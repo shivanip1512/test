@@ -234,19 +234,16 @@ public interface YukonListEntryTypes
     public static final int EVENT_ACTION_CUST_ACCT_CREATED = 10201;
     public static final int EVENT_ACTION_CUST_ACCT_UPDATED = 10202;
     
-    //entryIDS for EventLogging in STARS - Actions (for Inventory Events)
-    public static final int EVENT_ACTION_INV_ORDERED = 10301;
-    public static final int EVENT_ACTION_INV_SHIPPED = 10302;
-    public static final int EVENT_ACTION_INV_RECEIVED = 10303;
-    public static final int EVENT_ACTION_INV_ISSUED = 10304;
-    public static final int EVENT_ACTION_INV_INSTALLED = 10305;
-    public static final int EVENT_ACTION_INV_INSTALLED_ACT = 10306;
-    public static final int EVENT_ACTION_INV_INSTALLED_DEACT = 10307;
-    public static final int EVENT_ACTION_INV_REMOVED = 10308;
-    public static final int EVENT_ACTION_INV_RETIRED = 10309;
-    public static final int EVENT_ACTION_INV_SCRAPPED = 10310;
-    public static final int EVENT_ACTION_INV_RETURNED = 10311;
-    public static final int EVENT_ACTION_INV_LOST = 10312;
+    //YukonDefinitionIDS for EventLogging in STARS - Actions (for Inventory Events)
+    public static final int EVENT_ACTION_INV_ORDERED = 1704;
+    public static final int EVENT_ACTION_INV_SHIPPED = 1705;
+    public static final int EVENT_ACTION_INV_RECEIVED = 1706;
+    public static final int EVENT_ACTION_INV_ISSUED = 1707;
+    public static final int EVENT_ACTION_INV_INSTALLED = 1708;
+    public static final int EVENT_ACTION_INV_INSTALLED_ACT = 1701;
+    public static final int EVENT_ACTION_INV_INSTALLED_DEACT = 1703;
+    public static final int EVENT_ACTION_INV_REMOVED = 1709;
+
     
     //entryIDS for CICustTypes
     public static final int CUSTOMER_TYPE_COMMERCIAL = 1930;
