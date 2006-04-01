@@ -46,6 +46,7 @@ public class InventoryBase extends DBPersistent {
 				getInventoryBase().getInventoryID() );
 		
 		delete( "ECToInventoryMapping", "InventoryID", getInventoryBase().getInventoryID() );
+        delete( "InventoryToWarehouseMapping", "InventoryID", getInventoryBase().getInventoryID());
 		getInventoryBase().delete();
     }
 
