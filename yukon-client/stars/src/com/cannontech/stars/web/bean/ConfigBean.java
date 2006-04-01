@@ -12,6 +12,7 @@ import com.cannontech.database.data.lite.stars.LiteServiceCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.db.stars.hardware.StaticLoadGroupMapping;
 import com.cannontech.roles.operator.AdministratorRole;
+import com.cannontech.roles.operator.InventoryRole;
 import com.cannontech.stars.util.ECUtils;
 
 
@@ -22,6 +23,8 @@ public class ConfigBean
     private List<StaticLoadGroupMapping> allStaticGroups;
     private boolean hasStaticLoadGroupMapping;
     private int currentApplianceCategoryID;
+    private LiteYukonUser currentUser = null;
+    private boolean hasResetPermission;
     
     public ConfigBean()
     {
@@ -68,6 +71,27 @@ public class ConfigBean
 
     public void setAllStaticGroups(List<StaticLoadGroupMapping> allStaticGroups) {
         this.allStaticGroups = allStaticGroups;
+    }
+
+    public boolean isHasResetPermission() {
+        /*Let's take some precautions that this person should be able to reset static load group mappings
+         * 
+         */
+        hasResetPermission = AuthFuncs.checkRoleProperty(getCurrentUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS)
+                            && AuthFuncs.checkRoleProperty(getCurrentUser(), InventoryRole.SN_CONFIG_RANGE);
+        return hasResetPermission;
+    }
+
+    public void setHasResetPermission(boolean hasResetPermission) {
+        this.hasResetPermission = hasResetPermission;
+    }
+
+    public LiteYukonUser getCurrentUser() {
+        return currentUser;
+    }
+
+    public void setCurrentUser(LiteYukonUser currentUser) {
+        this.currentUser = currentUser;
     }
     
 }
