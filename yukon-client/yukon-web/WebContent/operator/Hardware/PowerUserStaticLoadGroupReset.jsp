@@ -12,15 +12,16 @@
 		<%@ include file="include/HeaderBar.jsp" %>
 	</div>
  	<br clear="all"> 
- 	
+ 	                                      
 	<div class="standardpurplesidebox"> 
 	</div>
-
+                            
 	<div class="standardcentralwhitebody">
 		<div align="center"> <br>
            
     	</div>
-    	
+    	   `
+            
 		<form name="MForm" method="post" action="<%=request.getContextPath()%>/servlet/InventoryManager">
 	    	<input type="hidden" name="action" value="StaticLoadGroupMapMasterReset">
 	    	
