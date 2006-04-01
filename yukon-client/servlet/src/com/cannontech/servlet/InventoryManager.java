@@ -737,14 +737,11 @@ public class InventoryManager extends HttpServlet {
 		try {
 			int invID = Integer.parseInt( req.getParameter("InvID") );
 			LiteInventoryBase liteInv = energyCompany.getInventoryBrief( invID, true );
-			
+            
 			StarsOperation operation = UpdateLMHardwareAction.getRequestOperation( req, energyCompany );
 			UpdateLMHardwareAction.updateInventory( operation.getStarsUpdateLMHardware(), liteInv, energyCompany );
 			
-            //TODO
-            //Warehouse.moveInventoryToAnotherWarehouse(invID, invID)
-            
-			if (req.getParameter("UseHardwareAddressing") != null) {
+            if (req.getParameter("UseHardwareAddressing") != null) {
 				StarsLMConfiguration starsCfg = new StarsLMConfiguration();
 				InventoryManagerUtil.setStarsLMConfiguration( starsCfg, req );
 				UpdateLMHardwareConfigAction.updateLMConfiguration( starsCfg, (LiteStarsLMHardware)liteInv, energyCompany );
@@ -758,7 +755,7 @@ public class InventoryManager extends HttpServlet {
 				}
 			}
 			
-			session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Hardware information updated successfully" );
+            session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Hardware information updated successfully" );
 		}
 		catch (WebClientException e) {
 			CTILogger.error( e.getMessage(), e );
