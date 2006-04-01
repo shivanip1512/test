@@ -1,9 +1,19 @@
+<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
 <%@ include file="include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.database.data.pao.PAOGroups" %>
+<jsp:useBean id="detailBean" class="com.cannontech.stars.web.bean.InventoryDetailBean" scope="page"/>
+
+    <%pageContext.setAttribute("liteEC", liteEC);%>
+    <c:set target="${detailBean}" property="energyCompany" value="${liteEC}" />
+    <%pageContext.setAttribute("currentUser", lYukonUser);%>
+    <c:set target="${detailBean}" property="currentUser" value="${currentUser}" />
+
+
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
 	int invNo = Integer.parseInt(request.getParameter("InvNo"));
 	StarsInventory inventory = inventories.getStarsInventory(invNo);
+    pageContext.setAttribute("currentInvID", inventory.getInventoryID());    
 	
 	boolean invChecking = AuthFuncs.checkRoleProperty(lYukonUser, ConsumerInfoRole.INVENTORY_CHECKING);
 	
@@ -41,6 +51,7 @@
 	}
 %>
 
+<c:set target="${detailBean}" property="currentInventoryID" value="${currentInvID}" />
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -77,6 +88,10 @@ function validate(form) {
 function changeSerialNo() {
 	document.snForm.submit();
 }
+
+function revealLog() {
+    document.getElementById("stateChangeHistory").style.display = "";
+}
 </script>
 </head>
 
@@ -112,6 +127,7 @@ function changeSerialNo() {
                 <input type="hidden" name="action" value="UpdateLMHardware">
                 <input type="hidden" name="OrigInvID" value="<%= inventory.getInventoryID() %>">
                 <input type="hidden" name="InvID" value="<%= inventory.getInventoryID() %>">
+                <input type="hidden" name="oldStateID" value='<c:out value="${detailBean.currentInventory.currentStateID}"/>'>
                 <input type="hidden" name="DeviceID" value="<%= inventory.getDeviceID() %>">
 				<input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>?InvNo=<%= invNo %>">
 				<input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?InvNo=<%= invNo %>">
@@ -120,7 +136,7 @@ function changeSerialNo() {
                   <td width="300" valign="top" bgcolor="#FFFFFF"> 
                     <table width="300" border="0" cellspacing="0" cellpadding="0">
                       <tr> 
-                          <td valign="top"><span class="SubtitleHeader">DEVICE</span> 
+                          <td valign="top"><span class="SubtitleHeader">DEVICE INFO</span> 
                             <hr>
 <% if (invChecking || inventory.getLMHardware() == null) { %>
                             <input type="hidden" name="DeviceType" value="<%= inventory.getDeviceType().getEntryID() %>">
@@ -188,22 +204,7 @@ function changeSerialNo() {
                                   <input type="text" name="AltTrackNo" maxlength="30" size="24" value="<%= inventory.getAltTrackingNumber() %>" onchange="setContentChanged(true)">
                                 </td>
                               </tr>
-                              <tr> 
-                                <td width="100" class="TableCell"> 
-                                  <div align="right">Receive Date: </div>
-                                </td>
-                                <td width="200"> 
-                                  <input type="text" name="ReceiveDate" maxlength="30" size="24" value="<%= ServletUtils.formatDate(inventory.getReceiveDate(), datePart) %>" onchange="setContentChanged(true)">
-                                </td>
-                              </tr>
-                              <tr> 
-                                <td width="100" class="TableCell"> 
-                                  <div align="right">Remove Date: </div>
-                                </td>
-                                <td width="200"> 
-                                  <input type="text" name="RemoveDate" maxlength="30" size="24" value="<%= ServletUtils.formatDate(inventory.getRemoveDate(), datePart) %>" onchange="setContentChanged(true)">
-                                </td>
-                              </tr>
+                              
                               <tr> 
                                 <td width="100" class="TableCell"> 
                                   <div align="right">Voltage: </div>
@@ -225,14 +226,6 @@ function changeSerialNo() {
                               </tr>
                               <tr> 
                                 <td width="100" class="TableCell"> 
-                                  <div align="right">Status: </div>
-                                </td>
-                                <td width="200"> 
-                                  <input type="text" name="Status" maxlength="30" size="24" value="<%= inventory.getDeviceStatus().getContent() %>" onchange="setContentChanged(true)">
-                                </td>
-                              </tr>
-                              <tr> 
-                                <td width="100" class="TableCell"> 
                                   <div align="right">Notes: </div>
                                 </td>
                                 <td width="200"> 
@@ -243,22 +236,78 @@ function changeSerialNo() {
                           </td>
                       </tr>
                     </table>
+                    
+                    <table width="300" border="0" cellspacing="0" cellpadding="0">
+                        <tr> 
+                          <td><span class="SubtitleHeader"><br>
+                            DEVICE STATUS</span> 
+                            <hr>
+                                <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
+                                    <tr> 
+                                        <td width="88" class="TableCell"> 
+                                            <div align="right">Status:</div>
+                                        </td>
+                                        <td width="210">
+                                            <select id='Status' name='Status' size="1" onChange="setContentChanged(true)">
+                                                <option value="0" selected> <c:out value="(none)"/> </option>
+                                                <c:forEach var="deviceState" items="${detailBean.availableDeviceStates.yukonListEntries}">
+                                                    <c:choose>
+                                                        <c:when test="${deviceState.entryID == detailBean.currentInventory.currentStateID}">
+                                                            <option value='<c:out value="${deviceState.entryID}"/>' selected> <c:out value="${deviceState.entryText}"/> </option>
+                                                        </c:when> 
+                                                        <c:otherwise>
+                                                            <option value='<c:out value="${deviceState.entryID}"/>'> <c:out value="${deviceState.entryText}"/> </option>
+                                                        </c:otherwise> 
+                                                    </c:choose>
+                                                </c:forEach> 
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr> 
+                                        <td width="88" class="TableCell"> 
+                                          <div align="right">Date Installed:</div>
+                                        </td>
+                                        <td width="210"> 
+                                            <c:out value="${detailBean.currentReceiveDate}"/>
+                                        </td>
+                                    </tr>
+                                    <tr> 
+                                        <td width="88" class="TableCell"> 
+                                            <div align="right">Date Received:</div>
+                                        </td>
+                                        <td width="210"> 
+                                            <c:out value="${detailBean.currentReceiveDate}"/> 
+                                        </td>
+                                    </tr>
+                                    <tr> 
+                                        <td width="88" class="TableCell"> 
+                                            <div align="right">Date Removed:</div>
+                                        </td>
+                                        <td width="210"> 
+                                            <c:out value="${detailBean.currentRemoveDate}"/>
+                                        </td>
+                                    </tr>
+                                    <tr> 
+                                        <td width="88" class="TableCell"> 
+                                            <div align="right">Status History:</div>
+                                        </td>
+                                        <td width="210"> 
+                                            <input type="button" name="ViewLog" value="View" onclick="revealLog()">
+                                        </td>
+                                    </tr>
+                                  
+                                </table>
+                              </td>
+                            </tr>
+                          </table>
                   </td>
                   <td width="300" valign="top" bgcolor="#FFFFFF"> 
                     <div align="center"> 
                       <table width="300" border="0" cellspacing="0" cellpadding="0">
                         <tr> 
-                            <td valign="top"><span class="SubtitleHeader">INSTALL</span> 
+                            <td valign="top"><span class="SubtitleHeader">SERVICE AND STORAGE</span> 
                               <hr>
                               <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
-                                <tr> 
-                                  <td width="100" class="TableCell"> 
-                                    <div align="right">Date Installed: </div>
-                                  </td>
-                                  <td width="200"> 
-                                    <input type="text" name="InstallDate" maxlength="30" size="24" value="<%= ServletUtils.formatDate(inventory.getInstallDate(), datePart) %>" onchange="setContentChanged(true)">
-                                  </td>
-                                </tr>
                                 <tr> 
                                   <td width="100" class="TableCell"> 
                                     <div align="right">Service Company: </div>
@@ -277,6 +326,26 @@ function changeSerialNo() {
                                     </select>
                                   </td>
                                 </tr>
+                                <tr> 
+                                <td width="88" class="TableCell"> 
+                                  <div align="right">Warehouse:</div>
+                                </td>
+                                <td width="210"> 
+                                    <select id='Warehouse' name='Warehouse' size="1" onChange="setContentChanged(true)">
+                                        <option value="0" selected> <c:out value="(none)"/> </option>
+                                        <c:forEach var="warehouse" items="${detailBean.availableWarehouses}">
+                                            <c:choose>
+                                                <c:when test="${warehouse.warehouseID == detailBean.currentWarehouse.warehouseID}">
+                                                    <option value='<c:out value="${warehouse.warehouseID}"/>' selected> <c:out value="${warehouse.warehouseName}"/> </option>
+                                                </c:when> 
+                                                <c:otherwise>
+                                                    <option value='<c:out value="${warehouse.warehouseID}"/>'> <c:out value="${warehouse.warehouseName}"/> </option>
+                                                </c:otherwise> 
+                                            </c:choose>
+                                        </c:forEach> 
+                                    </select>
+                                </td>
+                              </tr>
                                 <tr> 
                                   <td width="100" class="TableCell"> 
                                     <div align="right">Notes: </div>
@@ -351,6 +420,28 @@ function changeSerialNo() {
                   </td>
                 </tr>
               </table>
+              
+              <div id="stateChangeHistory" style="display:none">
+                    <div align="center">
+                        <span class="TitleHeader">INVENTORY STATE CHANGE HISTORY</span>
+                    </div>
+                    <br>
+                    <table width="600" border="1" cellspacing="0" cellpadding="5" align="center">
+                        <tr>
+                            <td class='HeaderCell' width='200'>Event</td>
+                            <td class='HeaderCell' width='200'>User Name</td>
+                            <td class='HeaderCell' width='200'>Time of Event</td>
+                        </tr>
+                        <c:forEach var="event" items="${detailBean.currentEvents}">
+                            <tr>
+                                <td class='TableCell' width='200'><c:out value="${event.actionText}"/></td>
+                                <td class='TableCell' width='200'><c:out value="${event.userName}"/></td>
+                                <td class='TableCell' width='200'><c:out value="${event.eventBase.eventTimestamp}"/></td>
+                            </tr>
+                        </c:forEach>
+                    </table>
+               </div>
+              
             <table width="400" border="0" cellspacing="0" cellpadding="3" bgcolor="#FFFFFF">
               <tr> 
                   <td width="42%" align="right"> 
