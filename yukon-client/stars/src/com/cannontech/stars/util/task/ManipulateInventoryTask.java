@@ -195,7 +195,7 @@ public class ManipulateInventoryTask extends TimeConsumingTask {
                     stateChanged = true;
                 }
                 
-                Integer oldWarehouseID = Warehouse.getWarehouseFromInventoryID(invDB.getInventoryID());
+                Integer oldWarehouseID = Warehouse.getWarehouseIDFromInventoryID(invDB.getInventoryID());
                 if (newWarehouseID != null && oldWarehouseID.compareTo(newWarehouseID) != 0)
                 {
                     warehouseChanged = true;
