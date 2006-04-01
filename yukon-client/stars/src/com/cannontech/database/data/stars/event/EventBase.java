@@ -13,7 +13,11 @@ import com.cannontech.database.db.DBPersistent;
 public class EventBase extends DBPersistent {
 	
 	private com.cannontech.database.db.stars.event.EventBase eventBase = null;
-
+    
+    private String actionText;
+    private String userName;
+    private int actionYukDefID;
+    
 	public void setEventID(Integer eventID) {
 		getEventBase().setEventID( eventID );
 	}
@@ -69,4 +73,28 @@ public class EventBase extends DBPersistent {
 		com.cannontech.database.db.stars.event.EventBase eventBase) {
 		this.eventBase = eventBase;
 	}
+    
+    public String getActionText() {
+        return actionText;
+    }
+
+    public void setActionText(String actionText) {
+        this.actionText = actionText;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public int getActionYukDefID() {
+        return actionYukDefID;
+    }
+
+    public void setActionYukDefID(int actionYukDefID) {
+        this.actionYukDefID = actionYukDefID;
+    }
 }

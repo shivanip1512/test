@@ -21,8 +21,6 @@ import com.cannontech.database.db.user.YukonUser;
 public class EventAccount extends EventBase {
 
     private com.cannontech.database.db.stars.event.EventAccount eventAccount = null;
-    String actionText;
-    String userName;
     
     public EventAccount() {
         super();
@@ -116,20 +114,5 @@ public class EventAccount extends EventBase {
         
         return eventAccounts;
     }
-
-    public String getActionText() {
-        return actionText;
-    }
-
-    public void setActionText(String actionText) {
-        this.actionText = actionText;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
+    
 }
