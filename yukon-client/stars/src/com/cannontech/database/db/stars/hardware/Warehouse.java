@@ -222,9 +222,9 @@ public static List<Integer> getAllInventoryInAWarehouse(int warehouseID)
     return inventory;
 }
 
-public static Integer getWarehouseFromInventoryID(int invenID)
+public static Integer getWarehouseIDFromInventoryID(int invenID)
 {
-    Integer warehouseID = new Integer(-1);
+    Integer warehouseID = new Integer(0);
     
     SqlStatement stmt = new SqlStatement("SELECT WAREHOUSEID FROM " + MAPPING_TABLE_NAME + " WHERE INVENTORYID = " + invenID, CtiUtilities.getDatabaseAlias());
     
@@ -277,9 +277,24 @@ public static String getWarehouseNameFromInventoryID(int invenID)
 public static boolean moveInventoryToAnotherWarehouse(int invenID, int newWarehouseID)
 {
     boolean success = false;
+    SqlStatement stmt;
     
-    SqlStatement stmt = new SqlStatement("UPDATE " + MAPPING_TABLE_NAME + " SET WAREHOUSEID = " + newWarehouseID + " WHERE INVENTORYID = " + invenID, CtiUtilities.getDatabaseAlias());
-    
+    if(newWarehouseID == 0)
+        stmt = new SqlStatement("DELETE FROM " + MAPPING_TABLE_NAME + " WHERE INVENTORYID = " + invenID, CtiUtilities.getDatabaseAlias());
+    else 
+    {
+        Integer oldWarehouseID = getWarehouseIDFromInventoryID(invenID);
+        if(oldWarehouseID == 0)
+            stmt = new SqlStatement("INSERT INTO " + MAPPING_TABLE_NAME + " VALUES ( " + newWarehouseID + ", " + invenID + " ) ", CtiUtilities.getDatabaseAlias());
+        else if(oldWarehouseID.intValue() != newWarehouseID)
+        {
+            stmt = new SqlStatement("UPDATE " + MAPPING_TABLE_NAME + " SET WAREHOUSEID = " + newWarehouseID + " WHERE INVENTORYID = " + invenID, CtiUtilities.getDatabaseAlias());
+        }
+        else 
+            return false;
+    }
+        
+        
     try
     {
         stmt.execute();
@@ -326,5 +341,34 @@ public Integer getInventoryID() {
 
 public void setInventoryID(Integer inventoryID) {
     this.inventoryID = inventoryID;
+}
+
+public static Warehouse getWarehouseFromInventoryID(int invenID)
+{
+    Warehouse myHouse = new Warehouse();
+    myHouse.setWarehouseID(new Integer(0));
+    myHouse.setWarehouseName(CtiUtilities.STRING_NONE);
+    
+    SqlStatement stmt = new SqlStatement("SELECT * FROM " + TABLE_NAME + " WHERE WAREHOUSEID IN (SELECT WAREHOUSEID FROM " + MAPPING_TABLE_NAME + " WHERE INVENTORYID = " + invenID + ")", CtiUtilities.getDatabaseAlias());
+    
+    try
+    {
+        stmt.execute();
+        
+        if( stmt.getRowCount() > 0 )
+        {
+            myHouse.setWarehouseID(new Integer(stmt.getRow(0)[0].toString()));
+            myHouse.setWarehouseName(stmt.getRow(0)[1].toString());
+            myHouse.setAddressID(new Integer(stmt.getRow(0)[2].toString()));
+            myHouse.setNotes(stmt.getRow(0)[3].toString());
+            myHouse.setEnergyCompanyID(new Integer(stmt.getRow(0)[4].toString()));
+        }
+    }
+    catch( Exception e )
+    {
+        e.printStackTrace();
+    }
+    
+    return myHouse;
 }
 }
