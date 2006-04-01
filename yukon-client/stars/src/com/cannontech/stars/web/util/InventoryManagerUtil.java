@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.Hashtable;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
@@ -41,15 +42,19 @@ import com.cannontech.database.data.stars.hardware.InventoryBase;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.pao.YukonPAObject;
+import com.cannontech.database.db.stars.hardware.Warehouse;
 import com.cannontech.device.range.DeviceAddressRange;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.stars.util.*;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.SwitchCommandQueue;
 import com.cannontech.stars.util.WebClientException;
+import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.action.YukonSwitchCommandAction;
 import com.cannontech.stars.xml.serialize.DeviceType;
+import com.cannontech.stars.xml.serialize.DeviceStatus;
 import com.cannontech.stars.xml.serialize.ExpressCom;
 import com.cannontech.stars.xml.serialize.InstallationCompany;
 import com.cannontech.stars.xml.serialize.LMHardware;
@@ -128,6 +133,7 @@ public class InventoryManagerUtil {
 		if (req.getParameter("InstallNotes") != null)
 			starsInv.setInstallationNotes( req.getParameter("InstallNotes").replaceAll(System.getProperty("line.separator"), "<br>") );
 		
+        /*
 		String recvDateStr = req.getParameter("ReceiveDate");
 		if (recvDateStr != null && recvDateStr.length() > 0) {
 			Date recvDate = ServletUtil.parseDateStringLiberally( recvDateStr, energyCompany.getDefaultTimeZone() );
@@ -151,7 +157,7 @@ public class InventoryManagerUtil {
 				throw new WebClientException("Invalid remove date format '" + remvDateStr + "', the date should be in the form of 'mm/dd/yy'");
 			starsInv.setRemoveDate( remvDate );
 		}
-		
+		*/
 		if (req.getParameter("Voltage") != null) {
 			Voltage volt = new Voltage();
 			volt.setEntryID( Integer.parseInt(req.getParameter("Voltage")) );
@@ -170,6 +176,32 @@ public class InventoryManagerUtil {
 			starsInv.setDeviceType( devType );
 		}
 		
+        if (req.getParameter("Status") != null) {
+            DeviceStatus devStat = new DeviceStatus();
+            devStat.setEntryID( Integer.parseInt(req.getParameter("Status")) );
+            starsInv.setDeviceStatus( devStat );
+        
+            /*
+             * This violates so many standards of good coding I hate to even think about it
+             * but it beat trying to put it in nine different spots in the Yao action/not-action use maze.
+             */
+            HttpSession session = req.getSession(false);
+            StarsYukonUser user = (StarsYukonUser)
+                    session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
+            
+            if(req.getParameter("oldStateID") != null && Integer.parseInt(req.getParameter("oldStateID")) != devStat.getEntryID())
+                EventUtils.logSTARSEvent(user.getUserID(), EventUtils.EVENT_CATEGORY_INVENTORY, devStat.getEntryID(), starsInv.getInventoryID());
+        }
+        
+        /*
+         * TODO This should be moved elsewhere
+         */
+        Integer warehouseID = 0;
+        if(req.getParameter("Warehouse") != null)
+            warehouseID = new Integer(req.getParameter("Warehouse"));
+        
+        Warehouse.moveInventoryToAnotherWarehouse(starsInv.getInventoryID(), warehouseID);
+        
 		if (starsInv.getDeviceType() != null) {
 			int categoryID = InventoryUtils.getInventoryCategoryID( starsInv.getDeviceType().getEntryID(), energyCompany );
 			if (InventoryUtils.isLMHardware( categoryID )) {
