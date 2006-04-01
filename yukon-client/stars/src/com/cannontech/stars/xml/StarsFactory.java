@@ -543,6 +543,8 @@ public class StarsFactory {
 		invDB.setDeviceID( new Integer(starsInv.getDeviceID()) );
 		if (starsInv.getDeviceLabel() != null)
 			invDB.setDeviceLabel( starsInv.getDeviceLabel() );
+        if (starsInv.getDeviceStatus() != null)
+            invDB.setCurrentStateID( starsInv.getDeviceStatus().getEntryID() );
 	}
 	
 	
