@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2006/04/03 20:44:25 $
+* REVISION     :  $Revision: 1.34 $
+* DATE         :  $Date: 2006/04/03 21:04:20 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1675,7 +1675,7 @@ INT CtiDeviceMCT470::executeScan(CtiRequestMsg                  *pReq,
                         nRet = NoMethod;
                     }
                 }
-    
+
                 //Read the IED demand
                 function = Emetcon::GetValue_IEDDemand;
                 found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
@@ -2611,7 +2611,7 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
         if( parse.getFlags() & CMD_FLAG_GV_DEMAND )
         {
             //If before fix and the timestamp is at least 10 minutes old
-            if( dataInvalid || (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) < MCT470_SspecRev_IED_Zero_Write_Min 
+            if( dataInvalid || (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) < MCT470_SspecRev_IED_Zero_Write_Min
                 && _iedTime.seconds()/60 < (CtiTime::now().seconds()/60-maxReadMinutes)))
             {
                 //If we are here, we believe the data is incorrect!
@@ -2622,51 +2622,51 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
             {
                 CtiPointSPtr kw, km, volts;
                 bool send_outages = true;
-    
+
                 //  get demand
                 pi = getData(DSt->Message, 3, ValueType_Raw);
-    
+
                 if(kw = getDevicePointOffsetTypeEqual(MCT470_PointOffset_TotalKW, AnalogPointType))
                 {
                     pi.value = boost::static_pointer_cast<CtiPointNumeric>(kw)->computeValueForUOM(pi.value);
-    
+
                     point_string = getName() + " / " + kw->getName() + " = " + CtiNumStr(pi.value, boost::static_pointer_cast<CtiPointNumeric>(kw)->getPointUnits().getDecimalPlaces());
-    
+
                     ReturnMsg->PointData().push_back(makePointDataMsg(kw, pi, point_string));
                 }
                 else
                 {
                     resultString += getName() + " / current KW = " + CtiNumStr(pi.value) + "\n";
                 }
-    
+
                 //  get selectable metric (kM, kVAR, etc)
                 pi = getData(DSt->Message + 3, 3, ValueType_Raw);
-    
+
                 if(km = getDevicePointOffsetTypeEqual(MCT470_PointOffset_TotalKM, AnalogPointType))
                 {
                     pi.value = boost::static_pointer_cast<CtiPointNumeric>(km)->computeValueForUOM(pi.value);
-    
+
                     point_string = getName() + " / " + km->getName() + " = " + CtiNumStr(pi.value, boost::static_pointer_cast<CtiPointNumeric>(km)->getPointUnits().getDecimalPlaces());
-    
+
                     ReturnMsg->PointData().push_back(makePointDataMsg(km, pi, point_string));
                 }
                 else
                 {
                     resultString += getName() + " / current KM = " + CtiNumStr(pi.value) + "\n";
                 }
-    
+
                 //  S4-specific - get voltage
                 pi = getData(DSt->Message + 6, 2, ValueType_Raw);
                 pi.value /= 100.0;
-    
+
                 if(volts = getDevicePointOffsetTypeEqual(MCT470_PointOffset_VoltsPhaseA, AnalogPointType))
                 {
                     send_outages = false;
-    
+
                     pi.value  = boost::static_pointer_cast<CtiPointNumeric>(volts)->computeValueForUOM(pi.value);
-    
+
                     point_string = getName() + " / " + volts->getName() + " = " + CtiNumStr(pi.value, boost::static_pointer_cast<CtiPointNumeric>(volts)->getPointUnits().getDecimalPlaces());
-    
+
                     ReturnMsg->PointData().push_back(makePointDataMsg(volts, pi, point_string));
                 }
                 //  don't send the point if it's not defined - this is a hack to allow the S4 and Alpha decodes to
@@ -2675,19 +2675,19 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                 {
                     resultString += getName() + " / Phase A Volts = " + CtiNumStr(pi.value) + "\n";
                 }*/
-    
+
                 pi = getData(DSt->Message + 8, 2, ValueType_Raw);
                 pi.value /= 100.0;
-    
+
                 if(volts = getDevicePointOffsetTypeEqual(MCT470_PointOffset_VoltsPhaseB, AnalogPointType))
                 {
                     send_outages = false;
-    
+
                     pi.value  = boost::static_pointer_cast<CtiPointNumeric>(volts)->computeValueForUOM(pi.value);
-    
+
                     point_string = getName() + " / " + volts->getName() + " = " + CtiNumStr(pi.value, boost::static_pointer_cast<CtiPointNumeric>(volts)->getPointUnits().getDecimalPlaces());
-    
-                    ReturnMsg->PointData().push_back(makePointDataMsg(km, pi, point_string));
+
+                    ReturnMsg->PointData().push_back(makePointDataMsg(volts, pi, point_string));
                 }
                 //  don't send the point if it's not defined - this is a hack to allow the S4 and Alpha decodes to
                 //    both happen (until we have the configs to tell us which one to use)
@@ -2695,19 +2695,19 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                 {
                     resultString += getName() + " / Phase B Volts = " + CtiNumStr(pi.value) + "\n";
                 }*/
-    
+
                 pi = getData(DSt->Message + 10, 2, ValueType_Raw);
                 pi.value /= 100.0;
-    
+
                 if(volts = getDevicePointOffsetTypeEqual(MCT470_PointOffset_VoltsPhaseC, AnalogPointType))
                 {
                     send_outages = false;
-    
+
                     pi.value  = boost::static_pointer_cast<CtiPointNumeric>(volts)->computeValueForUOM(pi.value);
-    
+
                     point_string = getName() + " / " + volts->getName() + " = " + CtiNumStr(pi.value, boost::static_pointer_cast<CtiPointNumeric>(volts)->getPointUnits().getDecimalPlaces());
-    
-                    ReturnMsg->PointData().push_back(makePointDataMsg(km, pi, point_string));
+
+                    ReturnMsg->PointData().push_back(makePointDataMsg(volts, pi, point_string));
                 }
                 //  don't send the point if it's not defined - this is a hack to allow the S4 and Alpha decodes to
                 //    both happen (until we have the configs to tell us which one to use)
@@ -2715,11 +2715,11 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                 {
                     resultString += getName() + " / current KM = " + CtiNumStr(pi.value) + "\n";
                 }*/
-    
+
                 if( send_outages )
                 {
                     pi = getData(DSt->Message + 6, 2, ValueType_Raw);
-    
+
                     resultString += getName() + " / outage count: " + CtiNumStr(pi.value) + "\n";
                 }
             }
@@ -2802,7 +2802,8 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
             int timezone_offset = 0;
             if( GetTimeZoneInformation(&tzinfo) != TIME_ZONE_ID_INVALID )
             {
-                timezone_offset = tzinfo.Bias;
+                //  Bias is in minutes
+                timezone_offset = tzinfo.Bias * 60;
             }
 
             pi        = getData(DSt->Message + 5, 3, ValueType_Raw);
@@ -2887,8 +2888,18 @@ INT CtiDeviceMCT470::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, lis
         {
             case Emetcon::GetConfig_IEDTime:
             {
+                //  this is CRAZY WIN32 SPECIFIC
+                _TIME_ZONE_INFORMATION tzinfo;
+                int timezone_offset = 0;
+                if( GetTimeZoneInformation(&tzinfo) != TIME_ZONE_ID_INVALID )
+                {
+                    //  Bias is in minutes
+                    timezone_offset = tzinfo.Bias * 60;
+                }
+
                 point_info_t pi_time  = getData(DSt->Message, 4, ValueType_Raw);
-                CtiTime       ied_time = CtiTime((unsigned long)pi_time.value);
+                CtiTime      ied_time = CtiTime((unsigned long)pi_time.value + timezone_offset);
+
                 _iedTime = ied_time;
 
                 resultString += getName() + " / current time: " + ied_time.asString() + "\n";
