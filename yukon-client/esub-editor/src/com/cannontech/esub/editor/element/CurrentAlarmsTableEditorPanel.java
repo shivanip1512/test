@@ -515,21 +515,18 @@ public Object getValue(Object o) {
             while( categories.hasMoreElements() )
             {
                 CheckNode category = (CheckNode)categories.nextElement();
-//                if(category.isSelected())
-//                {
-                    Enumeration points = category.children();
-                    while(points.hasMoreElements())
+                Enumeration points = category.children();
+                while(points.hasMoreElements())
+                {
+                    CheckNode currentPointNode = (CheckNode)points.nextElement();
+                    if(currentPointNode.isSelected())
                     {
-                        CheckNode currentPointNode = (CheckNode)points.nextElement();
-                        if(currentPointNode.isSelected())
-                        {
-                            LitePoint point = (LitePoint) currentPointNode.getUserObject();
-                            
-                            pointids.add( point.getLiteID());
-                            
-                        }
+                        LitePoint point = (LitePoint) currentPointNode.getUserObject();
+                        
+                        pointids.add( point.getLiteID());
+                        
                     }
-                //}
+                }
             }
         }
     }
