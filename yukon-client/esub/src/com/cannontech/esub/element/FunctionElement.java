@@ -34,7 +34,7 @@ public class FunctionElement extends LxAbstractImage implements DrawingElement, 
     private int version = CURRENT_VERSION; 
     private Integer functionID = 0;
     private ArrayList argList = new ArrayList();
-    private static final String CONTROL_BY_POINT = "SubmitControl(";
+    private static final String CONTROL_BY_POINT = "submitControl(";
     
 /**
  * StaticImage constructor comment.
