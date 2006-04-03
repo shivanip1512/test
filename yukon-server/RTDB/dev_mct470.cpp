@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.32 $
-* DATE         :  $Date: 2006/03/30 16:05:26 $
+* REVISION     :  $Revision: 1.33 $
+* DATE         :  $Date: 2006/04/03 20:44:25 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2562,6 +2562,7 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                     frozen = 0,
                     offset = 0,
                     rate   = 0;
+    const int       maxReadMinutes = 10;
     point_info_t    pi;
     string       point_string, resultString;
 
@@ -2610,8 +2611,8 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
         if( parse.getFlags() & CMD_FLAG_GV_DEMAND )
         {
             //If before fix and the timestamp is at least 10 minutes old
-            if( dataInvalid || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) < MCT470_SspecRev_IED_Zero_Write_Min 
-                && _iedTime.seconds()/60 > (CtiTime::now().seconds()/60-10))
+            if( dataInvalid || (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) < MCT470_SspecRev_IED_Zero_Write_Min 
+                && _iedTime.seconds()/60 < (CtiTime::now().seconds()/60-maxReadMinutes)))
             {
                 //If we are here, we believe the data is incorrect!
                 resultString += "Device: " + getName() + "\nData buffer is bad, retry command" ;
