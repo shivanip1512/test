@@ -50,9 +50,8 @@ private void buildRegistration()
 	reg.setPriority( 15 );
 
 	PointRegistration pReg = new PointRegistration();
-	pReg.setRegFlags( PointRegistration.REG_ALL_PTS_MASK |
-							PointRegistration.REG_ALARMS );
-								
+	pReg.setRegFlags(PointRegistration.REG_ALARMS);
+			 					
 	multi.getVector().addElement(reg);
 	multi.getVector().addElement(pReg);
 	
