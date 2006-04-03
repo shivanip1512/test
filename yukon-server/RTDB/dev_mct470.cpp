@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.34 $
-* DATE         :  $Date: 2006/04/03 21:04:20 $
+* REVISION     :  $Revision: 1.35 $
+* DATE         :  $Date: 2006/04/03 21:24:36 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2915,7 +2915,7 @@ INT CtiDeviceMCT470::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, lis
                 resultString += getName() + " / demand reset count: " + CtiNumStr((int)pi.value) + "\n";
 
                 pi_time  = getData(DSt->Message + 7, 4, ValueType_Raw);
-                ied_time = CtiTime((unsigned long)pi_time.value);
+                ied_time = CtiTime((unsigned long)pi_time.value + timezone_offset);
 
                 resultString += getName() + " / time of last reset: " + ied_time.asString() + "\n";
 
