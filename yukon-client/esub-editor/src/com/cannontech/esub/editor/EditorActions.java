@@ -17,9 +17,7 @@ import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.esub.element.AlarmTextElement;
-import com.cannontech.esub.element.CurrentAlarmsTable;
-import com.cannontech.esub.element.DynamicGraphElement;
+import com.cannontech.esub.element.*;
 import com.cannontech.esub.util.Util;
 import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.util.Command;
@@ -53,6 +51,7 @@ class EditorActions {
 	public static final String DYNAMIC_GRAPH = "DYNAMIC GRAPH";
 	public static final String ALARM_TABLE_ELEMENT = "ALARM TABLE";
 	public static final String ALARM_TEXT_ELEMENT = "ALARM TEXT";
+    public static final String FUNCTION_ELEMENT = "FUNCTION ELEMENT";
 	
 	//Element or group of elements related actions
 	public static final String HORIZONTAL_ALIGN_LEFT_ELEMENTS = "HORIZONTAL ALIGN LEFT";
@@ -815,19 +814,40 @@ class EditorActions {
 			"Alarm Text",
 			"TextAlarm.gif",
 			true) {
-				public void processAction(ActionEvent e) {
-					editor.getDrawing().getLxView().stopInteractiveCreation();
-										
-					AlarmTextElement elem = new AlarmTextElement();
-					
-					editor.setBehavior(elem);
-					editor.elementPlacer.setElement(elem);
-					editor.elementPlacer.setIsPlacing(true);
-					
-					editor.getDrawing().getLxView().setCursor(
-						new Cursor(Cursor.CROSSHAIR_CURSOR));
-				}
-			};
+		public void processAction(ActionEvent e) {
+			editor.getDrawing().getLxView().stopInteractiveCreation();
+								
+			AlarmTextElement elem = new AlarmTextElement();
+			
+			editor.setBehavior(elem);
+			editor.elementPlacer.setElement(elem);
+			editor.elementPlacer.setIsPlacing(true);
+			
+			editor.getDrawing().getLxView().setCursor(
+				new Cursor(Cursor.CROSSHAIR_CURSOR));
+		}
+	};
+            
+    private final LxAbstractAction functionElementAction =
+        new LxAbstractAction(
+            FUNCTION_ELEMENT,
+            "Function",
+            "Function",
+            "Function.gif",
+            true) {
+        public void processAction(ActionEvent e) {
+            editor.getDrawing().getLxView().stopInteractiveCreation();
+                                
+            FunctionElement elem = new FunctionElement();
+            
+            editor.setBehavior(elem);
+            editor.elementPlacer.setElement(elem);
+            editor.elementPlacer.setIsPlacing(true);
+            
+            editor.getDrawing().getLxView().setCursor(
+                new Cursor(Cursor.CROSSHAIR_CURSOR));
+        }
+    };
 					
 	private final LxAbstractAction aboutEsubEditor = 
 		new LxAbstractAction(
@@ -895,6 +915,7 @@ class EditorActions {
 		actionMap.put(DYNAMIC_GRAPH, dynamicGraphAction);
 		actionMap.put(ALARM_TABLE_ELEMENT, alarmTableElementAction);
 		actionMap.put(ALARM_TEXT_ELEMENT, alarmTextElementAction);
+        actionMap.put(FUNCTION_ELEMENT, functionElementAction);
 		
 		actionMap.put(ABOUT_ESUB_EDITOR, aboutEsubEditor);
 		
