@@ -20,14 +20,6 @@ function showConfirmWin( theDiv )
 
 } //end showControlWin
 
-
-// Called by the pop up confirm window to close itself.
-document.closeConfirmWin = function(w) 
-{
-    w.close();
-}
-
-
 function elementContains(elmOuter, elmInner)
 {
   while (elmInner && elmInner != elmOuter)
