@@ -230,8 +230,7 @@ public class FunctionElementEditorPanel  extends com.cannontech.common.gui.util.
                     getPointSelectionPanel().selectPoint(PointFuncs.getLitePoint(pointID));
                 }
             } catch (Exception e) {
-                System.out.println("error with function string data");
-                e.printStackTrace();
+                
             } 
         }
     }
