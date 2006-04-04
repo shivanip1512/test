@@ -192,9 +192,11 @@ public class FunctionElementEditorPanel  extends com.cannontech.common.gui.util.
         String functionName = getFunctionComboBox().getSelectedItem().toString();
         argList.add(functionName);
         String rawState = getRawStateComboBox().getSelectedItem().toString();
-        argList.add(rawState);
         String pointID = new Integer(getPointSelectionPanel().getSelectedPoint().getLiteID()).toString();
+        
         argList.add(pointID);
+        argList.add(rawState);
+        
         if(pointID.equals("") )
         {
             argList = null;
@@ -221,8 +223,9 @@ public class FunctionElementEditorPanel  extends com.cannontech.common.gui.util.
             
             try {
                 functionName = (String)argList.get(0);
-                rawState = (String)argList.get(1);
-                pointID = new Integer((String)argList.get(2)).intValue();
+                pointID = new Integer((String)argList.get(1)).intValue();
+                rawState = (String)argList.get(2);
+                
                 if( pointID != -1 && functionName != null && rawState != null)
                 {
                     getFunctionComboBox().setSelectedItem(functionName);

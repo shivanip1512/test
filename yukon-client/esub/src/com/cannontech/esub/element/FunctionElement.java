@@ -194,10 +194,8 @@ public synchronized void saveAsJLX(OutputStream out) throws IOException
         String ret = new String(script);
         if(argList != null)
         {
-        for(int i = 0; i < argList.size(); i++)
+        for(int i = 1; i < argList.size(); i++)
         {
-            
-            
             if(i  != argList.size()-1)
             {
                 ret = ret + "\"";
