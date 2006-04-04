@@ -191,7 +191,7 @@ public class FunctionElementEditorPanel  extends com.cannontech.common.gui.util.
         ArrayList argList = new ArrayList();
         String functionName = getFunctionComboBox().getSelectedItem().toString();
         argList.add(functionName);
-        String rawState = getRawStateComboBox().getSelectedItem().toString();
+        String rawState = String.valueOf(getRawStateComboBox().getSelectedIndex());
         String pointID = new Integer(getPointSelectionPanel().getSelectedPoint().getLiteID()).toString();
         
         argList.add(pointID);
