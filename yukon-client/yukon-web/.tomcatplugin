@@ -6,32 +6,42 @@
     <redirectLogger>false</redirectLogger>
     <updateXml>true</updateXml>
     <warLocation></warLocation>
+    <extraInfo></extraInfo>
     <webPath></webPath>
     <webClassPathEntries>
         <webClassPathEntry>/billing/bin</webClassPathEntry>
         <webClassPathEntry>/cbc/bin</webClassPathEntry>
         <webClassPathEntry>/commander/bin</webClassPathEntry>
         <webClassPathEntry>/common/bin</webClassPathEntry>
+        <webClassPathEntry>/cttp/bin</webClassPathEntry>
         <webClassPathEntry>/dbeditor/bin</webClassPathEntry>
         <webClassPathEntry>/esub/bin</webClassPathEntry>
+        <webClassPathEntry>/esub/resource</webClassPathEntry>
         <webClassPathEntry>/loadcontrol/bin</webClassPathEntry>
         <webClassPathEntry>/macs/bin</webClassPathEntry>
+        <webClassPathEntry>/multispeak/bin</webClassPathEntry>
         <webClassPathEntry>/report/bin</webClassPathEntry>
         <webClassPathEntry>/servlet/bin</webClassPathEntry>
         <webClassPathEntry>/stars/bin</webClassPathEntry>
         <webClassPathEntry>/tdc/bin</webClassPathEntry>
         <webClassPathEntry>/third-party/SqlServer.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/acme.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/activation.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/axis.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/batik.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/bsh.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/castor-xml.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/classes12.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/commons-discovery.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/commons-fileupload.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/commons-httpclient.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/commons-logging.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/dom4j.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/ejbonly.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/itext.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/jaxm-api.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/jaxm-runtime.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/jaxrpc.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/jcchart401K.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/jcfield401K.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/jcommon.jar</webClassPathEntry>
@@ -43,41 +53,31 @@
         <webClassPathEntry>/third-party/jtds.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/junit.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/led.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/log4j-1.2.4.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/mail.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/mx4j-jmx.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/mx4j-remote.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/mx4j.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/poi.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/rwav.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/saaj.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/struts.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/wsdl4j.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/xerces.jar</webClassPathEntry>
         <webClassPathEntry>/tools/bin</webClassPathEntry>
         <webClassPathEntry>/trending/bin</webClassPathEntry>
-        <webClassPathEntry>/yukonappserver/bin</webClassPathEntry>
-        <webClassPathEntry>/third-party/saaj.jar</webClassPathEntry>
-        <webClassPathEntry>/third-party/castor-xml.jar</webClassPathEntry>
-        <webClassPathEntry>/third-party/activation.jar</webClassPathEntry>
-        <webClassPathEntry>/third-party/axis.jar</webClassPathEntry>
-        <webClassPathEntry>/third-party/commons-discovery.jar</webClassPathEntry>
-        <webClassPathEntry>/third-party/commons-httpclient.jar</webClassPathEntry>
-        <webClassPathEntry>/third-party/jaxrpc.jar</webClassPathEntry>
-        <webClassPathEntry>/third-party/log4j-1.2.4.jar</webClassPathEntry>
-        <webClassPathEntry>/third-party/mail.jar</webClassPathEntry>
-        <webClassPathEntry>/third-party/mx4j-remote.jar</webClassPathEntry>
-        <webClassPathEntry>/third-party/mx4j.jar</webClassPathEntry>
         <webClassPathEntry>/yukon-web/WebContent/WEB-INF/classes</webClassPathEntry>
         <webClassPathEntry>/yukon-web/WebContent/WEB-INF/lib/commons-beanutils-1.6.1.jar</webClassPathEntry>
         <webClassPathEntry>/yukon-web/WebContent/WEB-INF/lib/commons-codec-1.2.jar</webClassPathEntry>
         <webClassPathEntry>/yukon-web/WebContent/WEB-INF/lib/commons-digester-1.5.jar</webClassPathEntry>
-        <webClassPathEntry>/yukon-web/WebContent/WEB-INF/lib/commons-collections-3.0.jar</webClassPathEntry>
         <webClassPathEntry>/yukon-web/WebContent/WEB-INF/lib/commons-el.jar</webClassPathEntry>
         <webClassPathEntry>/yukon-web/WebContent/WEB-INF/lib/commons-fileupload-1.0.jar</webClassPathEntry>
         <webClassPathEntry>/yukon-web/WebContent/WEB-INF/lib/commons-logging.jar</webClassPathEntry>
         <webClassPathEntry>/yukon-web/WebContent/WEB-INF/lib/commons-validator.jar</webClassPathEntry>
         <webClassPathEntry>/yukon-web/WebContent/WEB-INF/lib/jsp-2.0.jar</webClassPathEntry>
         <webClassPathEntry>/yukon-web/WebContent/WEB-INF/lib/log4j-1.2.8.jar</webClassPathEntry>
-        <webClassPathEntry>/yukon-web/WebContent/WEB-INF/lib/myfaces.jar</webClassPathEntry>
         <webClassPathEntry>/yukon-web/WebContent/WEB-INF/lib/struts.jar</webClassPathEntry>
         <webClassPathEntry>/yukon-web/WebContent/WEB-INF/lib/web.jar</webClassPathEntry>
-        <webClassPathEntry>/third-party/wsdl4j.jar</webClassPathEntry>
-        <webClassPathEntry>/multispeak/bin</webClassPathEntry>
-        <webClassPathEntry>/cttp/bin</webClassPathEntry>
+        <webClassPathEntry>/yukonappserver/bin</webClassPathEntry>
     </webClassPathEntries>
 </tomcatProjectProperties>

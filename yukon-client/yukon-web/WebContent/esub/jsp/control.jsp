@@ -144,7 +144,7 @@ location="control.jsp?pointid=" + id + "&state=" + state + "&action=CONTROLCONFI
 }
 
 function executeControl(id, state) {
-submitControl(id,state); // in point.js
+submitControlXMLHttp(id,state,true); // in point.js
 }
 
 function cancelControl() {

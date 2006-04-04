@@ -76,6 +76,13 @@ function showControlWindow(pointID) {
  */
 function submitControl(pointid, rawstate) {
 	var url = '/servlet/ControlServlet?id=' + pointid + '&rawstate=' + rawstate;
+	getURL(url, null);
+}
+
+function submitControlXMLHttp(pointid, rawstate, close) {
+	var url = '/servlet/ControlServlet?id=' + pointid + '&rawstate=' + rawstate;
 	loadXMLDoc(url, null);
-	self.close();
+	if(close == true) {
+		self.close();
+	}
 }
