@@ -85,7 +85,7 @@ public:
 
     string asString() const;
 
-    CtiTime addDays(const int days);
+    CtiTime addDays(const int days, bool DSTflag = true);
 
     static CtiTime now();
     void resetToNow();

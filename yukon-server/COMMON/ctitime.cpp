@@ -137,19 +137,29 @@ CtiTime& CtiTime::addMinutes(const int mins)
     return addSeconds(mins*60);
 }
 
-CtiTime CtiTime::addDays(const int days)
+/*
+ *  Will add one day to the time. flag is set to true so that if you add a day from mignight
+ *  and it crosses a DST boundary, the result is still midnight the following day.
+ *  Set flag = false if you do not wish to keep the time the same while adding days.
+ */
+CtiTime CtiTime::addDays(const int days, bool DSTflag)
 {
-    CtiTime DSTtest = *this;
-    DSTtest.addSeconds(days*24*60*60);
+    if (DSTflag) {
 
-    if ( DSTtest.isDST() == isDST() )
+        CtiTime DSTtest = *this;
+        DSTtest.addSeconds(days*24*60*60);
+    
+        if ( DSTtest.isDST() == isDST() )
+            return addSeconds(days*24*60*60);
+        if ( isDST() ) {
+            return addSeconds( days*24*60*60 + 3600 );
+        }else
+            return addSeconds( days*24*60*60 - 3600 );
+
+    }else{
         return addSeconds(days*24*60*60);
-    if ( isDST() ) {
-        // Opposite of what it should be: This is only happening in the addDay
-        // because of Jesse. blame canada!
-        return addSeconds( days*24*60*60 + 3600 );
-    }else
-        return addSeconds( days*24*60*60 - 3600 );
+    }
+       
 }
 
 
