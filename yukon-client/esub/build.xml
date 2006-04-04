@@ -15,8 +15,12 @@
 	      </classpath> 
      	</javac>
 		
-       <jar jarfile="${yukon.lib}/esub.jar"
-            basedir="build/" />       
+       <jar jarfile="${yukon.lib}/esub.jar" basedir="build/">       
+	 	    <fileset dir="resource">
+				<include name="**/*.gif"/>
+				<include name="**/*.ico"/>
+			</fileset>       	
+       	</jar>
             
         <copy todir="${yukon.lib}/images">
        		<fileset dir="images">

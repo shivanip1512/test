@@ -9,6 +9,8 @@ import java.awt.geom.PathIterator;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Iterator;
+import java.util.List;
 
 import org.apache.batik.dom.svg.SVGDOMImplementation;
 import org.apache.batik.svggen.SVGGraphics2D;
@@ -31,6 +33,7 @@ import com.cannontech.esub.element.CurrentAlarmsTable;
 import com.cannontech.esub.element.DrawingElement;
 import com.cannontech.esub.element.DynamicGraphElement;
 import com.cannontech.esub.element.DynamicText;
+import com.cannontech.esub.element.FunctionElement;
 import com.cannontech.esub.element.StateImage;
 import com.cannontech.esub.element.StaticImage;
 import com.cannontech.esub.element.StaticText;
@@ -199,6 +202,10 @@ public class SVGGenerator {
 			if( comp instanceof AlarmTextElement ) {
 				elem = createAlarmText(doc, (AlarmTextElement) comp);
 			}
+			else 
+		    if( comp instanceof FunctionElement ) {
+		    	elem = createFunction(doc, (FunctionElement) comp);
+		    }
 			
 			if( elem != null ) {	
 				if( comp instanceof DrawingElement ) {
@@ -399,10 +406,16 @@ public class SVGGenerator {
 		imgElem.setAttributeNS(null, "width", Integer.toString(width));
 		imgElem.setAttributeNS(null, "height", Integer.toString(height));
 		
+		List imageNames = img.getImageNames();
+		for(int i = 0; i < imageNames.size(); i++) {
+			String imageName = (String) imageNames.get(i);
+			imgElem.setAttributeNS(null, "image" + i, imageName);
+		}
+		
 		if(!genOptions.isStaticSVG() && genOptions.isScriptingEnabled()) {
 			imgElem.setAttributeNS(null, "onclick", "showPointDetails(evt)");
 		}
-		return imgElem;		
+		return imgElem;
 	}	
 	
 	private Element createStaticText(SVGDocument doc, StaticText text) {
@@ -482,11 +495,11 @@ public class SVGGenerator {
 			int ackY = y + 6;
 
 			String ackAlarmArgs = "'" + deviceIdList + "','" + pointIdList + "','" + alarmCategoryIdList + "'";
-			jsGenerator.createButton(ackX, ackY, 150, 16, false, false, false, "CGUI.root", "Acknowledge Alarms", "acknowledgeAlarm(" + ackAlarmArgs + ");");
+			jsGenerator.addButton(ackX, ackY, 150, 16, false, false, false, "CGUI.root", "Acknowledge Alarms", "acknowledgeAlarm(" + ackAlarmArgs + ");");
 			
 			int muteX = x + 170;
 			int muteY = y + 6;
-			jsGenerator.createButton(muteX, muteY, 150, 16, false, false, false, "CGUI.root", "Mute", "toggleMute();");		
+			jsGenerator.addButton(muteX, muteY, 150, 16, false, false, false, "CGUI.root", "Mute", "toggleMute();");		
 		}
 		
 		return retElement;		
@@ -537,6 +550,12 @@ public class SVGGenerator {
 		return textElem;					
 	}
 		
+	public Element createFunction(SVGDocument doc, FunctionElement function) {
+		String js = function.getScript();
+		jsGenerator.addOnload(js);
+		return null;
+	}
+	
 	/**
 	 * Create a String that is a comma seperated list of integer ids
 	 * @param ids

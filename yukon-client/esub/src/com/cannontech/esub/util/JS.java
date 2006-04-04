@@ -57,10 +57,14 @@ class JS {
 	"}\n" +
 	"function followLink(url) {\n" +	
 	"	location = url;\n" + 
-	"}\n" +
+	"}\n";
+	
+	private static final String onLoadHeader =
 	"function _onload(evt) {\n" +
 	"   CGUI.init();" +
-	"   buildGUI();" +
+	"   buildGUI();";
+	
+	private static final String onLoadFooter = 
 	"   refresh(evt);" +
 	"}\n";
 	
@@ -75,17 +79,26 @@ class JS {
 	// The javascript for CGUI widgets accumulates here
 	private StringBuffer guiBuf;
 
+	// script to be executed on load accumulates here
+	private StringBuffer onLoadBuf;
+	
 	public JS() {
 		reset();
 	}
 	
 	public String getScript() {
-		StringBuffer scriptBuf = new StringBuffer(JS.length()+CGUIHeader.length()+guiBuf.length()+CGUIFooter.length());
-		scriptBuf.append(JS).append(CGUIHeader).append(guiBuf).append(CGUIFooter);
+		StringBuffer scriptBuf = new StringBuffer(JS.length()+onLoadBuf.length()+CGUIHeader.length()+guiBuf.length()+CGUIFooter.length());
+		scriptBuf.append(JS)
+			.append(onLoadHeader)
+			.append(onLoadBuf)
+			.append(onLoadFooter)
+			.append(CGUIHeader)
+			.append(guiBuf)
+			.append(CGUIFooter);
 		return scriptBuf.toString();
 	}
 	
-	public void createButton(int x, int y, 
+	public void addButton(int x, int y, 
 							int width, int height, 
 							boolean toggleType, boolean disabled, boolean selected,
 							String parentElement, String text, String action) {
@@ -148,8 +161,14 @@ class JS {
 		buttonNum++;
 	}
 	
+	public void addOnload(String script) {
+		onLoadBuf.append(script);
+		onLoadBuf.append(System.getProperty("line.separator"));
+	}
+	
 	public void reset() {
 		buttonNum = 1;
 		guiBuf = new StringBuffer();
+		onLoadBuf = new StringBuffer();
 	}
 }

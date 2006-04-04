@@ -4,13 +4,18 @@ import java.awt.Image;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 import com.cannontech.database.cache.functions.PointFuncs;
+import com.cannontech.database.cache.functions.StateFuncs;
 import com.cannontech.database.cache.functions.YukonImageFuncs;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
+import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonImage;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.esub.Drawing;
@@ -118,7 +123,7 @@ public void setPointID(int pointID) {
 			return Util.DEFAULT_IMAGE_NAME;
 		}
 	}
-		
+	
 	public LiteYukonImage getYukonImage() {
 		LiteState state = getCurrentState();
 		if(state != null) {
@@ -130,6 +135,36 @@ public void setPointID(int pointID) {
 			return YukonImageFuncs.getLiteYukonImage(imageId);
 		}
 		return null;
+	}
+	
+	/**
+	 * Returns a list of image names corresponding to each of the points raw states
+	 * @return
+	 */
+	public List getImageNames() {
+		List imageNames = new ArrayList(6);
+		LitePoint point = getPoint();
+		LiteStateGroup lsg = StateFuncs.getLiteStateGroup(point.getStateGroupID());
+		List states = lsg.getStatesList();
+		for(int i = 0; i < states.size(); i++) {
+			Integer imgIdObj = (Integer) customImageMap.get(new Integer(i));
+			int imgId; 
+			if(imgIdObj != null) {
+				imgId = imgIdObj.intValue();
+			} 
+			else {
+				imgId = ((LiteState) states.get(i)).getImageID();
+			}
+			LiteYukonImage lyi = YukonImageFuncs.getLiteYukonImage(imgId); 
+			if(lyi != null) {
+				imageNames.add(lyi.getImageName());
+			}
+			else {
+				imageNames.add(Util.DEFAULT_IMAGE_NAME);
+			}
+		}
+		return imageNames;
+		                                      
 	}
 	/**
 	 * Updates the elements actual image with the currentStates
