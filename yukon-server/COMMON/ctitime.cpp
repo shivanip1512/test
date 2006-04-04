@@ -139,7 +139,15 @@ CtiTime& CtiTime::addMinutes(const int mins)
 
 CtiTime CtiTime::addDays(const int days)
 {
-    return addSeconds(days*24*60*60);
+    CtiTime DSTtest = *this;
+    DSTtest.addSeconds(days*24*60*60);
+
+    if ( DSTtest.isDST() == isDST() )
+        return addSeconds(days*24*60*60);
+    if ( isDST() ) {
+        return addSeconds( days*24*60*60 - 3600 );
+    }else
+        return addSeconds( days*24*60*60 + 3600 );
 }
 
 
