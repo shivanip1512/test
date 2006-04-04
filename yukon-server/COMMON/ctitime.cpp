@@ -145,9 +145,11 @@ CtiTime CtiTime::addDays(const int days)
     if ( DSTtest.isDST() == isDST() )
         return addSeconds(days*24*60*60);
     if ( isDST() ) {
-        return addSeconds( days*24*60*60 - 3600 );
-    }else
+        // Opposite of what it should be: This is only happening in the addDay
+        // because of Jesse. blame canada!
         return addSeconds( days*24*60*60 + 3600 );
+    }else
+        return addSeconds( days*24*60*60 - 3600 );
 }
 
 
