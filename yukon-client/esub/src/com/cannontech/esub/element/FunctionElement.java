@@ -1,10 +1,14 @@
 package com.cannontech.esub.element;
 
 import java.awt.Image;
+import java.io.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.*;
+
+import javax.swing.ImageIcon;
+import javax.swing.plaf.IconUIResource;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.functions.PointFuncs;
@@ -21,13 +25,10 @@ import com.loox.jloox.LxAbstractImage;
  * Creation date: (1/22/2002 10:15:09 AM)
  * @author: alauinger
  */
-public class FunctionElement extends LxAbstractImage implements DrawingElement, YukonImageElement {
+public class FunctionElement extends LxAbstractImage implements DrawingElement{
     
     private static final String ELEMENT_ID = "functionElement"; 
     private static final int CURRENT_VERSION = 1;
-    private String databaseAlias = CtiUtilities.getDatabaseAlias();
-    private LiteYukonImage yukonImage = LiteYukonImage.FUNCTION_IMAGE;
-    private int pointID = PointTypes.SYSTEM_POINT;
     private Drawing drawing;
     private String linkTo = null;
     private Properties props = new Properties();
@@ -35,7 +36,37 @@ public class FunctionElement extends LxAbstractImage implements DrawingElement, 
     private Integer functionID = 0;
     private ArrayList argList = new ArrayList();
     private static final String CONTROL_BY_POINT = "submitControl(";
+    private static Class imageClass = ImageIcon.class;
+    private static ImageIcon icon = null;
     
+    {
+        byte[] imagebuffer = null;
+        try 
+        {
+            InputStream resource = null;
+
+            resource = imageClass.getResourceAsStream("/Function2.gif");
+
+            BufferedInputStream in = new BufferedInputStream(resource);
+            ByteArrayOutputStream out = new ByteArrayOutputStream(1024);
+
+            byte[] buffer = new byte[1024];
+            int n;
+            while ((n = in.read(buffer)) > 0) 
+            {
+                out.write(buffer, 0, n);
+            }
+            in.close();
+            out.flush();
+            imagebuffer = out.toByteArray();
+        } catch (IOException ioe)
+        {
+            System.err.println(ioe.toString());
+        }
+
+        icon = new ImageIcon(imagebuffer);
+    }
+
 /**
  * StaticImage constructor comment.
  */
@@ -44,12 +75,45 @@ public FunctionElement() {
     initialize();
 }
 
+public ImageIcon getImageIcon()
+{
+    
+    byte[] imagebuffer = null;
+    try 
+    {
+        InputStream resource = null;
+
+        resource = imageClass.getResourceAsStream("/Function2.gif");
+
+        BufferedInputStream in = new BufferedInputStream(resource);
+        ByteArrayOutputStream out = new ByteArrayOutputStream(1024);
+
+        byte[] buffer = new byte[1024];
+        int n;
+        while ((n = in.read(buffer)) > 0) 
+        {
+            out.write(buffer, 0, n);
+        }
+        in.close();
+        out.flush();
+        imagebuffer = out.toByteArray();
+    } catch (IOException ioe)
+    {
+        System.err.println(ioe.toString());
+    }
+
+    return new ImageIcon(imagebuffer);
+    
+}
+
 /**
  * Creation date: (1/22/2002 10:20:30 AM)
  */
 private void initialize() {
-    yukonImage.retrieve(databaseAlias);
-    setYukonImage(yukonImage);
+    
+    setImage(getImageIcon().getImage());
+    //setImage(icon.getImage());
+    
 }
 
     /**
@@ -63,38 +127,6 @@ private void initialize() {
      */
     public void setDrawing(Drawing d) {
         this.drawing = d;
-    }
-    
-    /**
-     * Returns the yukonImage.
-     * @return LiteYukonImage
-     */
-    public LiteYukonImage getYukonImage() {
-        return yukonImage;
-    }
-
-    /**
-     * Sets the yukonImage.
-     * @param yukonImage The yukonImage to set
-     */
-    public void setYukonImage(LiteYukonImage yukonImage) {
-        if(yukonImage == null) {
-            this.yukonImage = LiteYukonImage.NONE_IMAGE;
-            this.yukonImage.setImageValue(Util.DEFAULT_IMAGE_BYTES);
-        }
-        else {
-            this.yukonImage = yukonImage;
-        }
-            
-        setImage( Util.prepareImage(this.yukonImage.getImageValue()));
-    }
-    
-    /**
-     * Sets the yukonImage by image name
-     * @param imageName
-     */
-    public void setYukonImage(String imageName) {
-        setYukonImage(YukonImageFuncs.getLiteYukonImage(imageName));
     }
     
     public void setImage(Image img) {
@@ -203,7 +235,7 @@ public synchronized void saveAsJLX(OutputStream out) throws IOException
             }
         }
         ret = ret + ");";
-        
+        System.out.println(ret);
         return ret;
     }
 

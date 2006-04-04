@@ -13,13 +13,16 @@ import com.loox.jloox.LxSaveUtils;
 /**
  * @author aaron
  */
-public class PersistFunctionElement extends BasePersistElement {
+public class PersistFunctionElement extends BasePersistElement 
+{
 
     // Only create one of these
     private static PersistElement instance = null;
     
-    public static synchronized PersistElement getInstance() {
-        if(instance == null) {
+    public static synchronized PersistElement getInstance() 
+    {
+        if(instance == null) 
+        {
             instance = new PersistFunctionElement();
         }
         return instance;
@@ -28,16 +31,17 @@ public class PersistFunctionElement extends BasePersistElement {
     /**
      * @see com.cannontech.esub.element.persist.PersistElement#readFromJLX(DrawingElement, InputStream)
      */
-    public void readFromJLX(DrawingElement drawingElem, InputStream in, int version)
-        throws IOException {
+    public void readFromJLX(DrawingElement drawingElem, InputStream in, int version) throws IOException {
             
             FunctionElement elem = (FunctionElement) drawingElem;
             
             switch(version) {
                 
-                case 1: {
+                case 1: 
+                {
                   
                     elem.setFunctionID(LxSaveUtils.readInt(in));
+                    elem.setImage(elem.getImageIcon().getImage());
                     ArrayList argList = new ArrayList();
                     int argCount = LxSaveUtils.readInt(in);
                     for (int i =0; i < argCount; i++)
@@ -45,13 +49,11 @@ public class PersistFunctionElement extends BasePersistElement {
                         argList.add(LxSaveUtils.readString(in));
                     }
                     elem.setArgList(argList);
-                    LiteYukonImage img = YukonImageFuncs.getLiteYukonImage(1);
-                    elem.setYukonImage(img);
                     break;
                 }
                
-                
-                default: {
+                default: 
+                {
                     throw new IOException("Unknown version: " + version + " in " + elem.getClass().getName());
                 }
             }
@@ -60,10 +62,8 @@ public class PersistFunctionElement extends BasePersistElement {
     /**
      * @see com.cannontech.esub.element.persist.PersistElement#saveAsJLX(DrawingElement, OutputStream)
      */
-    public void saveAsJLX(DrawingElement drawingElem, OutputStream out, int version)
-        throws IOException {    
+    public void saveAsJLX(DrawingElement drawingElem, OutputStream out, int version) throws IOException {    
             FunctionElement elem = (FunctionElement) drawingElem;
-            
             LxSaveUtils.writeInt(out, elem.getFunctionID());
             LxSaveUtils.writeInt(out, elem.getArgList().size());
             ArrayList argList = elem.getArgList();
