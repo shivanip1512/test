@@ -229,7 +229,7 @@ public class FunctionElementEditorPanel  extends com.cannontech.common.gui.util.
                 if( pointID != -1 && functionName != null && rawState != null)
                 {
                     getFunctionComboBox().setSelectedItem(functionName);
-                    getRawStateComboBox().setSelectedItem(rawState);
+                    getRawStateComboBox().setSelectedIndex(new Integer(rawState).intValue());
                     getPointSelectionPanel().selectPoint(PointFuncs.getLitePoint(pointID));
                 }
             } catch (Exception e) {
