@@ -195,6 +195,11 @@ public class FunctionElementEditorPanel  extends com.cannontech.common.gui.util.
         argList.add(rawState);
         String pointID = new Integer(getPointSelectionPanel().getSelectedPoint().getLiteID()).toString();
         argList.add(pointID);
+        if(pointID.equals("") )
+        {
+            argList = null;
+        }
+        
         functionElement.setFunctionID(0);
         functionElement.setArgList(argList);
         
