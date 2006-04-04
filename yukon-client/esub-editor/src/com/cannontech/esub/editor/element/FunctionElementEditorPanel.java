@@ -29,9 +29,6 @@ public class FunctionElementEditorPanel  extends com.cannontech.common.gui.util.
     private JComboBox functionComboBox = null;
     private JComboBox rawStateComboBox = null;
     private PointSelectionPanel pointSelectionPanel = null;
-//    private JScrollPane deviceJScrollPane = null;
-//    private JTree deviceJTree = null;
-//    private CheckNodeSelectionListener deviceNodeListener = null;
     private static final String[] functions = { "Control by Point" };
     private static final String[] states = { "Open", "Close" };
     private FunctionElement functionElement;
@@ -232,9 +229,6 @@ public class FunctionElementEditorPanel  extends com.cannontech.common.gui.util.
                 e.printStackTrace();
             } 
         }
-        
-        LiteYukonImage img = YukonImageFuncs.getLiteYukonImage(1);
-        functionElement.setYukonImage(img);
     }
     
     public boolean isInputValid() {
