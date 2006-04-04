@@ -41,7 +41,7 @@ public class PersistFunctionElement extends BasePersistElement
                 {
                   
                     elem.setFunctionID(LxSaveUtils.readInt(in));
-                    elem.setImage(elem.getImageIcon().getImage());
+                    
                     ArrayList argList = new ArrayList();
                     int argCount = LxSaveUtils.readInt(in);
                     for (int i =0; i < argCount; i++)

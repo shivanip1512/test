@@ -36,16 +36,17 @@ public class FunctionElement extends LxAbstractImage implements DrawingElement{
     private Integer functionID = 0;
     private ArrayList argList = new ArrayList();
     private static final String CONTROL_BY_POINT = "submitControl(";
-    private static Class imageClass = ImageIcon.class;
+    
     private static ImageIcon icon = null;
     
+    static
     {
         byte[] imagebuffer = null;
         try 
         {
             InputStream resource = null;
 
-            resource = imageClass.getResourceAsStream("/Function2.gif");
+            resource = FunctionElement.class.getResourceAsStream("/Function2.gif");
 
             BufferedInputStream in = new BufferedInputStream(resource);
             ByteArrayOutputStream out = new ByteArrayOutputStream(1024);
@@ -75,36 +76,7 @@ public FunctionElement() {
     initialize();
 }
 
-public ImageIcon getImageIcon()
-{
-    
-    byte[] imagebuffer = null;
-    try 
-    {
-        InputStream resource = null;
 
-        resource = imageClass.getResourceAsStream("/Function2.gif");
-
-        BufferedInputStream in = new BufferedInputStream(resource);
-        ByteArrayOutputStream out = new ByteArrayOutputStream(1024);
-
-        byte[] buffer = new byte[1024];
-        int n;
-        while ((n = in.read(buffer)) > 0) 
-        {
-            out.write(buffer, 0, n);
-        }
-        in.close();
-        out.flush();
-        imagebuffer = out.toByteArray();
-    } catch (IOException ioe)
-    {
-        System.err.println(ioe.toString());
-    }
-
-    return new ImageIcon(imagebuffer);
-    
-}
 
 /**
  * Creation date: (1/22/2002 10:20:30 AM)
@@ -238,7 +210,7 @@ public synchronized void saveAsJLX(OutputStream out) throws IOException
             }
         }
         ret = ret + ");";
-        System.out.println(ret);
+        
         return ret;
     }
         return "";
