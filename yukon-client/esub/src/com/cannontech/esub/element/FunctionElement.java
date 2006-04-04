@@ -198,13 +198,13 @@ public synchronized void saveAsJLX(OutputStream out) throws IOException
         {
             if(i  != argList.size()-1)
             {
-                ret = ret + "\"";
                 ret = ret + (argList.get(i));
-                ret = ret + "\"";
                 ret = ret+",";
             }else
             {
+                ret = ret + "\'";
                 ret = ret + argList.get(i);
+                ret = ret + "\'";
             }
         }
         ret = ret + ");";
