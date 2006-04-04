@@ -111,8 +111,8 @@ public ImageIcon getImageIcon()
  */
 private void initialize() {
     
-    setImage(getImageIcon().getImage());
-    //setImage(icon.getImage());
+    //setImage(getImageIcon().getImage());
+    setImage(icon.getImage());
     
 }
 
@@ -159,6 +159,7 @@ public synchronized void readFromJLX(InputStream in, String version) throws IOEx
 {
         super.readFromJLX(in, version);
         PersistFunctionElement.getInstance().readFromJLX(this,in);
+        setImage(icon.getImage());
 }
 
 /**
@@ -219,6 +220,8 @@ public synchronized void saveAsJLX(OutputStream out) throws IOException
         
         String script = CONTROL_BY_POINT;
         String ret = new String(script);
+        if(argList != null)
+        {
         for(int i = 0; i < argList.size(); i++)
         {
             
@@ -238,6 +241,9 @@ public synchronized void saveAsJLX(OutputStream out) throws IOException
         System.out.println(ret);
         return ret;
     }
+        return "";
+    }
+   
 
     public String getLinkTo() {
         return null;
