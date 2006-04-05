@@ -38,7 +38,7 @@ using std::cerr;
 using std::endl;
 
 
-
+#pragma pack(push, LockGuardPack, 8)
 template<class T>
 class IM_EX_CTIBASE CtiLockGuard
 {
@@ -103,5 +103,6 @@ private:
 
     T& _res;
 };
+#pragma pack(pop, LockGuardPack)
 
 #endif
