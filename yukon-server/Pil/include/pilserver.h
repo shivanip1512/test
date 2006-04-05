@@ -77,6 +77,7 @@ public:
 
    INT analyzeWhiteRabbits(CtiRequestMsg& pReq, CtiCommandParser &parse, list< CtiRequestMsg* > & execList, list< CtiMessage* > & retList);
    INT analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, list< CtiRequestMsg* > & execList, list< CtiMessage* > & retList);
+   INT analyzePointGroup(CtiRequestMsg& Req, CtiCommandParser &parse, list< CtiRequestMsg* > & execList, list< CtiMessage* > & retList);
 
    void putQueue(CtiMessage *Msg);
 

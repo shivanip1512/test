@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.74 $
-* DATE         :  $Date: 2006/03/02 23:03:19 $
+* REVISION     :  $Revision: 1.75 $
+* DATE         :  $Date: 2006/04/05 16:24:30 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -34,6 +34,7 @@
 #include "cticalls.h"
 
 #include "dev_grp_versacom.h"
+#include "dev_grp_point.h"
 #include "dev_mct.h"
 #include "dsm2.h"
 #include "ctinexus.h"
@@ -654,7 +655,7 @@ void CtiPILServer::resultThread()
                         if(parse.getFlags() & CMD_FLAG_UPDATE)
                         {
                             std::list< CtiMessage* >::iterator itr = retList.begin();
-                            while ( itr != retList.end() ) 
+                            while ( itr != retList.end() )
                             //for(i = 0; i < retList.size(); i++)
                             {
                                 CtiMessage *&pMsg = *itr;
@@ -1034,7 +1035,7 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
                         dout << NowTime << "   Command: " << pExecReq->CommandString() << endl;
                     }
                 }
-                
+
                 for(int j = tempOutList.size(); j > 0; j--)
                 {
                     // _porterOMQueue.putQueue(tempOutList.get());
@@ -1370,9 +1371,16 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
         }
     }
 
-    if( Dev && parse.isKeyValid("install") && (Dev->getType() == TYPE_REPEATER800 || Dev->getType() == TYPE_REPEATER900) )
+    if(Dev)
     {
-        analyzeAutoRole(*pReq,parse,execList,retList);
+        if( (Dev->getType() == TYPE_REPEATER800 || Dev->getType() == TYPE_REPEATER900) && parse.isKeyValid("install") )
+        {
+            analyzeAutoRole(*pReq,parse,execList,retList);
+        }
+        else if( Dev->getType() == TYPE_LMGROUP_POINT )
+        {
+            analyzePointGroup(*pReq,parse,execList,retList);
+        }
     }
 
     if(!pReq->DeviceId() && parse.isKeyValid("group"))
@@ -1700,6 +1708,27 @@ INT CtiPILServer::analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, l
     return status;
 }
 
+
+INT CtiPILServer::analyzePointGroup(CtiRequestMsg& Req, CtiCommandParser &parse, list< CtiRequestMsg* > & execList, list< CtiMessage* > & retList)
+{
+    INT status = NORMAL;
+    int i;
+    CtiDeviceManager::LockGuard dev_guard(DeviceManager->getMux());
+
+    CtiDeviceSPtr ptGroup = DeviceManager->getEqual(Req.DeviceId());    // This is our repeater we are curious about!
+
+    if(ptGroup)
+    {
+        CtiRequestMsg *pReq = new CtiRequestMsg;
+        ((CtiDeviceGroupPoint*)ptGroup.get())->generateRequest(pReq, parse);
+        pReq->setUser( Req.getUser() );
+
+        execList.insert( pReq );                                        // Fine then.
+        execList.insert( (CtiRequestMsg*)Req.replicateMessage() );
+    }
+
+    return status;
+}
 
 void CtiPILServer::putQueue(CtiMessage *Msg)
 {

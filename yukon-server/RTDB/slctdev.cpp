@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/slctdev.cpp-arc  $
-* REVISION     :  $Revision: 1.49 $
-* DATE         :  $Date: 2005/12/20 17:20:28 $
+* REVISION     :  $Revision: 1.50 $
+* DATE         :  $Date: 2006/04/05 16:24:30 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -47,6 +47,7 @@
 #include "dev_grp_energypro.h"
 #include "dev_grp_golay.h"
 #include "dev_grp_mct.h"
+#include "dev_grp_point.h"
 #include "dev_grp_ripple.h"
 #include "dev_grp_sa105.h"
 #include "dev_grp_sa205.h"
@@ -329,6 +330,11 @@ DLLEXPORT CtiDeviceBase* DeviceFactory(RWDBReader &rdr)
             NewDevice = (CtiDeviceBase*) CTIDBG_new CtiDeviceWctpTerminal;
             break;
         }
+    case TYPE_LMGROUP_POINT:
+        {
+            NewDevice = (CtiDeviceBase*) CTIDBG_new CtiDeviceGroupPoint;
+            break;
+        }
     case TYPE_LMGROUP_EMETCON:
         {
             NewDevice = (CtiDeviceBase*) CTIDBG_new CtiDeviceGroupEmetcon;
@@ -464,7 +470,7 @@ DLLEXPORT CtiRouteBase* RouteFactory(RWDBReader &rdr)
     rdr["type"]  >> rwsType;
 
     std::transform(category.begin(), category.end(), category.begin(), ::tolower);
-    
+
 
     if(category == string("route"))
     {
