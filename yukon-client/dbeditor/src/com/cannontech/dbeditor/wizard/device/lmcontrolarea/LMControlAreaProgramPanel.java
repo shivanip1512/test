@@ -38,6 +38,7 @@ public class LMControlAreaProgramPanel extends com.cannontech.common.gui.util.Da
 	private static final TreeFindPanel FND_PANEL = new TreeFindPanel();
 	IvjEventHandler ivjEventHandler = new IvjEventHandler();
 	private javax.swing.JLabel ivjJLabelSearchInstructions = null;
+    private Integer myDeviceID;
 
 class IvjEventHandler implements java.awt.event.ActionListener {
 		public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -878,19 +879,30 @@ public boolean isInputValid() {
 
     Vector unassignedPrgIDs = LMProgram.getUnassignedPrograms();
 
-    for (int i = 0; i < getJTableModel().getRowCount(); i++) {
+    for (int i = 0; i < getJTableModel().getRowCount(); i++) 
+    {
         ControlAreaProgramTableModel.ProgramRow row = getJTableModel().getRowAt(i);
 
         Integer programID = row.getProgramList().getLmProgramDeviceID();
-        if (unassignedPrgIDs.contains(programID)) {
+        
+        Integer deviceID =row.getProgramList().getDeviceID();
+        
+        if (unassignedPrgIDs.contains(programID))
+        {
             ret = true;
-        } else {
-            setErrorString("One of the programs is already assigned to a control area.");
-
-            ret = false;
-            break;
+        } else
+        {
+            if( deviceID != null && myDeviceID.intValue() == deviceID.intValue() ) 
+            {
+                ret = true;
+            }else
+            {
+                setErrorString("The program " + row.getLiteDevice().getPaoName() + " is already assigned to a control area.");
+    
+                ret = false;
+                break;
+            }
         }
-
     }
 
     return ret;
@@ -1013,9 +1025,9 @@ public void setValue(Object o)
 {
 	if( o == null )
 		return;
-
+	
 	com.cannontech.database.data.device.lm.LMControlArea controlArea = (com.cannontech.database.data.device.lm.LMControlArea)o;
-
+	myDeviceID = controlArea.getPAObjectID();
 	for( int i = 0; i < controlArea.getLmControlAreaProgramVector().size(); i++ )
 	{
 		com.cannontech.database.db.device.lm.LMControlAreaProgram programList = (com.cannontech.database.db.device.lm.LMControlAreaProgram)controlArea.getLmControlAreaProgramVector().elementAt(i);
