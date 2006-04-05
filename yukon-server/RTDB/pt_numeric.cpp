@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/pt_numeric.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2005/12/20 17:20:28 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2006/04/05 16:23:52 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -78,8 +78,18 @@ void CtiPointNumeric::getLimitSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSe
 
 void CtiPointNumeric::DecodeDatabaseReader(RWDBReader &rdr)
 {
-   Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
-   _pointUnits.DecodeDatabaseReader(rdr);
+    if(isA(rdr))
+    {
+       Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
+       _pointUnits.DecodeDatabaseReader(rdr);
+    }
+    else
+    {
+         {
+             CtiLockGuard<CtiLogger> doubt_guard(dout);
+             dout << CtiTime() << " " << getName() << " cannot decode this rdr " << __FILE__ << " (" << __LINE__ << ")" << endl;
+         }
+    }
 }
 
 void CtiPointNumeric::DecodeLimitsDatabaseReader(RWDBReader &rdr)

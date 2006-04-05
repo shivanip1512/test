@@ -6,14 +6,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/pt_status.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/12/20 17:20:28 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2006/04/05 16:23:52 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 
+#include "logger.h"
 #include "pt_status.h"
 #include "tbl_pt_alarm.h"
 using namespace std;
@@ -81,11 +82,20 @@ void CtiPointStatus::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector
 
 void CtiPointStatus::DecodeDatabaseReader(RWDBReader &rdr)
 {
-   string rwsTemp;
-   Inherited::DecodeDatabaseReader(rdr);          // get the base class data out!
-   //  this needs to be turned into a dout, if possible
-   if(getDebugLevel() & DEBUGLEVEL_DATABASE) cout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
-   _pointStatus.DecodeDatabaseReader(rdr);
+    if(isA(rdr))
+    {
+        Inherited::DecodeDatabaseReader(rdr);          // get the base class data out!
+        //  this needs to be turned into a dout, if possible
+        if(getDebugLevel() & DEBUGLEVEL_DATABASE) cout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        _pointStatus.DecodeDatabaseReader(rdr);
+    }
+    else
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " " << getName() << " cannot decode this rdr " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
 }
 
 void CtiPointStatus::DumpData()

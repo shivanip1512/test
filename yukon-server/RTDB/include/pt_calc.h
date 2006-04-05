@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_calc.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/12/20 17:20:31 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2006/04/05 16:23:53 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -87,16 +87,17 @@ public:
 
    virtual void DecodeDatabaseReader(RWDBReader &rdr)
    {
-      INT iTemp;
-      RWDBNullIndicator isNull;
-
-      Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
-
-      #if 0 // 062800
-      if(getDebugLevel() & DEBUGLEVEL_DATABASE) cout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
-
-      rdr["updatefrequency"] >> UpdateFrequency;
-      #endif
+      if(isA(rdr))
+      {
+          Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
+      }
+      else
+      {
+           {
+               CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " " << getName() << " cannot decode this rdr " << __FILE__ << " (" << __LINE__ << ")" << endl;
+           }
+      }
    }
 
    virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)

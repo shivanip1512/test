@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/pt_base.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/12/20 17:20:28 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2006/04/05 16:23:52 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,6 +17,7 @@
 #include "pt_base.h"
 #include "tbl_pt_alarm.h"
 #include "logger.h"
+#include "rwutil.h"
 
 void IM_EX_PNTDB DefDynamicFactory(const CtiPointBase& pt)
 {
@@ -321,4 +322,21 @@ int CtiPointBase::getControlExpirationTime() const
 {
     return 300;
 }
+
+/*
+ * This method makes certain this object should be able to decode with this reader.
+ */
+bool CtiPointBase::isA(RWDBReader &rdr) const
+{
+    bool I_is = false;
+    int pttype;
+    string rwsType = "(none)";
+
+    rdr["pointtype"]  >> rwsType;
+    pttype = resolvePointType(rwsType);
+    if(pttype == getType()) I_is = true;
+
+    return I_is;
+}
+
 

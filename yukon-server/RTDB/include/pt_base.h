@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_base.h-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2006/03/23 15:29:19 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2006/04/05 16:23:53 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -140,6 +140,7 @@ public:
    bool isNumeric() const;
    bool isStatus() const;
    bool hasAlarming() const;
+   bool isA(RWDBReader &rdr) const;
 
    virtual int getControlOffset() const { return 0; }
 };
