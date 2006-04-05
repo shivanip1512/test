@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.75 $
-* DATE         :  $Date: 2006/04/05 16:24:30 $
+* REVISION     :  $Revision: 1.76 $
+* DATE         :  $Date: 2006/04/05 16:54:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1723,8 +1723,8 @@ INT CtiPILServer::analyzePointGroup(CtiRequestMsg& Req, CtiCommandParser &parse,
         ((CtiDeviceGroupPoint*)ptGroup.get())->generateRequest(pReq, parse);
         pReq->setUser( Req.getUser() );
 
-        execList.insert( pReq );                                        // Fine then.
-        execList.insert( (CtiRequestMsg*)Req.replicateMessage() );
+        execList.push_back( pReq );                                        // Fine then.
+        execList.push_back( (CtiRequestMsg*)Req.replicateMessage() );
     }
 
     return status;
