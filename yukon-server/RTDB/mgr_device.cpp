@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.79 $
-* DATE         :  $Date: 2006/04/05 16:23:23 $
+* REVISION     :  $Revision: 1.80 $
+* DATE         :  $Date: 2006/04/05 16:26:14 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1650,7 +1650,7 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
                         if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load Point Group Devices" << endl;
+                            dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds to load Point Group Devices" << endl;
                         }
                     }
 
