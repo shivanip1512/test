@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.134 $
-* DATE         :  $Date: 2006/03/24 15:58:44 $
+* REVISION     :  $Revision: 1.135 $
+* DATE         :  $Date: 2006/04/05 16:24:46 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2591,6 +2591,35 @@ INT CtiVanGogh::postMOAUploadToConnection(CtiVanGoghConnectionManager &VGCM, int
 
                     }
                 }
+            }
+
+            /*
+             *  Block the MOA into 1000 element multis.
+             */
+            if( pMulti->getCount() >= gConfigParms.getValueAsULong("DISPATCH_MAX_MULTI_MOA", 1000) )
+            {
+                if(gDispatchDebugLevel & DISPATCH_DEBUG_MSGSTOCLIENT)
+                {
+                    {
+                        CtiTime Now;
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << Now << " **** MOA UPLOAD **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << Now << " Client Connection " << VGCM.getClientName() << " on " << VGCM.getPeer() << endl;
+                    }
+                    pMulti->dump();
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** MOA UPLOAD **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                }
+
+                if(VGCM.WriteConnQue(pMulti, 5000))
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << " Connection is having issues : " << VGCM.getClientName() << " / " << VGCM.getClientAppId() << endl;
+                }
+
+                pMulti  = CTIDBG_new CtiMultiMsg;
             }
         }
 
@@ -5696,7 +5725,7 @@ void CtiVanGogh::adjustDeviceDisableTags(LONG id, bool dbchange, string user)
 
                 CtiPointManager::spiterator itr = PointMgr.begin();//Where is the exclusion here?
                 CtiPointManager::spiterator end = PointMgr.end();
-        
+
                 for( ; itr != end; itr++ )
                 {
                     CtiPointSPtr pPoint = itr->second;
@@ -7295,9 +7324,9 @@ CtiMultiMsg* CtiVanGogh::resetControlHours()
             CtiServerExclusion pmguard(_server_exclusion);
             CtiPointManager::spiterator itr = PointMgr.begin();
             CtiPointManager::spiterator end = PointMgr.end();
-        
+
             for( ; itr != end; itr++ )
-            {                
+            {
                 CtiPointSPtr point = itr->second;
                 if(point && point->isInService() && point->getType() == AnalogPointType && isDeviceGroupType(point->getDeviceID()) )
                 {
