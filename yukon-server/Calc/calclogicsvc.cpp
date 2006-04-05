@@ -38,6 +38,8 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 BOOL UserQuit = FALSE;
 bool _shutdownOnThreadTimeout = false;
+bool _runCalcHistorical = false;
+bool _runCalcBaseline = false;
 
 //Boolean if debug messages are printed
 ULONG _CALC_DEBUG = CALC_DEBUG_THREAD_REPORTING;
@@ -322,6 +324,7 @@ void CtiCalcLogicService::Run( )
                             tempCalcThread->setPeriodicPointMap(calcThread->getPeriodicPointMap());
                             tempCalcThread->setOnUpdatePointMap(calcThread->getOnUpdatePointMap());
                             tempCalcThread->setConstantPointMap(calcThread->getConstantPointMap());
+                            tempCalcThread->setHistoricalPointMap(calcThread->getHistoricalPointMap());
 
                             calcThread->clearPointMaps();
                         }
@@ -1215,6 +1218,37 @@ bool CtiCalcLogicService::readCalcPoints( CtiCalculateThread *calcThread )
             }
         }
 
+        long uomid;
+        //Read from PointUnit Table, insert into pointStore
+        RWDBTable    unitTable     = db.table("POINTUNIT");
+        RWDBSelector unitselector  = db.selector();
+
+        unitselector << unitTable["POINTID"]
+        << unitTable["UOMID"];
+
+        unitselector.from( unitTable );
+
+        //cout << componentselector.asString() << endl;
+
+        RWDBReader  unitRdr = unitselector.reader( conn );
+
+        CtiPointStore* pointStore = CtiPointStore::getInstance();
+        //  iterate through the components
+        while( unitRdr() )
+        {
+
+            //  read 'em in, and append to the class
+            unitRdr["POINTID"] >> pointid;
+            unitRdr["UOMID"] >> uomid;
+
+            CtiHashKey pointHashKey(pointid);
+            CtiPointStoreElement* calcPointPtr = (CtiPointStoreElement*)((*pointStore).find(&pointHashKey));
+            if( calcPointPtr != rwnil )
+            {
+                calcPointPtr->setUOMID(uomid);
+            }
+        }
+
     }
     catch( RWxmsg &msg )
     {
@@ -1629,6 +1663,28 @@ void CtiCalcLogicService::loadConfigParameters()
     {
         _shutdownOnThreadTimeout = false;
         if(DebugLevel & CALC_DEBUG_CALC_INIT) cout << "Configuration Parameter CALC_SHUTDOWN_ON_THREAD_TIMEOUT default : " << _shutdownOnThreadTimeout << endl;
+    }
+
+    strcpy(var, "CALC_LOGIC_RUN_HISTORICAL");
+    if( !stringCompareIgnoreCase(gConfigParms.getValueAsString(var),"true") )
+    {
+        _runCalcHistorical = true;
+        if(DebugLevel & CALC_DEBUG_CALC_INIT) cout << "Configuration Parameter CALC_LOGIC_RUN_HISTORICAL default : " << _shutdownOnThreadTimeout << endl;
+    }
+    else
+    {
+        _runCalcHistorical = false;
+    }
+
+    strcpy(var, "CALC_LOGIC_RUN_BASELINE");
+    if( !stringCompareIgnoreCase(gConfigParms.getValueAsString(var),"true") )
+    {
+        _runCalcBaseline = true;
+        if(DebugLevel & CALC_DEBUG_CALC_INIT) cout << "Configuration Parameter CALC_LOGIC_RUN_BASELINE default : " << _shutdownOnThreadTimeout << endl;
+    }
+    else
+    {
+        _runCalcBaseline = false;
     }
     
     SET_CRT_OUTPUT_MODES;

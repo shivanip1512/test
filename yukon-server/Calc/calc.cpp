@@ -27,6 +27,9 @@ CtiCalc::CtiCalc( long pointId, const string &updateType, int updateInterval, co
 {
     _valid = TRUE;
     _pointId = pointId;
+    _isBaseline = false;
+    _baselineId = 0;
+    _baselinePercentId = 0;
 
     if( !stringCompareIgnoreCase(qualityFlag, "y") )
     {
@@ -57,7 +60,6 @@ CtiCalc::CtiCalc( long pointId, const string &updateType, int updateInterval, co
     }
     else if( !stringCompareIgnoreCase(updateType,UpdateType_Historical))
     {
-        _valid = FALSE;
         _updateInterval = 0;
         _updateType = historical;
     }
@@ -111,6 +113,17 @@ void CtiCalc::appendComponent( CtiCalcComponent *componentToAdd )
 {
     _components.append( componentToAdd );
     componentToAdd->passParent( this );
+
+    if( !strcmp(componentToAdd->getFunctionName().c_str(), "Baseline") )
+    {
+        _isBaseline = true;
+        _baselineId = componentToAdd->getComponentPointId();
+    }
+    else if( !strcmp(componentToAdd->getFunctionName().c_str(), "Baseline Percent") )
+    {
+        _isBaseline = true;
+        _baselinePercentId = componentToAdd->getComponentPointId();
+    }
 }
 
 
@@ -278,6 +291,7 @@ BOOL CtiCalc::ready( void )
                 for( ; iter( ); )
                     isReady &= ((CtiCalcComponent *)(iter.key( )))->isUpdated( );
                 break;
+            case historical:
             case constant:
                 isReady = TRUE;
                 break;
@@ -582,4 +596,23 @@ double CtiCalc::figureDemandAvg(long secondsInAvg)
     }
 
     return retVal;
+}
+
+int CtiCalc::getComponentCount()
+{
+    return _components.entries();
+}
+
+vector<long> CtiCalc::getComponentIDList()
+{
+    vector<long> componentIDList;
+    RWSlistCollectablesIterator iter( _components );
+    CtiCalcComponent *tmpComponent;
+
+    for( ; iter(); )
+    {
+        tmpComponent = (CtiCalcComponent *)iter.key( );
+        componentIDList.push_back(tmpComponent->getComponentPointId());
+    }
+    return componentIDList;
 }

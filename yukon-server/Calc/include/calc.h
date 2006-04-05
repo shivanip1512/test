@@ -18,10 +18,11 @@ private:
     PointUpdateType      _updateType;
     ULONG                _nextInterval;
     int                  _updateInterval;
-    long                 _pointId;
+    long                 _pointId, _baselineId, _baselinePercentId;
     BOOL                 _valid;
     bool                 _calculateQuality;
     CtiTime              _pointCalcWindowEndTime;
+    bool                 _isBaseline;
 
     // text from the database
     static const CHAR * UpdateType_Periodic;
@@ -39,8 +40,7 @@ public:
 
     CtiCalc( ) :
     _updateType(undefined), _updateInterval(-1), _pointId(-1), _valid(FALSE), _nextInterval( 1 ),
-
-    _pointCalcWindowEndTime( CtiTime(CtiDate(1,1,1990)) ), _calculateQuality(true)
+    _pointCalcWindowEndTime( CtiTime(CtiDate(1,1,1990)) ), _calculateQuality(true), _isBaseline(false)
     {}
 
     CtiCalc( long pointId, const string &updateType, int updateInterval, const string &qualityFlag );
@@ -53,17 +53,32 @@ public:
     ULONG     getNextInterval() const;
     CtiCalc&  setNextInterval (int interval);
     int      getUpdateInterval( ) const;
+    int      getComponentCount();
+    vector<long> getComponentIDList();
     long findDemandAvgComponentPointId();
-
+    
     long getPointId( void )  
     {  
         return _pointId;
+    }
+
+    long getBaselineId( void )  
+    {  
+        return _baselineId;
+    }
+
+    long getBaselinePercentId( void )  
+    {  
+        return _baselinePercentId;
     }
 
     CtiCalc &operator=( CtiCalc &toCopy );
     BOOL operator==( CtiCalc &equalTest )  
     {  
         return _pointId == equalTest.getPointId( );
+    }
+    bool isBaselineCalc() {
+        return _isBaseline;
     }
 
     void appendComponent( CtiCalcComponent *componentToAdd );

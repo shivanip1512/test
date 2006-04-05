@@ -28,6 +28,7 @@
 #define CALC_DEBUG_POINTDATA                        0x00000200
 #define CALC_DEBUG_THREAD_REPORTING                 0x00000400
 #define CALC_DEBUG_INBOUND_MSGS                     0x00000800
+#define CALC_DEBUG_BASELINE                         0x00001000
 
 enum PointUpdateType
 {
@@ -61,8 +62,8 @@ class CtiPointStoreElement : public RWCollectable
     friend class CtiPointStore;
 
 private:
-    long _pointNum, _numUpdates, _secondsSincePreviousPointTime, _updatesInCurrentAvg;
-    double _pointValue;
+    long _pointNum, _numUpdates, _secondsSincePreviousPointTime, _updatesInCurrentAvg, _uomID;
+    double _pointValue, _curHistoricValue;
     unsigned _pointQuality;
     unsigned _pointTags;
     CtiTime _pointTime, _calcPointWindowEndTime;
@@ -100,6 +101,10 @@ public:
 
     void setUpdatesInCurrentAvg( long newCount )   {   _updatesInCurrentAvg = newCount;   };
     long getUpdatesInCurrentAvg( void )            {   return _updatesInCurrentAvg; };
+    void setHistoricValue(double historicValue)    {   _curHistoricValue = historicValue; };
+    double getHistoricValue()                      {   return _curHistoricValue;          };
+    void setUOMID(long uomid)                      {   _uomID = uomid;                   };
+    long getUOMID(void)                            {   return _uomID;                     };
 
     const CtiTime& getPointCalcWindowEndTime( void )                  {   return _calcPointWindowEndTime;    };
     void          setPointCalcWindowEndTime( const CtiTime& endTime ) {   _calcPointWindowEndTime = endTime;  };

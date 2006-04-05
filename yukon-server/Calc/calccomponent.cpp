@@ -215,14 +215,22 @@ double CtiCalcComponent::calculate( double input, int &component_quality, CtiTim
         if(componentPointPtr != NULL)
         {
             _lastUseUpdateNum = componentPointPtr->getNumUpdates( );
-            if( _calcpoint->push( componentPointPtr->getPointValue() ) )
-                input = componentPointPtr->getPointValue();
-
-            component_quality = componentPointPtr->getPointQuality();
             component_time = componentPointPtr->getPointTime();
+            component_quality = componentPointPtr->getPointQuality();
             if(componentPointPtr->getPointTags() & (TAG_DISABLE_DEVICE_BY_DEVICE | TAG_DISABLE_POINT_BY_POINT))
             {
                 component_quality = QuestionableQuality;
+            }
+
+            if( _calcpoint->getUpdateType() == historical )
+            {
+                if( _calcpoint->push( componentPointPtr->getHistoricValue() ) )
+                    input = componentPointPtr->getHistoricValue();
+            }
+            else
+            {
+                if( _calcpoint->push( componentPointPtr->getPointValue() ) )
+                    input = componentPointPtr->getPointValue();
             }
         }
     }

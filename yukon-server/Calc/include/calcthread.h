@@ -9,6 +9,7 @@
 #include <rw/tpdeque.h>
 #include <rw/thr/thrfunc.h>
 #include <map>
+#include <vector>
 
 #include "hashkey.h"
 #include "msg_multi.h"
@@ -39,20 +40,37 @@ public:
 
     typedef RWTPtrHashMap<CtiHashKey, CtiCalc, my_hash<CtiHashKey> , equal_to<CtiHashKey> > CtiCalcPointMap;
     typedef RWTPtrHashMapIterator<CtiHashKey, CtiCalc, my_hash<CtiHashKey> , equal_to<CtiHashKey> > CtiCalcPointMapIterator;
-    typedef map<long, CtiTime> PointTimeMap;
-    typedef map<long, double> HistoricalPointValueMap;
-    typedef map<CtiTime, HistoricalPointValueMap > DynamicTableData;
-    typedef map<CtiTime, HistoricalPointValueMap >::iterator DynamicTableDataIter;
-
+    
 private:
     CtiCalcPointMap _periodicPoints, _onUpdatePoints, _constantPoints, _historicalPoints;
     CtiValDeque<long> _auAffectedPoints;
     CtiPtrDeque<CtiMultiMsg> _outbox;
     RWMutexLock _pointDataMutex;
 
+    struct BaselineData
+    {
+        int maxSearchDays;
+        int usedDays;
+        int percent;
+        long holidays;
+        string excludedWeekDays;
+    };
+    typedef pair<long, double> PointValuePair;
+    typedef vector<double> HourlyValues;
+    typedef map<long, CtiTime> PointTimeMap;
+    typedef set<CtiDate> DatesSet;
+    typedef map<long, double> HistoricalPointValueMap;
+    typedef map<long, long> PointBaselineMap;
+    typedef map<long, BaselineData> BaselineMap;
+    typedef map<CtiTime, HistoricalPointValueMap > DynamicTableData;
+    typedef map<CtiTime, HistoricalPointValueMap >::iterator DynamicTableDataIter;
+    typedef map<CtiTime, PointValuePair> DynamicTableSinglePointData;
+    typedef map<CtiTime, PointValuePair >::iterator DynamicTableSinglePointDataIter;
+
     void periodicThread( void );
     void onUpdateThread( void );
     void historicalThread( void );
+    void baselineThread( void );
     static void sendUserQuit(void *who);
 
     mutable RWRecursiveLock<RWMutexLock> _mutex;
@@ -60,13 +78,19 @@ private:
     RWThreadFunction _periodicThreadFunc;
     RWThreadFunction _onUpdateThreadFunc;
     RWThreadFunction _historicalThreadFunc;
+    RWThreadFunction _baselineThreadFunc;
 
     CtiCalcThreadInterruptReason _interruptReason;
 
     void getCalcHistoricalLastUpdatedTime(PointTimeMap &dbTimeMap);
     void getHistoricalTableData(CtiCalc *calcPoint, CtiTime &lastTime, DynamicTableData &data);
+    void getHistoricalTableSinglePointData(long calcPoint, CtiTime &lastTime, DynamicTableSinglePointData &data);
     void setHistoricalPointStore(HistoricalPointValueMap &valueMap);
     void updateCalcHistoricalLastUpdatedTime(PointTimeMap &unlistedPoints, PointTimeMap &updatedPoints);
+    void getCalcBaselineMap(PointBaselineMap &baselineMap);
+    void getBaselineMap(BaselineMap &baselineMap);
+    void getCurtailedDates(DatesSet &curtailedDates, long pointID, CtiTime &startTime);
+    bool processDay(long pointID, CtiTime curTime, DynamicTableSinglePointData &data, DynamicTableSinglePointData &percentData, int percent, HourlyValues &results);
 
 public:
 
@@ -90,6 +114,7 @@ public:
     BOOL isAPeriodicCalcPointID(const long aPointID);
     BOOL isAnOnUpdateCalcPointID(const long aPointID);
     BOOL isAConstantCalcPointID(const long aPointID);
+    BOOL isAHistoricalCalcPointID(const long aPointID);
     long numberOfLoadedCalcPoints() { return (_periodicPoints.entries() + _onUpdatePoints.entries() + _constantPoints.entries()); };
 
     int outboxEntries( void )   {   return _outbox.entries( ); };
@@ -112,10 +137,12 @@ public:
     CtiCalcPointMap getPeriodicPointMap() const;
     CtiCalcPointMap getOnUpdatePointMap() const;
     CtiCalcPointMap getConstantPointMap() const;
+    CtiCalcPointMap getHistoricalPointMap() const;
 
     void setPeriodicPointMap(const CtiCalcPointMap &);
     void setOnUpdatePointMap(const CtiCalcPointMap &);
     void setConstantPointMap(const CtiCalcPointMap &);
+    void setHistoricalPointMap(const CtiCalcPointMap &);
 
     void clearPointMaps();
     void clearAndDestroyPointMaps();

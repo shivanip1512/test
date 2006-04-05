@@ -39,6 +39,7 @@ private:
     int                  _pointUpdated;
     BOOL                 _valid;
     long                 _lastUseUpdateNum;
+    double               _curHistoricValue;
 
     double               _doFunction( string &, bool &validCalc );
 
@@ -69,13 +70,14 @@ public:
 
     const string& getFunctionName() {return _functionName;};
     long getComponentPointId() {return _componentPointId;};
-
+    
     BOOL isValid( void )  {  return _valid;};
 
     BOOL isUpdated( int calcsUpdateType = 0, const CtiTime &calcsLastUpdateTime = CtiTime() );
 
     CtiCalcComponent  &operator=( const CtiCalcComponent &componentToCopy );
     double            calculate( double input, int &component_quality, CtiTime &component_time, bool &calcValid );
+ 
 
 //  as soon as the FIXME in calccomponent.cpp is done, these can be uncommented
 //    or, if they're never used, delete the whole shebang...
