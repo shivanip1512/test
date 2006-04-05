@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.78 $
-* DATE         :  $Date: 2006/03/31 18:24:43 $
+* REVISION     :  $Revision: 1.79 $
+* DATE         :  $Date: 2006/04/05 16:23:23 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -43,6 +43,7 @@
 #include "dev_grp_energypro.h"
 #include "dev_grp_expresscom.h"
 #include "dev_grp_golay.h"
+#include "dev_grp_point.h"
 #include "dev_grp_ripple.h"
 #include "dev_grp_sa105.h"
 #include "dev_grp_sa305.h"
@@ -1618,7 +1619,39 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
                             dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds to load  Golay Group Devices" << endl;
                         }
 
+                        start = start.now();
+                        {
+                            RWDBConnection conn = getConnection();
+                            RWDBDatabase db = getDatabase();
 
+                            RWDBTable   keyTable;
+                            RWDBSelector selector = db.selector();
+
+                            if(DebugLevel & 0x00020000)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Point Group Devices" << endl;
+                            }
+                            CtiDeviceGroupPoint().getSQL( db, keyTable, selector );
+                            if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
+
+                            RWDBReader rdr = selector.reader(conn);
+                            if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                            }
+                            refreshDevices(rowFound, rdr, Factory);
+
+                            if(DebugLevel & 0x00020000)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for Point Group Devices" << endl;
+                            }
+                        }
+                        stop = stop.now();
+                        if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load Point Group Devices" << endl;
+                        }
                     }
 
                     start = start.now();
@@ -2716,7 +2749,7 @@ void CtiDeviceManager::apply(void (*applyFun)(const long, ptr_type, void*), void
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 }
 
