@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.35 $
-* DATE         :  $Date: 2006/04/03 21:24:36 $
+* REVISION     :  $Revision: 1.36 $
+* DATE         :  $Date: 2006/04/05 16:39:56 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2617,6 +2617,41 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                 //If we are here, we believe the data is incorrect!
                 resultString += "Device: " + getName() + "\nData buffer is bad, retry command" ;
                 status = ALPHABUFFERERROR;
+
+                CtiPointSPtr kw, km, volts;
+
+                pi.value = 0;
+                pi.quality = NonUpdatedQuality;
+
+                if(kw = getDevicePointOffsetTypeEqual(MCT470_PointOffset_TotalKW, AnalogPointType))
+                {
+                    point_string = getName() + " / " + kw->getName() + " = Non Updated";
+                    ReturnMsg->PointData().push_back(makePointDataMsg(kw, pi, point_string));
+                }
+
+                if(km = getDevicePointOffsetTypeEqual(MCT470_PointOffset_TotalKM, AnalogPointType))
+                {
+                    point_string = getName() + " / " + km->getName() + " = Non Updated";
+                    ReturnMsg->PointData().push_back(makePointDataMsg(km, pi, point_string));
+                }
+
+                if(volts = getDevicePointOffsetTypeEqual(MCT470_PointOffset_VoltsPhaseA, AnalogPointType))
+                {
+                    point_string = getName() + " / " + volts->getName() + " = Non Updated";
+                    ReturnMsg->PointData().push_back(makePointDataMsg(volts, pi, point_string));
+                }
+
+                if(volts = getDevicePointOffsetTypeEqual(MCT470_PointOffset_VoltsPhaseB, AnalogPointType))
+                {
+                    point_string = getName() + " / " + volts->getName() + " = Non Updated";
+                    ReturnMsg->PointData().push_back(makePointDataMsg(volts, pi, point_string));
+                }
+
+                if(volts = getDevicePointOffsetTypeEqual(MCT470_PointOffset_VoltsPhaseC, AnalogPointType))
+                {
+                    point_string = getName() + " / " + volts->getName() + " = Non Updated";
+                    ReturnMsg->PointData().push_back(makePointDataMsg(volts, pi, point_string));
+                }
             }
             else
             {
