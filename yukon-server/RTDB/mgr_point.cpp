@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_point.cpp-arc  $
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2006/03/23 15:29:18 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2006/04/05 16:24:12 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -438,6 +438,9 @@ CtiPointBase* PointFactory(RWDBReader &rdr)
             break;
         }
     }
+
+    // Identify the point so it knows what it is.
+    if(Point) Point->getPointBase().setType((CtiPointType_t)PtType);
 
     return Point;
 }

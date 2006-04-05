@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.57 $
-* DATE         :  $Date: 2006/03/31 18:24:43 $
+* REVISION     :  $Revision: 1.58 $
+* DATE         :  $Date: 2006/04/05 16:24:12 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -194,7 +194,17 @@ INT CtiDeviceBase::RefreshDevicePoints()
 
     if(_pointMgr != NULL)
     {
-        _pointMgr->refreshList(isPoint, NULL, 0, getID());
+        try
+        {
+            _pointMgr->refreshList(isPoint, NULL, 0, getID());
+        }
+        catch(...)
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " EP: " << getName() << "  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+        }
     }
     else
     {

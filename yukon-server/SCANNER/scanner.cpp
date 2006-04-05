@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.57 $
-* DATE         :  $Date: 2006/03/02 23:03:20 $
+* REVISION     :  $Revision: 1.58 $
+* DATE         :  $Date: 2006/04/05 16:25:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1077,23 +1077,33 @@ CtiTime TimeOfNextRemoteScan()
 
 static void applyAnalyzeNextLPScan(const long key, CtiDeviceSPtr Device, void *d)
 {
-    CtiTime TimeNow;
-    CtiTime TempTime(YUKONEOT);
-    CtiTime &nextLPScanTime = *((CtiTime*)d);
-
-    if(isCarrierLPDevice(Device))
+    try
     {
-            CtiDeviceMCT  *DeviceRecord = (CtiDeviceMCT *)Device.get();
+        CtiTime TimeNow;
+        CtiTime TempTime(YUKONEOT);
+        CtiTime &nextLPScanTime = *((CtiTime*)d);
 
-        if(!(DeviceRecord->isInhibited()) && (DeviceRecord->isWindowOpen()))
+        if(isCarrierLPDevice(Device))
         {
-            TempTime = DeviceRecord->calcNextLPScanTime();
+                CtiDeviceMCT  *DeviceRecord = (CtiDeviceMCT *)Device.get();
 
-            if(nextLPScanTime > TempTime)
+            if(!(DeviceRecord->isInhibited()) && (DeviceRecord->isWindowOpen()))
             {
-                nextLPScanTime = TempTime;
-                barkAboutCurrentTime( Device, TempTime, __LINE__ );
+                TempTime = DeviceRecord->calcNextLPScanTime();
+
+                if(nextLPScanTime > TempTime)
+                {
+                    nextLPScanTime = TempTime;
+                    barkAboutCurrentTime( Device, TempTime, __LINE__ );
+                }
             }
+        }
+    }
+    catch(...)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 }
