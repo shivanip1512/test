@@ -95,18 +95,6 @@
 		
 		function validate(form) 
 		{
-			if (form.name.value == "") 
-			{
-					alert("Time period name cannot be empty and must be unique.");
-					return false;
-			}
-			
-			if (form.shipDate.value == "") 
-			{
-				alert("The ship date cannot be empty");
-				return false;
-			}
-			
 			return true;
 		}
 		
