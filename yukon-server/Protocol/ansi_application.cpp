@@ -11,10 +11,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/ansi_application.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2005/12/20 17:19:53 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2006/04/06 17:00:30 $
 *    History: 
       $Log: ansi_application.cpp,v $
+      Revision 1.16  2006/04/06 17:00:30  jrichter
+      BUG FIX:  memory leak in porter...cleared out stdTablesAvailable/mfgTablesAvailable list.  since, prot_ansi object was not being destructed...it kept adding each time through connecting to device.  hopefully this is the root of all sentinel evil.
+
       Revision 1.15  2005/12/20 17:19:53  tspar
       Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 
@@ -108,6 +111,11 @@ void CtiANSIApplication::init( void )
 
     _wrDataSize = 0;
     _negotiateRetry = 0;
+    if (_currentTable != NULL)
+    {
+        delete _currentTable;
+        _currentTable = NULL;
+    }
     _currentTable = CTIDBG_new BYTE[1024];
     getDatalinkLayer().init();
 
@@ -935,6 +943,11 @@ void CtiANSIApplication::identificationData( BYTE *aPacket)
 
      _authTicketLength = aPacket[7];
 
+     if (_authTicket != NULL)
+     {
+         delete _authTicket;
+         _authTicket = NULL;
+     }
      _authTicket = new BYTE[_authTicketLength];
      for (int i = 0; i < _authTicketLength; i++)
      {
@@ -1125,6 +1138,11 @@ void CtiANSIApplication::setLPDataMode( bool value, int sizeOfLpTable )
     _sizeOfLpTable = sizeOfLpTable;
     if (_lpMode) 
     {
+        if (_lpTempBigTable != NULL) 
+        {
+            delete []_lpTempBigTable;
+            _lpTempBigTable = NULL;
+        }
         _lpTempBigTable = CTIDBG_new BYTE[_sizeOfLpTable];
     }
     else 
@@ -1438,6 +1456,11 @@ int CtiANSIApplication::encryptDataMethod()
     dataEncryptionStandard(key, data, 0);
 
 
+    if (_iniAuthVector != NULL)
+    {
+        delete _iniAuthVector;
+        _iniAuthVector = NULL;
+    }
     _iniAuthVector = new BYTE[8];
     for (i = 0; i < 8; i++)
     {

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.177 $
-* DATE         :  $Date: 2006/03/31 18:24:42 $
+* REVISION     :  $Revision: 1.178 $
+* DATE         :  $Date: 2006/04/06 17:00:30 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1527,7 +1527,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         ULONG bytesReceived = 0;
 
                         CtiDeviceSentinel *sentinelDev    = ( CtiDeviceSentinel *)Device.get();
-                        CtiProtocolANSI &ansi   = sentinelDev->getSentinelProtocol();
+                        CtiProtocolANSI_sentinel &ansi   = sentinelDev->getSentinelProtocol();
 
                         ansi.setAnsiDeviceName(sentinelDev->getName());
                         //allocate some space

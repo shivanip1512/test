@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_kv2.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2006/02/27 23:58:32 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2006/04/06 17:00:30 $
 *
 
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
@@ -74,8 +74,8 @@ public:
                        list< CtiMessage* >  &retList,
                        list< OUTMESS* >     &outList );
 
-   CtiProtocolANSI & getSentinelProtocol( void );
-   void processDispatchReturnMessage( list< CtiReturnMsg* >  &retList, UINT archiveFlag );
+   CtiProtocolANSI_sentinel& getSentinelProtocol( void );
+   void processDispatchReturnMessage( RWTPtrSlist< CtiReturnMsg >  &retList, UINT archiveFlag );
    int buildScannerTableRequest (BYTE *ptr, UINT flags);
    int buildCommanderTableRequest (BYTE *ptr, UINT flags);
    INT sendCommResult( INMESS *InMessage);

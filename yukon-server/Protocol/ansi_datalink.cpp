@@ -11,10 +11,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/ansi_datalink.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $                                                198
-* DATE         :  $Date: 2005/12/20 17:19:53 $
+* REVISION     :  $Revision: 1.14 $                                                198
+* DATE         :  $Date: 2006/04/06 17:00:30 $
 *    History: 
       $Log: ansi_datalink.cpp,v $
+      Revision 1.14  2006/04/06 17:00:30  jrichter
+      BUG FIX:  memory leak in porter...cleared out stdTablesAvailable/mfgTablesAvailable list.  since, prot_ansi object was not being destructed...it kept adding each time through connecting to device.  hopefully this is the root of all sentinel evil.
+
       Revision 1.13  2005/12/20 17:19:53  tspar
       Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 
@@ -77,6 +80,11 @@ void CtiANSIDatalink::init( void )
    setSequence( 0 );
    _currentPos = ack;
    _previousPos = ack;
+   if (_currentPacket != NULL)
+   {
+       delete _currentPacket;
+       _currentPacket = NULL;
+   }
    _currentPacket = CTIDBG_new BYTE[512];
    _toggle = false;
    _packetBytesReceived = 0;

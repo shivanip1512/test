@@ -729,7 +729,7 @@ int CtiDeviceSentinel::buildCommanderTableRequest (BYTE *aMsg, UINT flags)
 //
 //=========================================================================================================================================
 
-CtiProtocolANSI & CtiDeviceSentinel::getSentinelProtocol( void )
+CtiProtocolANSI_sentinel& CtiDeviceSentinel::getSentinelProtocol( void )
 {
    return  _ansiProtocol;
 }
@@ -945,7 +945,7 @@ void CtiDeviceSentinel::processDispatchReturnMessage( list< CtiReturnMsg* > &ret
                         }
                         pData->setType( pPoint->getType() );
 
-                        msgPtr = CTIDBG_new CtiReturnMsg;
+                        msgPtr = CTIDBG_new CtiReturnMsg();
 
                         msgPtr->insert(pData);
                         retList.push_back(msgPtr);
@@ -972,7 +972,7 @@ void CtiDeviceSentinel::processDispatchReturnMessage( list< CtiReturnMsg* > &ret
                         qual = NormalQuality;
 
                         int msgCntr = 0;
-                        msgPtr = CTIDBG_new CtiReturnMsg;
+                        msgPtr = CTIDBG_new CtiReturnMsg();
 
                         for (y = getSentinelProtocol().getTotalWantedLPBlockInts()-1; y >= 0; y--)
                         {
@@ -1001,7 +1001,7 @@ void CtiDeviceSentinel::processDispatchReturnMessage( list< CtiReturnMsg* > &ret
                                     retList.push_back(msgPtr);
                                     msgPtr = NULL;
                                     if (y > 0)
-                                        msgPtr = CTIDBG_new CtiReturnMsg;
+                                        msgPtr = CTIDBG_new CtiReturnMsg();
                                 }
                                 else
                                     msgCntr++;
@@ -1071,7 +1071,7 @@ void CtiDeviceSentinel::processDispatchReturnMessage( list< CtiReturnMsg* > &ret
                                 pData->setTime( CtiTime() );
                                 pData->setType( pStatusPoint->getType() );
 
-                                msgPtr = CTIDBG_new CtiReturnMsg;
+                                msgPtr = CTIDBG_new CtiReturnMsg();
                                 msgPtr->insert(pData);
 
                                 retList.push_back(msgPtr);
