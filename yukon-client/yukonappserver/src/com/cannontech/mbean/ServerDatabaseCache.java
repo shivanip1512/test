@@ -3658,7 +3658,7 @@ public synchronized LiteContact[] getContactsByLastName(String lastName, boolean
 
 public synchronized LiteContact[] getContactsByFirstName(String firstName, boolean partialMatch) 
 {
-    return YukonUserContactLookup.loadContactsByLastName(firstName, partialMatch);
+    return YukonUserContactLookup.loadContactsByFirstName(firstName, partialMatch);
 }
 
 public synchronized LiteContact[] getContactsByPhoneNumber(String phone, boolean partialMatch) 
