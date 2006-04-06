@@ -303,9 +303,17 @@ public class PurchaseBean
         return hasCurrentlyPaid;
     }
 
-    public boolean isAllowSerialNumberInput() {
-        allowSerialNumberInput = currentShipment.getShipmentID() == null || currentShipment.getSerialNumberStart().length() < 2 || currentShipment.getSerialNumberEnd().length() < 2;
+    public boolean isAllowSerialNumberInput() 
+    {
+        if(currentShipment.getShipmentID() == null || currentShipment.getSerialNumberStart().length() < 2 || currentShipment.getSerialNumberEnd().length() < 2)
+            allowSerialNumberInput = true;
+
         return allowSerialNumberInput;
+    }
+    
+    public void setAllowSerialNumberInput(boolean allow)
+    {
+        allowSerialNumberInput = allow;
     }
 
     public LiteStarsEnergyCompany getSerialNumberMember() {
