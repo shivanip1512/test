@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/DSM2.H-arc  $
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2006/02/24 00:19:09 $
+* REVISION     :  $Revision: 1.34 $
+* DATE         :  $Date: 2006/04/06 15:26:48 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,7 +20,6 @@
 
 #include <time.h>
 #include <string>
-#pragma pack(push, message_packing, 1)
 #include "mutex.h"
 #include "guard.h"
 #include "dlldefs.h"
@@ -456,6 +455,8 @@ IM_EX_CTIBASE ULONG OutMessageCount();
 #define RPT_UN_MIN      4190464L
 #define READ_ST         0x40
 #define READ_RE         0xff
+
+#pragma pack(push, message_packing, 1)
 
 typedef union
 {
@@ -911,9 +912,9 @@ public:
       *this = aRef;
       incrementCount();
    }
-   
+
    CtiOutMessage(const CtiOutMessage *aRef)
-   { 
+   {
       *this = CtiOutMessage( *aRef );
       incrementCount();
    }
@@ -1096,6 +1097,8 @@ typedef struct _DSM2_SEASON
    SHORT StopDay;
 } DSM2_SEASON;
 
+#pragma pack(pop, message_packing)     // Restore the prior packing alignment..
+
 /* DST active flag */
 #define DSTACTIVE           0x8000
 #define DSTSET(q)  ((DSTFlag ()) ? (q | DSTACTIVE) : (q & ~DSTACTIVE))
@@ -1163,7 +1166,5 @@ int            IM_EX_CTIBASE I_Words (PBYTE, USHORT, USHORT, DSTRUCT *);
 int            IM_EX_CTIBASE J_Word (PBYTE, ESTRUCT *);
 int            IM_EX_CTIBASE I_BCHCheck (PBYTE);
 
-
-#pragma pack(pop, message_packing)     // Restore the prior packing alignment..
 
 #endif      // #ifndef DSM2_H

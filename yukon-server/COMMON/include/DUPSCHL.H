@@ -2,9 +2,9 @@
 #ifndef _DUPSCHL_H_
 #define _DUPSCHL_H_
 
-#pragma pack(1)
-
 #include "dev_base.h"
+
+#pragma pack(push, 1)
 
 #define SCHL_SHMEMLP  "SCHL\\LPROFILE.DAT"
 #define SCHL_SHMEMMM  "SCHL\\MASSMEM.DAT"
@@ -262,79 +262,79 @@ typedef struct
 
 
 typedef struct {
-	BYTE     Year;       // Mod-100 year anyway....
-	BYTE     Month;
-	BYTE     DayOfMonth;
-	BYTE     Hours;
-	BYTE     Minutes;
-	BYTE     Seconds;
-	BYTE     DayOfWeek;
+    BYTE     Year;       // Mod-100 year anyway....
+    BYTE     Month;
+    BYTE     DayOfMonth;
+    BYTE     Hours;
+    BYTE     Minutes;
+    BYTE     Seconds;
+    BYTE     DayOfWeek;
 } VectronRealTimeRegister_t;
 
 
 typedef struct {
 
-	DOUBLE						pulseWeight;	//   4	
-	USHORT						registerAddress;
-	USHORT						energyRegister;
-	USHORT						pulseCount;
+    DOUBLE                      pulseWeight;    //   4
+    USHORT                      registerAddress;
+    USHORT                      energyRegister;
+    USHORT                      pulseCount;
 } VectronProgram_t;
 
 typedef struct {
 
-	struct 
-	{
-		BYTE						energyRegisterChannel1;
-		BYTE						energyRegisterChannel2;
-		BYTE						pulseWeightChannel1[4];	//   4	
-		BYTE                        intervalLength;         //   1
-		BYTE                        logicalStart[2];        //   3
-		BYTE                        logicalEnd[2];          //   3
-		BYTE						outageLength[2];		//   2
-		BYTE						unused01;
-		BYTE						loadResearchID[14];
-		BYTE                     	currentRecord[2];       //   2
-		BYTE                       	currentInterval;        //   1
-		BYTE						reserved01[2];
-		BYTE						leftoverOutageTime[3];	
-		BYTE						currentRecordPtr[2];
-		BYTE						reserved02[5];
-		BYTE						reserved03[3];
-		BYTE						coldStartTime[7];
-		BYTE						rserved04[2];
-		BYTE						numberOfChannels;
-		BYTE						registerAddressChannel1;
-		BYTE						registerAddressChannel2;
-		BYTE						pulseWeightChannel2[4];
-		BYTE						intervalTimer;
-		BYTE						pulseCountChannel1[2];
-		BYTE						pulseCountChannel2[2];
+    struct
+    {
+        BYTE                        energyRegisterChannel1;
+        BYTE                        energyRegisterChannel2;
+        BYTE                        pulseWeightChannel1[4]; //   4
+        BYTE                        intervalLength;         //   1
+        BYTE                        logicalStart[2];        //   3
+        BYTE                        logicalEnd[2];          //   3
+        BYTE                        outageLength[2];        //   2
+        BYTE                        unused01;
+        BYTE                        loadResearchID[14];
+        BYTE                        currentRecord[2];       //   2
+        BYTE                        currentInterval;        //   1
+        BYTE                        reserved01[2];
+        BYTE                        leftoverOutageTime[3];
+        BYTE                        currentRecordPtr[2];
+        BYTE                        reserved02[5];
+        BYTE                        reserved03[3];
+        BYTE                        coldStartTime[7];
+        BYTE                        rserved04[2];
+        BYTE                        numberOfChannels;
+        BYTE                        registerAddressChannel1;
+        BYTE                        registerAddressChannel2;
+        BYTE                        pulseWeightChannel2[4];
+        BYTE                        intervalTimer;
+        BYTE                        pulseCountChannel1[2];
+        BYTE                        pulseCountChannel2[2];
 
-	}	Byte;
+    }   Byte;
 
-	struct 
-	{
-		VectronProgram_t			program[2];
-		USHORT                      intervalLength;         //   1
-		USHORT                      logicalStart;        //   3
-		USHORT                      logicalEnd;          //   3
-		USHORT                      logicalCurrent;          //   3
-		BYTE						loadResearchID[14];
+    struct
+    {
+        VectronProgram_t            program[2];
+        USHORT                      intervalLength;         //   1
+        USHORT                      logicalStart;        //   3
+        USHORT                      logicalEnd;          //   3
+        USHORT                      logicalCurrent;          //   3
+        BYTE                        loadResearchID[14];
 
-		USHORT                     	currentRecord;       //   2
-		USHORT                      recordLength;          //   3
-		USHORT                     	currentInterval;        //   1
+        USHORT                      currentRecord;       //   2
+        USHORT                      recordLength;          //   3
+        USHORT                      currentInterval;        //   1
 
-		DOUBLE						leftoverOutageTime;	
-		USHORT						currentRecordPtr;
-		DOUBLE						coldStartTime;
+        DOUBLE                      leftoverOutageTime;
+        USHORT                      currentRecordPtr;
+        DOUBLE                      coldStartTime;
 
-		USHORT						numberOfChannels;
-		USHORT						intervalTimer;
+        USHORT                      numberOfChannels;
+        USHORT                      intervalTimer;
 
-	}	Real;
+    }   Real;
 
-	BOOL     dataIsReal;
+    BOOL     dataIsReal;
 
 } VectronMMConfig_t;
 
@@ -355,7 +355,7 @@ typedef struct {
 
 typedef struct
 {
-	struct {
+    struct {
         BYTE                             phaseAVoltage[4];
         BYTE                             phaseBVoltage[4];
         BYTE                             phaseCVoltage[4];
@@ -363,15 +363,15 @@ typedef struct
         BYTE                             phaseBCurrent[4];
         BYTE                             phaseCCurrent[4];
 
-		BYTE                             unitType[3];
-		BYTE                             unitId[8];
-		BYTE                             registerMultiplier[4];
-		BYTE                             registerMapping[6];
+        BYTE                             unitType[3];
+        BYTE                             unitId[8];
+        BYTE                             registerMultiplier[4];
+        BYTE                             registerMapping[6];
 
         BYTE                             register2Info1[8]; // either rate E Max or E energy
         BYTE                             register1RateE[12]; // e E Max, Cum
-		BYTE                             demandResetCount[2];
-		BYTE                             outageCount[2];
+        BYTE                             demandResetCount[2];
+        BYTE                             outageCount[2];
         BYTE                             register3RateECum[4]; // rate E Cum
         BYTE                             register1RateA[8]; // e E Max, Cum
         BYTE                             register4RateECum[4]; // rate E Cum
@@ -385,40 +385,40 @@ typedef struct
         BYTE                             register4Info1[8]; // either rate E Max or E energy
 
 
-		BYTE                             sWRev[2];
-		BYTE                             fWRev[2];
-		BYTE                             progId[2];
-		BYTE                             meterId[9];
+        BYTE                             sWRev[2];
+        BYTE                             fWRev[2];
+        BYTE                             progId[2];
+        BYTE                             meterId[9];
 
-	}	Byte;
+    }   Byte;
 
-	struct {
+    struct {
 
         VectronPhaseInfo_t               phaseA;
         VectronPhaseInfo_t               phaseB;
         VectronPhaseInfo_t               phaseC;
 
-		BYTE                             unitType[3];
-		BYTE                             unitId[8];
-		FLOAT                            registerMultiplier;
-		USHORT                           demandResetCount;
-		USHORT                           outageCount;
-		FLOAT                            sWRev;
-		FLOAT                            fWRev;
-		USHORT                           progId;
-		BYTE                             meterId[9];
+        BYTE                             unitType[3];
+        BYTE                             unitId[8];
+        FLOAT                            registerMultiplier;
+        USHORT                           demandResetCount;
+        USHORT                           outageCount;
+        FLOAT                            sWRev;
+        FLOAT                            fWRev;
+        USHORT                           progId;
+        BYTE                             meterId[9];
 
-        struct 
+        struct
         {
-            struct 
+            struct
             {
-                struct 
+                struct
                 {
-                    VectronMaximumRegister_t     rateE;   
-                    VectronMaximumRegister_t     rateA;   
-                    VectronMaximumRegister_t     rateB;   
-                    VectronMaximumRegister_t     rateC;   
-                    VectronMaximumRegister_t     rateD;   
+                    VectronMaximumRegister_t     rateE;
+                    VectronMaximumRegister_t     rateA;
+                    VectronMaximumRegister_t     rateB;
+                    VectronMaximumRegister_t     rateC;
+                    VectronMaximumRegister_t     rateD;
                 } demand;
             } data;
 
@@ -426,24 +426,24 @@ typedef struct
             USHORT mapping;
         } register1;
 
-        struct 
+        struct
         {
             union
             {
-                struct 
+                struct
                 {
-                    VectronMaximumRegister_t     rateE;   
-                    VectronMaximumRegister_t     rateA;   
-                    VectronMaximumRegister_t     rateB;   
+                    VectronMaximumRegister_t     rateE;
+                    VectronMaximumRegister_t     rateA;
+                    VectronMaximumRegister_t     rateB;
                 } demand;
 
                 struct
                 {
-                    DOUBLE                       rateE;              
-                    DOUBLE                       rateA;              
-                    DOUBLE                       rateB;              
-                    DOUBLE                       rateC;              
-                    DOUBLE                       rateD;              
+                    DOUBLE                       rateE;
+                    DOUBLE                       rateA;
+                    DOUBLE                       rateB;
+                    DOUBLE                       rateC;
+                    DOUBLE                       rateD;
 
                 } energy;
 
@@ -453,18 +453,18 @@ typedef struct
             USHORT mapping;
         } register2;
 
-        struct 
+        struct
         {
             union
             {
-                struct 
+                struct
                 {
-                    VectronMaximumRegister_t     rateE;   
+                    VectronMaximumRegister_t     rateE;
                 } demand;
 
                 struct
                 {
-                    DOUBLE                       rateE;              
+                    DOUBLE                       rateE;
                 } energy;
 
             } data;
@@ -472,18 +472,18 @@ typedef struct
             USHORT mapping;
         } register3;
 
-        struct 
+        struct
         {
             union
             {
-                struct 
+                struct
                 {
-                    VectronMaximumRegister_t     rateE;   
+                    VectronMaximumRegister_t     rateE;
                 } demand;
 
                 struct
                 {
-                    DOUBLE                       rateE;              
+                    DOUBLE                       rateE;
                 } energy;
 
             } data;
@@ -491,9 +491,9 @@ typedef struct
             USHORT mapping;
         } register4;
 
-	}	Real;
+    }   Real;
 
-	BOOL     dataIsReal;
+    BOOL     dataIsReal;
 
 } VectronScanData_t;
 
@@ -504,7 +504,7 @@ typedef struct {
    time_t                     NextRecordTime;
    ULONG                      porterLPTime;
    ULONG                      Flags;               // Misc Flags
-   VectronRealTimeRegister_t  RealTime;  
+   VectronRealTimeRegister_t  RealTime;
    VectronMMConfig_t          MMConfig;
    BYTE                       MMBuffer[1500];
 }  VectronLoadProfileMessage_t;                    // To fit in a DIALREPLY we cannot be > 2kB
@@ -513,8 +513,8 @@ typedef struct {
 // array of commands used by both meters
 typedef struct
 {
-	INT      startAddress;
-	INT      stopAddress;
+    INT      startAddress;
+    INT      stopAddress;
     INT      startOffset;
     INT      bytesToRead;
     CHAR     *name;
@@ -532,6 +532,6 @@ typedef struct {
 
 
 
-#pragma pack()
+#pragma pack(pop)
 
 #endif /* _DUPSCHL_H_ */
