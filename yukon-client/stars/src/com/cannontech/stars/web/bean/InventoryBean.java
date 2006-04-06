@@ -79,6 +79,7 @@ public class InventoryBean {
     private String filterInventoryHTML;
     private String numberOfRecords = "0";
     private boolean viewResults = false;
+    private boolean shipmentCheck = false;
 	
 	/**
 	 * Comparator of serial # and device names. Serial # is always "less than"
@@ -200,7 +201,7 @@ public class InventoryBean {
     }
     
 	private ArrayList getHardwareList(boolean showEnergyCompany) throws WebClientException {
-		if (inventoryList != null) return inventoryList;
+		if (inventoryList != null && !shipmentCheck) return inventoryList;
 		
 		ArrayList hardwares = null;
 		if ((getHtmlStyle() & HTML_STYLE_INVENTORY_SET) != 0 && inventorySet != null) {
@@ -1204,12 +1205,20 @@ public class InventoryBean {
     {
         try
         {
-            return getHardwareList(false);
+            return getHardwareList(true);
         }
         catch (Exception e)
         {
             return null;
         }
         
+    }
+
+    public boolean isShipmentCheck() {
+        return shipmentCheck;
+    }
+
+    public void setShipmentCheck(boolean shipmentCheck) {
+        this.shipmentCheck = shipmentCheck;
     }
 }
