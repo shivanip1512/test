@@ -117,31 +117,29 @@
 	        	</table>
 	        	<table width="500" border="1" cellspacing="0" cellpadding="5" align="center">
 	        		<tr>
-	        			<td width="20%">
-							<div align="right">
-								<INPUT type="Button" name="editShipment" value="Edit" onclick="loadShipment(this.form)" />
-								<INPUT type="Button" name="deleteShipment" value="Remove" onclick="removeShipment()"/>
-							</div>
-						</td> 
-	            		<td width="40%" valign="top" class="TableCell"> Assigned Shipments:<br>
-	                    	<select id="shipments" name="shipments" size="5" style="width:165">
-	                        	<c:forEach var="ship" items="${purchaseBean.assignedInvoiceShipments}">
-									<option value='<c:out value="${ship.shipmentID}"/>'> Serial #: <c:out value="${ship.serialNumberStart}"/> to <c:out value="${ship.serialNumberEnd}"/> </option>
-								</c:forEach>
-							</select>
-	            		</td>
+	        			<td width="40%" valign="top" class="TableCell"> Available Shipments:<br>
+                            <div align="center">
+                                <select id="allShipments" name="allShipments" size="5" style="width:165">
+                                    <c:forEach var="ship" items="${purchaseBean.allUnassignedInvoiceShipments}">
+                                        <option value='<c:out value="${ship.shipmentID}"/>'> <c:out value="${ship.shipmentNumber}"/>: #<c:out value="${ship.serialNumberStart}"/> to <c:out value="${ship.serialNumberEnd}"/> </option>
+                                    </c:forEach>
+                                </select>
+                            </div>
+                        </td>
 	                    <td width="10%" align="center"> 
-	                      	<input type="button" id="AddButton" name="Add" value="<<" onclick="addShipment(this.form)">
+	                      	<input type="button" id="RemoveButton" name="Remove" value="<<" onclick="removeShipment(this.form)">
 	                      	<br>
-	                      	<input type="button" id="RemoveButton" name="Remove" value=">>" onclick="removeShipment(this.form)">
+	                      	<input type="button" id="AddButton" name="Add" value=">>" onclick="addShipment(this.form)">
 	                    </td>
-	                    <td width="40%" valign="top" class="TableCell"> Available Shipments:<br>
-	                    	<select id="allShipments" name="allShipments" size="5" style="width:165">
-	                        	<c:forEach var="ship" items="${purchaseBean.allUnassignedInvoiceShipments}">
-									<option value='<c:out value="${ship.shipmentID}"/>'> Serial #: <c:out value="${ship.serialNumberStart}"/> to <c:out value="${ship.serialNumberEnd}"/> </option>
-								</c:forEach>
-							</select>
-	            		</td>
+	                    <td width="40%" valign="top" class="TableCell"> Assigned to this Invoice:<br>
+                            <div align="center">
+                                <select id="shipments" name="shipments" size="5" style="width:165">
+                                    <c:forEach var="ship" items="${purchaseBean.assignedInvoiceShipments}">
+                                        <option value='<c:out value="${ship.shipmentID}"/>'> <c:out value="${ship.shipmentNumber}"/>: #<c:out value="${ship.serialNumberStart}"/> to <c:out value="${ship.serialNumberEnd}"/> </option>
+                                    </c:forEach>
+                                </select>
+                            </div>   
+                        </td>
                     </tr>
 				</table>
 			</div> 
