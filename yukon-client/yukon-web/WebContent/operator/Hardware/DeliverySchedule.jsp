@@ -53,9 +53,16 @@
 	                <td width="80%"> 
                   	    <select id="modelType" name="modelType" size="1" style="width:170">
                         	<c:forEach var="deviceEntry" items="${purchaseBean.availableDeviceTypes.yukonListEntries}">
-								<option value='<c:out value="${deviceEntry.entryID}"/>'> <c:out value="${deviceEntry.entryText}"/> </option>
+								<c:choose>
+                                    <c:when test="${deviceEntry.entryID == purchaseBean.currentSchedule.modelID}">
+                                        <option value='<c:out value="${deviceEntry.entryID}"/>' selected> <c:out value="${deviceEntry.entryText}"/> </option>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <option value='<c:out value="${deviceEntry.entryID}"/>'> <c:out value="${deviceEntry.entryText}"/> </option>
+                                    </c:otherwise>
+                                </c:choose>
 							</c:forEach>
-						</select>
+                        </select>
 	                </td>
 	          	</tr>
 	          	<tr>
@@ -140,7 +147,7 @@
 		                    <div align="center">
 		                    	<select id="shipments" name="shipments" size="5" style="width:250">
 		                        	<c:forEach var="ship" items="${purchaseBean.availableShipments}">
-										<option value='<c:out value="${ship.shipmentID}"/>'> Serial #: <c:out value="${ship.serialNumberStart}"/> to <c:out value="${ship.serialNumberEnd}"/> </option>
+										<option value='<c:out value="${ship.shipmentID}"/>'> <c:out value="${ship.shipmentNumber}"/>: Serial # <c:out value="${ship.serialNumberStart}"/> to <c:out value="${ship.serialNumberEnd}"/> </option>
 									</c:forEach>
 								</select>
 							</div>
