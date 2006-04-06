@@ -847,6 +847,27 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
             oldResult = oldResult*2;
             retVal = oldResult + newValue;
         }
+        else if( !stringCompareIgnoreCase(functionName,"Mid Level Latch") )
+        {
+            double point1 = _calcpoint->pop( );
+            double point2  = _calcpoint->pop( );
+
+            if( point1 > 0 && point2 > 0 ) //if both true
+            {
+                retVal = 1;
+            }
+            else if( point1 <= 0 && point2 <= 0 )//if both false
+            {
+                retVal = 0;
+            }
+            else //If only 1 true and 1 false, keep last value
+            {
+                CtiPointStore* pointStore = CtiPointStore::getInstance();
+                CtiHashKey parentHashKey(_calcpoint->getPointId());
+                CtiPointStoreElement* parentPointPtr = (CtiPointStoreElement*)((*pointStore)[&parentHashKey]);
+                retVal = parentPointPtr->getPointValue();
+            }
+        }
         else
         {
             // We do not have a function.
