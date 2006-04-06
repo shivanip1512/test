@@ -1994,7 +1994,7 @@ public class InventoryManager extends HttpServlet {
             session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Delivery schedule could not be saved to the database.  Transaction failed.");
         }
         
-        redirect = req.getContextPath() + "/operator/Hardware/PurchaseTrack.jsp";
+        redirect = req.getContextPath() + "/operator/Hardware/DeliverySchedule.jsp";
     }
     
     private void requestNewTimePeriod(StarsYukonUser user, HttpServletRequest req, HttpSession session) 
@@ -2120,6 +2120,13 @@ public class InventoryManager extends HttpServlet {
         currentShipment.setSalesTotal(new Double(req.getParameter("total")));
         currentShipment.setAmountPaid(new Double(req.getParameter("amountPaid")));
         
+        String serialStart = (req.getParameter("serialStart"));
+        String serialEnd = (req.getParameter("serialEnd"));
+        if(serialStart != null)
+            currentShipment.setSerialNumberStart(serialStart);
+        if(serialEnd != null)
+            currentShipment.setSerialNumberEnd(serialEnd);
+        
         try
         {
             /**
@@ -2157,9 +2164,6 @@ public class InventoryManager extends HttpServlet {
              * B: Create new with currentState = Ordered in appropriate warehouse
              * C: Probably will need to spin off a process task so we can time it
              * */
-            String serialStart = (req.getParameter("serialStart"));
-            String serialEnd = (req.getParameter("serialEnd"));
-            
             if(serialStart != null && serialEnd != null)
             {
                 InventoryBean iBean = (InventoryBean) session.getAttribute("inventoryBean");
@@ -2177,8 +2181,12 @@ public class InventoryManager extends HttpServlet {
                 tempList.add(new FilterWrapper(String.valueOf(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SERIAL_RANGE_MIN), serialStart, serialStart));
                 iBean.setFilterByList(tempList);
                 
+                iBean.setShipmentCheck(true);
                 ArrayList found = iBean.getLimitedHardwareList();
+                iBean.setShipmentCheck(false);
                 //failure
+                
+                pBean.setAllowSerialNumberInput(true);
                 if(found == null)
                 {
                     session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Inventory was unable to determine if serial range is pre-existing.  It is unsafe to create this range.");
@@ -2192,11 +2200,9 @@ public class InventoryManager extends HttpServlet {
                 }
                 else
                 {
-                    currentShipment.setSerialNumberStart(serialStart);
-                    currentShipment.setSerialNumberEnd(serialEnd);
-                    
-                    session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Serial range has not yet been added.  Please verify the following information and click submit.");
+                    session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Actual serial range has not yet been created in inventory.  Please verify the following information and click submit.");
                     redirect = req.getContextPath() + "/operator/Hardware/ShipmentSNRangeAdd.jsp";
+                    pBean.setAllowSerialNumberInput(false);
                 }
                     
             }
