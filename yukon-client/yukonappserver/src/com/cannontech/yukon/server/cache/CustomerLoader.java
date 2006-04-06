@@ -163,7 +163,7 @@ public class CustomerLoader implements Runnable
 			//TODO incorporate EnergyCompanyCustomerList to get the energycompany value.
 			sqlString = 
 				"select CustomerID, MainAddressID, CompanyName, " +
-				"CustomerDemandLevel, CurtailAmount " +
+				"CustomerDemandLevel, CurtailAmount, CICustType " +
 				"from " + CICustomerBase.TABLE_NAME + " " +
                 "where CustomerID <= " + maxCustomerID;
 				
@@ -176,10 +176,12 @@ public class CustomerLoader implements Runnable
 				String name = rset.getString(3).trim();
 				double dmdLevel = rset.getDouble(4);
 				double curtAmount = rset.getDouble(5);
+				int cstTypeID = rset.getInt(6);
 				((LiteCICustomer)allCustsMap.get(new Integer(cstID))).setMainAddressID(addressID);
 				((LiteCICustomer)allCustsMap.get(new Integer(cstID))).setCompanyName(name);
 				((LiteCICustomer)allCustsMap.get(new Integer(cstID))).setDemandLevel(dmdLevel);
 				((LiteCICustomer)allCustsMap.get(new Integer(cstID))).setCurtailAmount(curtAmount);
+				((LiteCICustomer)allCustsMap.get(new Integer(cstID))).setCICustType(cstTypeID);
 			}
 		}
 		catch( java.sql.SQLException e )
