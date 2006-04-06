@@ -1,5 +1,6 @@
 package com.cannontech.database.db.stars.purchasing;
 
+import java.sql.SQLException;
 import java.util.*;
 
 import com.cannontech.common.util.CtiUtilities;
@@ -67,6 +68,13 @@ public void delete() throws java.sql.SQLException
     delete( SCHED_MAPPING_TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
     
     delete( TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
+}
+
+public void deletePartial() throws SQLException
+{
+    Object constraintValues[] = { getShipmentID() };
+    
+    delete( INVOICE_MAPPING_TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
 }
 
 
