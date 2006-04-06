@@ -55,9 +55,16 @@
 	                <td width="80%"> 
                   	    <select id="warehouse" name="warehouse" size="1" style="width:170">
                         	<c:forEach var="house" items="${purchaseBean.availableWarehouses}">
-								<option value='<c:out value="${house.warehouseID}"/>'> <c:out value="${house.warehouseName}"/> </option>
-							</c:forEach>
-						</select>
+					             <c:choose>
+                                     <c:when test="${house.warehouseID == purchaseBean.currentShipment.warehouseID}">
+                                        <option value='<c:out value="${house.warehouseID}"/>' selected> <c:out value="${house.warehouseName}"/> </option>
+							         </c:when>
+                                     <c:otherwise>
+                                        <option value='<c:out value="${house.warehouseID}"/>'> <c:out value="${house.warehouseName}"/> </option>
+                                     </c:otherwise>
+                                </c:choose>
+                            </c:forEach>
+                        </select>
 	                </td>
 	          	</tr>
 	          	<c:choose>
@@ -126,7 +133,7 @@
 	                  	<div align="right">Filing:</div>
 	                </td>
 	                <td width="80%"> 
-	                  	<div align="left" class="fieldinfo">This time projection is for schedule <c:out value="${purchaseBean.currentSchedule.scheduleName}"/></div>
+	                  	<div align="left" class="fieldinfo">This shipment is part of schedule <c:out value="${purchaseBean.currentSchedule.scheduleName}"/></div>
 	                </td>
 		     	</tr>
 	        </table>
@@ -222,13 +229,13 @@
 				return false;
 			}
 			
-			if (form.serialStart.value == "") 
+			if (form.serialStart != null && form.serialStart.value == "") 
 			{
 				alert("Serial range start field cannot be empty and should be a valid serial number.");
 				return false;
 			}
 			
-			if (form.serialEnd.value == "") 
+			if (form.serialEnd != null && form.serialEnd.value == "") 
 			{
 				alert("Serial range end field cannot be empty and should be a valid serial number.");
 				return false;
