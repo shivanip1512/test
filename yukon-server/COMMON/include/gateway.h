@@ -8,13 +8,12 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2004/09/15 20:49:08 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2006/04/06 16:25:22 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
-#pragma pack(1)
 #pragma warning( disable : 4786)
 #ifndef __GATEWAY_H__
 #define __GATEWAY_H__
@@ -125,6 +124,8 @@
 #define INVALIDDAY                      0002
 #define INVALIDPERIOD                   0003
 #define DUPLICATEDEVICEID               0004
+
+#pragma pack(push, 1)
 
 // Structure to receive messages from the gateway
 
@@ -519,5 +520,6 @@ typedef struct {
     unsigned short Type;
 } KEEPALIVE;
 
+#pragma pack(pop)
 
 #endif // #ifndef __GATEWAY_H__

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/INCLUDE/MPC.H-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2004/12/20 21:02:09 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2006/04/06 16:25:50 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -117,14 +117,14 @@ typedef struct {
 #define TELEGRAPHEND_ERROR      4
 #define TELEGRAPH_CONNECT_FAIL  99      /* send when pipe to MPC fails */
 
-#pragma pack(1)         /* force byte alignment */
+#pragma pack(push, 1)   //  force byte alignment
 
 typedef struct {
     ULONG Function;
     CHAR Telegraph[7];
 } TELEGRAPH;
 
-#pragma pack()          /* set back to compiler default alignment */
+#pragma pack(pop)       //  restore to previous alignment
 
 
 

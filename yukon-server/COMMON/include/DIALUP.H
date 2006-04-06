@@ -9,7 +9,7 @@
 
 class CtiPort;
 
-#pragma pack(1)
+#pragma pack(push, 1)
 
 /*
  *  The following defines are an attempt to eliminate a protocol from the requesting object
@@ -108,6 +108,6 @@ INT      DialupReceive(CTIXMIT *Xfer, REQUESTRECORD *ReqRecord);
 INT      DialupHandShake  (OUTMESS *OutMessage, INMESS  *InMessage, CtiPort *PortRecord, CtiDeviceBase  *RemoteRecord);
 INT      DialupPostScan  (OUTMESS *OutMessage, INMESS  *InMessage, CtiDeviceBase  *DeviceRecord);
 
-#pragma pack()
+#pragma pack(pop)
 
 #endif // #ifndef _DIALUP_H_
