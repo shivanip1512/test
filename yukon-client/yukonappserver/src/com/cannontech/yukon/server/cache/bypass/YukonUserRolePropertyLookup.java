@@ -6,15 +6,19 @@
  */
 package com.cannontech.yukon.server.cache.bypass;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.util.StringUtils;
-import com.cannontech.database.Transaction;
+import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.db.user.YukonRole;
-import com.cannontech.database.db.user.YukonUserRole;
 import com.cannontech.database.db.user.YukonGroupRole;
+import com.cannontech.database.db.user.YukonRole;
 import com.cannontech.database.db.user.YukonRoleProperty;
+import com.cannontech.database.db.user.YukonUserRole;
 
 /**
  * @author jdayton
@@ -39,94 +43,111 @@ public class YukonUserRolePropertyLookup
 		 * -We obtain the group entry for this property if there is not a user one.
 		 * -Return the value field of that entry. 
 		 */
-		 
-		com.cannontech.database.SqlStatement stmt =
-			new com.cannontech.database.SqlStatement("SELECT value FROM " + YukonUserRole.TABLE_NAME + " WHERE userid = " + user.getLiteID() +
-													" AND RolePropertyID = " + rolePropertyID,
-													CtiUtilities.YUKONDBALIAS );
+	    String sql = "SELECT value FROM " + YukonUserRole.TABLE_NAME + 
+                    " WHERE userid = ?" +
+                    " AND RolePropertyID = ?";
+
 		String propertyValue = null;
-		
-		try
-		{
-			stmt.execute();
-			
-			if( stmt.getRowCount() > 0 )
-				propertyValue = stmt.getRow(0)[0].toString();
-		
-		}
-		catch( Exception e )
-		{
-	   		com.cannontech.clientutils.CTILogger.error( "Error retrieving roles for user " + user.getUsername() + ": " + e.getMessage(), e );
-		}	
-		
-		//no user role property, so get the group one...first need to find all the groups for this user, though
-		if(propertyValue == null || propertyValue.compareTo(CtiUtilities.STRING_NONE) == 0)
-		{
-			stmt = new com.cannontech.database.SqlStatement("SELECT GroupID FROM YukonUserGroup WHERE userid = " + user.getLiteID() 
-														+ " ORDER BY GROUPID", CtiUtilities.YUKONDBALIAS );
-			Integer[] groupIDs = new Integer[0];
-		
-			try
-			{
-				stmt.execute();
-				
-				if( stmt.getRowCount() > 0 )
-				{
-					groupIDs = new Integer[stmt.getRowCount()];
+		PreparedStatement pstmt = null;
+        Connection conn = null;
+        ResultSet rset = null;
+        
+        conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+        if( conn == null )
+        {
+            CTILogger.info("YukonUserRolePropertyLookup.loadSpecificRoleProperty:  Error getting database connection.");
+            return null;
+        }
+        try
+        {
+    		try
+    		{
+                pstmt = conn.prepareStatement(sql);
+                pstmt.setInt(1, user.getLiteID());
+                pstmt.setInt(2, rolePropertyID);
+    
+                rset = pstmt.executeQuery();
+                
+                if( rset.next())
+                    propertyValue = rset.getString(1);
+                
+                pstmt.close();
+    		}
+    		catch( Exception e )
+    		{
+    	   		CTILogger.error( "Error retrieving roles for user " + user.getUsername() + ": " + e.getMessage(), e );
+    		}
+    	
+    		//no user role property, so get the group one...first need to find all the groups for this user, though
+    		if(propertyValue == null || propertyValue.compareTo(CtiUtilities.STRING_NONE) == 0)
+    		{
+    			sql = "SELECT YUG.GroupID, YGR.Value " +
+                       " FROM YukonUserGroup yug, " + YukonGroupRole.TABLE_NAME + " ygr " + 
+                       " WHERE yug.groupid = ygr.groupid " +
+                       " and userid = ?" +
+                       " and rolepropertyid = ? " + 
+                       " ORDER BY yug.GROUPID";
+    
+    			try
+    			{
+                    pstmt = conn.prepareStatement(sql.toString());
+                    pstmt.setInt(1, user.getLiteID());
+                    pstmt.setInt(2, rolePropertyID);
+                    rset = pstmt.executeQuery();
+    				
+                    if( rset.next())
+                    {
+                        //assuming there are no role conflicts, should only have one occurrence for this user
+                        propertyValue = rset.getString(2);
+                    }
+                    pstmt.close();
+    			}
+    			catch( Exception e )
+    			{
+    		  		com.cannontech.clientutils.CTILogger.error( "Error retrieving group, value for user " + user.getUsername() + ": " + e.getMessage(), e );
+    		   		return "";
+    			}
+    		}
+    		
+    		//not sure why we can't find it, but better return default value
+    		
+    		if(propertyValue == null || propertyValue.compareTo(CtiUtilities.STRING_NONE) == 0)
+    		{
+                sql = "SELECT DefaultValue " +
+                      " FROM " + YukonRoleProperty.TABLE_NAME + 
+                      " WHERE rolePropertyID =?";
+    			try
+    			{
+                    pstmt =  conn.prepareStatement(sql.toString());
+                    pstmt.setInt(1, rolePropertyID);
+                    rset = pstmt.executeQuery();
+                
+                    if( rset.next())
+                    {
+                        //assuming there are no role conflicts, should only have one occurrence for this user
+                        propertyValue = rset.getString(1);
+                    }
+    			}
+    			catch( Exception e )
+    			{
+    				CTILogger.error( "Role property with id " + rolePropertyID + "does not appear to exist: " + e.getMessage(), e );
+    				return "";
+    			}	
+    		}
+        }
+        finally
+        {
+            try
+            {
+                if( pstmt != null ) pstmt.close();
+                if( conn != null ) conn.close();
+            } 
+            catch( java.sql.SQLException e2 )
+            {
+                e2.printStackTrace();
+            }
+        }
 
-					for( int i = 0; i < groupIDs.length; i++ )
-					{
-						groupIDs[i] = new Integer( ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue());
-					}
-				}
-			}
-			catch( Exception e )
-			{
-		  		com.cannontech.clientutils.CTILogger.error( "Error retrieving groups for user " + user.getUsername() + ": " + e.getMessage(), e );
-		   		return "";
-			}
-
-            String groupIdStr;
-            groupIdStr = StringUtils.convertToSqlLikeList(groupIDs);
-			
-			stmt = new com.cannontech.database.SqlStatement("SELECT value FROM " + YukonGroupRole.TABLE_NAME + " WHERE rolepropertyid = " + rolePropertyID + " AND GroupID IN("
-															+ groupIdStr + ")", CtiUtilities.YUKONDBALIAS );
-			try
-			{
-				stmt.execute();
-			
-				if( stmt.getRowCount() > 0 )
-				{
-					//assuming there are no role conflicts, should only have one occurrence for this user
-					propertyValue = stmt.getRow(0)[0].toString();
-				}
-			}
-			catch( Exception e )
-			{
-				com.cannontech.clientutils.CTILogger.error( "Error retrieving role property value for user " + user.getUsername() + ": " + e.getMessage(), e );
-			}												
-		}
-		
-		//not sure why we can't find it, but better return default value
-		
-		if(propertyValue == null || propertyValue.compareTo(CtiUtilities.STRING_NONE) == 0)
-		{
-			stmt = new com.cannontech.database.SqlStatement("SELECT DefaultValue FROM " + YukonRoleProperty.TABLE_NAME + " WHERE rolePropertyID = " + rolePropertyID,
-															CtiUtilities.YUKONDBALIAS );
-			try
-			{
-				stmt.execute();
-			
-				if( stmt.getRowCount() > 0 )
-					propertyValue = stmt.getRow(0)[0].toString();
-			}
-			catch( Exception e )
-			{
-				com.cannontech.clientutils.CTILogger.error( "Role property with id " + rolePropertyID + "does not appear to exist: " + e.getMessage(), e );
-				return "";
-			}	
-		}
-		
 		return propertyValue;
 	}
 
@@ -138,95 +159,100 @@ public class YukonUserRolePropertyLookup
 		 * -Return the role information as a LiteYukonRole. 
 		 */
 		 
-		com.cannontech.database.SqlStatement stmt =
-			new com.cannontech.database.SqlStatement("SELECT UserRoleID,UserID,RoleID,RolePropertyID,Value FROM " + YukonUserRole.TABLE_NAME + " WHERE UserID = " + user.getLiteID()
-													+ " AND RoleID = " + roleID,
-													CtiUtilities.YUKONDBALIAS );
-		LiteYukonRole theProudRole = null;
-		
-		try
-		{
-			stmt.execute();
-			
-			//it found one
-			if( stmt.getRowCount() > 0 )
-			{
-				Object[] row = stmt.getRow(0);
-			
-				YukonRole tempRole = new YukonRole();
-				tempRole.setRoleID(new Integer(roleID));
-				tempRole = (YukonRole) Transaction.createTransaction(Transaction.RETRIEVE, tempRole).execute();
-				theProudRole = new LiteYukonRole();
-				theProudRole.setRoleID(roleID);
-				theProudRole.setRoleName(tempRole.getRoleName());
-				theProudRole.setCategory(tempRole.getCategory());
-				theProudRole.setDescription(tempRole.getRoleDescription());
-				return theProudRole;
-			}
-		}
-		catch( Exception e )
-		{
-			com.cannontech.clientutils.CTILogger.error( "Error retrieving roles for user " + user.getUsername() + ": " + e.getMessage(), e );
-			return null;
-		}	
-		
-		//no user role, so get the group one...first need to find all the groups for this user, though
-		stmt = new com.cannontech.database.SqlStatement("SELECT GroupID FROM YukonUserGroup WHERE userid = " + user.getLiteID() 
-														+ " ORDER BY GROUPID", CtiUtilities.YUKONDBALIAS );
-		Integer[] groupIDs = new Integer[0];
-		
-		try
-		{
-			stmt.execute();
-		
-			if( stmt.getRowCount() > 0 )
-			{
-				groupIDs = new Integer[stmt.getRowCount()];
+        String sql = "SELECT yr.RoleID, RoleName, Category, RoleDescription " +
+                     " FROM " + YukonUserRole.TABLE_NAME + " yur, " + YukonRole.TABLE_NAME + " yr " +  
+                     " WHERE yr.roleid = yur.roleid " +
+                     " AND UserID = ?" + 
+                     " AND yr.RoleID = ?"; 
 
-				for( int i = 0; i < groupIDs.length; i++ )
-				{
-					groupIDs[i] = new Integer( ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue());
-				}
-			}
+		LiteYukonRole theProudRole = null;
+
+        PreparedStatement pstmt = null;
+        Connection conn = null;
+        ResultSet rset = null;
+        
+        conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+        if( conn == null )
+        {
+            CTILogger.info("YukonUserRolePropertyLookup.loadSpecificRole:  Error getting database connection.");
+            return null;
+        }
+        try
+        {
+    		try
+    		{
+                pstmt = conn.prepareStatement(sql);
+                pstmt.setInt(1, user.getLiteID());
+                pstmt.setInt(2, roleID);
+
+                CTILogger.info(" *********" + conn.nativeSQL(sql));
+
+                rset = pstmt.executeQuery();
+
+    			//it found one
+                if( rset.next())
+                {
+    				theProudRole = new LiteYukonRole();
+    				theProudRole.setRoleID(roleID);
+    				theProudRole.setRoleName(rset.getString(2));
+    				theProudRole.setCategory(rset.getString(3));
+    				theProudRole.setDescription(rset.getString(4));
+    			}
+                pstmt.close();
+    		}
+    		catch( Exception e )
+    		{
+    			CTILogger.error( "Error retrieving roles for user " + user.getUsername() + ": " + e.getMessage(), e );
+    			return null;
+    		}	
+    		
+            if (theProudRole == null)
+            {
+                sql = "SELECT Distinct yr.RoleID, RoleName, Category, RoleDescription " +
+                      " FROM " + YukonGroupRole.TABLE_NAME + " ygr, YukonUserGroup yug, " + YukonRole.TABLE_NAME + " yr " +
+                      " WHERE ygr.groupid = yug.groupid " +
+                      " AND ygr.roleid = yr.roleid " +
+                      " AND yug.userid = ?" +
+                      " AND ygr.roleid = ?"; 
+    
+        		try
+        		{
+                    pstmt = conn.prepareStatement(sql);
+                    pstmt.setInt(1, user.getLiteID());
+                    pstmt.setInt(2, roleID);
+        
+                    rset = pstmt.executeQuery();
+    
+        			//assuming there are no role conflicts, should only have one occurrence for this user
+        			//if none, we can assume that this user does not have this role
+                    if( rset.next())
+        			{
+        				theProudRole = new LiteYukonRole();
+        				theProudRole.setRoleID(roleID);
+        				theProudRole.setRoleName(rset.getString(2));
+        				theProudRole.setCategory(rset.getString(3));
+        				theProudRole.setDescription(rset.getString(4));
+        			}
+                    pstmt.close();
+        		}
+        		catch( Exception e )
+        		{
+        			CTILogger.error( "Error retrieving role for user " + user.getUsername() + ": " + e.getMessage(), e );
+        		}												
+            }
 		}
-		catch( Exception e )
-		{
-			com.cannontech.clientutils.CTILogger.error( "Error retrieving groups for user " + user.getUsername() + ": " + e.getMessage(), e );
-		}
-			
-		String groupIdStr;
-		groupIdStr = StringUtils.convertToSqlLikeList(groupIDs);
-			
-		stmt = new com.cannontech.database.SqlStatement("SELECT GroupRoleID, GroupID, RoleID, RolePropertyID, Value FROM " + YukonGroupRole.TABLE_NAME + " WHERE roleid = " + roleID + " AND GroupID in ("
-														+ groupIdStr + ")", CtiUtilities.YUKONDBALIAS );
-		try
-		{
-			stmt.execute();
-			//assuming there are no role conflicts, should only have one occurrence for this user
-			//if none, we can assume that this user does not have this role
-			if( stmt.getRowCount() > 0 )
-			{
-				Object[] row = stmt.getRow(0);
-			
-				YukonRole tempRole = new YukonRole();
-				tempRole.setRoleID(new Integer(roleID));
-				tempRole = (YukonRole) Transaction.createTransaction(Transaction.RETRIEVE, tempRole).execute();
-				theProudRole = new LiteYukonRole();
-				theProudRole.setRoleID(roleID);
-				theProudRole.setRoleName(tempRole.getRoleName());
-				theProudRole.setCategory(tempRole.getCategory());
-				theProudRole.setDescription(tempRole.getRoleDescription());
-				return theProudRole;
-			}
-		}
-		catch( Exception e )
-		{
-			com.cannontech.clientutils.CTILogger.error( "Error retrieving role for user " + user.getUsername() + ": " + e.getMessage(), e );
-		}												
-			
+        finally
+        {
+            try
+            {
+                if( pstmt != null ) pstmt.close();
+                if( conn != null ) conn.close();
+            } 
+            catch( java.sql.SQLException e2 )
+            {
+                e2.printStackTrace();
+            }
+        }        
 		return theProudRole;
-		
 	}
-	
-	
 }

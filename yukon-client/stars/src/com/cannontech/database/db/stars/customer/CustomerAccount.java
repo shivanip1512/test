@@ -1,5 +1,8 @@
 package com.cannontech.database.db.stars.customer;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 
 import com.cannontech.clientutils.CTILogger;
@@ -93,13 +96,13 @@ public class CustomerAccount extends DBPersistent {
 	        stmt.setString( 2, accountNumber );
 	        rset = stmt.executeQuery();
 	        
-	        ArrayList acctIDList = new ArrayList();
+	        ArrayList<Integer> acctIDList = new ArrayList<Integer>();
 	        while (rset.next())
 	        	acctIDList.add( new Integer(rset.getInt(1)) );
 	        
 			int[] accountIDs = new int[ acctIDList.size() ];
 			for (int i = 0; i < accountIDs.length; i++)
-				accountIDs[i] = ((Integer) acctIDList.get(i)).intValue();
+				accountIDs[i] = acctIDList.get(i).intValue();
 			
 			return accountIDs;
         }
@@ -148,88 +151,159 @@ public class CustomerAccount extends DBPersistent {
    
     public static int[] searchByPrimaryContactLastName(String lastName, int energyCompanyID) {
         if (lastName == null || lastName.length() == 0) return null;
+        int[] returnAcctIDs = null;
         
         String sql = "SELECT DISTINCT acct.AccountID " + 
                     " FROM ECToAccountMapping map, " + TABLE_NAME + " acct, " + Customer.TABLE_NAME + " cust,  " + Contact.TABLE_NAME + " cont " +
-                    " WHERE map.EnergyCompanyID = " + energyCompanyID + 
+                    " WHERE map.EnergyCompanyID = ?" + 
                     " AND map.AccountID = acct.AccountID " +
                     " AND acct.CustomerID = cust.CustomerID " +
                     " AND CUST.PRIMARYCONTACTID = CONT.CONTACTID " +
-                    " AND UPPER(CONT.CONTLASTNAME) LIKE '" + lastName.toUpperCase() + "%'";
+                    " AND UPPER(CONT.CONTLASTNAME) LIKE ?";
         
-        SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
+        PreparedStatement pstmt = null;
+        Connection conn = null;
+        ResultSet rset = null;
         
         try {
-            stmt.execute();
+            conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
             
-            int[] accountIDs = new int[ stmt.getRowCount() ];
-            for (int i = 0; i < stmt.getRowCount(); i++)
-                accountIDs[i] = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, energyCompanyID);
+            pstmt.setString(2, lastName.toUpperCase()+"%");
+
+            rset = pstmt.executeQuery();        
             
-            return accountIDs;
+            ArrayList<Integer> accountIDs = new ArrayList<Integer>();
+            while(rset.next())
+                accountIDs.add(rset.getInt(1));
+            
+            returnAcctIDs = new int[accountIDs.size()];
+            for(int i = 0; i < accountIDs.size(); i++)
+                returnAcctIDs[i] = accountIDs.get(i).intValue();
         }
         catch (Exception e) {
             CTILogger.error( e.getMessage(), e );
         }
-        
-        return null;
+        finally
+        {
+            try
+            {
+                if( pstmt != null ) pstmt.close();
+                if( conn != null ) conn.close();
+            } 
+            catch( java.sql.SQLException e2 )
+            {
+                e2.printStackTrace();
+            }
+        }
+        return returnAcctIDs;
     }
     
     public static int[] searchByPrimaryContactPhoneNumber(String phoneNumber, int energyCompanyID) {
         if (phoneNumber == null || phoneNumber.length() == 0) return null;
+        int[] returnAcctIDs = null;
         
         String sql = "SELECT DISTINCT acct.AccountID " + 
                     " FROM ECToAccountMapping map, " + TABLE_NAME + " acct, " + Customer.TABLE_NAME + " cust,  " + Contact.TABLE_NAME + " cont " +
-                    " WHERE map.EnergyCompanyID = " + energyCompanyID + 
+                    " WHERE map.EnergyCompanyID = ?" + 
                     " AND map.AccountID = acct.AccountID " +
                     " AND acct.CustomerID = cust.CustomerID " +
                     " AND CUST.PRIMARYCONTACTID = CONT.CONTACTID " +
-                    " AND NOTIFICATION LIKE '%" + phoneNumber + "'";
+                    " AND NOTIFICATION LIKE ?";
         
-        SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
+        PreparedStatement pstmt = null;
+        Connection conn = null;
+        ResultSet rset = null;
         
         try {
-            stmt.execute();
+            conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
             
-            int[] accountIDs = new int[ stmt.getRowCount() ];
-            for (int i = 0; i < stmt.getRowCount(); i++)
-                accountIDs[i] = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, energyCompanyID);
+            pstmt.setString(2, "%"+phoneNumber);
+
+            rset = pstmt.executeQuery();
             
-            return accountIDs;
+            ArrayList<Integer> accountIDs = new ArrayList<Integer>();
+            while(rset.next())
+                accountIDs.add(rset.getInt(1));
+            
+            returnAcctIDs = new int[accountIDs.size()];
+            for(int i = 0; i < accountIDs.size(); i++)
+                returnAcctIDs[i] = accountIDs.get(i).intValue();
         }
         catch (Exception e) {
             CTILogger.error( e.getMessage(), e );
         }
-        
-        return null;
+        finally
+        {
+            try
+            {
+                if( pstmt != null ) pstmt.close();
+                if( conn != null ) conn.close();
+            } 
+            catch( java.sql.SQLException e2 )
+            {
+                e2.printStackTrace();
+            }
+        }
+        return returnAcctIDs;
     }
     
     public static int[] searchBySerialNumber(String serialNo, int energyCompanyID) {
-    	try {
-			com.cannontech.database.db.stars.hardware.LMHardwareBase[] hardwares =
-					com.cannontech.database.db.stars.hardware.LMHardwareBase.searchBySerialNumber( serialNo, energyCompanyID );
+			LMHardwareBase[] hardwares = LMHardwareBase.searchBySerialNumber( serialNo, energyCompanyID );
 			if (hardwares.length == 0) return new int[0];
-    		
-			String sql = "SELECT DISTINCT acct.AccountID FROM ECToAccountMapping map, " + TABLE_NAME + " acct, " + com.cannontech.database.db.stars.hardware.InventoryBase.TABLE_NAME + " inv "
-					   + "WHERE map.EnergyCompanyID = " + energyCompanyID + " AND map.AccountID = acct.AccountID AND acct.AccountID = inv.AccountID AND (inv.InventoryID = " + hardwares[0].getInventoryID();
-			for (int i = 1; i < hardwares.length; i++)
-				sql += " OR inv.InventoryID = " + hardwares[i].getInventoryID();
-			sql += ")";
-			
-			SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
-			stmt.execute();
-			
-			int[] accountIDs = new int[ stmt.getRowCount() ];
-			for (int i = 0; i < stmt.getRowCount(); i++)
-				accountIDs[i] = ((java.math.BigDecimal)stmt.getRow(i)[0]).intValue();
-			
-			return accountIDs;
-    	}
-    	catch (Exception e) {
-    		CTILogger.error( e.getMessage(), e );
-    	}
-    	
-		return null;
+
+            int[] returnAcctIDs = null;
+            String sql = "SELECT DISTINCT acct.AccountID " +
+                        " FROM ECToAccountMapping map, " + TABLE_NAME + " acct, " + InventoryBase.TABLE_NAME + " inv " + 
+                        " WHERE map.EnergyCompanyID = ?" + 
+                        " AND map.AccountID = acct.AccountID " +
+                        " AND acct.AccountID = inv.AccountID " +
+                        " AND (inv.InventoryID = ?" ;
+                        for (int i = 1; i < hardwares.length; i++)
+                            sql += " OR inv.InventoryID = ?";
+                        sql += ")";
+            
+            PreparedStatement pstmt = null;
+            Connection conn = null;
+            ResultSet rset = null;
+            
+            try {
+                conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+                
+                pstmt = conn.prepareStatement(sql);
+                pstmt.setInt(1, energyCompanyID);
+                for(int i = 0; i < hardwares.length; i++)
+                    pstmt.setInt(i+2, hardwares[i].getInventoryID().intValue());
+
+                rset = pstmt.executeQuery();
+                
+                ArrayList<Integer> accountIDs = new ArrayList<Integer>();
+                while(rset.next())
+                    accountIDs.add(rset.getInt(1));
+                
+                returnAcctIDs = new int[accountIDs.size()];
+                for(int i = 0; i < accountIDs.size(); i++)
+                    returnAcctIDs[i] = accountIDs.get(i).intValue();
+            }
+            catch (Exception e) {
+                CTILogger.error( e.getMessage(), e );
+            }
+            finally
+            {
+                try
+                {
+                    if( pstmt != null ) pstmt.close();
+                    if( conn != null ) conn.close();
+                } 
+                catch( java.sql.SQLException e2 )
+                {
+                    e2.printStackTrace();
+                }
+            }
+            return returnAcctIDs;
     }
 
     /**
@@ -288,27 +362,52 @@ public class CustomerAccount extends DBPersistent {
     
     public static int[] searchByCompanyName(String searchName, int energyCompanyID) 
     {
-		String sql = "SELECT DISTINCT acct.AccountID FROM ECToAccountMapping map, " + TABLE_NAME + " acct, " + CICustomerBase.TABLE_NAME + " cust "
-				   + "WHERE map.EnergyCompanyID = " + energyCompanyID + " AND map.AccountID = acct.AccountID "
-				   + "AND acct.CustomerID = cust.CustomerID AND UPPER(cust.CompanyName) LIKE UPPER('" + searchName + "')";
-		
-		SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
-	    	
-		try {
-			stmt.execute();
-	    		
-			int[] accountIDs = new int[ stmt.getRowCount() ];
-			for (int i = 0; i < stmt.getRowCount(); i++)
-				accountIDs[i] = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
-				
-			return accountIDs;
-		}
-		catch (Exception e) {
-			CTILogger.error( e.getMessage(), e );
-		}
-	    	
-		return null;
-}
+        int[] returnAcctIDs = null;
+        String sql = "SELECT DISTINCT acct.AccountID " +
+                    " FROM ECToAccountMapping map, " + TABLE_NAME + " acct, " + CICustomerBase.TABLE_NAME + " cust " + 
+                    " WHERE map.EnergyCompanyID = ?" + 
+                    " AND map.AccountID = acct.AccountID " +
+                    " AND acct.CustomerID = cust.CustomerID " + 
+                    " AND UPPER(cust.CompanyName) LIKE UPPER(?)";
+
+        PreparedStatement pstmt = null;
+        Connection conn = null;
+        ResultSet rset = null;
+        
+        try {
+            conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+            
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, energyCompanyID);
+            pstmt.setString(2, searchName);
+
+            rset = pstmt.executeQuery();
+            
+            ArrayList<Integer> accountIDs = new ArrayList<Integer>();
+            while(rset.next())
+                accountIDs.add(rset.getInt(1));
+            
+            returnAcctIDs = new int[accountIDs.size()];
+            for(int i = 0; i < accountIDs.size(); i++)
+                returnAcctIDs[i] = accountIDs.get(i).intValue();
+        }
+        catch (Exception e) {
+            CTILogger.error( e.getMessage(), e );
+        }
+        finally
+        {
+            try
+            {
+                if( pstmt != null ) pstmt.close();
+                if( conn != null ) conn.close();
+            } 
+            catch( java.sql.SQLException e2 )
+            {
+                e2.printStackTrace();
+            }
+        }
+        return returnAcctIDs;
+    }
     
     public static int[] searchByAddress(String address, int energyCompanyID) {
     	String sql = "SELECT DISTINCT acct.AccountID " +
@@ -329,13 +428,13 @@ public class CustomerAccount extends DBPersistent {
 			stmt.setString( 2, address );
 			rset = stmt.executeQuery();
 	        
-			ArrayList acctIDList = new ArrayList();
+			ArrayList<Integer> acctIDList = new ArrayList<Integer>();
 			while (rset.next())
 				acctIDList.add( new Integer(rset.getInt(1)) );
 	        
 			int[] accountIDs = new int[ acctIDList.size() ];
 			for (int i = 0; i < accountIDs.length; i++)
-				accountIDs[i] = ((Integer) acctIDList.get(i)).intValue();
+				accountIDs[i] = acctIDList.get(i).intValue();
 			
 			return accountIDs;
 		}
@@ -373,13 +472,13 @@ public class CustomerAccount extends DBPersistent {
 			stmt.setInt( 2, energyCompanyID );
 			rset = stmt.executeQuery();
 			
-			ArrayList acctIDList = new ArrayList();
+			ArrayList<Integer> acctIDList = new ArrayList<Integer>();
 			while (rset.next())
 				acctIDList.add( new Integer(rset.getInt(1)) );
 	        
 			int[] accountIDs = new int[ acctIDList.size() ];
 			for (int i = 0; i < accountIDs.length; i++)
-				accountIDs[i] = ((Integer) acctIDList.get(i)).intValue();
+				accountIDs[i] = acctIDList.get(i).intValue();
 			
 			return accountIDs;
 		}
@@ -399,34 +498,50 @@ public class CustomerAccount extends DBPersistent {
 	}
 
     public static CustomerAccount getCustomerAccount(Integer accountID) {
-        String sql = "SELECT AccountID, AccountSiteID, AccountNumber, CustomerID, BillingAddressID, AccountNotes "
-        		   + "FROM " + TABLE_NAME + " WHERE AccountID = " + accountID;
-        SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
-
-        try
-        {
-        	stmt.execute();
-        	
-        	if (stmt.getRowCount() > 0) {
-        		Object[] row = stmt.getRow(0);
-                CustomerAccount account = new CustomerAccount();
-
-                account.setAccountID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
-                account.setAccountSiteID( new Integer(((java.math.BigDecimal) row[1]).intValue()) );
-                account.setAccountNumber( (String) row[2] );
-                account.setCustomerID( new Integer(((java.math.BigDecimal) row[3]).intValue()) );
-                account.setBillingAddressID( new Integer(((java.math.BigDecimal) row[4]).intValue()) );
-                account.setAccountNotes( (String) row[5] );
-                
-                return account;
+        CustomerAccount account = null;
+        String sql = "SELECT AccountID, AccountSiteID, AccountNumber, CustomerID, BillingAddressID, AccountNotes " +
+                    " FROM " + TABLE_NAME + 
+                    " WHERE AccountID = ?"; 
+            
+        PreparedStatement pstmt = null;
+        Connection conn = null;
+        ResultSet rset = null;
+        
+        try {
+            conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+            
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, accountID.intValue());
+    
+            rset = pstmt.executeQuery();
+            
+            while(rset.next())
+            {
+                account = new CustomerAccount();
+                account.setAccountID( new Integer(rset.getInt(1)));
+                account.setAccountSiteID( new Integer(rset.getInt(2)) );
+                account.setAccountNumber( rset.getString(3));
+                account.setCustomerID( new Integer(rset.getInt(4)) );
+                account.setBillingAddressID( new Integer(rset.getInt(5)) );
+                account.setAccountNotes( rset.getString(6) );
             }
         }
-        catch( Exception e )
-        {
+        catch (Exception e) {
             CTILogger.error( e.getMessage(), e );
         }
-
-        return null;
+        finally
+        {
+            try
+            {
+                if( pstmt != null ) pstmt.close();
+                if( conn != null ) conn.close();
+            } 
+            catch( java.sql.SQLException e2 )
+            {
+                e2.printStackTrace();
+            }
+        }
+        return account;
     }
 
     public void delete() throws java.sql.SQLException {

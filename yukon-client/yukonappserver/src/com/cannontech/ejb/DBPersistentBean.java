@@ -2,12 +2,10 @@ package com.cannontech.ejb;
 
 import java.io.ByteArrayInputStream;
 import java.math.BigDecimal;
-import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -189,19 +187,21 @@ public class DBPersistentBean implements IDBPersistent
       if( columnNames.length < 1 )
          return;
    
-       deleteString += columnNames[0] + "=" + columnValues[0];
+       deleteString += columnNames[0] + "=?";
    
        for( int i = 1; i < columnNames.length; i++ )
-         deleteString += " AND " + columnNames[i] + "=" + columnValues[i];
+         deleteString += " AND " + columnNames[i] + "=?";
    
-       java.sql.Statement stmt = null;
-       
+       PreparedStatement pstmt = null;
 //     everything went well, print the SQL to a file if desired
        printSQLToFile( deleteString.toString(), columnValues, null, null );
        try
        {
-         stmt = getDbConnection().createStatement();
-         stmt.executeUpdate(deleteString);
+         pstmt = getDbConnection().prepareStatement(deleteString.toString());
+         for( int i = 0; i < columnValues.length; i++ )
+             pstmt.setObject(i+1, columnValues[i]);          
+
+         pstmt.executeUpdate();
        }
        catch( SQLException e )
        {
@@ -209,8 +209,8 @@ public class DBPersistentBean implements IDBPersistent
        }
        finally
        {
-         if( stmt != null )
-            stmt.close();
+         if( pstmt != null )
+            pstmt.close();
        }
    }
 
@@ -221,16 +221,18 @@ public class DBPersistentBean implements IDBPersistent
    **/
    public void delete( String tableName, String columnName, String columnValue ) throws SQLException
    {
-      String deleteString = "DELETE FROM " + tableName + " WHERE " + columnName + "=" + columnValue;
+      String deleteString = "DELETE FROM " + tableName + " WHERE " + columnName + "=?";
    
-      java.sql.Statement stmt = null;
+      PreparedStatement pstmt = null;
 //    everything went well, print the SQL to a file if desired
       Object [] columnValues = new Object[]{columnValue};
       printSQLToFile( deleteString, columnValues, null, null );
       try
       {
-         stmt = getDbConnection().createStatement();
-         stmt.executeUpdate(deleteString);
+         pstmt = getDbConnection().prepareStatement(deleteString);
+         pstmt.setObject(1, columnValue);          
+
+         pstmt.executeUpdate();
       }
       catch( SQLException e )
       {
@@ -238,8 +240,8 @@ public class DBPersistentBean implements IDBPersistent
       }
       finally
       {
-         if( stmt != null )
-            stmt.close();
+         if( pstmt != null )
+            pstmt.close();
       }
    }
 
@@ -259,23 +261,25 @@ public class DBPersistentBean implements IDBPersistent
       selectString += " FROM " + tableName;
       if (constraintColumns.length > 0)
       {
-         selectString += " WHERE " + constraintColumns[0] + "=" + constraintValues[0];
+         selectString += " WHERE " + constraintColumns[0] + "=?";
          for (int j = 1; j < constraintColumns.length; j++)
-            selectString += " AND " + constraintColumns[j] + "=" + constraintValues[j];
+            selectString += " AND " + constraintColumns[j] + "=?";
       }
-      Statement stmt = null;
+      PreparedStatement pstmt = null;
       ResultSet rset = null;
       Object returnObjects[][] = null;
       try
       {
-         stmt = getDbConnection().createStatement();
-         rset = stmt.executeQuery(selectString);
+          pstmt = getDbConnection().prepareStatement(selectString.toString());
+          for( int i = 0; i < constraintValues.length; i++ )
+              pstmt.setObject(i+1, constraintValues[i]);          
+          rset = pstmt.executeQuery();
    
          //Get all the rows
-         Vector rows = new Vector();
+         Vector<Vector <Object>> rows = new Vector<Vector <Object>>();
          while (rset.next())
          {
-            Vector columns = new Vector();
+            Vector<Object> columns = new Vector<Object>();
             for (int i = 1; i <= rset.getMetaData().getColumnCount(); i++)
                   columns.addElement( rset.getObject(i) );
             
@@ -307,8 +311,8 @@ public class DBPersistentBean implements IDBPersistent
          if( rset != null )
             rset.close();
    
-         if( stmt != null )
-            stmt.close();
+         if( pstmt != null )
+            pstmt.close();
       }
       return returnObjects;
    }
@@ -331,21 +335,23 @@ public class DBPersistentBean implements IDBPersistent
       selectString += " FROM " + tableName;
       if (keyColumnNames.length > 0)
       {
-         selectString += " WHERE " + keyColumnNames[0] + "=" + keyColumnValues[0];
+         selectString += " WHERE " + keyColumnNames[0] + "=?";
          for (int j = 1; j < keyColumnNames.length; j++)
-            selectString += " AND " + keyColumnNames[j] + "=" + keyColumnValues[j];
+            selectString += " AND " + keyColumnNames[j] + "=?";
       }
       
-      Statement stmt = null;
+      PreparedStatement pstmt = null;
       ResultSet rset = null;
       Object returnObjects[] = null;
    
       try
       {
-         stmt = getDbConnection().createStatement(); //PROB!!!
-         rset = stmt.executeQuery(selectString);
+         pstmt = getDbConnection().prepareStatement(selectString.toString());
+         for( int i = 0; i < keyColumnValues.length; i++ )
+             pstmt.setObject(i+1, keyColumnValues[i]);          
+         rset = pstmt.executeQuery();
 
-         Vector v = new Vector();
+         Vector<Object> v = new Vector<Object>();
          int columns = rset.getMetaData().getColumnCount();
          if (rset.next())
             for (int k = 0; k < columns; k++)
@@ -419,8 +425,8 @@ public class DBPersistentBean implements IDBPersistent
          if (rset != null)
             rset.close();
    
-         if (stmt != null)
-            stmt.close();
+         if (pstmt != null)
+            pstmt.close();
       }
    
       return returnObjects;
