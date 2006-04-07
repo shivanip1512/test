@@ -2,13 +2,13 @@
   Filename:  lmgroupsa305.cpp
 
   Programmer:  Aaron Lauinger
-        
+
   Description:    Source file for CtiLMGroupSA305.
   CtiLMGroupSA305 maintains the state and handles
   the persistence of sa 305 groups in Load Management.
 
   Initial Date:  3/6/2004
-         
+
   COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2004
   ---------------------------------------------------------------------------*/
 #include "yukon.h"
@@ -26,12 +26,12 @@ RWDEFINE_COLLECTABLE( CtiLMGroupSA305, CTILMGROUPSA305_ID )
   Constructors
   ---------------------------------------------------------------------------*/
     CtiLMGroupSA305::CtiLMGroupSA305()
-{   
+{
 }
 
 CtiLMGroupSA305::CtiLMGroupSA305(RWDBReader& rdr)
 {
-    restore(rdr);   
+    restore(rdr);
 }
 
 CtiLMGroupSA305::CtiLMGroupSA305(const CtiLMGroupSA305& groupexp)
@@ -100,9 +100,23 @@ CtiRequestMsg* CtiLMGroupSA305::createSmartCycleRequestMsg(LONG percent, LONG pe
   --------------------------------------------------------------------------*/
 CtiRequestMsg* CtiLMGroupSA305::createTrueCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, bool no_ramp, int priority) const
 {
-    CtiLockGuard<CtiLogger> logger_guard(dout);
-    dout << CtiTime() << " - createTrueCycleRequestMsg() not implemented for SA305 LM Groups " << __FILE__ << " at:" << __LINE__ << endl;
-    return NULL;
+    char tempchar[64];
+    string controlString("control sa305 cycle ");
+    _ltoa(percent,tempchar,10);
+    controlString += tempchar;
+    controlString += " count ";
+    _ltoa(defaultCount,tempchar,10);
+    controlString += tempchar;
+    controlString += " period ";
+    controlString += buildPeriodString(period);
+    controlString += " truecycle ";
+
+    if( _LM_DEBUG & LM_DEBUG_STANDARD )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Sending adaptive alg command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+    }
+    return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
 
 /*-------------------------------------------------------------------------
@@ -115,7 +129,7 @@ CtiRequestMsg* CtiLMGroupSA305::createRotationRequestMsg(LONG sendRate, LONG she
 {
     string controlString("control sa305 shed ");
     controlString += buildShedString(shedTime);
-    
+
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -145,7 +159,7 @@ CtiRequestMsg* CtiLMGroupSA305::createMasterCycleRequestMsg(LONG offTime, LONG p
 
 /*-------------------------------------------------------------------------
   restoreGuts
-    
+
   Restore self's state from the given stream
   --------------------------------------------------------------------------*/
 void CtiLMGroupSA305::restoreGuts(RWvistream& istrm)
@@ -155,10 +169,10 @@ void CtiLMGroupSA305::restoreGuts(RWvistream& istrm)
 
 /*---------------------------------------------------------------------------
   saveGuts
-    
+
   Save self's state onto the given stream
   ---------------------------------------------------------------------------*/
-void CtiLMGroupSA305::saveGuts(RWvostream& ostrm ) const  
+void CtiLMGroupSA305::saveGuts(RWvostream& ostrm ) const
 {
     CtiLMGroupBase::saveGuts( ostrm );
 }
@@ -193,7 +207,7 @@ int CtiLMGroupSA305::operator!=(const CtiLMGroupSA305& right) const
 
 /*---------------------------------------------------------------------------
   replicate
-    
+
   Restores self's operation fields
   ---------------------------------------------------------------------------*/
 CtiLMGroupBase* CtiLMGroupSA305::replicate() const
@@ -203,7 +217,7 @@ CtiLMGroupBase* CtiLMGroupSA305::replicate() const
 
 /*---------------------------------------------------------------------------
   restore
-    
+
   Restores given a RWDBReader
   ---------------------------------------------------------------------------*/
 void CtiLMGroupSA305::restore(RWDBReader& rdr)
