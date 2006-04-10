@@ -320,7 +320,32 @@ function setCommercial() {
 								</select>
                               </td>
                             </tr>
-                            
+                             <tr>
+                                <td width="90" class="TableCell"> 
+                                  <div align="right">Presence Required:</div>
+                                </td>
+                                <td width="210"> 
+                                  <%
+                                    String selectTemp = ""; 
+                                    if (account.getCustAtHome().compareTo("Y") == 0)
+                                    {
+                                        selectTemp = "selected";
+                                    };
+                                  %>
+                                  <select name="CustAtHome" onchange="setContentChanged(true)">
+                                    <option value="N" selected>No</option>
+                                    <option value="Y" <%=selectTemp%>>Yes</option>
+                                  </select>
+                               </td>
+                              </tr>
+                              <tr>
+                                <td width="90" class="TableCell"> 
+                                  <div align="right">Customer Status:</div>
+                                </td>
+                                <td width="210"> 
+                                    <input "type="text" name="CustStatus" maxlength="1" size="4" value="<%=account.getCustStatus()%>" onchange="setContentChanged(true)">
+                                </td>
+                             </tr> 
                             <tr> 
                               <td width="90" class="TableCell"> 
                                 <div align="right">Substation Name: </div>

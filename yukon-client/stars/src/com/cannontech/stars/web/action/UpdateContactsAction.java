@@ -304,6 +304,8 @@ public class UpdateContactsAction implements ActionBase {
 			
 			respOper.setStarsUpdateContactsResponse( resp );
 			ServerUtils.handleDBChange( liteCustomer, DBChangeMsg.CHANGE_TYPE_UPDATE );
+            session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Contact information updated successfully" );
+            
 			return SOAPUtil.buildSOAPMessage( respOper );
 		}
 		catch (Exception e) {

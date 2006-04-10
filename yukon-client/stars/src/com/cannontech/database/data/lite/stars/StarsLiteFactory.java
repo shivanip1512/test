@@ -388,7 +388,8 @@ public class StarsLiteFactory {
 		liteAcctSite.setSiteNumber( acctSite.getSiteNumber() );
 		liteAcctSite.setStreetAddressID( acctSite.getStreetAddressID().intValue() );
 		liteAcctSite.setPropertyNotes( acctSite.getPropertyNotes() );
-        liteAcctSite.setCustAtHome(acctSite.getCustAtHome());
+        liteAcctSite.setCustAtHome( acctSite.getCustAtHome());
+        liteAcctSite.setCustStatus( acctSite.getCustomerStatus() );
 	}
 	
 	public static void setLiteLMControlHistory(LiteLMControlHistory liteCtrlHist, com.cannontech.database.db.pao.LMControlHistory ctrlHist) {
@@ -610,14 +611,6 @@ public class StarsLiteFactory {
 			if (app != null) {
 				liteApp.setDualFuel( new LiteStarsAppliance.DualFuel() );
 				StarsLiteFactory.setLiteAppDualFuel( liteApp.getDualFuel(), app );
-			}
-		}
-		else if (liteAppCat.getCategoryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_WATER_HEATER).getEntryID()) {
-			com.cannontech.database.db.stars.appliance.ApplianceGenerator app =
-					com.cannontech.database.db.stars.appliance.ApplianceGenerator.getApplianceGenerator( appliance.getApplianceBase().getApplianceID() );
-			if (app != null) {
-				liteApp.setGenerator( new LiteStarsAppliance.Generator() );
-				StarsLiteFactory.setLiteAppGenerator( liteApp.getGenerator(), app );
 			}
 		}
 		else if (liteAppCat.getCategoryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_GRAIN_DRYER).getEntryID()) {
@@ -1540,6 +1533,8 @@ public class StarsLiteFactory {
 		starsAccount.setCustomerNumber( liteCustomer.getCustomerNumber() );
 		starsAccount.setRateScheduleID(liteCustomer.getRateScheduleID() );
 		starsAccount.setAltTrackingNumber( liteCustomer.getAltTrackingNumber() );
+        starsAccount.setCustAtHome( liteAcctSite.getCustAtHome() );
+        starsAccount.setCustStatus( liteAcctSite.getCustStatus() );
 		starsAcctInfo.setStarsCustomerAccount( starsAccount );
 		
 		StreetAddress streetAddr = new StreetAddress();
@@ -2703,7 +2698,9 @@ public class StarsLiteFactory {
 	
 	public static boolean isIdenticalAccountSite(LiteAccountSite liteAcctSite, StarsCustAccount starsAcctSite) {
 		return (StarsUtils.forceNotNull(liteAcctSite.getSiteNumber()).equals( starsAcctSite.getPropertyNumber() )
-				&& StarsUtils.forceNotNull(liteAcctSite.getPropertyNotes()).equals( starsAcctSite.getPropertyNotes() ));
+				&& StarsUtils.forceNotNull(liteAcctSite.getPropertyNotes()).equals( starsAcctSite.getPropertyNotes() )
+                && StarsUtils.forceNotNull(liteAcctSite.getCustAtHome()).equals( starsAcctSite.getCustAtHome() )
+                && StarsUtils.forceNotNull(liteAcctSite.getCustStatus()).equals( starsAcctSite.getCustStatus() ));
 	}
 	
 	public static boolean isIdenticalThermostatSchedule(LiteLMThermostatSeasonEntry[] liteSched, StarsThermostatSchedule starsSched) {

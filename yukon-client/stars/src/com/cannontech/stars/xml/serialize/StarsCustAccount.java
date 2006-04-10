@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsCustAccount.java,v 1.97 2006/03/17 04:17:08 jdayton Exp $
+ * $Id: StarsCustAccount.java,v 1.98 2006/04/10 22:23:29 jdayton Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.97 $ $Date: 2006/03/17 04:17:08 $
+ * @version $Revision: 1.98 $ $Date: 2006/04/10 22:23:29 $
 **/
 public abstract class StarsCustAccount implements java.io.Serializable {
 
@@ -84,6 +84,10 @@ public abstract class StarsCustAccount implements java.io.Serializable {
     private int _rateScheduleID;
     
 	private java.lang.String _altTrackNumber;
+    
+    private String _custAtHome;
+    
+    private String _custStatus;
 
 
       //----------------/
@@ -595,4 +599,19 @@ public abstract class StarsCustAccount implements java.io.Serializable {
         validator.validate(this);
     } //-- void validate() 
 
+    public String getCustAtHome() {
+        return _custAtHome;
+    }
+
+    public void setCustAtHome(String _custAtHome) {
+        this._custAtHome = _custAtHome;
+    }
+
+    public String getCustStatus() {
+        return _custStatus;
+    }
+
+    public void setCustStatus(String _custStatus) {
+        this._custStatus = _custStatus;
+    }
 }

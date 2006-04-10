@@ -234,6 +234,8 @@ public class StarsFactory {
 			newAccount.setCustomerNumber( account.getCustomerNumber() );
 			newAccount.setRateScheduleID( account.getRateScheduleID() );
 			newAccount.setAltTrackingNumber( account.getAltTrackingNumber() );
+            newAccount.setCustAtHome( account.getCustAtHome() );
+            newAccount.setCustStatus( account.getCustStatus() );
             
 			return newAccount;
 		}
@@ -252,6 +254,8 @@ public class StarsFactory {
 	public static void setAccountSite(AccountSite acctSite, StarsCustAccount starsAccount) {
 		acctSite.setSiteNumber( starsAccount.getPropertyNumber() );
 		acctSite.setPropertyNotes( starsAccount.getPropertyNotes() );
+        acctSite.setCustAtHome( starsAccount.getCustAtHome() );
+        acctSite.setCustomerStatus( starsAccount.getCustStatus() );
 	}
 
 	public static void setSiteInformation(SiteInformation siteInfo, StarsCustAccount starsAccount) {
@@ -277,6 +281,8 @@ public class StarsFactory {
 		newAccount.setCustomerNumber(CtiUtilities.STRING_NONE);
 		newAccount.setRateScheduleID(CtiUtilities.NONE_ZERO_ID);
 		newAccount.setAltTrackingNumber(CtiUtilities.STRING_NONE);
+        newAccount.setCustStatus( "A" );
+        newAccount.setCustAtHome( "N" );
         
 		Substation sub = new Substation();
 		sub.setEntryID( CtiUtilities.NONE_ZERO_ID );

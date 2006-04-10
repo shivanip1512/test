@@ -77,6 +77,10 @@ public class UpdateCustAccountAction implements ActionBase {
 				updateAccount.setRateScheduleID( Integer.parseInt(req.getParameter("RateSchedule")) );
 			if (req.getParameter("AltTrackNum") != null)
 				updateAccount.setAltTrackingNumber( req.getParameter("AltTrackNum") );
+            if (req.getParameter("CustStatus") != null)
+                updateAccount.setCustStatus( req.getParameter("CustStatus") );
+            if (req.getParameter("CustAtHome") != null)
+                updateAccount.setCustAtHome( req.getParameter("CustAtHome") );
 			updateAccount.setAccountNotes( req.getParameter("AcctNotes").replaceAll(System.getProperty("line.separator"), "<br>") );
 
 			updateAccount.setPropertyNumber( req.getParameter("PropNo") );
@@ -216,7 +220,8 @@ public class UpdateCustAccountAction implements ActionBase {
             
 			StarsSuccess success = new StarsSuccess();
 			success.setDescription( "Customer account updated successfully" );
-            
+            session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Customer account updated successfully" );
+                        
             EventUtils.logSTARSEvent(user.getUserID(), EventUtils.EVENT_CATEGORY_ACCOUNT, YukonListEntryTypes.EVENT_ACTION_CUST_ACCT_UPDATED, updateAccount.getAccountID());
             
 			respOper.setStarsSuccess( success );

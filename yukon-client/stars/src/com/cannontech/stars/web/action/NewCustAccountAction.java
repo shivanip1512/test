@@ -62,6 +62,10 @@ public class NewCustAccountAction implements ActionBase {
 				account.setRateScheduleID( Integer.parseInt(req.getParameter("RateSchedule")) );
 			if (req.getParameter("AltTrackNum") != null)
 				account.setAltTrackingNumber( req.getParameter("AltTrackNum") );
+            if (req.getParameter("CustStatus") != null)
+                account.setCustStatus( req.getParameter("CustStatus") );
+            if (req.getParameter("CustAtHome") != null)
+                account.setCustAtHome( req.getParameter("CustAtHome") );
 			account.setAccountNotes( req.getParameter("AcctNotes").replaceAll(System.getProperty("line.separator"), "<br>") );
 			account.setPropertyNumber( req.getParameter("PropNo") );
 			account.setPropertyNotes( req.getParameter("PropNotes").replaceAll(System.getProperty("line.separator"), "<br>") );
@@ -459,11 +463,13 @@ public class NewCustAccountAction implements ActionBase {
         	
 			acctSiteDB.setSiteNumber( starsAccount.getPropertyNumber() );
 			acctSiteDB.setPropertyNotes( starsAccount.getPropertyNotes() );
+            acctSiteDB.setCustAtHome( starsAccount.getCustAtHome() );
+            acctSiteDB.setCustomerStatus( starsAccount.getCustStatus() );
 			/* CustomerAccount->AccountSite: End */
 			
 			accountDB.setAccountNumber( starsAccount.getAccountNumber() );
 			accountDB.setAccountNotes( starsAccount.getAccountNotes() );
-			customer.getCustomer().setCustomerNumber(starsAccount.getCustomerNumber());
+            customer.getCustomer().setCustomerNumber(starsAccount.getCustomerNumber());
 			customer.getCustomer().setRateScheduleID(new Integer(starsAccount.getRateScheduleID()));
 			customer.getCustomer().setAltTrackingNumber(starsAccount.getAltTrackingNumber());
             customer.getCustomer().setTemperatureUnit(AuthFuncs.getRolePropertyValue(energyCompany.getUserID(),

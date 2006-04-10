@@ -55,10 +55,6 @@ public abstract class StarsCustResidence implements java.io.Serializable {
     private MainFuelType _mainFuelType;
 
     private String _notes;
-    
-    private String _custAtHome;
-    
-    private String _custStatus;
 
 
       //----------------/
@@ -355,22 +351,5 @@ public abstract class StarsCustResidence implements java.io.Serializable {
         org.exolab.castor.xml.Validator validator = new org.exolab.castor.xml.Validator();
         validator.validate(this);
     } //-- void validate() 
-
-
-    public String getCustAtHome() {
-        return _custAtHome;
-    }
-
-    public void setCustAtHome(String _custAtHome) {
-        this._custAtHome = _custAtHome;
-    }
-
-    public String getCustStatus() {
-        return _custStatus;
-    }
-
-    public void setCustStatus(String _custStatus) {
-        this._custStatus = _custStatus;
-    }
 
 }

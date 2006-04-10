@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsCustAccountDescriptor.java,v 1.97 2006/03/17 04:17:08 jdayton Exp $
+ * $Id: StarsCustAccountDescriptor.java,v 1.98 2006/04/10 22:23:29 jdayton Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.97 $ $Date: 2006/03/17 04:17:08 $
+ * @version $Revision: 1.98 $ $Date: 2006/04/10 22:23:29 $
 **/
 public class StarsCustAccountDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -734,7 +734,7 @@ public class StarsCustAccountDescriptor extends org.exolab.castor.xml.util.XMLCl
 		desc.setMultivalued(false);
 		addFieldDescriptor(desc);
         
-		//-- validation code for: _timeZone
+		//-- validation code for: _altTrackNumber
 		fieldValidator = new FieldValidator();
 		{ //-- local scope
 			StringValidator sv = new StringValidator();
@@ -743,7 +743,81 @@ public class StarsCustAccountDescriptor extends org.exolab.castor.xml.util.XMLCl
 		}
 		desc.setValidator(fieldValidator);
 		
-		
+//      -- _custAtHome
+        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_custAtHome", "CustAtHome", NodeType.Attribute);
+        desc.setImmutable(true);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsCustAccount target = (StarsCustAccount) object;
+                return target.getCustAtHome();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsCustAccount target = (StarsCustAccount) object;
+                    target.setCustAtHome( (java.lang.String) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _custAtHome
+        fieldValidator = new FieldValidator();
+        { //-- local scope
+            StringValidator sv = new StringValidator();
+            sv.setWhiteSpace("preserve");
+            fieldValidator.setValidator(sv);
+        }
+        desc.setValidator(fieldValidator);
+      
+        
+//      -- _custStatus
+        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_custStatus", "CustStatus", NodeType.Attribute);
+        desc.setImmutable(true);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsCustAccount target = (StarsCustAccount) object;
+                return target.getCustStatus();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsCustAccount target = (StarsCustAccount) object;
+                    target.setCustStatus( (java.lang.String) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _custStatus
+        fieldValidator = new FieldValidator();
+        { //-- local scope
+            StringValidator sv = new StringValidator();
+            sv.setWhiteSpace("preserve");
+            fieldValidator.setValidator(sv);
+        }
+        desc.setValidator(fieldValidator);
+
         
         
         

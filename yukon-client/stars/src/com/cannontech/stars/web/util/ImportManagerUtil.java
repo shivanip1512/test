@@ -464,6 +464,8 @@ public class ImportManagerUtil {
 	    account.setCustomerNumber("");
 	    account.setRateScheduleID(0);
 	    account.setAltTrackingNumber("");
+        account.setCustAtHome("N");
+        account.setCustStatus("A");
 	
 	    StreetAddress propAddr = new StreetAddress();
 	    propAddr.setStreetAddr1( fields[IDX_STREET_ADDR1] );
