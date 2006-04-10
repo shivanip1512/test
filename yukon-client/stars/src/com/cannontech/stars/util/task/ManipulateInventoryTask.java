@@ -244,16 +244,7 @@ public class ManipulateInventoryTask extends TimeConsumingTask {
                 if(warehouseChanged)
                 {
                     Warehouse house = new Warehouse();
-                    if(oldWarehouseID.intValue() != -1)
-                    {
-                        house.setInventoryID(invDB.getInventoryID());
-                        house.setWarehouseID(oldWarehouseID);
-                        Transaction.createTransaction( Transaction.DELETE_PARTIAL, house ).execute();
-                    }
-                    
-                    house.setInventoryID(invDB.getInventoryID());
-                    house.setWarehouseID(newWarehouseID);
-                    Transaction.createTransaction( Transaction.ADD_PARTIAL, house ).execute();
+                    Warehouse.moveInventoryToAnotherWarehouse(invDB.getInventoryID(), newWarehouseID);
                 }
                 
                 numSuccess++;
