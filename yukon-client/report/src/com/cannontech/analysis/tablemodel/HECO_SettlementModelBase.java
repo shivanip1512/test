@@ -24,6 +24,7 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteRawPointHistory;
 import com.cannontech.database.data.lite.LiteSettlementConfig;
@@ -364,13 +365,17 @@ public class HECO_SettlementModelBase extends ReportModelBase
 	{
 		try
 		{
-			Integer programID = new Integer(rset.getInt(1));
-			Timestamp startTS = rset.getTimestamp(2);
-			Timestamp stopTS = rset.getTimestamp(3);
-			
-			LMEvent lmEvent = new LMEvent(programID, new Date(startTS.getTime()), new Date(stopTS.getTime()), getEnergyCompanyID(), getCustomerIDS(), getCustDemandLevels(), getCustCurtailLoads());
-			getDataObjects().add(lmEvent);
-			collectCustomerBillingData(lmEvent);			
+			Integer groupID = new Integer(rset.getInt(1));
+            String groupName = PAOFuncs.getYukonPAOName(groupID.intValue());
+            if( groupName.toLowerCase().indexOf("cidlc") > -1)
+            {
+    			Timestamp startTS = rset.getTimestamp(2);
+    			Timestamp stopTS = rset.getTimestamp(3);
+    			
+    			LMEvent lmEvent = new LMEvent(groupID, new Date(startTS.getTime()), new Date(stopTS.getTime()), getEnergyCompanyID(), getCustomerIDS(), getCustDemandLevels(), getCustCurtailLoads());
+    			getDataObjects().add(lmEvent);
+    			collectCustomerBillingData(lmEvent);
+            }
 		}
 		catch(java.sql.SQLException e)
 		{
