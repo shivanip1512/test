@@ -652,6 +652,14 @@ public class StarsLiteFactory {
 				StarsLiteFactory.setLiteAppIrrigation( liteApp.getIrrigation(), app );
 			}
 		}
+        else if (liteAppCat.getCategoryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_GENERATOR).getEntryID()) {
+            com.cannontech.database.db.stars.appliance.ApplianceGenerator app =
+                    com.cannontech.database.db.stars.appliance.ApplianceGenerator.getApplianceGenerator( appliance.getApplianceBase().getApplianceID() );
+            if (app != null) {
+                liteApp.setGenerator( new LiteStarsAppliance.Generator() );
+                StarsLiteFactory.setLiteAppGenerator( liteApp.getGenerator(), app );
+            }
+        }
         
 		return liteApp;
 	}
