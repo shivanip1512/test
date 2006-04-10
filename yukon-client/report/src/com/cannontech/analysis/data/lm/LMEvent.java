@@ -29,7 +29,6 @@ public class LMEvent
 	public static final int DISPATCHED_EVENT = 1;
 	public static final int UF_EVENT = 2;
 	public static final int EMERGENCY_EVENT = 3;
-	public static final int TEST_EVENT = 4;
 		
 	/** Load Group ID */
 	private Integer groupID = null;
@@ -65,7 +64,6 @@ public class LMEvent
 	private String DISPATCHED_EVENT_STRING = "Dispatched";
 	private String UF_EVENT_STRING = "Under Frequency";
 	private String EMERGENCY_EVENT_STRING = "Emergency";
-	private String TEST_EVENT_STRING = "Test";
 	
 	public static void main(String[] args)
 	{
@@ -324,8 +322,6 @@ public class LMEvent
 				return UF_EVENT_STRING;
 			case EMERGENCY_EVENT:
 				return EMERGENCY_EVENT_STRING;
-			case TEST_EVENT:
-				return TEST_EVENT_STRING;
 			case UNKNOWN_EVENT:
 			default :
 				return UNKNOWN_EVENT_STRING;
@@ -341,14 +337,11 @@ public class LMEvent
 		if( eventType < 0)
 		{
 			String groupName = PAOFuncs.getYukonPAOName(getGroupID().intValue());
-			if( groupName.toLowerCase().indexOf("emergency") >= 0)
+			if( groupName.toLowerCase().indexOf("emer") > -1)
 				eventType = EMERGENCY_EVENT;
-			else if( groupName.toLowerCase().indexOf("underfreq") >= 0 || 
-					 groupName.toLowerCase().indexOf("under freq") >= 0)
+			else if( groupName.toLowerCase().indexOf("under") > -1) 
 				eventType = UF_EVENT;
-			else if( groupName.toLowerCase().indexOf("test") >= 0 )
-				eventType = TEST_EVENT;
-			else if( groupName.toLowerCase().indexOf("dispatch") >= 0)	//Do DISPATCH last, since it could very well end up in other event type strings.
+			else if( groupName.toLowerCase().indexOf("disp") > -1)	//Do DISPATCH last, since it could very well end up in other event type strings.
 				eventType = DISPATCHED_EVENT;
 			else
 				eventType = UNKNOWN_EVENT;
