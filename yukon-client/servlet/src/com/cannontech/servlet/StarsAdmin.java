@@ -138,7 +138,7 @@ public class StarsAdmin extends HttpServlet {
         if(referer == null) referer = req.getContextPath() + SOAPClient.LOGIN_URL;	
 		
 		redirect = req.getParameter( ServletUtils.ATT_REDIRECT );
-		if (redirect == null) redirect = referer;
+		if (redirect == null) redirect = req.getContextPath() + "/operator/Admin/AdminTest.jsp";
     	
 		String action = req.getParameter( "action" );
 		if (action == null) action = "";
@@ -2108,11 +2108,13 @@ public class StarsAdmin extends HttpServlet {
 				Transaction.createTransaction( Transaction.INSERT, map ).execute();
 			}
 			
+            session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Member setting updated successfully.");
+           
 			energyCompany.clearHierarchy();
 		}
 		catch (Exception e) {
 			CTILogger.error( e.getMessage(), e );
-			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to update member login");
+			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to update member login.");
 		}
 	}
     
@@ -2161,10 +2163,13 @@ public class StarsAdmin extends HttpServlet {
 	private void removeMemberEnergyCompany(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 		
-		try {
+		try 
+        {
 			int memberID = Integer.parseInt( req.getParameter("MemberID") );
 			StarsAdminUtil.removeMember( energyCompany, memberID );
-		}
+            
+            session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Member successfully removed.");
+        }
 		catch (Exception e) {
 			CTILogger.error( e.getMessage(), e );
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to remove member(s)");
