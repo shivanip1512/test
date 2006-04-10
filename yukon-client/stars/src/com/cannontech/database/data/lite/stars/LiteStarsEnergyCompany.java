@@ -2737,7 +2737,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		return accountList;
 	}
 	
-	/*private ArrayList searchAccountByContactIDs(int[] contactIDs, boolean searchMembers) {
+	private ArrayList searchAccountByContactIDs(int[] contactIDs, boolean searchMembers) {
 		ArrayList accountList = new ArrayList();
 		
 		if (isAccountsLoaded()) {
@@ -2781,14 +2781,14 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		}
 		
 		return accountList;
-	}*/
+	}
 	
 	/**
 	 * Search customer accounts by phone number.
 	 * If searchMembers is true, it returns a list of Pair(LiteStarsCustAccountInformation, LiteStarsEnergyCompany);
 	 * otherwise it returns a list of LiteStarsCustAccountInformation.
 	 */
-/*	public ArrayList searchAccountByPhoneNo(String phoneNo, boolean searchMembers) {
+	public ArrayList searchAccountByPhoneNo(String phoneNo, boolean searchMembers) {
 		LiteContact[] contacts = ContactFuncs.getContactsByPhoneNo(
 				phoneNo, new int[] {YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE}, true );
 		
@@ -2798,54 +2798,13 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		
 		return searchAccountByContactIDs( contactIDs, searchMembers );
 	}
-    */
 	
-    public ArrayList<Pair> searchAccountByPhoneNo(String phoneNo, boolean searchMembers) {
-        ArrayList<Pair> accountList = new ArrayList();
-        
-        if (isAccountsLoaded()) {
-            ArrayList custAcctInfoList = getAllCustAccountInformation();
-            
-            LiteContact[] contacts = ContactFuncs.getContactsByPhoneNo( phoneNo, new int[] {YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE}, true);
-            for (int i = 0; i < custAcctInfoList.size(); i++) {
-                LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) custAcctInfoList.get(i);
-                for (int j = 0; j < contacts.length; j++) {
-                    if (liteAcctInfo.getCustomer().getPrimaryContactID() == contacts[j].getContactID()) {
-                        accountList.add( new Pair(liteAcctInfo, this) );
-                        break;
-                    }
-                }
-            }
-        }
-        else {
-            int[] accountIDs = com.cannontech.database.db.stars.customer.CustomerAccount.searchByPrimaryContactPhoneNumber(phoneNo, getLiteID() );
-            if (accountIDs != null) {
-                for (int i = 0; i < accountIDs.length; i++) {
-                    LiteStarsCustAccountInformation liteAcctInfo = getBriefCustAccountInfo( accountIDs[i], true );
-                    accountList.add( new Pair(liteAcctInfo, this) );
-                }
-            }
-        }
-        
-        if (searchMembers) {
-            ArrayList children = getChildren();
-            synchronized (children) {
-                for (int i = 0; i < children.size(); i++) {
-                    LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) children.get(i);
-                    ArrayList<Pair> memberList = company.searchAccountByPhoneNo( phoneNo, searchMembers );
-                    accountList.addAll( memberList );
-                }
-            }
-        }
-        
-        return accountList;
-    }     
 	/**
 	 * Search customer accounts by last name. The search is based on partial match, and is case-insensitive.
 	 * If searchMembers is true, it returns a list of Pair(LiteStarsCustAccountInformation, LiteStarsEnergyCompany);
 	 * otherwise it returns a list of LiteStarsCustAccountInformation.
 	 */
-	/* ArrayList searchAccountByLastName(String lastName, boolean searchMembers) {
+	public ArrayList searchAccountByLastName(String lastName, boolean searchMembers) {
 		LiteContact[] contacts = ContactFuncs.getContactsByLName( lastName, true );
 		
 		int[] contactIDs = new int[ contacts.length ];
@@ -2853,48 +2812,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			contactIDs[i] = contacts[i].getContactID();
 		
 		return searchAccountByContactIDs( contactIDs, searchMembers );
-	}*/
-    
-    public ArrayList<Pair> searchAccountByLastName(String lastName, boolean searchMembers) {
-        ArrayList<Pair> accountList = new ArrayList();
-        
-        if (isAccountsLoaded()) {
-            ArrayList custAcctInfoList = getAllCustAccountInformation();
-            
-            LiteContact[] contacts = ContactFuncs.getContactsByLName( lastName, true );
-            for (int i = 0; i < custAcctInfoList.size(); i++) {
-                LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) custAcctInfoList.get(i);
-                for (int j = 0; j < contacts.length; j++) {
-                    if (liteAcctInfo.getCustomer().getPrimaryContactID() == contacts[j].getContactID()) {
-                        accountList.add( new Pair(liteAcctInfo, this) );
-                        break;
-                    }
-                }
-            }
-        }
-        else {
-            int[] accountIDs = com.cannontech.database.db.stars.customer.CustomerAccount.searchByPrimaryContactLastName(lastName, getLiteID() );
-            if (accountIDs != null) {
-                for (int i = 0; i < accountIDs.length; i++) {
-                    LiteStarsCustAccountInformation liteAcctInfo = getBriefCustAccountInfo( accountIDs[i], true );
-                    accountList.add( new Pair(liteAcctInfo, this) );
-                }
-            }
-        }
-        
-        if (searchMembers) {
-            ArrayList children = getChildren();
-            synchronized (children) {
-                for (int i = 0; i < children.size(); i++) {
-                    LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) children.get(i);
-                    ArrayList<Pair> memberList = company.searchAccountByLastName( lastName, searchMembers );
-                    accountList.addAll( memberList );
-                }
-            }
-        }
-        
-        return accountList;
-    }    
+	}
 	
 	
 	/* The following methods are only used when SOAPClient exists locally */
