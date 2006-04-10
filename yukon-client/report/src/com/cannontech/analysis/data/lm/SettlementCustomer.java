@@ -7,8 +7,8 @@
 package com.cannontech.analysis.data.lm;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
@@ -22,9 +22,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
-import com.cannontech.database.cache.functions.CustomerFuncs;
 import com.cannontech.database.data.customer.CICustomerBase;
-import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteSettlementConfig;
 import com.cannontech.database.db.company.SettlementConfig;
 import com.cannontech.database.db.customer.CICustomerPointData;
@@ -94,7 +92,7 @@ public class SettlementCustomer
 	}
 
 	
-	private static Double retrieveCICustomerPointData(int pointID)
+	private static Double retrieveCICustomerPointData(int pointID, Date startDate, Date stopDate )
 	{
 		Double returnVal = null;
 		PointData pointData = PointChangeCache.getPointChangeCache().getValue(pointID);
@@ -104,17 +102,22 @@ public class SettlementCustomer
 		if( returnVal == null)	//we weren't able to get the value from Cache
 		{
 			String sqlString = "SELECT TIMESTAMP, VALUE FROM " + RawPointHistory.TABLE_NAME +
-				" WHERE POINTID = " + pointID + 
+				" WHERE POINTID = ?" + 
+                " AND TIMESTAMP > ? AND TIMESTAMP <= ?" +
 				" ORDER BY TIMESTAMP DESC ";
 		
 			Connection conn = null;
-			Statement stmt = null;
+			PreparedStatement pstmt = null;
 			ResultSet rset = null;
 			try
 			{
 				conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-				stmt = conn.createStatement();
-				rset = stmt.executeQuery(sqlString);
+				pstmt = conn.prepareStatement(sqlString);
+                pstmt.setInt(1, pointID);
+                pstmt.setTimestamp(2, new java.sql.Timestamp( startDate.getTime() ));
+                pstmt.setTimestamp(3, new java.sql.Timestamp( stopDate.getTime() ));
+                CTILogger.info("START DATE > " + startDate + "  -  STOP DATE <= " + stopDate);
+				rset = pstmt.executeQuery();
 		
 				while (rset.next())
 				{
@@ -135,8 +138,8 @@ public class SettlementCustomer
 				{
 					if (rset != null)
 						rset.close();
-					if (stmt != null)
-						stmt.close();
+					if (pstmt != null)
+						pstmt.close();
 					if (conn != null)
 						conn.close();
 				}
@@ -157,7 +160,7 @@ public class SettlementCustomer
 		{
 			CICustomerPointData pointData = getPointData(CICustomerPointData.TYPE_CURTAILABLE);
 			if (pointData != null)
-				curtailableLoad = retrieveCICustomerPointData(pointData.getPointID().intValue());
+				curtailableLoad = retrieveCICustomerPointData(pointData.getPointID().intValue(), getStartDate(), getStopDate());
 			else
 				curtailableLoad = new Double(0);
 		}
@@ -173,7 +176,7 @@ public class SettlementCustomer
 		{
 			CICustomerPointData pointData = getPointData(CICustomerPointData.TYPE_DEMAND);
 			if (pointData != null)
-				demandLevel = retrieveCICustomerPointData(pointData.getPointID().intValue());
+				demandLevel = retrieveCICustomerPointData(pointData.getPointID().intValue(), getStartDate(), getStopDate());
 			else 
 				demandLevel = new Double(0);
 		}
