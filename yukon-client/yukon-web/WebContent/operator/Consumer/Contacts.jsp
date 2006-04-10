@@ -44,7 +44,8 @@
           <td width="657" valign="top" bgcolor="#FFFFFF">
             <div align="center"><% String header = "ACCOUNT - CONTACTS"; %>
 			<%@ include file="include/InfoSearchBar.jsp" %> 
-			<% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %></div>
+			<% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
+            <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %></div>
               
 			<form name="form1" method="POST" action="<%= request.getContextPath() %>/servlet/SOAPClient">
 			  <input type="hidden" name="action" value="UpdateContacts">
