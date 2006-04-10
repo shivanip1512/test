@@ -570,12 +570,12 @@ public class YukonToCRSFuncs
 					applCatID = liteAppCat.getApplianceCategoryID();   //Set this here so if we don't find the correct text, we still get a valid applCatID
                     //This is a hack to attempt to better match the appliance category for the consumption type
                     if (ciCustTypeEntry != null){    //Commercial consumption type of some sort
-                        if( appCatEntry.getEntryText().toLowerCase().indexOf("commercial") > -1)
+                        if( liteAppCat.getDescription().toLowerCase().indexOf("commercial") > -1)
                             break;
                     }
                     else    //Residential consumption type
                     {
-                        if( appCatEntry.getEntryText().toLowerCase().indexOf("residential") > -1)
+                        if( liteAppCat.getDescription().toLowerCase().indexOf("residential") > -1)
                             break;
                     }
 				}
