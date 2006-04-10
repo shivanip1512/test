@@ -6,8 +6,8 @@ import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.db.pao.PAODefines;
 import com.cannontech.database.db.pao.PAOExclusion;
 import com.cannontech.common.util.CtiUtilities;
-import java.util.Vector;
-import java.util.StringTokenizer;
+
+import java.util.*;
 /**
  * Insert the type's description here.
  * Creation date: (4/4/2004 11:31:17 AM)
@@ -536,51 +536,82 @@ private javax.swing.JLabel getTransmitDurationJLabel() {
  */
 @SuppressWarnings("unchecked")
 public Object getValue(Object o)
-{	
-	SmartMultiDBPersistent multi = (SmartMultiDBPersistent) o;
-	
-	//YukonPAObject pao = (YukonPAObject)o;
-	YukonPAObject pao = (YukonPAObject)multi.getOwnerDBPersistent();
+{   
+    SmartMultiDBPersistent multi = (SmartMultiDBPersistent) o;
+    YukonPAObject pao = (YukonPAObject) multi.getOwnerDBPersistent();
 
-	if(getJCheckBoxEnable().isSelected())
-	{
-		//Add new exclusion timing information to the assigned PAOExclusion Vector
-		Integer paoID = pao.getPAObjectID();
-		
-		//CycleTime:#,Offset:#,TransmitTime:#,MaxTime:#
-		PAOExclusion paoExcl = 
-			PAOExclusion.createExclusTiming( paoID,
-				new Integer(getCycleTimeJTextField().getText()),
-				new Integer(getJTextFieldOffset().getText()),
-				new Integer(getJTextFieldTransmitTime().getText()) );
+    // search through the exclusion vector and see if a row already exists
+    // is so update it if something changed, do nothing if nothing changed
+    // if there is no exclusion row yet, create an exclusion and add it to
+    // the vector
 
-		pao.getPAOExclusionVector().add( paoExcl );
-	} 
-	
-	//if it isn't enabled, save the info but don't make it a "real" entry (append a comment symbol)
-	else if(getCycleTimeJTextField().getText().compareTo("") != 0 &&
-		getJTextFieldOffset().getText().compareTo("") != 0 &&
-		getJTextFieldTransmitTime().getText().compareTo("") != 0)
-	{
-		//Add new exclusion timing information to the assigned PAOExclusion Vector
-		Integer paoID = pao.getPAObjectID();
-		
-		//CycleTime:#,Offset:#,TransmitTime:#,MaxTime:#
-		PAOExclusion paoExcl = 
-			PAOExclusion.createExclusTiming( paoID,
-				new Integer(getCycleTimeJTextField().getText()),
-				new Integer(getJTextFieldOffset().getText()),
-				new Integer(getJTextFieldTransmitTime().getText()) );
+    ListIterator iter = pao.getPAOExclusionVector().listIterator();
 
-		//appending the "#" to the string so that porter knows not to use it
-		paoExcl.setFuncParams( "#" + paoExcl.getFuncParams() );
-		pao.getPAOExclusionVector().add( paoExcl );
-		
-	}
-	
-	multi.setOwnerDBPersistent(pao);
-	//return pao;
-	return multi;
+    boolean found = false;
+
+    while (iter.hasNext()) {
+        PAOExclusion excl = (PAOExclusion) iter.next();
+        if (excl.getExcludedPaoID().intValue() == 0) {
+            // we found the row for timing exclusion on this pao, update it
+            // and be done
+
+            StringBuffer exclusionTiming = new StringBuffer();
+            if (!getJCheckBoxEnable().isSelected()) {
+                exclusionTiming.append("#");
+            }
+            exclusionTiming.append("CycleTime:");
+            Integer cycleTime = new Integer(new Integer(getCycleTimeJTextField().getText()).intValue() * 60); // make
+                                                                                                                // seconds
+            exclusionTiming.append(cycleTime);
+            exclusionTiming.append(",Offset:" + getJTextFieldOffset().getText());
+            exclusionTiming.append(",TransmitTime:" + getJTextFieldTransmitTime().getText());
+            excl.setFuncParams(exclusionTiming.toString());
+            found = true;
+            break;
+        }
+    }
+
+    if (!found) {
+        // check the state of this panel, if no changes from opening panel,
+        // do nothing
+        if (getJCheckBoxEnable().isSelected()) {
+            // Add new exclusion timing information to the assigned
+            // PAOExclusion Vector
+            Integer paoID = pao.getPAObjectID();
+
+            // CycleTime:#,Offset:#,TransmitTime:#,MaxTime:#
+            PAOExclusion paoExcl = PAOExclusion.createExclusTiming(paoID,
+                       new Integer(getCycleTimeJTextField().getText()),
+                       new Integer(getJTextFieldOffset().getText()),
+                       new Integer(getJTextFieldTransmitTime().getText()));
+
+            pao.getPAOExclusionVector().add(paoExcl);
+        }
+
+        // if it isn't enabled, save the info but don't make it a "real"
+        // entry (append a comment symbol)
+        else if (getCycleTimeJTextField().getText().compareTo("") != 0 && getJTextFieldOffset().getText()
+                                                                                                                                                 .compareTo("") != 0) {
+            // Add new exclusion timing information to the assigned
+            // PAOExclusion Vector
+            Integer paoID = pao.getPAObjectID();
+
+            // CycleTime:#,Offset:#,TransmitTime:#,MaxTime:#
+            PAOExclusion paoExcl = PAOExclusion.createExclusTiming(paoID,
+                       new Integer(getCycleTimeJTextField().getText()),
+                       new Integer(getJTextFieldOffset().getText()),
+                       new Integer(getJTextFieldTransmitTime().getText()));
+
+            //appending the "#" to the string so that porter knows not to use it
+            paoExcl.setFuncParams("#" + paoExcl.getFuncParams());
+            pao.getPAOExclusionVector().add(paoExcl);
+
+        }
+
+    }
+    multi.setOwnerDBPersistent(pao);
+
+    return multi;
 }
 /**
  * Called whenever the part throws an exception.
