@@ -227,6 +227,7 @@ void CtiLMService::Run()
 
             if ( controlAreas == NULL || controlAreas->empty() )
             {
+		store->setValid(false);
                 trouble = true;
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - Unable to obtain a connection to the database or no control areas exist...will keep trying." << endl;
