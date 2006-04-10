@@ -780,8 +780,8 @@ public class StarsDatabaseCache implements com.cannontech.database.cache.DBChang
 			case DBChangeMsg.CHANGE_TYPE_ADD:
 				liteStarsEnergyCompany.addWorkOrderBase(liteWorkOrderBase);
 				liteStarsCustAcctInfo = (LiteStarsCustAccountInformation)liteStarsEnergyCompany.getCustAccountInformation(liteWorkOrderBase.getAccountID(), true);
+                StarsCustAccountInformation starsAcctInfo = liteStarsEnergyCompany.getStarsCustAccountInformation(liteWorkOrderBase.getAccountID(), true);
 				liteStarsCustAcctInfo.getServiceRequestHistory().add( 0, Integer.valueOf(liteWorkOrderBase.getOrderID()));
-				StarsCustAccountInformation starsAcctInfo = liteStarsEnergyCompany.getStarsCustAccountInformation(liteWorkOrderBase.getAccountID(), true);
 				if (starsAcctInfo != null) {
 					StarsServiceRequest starsOrder = StarsLiteFactory.createStarsServiceRequest( liteWorkOrderBase, liteStarsEnergyCompany);
 					starsAcctInfo.getStarsServiceRequestHistory().addStarsServiceRequest(0, starsOrder);
