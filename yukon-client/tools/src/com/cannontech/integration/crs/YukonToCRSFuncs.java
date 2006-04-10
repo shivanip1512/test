@@ -46,6 +46,7 @@ import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.StarsAppliance;
+import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsInventory;
 
 
@@ -470,12 +471,13 @@ public class YukonToCRSFuncs
 			meterHardwareBase = (MeterHardwareBase)Transaction.createTransaction(Transaction.INSERT, meterHardwareBase).execute();
 			
 			LiteStarsCustAccountInformation liteStarsCustAcctInfo = liteStarsEnergyCompany.getCustAccountInformation(accountID.intValue(), true);
+            StarsCustAccountInformation starsCustAcctInfo = liteStarsEnergyCompany.getStarsCustAccountInformation(accountID.intValue(), true);
 			LiteInventoryBase liteInvBase = new LiteInventoryBase();
 			StarsLiteFactory.setLiteInventoryBase(liteInvBase, meterHardwareBase.getInventoryBase());
 			liteStarsCustAcctInfo.getInventories().add(meterHardwareBase.getInventoryBase().getInventoryID()); 
 
 			StarsInventory starsInventory = StarsLiteFactory.createStarsInventory(liteInvBase, liteStarsEnergyCompany);
-			liteStarsEnergyCompany.getStarsCustAccountInformation(accountID.intValue(), true).getStarsInventories().addStarsInventory(starsInventory);
+			starsCustAcctInfo.getStarsInventories().addStarsInventory(starsInventory);
 		}
 		else
         {
@@ -508,14 +510,20 @@ public class YukonToCRSFuncs
 	
 	public static void createNewAppliances(Integer accountID, Character airCond, Character waterHeater, YukonListEntry ciCustTypeEntry,  LiteStarsEnergyCompany liteStarsEnergyCompany) throws TransactionException
 	{
-		LiteStarsCustAccountInformation liteStarsCustAcctInfo = liteStarsEnergyCompany.getCustAccountInformation(accountID.intValue(), true);
+		LiteStarsCustAccountInformation liteStarsCustAcctInfo = null;
+        StarsCustAccountInformation starsCustAcctInfo = null;
+        if( airCond.charValue() == 'Y' || waterHeater.charValue() == 'Y' )
+        {
+            liteStarsCustAcctInfo = liteStarsEnergyCompany.getCustAccountInformation(accountID.intValue(), true);
+            starsCustAcctInfo = liteStarsEnergyCompany.getStarsCustAccountInformation(accountID.intValue(), true);
+        }
 
 		if( airCond.charValue() == 'Y')
 		{
 			int applCatID = getApplianceCategoryID(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_AIR_CONDITIONER, ciCustTypeEntry, liteStarsEnergyCompany);
 
 			ApplianceBase applianceBase = new ApplianceBase();
-			applianceBase.getApplianceBase().setAccountID( new Integer(liteStarsCustAcctInfo.getAccountID()) );
+			applianceBase.getApplianceBase().setAccountID( accountID );
 			applianceBase.getApplianceBase().setApplianceCategoryID(applCatID);
 			applianceBase = (ApplianceBase) Transaction.createTransaction(Transaction.INSERT, applianceBase).execute();
 			LiteStarsAppliance liteApp = new LiteStarsAppliance();
@@ -530,7 +538,7 @@ public class YukonToCRSFuncs
 			StarsLiteFactory.setLiteAppAirConditioner( liteApp.getAirConditioner(), appAC );
 
 			StarsAppliance starsAppliance = StarsLiteFactory.createStarsAppliance(liteApp, liteStarsEnergyCompany);
-			liteStarsEnergyCompany.getStarsCustAccountInformation(accountID.intValue(), true).getStarsAppliances().addStarsAppliance(starsAppliance);
+			starsCustAcctInfo.getStarsAppliances().addStarsAppliance(starsAppliance);
 		}
 		if (waterHeater.charValue() == 'Y')
 		{
@@ -552,7 +560,7 @@ public class YukonToCRSFuncs
 			StarsLiteFactory.setLiteAppWaterHeater( liteApp.getWaterHeater(), appWH );
 			
 			StarsAppliance starsAppliance = StarsLiteFactory.createStarsAppliance(liteApp, liteStarsEnergyCompany);
-			liteStarsEnergyCompany.getStarsCustAccountInformation(accountID.intValue(), true).getStarsAppliances().addStarsAppliance(starsAppliance);
+			starsCustAcctInfo.getStarsAppliances().addStarsAppliance(starsAppliance);
 		}
 	}
 
