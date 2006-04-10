@@ -44,19 +44,16 @@
 						<INPUT id="load" type="Button" name="load" value="Load Plan" onclick="loadPlan(this.form)"/>
 					</td>
 					<td width="10%">
-						<INPUT type="Button" name="new" value="New Plan" onclick="createNewPlan(this.form)" />
-					</td>
+						<INPUT type="Button" name="deletePurchase" value="Delete Plan" onclick="deletePlan(this.form)" />
+                    </td>
 				</tr>
-			 	<!-- 
-					<tr>
-						<td width="30%"> </td>
-						<td width="30%"> </td>
-						<td width="30%">
-							<INPUT id="deletePlan" type="Button" name="deletePlan" value="Delete" onclick="deletePlan(this.form)"/>
-						</td>
-						<td width="10%"> </td>
-					</tr>
-				-->		
+			 	<tr>
+                    <td width="30%"> </td>
+					<td width="60%"> </td>
+					<td width="10%">
+					    <INPUT type="Button" name="new" value="New Plan" onclick="createNewPlan(this.form)" />
+					</td>
+			    </tr>
 			</table>
 			<div id="newtopsection" align="center">
 	    		<span class="ConfirmMsg">Please create a new purchase plan below.</span>
@@ -218,7 +215,7 @@
 		function deletePlan(form)
 		{
 			form.action.value = "DeletePurchasePlan"; 
-			alert("Permission violation: Deletion of purchase plans is restricted at this time.");
+			form.submit();   
 		}
 		
 		function createNewSchedule(form)
@@ -281,14 +278,21 @@
 		
 		function back(form)
 		{
-			<c:if test="${purchaseBean.currentPlan.purchaseID == null}">
-				<c:if test="${purchaseBean.numberOfPlans > 0}">
-					loadPlan(form);
-				</c:if>
-			</c:if>
-			<c:if test="${purchaseBean.currentPlan.purchaseID != null}">
-				if (warnUnsavedChanges()) location.href='../Operations.jsp'
-			</c:if>
+			<c:choose>
+                <c:when test="${purchaseBean.currentPlan.purchaseID == null}">
+    				<c:choose>
+                        <c:when test="${purchaseBean.numberOfPlans > 0}">
+        					loadPlan(form);
+        				</c:when>
+                        <c:otherwise>
+                            if (warnUnsavedChanges()) location.href='../Operations.jsp'
+                        </c:otherwise>
+                    </c:choose>
+                </c:when>
+			    <c:otherwise>
+				    if (warnUnsavedChanges()) location.href='../Operations.jsp'
+			    </c:otherwise>
+            </c:choose>
 		}
 		
 		function prepareSubmit(form) 
