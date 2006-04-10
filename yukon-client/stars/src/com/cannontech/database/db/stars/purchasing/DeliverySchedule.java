@@ -46,6 +46,7 @@ public void delete() throws java.sql.SQLException
 {
     Object constraintValues[] = { getScheduleID() };
 
+    delete( DeliverySchedule.TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues);
     delete( TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
 }
 
