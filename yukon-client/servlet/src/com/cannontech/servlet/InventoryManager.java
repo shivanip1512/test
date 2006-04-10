@@ -22,6 +22,7 @@ import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.stars.*;
 import com.cannontech.database.data.stars.hardware.MeterHardwareBase;
+import com.cannontech.database.data.stars.purchasing.PurchasingMultiDelete;
 import com.cannontech.database.db.stars.hardware.Warehouse;
 import com.cannontech.database.db.stars.purchasing.*;
 import com.cannontech.database.cache.functions.AuthFuncs;
@@ -194,6 +195,10 @@ public class InventoryManager extends HttpServlet {
             requestNewPurchasePlan( user, req, session );
         else if (action.equalsIgnoreCase("LoadPurchasePlan"))
             loadPurchasePlan( user, req, session );
+        else if (action.equalsIgnoreCase("DeletePurchasePlan"))
+            deletePurchasePlan( user, req, session );
+        else if (action.equalsIgnoreCase("DeletePurchasePlanConfirmed"))
+            deletePurchasePlanConfirmed( user, req, session );
         else if (action.equalsIgnoreCase("RequestNewDeliverySchedule"))
             requestNewDeliverySchedule( user, req, session );
         else if (action.equalsIgnoreCase("LoadDeliverySchedule"))
@@ -1870,6 +1875,51 @@ public class InventoryManager extends HttpServlet {
                 pBean.setCurrentPlan(purchasePlans.get(j));
         }
         
+        redirect = req.getContextPath() + "/operator/Hardware/PurchaseTrack.jsp";
+    }
+    
+    private void deletePurchasePlan(StarsYukonUser user, HttpServletRequest req, HttpSession session) 
+    { 
+        PurchaseBean pBean = (PurchaseBean) session.getAttribute("purchaseBean");
+        List<PurchasePlan> purchasePlans = pBean.getAvailablePlans();
+        Integer idToLoad = new Integer(req.getParameter("plans"));
+        
+        for(int j = 0; j < purchasePlans.size(); j++)
+        {
+            if(purchasePlans.get(j).getPurchaseID().compareTo(idToLoad) == 0)
+                pBean.setCurrentPlan(purchasePlans.get(j));
+        }
+        
+        session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "WARNING: You will be deleting all delivery schedules, shipments, and invoices under the specified purchase plan.  Continue to delete?");
+        redirect = req.getContextPath() + "/operator/Hardware/DeletePurchaseTrack.jsp";
+    }
+    
+    private void deletePurchasePlanConfirmed(StarsYukonUser user, HttpServletRequest req, HttpSession session) 
+    { 
+        PurchaseBean pBean = (PurchaseBean) session.getAttribute("purchaseBean");
+        PurchasingMultiDelete plannedDeath = new PurchasingMultiDelete();
+        plannedDeath.setPurchasePlan(pBean.getCurrentPlan());
+        plannedDeath.setSchedules(pBean.getAvailableSchedules());
+        plannedDeath.setShipments(pBean.getAvailableShipments());
+        plannedDeath.setInvoices(pBean.getAvailableInvoices());
+        
+        try
+        {
+            Transaction.createTransaction(Transaction.DELETE, plannedDeath).execute();
+        }
+        catch (TransactionException e) 
+        {
+            CTILogger.error( e.getMessage(), e );
+            e.printStackTrace();
+            session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, null);
+            session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Plan deletion did NOT complete.  Transaction failed.");
+        }
+        
+        session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Plan " + pBean.getCurrentPlan().getPlanName() + " was successfully deleted.");
+        /*
+         * Set current plan as the next in the list (next most recently created)
+         */
+        pBean.setCurrentPlan(pBean.getAvailablePlans().get(0));
         redirect = req.getContextPath() + "/operator/Hardware/PurchaseTrack.jsp";
     }
     
