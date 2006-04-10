@@ -62,7 +62,7 @@ protected String getHeaderText() {
  * Creation date: (3/4/2002 2:04:39 PM)
  * @return java.lang.Integer
  */
-private java.lang.Integer getInitialPAOId() {
+public java.lang.Integer getInitialPAOId() {
 	return initialPAOId;
 }
 /**
@@ -73,7 +73,8 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 {
 	if (currentInputPanel == null)
 	{
-		getPointTypePanel().setFirstFocus();
+
+        getPointTypePanel().setFirstFocus();
         return getPointTypePanel();
 	}
 	else if (currentInputPanel == getPointTypePanel())
@@ -317,7 +318,7 @@ protected PointStatusSettingsPanel getPointStatusSettingsPanel() {
 protected PointTypePanel getPointTypePanel() {
 
 	if( pointTypePanel == null )
-		pointTypePanel = new PointTypePanel();
+		pointTypePanel = new PointTypePanel(this);
 	
 	return pointTypePanel;
 }

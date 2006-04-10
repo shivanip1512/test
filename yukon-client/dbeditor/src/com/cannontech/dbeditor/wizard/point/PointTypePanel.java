@@ -1,5 +1,10 @@
 package com.cannontech.dbeditor.wizard.point;
 
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.data.pao.YukonPAObject;
+import com.cannontech.database.data.point.PointBase;
+import com.cannontech.database.data.point.PointFactory;
+
 /**
  * This type was created in VisualAge.
  */
@@ -12,6 +17,7 @@ public class PointTypePanel extends com.cannontech.common.gui.util.DataInputPane
 	private javax.swing.JLabel ivjSelectTypeLabel = null;
 	private javax.swing.JRadioButton ivjStatusRadioButton = null;
 	private javax.swing.JRadioButton ivjAccumulatorRadioButton = null;
+    private boolean isSystemPoint = false;
 
 class IvjEventHandler implements java.awt.event.ActionListener {
 		public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -32,9 +38,18 @@ class IvjEventHandler implements java.awt.event.ActionListener {
 	IvjEventHandler ivjEventHandler = new IvjEventHandler();
 	private javax.swing.JRadioButton ivjJRadioButtonAnalogOutput = null;
 	private javax.swing.JRadioButton ivjJRadioButtonStatusOutput = null;
-public PointTypePanel() {
+    private PointWizardPanel parentPanel;
+    
+    public PointTypePanel() {
+        super();
+        initialize();
+    }
+    
+public PointTypePanel(PointWizardPanel parent) {
 	super();
-	initialize();
+	parentPanel = parent;
+    initialize();
+    
 }
 /**
  * Comment
@@ -513,13 +528,13 @@ public Object getValue(Object val) {
 
 	int type = getPointType();
 	
-	com.cannontech.database.data.point.PointBase newPoint = com.cannontech.database.data.point.PointFactory.createPoint( type );
-
-	newPoint.getPoint().setAlarmInhibit( com.cannontech.common.util.CtiUtilities.getFalseCharacter() );
-	newPoint.getPoint().setServiceFlag( com.cannontech.common.util.CtiUtilities.getFalseCharacter() );
+	PointBase newPoint = PointFactory.createPoint( type );
+	
+	newPoint.getPoint().setAlarmInhibit( CtiUtilities.getFalseCharacter() );
+	newPoint.getPoint().setServiceFlag( CtiUtilities.getFalseCharacter() );
 	newPoint.getPoint().setArchiveType("None");
 	newPoint.getPoint().setArchiveInterval(new Integer(0));
-
+	
 	return newPoint;
 }
 /**
@@ -628,28 +643,28 @@ public void jRadioButtonStatusOutput_ActionPerformed(java.awt.event.ActionEvent 
 	
 	return;
 }
-/**
- * main entrypoint - starts the part when it is run as an application
- * @param args java.lang.String[]
- */
-public static void main(java.lang.String[] args) {
-	try {
-		java.awt.Frame frame = new java.awt.Frame();
-		PointTypePanel aPointTypePanel;
-		aPointTypePanel = new PointTypePanel();
-		frame.add("Center", aPointTypePanel);
-		frame.setSize(aPointTypePanel.getSize());
-		frame.addWindowListener(new java.awt.event.WindowAdapter() {
-			public void windowClosing(java.awt.event.WindowEvent e) {
-				System.exit(0);
-			};
-		});
-		frame.setVisible(true);
-	} catch (Throwable exception) {
-		System.err.println("Exception occurred in main() of com.ibm.uvm.abt.edit.DeletedClassView");
-		com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
-	}
-}
+///**
+// * main entrypoint - starts the part when it is run as an application
+// * @param args java.lang.String[]
+// */
+//public static void main(java.lang.String[] args) {
+//	try {
+//		java.awt.Frame frame = new java.awt.Frame();
+//		PointTypePanel aPointTypePanel;
+//		aPointTypePanel = new PointTypePanel();
+//		frame.add("Center", aPointTypePanel);
+//		frame.setSize(aPointTypePanel.getSize());
+//		frame.addWindowListener(new java.awt.event.WindowAdapter() {
+//			public void windowClosing(java.awt.event.WindowEvent e) {
+//				System.exit(0);
+//			};
+//		});
+//		frame.setVisible(true);
+//	} catch (Throwable exception) {
+//		System.err.println("Exception occurred in main() of com.ibm.uvm.abt.edit.DeletedClassView");
+//		com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
+//	}
+//}
 /**
  * Insert the method's description here.
  * Creation date: (4/30/2001 3:23:30 PM)
@@ -669,6 +684,19 @@ public void setPointType( int ptType )
  * @param val java.lang.Object
  */
 public void setValue(Object val) {
+    
+    if( parentPanel != null)
+    {
+        if( parentPanel.getInitialPAOId() != null )
+        {
+            if( parentPanel.getInitialPAOId().intValue() == 0 )
+            {
+                // this is the system device we are creating a point for, do not allow accumulators
+                setAsSystemPoint(true);
+                getAccumulatorRadioButton().setVisible(false);
+            }
+        }
+    }
 }
 
 public void setFirstFocus() 
@@ -683,6 +711,11 @@ public void setFirstFocus()
     });    
 }
 
+public void setAsSystemPoint(boolean bool)
+{
+    isSystemPoint = bool;
+}
+
 /**
  * Comment
  */
@@ -692,7 +725,7 @@ public void statusRadioButton_ActionPerformed(java.awt.event.ActionEvent actionE
 	getJRadioButtonStatusOutput().setVisible(false);
  	
  	pointType = com.cannontech.database.data.point.PointTypes.STATUS_POINT;
-
+ 	
 	return;
 }
 }

@@ -298,6 +298,16 @@ public class DatabaseCacheBean implements IDatabaseCache
       return getCache().getAllPoints();
    }
 
+   /**
+    * @ejb:interface-method
+    * tview-type="remote" 
+   **/
+   public synchronized java.util.List getAllSystemPoints()
+   {
+      return getCache().getAllSystemPoints();
+   }
+
+   
 	/**
 	 * @ejb:interface-method
 	 * tview-type="remote" 

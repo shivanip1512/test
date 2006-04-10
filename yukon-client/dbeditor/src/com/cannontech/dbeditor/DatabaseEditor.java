@@ -159,7 +159,8 @@ public class DatabaseEditor
 			new Integer(ModelFactory.NOTIFICATION_GROUP),
 			new Integer(ModelFactory.SEASON),
 			new Integer(ModelFactory.TAG),
-			new Integer(ModelFactory.TOUSCHEDULE)
+			new Integer(ModelFactory.TOUSCHEDULE),
+            new Integer(ModelFactory.SYSTEM_DEVICE)
 		};
 	private static final Integer[] NONLOGIN_SYSTEM_MODELS =
 		{
@@ -706,6 +707,10 @@ private void displayAWizardPanel(JMenuItem item)
 	{
 		showWizardPanel(new TOUScheduleWizardPanel());
 	}
+    else if (item == systemCreateMenu.systemPointMenuItem)
+    {
+        showWizardPanel(new com.cannontech.dbeditor.wizard.point.PointWizardPanel(new Integer(0)));
+    }
 
 }
 /**
@@ -2306,14 +2311,9 @@ public void popupMenuWillBecomeVisible(PopupMenuEvent event)
 	            getTreeNodePopupMenu().getJMenuItemChangeType().setEnabled(false);
 	            getTreeNodePopupMenu().getJMenuItemCopy().setEnabled(false);
 	         }
-	      
-	         
-	   
 	      }
 		}      
-      
-	}
-
+    }
 }
 /**
  * This method was created in VisualAge.

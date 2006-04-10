@@ -55,6 +55,7 @@ public interface IDatabaseCache
 	public java.util.List getAllTOUDays();
 
 	public java.util.List getAllPoints();
+    public java.util.List getAllSystemPoints();
 	//Map<Integer(ptID), LitePoint>
 	public java.util.Map getAllPointsMap();
 	

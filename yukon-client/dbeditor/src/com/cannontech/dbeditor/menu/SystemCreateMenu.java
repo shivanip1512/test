@@ -18,6 +18,7 @@ public class SystemCreateMenu extends javax.swing.JMenu {
 	public CommandableMenuItem tagMenuItem;
 	public CommandableMenuItem seasonMenuItem;
 	public CommandableMenuItem touMenuItem;
+    public CommandableMenuItem systemPointMenuItem;
 
 /**
  * CreateMenu constructor comment.
@@ -72,6 +73,10 @@ private void initialize() {
 	touMenuItem = new CommandableMenuItem("TOU Schedule...");
 	touMenuItem.setFont( font );
 	touMenuItem.setMnemonic('o');
+    
+    systemPointMenuItem = new CommandableMenuItem("System Point...");
+    systemPointMenuItem.setFont( font );
+    systemPointMenuItem.setMnemonic('y');
 	
 	setText("Create");
 	setFont( font );
@@ -88,5 +93,6 @@ private void initialize() {
 	add( seasonMenuItem );
 	add( tagMenuItem );
 	add( touMenuItem );
+    add( systemPointMenuItem );
 }
 }

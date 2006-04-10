@@ -79,6 +79,7 @@ public final class ModelFactory
 	public static final int BILLING_GROUP = 57;
 	
 	public static final int RECEIVERS = 58;
+    public static final int SYSTEM_DEVICE = 59;
 	
 	//The above is an enumeration of indices into
 	//the following array
@@ -142,7 +143,8 @@ public final class ModelFactory
 		TOUScheduleModel.class,
 		CBCOrderByTreeModel.class,
 		BillingGroupModel.class,
-		ReceiverTreeModel.class
+		ReceiverTreeModel.class,
+        SystemDeviceModel.class
 	};
 	
 //	The above is an enumeration of indices into
@@ -207,7 +209,8 @@ public final class ModelFactory
 		"TOU Schedule",
 		"CapBank Ordering",
 		"Billing Group",
-		"Receivers"
+		"Receivers",
+        "System Points"
 	};	
 
 /**
