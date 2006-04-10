@@ -113,9 +113,18 @@ public class InventoryBase extends DBPersistent {
 			setAccountID( (Integer) results[0] );
 			setInstallationCompanyID( (Integer) results[1] );
 			setCategoryID( (Integer) results[2] );
-			setReceiveDate( new Date(((java.sql.Timestamp) results[3]).getTime()) );
-			setInstallDate( new Date(((java.sql.Timestamp) results[4]).getTime()) );
-			setRemoveDate( new Date(((java.sql.Timestamp) results[5]).getTime()) );
+			if(results[3] == null)
+                setReceiveDate( new Date(0));
+            else
+                setReceiveDate( new Date(((java.sql.Timestamp) results[3]).getTime()) );
+			if(results[4] == null)
+                setInstallDate( new Date(0));
+            else
+                setInstallDate( new Date(((java.sql.Timestamp) results[4]).getTime()) );
+			if(results[5] == null)
+                setRemoveDate( new Date(0));
+            else
+                setRemoveDate( new Date(((java.sql.Timestamp) results[5]).getTime()) );
 			setAlternateTrackingNumber( (String) results[6] );
 			setVoltageID( (Integer) results[7] );
 			setNotes( (String) results[8] );
