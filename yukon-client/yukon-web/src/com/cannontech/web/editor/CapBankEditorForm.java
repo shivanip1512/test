@@ -11,6 +11,7 @@ import java.util.Map;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.TransactionException;
@@ -85,26 +86,26 @@ public class CapBankEditorForm extends DBEditorForm {
 		if (unassignedPoints == null) {		
 			unassignedPoints = new ArrayList();
 			CapBank capBank = ((CapBank) getDbPersistent());			
-					int controlDeviceId = capBank.getCapBank().getControlDeviceID().intValue();
-					if (controlDeviceId > 0) {
-						LitePoint[] allPoints = PAOFuncs
-								.getLitePointsForPAObject(controlDeviceId);
-					for (int i = 0; i < allPoints.length; i++) {
-						LitePoint point = allPoints[i];			
-						if (point.getUofmID() == PointUnits.UOMID_VOLTS)
-							{							
-								CapBankMonitorPointParams monitorPoint = new CapBankMonitorPointParams(point);
-								//set the cap bank id to replace the CBC if with Cap Bank Id
-								monitorPoint.setCapBankId(capBank.getCapBank().getDeviceID().intValue());
-								//set the feeder limits by default
-								setDefaultFeederLimits(capBank, monitorPoint);
-								
-								if(!isPointAssigned (monitorPoint)) {
-									unassignedPoints.add(monitorPoint);
-								}								
-							}
-						}				
+			int controlDeviceId = capBank.getCapBank().getControlDeviceID().intValue();
+			if (controlDeviceId > 0) {
+				LitePoint[] allPoints = PAOFuncs
+						.getLitePointsForPAObject(controlDeviceId);
+			for (int i = 0; i < allPoints.length; i++) {
+				LitePoint point = allPoints[i];			
+				if (point.getUofmID() == PointUnits.UOMID_VOLTS)
+					{							
+						CapBankMonitorPointParams monitorPoint = new CapBankMonitorPointParams(point);
+						//set the cap bank id to replace the CBC if with Cap Bank Id
+						monitorPoint.setCapBankId(capBank.getCapBank().getDeviceID().intValue());
+						//set the feeder limits by default
+						setDefaultFeederLimits(capBank, monitorPoint);
+						
+						if(!isPointAssigned (monitorPoint)) {
+							unassignedPoints.add(monitorPoint);
+						}								
 					}
+				}				
+			}
 					Collections.sort(unassignedPoints, JSFComparators.monitorPointComparator);
 			}
 			return unassignedPoints;		
@@ -137,7 +138,7 @@ public class CapBankEditorForm extends DBEditorForm {
 			monitorPoint.setUpperBandwidth(strategy.getPeakLead().floatValue() );
 			
 		} catch (SQLException e) {
-
+		    CTILogger.info("CapBankEditorForm -- setDefaultFeederLimits" + e.getMessage());
 		}
 		finally {
 			feeder.setDbConnection( null );
@@ -145,7 +146,10 @@ public class CapBankEditorForm extends DBEditorForm {
 			
 			try {
 			if( conn != null ) conn.close();
-			} catch( java.sql.SQLException e2 ) { }			
+			} catch( java.sql.SQLException e2 ) { 
+                CTILogger.info("CapBankEditorForm -- setDefaultFeederLimits" + e2.getMessage());
+
+            }			
 		}
 	}
 
