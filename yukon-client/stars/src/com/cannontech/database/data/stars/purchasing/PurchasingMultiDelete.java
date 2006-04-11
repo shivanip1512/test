@@ -30,19 +30,23 @@ public void delete() throws java.sql.SQLException
 {
     for(int j = 0; j < shipments.size(); j++)
     {
+        shipments.get(j).setDbConnection(getDbConnection());
         shipments.get(j).delete();
     }
     
     for(int i = 0; i < schedules.size(); i++)
     {
+        schedules.get(i).setDbConnection(getDbConnection());
         schedules.get(i).delete();
     }
     
     for(int j = 0; j < invoices.size(); j++)
     {
+        invoices.get(j).setDbConnection(getDbConnection());
         invoices.get(j).delete();
     }
     
+    purchasePlan.setDbConnection(getDbConnection());
     purchasePlan.delete();
 }
 
