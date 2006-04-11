@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2006/02/27 23:58:31 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2006/04/11 20:46:43 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -31,6 +31,17 @@ using Cti::Protocol::Emetcon;
 
 
 set< CtiDLCCommandStore > CtiDeviceMCTBroadcast::_commandStore;
+
+
+CtiDeviceMCTBroadcast::CtiDeviceMCTBroadcast()
+{
+}
+
+
+CtiDeviceMCTBroadcast::~CtiDeviceMCTBroadcast()
+{
+}
+
 
 void CtiDeviceMCTBroadcast::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
@@ -231,17 +242,16 @@ INT CtiDeviceMCTBroadcast::executePutStatus(CtiRequestMsg                  *pReq
     }
     else if( parse.isKeyValid("freeze") )
     {
-        //  if(!_lastFreeze)
-        //    _lastFreeze = true;
+        int next_freeze = parse.getiValue("freeze");
 
         if( parse.isKeyValid("voltage") )
         {
-            if( parse.getiValue("freeze") == 1 )
+            if( next_freeze == 1 )
             {
                 function = Emetcon::PutStatus_FreezeVoltageOne;
                 found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
             }
-            else if( parse.getiValue("freeze") == 2 )
+            if( next_freeze == 2 )
             {
                 function = Emetcon::PutStatus_FreezeVoltageTwo;
                 found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
@@ -249,12 +259,12 @@ INT CtiDeviceMCTBroadcast::executePutStatus(CtiRequestMsg                  *pReq
         }
         else
         {
-            if( parse.getiValue("freeze") == 1 )
+            if( next_freeze == 1 )
             {
                 function = Emetcon::PutStatus_FreezeOne;
                 found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
             }
-            else if( parse.getiValue("freeze") == 2 )
+            if( next_freeze == 2 )
             {
                 function = Emetcon::PutStatus_FreezeTwo;
                 found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);

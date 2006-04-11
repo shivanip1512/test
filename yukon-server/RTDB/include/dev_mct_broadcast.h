@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2006/02/27 23:58:32 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2006/04/11 20:46:43 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -40,7 +40,7 @@ protected:
 
 private:
 
-    bool _lastFreeze;                   // if false... last freeze sent was a zero if true, last freeze was a One;
+    int _last_freeze;
 
     static DLCCommandSet _commandStore;
 
@@ -48,8 +48,8 @@ public:
 
     typedef CtiDeviceDLCBase Inherited;
 
-    CtiDeviceMCTBroadcast() {}
-    virtual ~CtiDeviceMCTBroadcast() {}
+    CtiDeviceMCTBroadcast();
+    virtual ~CtiDeviceMCTBroadcast();
 
     static bool initCommandStore( );
     bool getOperation( const UINT &cmdType, USHORT &function, USHORT &length, USHORT &io );
