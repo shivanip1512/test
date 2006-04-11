@@ -1,7 +1,9 @@
-<%@ page import="com.cannontech.database.data.point.SystemLogData" %>
 <%@ page import="com.cannontech.yukon.cbc.StreamableCapObject" %>
 <%@ page import="com.cannontech.yukon.cbc.Feeder" %>
 <%@ page import="com.cannontech.yukon.cbc.SubBus" %>
+<%@ page import="com.cannontech.database.db.capcontrol.CCEventLog" %>
+<%@ page import="com.cannontech.cbc.web.CBCWebUtils" %>
+<%@ page import="com.cannontech.database.cache.functions.PAOFuncs" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <cti:standardPage title="Results" module="capcontrol">
 <cti:standardMenu/>
@@ -29,8 +31,7 @@
 	String type = ParamUtil.getString(request, "type", "");
 	String[] strPaoids = ParamUtil.getStrings(request, "value");
 	String[] titles = new String[ strPaoids.length ];
-	SystemLogData[][] logData = new SystemLogData[strPaoids.length][0];
-
+	List[] logData = new List [100];
 	if( CBCWebUtils.TYPE_RECENT_CNTRLS.equals(type) )
 	{
 		boolean hasSystem = false;
@@ -41,9 +42,9 @@
 
 			if( cbcPAO != null )
 			{
-				logData[i] = CBCWebUtils.getRecentControls( id, capControlCache, PREV_DAY_COUNT );
+				logData[i] = CBCWebUtils.getCCEventsForPAO(new Long (id), cbcPAO.getCcType());
 				titles[i] = capControlCache.getCapControlPAO(new Integer(id)) +
-						"  : Previous " + PREV_DAY_COUNT + " days of controls (" + logData[i].length + " events found)";
+						"  : Previous " + PREV_DAY_COUNT + " days of controls (" + ((List)logData[i]).size() + " events found)";
 
 				//temp hack for only showing 1 table for a SubBus or Feeder
 				// since each SubBus or Feeder checked returns the same CapControl system data
@@ -52,7 +53,7 @@
 					if( !hasSystem )
 					{
 						titles[i] = "SYSTEM EVENTS" +
-							"  : Previous " + PREV_DAY_COUNT + " days of controls (" + logData[i].length + " events found)";
+							"  : Previous " + PREV_DAY_COUNT + " days of controls (" + ((List)logData[i]).size() + " events found)";
 					
 						hasSystem = true;
 					}
@@ -74,24 +75,30 @@
 
 <%
 int paosShown = 0;
-for( int i = 0; i < titles.length && paosShown < MAX_PAOIDS; i++ ) {
-if( titles[i] != null ) {
-	paosShown++;
+for( int i = 0; i <logData.length; i++) {
+//if( titles[i] != null ) {
+//	paosShown++;
+if ((List)logData[i] != null) {
+int subId = ((CCEventLog)((List)logData[i]).get(0)).getSubId().intValue();
 %>          
-      <cti:titledContainer title="<%=titles[i]%>">
 
-          <div class="scrollMed">
+      <cti:titledContainer title="<%="Events for " + PAOFuncs.getLiteYukonPAO(subId).getPaoName()%>" >
+
+          
 			<form id="resForm" action="feeders.jsp" method="post">
 			<input type="hidden" name="itemid" />
-            <table id="resTable" width="100%" border="0" cellspacing="0" cellpadding="0">
-              <tr class="columnheader lAlign">				
+            <table id="resHeaderTable<%=i%>" width="100%" border="0" cellspacing="0" cellpadding="0">
+              <tr class="columnHeader lAlign">				
 				<td>Timestamp</td>
                 <td>Item</td>
                 <td>Event</td>
               </tr>
+             </table>
 
+			<div class="scrollMed">
+				<table id="resTable<%=i%>" width="98%" border="0" cellspacing="0" cellpadding="0">
 <%			
-	if( logData[i].length <= 0 ) {
+	if( ((List)logData[i]).size() <= 0 ) {
 %>			
         <tr class="alert cAlign">
 			<td>No data found</td>
@@ -100,34 +107,44 @@ if( titles[i] != null ) {
 		</tr>
 <%
 	}
-	else for( int j = 0; j < logData[i].length; j++ )
+	else for( int j = 0; j < ((List)logData[i]).size(); j++ )
 	{
 		String css = (j % 2 == 0 ? "tableCell" : "altTableCell");
-		SystemLogData systLog = logData[i][j];	
+		CCEventLog systLog = (CCEventLog)((List)logData[i]).get(j);	
 %>
 	        <tr class="<%=css%>">
 				<td><%=Formatters.DATETIME.format(systLog.getDateTime())%></td>
-				<% if (systLog.getAction() == null) {%>
+				<% if (systLog.getDateTime() == null) {%>
 				<td> ---- </td>
 				<%}else {%>		
-				<td><%=systLog.getAction()%></td>
+				<td><%=PAOFuncs.getLiteYukonPAO(systLog.getSubId().intValue()).getPaoName()%></td>
 				<%}%>
-				<% if (systLog.getDescription() == null) {%>
+				<% if (systLog.getText() == null) {%>
 				<td>----</td>
 				<%}else{%>
-				<td><%=systLog.getDescription()%></td>
+				<td><%=systLog.getText()%></td>
 				<%}%>
 			</tr>
 <%	} %>
 
             </table>
-			</form>
-        </div>
+           </div>
+	  </form>
+     
 
       </cti:titledContainer>
 <% } %>
-<% } %>
 
+<% } %>
+<%
+if (strPaoids.length > 0) {
+for (int i=0; i < strPaoids.length; i++) {
+%>
+<script type="text/javascript">
+Event.observe(window, 'load', function() { new CtiNonScrollTable('resTable<%=i%>','resHeaderTable<%=i%>');});
+</script>
+<% } %>
+<% } %>
 
 
 </cti:standardPage>
