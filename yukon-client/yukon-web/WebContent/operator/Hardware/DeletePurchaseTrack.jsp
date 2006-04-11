@@ -27,28 +27,32 @@
                  <input type="button" name="Back" value="No" onclick="back(this.form)">
 			</div>
 			<br>
-			<table width="200" border="1" cellspacing="0" cellpadding="0" align="center">
+			<table width="250" border="1" cellspacing="0" cellpadding="0" align="center">
                 <tr> 
-                    <td class="HeaderCell">Delivery Schedules (will be deleted)</td>
+                    <td align="center" class="HeaderCell">Delivery Schedules (will be deleted)</td>
                 </tr>
             </table>
-            <table width="200" border="1" cellspacing="0" cellpadding="5" align="center">
+            <table width="250" border="1" cellspacing="0" cellpadding="5" align="center">
                 <tr>
                     <c:forEach var="sched" items="${purchaseBean.availableSchedules}">
-                         <span class="headeremphasis"><c:out value="${sched.scheduleName}"></span> 
+                        <div align="center">
+                            <span class="TableCell"><c:out value="${sched.scheduleName}"/></span> 
+                        </div>
                     </c:forEach>
                 </tr>
             </table>
             <br>
-            <table width="200" border="1" cellspacing="0" cellpadding="0" align="center">
+            <table width="250" border="1" cellspacing="0" cellpadding="0" align="center">
                 <tr> 
-                    <td class="HeaderCell">Plan Invoices (will be deleted)</td>
+                    <td align="center" class="HeaderCell">Plan Invoices (will be deleted)</td>
                 </tr>
             </table>
-            <table width="200" border="1" cellspacing="0" cellpadding="5" align="center">
+            <table width="250" border="1" cellspacing="0" cellpadding="5" align="center">
             <tr>
-                <c:forEach var="sched" items="${purchaseBean.availableSchedules}">
-                     <span class="headeremphasis"><c:out value="${sched.scheduleName}"></span> 
+                <c:forEach var="invoice" items="${purchaseBean.availableInvoices}">
+                    <div align="center">
+                        <span class="TableCell"><c:out value="${invoice.invoiceDesignation}"/></span> 
+                    </div>
                 </c:forEach>
             </tr>
             </table>
