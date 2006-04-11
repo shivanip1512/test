@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_ccu.cpp-arc  $
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2006/02/27 23:58:31 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2006/04/11 20:54:22 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -326,6 +326,12 @@ INT CtiRouteCCU::assembleDLCRequest(CtiRequestMsg                  *pReq,
         OutMessage->Buffer.BSt.DlcRoute.RepVar     = Carrier.getCCUVarBits();
         OutMessage->Buffer.BSt.DlcRoute.RepFixed   = Carrier.getCCUFixBits();
         OutMessage->Buffer.BSt.DlcRoute.Stages     = getStages();                // How many repeaters on this route?
+
+        if( OutMessage->MessageFlags & MessageFlag_NoTransmit )
+        {
+            //  No CCU has feeder 7, so this is a no-transmit scenario.
+            OutMessage->Buffer.BSt.DlcRoute.Feeder = 7;
+        }
 
         status = prot.parseRequest(parse, *OutMessage);                     // Determin the stuff be need based upon the command.
     }
