@@ -129,6 +129,7 @@ void  CtiCommandParser::parse()
         boost::regex re_id     ("select (device)?id " + str_num);
         boost::regex re_grp    ("select group "       + str_quoted_token);
         boost::regex re_altg   ("select altgroup "    + str_quoted_token);
+        boost::regex re_billg  ("select billgroup "   + str_quoted_token);
         boost::regex re_rtename("select route *name " + str_quoted_token);
         boost::regex re_rteid  ("select route *id "   + str_num);
         boost::regex re_ptname ("select point *name " + str_quoted_token);
@@ -190,6 +191,22 @@ void  CtiCommandParser::parse()
                 //Removes the ' " ' character from "something"
                 token.erase(0,1);token.erase(token.length()-1,token.length()-1);
                 _cmd["altgroup"] = CtiParseValue( token, -1 );
+            }
+            CmdStr.replace(re_altg, "");
+        }
+        else if(!(token = CmdStr.match(re_billg)).empty())
+        {
+            size_t nstart;
+            size_t nstop;
+            nstart = token.index("billgroup ", &nstop);
+
+            nstop += nstart;
+
+            if(!(token = token.match(str_quoted_token, nstop)).empty())   // get the value
+            {
+                //Removes the ' " ' character from "something"
+                token.erase(0,1);token.erase(token.length()-1,token.length()-1);
+                _cmd["billgroup"] = CtiParseValue( token, -1 );
             }
             CmdStr.replace(re_altg, "");
         }
