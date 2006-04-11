@@ -6,17 +6,23 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.RowMapper;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.SystemLogData;
+import com.cannontech.database.db.capcontrol.CCEventLog;
 import com.cannontech.database.db.point.SystemLog;
 import com.cannontech.roles.capcontrol.CBCSettingsRole;
 import com.cannontech.util.ServletUtil;
@@ -281,5 +287,39 @@ public class CBCWebUtils implements CBCParamValues
 
 		return retLog;
 	}
+	
+	public static List getCCEventsForPAO (Long _subId_, String type) {
+	    String sqlStmt ="SELECT * FROM " + CCEventLog.TABLE_NAME + " WHERE"; 
+	    if (type.equalsIgnoreCase("CCFEEDER")){
+	    	sqlStmt += " FeederId = ?";
+	    }	    	
+	    else {
+	    	sqlStmt += " SubId = ?";
+	    }
+	    JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();            	    
+	    List ccEvents = yukonTemplate.query(sqlStmt, new Long[] {_subId_},
+	    		new RowMapper() {
+	    			public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
+	    				CCEventLog row = new CCEventLog(); 
+	    				row.setLogId (new Long ( rs.getBigDecimal(1).longValue() ));
+	    				row.setPointId(new Long ( rs.getBigDecimal(2).longValue() ));
+	    				row.setDateTime((Date)(( rs.getDate(3))));
+	    				row.setSubId(new Long ( rs.getBigDecimal(4).longValue() ));
+	    				row.setFeederId(new Long ( rs.getBigDecimal(5).longValue() ));
+	    				row.setEventType(new Integer ( rs.getBigDecimal(6).intValue() ));
+	    				row.setSeqId(new Long ( rs.getBigDecimal(7).longValue() ));
+	    				row.setValue(new Long ( rs.getBigDecimal(8).longValue() ));
+	    				row.setText((String) ( rs.getString(9)));
+	    				row.setUserName((String) ( rs.getString(10)));
+	    				return row;        				
+	    			}
+	    		});
+
+	    return ccEvents;  	
+	}
+
+
+	
+	 
 
 }
