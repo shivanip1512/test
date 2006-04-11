@@ -22,7 +22,7 @@ public class CBCSessionInfo
 	public static final String STR_FEEDERID = "cbc_lastFeederID";
 	public static final String STR_LAST_SEARCH = "cbc_lastSearch";
 
-
+	public static final String POPUP_EVENT = "pop_up_event";
 	public CBCSessionInfo()
 	{
 		super();
