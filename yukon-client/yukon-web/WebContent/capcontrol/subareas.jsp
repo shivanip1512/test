@@ -17,18 +17,20 @@
 </cti:breadCrumbs>
 
     <cti:titledContainer title="Substation Bus Areas">
-          <div class="scrollLarge">
+          
 		<form id="areaForm" action="subs.jsp" method="post">
 			<input type="hidden" name="<%=CBCSessionInfo.STR_CBC_AREA%>" />
-            <table id="areaTable" width="100%" border="0" cellspacing="0" cellpadding="0">
+            <table id="areaHeaderTable" width="100%" border="0" cellspacing="0" cellpadding="0">
               <tr class="columnHeader lAlign">				
-				<th>Area Name</th>
-                <th>Setup</th>
-                <th>Closed kVARS</th>
-                <th>Tripped kVARS</th>
-                <th>PFactor/Est.</th>
+				<td>Area Name</td>
+                <td>Setup</td>
+                <td>Closed kVARS</td>
+                <td>Tripped kVARS</td>
+                <td>PFactor/Est.</td>
               </tr>
-
+              </table>
+              <div class="scrollLarge">
+		<table id="areaTable" width="98%" border="0" cellspacing="0" cellpadding="0" >
 <%
 		String css = "tableCell";
 		for( int i = 0; i < capControlCache.getAreaNames().size(); i++ )
@@ -86,7 +88,10 @@
 <% } %>
 
             </table>
+			</div>
 			</form>
-        	</div>
+<script type="text/javascript">
+Event.observe(window, 'load', function() { new CtiNonScrollTable('areaTable','areaHeaderTable');});
+</script>
       </cti:titledContainer>
 </cti:standardPage>

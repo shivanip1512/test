@@ -2,6 +2,7 @@
 <cti:standardPage title="Substations" module="capcontrol">
 <%@include file="cbc_inc.jspf"%>
 
+
 <jsp:useBean id="capControlCache"
     class="com.cannontech.cbc.web.CapControlCache"
     type="com.cannontech.cbc.web.CapControlCache" scope="application"></jsp:useBean>
@@ -30,24 +31,26 @@
 
 <cti:titledContainer title="<%="Substation Buses In Area:  " + cbcSession.getLastArea()%>">
           
-          <div class="scrollLarge">
+          
             <form id="subForm" action="feeders.jsp" method="post">
             <input type="hidden" name="<%=CBCSessionInfo.STR_SUBID%>" />
           
-            <table id="subTable" width="100%" border="0" cellspacing="0" cellpadding="0">
+            <table id="subHeaderTable" width="98%" border="0" cellspacing="0" cellpadding="0">
               <tr class="columnHeader lAlign">              
-                <th>
+                <td>
                 <input type="checkbox" id="chkAllBx" onclick="checkAll(this, 'cti_chkbxSubs');"/>
-                Sub Name</th>
-                <th>State</th>
-                <th>Target</th>
-                <th>VAR Load / Est.</th>
-                <th>Date/Time</th>
-                <th>PFactor / Est.</th>
-                <th>Watts / Volts</th>
-                <th>Daily / Max Ops</th>
+                Sub Name</td>
+                <td>State</td>
+                <td>Target</td>
+                <td>VAR Load / Est.</td>
+                <td>Date/Time</td>
+                <td>PFactor / Est.</td>
+                <td>Watts / Volts</td>
+                <td>Daily / Max Ops</td>
               </tr>
-
+			</table>
+<div class="scrollLarge">
+<table id="subTable" width="98%" border="0" cellspacing="0" cellpadding="0" >
 <%
 String css = "tableCell";
 for( int i = 0; i < areaSubs.length; i++ )
@@ -55,10 +58,12 @@ for( int i = 0; i < areaSubs.length; i++ )
     css = ("tableCell".equals(css) ? "altTableCell" : "tableCell");
     SubBus subBus = areaSubs[i];
 %>
+
+
 	        <tr class="<%=css%>">
 				<td>
 				<input type="checkbox" name="cti_chkbxSubs" value="<%=subBus.getCcId()%>" />
-				<a href="#" class="<%=css%>" onclick="postMany('subForm', '<%=CBCSessionInfo.STR_SUBID%>', <%=subBus.getCcId()%>)">
+				<a href="#" class="<%=css%>" onclick="postMany('subForm', '<%=CBCSessionInfo.STR_SUBID%>', <%=subBus.getCcId()%>);">
 				<%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_NAME_COLUMN) %>
 				</a>
 				
@@ -109,9 +114,12 @@ for( int i = 0; i < areaSubs.length; i++ )
 <% } %>
 
             </table>
-            </form>
-        </div>
+	</div>
+        </form>
 
+<script type="text/javascript">
+Event.observe(window, 'load', function() { new CtiNonScrollTable('subTable','subHeaderTable');});
+</script>
       </cti:titledContainer>
       
 </cti:standardPage>
