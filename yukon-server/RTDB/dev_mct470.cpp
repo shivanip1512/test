@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.36 $
-* DATE         :  $Date: 2006/04/05 16:39:56 $
+* REVISION     :  $Revision: 1.37 $
+* DATE         :  $Date: 2006/04/11 19:02:33 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -31,11 +31,11 @@
 #include "config_parts.h"
 #include <string>
 
+#define MaxIEDReadMinutes 10
 using namespace std;
 using Cti::Protocol::Emetcon;
-using namespace Cti;
-using namespace Config;
-using namespace MCT;
+using namespace Cti::Config::MCT;
+using namespace Cti::Config;
 
 const CtiDeviceMCT470::DLCCommandSet CtiDeviceMCT470::_commandStore   = CtiDeviceMCT470::initCommandStore();
 const CtiDeviceMCT4xx::ConfigPartsList CtiDeviceMCT470::_config_parts = CtiDeviceMCT470::initConfigParts();
@@ -1510,6 +1510,28 @@ INT CtiDeviceMCT470::executeGetValue( CtiRequestMsg              *pReq,
 
     if( parse.getFlags() & CMD_FLAG_GV_IED )  //  This parse has the token "IED" in it!
     {
+        if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) < MCT470_SspecRev_IED_Zero_Write_Min
+            && _iedTime.seconds()/60 < (CtiTime::now().seconds()/60-(MaxIEDReadMinutes/2)) )
+        {
+            //If we need to read out the time, do so.
+            function = Emetcon::GetConfig_IEDTime;
+            found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+            if( found )
+            {
+                OutMessage->DeviceID  = getID();
+                OutMessage->TargetID  = getID();
+                OutMessage->Port      = getPortID();
+                OutMessage->Remote    = getAddress();
+                OutMessage->TimeOut   = 2;
+                OutMessage->Sequence  = function;         // Helps us figure it out later!
+                OutMessage->Retry     = 2;
+                OutMessage->Request.RouteID   = getRouteID();
+
+                strncpy(OutMessage->Request.CommandStr, "getconfig ied time", COMMAND_STR_SIZE );
+                outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
+            }
+        }
+
         if( parse.getFlags() & CMD_FLAG_GV_DEMAND )
         {
             //  this will be for the real-time table
@@ -1638,8 +1660,8 @@ INT CtiDeviceMCT470::executeScan(CtiRequestMsg                  *pReq,
 
             MCTSystemOptionsSPtr options = boost::static_pointer_cast< ConfigurationPart<MCTSystemOptions> >(getDeviceConfig()->getConfigFromType(ConfigTypeMCTSystemOptions));
 
-            if( options && ( !stringCompareIgnoreCase(options->getValueFromKey(DemandMetersToScan), "all")
-                          || !stringCompareIgnoreCase(options->getValueFromKey(DemandMetersToScan), "pulse")) )
+            if( !options || (options && ( !stringCompareIgnoreCase(options->getValueFromKey(DemandMetersToScan), "all")
+                          || !stringCompareIgnoreCase(options->getValueFromKey(DemandMetersToScan), "pulse"))) )
             {
                 //Read the pulse demand
                 function = Emetcon::GetValue_Demand;
@@ -1656,10 +1678,11 @@ INT CtiDeviceMCT470::executeScan(CtiRequestMsg                  *pReq,
                 }
             }
 
-            if( options && ( !stringCompareIgnoreCase(options->getValueFromKey(DemandMetersToScan), "all")
-                          || !stringCompareIgnoreCase(options->getValueFromKey(DemandMetersToScan), "ied")) )
+            if( !options || (options && ( !stringCompareIgnoreCase(options->getValueFromKey(DemandMetersToScan), "all")
+                          || !stringCompareIgnoreCase(options->getValueFromKey(DemandMetersToScan), "ied"))) )
             {
-                if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) < MCT470_SspecRev_IED_Zero_Write_Min )
+                if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) < MCT470_SspecRev_IED_Zero_Write_Min
+                    && _iedTime.seconds()/60 < (CtiTime::now().seconds()/60-(MaxIEDReadMinutes/2)) )
                 {
                     //If we need to read out the time, do so.
                     function = Emetcon::GetConfig_IEDTime;
@@ -2562,7 +2585,6 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                     frozen = 0,
                     offset = 0,
                     rate   = 0;
-    const int       maxReadMinutes = 10;
     point_info_t    pi;
     string       point_string, resultString;
 
@@ -2606,13 +2628,18 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                 break;
             }
         }
+
+        //If before fix and the timestamp is at least 10 minutes old
+        if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) < MCT470_SspecRev_IED_Zero_Write_Min
+                && _iedTime.seconds()/60 < (CtiTime::now().seconds()/60-MaxIEDReadMinutes))
+        {
+            dataInvalid = true;
+        }
         //  should we archive non-frozen points?
 
         if( parse.getFlags() & CMD_FLAG_GV_DEMAND )
         {
-            //If before fix and the timestamp is at least 10 minutes old
-            if( dataInvalid || (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) < MCT470_SspecRev_IED_Zero_Write_Min
-                && _iedTime.seconds()/60 < (CtiTime::now().seconds()/60-maxReadMinutes)))
+            if( dataInvalid )
             {
                 //If we are here, we believe the data is incorrect!
                 resultString += "Device: " + getName() + "\nData buffer is bad, retry command" ;
@@ -2761,109 +2788,177 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
         }
         else if( parse.getFlags() & CMD_FLAG_GV_RATET )
         {
-            CtiPointSPtr kwh, kmh;
-
-            pi = getData(DSt->Message, 5, ValueType_Raw);
-
-            if(kwh = getDevicePointOffsetTypeEqual(MCT470_PointOffset_TotalKWH, AnalogPointType))
+            if( dataInvalid )
             {
-                pi.value = boost::static_pointer_cast<CtiPointNumeric>(kwh)->computeValueForUOM(pi.value);
-
-                point_string = getName() + " / " + kwh->getName() + " = " + CtiNumStr(pi.value, boost::static_pointer_cast<CtiPointNumeric>(kwh)->getPointUnits().getDecimalPlaces());
-
-                ReturnMsg->PointData().push_back(makePointDataMsg(kwh, pi, point_string));
+                //If we are here, we believe the data is incorrect!
+                resultString += "Device: " + getName() + "\nData buffer is bad, retry command" ;
+                status = ALPHABUFFERERROR;
+    
+                CtiPointSPtr kwh, kmh;
+    
+                pi.value = 0;
+                pi.quality = NonUpdatedQuality;
+    
+                if(kwh = getDevicePointOffsetTypeEqual(MCT470_PointOffset_TotalKWH, AnalogPointType))
+                {
+                    point_string = getName() + " / " + kwh->getName() + " = Non Updated";
+                    ReturnMsg->PointData().push_back(makePointDataMsg(kwh, pi, point_string));
+                }
+    
+                if(kmh = getDevicePointOffsetTypeEqual(MCT470_PointOffset_TotalKMH, AnalogPointType))
+                {
+                    point_string = getName() + " / " + kmh->getName() + " = Non Updated";
+                    ReturnMsg->PointData().push_back(makePointDataMsg(kmh, pi, point_string));
+                }
             }
             else
             {
-                resultString += getName() + " / KWH total = " + CtiNumStr(pi.value) + "\n";
+                CtiPointSPtr kwh, kmh;
+    
+                pi = getData(DSt->Message, 5, ValueType_Raw);
+    
+                if(kwh = getDevicePointOffsetTypeEqual(MCT470_PointOffset_TotalKWH, AnalogPointType))
+                {
+                    pi.value = boost::static_pointer_cast<CtiPointNumeric>(kwh)->computeValueForUOM(pi.value);
+    
+                    point_string = getName() + " / " + kwh->getName() + " = " + CtiNumStr(pi.value, boost::static_pointer_cast<CtiPointNumeric>(kwh)->getPointUnits().getDecimalPlaces());
+    
+                    ReturnMsg->PointData().push_back(makePointDataMsg(kwh, pi, point_string));
+                }
+                else
+                {
+                    resultString += getName() + " / KWH total = " + CtiNumStr(pi.value) + "\n";
+                }
+    
+                pi = getData(DSt->Message + 5, 5, ValueType_Raw);
+    
+                if(kmh = getDevicePointOffsetTypeEqual(MCT470_PointOffset_TotalKMH, AnalogPointType))
+                {
+                    pi.value = boost::static_pointer_cast<CtiPointNumeric>(kmh)->computeValueForUOM(pi.value);
+    
+                    point_string = getName() + " / " + kmh->getName() + " = " + CtiNumStr(pi.value, boost::static_pointer_cast<CtiPointNumeric>(kmh)->getPointUnits().getDecimalPlaces());
+    
+                    ReturnMsg->PointData().push_back(makePointDataMsg(kmh, pi, point_string));
+                }
+                else
+                {
+                    resultString += getName() + " / KMH total = " + CtiNumStr(pi.value) + "\n";
+                }
+    
+                pi = getData(DSt->Message + 10, 2, ValueType_Raw);
+    
+                resultString += getName() + " / Average power factor since last freeze = " + CtiNumStr(pi.value) + "\n";
             }
-
-            pi = getData(DSt->Message + 5, 5, ValueType_Raw);
-
-            if(kmh = getDevicePointOffsetTypeEqual(MCT470_PointOffset_TotalKMH, AnalogPointType))
-            {
-                pi.value = boost::static_pointer_cast<CtiPointNumeric>(kmh)->computeValueForUOM(pi.value);
-
-                point_string = getName() + " / " + kmh->getName() + " = " + CtiNumStr(pi.value, boost::static_pointer_cast<CtiPointNumeric>(kmh)->getPointUnits().getDecimalPlaces());
-
-                ReturnMsg->PointData().push_back(makePointDataMsg(kmh, pi, point_string));
-            }
-            else
-            {
-                resultString += getName() + " / KMH total = " + CtiNumStr(pi.value) + "\n";
-            }
-
-            pi = getData(DSt->Message + 10, 2, ValueType_Raw);
-
-            resultString += getName() + " / Average power factor since last freeze = " + CtiNumStr(pi.value) + "\n";
         }
         else
         {
-            CtiPointSPtr kwh, kw;
-            point_info_t time_info;
-            CtiTime peak_time;
-
-            if( parse.getFlags() & CMD_FLAG_GV_KVARH || parse.getFlags() & CMD_FLAG_GV_KVAH  )
+            if( dataInvalid )
             {
-                offset = MCT470_PointOffset_TOU_KMBase;
+                //If we are here, we believe the data is incorrect!
+                resultString += "Device: " + getName() + "\nData buffer is bad, retry command" ;
+                status = ALPHABUFFERERROR;
+    
+                CtiPointSPtr kwh, kw;
+                int rate;
+    
+                pi.value = 0;
+                pi.quality = NonUpdatedQuality;
+    
+                if( parse.getFlags() & CMD_FLAG_GV_KVARH || parse.getFlags() & CMD_FLAG_GV_KVAH  )
+                {
+                    offset = MCT470_PointOffset_TOU_KMBase;
+                }
+                else
+                {
+                    offset = MCT470_PointOffset_TOU_KWBase;
+                }
+
+                if(      parse.getFlags() & CMD_FLAG_GV_RATEA )  rate = 0;
+                else if( parse.getFlags() & CMD_FLAG_GV_RATEB )  rate = 1;
+                else if( parse.getFlags() & CMD_FLAG_GV_RATEC )  rate = 2;
+                else if( parse.getFlags() & CMD_FLAG_GV_RATED )  rate = 3;
+
+                if(kwh = getDevicePointOffsetTypeEqual(offset + rate * 2 + 1, AnalogPointType))
+
+                {
+                    point_string = getName() + " / " + kwh->getName() + " = Non Updated";
+                    ReturnMsg->PointData().push_back(makePointDataMsg(kwh, pi, point_string));
+                }
+    
+                if(kw = getDevicePointOffsetTypeEqual(offset + rate * 2, AnalogPointType))
+                {
+                    point_string = getName() + " / " + kw->getName() + " = Non Updated";
+                    ReturnMsg->PointData().push_back(makePointDataMsg(kw, pi, point_string));
+                }
             }
             else
             {
-                offset = MCT470_PointOffset_TOU_KWBase;
-            }
-
-            if(      parse.getFlags() & CMD_FLAG_GV_RATEA )  rate = 0;
-            else if( parse.getFlags() & CMD_FLAG_GV_RATEB )  rate = 1;
-            else if( parse.getFlags() & CMD_FLAG_GV_RATEC )  rate = 2;
-            else if( parse.getFlags() & CMD_FLAG_GV_RATED )  rate = 3;
-
-            pi = getData(DSt->Message, 5, ValueType_Raw);
-
-            if(kwh = getDevicePointOffsetTypeEqual(offset + rate * 2 + 1, AnalogPointType))
-            {
-                pi.value = boost::static_pointer_cast<CtiPointNumeric>(kwh)->computeValueForUOM(pi.value);
-
-                point_string = getName() + " / " + kwh->getName() + " = " + CtiNumStr(pi.value, boost::static_pointer_cast<CtiPointNumeric>(kwh)->getPointUnits().getDecimalPlaces());
-
-                ReturnMsg->PointData().push_back(makePointDataMsg(kwh, pi, point_string));
-            }
-            else
-            {
-                resultString += getName() + " / KWH rate " + (char)('A' + rate) + " total = " + CtiNumStr(pi.value) + "\n";
-            }
-
-            //  this is CRAZY WIN32 SPECIFIC
-            _TIME_ZONE_INFORMATION tzinfo;
-            int timezone_offset = 0;
-            if( GetTimeZoneInformation(&tzinfo) != TIME_ZONE_ID_INVALID )
-            {
-                //  Bias is in minutes
-                timezone_offset = tzinfo.Bias * 60;
-            }
-
-            pi        = getData(DSt->Message + 5, 3, ValueType_Raw);
-            time_info = getData(DSt->Message + 8, 4, ValueType_Raw);
-            peak_time = CtiTime((unsigned long)time_info.value + timezone_offset);
-
-            if(kw = getDevicePointOffsetTypeEqual(offset + rate, AnalogPointType))
-            {
-                CtiPointDataMsg *peak_msg;
-
-                pi.value = boost::static_pointer_cast<CtiPointNumeric>(kw)->computeValueForUOM(pi.value);
-
-                point_string  = getName() + " / " + kw->getName() + " = " + CtiNumStr(pi.value, boost::static_pointer_cast<CtiPointNumeric>(kw)->getPointUnits().getDecimalPlaces());
-                point_string += " @ " + peak_time.asString() + "\n";
-
-                peak_msg = makePointDataMsg(kw, pi, point_string);
-                peak_msg->setTime(peak_time);
-
-                ReturnMsg->PointData().push_back(peak_msg);
-            }
-            else
-            {
-                resultString += getName() + " / KW rate " + (char)('A' + rate) + " peak = " + CtiNumStr(pi.value);
-
-                resultString += " @ " + peak_time.asString() + "\n";
+                CtiPointSPtr kwh, kw;
+                point_info_t time_info;
+                CtiTime peak_time;
+    
+                if( parse.getFlags() & CMD_FLAG_GV_KVARH || parse.getFlags() & CMD_FLAG_GV_KVAH  )
+                {
+                    offset = MCT470_PointOffset_TOU_KMBase;
+                }
+                else
+                {
+                    offset = MCT470_PointOffset_TOU_KWBase;
+                }
+    
+                if(      parse.getFlags() & CMD_FLAG_GV_RATEA )  rate = 0;
+                else if( parse.getFlags() & CMD_FLAG_GV_RATEB )  rate = 1;
+                else if( parse.getFlags() & CMD_FLAG_GV_RATEC )  rate = 2;
+                else if( parse.getFlags() & CMD_FLAG_GV_RATED )  rate = 3;
+    
+                pi = getData(DSt->Message, 5, ValueType_Raw);
+    
+                if(kwh = getDevicePointOffsetTypeEqual(offset + rate * 2 + 1, AnalogPointType))
+                {
+                    pi.value = boost::static_pointer_cast<CtiPointNumeric>(kwh)->computeValueForUOM(pi.value);
+    
+                    point_string = getName() + " / " + kwh->getName() + " = " + CtiNumStr(pi.value, boost::static_pointer_cast<CtiPointNumeric>(kwh)->getPointUnits().getDecimalPlaces());
+    
+                    ReturnMsg->PointData().push_back(makePointDataMsg(kwh, pi, point_string));
+                }
+                else
+                {
+                    resultString += getName() + " / KWH rate " + (char)('A' + rate) + " total = " + CtiNumStr(pi.value) + "\n";
+                }
+    
+                //  this is CRAZY WIN32 SPECIFIC
+                _TIME_ZONE_INFORMATION tzinfo;
+                int timezone_offset = 0;
+                if( GetTimeZoneInformation(&tzinfo) != TIME_ZONE_ID_INVALID )
+                {
+                    //  Bias is in minutes
+                    timezone_offset = tzinfo.Bias * 60;
+                }
+    
+                pi        = getData(DSt->Message + 5, 3, ValueType_Raw);
+                time_info = getData(DSt->Message + 8, 4, ValueType_Raw);
+                peak_time = CtiTime((unsigned long)time_info.value + timezone_offset);
+    
+                if(kw = getDevicePointOffsetTypeEqual(offset + rate, AnalogPointType))
+                {
+                    CtiPointDataMsg *peak_msg;
+    
+                    pi.value = boost::static_pointer_cast<CtiPointNumeric>(kw)->computeValueForUOM(pi.value);
+    
+                    point_string  = getName() + " / " + kw->getName() + " = " + CtiNumStr(pi.value, boost::static_pointer_cast<CtiPointNumeric>(kw)->getPointUnits().getDecimalPlaces());
+                    point_string += " @ " + peak_time.asString() + "\n";
+    
+                    peak_msg = makePointDataMsg(kw, pi, point_string);
+                    peak_msg->setTime(peak_time);
+    
+                    ReturnMsg->PointData().push_back(peak_msg);
+                }
+                else
+                {
+                    resultString += getName() + " / KW rate " + (char)('A' + rate) + " peak = " + CtiNumStr(pi.value);
+    
+                    resultString += " @ " + peak_time.asString() + "\n";
+                }
             }
         }
 
