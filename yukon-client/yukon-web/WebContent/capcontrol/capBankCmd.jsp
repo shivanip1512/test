@@ -17,6 +17,7 @@
 
 <!-- Form for submitting CapBank commands -->
 <form id="frmCapBankCmd" action="/servlet/CBCServlet" method="post">
+<input type="hidden" name="redirectURL" value="/capcontrol/feeders.jsp">
 <input type="hidden" name="controlType" value="<%=CBCServlet.TYPE_CAPBANK%>">
 <input type="hidden" name="paoID">
 <input type="hidden" name="cmdID">
@@ -92,16 +93,6 @@
 				onclick="postMany('frmCapBankCmd', 'paoID', <%=capBankId%>, 'cmdID', <%=CBCCommand.RESET_OPCOUNT%>); top.document.getElementById('tempIFrame').style.display='none';"
 				>Reset Op Counts</a>
 		  </td></tr>
-<% if( capBank.isBankMoved() ) { %>
-          <tr><td>
-          	<a href="javascript:void(0);" class="optDeselect"
-				onmouseover="changeOptionStyle(this)"
-				onclick="postMany('frmCapBankCmd', 'paoID', <%=capBankId%>, 'cmdID', <%=CBCCommand.RETURN_BANK_TO_FEEDER%>); top.document.getElementById('tempIFrame').style.display='none';"
-				>Temp Move Back</a>
-		  </td></tr>
-<% } %>
-
-
 <%	
 	LiteState[] cbcStates = CBCDisplay.getCBCStateNames();
 	for( int i = 0; i < cbcStates.length; i++ )
