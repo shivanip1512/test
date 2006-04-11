@@ -1953,6 +1953,11 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg)
 	{
 		//Do nothing, there is no cache for service Companies, but please do not release all cache!
 	}
+    else if ( database == DBChangeMsg.CHANGE_CBC_STRATEGY_DB)
+    {
+        
+        //Do nothing for now...
+    }
 	else if( database == DBChangeMsg.CHANGE_WORK_ORDER_DB )
 	{
 		//Do nothing, there is no default cache for workOrders/serviceRequests, but please do not release all cache!
