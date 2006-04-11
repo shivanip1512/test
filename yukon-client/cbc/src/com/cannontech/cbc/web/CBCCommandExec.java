@@ -189,42 +189,9 @@ public class CBCCommandExec
 	private void _executeConfirmSub( int _paoID )
 	{
 		Multi multi = new Multi();
-      
-		SubBus sub = cbcCache.getSubBus( new Integer(_paoID) );
-      
-		for( int i = 0; i < sub.getCcFeeders().size(); i++ )
-		{
-			Feeder feeder = (Feeder)sub.getCcFeeders().get(i);
-	
-			//do not confirm disabled feeders
-			if( feeder.getCcDisableFlag().booleanValue() )
-				continue;
-
-   			
-			for( int j = 0; j < feeder.getCcCapBanks().size(); j++ )
-			{
-				CapBankDevice bank = (CapBankDevice)feeder.getCcCapBanks().get(j);
-
-				//do not confirm disabled banks
-				if( bank.getCcDisableFlag().booleanValue() )
-				{
-					continue;
-				}
-				else if( CapBankDevice.isInAnyCloseState(bank) )
-				{
-					multi.getVector().add( new CBCCommand(
-								CBCCommand.CONFIRM_CLOSE, 
-								 bank.getControlDeviceID().intValue()) );
-				}
-				else if( CapBankDevice.isInAnyOpenState(bank) )
-				{
-					multi.getVector().add( new CBCCommand(
-								CBCCommand.CONFIRM_OPEN, 
-								 bank.getControlDeviceID().intValue()) );
-				}
-			}			
-		}
-	
+		CBCCommand command = new CBCCommand (CBCCommand.CONFIRM_SUB, _paoID);
+		command.setUserName(userName);
+		multi.getVector().add ( command );
 		if( multi.getVector().size() > 0 )
 			cbcCache.getConnection().write( multi );		
 	}
