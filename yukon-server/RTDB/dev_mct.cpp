@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.82 $
-* DATE         :  $Date: 2006/03/23 23:35:23 $
+* REVISION     :  $Revision: 1.83 $
+* DATE         :  $Date: 2006/04/11 20:49:25 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3053,6 +3053,8 @@ INT CtiDeviceMCT::executeControl(CtiRequestMsg                  *pReq,
                                  list< OUTMESS* >         &outList)
 {
     bool found = false;
+    bool dead_air = false;
+
     INT   nRet = NoError;
 
     INT function;
@@ -3118,26 +3120,38 @@ INT CtiDeviceMCT::executeControl(CtiRequestMsg                  *pReq,
     {
         function = Emetcon::Control_Conn;
         found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+
+        if( getType() == TYPEMCT410 )
+        {
+            //  the 410 requires some dead time to transmit to its disconnect base
+            dead_air = true;
+        }
     }
     else if(parse.getFlags() & CMD_FLAG_CTL_DISCONNECT)
     {
         function = Emetcon::Control_Disc;
         found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
 
-        //  do not allow the disconnect command to be sent to a meter that has no disconnect address
-        if( getType() == TYPEMCT410 && !_disconnectAddress )
+        if( getType() == TYPEMCT410 )
         {
-            CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
+            //  the 410 requires some dead time to transmit to its disconnect base
+            dead_air = true;
 
-            if( ReturnMsg )
+            //  do not allow the disconnect command to be sent to a meter that has no disconnect address
+            if( !_disconnectAddress )
             {
-                ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
-                ReturnMsg->setResultString(getName() + " / Disconnect command cannot be sent to an empty (zero) address");
+                CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
 
-                retMsgHandler( OutMessage->Request.CommandStr, NoMethod, ReturnMsg, vgList, retList, true );
+                if( ReturnMsg )
+                {
+                    ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
+                    ReturnMsg->setResultString(getName() + " / Disconnect command cannot be sent to an empty (zero) address");
+
+                    retMsgHandler( OutMessage->Request.CommandStr, NoMethod, ReturnMsg, vgList, retList, true );
+                }
+
+                found = false;
             }
-
-            found = false;
         }
     }
     else if(parse.isKeyValid("latch_relays"))
@@ -3172,6 +3186,24 @@ INT CtiDeviceMCT::executeControl(CtiRequestMsg                  *pReq,
         strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
 
         outList.push_back( OutMessage );
+
+        if( dead_air )
+        {
+            CtiOutMessage *om = new CtiOutMessage(*OutMessage);
+
+            //  we don't want this showing up in Commander
+            om->ReturnNexus = NULL;
+            om->SaveNexus   = NULL;
+
+            //  make sure we leave a good chunk of time for the MCT to transmit
+            om->Buffer.BSt.Length = 13;
+            om->Buffer.BSt.IO     = Cti::Protocol::Emetcon::IO_Write;
+
+            om->MessageFlags |= MessageFlag_NoTransmit;
+
+            outList.push_back(om);
+        }
+
         OutMessage = NULL;
     }
 
@@ -4854,6 +4886,12 @@ void CtiDeviceMCT::setConfigData( const string &configName, int configType, cons
             _wireConfig[i] = WireConfigInvalid;
         }
     }
+}
+
+
+int CtiDeviceMCT::getNextFreeze( void ) const
+{
+    return ((_expected_freeze + 1) % 2) + 1;
 }
 
 
