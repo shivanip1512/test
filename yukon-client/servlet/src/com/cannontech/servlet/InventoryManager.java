@@ -1906,6 +1906,7 @@ public class InventoryManager extends HttpServlet {
         try
         {
             Transaction.createTransaction(Transaction.DELETE, plannedDeath).execute();
+            session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Plan " + pBean.getCurrentPlan().getPlanName() + " was successfully deleted.");
         }
         catch (TransactionException e) 
         {
@@ -1915,7 +1916,6 @@ public class InventoryManager extends HttpServlet {
             session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Plan deletion did NOT complete.  Transaction failed.");
         }
         
-        session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Plan " + pBean.getCurrentPlan().getPlanName() + " was successfully deleted.");
         /*
          * Set current plan as the next in the list (next most recently created)
          */
