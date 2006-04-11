@@ -1,6 +1,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <cti:standardPage title="Feeders" module="capcontrol">
 <%@include file="cbc_inc.jspf"%>
+<%@ page import="com.cannontech.common.constants.LoginController" %>
 
 <jsp:useBean id="capControlCache"
     class="com.cannontech.cbc.web.CapControlCache"
@@ -13,12 +14,15 @@
 
 <%
 	int subid = cbcSession.getLastSubID();
-	
+	LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);			
+	String popupEvent = AuthFuncs.getRolePropertyValue(user, WebClientRole.POPUP_APPEAR_STYLE);
+	if (popupEvent == null) popupEvent = "onmouseover";
 	SubBus subBus = capControlCache.getSubBus( new Integer(subid) );
 	Feeder[] feeders = capControlCache.getFeedersBySub( new Integer(subid) );
 	CapBankDevice[] capBanks = capControlCache.getCapBanksBySub( new Integer(subid) );
 
 	boolean hasControl = CBCWebUtils.hasControlRights(session);
+	
 %>
 
 <cti:standardMenu/>
@@ -68,7 +72,7 @@ if( subBus != null ) {
 						<a type="state" name="cti_dyn" id="<%=subBus.getCcId()%>"
 							style="color: <%=CBCDisplay.getHTMLFgColor(subBus)%>;"
 							href="javascript:void(0);"
-						    onmouseover="overlib(
+						    <%= popupEvent %> ="return overlib(
 								createIFrame('subCmd.jsp?subId=<%=subBus.getCcId()%>', 135, 90, 'tempIFrame', 0),
 								STICKY, WIDTH,135, HEIGHT,90, OFFSETX,-15,OFFSETY,-15,
 								MOUSEOFF, FULLHTML);"
@@ -141,7 +145,7 @@ for( int i = 0; i < feeders.length; i++ )
 	<a type="state" name="cti_dyn" id="<%=feeder.getCcId()%>"
 		style="color: <%=CBCDisplay.getHTMLFgColor(feeder)%>;"
 		href="javascript:void(0);"
-	    onmouseover="overlib(
+	    <%= popupEvent %> ="return overlib(
 			createIFrame('feederCmd.jsp?feederId=<%=feeder.getCcId()%>', 135, 75, 'tempIFrame', 0),
 			STICKY, WIDTH,135, HEIGHT,75, OFFSETX,-15, OFFSETY,-15,
 			MOUSEOFF, FULLHTML);"
@@ -222,7 +226,7 @@ for( int i = 0; i < capBanks.length; i++ )
 					<td><input type="checkbox" name="cti_chkbxBanks" value="<%=capBank.getCcId()%>"/>
 					<% if( hasControl && !CtiUtilities.STRING_NONE.equals(subBus.getControlUnits()) ) { %>
 						<a href="javascript:void(0);"
-						    onmouseover="overlib(
+						    <%= popupEvent %>="return overlib(
 								createIFrame('capBankCmd.jsp?capBankId=<%=capBank.getCcId()%>&cmdType=field', 155, 110, 'tempIFrame', 0),
 								STICKY, WIDTH,155, HEIGHT,110, OFFSETX,-15,OFFSETY,-15,
 								MOUSEOFF, FULLHTML);"
@@ -242,10 +246,11 @@ for( int i = 0; i < capBanks.length; i++ )
 						<a type="state" name="cti_dyn" id="<%=capBank.getCcId()%>"
 							style="color: <%=CBCDisplay.getHTMLFgColor(capBank)%>;"
 							href="javascript:void(0);"
-						    onmouseover="overlib(
+						    <%= popupEvent %>	= "return overlib(
 								createIFrame('capBankCmd.jsp?capBankId=<%=capBank.getCcId()%>&cmdType=system', 155, 200, 'tempIFrame', 0),
 								STICKY, WIDTH,155, HEIGHT,200, OFFSETX,-15,OFFSETY,-15,
 								MOUSEOFF, FULLHTML);"
+						    
 						    onmouseout="nd();" >
 							
 					<% } else { %>
@@ -266,7 +271,12 @@ for( int i = 0; i < capBanks.length; i++ )
 
 		          	<a href="javascript:void(0);"
 		          		<% if( capBank.isBankMoved() ) {%>
-		          			class="warning" onmouseover="statusMsg(this, 'This bank has been temporarily moved from it\'s original feeder');"
+		          			class="warning" <%= popupEvent %>="return overlib(
+								createIFrame('capBankMove.jsp?capBankId=<%=capBank.getCcId()%>&cmdType=system', 155, 200, 'tempIFrame', 0),
+								STICKY, WIDTH,155, HEIGHT,200, OFFSETX,-15,OFFSETY,-15,
+								MOUSEOFF, FULLHTML);"
+								onmouseout="nd();" 
+		          			
 		          		<% } else { %>
 							onmouseover="statusMsg(this, 'Click here to temporarily move this CapBank from it\'s current parent feeder');"
 		          			onclick="showPopUp('tempmove.jsp?bankid='+<%=capBank.getCcId()%>);"
