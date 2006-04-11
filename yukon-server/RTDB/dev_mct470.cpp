@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.37 $
-* DATE         :  $Date: 2006/04/11 19:02:33 $
+* REVISION     :  $Revision: 1.38 $
+* DATE         :  $Date: 2006/04/11 20:39:55 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1658,39 +1658,22 @@ INT CtiDeviceMCT470::executeScan(CtiRequestMsg                  *pReq,
             OutMessage->Retry     = 2;
             OutMessage->Request.RouteID   = getRouteID();
 
-            MCTSystemOptionsSPtr options = boost::static_pointer_cast< ConfigurationPart<MCTSystemOptions> >(getDeviceConfig()->getConfigFromType(ConfigTypeMCTSystemOptions));
+            CtiConfigDeviceSPtr deviceConfig = getDeviceConfig();
 
-            if( !options || (options && ( !stringCompareIgnoreCase(options->getValueFromKey(DemandMetersToScan), "all")
-                          || !stringCompareIgnoreCase(options->getValueFromKey(DemandMetersToScan), "pulse"))) )
+            if( deviceConfig )
             {
-                //Read the pulse demand
-                function = Emetcon::GetValue_Demand;
-                found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
-                if( found )
-                {
-                    OutMessage->Sequence  = function;     // Helps us figure it out later!
-                    strncpy(OutMessage->Request.CommandStr, "getvalue demand", COMMAND_STR_SIZE );
-                    outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
-                }
-                else
-                {
-                    nRet = NoMethod;
-                }
-            }
+                MCTSystemOptionsSPtr options = boost::static_pointer_cast< ConfigurationPart<MCTSystemOptions> >(deviceConfig->getConfigFromType(ConfigTypeMCTSystemOptions));
 
-            if( !options || (options && ( !stringCompareIgnoreCase(options->getValueFromKey(DemandMetersToScan), "all")
-                          || !stringCompareIgnoreCase(options->getValueFromKey(DemandMetersToScan), "ied"))) )
-            {
-                if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) < MCT470_SspecRev_IED_Zero_Write_Min
-                    && _iedTime.seconds()/60 < (CtiTime::now().seconds()/60-(MaxIEDReadMinutes/2)) )
+                if( !options || (options && ( !stringCompareIgnoreCase(options->getValueFromKey(DemandMetersToScan), "all")
+                              || !stringCompareIgnoreCase(options->getValueFromKey(DemandMetersToScan), "pulse"))) )
                 {
-                    //If we need to read out the time, do so.
-                    function = Emetcon::GetConfig_IEDTime;
+                    //Read the pulse demand
+                    function = Emetcon::GetValue_Demand;
                     found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
                     if( found )
                     {
                         OutMessage->Sequence  = function;     // Helps us figure it out later!
-                        strncpy(OutMessage->Request.CommandStr, "getconfig ied time", COMMAND_STR_SIZE );
+                        strncpy(OutMessage->Request.CommandStr, "getvalue demand", COMMAND_STR_SIZE );
                         outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
                     }
                     else
@@ -1699,19 +1682,45 @@ INT CtiDeviceMCT470::executeScan(CtiRequestMsg                  *pReq,
                     }
                 }
 
-                //Read the IED demand
-                function = Emetcon::GetValue_IEDDemand;
-                found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
-                if( found )
+                if( !options || (options && ( !stringCompareIgnoreCase(options->getValueFromKey(DemandMetersToScan), "all")
+                              || !stringCompareIgnoreCase(options->getValueFromKey(DemandMetersToScan), "ied"))) )
                 {
-                    OutMessage->Sequence  = function;     // Helps us figure it out later!
-                    strncpy(OutMessage->Request.CommandStr, "getvalue ied demand", COMMAND_STR_SIZE );
-                    outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
+                    if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) < MCT470_SspecRev_IED_Zero_Write_Min
+                        && _iedTime.seconds()/60 < (CtiTime::now().seconds()/60-(MaxIEDReadMinutes/2)) )
+                    {
+                        //If we need to read out the time, do so.
+                        function = Emetcon::GetConfig_IEDTime;
+                        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+                        if( found )
+                        {
+                            OutMessage->Sequence  = function;     // Helps us figure it out later!
+                            strncpy(OutMessage->Request.CommandStr, "getconfig ied time", COMMAND_STR_SIZE );
+                            outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
+                        }
+                        else
+                        {
+                            nRet = NoMethod;
+                        }
+                    }
+
+                    //Read the IED demand
+                    function = Emetcon::GetValue_IEDDemand;
+                    found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+                    if( found )
+                    {
+                        OutMessage->Sequence  = function;     // Helps us figure it out later!
+                        strncpy(OutMessage->Request.CommandStr, "getvalue ied demand", COMMAND_STR_SIZE );
+                        outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
+                    }
+                    else
+                    {
+                        nRet = NoMethod;
+                    }
                 }
-                else
-                {
-                    nRet = NoMethod;
-                }
+            }
+            else
+            {
+                nRet = NoMethod;
             }
         }
         default:
@@ -2793,18 +2802,18 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                 //If we are here, we believe the data is incorrect!
                 resultString += "Device: " + getName() + "\nData buffer is bad, retry command" ;
                 status = ALPHABUFFERERROR;
-    
+
                 CtiPointSPtr kwh, kmh;
-    
+
                 pi.value = 0;
                 pi.quality = NonUpdatedQuality;
-    
+
                 if(kwh = getDevicePointOffsetTypeEqual(MCT470_PointOffset_TotalKWH, AnalogPointType))
                 {
                     point_string = getName() + " / " + kwh->getName() + " = Non Updated";
                     ReturnMsg->PointData().push_back(makePointDataMsg(kwh, pi, point_string));
                 }
-    
+
                 if(kmh = getDevicePointOffsetTypeEqual(MCT470_PointOffset_TotalKMH, AnalogPointType))
                 {
                     point_string = getName() + " / " + kmh->getName() + " = Non Updated";
@@ -2814,39 +2823,39 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
             else
             {
                 CtiPointSPtr kwh, kmh;
-    
+
                 pi = getData(DSt->Message, 5, ValueType_Raw);
-    
+
                 if(kwh = getDevicePointOffsetTypeEqual(MCT470_PointOffset_TotalKWH, AnalogPointType))
                 {
                     pi.value = boost::static_pointer_cast<CtiPointNumeric>(kwh)->computeValueForUOM(pi.value);
-    
+
                     point_string = getName() + " / " + kwh->getName() + " = " + CtiNumStr(pi.value, boost::static_pointer_cast<CtiPointNumeric>(kwh)->getPointUnits().getDecimalPlaces());
-    
+
                     ReturnMsg->PointData().push_back(makePointDataMsg(kwh, pi, point_string));
                 }
                 else
                 {
                     resultString += getName() + " / KWH total = " + CtiNumStr(pi.value) + "\n";
                 }
-    
+
                 pi = getData(DSt->Message + 5, 5, ValueType_Raw);
-    
+
                 if(kmh = getDevicePointOffsetTypeEqual(MCT470_PointOffset_TotalKMH, AnalogPointType))
                 {
                     pi.value = boost::static_pointer_cast<CtiPointNumeric>(kmh)->computeValueForUOM(pi.value);
-    
+
                     point_string = getName() + " / " + kmh->getName() + " = " + CtiNumStr(pi.value, boost::static_pointer_cast<CtiPointNumeric>(kmh)->getPointUnits().getDecimalPlaces());
-    
+
                     ReturnMsg->PointData().push_back(makePointDataMsg(kmh, pi, point_string));
                 }
                 else
                 {
                     resultString += getName() + " / KMH total = " + CtiNumStr(pi.value) + "\n";
                 }
-    
+
                 pi = getData(DSt->Message + 10, 2, ValueType_Raw);
-    
+
                 resultString += getName() + " / Average power factor since last freeze = " + CtiNumStr(pi.value) + "\n";
             }
         }
@@ -2857,13 +2866,13 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                 //If we are here, we believe the data is incorrect!
                 resultString += "Device: " + getName() + "\nData buffer is bad, retry command" ;
                 status = ALPHABUFFERERROR;
-    
+
                 CtiPointSPtr kwh, kw;
                 int rate;
-    
+
                 pi.value = 0;
                 pi.quality = NonUpdatedQuality;
-    
+
                 if( parse.getFlags() & CMD_FLAG_GV_KVARH || parse.getFlags() & CMD_FLAG_GV_KVAH  )
                 {
                     offset = MCT470_PointOffset_TOU_KMBase;
@@ -2884,7 +2893,7 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                     point_string = getName() + " / " + kwh->getName() + " = Non Updated";
                     ReturnMsg->PointData().push_back(makePointDataMsg(kwh, pi, point_string));
                 }
-    
+
                 if(kw = getDevicePointOffsetTypeEqual(offset + rate * 2, AnalogPointType))
                 {
                     point_string = getName() + " / " + kw->getName() + " = Non Updated";
@@ -2896,7 +2905,7 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                 CtiPointSPtr kwh, kw;
                 point_info_t time_info;
                 CtiTime peak_time;
-    
+
                 if( parse.getFlags() & CMD_FLAG_GV_KVARH || parse.getFlags() & CMD_FLAG_GV_KVAH  )
                 {
                     offset = MCT470_PointOffset_TOU_KMBase;
@@ -2905,27 +2914,27 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                 {
                     offset = MCT470_PointOffset_TOU_KWBase;
                 }
-    
+
                 if(      parse.getFlags() & CMD_FLAG_GV_RATEA )  rate = 0;
                 else if( parse.getFlags() & CMD_FLAG_GV_RATEB )  rate = 1;
                 else if( parse.getFlags() & CMD_FLAG_GV_RATEC )  rate = 2;
                 else if( parse.getFlags() & CMD_FLAG_GV_RATED )  rate = 3;
-    
+
                 pi = getData(DSt->Message, 5, ValueType_Raw);
-    
+
                 if(kwh = getDevicePointOffsetTypeEqual(offset + rate * 2 + 1, AnalogPointType))
                 {
                     pi.value = boost::static_pointer_cast<CtiPointNumeric>(kwh)->computeValueForUOM(pi.value);
-    
+
                     point_string = getName() + " / " + kwh->getName() + " = " + CtiNumStr(pi.value, boost::static_pointer_cast<CtiPointNumeric>(kwh)->getPointUnits().getDecimalPlaces());
-    
+
                     ReturnMsg->PointData().push_back(makePointDataMsg(kwh, pi, point_string));
                 }
                 else
                 {
                     resultString += getName() + " / KWH rate " + (char)('A' + rate) + " total = " + CtiNumStr(pi.value) + "\n";
                 }
-    
+
                 //  this is CRAZY WIN32 SPECIFIC
                 _TIME_ZONE_INFORMATION tzinfo;
                 int timezone_offset = 0;
@@ -2934,29 +2943,29 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                     //  Bias is in minutes
                     timezone_offset = tzinfo.Bias * 60;
                 }
-    
+
                 pi        = getData(DSt->Message + 5, 3, ValueType_Raw);
                 time_info = getData(DSt->Message + 8, 4, ValueType_Raw);
                 peak_time = CtiTime((unsigned long)time_info.value + timezone_offset);
-    
+
                 if(kw = getDevicePointOffsetTypeEqual(offset + rate, AnalogPointType))
                 {
                     CtiPointDataMsg *peak_msg;
-    
+
                     pi.value = boost::static_pointer_cast<CtiPointNumeric>(kw)->computeValueForUOM(pi.value);
-    
+
                     point_string  = getName() + " / " + kw->getName() + " = " + CtiNumStr(pi.value, boost::static_pointer_cast<CtiPointNumeric>(kw)->getPointUnits().getDecimalPlaces());
                     point_string += " @ " + peak_time.asString() + "\n";
-    
+
                     peak_msg = makePointDataMsg(kw, pi, point_string);
                     peak_msg->setTime(peak_time);
-    
+
                     ReturnMsg->PointData().push_back(peak_msg);
                 }
                 else
                 {
                     resultString += getName() + " / KW rate " + (char)('A' + rate) + " peak = " + CtiNumStr(pi.value);
-    
+
                     resultString += " @ " + peak_time.asString() + "\n";
                 }
             }
