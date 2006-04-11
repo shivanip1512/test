@@ -40,7 +40,8 @@ CtiLMGroupBase::CtiLMGroupBase()
     : _next_control_time(gInvalidCtiTime),
       _controlstarttime(gInvalidCtiTime),
       _controlcompletetime(gInvalidCtiTime),
-      _daily_ops(0),      
+      _daily_ops(0),
+      _groupcontrolstate(InactiveState),
       _insertDynamicDataFlag(TRUE)
 {
     resetInternalState();
@@ -51,6 +52,7 @@ CtiLMGroupBase::CtiLMGroupBase(RWDBReader& rdr)
       _controlstarttime(gInvalidCtiTime),
       _controlcompletetime(gInvalidCtiTime),
       _daily_ops(0),
+      _groupcontrolstate(InactiveState),      
       _insertDynamicDataFlag(TRUE)
 {
     resetInternalState();
@@ -346,7 +348,7 @@ bool CtiLMGroupBase::getIsRampingOut() const
 ULONG CtiLMGroupBase::getCurrentControlDuration() const
 {
     return (getGroupControlState() == ActiveState ?
-	    CtiTime::now().seconds() - getControlStartTime().seconds() : 0);
+            CtiTime::now().seconds() - getControlStartTime().seconds() : 0);
 }
 
 /*---------------------------------------------------------------------------
@@ -1161,7 +1163,7 @@ void CtiLMGroupBase::restore(RWDBReader& rdr)
         setControlStartTime(gInvalidCtiTime);
         setControlCompleteTime(gInvalidCtiTime);
         setNextControlTime(gInvalidCtiTime);
-		resetDailyOps(0);
+                resetDailyOps(0);
         _internalState = 0;
 
         _insertDynamicDataFlag = TRUE;

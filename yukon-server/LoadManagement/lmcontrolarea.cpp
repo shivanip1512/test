@@ -881,9 +881,9 @@ BOOL CtiLMControlArea::hasThresholdTrigger()
     {
         CtiLMControlAreaTrigger* currentTrigger = (CtiLMControlAreaTrigger*)_lmcontrolareatriggers[i];
         if( !stringCompareIgnoreCase(currentTrigger->getTriggerType(), CtiLMControlAreaTrigger::ThresholdTriggerType) )
-		{
-		    return TRUE;
-		}
+                {
+                    return TRUE;
+                }
     }
     return FALSE;
 }
@@ -1153,7 +1153,7 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG 
                     string additional = *getAutomaticallyStartedSignalString();
                     //additional += getAutomaticallyStartedSignalString();
                     CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
-                    signal->setSOE(1);	
+                    signal->setSOE(1);  
 
                     multiDispatchMsg->insert(signal);
                     {
@@ -1205,12 +1205,12 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG 
                             }
                         }
 
-			// We need to check the programs trigger threshold offset to make sure we are above it, BUT
-			// if there is no threshold trigger then it doesn't apply.
-			// Likewise if this program has no trigger offset then don't worry about it, let it control
+                        // We need to check the programs trigger threshold offset to make sure we are above it, BUT
+                        // if there is no threshold trigger then it doesn't apply.
+                        // Likewise if this program has no trigger offset then don't worry about it, let it control
                         if( (!hasThresholdTrigger() ||
-			     lmProgramDirect->getTriggerOffset() == 0 ||
-			     isThresholdTriggerTripped(lmProgramDirect)) )
+                             lmProgramDirect->getTriggerOffset() == 0 ||
+                             isThresholdTriggerTripped(lmProgramDirect)) )
 //                            (lmProgramDirect->getMaxDailyOps() == 0 ||
 //                             lmProgramDirect->getDailyOps() < lmProgramDirect->getMaxDailyOps()))
                         {
@@ -1375,25 +1375,26 @@ void CtiLMControlArea::reduceControlAreaControl(ULONG secondsFrom1901, CtiMultiM
                 }
             }
         }
+    }
 
-        if(num_active_programs == 0)
-        { //Looks like we stopped them all
-            setControlAreaState(CtiLMControlArea::InactiveState);
-            string text("Automatic Stop, LM Control Area: ");
-            text += getPAOName();
-            string additional("");//someday we can say why we auto stopped
-            CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
-            signal->setSOE(1);
+    if(num_active_programs == 0)
+    { //Looks like we stopped them all
+        setControlAreaState(CtiLMControlArea::InactiveState);
+        string text("Automatic Stop, LM Control Area: ");
+        text += getPAOName();
+        string additional("");//someday we can say why we auto stopped
+        CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
+        signal->setSOE(1);
 
-            multiDispatchMsg->insert(signal);
+        multiDispatchMsg->insert(signal);
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime() << " - " << text << ", " << additional << endl;
         }
-        }
-        setUpdatedFlag(TRUE);
-        return;
     }
+    setUpdatedFlag(TRUE);
+    return;
+    
 }
 
 /*---------------------------------------------------------------------------
@@ -1949,8 +1950,8 @@ BOOL CtiLMControlArea::stopAllControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* mul
             {
                 returnBOOL = TRUE;
 
-				// Let the world know we just auto stopped?
-				((CtiLMProgramDirect*)currentLMProgram)->scheduleStopNotification(CtiTime());
+                                // Let the world know we just auto stopped?
+                                ((CtiLMProgramDirect*)currentLMProgram)->scheduleStopNotification(CtiTime());
 
                 if( !sentSignalMsg )
                 {
@@ -2262,8 +2263,8 @@ void CtiLMControlArea::handleNotification(ULONG secondsFrom1901, CtiMultiMsg* mu
         {
             CtiLMProgramDirect* currentLMDirectProgram = (CtiLMProgramDirect*) currentLMProgram;
 
-	    // Notify of activation
-	    if( currentLMDirectProgram->getNotifyActiveTime() > gInvalidCtiTime &&
+            // Notify of activation
+            if( currentLMDirectProgram->getNotifyActiveTime() > gInvalidCtiTime &&
                 currentLMDirectProgram->getNotifyActiveTime().seconds() <= secondsFrom1901 )
             {
                 currentLMDirectProgram->notifyGroupsOfStart(multiNotifMsg);
@@ -2271,14 +2272,14 @@ void CtiLMControlArea::handleNotification(ULONG secondsFrom1901, CtiMultiMsg* mu
                 currentLMDirectProgram->dumpDynamicData();
             }
 
-		    //Notify of inactivation
-	 	    if( currentLMDirectProgram->getNotifyInactiveTime() > gInvalidCtiTime &&
+                    //Notify of inactivation
+                    if( currentLMDirectProgram->getNotifyInactiveTime() > gInvalidCtiTime &&
                 currentLMDirectProgram->getNotifyInactiveTime().seconds() <= secondsFrom1901 )
             {
                 currentLMDirectProgram->notifyGroupsOfStop(multiNotifMsg);
                 currentLMDirectProgram->setNotifyInactiveTime(gInvalidCtiTime);
                 currentLMDirectProgram->dumpDynamicData();
-            }	    
+            }       
         }
     }    
 }
