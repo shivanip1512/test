@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.76 $
-* DATE         :  $Date: 2006/04/05 16:54:28 $
+* REVISION     :  $Revision: 1.77 $
+* DATE         :  $Date: 2006/04/11 20:56:33 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -82,8 +82,9 @@ DLLEXPORT CtiLocalConnect PilToPorter; //Pil handles this one
 static vector< CtiPointDataMsg > pdMsgCol;
 static bool findShedDeviceGroupControl(const long key, CtiDeviceSPtr otherdevice, void *vptrControlParent);
 static bool findRestoreDeviceGroupControl(const long key, CtiDeviceSPtr otherdevice, void *vptrControlParent);
-static bool findAltMeterGroupName(const long key, CtiDeviceSPtr otherdevice, void *vptrAltGroupName);
 static bool findMeterGroupName(const long key, CtiDeviceSPtr otherdevice, void *vptrGroupName);
+static bool findAltMeterGroupName(const long key, CtiDeviceSPtr otherdevice, void *vptrAltGroupName);
+static bool findBillingGroupName(const long key, CtiDeviceSPtr otherdevice, void *vptrAltGroupName);
 
 int CtiPILServer::execute()
 {
@@ -1383,20 +1384,41 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
         }
     }
 
-    if(!pReq->DeviceId() && parse.isKeyValid("group"))
+    if(!pReq->DeviceId())
     {
-        // We are to do some magiks here.  Looking for names in groups
-        string gname = parse.getsValue("group");
-        std::transform(gname.begin(), gname.end(), gname.begin(), ::tolower);
+        bool group     = false,
+             altgroup  = false,
+             billgroup = false;
 
+        //  note that only one of these will be set at once - the first one
+        //    will cause the if block to be true, and the others will be false
+        if( (group     = parse.isKeyValid("group"))    ||
+            (altgroup  = parse.isKeyValid("altgroup")) ||
+            (billgroup = parse.isKeyValid("billgroup")) )
         {
+            string groupname;
+
+            // We are to do some magiks here.  Looking for names in groups
+            if( group )     groupname = parse.getsValue("group");
+            if( altgroup )  groupname = parse.getsValue("altgroup");
+            if( billgroup ) groupname = parse.getsValue("billgroup");
+
+            std::transform(groupname.begin(), groupname.end(), groupname.begin(), ::tolower);
+
             int groupsubmitcnt = 0;
             CtiDeviceManager::LockGuard dev_guard(DeviceManager->getMux());
             CtiDeviceManager::spiterator itr_dev;
 
             vector< CtiDeviceManager::ptr_type > match_coll;
-            DeviceManager->select(findMeterGroupName, (void*)(gname.c_str()), match_coll);
+            if( group )     DeviceManager->select(findMeterGroupName,    (void*)(groupname.c_str()), match_coll);
+            if( altgroup )  DeviceManager->select(findAltMeterGroupName, (void*)(groupname.c_str()), match_coll);
+            if( billgroup ) DeviceManager->select(findBillingGroupName,  (void*)(groupname.c_str()), match_coll);
             CtiDeviceSPtr sptr;
+
+            string grouptype;
+            if( group )     grouptype = "Collection Group";
+            if( altgroup )  grouptype = "Alternate Collection Group";
+            if( billgroup ) grouptype = "Billing Group";
 
             while(!match_coll.empty())
             {
@@ -1424,50 +1446,7 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Collection Group " << gname << " found " << groupsubmitcnt << " target devices." << endl;
-            }
-        }
-    }
-    else if(!pReq->DeviceId() && parse.isKeyValid("altgroup"))
-    {
-        // We are to do some magiks here.  Looking for names in groups
-        string gname = parse.getsValue("altgroup");
-
-        {
-            int groupsubmitcnt = 0;
-            CtiDeviceManager::LockGuard dev_guard(DeviceManager->getMux());
-            CtiDeviceManager::spiterator itr_dev;
-
-            vector< CtiDeviceManager::ptr_type > match_coll;
-            DeviceManager->select(findAltMeterGroupName, (void*)(gname.c_str()), match_coll);
-            CtiDeviceSPtr sptr;
-
-            while(!match_coll.empty())
-            {
-                sptr = match_coll.back();
-                match_coll.pop_back();
-
-                CtiDeviceBase &device = *(sptr.get());
-
-                groupsubmitcnt++;
-
-                // We have a name match
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Adding device " << device.getName() << " for ALT group execution" << endl;
-                }
-
-                // Create a message for this one!
-                pReq->setDeviceId(device.getID());
-                CtiRequestMsg *pNew = (CtiRequestMsg*)pReq->replicateMessage();
-                pNew->setConnectionHandle( pReq->getConnectionHandle() );
-
-                execList.push_back( pNew );
-            }
-
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Alternate Collection Group " << gname << " found " << groupsubmitcnt << " target devices." << endl;
+                dout << CtiTime() << grouptype << " " << groupname << " found " << groupsubmitcnt << " target devices." << endl;
             }
         }
     }
@@ -1538,19 +1517,19 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
             dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
-        if(parse.isKeyValid("freeze"))
+        if(parse.isKeyValid("freeze") && pReq->DeviceId())
         {
             boost::regex coll_grp("collection_group +((\"|')[^\"']+(\"|'))");
             CtiString tmp, group_name;
+
+            int next_freeze = parse.getiValue("freeze");
 
             if( !(tmp = CtiString(parse.getCommandStr().c_str()).match(coll_grp)).empty() )
             {
                 //  pull out the group name
                 group_name = tmp.match(boost::regex("(\"|')[^\"']+(\"|')"));
                 //  trim off the quotes
-                group_name.erase(0,1);
-                group_name.erase(group_name.length() - 1,group_name.length() - 1);
-                //group_name = CtiString((size_t)1, (size_t)group_name.length() - 2);
+                group_name = group_name.substr(1, group_name.size() - 2);
 
                 {
                     CtiDeviceManager::LockGuard dev_guard(DeviceManager->getMux());
@@ -1565,7 +1544,16 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
                         device = match_coll.back();
                         match_coll.pop_back();
 
-                        device->setExpectedFreeze(parse.getdValue("freeze"));
+                        //  if a freeze wasn't specified, grab the first MCT and initialize the freeze counter
+                        //    with what he expects to hear next
+                        if( !next_freeze )
+                        {
+                            shared_ptr<CtiDeviceMCT> mct = boost::static_pointer_cast<CtiDeviceMCT>(device);
+
+                            next_freeze = mct->getNextFreeze();
+                        }
+
+                        device->setExpectedFreeze(next_freeze);
                     }
 
                     //  this is where we'd attempt to correct devices that have an incorrect freeze counter
@@ -1576,6 +1564,11 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
             {
 
             }
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
