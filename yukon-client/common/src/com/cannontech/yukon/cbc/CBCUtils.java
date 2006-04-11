@@ -28,6 +28,7 @@ import com.cannontech.database.db.point.calculation.CalcComponentTypes;
  */
 public final class CBCUtils
 {
+	public static final int TEMP_MOVE_REFRESH = 1000;
 	//responsible for how to render data for CBC displays
 	public static final CBCDisplay CBC_DISPLAY = new CBCDisplay();
 

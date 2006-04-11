@@ -135,6 +135,11 @@ public void doPost(HttpServletRequest req, HttpServletResponse resp) throws java
 		CTILogger.warn( "CBC Command servlet was hit, but NO action was taken" );
 	
 
+	try {
+		Thread.sleep(CBCUtils.TEMP_MOVE_REFRESH);
+	} catch (InterruptedException e) {
+		CTILogger.warn("CBCServlet was interupted - doPost");
+	}
 	//always forward the client to the specified URL if present
 	if( redirectURL != null )
 		resp.sendRedirect( resp.encodeRedirectURL(req.getContextPath() + redirectURL) );
