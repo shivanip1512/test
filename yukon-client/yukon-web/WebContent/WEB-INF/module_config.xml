@@ -67,7 +67,7 @@
           </option>
         </sublinks>
       </option>
-      <option name="Reporting">
+      <option name="Analysis">
         <requireFalseProperty value="com.cannontech.roles.capcontrol.CBCSettingsRole.HIDE_REPORTS"/>
         <sublinks>
           <option name="Today kVAR/Watt">
@@ -85,9 +85,6 @@
           <option name="30 Day PF">
 	        <requireFalseProperty value="com.cannontech.roles.capcontrol.CBCSettingsRole.HIDE_GRAPHS"/>
             <script>showPopUpChkBoxes('charts.jsp?type=PF')</script>
-          </option>
-          <option name="Recent Controls">
-            <script>showRecentCmds('tabledata.jsp?type=RC')</script>
           </option>
         </sublinks>
       </option>
@@ -108,6 +105,9 @@
           <option name="One-Line">
 	        <requireFalseProperty value="com.cannontech.roles.capcontrol.CBCSettingsRole.HIDE_ONELINE"/>
             <script>showConfirmWin(this)</script>
+          </option>
+          <option name="Recent Controls">
+            <script>showRecentCmds('tabledata.jsp?type=RC')</script>
           </option>
         </sublinks>
       </option>
