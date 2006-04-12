@@ -114,42 +114,44 @@ public class CapBankEditorForm extends DBEditorForm {
 
 	private void setDefaultFeederLimits(CapBank capBank, CapBankMonitorPointParams monitorPoint) {
 		int fdrId = com.cannontech.database.db.capcontrol.CapBank.getParentFeederID( capBank.getPAObjectID().intValue());
-		LiteYukonPAObject liteFeeder = PAOFuncs.getLiteYukonPAO(fdrId);
-		CapControlFeeder feeder = (CapControlFeeder) LiteFactory.convertLiteToDBPers( liteFeeder);
-		Connection conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-		try {
+		if (fdrId != 0 ){	
+			LiteYukonPAObject liteFeeder = PAOFuncs.getLiteYukonPAO(fdrId);		
+			CapControlFeeder feeder = (CapControlFeeder) LiteFactory.convertLiteToDBPers( liteFeeder);
+			Connection conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+			try {
+				
+				feeder.setDbConnection( conn );						
+				feeder.retrieve();
+			} catch (SQLException e) {
+	
+			}
+			int stratId = feeder.getCapControlFeeder().getStrategyID().intValue();
 			
-			feeder.setDbConnection( conn );						
-			feeder.retrieve();
-		} catch (SQLException e) {
-
-		}
-		int stratId = feeder.getCapControlFeeder().getStrategyID().intValue();
-		
-		CapControlStrategy strategy = new CapControlStrategy();
-		strategy.setStrategyID(new Integer ( stratId));
-		
-		
-		try {
-			strategy.setDbConnection( conn );
-			strategy.retrieve();
-
-			monitorPoint.setLowerBandwidth(strategy.getPeakLag().floatValue() );
-			monitorPoint.setUpperBandwidth(strategy.getPeakLead().floatValue() );
+			CapControlStrategy strategy = new CapControlStrategy();
+			strategy.setStrategyID(new Integer ( stratId));
 			
-		} catch (SQLException e) {
-		    CTILogger.info("CapBankEditorForm -- setDefaultFeederLimits" + e.getMessage());
-		}
-		finally {
-			feeder.setDbConnection( null );
-			strategy.setDbConnection( null );
 			
 			try {
-			if( conn != null ) conn.close();
-			} catch( java.sql.SQLException e2 ) { 
-                CTILogger.info("CapBankEditorForm -- setDefaultFeederLimits" + e2.getMessage());
-
-            }			
+				strategy.setDbConnection( conn );
+				strategy.retrieve();
+	
+				monitorPoint.setLowerBandwidth(strategy.getPeakLag().floatValue() );
+				monitorPoint.setUpperBandwidth(strategy.getPeakLead().floatValue() );
+				
+			} catch (SQLException e) {
+			    CTILogger.info("CapBankEditorForm -- setDefaultFeederLimits" + e.getMessage());
+			}
+			finally {
+				feeder.setDbConnection( null );
+				strategy.setDbConnection( null );
+				
+				try {
+				if( conn != null ) conn.close();
+				} catch( java.sql.SQLException e2 ) { 
+	                CTILogger.info("CapBankEditorForm -- setDefaultFeederLimits" + e2.getMessage());
+	
+	            }			
+			}
 		}
 	}
 
