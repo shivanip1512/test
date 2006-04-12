@@ -44,7 +44,7 @@ public class StandardPageTag extends BodyTagSupport {
     private List scriptFiles;
     private String module = "";
     private String breadCrumbData = "";
-    private boolean debugMode = true;
+    private boolean debugMode = false;
     private boolean showMenu = false;
     
     public int doStartTag() throws JspException {
