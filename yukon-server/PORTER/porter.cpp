@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.92 $
-* DATE         :  $Date: 2006/03/29 22:49:45 $
+* REVISION     :  $Revision: 1.93 $
+* DATE         :  $Date: 2006/04/13 19:37:06 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1443,7 +1443,6 @@ INT RefreshPorterRTDB(void *ptr)
     InitYukonBaseGlobals();
     LoadPorterGlobals();
     LoadCommFailPoints();
-    ResetBreakAlloc();          // Make certain the debug library does not break us.
 
     if( !PorterQuit && (pChg == NULL || (pChg->getDatabase() == ChangeStateGroupDb)) )
     {

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/12/20 17:19:24 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2006/04/13 19:37:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -25,6 +25,7 @@ using namespace std;
 #include "portsvc.h"
 #include "ctibase.h"
 #include "portglob.h"
+#include "utility.h"
 
 extern INT PorterMainFunction(INT argc, CHAR** argv);
 
@@ -103,7 +104,13 @@ void CtiPorterService::Run()
    // set service as running Now
    SetStatus(SERVICE_RUNNING, 0, 0, SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN );
 
-   WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], INFINITE);
+   DWORD waitResult;
+   do
+   {
+       waitResult = WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 300000);   // Wake up Every 5 minutes and toggle the break counter
+       ResetBreakAlloc();
+
+   } while( WAIT_TIMEOUT == waitResult );
 
    SetStatus( SERVICE_STOP_PENDING, 50, 40000 );
 
