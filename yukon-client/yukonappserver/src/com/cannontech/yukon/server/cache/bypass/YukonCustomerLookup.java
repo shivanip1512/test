@@ -10,9 +10,8 @@ import java.util.Map;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.Transaction;
-import com.cannontech.database.data.lite.LiteContactNotification;
-import com.cannontech.database.data.lite.LiteCustomer;
-import com.cannontech.database.data.lite.LiteCICustomer;
+import com.cannontech.database.data.customer.CustomerTypes;
+import com.cannontech.database.data.lite.*;
 import com.cannontech.database.db.customer.CICustomerBase;
 import com.cannontech.database.db.customer.Customer;
 import com.cannontech.database.db.user.YukonRole;
@@ -39,7 +38,7 @@ public class YukonCustomerLookup
 	public static LiteCustomer loadSpecificCustomerByContactID(int contactID)
 	{
 		com.cannontech.database.SqlStatement stmt =
-			new com.cannontech.database.SqlStatement("SELECT CUSTOMERID FROM " +
+			new com.cannontech.database.SqlStatement("SELECT CUSTOMERID, CUSTOMERTYPEID FROM " +
                                                        Customer.TABLE_NAME + " WHERE PRIMARYCONTACTID = " + contactID, "yukon");
 		LiteCustomer theCustomer = null;
 		
@@ -50,9 +49,9 @@ public class YukonCustomerLookup
 			//it found one
 			if( stmt.getRowCount() > 0 )
 			{
-			    theCustomer = new LiteCustomer(((java.math.BigDecimal) stmt.getRow(0)[0]).intValue());
-			    theCustomer.retrieve(CtiUtilities.YUKONDBALIAS);
-                theCustomer = loadCICustomer(theCustomer);
+			    int customerID = ((java.math.BigDecimal) stmt.getRow(0)[0]).intValue();
+                int customerType = ((java.math.BigDecimal) stmt.getRow(0)[0]).intValue();
+                theCustomer = LiteFactory.createCICustomerOrLiteCustomer(CtiUtilities.YUKONDBALIAS, customerID, customerType);
             }
 		}
 		catch( Exception e )
@@ -64,41 +63,32 @@ public class YukonCustomerLookup
     }
 
     /*
-     * Grab a contact straight from the DB using the ContactID 
+     * Grab a contact straight from the DB using the CustomerID 
      */
     public static LiteCustomer loadSpecificCustomer(int customerID)
     {
+        com.cannontech.database.SqlStatement stmt =
+            new com.cannontech.database.SqlStatement("SELECT CUSTOMERTYPEID FROM " +
+                                                       Customer.TABLE_NAME + " WHERE CUSTOMERID = " + customerID, "yukon");
         LiteCustomer theCustomer = null;
         
         try
         {
-            theCustomer = new LiteCustomer(customerID);
-            theCustomer.retrieve(CtiUtilities.YUKONDBALIAS);
-            theCustomer = loadCICustomer(theCustomer);
+            stmt.execute();
+            
+            //it found one
+            if( stmt.getRowCount() > 0 )
+            {
+                int customerType = ((java.math.BigDecimal) stmt.getRow(0)[0]).intValue();
+                theCustomer = LiteFactory.createCICustomerOrLiteCustomer(CtiUtilities.YUKONDBALIAS, customerID, customerType);
+            }
         }
         catch( Exception e )
         {
-            com.cannontech.clientutils.CTILogger.error( "Error retrieving customer with ID: "+ customerID + "  " + e.getMessage(), e );
+            com.cannontech.clientutils.CTILogger.error( "Error retrieving customer for customerID " + customerID + ": " + e.getMessage(), e );
         }
-        
+          
         return theCustomer;
-    }
-    
-    public static LiteCustomer loadCICustomer( LiteCustomer customer )
-    {
-       try
-       {
-            LiteCICustomer newCICust = new LiteCICustomer(customer.getCustomerID());
-            newCICust.retrieve(CtiUtilities.getDatabaseAlias());
-            if(newCICust.getCompanyName() != null)
-                return newCICust;
-            else
-                return customer;
-        }
-        catch( Exception e )
-        {
-            return customer;
-        }
     }
     
 }

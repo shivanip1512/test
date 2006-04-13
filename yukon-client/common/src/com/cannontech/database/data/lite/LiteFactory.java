@@ -9,8 +9,7 @@ import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.db.command.Command;
 import com.cannontech.database.db.company.SettlementConfig;
 import com.cannontech.database.data.command.DeviceTypeCommand;
-import com.cannontech.database.data.customer.CICustomerBase;
-import com.cannontech.database.data.customer.Customer;
+import com.cannontech.database.data.customer.*;
 import com.cannontech.database.data.device.*;
 import com.cannontech.database.data.notification.NotificationGroup;
 import com.cannontech.database.data.user.YukonUser;
@@ -530,6 +529,25 @@ public static DBPersistent convertLiteToDBPersAndRetrieve( LiteBase lBase ) {
 
 	return userObject;
 	
+}
+
+/*
+ * This guy is useful when we need to retrieve for either a LiteCICustomer or a regular LiteCustomer.
+ */
+public static LiteCustomer createCICustomerOrLiteCustomer(String dbAlias, int customerID, int customerType)
+{
+    if(customerType == CustomerTypes.CUSTOMER_CI)
+    {
+        LiteCICustomer theCustomer = new LiteCICustomer(customerID);
+        theCustomer.retrieve(dbAlias);
+        return theCustomer;
+    }
+    else
+    {
+        LiteCustomer theCustomer = new LiteCustomer(customerID);
+        theCustomer.retrieve(dbAlias);
+        return theCustomer;
+    }
 }
 
 }

@@ -1,7 +1,15 @@
 package com.cannontech.database.data.lite;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.version.VersionTools;
+import com.cannontech.database.PoolManager;
+import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.db.customer.CICustomerBase;
+import com.cannontech.database.db.customer.Customer;
 
 /**
  * @author alauinger
@@ -122,36 +130,91 @@ public class LiteCICustomer extends LiteCustomer
 	
 	public void retrieve( String dbalias )
 	{
-		super.retrieve( dbalias );
-		
-		try
-		{
-			com.cannontech.database.SqlStatement stat = 
-				new com.cannontech.database.SqlStatement(
-					"SELECT MainAddressID, CompanyName, " +
-					" CustomerDemandLevel, CurtailAmount, CICustType " +
-					" FROM " + CICustomerBase.TABLE_NAME +
-					" WHERE CustomerID = " + getLiteID(),
-					dbalias );
-			
-			stat.execute();
-			
-			if( stat.getRowCount() > 0 )
-			{	
-			
-    			Object[] objs = stat.getRow(0);
-    			
-    			setMainAddressID( ((java.math.BigDecimal) objs[0]).intValue() ); 			
-    			setCompanyName( objs[1].toString() );	
-    			setDemandLevel( Double.valueOf(objs[2].toString()).doubleValue() );
-    			setCurtailAmount( Double.valueOf(objs[3].toString()).doubleValue() );
-    			setCICustType( ((java.math.BigDecimal) objs[4]).intValue() );
+        PreparedStatement pstmt = null;
+        java.sql.Connection conn = null;
+        ResultSet rset = null;
+        try 
+        {
+            conn = PoolManager.getInstance().getConnection( dbalias );
+            
+            String sql = "SELECT ci.MainAddressID, ci.CompanyName, ci.CustomerDemandLevel, " +
+                        "ci.CurtailAmount, ci.CICustType, c.PrimaryContactID, c.CustomerTypeID, " +
+                        "c.TimeZone, c.CustomerNumber, c.RateScheduleID, c.AltTrackNum, c.TemperatureUnit" +
+                        " FROM " + Customer.TABLE_NAME + " c, " + CICustomerBase.TABLE_NAME + " ci" +
+                        " WHERE ci.CustomerID = ? AND c.CustomerID = ci.CustomerID";
+            
+            pstmt = conn.prepareStatement( sql );
+            pstmt.setInt( 1, getCustomerID());
+            rset = pstmt.executeQuery();
+            
+            if(rset.next())
+            {
+                setMainAddressID( rset.getInt(1) );            
+                setCompanyName( rset.getString(2) );   
+                setDemandLevel( rset.getDouble(3) );
+                setCurtailAmount( rset.getDouble(4) );
+                setCICustType( rset.getInt(5) );
+                setPrimaryContactID(rset.getInt(6) );
+                setCustomerTypeID( rset.getInt(7) );
+                setTimeZone( rset.getString(8) );
+                setCustomerNumber( rset.getString(9) );
+                setRateScheduleID( rset.getInt(10) );
+                setAltTrackingNumber( rset.getString(11) );
+                setTemperatureUnit( rset.getString(12) );
             }
-		}
-		catch( Exception e )
-		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-		}
+            else
+                throw new IllegalStateException("Unable to find the Customer with CustomerID = " + getCustomerID() );
+            pstmt.close();
+            
+            sql = "SELECT ca.ContactID " + 
+                 " FROM CustomerAdditionalContact ca, " + Customer.TABLE_NAME + " c " +
+                 " WHERE c.CustomerID = ?" +
+                 " AND c.CustomerID=ca.CustomerID " +
+                 " ORDER BY ca.Ordering";
+            
+            pstmt = conn.prepareStatement( sql );
+            pstmt.setInt( 1, getCustomerID());
+            rset = pstmt.executeQuery();
+            
+            getAdditionalContacts().removeAllElements();
+            
+            while(rset.next()) //add the LiteContact to this Customer
+                getAdditionalContacts().add( ContactFuncs.getContact( rset.getInt(1)) );
+
+            pstmt.close();
+            
+            if (VersionTools.starsExists())
+            {
+                sql = "SELECT acct.AccountID, map.EnergyCompanyID " +
+                     " FROM CustomerAccount acct, ECToAccountMapping map " +
+                     " WHERE acct.CustomerID = ?" +
+                     " AND acct.AccountID = map.AccountID";
+                
+                pstmt = conn.prepareStatement( sql );
+                pstmt.setInt( 1, getCustomerID());
+                rset = pstmt.executeQuery();
+                
+                getAccountIDs().removeAllElements();
+                
+                while(rset.next())
+                {
+                    getAccountIDs().add( new Integer(rset.getInt(1)) );
+                    setEnergyCompanyID(rset.getInt(2));
+                }
+                pstmt.close();
+            }
+        }
+        catch (Exception e) {
+            CTILogger.error( e.getMessage(), e );
+        }
+        finally {
+            try {
+                if (pstmt != null) pstmt.close();
+                if (conn != null) conn.close();
+            }
+            catch (java.sql.SQLException e) {}
+        }
+        
 	}
 
 	public int getCICustType() {
