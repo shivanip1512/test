@@ -25,7 +25,6 @@ public class LoadWorkOrdersTask extends TimeConsumingTask {
 
 	LiteStarsEnergyCompany energyCompany = null;
 	
-	int numOrderTotal = 0;
 	int numOrderLoaded = 0;
 	
 	public LoadWorkOrdersTask(LiteStarsEnergyCompany energyCompany) {
@@ -37,8 +36,8 @@ public class LoadWorkOrdersTask extends TimeConsumingTask {
 	 */
 	public String getProgressMsg() {
 		if (status == STATUS_RUNNING) {
-			if (numOrderTotal > 0)
-				return numOrderLoaded + " of " + numOrderTotal + " work orders loaded";
+			if (numOrderLoaded > 0)
+				return numOrderLoaded + " work orders loaded";
 			else
 				return "Preparing for loading the work orders...";
 		}
@@ -76,7 +75,6 @@ public class LoadWorkOrdersTask extends TimeConsumingTask {
 			
 			stmt = conn.createStatement();
 			java.sql.ResultSet rset = stmt.executeQuery( sql );
-			numOrderTotal = rset.getMetaData().getColumnCount();
 			
 			while (rset.next()) {
 				loadWorkOrder(rset);

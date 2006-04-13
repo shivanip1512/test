@@ -27,7 +27,6 @@ public class LoadCustAccountsTask extends TimeConsumingTask {
 
 	LiteStarsEnergyCompany energyCompany = null;
 	
-	int numAcctTotal = 0;
 	int numAcctLoaded = 0;
 	
 	public LoadCustAccountsTask(LiteStarsEnergyCompany energyCompany) {
@@ -39,8 +38,8 @@ public class LoadCustAccountsTask extends TimeConsumingTask {
 	 */
 	public String getProgressMsg() {
 		if (status == STATUS_RUNNING) {
-			if (numAcctTotal > 0)
-				return numAcctLoaded + " of " + numAcctTotal + " customer accounts loaded";
+			if (numAcctLoaded > 0)
+				return numAcctLoaded + " customer accounts loaded";
 			else
 				return "Preparing for loading customer accounts...";
 		}
@@ -119,7 +118,6 @@ public class LoadCustAccountsTask extends TimeConsumingTask {
 			
 			rset.close();
 			rset = stmt.executeQuery( sql );
-			numAcctTotal = rset.getMetaData().getColumnCount();
 			
 			while (rset.next()) {
 				loadCustomerAccount(rset, acctAppIDMap, acctInvIDMap);
