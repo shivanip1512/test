@@ -1626,6 +1626,11 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		return liteInv;
 	}
 	
+    public LiteInventoryBase getInventoryFromMap(int inventoryID)
+    {
+        return (LiteInventoryBase) getInventoryMap().get( new Integer(inventoryID) );
+    }
+    
 	public void addInventory(LiteInventoryBase liteInv) {
 		Hashtable invMap = getInventoryMap();
 		synchronized (invMap) {
