@@ -32,10 +32,6 @@ public TDCDeviceTreeModel()
  */
 public boolean isDeviceValid( int category_, int class_, int type_ )
 {
-//	return class_ != DeviceClasses.SYSTEM
-//			&& class_ != PAOGroups.INVALID
-//			&& type_ != PAOGroups.INVALID
-//			&& category_ != PAOGroups.INVALID ;
     
     return class_ != PAOGroups.INVALID
     && type_ != PAOGroups.INVALID
