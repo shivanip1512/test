@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/port_shr.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2006/04/13 19:36:41 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2006/04/13 19:40:01 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -123,7 +123,7 @@ USHORT CtiPortShare::ProcessEventCode(USHORT EventCode)
  *  This nexus has NOTHING to do with the SCADA side of the system.  It is used to get results out from the internals of porter.
  *
  */
-void CtiPortShare::createNexus(CtiString nexusName)
+void CtiPortShare::createNexus(string nexusName)
 {
    INT nRet;
    CTINEXUS ListenNexus;

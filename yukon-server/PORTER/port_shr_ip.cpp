@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/port_shr_ip.cpp-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2006/04/13 19:36:41 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2006/04/13 19:40:02 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -367,7 +367,7 @@ void CtiPortShareIP::inThread()
             }
         }
     }
-    _scadaListenNexus.CTINexusClose();
+    scadaListenNexus.CTINexusClose();
 }
 
 
