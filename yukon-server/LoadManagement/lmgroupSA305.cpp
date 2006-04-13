@@ -109,7 +109,7 @@ CtiRequestMsg* CtiLMGroupSA305::createTrueCycleRequestMsg(LONG percent, LONG per
     controlString += tempchar;
     controlString += " period ";
     controlString += buildPeriodString(period);
-    controlString += " truecycle ";
+    controlString += " truecycle";
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
