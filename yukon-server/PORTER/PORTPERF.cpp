@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTPERF.cpp-arc  $
-* REVISION     :  $Revision: 1.40 $
-* DATE         :  $Date: 2006/03/24 15:58:36 $
+* REVISION     :  $Revision: 1.41 $
+* DATE         :  $Date: 2006/04/13 19:37:17 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -131,21 +131,14 @@ VOID PerfUpdateThread (PVOID Arg)
         /* do this as long as we are running */
         for(;!PorterQuit;)
         {
-            if(gConfigParms.isOpt("PORTER_DEVICESTATUPDATERATE"))
-            {
-                if(!(PerfUpdateRate = atol(gConfigParms.getValueAsString("PORTER_DEVICESTATUPDATERATE").c_str())))
-                {
-                    PerfUpdateRate = 3600L;
-                }
-            }
+            PerfUpdateRate = gConfigParms.getValueAsULong("PORTER_DEVICESTATUPDATERATE", 3600L);
 
             now = now.now();
-
             CtiTime nextTime = nextScheduledTimeAlignedOnRate(now, PerfUpdateRate);
 
             do
             {
-                now = now.now();
+                Sleep(1000);
                 if(lastTickleTime.seconds() < (now.seconds() - CtiThreadMonitor::StandardTickleTime))
                 {
                     if(lastReportTime.seconds() < (now.seconds() - CtiThreadMonitor::StandardMonitorTime))
@@ -163,15 +156,14 @@ VOID PerfUpdateThread (PVOID Arg)
 
                 if(statCol.empty())
                 {
-                    Sleep(2500);
+                    Sleep(1000);
                 }
                 else   // Process the deque!
                 {
                     processCollectedStats(false);
                 }
-            } while( !PorterQuit && now.seconds() > nextTime.seconds()  );
-
-            now = now.now();
+                now = now.now();
+            } while( !PorterQuit && now.seconds() < nextTime.seconds()  );
 
             /* Do the statistics */
             processCollectedStats(true);
