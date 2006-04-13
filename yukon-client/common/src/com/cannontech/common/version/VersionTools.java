@@ -15,6 +15,7 @@ public final class VersionTools
 	public static final String KEY_YUKON_VERSION = "Yukon-Version";
 	public static final String COMMON_JAR = "common.jar";
 	
+    private static Boolean starsExists = null;
 	private static Boolean crsPtjIntegration = null;
     private static Boolean staticLoadGroupMapping = null;
 	public static String yukonVersion = null;
@@ -131,8 +132,10 @@ public synchronized static CTIDatabase getDatabaseVersion()
 public static boolean starsExists()
 {
 	//case sensitive in Oracle (very important)
+    if(starsExists == null)
 	//this is not a save check by itself anymore
-	return VersionTools.tableExists("CUSTOMERACCOUNT");
+        starsExists = new Boolean(VersionTools.tableExists("APPLIANCECATEGORY"));
+    return starsExists;
 }
 
 /**
