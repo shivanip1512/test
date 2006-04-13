@@ -7,11 +7,16 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.63 $
-* DATE         :  $Date: 2006/02/27 23:58:31 $
+* REVISION     :  $Revision: 1.64 $
+* DATE         :  $Date: 2006/04/13 19:37:45 $
 *
 * HISTORY      :
 * $Log: port_base.cpp,v $
+* Revision 1.64  2006/04/13 19:37:45  cplender
+* Port Sharing can be forced to 50% shared by using PORTER_FORCE_PORT_SHARE : true.
+* I would avoid this unless your britches are big enough to know you need it.
+* Added for testing at HLYW
+*
 * Revision 1.63  2006/02/27 23:58:31  tspar
 * Phase two of RWTPtrSlist replacement.
 *
@@ -1404,19 +1409,27 @@ INT CtiPort::readQueue( PREQUESTDATA RequestData, PULONG DataSize, PPVOID Data, 
 
     ULONG Element = getQueueSlot();
 
-    if( _portShareQueue && !Element && getSharingStatus() && getShareToggle() )
+    if( _portShareQueue && getSharingStatus() && getShareToggle() )
     {
-        /*
-         *  If we "detect" a queue slot element request, we will not pull from the shareQueue (starvation issue maybe on the shareQ)
-         *  if _portShareQueue is NULL, we will not pull from the shareQueue
-         *  if the SharingStatus is true, we MAY proceed
-         *  if the toggle is set to true, we MAY proceed!
-         */
-        // We are sharing the port and the share toggle is set to select a shared queue entry.
-        setShareToggle(false);    // Indicates that the next queue read should look for an UN-flagged (MSGFLG_PORT_SHARING) OM (One from Yukon that is)
-        status = ReadQueue(_portShareQueue, RequestData, DataSize, Data, Element, WaitFlag, Priority, pElementCount);
+        if(!Element || gConfigParms.isTrue("PORTER_FORCE_PORT_SHARE"))
+        {
+            /*
+             *  If we "detect" a queue slot element request, we will not pull from the shareQueue (starvation issue maybe on the shareQ)
+             *  if _portShareQueue is NULL, we will not pull from the shareQueue
+             *  if the SharingStatus is true, we MAY proceed
+             *  if the toggle is set to true, we MAY proceed!
+             */
+            // We are sharing the port and the share toggle is set to select a shared queue entry.
+            setShareToggle(false);    // Indicates that the next queue read should look for an UN-flagged (MSGFLG_PORT_SHARING) OM (One from Yukon that is)
+            status = ReadQueue(_portShareQueue, RequestData, DataSize, Data, Element, WaitFlag, Priority, pElementCount);
 
-        if(!status) readPortQueue = false; // We pulled one from the share queue.
+            if(!status) readPortQueue = false; // We pulled one from the share queue.
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " " << getName() << " bypassed the portShareQueue due to a targeted portqueue read." << endl;
+        }
     }
 
     if(readPortQueue && _portQueue)
@@ -1703,7 +1716,7 @@ int CtiPort::getWorkCount()
     int workCount = 0;
     map< LONG, int >::iterator iter;
     try
-    {        
+    {
         if( _communicating )
         {
             workCount++;
