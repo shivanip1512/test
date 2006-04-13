@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/INCLUDE/port_shr_ip.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2006/03/09 18:33:20 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2006/04/13 19:36:41 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -35,7 +35,7 @@ protected:
    bool _reconnect;
    bool _broadcast;
 
-   CTINEXUS _scadaNexus, _scadaListenNexus;
+   CTINEXUS _scadaNexus;
 
    int _ipPort;                                 // IP port to expose.
 

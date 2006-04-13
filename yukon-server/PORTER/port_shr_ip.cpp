@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/port_shr_ip.cpp-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2006/03/09 18:33:20 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2006/04/13 19:36:41 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -97,6 +97,7 @@ void CtiPortShareIP::inThread()
     unsigned long bytesRead;
     BYTE Buffer[300];
     unsigned long bytesWritten;
+    CTINEXUS scadaListenNexus;          // Presents the IP Port for scada to connect to.
     CTINEXUS tmpNexus;
 
     OUTMESS *OutMessage = NULL;
@@ -150,14 +151,14 @@ void CtiPortShareIP::inThread()
                 }
 
                 //  make sure the listener is up.  Any new connections arrive through this nexus.
-                if( _scadaListenNexus.sockt == INVALID_SOCKET )
+                if( scadaListenNexus.sockt == INVALID_SOCKET )
                 {
-                    if(_scadaListenNexus.CTINexusCreate(getIPPort()))
+                    if(scadaListenNexus.CTINexusCreate(getIPPort()))
                     {
-                        _scadaListenNexus.CTINexusClose();
+                        scadaListenNexus.CTINexusClose();
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " inThread couldn't create _scadaListenNexus - sleeping 5 seconds **** " << FILELINE << endl;
+                            dout << CtiTime() << " inThread couldn't create scadaListenNexus - sleeping 5 seconds **** " << FILELINE << endl;
                         }
                         //  sanity check - 5 second delay keeps us from an insanely tight loop if we break repeatedly
                         sleep(5000);
@@ -168,7 +169,7 @@ void CtiPortShareIP::inThread()
                 //    or if we're not connected
                 if( loopsSinceRead > 20 || !_scadaNexus.CTINexusValid())
                 {
-                    _scadaListenNexus.CTINexusConnect(&tmpNexus, NULL, 1, CTINEXUS_FLAG_READANY);
+                    scadaListenNexus.CTINexusConnect(&tmpNexus, NULL, 1, CTINEXUS_FLAG_READANY);
 
                     if(tmpNexus.CTINexusValid())
                     {
@@ -410,7 +411,7 @@ void CtiPortShareIP::outThread()
                 if(outThreadValidateNexus())
                 {
                     //  wait forever to hear back from the port
-                    if(_listenNexus.CTINexusRead(&InMessage, sizeof(InMessage), &BytesRead, CTINEXUS_INFINITE_TIMEOUT) || BytesRead == 0)
+                    if(_internalNexus.CTINexusRead(&InMessage, sizeof(InMessage), &BytesRead, CTINEXUS_INFINITE_TIMEOUT) || BytesRead == 0)
                     {
                         //  This cannot be
                         set(CtiPortShareIP::INWAITFOROUT, false);
@@ -536,7 +537,7 @@ void CtiPortShareIP::run()
     {
         _outThread = rwMakeThreadFunction(*this, &CtiPortShareIP::outThread );
         _outThread.start();
-    
+
         _inThread  = rwMakeThreadFunction(*this, &CtiPortShareIP::inThread );
         _inThread.start();
 
@@ -582,7 +583,7 @@ void CtiPortShareIP::shutDown()
 {
     try
     {
-    
+
         if(RW_THR_COMPLETED != _outThread.join( 250 ))
         {
             if(getDebugLevel() & DEBUGLEVEL_LUDICROUS) //I hate to use this, but everywhere else in this code does...

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/port_shr.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2006/01/05 21:05:36 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2006/04/13 19:36:41 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -29,9 +29,10 @@
 CtiPortShare::CtiPortShare(CtiPortSPtr myPort, INT listenPort) :
    _sequenceFailReported(false),
    _port(myPort),
-   _listenPort(listenPort)
+   _internalPort(listenPort)
 {
    _returnNexus.NexusState = CTINEXUS_STATE_NULL;
+   _returnNexus.sockt = INVALID_SOCKET;
 }
 
 
@@ -114,29 +115,37 @@ USHORT CtiPortShare::ProcessEventCode(USHORT EventCode)
    return retValue;
 }
 
-
-void CtiPortShare::createNexus(string nexusName)
+/*
+ *  This method creates a server side nexus and waits for a client connection.  It then closes the listener
+ *  and re-cycles the name as the port share's "server" side of the newly formed connection.
+ *  The new connection is formed by a different thread calling connectNexus()
+ *
+ *  This nexus has NOTHING to do with the SCADA side of the system.  It is used to get results out from the internals of porter.
+ *
+ */
+void CtiPortShare::createNexus(CtiString nexusName)
 {
    INT nRet;
+   CTINEXUS ListenNexus;
    CTINEXUS newNexus;
 
    /*
     *  4/8/99 This is the server side of a CTIDBG_new Nexus
-    *  This thread listens only once and then may shutdown the listener?????
+    *  This thread listens only once and is shutdown as the listener.
     *
-    *  The socket connection created here is then used to communicate to porter
+    *  The socket connection created here is then used to communicate to porter from port_shr.
     */
 
-   strcpy(_listenNexus.Name, nexusName.c_str());
+   strcpy(ListenNexus.Name, nexusName.data());
 
    if( getDebugLevel() == DEBUGLEVEL_LUDICROUS )
    {
       CtiLockGuard<CtiLogger> doubt_guard(dout);
       dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-      dout << "  Presenting port " << _listenPort << " for connection " << endl;
+      dout << "  Presenting port " << _internalPort << " for connection " << endl;
    }
 
-   if(_listenNexus.CTINexusCreate(_listenPort))
+   if(ListenNexus.CTINexusCreate(_internalPort))
    {
       {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -148,7 +157,7 @@ void CtiPortShare::createNexus(string nexusName)
    /*
     *  Blocking wait on the listening nexus.  Will return a CTIDBG_new nexus for the connection
     */
-   nRet = _listenNexus.CTINexusConnect(&newNexus);
+   nRet = ListenNexus.CTINexusConnect(&newNexus);
 
    if(nRet)
    {
@@ -166,7 +175,7 @@ void CtiPortShare::createNexus(string nexusName)
       dout << CtiTime() << " closing listener nexus for in/outthread connection " << nexusName << endl;
    }
 
-   _listenNexus.CTINexusClose();  // Don't need this anymore.
+   ListenNexus.CTINexusClose();  // Don't need this anymore.
 
    if( getDebugLevel() == DEBUGLEVEL_LUDICROUS )
    {
@@ -174,7 +183,17 @@ void CtiPortShare::createNexus(string nexusName)
       dout << CtiTime() << " closed " << nexusName << endl;
    }
 
-   _listenNexus = newNexus;
+   if(_internalNexus.CTINexusValid())
+   {
+        _internalNexus.CTINexusClose();
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Closing the internal port_shr nexus.  Will recreate." << endl;
+        }
+   }
+
+   _internalNexus = newNexus;
+   strcpy(_internalNexus.Name, nexusName.data());
 
    return;
 }
@@ -183,9 +202,9 @@ void CtiPortShare::interruptBlockingAPI()
 {
    // OK, need to sweep the nexus here.
 
-   if(_listenNexus.NexusState != CTINEXUS_STATE_NULL)
+   if(_internalNexus.NexusState != CTINEXUS_STATE_NULL)
    {
-      _listenNexus.CTINexusClose(); // Kick it good.
+      _internalNexus.CTINexusClose(); // Kick it good.
    }
 
    if(_returnNexus.NexusState != CTINEXUS_STATE_NULL)
@@ -194,6 +213,10 @@ void CtiPortShare::interruptBlockingAPI()
    }
 }
 
+/*
+ *  This method creates a connection to the internal nexus via the local IP and _internalPort.  All responses from porter proper are
+ *  sent back out via this nexus.  It has nothing to do with the SCADA side.
+ */
 void CtiPortShare::connectNexus()
 {
    INT i, j = 0;
@@ -202,11 +225,10 @@ void CtiPortShare::connectNexus()
    {
       CtiLockGuard<CtiLogger> doubt_guard(dout);
       dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-      dout << "  Attempting connection on port " << _listenPort << endl;
+      dout << "  Attempting connection on port " << _internalPort << endl;
    }
 
-//   while((i = _returnNexus.CTINexusOpen("127.0.0.1", _listenPort, CTINEXUS_FLAG_READEXACTLY)) != NORMAL)
-   while((i = _returnNexus.CTINexusOpen("127.0.0.1", _listenPort, CTINEXUS_FLAG_READANY)) != NORMAL)
+   while((i = _returnNexus.CTINexusOpen("127.0.0.1", _internalPort, CTINEXUS_FLAG_READANY)) != NORMAL)
    {
       if(!(++j % 15))
       {

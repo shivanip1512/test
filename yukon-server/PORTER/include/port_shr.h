@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/INCLUDE/port_shr.h-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2006/03/09 18:33:20 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2006/04/13 19:36:41 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -48,11 +48,13 @@ protected:
 
    bool _sequenceFailReported;
    UINT _requestCount;                          // counts outstanding requests.  > 1 indicates a problem.
-   CTINEXUS _returnNexus;                       // Who gets us back where we belong.
    shared_ptr< CtiPort > _port;                 // The port on which this share exists.
 
-   CTINEXUS _listenNexus;
-   INT      _listenPort;
+   CTINEXUS _returnNexus;                       // returnNexus is formed as the "client" side of a socket to internalNexus (server side)
+                                                // both are formed in this class.  returnNexus is passed into porter via the outmessage through queues,
+                                                // so data is returned outbound only via the nexus.
+   CTINEXUS _internalNexus;                     // internalNexus is the "server" side of the internal nexus from port_shr and porter proper.
+   INT      _internalPort;                      // internal port for porter to share communicaitons.  Used to return IMs from port control.  It's number does not matter.
 
    virtual void inThread( void ) = 0;
    virtual void outThread( void ) = 0;
@@ -100,6 +102,6 @@ public:
 
 };
 
-inline CtiPortShare& CtiPortShare::setListenPort(INT prt) { _listenPort = prt; return *this; }
+inline CtiPortShare& CtiPortShare::setListenPort(INT prt) { _internalPort = prt; return *this; }
 
 #endif // #ifndef __PORT_SHR_H__
