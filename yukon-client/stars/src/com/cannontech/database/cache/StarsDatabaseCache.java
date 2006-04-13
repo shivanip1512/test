@@ -72,7 +72,7 @@ public class StarsDatabaseCache implements com.cannontech.database.cache.DBChang
 	// Instance of the SOAPServer object
 	private static StarsDatabaseCache instance = null;
 	
-	// Array of all the energy companies (LiteStarsEnergyCompany)
+    // Array of all the energy companies (LiteStarsEnergyCompany)
 	private ArrayList energyCompanies = null;
     
 	// List of web configurations (LiteWebConfiguration)
@@ -134,9 +134,9 @@ public class StarsDatabaseCache implements com.cannontech.database.cache.DBChang
 		return instance;
 	}
 	
-	public void loadData() {
-		getAllWebConfigurations();
-		
+	public void loadData() 
+    {
+	    getAllWebConfigurations();
 		
         // Force all contacts to be loaded (since this can take a long time, and slow down the first time login)
 		DefaultDatabaseCache.getInstance().getAllContacts();
@@ -147,17 +147,33 @@ public class StarsDatabaseCache implements com.cannontech.database.cache.DBChang
 		
 		Thread initThrd = new Thread(new Runnable() {
 			public void run() {
-				for (int i = 0; i < companies.length; i++) {
-					if (!ECUtils.isDefaultEnergyCompany( companies[i] )) {
-						// Fire the data loading threads off, and wait for all of them to stop
-						companies[i].loadAllInventory( false );
-						companies[i].loadAllCustomerAccounts( false );
-						companies[i].loadAllWorkOrders( false );
+				
+			    /////////////////////////////////
+                java.util.Date loadStart = null;
+                java.util.Date loadStop = null;
+
+                loadStart = new java.util.Date(); 
+                /////////////////////////////////
+                
+                for (int i = 0; i < companies.length; i++) 
+                {
+					if (!ECUtils.isDefaultEnergyCompany( companies[i] )) 
+                    {
 						companies[i].loadAllInventory( true );
-						companies[i].loadAllCustomerAccounts( true );
-						companies[i].loadAllWorkOrders( true );
-					}
-				}
+                        companies[i].loadAllCustomerAccounts( true );
+                        companies[i].loadAllWorkOrders( true );
+                    }
+                }
+                
+                /////////////////////////////////////////////    
+                loadStop = new java.util.Date();
+
+                com.cannontech.clientutils.CTILogger.info( "$$$$$$$$$ CACHE IS NOW PRELOADED: " +
+                    (loadStop.getTime() - loadStart.getTime())*.001 + 
+                      " Secs for this to happen $$$$$$$$$$$$" );
+                
+                /////////////////////////////////////////////
+                
 			}
 		});
 		initThrd.start();
@@ -217,9 +233,6 @@ public class StarsDatabaseCache implements com.cannontech.database.cache.DBChang
 						LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
 						if (!ECUtils.isDefaultEnergyCompany( company )) {
 							// Fire the data loading threads off, and wait for all of them to stop
-							company.loadAllInventory( false );
-							company.loadAllCustomerAccounts( false );
-							company.loadAllWorkOrders( false );
 							company.loadAllInventory( true );
 							company.loadAllCustomerAccounts( true );
 							company.loadAllWorkOrders( true );
