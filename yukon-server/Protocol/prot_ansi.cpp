@@ -11,10 +11,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/prot_ansi.cpp-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2006/04/06 17:00:30 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2006/04/14 16:31:03 $
 *    History: 
       $Log: prot_ansi.cpp,v $
+      Revision 1.21  2006/04/14 16:31:03  jrichter
+      BUG FIX: DST adjustment
+
       Revision 1.20  2006/04/06 17:00:30  jrichter
       BUG FIX:  memory leak in porter...cleared out stdTablesAvailable/mfgTablesAvailable list.  since, prot_ansi object was not being destructed...it kept adding each time through connecting to device.  hopefully this is the root of all sentinel evil.
 
@@ -676,9 +679,7 @@ bool CtiProtocolANSI::decode( CtiXfer &xfer, int status )
                            }
                        }
                        //Spring Ahead DST adjustment
-                       if (_tableFiveTwo->adjustTimeForDST() && 
-                          ( llp < beginLLP && 
-                            now > begin ) )
+                       if (_tableFiveTwo->adjustTimeForDST() )
                        {
                            _header->lastLoadProfileTime += 3600;                                         
                            {
