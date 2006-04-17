@@ -80,6 +80,8 @@ private:
     void EnableOvUv();
     void DisableOvUv();
     void DeleteItem();
+    void ConfirmSub();
+    void ConfirmArea();
 
     CtiCCCommand* _command;
 };

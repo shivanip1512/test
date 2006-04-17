@@ -149,6 +149,9 @@ public:
     void reloadGeoAreasFromDatabase();
     void locateOrphans(list<long> *orphanCaps, list<long> *orphanFeeders, map<long, CtiCCCapBankPtr> paobject_capbank_map,
                        map<long, CtiCCFeederPtr> paobject_feeder_map, map<long, long> capbank_feeder_map, map<long, long> feeder_subbus_map);
+    BOOL isCapBankOrphan(long capBankId);
+    BOOL isFeederOrphan(long feederId);
+    void removeFromOrphanList(long ccId);
 
     list <CC_DBRELOAD_INFO> getDBReloadList() { return _reloadList; };
     void insertDBReloadList(CC_DBRELOAD_INFO x);

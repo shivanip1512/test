@@ -89,7 +89,9 @@ public:
         UNWAIVE_FEEDER,//16
         ENABLE_OVUV,//17 
         DISABLE_OVUV,//18
-        DELETE_ITEM //19
+        DELETE_ITEM, //19
+        CONFIRM_SUB, //20
+        CONFIRM_AREA //21
        // DISABLE_SUBSTATION_BUS_VERIFICATION//20
     };
 

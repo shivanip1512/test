@@ -366,7 +366,7 @@ void CtiCapController::controlLoop()
                                                 if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
                                                 {
                                                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                                                        dout << CtiTime() << " ------ CAP BANK VERIFICATION LIST:  SUB-" << currentSubstationBus->getPAOId()<<" CB-"<<currentSubstationBus->getCurrentVerificationCapBankId() << endl;
+                                                        dout << CtiTime() << " ------ CAP BANK VERIFICATION LIST:  SUB-" << currentSubstationBus->getPAOName()<<" CB-"<<currentSubstationBus->getCurrentVerificationCapBankId() << endl;
                                                 }
 
                                                 currentSubstationBus->startVerificationOnCapBank(currentDateTime, pointChanges, ccEvents, pilMessages);
@@ -393,7 +393,7 @@ void CtiCapController::controlLoop()
                                                 if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
                                                 {
                                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                                   dout << CtiTime() << " - DISABLED VERIFICATION ON: subBusID: "<<currentSubstationBus->getPAOId() << endl;
+                                                   dout << CtiTime() << " - DISABLED VERIFICATION ON: subBusID: "<<currentSubstationBus->getPAOName() << endl;
                                                 } 
                                                 //ALSO need to reset verification flags/ busperforming verificationflags/ on feeders and capbanks!!!
                                             }
@@ -410,7 +410,7 @@ void CtiCapController::controlLoop()
                                     if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
                                     {
                                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                                       dout << CtiTime() << " - Performing VERIFICATION ON: subBusID: "<<currentSubstationBus->getPAOId() << endl;
+                                       dout << CtiTime() << " - Performing VERIFICATION ON: subBusID: "<<currentSubstationBus->getPAOName() << endl;
                                     }
                                     int strategy = (long)currentSubstationBus->getVerificationStrategy();
 
@@ -420,7 +420,7 @@ void CtiCapController::controlLoop()
                                         if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
                                         {
                                              CtiLockGuard<CtiLogger> logger_guard(dout);
-                                             dout << CtiTime() << " ------ CAP BANK VERIFICATION LIST:  SUB-" << currentSubstationBus->getPAOId()<<" CB-"<<currentSubstationBus->getCurrentVerificationCapBankId() << endl;
+                                             dout << CtiTime() << " ------ CAP BANK VERIFICATION LIST:  SUB-" << currentSubstationBus->getPAOName()<<" CB-"<<currentSubstationBus->getCurrentVerificationCapBankId() << endl;
                                         }
                                         currentSubstationBus->startVerificationOnCapBank(currentDateTime, pointChanges, ccEvents, pilMessages);
                                         //currentSubstationBus->setPerformingVerificationFlag(TRUE);
@@ -452,7 +452,7 @@ void CtiCapController::controlLoop()
                                         if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
                                         {
                                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                                           dout << CtiTime() << " - DISABLED VERIFICATION ON: subBusID: "<<currentSubstationBus->getPAOId() << endl;
+                                           dout << CtiTime() << " - DISABLED VERIFICATION ON: subBusID: "<<currentSubstationBus->getPAOName() << endl;
                                         } 
 
                                         //ALSO need to reset verification flags/ busperforming verificationflags/ on feeders and capbanks!!!
@@ -540,6 +540,12 @@ void CtiCapController::controlLoop()
                     if( multiPilMsg->getCount() > 0 )
                     {
                         multiPilMsg->resetTime(); // CGP 5/21/04 Update its time to current time.
+                        if( _CC_DEBUG & CC_DEBUG_EXTENDED )
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " PIL MESSAGES " << endl;
+                            multiPilMsg->dump();
+                        }
                         getPILConnection()->WriteConnQue(multiPilMsg);
                         multiPilMsg = new CtiMultiMsg();
                     }
@@ -1452,8 +1458,6 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
     BOOL found = FALSE;
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
-    //CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(secondsFrom1901);
-
 
     try
     {   CtiCCSubstationBus* currentSubstationBus = NULL;
@@ -2249,4 +2253,7 @@ void CtiCapController::loadControlLoopCParms()
     }
     }
 }
+
+
+
 

@@ -789,7 +789,7 @@ void CtiCCSubstationBusStore::reset()
         {
             dumpAllDynamicData();
         }
-        {
+/*        {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime() << " - Store START sending messages to clients." << endl;
         }
@@ -812,7 +812,8 @@ void CtiCCSubstationBusStore::reset()
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime() << " - Store DONE sending messages to clients." << endl;
-        }
+        } 
+*/
     }
     catch (...)
     {
@@ -3324,7 +3325,8 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId, map< long,
 
                             currentCCFeeder->setParentControlUnits(currentCCSubstationBus->getControlUnits());
                             currentCCFeeder->setParentName(currentCCSubstationBus->getPAOName());
-                            if (newStrategy != NULL)
+
+                            if (currentCCFeeder->getStrategyId() == 0 && newStrategy != NULL)
                             {                      
                                 currentCCFeeder->setStrategyValues(newStrategy);
                                 currentCCFeeder->setStrategyId(0);
@@ -3897,11 +3899,12 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
                         long currentCCCapBankId;
                         rdr["paobjectid"] >> currentCCCapBankId;
 
-                        CtiCCCapBankPtr currentCCCapBank = paobject_capbank_map->find(currentCCCapBankId)->second;
-                        LONG tempPAObjectId = 0;
-                        rdr["paobjectid"] >> tempPAObjectId;
-                        if (// currentCCCapBank != NULL &&
-                            tempPAObjectId == currentCCCapBank->getPAOId() )
+                        CtiCCCapBankPtr currentCCCapBank = NULL;
+
+                        if (paobject_capbank_map->find(currentCCCapBankId) != paobject_capbank_map->end())
+                            currentCCCapBank = paobject_capbank_map->find(currentCCCapBankId)->second;
+
+                        if ( currentCCCapBank != NULL )
                         {
                             rdr["pointid"] >> isNull;
                             if ( !isNull )
@@ -4264,6 +4267,76 @@ void CtiCCSubstationBusStore::locateOrphans(list<long> *orphanCaps, list<long> *
     }
 }
 
+BOOL CtiCCSubstationBusStore::isFeederOrphan(long feederId)
+{
+    BOOL retVal = FALSE;
+
+    try
+    {   
+        RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+        {   
+            list <long>::iterator iter = _orphanedFeeders.begin();
+
+            while (iter != _orphanedFeeders.end())
+            {
+                if (*iter == feederId)
+                    return TRUE;
+                else
+                    iter++;
+            }
+        }
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
+    return retVal;
+}
+BOOL CtiCCSubstationBusStore::isCapBankOrphan(long capBankId)
+{
+    BOOL retVal = FALSE;
+
+    try
+    {   
+        RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+        {   
+            list <long>::iterator iter = _orphanedCapBanks.begin();
+
+            while (iter != _orphanedCapBanks.end())
+            {
+                if (*iter == capBankId)
+                    return TRUE;
+                else
+                    iter++;
+            }
+        }
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
+    return retVal;
+}
+void CtiCCSubstationBusStore::removeFromOrphanList(long ccId)
+{
+    try
+    {   
+        RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+        {   
+            _orphanedCapBanks.remove(ccId);
+            _orphanedFeeders.remove(ccId);
+        }
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
+}
+
+
 void CtiCCSubstationBusStore::deleteSubBus(long subBusId)
 {
     CtiCCSubstationBusPtr subToDelete = findSubBusByPAObjectID(subBusId);
@@ -4571,6 +4644,7 @@ void CtiCCSubstationBusStore::deleteCapBank(long capBankId)
 void CtiCCSubstationBusStore::checkDBReloadList()
 {
     BOOL sendBusInfo = false;
+    CtiTime currentDateTime;
     try
     {
         RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
@@ -4591,10 +4665,16 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                             reloadCapBankFromDatabase(reloadTemp.objectId, &_paobject_capbank_map, &_paobject_feeder_map,
                                                       &_pointid_capbank_map, &_capbank_subbus_map, &_capbank_feeder_map, 
                                                       &_feeder_subbus_map );
+                            if(isCapBankOrphan(reloadTemp.objectId) )
+                               removeFromOrphanList(reloadTemp.objectId);
+
                         }
                         else if (reloadTemp.action == ChangeTypeDelete)
                         {
                             deleteCapBank(reloadTemp.objectId);
+                            if(isCapBankOrphan(reloadTemp.objectId) )
+                               removeFromOrphanList(reloadTemp.objectId);
+
                         }
                         break;
                     }
@@ -4606,10 +4686,15 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                             //reloadFeederFromDatabase(reloadTemp.objectId);
                              reloadFeederFromDatabase(reloadTemp.objectId, &_strategyid_strategy_map, &_paobject_feeder_map,
                                                      &_paobject_subbus_map, &_pointid_feeder_map, &_feeder_subbus_map );
+
+                             if(isFeederOrphan(reloadTemp.objectId))
+                               removeFromOrphanList(reloadTemp.objectId);
                         }
                         else if (reloadTemp.action == ChangeTypeDelete)
                         {
                             deleteFeeder(reloadTemp.objectId);
+                            if(isFeederOrphan(reloadTemp.objectId) )
+                               removeFromOrphanList(reloadTemp.objectId);
                          
                         }
                         break;
@@ -4665,6 +4750,18 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                 {
                     msgBitMask = CtiCCSubstationBusMsg::AllSubBusesSent | CtiCCSubstationBusMsg::SubBusDeleted;
                 }
+
+                for(LONG i=0;i<_ccSubstationBuses->size();i++)
+                {
+                    CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)(*_ccSubstationBuses)[i];
+                    CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
+                    for(LONG j=0;j<ccFeeders.size();j++)
+                    {
+                        CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j];
+                        currentFeeder->setPeakTimeFlag(currentSubstationBus->isPeakTime(currentDateTime));
+                    }
+                }
+
                 CtiCCExecutorFactory f;
                 CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationBusMsg(*_ccSubstationBuses,msgBitMask));
                 executor->Execute();

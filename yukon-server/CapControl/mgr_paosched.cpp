@@ -572,7 +572,7 @@ void CtiPAOScheduleManager::refreshSchedulesFromDB()
 
 
                         selector.from(paoScheduleTable);
-                        //if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+                        if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << CtiTime() << " - " << selector.asString().data() << endl;
@@ -665,7 +665,7 @@ void CtiPAOScheduleManager::refreshEventsFromDB()
 
 
                         selector.from(paoEventTable);
-                        //if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+                        if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << CtiTime() << " - " << selector.asString().data() << endl;

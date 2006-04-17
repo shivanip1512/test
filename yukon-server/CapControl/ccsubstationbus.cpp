@@ -3138,7 +3138,7 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                        if( text.length() > 0 )
                        {//if control failed or questionable, create event to be sent to dispatch
                            long tempLong = currentCapBank->getStatusPointId();
-                           pointChanges.push_back(new CtiSignalMsg(tempLong,0,text,additional,CapControlLogType,SignalEvent, "cap control"));
+                           pointChanges.push_back(new CtiSignalMsg(tempLong,0,text,additional,CapControlLogType,SignalEvent, "cap control verification"));
                            ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(1);
                        }
                        pointChanges.push_back(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType));
@@ -3146,7 +3146,7 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                        currentCapBank->setLastStatusChangeTime(CtiTime());
 
                        //setEventSequence(currentFeeder->getEventSequence() + 1);
-                       ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, getEventSequence(), currentCapBank->getControlStatus(), text, "cap control"));
+                       ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, getEventSequence(), currentCapBank->getControlStatus(), text, "cap control verification"));
                        //setEventSequence(0);
                    }
                    else
