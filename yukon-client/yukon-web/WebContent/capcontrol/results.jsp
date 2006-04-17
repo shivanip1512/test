@@ -52,7 +52,7 @@
   <cti:crumbLink url="results.jsp" title="Results"/>
 </cti:breadCrumbs>
 
-<cti:titledContainer title='<%="Search Resuls For: " + label + "   (" + items.length + " found)"%>'>
+<cti:titledContainer title='<%="Search Results For: " + label + "   (" + items.length + " found)"%>'>
 
 <form id="parentForm" action="feeders.jsp" method="post">
 	<input type="hidden" name="<%=CBCSessionInfo.STR_CBC_AREA%>" />
