@@ -105,14 +105,12 @@ function selectMemberAccount(accountID, memberID) {
 <% } %>
                 </tr>
 <%
-           int prevECID = -1;
+            LiteStarsEnergyCompany member = liteEC;
             for (int i = 0; i < resp.getStarsBriefCustAccountInfoCount(); i++) {
-                LiteStarsEnergyCompany member = liteEC;
                 if (resp.getStarsBriefCustAccountInfo(i).hasEnergyCompanyID())
                 {
-                    if( prevECID != resp.getStarsBriefCustAccountInfo(i).getEnergyCompanyID())
+                    if( member.getEnergyCompanyID() != resp.getStarsBriefCustAccountInfo(i).getEnergyCompanyID())
                     {   //only load this if needed
-                        prevECID = resp.getStarsBriefCustAccountInfo(i).getEnergyCompanyID();
                         member = StarsDatabaseCache.getInstance().getEnergyCompany(resp.getStarsBriefCustAccountInfo(i).getEnergyCompanyID());
                     }
                 }
