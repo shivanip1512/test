@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -30,7 +31,6 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.PointFuncs;
-import com.cannontech.database.cache.functions.StateFuncs;
 import com.cannontech.database.data.capcontrol.CCYukonPAOFactory;
 import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.capcontrol.CapBankController;
@@ -43,7 +43,6 @@ import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.TwoWayDevice;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.MultiDBPersistent;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
@@ -138,7 +137,12 @@ public class CapControlForm extends DBEditorForm {
     private String paoName = "";
     
     private boolean switchPointEnabled = true;
-
+    
+    private TreeNode varTreeData = null;
+    private TreeNode wattTreeData = null;
+    private TreeNode voltTreeData = null;
+    
+    
 	/**
 	 * default constructor
 	 */
@@ -249,31 +253,13 @@ public class CapControlForm extends DBEditorForm {
 	 */
 	public TreeNode getVarTreeData() {
 
-		TreeNode rootData = new TreeNodeBase("root", "VAR Points", false);
-
-		PointLists pLists = new PointLists();
-		LiteYukonPAObject[] lPaos = pLists
-				.getPAOsByUofMPoints(PointUnits.CAP_CONTROL_VAR_UOMIDS);
-
-		TreeNodeBase[] paos = new TreeNodeBase[lPaos.length];
-		for (int i = 0; i < lPaos.length; i++) {
-
-			paos[i] = new TreeNodeBase( // type, description, leaf
-					"paos", lPaos[i].getPaoName(), String.valueOf(lPaos[i]
-							.getYukonID()), false);
-
-			LitePoint[] lPoints = pLists.getPointsByUofMPAOs(lPaos[i]
-					.getYukonID(), PointUnits.CAP_CONTROL_VAR_UOMIDS);
-				for (int j = 0; j < lPoints.length; j++) {
-					paos[i].getChildren().add(
-							new TreeNodeBase("points", lPoints[j].getPointName(),
-									String.valueOf(lPoints[j].getPointID()), true));
-				}						
-			if (lPoints.length > 0)
-				rootData.getChildren().add(paos[i]);
-		}
-
-		return rootData;
+		if (varTreeData == null){
+			varTreeData = new TreeNodeBase("root", "Var Points", false);
+			int [] types = { PointTypes.ANALOG_POINT, PointTypes.CALCULATED_POINT};
+			List points = PointFuncs.getLitePointsByUOMID(PointUnits.CAP_CONTROL_VAR_UOMIDS,  types);
+			JSFTreeUtils.createPAOTreeFromPointList (points, varTreeData);
+		}	
+		return varTreeData;
 	}
 
 	/**
@@ -281,66 +267,34 @@ public class CapControlForm extends DBEditorForm {
 	 * 
 	 */
 	public TreeNode getWattTreeData() {
-
-		TreeNode rootData = new TreeNodeBase("root", "WATT Points", false);
-
-		PointLists pLists = new PointLists();
-		LiteYukonPAObject[] lPaos = pLists
-				.getPAOsByUofMPoints(PointUnits.CAP_CONTROL_WATTS_UOMIDS);
-
-		TreeNodeBase[] paos = new TreeNodeBase[lPaos.length];
-		for (int i = 0; i < lPaos.length; i++) {
-
-			paos[i] = new TreeNodeBase( // type, description, leaf
-					"paos", lPaos[i].getPaoName(), String.valueOf(lPaos[i]
-							.getYukonID()), false);
-
-			LitePoint[] lPoints = pLists.getPointsByUofMPAOs(lPaos[i]
-					.getYukonID(), PointUnits.CAP_CONTROL_WATTS_UOMIDS);
-			for (int j = 0; j < lPoints.length; j++) {
-				paos[i].getChildren().add(
-						new TreeNodeBase("points", lPoints[j].getPointName(),
-								String.valueOf(lPoints[j].getPointID()), true));
-			}
-			if (lPoints.length > 0)
-				rootData.getChildren().add(paos[i]);
-
-		}
-
-		return rootData;
+		if (wattTreeData == null){
+			wattTreeData =  new TreeNodeBase("root", "Watt Points", false);
+			int [] types = { PointTypes.ANALOG_POINT, PointTypes.CALCULATED_POINT};
+			List points = PointFuncs.getLitePointsByUOMID(PointUnits.CAP_CONTROL_WATTS_UOMIDS,  types);
+			JSFTreeUtils.createPAOTreeFromPointList (points, wattTreeData);
+		}	
+		return wattTreeData;
 	}
+
 
 	/**
 	 * Returns all available Volt points
 	 * 
 	 */
 	public TreeNode getVoltTreeData() {
-
-		TreeNode rootData = new TreeNodeBase("root", "Volt Points", false);
-
-		PointLists pLists = new PointLists();
-		LiteYukonPAObject[] lPaos = pLists
-				.getPAOsByUofMPoints(PointUnits.CAP_CONTROL_VOLTS_UOMIDS);
-
-		TreeNodeBase[] paos = new TreeNodeBase[lPaos.length];
-		for (int i = 0; i < lPaos.length; i++) {
-
-			paos[i] = new TreeNodeBase( // type, description, leaf
-					"paos", lPaos[i].getPaoName(), String.valueOf(lPaos[i]
-							.getYukonID()), false);
-
-			LitePoint[] lPoints = pLists.getPointsByUofMPAOs(lPaos[i]
-					.getYukonID(), PointUnits.CAP_CONTROL_VOLTS_UOMIDS);
-			for (int j = 0; j < lPoints.length; j++) {
-				paos[i].getChildren().add(
-						new TreeNodeBase("points", lPoints[j].getPointName(),
-								String.valueOf(lPoints[j].getPointID()), true));
-			}
-			if (lPoints.length > 0)
-				rootData.getChildren().add(paos[i]);		
-		}
-
-		return rootData;
+		if (voltTreeData == null){
+			voltTreeData = new TreeNodeBase("root", "Volt Points", false);
+			int [] types = { PointTypes.ANALOG_POINT, PointTypes.CALCULATED_POINT};
+			List points = PointFuncs.getLitePointsByUOMID(PointUnits.CAP_CONTROL_VOLTS_UOMIDS,  types);
+			JSFTreeUtils.createPAOTreeFromPointList (points, voltTreeData);
+		}	
+		return voltTreeData;
+	}
+	
+	private void  resetUOFMTreeData() {
+		voltTreeData = null;
+		wattTreeData = null;
+		varTreeData = null;
 	}
 
 	/**
@@ -654,7 +608,8 @@ public class CapControlForm extends DBEditorForm {
 		resetStrategies();
 		resetCBCEditor();
 		resetCurrentDivOffset();
-		resetCurrentAltSubDivOffset(); 
+		resetCurrentAltSubDivOffset();
+		resetUOFMTreeData();
 		isDualSubBusEdited = false;
 		editingCBCStrategy = false;
 		unassignedBanks = null;
@@ -1338,10 +1293,11 @@ public class CapControlForm extends DBEditorForm {
 						currFdr.getChildList().add(
 								new CCFeederBankList(new Integer(itemID),
 										new Integer(elemID),
-										new Integer(currFdr.getChildList()
-												.size() + 1)));
-
+										new Integer(maxDispOrderOnList (currFdr.getChildList()) + 1)));
 						unassignedBanks.remove(i);
+							
+						
+						
 						break;
 					}
 				}
@@ -1359,10 +1315,11 @@ public class CapControlForm extends DBEditorForm {
 						currSub.getChildList().add(
 								new CCFeederSubAssignment(new Integer(elemID),
 										new Integer(itemID),
-										new Integer(currSub.getChildList()
-												.size() + 1)));
+										new Integer(maxDispOrderOnList (currSub.getChildList())+ 1)));
 
 						unassignedFeeders.remove(i);
+						
+						
 						break;
 					}
 				}
@@ -1370,6 +1327,49 @@ public class CapControlForm extends DBEditorForm {
 		}
 
 	}
+
+	private void reorderList(ArrayList childList) {
+		for (int i = 0; i < childList.size(); i++) {
+			Object element = childList.get(i);
+			if (element instanceof CCFeederSubAssignment) {
+				CCFeederSubAssignment feeder = (CCFeederSubAssignment) element;
+				feeder.setDisplayOrder(new Integer ( i + 1));
+			}
+			else if (element instanceof CCFeederBankList) {
+				CCFeederBankList capBank = (CCFeederBankList) element;
+				capBank.setControlOrder(new Integer ( i  + 1));
+			}
+			else
+				return;
+		}		
+	}
+
+
+	private int maxDispOrderOnList(ArrayList childList) {
+		int max = 0;
+		for (Iterator iter = childList.iterator(); iter.hasNext();) {
+			Object element = (Object) iter.next();
+			if (element instanceof CCFeederSubAssignment) {
+				CCFeederSubAssignment feeder = (CCFeederSubAssignment) element;
+				if (feeder.getDisplayOrder().intValue() > max)
+				{
+					max = feeder.getDisplayOrder().intValue();
+				}
+			}
+			else if (element instanceof CCFeederBankList) {
+				CCFeederBankList capBank = (CCFeederBankList) element;
+				if (capBank.getControlOrder().intValue() > max)
+				{
+					max = capBank.getControlOrder().intValue();
+				}
+			}
+			else
+				return 0;
+		}	
+					
+		return max;
+	}
+
 
 	/**
 	 * Removed an element from one table to another by the given id
@@ -1399,6 +1399,7 @@ public class CapControlForm extends DBEditorForm {
 					// keep our order
 					Collections.sort(unassignedBanks,
 							LiteComparators.liteStringComparator);
+					reorderList (currFdr.getChildList());
 					break;
 				}
 			}
@@ -1419,6 +1420,7 @@ public class CapControlForm extends DBEditorForm {
 					// keep our order
 					Collections.sort(unassignedFeeders,
 							LiteComparators.liteStringComparator);
+					reorderList (currSub.getChildList());
 					break;
 				}
 			}
@@ -1875,16 +1877,18 @@ public class CapControlForm extends DBEditorForm {
     
     public String getPaoName() {
     	String retStr = "";
-        if (getDbPersistent() instanceof YukonPAObject) {
-    	  if (getDbPersistent() != null) {
-        	retStr = ((YukonPAObject)getDbPersistent()).getPAOName();
-	      }
-        }
-        else if (getDbPersistent() instanceof PAOSchedule) {
-        	if (getDbPersistent() != null) {
-            	retStr = ((PAOSchedule)getDbPersistent()).getScheduleName();
-    	      }
-        }	
+    	if (getDbPersistent() != null) {
+	    	if (getDbPersistent() instanceof YukonPAObject) {
+	    	  
+	        	retStr = ((YukonPAObject)getDbPersistent()).getPAOName();
+		      
+	        }
+	        else if (getDbPersistent() instanceof PAOSchedule) {
+	        	if (getDbPersistent() != null) {
+	            	retStr = ((PAOSchedule)getDbPersistent()).getScheduleName();
+	    	      }
+	        }
+    	}
         return retStr;
     }
     
@@ -1928,6 +1932,8 @@ public class CapControlForm extends DBEditorForm {
 	public void setSwitchPointEnabled(boolean switchPointEnabled) {
 		this.switchPointEnabled = switchPointEnabled;
 	}
+
+
   
     
     
