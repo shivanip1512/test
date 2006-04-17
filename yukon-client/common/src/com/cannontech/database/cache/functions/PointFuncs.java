@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -13,10 +14,13 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.capcontrol.CapBank;
+import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LitePointLimit;
 import com.cannontech.database.data.lite.LitePointUnit;
 import com.cannontech.database.data.lite.LiteStateGroup;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.point.CapBankMonitorPointParams;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.capcontrol.CCMonitorBankList;
@@ -74,7 +78,7 @@ public static int getMaxPointID()
  * @return com.cannontech.database.data.lite.LitePoint[]
  * @param uomID int
  */
-public static LitePoint[] getLitePointsByUOMID(int[] uomIDs) 
+private static LitePoint[] getLitePointsByUOMID(int[] uomIDs) 
 {
    DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
    java.util.ArrayList pointList = new java.util.ArrayList(32);
@@ -82,14 +86,13 @@ public static LitePoint[] getLitePointsByUOMID(int[] uomIDs)
    synchronized( cache )
    {
       java.util.List points = cache.getAllPoints();
-      //java.util.Collections.sort( points, com.cannontech.database.data.lite.LiteComparators.litePointIDComparator );
       
       for( int i = 0; i < points.size(); i++ )
       {      
 			LitePoint litePoint = (LitePoint)points.get(i);
 			
 			for( int j = 0; j < uomIDs.length; j++ )
-            if( litePoint.getUofmID() != uomIDs[j] )
+            if( litePoint.getUofmID() == uomIDs[j] )
             {
                pointList.add( litePoint );
                break;
@@ -104,6 +107,25 @@ public static LitePoint[] getLitePointsByUOMID(int[] uomIDs)
    
    return retVal;
 }
+
+	public static List getLitePointsByUOMID (int[] uomIDs, int[] types){
+		LitePoint[] points = getLitePointsByUOMID(uomIDs);
+		List retPointList = new ArrayList();
+		for (int i = 0; i < points.length; i++) {
+			LitePoint litePoint = (LitePoint)points[i];
+			for (int j = 0; j < types.length; j++) {
+				if (litePoint.getLiteType() == types[j]) {
+					LiteYukonPAObject liteDevice = PAOFuncs
+                    	.getLiteYukonPAO(litePoint.getPaobjectID());
+					if (DeviceClasses.isCoreDeviceClass(liteDevice.getPaoClass())) {
+						retPointList.add(litePoint);
+					}
+				}
+			}
+		}
+	   Collections.sort(retPointList, LiteComparators.liteStringComparator);
+	   return retPointList;
+	}
 
 	/**
 	 * Returns the name of the point with a given id.
