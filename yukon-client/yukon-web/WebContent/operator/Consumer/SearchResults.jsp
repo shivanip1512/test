@@ -105,13 +105,19 @@ function selectMemberAccount(accountID, memberID) {
 <% } %>
                 </tr>
 <%
-			for (int i = 0; i < resp.getStarsBriefCustAccountInfoCount(); i++) {
-				LiteStarsEnergyCompany member = liteEC;
-				if (resp.getStarsBriefCustAccountInfo(i).hasEnergyCompanyID())
-					member = StarsDatabaseCache.getInstance().getEnergyCompany(resp.getStarsBriefCustAccountInfo(i).getEnergyCompanyID());
-				
-				LiteStarsCustAccountInformation liteAcctInfo = member.getBriefCustAccountInfo(
-						resp.getStarsBriefCustAccountInfo(i).getAccountID(), true);
+           int prevECID = -1;
+            for (int i = 0; i < resp.getStarsBriefCustAccountInfoCount(); i++) {
+                LiteStarsEnergyCompany member = liteEC;
+                if (resp.getStarsBriefCustAccountInfo(i).hasEnergyCompanyID())
+                {
+                    if( prevECID != resp.getStarsBriefCustAccountInfo(i).getEnergyCompanyID())
+                    {   //only load this if needed
+                        prevECID = resp.getStarsBriefCustAccountInfo(i).getEnergyCompanyID();
+                        member = StarsDatabaseCache.getInstance().getEnergyCompany(resp.getStarsBriefCustAccountInfo(i).getEnergyCompanyID());
+                    }
+                }
+                
+                LiteStarsCustAccountInformation liteAcctInfo = member.getBriefCustAccountInfo(resp.getStarsBriefCustAccountInfo(i).getAccountID(), true);
 				if (liteAcctInfo == null) continue;
 				
 				LiteCustomer customer = liteAcctInfo.getCustomer();
@@ -136,7 +142,7 @@ function selectMemberAccount(accountID, memberID) {
                   <td width="18%" class="TableCell"><%= LiteStarsCustAccountInformation.getCompanyName(customer.getLiteID()) %> 
                   </td>
 <% } else if (customer instanceof LiteCICustomer) { %>                 
-                  <td width="30%" class="TableCell"><%= contact.getContLastName() + ", " + contact.getContFirstName() + " (" + LiteStarsCustAccountInformation.getCompanyName(customer.getLiteID()) + ")"%>  
+                  <td width="30%" class="TableCell"><%= contact.getContLastName() + ", " + contact.getContFirstName() + " (" + ((LiteCICustomer)customer).getCompanyName() + ")"%>  
                   </td>
 <% } else { %>                 
                   <td width="18%" class="TableCell"><%= contact.getContLastName() + ", " + contact.getContFirstName() %> 
