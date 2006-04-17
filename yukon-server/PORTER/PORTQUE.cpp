@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.46 $
-* DATE         :  $Date: 2006/02/21 15:27:00 $
+* REVISION     :  $Revision: 1.47 $
+* DATE         :  $Date: 2006/04/17 19:30:10 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -783,6 +783,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
                 ResultMessage.EventCode       = NORMAL;
 
                 ResultMessage.DeviceID        = InMessage->DeviceID;
+                ResultMessage.MessageFlags    = InMessage->MessageFlags;
 
                 /* Load up the info out of the CCUInfo Structure */
                 ResultMessage.TargetID        = pInfo->QueTable[QueTabEnt].TargetID;
@@ -963,7 +964,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
                     }
                 }
 
-                statisticsNewCompletion( ResultMessage.Port, ResultMessage.DeviceID, ResultMessage.TargetID, ResultMessage.EventCode & 0x3fff );
+                statisticsNewCompletion( ResultMessage.Port, ResultMessage.DeviceID, ResultMessage.TargetID, ResultMessage.EventCode & 0x3fff, ResultMessage.MessageFlags );
             }
             else
             {

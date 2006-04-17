@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.39 $
-* DATE         :  $Date: 2006/02/27 23:58:29 $
+* REVISION     :  $Revision: 1.40 $
+* DATE         :  $Date: 2006/04/17 19:30:10 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -444,7 +444,7 @@ INT PorterEntryPoint(OUTMESS *&OutMessage)
 #endif
 
      //This could go after more checking, but I like it here. I think the message has been checked enough?
-    statisticsNewRequest(OutMessage->Port, OutMessage->DeviceID, OutMessage->TargetID);
+    statisticsNewRequest(OutMessage->Port, OutMessage->DeviceID, OutMessage->TargetID, OutMessage->MessageFlags);
 
     /*
      * Ok, all checks passed so far, so lets operate on this remote

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.178 $
-* DATE         :  $Date: 2006/04/06 17:00:30 $
+* REVISION     :  $Revision: 1.179 $
+* DATE         :  $Date: 2006/04/17 19:30:10 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2741,6 +2741,7 @@ INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OU
     INT port = OutMessage->Port;
     INT deviceID = OutMessage->DeviceID;
     INT targetID = OutMessage->TargetID;
+    INT msgFlags = OutMessage->MessageFlags;
 
     if( (CommResult != NORMAL && CommResult != ErrPortSimulated) ||
         (  (GetPreferredProtocolWrap(Port, Device) == ProtocolWrapIDLC) &&         // 031003 CGP // (  (Port->getProtocolWrap() == ProtocolWrapIDLC) &&
@@ -2881,7 +2882,7 @@ INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OU
 
     if(status == RETRY_SUBMITTED)
     {
-        statisticsNewAttempt( port, deviceID, targetID, CommResult );
+        statisticsNewAttempt( port, deviceID, targetID, CommResult, msgFlags );
     }
     else if(CommResult == ErrPortSimulated)
     {
@@ -3167,11 +3168,11 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
     // Statistics processing.
     if(status == RETRY_SUBMITTED)
     {
-        statisticsNewAttempt( InMessage->Port, InMessage->DeviceID, InMessage->TargetID, CommResult );
+        statisticsNewAttempt( InMessage->Port, InMessage->DeviceID, InMessage->TargetID, CommResult, InMessage->MessageFlags );
     }
     else
     {
-        statisticsNewCompletion( InMessage->Port, InMessage->DeviceID, InMessage->TargetID, CommResult );
+        statisticsNewCompletion( InMessage->Port, InMessage->DeviceID, InMessage->TargetID, CommResult, InMessage->MessageFlags );
     }
 
     return status;

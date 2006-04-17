@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/yukon.h-arc  $
-* REVISION     :  $Revision: 1.51 $
-* DATE         :  $Date: 2006/04/11 15:31:47 $
+* REVISION     :  $Revision: 1.52 $
+* DATE         :  $Date: 2006/04/17 19:30:10 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -451,6 +451,7 @@ enum CtiOutMessageFlags_t
     MessageFlag_MessageRequeued            = 0x00000001 << 6,   // This message was reque'd and retries were decremented.
     MessageFlag_PortSharing                = 0x00000001 << 7,
     MessageFlag_NoTransmit                 = 0x00000001 << 8,
+    MessageFlag_StatisticsRequested        = 0x00000001 << 9,
 };
 
 

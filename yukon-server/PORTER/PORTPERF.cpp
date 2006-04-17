@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTPERF.cpp-arc  $
-* REVISION     :  $Revision: 1.41 $
-* DATE         :  $Date: 2006/04/13 19:37:17 $
+* REVISION     :  $Revision: 1.42 $
+* DATE         :  $Date: 2006/04/17 19:30:10 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -264,8 +264,10 @@ CtiStatisticsIterator_t statisticsPaoFind(const LONG paoId)
     return dstatitr;
 }
 
-void statisticsNewRequest(long paoportid, long devicepaoid, long targetpaoid)
+void statisticsNewRequest(long paoportid, long devicepaoid, long targetpaoid, UINT &messageFlags )
 {
+    messageFlags |= MessageFlag_StatisticsRequested;
+
     CtiLockGuard<CtiMutex> guard(gDeviceStatColMux);
     CtiStatTuple tup;
 
@@ -319,18 +321,26 @@ void statisticsProcessNewRequest(long paoportid, long devicepaoid, long targetpa
     }
 }
 
-void statisticsNewAttempt(long paoportid, long devicepaoid, long targetpaoid, int result)
+void statisticsNewAttempt(long paoportid, long devicepaoid, long targetpaoid, int result,  UINT messageFlags)
 {
-    CtiLockGuard<CtiMutex> guard(gDeviceStatColMux);
-    CtiStatTuple tup;
-
-    tup.action = CtiStatTuple::Attempt;
-    tup.paoportid = paoportid;
-    tup.devicepaoid = devicepaoid;
-    tup.targetpaoid = targetpaoid;
-    tup.result = result;
-
-    statCol.push_back(tup);
+    if( messageFlags & MessageFlag_StatisticsRequested )
+    {
+        CtiLockGuard<CtiMutex> guard(gDeviceStatColMux);
+        CtiStatTuple tup;
+    
+        tup.action = CtiStatTuple::Attempt;
+        tup.paoportid = paoportid;
+        tup.devicepaoid = devicepaoid;
+        tup.targetpaoid = targetpaoid;
+        tup.result = result;
+    
+        statCol.push_back(tup);
+    }
+    else if( gConfigParms.getValueAsULong("STATISTICS_DEBUGLEVEL", 0, 16) )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Statistics not requested for: Port " << paoportid << " Device " << devicepaoid << " / Target " << targetpaoid << endl;
+    }
     return;
 }
 
@@ -379,17 +389,25 @@ void statisticsProcessNewAttempt(long paoportid, long devicepaoid, long targetpa
     }
 }
 
-void statisticsNewCompletion(long paoportid, long devicepaoid, long targetpaoid, int result)
+void statisticsNewCompletion(long paoportid, long devicepaoid, long targetpaoid, int result, UINT messageFlags)
 {
-    CtiLockGuard<CtiMutex> guard(gDeviceStatColMux);
-    CtiStatTuple tup;
-
-    tup.action = CtiStatTuple::Completion;
-    tup.paoportid = paoportid;
-    tup.devicepaoid = devicepaoid;
-    tup.targetpaoid = targetpaoid;
-    tup.result = result;
-    statCol.push_back(tup);
+    if( messageFlags & MessageFlag_StatisticsRequested )
+    {
+        CtiLockGuard<CtiMutex> guard(gDeviceStatColMux);
+        CtiStatTuple tup;
+    
+        tup.action = CtiStatTuple::Completion;
+        tup.paoportid = paoportid;
+        tup.devicepaoid = devicepaoid;
+        tup.targetpaoid = targetpaoid;
+        tup.result = result;
+        statCol.push_back(tup);
+    }
+    else if( gConfigParms.getValueAsULong("STATISTICS_DEBUGLEVEL", 0, 16) )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Statistics not requested for: Port " << paoportid << " Device " << devicepaoid << " / Target " << targetpaoid << endl;
+    }
     return;
 }
 
