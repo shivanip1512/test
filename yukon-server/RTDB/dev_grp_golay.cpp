@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2006/02/27 23:58:30 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2006/04/17 20:12:07 $
 *
 * HISTORY      :
 * $Log: dev_grp_golay.cpp,v $
+* Revision 1.21  2006/04/17 20:12:07  cplender
+* Altered the processing of golay operational addresses to fully support F1,2,3 & 4
+*
 * Revision 1.20  2006/02/27 23:58:30  tspar
 * Phase two of RWTPtrSlist replacement.
 *
@@ -237,8 +240,9 @@ INT CtiDeviceGroupGolay::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
         parse.setValue("control_reduction", 100 );
 
         parse.setValue("sa_codesimple", _loadGroup.getOperationalAddress());
+        parse.setValue("sa_golaybase", _loadGroup.getGolayOperationalAddress());
         if(!parse.isKeyValid("sa_function"))
-            parse.setValue("sa_function", 1 );      // This may need a peek CGP // _loadGroup.getFunction(control));
+            parse.setValue("sa_function", _loadGroup.getFunction(control));
 
         if( (Route = getRoute( getRouteID() )) )    // This is "this's" route
         {

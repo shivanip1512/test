@@ -11,14 +11,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/12/20 17:16:06 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2006/04/17 20:12:07 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
 
 #include "logger.h"
+#include "numstr.h"
 #include "tbl_lmg_sasimple.h"
 
 #include "rwutil.h"
@@ -204,6 +205,67 @@ void CtiTableSASimpleGroup::DecodeDatabaseReader( RWDBReader &rdr )
     rdr["nominaltimeout"]       >> _nominalTimeout;
     rdr["markindex"]            >> _markIndex;
     rdr["spaceindex"]           >> _spaceIndex;
+
+    if( _operationalAddress.length() >= 6 )
+    {
+        char *p;
+        char tmp[8];
+        long op = strtoul(_operationalAddress.data(), &p, 10);
+        long opAA, opbb, opBB;
+
+        string opAddr;
+
+        memset(tmp, 0, sizeof(tmp));
+
+        tmp[0] = _operationalAddress[(size_t)0];
+        tmp[1] = _operationalAddress[(size_t)1];
+        opBB = strtoul(tmp, &p, 10);
+
+        tmp[0] = _operationalAddress[(size_t)2];
+        tmp[1] = _operationalAddress[(size_t)3];
+        opAA = strtoul(tmp, &p, 10);
+
+        tmp[0] = _operationalAddress[(size_t)4];
+        tmp[1] = _operationalAddress[(size_t)5];
+        opbb = strtoul(tmp, &p, 10);
+
+        // This code attempts to determine the "function" based upon the bits of the A & B words (BBAABB).
+        bool a_word_even = (opAA % 2) ? false : true;
+        bool b_word_even = (opbb % 2) ? false : true;
+
+        if(a_word_even && b_word_even)
+        {
+            // Function 1
+            _function = 1;
+        }
+        else if(a_word_even && !b_word_even)
+        {
+            // Function 2
+            _function = 2;
+            opbb -= 1;
+        }
+        else if(!a_word_even && b_word_even)
+        {
+            // Function 3
+            _function = 3;
+            opAA -=1;
+        }
+        else if(!a_word_even && !b_word_even)
+        {
+            // Function 4
+            _function = 4;
+            opAA -= 1;
+            opbb -= 1;
+        }
+
+        op = (opBB * 10000) + (opAA * 100) + opbb;  // This is the base address.
+        opAddr = CtiNumStr( op );      // This is the opAddr BASE string
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Golay Opaddr: " << _operationalAddress << " == " << opAddr << " Function " << _function << endl;
+        }
+    }
 }
 
 //=====================================================================================================================
@@ -238,5 +300,34 @@ RWDBStatus CtiTableSASimpleGroup::Delete()
     return RWDBStatus::notSupported;
 }
 
+string CtiTableSASimpleGroup::getGolayOperationalAddress() const
+{
+    string opAddr("000000");
 
+    if( _operationalAddress.length() >= 6 )
+    {
+        char *p;
+        char tmp[8];
+        long op = strtoul(_operationalAddress.data(), &p, 10);
+        long opAA, opbb, opBB;
 
+        memset(tmp, 0, sizeof(tmp));
+
+        tmp[0] = _operationalAddress[(size_t)0];
+        tmp[1] = _operationalAddress[(size_t)1];
+        opBB = strtoul(tmp, &p, 10);
+
+        tmp[0] = _operationalAddress[(size_t)2];
+        tmp[1] = _operationalAddress[(size_t)3];
+        opAA = strtoul(tmp, &p, 10);
+
+        tmp[0] = _operationalAddress[(size_t)4];
+        tmp[1] = _operationalAddress[(size_t)5];
+        opbb = strtoul(tmp, &p, 10);
+
+        op = (opBB * 10000) + (opAA * 100) + opbb;  // This is the base address.
+        opAddr = CtiNumStr( op );                   // This is the opAddr BASE string
+    }
+
+    return opAddr;
+}

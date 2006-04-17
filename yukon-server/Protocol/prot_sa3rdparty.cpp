@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.38 $
-* DATE         :  $Date: 2006/01/03 20:23:38 $
+* REVISION     :  $Revision: 1.39 $
+* DATE         :  $Date: 2006/04/17 20:12:07 $
 *
 * HISTORY      :
 * $Log: prot_sa3rdparty.cpp,v $
+* Revision 1.39  2006/04/17 20:12:07  cplender
+* Altered the processing of golay operational addresses to fully support F1,2,3 & 4
+*
 * Revision 1.38  2006/01/03 20:23:38  tspar
 * Moved non RW string utilities from rwutil.h to utility.h
 *
@@ -214,7 +217,7 @@ INT CtiProtocolSA3rdParty::parseCommand(CtiCommandParser &parse)
     case ProtocolGolayType:
         {
             _sa._groupType = GOLAY;
-            strncpy(_sa._codeSimple, parse.getsValue("sa_codesimple").c_str(), 7);
+            strncpy(_sa._codeSimple, parse.getsValue("sa_golaybase").c_str(), 7);
             break;
         }
     case ProtocolSADigitalType:
@@ -520,15 +523,15 @@ INT CtiProtocolSA3rdParty::assemblePutConfig(CtiCommandParser &parse)
 
                 boost::char_separator<char> sep("=");
                 Boost_char_tokenizer slotok(temp, sep);
-                Boost_char_tokenizer::iterator tok_iter = slotok.begin(); 
+                Boost_char_tokenizer::iterator tok_iter = slotok.begin();
                 temp = trim_left(temp, *tok_iter);
 
                 boost::char_separator<char> sep1("=,\r\n ");
                 Boost_char_tokenizer _slotok(temp, sep1);
-                Boost_char_tokenizer::iterator _tok_iter = _slotok.begin(); 
+                Boost_char_tokenizer::iterator _tok_iter = _slotok.begin();
 
-                
-                
+
+
 
                 rwsslot = *tok_iter;
                 rwsaddr = *_tok_iter;
@@ -574,7 +577,7 @@ INT CtiProtocolSA3rdParty::assemblePutConfig(CtiCommandParser &parse)
         {
             INT offtime = 0;
             e1.assign(" offhours +[0-9]+");
-            
+
             if(boost::regex_search(str, what, e1, boost::match_default))
             {
                 token = string(what[0]);

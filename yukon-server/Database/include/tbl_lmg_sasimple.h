@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/12/20 17:16:08 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2006/04/17 20:12:07 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -61,6 +61,7 @@ public:
     LONG getLmGroupId( void ) const;
     LONG getRouteId( void ) const;
     string getOperationalAddress( void ) const;          // bitmask for functions to operate upon bit 0 is function 1.  Bit 3 is function 4.
+    string getGolayOperationalAddress() const;
     int getFunction( bool control ) const;
     int getNominalTimeout( void ) const;
     int getVirtualTimeout( void ) const;
