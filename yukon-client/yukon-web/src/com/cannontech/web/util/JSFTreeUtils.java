@@ -1,5 +1,6 @@
 package com.cannontech.web.util;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -14,7 +15,7 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 
 public class JSFTreeUtils {
 
-    public static TreeNode createPAOTreeFromPointList(Set points, TreeNode root) {
+    public static TreeNode createPAOTreeFromPointList(Collection points, TreeNode root) {
         TreeNode rootData = root;
 
         HashMap deviceMap = new HashMap(100);
@@ -38,7 +39,8 @@ public class JSFTreeUtils {
                 deviceMap.put(device, newParent);
                 rootData.getChildren().add(newParent);
 
-            } else {
+            } 
+            else {
                 // don't create a device
                 // just attach a point in the root data for this device
                 // get the old tree node
