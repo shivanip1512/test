@@ -21,6 +21,7 @@ import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.stars.util.*;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.ServletUtils;
@@ -133,7 +134,8 @@ public class AddSNRangeTask extends TimeConsumingTask {
 				StarsLiteFactory.setLiteStarsLMHardware( liteHw, hardware );
 				energyCompany.addInventory( liteHw );
 				
-				numSuccess++;
+                EventUtils.logSTARSEvent(user.getUserID(), EventUtils.EVENT_CATEGORY_INVENTORY, devTypeID, liteHw.getInventoryID());
+                numSuccess++;
 			}
 			catch (com.cannontech.database.TransactionException e) {
 				CTILogger.error( e.getMessage(), e );
@@ -150,7 +152,7 @@ public class AddSNRangeTask extends TimeConsumingTask {
 		String logMsg = "Serial Range:" + String.valueOf(snFrom) + " - " + String.valueOf(snTo)
 				+ ",Device Type:" + YukonListFuncs.getYukonListEntry(devTypeID.intValue()).getEntryText();
 		ActivityLogger.logEvent( user.getUserID(), ActivityLogActions.INVENTORY_ADD_RANGE, logMsg );
-		
+        
 		session.removeAttribute( InventoryManagerUtil.INVENTORY_SET );
 		status = STATUS_FINISHED;
 		

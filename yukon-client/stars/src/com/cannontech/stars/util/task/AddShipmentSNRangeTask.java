@@ -22,6 +22,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.db.stars.hardware.Warehouse;
+import com.cannontech.stars.util.*;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.ServletUtils;
@@ -120,6 +121,7 @@ public class AddShipmentSNRangeTask extends TimeConsumingTask {
 				LiteStarsLMHardware liteHw = new LiteStarsLMHardware();
 				StarsLiteFactory.setLiteStarsLMHardware( liteHw, hardware );
 				energyCompany.addInventory( liteHw );
+                EventUtils.logSTARSEvent(user.getUserID(), EventUtils.EVENT_CATEGORY_INVENTORY, devTypeID, liteHw.getInventoryID());
                 
                 if(warehouseID.intValue() > 0)
                 {
@@ -144,8 +146,7 @@ public class AddShipmentSNRangeTask extends TimeConsumingTask {
 		
 		String logMsg = "Serial Range:" + String.valueOf(snFrom) + " - " + String.valueOf(snTo)
 				+ ",Device Type:" + YukonListFuncs.getYukonListEntry(devTypeID.intValue()).getEntryText();
-		
-        /*TODO need to add new SAM event logging*/
+
         ActivityLogger.logEvent( user.getUserID(), ActivityLogActions.INVENTORY_ADD_RANGE, logMsg );
 		
 		session.removeAttribute( InventoryManagerUtil.INVENTORY_SET );
