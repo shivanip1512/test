@@ -107,7 +107,7 @@ public class EventInventory extends EventBase {
                 eventInventory.getEventInventory().setInventoryID(new Integer( inventoryID));
                 eventInventory.setActionText(stmt.getRow(i)[5].toString());
                 eventInventory.setUserName(stmt.getRow(i)[6].toString());
-                eventInventory.setActionYukDefID( ((java.math.BigDecimal)stmt.getRow(i)[3]).intValue() );
+                eventInventory.setActionYukDefID( ((java.math.BigDecimal)stmt.getRow(i)[7]).intValue() );
                 eventInventories.add(eventInventory);
             }
         }
