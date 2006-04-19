@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.50 $
-* DATE         :  $Date: 2006/03/10 00:45:20 $
+* REVISION     :  $Revision: 1.51 $
+* DATE         :  $Date: 2006/04/19 15:50:10 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -215,7 +215,7 @@ bool CtiProtocolLMI::hasInboundData( void )
 
 void CtiProtocolLMI::getInboundData( list< CtiPointDataMsg* > &pointList, string &info )
 {
-    int i = 1;
+    int i = 0;
     CtiPointDataMsg *pdm;
 
     _seriesv.getInboundPoints(pointList);
@@ -240,10 +240,12 @@ void CtiProtocolLMI::getInboundData( list< CtiPointDataMsg* > &pointList, string
 
     while( !_returned_codes.empty() )
     {
-        info += CtiNumStr(_returned_codes.front()).zpad(6) + " ";
+        pair<int, int> golay_address = CtiProtocolSA3rdParty::parseGolayAddress(_returned_codes.front());
         _returned_codes.pop();
 
-        if( !(i++ % 6) )
+        info += CtiNumStr(golay_address.first).zpad(6) + "-" + CtiNumStr(golay_address.second) + " ";
+
+        if( !(++i % 6) )
         {
             info += "\n";
         }
@@ -698,8 +700,9 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
                             om = viable_codes.front();
                             viable_codes.pop();
 
-                            om->Buffer.SASt._codeSimple[6] = 0;  //  make sure it's null-terminated, just to be safe...
                             char (&codestr)[7] = om->Buffer.SASt._codeSimple;
+
+                            codestr[6] = 0;  //  make sure it's null-terminated, just to be safe...
 
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(slog);
@@ -727,7 +730,14 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
                                 //  we don't expire the messages until well after they should've been collected
                                 ptime::time_duration_type expiration(seconds((60 + 30) * _tick_time));
 
-                                CtiVerificationWork *work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_Golay, *om, CtiProtocolSA3rdParty::asString(om->Buffer.SASt).data(), codestr, expiration);
+                                string golay_codestr;
+                                pair< int, int > golay_code = CtiProtocolSA3rdParty::parseGolayAddress(codestr);
+
+                                golay_codestr  = CtiNumStr(golay_code.first);       //  base address
+                                golay_codestr += "-";
+                                golay_codestr += CtiNumStr(golay_code.second - 1);  //  make the function 0-based so it'll match the RTM's result
+
+                                CtiVerificationWork *work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_Golay, *om, CtiProtocolSA3rdParty::asString(om->Buffer.SASt).data(), golay_codestr, expiration);
 
                                 _verification_objects.push(work);
                             }
@@ -1030,21 +1040,29 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
 
                                 while( offset < (_inbound.length - 1) )
                                 {
-                                    char buf[7];
+                                    char codestr[7];
 
-                                    memcpy(buf, _inbound.data + offset, 6);
-                                    buf[6] = 0;
+                                    memcpy(codestr, _inbound.data + offset, 6);
+                                    codestr[6] = 0;
 
                                     if( _command == Command_ReadEchoedCodes )
                                     {
                                         if( !findStringIgnoreCase(gConfigParms.getValueAsString("PROTOCOL_LMI_VERIFY"),"false") )
                                         {
+                                            string golay_codestr;
+                                            pair< int, int > golay_code = CtiProtocolSA3rdParty::parseGolayAddress(codestr);
+
+                                            golay_codestr  = CtiNumStr(golay_code.first);       //  base address
+                                            golay_codestr += "-";
+                                            golay_codestr += CtiNumStr(golay_code.second - 1);  //  make the function 0-based so it'll match the RTM's result
+
+                                            if( gConfigParms.getValueAsULong("LMI_DEBUGLEVEL", 0) )
                                             {
                                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                                dout << CtiTime() << " CtiProtocolLMI::decode() creating report object for code \"" << buf << "\", receiver_id (" << _transmitter_id << ")" << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                                dout << CtiTime() << " CtiProtocolLMI::decode() creating report object for code \"" << golay_codestr << "\", receiver_id (" << _transmitter_id << ")" << __FILE__ << " (" << __LINE__ << ")" << endl;
                                             }
 
-                                            CtiVerificationReport *report = CTIDBG_new CtiVerificationReport(CtiVerificationBase::Protocol_Golay, _transmitter_id, string(buf), second_clock::universal_time());
+                                            CtiVerificationReport *report = CTIDBG_new CtiVerificationReport(CtiVerificationBase::Protocol_Golay, _transmitter_id, golay_codestr, second_clock::universal_time());
                                             _verification_objects.push(report);
                                         }
 
@@ -1052,7 +1070,7 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
                                     }
                                     else
                                     {
-                                        _retrieved_codes.push(atoi(buf));
+                                        _retrieved_codes.push(atoi(codestr));
                                     }
 
                                     offset += 6;

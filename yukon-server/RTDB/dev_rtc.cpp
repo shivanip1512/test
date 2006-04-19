@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.42 $
-* DATE         :  $Date: 2006/03/23 15:29:18 $
+* REVISION     :  $Revision: 1.43 $
+* DATE         :  $Date: 2006/04/19 15:52:18 $
 *
 * HISTORY      :
 * $Log: dev_rtc.cpp,v $
+* Revision 1.43  2006/04/19 15:52:18  mfisher
+* changed code reporting to match the RTM's format (bbaabb-f)
+*
 * Revision 1.42  2006/03/23 15:29:18  jotteson
 * Mass update of point* to smart pointers. Point manager now uses smart pointers.
 *
@@ -791,15 +794,20 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
                     }
                     else
                     {
-                        strncpy(codestr, rtcOutMessage->Buffer.SASt._codeSimple, 6);
-                        codestr[6] = 0;
+                        string golay_codestr;
+                        pair< int, int > golay_code = CtiProtocolSA3rdParty::parseGolayAddress(rtcOutMessage->Buffer.SASt._codeSimple);
+
+                        golay_codestr  = CtiNumStr(golay_code.first);       //  base address
+                        golay_codestr += "-";
+                        golay_codestr += CtiNumStr(golay_code.second - 1);  //  make the function 0-based so it'll match the RTM's result
+
                         cmdStr = CtiProtocolSA3rdParty::asString(rtcOutMessage->Buffer.SASt);
                         if( gConfigParms.getValueAsULong("DEBUGLEVEL_DEVICE", 0) == TYPE_RTC )
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " " << cmdStr << endl;
                         }
-                        work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_Golay, *rtcOutMessage, cmdStr, codestr, seconds(60));
+                        work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_Golay, *rtcOutMessage, cmdStr, golay_codestr, seconds(60));
                     }
 
                     if(work) _verification_objects.push(work);
