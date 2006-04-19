@@ -103,15 +103,20 @@ public class LoadWorkOrdersTask extends TimeConsumingTask {
 
 				int orderID = rset.getInt(6);
 				LiteWorkOrderBase liteWorkOrderBase = energyCompany.getWorkOrderBase(orderID, false);
-        		EventWorkOrder eventWorkOrder = new EventWorkOrder();
-        		eventWorkOrder.setEventID(new Integer(rset.getInt(1)));
-        		eventWorkOrder.getEventBase().setUserID(new Integer(rset.getInt(2)));
-        		eventWorkOrder.getEventBase().setSystemCategoryID(new Integer(rset.getInt(3)));
-        		eventWorkOrder.getEventBase().setActionID(new Integer(rset.getInt(4)));
-        		eventWorkOrder.getEventBase().setEventTimestamp( new Date(rset.getTimestamp(5).getTime() ));        		
-        		eventWorkOrder.getEventWorkOrder().setWorkOrderID(new Integer(new Integer( orderID)));
-				liteWorkOrderBase.getEventWorkOrders().add(0, eventWorkOrder);
-
+                if( liteWorkOrderBase != null)
+                {
+            		EventWorkOrder eventWorkOrder = new EventWorkOrder();
+            		eventWorkOrder.setEventID(new Integer(rset.getInt(1)));
+            		eventWorkOrder.getEventBase().setUserID(new Integer(rset.getInt(2)));
+            		eventWorkOrder.getEventBase().setSystemCategoryID(new Integer(rset.getInt(3)));
+            		eventWorkOrder.getEventBase().setActionID(new Integer(rset.getInt(4)));
+            		eventWorkOrder.getEventBase().setEventTimestamp( new Date(rset.getTimestamp(5).getTime() ));        		
+            		eventWorkOrder.getEventWorkOrder().setWorkOrderID(new Integer(new Integer( orderID)));
+    				liteWorkOrderBase.getEventWorkOrders().add(0, eventWorkOrder);
+                }
+                else {
+                    CTILogger.error("WorkOrderID: " + orderID + " - Not loaded for EnergyCompanyID: " + energyCompany.getEnergyCompanyID().intValue());
+                }
 				if (isCanceled) {
 					status = STATUS_CANCELED;
 					return;
