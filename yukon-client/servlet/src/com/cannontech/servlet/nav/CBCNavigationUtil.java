@@ -6,6 +6,12 @@ import com.cannontech.web.navigation.CtiNavObject;
 
 public class CBCNavigationUtil {
     
+	private static final String [] PAGES_TO_SKIP = {"capBankCmd.jsp", 
+													"feederCmd.jsp",
+													"subCmd.jsp",
+													"charts.jsp",
+													"capBankMove.jsp",
+													"tempmove.jsp"};
     public CBCNavigationUtil() {
         super();
     }
@@ -19,7 +25,7 @@ public class CBCNavigationUtil {
     public static String goBack(HttpSession session) {        
         CtiNavObject navObject = (CtiNavObject) session.getAttribute("CtiNavObject");        
         if (navObject.getHistory().size() >= 1)
-            return parseRedirect( (String) navObject.getHistory().pop());
+            return parseRedirect( (String) navObject.getHistory().pop(), session);
         else
             return "";  
     }
@@ -30,17 +36,14 @@ public class CBCNavigationUtil {
 	 * From navigation point of view these pages are "intermediary"
 	 * therefore they need to be skipped 
 	 * */
-    private static String parseRedirect(String string) {
-		if (string.indexOf("capBankCmd") != -1) {
-			return string.replaceAll("capBankCmd", "feeders");
-		}
-		if (string.indexOf("feederCmd") != -1) {
-			return string.replaceAll("feederCmd", "feeders");
-		}
-		if (string.indexOf("subCmd") != -1) {
-			return string.replaceAll("subCmd", "feeders");
-		}		
+    private static String parseRedirect(String string, HttpSession session) {
+    	CtiNavObject navObject = (CtiNavObject) session.getAttribute("CtiNavObject");	
+    	for (int i = 0; i < PAGES_TO_SKIP.length; i++) {
+			String pageToSkip = PAGES_TO_SKIP[i];
+			if (string.indexOf(pageToSkip) != -1) {
+				return navObject.getModuleExitPage();
+			}
+		}    		
 		return string;
-	}  
-
+	} 
 }
