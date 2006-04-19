@@ -15,7 +15,7 @@
             <%}
             else 
             {%>
-              <img src="../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.NAV_BULLET%>"/>" width="12" height="12"><a href="/readmeter/user_trending.jsp?<%= "gdefid=" + gData[i][0]%>"><span class="NavText"><%=gData[i][1] %></span></a><br>
+              <img src="../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.NAV_BULLET_EXPAND%>"/>" width="12" height="12"><a href="/readmeter/user_trending.jsp?<%= "gdefid=" + gData[i][0]%>"><span class="NavText"><%=gData[i][1] %></span></a><br>
             <%}
           }
         }
