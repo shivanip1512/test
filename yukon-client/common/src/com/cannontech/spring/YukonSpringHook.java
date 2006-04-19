@@ -5,6 +5,8 @@ import org.springframework.beans.factory.access.BeanFactoryReference;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.access.ContextSingletonBeanFactoryLocator;
 
+import com.cannontech.database.incrementer.NextValueHelper;
+
 public class YukonSpringHook {
     static ApplicationContext applicationContext;
     
@@ -24,6 +26,11 @@ public class YukonSpringHook {
     
     public static Object getBean(String name) {
         return getContext().getBean(name);
+    }
+    
+    public static NextValueHelper getNextValueHelper() {
+        // I'm not sure if this is the best spot for this...
+        return (NextValueHelper) getBean("nextValueHelper");
     }
     
 
