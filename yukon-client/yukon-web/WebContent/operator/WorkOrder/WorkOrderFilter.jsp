@@ -89,12 +89,8 @@ function showAll(form) {
 					  %>
                         <option value="<%= entry.getYukonDefID() %>" <%= selected %>><%= entry.getContent() %></option>
 					  <% } %>
-					  </select>	                	
-	                    	<c:forEach var="filterEntry" items="${filterBean.availableFilters.yukonListEntries}">
-								<option value='<c:out value="${filterEntry.yukonDefID}"/>'> <c:out value="${filterEntry.entryText}"/> </option>
-							</c:forEach>
-	                    </select>
-	            	</td>
+					  </select>
+                    </td>
 	            	<td width="240"> 
 	                	<div id='<c:out value="${filterDeviceType}"/>'> 
 	                    	<select id='<c:out value="${filterDeviceType}"/>1' name='<c:out value="${filterDeviceType}"/>1' size="1" style="width: 200px" onChange="selectFilter(this.value)">
@@ -200,8 +196,7 @@ function showAll(form) {
                           <td width="35%"> 
                             <select name="SortBy">
                               <%
-	StarsCustSelectionList sortByList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_SO_SORT_BY );
-	for (int i = 0; i < sortByList.getStarsSelectionListEntryCount(); i++) {
+for (int i = 0; i < sortByList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = sortByList.getStarsSelectionListEntry(i);
 		String selected = (entry.getYukonDefID() == soBean.getSortBy())? "selected" : "";
 %>
