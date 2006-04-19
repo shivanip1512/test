@@ -1,6 +1,12 @@
 package com.cannontech.database.data.lite;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.Vector;
+
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.version.VersionTools;
+import com.cannontech.database.PoolManager;
 import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.db.customer.Customer;
 import com.cannontech.common.util.CtiUtilities;
@@ -23,12 +29,13 @@ public class LiteCustomer extends LiteBase {
 	private String altTrackNum = CtiUtilities.STRING_NONE;
     private String temperatureUnit = CtiUtilities.FAHRENHEIT_CHARACTER;
 	
+    private boolean extended = false;
 	//non-persistent data, 
 	//contains com.cannontech.database.data.lite.LiteContact
-	private java.util.Vector additionalContacts = null;
+	private Vector<LiteContact> additionalContacts = null;
 	
 	// contains int ,Used for residential customers only
-	private java.util.Vector accountIDs = null;
+	private Vector<Integer> accountIDs = null;
 	private int energyCompanyID = -1;
 	
 	public LiteCustomer() {
@@ -51,82 +58,106 @@ public class LiteCustomer extends LiteBase {
 	}
 	
 	public void retrieve(String dbAlias) {
+        PreparedStatement pstmt = null;
 		java.sql.Connection conn = null;
+        ResultSet rset = null;
 		try {
-			conn = com.cannontech.database.PoolManager.getInstance().getConnection( dbAlias );
+			conn = PoolManager.getInstance().getConnection( dbAlias );
 			
-			com.cannontech.database.SqlStatement stat = new com.cannontech.database.SqlStatement(
-					"SELECT PrimaryContactID, CustomerTypeID, TimeZone, CustomerNumber, RateScheduleID, " +
-                    "    AltTrackNum, TemperatureUnit" +
-					" FROM " + Customer.TABLE_NAME +
-					" WHERE CustomerID = " + getCustomerID(),
-					conn );
+            String sql = "SELECT PrimaryContactID, CustomerTypeID, TimeZone, CustomerNumber, RateScheduleID, AltTrackNum, TemperatureUnit" +
+					    " FROM " + Customer.TABLE_NAME +
+					    " WHERE CustomerID = ?";
+            
+            pstmt = conn.prepareStatement( sql );
+            pstmt.setInt( 1, getCustomerID());
+            rset = pstmt.executeQuery();
 			
-			stat.execute();
-			
-			if( stat.getRowCount() <= 0 )
-				throw new IllegalStateException("Unable to find the Customer with CustomerID = " + getCustomerID() );
-			
-			Object[] objs = stat.getRow(0);
-			
-			setPrimaryContactID( ((java.math.BigDecimal) objs[0]).intValue() );
-			setCustomerTypeID( ((java.math.BigDecimal) objs[1]).intValue() );
-			setTimeZone( objs[2].toString() );
-			setCustomerNumber( objs[3].toString() );
-			setRateScheduleID( ((java.math.BigDecimal) objs[4]).intValue() );
-			setAltTrackingNumber( objs[5].toString() );
-            setTemperatureUnit( objs[6].toString() );
-			
-			stat = new com.cannontech.database.SqlStatement(
-					"SELECT ca.ContactID " + 
-					"FROM CustomerAdditionalContact ca, " + 
-					Customer.TABLE_NAME + " c " +
-					"WHERE " +
-					"c.CustomerID=" + getCustomerID() + " " +
-					"AND c.CustomerID=ca.CustomerID " +
-					"ORDER BY ca.Ordering",
-					conn );
-			
-			stat.execute();
-			
-			getAdditionalContacts().removeAllElements();
-			
-			for( int i = 0; i < stat.getRowCount(); i++ ) {
-				//add the LiteContact to this Customer
-				getAdditionalContacts().add(
-					ContactFuncs.getContact(((java.math.BigDecimal) stat.getRow(i)[0]).intValue()) );
-
-			}
-
-			if (VersionTools.starsExists()) {
-				stat = new com.cannontech.database.SqlStatement(
-						"SELECT acct.AccountID, map.EnergyCompanyID " +
-						"FROM CustomerAccount acct, ECToAccountMapping map " +
-						"WHERE acct.CustomerID=" + getCustomerID() +
-						" AND acct.AccountID = map.AccountID",
-						conn );
-				
-				stat.execute();
-				
-				getAccountIDs().removeAllElements();
-				
-				for (int i = 0; i < stat.getRowCount(); i++) {
-					getAccountIDs().add(
-						new Integer(((java.math.BigDecimal) stat.getRow(i)[0]).intValue()) );
-					energyCompanyID = ((java.math.BigDecimal) stat.getRow(i)[1]).intValue();
-				}
-			}
+            if(rset.next())
+            {
+    			setPrimaryContactID(rset.getInt(1) );
+    			setCustomerTypeID( rset.getInt(2) );
+    			setTimeZone( rset.getString(3) );
+    			setCustomerNumber( rset.getString(4) );
+    			setRateScheduleID( rset.getInt(5) );
+    			setAltTrackingNumber( rset.getString(6) );
+                setTemperatureUnit( rset.getString(7) );
+            }
+            else
+                throw new IllegalStateException("Unable to find the Customer with CustomerID = " + getCustomerID() );
 		}
 		catch (Exception e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 		}
 		finally {
 			try {
+                if (pstmt != null) pstmt.close();
 				if (conn != null) conn.close();
 			}
 			catch (java.sql.SQLException e) {}
 		}
 	}
+
+    private synchronized void retrieveExtended() {
+        if(!isExtended()){
+                
+            PreparedStatement pstmt = null;
+            java.sql.Connection conn = null;
+            ResultSet rset = null;
+            try {
+                conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias());
+                
+                String sql = "SELECT ca.ContactID " + 
+                     " FROM CustomerAdditionalContact ca, " + Customer.TABLE_NAME + " c " +
+                     " WHERE c.CustomerID = ?" +
+                     " AND c.CustomerID=ca.CustomerID " +
+                     " ORDER BY ca.Ordering";
+                
+                pstmt = conn.prepareStatement( sql );
+                pstmt.setInt( 1, getCustomerID());
+                rset = pstmt.executeQuery();
+                
+                getAdditionalContacts().removeAllElements();
+                
+                while(rset.next()) //add the LiteContact to this Customer
+                    getAdditionalContacts().add( ContactFuncs.getContact( rset.getInt(1)) );
+    
+                pstmt.close();
+                
+                if (VersionTools.starsExists())
+                {
+                    sql = "SELECT acct.AccountID, map.EnergyCompanyID " +
+                         " FROM CustomerAccount acct, ECToAccountMapping map " +
+                         " WHERE acct.CustomerID = ?" +
+                         " AND acct.AccountID = map.AccountID";
+                    
+                    pstmt = conn.prepareStatement( sql );
+                    pstmt.setInt( 1, getCustomerID());
+                    rset = pstmt.executeQuery();
+                    
+                    getAccountIDs().removeAllElements();
+                    
+                    while(rset.next())
+                    {
+                        getAccountIDs().add( new Integer(rset.getInt(1)) );
+                        energyCompanyID = rset.getInt(2);
+                    }
+                    pstmt.close();
+                }
+            }
+            catch (Exception e) {
+                CTILogger.error( e.getMessage(), e );
+            }
+            finally {
+                try {
+                    if (rset != null) rset.close();
+                    if (pstmt != null) pstmt.close();
+                    if (conn != null) conn.close();
+                }
+                catch (java.sql.SQLException e) {}
+            }
+            setExtended(true);
+        }
+    }
 
 	/**
 	 * Returns the customerTypeID.
@@ -148,7 +179,7 @@ public class LiteCustomer extends LiteBase {
 	 * Sets the additionalContacts.
 	 * @param additionalContacts The additionalContacts to set
 	 */
-	public void setAdditionalContacts(java.util.Vector additionalContacts) {
+	public void setAdditionalContacts(Vector<LiteContact> additionalContacts) {
 		this.additionalContacts = additionalContacts;
 	}
 
@@ -196,9 +227,12 @@ public class LiteCustomer extends LiteBase {
 	 * Returns the additionalContacts.
 	 * @return java.util.Vector
 	 */
-	public java.util.Vector getAdditionalContacts() {
+	public Vector<LiteContact> getAdditionalContacts() {
 		if (additionalContacts == null)
-			additionalContacts = new java.util.Vector(10);
+        {
+			additionalContacts = new Vector<LiteContact>(10);
+            retrieveExtended();
+        }
 		return additionalContacts;
 	}
 	
@@ -206,9 +240,12 @@ public class LiteCustomer extends LiteBase {
 	 * Returns the customer account IDs
 	 * @return java.util.Vector
 	 */
-	public java.util.Vector getAccountIDs() {
+	public Vector<Integer> getAccountIDs() {
 		if (accountIDs == null)
-			accountIDs = new java.util.Vector();
+        {
+			accountIDs = new Vector<Integer>();
+            retrieveExtended();
+        }
 		return accountIDs;
 	}
 	
@@ -217,13 +254,15 @@ public class LiteCustomer extends LiteBase {
 	 * should belong to only one energy company.
 	 */
 	public int getEnergyCompanyID() {
+        if( energyCompanyID == -1)
+            retrieveExtended();
 		return energyCompanyID;
 	}
 
 	/**
 	 * @param vector
 	 */
-	public void setAccountIDs(java.util.Vector vector)
+	public void setAccountIDs(Vector<Integer> vector)
 	{
 		accountIDs = vector;
 	}
@@ -266,5 +305,15 @@ public class LiteCustomer extends LiteBase {
 	{
 		this.rateScheduleID = rSched;
 	}
+
+    public boolean isExtended()
+    {
+        return extended;
+    }
+
+    public void setExtended(boolean extended)
+    {
+        this.extended = extended;
+    }
 
 }

@@ -164,45 +164,6 @@ public class LiteCICustomer extends LiteCustomer
             }
             else
                 throw new IllegalStateException("Unable to find the Customer with CustomerID = " + getCustomerID() );
-            pstmt.close();
-            
-            sql = "SELECT ca.ContactID " + 
-                 " FROM CustomerAdditionalContact ca, " + Customer.TABLE_NAME + " c " +
-                 " WHERE c.CustomerID = ?" +
-                 " AND c.CustomerID=ca.CustomerID " +
-                 " ORDER BY ca.Ordering";
-            
-            pstmt = conn.prepareStatement( sql );
-            pstmt.setInt( 1, getCustomerID());
-            rset = pstmt.executeQuery();
-            
-            getAdditionalContacts().removeAllElements();
-            
-            while(rset.next()) //add the LiteContact to this Customer
-                getAdditionalContacts().add( ContactFuncs.getContact( rset.getInt(1)) );
-
-            pstmt.close();
-            
-            if (VersionTools.starsExists())
-            {
-                sql = "SELECT acct.AccountID, map.EnergyCompanyID " +
-                     " FROM CustomerAccount acct, ECToAccountMapping map " +
-                     " WHERE acct.CustomerID = ?" +
-                     " AND acct.AccountID = map.AccountID";
-                
-                pstmt = conn.prepareStatement( sql );
-                pstmt.setInt( 1, getCustomerID());
-                rset = pstmt.executeQuery();
-                
-                getAccountIDs().removeAllElements();
-                
-                while(rset.next())
-                {
-                    getAccountIDs().add( new Integer(rset.getInt(1)) );
-                    setEnergyCompanyID(rset.getInt(2));
-                }
-                pstmt.close();
-            }
         }
         catch (Exception e) {
             CTILogger.error( e.getMessage(), e );
