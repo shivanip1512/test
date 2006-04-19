@@ -1,10 +1,15 @@
 package com.cannontech.database.cache.functions;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.PoolManager;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteCustomer;
@@ -94,6 +99,47 @@ public final class ContactFuncs
             return cache.getContactsByLastName(lastName_, partialMatch);
         }
 	}
+    
+
+	public static int[] retrieveContactIDsByLastName(String lastName_, boolean partialMatch)
+    {
+        int [] contactIDs = null;
+        PreparedStatement pstmt = null;
+        Connection conn = null;
+        ResultSet rset = null;
+
+        try {
+            conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+            String sql = "SELECT CONTACTID " + 
+                        " FROM " + Contact.TABLE_NAME + 
+                        " WHERE UPPER(CONTLASTNAME) LIKE ?";
+            
+            pstmt = conn.prepareStatement( sql );
+            pstmt.setString( 1, lastName_.toUpperCase()+(partialMatch? "%":""));
+            rset = pstmt.executeQuery();
+    
+            ArrayList<Integer> contactIDList = new ArrayList<Integer>();
+            while(rset.next())
+            {
+                contactIDList.add(new Integer(rset.getInt(1)));
+            }
+            contactIDs = new int[contactIDList.size()];
+            for (int i = 0; i < contactIDList.size(); i++)
+                contactIDs[i] = contactIDList.get(i).intValue();
+        }
+        catch( Exception e ){
+            CTILogger.error( "Error retrieving contacts with last name " + lastName_+ ": " + e.getMessage(), e );
+        }
+        finally {
+            try {
+                if (rset != null) rset.close();
+                if (pstmt != null) pstmt.close();
+                if (conn != null) conn.close();
+            }
+            catch (java.sql.SQLException e) {}
+        }
+        return contactIDs;
+    }
 	
 	public static LiteContact[] getContactsByLName( String lastName_ ) {
 		return getContactsByLName( lastName_, false );
