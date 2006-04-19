@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2006/03/23 15:29:18 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2006/04/19 15:51:29 $
 *
 * HISTORY      :
 * $Log: dev_rtm.cpp,v $
+* Revision 1.19  2006/04/19 15:51:29  mfisher
+* removed CtiNumStr call around 205 code reporting
+*
 * Revision 1.18  2006/03/23 15:29:18  jotteson
 * Mass update of point* to smart pointers. Point manager now uses smart pointers.
 *
@@ -600,11 +603,11 @@ int CtiDeviceRTM::decode(CtiXfer &xfer,  int status)
                             {
                             case GOLAY:
                                 prot_type = CtiVerificationBase::Protocol_Golay;
-                                codestr = sacode.code;
+                                codestr   = sacode.code;
                                 break;
                             case SA205:
                                 prot_type = CtiVerificationBase::Protocol_SA205;
-                                codestr = CtiNumStr(sacode.code);
+                                codestr   = sacode.code;
                                 break;
                             }
 
