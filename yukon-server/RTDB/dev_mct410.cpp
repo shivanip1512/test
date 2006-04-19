@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.63 $
-* DATE         :  $Date: 2006/03/30 16:05:26 $
+* REVISION     :  $Revision: 1.64 $
+* DATE         :  $Date: 2006/04/19 20:42:42 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2597,7 +2597,7 @@ int CtiDeviceMCT410::executePutConfigDisconnect(CtiRequestMsg *pReq,CtiCommandPa
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
 
                 dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                nRet = NOTNORMAL;
+                nRet = NoConfigData;
             }
             else
             {
@@ -2627,10 +2627,10 @@ int CtiDeviceMCT410::executePutConfigDisconnect(CtiRequestMsg *pReq,CtiCommandPa
             }
         }
         else
-            nRet = NoMethod;
+            nRet = NoConfigData;
     }
     else
-        nRet = NoMethod;
+        nRet = NoConfigData;
 
     return nRet;
 }
@@ -2663,7 +2663,7 @@ int CtiDeviceMCT410::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParse
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint - Operation PutConfig_Options not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                nRet = NOTNORMAL;
+                nRet = NoConfigData;
             }
             else
             if( options == numeric_limits<long>::min() || configuration == numeric_limits<long>::min() || event1mask == numeric_limits<long>::min()
@@ -2671,7 +2671,7 @@ int CtiDeviceMCT410::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParse
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint - Necessary data not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                nRet = NOTNORMAL;
+                nRet = NoConfigData;
             }
             else
             {
@@ -2710,14 +2710,14 @@ int CtiDeviceMCT410::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParse
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint - Operation PutConfig_Outage not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                nRet = NOTNORMAL;
+                nRet = NoConfigData;
             }
             else
             if( outage == numeric_limits<long>::min() )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint - Operation outage not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                nRet = NOTNORMAL;
+                nRet = NoConfigData;
             }
             else
             {
@@ -2742,14 +2742,14 @@ int CtiDeviceMCT410::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParse
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint - Operation PutConfig_TimeAdjustTolerance not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                nRet = NOTNORMAL;
+                nRet = NoConfigData;
             }
             else
             if( timeAdjustTolerance == numeric_limits<long>::min() )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint - Operation time adjust tolerance not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                nRet = NOTNORMAL;
+                nRet = NoConfigData;
             }
             else
             {
@@ -2771,10 +2771,10 @@ int CtiDeviceMCT410::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParse
             }
         }
         else
-            nRet = NoMethod;
+            nRet = NoConfigData;
     }
     else
-        nRet = NoMethod;
+        nRet = NoConfigData;
 
     return nRet;
 }
