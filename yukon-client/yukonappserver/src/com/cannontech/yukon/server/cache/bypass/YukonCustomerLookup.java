@@ -6,15 +6,12 @@
  */
 package com.cannontech.yukon.server.cache.bypass;
 
-import java.util.Map;
-
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.Transaction;
 import com.cannontech.database.data.customer.CustomerTypes;
-import com.cannontech.database.data.lite.*;
-import com.cannontech.database.db.customer.CICustomerBase;
+import com.cannontech.database.data.lite.LiteCICustomer;
+import com.cannontech.database.data.lite.LiteCustomer;
+import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.db.customer.Customer;
-import com.cannontech.database.db.user.YukonRole;
 
 /**
  * @author jdayton
@@ -65,7 +62,7 @@ public class YukonCustomerLookup
     /*
      * Grab a contact straight from the DB using the CustomerID 
      */
-    public static LiteCustomer loadSpecificCustomer(int customerID)
+/*    public static LiteCustomer loadSpecificCustomer(int customerID)
     {
         com.cannontech.database.SqlStatement stmt =
             new com.cannontech.database.SqlStatement("SELECT CUSTOMERTYPEID FROM " +
@@ -89,6 +86,20 @@ public class YukonCustomerLookup
         }
           
         return theCustomer;
+    }
+*/    
+    public static LiteCustomer loadSpecificCustomer(int customerID)
+    {
+        LiteCustomer liteCustomer = new LiteCustomer(customerID);
+        liteCustomer.retrieve(CtiUtilities.getDatabaseAlias());
+        
+        if(liteCustomer.getCustomerTypeID() == CustomerTypes.CUSTOMER_CI)
+        {   //retrieve the CICustomerBase object instead.
+            liteCustomer = new LiteCICustomer(customerID);
+            liteCustomer.retrieve(CtiUtilities.getDatabaseAlias());
+        }
+          
+        return liteCustomer;
     }
     
 }
