@@ -1,4 +1,3 @@
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   prot_sa3rdparty
@@ -9,11 +8,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2006/04/19 14:57:50 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2006/04/19 15:48:30 $
 * HISTORY      :
 *
 * $Log: prot_sa3rdparty.h,v $
+* Revision 1.19  2006/04/19 15:48:30  mfisher
+* added an overloaded int version of parseGolayAddress()
+*
 * Revision 1.18  2006/04/19 14:57:50  mfisher
 * added parseGolayAddress() to resolve base address and function from a 6-digit Golay address
 *
@@ -103,8 +105,8 @@ using std::pair;
 #define MAX_SAERR_MSG_SIZE 256
 
 #define GRP_SA_RTM 100              // Must be greater than any REAL grouptype.
-                                    //
-// CPARMS for setting "PROTOCOL_SA_TELVENT"
+
+                                    // CPARMS for setting "PROTOCOL_SA_TELVENT"
 #define CTIPROT_ABRUPT_RESTORE                  0x00000010          // Using this could make the restores work WRONG...  Remove this and code wrapped one day soon.
 
 class IM_EX_PROT CtiProtocolSA3rdParty : public Protocol::Interface
@@ -200,7 +202,8 @@ public:
     static INT TMSlen (UCHAR *abuf, INT *len);
     static INT procTMSmsg(UCHAR *abuf, INT len, SA_CODE *scode, X205CMD *x205cmd);
 
-    static pair< int, int > parseGolayAddress(const string &golay_code);
+    static pair< unsigned long, unsigned > parseGolayAddress(unsigned long code);
+    static pair< unsigned long, unsigned > parseGolayAddress(const string &golay_code);
 
     static string asString(const CtiSAData &sa);
     static string strategyAsString(const CtiSAData &sa);
