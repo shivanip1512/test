@@ -100,16 +100,17 @@ function loadTarget(form)
                                       <td> 
                                         <table class="TableCell" align="center" width="33%">
                                           <%
-                                  for( int j = 0; j < ReportTypes.getGroupToTypeMap()[ReportTypes.STARS_REPORTS_GROUP].length; j++ ){%>
+                                          int [] rptTypes = ReportTypes.getGroupReportTypes(ReportTypes.STARS_REPORTS_GROUP);
+                                  for( int j = 0; j < rptTypes.length; j++ ){%>
                                           <tr> 
                                             <td width="20%"> 
-                                              <input id = "type" type="radio" name="type" value="<%=ReportTypes.getGroupToTypeMap()[ReportTypes.STARS_REPORTS_GROUP][j]%>"
+                                              <input id = "type" type="radio" name="type" value="<%=rptTypes[j]%>"
                                       <% if( j == 0){%>
                                          checked=true
                                       <%}
                                       //Below is the ending tag for radio input%>
                                       >
-                                              <%=ReportTypes.getReportName(ReportTypes.getGroupToTypeMap()[ReportTypes.STARS_REPORTS_GROUP][j])%> 
+                                              <%=ReportTypes.getReportName(rptTypes[j])%> 
                                             </td>
                                           </tr>
                                           <%}%>
