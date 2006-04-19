@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.39 $
-* DATE         :  $Date: 2006/04/19 14:14:46 $
+* REVISION     :  $Revision: 1.40 $
+* DATE         :  $Date: 2006/04/19 20:42:55 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1659,25 +1659,52 @@ INT CtiDeviceMCT470::executeScan(CtiRequestMsg                  *pReq,
             OutMessage->Request.RouteID   = getRouteID();
 
             CtiConfigDeviceSPtr deviceConfig = getDeviceConfig();
+            MCTSystemOptionsSPtr options;
 
+            CtiString originalString = pReq->CommandString();
+            boost::regex re_scan ("scan integrity");
+            
             if( deviceConfig )
             {
-                CtiString originalString = pReq->CommandString();
-                boost::regex re_scan ("scan integrity");
-                
-                MCTSystemOptionsSPtr options = boost::static_pointer_cast< ConfigurationPart<MCTSystemOptions> >(deviceConfig->getConfigFromType(ConfigTypeMCTSystemOptions));
+                options = boost::static_pointer_cast< ConfigurationPart<MCTSystemOptions> >(deviceConfig->getConfigFromType(ConfigTypeMCTSystemOptions));
+            }
 
-                if( !options || (options && ( !stringCompareIgnoreCase(options->getValueFromKey(DemandMetersToScan), "all")
-                              || !stringCompareIgnoreCase(options->getValueFromKey(DemandMetersToScan), "pulse"))) )
+            if( !options || (options && ( !stringCompareIgnoreCase(options->getValueFromKey(DemandMetersToScan), "all")
+                          || !stringCompareIgnoreCase(options->getValueFromKey(DemandMetersToScan), "pulse"))) )
+            {
+                //Read the pulse demand
+                function = Emetcon::GetValue_Demand;
+                found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+                if( found )
                 {
-                    //Read the pulse demand
-                    function = Emetcon::GetValue_Demand;
+                    OutMessage->Sequence  = function;     // Helps us figure it out later!
+                    CtiString createdString = originalString;
+                    CtiString replaceString = "getvalue demand";
+                    createdString.toLower();
+                    createdString.replace(re_scan, replaceString);//This had better be here, or we have issues.
+                    strncpy(OutMessage->Request.CommandStr, createdString.data(), COMMAND_STR_SIZE);
+                    outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
+                    incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
+                }
+                else
+                {
+                    nRet = NoMethod;
+                }
+            }
+
+            if( !options || (options && ( !stringCompareIgnoreCase(options->getValueFromKey(DemandMetersToScan), "all")
+                          || !stringCompareIgnoreCase(options->getValueFromKey(DemandMetersToScan), "ied"))) )
+            {
+                if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) < MCT470_SspecRev_IED_Zero_Write_Min )
+                {
+                    //If we need to read out the time, do so.
+                    function = Emetcon::GetConfig_IEDTime;
                     found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
                     if( found )
                     {
                         OutMessage->Sequence  = function;     // Helps us figure it out later!
                         CtiString createdString = originalString;
-                        CtiString replaceString = "getvalue demand";
+                        CtiString replaceString = "getconfig ied time";
                         createdString.toLower();
                         createdString.replace(re_scan, replaceString);//This had better be here, or we have issues.
                         strncpy(OutMessage->Request.CommandStr, createdString.data(), COMMAND_STR_SIZE);
@@ -1690,55 +1717,36 @@ INT CtiDeviceMCT470::executeScan(CtiRequestMsg                  *pReq,
                     }
                 }
 
-                if( !options || (options && ( !stringCompareIgnoreCase(options->getValueFromKey(DemandMetersToScan), "all")
-                              || !stringCompareIgnoreCase(options->getValueFromKey(DemandMetersToScan), "ied"))) )
+                //Read the IED demand
+                function = Emetcon::GetValue_IEDDemand;
+                found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+                if( found )
                 {
-                    if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) < MCT470_SspecRev_IED_Zero_Write_Min )
-                    {
-                        //If we need to read out the time, do so.
-                        function = Emetcon::GetConfig_IEDTime;
-                        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
-                        if( found )
-                        {
-                            OutMessage->Sequence  = function;     // Helps us figure it out later!
-                            CtiString createdString = originalString;
-                            CtiString replaceString = "getconfig ied time";
-                            createdString.toLower();
-                            createdString.replace(re_scan, replaceString);//This had better be here, or we have issues.
-                            strncpy(OutMessage->Request.CommandStr, createdString.data(), COMMAND_STR_SIZE);
-                            outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
-                            incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
-                        }
-                        else
-                        {
-                            nRet = NoMethod;
-                        }
-                    }
-
-                    //Read the IED demand
-                    function = Emetcon::GetValue_IEDDemand;
-                    found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
-                    if( found )
-                    {
-                        OutMessage->Sequence  = function;     // Helps us figure it out later!
-                        CtiString createdString = originalString;
-                        CtiString replaceString = "getvalue ied demand";
-                        createdString.toLower();
-                        createdString.replace(re_scan, replaceString);//This had better be here, or we have issues.
-                        strncpy(OutMessage->Request.CommandStr, createdString.data(), COMMAND_STR_SIZE);
-                        outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
-                        incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
-                    }
-                    else
-                    {
-                        nRet = NoMethod;
-                    }
+                    OutMessage->Sequence  = function;     // Helps us figure it out later!
+                    CtiString createdString = originalString;
+                    CtiString replaceString = "getvalue ied demand";
+                    createdString.toLower();
+                    createdString.replace(re_scan, replaceString);//This had better be here, or we have issues.
+                    strncpy(OutMessage->Request.CommandStr, createdString.data(), COMMAND_STR_SIZE);
+                    outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
+                    incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
+                }
+                else
+                {
+                    nRet = NoMethod;
                 }
             }
             else
             {
                 nRet = NoMethod;
             }
+
+            if( OutMessage )
+            {
+                delete OutMessage;
+                OutMessage = NULL;
+            }
+            break;
         }
         default:
         {
@@ -1855,7 +1863,7 @@ int CtiDeviceMCT470::executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiC
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                nRet = NOTNORMAL;
+                nRet = NoConfigData;
             }
             else
             {
@@ -1909,7 +1917,7 @@ int CtiDeviceMCT470::executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiC
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                nRet = NOTNORMAL;
+                nRet = NoConfigData;
             }
             else
             {
@@ -1950,10 +1958,10 @@ int CtiDeviceMCT470::executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiC
             }
         }
         else
-            nRet = NoMethod;
+            nRet = NoConfigData;
     }
     else
-        nRet = NoMethod;
+        nRet = NoConfigData;
 
     return NORMAL;
 }
@@ -1980,7 +1988,7 @@ int CtiDeviceMCT470::executePutConfigRelays(CtiRequestMsg *pReq,CtiCommandParser
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                nRet = NOTNORMAL;
+                nRet = NoConfigData;
             }
             else
             {
@@ -2007,10 +2015,10 @@ int CtiDeviceMCT470::executePutConfigRelays(CtiRequestMsg *pReq,CtiCommandParser
             }
         }
         else
-            nRet = NoMethod;
+            nRet = NoConfigData;
     }
     else
-        nRet = NoMethod;
+        nRet = NoConfigData;
 
     return NORMAL;
 }
@@ -2040,7 +2048,7 @@ int CtiDeviceMCT470::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandPars
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                nRet = NOTNORMAL;
+                nRet = NoConfigData;
             }
             else
             {
@@ -2069,10 +2077,10 @@ int CtiDeviceMCT470::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandPars
             }
         }
         else
-            nRet = NoMethod;
+            nRet = NoConfigData;
     }
     else
-        nRet = NoMethod;
+        nRet = NoConfigData;
 
     return nRet;
 }
@@ -2103,7 +2111,7 @@ int CtiDeviceMCT470::executePutConfigPrecannedTable(CtiRequestMsg *pReq,CtiComma
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                nRet = NOTNORMAL;
+                nRet = NoConfigData;
             }
             else
             {
@@ -2132,10 +2140,10 @@ int CtiDeviceMCT470::executePutConfigPrecannedTable(CtiRequestMsg *pReq,CtiComma
             }
         }
         else
-            nRet = NoMethod;
+            nRet = NoConfigData;
     }
     else
-        nRet = NoMethod;
+        nRet = NoConfigData;
 
     return NORMAL;
 }
@@ -2171,7 +2179,7 @@ int CtiDeviceMCT470::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParse
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint - Operation PutConfig_Options not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                nRet = NOTNORMAL;
+                nRet = NoConfigData;
             }
             else
             if( event1mask == numeric_limits<long>::min()
@@ -2180,7 +2188,7 @@ int CtiDeviceMCT470::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParse
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint - Options or Configuration not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                nRet = NOTNORMAL;
+                nRet = NoConfigData;
             }
             else
             {
@@ -2215,14 +2223,14 @@ int CtiDeviceMCT470::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParse
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint - Time Adjust Tolerance not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                nRet = NOTNORMAL;
+                nRet = NoConfigData;
             }
             else
             if( timeAdjustTolerance == numeric_limits<long>::min() )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint - Bad value for Time Adjust Tolerance **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                nRet = NOTNORMAL;
+                nRet = NoConfigData;
             }
             else
             {
@@ -2244,10 +2252,10 @@ int CtiDeviceMCT470::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParse
             }
         }
         else
-            nRet = NoMethod;
+            nRet = NoConfigData;
     }
     else
-        nRet = NoMethod;
+        nRet = NoConfigData;
 
     return nRet;
 }
