@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.38 $
-* DATE         :  $Date: 2006/04/11 20:39:55 $
+* REVISION     :  $Revision: 1.39 $
+* DATE         :  $Date: 2006/04/19 14:14:46 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -29,6 +29,7 @@
 #include "numstr.h"
 #include "config_base.h"
 #include "config_parts.h"
+#include "ctistring.h"
 #include <string>
 
 #define MaxIEDReadMinutes 10
@@ -1510,8 +1511,7 @@ INT CtiDeviceMCT470::executeGetValue( CtiRequestMsg              *pReq,
 
     if( parse.getFlags() & CMD_FLAG_GV_IED )  //  This parse has the token "IED" in it!
     {
-        if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) < MCT470_SspecRev_IED_Zero_Write_Min
-            && _iedTime.seconds()/60 < (CtiTime::now().seconds()/60-(MaxIEDReadMinutes/2)) )
+        if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) < MCT470_SspecRev_IED_Zero_Write_Min )
         {
             //If we need to read out the time, do so.
             function = Emetcon::GetConfig_IEDTime;
@@ -1662,6 +1662,9 @@ INT CtiDeviceMCT470::executeScan(CtiRequestMsg                  *pReq,
 
             if( deviceConfig )
             {
+                CtiString originalString = pReq->CommandString();
+                boost::regex re_scan ("scan integrity");
+                
                 MCTSystemOptionsSPtr options = boost::static_pointer_cast< ConfigurationPart<MCTSystemOptions> >(deviceConfig->getConfigFromType(ConfigTypeMCTSystemOptions));
 
                 if( !options || (options && ( !stringCompareIgnoreCase(options->getValueFromKey(DemandMetersToScan), "all")
@@ -1673,8 +1676,13 @@ INT CtiDeviceMCT470::executeScan(CtiRequestMsg                  *pReq,
                     if( found )
                     {
                         OutMessage->Sequence  = function;     // Helps us figure it out later!
-                        strncpy(OutMessage->Request.CommandStr, "getvalue demand", COMMAND_STR_SIZE );
+                        CtiString createdString = originalString;
+                        CtiString replaceString = "getvalue demand";
+                        createdString.toLower();
+                        createdString.replace(re_scan, replaceString);//This had better be here, or we have issues.
+                        strncpy(OutMessage->Request.CommandStr, createdString.data(), COMMAND_STR_SIZE);
                         outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
+                        incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
                     }
                     else
                     {
@@ -1685,8 +1693,7 @@ INT CtiDeviceMCT470::executeScan(CtiRequestMsg                  *pReq,
                 if( !options || (options && ( !stringCompareIgnoreCase(options->getValueFromKey(DemandMetersToScan), "all")
                               || !stringCompareIgnoreCase(options->getValueFromKey(DemandMetersToScan), "ied"))) )
                 {
-                    if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) < MCT470_SspecRev_IED_Zero_Write_Min
-                        && _iedTime.seconds()/60 < (CtiTime::now().seconds()/60-(MaxIEDReadMinutes/2)) )
+                    if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) < MCT470_SspecRev_IED_Zero_Write_Min )
                     {
                         //If we need to read out the time, do so.
                         function = Emetcon::GetConfig_IEDTime;
@@ -1694,8 +1701,13 @@ INT CtiDeviceMCT470::executeScan(CtiRequestMsg                  *pReq,
                         if( found )
                         {
                             OutMessage->Sequence  = function;     // Helps us figure it out later!
-                            strncpy(OutMessage->Request.CommandStr, "getconfig ied time", COMMAND_STR_SIZE );
+                            CtiString createdString = originalString;
+                            CtiString replaceString = "getconfig ied time";
+                            createdString.toLower();
+                            createdString.replace(re_scan, replaceString);//This had better be here, or we have issues.
+                            strncpy(OutMessage->Request.CommandStr, createdString.data(), COMMAND_STR_SIZE);
                             outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
+                            incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
                         }
                         else
                         {
@@ -1709,8 +1721,13 @@ INT CtiDeviceMCT470::executeScan(CtiRequestMsg                  *pReq,
                     if( found )
                     {
                         OutMessage->Sequence  = function;     // Helps us figure it out later!
-                        strncpy(OutMessage->Request.CommandStr, "getvalue ied demand", COMMAND_STR_SIZE );
+                        CtiString createdString = originalString;
+                        CtiString replaceString = "getvalue ied demand";
+                        createdString.toLower();
+                        createdString.replace(re_scan, replaceString);//This had better be here, or we have issues.
+                        strncpy(OutMessage->Request.CommandStr, createdString.data(), COMMAND_STR_SIZE);
                         outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
+                        incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
                     }
                     else
                     {
@@ -2450,8 +2467,9 @@ INT CtiDeviceMCT470::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, l
         }
 
         ReturnMsg->setResultString(resultString);
+        decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
 
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList, getGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection ));
     }
 
     return status;
@@ -2972,8 +2990,9 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
         }
 
         ReturnMsg->setResultString(resultString);
+        decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
 
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList, getGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection) );
     }
 
     return status;
@@ -3074,8 +3093,9 @@ INT CtiDeviceMCT470::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, lis
         }
 
         ReturnMsg->setResultString(resultString);
+        decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
 
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList, getGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection) );
     }
 
     return status;
