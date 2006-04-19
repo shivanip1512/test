@@ -9,11 +9,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2005/12/20 17:19:59 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2006/04/19 14:57:50 $
 * HISTORY      :
 *
 * $Log: prot_sa3rdparty.h,v $
+* Revision 1.18  2006/04/19 14:57:50  mfisher
+* added parseGolayAddress() to resolve base address and function from a 6-digit Golay address
+*
 * Revision 1.17  2005/12/20 17:19:59  tspar
 * Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 *
@@ -91,14 +94,16 @@
 #include "dsm2.h"
 #include "pointtypes.h"
 #include "prot_base.h"
+#include "protocol_sa.h"        // Telvent provided sa library.
+
 using namespace Cti;  //  in preparation for moving devices to their own namespace
 
-#include "protocol_sa.h"        // Telvent provided sa library.
+using std::pair;
 
 #define MAX_SAERR_MSG_SIZE 256
 
 #define GRP_SA_RTM 100              // Must be greater than any REAL grouptype.
-using std::pair;
+                                    //
 // CPARMS for setting "PROTOCOL_SA_TELVENT"
 #define CTIPROT_ABRUPT_RESTORE                  0x00000010          // Using this could make the restores work WRONG...  Remove this and code wrapped one day soon.
 
@@ -194,6 +199,8 @@ public:
     static INT formatTMScmd (UCHAR *abuf, INT *buflen, USHORT TMS_cmd_type, USHORT xmitter);
     static INT TMSlen (UCHAR *abuf, INT *len);
     static INT procTMSmsg(UCHAR *abuf, INT len, SA_CODE *scode, X205CMD *x205cmd);
+
+    static pair< int, int > parseGolayAddress(const string &golay_code);
 
     static string asString(const CtiSAData &sa);
     static string strategyAsString(const CtiSAData &sa);

@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.39 $
-* DATE         :  $Date: 2006/04/17 20:12:07 $
+* REVISION     :  $Revision: 1.40 $
+* DATE         :  $Date: 2006/04/19 14:57:50 $
 *
 * HISTORY      :
 * $Log: prot_sa3rdparty.cpp,v $
+* Revision 1.40  2006/04/19 14:57:50  mfisher
+* added parseGolayAddress() to resolve base address and function from a 6-digit Golay address
+*
 * Revision 1.39  2006/04/17 20:12:07  cplender
 * Altered the processing of golay operational addresses to fully support F1,2,3 & 4
 *
@@ -2087,6 +2090,33 @@ INT CtiProtocolSA3rdParty::procTMSmsg(UCHAR *abuf, INT len, SA_CODE *_sa_code, X
 {
     return ::procTMSmsg(abuf, len, _sa_code, x205cmd);
 }
+
+
+pair< int, int > CtiProtocolSA3rdParty::parseGolayAddress(const string &golay_code)
+{
+    int code = strtoul(golay_code.c_str(), 0, 10), function;
+
+    // This code attempts to determine the "function" based upon the bits of the A & B words (BBAABB).
+    bool a_word_odd = (code / 100) % 2;
+    bool b_word_odd =  code % 2;
+
+    function = 1;
+
+    if( a_word_odd )
+    {
+        code -= 100;
+        function += 2;
+    }
+
+    if( b_word_odd )
+    {
+        code -= 1;
+        function += 1;
+    }
+
+    return std::make_pair(code, function);
+}
+
 
 int CtiProtocolSA3rdParty::getStrategySTime() const
 {
