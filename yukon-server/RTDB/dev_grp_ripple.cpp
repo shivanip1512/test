@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_grp_ripple.cpp-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2006/03/23 15:29:16 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2006/04/19 20:44:46 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -125,11 +125,13 @@ INT CtiDeviceGroupRipple::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &
          * OK, these are the items we are about to set out to perform..  Any additional signals will
          * be added into the list upon completion of the Execute!
          */
-        if(parse.getActionItems().entries())
+        if(parse.getActionItems().size())
         {
-            for(size_t i = 0; i < parse.getActionItems().entries(); i++)
+            for(std::list< string >::iterator itr = parse.getActionItems().begin(); 
+                 itr != parse.getActionItems().end();
+                 ++itr )
             {
-                string actn = parse.getActionItems()[i];
+                string actn = *itr;
                 string desc = getDescription(parse);
 
                 CtiPointStatusSPtr pControlStatus = boost::static_pointer_cast<CtiPointStatus>(getDeviceControlPointOffsetEqual( GRP_CONTROL_STATUS ));
@@ -267,9 +269,9 @@ INT CtiDeviceGroupRipple::initTrxID( int trx, CtiCommandParser &parse, list< Cti
     setTrxID(trx);
 
     _isShed = parse.getControlled();
-    if(parse.getActionItems().entries() > 0 )
+    if(parse.getActionItems().size() > 0 )
     {
-        _lastCommand = parse.getActionItems()[0];    // This might just suck!  I guess I am expecting only one (today) and building for the future..?
+        _lastCommand = *(parse.getActionItems().begin());    // This might just suck!  I guess I am expecting only one (today) and building for the future..?
     }
 
     if (pPoint = getDevicePointOffsetTypeEqual(1, AnalogPointType))

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2006/03/23 15:29:16 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2006/04/19 20:44:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -175,7 +175,7 @@ INT CtiDeviceCBC::executeFisherPierceCBC(CtiRequestMsg                  *pReq,
          * OK, these are the items we are about to set out to perform..  Any additional signals will
          * be added into the list upon completion of the Execute!
          */
-        if(parse.getActionItems().entries() == 1)
+        if(parse.getActionItems().size() == 1)
         {
             pPoint = getDevicePointOffsetTypeEqual(1, StatusPointType);
 
@@ -194,7 +194,7 @@ INT CtiDeviceCBC::executeFisherPierceCBC(CtiRequestMsg                  *pReq,
             }
             else
             {
-                string actn = parse.getActionItems()[0];
+                string actn = *(parse.getActionItems().begin());
                 string desc = getDescription(parse);
 
                 vgList.push_back(CTIDBG_new CtiSignalMsg(SYS_PID_CAPCONTROL, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
@@ -291,7 +291,7 @@ INT CtiDeviceCBC::executeVersacomCBC(CtiRequestMsg                  *pReq,
          * OK, these are the items we are about to set out to perform..  Any additional signals will
          * be added into the list upon completion of the Execute!
          */
-        if(parse.getActionItems().entries() == 1)
+        if(parse.getActionItems().size() == 1)
         {
             pPoint = getDevicePointOffsetTypeEqual(1, StatusPointType);
 
@@ -310,7 +310,7 @@ INT CtiDeviceCBC::executeVersacomCBC(CtiRequestMsg                  *pReq,
             }
             else
             {
-                string actn = parse.getActionItems()[0];
+                string actn = *(parse.getActionItems().begin());
                 string desc = getDescription(parse);
 
                 vgList.push_back(CTIDBG_new CtiSignalMsg(SYS_PID_CAPCONTROL, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
@@ -506,9 +506,9 @@ INT CtiDeviceCBC::executeExpresscomCBC(CtiRequestMsg                  *pReq,
                 vgList.push_back(CTIDBG_new CtiSignalMsg(pPoint->getPointID(), pReq->getSOE(), desc, actn, CapControlLogType, SignalEvent, pReq->getUser()));
             }
         }
-        else if(parse.getActionItems().entries() == 1)
+        else if(parse.getActionItems().size() == 1)
         {
-            string actn = parse.getActionItems()[0];
+            string actn = *(parse.getActionItems().begin());
             string desc = getDescription(parse);
 
             vgList.push_back(CTIDBG_new CtiSignalMsg(SYS_PID_CAPCONTROL, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));

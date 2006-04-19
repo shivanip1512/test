@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2006/02/27 23:58:30 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2006/04/19 20:44:46 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -242,11 +242,13 @@ INT CtiDeviceGroupMCT::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &pa
                  * OK, these are the items we are about to set out to perform..  Any additional signals will
                  * be added into the list upon completion of the Execute!
                  */
-                if(parse.getActionItems().entries())
+                if(parse.getActionItems().size())
                 {
-                    for(size_t offset = offset; offset < parse.getActionItems().entries(); offset++)
+                    for(std::list< string >::iterator itr = parse.getActionItems().begin(); 
+                         itr != parse.getActionItems().end();
+                         ++itr )
                     {
-                        string actn = parse.getActionItems()[offset];
+                        string actn = *itr;
                         string desc = getDescription(parse);
 
                         vgList.push_back(CTIDBG_new CtiSignalMsg(SYS_PID_SYSTEM, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));

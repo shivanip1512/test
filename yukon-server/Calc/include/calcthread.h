@@ -5,8 +5,8 @@
 #include <functional>
 
 #include <rw/tphdict.h>
-#include <rw/tvdeque.h>
-#include <rw/tpdeque.h>
+//#include <rw/tvdeque.h>
+//#include <rw/tpdeque.h>
 #include <rw/thr/thrfunc.h>
 #include <map>
 #include <vector>
@@ -38,8 +38,10 @@ public:
     } CtiCalcThreadInterruptReason;
 
 
-    typedef RWTPtrHashMap<CtiHashKey, CtiCalc, my_hash<CtiHashKey> , equal_to<CtiHashKey> > CtiCalcPointMap;
-    typedef RWTPtrHashMapIterator<CtiHashKey, CtiCalc, my_hash<CtiHashKey> , equal_to<CtiHashKey> > CtiCalcPointMapIterator;
+    //typedef RWTPtrHashMap<CtiHashKey, CtiCalc, my_hash<CtiHashKey> , equal_to<CtiHashKey> > CtiCalcPointMap;
+    typedef std::map<CtiHashKey*, CtiCalc* > CtiCalcPointMap;
+    typedef std::map<CtiHashKey*, CtiCalc* >::iterator CtiCalcPointMapIterator;
+    //typedef RWTPtrHashMapIterator<CtiHashKey, CtiCalc, my_hash<CtiHashKey> , equal_to<CtiHashKey> > CtiCalcPointMapIterator;
     
 private:
     CtiCalcPointMap _periodicPoints, _onUpdatePoints, _constantPoints, _historicalPoints;
@@ -114,11 +116,14 @@ public:
     BOOL isAPeriodicCalcPointID(const long aPointID);
     BOOL isAnOnUpdateCalcPointID(const long aPointID);
     BOOL isAConstantCalcPointID(const long aPointID);
+
     BOOL isAHistoricalCalcPointID(const long aPointID);
-    long numberOfLoadedCalcPoints() { return (_periodicPoints.entries() + _onUpdatePoints.entries() + _constantPoints.entries()); };
+    long numberOfLoadedCalcPoints() { return (_periodicPoints.size() + _onUpdatePoints.size() + _constantPoints.size()); };
+
 
     int outboxEntries( void )   {   return _outbox.entries( ); };
     CtiMultiMsg *getOutboxEntry( void )                         {   return _outbox.popFront( ); };
+    //Bad?
     RWTPtrHashMapIterator<CtiHashKey, CtiPointStoreElement, my_hash<CtiHashKey>, equal_to<CtiHashKey> >
     *getPointDependencyIterator( void )                         {   return CTIDBG_new RWTPtrHashMapIterator<CtiHashKey, CtiPointStoreElement, my_hash<CtiHashKey>, equal_to<CtiHashKey> >( *CtiPointStore::getInstance() );   };
 

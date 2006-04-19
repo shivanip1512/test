@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.135 $
-* DATE         :  $Date: 2006/04/05 16:24:46 $
+* REVISION     :  $Revision: 1.136 $
+* DATE         :  $Date: 2006/04/19 20:44:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -5346,6 +5346,11 @@ void CtiVanGogh::establishListener()
 
                 exit(-1);
             }
+        }
+        catch(const RWxmsg& x)
+        {
+            cout << "Exception: " << x.why() << endl;
+            RWTHROW(x);
         }
         catch(...)
         {

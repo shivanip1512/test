@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/utility.h-arc  $
-* REVISION     :  $Revision: 1.34 $
-* DATE         :  $Date: 2006/03/02 23:03:18 $
+* REVISION     :  $Revision: 1.35 $
+* DATE         :  $Date: 2006/04/19 20:44:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -289,5 +289,24 @@ inline bool list_contains( std::list<T> *V, T x )
         }
    }
    return false;
+}
+
+template < class K, class T >
+inline void delete_map( std::map<K,T> V )
+{
+
+   for (std::map<K,T>::iterator itr = V.begin(); itr != V.end(); itr++) {
+        delete (*itr).first;
+        delete (*itr).second;
+   }
+}
+template < class K, class T >
+inline void delete_map( std::map<K,T> *V )
+{
+
+   for (std::map<K,T>::iterator itr = V->begin(); itr != V->end(); itr++) {
+        delete (*itr).first;
+        delete (*itr).second;
+   }
 }
 #endif // #ifndef __UTILITY_H__

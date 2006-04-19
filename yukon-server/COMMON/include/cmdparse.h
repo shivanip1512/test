@@ -18,6 +18,8 @@
 #include <iomanip>
 #include <functional>
 #include <string>
+#include <list>
+#include <map>
 
 #include <rw/tvhdict.h>
 #include <rw/rwdate.h>
@@ -28,7 +30,9 @@
 #include "dlldefs.h"
 #include "parsevalue.h"
 
+
 using std::string;
+using std::map;
 
 struct simple_hash
 {
@@ -40,10 +44,10 @@ class IM_EX_CTIBASE CtiCommandParser
 protected:
 
    string                  _cmdString;
-   RWTValSlist< string >   _actionItems;
+   std::list< string >   _actionItems;
 
-   RWTValHashMap< string, CtiParseValue, simple_hash, std::equal_to<string> > _cmd;
-
+   map< string, CtiParseValue > _cmd;
+   //stdext::hash_map< string, CtiParseValue > _cmd;
 
 private:
 
@@ -82,8 +86,8 @@ private:
 
 public:
 
-   typedef RWTValHashMap< string, CtiParseValue, simple_hash, std::equal_to<string> > map_type;
-   typedef RWTValHashMapIterator< string, CtiParseValue, simple_hash, std::equal_to<string> > map_itr_type;
+   typedef std::map< string, CtiParseValue > map_type;
+   typedef std::map< string, CtiParseValue >::iterator  map_itr_type;
 
    CtiCommandParser(const string str);
 
@@ -120,7 +124,7 @@ public:
    CtiCommandParser& setValue(const string key, string val);
 
 
-   RWTValSlist< string >& getActionItems();
+   std::list< string >& getActionItems();
 
    void parse();
 

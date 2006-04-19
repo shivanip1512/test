@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_alm_nloc.h-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2006/03/23 15:29:19 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2006/04/19 20:44:46 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -91,13 +91,15 @@ public:
         // OK, these are the items we are about to set out to perform..  Any additional signals will
         // be added into the list upon completion of the Execute!
         //
-        if(parse.getActionItems().entries())
+        if(parse.getActionItems().size())
         {
+            int offset = 0;
             bool reducelogs = !stringCompareIgnoreCase(gConfigParms.getValueAsString("REDUCE_CONTROL_REPORTS_TO_SYSTEM_LOG"),"true");
-
-            for(size_t offset = 0 ; offset < parse.getActionItems().entries(); offset++)
+            for(std::list< string >::iterator itr = parse.getActionItems().begin(); 
+                 itr != parse.getActionItems().end();
+                 ++itr )
             {
-                string actn = parse.getActionItems()[offset];
+                string actn = *itr;
                 string desc = getDescription(parse);
 
                 if(offset > 0) _lastCommand += " / ";
@@ -111,6 +113,7 @@ public:
 
                     vgList.push_back(CTIDBG_new CtiSignalMsg(pid, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
                 }
+                ++offset;
             }
         }
 

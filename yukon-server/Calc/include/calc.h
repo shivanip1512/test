@@ -4,7 +4,8 @@
 
 #include <rw/slistcol.h>
 #include <rw/tvdlist.h>
-#include <rw/tstack.h>
+//#include <rw/tstack.h>
+#include "ctiqueues.h"
 
 #include "calccomponent.h"
 
@@ -14,7 +15,7 @@ class CtiCalc : public RWCollectable
 
 private:
     RWSlistCollectables  _components;
-    RWTStack<double, RWTValDlist<double> > _stack;
+    CtiStack<double>     _stack;
     PointUpdateType      _updateType;
     ULONG                _nextInterval;
     int                  _updateInterval;

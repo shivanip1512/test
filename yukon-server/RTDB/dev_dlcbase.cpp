@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dlcbase.cpp-arc  $
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2006/02/27 23:58:29 $
+* REVISION     :  $Revision: 1.34 $
+* DATE         :  $Date: 2006/04/19 20:44:45 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -442,11 +442,13 @@ int CtiDeviceDLCBase::executeOnDLCRoute( CtiRequestMsg              *pReq,
              * OK, these are the items we are about to set out to perform..  Any additional signals will
              * be added into the list upon completion of the Execute!
              */
-            if(parse.getActionItems().entries())
+            if(parse.getActionItems().size())
             {
-                for(size_t offset = offset; offset < parse.getActionItems().entries(); offset++)
+                for(std::list< string >::iterator itr = parse.getActionItems().begin(); 
+                     itr != parse.getActionItems().end();
+                     ++itr )
                 {
-                    string actn = parse.getActionItems()[offset];
+                    string actn = *itr;
                     string desc = getDescription(parse);
 
                     vgList.push_back(CTIDBG_new CtiSignalMsg(SYS_PID_SYSTEM, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));

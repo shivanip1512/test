@@ -12,10 +12,14 @@
 #ifndef CTIPCPTRQUEUE_H
 #define CTIPCPTRQUEUE_H
 
-#include <queue>
+#include <list>
+#include <LIMITS>
+
 #include <boost/thread/condition.hpp>
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/xtime.hpp>
+
+
 #include "mutex.h"
 #include "guard.h"
 
@@ -23,16 +27,18 @@ template < class T >
 class CtiPCPtrQueue{
 
     private:
-		std::queue < T* > q;
+		std::list < T* > q;
         bool closed;
         boost::condition wait;
-        boost::mutex mux;
+        mutable boost::mutex mux;
 
     public:
         CtiPCPtrQueue(){
             closed = false;
         };
         ~CtiPCPtrQueue(){
+            boost::mutex::scoped_lock scoped_lock(mux);
+            close();
             T* item;
             while( tryRead(item) )
                 delete item;            
@@ -42,24 +48,26 @@ class CtiPCPtrQueue{
          * The element will be considered beloning to whomever read it off.
          */
         T* read(){
-			boost::mutex::scoped_lock scoped_lock(mux);
-            if ( q.empty()) 
-                return NULL;
-            T* tmp = q.front();
-            q.pop();
-            return tmp;
+            T* temp = NULL;
+            std::numeric_limits<long> lim;
+            read( temp, lim.max() );
+            
+            return temp;
         }
 
-        bool read(T*& result, long milli){
+        bool read(T*& result, unsigned milli){
             boost::mutex::scoped_lock scoped_lock(mux);
-            bool success = false;
+            bool success = true;
             struct boost::xtime xt;
-            xt.sec = milli;
-            if ( q.empty() ) {
+            boost::xtime_get(&xt, boost::TIME_UTC); 
+            xt.sec  += milli/1000;
+            xt.nsec += (milli%1000)*1000;
+
+            if ( !(q.size() > 0) ) {
                 success = wait.timed_wait( scoped_lock, xt );
                 if (success) {
                     result = q.front();
-                    q.pop();
+                    q.pop_front();
                     return true;
                 }else{
                     result = NULL;
@@ -67,7 +75,7 @@ class CtiPCPtrQueue{
                 }
             }else{
                 result = q.front();
-    			q.pop();
+    			q.pop_front();
                 return true;
             }
         }
@@ -77,13 +85,13 @@ class CtiPCPtrQueue{
          */
         bool tryRead(T*& result){
             boost::mutex::scoped_lock scoped_lock(mux);
-            if ( q.empty() ) {
+            if ( !(q.size() > 0) ) {
                 result = NULL;
                 return false;
             }
             else{
                 result = q.front();
-                q.pop();
+                q.pop_front();
                 return true;
             }
         }
@@ -92,7 +100,7 @@ class CtiPCPtrQueue{
          */
         bool canRead(){
             boost::mutex::scoped_lock scoped_lock(mux);
-            if ( q.empty() )
+            if ( !(q.size() > 0) )
                 return false;
             else
                 return true;
@@ -107,7 +115,7 @@ class CtiPCPtrQueue{
             boost::mutex::scoped_lock scoped_lock(mux);
             if (closed == true)
                 return false;
-            q.push( elem );
+            q.push_back( elem );
 			wait.notify_one();
             return true;
         };
@@ -119,7 +127,7 @@ class CtiPCPtrQueue{
         /* empty() will return true if the queue is empty, false if the queue is full */
         bool empty(){
             boost::mutex::scoped_lock scoped_lock(mux);
-            return q.empty();
+            return (q.size() > 0);
         };
         /*  will mark the queue so as to not accept more writes.
         *   Reads will still work, until the queue is empty.

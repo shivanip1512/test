@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_system.cpp-arc  $
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2006/02/27 23:58:31 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2006/04/19 20:44:46 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -47,11 +47,13 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
      * OK, these are the items we are about to set out to perform..  Any additional signals will
      * be added into the list upon completion of the Execute!
      */
-    if(parse.getActionItems().entries())
+    if(parse.getActionItems().size())
     {
-        for( size_t offset = 0; offset < parse.getActionItems().entries(); offset++)
+        for(std::list< string >::iterator itr = parse.getActionItems().begin(); 
+             itr != parse.getActionItems().end();
+             ++itr )
         {
-            string actn = parse.getActionItems()[offset];
+            string actn = *itr;
             string desc = getDescription(parse);
 
             vgList.push_back(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));

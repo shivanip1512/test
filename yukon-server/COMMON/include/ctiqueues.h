@@ -11,6 +11,9 @@
 #define CTIQUEUES_H
 
 #include <queue>
+#include <stack>
+
+using std::stack;
 
 template < class T >
 class CtiPtrDeque{
@@ -93,6 +96,43 @@ class CtiValDeque{
             while ( !empty() ) {
                 popFront();
             }
+        }
+
+};
+
+template< class T >
+class CtiStack{
+
+    private:
+        stack<T> s;
+        int size;
+    public:
+        CtiStack(){
+            size = 0;
+        }
+        int entries(){
+            return size;
+        }
+        bool isEmpty(){
+            return s.empty();
+        }
+        void clear(){
+            while( !s.empty() ){
+                s.pop();
+            }
+        }
+        void push( T a ){
+            s.push(a);
+            ++size;
+        }
+        T pop(){
+            T temp = s.top();
+            s.pop();
+            --size;
+            return ( temp );
+        }
+        T top(){
+            return s.top();
         }
 
 };

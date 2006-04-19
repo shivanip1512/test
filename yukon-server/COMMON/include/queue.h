@@ -7,17 +7,15 @@
 #include <iostream>
 #include <functional>
 #include <iostream>
-//using namespace std;
+#include <LIMITS>
 
 #include "dlldefs.h"
 #include "logger.h"
+#include "utility.h"
 
-
-#include <rw\thr\condtion.h> // for RWCondition
-#include <rw\thr\monitor.h>  // for RWMonitor<T>
-#include <rw\thr\mutex.h>    // for RWMutexLock
-#include <rw\tpsrtdli.h>     // for RWTPtrSortedDlist<T>
-#include <rw\tpdlist.h>      // for RWTPtrDlist<T>
+#include <boost/thread/condition.hpp>
+#include <boost/thread/mutex.hpp>
+#include <boost/thread/xtime.hpp>
 
 using std::string;
 using std::cout;
@@ -25,19 +23,18 @@ using std::endl;
 
 // Template Queuing class
 template <class T,  class C>
-class IM_EX_CTIBASE CtiQueue : RWMonitor< RWMutexLock >
+class IM_EX_CTIBASE CtiQueue 
 {
 private:
-    RWCondition                dataAvailable;
-    RWTPtrSortedDlist<T,C>     _sortedCol;
-
+    boost::condition           dataAvailable;
+    mutable boost::mutex                mux;
+    std::list<T*>               _sortedCol;
     string                  _name;
 public:
 
     CtiQueue() :
-    _name("Unnamed Queue"),
-    dataAvailable(mutex())     // init with monitor mutex
-    {}
+    _name("Unnamed Queue")
+    { }
 
     void putQueue(T *pt)
     {
@@ -45,15 +42,16 @@ public:
         {
             if(pt != NULL)
             {
-                LockGuard lock(monitor()); // acquire monitor mutex
-                _sortedCol.insert(pt);
-                dataAvailable.signal();
+                boost::mutex::scoped_lock scoped_lock(mux);
+                _sortedCol.push_back(pt);
+                _sortedCol.sort();
+                dataAvailable.notify_one();
                 // mutex automatically released in LockGuard destructor
             }
         }
-        catch(const RWxmsg& x)
+        catch(...)
         {
-            cout << "Exception: " << x.why() << endl;
+            cout << "Exception: " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
@@ -62,20 +60,20 @@ public:
         T *pval = NULL;
         try
         {
-            LockGuard lock(monitor());   // acquire monitor mutex
-            while(!(_sortedCol.entries() > 0))
-            {
-                dataAvailable.wait(); // mutex released automatically
-                // thread must have been signalled AND
-                //   mutex reacquired to reach here
+            boost::mutex::scoped_lock scoped_lock(mux);
+            while( !(_sortedCol.size() > 0) )
+            {              
+                dataAvailable.wait(scoped_lock);
             }
-            pval = _sortedCol.removeFirst();
+
+            pval = _sortedCol.front();
+            _sortedCol.pop_front();
+            
             // cout << "Number of entries " << _sortedCol.entries() << endl;
         }
-        catch(const RWxmsg& x)
+        catch(...)
         {
-            cout << "Exception: " << x.why() << endl;
-            RWTHROW(x);
+            cout << "Exception: " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         return pval;
@@ -86,26 +84,34 @@ public:
         T *pval = NULL;
         try
         {
-            LockGuard lock(monitor());   // acquire monitor mutex
-            RWWaitStatus wRes = RW_THR_COMPLETED;
+            boost::mutex::scoped_lock scoped_lock(mux);
+            bool wRes = false;
+            struct boost::xtime xt;
+            boost::xtime_get(&xt, boost::TIME_UTC); 
+            xt.sec  += (time/1000);
+            xt.nsec += (time%1000)*1000;
 
-            if(!(_sortedCol.entries() > 0))
+            if(!(_sortedCol.size() > 0))
             {
-                wRes = dataAvailable.wait(time); // monitor mutex released automatically
+                wRes = dataAvailable.timed_wait(scoped_lock,xt); // monitor mutex released automatically
                 // thread must have been signalled AND mutex reacquired to reach here OR RW_THR_TIMEOUT
+                if(wRes == true)
+                {
+                    pval = _sortedCol.front();
+                    _sortedCol.pop_front();
+                }
+            }else{
+                pval = _sortedCol.front();
+                _sortedCol.pop_front();
             }
 
-            if(wRes == RW_THR_COMPLETED)
-            {
-                pval = _sortedCol.removeFirst();
-            }
+
 
             // mutex automatically released in LockGuard destructor
         }
-        catch(const RWxmsg& x)
+        catch(...)
         {
-            cout << "Exception: " << x.why() << endl;
-            RWTHROW(x);
+            cout << "Exception: " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
         return pval;
     }
@@ -117,38 +123,22 @@ public:
         {
             if(pt != NULL)
             {
-                LockGuard lock(monitor()); // acquire monitor mutex
+                boost::mutex::scoped_lock scoped_lock(mux);
                 {
-                    _sortedCol.insert(pt);
-                    dataAvailable.signal();
+                    _sortedCol.push_back(pt);
+                    _sortedCol.sort();
+                    dataAvailable.notify_one();
                     // mutex automatically released in LockGuard destructor
                     putWasDone = true;
                 }
             }
         }
-        catch(const RWxmsg& x)
+        catch(...)
         {
-            cout << "Exception: " << x.why() << endl;
+            cout << "Exception: " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         return putWasDone;
-    }
-
-    T* getByFunc(RWBoolean (*fn)(const T*, void *), void *d)
-    {
-        try
-        {
-            T *pval = NULL;
-
-            LockGuard lock(monitor());   // acquire monitor mutex
-            pval = _sortedCol.remove(fn, d);
-            return pval;
-            // mutex automatically released in LockGuard destructor
-        }
-        catch(const RWxmsg& x)
-        {
-            cout << "Exception: " << x.why() << endl;
-        }
     }
 
     /*
@@ -156,25 +146,25 @@ public:
      */
     size_t   resize(size_t addition = 1)
     {
-        LockGuard lock(monitor());   // acquire monitor mutex
+        boost::mutex::scoped_lock scoped_lock(mux);
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
-        return _sortedCol.entries();
+        return _sortedCol.size();
     }
 
 
     size_t   entries(void) const       // QueryQue.
     {
-        TryLockGuard lock(monitor());   // TRY to acquire monitor mutex. Not critical.  May be used as a getter, so we cannot be rigid here.
-        return _sortedCol.entries();
+        //TryLockGuard lock(monitor());   // TRY to acquire monitor mutex. Not critical.  May be used as a getter, so we cannot be rigid here.
+        return _sortedCol.size();
     }
 
     size_t   size(void)        // how big may it be?
     {
-        TryLockGuard lock(monitor());   // TRY to acquire monitor mutex. Not critical.  May be used as a getter, so we cannot be rigid here.
-        return _sortedCol.entries();
+        //TryLockGuard lock(monitor());   // TRY to acquire monitor mutex. Not critical.  May be used as a getter, so we cannot be rigid here.
+        return _sortedCol.size();
     }
 
     BOOL  isFull(void)
@@ -184,8 +174,9 @@ public:
 
     void     clearAndDestroy(void)      // Destroys pointed to objects as well.
     {
-        LockGuard lock(monitor());   // acquire monitor mutex
-        _sortedCol.clearAndDestroy();
+        boost::mutex::scoped_lock scoped_lock(mux);
+        delete_list(_sortedCol);
+        _sortedCol.clear();
     }
 
     string getName() const
@@ -198,28 +189,36 @@ public:
         _name = str;
         return *this;
     }
-
+    template<class _II, class _Fn> inline
+    void ts_for_each(_II _F, _II _L, _Fn _Op, void* d)
+    {
+        for (; _F != _L; ++_F)
+            _Op(*_F, d);
+         
+    }
     void apply(void (*fn)(T*&,void*), void* d)
     {
-        LockGuard lock(monitor());   // acquire monitor mutex
-        _sortedCol.apply(fn,d);
+        boost::mutex::scoped_lock scoped_lock(mux);
+        ts_for_each(_sortedCol.begin(),_sortedCol.end(),fn,d);
     }
+
 };
 
 // Template Queuing class
 template <class T>
-class IM_EX_CTIBASE CtiFIFOQueue : RWMonitor< RWMutexLock >
+class IM_EX_CTIBASE CtiFIFOQueue 
 {
 private:
-    RWCondition dataAvailable;
-    RWTPtrDlist<T>  _col;
+
+    std::list<T*> _col;
+    boost::condition           dataAvailable;
+    mutable boost::mutex                mux;
 
     string       _name;
 public:
 
     CtiFIFOQueue() :
-    _name("Unnamed Queue"),
-    dataAvailable(mutex())     // init with monitor mutex
+    _name("Unnamed Queue")
     {}
 
     void putQueue(T *pt)
@@ -228,15 +227,17 @@ public:
         {
             if(pt != NULL)
             {
-                LockGuard lock(monitor()); // acquire monitor mutex
-                _col.insert(pt);
-                dataAvailable.signal();
+                {
+                boost::mutex::scoped_lock scoped_lock(mux);
+                _col.push_back(pt);
+                dataAvailable.notify_one();
                 // mutex automatically released in LockGuard destructor
+                }
             }
         }
-        catch(const RWxmsg& x)
+        catch(...)
         {
-            cout << "Exception: " << x.why() << endl;
+            cout << "Exception: " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
@@ -245,20 +246,19 @@ public:
         T *pval = NULL;
         try
         {
-            LockGuard lock(monitor());   // acquire monitor mutex
-            while(!(_col.entries() > 0))
-            {
-                dataAvailable.wait(); // mutex released automatically
-                // thread must have been signalled AND
-                //   mutex reacquired to reach here
-            }
-            pval = _col.removeFirst();
-            // cout << "Number of entries " << _col.entries() << endl;
+            boost::mutex::scoped_lock scoped_lock(mux);
+            while( !(_col.size() > 0) )
+            {              
+                dataAvailable.wait(scoped_lock);
+            }            
+            pval = _col.front();
+            _col.pop_front();
+        
+            // cout << "Number of entries " << _sortedCol.entries() << endl;
         }
-        catch(const RWxmsg& x)
+        catch(...)
         {
-            cout << "Exception: " << x.why() << endl;
-            RWTHROW(x);
+            cout << "Exception: " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         return pval;
@@ -269,26 +269,34 @@ public:
         T *pval = NULL;
         try
         {
-            LockGuard lock(monitor());   // acquire monitor mutex
-            RWWaitStatus wRes = RW_THR_COMPLETED;
+            boost::mutex::scoped_lock scoped_lock(mux);
+            bool wRes = true;
+            struct boost::xtime xt;
+            boost::xtime_get(&xt, boost::TIME_UTC); 
+            xt.sec  += (time/1000);
+            xt.nsec += (time%1000)*1000;
 
-            if(!(_col.entries() > 0))
+            if(!(_col.size() > 0))
             {
-                wRes = dataAvailable.wait(time); // monitor mutex released automatically
+                wRes = dataAvailable.timed_wait(scoped_lock,xt); // monitor mutex released automatically
                 // thread must have been signalled AND mutex reacquired to reach here OR RW_THR_TIMEOUT
+                if(wRes == true)
+                {
+                    pval = _col.front();
+                    _col.pop_front();
+                }
+            }else{
+                pval = _col.front();
+                _col.pop_front();
             }
 
-            if(wRes == RW_THR_COMPLETED)
-            {
-                pval = _col.removeFirst();
-            }
+
 
             // mutex automatically released in LockGuard destructor
         }
-        catch(const RWxmsg& x)
+        catch(...)
         {
-            cout << "Exception: " << x.why() << endl;
-            RWTHROW(x);
+            cout << "Exception: " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
         return pval;
     }
@@ -300,38 +308,21 @@ public:
         {
             if(pt != NULL)
             {
-                LockGuard lock(monitor()); // acquire monitor mutex
                 {
-                    _col.insert(pt);
-                    dataAvailable.signal();
+                    boost::mutex::scoped_lock scoped_lock(mux);
+                    _col.push_back(pt);
+                    dataAvailable.notify_one();
                     // mutex automatically released in LockGuard destructor
                     putWasDone = true;
                 }
             }
         }
-        catch(const RWxmsg& x)
+        catch(...)
         {
-            cout << "Exception: " << x.why() << endl;
+            cout << "Exception: " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         return putWasDone;
-    }
-
-    T* getByFunc(RWBoolean (*fn)(const T*, void *), void *d)
-    {
-        try
-        {
-            T *pval = NULL;
-
-            LockGuard lock(monitor());   // acquire monitor mutex
-            pval = _col.remove(fn, d);
-            return pval;
-            // mutex automatically released in LockGuard destructor
-        }
-        catch(const RWxmsg& x)
-        {
-            cout << "Exception: " << x.why() << endl;
-        }
     }
 
     /*
@@ -339,25 +330,29 @@ public:
      */
     size_t   resize(size_t addition = 1)
     {
-        LockGuard lock(monitor());   // acquire monitor mutex
+        {
+        boost::mutex::scoped_lock scoped_lock(mux);
+        //LockGuard lock(monitor());   // acquire monitor mutex
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
-        return _col.entries();
+        return _col.size();
+
+        }
     }
 
 
     size_t   entries(void) const       // QueryQue.
     {
-        TryLockGuard lock(monitor());   // TRY to acquire monitor mutex. Not critical.  May be used as a getter, so we cannot be rigid here.
-        return _col.entries();
+        //TryLockGuard lock(monitor());   // TRY to acquire monitor mutex. Not critical.  May be used as a getter, so we cannot be rigid here.
+        return _col.size();
     }
 
     size_t   size(void)        // how big may it be?
     {
-        TryLockGuard lock(monitor());   // TRY to acquire monitor mutex. Not critical.  May be used as a getter, so we cannot be rigid here.
-        return _col.entries();
+        //TryLockGuard lock(monitor());   // TRY to acquire monitor mutex. Not critical.  May be used as a getter, so we cannot be rigid here.
+        return _col.size();
     }
 
     BOOL  isFull(void)
@@ -367,8 +362,11 @@ public:
 
     void     clearAndDestroy(void)      // Destroys pointed to objects as well.
     {
-        LockGuard lock(monitor());   // acquire monitor mutex
-        _col.clearAndDestroy();
+        {
+        boost::mutex::scoped_lock scoped_lock(mux);
+        delete_list(_col);
+        _col.clear();
+        }
     }
 
     string getName() const
@@ -381,11 +379,20 @@ public:
         _name = str;
         return *this;
     }
-
+    template<class _II, class _Fn> inline
+    void ts_for_each(_II _F, _II _L, _Fn _Op, void* d)
+    {
+        for (; _F != _L; ++_F)
+            _Op(*_F, d);
+         
+    }
     void apply(void (*fn)(T*&,void*), void* d)
     {
-        LockGuard lock(monitor());   // acquire monitor mutex
-        _col.apply(fn,d);
+        {
+        boost::mutex::scoped_lock scoped_lock(mux);
+        //_col.apply(fn,d);
+        ts_for_each(_col.begin(),_col.end();,fn,d);
+        }
     }
 };
 

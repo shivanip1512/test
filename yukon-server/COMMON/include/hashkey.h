@@ -3,7 +3,7 @@
 #ifndef __HASHKEY_H__
 #define __HASHKEY_H__
 
-#include <rw\defs.h>
+
 #include <limits.h>
 #include <string>
 #include "hash_functions.h"
@@ -33,7 +33,7 @@ public:
       ID(LONG_MAX)
    {}
 
-   RWBoolean operator < ( const CtiHashKey &aRef) const
+   bool operator < ( const CtiHashKey &aRef) const
    {
       if(_bIDBased)
       {
@@ -45,7 +45,7 @@ public:
       }
    }
 
-   RWBoolean virtual operator==(const CtiHashKey& aRef) const
+   bool virtual operator==(const CtiHashKey& aRef) const
    {
       if(_bIDBased)
       {

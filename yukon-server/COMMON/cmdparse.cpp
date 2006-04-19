@@ -1,6 +1,6 @@
 #include "yukon.h"
 
-#include "ctistring.h"
+
 #include <windows.h>
 #include <stdlib.h>
 #include <iostream>
@@ -17,6 +17,7 @@
 #include "numstr.h"
 #include "pointdefs.h"
 #include "utility.h"
+#include "ctistring.h"
 
 using namespace std;
 
@@ -191,22 +192,22 @@ void  CtiCommandParser::parse()
                 //Removes the ' " ' character from "something"
                 token.erase(0,1);token.erase(token.length()-1,token.length()-1);
                 _cmd["altgroup"] = CtiParseValue( token, -1 );
-            }
-            CmdStr.replace(re_altg, "");
-        }
-        else if(!(token = CmdStr.match(re_billg)).empty())
-        {
-            size_t nstart;
-            size_t nstop;
-            nstart = token.index("billgroup ", &nstop);
-
-            nstop += nstart;
-
-            if(!(token = token.match(str_quoted_token, nstop)).empty())   // get the value
-            {
-                //Removes the ' " ' character from "something"
-                token.erase(0,1);token.erase(token.length()-1,token.length()-1);
-                _cmd["billgroup"] = CtiParseValue( token, -1 );
+                	             }
+  	             CmdStr.replace(re_altg, "");
+  	         }
+  	         else if(!(token = CmdStr.match(re_billg)).empty())
+  	         {
+  	             size_t nstart;
+  	             size_t nstop;
+  	             nstart = token.index("billgroup ", &nstop);
+  	 
+  	             nstop += nstart;
+  	 
+  	             if(!(token = token.match(str_quoted_token, nstop)).empty())   // get the value
+  	             {
+  	                 //Removes the ' " ' character from "something"
+  	                 token.erase(0,1);token.erase(token.length()-1,token.length()-1);
+  	                 _cmd["billgroup"] = CtiParseValue( token, -1 );
             }
             CmdStr.replace(re_altg, "");
         }
@@ -922,7 +923,7 @@ void  CtiCommandParser::doParseControl(const string &_CmdStr)
         }
 
 
-        if(flag) _actionItems.insert(tbuf);                      // If anything was set, make sure someone can be informed
+        if(flag) _actionItems.push_back(tbuf);                      // If anything was set, make sure someone can be informed
 
         if(!(token = CmdStr.match("off(set)? *" + str_num)).empty())            // Sourcing from CmdStr, which is the entire command string.
         {
@@ -1193,7 +1194,7 @@ void  CtiCommandParser::doParsePutStatus(const string &_CmdStr)
 
         if(CmdStr.contains(" reset"))
         {
-            if( _cmd.contains("flag") )
+            if( _cmd.find("flag") != NULL )
             {
                 flag = _cmd["flag"].getInt();
             }
@@ -1646,8 +1647,13 @@ void  CtiCommandParser::doParseScan(const string &_CmdStr)
 UINT     CtiCommandParser::getCommand() const
 {
     CtiParseValue& pv = CtiParseValue(); // = _cmd["command"];
+    map_itr_type itr;
 
-    _cmd.findValue("command", pv);
+    itr = _cmd.find("command");
+    if (itr != NULL) {
+        pv = (*itr).second;
+    }
+    //_cmd.findValue("command", pv);
 
     return pv.getInt();
 }
@@ -1664,14 +1670,18 @@ UINT     CtiCommandParser::getOffset() const
 
 bool  CtiCommandParser::isKeyValid(const string key) const
 {
-    return _cmd.contains(key.c_str());
+    return ( _cmd.find(key.c_str()) != NULL );
 }
 
 UINT     CtiCommandParser::getOffset(const string key) const
 {
     CtiParseValue& pv = CtiParseValue(); // = _cmd["command"];
-    _cmd.findValue(key.c_str(), pv);
+    map_itr_type itr;
 
+    itr = _cmd.find(key.c_str());
+    if (itr != _cmd.end()) {
+        pv = (*itr).second;
+    }
     return pv.getInt();
 }
 INT      CtiCommandParser::getiValue(const string key, INT valifnotfound) const
@@ -1681,7 +1691,11 @@ INT      CtiCommandParser::getiValue(const string key, INT valifnotfound) const
     if(isKeyValid(key.c_str()))
     {
         CtiParseValue& pv = CtiParseValue(); // = _cmd["command"];
-        _cmd.findValue(key.c_str(), pv);
+        map_itr_type itr;
+        itr = _cmd.find(key.c_str());
+        if ( itr != _cmd.end() ) {
+            pv = (*itr).second;
+        }
         val = pv.getInt();
     }
 
@@ -1695,8 +1709,11 @@ DOUBLE   CtiCommandParser::getdValue(const string key, DOUBLE valifnotfound) con
     if(isKeyValid(key.c_str()))
     {
         CtiParseValue& pv = CtiParseValue(); // = _cmd["command"];
-        _cmd.findValue(key.c_str(), pv);
-
+        map_itr_type itr;        
+        itr = _cmd.find(key.c_str() );
+        if (itr != _cmd.end()) {
+            pv = (*itr).second;
+        }
         val = pv.getReal();
     }
 
@@ -1706,8 +1723,11 @@ DOUBLE   CtiCommandParser::getdValue(const string key, DOUBLE valifnotfound) con
 string CtiCommandParser::getsValue(const string key) const
 {
     CtiParseValue& pv = CtiParseValue();
-    _cmd.findValue(key.c_str(), pv);
-
+    map_itr_type itr;
+    itr = _cmd.find(key.c_str() );
+    if (itr != _cmd.end()) {
+        pv = (*itr).second;
+    }
     return pv.getString().c_str();
 }
 
@@ -2095,7 +2115,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
             _cmd["utility"] = CtiParseValue( _num );
 
             _snprintf(tbuf, sizeof(tbuf), "CONFIG UID = %d", _num);
-            _actionItems.insert(tbuf);
+            _actionItems.push_back(tbuf);
         }
 
         if(!(token = CmdStr.match(" aux*[ =]*([ =]+0x)?[0-9a-f]+")).empty())
@@ -2112,7 +2132,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
             _cmd["aux"] = CtiParseValue( _num );
 
             _snprintf(tbuf, sizeof(tbuf), "CONFIG AUX = %d", _num);
-            _actionItems.insert(tbuf);
+            _actionItems.push_back(tbuf);
         }
 
         if(!(token = CmdStr.match(" sect(ion)?[ =]*[0-9]+")).empty())
@@ -2124,7 +2144,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
             _cmd["section"] = CtiParseValue( _num );
 
             _snprintf(tbuf, sizeof(tbuf), "CONFIG SECTION = %d", _num);
-            _actionItems.insert(tbuf);
+            _actionItems.push_back(tbuf);
         }
 
         if(CmdStr.contains(" clas"))
@@ -2151,7 +2171,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
                 _cmd["class"] = CtiParseValue( _num );
 
                 _snprintf(tbuf, sizeof(tbuf), "CONFIG CLASS = %s", convertVersacomAddressToHumanForm(_num).c_str());
-                _actionItems.insert(tbuf);
+                _actionItems.push_back(tbuf);
 
             }
             else if(!(token = CmdStr.match(" class [0-9]+" \
@@ -2195,7 +2215,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
                 _cmd["class"] = CtiParseValue( _num );
 
                 _snprintf(tbuf, sizeof(tbuf), "CONFIG CLASS = %s", convertVersacomAddressToHumanForm(_num).c_str());
-                _actionItems.insert(tbuf);
+                _actionItems.push_back(tbuf);
             }
         }
 
@@ -2225,7 +2245,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
                 _cmd["division"] = CtiParseValue( _num );
 
                 _snprintf(tbuf, sizeof(tbuf), "CONFIG DIVISION = %s", convertVersacomAddressToHumanForm(_num).c_str());
-                _actionItems.insert(tbuf);
+                _actionItems.push_back(tbuf);
 
             }
             else if(!(token = CmdStr.match(" divi(sion)? [0-9]+" \
@@ -2269,7 +2289,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
                 _cmd["division"] = CtiParseValue( _num );
 
                 _snprintf(tbuf, sizeof(tbuf), "CONFIG DIVISION = %s", convertVersacomAddressToHumanForm(_num).c_str());
-                _actionItems.insert(tbuf);
+                _actionItems.push_back(tbuf);
             }
         }
 
@@ -2290,7 +2310,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
                 _cmd["fromutility"] = CtiParseValue( _num );
 
                 _snprintf(tbuf, sizeof(tbuf), "CONFIG FROM UID = %d", _num);
-                _actionItems.insert(tbuf);
+                _actionItems.push_back(tbuf);
             }
 
             if(!(token = CmdStr.match("fromsect(ion)?[ =]*([ =]+(0x))?[0-9a-f]+")).empty())
@@ -2307,7 +2327,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
                 _cmd["fromsection"] = CtiParseValue( _num );
 
                 _snprintf(tbuf, sizeof(tbuf), "CONFIG FROM SECTION = %d", _num);
-                _actionItems.insert(tbuf);
+                _actionItems.push_back(tbuf);
             }
 
             if(!(token = CmdStr.match("fromclass[ =]*([ =]+)?0x[0-9a-f]+")).empty())
@@ -2332,7 +2352,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
                 _cmd["fromclass"] = CtiParseValue( _num );
 
                 _snprintf(tbuf, sizeof(tbuf), "CONFIG FROM CLASS = %s", convertVersacomAddressToHumanForm(_num).c_str());
-                _actionItems.insert(tbuf);
+                _actionItems.push_back(tbuf);
 
             }
 
@@ -2360,7 +2380,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
                 _cmd["fromdivision"] = CtiParseValue( _num );
 
                 _snprintf(tbuf, sizeof(tbuf), "CONFIG FROM DIVISION = %s", convertVersacomAddressToHumanForm(_num).c_str());
-                _actionItems.insert(tbuf);
+                _actionItems.push_back(tbuf);
 
             }
         }
@@ -2380,7 +2400,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
                     _cmd["utility"] = CtiParseValue( _num );
 
                     _snprintf(tbuf, sizeof(tbuf), "CONFIG UTILITY = %d", _num);
-                    _actionItems.insert(tbuf);
+                    _actionItems.push_back(tbuf);
                 }
                 if(!(strnum = token.match(" a[ =]*(0x)?[0-9a-f]+")).empty())
                 {
@@ -2395,7 +2415,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
                     _cmd["aux"] = CtiParseValue( _num );
 
                     _snprintf(tbuf, sizeof(tbuf), "CONFIG AUX = %d", _num);
-                    _actionItems.insert(tbuf);
+                    _actionItems.push_back(tbuf);
                 }
                 if(!(strnum = token.match(" s[ =]*[0-9]+")).empty())
                 {
@@ -2403,7 +2423,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
                     _cmd["section"] = CtiParseValue( _num );
 
                     _snprintf(tbuf, sizeof(tbuf), "CONFIG SECTION = %d", _num);
-                    _actionItems.insert(tbuf);
+                    _actionItems.push_back(tbuf);
                 }
                 if(!(strnum = token.match(" c[ =]*(0x)?[0-9a-f]+")).empty())
                 {
@@ -2428,7 +2448,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
 
                     _cmd["class"] = CtiParseValue( _num );
                     _snprintf(tbuf, sizeof(tbuf), "CONFIG CLASS = %s", convertVersacomAddressToHumanForm(_num).c_str());
-                    _actionItems.insert(tbuf);
+                    _actionItems.push_back(tbuf);
 
                 }
                 if(!(strnum = token.match(" d[ =]*(0x)?[0-9a-f]+")).empty())
@@ -2455,7 +2475,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
                     _cmd["division"] = CtiParseValue( _num );
 
                     _snprintf(tbuf, sizeof(tbuf), "CONFIG DIVISION = %s", convertVersacomAddressToHumanForm(_num).c_str());
-                    _actionItems.insert(tbuf);
+                    _actionItems.push_back(tbuf);
 
                 }
 
@@ -2472,23 +2492,23 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
                 if(CmdStr.contains(" service in"))
                 {
                     serviceflag |= (0x08 | 0x02); // (VC_SERVICE_C_IN | VC_SERVICE_T_IN);
-                    _actionItems.insert("SERVICE ENABLE");
+                    _actionItems.push_back("SERVICE ENABLE");
                 }
                 else if( CmdStr.contains(" service out"))
                 {
                     serviceflag |= 0x04;
-                    _actionItems.insert("SERVICE DISABLE");
+                    _actionItems.push_back("SERVICE DISABLE");
                 }
 
                 if(CmdStr.contains(" service tin"))
                 {
                     serviceflag |= 0x02;
-                    _actionItems.insert("SERVICE ENABLE TEMPORARY");
+                    _actionItems.push_back("SERVICE ENABLE TEMPORARY");
                 }
                 else if(CmdStr.contains(" service tout"))
                 {
                     serviceflag |= 0x01;
-                    _actionItems.insert("SERVICE DISABLE TEMPORARY");
+                    _actionItems.push_back("SERVICE DISABLE TEMPORARY");
                 }
 
                 if(serviceflag)
@@ -2606,7 +2626,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
 
                 _cmd["service"] = CtiParseValue( flag );
 
-                _actionItems.insert(tbuf);
+                _actionItems.push_back(tbuf);
             }
         }
 
@@ -2640,7 +2660,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
                     ((flag & 0x80) ? "ON" : "OFF"),
                     ((flag & 0x40) ? "ON" : "OFF"),
                     ((flag & 0x20) ? "ON" : "OFF"));
-            _actionItems.insert(tbuf);
+            _actionItems.push_back(tbuf);
         }
 
         if(CmdStr.contains("reset"))
@@ -2685,7 +2705,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
                 _cmd["reset"] = CtiParseValue( flag );
 
                 _snprintf(tbuf, sizeof(tbuf), "CNTR RESET = 0x%02X", flag);
-                _actionItems.insert(tbuf);
+                _actionItems.push_back(tbuf);
             }
         }
 
@@ -2700,7 +2720,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
                     _cmd["proptime"] = CtiParseValue( _num );
 
                     _snprintf(tbuf, sizeof(tbuf), "CONFIG PROPTIME = %d", _num);
-                    _actionItems.insert(tbuf);
+                    _actionItems.push_back(tbuf);
                 }
             }
         }
@@ -2722,7 +2742,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
                     _cmd["coldload_r1"] = CtiParseValue( _num );
 
                     _snprintf(tbuf, sizeof(tbuf), "CONFIG COLDLOAD R1 = %d", _num);
-                    _actionItems.insert(tbuf);
+                    _actionItems.push_back(tbuf);
                 }
                 if(!(strnum = token.match("r2[ =]*[0-9]+[ =]*[hms]?")).empty())
                 {
@@ -2732,7 +2752,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
                     _cmd["coldload_r2"] = CtiParseValue( _num );
 
                     _snprintf(tbuf, sizeof(tbuf), "CONFIG COLDLOAD R2 = %d", _num);
-                    _actionItems.insert(tbuf);
+                    _actionItems.push_back(tbuf);
                 }
                 if(!(strnum = token.match("r3[ =]*[0-9]+[ =]*[hms]?")).empty())
                 {
@@ -2742,7 +2762,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
                     _cmd["coldload_r3"] = CtiParseValue( _num );
 
                     _snprintf(tbuf, sizeof(tbuf), "CONFIG COLDLOAD R3 = %d", _num);
-                    _actionItems.insert(tbuf);
+                    _actionItems.push_back(tbuf);
                 }
             }
         }
@@ -2934,7 +2954,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
             _cmd["ovuv"] = CtiParseValue( op );
 
             _snprintf(tbuf, sizeof(tbuf), "OVUV %s", op_name);
-            _actionItems.insert(tbuf);
+            _actionItems.push_back(tbuf);
         }
 
         if(!(token = CmdStr.match(" sync|filler")).empty())
@@ -3060,7 +3080,7 @@ void  CtiCommandParser::doParsePutStatusVersacom(const string &_CmdStr)
                 _cmd["proptest"] = CtiParseValue( op );
 
                 _snprintf(tbuf, sizeof(tbuf), "PROP TEST: %01x = %s", op, op_name);
-                _actionItems.insert(tbuf);
+                _actionItems.push_back(tbuf);
             }
         }
         else if(!(token = CmdStr.match("ovuv[ =]+((ena(ble)?)|(dis(able)?))")).empty())
@@ -3082,7 +3102,7 @@ void  CtiCommandParser::doParsePutStatusVersacom(const string &_CmdStr)
             _cmd["ovuv"] = CtiParseValue( op );
 
             _snprintf(tbuf, sizeof(tbuf), "OVUV %s", op_name);
-            _actionItems.insert(tbuf);
+            _actionItems.push_back(tbuf);
         }
     }
     else
@@ -3133,7 +3153,7 @@ void  CtiCommandParser::doParsePutStatusFisherP(const string &_CmdStr)
             _cmd["ovuv"] = CtiParseValue( op );
 
             _snprintf(tbuf, sizeof(tbuf), "OVUV %s", op_name);
-            _actionItems.insert(tbuf);
+            _actionItems.push_back(tbuf);
         }
     }
     else
@@ -3146,7 +3166,7 @@ void  CtiCommandParser::doParsePutStatusFisherP(const string &_CmdStr)
     }
 }
 
-RWTValSlist< string >& CtiCommandParser::getActionItems()
+std::list< string >& CtiCommandParser::getActionItems()
 {
     return _actionItems;
 }
@@ -3439,15 +3459,15 @@ string CtiCommandParser::asString()
 {
     CtiString rstr;
 
-    map_itr_type itr(_cmd);
+    map_itr_type itr = _cmd.begin();
 
-    for(; itr(); )
+    for(; itr != _cmd.end(); ++itr )
     {
         if(rstr.length() > 0)
         {
             rstr += CtiString(":");
         }
-        rstr += CtiString(itr.key()) + CtiString("=") + ( itr.value().getString().length() ? itr.value().getString(): CtiString("(none)")) + CtiString(",") + CtiNumStr(itr.value().getInt()) + CtiString(",") + CtiNumStr(itr.value().getReal());
+        rstr += CtiString((*itr).first) + CtiString("=") + ( (*itr).second.getString().length() ? (*itr).second.getString(): CtiString("(none)")) + CtiString(",") + CtiNumStr((*itr).second.getInt()) + CtiString(",") + CtiNumStr((*itr).second.getReal());
     }
     return rstr;
 }
@@ -3458,21 +3478,21 @@ void CtiCommandParser::Dump()
 
     dout.fill('0');
 
-    map_itr_type itr(_cmd);
+    map_itr_type itr = _cmd.begin();
 
-    for(; itr(); )
+    for(; itr != _cmd.end() ; ++itr )
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Key " << itr.key() << " Value (str) " << itr.value().getString() <<
-            " (int) " << (int)(itr.value().getInt()) <<
-            " (dbl) " << itr.value().getReal() <<
+            dout << "Key " << (*itr).first << " Value (str) " << (*itr).second.getString() <<
+            " (int) " << (int)((*itr).second.getInt()) <<
+            " (dbl) " << (*itr).second.getReal() <<
             " (bytes) ";
         }
 
-        for(int i = 0; i < itr.value().getString().length(); i++ )
+        for(int i = 0; i < (*itr).second.getString().length(); i++ )
         {
-            dout << hex << setw(2) << (INT)(itr.value().getString()[i]) << " ";
+            dout << hex << setw(2) << (INT)((*itr).second.getString()[i]) << " ";
         }
 
         dout << endl;
@@ -3841,7 +3861,7 @@ void  CtiCommandParser::doParseControlExpresscom(const string &_CmdStr)
             }
         }
 
-        _actionItems.insert("SETPOINT");
+        _actionItems.push_back("SETPOINT");
     }
 }
 
@@ -4011,7 +4031,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
                 _cmd["xca_spid"] = CtiParseValue( _num );
 
                 _snprintf(tbuf, sizeof(tbuf), "CONFIG SPID = %d", _num);
-                _actionItems.insert(tbuf);
+                _actionItems.push_back(tbuf);
             }
             if(!(valStr = CmdStr.match(" g[ =]*[0-9]+")).empty())
             {
@@ -4019,7 +4039,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
                 _cmd["xca_geo"] = CtiParseValue( _num );
 
                 _snprintf(tbuf, sizeof(tbuf), "CONFIG GEO = %d", _num);
-                _actionItems.insert(tbuf);
+                _actionItems.push_back(tbuf);
             }
             if(!(valStr = CmdStr.match(" b[ =]*[0-9]+")).empty())
             {
@@ -4027,7 +4047,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
                 _cmd["xca_sub"] = CtiParseValue( _num );
 
                 _snprintf(tbuf, sizeof(tbuf), "CONFIG SUBSTATION = %d", _num);
-                _actionItems.insert(tbuf);
+                _actionItems.push_back(tbuf);
             }
             if(!(valStr = CmdStr.match(" f[ =]*[0-9]+")).empty())
             {
@@ -4035,7 +4055,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
                 _cmd["xca_feeder"] = CtiParseValue( _num );
 
                 _snprintf(tbuf, sizeof(tbuf), "CONFIG FEEDER = %d", _num);
-                _actionItems.insert(tbuf);
+                _actionItems.push_back(tbuf);
             }
             if(!(valStr = CmdStr.match(" z[ =]*[0-9]+")).empty())
             {
@@ -4043,7 +4063,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
                 _cmd["xca_zip"] = CtiParseValue( _num );
 
                 _snprintf(tbuf, sizeof(tbuf), "CONFIG ZIP = %d", _num);
-                _actionItems.insert(tbuf);
+                _actionItems.push_back(tbuf);
             }
             if(!(valStr = CmdStr.match(" u[ =]*[0-9]+")).empty())
             {
@@ -4051,7 +4071,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
                 _cmd["xca_uda"] = CtiParseValue( _num );
 
                 _snprintf(tbuf, sizeof(tbuf), "CONFIG UDA = %d", _num);
-                _actionItems.insert(tbuf);
+                _actionItems.push_back(tbuf);
             }
 
             CtiString programtemp;
@@ -4098,13 +4118,13 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
                             if(!ptemp.empty())
                             {
                                 _snprintf(tbuf, sizeof(tbuf), "CONFIG LOAD %d to PROGRAM = %s", i+1, ptemp);
-                                _actionItems.insert(tbuf);
+                                _actionItems.push_back(tbuf);
                             }
 
                             if(!rtemp.empty())
                             {
                                 _snprintf(tbuf, sizeof(tbuf), "CONFIG LOAD %d to SPLINTER = %s", i+1, rtemp);
-                                _actionItems.insert(tbuf);
+                                _actionItems.push_back(tbuf);
                             }
                         }
                     }
@@ -4158,7 +4178,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
             _cmd["xctservicebitl"] = CtiParseValue( bitL );
             _cmd["xctservicetime"] = CtiParseValue( offtime );
             _cmd["xctservicecancel"] = CtiParseValue( cancel );
-            _actionItems.insert(tbuf);
+            _actionItems.push_back(tbuf);
         }
         else if(!(token = CmdStr.match("serv(ice)? (in|out|enable|disable)( (relay|load) [0-9]+)?")).empty())
         {
@@ -4186,7 +4206,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
             }
 
             _cmd["xcpservice"] = CtiParseValue( flag );
-            _actionItems.insert(tbuf);
+            _actionItems.push_back(tbuf);
         }
     }
     else if(!(token = CmdStr.match(" ovuv[ =]+((ena(ble)?)|(dis(able)?))")).empty())
@@ -4208,7 +4228,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
         _cmd["ovuv"] = CtiParseValue( op );
 
         _snprintf(tbuf, sizeof(tbuf), "OVUV %s", op_name);
-        _actionItems.insert(tbuf);
+        _actionItems.push_back(tbuf);
     }
     else if(CmdStr.contains("schedule"))
     {
@@ -4277,7 +4297,7 @@ void  CtiCommandParser::doParsePutStatusExpresscom(const string &_CmdStr)
             _cmd["xcproptest"] = CtiParseValue( op );
 
             _snprintf(tbuf, sizeof(tbuf), "PROP TEST: %01x = %s", op, op_name);
-            _actionItems.insert(tbuf);
+            _actionItems.push_back(tbuf);
         }
     }
     else if(!(token = CmdStr.match(" ovuv[ =]+((ena(ble)?)|(dis(able)?))")).empty())
@@ -4299,7 +4319,7 @@ void  CtiCommandParser::doParsePutStatusExpresscom(const string &_CmdStr)
         _cmd["ovuv"] = CtiParseValue( op );
 
         _snprintf(tbuf, sizeof(tbuf), "OVUV %s", op_name);
-        _actionItems.insert(tbuf);
+        _actionItems.push_back(tbuf);
     }
 }
 
@@ -4669,7 +4689,7 @@ void CtiCommandParser::doParsePutConfigSA(const string &_CmdStr)
                 _cmd["tamperdetect_f1"] = CtiParseValue( _num );
 
                 _snprintf(tbuf, sizeof(tbuf), "CONFIG TAMPER COUNT R1 = %d", _num);
-                _actionItems.insert(tbuf);
+                _actionItems.push_back(tbuf);
             }
             if(!(strnum = token.match("f2[ =]*" + str_num)).empty())
             {
@@ -4678,7 +4698,7 @@ void CtiCommandParser::doParsePutConfigSA(const string &_CmdStr)
                 _cmd["tamperdetect_f2"] = CtiParseValue( _num );
 
                 _snprintf(tbuf, sizeof(tbuf), "CONFIG TAMPER COUNT R2 = %d", _num);
-                _actionItems.insert(tbuf);
+                _actionItems.push_back(tbuf);
             }
         }
     }
@@ -4762,7 +4782,7 @@ void CtiCommandParser::doParsePutConfigSA(const string &_CmdStr)
                 _cmd["sa_group"] = CtiParseValue( _num );
 
                 _snprintf(tbuf, sizeof(tbuf), "CONFIG GROUP = %d", _num);
-                _actionItems.insert(tbuf);
+                _actionItems.push_back(tbuf);
             }
             if(!(valStr = CmdStr.match(" d[ =]*" + str_num)).empty())
             {
@@ -4770,7 +4790,7 @@ void CtiCommandParser::doParsePutConfigSA(const string &_CmdStr)
                 _cmd["sa_division"] = CtiParseValue( _num );
 
                 _snprintf(tbuf, sizeof(tbuf), "CONFIG DIVISION = %d", _num);
-                _actionItems.insert(tbuf);
+                _actionItems.push_back(tbuf);
             }
             if(!(valStr = CmdStr.match(" s[ =]*" + str_num)).empty())
             {
@@ -4778,7 +4798,7 @@ void CtiCommandParser::doParsePutConfigSA(const string &_CmdStr)
                 _cmd["sa_substation"] = CtiParseValue( _num );
 
                 _snprintf(tbuf, sizeof(tbuf), "CONFIG SUBSTATION = %d", _num);
-                _actionItems.insert(tbuf);
+                _actionItems.push_back(tbuf);
             }
             if(!(valStr = CmdStr.match(" [pr][ =]*" + str_num)).empty())
             {
@@ -4786,7 +4806,7 @@ void CtiCommandParser::doParsePutConfigSA(const string &_CmdStr)
                 _cmd["sa_package"] = CtiParseValue( _num );
 
                 _snprintf(tbuf, sizeof(tbuf), "CONFIG RATE PACKAGE = %d", _num);
-                _actionItems.insert(tbuf);
+                _actionItems.push_back(tbuf);
             }
             else
             {
@@ -4796,7 +4816,7 @@ void CtiCommandParser::doParsePutConfigSA(const string &_CmdStr)
                     _cmd["sa_family"] = CtiParseValue( _num );
 
                     _snprintf(tbuf, sizeof(tbuf), "CONFIG FAMILY = %d", _num);
-                    _actionItems.insert(tbuf);
+                    _actionItems.push_back(tbuf);
                 }
                 if(!(valStr = CmdStr.match(" m[ =]*" + str_num)).empty())
                 {
@@ -4804,7 +4824,7 @@ void CtiCommandParser::doParsePutConfigSA(const string &_CmdStr)
                     _cmd["sa_member"] = CtiParseValue( _num );
 
                     _snprintf(tbuf, sizeof(tbuf), "CONFIG MEMBER = %d", _num);
-                    _actionItems.insert(tbuf);
+                    _actionItems.push_back(tbuf);
                 }
             }
         }
@@ -5005,7 +5025,7 @@ void  CtiCommandParser::doParsePutConfigCBC(const string &_CmdStr)
             uv = limitValue(uv, 105, 122);
             _cmd["cbc_emergency_uv_close_voltage"] = CtiParseValue( uv );
             valStr = CtiString("Emergency UV Close Voltage ") + CtiNumStr(uv);
-            _actionItems.insert(valStr);
+            _actionItems.push_back(valStr);
         }
 
         if(!(token = CmdStr.match(" ov[ =]+" + str_num)).empty())
@@ -5015,7 +5035,7 @@ void  CtiCommandParser::doParsePutConfigCBC(const string &_CmdStr)
             ov = limitValue(ov, 118, 135);
             _cmd["cbc_emergency_ov_trip_voltage"] = CtiParseValue( ov );
             valStr = CtiString("Emergency OV Trip Voltage ") + CtiNumStr(ov);
-            _actionItems.insert(valStr);
+            _actionItems.push_back(valStr);
         }
 
         if(!(token = CmdStr.match(" timer[ =]+" + str_num)).empty())
@@ -5025,7 +5045,7 @@ void  CtiCommandParser::doParsePutConfigCBC(const string &_CmdStr)
             timer = limitValue(timer, 1, 255);
             _cmd["cbc_emergency_ov_trip_voltage"] = CtiParseValue( timer );
             valStr = CtiString("Emergency OV Trip Voltage ") + CtiNumStr(timer);
-            _actionItems.insert(valStr);
+            _actionItems.push_back(valStr);
         }
 
         if(ov != 0 && uv != 0 && timer != 0)
@@ -5057,7 +5077,7 @@ void  CtiCommandParser::doParsePutConfigCBC(const string &_CmdStr)
         }
 
         valStr = CtiString("OVUV Control Trigger Time ") + CtiNumStr(iValue) + " random " + CtiNumStr(random);
-        _actionItems.insert(valStr);
+        _actionItems.push_back(valStr);
 
         xcraw += "0x0b 0x" + CtiNumStr(HIBYTE(iValue)).hex() + " 0x" + CtiNumStr(LOBYTE(iValue)).hex() + " 0x" + CtiNumStr(random).hex();
         _cmd["xcrawconfig"] = xcraw;
@@ -5069,7 +5089,7 @@ void  CtiCommandParser::doParsePutConfigCBC(const string &_CmdStr)
         iValue = limitValue(iValue, 1, 30);
         _cmd["cbc_daily_control_limit"] = CtiParseValue( iValue );
         valStr = CtiString("OV Trip Voltage ") + CtiNumStr(iValue);
-        _actionItems.insert(valStr);
+        _actionItems.push_back(valStr);
 
         xcraw += "0x10 0x" + CtiNumStr(iValue).hex();
         _cmd["xcrawconfig"] = xcraw;
@@ -5165,7 +5185,7 @@ void  CtiCommandParser::doParsePutConfigCBC(const string &_CmdStr)
         }
         _cmd["cbc_tempcontrol_enable"] = CtiParseValue( iValue );
         valStr = CtiString("Temperature control ") + (iValue ? CtiString("enable") : CtiString("disable"));
-        _actionItems.insert(valStr);
+        _actionItems.push_back(valStr);
 
         _cmd["xcrawconfig"] = xcraw;
     }
@@ -5181,7 +5201,7 @@ void  CtiCommandParser::doParsePutConfigCBC(const string &_CmdStr)
         }
         _cmd["cbc_timecontrol_enable"] = iValue;
         valStr = CtiString("Time control ") + (iValue ? CtiString("enable") : CtiString("disable"));
-        _actionItems.insert(valStr);
+        _actionItems.push_back(valStr);
 
 
         {
@@ -5200,7 +5220,7 @@ void  CtiCommandParser::doParsePutConfigCBC(const string &_CmdStr)
             iValue = limitValue(iValue, 105, 122);
             _cmd["cbc_uv_close_voltage"] = CtiParseValue( iValue );
             valStr = CtiString("UV Close Voltage ") + CtiNumStr(iValue);
-            _actionItems.insert(valStr);
+            _actionItems.push_back(valStr);
 
             xcraw += "0x09 0x" + CtiNumStr(iValue).hex();
             _cmd["xcrawconfig"] = xcraw;
@@ -5212,7 +5232,7 @@ void  CtiCommandParser::doParsePutConfigCBC(const string &_CmdStr)
             iValue = limitValue(iValue, 118, 135);
             _cmd["cbc_ov_trip_voltage"] = CtiParseValue( iValue );
             valStr = CtiString("OV Trip Voltage ") + CtiNumStr(iValue);
-            _actionItems.insert(valStr);
+            _actionItems.push_back(valStr);
 
             xcraw += "0x0a 0x" + CtiNumStr(iValue).hex();
             _cmd["xcrawconfig"] = xcraw;
