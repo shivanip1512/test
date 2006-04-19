@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <bean id="yukonDataSource" class="com.cannontech.database.YukonDataSource">
+    <constructor-arg value="yukon"/>
+  </bean>
+  
+  <bean id="connectionPool" class="com.cannontech.yukon.conns.ConnPool" factory-method="getInstance"/>
+  <bean id="notificationProxy" factory-bean="connectionPool" factory-method="getDefNotificationConn" singleton="false"/>
+  <bean id="dispatchConnection" factory-bean="connectionPool" factory-method="getDefDispatchConn" singleton="false"/>
+  
+  
+  <bean id="nextValueHelper" class="com.cannontech.database.incrementer.NextValueHelper">
+    <property name="sequenceNameLookup" ref="sequenceNameLookup"/>
+  </bean>
+  
+  <bean id="sequenceNameLookup" class="com.cannontech.database.incrementer.XmlIncrementer"
+        init-method="parse">
+    <property name="dataSource" ref="yukonDataSource"/>
+    <property name="configFile" value="classpath:com/cannontech/database/incrementer/table_sequences.xml"/>
+  </bean>
+  
+</beans>
