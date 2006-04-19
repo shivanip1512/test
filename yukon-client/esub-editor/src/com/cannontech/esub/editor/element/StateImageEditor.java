@@ -16,13 +16,15 @@ public class StateImageEditor extends com.cannontech.common.editor.PropertyPanel
 	private DataInputPanel[] inputPanels = {
 		stateImageEditorPanel
 	};
-/**
+
+    /**
  * DynamicTextEditor constructor comment.
  */
 public StateImageEditor() {
 	super();
 	initialize();
 }
+
 /**
  * Creation date: (12/18/2001 4:07:28 PM)
  */
@@ -30,6 +32,7 @@ private void checkValidity()
 {
 	getPropertyButtonPanel().getOkJButton().setEnabled(isInputValid());
 }
+
 /**
  * 
  */
@@ -82,6 +85,7 @@ public String[] getTabNames() {
 public Object getValue(Object o) {
 	return getStateImageEditorPanel().getValue(o);
 }
+
 /**
  * Called whenever the part throws an exception.
  * @param exception java.lang.Throwable
@@ -92,27 +96,26 @@ private void handleException(java.lang.Throwable exception) {
 	// CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
 	// exception.printStackTrace(System.out);
 }
+
 /**
  * Initialize the class.
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
 private void initialize() {
 	try {
-		// user code begin {1}
-		// user code end
 		setName("DynamicTextEditor");
-		setPreferredSize(new java.awt.Dimension(480, 650));
 		setLayout(new java.awt.GridBagLayout());
-		setSize(480, 650);
-		setMinimumSize(new java.awt.Dimension(480, 650));
+        
+		setPreferredSize(new java.awt.Dimension(540, 630));
+		setSize(540, 630);
+		setMinimumSize(new java.awt.Dimension(540, 630));
 	} catch (java.lang.Throwable ivjExc) {
 		handleException(ivjExc);
 	}
-	// user code begin {2}
 	getStateImageEditorPanel().addDataInputPanelListener(this);
 	checkValidity();
-	// user code end
 }
+
 /**
  * Creation date: (12/18/2001 4:05:26 PM)
  * @param evt PropertyPanelEvent
@@ -120,6 +123,7 @@ private void initialize() {
 public void inputUpdate(PropertyPanelEvent evt) {
 	checkValidity();
 }
+
 /**
  * main entrypoint - starts the part when it is run as an application
  * @param args java.lang.String[]
@@ -145,6 +149,7 @@ public static void main(java.lang.String[] args) {
 		exception.printStackTrace(System.out);
 	}
 }
+
 /**
  * Creation date: (1/21/2002 12:32:09 PM)
  * @param newStateImageEditorPanel com.cannontech.esub.editor.element.StateImageEditorPanel
@@ -152,6 +157,7 @@ public static void main(java.lang.String[] args) {
 public void setStateImageEditorPanel(StateImageEditorPanel newStateImageEditorPanel) {
 	stateImageEditorPanel = newStateImageEditorPanel;
 }
+
 /**
  * This method was created in VisualAge.
  * @param o java.lang.Object
@@ -160,11 +166,12 @@ public void setValue(Object o)
 {
 	super.setValue(o);
 }
-	/**
-	 * @see PropertyPanel#createNewPanel(int)
-	 */
-	public Object[] createNewPanel(int arg0) {
-		return null;
-	}
 
+/**
+ * @see PropertyPanel#createNewPanel(int)
+ */
+public Object[] createNewPanel(int arg0) 
+{
+	return null;
+}
 }
