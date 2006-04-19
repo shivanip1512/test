@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.Date;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
@@ -54,212 +55,106 @@ public class CustomerAccount extends DBPersistent {
     /**
      * @return Array of {Account ID(Integer), Account #(String)}
      */
-    public static Object[][] getAllCustomerAccounts(Integer energyCompanyID) {
-        String sql = "SELECT acct.AccountID, acct.AccountNumber " +
-                "FROM " + TABLE_NAME + " acct, ECToAccountMapping map " +
-                "WHERE map.EnergyCompanyID = " + energyCompanyID + " AND map.AccountID = acct.AccountID";
-        
-        try {
-            SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
-            stmt.execute();
-            
-            Object[][] res = new Object[ stmt.getRowCount() ][];
-            for (int i = 0; i < stmt.getRowCount(); i++) {
-                res[i] = new Object[2];
-                res[i][0] = new Integer( ((java.math.BigDecimal)stmt.getRow(i)[0]).intValue() );
-                res[i][1] = (String) stmt.getRow(i)[1];
-            }
-            
-            return res;
-        }
-        catch (Exception e) {
-            CTILogger.error( e.getMessage(), e );
-        }
-        
-        return null;
-    }
+	public static Object[][] getAllCustomerAccounts(Integer energyCompanyID) {
+		String sql = "SELECT acct.AccountID, acct.AccountNumber " +
+				"FROM " + TABLE_NAME + " acct, ECToAccountMapping map " +
+				"WHERE map.EnergyCompanyID = " + energyCompanyID + " AND map.AccountID = acct.AccountID";
+		
+		try {
+			SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
+			stmt.execute();
+			
+			Object[][] res = new Object[ stmt.getRowCount() ][];
+			for (int i = 0; i < stmt.getRowCount(); i++) {
+				res[i] = new Object[2];
+				res[i][0] = new Integer( ((java.math.BigDecimal)stmt.getRow(i)[0]).intValue() );
+				res[i][1] = (String) stmt.getRow(i)[1];
+			}
+			
+			return res;
+		}
+		catch (Exception e) {
+			CTILogger.error( e.getMessage(), e );
+		}
+		
+		return null;
+	}
 
     public static int[] searchByAccountNumber(String accountNumber, int energyCompanyID) {
-        java.sql.Connection conn = null;
-        java.sql.PreparedStatement stmt = null;
-        java.sql.ResultSet rset = null;
-        
-        try {
-            conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-            
-            String sql = "SELECT acct.AccountID FROM ECToAccountMapping map, " + TABLE_NAME + " acct "
-                       + "WHERE map.EnergyCompanyID = ? AND map.AccountID = acct.AccountID"
-                       + " AND UPPER(acct.AccountNumber) LIKE UPPER(?)";
-            
-            stmt = conn.prepareStatement(sql);
-            stmt.setInt( 1, energyCompanyID );
-            stmt.setString( 2, accountNumber );
-            rset = stmt.executeQuery();
-            
-            ArrayList<Integer> acctIDList = new ArrayList<Integer>();
-            while (rset.next())
-                acctIDList.add( new Integer(rset.getInt(1)) );
-            
-            int[] accountIDs = new int[ acctIDList.size() ];
-            for (int i = 0; i < accountIDs.length; i++)
-                accountIDs[i] = acctIDList.get(i).intValue();
-            
-            return accountIDs;
+		java.sql.Connection conn = null;
+		java.sql.PreparedStatement stmt = null;
+		java.sql.ResultSet rset = null;
+		
+		try {
+			conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
+    		
+	        String sql = "SELECT acct.AccountID FROM ECToAccountMapping map, " + TABLE_NAME + " acct "
+	                   + "WHERE map.EnergyCompanyID = ? AND map.AccountID = acct.AccountID"
+	                   + " AND UPPER(acct.AccountNumber) LIKE UPPER(?)";
+	        
+	        stmt = conn.prepareStatement(sql);
+	        stmt.setInt( 1, energyCompanyID );
+	        stmt.setString( 2, accountNumber );
+	        rset = stmt.executeQuery();
+	        
+	        ArrayList<Integer> acctIDList = new ArrayList<Integer>();
+	        while (rset.next())
+	        	acctIDList.add( new Integer(rset.getInt(1)) );
+	        
+			int[] accountIDs = new int[ acctIDList.size() ];
+			for (int i = 0; i < accountIDs.length; i++)
+				accountIDs[i] = acctIDList.get(i).intValue();
+			
+			return accountIDs;
         }
         catch( java.sql.SQLException e ) {
             CTILogger.error( e.getMessage(), e );
         }
-        finally {
-            try {
-                if (rset != null) rset.close();
-                if (stmt != null) stmt.close();
-                if (conn != null) conn.close();
-            }
-            catch (java.sql.SQLException e) {}
-        }
-        
+		finally {
+			try {
+				if (rset != null) rset.close();
+				if (stmt != null) stmt.close();
+				if (conn != null) conn.close();
+			}
+			catch (java.sql.SQLException e) {}
+		}
+		
         return null;
     }
     
     public static int[] searchByPrimaryContactIDs(int[] contactIDs, int energyCompanyID) {
-        if (contactIDs == null || contactIDs.length == 0) return null;
-        
+    	if (contactIDs == null || contactIDs.length == 0) return null;
+        int [] accountIDs = null;
+    	Date timerStart = new Date();
         String sql = "SELECT DISTINCT acct.AccountID FROM ECToAccountMapping map, " + TABLE_NAME + " acct, " + com.cannontech.database.db.customer.Customer.TABLE_NAME + " cust "
-                   + "WHERE map.EnergyCompanyID = " + energyCompanyID + " AND map.AccountID = acct.AccountID "
-                   + "AND acct.CustomerID = cust.CustomerID AND (cust.PrimaryContactID = " + String.valueOf(contactIDs[0]);
-        for (int i = 1; i < contactIDs.length; i++)
-            sql += " OR cust.PrimaryContactID = " + String.valueOf(contactIDs[i]);
-        sql += ")";
-        
+    			   + "WHERE map.EnergyCompanyID = " + energyCompanyID + " AND map.AccountID = acct.AccountID "
+    			   + "AND acct.CustomerID = cust.CustomerID AND (cust.PrimaryContactID = " + String.valueOf(contactIDs[0]);
+    	for (int i = 1; i < contactIDs.length; i++)
+    		sql += " OR cust.PrimaryContactID = " + String.valueOf(contactIDs[i]);
+    	sql += ")";
+    	
         SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
+    	
         
         try {
             stmt.execute();
-            
-            int[] accountIDs = new int[ stmt.getRowCount() ];
+            CTILogger.debug((new Date().getTime() - timerStart.getTime())*.001 + " After execute" );
+            accountIDs = new int[ stmt.getRowCount() ];
             for (int i = 0; i < stmt.getRowCount(); i++)
                 accountIDs[i] = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
-            
-            return accountIDs;
-        }
-        catch (Exception e) {
-            CTILogger.error( e.getMessage(), e );
-        }
-        
-        return null;
-    }
-   
-//    public static int[] searchByPrimaryContactLastName(String lastName, int energyCompanyID) {
-    public static int[] searchByPrimaryContactLastName(String lastName, int[] ecIDs) {
-        if (lastName == null || lastName.length() == 0 || ecIDs == null || ecIDs.length <= 0) return null;
-        int[] returnAcctIDs = null;
-        
-        String sql = "SELECT DISTINCT acct.AccountID " + 
-                    " FROM ECToAccountMapping map, " + TABLE_NAME + " acct, " + Customer.TABLE_NAME + " cust,  " + Contact.TABLE_NAME + " cont " +
-                    " WHERE map.AccountID = acct.AccountID " +
-                    " AND acct.CustomerID = cust.CustomerID " +
-                    " AND CUST.PRIMARYCONTACTID = CONT.CONTACTID " +
-                    " AND UPPER(CONT.CONTLASTNAME) LIKE ?" +
-                    " AND (map.EnergyCompanyID = ? " ;
-                    for (int i = 1; i < ecIDs.length; i++)
-                        sql += " OR map.EnergyCompanyID = ? ";
-                    sql += ")";
-                    
-        
-        PreparedStatement pstmt = null;
-        Connection conn = null;
-        ResultSet rset = null;
-        
-        try {
-            conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-            
-            pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, lastName.toUpperCase()+"%");
-            for (int i = 0; i < ecIDs.length; i++)
-                pstmt.setInt(i+2, ecIDs[i]);
 
-            rset = pstmt.executeQuery();        
-            
-            ArrayList<Integer> accountIDs = new ArrayList<Integer>();
-            while(rset.next())
-                accountIDs.add(rset.getInt(1));
-            
-            returnAcctIDs = new int[accountIDs.size()];
-            for(int i = 0; i < accountIDs.size(); i++)
-                returnAcctIDs[i] = accountIDs.get(i).intValue();
         }
         catch (Exception e) {
             CTILogger.error( e.getMessage(), e );
         }
-        finally
-        {
-            try
-            {
-                if( pstmt != null ) pstmt.close();
-                if( conn != null ) conn.close();
-            } 
-            catch( java.sql.SQLException e2 )
-            {
-                e2.printStackTrace();
-            }
-        }
-        return returnAcctIDs;
-    }
-    
-    public static int[] searchByPrimaryContactPhoneNumber(String phoneNumber, int energyCompanyID) {
-        if (phoneNumber == null || phoneNumber.length() == 0) return null;
-        int[] returnAcctIDs = null;
         
-        String sql = "SELECT DISTINCT acct.AccountID " + 
-                    " FROM ECToAccountMapping map, " + TABLE_NAME + " acct, " + Customer.TABLE_NAME + " cust,  " + Contact.TABLE_NAME + " cont " +
-                    " WHERE map.EnergyCompanyID = ?" + 
-                    " AND map.AccountID = acct.AccountID " +
-                    " AND acct.CustomerID = cust.CustomerID " +
-                    " AND CUST.PRIMARYCONTACTID = CONT.CONTACTID " +
-                    " AND NOTIFICATION LIKE ?";
-        
-        PreparedStatement pstmt = null;
-        Connection conn = null;
-        ResultSet rset = null;
-        
-        try {
-            conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-            
-            pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1, energyCompanyID);
-            pstmt.setString(2, "%"+phoneNumber);
-
-            rset = pstmt.executeQuery();
-            
-            ArrayList<Integer> accountIDs = new ArrayList<Integer>();
-            while(rset.next())
-                accountIDs.add(rset.getInt(1));
-            
-            returnAcctIDs = new int[accountIDs.size()];
-            for(int i = 0; i < accountIDs.size(); i++)
-                returnAcctIDs[i] = accountIDs.get(i).intValue();
-        }
-        catch (Exception e) {
-            CTILogger.error( e.getMessage(), e );
-        }
-        finally
-        {
-            try
-            {
-                if( pstmt != null ) pstmt.close();
-                if( conn != null ) conn.close();
-            } 
-            catch( java.sql.SQLException e2 )
-            {
-                e2.printStackTrace();
-            }
-        }
-        return returnAcctIDs;
+        CTILogger.debug((new Date().getTime() - timerStart.getTime())*.001 + " Secs for searchByPrimaryContactIDs (" + accountIDs.length  + " AccountIDS loaded)" );
+        return accountIDs;
     }
     
     public static int[] searchBySerialNumber(String serialNo, int energyCompanyID) {
-            LMHardwareBase[] hardwares = LMHardwareBase.searchBySerialNumber( serialNo, energyCompanyID );
-            if (hardwares.length == 0) return new int[0];
+			LMHardwareBase[] hardwares = LMHardwareBase.searchBySerialNumber( serialNo, energyCompanyID );
+			if (hardwares.length == 0) return new int[0];
 
             int[] returnAcctIDs = null;
             String sql = "SELECT DISTINCT acct.AccountID " +
@@ -320,28 +215,28 @@ public class CustomerAccount extends DBPersistent {
      */
     public static ArrayList<CustomerAccount> searchBySerialNumber(String serialNo) {
 
-        ArrayList<CustomerAccount> customerAccts = new ArrayList<CustomerAccount>();
-        
-        String sql = "SELECT DISTINCT ACCT.ACCOUNTID, ACCT.ACCOUNTSITEID, ACCT.ACCOUNTNUMBER, ACCT.CUSTOMERID, ACCT.BILLINGADDRESSID, ACCOUNTNOTES " + 
-                    " FROM " + TABLE_NAME + " ACCT, " + InventoryBase.TABLE_NAME + " INV, " + LMHardwareBase.TABLE_NAME + " LMHB " +
-                    " WHERE ACCT.ACCOUNTID = INV.ACCOUNTID " +
-                    " AND INV.INVENTORYID = LMHB.INVENTORYID " + 
-                    " AND UPPER(LMHB.MANUFACTURERSERIALNUMBER) = UPPER(?) " + 
-                    " AND LMHB.INVENTORYID >= 0 ";
+    	ArrayList<CustomerAccount> customerAccts = new ArrayList<CustomerAccount>();
+    	
+    	String sql = "SELECT DISTINCT ACCT.ACCOUNTID, ACCT.ACCOUNTSITEID, ACCT.ACCOUNTNUMBER, ACCT.CUSTOMERID, ACCT.BILLINGADDRESSID, ACCOUNTNOTES " + 
+    				" FROM " + TABLE_NAME + " ACCT, " + InventoryBase.TABLE_NAME + " INV, " + LMHardwareBase.TABLE_NAME + " LMHB " +
+					" WHERE ACCT.ACCOUNTID = INV.ACCOUNTID " +
+					" AND INV.INVENTORYID = LMHB.INVENTORYID " + 
+					" AND UPPER(LMHB.MANUFACTURERSERIALNUMBER) = UPPER(?) " + 
+					" AND LMHB.INVENTORYID >= 0 ";
 
-        java.sql.Connection conn = null;
-        java.sql.PreparedStatement stmt = null;
-        java.sql.ResultSet rset = null;
+		java.sql.Connection conn = null;
+    	java.sql.PreparedStatement stmt = null;
+    	java.sql.ResultSet rset = null;
 
-        try {
-            conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-            
-            stmt = conn.prepareStatement(sql);
-            stmt.setString(1, serialNo);
-            
-            rset = stmt.executeQuery();
-            
-            while (rset.next()) {
+	    try {
+    		conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
+    		
+    		stmt = conn.prepareStatement(sql);
+			stmt.setString(1, serialNo);
+			
+			rset = stmt.executeQuery();
+			
+			while (rset.next()) {
                 CustomerAccount account = new CustomerAccount();
                 account.setAccountID( new Integer(rset.getInt(1)) );
                 account.setAccountSiteID( new Integer(rset.getInt(2)) );
@@ -350,20 +245,20 @@ public class CustomerAccount extends DBPersistent {
                 account.setBillingAddressID( new Integer(rset.getInt(5)) );
                 account.setAccountNotes( rset.getString(6));
                 customerAccts.add(account);
-            }
-        }
-        catch (java.sql.SQLException e) {
-            CTILogger.error( e.getMessage(), e );
-        }
-        finally {
-            try {
-                if (rset != null) rset.close();
-                if (stmt != null) stmt.close();
-                if (conn != null) conn.close();
-            }
-            catch (java.sql.SQLException e) {}
-        }
-        return customerAccts;
+			}
+    	}
+    	catch (java.sql.SQLException e) {
+    		CTILogger.error( e.getMessage(), e );
+    	}
+    	finally {
+    		try {
+				if (rset != null) rset.close();
+				if (stmt != null) stmt.close();
+				if (conn != null) conn.close();
+    		}
+    		catch (java.sql.SQLException e) {}
+    	}
+    	return customerAccts;
     }
     
     public static int[] searchByCompanyName(String searchName, int energyCompanyID) 
@@ -416,92 +311,92 @@ public class CustomerAccount extends DBPersistent {
     }
     
     public static int[] searchByAddress(String address, int energyCompanyID) {
-        String sql = "SELECT DISTINCT acct.AccountID " +
-                "FROM CustomerAccount acct, ECToAccountMapping map, AccountSite site, Address addr " +
-                "WHERE map.EnergyCompanyID = ? AND map.AccountID = acct.AccountID " +
-                "AND acct.AccountSiteID = site.AccountSiteID AND site.StreetAddressID = addr.AddressID " +
-                "AND UPPER(addr.LocationAddress1) LIKE UPPER(?)";
-        
-        java.sql.Connection conn = null;
-        java.sql.PreparedStatement stmt = null;
-        java.sql.ResultSet rset = null;
-        
-        try {
-            conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-            
-            stmt = conn.prepareStatement(sql);
-            stmt.setInt( 1, energyCompanyID );
-            stmt.setString( 2, address );
-            rset = stmt.executeQuery();
-            
-            ArrayList<Integer> acctIDList = new ArrayList<Integer>();
-            while (rset.next())
-                acctIDList.add( new Integer(rset.getInt(1)) );
-            
-            int[] accountIDs = new int[ acctIDList.size() ];
-            for (int i = 0; i < accountIDs.length; i++)
-                accountIDs[i] = acctIDList.get(i).intValue();
-            
-            return accountIDs;
-        }
-        catch( java.sql.SQLException e ) {
-            CTILogger.error( e.getMessage(), e );
-        }
-        finally {
-            try {
-                if (rset != null) rset.close();
-                if (stmt != null) stmt.close();
-                if (conn != null) conn.close();
-            }
-            catch (java.sql.SQLException e) {}
-        }
-        
-        return null;
+    	String sql = "SELECT DISTINCT acct.AccountID " +
+    			"FROM CustomerAccount acct, ECToAccountMapping map, AccountSite site, Address addr " +
+    			"WHERE map.EnergyCompanyID = ? AND map.AccountID = acct.AccountID " +
+    			"AND acct.AccountSiteID = site.AccountSiteID AND site.StreetAddressID = addr.AddressID " +
+    			"AND UPPER(addr.LocationAddress1) LIKE UPPER(?)";
+		
+		java.sql.Connection conn = null;
+		java.sql.PreparedStatement stmt = null;
+		java.sql.ResultSet rset = null;
+		
+		try {
+			conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
+	        
+			stmt = conn.prepareStatement(sql);
+			stmt.setInt( 1, energyCompanyID );
+			stmt.setString( 2, address );
+			rset = stmt.executeQuery();
+	        
+			ArrayList<Integer> acctIDList = new ArrayList<Integer>();
+			while (rset.next())
+				acctIDList.add( new Integer(rset.getInt(1)) );
+	        
+			int[] accountIDs = new int[ acctIDList.size() ];
+			for (int i = 0; i < accountIDs.length; i++)
+				accountIDs[i] = acctIDList.get(i).intValue();
+			
+			return accountIDs;
+		}
+		catch( java.sql.SQLException e ) {
+			CTILogger.error( e.getMessage(), e );
+		}
+		finally {
+			try {
+				if (rset != null) rset.close();
+				if (stmt != null) stmt.close();
+				if (conn != null) conn.close();
+			}
+			catch (java.sql.SQLException e) {}
+		}
+		
+		return null;
     }
-    
-    public static int[] searchByMapNumber(String mapNo, int energyCompanyID) {
-        String sql = "SELECT acct.AccountID FROM " +
-                "AccountSite site, CustomerAccount acct, ECToAccountMapping map " +
-                "WHERE UPPER(site.SiteNumber) LIKE UPPER(?) " +
-                "AND site.AccountSiteID = acct.AccountSiteID " +
-                "AND acct.AccountID = map.AccountID and map.EnergyCompanyID = ?";
-        
-        java.sql.Connection conn = null;
-        java.sql.PreparedStatement stmt = null;
-        java.sql.ResultSet rset = null;
-        
-        try {
-            conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-            
-            stmt = conn.prepareStatement( sql );
-            stmt.setString( 1, mapNo );
-            stmt.setInt( 2, energyCompanyID );
-            rset = stmt.executeQuery();
-            
-            ArrayList<Integer> acctIDList = new ArrayList<Integer>();
-            while (rset.next())
-                acctIDList.add( new Integer(rset.getInt(1)) );
-            
-            int[] accountIDs = new int[ acctIDList.size() ];
-            for (int i = 0; i < accountIDs.length; i++)
-                accountIDs[i] = acctIDList.get(i).intValue();
-            
-            return accountIDs;
-        }
-        catch (java.sql.SQLException e) {
-            CTILogger.error( e.getMessage(), e );
-        }
-        finally {
-            try {
-                if (rset != null) rset.close();
-                if (stmt != null) stmt.close();
-                if (conn != null) conn.close();
-            }
-            catch (java.sql.SQLException e) {}
-        }
-        
-        return null;
-    }
+	
+	public static int[] searchByMapNumber(String mapNo, int energyCompanyID) {
+		String sql = "SELECT acct.AccountID FROM " +
+				"AccountSite site, CustomerAccount acct, ECToAccountMapping map " +
+				"WHERE UPPER(site.SiteNumber) LIKE UPPER(?) " +
+				"AND site.AccountSiteID = acct.AccountSiteID " +
+				"AND acct.AccountID = map.AccountID and map.EnergyCompanyID = ?";
+    	
+		java.sql.Connection conn = null;
+		java.sql.PreparedStatement stmt = null;
+		java.sql.ResultSet rset = null;
+		
+		try {
+			conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
+    		
+			stmt = conn.prepareStatement( sql );
+			stmt.setString( 1, mapNo );
+			stmt.setInt( 2, energyCompanyID );
+			rset = stmt.executeQuery();
+			
+			ArrayList<Integer> acctIDList = new ArrayList<Integer>();
+			while (rset.next())
+				acctIDList.add( new Integer(rset.getInt(1)) );
+	        
+			int[] accountIDs = new int[ acctIDList.size() ];
+			for (int i = 0; i < accountIDs.length; i++)
+				accountIDs[i] = acctIDList.get(i).intValue();
+			
+			return accountIDs;
+		}
+		catch (java.sql.SQLException e) {
+			CTILogger.error( e.getMessage(), e );
+		}
+		finally {
+			try {
+				if (rset != null) rset.close();
+				if (stmt != null) stmt.close();
+				if (conn != null) conn.close();
+			}
+			catch (java.sql.SQLException e) {}
+		}
+    	
+		return null;
+	}
 
     public static CustomerAccount getCustomerAccount(Integer accountID) {
         CustomerAccount account = null;
@@ -557,9 +452,9 @@ public class CustomerAccount extends DBPersistent {
     }
 
     public void add() throws java.sql.SQLException {
-        if (getAccountID() == null)
-            setAccountID( getNextAccountID() );
-            
+    	if (getAccountID() == null)
+    		setAccountID( getNextAccountID() );
+    		
         Object[] addValues = {
             getAccountID(), getAccountSiteID(), getAccountNumber(),
             getCustomerID(), getBillingAddressID(), getAccountNotes()
