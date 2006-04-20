@@ -37,12 +37,19 @@ public class UpdateUtil {
 		if( (displayAttrib & PointAttributes.VALUE) != 0 ) {			
 			PointData pData = pcc.getValue(pointID);
 			LitePointUnit lpu = PointFuncs.getPointUnit(pointID);
-			
-			if (pData != null && lpu != null ) {				
+
+			if (pData != null) {
 				DecimalFormat f = new DecimalFormat();
-				f.setMaximumFractionDigits(lpu.getDecimalPlaces());
-				f.setMinimumFractionDigits(lpu.getDecimalPlaces());
-				text = f.format(pData.getValue());				
+				if (lpu != null) {
+					f.setMaximumFractionDigits(lpu.getDecimalPlaces());
+					f.setMinimumFractionDigits(lpu.getDecimalPlaces());
+				} else {
+					// No point units, could be a status
+					f.setMaximumFractionDigits(0);
+					f.setMinimumFractionDigits(0);
+				}
+
+				text = f.format(pData.getValue());
 				prev = true;
 			}
 		}

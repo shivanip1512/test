@@ -218,18 +218,20 @@ function updateNode(node) {
 
 /* update a single state image */
 function updateImage(node) {
-	var imageID = node.getAttribute('id');
-    if( !isNaN(imageID) ) {        
-        url = '/servlet/StateImageServlet' + '?' + 'id=' + node.getAttribute('id');
-        getURL(url, fn);
-    }
-    
+	var pointId = node.getAttribute('id');
+	if( !isNaN(pointId) ) {
+		// dattrib = 1 is value attribute, TODO: don't hardcode this?
+		url = '/servlet/DynamicTextServlet' + '?' + 'id=' + pointId + '&dattrib=1';
+		getURL(url, fn);		
+	}
+	
 	function fn(obj) {
-		//confirm(obj.content);
-	    if (obj.content) {  
-	    	node.setAttributeNS(xlinkNS, 'xlink\:href', obj.content);
+		if(obj.content) {
+			var value = obj.content;
+			var imageName = node.getAttribute('image'+trim(value));			
+			node.setAttributeNS(xlinkNS, 'xlink:\href', imageName);
 		}
-	} //end fn
+	}
 } //end updateImage
 
 /* update a single alarm text element */
@@ -252,3 +254,10 @@ function updateAlarmText(node) {
 		}
 	}
 }
+
+/**
+ * Remove white space from a string.
+ */
+function trim (s) {
+	return s.replace(/^\s+|\s+$/g, '');
+} 

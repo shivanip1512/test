@@ -128,7 +128,7 @@ public void setPointID(int pointID) {
 		LiteState state = getCurrentState();
 		if(state != null) {
 			int imageId = state.getImageID();
-			Integer customImageId = (Integer) customImageMap.get(new Integer(pointID));
+			Integer customImageId = (Integer) customImageMap.get(new Integer(state.getStateRawState()));
 			if(customImageId != null) {
 				imageId = customImageId.intValue();
 			}
