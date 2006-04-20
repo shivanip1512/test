@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_tap.cpp-arc  $
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2006/03/23 15:29:18 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2006/04/20 17:10:51 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -229,7 +229,8 @@ INT CtiDeviceTapPagingTerminal::decodeResponseHandshake(CtiXfer &xfer,INT commRe
             /* Check if this is ID= */
             if(xfer.getInCountActual() >= 2)
             {
-                if((strstr((char*)xfer.getInBuffer(), "ID") != NULL) || (strstr((char*)xfer.getInBuffer(), "\r\n") != NULL))
+                if((strstr((char*)xfer.getInBuffer(), "ID") != NULL) ||
+                   (gConfigParms.isTrue("TAPTERM_ACCEPT_CRLF_AS_ID") && (strstr((char*)xfer.getInBuffer(), "\r\n") != NULL)))
                 {
 
                     if(commReturnValue == READTIMEOUT)
@@ -296,7 +297,7 @@ INT CtiDeviceTapPagingTerminal::decodeResponseHandshake(CtiXfer &xfer,INT commRe
         }
     case StateHandshakeDecodeIdentify:
         {
-            if( xfer.getInBuffer()[0] == CHAR_ACK )
+            if( xfer.getInCountActual() >= 1 && xfer.getInBuffer()[0] == CHAR_ACK )
             {
                 setCurrentState(StateGenerate_1);
                 if(xfer.doTrace(commReturnValue))
@@ -304,7 +305,7 @@ INT CtiDeviceTapPagingTerminal::decodeResponseHandshake(CtiXfer &xfer,INT commRe
                     traceIn((char*)xfer.getInBuffer(), xfer.getInCountActual(), traceList, FALSE);
                 }
             }
-            else if( xfer.getInBuffer()[0] == CHAR_NAK )
+            else if( xfer.getInCountActual() >= 1 && xfer.getInBuffer()[0] == CHAR_NAK )
             {
                 status = ERRUNKNOWN;
                 setCurrentState(StateHandshakeAbort);
@@ -313,7 +314,7 @@ INT CtiDeviceTapPagingTerminal::decodeResponseHandshake(CtiXfer &xfer,INT commRe
                     traceIn((char*)xfer.getInBuffer(), xfer.getInCountActual(), traceList, TRUE);
                 }
             }
-            else if( xfer.getInBuffer()[0] == CHAR_ESC )
+            else if( xfer.getInCountActual() >= 1 && xfer.getInBuffer()[0] == CHAR_ESC )
             {
                 setCurrentState(StateHandshakeSendIdentify_2);
                 if(xfer.doTrace(commReturnValue))
@@ -321,22 +322,12 @@ INT CtiDeviceTapPagingTerminal::decodeResponseHandshake(CtiXfer &xfer,INT commRe
                     traceIn((char*)xfer.getInBuffer(), xfer.getInCountActual(), traceList, FALSE);
                 }
             }
-            else // We will retry the operation
+            else // We will look for more chars.
             {
                 setCurrentState( StateAbsorb );
                 if(xfer.doTrace(commReturnValue))
                 {
                     traceIn((char*)xfer.getInBuffer(), xfer.getInCountActual(), traceList, FALSE);
-                }
-
-                if(commReturnValue == NORMAL)
-                {
-                    // It is unknown how big the message may be coming from the TAP...
-                    // If we get anything, we will continue to read data.
-                    if(getAttemptsRemaining() < 3)
-                    {
-                        setAttemptsRemaining( getAttemptsRemaining() + 1 );
-                    }
                 }
             }
 
@@ -1561,7 +1552,7 @@ ULONG CtiDeviceTapPagingTerminal::getUniqueIdentifier() const
      *  This is an undocumented cparm.  It is in here only due to a lack of clarity on the effects of making the change in the else
      *  clause.  Can you say emergency backup?
      */
-    if( !stringCompareIgnoreCase(gConfigParms.getValueAsString("TCPARM_USE_OLD_TAP_GUID"),"true") )
+    if( gConfigParms.isTrue("TCPARM_USE_OLD_TAP_GUID") )
     {
         string num;
 
