@@ -6,26 +6,25 @@
  */
 package com.cannontech.stars.util.task;
 
-import java.util.Date;
-import java.util.ArrayList;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.Pair;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.activity.ActivityLogActions;
+import com.cannontech.database.data.lite.stars.*;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.stars.util.*;
-import com.cannontech.stars.util.InventoryUtils;
-import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
-import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
+import com.cannontech.stars.web.bean.InventoryBean;
 import com.cannontech.stars.web.util.InventoryManagerUtil;
 
 /**
@@ -93,19 +92,50 @@ public class AddSNRangeTask extends TimeConsumingTask {
 		
 		Integer categoryID = new Integer( InventoryUtils.getInventoryCategoryID(devTypeID.intValue(), energyCompany) );
 		
+        /*
+         * Let's cheat a little and use the inventoryBean filtering to look for serial range.
+         */
+        InventoryBean iBean = (InventoryBean) session.getAttribute("inventoryBean");
+        if(iBean == null)
+        {
+            session.setAttribute("inventoryBean", new InventoryBean());
+            iBean = (InventoryBean) session.getAttribute("inventoryBean");
+        }
+        
+        ArrayList tempList = new ArrayList();
+        String serialStart = Integer.toString(snFrom);
+        String serialEnd = Integer.toString(snTo);
+        String devType = Integer.toString(devTypeID);
+        tempList.add(new FilterWrapper(String.valueOf(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_DEV_TYPE), devType, devType));
+        tempList.add(new FilterWrapper(String.valueOf(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SERIAL_RANGE_MAX), serialEnd, serialEnd));
+        tempList.add(new FilterWrapper(String.valueOf(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SERIAL_RANGE_MIN), serialStart, serialStart));
+        iBean.setFilterByList(tempList);
+        
+        iBean.setShipmentCheck(true);
+        ArrayList found = iBean.getLimitedHardwareList();
+        LiteInventoryBase liteInv = null;
+        HashMap foundMap = new HashMap(found.size());
+        for(int j = 0; j < found.size(); j++)
+        {
+            if (found.get(j) instanceof Pair)
+                liteInv = (LiteInventoryBase)((Pair)iBean.getInventoryList().get(j)).getFirst();
+            else if( iBean.getInventoryList().get(j) instanceof LiteInventoryBase)
+                liteInv = (LiteInventoryBase)iBean.getInventoryList().get(j);
+            
+            /*
+             * if this needs to do meters, will have to add a clause
+             */
+            if(liteInv != null && liteInv instanceof LiteStarsLMHardware)
+                foundMap.put(((LiteStarsLMHardware)liteInv).getManufacturerSerialNumber(), ((LiteStarsLMHardware)liteInv));
+        }
+        
 		for (int sn = snFrom; sn <= snTo; sn++) {
 			String serialNo = String.valueOf(sn);
 			
-			try {
-				LiteStarsLMHardware existingHw = energyCompany.searchForLMHardware( devTypeID.intValue(), serialNo );
-				if (existingHw != null) {
-					hardwareSet.add( existingHw );
-					numFailure++;
-					continue;
-				}
-			}
-			catch (ObjectInOtherEnergyCompanyException e) {
-				hardwareSet.add( new Pair(e.getObject(), e.getEnergyCompany()) );
+			LiteStarsLMHardware existingHw = (LiteStarsLMHardware)foundMap.get(serialNo);
+			if (existingHw != null) 
+            {
+				hardwareSet.add( existingHw );
 				numFailure++;
 				continue;
 			}
@@ -134,7 +164,7 @@ public class AddSNRangeTask extends TimeConsumingTask {
 				StarsLiteFactory.setLiteStarsLMHardware( liteHw, hardware );
 				energyCompany.addInventory( liteHw );
 				
-                EventUtils.logSTARSEvent(user.getUserID(), EventUtils.EVENT_CATEGORY_INVENTORY, devTypeID, liteHw.getInventoryID());
+                EventUtils.logSTARSEvent(user.getUserID(), EventUtils.EVENT_CATEGORY_INVENTORY, devStateID, liteHw.getInventoryID());
                 numSuccess++;
 			}
 			catch (com.cannontech.database.TransactionException e) {
