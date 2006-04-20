@@ -148,14 +148,14 @@ function changeMember(form) {
                             </select>
                           </td>
                         </tr>
-                        <tr> 
+                        <!-- <tr> 
                           <td width="25%"> 
                             <div align="right">Receive Date:</div>
                           </td>
                           <td width="75%"> 
                             <input type="text" name="ReceiveDate" size="24" value="<%= StarsUtils.forceNotNull(savedReq.getProperty("ReceiveDate")) %>">
                             <span class="DefaultText">(MM/DD/YYYY)</span> </td>
-                        </tr>
+                        </tr>--> 
                         <tr> 
                           <td width="25%"> 
                             <div align="right">Voltage:</div>
