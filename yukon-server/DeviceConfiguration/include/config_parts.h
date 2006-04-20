@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/config_type_mct_addressing.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2006/03/30 16:04:39 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2006/04/20 17:06:35 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -26,7 +26,7 @@ namespace Config {
 namespace MCT {
 enum MCTAddressing
 {
-    MCTAddressingInvalid,
+    MCTAddressingInvalid = 0,
     Bronze,
     Lead,
     ServiceProviderID,
@@ -35,7 +35,7 @@ enum MCTAddressing
 
 enum MCT_TOU
 {
-    MCT_TOUInvalid,
+    MCT_TOUInvalid = 0,
     DayTable,
     DaySchedule1,
     DaySchedule2,
@@ -46,7 +46,7 @@ enum MCT_TOU
 
 enum MCT_DST
 {
-    MCT_DSTInvalid,
+    MCT_DSTInvalid = 0,
     DstBegin,
     DstEnd,
     TimeZoneOffset
@@ -54,7 +54,7 @@ enum MCT_DST
 
 enum MCTOptions
 {
-    MCTOptionsInvalid,
+    MCTOptionsInvalid = 0,
     AlarmMaskMeter,
     AlarmMaskEvent1,
     AlarmMaskEvent2,
@@ -66,7 +66,7 @@ enum MCTOptions
 
 enum MCTDemandLoadProfile
 {
-    MCTDemandLoadProfileInvalid,
+    MCTDemandLoadProfileInvalid = 0,
     DemandInterval,
     LoadProfileInterval,
     VoltageLPInterval,
@@ -76,21 +76,21 @@ enum MCTDemandLoadProfile
 
 enum MCTVThreshold
 {
-    MCTVThresholdInvalid,
+    MCTVThresholdInvalid = 0,
     UnderVoltageThreshold,
     OverVoltageThreshold
 };
 
 enum MCTDisconnect
 {
-    MCTDisconnectInvalid,
+    MCTDisconnectInvalid = 0,
     DemandThreshold,
     ConnectDelay
 };
 
 enum MCTLongLoadProfile
 {
-    MCTLongLoadProfileInvalid,
+    MCTLongLoadProfileInvalid = 0,
     Channel1Length,
     Channel2Length,
     Channel3Length,
@@ -99,7 +99,7 @@ enum MCTLongLoadProfile
 
 enum MCTHoliday
 {
-    MCTHolidayInvalid,
+    MCTHolidayInvalid = 0,
     HolidayDate1,
     HolidayDate2,
     HolidayDate3,
@@ -107,7 +107,7 @@ enum MCTHoliday
 
 enum MCTLoadProfileChannels
 {
-    MCTLoadProfileChannelsInvalid,
+    MCTLoadProfileChannelsInvalid = 0,
     ChannelConfig1,
     ChannelConfig2,
     ChannelConfig3,
@@ -124,14 +124,14 @@ enum MCTLoadProfileChannels
 
 enum MCTRelays
 {
-    MCTRelaysInvalid,
+    MCTRelaysInvalid = 0,
     RelayATimer,
     RelayBTimer,
 };
 
 enum MCTPrecannedTable
 {
-    MCTPrecannedTableInvalid,
+    MCTPrecannedTableInvalid = 0,
     TableReadInterval,
     MeterNumber,
     TableType,
@@ -139,7 +139,7 @@ enum MCTPrecannedTable
 
 enum MCTSystemOptions
 {
-    MCTSystemOptionsInvalid,
+    MCTSystemOptionsInvalid = 0,
     DemandMetersToScan,
 };
 
@@ -148,6 +148,7 @@ enum MCTSystemOptions
 namespace CBC{
 enum CBCVoltage
 {
+    CBCVoltageInvalid = 0,
     ActiveSettings,
     UVClosePoint,
     OVTripPoint,
@@ -157,28 +158,28 @@ enum CBCVoltage
     EmergencyUVPoint,
     EmergencyOVPoint,
     EmergencyVoltageTime,
-    CBCVoltageInvalid,
 };
 
 enum CBCCommsLost
 {
+    CBCCommsLostInvalid = 0,
     CommsLostUVClosePoint,
     CommsLostOVTripPoint,
     CommsLostTime,
     CommsLostAction,
-    CBCCommsLostInvalid,
 };
 
 enum CBCNeutralCurrent
 {
+    CBCNeutralCurrentInvalid = 0,
     FaultCurrentSetPoint,
     StateChangeSetPoint,
     NeutralCurrentRetryCount,
-    CBCNeutralCurrentInvalid,
 };
 
 enum CBCFaultDetection
 {
+    CBCFaultDetectionInvalid = 0,
     FaultDetectionActive,
     AI1AverageTime,
     AI2AverageTime,
@@ -190,11 +191,11 @@ enum CBCFaultDetection
     AI2RatioThreshold,
     AI3RatioThreshold,
     BatteryOnTime,
-    CBCFaultDetectionInvalid,
 };
 
 enum CBCSeason1TimeAndTemp
 {
+    CBCSeason1TimeAndTempInvalid = 0,
     Season1Start,
     WeekdayTimedControlClose1,
     WeekendTimedControlClose1,
@@ -209,11 +210,11 @@ enum CBCSeason1TimeAndTemp
     TempMaxThresholdAction1,
     TempMaxHysterisis1,
     TempMaxThresholdTrigTime1,
-    CBCSeason1TimeAndTempInvalid,
 };
 
 enum CBCSeason2TimeAndTemp
 {
+    CBCSeason2TimeAndTempInvalid = 0,
     Season2Start,
     WeekdayTimedControlClose2,
     WeekendTimedControlClose2,
@@ -228,27 +229,27 @@ enum CBCSeason2TimeAndTemp
     TempMaxThresholdAction2,
     TempMaxHysterisis2,
     TempMaxThresholdTrigTime2,
-    CBCSeason2TimeAndTempInvalid,
 };
 
 enum CBCControlTimes
 {
+    CBCControlTimesInvalid = 0,
     ContactClosureTime,
     ManualControlDelayTrip,
     ManualControlDelayClose,
     RecloseDelayTime,
-    CBCControlTimesInvalid,
 };
 
 enum CBCDataLogging
 {
+    CBCDataLoggingInvalid = 0,
     DataLogFlags,
     LogTimeInterval,
-    CBCDataLoggingInvalid,
 };
 
 enum CBCAddressing
 {
+    MCTAddressingInvalid = 0,
     Geo,
     Substation,
     Feeder,
@@ -257,22 +258,21 @@ enum CBCAddressing
     Program,
     Splinter,
     RequiredAddressLevel,
-    MCTAddressingInvalid,
 };
 
 enum CBC_DNP
 {
+    CBC_DNPInvalid = 0,
     LineVoltageDeadBand,
     DeltaVoltageDeadBand,
     AnalogDeadBand,
-    CBC_DNPInvalid,
 };
 
 enum CBC_UDP
 {
+    CBC_UDPInvalid = 0,
     RetryDelay,
     PollTimeout,
-    CBC_UDPInvalid,
 };
 
 }//namespace CBC
