@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_base.h-arc  $
-* REVISION     :  $Revision: 1.40 $
-* DATE         :  $Date: 2006/02/27 23:58:33 $
+* REVISION     :  $Revision: 1.41 $
+* DATE         :  $Date: 2006/04/20 17:15:30 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -144,7 +144,7 @@ public:
     HCTIQUEUE&  getPortQueueHandle();
     INT writeQueue(ULONG Request, LONG  DataSize, PVOID Data, ULONG Priority, HANDLE hQuit = NULL);
     INT readQueue( PREQUESTDATA RequestData, PULONG  DataSize, PPVOID Data, BOOL32 WaitFlag, PBYTE Priority, ULONG *pElementCount );
-    INT searchQueue( void *ptr, BOOL (*myFunc)(void*, void*) );
+    INT searchQueue( void *ptr, BOOL (*myFunc)(void*, void*), bool useFirstElement = true );
 
     INT queueInit(HANDLE hQuit);                 // Sets up the PortQueue
     INT queueDeInit();               // Blasts the PortQueue

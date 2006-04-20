@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.179 $
-* DATE         :  $Date: 2006/04/17 19:30:10 $
+* REVISION     :  $Revision: 1.180 $
+* DATE         :  $Date: 2006/04/20 17:15:30 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3721,7 +3721,7 @@ bool ShuffleQueue( CtiPortSPtr shPort, OUTMESS *&OutMessage, CtiDeviceSPtr &devi
             INT qEnt = 0;
             {
                 CtiLockGuard< CtiMutex >  find_dev_guard(DeviceManager.getMux());
-                qEnt = SearchQueue( Port->getPortQueueHandle(), NULL, findExclusionFreeOutMessage );
+                qEnt = SearchQueue( Port->getPortQueueHandle(), NULL, findExclusionFreeOutMessage, false );
             }
 
             if(qEnt > 0)
@@ -4104,7 +4104,7 @@ INT GetWork(CtiPortSPtr Port, CtiOutMessage *&OutMessage, ULONG &QueEntries)
     if( Port->getQueueSlot() == 0 )
     {
         CtiLockGuard< CtiMutex >  find_dev_guard(DeviceManager.getMux());
-        Port->setQueueSlot( Port->searchQueue( NULL, findExclusionFreeOutMessage ) );
+        Port->setQueueSlot( Port->searchQueue( NULL, findExclusionFreeOutMessage, false ) );
     }
 
     /*
@@ -4138,7 +4138,6 @@ INT GetWork(CtiPortSPtr Port, CtiOutMessage *&OutMessage, ULONG &QueEntries)
     {
         Port->incQueueSubmittal(1, CtiTime());
     }
-
     return status;
 }
 

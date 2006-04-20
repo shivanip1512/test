@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.64 $
-* DATE         :  $Date: 2006/04/13 19:37:45 $
+* REVISION     :  $Revision: 1.65 $
+* DATE         :  $Date: 2006/04/20 17:15:30 $
 *
 * HISTORY      :
 * $Log: port_base.cpp,v $
+* Revision 1.65  2006/04/20 17:15:30  cplender
+* SearchQueue needs to detect zeroeth item matches.
+*
 * Revision 1.64  2006/04/13 19:37:45  cplender
 * Port Sharing can be forced to 50% shared by using PORTER_FORCE_PORT_SHARE : true.
 * I would avoid this unless your britches are big enough to know you need it.
@@ -1457,9 +1460,9 @@ INT CtiPort::readQueue( PREQUESTDATA RequestData, PULONG DataSize, PPVOID Data, 
     return status;
 }
 
-INT CtiPort::searchQueue( void *ptr, BOOL (*myFunc)(void*, void*) )
+INT CtiPort::searchQueue( void *ptr, BOOL (*myFunc)(void*, void*), bool useFirstElement )
 {
-    return SearchQueue( _portQueue, ptr, myFunc );
+    return SearchQueue( _portQueue, ptr, myFunc, useFirstElement );
 }
 
 

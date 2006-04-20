@@ -605,7 +605,7 @@ IM_EX_CTIBASE INT PurgeQueue (HCTIQUEUE QueueHandle)
 }
 
 
-IM_EX_CTIBASE INT SearchQueue( HCTIQUEUE QueueHandle, void *ptr, BOOL (*myFunc)(void*, void*))
+IM_EX_CTIBASE INT SearchQueue( HCTIQUEUE QueueHandle, void *ptr, BOOL (*myFunc)(void*, void*), bool useFirstElement)
 {
     INT element = 0;  // ie. not found, or first entry was a find.
     PQUEUEENT Entry;
@@ -628,8 +628,9 @@ IM_EX_CTIBASE INT SearchQueue( HCTIQUEUE QueueHandle, void *ptr, BOOL (*myFunc)(
                     {
                         if( (*myFunc)(ptr, Entry->Data) )
                         {
-                            if(Entry != QueueHandle->First)         // If the Top of Queue is a "find", return zero.
+                            if(useFirstElement || Entry != QueueHandle->First)         // If the Top of Queue is a "find", return zero.
                                 element = Entry->Element;
+
                             break;         // We found a match!
                         }
                     }

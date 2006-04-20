@@ -104,7 +104,7 @@ IM_EX_CTIBASE INT ReadQueue (HCTIQUEUE QueueHandle,
 
 IM_EX_CTIBASE INT PurgeQueue (HCTIQUEUE QueueHandle);
 
-IM_EX_CTIBASE INT SearchQueue( HCTIQUEUE QueueHandle, void *ptr, BOOL (*myFunc)(void*, void*));
+IM_EX_CTIBASE INT SearchQueue( HCTIQUEUE QueueHandle, void *ptr, BOOL (*myFunc)(void*, void*), bool useFirstElement = true);
 
 IM_EX_CTIBASE INT SearchQueue (HCTIQUEUE QueueHandle,
                                PVOID CompareData,
