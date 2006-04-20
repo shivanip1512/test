@@ -1447,6 +1447,27 @@ void  CtiCommandParser::doParsePutConfig(const string &_CmdStr)
             _cmd["templateinservice"] = CtiParseValue( sistr );
         }
 
+        if(CmdStr.contains(" install"))
+        {
+            _cmd["install"] = CtiParseValue(TRUE);
+
+            if(!(token = CmdStr.match("install +[a-z0-9]* *[a-z0-9]*")).empty())
+            {
+                CtiTokenizer cmdtok(token);
+                cmdtok();  //  go past "install"
+
+                _cmd["installvalue"] = CtiParseValue(cmdtok());
+
+                token = cmdtok();
+                if(!(token.match("force")).empty())
+                {
+                    _cmd["force"] = CtiParseValue(true);
+                }
+
+
+            }
+        }
+        
         if(CmdStr.contains(" tou"))
         {
             string tou_schedule;
@@ -1761,10 +1782,6 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
 
     if(!token.empty() && token == "putconfig")
     {
-        if(CmdStr.contains(" install"))
-        {
-            _cmd["install"] = CtiParseValue(TRUE);
-        }
         if(CmdStr.contains(" ied"))
         {
             _cmd["ied"] = CtiParseValue(TRUE);
