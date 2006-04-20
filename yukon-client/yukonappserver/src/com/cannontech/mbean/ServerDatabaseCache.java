@@ -3674,10 +3674,11 @@ public synchronized LiteContactNotification getAContactNotifByNotifID(int contNo
 {
     LiteContactNotification specifiedNotify = null;
     //check cache for previous grabs
-    if(allContactsMap == null)
-        allContactsMap = new HashMap();
-    else
-        specifiedNotify = (LiteContactNotification) allContactNotifsMap.get(new Integer(contNotifyID));
+    if(allContactsMap == null) {
+		getAllContacts();
+	} else {
+		specifiedNotify = (LiteContactNotification) allContactNotifsMap.get(new Integer(contNotifyID));
+	}
     
     //not in cache, go to DB.
     if(specifiedNotify == null)
