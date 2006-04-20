@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2006/04/19 15:04:02 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2006/04/20 17:14:53 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -213,10 +213,12 @@ void CtiTableSASimpleGroup::DecodeDatabaseReader( RWDBReader &rdr )
 
         _function = golay_address.second;
 
+        #if 0
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " Golay Opaddr: " << _operationalAddress << " == " << golay_address.first << " Function " << golay_address.second << endl;
         }
+        #endif
     }
 }
 
@@ -258,27 +260,15 @@ string CtiTableSASimpleGroup::getGolayOperationalAddress() const
 
     if( _operationalAddress.length() >= 6 )
     {
-        char *p;
-        char tmp[8];
-        long op = strtoul(_operationalAddress.data(), &p, 10);
-        long opAA, opbb, opBB;
+        std::pair< int, int > golay_address = CtiProtocolSA3rdParty::parseGolayAddress(_operationalAddress.data());
+        opAddr = CtiNumStr( golay_address.first );                   // This is the opAddr BASE string
 
-        memset(tmp, 0, sizeof(tmp));
-
-        tmp[0] = _operationalAddress[(size_t)0];
-        tmp[1] = _operationalAddress[(size_t)1];
-        opBB = strtoul(tmp, &p, 10);
-
-        tmp[0] = _operationalAddress[(size_t)2];
-        tmp[1] = _operationalAddress[(size_t)3];
-        opAA = strtoul(tmp, &p, 10);
-
-        tmp[0] = _operationalAddress[(size_t)4];
-        tmp[1] = _operationalAddress[(size_t)5];
-        opbb = strtoul(tmp, &p, 10);
-
-        op = (opBB * 10000) + (opAA * 100) + opbb;  // This is the base address.
-        opAddr = CtiNumStr( op );                   // This is the opAddr BASE string
+        #if 0
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Golay Opaddr: " << _operationalAddress << " == " << golay_address.first << " Function " << golay_address.second << endl;
+        }
+        #endif
     }
 
     return opAddr;
