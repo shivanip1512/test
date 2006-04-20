@@ -28,8 +28,7 @@ public class SwitchTypePanel extends com.cannontech.common.gui.util.DataInputPan
             "LCR 4500       (EXPRESSCOM)",
             "LCR 4500       (Golay)",
             "LCR 4000       (VERSACOM)",
-			"LCR 4000       (VERSACOM)",
-            "LCR 3100       (EXPRESSCOM)",
+			"LCR 3100       (EXPRESSCOM)",
             "LCR 3100       (VERSACOM)",
 //            "LCR 3100       (EMETCON)",
 			"LCR 3000       (VERSACOM)",
@@ -42,6 +41,31 @@ public class SwitchTypePanel extends com.cannontech.common.gui.util.DataInputPan
 			"Point Group",
 			"MCT Group"
 	};
+    
+    // These are the values that correspond to each selection
+    // switchList
+    private static final int[] VALUE_LIST = 
+    {
+            com.cannontech.database.data.pao.PAOGroups.LM_GROUP_EXPRESSCOMM,
+            com.cannontech.database.data.pao.PAOGroups.LM_GROUP_VERSACOM,
+            com.cannontech.database.data.pao.PAOGroups.LM_GROUP_EXPRESSCOMM,
+            com.cannontech.database.data.pao.PAOGroups.LM_GROUP_GOLAY,
+            com.cannontech.database.data.pao.PAOGroups.LM_GROUP_EXPRESSCOMM,
+            com.cannontech.database.data.pao.PAOGroups.LM_GROUP_GOLAY,
+            com.cannontech.database.data.pao.PAOGroups.LM_GROUP_VERSACOM,
+            com.cannontech.database.data.pao.PAOGroups.LM_GROUP_EXPRESSCOMM,
+            com.cannontech.database.data.pao.PAOGroups.LM_GROUP_VERSACOM,
+//            com.cannontech.database.data.pao.PAOGroups.LM_GROUP_EMETCON,
+            com.cannontech.database.data.pao.PAOGroups.LM_GROUP_VERSACOM,
+            com.cannontech.database.data.pao.PAOGroups.LM_GROUP_EMETCON,
+            com.cannontech.database.data.pao.PAOGroups.LM_GROUP_VERSACOM,
+            com.cannontech.database.data.pao.PAOGroups.LM_GROUP_RIPPLE,
+            com.cannontech.database.data.pao.PAOGroups.LM_GROUP_EMETCON,
+            com.cannontech.database.data.pao.PAOGroups.LM_GROUP_GOLAY,
+            com.cannontech.database.data.pao.PAOGroups.LM_GROUP_EXPRESSCOMM,
+            com.cannontech.database.data.pao.PAOGroups.LM_GROUP_POINT,
+            com.cannontech.database.data.pao.PAOGroups.LM_GROUP_MCT,
+    };  
 	
 	//normally we cannot show SA protocol groups, since legal permission
 	//has only been granted for a few specific companies
@@ -65,47 +89,38 @@ public class SwitchTypePanel extends com.cannontech.common.gui.util.DataInputPan
 			"DCU-S3000      (SA-305)",
 			"DCU-S2000      (SA-205)",
 			"DCU-S1170      (SA Digital)",
-			"DCU-S1180      (Golay)",	
+			"DCU-S1180      (Golay)",
             "T-STAT         (EXPRESSCOM)",
 			"Point Group",
 			"MCT Group"
 	};
 	
-	// These are the values that correspond to each selection
-	// switchList
-	private static final int[] VALUE_LIST = 
-	{
-			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_EXPRESSCOMM,
-			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_EXPRESSCOMM,
-			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_VERSACOM,
-			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_VERSACOM,			
-			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_VERSACOM,
-			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_EMETCON,
-			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_VERSACOM,
-			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_RIPPLE,
-			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_EMETCON,
-			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_GOLAY,
-			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_POINT,
-			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_MCT,
-	};	
+
 	
 	//normally we cannot show SA protocol groups, since legal permission
 	//has only been granted for a few specific companies
 	private static final int[] VALUE_LIST_SA = 
 	{
 			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_EXPRESSCOMM,
+            com.cannontech.database.data.pao.PAOGroups.LM_GROUP_VERSACOM,
 			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_EXPRESSCOMM,
+            com.cannontech.database.data.pao.PAOGroups.LM_GROUP_GOLAY,
+            com.cannontech.database.data.pao.PAOGroups.LM_GROUP_EXPRESSCOMM,
+            com.cannontech.database.data.pao.PAOGroups.LM_GROUP_GOLAY,
 			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_VERSACOM,
-			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_VERSACOM,			
-			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_VERSACOM,
-			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_EMETCON,
-			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_VERSACOM,
-			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_RIPPLE,
+            com.cannontech.database.data.pao.PAOGroups.LM_GROUP_EXPRESSCOMM,
+            com.cannontech.database.data.pao.PAOGroups.LM_GROUP_VERSACOM,
+            com.cannontech.database.data.pao.PAOGroups.LM_GROUP_EMETCON,
+            com.cannontech.database.data.pao.PAOGroups.LM_GROUP_VERSACOM,
+            com.cannontech.database.data.pao.PAOGroups.LM_GROUP_EMETCON,
+            com.cannontech.database.data.pao.PAOGroups.LM_GROUP_VERSACOM,
+            com.cannontech.database.data.pao.PAOGroups.LM_GROUP_RIPPLE,
 			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_EMETCON,
 			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_SA305,
 			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_SA205,
 			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_SADIGITAL,
 			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_GOLAY,
+            com.cannontech.database.data.pao.PAOGroups.LM_GROUP_EXPRESSCOMM,
 			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_POINT,
 			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_MCT,
 	};
@@ -113,7 +128,6 @@ public class SwitchTypePanel extends com.cannontech.common.gui.util.DataInputPan
 /**
  * Constructor
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 public SwitchTypePanel() {
 	super();
 	initialize();
@@ -123,17 +137,10 @@ public SwitchTypePanel() {
 /**
  * connEtoM1:  (SwitchTypePanel.initialize() --> SwitchList.setListData([Ljava.lang.Object;)V)
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private void connEtoM1() {
 	try {
-		// user code begin {1}
-		// user code end
 		getSwitchList().setListData(this.connEtoM1_ListData());
-		// user code begin {2}
-		// user code end
 	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
 		handleException(ivjExc);
 	}
 }
