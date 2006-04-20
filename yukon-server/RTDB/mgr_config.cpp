@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/mgr_config.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2006/03/30 16:04:38 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2006/04/20 17:06:18 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -152,13 +152,16 @@ void CtiConfigManager::refreshConfigurations()
                 deviceMapItr->second->insertConfig(typeMapItr->second);
             }
 
-            if(_deviceConfig.find(configID)->second->getConfigFromType(typeMapItr->second->getType())  == typeMapItr->second)
+            if(!((deviceMapItr = _deviceConfig.find(configID))==_deviceConfig.end()) && typeMapItr != _typeConfig.end())//This is debugging code and could be removed.
             {
-            }
-            else
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " PartID "<< partID<<" was NOT correctly added to ConfigID "<<configID<< endl;
+                if(deviceMapItr->second->getConfigFromType(typeMapItr->second->getType()) == typeMapItr->second)
+                {
+                }
+                else
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " PartID "<< partID<<" was NOT correctly added to ConfigID "<<configID<< endl;
+                }
             }
         }
 
