@@ -212,22 +212,28 @@ public class StarsLiteFactory {
 		liteInv.setDeviceLabel( invDB.getDeviceLabel() );
 		liteInv.setCurrentStateID(invDB.getCurrentStateID().intValue());
 		
-		ArrayList invHist = liteInv.getInventoryHistory();
-		invHist.clear();
-		
-		com.cannontech.database.data.stars.event.LMHardwareEvent[] events =
-				com.cannontech.database.data.stars.event.LMHardwareEvent.getAllLMHardwareEvents( new Integer(liteInv.getInventoryID()) );
-		for (int i = 0; i < events.length; i++) {
-			LiteLMHardwareEvent liteEvent = (LiteLMHardwareEvent) createLite( events[i] );
-			invHist.add( liteEvent );
-		}
-		
-		liteInv.updateDeviceStatus();
 	}
 	
 	public static void setLiteStarsLMHardware(LiteStarsLMHardware liteHw, com.cannontech.database.data.stars.hardware.LMHardwareBase hw) {
 		setLiteInventoryBase( liteHw, hw.getInventoryBase() );
 		
+        /*
+         * If there were non-LM inventory item events being stored in this table, 
+         * such as MCT events, then this will need to be moved back to setLiteInventoryBase;
+         * not sure why it was originally put there, though.  This should be LMHardware specific.
+         */
+        ArrayList invHist = liteHw.getInventoryHistory();
+        invHist.clear();
+    
+        com.cannontech.database.data.stars.event.LMHardwareEvent[] events =
+                com.cannontech.database.data.stars.event.LMHardwareEvent.getAllLMHardwareEvents( new Integer(liteHw.getInventoryID()) );
+        for (int i = 0; i < events.length; i++) {
+            LiteLMHardwareEvent liteEvent = (LiteLMHardwareEvent) createLite( events[i] );
+            invHist.add( liteEvent );
+        }
+        
+        liteHw.updateDeviceStatus();
+        
 		liteHw.setManufacturerSerialNumber( hw.getLMHardwareBase().getManufacturerSerialNumber() );
 		liteHw.setLmHardwareTypeID( hw.getLMHardwareBase().getLMHardwareTypeID().intValue() );
 		liteHw.setRouteID( hw.getLMHardwareBase().getRouteID().intValue() );
