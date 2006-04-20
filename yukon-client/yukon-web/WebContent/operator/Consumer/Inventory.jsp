@@ -268,7 +268,7 @@ function revealLog() {
                                           <div align="right">Date Installed:</div>
                                         </td>
                                         <td width="210"> 
-                                            <c:out value="${detailBean.currentReceiveDate}"/>
+                                            <c:out value="${detailBean.currentInstallDate}"/>
                                         </td>
                                     </tr>
                                     <tr> 
