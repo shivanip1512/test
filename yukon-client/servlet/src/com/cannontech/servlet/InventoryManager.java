@@ -894,7 +894,7 @@ public class InventoryManager extends HttpServlet {
 		Integer routeID = Integer.valueOf( req.getParameter("Route") );
 		
 		Date recvDate = null;
-		String recvDateStr = req.getParameter("ReceiveDate");
+        /*String recvDateStr = req.getParameter("ReceiveDate");
 		if (recvDateStr.length() > 0) {
 			recvDate = com.cannontech.util.ServletUtil.parseDateStringLiberally(recvDateStr, member.getDefaultTimeZone());
 			if (recvDate == null) {
@@ -902,13 +902,13 @@ public class InventoryManager extends HttpServlet {
 				redirect = referer;
 				return;
 			}
-		}
+		}*/
 		
 		// if operation completed, but not all serial numbers added, show the result on "ResultSet.jsp"
 		// (the REDIRECT parameter is set within the AddSNRangeTask.run() method)
 		session.removeAttribute( ServletUtils.ATT_REDIRECT );
 		
-		TimeConsumingTask task = new AddSNRangeTask( member, snFrom, snTo, devTypeID, devStateID, recvDate, voltageID, companyID, routeID, req );
+		TimeConsumingTask task = new AddSNRangeTask( member, snFrom, snTo, devTypeID, devStateID, new Date(), voltageID, companyID, routeID, req );
 		long id = ProgressChecker.addTask( task );
 		
 		// Wait 5 seconds for the task to finish (or error out), if not, then go to the progress page
@@ -2227,6 +2227,8 @@ public class InventoryManager extends HttpServlet {
                  * Let's cheat a little and use the inventoryBean filtering to look for serial range.
                  */
                 ArrayList tempList = new ArrayList();
+                String devType = pBean.getCurrentSchedule().getModelID().toString();
+                tempList.add(new FilterWrapper(String.valueOf(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_DEV_TYPE), devType, devType));
                 tempList.add(new FilterWrapper(String.valueOf(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SERIAL_RANGE_MAX), serialEnd, serialEnd));
                 tempList.add(new FilterWrapper(String.valueOf(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SERIAL_RANGE_MIN), serialStart, serialStart));
                 iBean.setFilterByList(tempList);
