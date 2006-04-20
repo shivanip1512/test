@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/slctdev.cpp-arc  $
-* REVISION     :  $Revision: 1.50 $
-* DATE         :  $Date: 2006/04/05 16:24:30 $
+* REVISION     :  $Revision: 1.51 $
+* DATE         :  $Date: 2006/04/20 17:06:52 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,6 +21,7 @@
 #include "dev_macro.h"
 #include "dev_cbc6510.h"
 #include "dev_cbc.h"
+#include "dev_cbc7020.h"
 #include "dev_ccu.h"
 #include "dev_welco.h"
 #include "dev_ilex.h"
