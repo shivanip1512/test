@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_710.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2006/03/02 16:36:45 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2006/04/20 17:15:13 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,6 +23,7 @@
 
 #include <rw\thr\mutex.h>
 
+#include "critical_section.h"
 #include "dlldefs.h"
 #include "netports.h"
 #include "cticonnect.h"
@@ -48,6 +49,8 @@ private:
     DataKeeperQueue _outQueue;
     CtiLocalConnect *_directConnection;
     ULONG _nexusState;
+
+    CtiCriticalSection _crit;
 
 public:
     CtiLocalConnect()

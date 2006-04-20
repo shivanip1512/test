@@ -8,13 +8,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_710.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2006/03/02 16:36:45 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2006/04/20 17:15:13 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
+#include "cparms.h"
 #include "logger.h"
 #include "ctilocalconnect.h"
 
@@ -59,7 +60,17 @@ INT CtiLocalConnect::CTINexusWrite(VOID *buf, ULONG len, PULONG BWritten, LONG T
         try
         {
             memcpy(bufStore, buf, len);
-            _outQueue.push(data);
+
+            if( gConfigParms.getValueAsULong("DEBUGLEVEL_NEXUS",0, 16) & 0x00000010 )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** ctilocalconnect push to queue **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            {
+                CtiLockGuard< CtiCriticalSection > g(_crit);
+                _outQueue.push(data);
+            }
 
             if( BWritten )
             {
@@ -155,15 +166,24 @@ INT CtiLocalConnect::CtiLocalConnectRead(VOID *buf, ULONG len, PULONG BRead, LON
     {
         try
         {
-            data = &(_outQueue.front());
-            memcpy(buf, data->data, len);
-            *BRead = len;
-            retVal = 0;
-
-            if( flags != MESSAGE_PEEK )
             {
-                delete [] data->data;
-                _outQueue.pop();
+                CtiLockGuard< CtiCriticalSection > g(_crit);
+                data = &(_outQueue.front());
+                memcpy(buf, data->data, len);
+                *BRead = len;
+                retVal = 0;
+
+                if( flags != MESSAGE_PEEK )
+                {
+                    delete [] data->data;
+                    _outQueue.pop();
+                }
+            }
+
+            if( gConfigParms.getValueAsULong("DEBUGLEVEL_NEXUS",0, 16) & 0x00000020 )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** ctilocalconnect pop from queue **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
         catch(...)
