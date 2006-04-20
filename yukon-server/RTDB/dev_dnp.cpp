@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.48 $
-* DATE         :  $Date: 2006/03/23 15:29:16 $
+* REVISION     :  $Revision: 1.49 $
+* DATE         :  $Date: 2006/04/20 17:05:13 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1088,38 +1088,6 @@ void DNP::DecodeDatabaseReader(RWDBReader &rdr)
    {
        _dnp.setOptions(Protocol::DNPInterface::Options_DatalinkConfirm);
    }
-}
-
-
-INT CBC7020::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
-{
-    INT nRet = NoMethod;
-
-    //  if it's a control open/close request without an offset
-    if( (parse.getCommand() == ControlRequest) && !(parse.getFlags() & CMD_FLAG_OFFSET) &&
-        (parse.getFlags() & CMD_FLAG_CTL_OPEN || parse.getFlags() & CMD_FLAG_CTL_CLOSE) )
-    {
-        if( parse.getFlags() & CMD_FLAG_CTL_OPEN )
-        {
-            pReq->setCommandString("control open offset 1");
-        }
-        else // if( parse.getFlags() & CMD_FLAG_CTL_CLOSE ) - implied because of the above if condition
-        {
-            pReq->setCommandString("control close offset 1");
-        }
-
-        CtiCommandParser new_parse(pReq->CommandString());
-
-        //  NOTE the new parser I'm passing in - i've already touched the pReq string, so
-        //    i need to seal the deal with a new parse
-        nRet = Inherited::ExecuteRequest(pReq, new_parse, OutMessage, vgList, retList, outList);
-    }
-    else
-    {
-        nRet = Inherited::ExecuteRequest(pReq, parse, OutMessage, vgList, retList, outList);
-    }
-
-    return nRet;
 }
 
 
