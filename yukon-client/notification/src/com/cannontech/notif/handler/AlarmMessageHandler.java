@@ -27,7 +27,13 @@ public class AlarmMessageHandler extends NotifHandler {
         LitePoint point = (LitePoint)PointFuncs.getLitePoint(msg.pointId);
         notif.addData("pointname", point.getPointName());
         notif.addData("value", Double.toString(msg.value));
-        String uofmName = UnitMeasureFuncs.getLiteUnitMeasureByPointID(msg.pointId).getUnitMeasureName();
+        LiteUnitMeasure liteUnitMeasureByPointID = UnitMeasureFuncs.getLiteUnitMeasureByPointID(msg.pointId);
+        String uofmName;
+        if (liteUnitMeasureByPointID == null) {
+        	uofmName = "n/a";
+        } else {
+        	uofmName = liteUnitMeasureByPointID.getUnitMeasureName();
+        }
         notif.addData("unitofmeasure", uofmName);
         
         NotificationBuilder notifFormatter = new NotificationBuilder() {
