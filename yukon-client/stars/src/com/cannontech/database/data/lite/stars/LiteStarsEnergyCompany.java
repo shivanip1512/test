@@ -2818,8 +2818,8 @@ public class LiteStarsEnergyCompany extends LiteBase {
      * If searchMembers is true, it returns a list of Pair(LiteStarsCustAccountInformation, LiteStarsEnergyCompany);
      * otherwise it returns a list of LiteStarsCustAccountInformation.
      */
-    public ArrayList searchAccountByLastName(String lastName, boolean searchMembers) {
-        int[] contactIDs = ContactFuncs.retrieveContactIDsByLastName( lastName, true );
+    public ArrayList searchAccountByLastName(String lastName, boolean searchMembers, boolean partialMatch) {
+        int[] contactIDs = ContactFuncs.retrieveContactIDsByLastName( lastName, partialMatch);
         return searchAccountByContactIDs( contactIDs, searchMembers );
     }
     

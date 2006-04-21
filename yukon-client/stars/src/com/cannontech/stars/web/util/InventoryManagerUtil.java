@@ -528,7 +528,7 @@ public class InventoryManagerUtil {
 			return getInventoryByAccounts( accounts, energyCompany );
 		}
 		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_LAST_NAME) {
-			ArrayList accounts = energyCompany.searchAccountByLastName( searchValue, searchMembers );
+			ArrayList accounts = energyCompany.searchAccountByLastName( searchValue, searchMembers, true );
 			return getInventoryByAccounts( accounts, energyCompany );
 		}
 		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_ORDER_NO) {
