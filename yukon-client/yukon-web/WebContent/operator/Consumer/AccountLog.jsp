@@ -9,14 +9,14 @@
 	
 	<link rel="stylesheet" href="../../include/PurpleStyles.css" type="text/css">
 	<div class="headerbar">
-		<%@ include file="include/HeaderBar.jsp" %>
+		<%@ include file="include/HeaderBar.jspf" %>
 	</div>
  	<br clear="all"> 
  	
 	<div class="standardpurplesidebox"> 
 		<% String pageName = "AccountLog.jsp"; %>
 		<div align="right">
-			<%@ include file="include/Nav_Aux.jsp" %>
+			<%@ include file="include/Nav_Aux.jspf" %>
 		</div>
 	</div>
 

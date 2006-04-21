@@ -1,5 +1,4 @@
 <script language="JavaScript" src="<%= request.getContextPath() %>/JavaScript/change_monitor.js"></script>
-
 <table width="760" border="0" cellspacing="0" cellpadding="0" align="center">
   <tr> 
     <td width="102" height="102" background="../../../WebConfig/<cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_IMG_CORNER %>"/>">&nbsp;</td>

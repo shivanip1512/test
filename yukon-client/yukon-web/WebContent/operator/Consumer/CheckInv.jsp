@@ -65,7 +65,7 @@
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
-      <%@ include file="include/HeaderBar.jsp" %>
+      <%@ include file="include/HeaderBar.jspf" %>
     </td>
   </tr>
   <tr>
@@ -84,9 +84,9 @@
             <div align="center">
               <% String header = "CHECK INVENTORY"; %>
 <% if (!inWizard) { %>
-              <%@ include file="include/InfoSearchBar.jsp" %>
+              <%@ include file="include/InfoSearchBar.jspf" %>
 <% } else { %>
-              <%@ include file="include/InfoSearchBar2.jsp" %>
+              <%@ include file="include/InfoSearchBar2.jspf" %>
 <% } %>
 
               <form name="form1" method="POST" action="<%= request.getContextPath() %>/servlet/InventoryManager">

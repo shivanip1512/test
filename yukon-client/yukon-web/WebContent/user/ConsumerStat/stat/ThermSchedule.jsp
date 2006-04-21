@@ -57,7 +57,7 @@
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
-      <%@ include file="include/HeaderBar.jsp" %>
+      <%@ include file="include/HeaderBar.jspf" %>
     </td>
   </tr>
   <tr>
@@ -72,13 +72,13 @@
         <tr> 
           <td  valign="top" width="101">
 		  <% String pageName = "ThermSchedule.jsp?" + thermNoStr; %>
-          <%@ include file="include/Nav.jsp" %>
+          <%@ include file="include/Nav.jspf" %>
 		  </td>
           <td width="1" bgcolor="#000000"><img src="../../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
 		  <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"><br>
               <% String header = AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_TITLE_THERM_SCHED); %>
-              <%@ include file="include/InfoBar.jsp" %>
+              <%@ include file="include/InfoBar.jspf" %>
               <table width="600" border="0" cellpadding="0" cellspacing="0">
                 <tr>
                   <td>
@@ -92,17 +92,17 @@
 	StarsThermostatTypes thermoType = thermoProgram.getThermostatType();
 	if (thermoType.getType() == StarsThermostatTypes.EXPRESSSTAT_TYPE) {
 %>
-			  <%@ include file="../../../include/therm_schedule.jsp" %>
+			  <%@ include file="../../../include/therm_schedule.jspf" %>
 <%
 	}
 	else if (thermoType.getType() == StarsThermostatTypes.COMMERCIAL_TYPE) {
 %>
-			  <%@ include file="../../../include/therm_schedule1.jsp" %>
+			  <%@ include file="../../../include/therm_schedule1.jspf" %>
 <%
 	}
 	else if (thermoType.getType() == StarsThermostatTypes.ENERGYPRO_TYPE) {
 %>
-			  <%@ include file="../../../include/therm_schedule2.jsp" %>
+			  <%@ include file="../../../include/therm_schedule2.jspf" %>
 <%
 	}
 %>

@@ -35,7 +35,7 @@
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr> 
     <td> 
-      <%@ include file="include/HeaderBar.jsp" %>
+      <%@ include file="include/HeaderBar.jspf" %>
     </td>
   </tr>
   <tr> 
@@ -53,7 +53,7 @@
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div class = "MainText" align="center"> 
               <% String header = "NEW SIGNUP WIZARD"; %>
-              <%@ include file="include/InfoSearchBar2.jsp" %>
+              <%@ include file="include/InfoSearchBar2.jspf" %>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			  
               <span class="ConfirmMsg">Customer account created successfully, 

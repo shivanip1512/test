@@ -412,25 +412,25 @@
 	if (tab.equalsIgnoreCase(""))
 	{
 		%>
-			<%@ include file="include/user_ee_current.jsp" %>
+			<%@ include file="include/user_ee_current.jspf" %>
 		<%
 	}
 	else if (tab.equalsIgnoreCase("accept"))
 	{
 		%>
-			<%@ include file="include/user_ee_accept.jsp" %>
+			<%@ include file="include/user_ee_accept.jspf" %>
 		<%
 	}
 	else if (tab.equalsIgnoreCase("confirm"))
 	{
 		%>
-			<%@ include file="include/user_ee_confirm.jsp" %>
+			<%@ include file="include/user_ee_confirm.jspf" %>
 		<%
 	}
 	else if (tab.equalsIgnoreCase("offer"))
 	{
 		%>
-			<%@ include file="include/user_ee_offer.jsp" %>
+			<%@ include file="include/user_ee_offer.jspf" %>
 		<%
 	}
 %>

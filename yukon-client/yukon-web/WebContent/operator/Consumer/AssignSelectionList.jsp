@@ -60,7 +60,7 @@ function setListEntry(form, value, idx) {
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
-      <%@ include file="include/HeaderBar.jsp" %>
+      <%@ include file="include/HeaderBar.jspf" %>
     </td>
   </tr>
   <tr>
@@ -78,7 +78,7 @@ function setListEntry(form, value, idx) {
           <td width="657" height="400" valign="top" bgcolor="#FFFFFF">
             <div align="center"> 
               <% String header = "IMPORT STARS - ASSIGN SELECTION LIST"; %>
-              <%@ include file="include/InfoSearchBar2.jsp" %>
+              <%@ include file="include/InfoSearchBar2.jspf" %>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               <table width="600" border="0" cellspacing="0" cellpadding="0">
                 <tr> 

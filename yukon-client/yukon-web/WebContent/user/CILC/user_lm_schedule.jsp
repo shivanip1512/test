@@ -191,7 +191,7 @@ function MM_findObj(n, d) { //v4.0
         <tr> 
           <td  valign="top" width="150"> 
 		  <% String pageName = "user_lm_time.jsp"; %>
-          <%@ include file="include/nav.jsp" %>
+          <%@ include file="include/nav.jspf" %>
           </td>
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           

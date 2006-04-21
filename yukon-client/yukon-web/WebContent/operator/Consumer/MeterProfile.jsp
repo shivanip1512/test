@@ -8,7 +8,7 @@
 	
 	<link rel="stylesheet" href="../../include/PurpleStyles.css" type="text/css">
 	<div class="headerbar">
-		<%@ include file="include/HeaderBar.jsp" %>
+		<%@ include file="include/HeaderBar.jspf" %>
 	</div>
  	<br clear="all"> 
  	
@@ -23,7 +23,7 @@
  	<div class="standardpurplesidebox"> 
 		<% String pageName = "MeterProfile.jsp"; %>
 		<div align="right">
-			<%@ include file="include/Nav_Aux.jsp" %>
+			<%@ include file="include/Nav_Aux.jspf" %>
 		</div>
 		<%pageContext.setAttribute("validSwitches", validSwitches);%>
 		<c:set target="${meterBean}" property="currentAccountInventory" value="${validSwitches}" />
@@ -32,7 +32,7 @@
 	<div class="standardcentralwhitebody">
 		<div align="center"> <br>
             <% String header = "METER PROFILE"; %>
-            <%@ include file="include/InfoSearchBar.jsp" %>
+            <%@ include file="include/InfoSearchBar.jspf" %>
             <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
             <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
     		<br clear="all">

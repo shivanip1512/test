@@ -28,7 +28,7 @@
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
-      <%@ include file="include/HeaderBar.jsp" %>
+      <%@ include file="include/HeaderBar.jspf" %>
     </td>
   </tr>
   <tr>
@@ -52,17 +52,17 @@
 <%
 	if (thermoType.getType() == StarsThermostatTypes.EXPRESSSTAT_TYPE) {
 %>
-			  <%@ include file="../../include/therm_schedule.jsp" %>
+			  <%@ include file="../../include/therm_schedule.jspf" %>
 <%
 	}
 	else if (thermoType.getType() == StarsThermostatTypes.COMMERCIAL_TYPE) {
 %>
-			  <%@ include file="../../include/therm_schedule1.jsp" %>
+			  <%@ include file="../../include/therm_schedule1.jspf" %>
 <%
 	}
 	else if (thermoType.getType() == StarsThermostatTypes.ENERGYPRO_TYPE) {
 %>
-			  <%@ include file="../../include/therm_schedule2.jsp" %>
+			  <%@ include file="../../include/therm_schedule2.jspf" %>
 <%
 	}
 %>

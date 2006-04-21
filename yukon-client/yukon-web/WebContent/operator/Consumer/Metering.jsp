@@ -2,7 +2,7 @@
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 
 <SCRIPT  LANGUAGE="JavaScript" SRC="../../JavaScript/calendar.js"></SCRIPT>
-<%@ include file="../../include/trending_functions.jsp" %>
+<%@ include file="../../include/trending_functions.jspf" %>
 
 <html>
 <head>
@@ -23,7 +23,7 @@
 <table width="760" border="0" cellspacing="0" cellpadding="0">
 	<tr>
 		<td> 
-			<%@ include file="include/HeaderBar.jsp" %>
+			<%@ include file="include/HeaderBar.jspf" %>
 		</td>
 	</tr>
 	<tr>
@@ -39,12 +39,12 @@
 			<form>
 			<td  valign="top" width="101">
 			<% String pageName = "Metering.jsp"; %>
-			<%@ include file="include/Nav.jsp" %>
+			<%@ include file="include/Nav.jspf" %>
 			</td>
 			</form>
 			<td width="1" bgcolor="#000000"></td>
 			<td width="657" valign="top" bgcolor="#FFFFFF">
-				<%@include file="../../include/trending_options.jsp"%>
+				<%@include file="../../include/trending_options.jspf"%>
             <table width="575" border="0" cellspacing="0" cellpadding="0" align="center" height="46">
 			<tr> 
 				<td><center> 
@@ -60,7 +60,7 @@
 				}
 				else if( graphBean.getViewType() == GraphRenderers.TABULAR)
 				{%>
-					<%@ include file="../../include/trending_tabular.jsp" %>					
+					<%@ include file="../../include/trending_tabular.jspf" %>					
 					<%
 				}				
 				else // "graph" is default

@@ -1,7 +1,7 @@
 <html>
 <% String pageName = "user_trending.jsp"; %> 
 <%@ include file="include/user_header.jsp" %>
-<%@ include file="../include/trending_functions.jsp" %>
+<%@ include file="../include/trending_functions.jspf" %>
 <%@ page import="com.cannontech.roles.application.WebClientRole"%>
 <head>
 <title>Trending</title>
@@ -62,12 +62,12 @@
         </tr>
         <tr> 
           <td  valign="top" width="150"> 
-            <%@ include file="include/nav.jsp" %>
+            <%@ include file="include/nav.jspf" %>
           </td>
           <td width="1" bgcolor="#000000"></td>
           <td width="608" valign="top" bgcolor="#FFFFFF" > 
           
-			<%@include file="../include/trending_options.jsp"%>
+			<%@include file="../include/trending_options.jspf"%>
             <table width="575" border="0" cellspacing="0" cellpadding="0" align="center" height="46" class="Subtext">
               <tr>
                 <td>
@@ -85,7 +85,7 @@
                     }
                     else if( graphBean.getViewType() == GraphRenderers.TABULAR)
                     {%>
-                      <%@ include file="../include/trending_tabular.jsp" %>
+                      <%@ include file="../include/trending_tabular.jspf" %>
                       <%graphBean.updateCurrentPane();
                       out.println(graphBean.getHtmlString());
                     }

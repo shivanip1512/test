@@ -34,7 +34,7 @@ function showAdditionalAppInfo(index)
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr> 
     <td> 
-      <%@ include file="include/HeaderBar.jsp" %>
+      <%@ include file="include/HeaderBar.jspf" %>
     </td>
   </tr>
   <tr> 
@@ -47,10 +47,10 @@ function showAdditionalAppInfo(index)
           <td width="1" bgcolor="#000000" height="1"></td>
         </tr>
         <tr> 
-          <td  valign="top" width="101"><% String pageName = "CreateAppliances.jsp"; %><%@ include file="include/Nav.jsp" %></td>
+          <td  valign="top" width="101"><% String pageName = "CreateAppliances.jsp"; %><%@ include file="include/Nav.jspf" %></td>
           <td width="1" bgcolor="#000000"><img src=""../WebConfig/yukon/Icons/VerticalRule.gif"" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
-            <div class = "MainText" align="center"><% String header = "CREATE NEW APPLIANCE"; %><%@ include file="include/InfoSearchBar.jsp" %>
+            <div class = "MainText" align="center"><% String header = "CREATE NEW APPLIANCE"; %><%@ include file="include/InfoSearchBar.jspf" %>
 			<% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
            
               <form name="MForm" method="post" action="<%= request.getContextPath() %>/servlet/SOAPClient">

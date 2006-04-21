@@ -4,11 +4,6 @@
 	<display-name>Yukon Web Application</display-name>
 	<description>The Yukon web application</description>
 
-	<context-param>
-	    <param-name>tiles-definitions</param-name>
-	    <param-value>/WEB-INF/tiles.xml</param-value>
-	</context-param>
-
 <!-- Does not seem to work for specifying many faces-config.xml files -->
 <!--    name:  javax.faces.application.CONFIG_FILES -->
 <!--    value:   /WEB-INF/cbc_faces-config.xml,/WEB-INF/lm_faces-config.xml -->
@@ -391,6 +386,12 @@
 	<!-- END AXIS servlets -->
 
 	
+
+
+    <!-- [INSERT GENERATED WEB.XML FRAGMENT HERE] -->
+
+
+
 	
 	<servlet-mapping>
 		<servlet-name>svgGenerator</servlet-name>
@@ -487,6 +488,7 @@
 
 
 	<welcome-file-list>
+        <welcome-file>org.apache.jsp.login_jsp</welcome-file>
 		<welcome-file>login.jsp</welcome-file>
 	</welcome-file-list>
 
@@ -496,11 +498,6 @@
 		<exception-type>java.lang.Throwable</exception-type>
     	<location>/internalError.jsp</location>
 	</error-page>
-
-    <taglib>
-        <taglib-uri>http://struts.apache.org/tags-tiles</taglib-uri>
-        <taglib-location>/WEB-INF/tld/struts-tiles.tld</taglib-location>
-    </taglib>
     
     <taglib>
 		<taglib-uri>http://cannontech.com/tags/cti</taglib-uri>

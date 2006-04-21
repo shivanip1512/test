@@ -2,7 +2,7 @@
 <!-- Java script needed for the Calender Function--->
 <SCRIPT  LANGUAGE="JavaScript" SRC="../../../JavaScript/calendar.js"></SCRIPT>
 <%@ include file="include/StarsHeader.jsp" %>
-<%@ include file="../../../include/trending_functions.jsp" %>
+<%@ include file="../../../include/trending_functions.jspf" %>
 <head>
 <title>Consumer Energy Services</title>
 <link rel="stylesheet" href="../../../WebConfig/yukon/CannonStyle.css" type="text/css">
@@ -33,7 +33,7 @@ MM_reloadPage(true);
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
-      <%@ include file="include/HeaderBar.jsp" %>
+      <%@ include file="include/HeaderBar.jspf" %>
     </td>
   </tr>
   <tr>
@@ -48,12 +48,12 @@ MM_reloadPage(true);
         <tr> 
           <td  valign="top" width="101"> 
             <% String pageName = "Metering.jsp"; %> 
-            <%@ include file="include/Nav.jsp" %>
+            <%@ include file="include/Nav.jspf" %>
           </td>
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF" >
           
-			<%@include file="../../../include/trending_options.jsp"%>
+			<%@include file="../../../include/trending_options.jspf"%>
 
             <table width="575" border="0" cellspacing="0" cellpadding="0" align="center" height="46">
               <tr> 
@@ -72,7 +72,7 @@ MM_reloadPage(true);
 					}
 					else if( graphBean.getViewType() == GraphRenderers.TABULAR)
 					{%>
-						<%@ include file="../../../include/trending_tabular.jsp" %>					
+						<%@ include file="../../../include/trending_tabular.jspf" %>					
 						<%
 					}
 					else // "graph" is default

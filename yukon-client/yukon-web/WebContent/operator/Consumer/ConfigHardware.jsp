@@ -72,7 +72,7 @@ function changeProgSelection(chkBox) {
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
-      <%@ include file="include/HeaderBar.jsp" %>
+      <%@ include file="include/HeaderBar.jspf" %>
     </td>
   </tr>
   <tr>
@@ -87,13 +87,13 @@ function changeProgSelection(chkBox) {
         <tr> 
           <td  valign="top" width="101"> 
             <% String pageName = "ConfigHardware.jsp?InvNo=" + invNo; %>
-            <%@ include file="include/Nav.jsp" %>
+            <%@ include file="include/Nav.jspf" %>
           </td>
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center">
               <% String header = "HARDWARE - CONFIGURATION"; %>
-			  <%@ include file="include/InfoSearchBar.jsp" %>
+			  <%@ include file="include/InfoSearchBar.jspf" %>
 			  <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			  
@@ -217,10 +217,10 @@ function changeProgSelection(chkBox) {
                 <table width="500" border="0" cellspacing="0" cellpadding="10">
                   <tr> 
                     <td valign="top" align="center"> 
-                      <%@ include file="../../include/hwconfig_addressing.jsp" %>
+                      <%@ include file="../../include/hwconfig_addressing.jspf" %>
                     </td>
                     <td valign="top" align="center"> 
-                      <%@ include file="../../include/hwconfig_relays.jsp" %>
+                      <%@ include file="../../include/hwconfig_relays.jspf" %>
                     </td>
                   </tr>
                 </table>

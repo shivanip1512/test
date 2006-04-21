@@ -14,7 +14,7 @@
 
 	<link rel="stylesheet" href="../../include/PurpleStyles.css" type="text/css">
 	<div class="headerbar">
-		<%@ include file="include/HeaderBar.jsp" %>
+		<%@ include file="include/HeaderBar.jspf" %>
 	</div>
  	<br clear="all"> 
  	
@@ -31,14 +31,14 @@
 	<div class="standardpurplesidebox"> 
 		<% String pageName = "WOFilter.jsp"; %>
 		<div align="right">
-			<%@ include file="include/Nav.jsp" %>
+			<%@ include file="include/Nav.jspf" %>
 		</div>
 	</div>
 
 	<div class="standardcentralwhitebody">
 		<div align="center"> <br>
             <% String header = "FILTER CHOICES"; %>
-            <%@ include file="include/SearchBar.jsp" %>
+            <%@ include file="include/SearchBar.jspf" %>
     		<% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
     		<br clear="all">
     	</div>

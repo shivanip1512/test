@@ -38,14 +38,14 @@
     {
 %>
 
-  <%@ include file="oper_mand_detail.jsp" %>
+  <%@ include file="oper_mand_detail.jspf" %>
   <%    
     }
     else
     {
         // Just display the summary
 %>
-  <%@ include file="oper_mand_summary.jsp" %>
+  <%@ include file="oper_mand_summary.jspf" %>
   <%
     }
 %>

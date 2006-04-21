@@ -119,7 +119,7 @@ function validForm(form)
               <tr> 
                 <td valign="top"> 
                   <% String pageName = "switch_commands.jsp"; %>
-          		  <%@ include file="include/nav.jsp" %>
+          		  <%@ include file="include/nav.jspf" %>
                 </td>
               </tr>
             </table>

@@ -1,4 +1,4 @@
-<%@ include file="include/oper_header.jsp" %>
+<%@ include file="include/oper_header.jspf" %>
 
 <%@ page import="com.cannontech.servlet.LCConnectionServlet" %>
 <%@ page import="com.cannontech.loadcontrol.data.LMProgramEnergyExchange" %>
@@ -630,70 +630,70 @@ System.out.println("sending- EndOf Offer Date : " + endOfOfferDate);
             if( tab.equalsIgnoreCase("new") )
             {
             %>
-<%@ include file="include/oper_ee_new.jsp" %>
+<%@ include file="include/oper_ee_new.jspf" %>
 <%
             }
             else
             if( tab.equalsIgnoreCase("newconfirm") )
             {
             %>
-<%@ include file="include/oper_ee_new_confirm.jsp" %>
+<%@ include file="include/oper_ee_new_confirm.jspf" %>
 <%
             }
             else
             if( tab.equalsIgnoreCase("programs") )
             {
             %>
-<%@ include file="include/oper_ee_programs.jsp" %>
+<%@ include file="include/oper_ee_programs.jspf" %>
 <%
             }
             else
             if( tab.equalsIgnoreCase("profile") )
             {
             %>
-<%@ include file="include/customer_ee_profile.jsp" %>
+<%@ include file="include/customer_ee_profile.jspf" %>
 <%
             }
             else
             if( tab.equalsIgnoreCase("history") )
             {
             %>
-<%@ include file="include/oper_ee_history.jsp" %>
+<%@ include file="include/oper_ee_history.jspf" %>
 <% 
 			} 
 			else
 			if( tab.equalsIgnoreCase("historydetail" ) )
 			{
 			%>
-<%@ include file="include/oper_ee_history_detail.jsp" %>
+<%@ include file="include/oper_ee_history_detail.jspf" %>
 <%
 			}
 			else
 			if( tab.equalsIgnoreCase("historyresponse" ) )
 			{
 			%>
-<%@ include file="include/oper_ee_history_response.jsp" %>
+<%@ include file="include/oper_ee_history_response.jspf" %>
 <%
             }
             else
             if( tab.equalsIgnoreCase("current" ) )
             {
             %>
-<%@ include file="include/oper_ee_current.jsp" %>
+<%@ include file="include/oper_ee_current.jspf" %>
 <%
             }
             else
             if( tab.equalsIgnoreCase("revise") )
             {
             %>
-<%@ include file="include/oper_ee_revise.jsp" %>
+<%@ include file="include/oper_ee_revise.jspf" %>
 <%
             }
             else
             if( tab.equalsIgnoreCase("reviseconfirm") )
             {
             %>
-<%@ include file="include/oper_ee_revise_confirm.jsp" %>
+<%@ include file="include/oper_ee_revise_confirm.jspf" %>
 <%
             }
             else

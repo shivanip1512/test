@@ -17,7 +17,7 @@
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
-      <%@ include file="include/HeaderBar.jsp" %>
+      <%@ include file="include/HeaderBar.jspf" %>
     </td>
   </tr>
   <tr>
@@ -35,7 +35,7 @@
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center">
               <% String header = "DELETE HARDWARE"; %>
-			  <%@ include file="include/InfoSearchBar.jsp" %>
+			  <%@ include file="include/InfoSearchBar.jspf" %>
               <form name="form1" method="POST" action="<%= request.getContextPath() %>/servlet/SOAPClient">
 			    <input type="hidden" name="action" value="DeleteLMHardware">
 			    <input type="hidden" name="InvID" value="<%= invID %>">

@@ -30,7 +30,7 @@
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
-      <%@ include file="include/HeaderBar.jsp" %>
+      <%@ include file="include/HeaderBar.jspf" %>
     </td>
   </tr>
   <tr>
@@ -46,7 +46,7 @@
           <td  valign="top" width="101">
 <% if (!inWizard) { %>
 		  <% String pageName = "Programs.jsp"; %>
-          <%@ include file="include/Nav.jsp" %>
+          <%@ include file="include/Nav.jspf" %>
 <% } %>
 		  </td>
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
@@ -54,9 +54,9 @@
             <div align="center"> 
               <% String header = "PROGRAMS - DETAILS"; %>
 <% if (!inWizard) { %>
-              <%@ include file="include/InfoSearchBar.jsp" %>
+              <%@ include file="include/InfoSearchBar.jspf" %>
 <% } else { %>
-              <%@ include file="include/InfoSearchBar2.jsp" %>
+              <%@ include file="include/InfoSearchBar2.jspf" %>
 <% } %>
 <%
 	if (program.getStarsWebConfig().getURL().length() > 0) {

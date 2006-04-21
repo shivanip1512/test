@@ -11,7 +11,7 @@
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
-      <%@ include file="include/HeaderBar.jsp" %>
+      <%@ include file="include/HeaderBar.jspf" %>
     </td>
   </tr>
   <tr>
@@ -29,7 +29,7 @@
           <td width="657" height="400" valign="top" bgcolor="#FFFFFF">
             <div align="center"> 
               <% String header = "IMPORT ACCOUNT DATA"; %>
-              <%@ include file="include/InfoSearchBar2.jsp" %>
+              <%@ include file="include/InfoSearchBar2.jspf" %>
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg.replaceAll(System.getProperty("line.separator"), "<br>") + "</span><br>"); %>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg.replaceAll(System.getProperty("line.separator"), "<br>") + "</span><br>"); %>
 			  <form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/ImportManager" enctype="multipart/form-data">

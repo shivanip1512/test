@@ -7,7 +7,7 @@
 			"Found some program violations, " +
 			"showing program violation page" );
 %>
-		<%@ include file="include/progviolation.jsp" %>
+		<%@ include file="include/progviolation.jspf" %>
 <%
 		return;
 	}

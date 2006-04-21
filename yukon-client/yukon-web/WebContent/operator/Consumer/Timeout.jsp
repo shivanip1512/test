@@ -12,7 +12,7 @@
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
-      <%@ include file="include/HeaderBar.jsp" %>
+      <%@ include file="include/HeaderBar.jspf" %>
     </td>
   </tr>
   <tr>
@@ -27,15 +27,15 @@
         <tr> 
           <td  valign="top" width="101">
 		  <% String pageName = "Timeout.jsp"; %>
-          <%@ include file="include/Nav.jsp" %>
+          <%@ include file="include/Nav.jspf" %>
 		  </td>
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
 		  <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"> 
               <% String header = "THERMOSTAT - SCHEDULE<BR>TIMEOUT WARNING"; %>
-              <%@ include file="include/InfoSearchBar.jsp" %>
+              <%@ include file="include/InfoSearchBar.jspf" %>
               <p>
-			  <%@ include file="../../include/therm_timeout.jsp" %>
+			  <%@ include file="../../include/therm_timeout.jspf" %>
               <p align="center" class="MainText">&nbsp; </p>
             </div>
 			

@@ -65,7 +65,7 @@ MM_reloadPage(true);
         <tr> 
           <td  valign="top" width="150"> 
             <% String pageName = "user_get_data_now.jsp"; %> 
-            <%@ include file="include/nav.jsp" %>
+            <%@ include file="include/nav.jspf" %>
           </td>
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF" >

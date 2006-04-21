@@ -1,7 +1,7 @@
 <html>
 <SCRIPT  LANGUAGE="JavaScript" SRC="../../JavaScript/calendar.js"></SCRIPT>
 <%@ include file="include/metering_header.jsp" %>
-<%@ include file="../../include/trending_functions.jsp" %>
+<%@ include file="../../include/trending_functions.jspf" %>
 <head>
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
@@ -60,7 +60,7 @@
 			<td valign="top" width="101"><br>
 			<table width="101" border="0" cellspacing="0" cellpadding="5">
 			<tr>
-			<%@include file="include/nav.jsp"%>
+			<%@include file="include/nav.jspf"%>
 			</tr>
 			</table>
 			</td>
@@ -75,7 +75,7 @@
 			</table>
 
             <% String pageName = "Metering.jsp"; %> 
-			<%@include file="../../include/trending_options.jsp"%>
+			<%@include file="../../include/trending_options.jspf"%>
 
             <table width="575" border="0" cellspacing="0" cellpadding="0" align="center" height="46">
 			<tr> 
@@ -92,7 +92,7 @@
 				}
 				else if( graphBean.getViewType() == GraphRenderers.TABULAR )
 				{%>
-					<%@ include file="../../include/trending_tabular.jsp" %>					
+					<%@ include file="../../include/trending_tabular.jspf" %>					
 					<%
 				}
 				else // "graph" is default

@@ -1,8 +1,8 @@
-<%@ include file="include/oper_header.jsp" %>
+<%@ include file="include/oper_header.jspf" %>
 
 <%@ page import="com.cannontech.message.macs.message.Schedule" %>
-<%@ page import="com.cannontech.yukon.concrete.ResourceFactory" %>
 <%@ page import="com.cannontech.yukon.IMACSConnection" %>
+<%@ page import="com.cannontech.yukon.conns.ConnPool" %>
 
 <%@ taglib uri="/WEB-INF/struts.tld" prefix="struts" %>
 <%@ taglib uri="/WEB-INF/cti.tld" prefix="cti" %>
@@ -92,7 +92,7 @@
 		}
 	}
 
-	IMACSConnection conn = ResourceFactory.getIYukon().getMACSConnection();
+	IMACSConnection conn = (IMACSConnection)(ConnPool.getInstance().getConn(ConnPool.MACS_CONN));
 
 	if( conn != null )
 	{

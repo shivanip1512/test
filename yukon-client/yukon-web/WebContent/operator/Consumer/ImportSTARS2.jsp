@@ -16,7 +16,7 @@
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
-      <%@ include file="include/HeaderBar.jsp" %>
+      <%@ include file="include/HeaderBar.jspf" %>
     </td>
   </tr>
   <tr>
@@ -34,7 +34,7 @@
           <td width="657" height="400" valign="top" bgcolor="#FFFFFF">
             <div align="center"> 
               <% String header = "IMPORT STARS - EDIT SELECTION LISTS"; %>
-              <%@ include file="include/InfoSearchBar2.jsp" %>
+              <%@ include file="include/InfoSearchBar2.jspf" %>
               <table width="500" border="0" cellspacing="0" cellpadding="0">
                 <tr> 
                   <td class="MainText"> 

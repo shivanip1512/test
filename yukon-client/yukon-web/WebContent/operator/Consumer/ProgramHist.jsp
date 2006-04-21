@@ -12,7 +12,7 @@
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
-      <%@ include file="include/HeaderBar.jsp" %>
+      <%@ include file="include/HeaderBar.jspf" %>
     </td>
   </tr>
   <tr>
@@ -27,13 +27,13 @@
         <tr> 
           <td  valign="top" width="101">
 		  <% String pageName = "ProgramHist.jsp"; %>
-          <%@ include file="include/Nav.jsp" %>
+          <%@ include file="include/Nav.jspf" %>
 		  </td>
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center">
               <% String header = AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_TITLE_CONTROL_HISTORY); %>
-              <%@ include file="include/InfoSearchBar.jsp" %>
+              <%@ include file="include/InfoSearchBar.jspf" %>
 			<% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
              
               <br>

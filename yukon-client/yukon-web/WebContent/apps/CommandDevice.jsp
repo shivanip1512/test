@@ -387,16 +387,16 @@
 <%
 			if( lp )
 			{%>
-				<%@ include file="AdvancedCommander410.jsp"%>
+				<%@ include file="AdvancedCommander410.jspf"%>
 			<%}
 			else if (isMCT410 && !manual)
 			{
 			%>
-				<%@ include file="Commander410.jsp"%>
+				<%@ include file="Commander410.jspf"%>
 			<%}
 			else
 			{%>
-	 			<%@ include file="Commander.jsp"%>
+	 			<%@ include file="Commander.jspf"%>
 			<%}%>
 			
           <td width="1" bgcolor="#000000"><img src="../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>

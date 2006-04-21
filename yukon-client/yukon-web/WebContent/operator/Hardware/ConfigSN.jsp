@@ -146,7 +146,7 @@ function removeAllConfig(form) {
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
-      <%@ include file="include/HeaderBar.jsp" %>
+      <%@ include file="include/HeaderBar.jspf" %>
     </td>
   </tr>
   <tr>
@@ -161,13 +161,13 @@ function removeAllConfig(form) {
         <tr> 
           <td  valign="top" width="101">
             <% String pageName = "ConfigSN.jsp"; %>
-            <%@ include file="include/Nav.jsp" %>
+            <%@ include file="include/Nav.jspf" %>
           </td>
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF">
             <div align="center"> 
               <% String header = "CONFIGURE SERIAL NUMBER RANGE"; %>
-              <%@ include file="include/SearchBar.jsp" %>
+              <%@ include file="include/SearchBar.jspf" %>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
 			  
@@ -353,10 +353,10 @@ function removeAllConfig(form) {
                         <table border="0" cellspacing="0" cellpadding="10">
                           <tr> 
                             <td align="center" valign="top"> 
-                              <%@ include file="../../include/hwconfig_addressing.jsp" %>
+                              <%@ include file="../../include/hwconfig_addressing.jspf" %>
                             </td>
                             <td align="center" valign="top"> 
-                              <%@ include file="../../include/hwconfig_relays.jsp" %>
+                              <%@ include file="../../include/hwconfig_relays.jspf" %>
                             </td>
                           </tr>
                         </table>

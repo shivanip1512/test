@@ -1,3 +1,4 @@
+
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -7,44 +8,39 @@
 
 </head>
 <%@ page import="com.cannontech.database.cache.DefaultDatabaseCache" %>
+
 <%  
-    /* Go through the devices and find a matching deviceid */
-    String customerIDStr = request.getParameter("customerid");
+/* Go through the devices and find a matching deviceid */
+String customerIDStr = request.getParameter("customerid");
 
-    if( customerIDStr != null )
-    {   
-        int customerID = Integer.parseInt(customerIDStr);
-        
-        // Attempt to retrieve the customer's info
-        com.cannontech.database.data.customer.CICustomerBase cust = 
-            (com.cannontech.database.data.customer.CICustomerBase) 
-                com.cannontech.database.data.customer.CustomerFactory.createCustomer(com.cannontech.database.data.customer.CustomerTypes.CUSTOMER_CI);
+if( customerIDStr != null ) 
+{
+	int customerID = Integer.parseInt(customerIDStr);
 
-        cust.setCustomerID( new Integer(customerID) );
+	// Attempt to retrieve the customer's info
+    com.cannontech.database.data.customer.CICustomerBase cust = 
+    	(com.cannontech.database.data.customer.CICustomerBase) 
+    com.cannontech.database.data.customer.CustomerFactory.createCustomer(com.cannontech.database.data.customer.CustomerTypes.CUSTOMER_CI);
 
+	cust.setCustomerID( new Integer(customerID) );
 
-        java.sql.Connection conn = null;
-        
-        try
-        {
-            conn = com.cannontech.database.PoolManager.getInstance().getConnection(dbAlias);       
-            cust.setDbConnection(conn);
-            cust.retrieve();
-            cust.setDbConnection(null);
+    java.sql.Connection conn = null;
+    try {
+        conn = com.cannontech.database.PoolManager.getInstance().getConnection(dbAlias);       
+        cust.setDbConnection(conn);
+        cust.retrieve();
+        cust.setDbConnection(null);
+    }
+    catch(java.sql.SQLException e ) {
+        e.printStackTrace();
+    }
+    finally {
+        try {
+            if( conn != null ) conn.close();
         }
-        catch(java.sql.SQLException e )
-        {
-            e.printStackTrace();
-        }
-        finally
-        {
-            try 
-            {
-                if( conn != null ) conn.close();
-            }
-            catch(java.sql.SQLException e2) { }         
-        }
-%>
+        catch(java.sql.SQLException e2) { }         
+    } %>
+    
 <body class="Background" leftmargin="0" topmargin="0">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
@@ -58,7 +54,7 @@
                 <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>" defaultvalue="yukon/DemoHeader.gif"/>">&nbsp;</td>
               </tr>
               <tr> 
-                <td width="253" height="28" class="PageHeader">&nbsp;&nbsp;&nbsp;Load Response</td>
+                <td width="253" height="28" class="PageHeader">&nbsp;&nbsp;&nbsp;<cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>" defaultvalue="Energy Buyback"/></td>
 				<td width="235" valign="middle">&nbsp;</td>
                 <td width="58" valign="middle"> 
                   <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
@@ -66,10 +62,6 @@
                 <td width="57" valign="middle"> 
                   <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                 </td>
-                
-                </form>
-                <form method="get" action="">
-                </form>
               </tr>
             </table>
           </td>
@@ -89,26 +81,26 @@
         </tr>
         <tr> 
           <td  valign="top" width="101"> 
-                        <table width="101" border="0" cellspacing="0" cellpadding="6" height="200">
+            <table width="101" border="0" cellspacing="0" cellpadding="6" height="200">
               <tr> 
                 <td height="20" valign="top" align="center"> 
-                  <form name="form1" method="get" action="oper_mand.jsp?tab=current">
-                    <p align="center"><br>
+                  <form name="form1" method="Get" action="oper_ee.jsp?tab=current">
+                    <p><br>
                       <input type="submit" name="tab" value="Current">
                     </p>
-                  </form>
-                  <form name="form1" method="get" action="oper_mand.jsp?tab=new">
-                    <p align="center"> 
+				  </form>
+                  <form name="form1" method="get" action="oper_ee.jsp?tab=new">
+				    <p> 
                       <input type="submit" name="tab" value="New">
                     </p>
-                  </form>
-                  <form name="form1" method="get" action="oper_mand.jsp?tab=history">
-                    <p align="center"> 
+				  </form>
+                  <form name="form1" method="get" action="oper_ee.jsp?tab=history">
+				    <p> 
                       <input type="submit" name="tab" value="History">
                     </p>
-                  </form>
-                  <form name="form1" method="get" action="oper_mand.jsp?tab=programs">
-                    <p align="center"> 
+					</form>
+				   <form name="form1" method="get" action="oper_ee.jsp?tab=programs">
+                    <p> 
                       <input type="submit" name="tab" value="Programs">
                     </p>
                   </form>
@@ -118,20 +110,20 @@
             </table>
           </td>
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
-          <td width="657" valign="top" bgcolor="#FFFFFF">
+          <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <table width="640" border="0" cellspacing="0" cellpadding="0" align="left">
               <tr>
                 <td width="640">
-                  <p align="center" class="TitleHeader"><br><cti:getProperty propertyid="<%=DirectCurtailmentRole.CURTAILMENT_LABEL%>" defaultvalue="Notification"/> - CUSTOMER PROFILE</p>
+                  <p align="center" class="TitleHeader"><br><cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>" defaultvalue="Energy Buyback"/> - CUSTOMER PROFILE</p>
                 </td>
               </tr>
-              <%@include file="cust_profile.jsp"%>
+              <%@include file="cust_profile.jspf"%>
               <!--<CLIP>-->
               <%} %>
               <tr>
                 <td>
                   <br><br>
-                  <p align="center" class="SubtitleHeader"><a href="javascript:history.back()" class="Link1">Back to Program Summary</a> 
+                  <p align="center" class="SubtitleHeader"><a href="<%= referrer %>" class="Link1">Back to Program Summary</a> 
                   <br><br>
                 </td>
               </tr>
@@ -146,3 +138,5 @@
 <br>
 </body>
 </html>
+
+

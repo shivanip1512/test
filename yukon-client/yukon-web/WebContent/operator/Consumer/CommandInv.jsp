@@ -83,7 +83,7 @@
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
-      <%@ include file="include/HeaderBar.jsp" %>
+      <%@ include file="include/HeaderBar.jspf" %>
     </td>
   </tr>
   <tr>
@@ -110,22 +110,22 @@
             	pageName = pageName + "&" + serialType + "=" + serialNum;
             }
             %>
-            <%@ include file="include/Nav.jsp" %>
+            <%@ include file="include/Nav.jspf" %>
           </td>
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
 <%
 			if( lp )
 			{%>
-				<%@ include file="../../apps/AdvancedCommander410.jsp"%>
+				<%@ include file="../../apps/AdvancedCommander410.jspf"%>
 			<%}
 			else if (isMCT410 && !manual)
 			{
 				%>
-				<%@ include file="../../apps/Commander410.jsp"%>
+				<%@ include file="../../apps/Commander410.jspf"%>
 			<%}
 			else
 			{%>
-	 			<%@ include file="../../apps/Commander.jsp"%>
+	 			<%@ include file="../../apps/Commander.jspf"%>
 			<%}%>
 			
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>

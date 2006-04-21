@@ -102,7 +102,7 @@ function newCode(form) {
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
-      <%@ include file="include/HeaderBar.jsp" %>
+      <%@ include file="include/HeaderBar.jspf" %>
 <% if (company.getCompanyID() < 0 && !address.equals("(none)")) { %>
       <script language="JavaScript">setContentChanged(true);</script>
 <% } %>

@@ -124,7 +124,7 @@ function revealLog() {
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
-      <%@ include file="include/HeaderBar.jsp" %>
+      <%@ include file="include/HeaderBar.jspf" %>
     </td>
   </tr>
   <tr>
@@ -164,7 +164,7 @@ function revealLog() {
 <%if (!viewOnly) {
 
                 %>
-              <%@ include file="include/SearchBar.jsp" %>
+              <%@ include file="include/SearchBar.jspf" %>
 <%} else {
                 %>
               <table width="100%" border="0" cellspacing="0" cellpadding="5">
@@ -592,7 +592,7 @@ function revealLog() {
                         </tr>
                         <tr>
                           <td align="center"> 
-                            <%@ include file="../../include/hwconfig_addressing.jsp" %>
+                            <%@ include file="../../include/hwconfig_addressing.jspf" %>
                           </td>
                         </tr>
                       </table>
@@ -609,7 +609,7 @@ function revealLog() {
                         </tr>
                         <tr> 
                           <td align="center"> 
-                            <%@ include file="../../include/hwconfig_relays.jsp" %>
+                            <%@ include file="../../include/hwconfig_relays.jspf" %>
                           </td>
                         </tr>
                       </table>

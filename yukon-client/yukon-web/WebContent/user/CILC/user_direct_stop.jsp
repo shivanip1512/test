@@ -111,8 +111,8 @@
 		}
 	   		    
 
-            com.cannontech.loadcontrol.messages.LMManualControlMsg msg = new com.cannontech.loadcontrol.messages.LMManualControlMsg();
-        	msg.setCommand(com.cannontech.loadcontrol.messages.LMManualControlMsg.SCHEDULED_STOP);
+            com.cannontech.loadcontrol.messages.LMManualControlRequest msg = new com.cannontech.loadcontrol.messages.LMManualControlRequest();
+        	msg.setCommand(com.cannontech.loadcontrol.messages.LMManualControlRequest.SCHEDULED_STOP);
 	        msg.setYukonID(programID);
 	        msg.setStartGear(1);
                         
@@ -194,7 +194,7 @@
         <tr> 
           <td  valign="top" width="150"> 
 		  <% String pageName = "user_direct.jsp"; %>
-          <%@ include file="include/nav.jsp" %>
+          <%@ include file="include/nav.jspf" %>
           </td>
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           

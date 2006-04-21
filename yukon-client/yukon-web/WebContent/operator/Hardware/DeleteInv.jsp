@@ -16,7 +16,7 @@
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
-      <%@ include file="include/HeaderBar.jsp" %>
+      <%@ include file="include/HeaderBar.jspf" %>
     </td>
   </tr>
   <tr>
@@ -34,7 +34,7 @@
           <td width="657" valign="top" bgcolor="#FFFFFF" nowrap> 
             <div align="center"> 
               <% String header = "DELETE DEVICE"; %>
-              <%@ include file="include/SearchBar.jsp" %>
+              <%@ include file="include/SearchBar.jspf" %>
 			  
               <form name="form1" method="post" action="<%= request.getContextPath() %>/servlet/InventoryManager">
 			    <input type="hidden" name="action" value="DeleteInventory">

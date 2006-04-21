@@ -100,7 +100,7 @@ function prepareSubmit(form) {
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
-      <%@ include file="include/HeaderBar.jsp" %>
+      <%@ include file="include/HeaderBar.jspf" %>
       <!-- This is not the first page in a wizard, so always set the content changed to be true -->
       <script language="JavaScript">setContentChanged(true);</script>
     </td>
@@ -118,7 +118,7 @@ function prepareSubmit(form) {
           <td  valign="top" width="101">
 <% if (!inWizard) { %>
 		  <% String pageName = "Programs.jsp"; %>
-          <%@ include file="include/Nav.jsp" %>
+          <%@ include file="include/Nav.jspf" %>
 <% } %>
 		  </td>
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
@@ -126,9 +126,9 @@ function prepareSubmit(form) {
             <div align="center"> 
               <% String header = AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_TITLE_ENROLLMENT); %>
 <% if (!inWizard) { %>
-              <%@ include file="include/InfoSearchBar.jsp" %>
+              <%@ include file="include/InfoSearchBar.jspf" %>
 <% } else { %>
-              <%@ include file="include/InfoSearchBar2.jsp" %>
+              <%@ include file="include/InfoSearchBar2.jspf" %>
 <% } %>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               <table width="80%" border="0" cellspacing="0" cellpadding="0">

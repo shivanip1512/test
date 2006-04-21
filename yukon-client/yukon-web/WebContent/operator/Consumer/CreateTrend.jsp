@@ -63,7 +63,7 @@ function disableButton(x)
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr> 
     <td> 
-      <%@ include file="include/HeaderBar.jsp" %>
+      <%@ include file="include/HeaderBar.jspf" %>
     </td>
   </tr>
   <tr> 
@@ -76,12 +76,12 @@ function disableButton(x)
           <td width="1" bgcolor="#000000" height="1"></td>
         </tr>
         <tr> 
-          <td  valign="top" width="101"><% String pageName = "CreateTrend.jsp"; %><%@ include file="include/Nav.jsp" %></td>
+          <td  valign="top" width="101"><% String pageName = "CreateTrend.jsp"; %><%@ include file="include/Nav.jspf" %></td>
           <td width="1" bgcolor="#000000"><img src=""../WebConfig/yukon/Icons/VerticalRule.gif"" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div class = "MainText" align="center">
 			  <% String header = AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_TITLE_CREATE_TREND); %>
-			  <%@ include file="include/InfoSearchBar.jsp" %>
+			  <%@ include file="include/InfoSearchBar.jspf" %>
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               
               <form name = "newTrendForm" method="POST" action="CreateTrend.jsp">

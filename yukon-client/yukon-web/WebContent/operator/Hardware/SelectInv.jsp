@@ -53,7 +53,7 @@
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
-      <%@ include file="include/HeaderBar.jsp" %>
+      <%@ include file="include/HeaderBar.jspf" %>
     </td>
   </tr>
   <tr>
@@ -71,7 +71,7 @@
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"> 
               <% String header = "SELECT INVENTORY"; %>
-              <%@ include file="include/SearchBar2.jsp" %>
+              <%@ include file="include/SearchBar2.jspf" %>
               <br>
               <form name="MForm" method="post" action="">
                 <input type="hidden" name="HtmlStyle" value="<%= InventoryBean.HTML_STYLE_SELECT_LM_HARDWARE %>">

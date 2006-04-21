@@ -29,7 +29,7 @@ document.location = "Update.jsp";
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr> 
     <td> 
-      <%@ include file="include/HeaderBar.jsp" %>
+      <%@ include file="include/HeaderBar.jspf" %>
     </td>
   </tr>
   <tr> 
@@ -42,11 +42,11 @@ document.location = "Update.jsp";
           <td width="1" bgcolor="#000000" height="1"></td>
         </tr>
         <tr> 
-          <td  valign="top" width="101"><% String pageName = "PrintExport.jsp"; %><%@ include file="include/Nav.jsp" %> </td>
+          <td  valign="top" width="101"><% String pageName = "PrintExport.jsp"; %><%@ include file="include/Nav.jspf" %> </td>
           <td width="1" bgcolor="#000000"><img src=""../WebConfig/yukon/Icons/VerticalRule.gif"" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"> 
-              <% String header = "PRINT/EXPORT"; %><%@ include file="include/InfoSearchBar.jsp" %>
+              <% String header = "PRINT/EXPORT"; %><%@ include file="include/InfoSearchBar.jspf" %>
               <form name ="MForm" action = "">
                 <table width="53%" border="1" height="189" cellspacing = "0">
                   <tr bgcolor="#CCCCCC"> 

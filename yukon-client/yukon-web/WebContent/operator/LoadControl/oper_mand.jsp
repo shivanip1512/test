@@ -1,4 +1,4 @@
-<%@ include file="include/oper_header.jsp" %> 
+<%@ include file="include/oper_header.jspf" %> 
 
 <cti:checkRole roleid="<%=DirectCurtailmentRole.ROLEID%>">
 <%
@@ -194,49 +194,49 @@
         if( tab.equalsIgnoreCase("history") )
         {   
         %>
-        <%@ include file="include/oper_mand_history.jsp" %>
+        <%@ include file="include/oper_mand_history.jspf" %>
         <%
         }
         else
         if( tab.equalsIgnoreCase("historydetail") )
         {
         %>
-        <%@ include file="include/oper_mand_history_detail.jsp" %>
+        <%@ include file="include/oper_mand_history_detail.jspf" %>
         <%
         }
         else
         if( tab.equalsIgnoreCase("programs") )
         {
         %>
-        <%@ include file="include/oper_mand_programs.jsp" %>
+        <%@ include file="include/oper_mand_programs.jspf" %>
         <%
         }
         else
         if( tab.equalsIgnoreCase("new") )
         {
         %>
-        <%@ include file="include/oper_mand_new.jsp" %>
+        <%@ include file="include/oper_mand_new.jspf" %>
         <%
         }
 		else    
 		if( tab.equalsIgnoreCase("newconfirm") )
 		{
 		%>
-        <%@ include file="include/oper_mand_new_confirm.jsp" %>
+        <%@ include file="include/oper_mand_new_confirm.jspf" %>
         <%
 		}
         else
         if( tab.equalsIgnoreCase("profile") )
         {
         %>
-        <%@ include file="include/customer_mand_profile.jsp" %>
+        <%@ include file="include/customer_mand_profile.jspf" %>
         <%
         }
         else               
         if( tab.equalsIgnoreCase("current") || true)
         {
         %>
-        <%@ include file="include/oper_mand_current.jsp" %>
+        <%@ include file="include/oper_mand_current.jspf" %>
         <%
         }
         

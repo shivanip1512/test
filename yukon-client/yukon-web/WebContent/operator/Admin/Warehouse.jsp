@@ -6,7 +6,7 @@
 	<link rel="stylesheet" href="../../include/PurpleStyles.css" type="text/css">
 	
 	<div class="headerbar">
-		<%@ include file="include/HeaderBar.jsp" %>
+		<%@ include file="include/HeaderBar.jspf" %>
 	</div>
  	<br clear="all"> 
  	

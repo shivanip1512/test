@@ -152,7 +152,7 @@ function sendWorkOrder() {
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
-      <%@ include file="include/HeaderBar.jsp" %>
+      <%@ include file="include/HeaderBar.jspf" %>
     </td>
   </tr>
   <tr>
@@ -203,7 +203,7 @@ function sendWorkOrder() {
           <td width="657" valign="top" bgcolor="#FFFFFF">
             <div align="center">
 			  <% String header = "WORK ORDERS - SERVICE HISTORY"; %>
-			  <%@ include file="include/InfoSearchBar.jsp" %>
+			  <%@ include file="include/InfoSearchBar.jspf" %>
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			  <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
 			</div>

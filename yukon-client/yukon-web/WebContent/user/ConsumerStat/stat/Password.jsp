@@ -37,7 +37,7 @@ function validate(form) {
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
-      <%@ include file="include/HeaderBar.jsp" %>
+      <%@ include file="include/HeaderBar.jspf" %>
     </td>
   </tr>
   <tr>
@@ -52,13 +52,13 @@ function validate(form) {
         <tr> 
           <td  valign="top" width="101">
 		  <% String pageName = "Password.jsp"; %>
-          <%@ include file="include/Nav.jsp" %>
+          <%@ include file="include/Nav.jspf" %>
 		  </td>
           <td width="1" bgcolor="#000000"><img src="../../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"><br>
               <% String header = "ADMINISTRATION - CHANGE LOGIN"; %>
-              <%@ include file="include/InfoBar.jsp" %>
+              <%@ include file="include/InfoBar.jspf" %>
               <table width="600" border="0" cellpadding="0" cellspacing="0">
                 <tr> 
                   <td> 

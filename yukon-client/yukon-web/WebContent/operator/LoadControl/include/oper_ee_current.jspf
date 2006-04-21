@@ -60,21 +60,21 @@
 	if( customerID != null ) 
 	{
 %>
-	<%@ include file="oper_ee_response.jsp" %>
+	<%@ include file="oper_ee_response.jspf" %>
 <%
 	}
 	else
 	if( progParam != null )
 	{
 %>
-	<%@ include file="oper_ee_detail.jsp" %>        
+	<%@ include file="oper_ee_detail.jspf" %>        
 <%    
 	}
 	else
 	{
 		// Just display the summary
 %>
-	<%@ include file="oper_ee_summary.jsp" %>
+	<%@ include file="oper_ee_summary.jspf" %>
 <%
 	}
 %>

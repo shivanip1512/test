@@ -146,7 +146,7 @@ function setCommercial()
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
-      <%@ include file="include/HeaderBar.jsp" %>
+      <%@ include file="include/HeaderBar.jspf" %>
       <script language="JavaScript">setContentChanged(<%= account.getAccountNumber().length() > 0 %>);</script>
     </td>
   </tr>
@@ -164,7 +164,7 @@ function setCommercial()
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" bgcolor="#FFFFFF" valign = "top" align = "center"> 
             <% String header = "NEW SIGNUP"; %>
-            <%@ include file="include/InfoSearchBar2.jsp" %>
+            <%@ include file="include/InfoSearchBar2.jspf" %>
             <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			
             <form name="form1" method="POST" action="<%= request.getContextPath() %>/servlet/SOAPClient" onSubmit="return validate(this)">
