@@ -108,7 +108,22 @@ public class WorkOrderManager extends HttpServlet {
 			resp.sendRedirect( req.getContextPath() + SOAPClient.LOGIN_URL );
 			return;
 		}
-    	
+    	int memberCompanyID = user.getEnergyCompanyID();
+        
+        if (req.getParameter("SwitchContext") != null) {
+            try{
+                int memberID = Integer.parseInt( req.getParameter("SwitchContext") );
+                StarsAdmin.switchContext( user, req, session, memberID );
+                session = req.getSession( false );
+                memberCompanyID = memberID;
+            }
+            catch (WebClientException e) {
+                session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, e.getMessage() );
+                resp.sendRedirect( referer );
+                return;
+            }
+        }
+        
 		referer = req.getParameter( ServletUtils.ATT_REFERRER );
 		if (referer == null) referer = ((CtiNavObject)session.getAttribute(ServletUtils.NAVIGATE)).getPreviousPage();
 		redirect = req.getParameter( ServletUtils.ATT_REDIRECT );
@@ -125,7 +140,7 @@ public class WorkOrderManager extends HttpServlet {
 		if (action == null) action = "";
 		
 		if (action.equalsIgnoreCase("SearchWorkOrder"))
-			searchWorkOrder( user, req, session );
+			searchWorkOrder( req, session, memberCompanyID );
 		else if (action.equalsIgnoreCase("CreateWorkOrder")) {
 			redirect = req.getContextPath() + "/servlet/SOAPClient?action=" + action +
 					"&REDIRECT=" + req.getParameter(ServletUtils.ATT_REDIRECT) +
@@ -141,13 +156,13 @@ public class WorkOrderManager extends HttpServlet {
 		else if (action.equalsIgnoreCase("SendWorkOrder"))
 			sendWorkOrder( user, req, session );
         else if (action.equalsIgnoreCase("UpdateFilters"))
-            updateFilters( user, req, session );
+            updateFilters( req, session );
         else if (action.equalsIgnoreCase("ManipulateSelectedResults"))
-        	manipulateSelectedResults( user, req, session );
+        	manipulateSelectedResults( req, session );
         else if (action.equalsIgnoreCase("ManipulateResults"))
-        	manipulateResults( user, req, session );
+        	manipulateResults( req, session );
         else if (action.equalsIgnoreCase("ApplyActions"))
-        	applyActions( user, req, session );		
+        	applyActions( req, session );		
         else if( action.equalsIgnoreCase("ViewAllResults"))
         	viewAllResults(req, session, true);
         else if( action.equalsIgnoreCase("HideAllResults"))
@@ -226,7 +241,7 @@ public class WorkOrderManager extends HttpServlet {
 			workOrderBean.setSortOrder(Integer.valueOf(param) );
 
 	}
-	private void manipulateSelectedResults(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
+	private void manipulateSelectedResults( HttpServletRequest req, HttpSession session) {
 		
 		String[] selections = req.getParameterValues("checkWorkOrder");
         if( selections == null)//none selected
@@ -255,10 +270,10 @@ public class WorkOrderManager extends HttpServlet {
 		}
 		workOrderBean.setWorkOrderList(liteWorkOrderList);
 		
-		manipulateResults(user, req, session);
+		manipulateResults(req, session);
 		
 	}
-	private void applyActions(StarsYukonUser user, HttpServletRequest req, HttpSession session) 
+	private void applyActions(HttpServletRequest req, HttpSession session) 
     {        
         String[] selectionIDs = req.getParameterValues("SelectionIDs");
         String[] actionTexts = req.getParameterValues("ActionTexts");
@@ -329,7 +344,7 @@ public class WorkOrderManager extends HttpServlet {
             redirect = req.getContextPath() + "/operator/Admin/Progress.jsp?id=" + id;
         }
     }
-	private void manipulateResults(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
+	private void manipulateResults(HttpServletRequest req, HttpSession session) {
 		redirect = req.getContextPath() + "/operator/WorkOrder/ChangeWorkOrders.jsp";		
 	}
 
@@ -338,7 +353,7 @@ public class WorkOrderManager extends HttpServlet {
 		workOrderBean.setViewAllResults(viewResults);
 	}
 
-	private void updateFilters(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
+	private void updateFilters(HttpServletRequest req, HttpSession session) {
     {
     	String start = req.getParameter("start");
     	String stop = req.getParameter("stop");
@@ -364,44 +379,49 @@ public class WorkOrderManager extends HttpServlet {
     };
 	}
 
-	private void searchWorkOrder(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
-		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
+	private void searchWorkOrder(HttpServletRequest req, HttpSession session, int memberCompanyID) {
+		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( memberCompanyID );
 		
 		session.removeAttribute( WorkOrderManagerUtil.WORK_ORDER_SET );
 		
-		int searchBy = Integer.parseInt( req.getParameter("SearchBy") );
+		int searchBy = -1;
+        if( req.getParameter("SearchBy") != null)
+            searchBy = Integer.parseInt( req.getParameter("SearchBy") );
+        
 		String searchValue = req.getParameter( "SearchValue" );
 		if (searchValue.trim().length() == 0) {
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Search value cannot be empty");
 			return;
 		}
-		
+        
+        ArrayList<LiteWorkOrderBase> liteWorkOrderList = new ArrayList<LiteWorkOrderBase>();		
+        if( searchBy < 0)//we use -1 for search by orderID.  This is a shortcut! and is useful when having member searches.
+        {   //We are short cutting a big loop through all energy companies to find the EC with this OrderID by passing in the ECID.
+            liteWorkOrderList.add(energyCompany.getWorkOrderBase(Integer.valueOf(searchValue), true));
+            session.setAttribute(WorkOrderManagerUtil.WORK_ORDER_SET, liteWorkOrderList);
+            redirect = req.getContextPath() + "/operator/WorkOrder/ModifyWorkOrder.jsp";
+            return;
+        }
+        
+        
 		// Remember the last search option
 		session.setAttribute( ServletUtils.ATT_LAST_SERVICE_SEARCH_OPTION, new Integer(searchBy) );
-		
+        StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 		boolean searchMembers = AuthFuncs.checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS ) && 
 								(energyCompany.getChildren().size() > 0);
 
-		int[] orderIDs = null; 
-		
 		if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_ORDER_NO) {
-			ArrayList orderList = energyCompany.searchWorkOrderByOrderNo( searchValue, searchMembers );
-			orderIDs = new int[ orderList.size() ];
-			for (int i = 0; i < orderList.size(); i++)
-				if (searchMembers)
-					orderIDs[i] = ((LiteWorkOrderBase)((Pair)orderList.get(i)).getFirst()).getOrderID();
-				else
-					orderIDs[i] = ((LiteWorkOrderBase)orderList.get(i)).getOrderID();
+			liteWorkOrderList = energyCompany.searchWorkOrderByOrderNo( searchValue, searchMembers );
 		}
 		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_ACCT_NO) {
 			ArrayList accounts = energyCompany.searchAccountByAccountNo( searchValue, searchMembers );
-			orderIDs = getOrderIDsByAccounts( accounts );
+			liteWorkOrderList.addAll(getOrderIDsByAccounts( accounts, energyCompany ) );
 		}
 		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_PHONE_NO) {
 			try {
 				String phoneNo = ServletUtils.formatPhoneNumber( searchValue );
 				ArrayList accounts = energyCompany.searchAccountByPhoneNo( phoneNo, searchMembers );
-				orderIDs = getOrderIDsByAccounts( accounts );
+                liteWorkOrderList.addAll(getOrderIDsByAccounts( accounts, energyCompany ) );
 			}
 			catch (WebClientException e) {
 				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, e.getMessage());
@@ -409,29 +429,31 @@ public class WorkOrderManager extends HttpServlet {
 			}
 		}
 		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_LAST_NAME) {
-			ArrayList accounts = energyCompany.searchAccountByLastName( searchValue, searchMembers );
-			orderIDs = getOrderIDsByAccounts( accounts );
+			ArrayList accounts = energyCompany.searchAccountByLastName( searchValue, searchMembers , true);
+            liteWorkOrderList.addAll(getOrderIDsByAccounts( accounts, energyCompany ) );
 		}
 		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_SERIAL_NO) {
 			ArrayList accounts = energyCompany.searchAccountBySerialNo( searchValue, searchMembers );
-			orderIDs = getOrderIDsByAccounts( accounts );
+            liteWorkOrderList.addAll(getOrderIDsByAccounts( accounts, energyCompany ) );
 		}
 		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_ADDRESS) {
 			ArrayList accounts = energyCompany.searchAccountByAddress( searchValue, searchMembers );
-			orderIDs = getOrderIDsByAccounts( accounts );
+            liteWorkOrderList.addAll(getOrderIDsByAccounts( accounts, energyCompany ) );
 		}
 		
-		if (orderIDs == null || orderIDs.length == 0) {
+		if (liteWorkOrderList.size() == 0) {
 			session.setAttribute(WorkOrderManagerUtil.WORK_ORDER_SET_DESC, "<div class='ErrorMsg' align='center'>No service order found matching the search criteria.</div>");
 		}
-		else if (orderIDs.length == 1) {
-			redirect = req.getContextPath() + "/operator/WorkOrder/ModifyWorkOrder.jsp?OrderId=" + orderIDs[0];
-		}
+        //Don't be smart about going directly to the web page, this way we can go through the context switch of EC if needed
+		/*else if (liteWorkOrderList.size() == 1) {   
+            session.setAttribute(WorkOrderManagerUtil.WORK_ORDER_SET, liteWorkOrderList);
+            redirect = req.getContextPath() + "/operator/WorkOrder/ModifyWorkOrder.jsp";
+		}*/
 		else {
-			ArrayList soList = new ArrayList();
-			for (int i = 0; i < orderIDs.length; i++)
-				soList.add( energyCompany.getWorkOrderBase(orderIDs[i], true) );
-			session.setAttribute(WorkOrderManagerUtil.WORK_ORDER_SET, soList);
+//			ArrayList soList = new ArrayList();
+//			for (int i = 0; i < orderIDs.length; i++)
+//				soList.add( energyCompany.getWorkOrderBase(orderIDs[i], true) );
+			session.setAttribute(WorkOrderManagerUtil.WORK_ORDER_SET, liteWorkOrderList);
 			session.setAttribute(WorkOrderManagerUtil.WORK_ORDER_SET_DESC, "Click on a Order # to view the service order details.");
 			session.setAttribute(ServletUtils.ATT_REFERRER, referer);
 		}
@@ -561,26 +583,35 @@ public class WorkOrderManager extends HttpServlet {
 		}
 	}
 	
-	private int[] getOrderIDsByAccounts(ArrayList accounts) {
+    private ArrayList<LiteWorkOrderBase> getOrderIDsByAccounts(ArrayList accounts, LiteStarsEnergyCompany defaultEnergyCompany) {
+//	private int[] getOrderIDsByAccounts(ArrayList accounts) {
 		if (accounts != null && accounts.size() > 0) {
-			ArrayList orderIDList = new ArrayList();
-			
+			ArrayList liteWorkOrderList = new ArrayList<LiteWorkOrderBase>();
 			for (int i = 0; i < accounts.size(); i++) {
-				LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) accounts.get(i);
+                LiteStarsCustAccountInformation liteAcctInfo = null;             
+                LiteStarsEnergyCompany liteStarsEnergyCompany = null;
+                if (accounts.get(i) instanceof Pair){
+                    liteAcctInfo = (LiteStarsCustAccountInformation)((Pair)accounts.get(i)).getFirst();
+                    liteStarsEnergyCompany = (LiteStarsEnergyCompany)((Pair)accounts.get(i)).getSecond();
+                }
+                else
+                {
+                    liteAcctInfo = (LiteStarsCustAccountInformation) accounts.get(i);
+                    liteStarsEnergyCompany = defaultEnergyCompany;
+                }
+                
 				if (liteAcctInfo.isExtended()) {
-					orderIDList.addAll( liteAcctInfo.getServiceRequestHistory() );
+                    for(int j = 0; j < liteAcctInfo.getServiceRequestHistory().size(); j++)
+                        liteWorkOrderList.add(liteStarsEnergyCompany.getWorkOrderBase(liteAcctInfo.getServiceRequestHistory().get(j).intValue(), true));
 				}
 				else {
 					int[] woIDs = WorkOrderBase.searchByAccountID( liteAcctInfo.getAccountID() );
 					for (int j = 0; j < woIDs.length; j++)
-						orderIDList.add( new Integer(woIDs[j]) );
+                        liteWorkOrderList.add(liteStarsEnergyCompany.getWorkOrderBase(woIDs[j], true));
 				}
 			}
 			
-			int[] orderIDs = new int[ orderIDList.size() ];
-			for (int i = 0; i< orderIDList.size(); i++)
-				orderIDs[i] = ((Integer) orderIDList.get(i)).intValue();
-			return orderIDs;
+			return liteWorkOrderList;
 		}
 		
 		return null;
