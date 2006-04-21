@@ -2147,7 +2147,11 @@ public class InventoryManager extends HttpServlet {
         boolean shipmentFailed = false;
          
         currentShipment.setShipmentNumber(req.getParameter("name"));
-        currentShipment.setWarehouseID(new Integer(req.getParameter("warehouse")));
+        String warehouse = req.getParameter("warehouse");
+        if(warehouse != null)
+            currentShipment.setWarehouseID(new Integer(warehouse));
+        else
+            currentShipment.setWarehouseID(new Integer(0));
         
         Date orderedDate = ServletUtil.parseDateStringLiberally( req.getParameter("orderingDate"), pBean.getEnergyCompany().getDefaultTimeZone());
         Date shipDate = ServletUtil.parseDateStringLiberally( req.getParameter("shipDate"), pBean.getEnergyCompany().getDefaultTimeZone());

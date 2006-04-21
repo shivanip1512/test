@@ -317,6 +317,12 @@ public class PurchaseBean
     }
 
     public LiteStarsEnergyCompany getSerialNumberMember() {
+        if(currentShipment.getWarehouseID().intValue() <= 0)
+        {
+            serialNumberMember = energyCompany;
+            return serialNumberMember;
+        }
+        
         Integer ecID = Warehouse.getEnergyCompanyIDFromWarehouseID(currentShipment.getWarehouseID());
         
         if(ecID.compareTo(energyCompany.getEnergyCompanyID()) == 0)
