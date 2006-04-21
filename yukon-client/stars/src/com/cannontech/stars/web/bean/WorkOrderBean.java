@@ -16,7 +16,10 @@ import javax.servlet.http.HttpServletRequest;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.Pair;
 import com.cannontech.database.cache.StarsDatabaseCache;
+import com.cannontech.database.cache.functions.AuthFuncs;
+import com.cannontech.database.cache.functions.EnergyCompanyFuncs;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteCustomer;
@@ -28,9 +31,11 @@ import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.stars.event.EventWorkOrder;
 import com.cannontech.database.data.stars.report.WorkOrderBase;
+import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.stars.util.FilterWrapper;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
+import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.serialize.StarsServiceRequest;
 import com.cannontech.util.ServletUtil;
 
@@ -234,7 +239,18 @@ public class WorkOrderBean {
 		
 		ArrayList<LiteWorkOrderBase> workOrders = null;
 		if (getHtmlStyle() == HTML_STYLE_SEARCH_RESULTS)
-			workOrders = searchResults;
+        {
+            workOrders = new ArrayList<LiteWorkOrderBase>();
+            for (int i = 0; i < searchResults.size(); i++)
+            {
+                if( searchResults.get(i) instanceof Pair)
+                    workOrders.add( (LiteWorkOrderBase)((Pair)searchResults.get(i)).getFirst());
+                else
+                    workOrders.add( (LiteWorkOrderBase)searchResults.get(i));
+            }
+            workOrderList = sortList(workOrders);
+            return workOrderList;
+        }
 		/*else if (isManageMembers()) {
 			if (getMember() >= 0) {
 				LiteStarsEnergyCompany member = StarsDatabaseCache.getInstance().getEnergyCompany( getMember() );
@@ -427,9 +443,9 @@ public class WorkOrderBean {
 	}
 	
 	public String getHTML(HttpServletRequest req) {
-		/*StarsYukonUser user = (StarsYukonUser) req.getSession().getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
+		StarsYukonUser user = (StarsYukonUser) req.getSession().getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 		
-		setManageMembers(false);
+		/*setManageMembers(false);
         if(AuthFuncs.checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS ) && 
         		(getEnergyCompany().getChildren().size() > 0)){
                 setManageMembers(true);
@@ -479,36 +495,44 @@ public class WorkOrderBean {
 		
 		StringBuffer htmlBuf = new StringBuffer();
 		
-        if((getHtmlStyle() & HTML_STYLE_LIST_ALL) != 0)
-        {
-    		htmlBuf.append("<script language='JavaScript'>").append(LINE_SEPARATOR);
-            htmlBuf.append("function checkAll() {").append(LINE_SEPARATOR);
-            htmlBuf.append("var checkBoxArray = new Array();").append(LINE_SEPARATOR);
-            htmlBuf.append("checkBoxArray = document.MForm.checkWorkOrder;").append(LINE_SEPARATOR);
-            htmlBuf.append("if ( checkBoxArray.length == undefined) {").append(LINE_SEPARATOR);
-            htmlBuf.append("  document.MForm.checkWorkOrder.checked = true ;").append(LINE_SEPARATOR);
-            htmlBuf.append("} else {").append(LINE_SEPARATOR);
-            htmlBuf.append("  for (i = 0; i < checkBoxArray.length; i++)").append(LINE_SEPARATOR);
-            htmlBuf.append("    checkBoxArray[i].checked = true ;").append(LINE_SEPARATOR);
-            htmlBuf.append("  }  }").append(LINE_SEPARATOR);
-            
-            htmlBuf.append("function uncheckAll() {").append(LINE_SEPARATOR);
-            htmlBuf.append("var checkBoxArray = new Array();").append(LINE_SEPARATOR);
-            htmlBuf.append("checkBoxArray = document.MForm.checkWorkOrder;").append(LINE_SEPARATOR);
-            htmlBuf.append("if ( checkBoxArray.length == undefined) {").append(LINE_SEPARATOR);
-            htmlBuf.append("  document.MForm.checkWorkOrder.checked = false;").append(LINE_SEPARATOR);
-            htmlBuf.append("} else {").append(LINE_SEPARATOR);
-            htmlBuf.append("  for (i = 0; i < checkBoxArray.length; i++)").append(LINE_SEPARATOR);
-            htmlBuf.append("    checkBoxArray[i].checked = false ;").append(LINE_SEPARATOR);
-            htmlBuf.append("  }  }").append(LINE_SEPARATOR);
-            
-            htmlBuf.append("function manipSelected() {").append(LINE_SEPARATOR);
-            htmlBuf.append("	this.MForm.action.value = \"ManipulateSelectedResults\";").append(LINE_SEPARATOR);
-            htmlBuf.append(" 	this.MForm.submit();").append(LINE_SEPARATOR);
-            htmlBuf.append("}").append(LINE_SEPARATOR);
-    		htmlBuf.append("</script>").append(LINE_SEPARATOR);
-        }
+		htmlBuf.append("<script language='JavaScript'>").append(LINE_SEPARATOR);
+        htmlBuf.append("function checkAll() {").append(LINE_SEPARATOR);
+        htmlBuf.append("var checkBoxArray = new Array();").append(LINE_SEPARATOR);
+        htmlBuf.append("checkBoxArray = document.MForm.checkWorkOrder;").append(LINE_SEPARATOR);
+        htmlBuf.append("if ( checkBoxArray.length == undefined) {").append(LINE_SEPARATOR);
+        htmlBuf.append("  document.MForm.checkWorkOrder.checked = true ;").append(LINE_SEPARATOR);
+        htmlBuf.append("} else {").append(LINE_SEPARATOR);
+        htmlBuf.append("  for (i = 0; i < checkBoxArray.length; i++)").append(LINE_SEPARATOR);
+        htmlBuf.append("    checkBoxArray[i].checked = true ;").append(LINE_SEPARATOR);
+        htmlBuf.append("  }  }").append(LINE_SEPARATOR);
+        
+        htmlBuf.append("function uncheckAll() {").append(LINE_SEPARATOR);
+        htmlBuf.append("var checkBoxArray = new Array();").append(LINE_SEPARATOR);
+        htmlBuf.append("checkBoxArray = document.MForm.checkWorkOrder;").append(LINE_SEPARATOR);
+        htmlBuf.append("if ( checkBoxArray.length == undefined) {").append(LINE_SEPARATOR);
+        htmlBuf.append("  document.MForm.checkWorkOrder.checked = false;").append(LINE_SEPARATOR);
+        htmlBuf.append("} else {").append(LINE_SEPARATOR);
+        htmlBuf.append("  for (i = 0; i < checkBoxArray.length; i++)").append(LINE_SEPARATOR);
+        htmlBuf.append("    checkBoxArray[i].checked = false ;").append(LINE_SEPARATOR);
+        htmlBuf.append("  }  }").append(LINE_SEPARATOR);
+        
+        htmlBuf.append("function manipSelected() {").append(LINE_SEPARATOR);
+        htmlBuf.append("	this.MForm.action.value = \"ManipulateSelectedResults\";").append(LINE_SEPARATOR);
+        htmlBuf.append(" 	this.MForm.submit();").append(LINE_SEPARATOR);
+        htmlBuf.append("}").append(LINE_SEPARATOR);
 
+        htmlBuf.append("function searchOrderID(orderID, memberID) {").append(LINE_SEPARATOR);
+        htmlBuf.append("    this.MForm.action.value = \"SearchWorkOrder\";").append(LINE_SEPARATOR);
+        htmlBuf.append("    this.MForm.SearchValue.value = orderID;").append(LINE_SEPARATOR);
+        htmlBuf.append("    this.MForm.SwitchContext.value = memberID;").append(LINE_SEPARATOR);
+        htmlBuf.append("    this.MForm.submit();").append(LINE_SEPARATOR);
+        htmlBuf.append("}").append(LINE_SEPARATOR);
+        htmlBuf.append("</script>").append(LINE_SEPARATOR);
+
+        htmlBuf.append("<input type=\"hidden\" name=\"SearchValue\" value=\"\">");
+        if( AuthFuncs.checkRoleProperty(user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS)  && (getEnergyCompany().getChildren().size() > 0) )
+                htmlBuf.append("<input type=\"hidden\" name=\"SwitchContext\" value=\"").append(getEnergyCompany().getEnergyCompanyID().intValue()).append("\">");
+        
 		htmlBuf.append("<table width='95%' border='0' cellspacing='0' cellpadding='3'>").append(LINE_SEPARATOR);
 		/*htmlBuf.append("  <tr>").append(LINE_SEPARATOR);
 		htmlBuf.append("    <td>").append(LINE_SEPARATOR);
@@ -528,8 +552,10 @@ public class WorkOrderBean {
 		htmlBuf.append("    <td>").append(LINE_SEPARATOR);
 		htmlBuf.append("      <table width='100%' border='1' cellspacing='0' cellpadding='3'>").append(LINE_SEPARATOR);
 		htmlBuf.append("        <tr>").append(LINE_SEPARATOR);
-		htmlBuf.append("          <td  class='HeaderCell' width='1%' >&nbsp;</td>").append(LINE_SEPARATOR);
-		htmlBuf.append("          <td  class='HeaderCell' width='13%' >Order #</td>").append(LINE_SEPARATOR);
+        if ((getHtmlStyle() & HTML_STYLE_LIST_ALL) != 0)
+            htmlBuf.append("          <td  class='HeaderCell' width='1%' >&nbsp;</td>").append(LINE_SEPARATOR);
+        
+        htmlBuf.append("          <td  class='HeaderCell' width='13%' >Order #</td>").append(LINE_SEPARATOR);
 		htmlBuf.append("          <td  class='HeaderCell' width='13%' >Date/Time</td>").append(LINE_SEPARATOR);
 		htmlBuf.append("          <td  class='HeaderCell' width='13%' >Order Type</td>").append(LINE_SEPARATOR);
 		htmlBuf.append("          <td  class='HeaderCell' width='13%' >Current State</td>").append(LINE_SEPARATOR);
@@ -539,14 +565,18 @@ public class WorkOrderBean {
 		htmlBuf.append("        </tr>").append(LINE_SEPARATOR);
 		
 //		for (int i = minOrderNo; i <= maxOrderNo; i++) {
+        LiteStarsEnergyCompany liteStarsEC_Order = null;
 		for (int i = 0; i < soList.size(); i++) {
 			LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) soList.get(i);
-			StarsServiceRequest starsOrder = StarsLiteFactory.createStarsServiceRequest(liteOrder, getEnergyCompany());
+            if( liteStarsEC_Order == null || liteStarsEC_Order.getEnergyCompanyID().intValue() != liteOrder.getEnergyCompanyID())
+                liteStarsEC_Order = StarsDatabaseCache.getInstance().getEnergyCompany(liteOrder.getEnergyCompanyID());
+            
+			StarsServiceRequest starsOrder = StarsLiteFactory.createStarsServiceRequest(liteOrder, liteStarsEC_Order);
 			Date date = null;
 			if( liteOrder.getEventWorkOrders().size() > 0)
 				date = StarsUtils.translateDate( liteOrder.getEventWorkOrders().get(0).getEventBase().getEventTimestamp().getTime());
 
-			String dateStr = (date != null)? StarsUtils.formatDate(date, energyCompany.getDefaultTimeZone()) : "----";
+			String dateStr = (date != null)? StarsUtils.formatDate(date, liteStarsEC_Order.getDefaultTimeZone()) : "----";
 
 			htmlBuf.append("        <tr>").append(LINE_SEPARATOR);
 			
@@ -557,7 +587,7 @@ public class WorkOrderBean {
                 htmlBuf.append("</td>").append(LINE_SEPARATOR);
             }        
 			htmlBuf.append("          <td class='TableCell' width='13%' >")
-					.append("<a href='ModifyWorkOrder.jsp?OrderId=").append(liteOrder.getOrderID()).append("' class='Link1'>")
+					.append("<a href='javascript:searchOrderID(").append(liteOrder.getOrderID()).append(", ").append(liteOrder.getEnergyCompanyID()).append(")' class='Link1'>")
 					.append(starsOrder.getOrderNumber()).append("</a></td>").append(LINE_SEPARATOR);
 			htmlBuf.append("          <td class='TableCell' width='13%' >").append(dateStr).append("</td>").append(LINE_SEPARATOR);
 			htmlBuf.append("          <td class='TableCell' width='13%' >").append(ServletUtils.forceNotEmpty( starsOrder.getServiceType().getContent() )).append("</td>").append(LINE_SEPARATOR);
@@ -706,7 +736,11 @@ public class WorkOrderBean {
 	 * @param list
 	 */
 	public void setSearchResults(ArrayList list) {
-		searchResults = list;
+        if( list == null || !list.equals(searchResults))
+        {
+            workOrderList = null;
+            searchResults = list;
+        }
 	}
 
 	public ArrayList<FilterWrapper> getFilters() {
@@ -714,9 +748,7 @@ public class WorkOrderBean {
 	}
 
 	public void setFilters(ArrayList<FilterWrapper> newFilters) {
-		if (newFilters == null && filters == null)
-			return;
-		if( !(newFilters.equals(filters)) )
+		if( newFilters == null || !(newFilters.equals(filters)) )
 		{
 			this.filters = newFilters;
 			workOrderList = null;	//TODO dump the existing list!
