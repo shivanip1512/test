@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/test.cpp-arc  $
-* REVISION     :  $Revision: 1.43 $
-* DATE         :  $Date: 2006/03/23 15:29:15 $
+* REVISION     :  $Revision: 1.44 $
+* DATE         :  $Date: 2006/04/21 18:52:08 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -35,6 +35,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "msg_dbchg.h"
 #include "msg_reg.h"
 #include "msg_pcreturn.h"
+#include "msg_pcrequest.h"
 #include "msg_signal.h"
 #include "msg_pdata.h"
 #include "msg_ptreg.h"
@@ -76,6 +77,8 @@ void testThreads( int argc, char **argv );
 void DoTheNasty(int argc, char **argv);
 void booya( void *haha );
 void ha( void *la );
+void pilExecute(int argc, char **argv);
+void pilHelp();
 
 typedef void (*XFUNC)(int argc, char **argv);       // Execution function
 typedef void (*HFUNC)();                           // Help Function
@@ -1855,4 +1858,151 @@ void dbtimeHelp()
     return;
 }
 
+
+void pilExecute(int argc, char **argv)
+{
+    int Op, k;
+
+    unsigned    timeCnt = rwEpoch;
+    unsigned    pt = 1;
+    CtiMessage  *pMsg;
+
+    CtiPointManager PointMgr;
+
+    try
+    {
+        int Op, k;
+
+        unsigned    timeCnt = rwEpoch;
+        unsigned    pt = 1;
+        CtiMessage  *pMsg;
+
+        if(argc < 3)
+        {
+            pilHelp();
+            return;
+        }
+
+        // PointMgr.refreshList();     // This should give me all the points in the box.
+        CtiConnection  Connect(PORTERINTERFACENEXUS, argv[2]);
+
+        CtiMultiMsg   *pM  = CTIDBG_new CtiMultiMsg;
+
+        pM->setMessagePriority(15);
+
+        Connect.WriteConnQue(CTIDBG_new CtiRegistrationMsg("pilExecute", rwThreadId(), FALSE));
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Reading inbound messages from registration" << endl;
+        }
+
+        while( NULL != (pMsg = Connect.ReadConnQue(1000)))
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Inbound message Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                pMsg->dump();
+            }
+
+            delete pMsg;
+        }
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Done reading registration messages" << endl;
+        }
+
+
+        /*
+            CtiRequestMsg(long device_id,
+                     const CtiString& command_string = CtiString(),
+                     long user_message_id = 0L,
+                     long transmission_id = 0L,
+                     long route_id        = 0L,
+                     int macro_offset     = 0,
+                     int attempt_num      = 0,
+                     int options_field    = 0,
+                     int priority_base    = 7);
+        */
+
+        #if 0
+        pM->insert( CTIDBG_new CtiRequestMsg(1117, "control close",1 , 1) );
+        pM->insert( CTIDBG_new CtiRequestMsg(1119, "control open",1 , 1) );
+        pM->insert( CTIDBG_new CtiRequestMsg(1113, "control close",1 , 1) );
+        pM->insert( CTIDBG_new CtiRequestMsg(1115, "control open",1 , 1) );
+        pM->insert( CTIDBG_new CtiRequestMsg(1111, "control close",1 , 1) );
+        pM->insert( CTIDBG_new CtiRequestMsg(1121, "control close",1 , 1) );
+        pM->insert( CTIDBG_new CtiRequestMsg(1123, "control close",1 , 1) );
+        pM->insert( CTIDBG_new CtiRequestMsg(1125, "control close",1 , 1) );
+        pM->insert( CTIDBG_new CtiRequestMsg(1127, "control open",1 , 1) );
+        pM->insert( CTIDBG_new CtiRequestMsg(1129, "control open",1 , 1) );
+
+        Connect.WriteConnQue( pM );
+        #else
+        Connect.WriteConnQue( CTIDBG_new CtiRequestMsg(1117, "control close",1 , 1) );
+        Sleep(1000);
+        Connect.WriteConnQue( CTIDBG_new CtiRequestMsg(1119, "control open",1 , 1) );
+        Sleep(1000);
+        Connect.WriteConnQue( CTIDBG_new CtiRequestMsg(1113, "control close",1 , 1) );
+        Sleep(1000);
+        Connect.WriteConnQue( CTIDBG_new CtiRequestMsg(1115, "control open",1 , 1) );
+        Sleep(1000);
+        Connect.WriteConnQue( CTIDBG_new CtiRequestMsg(1111, "control close",1 , 1) );
+        Sleep(1000);
+        Connect.WriteConnQue( CTIDBG_new CtiRequestMsg(1121, "control close",1 , 1) );
+        Sleep(1000);
+        Connect.WriteConnQue( CTIDBG_new CtiRequestMsg(1123, "control close",1 , 1) );
+        Sleep(1000);
+        Connect.WriteConnQue( CTIDBG_new CtiRequestMsg(1125, "control close",1 , 1) );
+        Sleep(1000);
+        Connect.WriteConnQue( CTIDBG_new CtiRequestMsg(1127, "control open",1 , 1) );
+        Sleep(1000);
+        Connect.WriteConnQue( CTIDBG_new CtiRequestMsg(1129, "control open",1 , 1) );
+
+        #endif
+        pM = 0;
+
+        while( NULL != (pMsg = Connect.ReadConnQue(2500)))
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Inbound message Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                pMsg->dump();
+            }
+
+            delete pMsg;
+        }
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Request application shutdown." << endl;
+        }
+
+        Sleep(1000);
+        Connect.WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 15));
+        Connect.ShutdownConnection();
+        Sleep(2500);
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+
+    return;
+}
+
+void pilHelp()
+{
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " pilExecute - Help" << endl;
+        dout << " Arg1: multi " << endl <<
+            " Arg2: <porter_machine_or_ip> " <<
+            endl;
+    }
+    return;
+}
 
