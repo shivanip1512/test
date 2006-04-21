@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.43 $
-* DATE         :  $Date: 2006/04/19 15:52:18 $
+* REVISION     :  $Revision: 1.44 $
+* DATE         :  $Date: 2006/04/21 15:20:13 $
 *
 * HISTORY      :
 * $Log: dev_rtc.cpp,v $
+* Revision 1.44  2006/04/21 15:20:13  mfisher
+* zero-padded the Golay address string
+*
 * Revision 1.43  2006/04/19 15:52:18  mfisher
 * changed code reporting to match the RTM's format (bbaabb-f)
 *
@@ -797,7 +800,7 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
                         string golay_codestr;
                         pair< int, int > golay_code = CtiProtocolSA3rdParty::parseGolayAddress(rtcOutMessage->Buffer.SASt._codeSimple);
 
-                        golay_codestr  = CtiNumStr(golay_code.first);       //  base address
+                        golay_codestr  = CtiNumStr(golay_code.first).zpad(6);       //  base address
                         golay_codestr += "-";
                         golay_codestr += CtiNumStr(golay_code.second - 1);  //  make the function 0-based so it'll match the RTM's result
 
