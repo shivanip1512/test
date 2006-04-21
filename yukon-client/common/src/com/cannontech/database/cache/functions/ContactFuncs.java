@@ -120,7 +120,7 @@ public final class ContactFuncs
         if( commaIndex > 0 )
         {
             firstName = lastName_.substring(commaIndex+1).trim();
-            lastName = lastName_.substring(0, commaIndex -1).trim();
+            lastName = lastName_.substring(0, commaIndex).trim();
         }
             
         try {
