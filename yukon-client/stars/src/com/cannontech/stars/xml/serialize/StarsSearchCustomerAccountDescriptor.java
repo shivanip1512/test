@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsSearchCustomerAccountDescriptor.java,v 1.94 2005/01/20 00:37:07 yao Exp $
+ * $Id: StarsSearchCustomerAccountDescriptor.java,v 1.95 2006/04/21 14:28:44 stacey Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -11,21 +11,17 @@ package com.cannontech.stars.xml.serialize;
  //- Imported classes and packages -/
 //---------------------------------/
 
-import org.exolab.castor.mapping.AccessMode;
-import org.exolab.castor.mapping.ClassDescriptor;
-import org.exolab.castor.mapping.FieldDescriptor;
-import org.exolab.castor.xml.*;
 import org.exolab.castor.xml.FieldValidator;
-import org.exolab.castor.xml.TypeValidator;
-import org.exolab.castor.xml.XMLFieldDescriptor;
-import org.exolab.castor.xml.handlers.*;
+import org.exolab.castor.xml.NodeType;
+import org.exolab.castor.xml.XMLFieldHandler;
 import org.exolab.castor.xml.util.XMLFieldDescriptorImpl;
-import org.exolab.castor.xml.validators.*;
+import org.exolab.castor.xml.validators.BooleanValidator;
+import org.exolab.castor.xml.validators.StringValidator;
 
 /**
  * 
  * 
- * @version $Revision: 1.94 $ $Date: 2005/01/20 00:37:07 $
+ * @version $Revision: 1.95 $ $Date: 2006/04/21 14:28:44 $
 **/
 public class StarsSearchCustomerAccountDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -133,6 +129,48 @@ public class StarsSearchCustomerAccountDescriptor extends org.exolab.castor.xml.
             fieldValidator.setValidator(sv);
         }
         desc.setValidator(fieldValidator);
+        
+        //-- _partialMatch
+        desc = new XMLFieldDescriptorImpl(java.lang.Boolean.TYPE, "_partialMatch", "partialMatch", NodeType.Attribute);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsSearchCustomerAccount target = (StarsSearchCustomerAccount) object;
+                if(!target.hasPartialMatch())
+                    return null;
+                return new Boolean(target.getPartialMatch());
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsSearchCustomerAccount target = (StarsSearchCustomerAccount) object;
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deletePartialMatch();
+                        return;
+                    }
+                    target.setPartialMatch( ((Boolean)value).booleanValue());
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _cancelScheduledOptOut
+        fieldValidator = new FieldValidator();
+        { //-- local scope
+            BooleanValidator bv = new BooleanValidator();
+            fieldValidator.setValidator(bv);
+        }
+        desc.setValidator(fieldValidator);        
         
     } //-- com.cannontech.stars.xml.serialize.StarsSearchCustomerAccountDescriptor()
 

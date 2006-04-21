@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsSearchCustomerAccount.java,v 1.94 2005/01/20 00:37:07 yao Exp $
+ * $Id: StarsSearchCustomerAccount.java,v 1.95 2006/04/21 14:28:44 stacey Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -11,19 +11,13 @@ package com.cannontech.stars.xml.serialize;
  //- Imported classes and packages -/
 //---------------------------------/
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.Serializable;
-import java.io.Writer;
-import org.exolab.castor.xml.*;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
-import org.xml.sax.ContentHandler;
+import org.exolab.castor.xml.Marshaller;
+import org.exolab.castor.xml.Unmarshaller;
 
 /**
  * 
  * 
- * @version $Revision: 1.94 $ $Date: 2005/01/20 00:37:07 $
+ * @version $Revision: 1.95 $ $Date: 2006/04/21 14:28:44 $
 **/
 public class StarsSearchCustomerAccount implements java.io.Serializable {
 
@@ -35,6 +29,13 @@ public class StarsSearchCustomerAccount implements java.io.Serializable {
     private SearchBy _searchBy;
 
     private java.lang.String _searchValue;
+    
+    private boolean _partialMatch;
+
+    /**
+     * keeps track of state for field: _partialMatch
+    **/
+    private boolean _has_partialMatch;
 
 
       //----------------/
@@ -70,6 +71,7 @@ public class StarsSearchCustomerAccount implements java.io.Serializable {
         return this._searchValue;
     } //-- java.lang.String getSearchValue() 
 
+      
     /**
     **/
     public boolean isValid()
@@ -126,6 +128,42 @@ public class StarsSearchCustomerAccount implements java.io.Serializable {
     {
         this._searchValue = searchValue;
     } //-- void setSearchValue(java.lang.String) 
+
+    /**
+     **/
+     public void deletePartialMatch()
+     {
+         this._has_partialMatch = false;
+     } //-- void deletePartialMatch() 
+
+     /**
+      * Returns the value of field 'partialMatch'.
+      * 
+      * @return the value of field 'partialMatch'.
+     **/
+     public boolean getPartialMatch()
+     {
+         return this._partialMatch;
+     } //-- boolean getPartialMatch() 
+
+     /**
+     **/
+     public boolean hasPartialMatch()
+     {
+         return this._has_partialMatch;
+     } //-- boolean hasPartialMatch() 
+
+     /**
+      * Sets the value of field 'partialMatch'.
+      * 
+      * @param partialMatch the value of field
+      * 'partialMatch'.
+     **/
+     public void setPartialMatch(boolean partialMatch)
+     {
+         this._partialMatch = partialMatch;
+         this._has_partialMatch = true;
+     } //-- void setPartialMatch(boolean) 
 
     /**
      * 
