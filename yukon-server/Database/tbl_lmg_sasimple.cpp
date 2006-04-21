@@ -1,6 +1,3 @@
-#include "yukon.h"
-
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   tbl_lmg_sa_simple
@@ -11,12 +8,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2006/04/20 17:14:53 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2006/04/21 15:17:07 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-
+#include "yukon.h"
 
 #include "logger.h"
 #include "numstr.h"
@@ -214,9 +211,11 @@ void CtiTableSASimpleGroup::DecodeDatabaseReader( RWDBReader &rdr )
         _function = golay_address.second;
 
         #if 0
+        string padded_address = CtiNumStr(golay_address.first).zpad(6);
+
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Golay Opaddr: " << _operationalAddress << " == " << golay_address.first << " Function " << golay_address.second << endl;
+            dout << CtiTime() << " Golay Opaddr: " << _operationalAddress << " == " << padded_address << " Function " << golay_address.second << endl;
         }
         #endif
     }
@@ -261,7 +260,8 @@ string CtiTableSASimpleGroup::getGolayOperationalAddress() const
     if( _operationalAddress.length() >= 6 )
     {
         std::pair< int, int > golay_address = CtiProtocolSA3rdParty::parseGolayAddress(_operationalAddress.data());
-        opAddr = CtiNumStr( golay_address.first );                   // This is the opAddr BASE string
+
+        opAddr = CtiNumStr(golay_address.first).zpad(6);    // This is the opAddr BASE string
 
         #if 0
         {
