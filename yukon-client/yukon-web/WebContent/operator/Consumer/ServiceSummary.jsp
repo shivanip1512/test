@@ -83,7 +83,7 @@ function checkOrderNo(form) {
 		LiteWorkOrderBase liteOrder = liteEC.getWorkOrderBase(order.getOrderID(), true);
 		String companyName = "";
 		for (int j = 0; j < companies.getStarsServiceCompanyCount(); j++) {
-			if (companies.getStarsServiceCompany(j).getCompanyID() == order.getServiceCompany().getEntryID()) {
+			if (companies.getStarsServiceCompany(j).getCompanyID() == liteOrder.getServiceCompanyID()) {
 				companyName = companies.getStarsServiceCompany(j).getCompanyName();
 				break;
 			}
