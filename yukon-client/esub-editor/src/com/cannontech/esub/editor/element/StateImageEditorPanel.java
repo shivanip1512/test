@@ -302,6 +302,9 @@ private PointSelectionPanel getPointSelectionPanel() {
 		try {
 			ivjPointSelectionPanel = com.cannontech.esub.editor.Util.getPointSelectionPanel();		
 			ivjPointSelectionPanel.setName("PointSelectionPanel");
+//            ivjPointSelectionPanel.setPreferredSize(new Dimension(150,200));
+//            ivjPointSelectionPanel.setSize(new Dimension(150,200));
+//            ivjPointSelectionPanel.setMaximumSize(new Dimension(150,200));
 		} catch (java.lang.Throwable ivjExc) {
 			handleException(ivjExc);
 		}
@@ -512,8 +515,10 @@ public void resetPreviewPanelImages(LitePoint p)
                 icon = new ImageIcon(lyi.getImageValue());
             }
             
-            imageLabels[rawStateNumber].setIcon(scaleImage(icon));
+            icon = scaleImage(icon);
+            imageLabels[rawStateNumber].setIcon(icon);
             images.add(imageLabels[rawStateNumber]);
+            
             buttons[i].setVisible(true);
             imageLabels[i].setVisible(true);
             stateLabels[i].setVisible(true);
@@ -573,8 +578,8 @@ public void setPreviewPanelImages(LitePoint p)
         {
             icon = new ImageIcon(lyi.getImageValue());
         }
-        
-        imageLabels[rawStateNumber].setIcon(scaleImage(icon));
+        icon = scaleImage(icon);
+        imageLabels[rawStateNumber].setIcon(icon);
         images.add(imageLabels[rawStateNumber]);
         
         buttons[rawStateNumber].setVisible(true);
@@ -1117,9 +1122,7 @@ private JButton getResetButton()
 
 private ImageIcon scaleImage(ImageIcon img)
 {
-    img.setImage(img.getImage().getScaledInstance(30,30, java.awt.Image.SCALE_AREA_AVERAGING ) );
-    
-    return img;
+    return new ImageIcon(img.getImage().getScaledInstance(30,30, java.awt.Image.SCALE_AREA_AVERAGING ));
 }
 public void actionPerformed(ActionEvent e) 
 {
@@ -1179,7 +1182,8 @@ public void actionPerformed(ActionEvent e)
                     }   
                 }
             }
-            catch(com.cannontech.database.TransactionException te) {
+            catch(com.cannontech.database.TransactionException te) 
+            {
                 CTILogger.error("Couldn't insert image", te);
             }
         }
