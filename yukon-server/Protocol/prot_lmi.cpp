@@ -8,15 +8,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.51 $
-* DATE         :  $Date: 2006/04/19 15:50:10 $
+* REVISION     :  $Revision: 1.52 $
+* DATE         :  $Date: 2006/04/21 15:20:05 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
-
-
-//#include <rw/rwdate.h>
 
 #include "logger.h"
 #include "porter.h"
@@ -733,7 +730,7 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
                                 string golay_codestr;
                                 pair< int, int > golay_code = CtiProtocolSA3rdParty::parseGolayAddress(codestr);
 
-                                golay_codestr  = CtiNumStr(golay_code.first);       //  base address
+                                golay_codestr  = CtiNumStr(golay_code.first).zpad(6);       //  base address
                                 golay_codestr += "-";
                                 golay_codestr += CtiNumStr(golay_code.second - 1);  //  make the function 0-based so it'll match the RTM's result
 
@@ -1052,7 +1049,7 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
                                             string golay_codestr;
                                             pair< int, int > golay_code = CtiProtocolSA3rdParty::parseGolayAddress(codestr);
 
-                                            golay_codestr  = CtiNumStr(golay_code.first);       //  base address
+                                            golay_codestr  = CtiNumStr(golay_code.first).zpad(6);       //  base address
                                             golay_codestr += "-";
                                             golay_codestr += CtiNumStr(golay_code.second - 1);  //  make the function 0-based so it'll match the RTM's result
 
