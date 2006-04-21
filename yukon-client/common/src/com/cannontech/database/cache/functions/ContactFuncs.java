@@ -100,22 +100,41 @@ public final class ContactFuncs
         }
 	}
     
-
+	/**
+     * Returns an array of contactIDS having lastName as partialMatch (true) or exact match (partialMatch=false).
+     * If lastName contains a comma, then the text following the comma is used for FIRSTNAME PARTIAL match 
+     * @param lastName_
+     * @param partialMatch
+     * @return
+	 */
 	public static int[] retrieveContactIDsByLastName(String lastName_, boolean partialMatch)
     {
         int [] contactIDs = null;
         PreparedStatement pstmt = null;
         Connection conn = null;
         ResultSet rset = null;
-
+        
+        String lastName = lastName_.trim();
+        String firstName = null;
+        int commaIndex = lastName_.indexOf(",");
+        if( commaIndex > 0 )
+        {
+            firstName = lastName_.substring(commaIndex+1).trim();
+            lastName = lastName_.substring(0, commaIndex -1).trim();
+        }
+            
         try {
             conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
             String sql = "SELECT CONTACTID " + 
                         " FROM " + Contact.TABLE_NAME + 
                         " WHERE UPPER(CONTLASTNAME) LIKE ?";
+                        if (firstName != null && firstName.length() > 0)
+                            sql += " AND UPPER(CONTFIRSTNAME) LIKE ? ";
             
             pstmt = conn.prepareStatement( sql );
-            pstmt.setString( 1, lastName_.toUpperCase()+(partialMatch? "%":""));
+            pstmt.setString( 1, lastName.toUpperCase()+(partialMatch? "%":""));
+            if (firstName != null && firstName.length() > 0)
+                pstmt.setString(2, firstName.toUpperCase() + "%");
             rset = pstmt.executeQuery();
     
             ArrayList<Integer> contactIDList = new ArrayList<Integer>();
@@ -128,7 +147,7 @@ public final class ContactFuncs
                 contactIDs[i] = contactIDList.get(i).intValue();
         }
         catch( Exception e ){
-            CTILogger.error( "Error retrieving contacts with last name " + lastName_+ ": " + e.getMessage(), e );
+            CTILogger.error( "Error retrieving contacts with last name " + lastName+ ": " + e.getMessage(), e );
         }
         finally {
             try {
