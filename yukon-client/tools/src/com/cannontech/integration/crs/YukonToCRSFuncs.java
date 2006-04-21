@@ -470,7 +470,7 @@ public class YukonToCRSFuncs
 			meterHardwareBase.setEnergyCompanyID(liteStarsEnergyCompany.getEnergyCompanyID());
 			meterHardwareBase = (MeterHardwareBase)Transaction.createTransaction(Transaction.INSERT, meterHardwareBase).execute();
 			
-			LiteStarsCustAccountInformation liteStarsCustAcctInfo = liteStarsEnergyCompany.getCustAccountInformation(accountID.intValue(), true);
+			LiteStarsCustAccountInformation liteStarsCustAcctInfo = liteStarsEnergyCompany.getBriefCustAccountInfo(accountID.intValue(), true);
             StarsCustAccountInformation starsCustAcctInfo = liteStarsEnergyCompany.getStarsCustAccountInformation(accountID.intValue(), true);
 			LiteInventoryBase liteInvBase = new LiteInventoryBase();
 			StarsLiteFactory.setLiteInventoryBase(liteInvBase, meterHardwareBase.getInventoryBase());
