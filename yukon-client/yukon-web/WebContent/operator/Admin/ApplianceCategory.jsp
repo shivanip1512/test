@@ -19,8 +19,16 @@
 	}
 
     LCConnectionServlet cs = (LCConnectionServlet) application.getAttribute(LCConnectionServlet.SERVLET_CONTEXT_ID);
-    LoadcontrolCache cache = cs.getCache();
-    LMProgramDirect[] allPrograms = cache.getDirectPrograms(); 
+    LMProgramDirect[] allPrograms;
+    if(cs != null)
+    {
+        LoadcontrolCache cache = cs.getCache();
+        allPrograms = cache.getDirectPrograms(); 
+    }
+    else
+    {
+        allPrograms = new LMProgramDirect[0];
+    }
 
     // list to put available programs in, contains LMProgramDirect objects
     ArrayList availPrograms = new ArrayList();
