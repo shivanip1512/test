@@ -73,12 +73,15 @@ yukon-client/yukon-web/WebContent/WEB-INF/classes
 yukon-client/yukon-web/WebContent/capcontrol/_notes
 yukon-client/yukon-web/WebContent/capcontrol/temp
 yukon-client/yukon-web/WebContent/user/CILC/_notes
+yukon-client/yukon-web/WebContent_temp
 yukon-client/yukon-web/_notes
 yukon-client/yukon-web/build
 yukon-client/yukon-web/build_jsp_std
 yukon-client/yukon-web/build_src
+yukon-client/yukon-web/deploy
 yukon-client/yukon-web/jspbuild
 yukon-client/yukon-web/srcbuild
+yukon-client/yukon-web/temp
 yukon-client/yukon-web/work
 yukon-client/yukonappclient/bin
 yukon-client/yukonappclient/build

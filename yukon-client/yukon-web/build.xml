@@ -1,165 +1,35 @@
 <?xml version="1.0" ?>
-<!--
-dir_print, jsp_build, build_webxml targets has been tested only on Windows machines
--->
 <project name="yukon web" default="all">
 
+    <property environment="env"/>   
 	<property file="../build/build.properties" />
 	<property name="yukon.web.src_build" value="build_src"/>
-	<property name="yukon.web.jsp_build" value="build_jsp_std"/>
-	<taskdef resource="net/sf/antcontrib/antcontrib.properties" />
+	
+	<target name="all" depends="clean, build" />
 
-
-	<target name="all" depends="clean, build">
-
+	<target name="install" depends="build">
+        
+		<jar jarfile="${yukon.client.bin}/yukon-web.jar" basedir="build/" />
+        
 	</target>
 	
-	<target name="jspcompile" depends="dir_print, jsp_build, build_webxml"/>
+	<target name="build" depends="build_src, war_precompiled"/>
 
-	<target name="dir_print">
-		<mkdir dir="WebContent_temp/WEB-INF/webxml/" />
+    <!-- 
+        Target to delete all of the files and directories from any previous builds
+     -->
+	<target name="clean">
+        
+		<delete file="${yukon.lib}/yukon.war" />
+		<delete file="${yukon.lib}/yukon-web.jar" />
+		<delete dir="build" />
+		<delete dir="${yukon.web.src_build}"/>
 
+		<delete dir="${yukon-web}/WebContent_temp" />
+        <delete dir="${yukon-web}/temp" />      
+        <delete dir="${yukon-web}/deploy" />      
 
-		<foreach target="jspc_tomcat" param="param.jspdir">
-			<path>
-				<fileset dir="${yukon-web}/WebContent">
-					<include name="**/*.jsp" />
-				</fileset>
-			</path>
-		</foreach>
-	</target>
-
-
-
-
-	<target name="jspc_tomcat">
-
-		<echo message="Creating JSP implementation class for ${param.jspdir}" />
-		<echo file="${yukon-web}/jsp_dir.txt" append="false">${param.jspdir}</echo>
-		<loadfile srcfile="${yukon-web}/jsp_dir.txt" property="jsp.curr.package">
-
-			<filterchain>
-				<tokenfilter>
-					<stringtokenizer />
-					<!--filter out the dir structure up to WebContent string 
-					C:\Workspace\yukon-web\WebContent\WEB-INF\layout\footer.jsp
-					-->
-					<replaceregex pattern="(.+\\WebContent\\)(.+)(\\.+.jsp)" replace=".\2" />
-				</tokenfilter>
-				<tokenfilter>
-					<stringtokenizer />
-					<replaceregex pattern="\\" replace="\." />
-				</tokenfilter>
-				<tokenfilter>
-					<stringtokenizer />
-					<replaceregex pattern="\\" replace="\." />
-				</tokenfilter>
-				<tokenfilter>
-					<stringtokenizer />
-					<replaceregex pattern="(WEB-INF\.)" replace="" />
-				</tokenfilter>
-				<tokenfilter>
-					<stringtokenizer />
-
-					<!--C:.Workspace.yukon-web\WebContent\customer_profile.jsp
-					C:.Workspace.yukon-web\WebContent\customer_profile.jsp;
-	
-					-->
-					<replaceregex pattern="(.+\:\.Workspace\.yukon-web\\WebContent\\.+.jsp)" replace=" " />
-				</tokenfilter>
-			</filterchain>
-		</loadfile>
-		<echo message="Package name is org.apache.jsp${jsp.curr.package}" />
-		<!--
-		<taskdef classname="org.apache.jasper.JspC" name="jasper2">
-			<classpath id="jspc.classpath">
-
-				<pathelement location="../build/jasper-compiler.jar" />
-				<pathelement location="../build/jasper-runtime.jar" />
-				<pathelement location="../build/ant.jar" />
-
-				<fileset dir="${yukon.lib}">
-					<include name="**/*.jar" />
-				</fileset>
-
-				<fileset dir="../third-party/">
-					<include name="**/*.jar" />
-				</fileset>
-
-
-			</classpath>
-		</taskdef>
-
-		<jasper2 
-			validateXml="false" 
-			uriroot="C:\Workspace\yukon-web\WebContent" 
-			package="org.apache.jsp${jsp.curr.package}"
-			webXmlFragment="${yukon-web}/WebContent/WEB-INF/generated_web.xml" 
-			outputDir="${yukon-web}/WebContent_temp" />
-
-	-->
-
-		<tstamp>
-			<format property="time" pattern="mmssSSS" />
-		</tstamp>
-
-
-		<java classname="org.apache.jasper.JspC" fork="yes">
-			<arg line="-v0 -webapp ${yukon-web}/WebContent/ -d ${yukon-web}/WebContent_temp
-				   	-p org.apache.jsp${jsp.curr.package} -webinc ${yukon-web}/WebContent_temp/WEB-INF/webxml/onepassweb${time}.xml
-					${param.jspdir}" />
-
-			<classpath>
-				<pathelement location="../build/jasper-compiler.jar" />
-				<pathelement location="../build/jasper-runtime.jar" />
-				<pathelement location="../build/ant.jar" />
-
-				<fileset dir="${yukon.lib}">
-					<include name="**/*.jar" />
-				</fileset>
-
-				<fileset dir="../third-party/">
-					<include name="**/*.jar" />
-				</fileset>
-
-
-			</classpath>
-		</java>
-		<echo message="Implementation class created." />
-	</target>
-
-	<target name="build" depends="build_src, war_std"/>
-
-	<target name="war_std">
-        <mkdir dir="${yukon.web.jsp_build}"/>
-        <copy todir="${yukon.web.jsp_build}">
-            <fileset dir="${yukon-web}/WebContent">
-                <exclude name="build/**" />
-                <exclude name="jspbuild/**" />
-                <exclude name="**/CVS" />
-                <exclude name="WEB-INF/web.xml" />
-                <exclude name="WEB-INF/classes/**" />
-                <exclude name="**/.*" />
-                <exclude name="**/build.xml" />
-            </fileset>
-        </copy>
-
-		<!-- Put all the Yukon JAR files in here that are needed by the webserver -->
-        <copy todir="${yukon.web.jsp_build}/WEB-INF/lib" flatten="true">
-           <fileset dir="${yukon.lib}" >
-              <include name="**/*.jar" />
-              <exclude name="j2ee.jar"/>
-           </fileset>
-        </copy>
-
-	    <war destfile="${yukon.lib}/yukon.war" basedir="${yukon.web.jsp_build}"
-	        webxml="WebContent/WEB-INF/web.xml" duplicate="preserve">
-	    </war>
-
-
-	</target>
-
-
+    </target>
 
 	<target name="build_src">
 
@@ -178,72 +48,162 @@ dir_print, jsp_build, build_webxml targets has been tested only on Windows machi
 		</javac>
 
 		<jar jarfile="${yukon.lib}/yukon-web.jar" basedir="${yukon.web.src_build}" />
+        
 	</target>
 
-	<target name="install" depends="build">
-		<jar jarfile="${yukon.client.bin}/yukon-web.jar" basedir="build/" />
-	</target>
+    <!-- 
+        Target to compile all of the .jsp files into .java files using jasper. 
+        Also creates a new web.xml with generated elements
+     -->
+    <target name="precompile_jsp"> 
+    
+        <mkdir dir="${yukon-web}/temp" />
+        <mkdir dir="${yukon-web}/WebContent_temp" />
 
-	<target name="jsp_build">
-		<mkdir dir="work" />
+        <!-- Define new task for jsp compilation -->   
+        <taskdef classname="org.apache.jasper.JspC" name="jasper2">
+            <classpath id="jspc.class.path">
+                <fileset dir="${yukon.build}/lib">
+                    <include name="**/*.jar"/>
+                </fileset>   
+                <fileset dir="${yukon.lib}">
+                    <include name="**/*.jar"/>
+                </fileset>   
+            </classpath>   
+        </taskdef>
 
+        <!-- Compile the .jsp files to .java -->   
+        <jasper2 
+            package="org.apache.jsp"
+            validateXml="false"
+            uriroot="${yukon-web}/WebContent"
+            webXmlFragment="${yukon-web}/temp/generated_web.xml"
+            outputDir="${yukon-web}/WebContent_temp" />
+       
+        <!-- Compile the .java files into .class files -->   
+        <javac fork="true" memoryMaximumSize="512M" srcdir="${yukon-web}/WebContent_temp" destdir="${yukon-web}/temp" target="${yukon.javac.target}" 
+            source="${yukon.javac.source}" debug="${yukon.javac.debug}">
+            <classpath>
+                <fileset dir="${yukon.build}/lib">
+                    <include name="**/*.jar"/>
+                </fileset>   
+                <fileset dir="${yukon-web}/WebContent/WEB-INF/lib">
+                  <include name="*.jar"/>
+                </fileset>
+                <fileset dir="${yukon.lib}">
+                    <include name="**/*.jar" />
+                </fileset>
+            </classpath>
+        </javac>
+        
+        <!-- Add generated web.xml fragment to the web.xml file -->   
+        <echo>Adding generated_web.xml elements to web.xml</echo>
 
-		<javac destdir="${yukon-web}/work" fork="true" srcdir="${yukon-web}/WebContent_temp" 
-			optimize="off" target="${yukon.javac.target}" 
-	 	    source="${yukon.javac.source}" debug="${yukon.javac.debug}"
-			failonerror="false" excludes="**/*.smap" 
-			memoryInitialSize="128M" memoryMaximumSize="512M" debuglevel="lines">
-			<classpath>
-				<pathelement location="../build/jasper-compiler.jar" />
-				<pathelement location="../build/jasper-runtime.jar" />
-				<pathelement location="../build/ant.jar" />
+        <loadfile property="generated.xml" srcfile="${yukon-web}/temp/generated_web.xml"></loadfile>
+        <copy file="${yukon-web}/WebContent/WEB-INF/web.xml" todir="${yukon-web}/temp" overwrite="true"/>
+        <replace file="${yukon-web}/temp/web.xml" token="&lt;!-- [INSERT GENERATED WEB.XML FRAGMENT HERE] --&gt;" value="${generated.xml}"></replace>
+        
+    </target> 
+ 
+    <!-- 
+        Target to put the compiled _jsp.java files into a yukon-web-jsp.jar
+    -->
+    <target name="jar_precompiled_jsp" depends="precompile_jsp">
+     
+        <!-- Create a yukon-web-jsp jar file with all of the .class files -->
+        <jar jarfile="${yukon-web}/temp/yukon-web-jsp.jar" basedir="${yukon-web}/temp/" excludes="*.xml *.jar"/>
+        
+    </target>
+ 
+    <!--
+        Target to create a yukon.war file with precompiled jsps included
+    -->   
+    <target name="war_precompiled" depends="jar_precompiled_jsp">
 
+        <mkdir dir="${yukon-web}/deploy" />
+        
+        <!-- Copy all of the necessary web application files into the deploy directory -->   
+        <copy todir="${yukon-web}/deploy" includeemptydirs="false">
+            <fileset dir="${yukon-web}/WebContent">
+                <exclude name="**/CVS" />
+                <exclude name="WEB-INF/web.xml" />
+                <exclude name="WEB-INF/classes/**" />
+                <exclude name="**/.*" />
+                <exclude name="**/build.xml" />
+                <exclude name="**/*.jsp" />
+                <exclude name="**/*.jspf" />
+            </fileset>
+        </copy>
 
-				<fileset dir="${yukon.lib}">
-					<include name="**/*.jar" />
-				</fileset>
+        <!-- Copy all of the library jars from the yukon lib directory into the deploy/WEB-INF/lib 
+        directory to be included in the war -->
+        <copy todir="${yukon-web}/deploy/WEB-INF/lib" flatten="true">
+           <fileset dir="${yukon.lib}" >
+              <include name="**/*.jar" />
+              <exclude name="j2ee.jar"/>
+           </fileset>
+        </copy>
+        <!-- Copy the yukon-web-jsp.jar into the deploy/WEB-INF/lib directory to be included in the war -->
+        <copy todir="${yukon-web}/deploy/WEB-INF/lib" flatten="true">
+           <fileset dir="${yukon-web}/temp/" >
+              <include name="**/*.jar" />
+           </fileset>
+        </copy>
 
-				<fileset dir="../third-party/">
-					<include name="**/*.jar" />
-				</fileset>
-			</classpath>
+        <!-- Copy the dummy login.jsp file into the deploy directory to be included in the war -->   
+        <copy todir="${yukon-web}/deploy" flatten="true" file="${yukon-web}/resources/login.jsp" overwrite="true"/>
 
+        <!-- Create the war file in the yukon lib directory from the 
+        contents of the yukon-web deploy directory -->   
+        <war destfile="${yukon.lib}/yukon.war" basedir="${yukon-web}/deploy"
+            webxml="${yukon-web}/temp/web.xml" duplicate="preserve">
+        </war>  
+        
+    </target>   
+ 
+    <!--
+        Target to deploy the yukon.war and yukon.xml files to the tomcat home directory
+    -->   
+    <target name="deploy_precompiled_war">
+        
+        <mkdir dir="${tomcat.home}/webapps/yukon"/>
+        <unwar dest="${tomcat.home}/webapps/yukon" src="${yukon.lib}/yukon.war"/>
+        <copy todir="${tomcat.home}/webapps" flatten="true" file="${yukon-web}/resources/yukon.xml" overwrite="true"/>
+           
+    </target>   
+    
+    <!--
+        Old war target and staging directory (replaced by war_precompiled)
+    -->   
+	<property name="yukon.web.jsp_build" value="build_jsp_std"/>
+    <target name="war_std">
+        <mkdir dir="${yukon.web.jsp_build}"/>
+        <copy todir="${yukon.web.jsp_build}">
+            <fileset dir="${yukon-web}/WebContent">
+                <exclude name="build/**" />
+                <exclude name="jspbuild/**" />
+                <exclude name="**/CVS" />
+                <exclude name="WEB-INF/web.xml" />
+                <exclude name="WEB-INF/classes/**" />
+                <exclude name="**/.*" />
+                <exclude name="**/build.xml" />
+            </fileset>
+        </copy>
 
-		</javac>
+        <!-- Put all the Yukon JAR files in here that are needed by the webserver -->
+        <copy todir="${yukon.web.jsp_build}/WEB-INF/lib" flatten="true">
+           <fileset dir="${yukon.lib}" >
+              <include name="**/*.jar" />
+              <exclude name="j2ee.jar"/>
+           </fileset>
+        </copy>
 
-	</target>
-	<target name="build_webxml">
-		<concat destfile="${yukon-web}/WebContent_temp/WEB-INF/generated_web.xml">
-			<fileset dir="${yukon-web}/WebContent_temp/WEB-INF/webxml/">
-				<include name="*.xml" />
-			</fileset>
-		</concat>
-	</target>
+        <war destfile="${yukon.lib}/yukon.war" basedir="${yukon.web.jsp_build}"
+            webxml="WebContent/WEB-INF/web.xml" duplicate="preserve">
+        </war>
 
-	<target name="clean">
-		<delete file="${yukon.lib}/yukon.war" />
-		<delete file="${yukon.lib}/yukon-web.jar" />
-		<delete dir="build" />
-		<delete dir="${yukon.web.jsp_build}"/>
-		<delete dir="${yukon.web.src_build}"/>
-
-		<delete includeemptydirs="true" quiet="true">
-			<fileset dir="${yukon-web}/WebContent_temp">
-				<include name="**/*.java" />
-			</fileset>
-		</delete>
-		<delete quiet="true">
-			<fileset dir="${yukon-web}/WebContent_build">
-				<include name="**/*.java" />
-			</fileset>
-		</delete>
-		<delete dir="work" />
-		<delete quiet="true">
-			<fileset dir="WebContent_temp/WEB-INF/webxml/" />
-		</delete>
-		<delete file="WebContent_temp/WEB-INF/generated_web.xml"/>
-	</target>
-
+    </target>
+    
 </project>
 
 

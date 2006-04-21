@@ -6,3 +6,6 @@ jspbuild
 srcbuild
 build_jsp_std
 build_src
+temp
+WebContent_temp
+deploy
