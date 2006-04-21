@@ -112,6 +112,7 @@ public class SearchCustAccountAction implements ActionBase {
             searchBy.setEntryID( Integer.parseInt(req.getParameter("SearchBy")) );
             searchAccount.setSearchBy( searchBy );
             searchAccount.setSearchValue( req.getParameter("SearchValue") );
+            searchAccount.setPartialMatch( (req.getParameter("ExactMatch") == null)?true:false);
             
             // Remember the last search option
 			session.setAttribute( ServletUtils.ATT_LAST_ACCOUNT_SEARCH_OPTION, new Integer(searchBy.getEntryID()) );
@@ -174,7 +175,7 @@ public class SearchCustAccountAction implements ActionBase {
             }
             else if (searchByDefID == YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_LAST_NAME) {
             	/* Search by last name */
-				accountList = energyCompany.searchAccountByLastName( searchAccount.getSearchValue(), searchMembers );
+				accountList = energyCompany.searchAccountByLastName( searchAccount.getSearchValue(), searchMembers, searchAccount.getPartialMatch());
             }
             else if (searchByDefID == YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_SERIAL_NO) {
             	/* Search by hardware serial number */
