@@ -3,11 +3,19 @@
 <%@ page import="com.cannontech.database.data.lite.LiteContact" %>
 <%@ page import="com.cannontech.database.data.lite.stars.*" %>
 <%@ page import="com.cannontech.database.cache.functions.YukonListFuncs" %>
+<%@ page import="com.cannontech.database.cache.StarsDatabaseCache" %>
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="com.cannontech.stars.web.util.WorkOrderManagerUtil" %>
+<%@ page import="com.cannontech.common.util.Pair" %>
 <%
-	int orderID = Integer.parseInt(request.getParameter("OrderId"));
-	LiteWorkOrderBase liteOrder = liteEC.getWorkOrderBase(orderID, true);
-//	StarsServiceRequest order = StarsLiteFactory.createStarsServiceRequest(liteOrder, liteEC);
-	
+    LiteWorkOrderBase liteOrder = null;
+    LiteStarsEnergyCompany liteWOEnergyCompany = null;
+    ArrayList workOrderSetList = (ArrayList)session.getAttribute(WorkOrderManagerUtil.WORK_ORDER_SET);
+    if (workOrderSetList.get(0) instanceof Pair)
+        liteOrder = (LiteWorkOrderBase)((Pair)workOrderSetList.get(0)).getFirst();
+    else
+        liteOrder = (LiteWorkOrderBase)workOrderSetList.get(0);
+    
 	int statusPending = liteEC.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PENDING).getEntryID();
 	int statusAssigned = liteEC.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_ASSIGNED).getEntryID();
 	int statusScheduled = liteEC.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_SCHEDULED).getEntryID();
@@ -200,15 +208,15 @@ function sendWorkOrder() {
 			  <input type="hidden" name="NoCache">
 			  <input type="hidden" name="OrderID" value="<%= liteOrder.getOrderID() %>">
                 <input type="hidden" name="OrderNo" value="<%= liteOrder.getOrderNumber() %>">
-			  <input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>?OrderId=<%= orderID %>">
-			  <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?OrderId=<%= orderID %>">
+			  <input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>">
+			  <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>">
 			</form>
 			<form name="woForm" method="post" action="<%= request.getContextPath() %>/servlet/WorkOrderManager">
 			  <input type="hidden" name="action" value="SendWorkOrder">
               <input type="hidden" name="OrderID" value="<%= liteOrder.getOrderID() %>">
                 <input type="hidden" name="OrderNo" value="<%= liteOrder.getOrderNumber() %>">
-              <input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>?OrderId=<%= orderID %>">
-              <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?OrderId=<%= orderID %>">
+              <input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>">
+              <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>">
 			  <input type="hidden" name="<%= ServletUtils.CONFIRM_ON_MESSAGE_PAGE %>">
 			</form>
           </td>
@@ -224,8 +232,8 @@ function sendWorkOrder() {
                 <input type="hidden" name="OrderNo" value="<%= liteOrder.getOrderNumber() %>">
                 <input type="hidden" name="OrderID" value="<%= liteOrder.getOrderID() %>">
 				<input type="hidden" name="AccountID" value="<%= liteOrder.getAccountID() %>">
-				<input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>?OrderId=<%= orderID %>">
-				<input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?OrderId=<%= orderID %>">
+				<input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>">
+				<input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>">
                 <table width="640" border="0" cellspacing="0" cellpadding="10" align="center">
                   <tr> 
                     <td width="300" valign="top" bgcolor="#FFFFFF"> 
@@ -465,7 +473,7 @@ function sendWorkOrder() {
                 <input type="hidden" name="action" value="GetCustAccount">
                 <input type="hidden" name="AccountID" value="<%= liteOrder.getAccountID() %>">
                 <input type="hidden" name="REDIRECT" value=" <%=request.getContextPath() %>/operator/Consumer/Update.jsp">
-                <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?OrderId=<%= orderID %>">
+                <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>">
               </form>
               <p>&nbsp;</p>
               </div>
