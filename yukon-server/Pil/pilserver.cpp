@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.78 $
-* DATE         :  $Date: 2006/04/13 15:52:33 $
+* REVISION     :  $Revision: 1.79 $
+* DATE         :  $Date: 2006/04/21 18:52:21 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -962,8 +962,6 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
     list< OUTMESS* >     tempOutList;
 
     list< CtiRequestMsg* >  execList;
-
-    extern CtiLocalConnect PilToPorter;
 
     OUTMESS *OutMessage = NULL;
     CtiReturnMsg   *pcRet = NULL;
