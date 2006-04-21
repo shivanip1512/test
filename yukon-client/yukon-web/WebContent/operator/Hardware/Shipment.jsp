@@ -240,6 +240,12 @@
 				alert("Serial range end field cannot be empty and should be a valid serial number.");
 				return false;
 			}
+            
+            if (form.warehouse.value == "")
+            {
+                alert("A warehouse is required for switch location assignment.  If no warehouses are available, then a new warehouse will need to be added to the appropriate energy company.");
+                return false;
+            }
 			
 			return true;
 		}
