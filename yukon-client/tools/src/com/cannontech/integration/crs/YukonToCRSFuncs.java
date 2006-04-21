@@ -514,7 +514,7 @@ public class YukonToCRSFuncs
         StarsCustAccountInformation starsCustAcctInfo = null;
         if( airCond.charValue() == 'Y' || waterHeater.charValue() == 'Y' )
         {
-            liteStarsCustAcctInfo = liteStarsEnergyCompany.getCustAccountInformation(accountID.intValue(), true);
+            liteStarsCustAcctInfo = liteStarsEnergyCompany.getBriefCustAccountInfo(accountID.intValue(), true);
             starsCustAcctInfo = liteStarsEnergyCompany.getStarsCustAccountInformation(accountID.intValue(), true);
         }
 
