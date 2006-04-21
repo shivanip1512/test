@@ -316,7 +316,7 @@ public class WorkOrderBean {
 					for (int j = 0; j < workOrders.size(); j++)
 					{
 						LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) workOrders.get(j);
-						LiteStarsCustAccountInformation liteCustAcctInfo = energyCompany.getCustAccountInformation(liteOrder.getAccountID(), true);
+						LiteStarsCustAccountInformation liteCustAcctInfo = energyCompany.getBriefCustAccountInfo(liteOrder.getAccountID(), true);
 						LiteAddress liteAddr = energyCompany.getAddress( liteCustAcctInfo.getAccountSite().getStreetAddressID());
 						
 						//The filterText is formatted "Label: value".  By parsing for the last space char we can get just the value.
@@ -331,7 +331,7 @@ public class WorkOrderBean {
 					for (int j = 0; j < workOrders.size(); j++)
 					{
 						LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) workOrders.get(j);
-						LiteStarsCustAccountInformation liteCustAcctInfo = energyCompany.getCustAccountInformation(liteOrder.getAccountID(), true);
+						LiteStarsCustAccountInformation liteCustAcctInfo = energyCompany.getBriefCustAccountInfo(liteOrder.getAccountID(), true);
 						if( specificFilterID.intValue() == -1)	// RESIDENTIAL CUSTOMER
 						{
 							if( liteCustAcctInfo.getCustomer() instanceof LiteCustomer)
