@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.41 $
-* DATE         :  $Date: 2006/04/19 15:48:30 $
+* REVISION     :  $Revision: 1.42 $
+* DATE         :  $Date: 2006/04/21 15:18:27 $
 *
 * HISTORY      :
 * $Log: prot_sa3rdparty.cpp,v $
+* Revision 1.42  2006/04/21 15:18:27  mfisher
+* made the Golay parsing logic a little more readable
+*
 * Revision 1.41  2006/04/19 15:48:30  mfisher
 * added an overloaded int version of parseGolayAddress()
 *
@@ -2108,8 +2111,8 @@ pair< unsigned long, unsigned > CtiProtocolSA3rdParty::parseGolayAddress(unsigne
     unsigned function = 1;
 
     //  This code attempts to determine the "function" based upon the bits of the A & B words (BBAABB).
-    bool a_word_odd = (code / 100) % 2;
-    bool b_word_odd =  code % 2;
+    bool a_word_odd = ((code / 100) % 2) == 1;
+    bool b_word_odd = (code % 2) == 1;
 
     if( a_word_odd )
     {
