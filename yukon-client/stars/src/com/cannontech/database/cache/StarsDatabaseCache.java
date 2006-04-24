@@ -56,6 +56,7 @@ import com.cannontech.stars.xml.serialize.StarsInventory;
 import com.cannontech.stars.xml.serialize.StarsLMProgram;
 import com.cannontech.stars.xml.serialize.StarsServiceCompany;
 import com.cannontech.stars.xml.serialize.StarsServiceRequest;
+import com.cannontech.stars.xml.serialize.StarsServiceRequestHistory;
 
 /**
  * @author yao
@@ -545,24 +546,20 @@ public class StarsDatabaseCache implements com.cannontech.database.cache.DBChang
 		else if( msg.getDatabase() == DBChangeMsg.CHANGE_WORK_ORDER_DB){
 			for (int i = 0; i < companies.size(); i++) {
 				LiteStarsEnergyCompany liteStarsEnergyCompany = (LiteStarsEnergyCompany) companies.get(i);
-				if( liteStarsEnergyCompany.getEnergyCompanyID().intValue() != EnergyCompany.DEFAULT_ENERGY_COMPANY_ID)
-				{				
-					LiteWorkOrderBase liteWorkOrderBase = liteStarsEnergyCompany.getWorkOrderBase( msg.getId(), false );
-					if( msg.getTypeOfChange() == DBChangeMsg.CHANGE_TYPE_ADD)
-					{
-						if( liteWorkOrderBase == null)
-						{
-							liteWorkOrderBase = new LiteWorkOrderBase(msg.getId());
-							liteWorkOrderBase.retrieve();
-							handleWorkOrderChange( msg, liteStarsEnergyCompany, liteWorkOrderBase );
-							return;
-						}
-					}
-					else {
-						if (liteWorkOrderBase != null) {
-							handleWorkOrderChange( msg, liteStarsEnergyCompany, liteWorkOrderBase );
-							return;
-						}
+				LiteWorkOrderBase liteWorkOrderBase = liteStarsEnergyCompany.getWorkOrderBase( msg.getId(), false );
+				if( liteWorkOrderBase == null)
+				{
+					liteWorkOrderBase = new LiteWorkOrderBase(msg.getId());
+					liteWorkOrderBase.retrieve();
+                    if( liteWorkOrderBase.getEnergyCompanyID() == liteStarsEnergyCompany.getEnergyCompanyID().intValue()){
+                        handleWorkOrderChange( msg, liteStarsEnergyCompany, liteWorkOrderBase );
+                        return;
+                    }
+				}
+				else {
+					if (liteWorkOrderBase != null) {
+						handleWorkOrderChange( msg, liteStarsEnergyCompany, liteWorkOrderBase );
+						return;
 					}
 				}
 			}
@@ -791,29 +788,49 @@ public class StarsDatabaseCache implements com.cannontech.database.cache.DBChang
 		
 		switch( msg.getTypeOfChange() ) {
 			case DBChangeMsg.CHANGE_TYPE_ADD:
+            case DBChangeMsg.CHANGE_TYPE_UPDATE:
+            {
+                liteStarsEnergyCompany.deleteWorkOrderBase(liteWorkOrderBase.getOrderID());
 				liteStarsEnergyCompany.addWorkOrderBase(liteWorkOrderBase);
 				liteStarsCustAcctInfo = (LiteStarsCustAccountInformation)liteStarsEnergyCompany.getCustAccountInformation(liteWorkOrderBase.getAccountID(), true);
+                liteStarsCustAcctInfo.getServiceRequestHistory().remove(Integer.valueOf(liteWorkOrderBase.getOrderID()));
+                liteStarsCustAcctInfo.getServiceRequestHistory().add( 0, Integer.valueOf(liteWorkOrderBase.getOrderID()));
+                
                 StarsCustAccountInformation starsAcctInfo = liteStarsEnergyCompany.getStarsCustAccountInformation(liteWorkOrderBase.getAccountID(), true);
-				liteStarsCustAcctInfo.getServiceRequestHistory().add( 0, Integer.valueOf(liteWorkOrderBase.getOrderID()));
 				if (starsAcctInfo != null) {
 					StarsServiceRequest starsOrder = StarsLiteFactory.createStarsServiceRequest( liteWorkOrderBase, liteStarsEnergyCompany);
-					starsAcctInfo.getStarsServiceRequestHistory().addStarsServiceRequest(0, starsOrder);
+                    StarsServiceRequestHistory orders = starsAcctInfo.getStarsServiceRequestHistory();
+                    boolean updated = false;
+                    for (int i = 0; i < orders.getStarsServiceRequestCount(); i++) {
+                        if (orders.getStarsServiceRequest(i).getOrderID() == starsOrder.getOrderID()) {
+                            orders.setStarsServiceRequest(i, starsOrder);
+                            updated = true;
+                            break;
+                        }
+                    }
+                    if (!updated)
+                        orders.addStarsServiceRequest(0, starsOrder);
 				}
 				break;
-				
-			case DBChangeMsg.CHANGE_TYPE_UPDATE:
-				liteStarsEnergyCompany.deleteWorkOrderBase(liteWorkOrderBase.getOrderID());
-				liteStarsEnergyCompany.addWorkOrderBase(liteWorkOrderBase);
-				liteStarsCustAcctInfo = (LiteStarsCustAccountInformation)liteStarsEnergyCompany.getCustAccountInformation(liteWorkOrderBase.getAccountID(), true);
-				liteStarsCustAcctInfo.getServiceRequestHistory().remove(Integer.valueOf(liteWorkOrderBase.getOrderID()));
-				liteStarsCustAcctInfo.getServiceRequestHistory().add( 0, Integer.valueOf(liteWorkOrderBase.getOrderID()));
-				break;
-				
+            }
 			case DBChangeMsg.CHANGE_TYPE_DELETE:
+            {
 				liteStarsEnergyCompany.deleteWorkOrderBase(liteWorkOrderBase.getOrderID());
 				liteStarsCustAcctInfo = (LiteStarsCustAccountInformation)liteStarsEnergyCompany.getCustAccountInformation(liteWorkOrderBase.getAccountID(), true);
 				liteStarsCustAcctInfo.getServiceRequestHistory().remove(Integer.valueOf(liteWorkOrderBase.getOrderID()));
+                
+                StarsCustAccountInformation starsAcctInfo = liteStarsEnergyCompany.getStarsCustAccountInformation(liteWorkOrderBase.getAccountID(), true);
+                if (starsAcctInfo != null) {
+                    StarsServiceRequestHistory orders = starsAcctInfo.getStarsServiceRequestHistory();
+                    for (int i = 0; i < orders.getStarsServiceRequestCount(); i++) {
+                        if (orders.getStarsServiceRequest(i).getOrderID() == liteWorkOrderBase.getOrderID()) {
+                            orders.removeStarsServiceRequest(i);
+                            break;
+                        }
+                    }
+                }                
 				break;
+            }
 		}
 	}
 
