@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTPERF.cpp-arc  $
-* REVISION     :  $Revision: 1.42 $
-* DATE         :  $Date: 2006/04/17 19:30:10 $
+* REVISION     :  $Revision: 1.43 $
+* DATE         :  $Date: 2006/04/24 19:23:06 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -393,6 +393,7 @@ void statisticsNewCompletion(long paoportid, long devicepaoid, long targetpaoid,
 {
     if( messageFlags & MessageFlag_StatisticsRequested )
     {
+        messageFlags &= ~MessageFlag_StatisticsRequested;
         CtiLockGuard<CtiMutex> guard(gDeviceStatColMux);
         CtiStatTuple tup;
     

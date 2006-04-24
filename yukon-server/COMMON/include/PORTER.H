@@ -274,6 +274,7 @@ struct QUEENT
     USHORT Length;
     LONG TargetID;
     ULONG Address;
+    UINT MessageFlags;//Perhaps we should keep the whole out message and not have to do this?
 
     PIL_ECHO Request;
 };

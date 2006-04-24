@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.47 $
-* DATE         :  $Date: 2006/04/17 19:30:10 $
+* REVISION     :  $Revision: 1.48 $
+* DATE         :  $Date: 2006/04/24 19:23:06 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -791,6 +791,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
                 ResultMessage.SaveNexus       = pInfo->QueTable[QueTabEnt].SaveNexus;
                 ResultMessage.Priority        = pInfo->QueTable[QueTabEnt].Priority;
                 ResultMessage.Sequence        = pInfo->QueTable[QueTabEnt].OriginalOutMessageSequence;
+                ResultMessage.MessageFlags    = pInfo->QueTable[QueTabEnt].MessageFlags;
 
                 ResultMessage.Return          = pInfo->QueTable[QueTabEnt].Request;
 
@@ -1244,6 +1245,7 @@ CCUQueueFlush (CtiDeviceSPtr Dev)
                     InMessage.SaveNexus = pInfo->QueTable[QueTabEnt].SaveNexus;
                     InMessage.Priority = pInfo->QueTable[QueTabEnt].Priority;
                     InMessage.Return = pInfo->QueTable[QueTabEnt].Request;
+                    InMessage.MessageFlags = pInfo->QueTable[QueTabEnt].MessageFlags;
                     InMessage.Time = LongTime();
                     InMessage.MilliTime =  0;
                     InMessage.EventCode = QUEUEFLUSHED | DECODED;
@@ -1308,6 +1310,7 @@ QueueFlush (CtiDeviceSPtr Dev)
                     InMessage.SaveNexus     = pInfo->QueTable[QueTabEnt].SaveNexus;
                     InMessage.Priority      = pInfo->QueTable[QueTabEnt].Priority;
                     InMessage.Return        = pInfo->QueTable[QueTabEnt].Request;
+                    InMessage.MessageFlags  = pInfo->QueTable[QueTabEnt].MessageFlags;
                     InMessage.Time          = LongTime();
                     InMessage.MilliTime     =  0;
                     InMessage.EventCode     = QUEUEFLUSHED | DECODED;                 // Indicates the result of the request.. The CCU queue was blown away!
@@ -1513,6 +1516,7 @@ BuildLGrpQ (CtiDeviceSPtr Dev)
                 pInfo->QueTable[QueTabEnt].Priority       = MyOutMessage->Priority;
                 pInfo->QueTable[QueTabEnt].Address        = MyOutMessage->Buffer.BSt.Address;
                 pInfo->QueTable[QueTabEnt].Request        = MyOutMessage->Request;
+                pInfo->QueTable[QueTabEnt].MessageFlags   = MyOutMessage->MessageFlags;
                 pInfo->QueTable[QueTabEnt].OriginalOutMessageSequence  = MyOutMessage->Sequence;            // The orignial requestor's sequence.
                 pInfo->QueTable[QueTabEnt].QueueEntrySequence          = QueueEntrySequence;                // The tatoo which makes this entry (QueTabEnt) identifiable with this OUT/INMESS pair.
 
@@ -1647,6 +1651,7 @@ BuildLGrpQ (CtiDeviceSPtr Dev)
                 if(OutMessage->Priority < 11)
                     OutMessage->Priority = 11;
 
+                statisticsNewRequest(OutMessage->Port, OutMessage->TrxID, OutMessage->DeviceID, OutMessage->MessageFlags);
                 if(PortManager.writeQueue (OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (VOID *) OutMessage, OutMessage->Priority))
                 {
                     _snprintf(tempstr, 99,"Error Writing to Queue for Port %2hd\n", OutMessage->Port);
@@ -1857,6 +1862,7 @@ DeQueue (INMESS *InMessage)
                         ResultMessage.ReturnNexus = pInfo->QueTable[i].ReturnNexus;
                         ResultMessage.SaveNexus = pInfo->QueTable[i].SaveNexus;
                         ResultMessage.Return = pInfo->QueTable[i].Request;
+                        ResultMessage.MessageFlags = pInfo->QueTable[i].MessageFlags;
                         ResultMessage.EventCode = InMessage->EventCode | DECODED;
                         ResultMessage.Time = InMessage->Time;
                         ResultMessage.MilliTime = InMessage->MilliTime;
@@ -1865,6 +1871,7 @@ DeQueue (INMESS *InMessage)
                             ResultMessage.Buffer.DSt.Address = pInfo->QueTable[i].Address;
                         }
 
+                        statisticsNewCompletion( ResultMessage.Port, InMessage->DeviceID, ResultMessage.TargetID, ResultMessage.EventCode & 0x3fff, ResultMessage.MessageFlags );
                         /* Now send it back */
                         if((SocketError = ResultMessage.ReturnNexus->CTINexusWrite (&ResultMessage, sizeof (ResultMessage), &BytesWritten, 60L)))
                         {
