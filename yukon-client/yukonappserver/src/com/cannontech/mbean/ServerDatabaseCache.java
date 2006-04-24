@@ -3629,13 +3629,13 @@ public synchronized LiteContact getAContactByUserID(int userID)
 
 public synchronized LiteContact getAContactByContactID(int contactID) 
 {
-    LiteContact specifiedContact = null;
     //check cache for previous grabs
-    if(allContactsMap == null) {
+    if(allContactsMap == null) 
+    {
         getAllContacts();
     }
-    else
-        specifiedContact = (LiteContact) allContactsMap.get(new Integer(contactID));
+    
+    LiteContact specifiedContact = (LiteContact) allContactsMap.get(new Integer(contactID));
     
     //not in cache, go to DB.
     if(specifiedContact == null)
@@ -3672,21 +3672,22 @@ public synchronized LiteContact getContactsByEmail(String email)
 
 public synchronized LiteContactNotification getAContactNotifByNotifID(int contNotifyID) 
 {
-    LiteContactNotification specifiedNotify = null;
     //check cache for previous grabs
-    if(allContactsMap == null) {
+    if(allContactsMap == null || allContactNotifsMap == null) 
+    {
 		getAllContacts();
-	} else {
-		specifiedNotify = (LiteContactNotification) allContactNotifsMap.get(new Integer(contNotifyID));
-	}
+	} 
     
+    LiteContactNotification specifiedNotify = (LiteContactNotification) allContactNotifsMap.get(new Integer(contNotifyID));
+	
     //not in cache, go to DB.
     if(specifiedNotify == null)
     {
         specifiedNotify = YukonUserContactNotificationLookup.loadSpecificContactNotificationByID(contNotifyID);
         //found it, put it in the cache for later searches
-        allContactsMap.put(new Integer(contNotifyID), specifiedNotify);
-        allContacts.add(specifiedNotify);
+        allContactNotifsMap.put(new Integer(contNotifyID), specifiedNotify);
+        //make sure the contact is also loaded
+        getAContactByContactID(specifiedNotify.getContactID());
     }
     
     return specifiedNotify;
