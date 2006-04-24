@@ -37,7 +37,7 @@ public class StateImageEditorPanel extends DataInputPanel implements ActionListe
 	private javax.swing.JPanel pointPanel = null;
 	private PointSelectionPanel ivjPointSelectionPanel = null;
 	private StateImage stateImage;
-    private Map map;
+    private HashMap map = new HashMap();
 	private LinkToPanel ivjLinkToPanel = null;
     private JLabel previewLabel;
     private JLabel rawStateLabel;
@@ -461,9 +461,10 @@ public static void main(java.lang.String[] args) {
  * This method was created in VisualAge.
  * @param o java.lang.Object
  */
-public void setValue(Object o) {
+public void setValue(Object o) 
+{
 	stateImage = (StateImage) o;
-	map = stateImage.getCustomImageMap();
+	map = new HashMap( stateImage.getCustomImageMap());
 	// Set link
 	getLinkToPanel().setLinkTo(stateImage.getLinkTo());
 
@@ -480,7 +481,8 @@ public void setValue(Object o) {
  * Creation date: (12/18/2001 4:16:51 PM)
  * @param evt javax.swing.event.TreeSelectionEvent
  */
-public void valueChanged(TreeSelectionEvent evt) {
+public void valueChanged(TreeSelectionEvent evt) 
+{
 	LitePoint p = getPointSelectionPanel().getSelectedPoint();	
     if(p != null)
     {
@@ -499,8 +501,6 @@ public void resetPreviewPanelImages(LitePoint p)
         
         for(int i = 0; i < states.size(); i++) 
         {
-            
-            
             int imgId = ((LiteState) states.get(i)).getImageID();
             LiteState state = (LiteState)states.get(i);
             int rawStateNumber = state.getStateRawState();
@@ -566,7 +566,7 @@ public void setPreviewPanelImages(LitePoint p)
         
         if(!(map.get(rawStateNumber) == null))
         {
-            imgId = new Integer((Integer)stateImage.getCustomImageMap().get(rawStateNumber)).intValue();
+            imgId = new Integer((Integer)map.get(rawStateNumber)).intValue();
         }
         
         LiteYukonImage lyi = YukonImageFuncs.getLiteYukonImage(imgId); 
