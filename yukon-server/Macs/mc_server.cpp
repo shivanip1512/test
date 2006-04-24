@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_server.cpp-arc  $
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2005/12/20 17:25:02 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2006/04/24 14:47:33 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -293,7 +293,7 @@ bool CtiMCServer::init()
     {
         RWRecursiveLock<class RWMutexLock>::LockGuard map_guard(_schedule_manager.getMux() );
         CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << CtiTime() << " Loaded " << _schedule_manager.getMap().entries() << " schedules from the database." << endl;
+        dout << CtiTime() << " Loaded " << _schedule_manager.getMap().size() << " schedules from the database." << endl;
     }
     else
     {
@@ -712,13 +712,13 @@ bool CtiMCServer::processMessage(CtiMessage* msg)
                 //send all the schedules to the client that requested them
                 RWRecursiveLock<RWMutexLock>::LockGuard guard( _schedule_manager.getMux() );
 
-                CtiMCScheduleManager::CtiRTDBIterator itr(_schedule_manager.getMap());
+                CtiMCScheduleManager::MapIterator itr = _schedule_manager.getMap().begin();
                 CtiMultiMsg* multi = new CtiMultiMsg();
 
                 CtiMCSchedule* sched;
-                for(;itr();)
+                for(;itr != _schedule_manager.getMap().end();++itr)
                 {
-                    sched = itr.value();
+                    sched = (*itr).second;
 
                     if( sched != NULL )
                     {

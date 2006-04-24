@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrftpinterface.cpp-arc  $
-*    REVISION     :  $Revision: 1.10 $
-*    DATE         :  $Date: 2005/12/20 17:17:13 $
+*    REVISION     :  $Revision: 1.11 $
+*    DATE         :  $Date: 2006/04/24 14:47:32 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrftpinterface.cpp,v $
+      Revision 1.11  2006/04/24 14:47:32  tspar
+      RWreplace: replacing a few missed or new Rogue Wave elements
+
       Revision 1.10  2005/12/20 17:17:13  tspar
       Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 
@@ -425,13 +428,13 @@ bool CtiFDRFtpInterface::loadTranslationLists()
                 getReceiveFromList().setPointList (pointList);
 
                 // get iterator on send list
-                CtiFDRManager::CTIFdrPointIterator  myIterator(getReceiveFromList().getPointList()->getMap());
+                CtiFDRManager::CTIFdrPointIterator  myIterator = getReceiveFromList().getPointList()->getMap().begin();
                 int x;
 
-                for ( ; myIterator(); )
+                for ( ; myIterator != getReceiveFromList().getPointList()->getMap().end(); ++myIterator)
                 {
                     foundPoint = true;
-                    translationPoint = myIterator.value();
+                    translationPoint = (*myIterator).second;
 
                     for (x=0; x < translationPoint->getDestinationList().size(); x++)
                     {

@@ -18,6 +18,7 @@
 #define __TFEXEC_H__
 #pragma warning( disable : 4786 )  // No truncated debug name warnings please....
 
+#include <queue>
 
 #include <rw/thr/thread.h>
 #include <rw/thr/thrfunc.h>
@@ -36,7 +37,8 @@ class CtiBatchedFunctorExecutor
 private:
     RWThread _timer_thr;
 
-    RWPCValQueue<RWFunctor0> _functor_queue;
+    //RWPCValQueue<RWFunctor0> _functor_queue;
+    std::queue<RWFunctor0> _functor_queue;
     long _millis;
 
     void _timed_thr_func();

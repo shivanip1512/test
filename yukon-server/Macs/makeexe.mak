@@ -147,18 +147,18 @@ mc_dbthr.obj:	yukon.h precompiled.h ctidbgmem.h mc_dbthr.h mc.h \
 		boost_time.h
 mc_fileint.obj:	yukon.h precompiled.h ctidbgmem.h mc_fileint.h \
 		fileint.h dlldefs.h queue.h logger.h thread.h mutex.h guard.h \
-		ctitime.h CtiPCPtrQueue.h mgr_mcsched.h mc.h rtdb.h hashkey.h \
-		hash_functions.h utility.h dsm2.h cticonnect.h netports.h \
-		sorted_vector.h dllbase.h os2_2w32.h types.h cticalls.h \
-		mc_sched.h dbmemobject.h tbl_pao.h tbl_mcsched.h \
+		ctitime.h CtiPCPtrQueue.h utility.h dsm2.h cticonnect.h \
+		netports.h sorted_vector.h mgr_mcsched.h mc.h rtdb.h \
+		hashkey.h hash_functions.h dllbase.h os2_2w32.h types.h \
+		cticalls.h mc_sched.h dbmemobject.h tbl_pao.h tbl_mcsched.h \
 		tbl_mcsimpsched.h message.h collectable.h rwutil.h \
 		boost_time.h mc_msg.h ctibase.h ctinexus.h ctidate.h
 mc_main.obj:	yukon.h precompiled.h ctidbgmem.h ctitime.h dlldefs.h \
 		CServiceConfig.h mc_svc.h cservice.h mc_server.h mc.h \
 		logger.h thread.h mutex.h guard.h CtiPCPtrQueue.h CParms.h \
 		rwutil.h boost_time.h message.h collectable.h queue.h \
-		mgr_mcsched.h rtdb.h hashkey.h hash_functions.h utility.h \
-		dsm2.h cticonnect.h netports.h sorted_vector.h dllbase.h \
+		utility.h dsm2.h cticonnect.h netports.h sorted_vector.h \
+		mgr_mcsched.h rtdb.h hashkey.h hash_functions.h dllbase.h \
 		os2_2w32.h types.h cticalls.h mc_sched.h dbmemobject.h \
 		tbl_pao.h tbl_mcsched.h tbl_mcsimpsched.h mc_dbthr.h mccmd.h \
 		msg_pcrequest.h msg_pcreturn.h msg_multi.h msg_pdata.h \
@@ -189,9 +189,9 @@ mc_script.obj:	yukon.h precompiled.h ctidbgmem.h mc_script.h mc.h \
 mc_server.obj:	yukon.h precompiled.h ctidbgmem.h mc_server.h mc.h \
 		logger.h dlldefs.h thread.h mutex.h guard.h ctitime.h \
 		CtiPCPtrQueue.h CParms.h rwutil.h boost_time.h message.h \
-		collectable.h queue.h mgr_mcsched.h rtdb.h hashkey.h \
-		hash_functions.h utility.h dsm2.h cticonnect.h netports.h \
-		sorted_vector.h dllbase.h os2_2w32.h types.h cticalls.h \
+		collectable.h queue.h utility.h dsm2.h cticonnect.h \
+		netports.h sorted_vector.h mgr_mcsched.h rtdb.h hashkey.h \
+		hash_functions.h dllbase.h os2_2w32.h types.h cticalls.h \
 		mc_sched.h dbmemobject.h tbl_pao.h tbl_mcsched.h \
 		tbl_mcsimpsched.h mc_dbthr.h mccmd.h msg_pcrequest.h \
 		msg_pcreturn.h msg_multi.h msg_pdata.h pointdefs.h \
@@ -201,10 +201,10 @@ mc_server.obj:	yukon.h precompiled.h ctidbgmem.h mc_server.h mc.h \
 mc_svc.obj:	yukon.h precompiled.h ctidbgmem.h mc_svc.h cservice.h \
 		dlldefs.h mc_server.h mc.h logger.h thread.h mutex.h guard.h \
 		ctitime.h CtiPCPtrQueue.h CParms.h rwutil.h boost_time.h \
-		message.h collectable.h queue.h mgr_mcsched.h rtdb.h \
-		hashkey.h hash_functions.h utility.h dsm2.h cticonnect.h \
-		netports.h sorted_vector.h dllbase.h os2_2w32.h types.h \
-		cticalls.h mc_sched.h dbmemobject.h tbl_pao.h tbl_mcsched.h \
+		message.h collectable.h queue.h utility.h dsm2.h cticonnect.h \
+		netports.h sorted_vector.h mgr_mcsched.h rtdb.h hashkey.h \
+		hash_functions.h dllbase.h os2_2w32.h types.h cticalls.h \
+		mc_sched.h dbmemobject.h tbl_pao.h tbl_mcsched.h \
 		tbl_mcsimpsched.h mc_dbthr.h mccmd.h msg_pcrequest.h \
 		msg_pcreturn.h msg_multi.h msg_pdata.h pointdefs.h \
 		ctdpcptrq.h clistener.h clientconn.h observe.h mc_msg.h \

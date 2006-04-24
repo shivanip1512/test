@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.20 $
-*    DATE         :  $Date: 2006/03/02 23:03:19 $
+*    REVISION     :  $Revision: 1.21 $
+*    DATE         :  $Date: 2006/04/24 14:47:33 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -19,6 +19,9 @@
 *    ---------------------------------------------------
 *    History:
       $Log: fdrlodestarimport.cpp,v $
+      Revision 1.21  2006/04/24 14:47:33  tspar
+      RWreplace: replacing a few missed or new Rogue Wave elements
+
       Revision 1.20  2006/03/02 23:03:19  tspar
       Phase Three: Final  phase of RWTPtrSlist replacement.
 
@@ -438,13 +441,13 @@ bool CtiFDR_LodeStarImportBase::loadTranslationLists()
             {
 
                 // get iterator on send list
-                CtiFDRManager::CTIFdrPointIterator  myIterator(pointList->getMap());
+                CtiFDRManager::CTIFdrPointIterator  myIterator = pointList->getMap().begin();
                 int x;
 
-                for ( ; myIterator(); )
+                for ( ; myIterator != pointList->getMap().end(); ++myIterator)
                 {
                     foundPoint = true;
-                    translationPoint = myIterator.value();
+                    translationPoint = (*myIterator).second;
 
                     for (x=0; x < translationPoint->getDestinationList().size(); x++)
                     {

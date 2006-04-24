@@ -8,8 +8,8 @@
  * Author: Tom Mack
  *
  * ARCHIVE      :  $Archive$
- * REVISION     :  $Revision: 1.7 $
- * DATE         :  $Date: 2005/12/20 17:17:14 $
+ * REVISION     :  $Revision: 1.8 $
+ * DATE         :  $Date: 2006/04/24 14:47:33 $
  */
 
 #include <windows.h>
@@ -248,16 +248,17 @@ bool CtiFDRSimple::loadTranslationLists()
         aList.setPointList (pointList);
   
         // get iterator on list
-        CtiFDRManager::CTIFdrPointIterator  myIterator(aList.getPointList()->getMap());
+        CtiFDRManager::CTIFdrPointIterator  myIterator = aList.getPointList()->getMap().begin();
   
         beginNewPoints();
   
-        while ( myIterator() )
+        while ( myIterator != aList.getPointList()->getMap().end() )
         {
-          point = myIterator.value();
+          point = (*myIterator).second;
   
           processNewPoint(point);
-  
+          ++myIterator;
+
         }
         endNewPoints();
       }

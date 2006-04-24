@@ -45,7 +45,7 @@ CtiBatchedFunctorExecutor::~CtiBatchedFunctorExecutor()
 -----------------------------------------------------------------------------*/    
 void CtiBatchedFunctorExecutor::enqueue(const RWFunctor0& functor)
 {
-    _functor_queue.write(functor);
+    _functor_queue.push(functor);
 }
 
 /*-----------------------------------------------------------------------------
@@ -70,8 +70,10 @@ void CtiBatchedFunctorExecutor::_timed_thr_func()
         }
 
         RWFunctor0 func;
-        while ( _functor_queue.read( func, 0 ) != RW_THR_TIMEOUT )
+        while( !_functor_queue.empty() )
         {
+            func = _functor_queue.front();
+            _functor_queue.pop();
             func();
         }
     }

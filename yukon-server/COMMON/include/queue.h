@@ -391,7 +391,7 @@ public:
         {
         boost::mutex::scoped_lock scoped_lock(mux);
         //_col.apply(fn,d);
-        ts_for_each(_col.begin(),_col.end();,fn,d);
+        ts_for_each(_col.begin(),_col.end(),fn,d);
         }
     }
 };

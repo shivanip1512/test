@@ -1199,13 +1199,13 @@ bool CtiFDRTelegyr::loadGroupLists( void )
          if( ( pointList->entries() == 0 ) || ( pointList->entries() > 0 ) )
          {
             // get iterator on list
-            CtiFDRManager::CTIFdrPointIterator myIterator( pointList->getMap() );
+            CtiFDRManager::CTIFdrPointIterator myIterator = pointList->getMap().begin();
 
             //iterate through all our points in the list
-            for( ; myIterator(); )
+            for( ; myIterator != pointList->getMap().end(); ++myIterator )
             {
                foundPoint = true;
-               translationPoint = myIterator.value();
+               translationPoint = (*myIterator).second;
 
                //iterate through all our destinations per point (should have 1 for telegyr)
                for( int x = 0; x < translationPoint->getDestinationList().size(); x++ )

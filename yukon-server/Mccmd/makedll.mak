@@ -97,11 +97,11 @@ mccmd.obj:	yukon.h precompiled.h ctidbgmem.h mccmd.h msg_pcrequest.h \
 		pointdefs.h logger.h thread.h mutex.h guard.h CtiPCPtrQueue.h \
 		ctdpcptrq.h dllBase.h os2_2w32.h types.h cticalls.h dsm2.h \
 		cticonnect.h netports.h dbaccess.h sema.h connection.h \
-		exchange.h msg_ptreg.h msg_reg.h queue.h cparms.h \
-		configparms.h msg_signal.h msg_dbchg.h msg_notif_email.h \
-		msg_notif_email_attachment.h ctibase.h ctinexus.h \
-		pointtypes.h numstr.h mgr_holiday.h ctidate.h dsm2err.h \
-		wpsc.h xcel.h decodetextcmdfile.h utility.h sorted_vector.h
+		exchange.h msg_ptreg.h msg_reg.h queue.h utility.h \
+		sorted_vector.h cparms.h configparms.h msg_signal.h \
+		msg_dbchg.h msg_notif_email.h msg_notif_email_attachment.h \
+		ctibase.h ctinexus.h pointtypes.h numstr.h mgr_holiday.h \
+		ctidate.h dsm2err.h wpsc.h xcel.h decodetextcmdfile.h
 mcs8100test.obj:	yukon.h precompiled.h ctidbgmem.h wpsc.h logger.h \
 		dlldefs.h thread.h mutex.h guard.h ctitime.h CtiPCPtrQueue.h \
 		types.h

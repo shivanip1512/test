@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive$
-*    REVISION     :  $Revision: 1.10 $
-*    DATE         :  $Date: 2006/02/17 17:04:31 $
+*    REVISION     :  $Revision: 1.11 $
+*    DATE         :  $Date: 2006/04/24 14:47:32 $
 *
 *
 *    AUTHOR: Ben Wallace
@@ -23,6 +23,9 @@
 *    ---------------------------------------------------
 *    History:
       $Log: fdrcygnet.cpp,v $
+      Revision 1.11  2006/04/24 14:47:32  tspar
+      RWreplace: replacing a few missed or new Rogue Wave elements
+
       Revision 1.10  2006/02/17 17:04:31  tspar
       CtiMultiMsg:  replaced RWOrdered with vector<RWCollectable*> throughout the tree
 
@@ -718,18 +721,18 @@ bool CtiFDRCygnet::retreiveAnalogPoints()
 
     // loop through all analog points
     CtiLockGuard<CtiMutex> guard(getReceiveFromList().getMutex());
-    CtiFDRManager::CTIFdrPointIterator  myIterator(getReceiveFromList().getPointList()->getMap());
+    CtiFDRManager::CTIFdrPointIterator  myIterator = getReceiveFromList().getPointList()->getMap().begin();
     int x;
 
     pMultiData = new CtiMultiMsg;
     int messCount = 0;
     int firstPass=true;
 
-    for ( ; myIterator(); )
+    for ( ; myIterator != getReceiveFromList().getPointList()->getMap().end(); ++myIterator )
     {
         // get the data from the list
         sendNoneUpdate = FALSE;
-        point = myIterator.value();
+        point = (*myIterator).second;
 
         if ((point->getPointType() == AnalogPointType) ||
             (point->getPointType() == PulseAccumulatorPointType) ||
@@ -1006,7 +1009,7 @@ bool CtiFDRCygnet::retreiveStatusPoints()
 
     // loop through all analog points
     CtiLockGuard<CtiMutex> guard(getReceiveFromList().getMutex());
-    CtiFDRManager::CTIFdrPointIterator  myIterator(getReceiveFromList().getPointList()->getMap());
+    CtiFDRManager::CTIFdrPointIterator  myIterator= getReceiveFromList().getPointList()->getMap().begin();
     int x;
 
     pMultiData = new CtiMultiMsg;
@@ -1014,11 +1017,11 @@ bool CtiFDRCygnet::retreiveStatusPoints()
 
     int firstPass=true;
 
-    for ( ; myIterator(); )
+    for ( ; myIterator != getReceiveFromList().getPointList()->getMap().end() ; ++myIterator )
     {
         sendNoneUpdate = FALSE;
 
-        point = myIterator.value();
+        point = (*myIterator).second;
 
         if (point->getPointType() == StatusPointType)
         {
@@ -1316,13 +1319,13 @@ bool CtiFDRCygnet::loadLists(CtiFDRPointList &aList)
             aList.setPointList (pointList);
 
             // get iterator on list
-            CtiFDRManager::CTIFdrPointIterator  myIterator(aList.getPointList()->getMap());
+            CtiFDRManager::CTIFdrPointIterator  myIterator = aList.getPointList()->getMap().begin();
             int x;
 
-            for ( ; myIterator(); )
+            for ( ; myIterator != aList.getPointList()->getMap().end(); ++myIterator )
             {
                 foundPoint = true;
-                translationPoint = myIterator.value();
+                translationPoint = (*myIterator).second;
 
                 for (x=0; x < translationPoint->getDestinationList().size(); x++)
                 {

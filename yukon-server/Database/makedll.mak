@@ -388,11 +388,11 @@ tbl_lmg_golay.obj:	yukon.h precompiled.h ctidbgmem.h tbl_lmg_golay.h \
 		dlldefs.h dbmemobject.h dllbase.h os2_2w32.h types.h \
 		cticalls.h dsm2.h mutex.h guard.h cticonnect.h netports.h \
 		dbaccess.h sema.h resolvers.h pointtypes.h db_entry_defines.h
-tbl_lmg_point.obj:	logger.h dlldefs.h thread.h mutex.h guard.h \
-		ctitime.h CtiPCPtrQueue.h tbl_lmg_point.h yukon.h \
-		precompiled.h ctidbgmem.h dbmemobject.h dllbase.h os2_2w32.h \
-		types.h cticalls.h dsm2.h cticonnect.h netports.h dbaccess.h \
-		sema.h resolvers.h pointtypes.h db_entry_defines.h
+tbl_lmg_point.obj:	yukon.h precompiled.h ctidbgmem.h logger.h \
+		dlldefs.h thread.h mutex.h guard.h ctitime.h CtiPCPtrQueue.h \
+		tbl_lmg_point.h dbmemobject.h dllbase.h os2_2w32.h types.h \
+		cticalls.h dsm2.h cticonnect.h netports.h dbaccess.h sema.h \
+		resolvers.h pointtypes.h db_entry_defines.h
 tbl_lmg_sa205105.obj:	yukon.h precompiled.h ctidbgmem.h cparms.h \
 		rwutil.h ctitime.h dlldefs.h boost_time.h logger.h thread.h \
 		mutex.h guard.h CtiPCPtrQueue.h tbl_lmg_sa205105.h \
@@ -407,10 +407,12 @@ tbl_lmg_sa305.obj:	yukon.h precompiled.h ctidbgmem.h logger.h \
 		boost_time.h
 tbl_lmg_sasimple.obj:	yukon.h precompiled.h ctidbgmem.h logger.h \
 		dlldefs.h thread.h mutex.h guard.h ctitime.h CtiPCPtrQueue.h \
-		tbl_lmg_sasimple.h dbmemobject.h dllbase.h os2_2w32.h types.h \
-		cticalls.h dsm2.h cticonnect.h netports.h dbaccess.h sema.h \
-		resolvers.h pointtypes.h db_entry_defines.h rwutil.h \
-		boost_time.h
+		numstr.h tbl_lmg_sasimple.h dbmemobject.h dllbase.h \
+		os2_2w32.h types.h cticalls.h dsm2.h cticonnect.h netports.h \
+		dbaccess.h sema.h resolvers.h pointtypes.h db_entry_defines.h \
+		prot_sa3rdparty.h cmdparse.h ctitokenizer.h parsevalue.h \
+		prot_base.h msg_pdata.h pointdefs.h message.h collectable.h \
+		rwutil.h boost_time.h xfer.h dialup.h protocol_sa.h
 tbl_lm_controlhist.obj:	yukon.h precompiled.h ctidbgmem.h \
 		tbl_lm_controlhist.h dbmemobject.h dbaccess.h dlldefs.h \
 		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \

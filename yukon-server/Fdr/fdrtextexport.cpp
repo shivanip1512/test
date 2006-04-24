@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrtextexport.cpp-arc  $
-*    REVISION     :  $Revision: 1.11 $
-*    DATE         :  $Date: 2006/01/16 21:09:35 $
+*    REVISION     :  $Revision: 1.12 $
+*    DATE         :  $Date: 2006/04/24 14:47:33 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,9 @@
 *    ---------------------------------------------------
 *    History:
       $Log: fdrtextexport.cpp,v $
+      Revision 1.12  2006/04/24 14:47:33  tspar
+      RWreplace: replacing a few missed or new Rogue Wave elements
+
       Revision 1.11  2006/01/16 21:09:35  mfisher
       removed RogueWave stuff
 
@@ -382,13 +385,13 @@ bool CtiFDR_TextExport::loadTranslationLists()
             {
 
                 // get iterator on send list
-                CtiFDRManager::CTIFdrPointIterator  myIterator(pointList->getMap());
+                CtiFDRManager::CTIFdrPointIterator  myIterator = pointList->getMap().begin();
                 int x;
 
-                for ( ; myIterator(); )
+                for ( ; myIterator != pointList->getMap().end(); ++myIterator )
                 {
                     foundPoint = true;
-                    translationPoint = myIterator.value();
+                    translationPoint = (*myIterator).second;
 
                     for (x=0; x < translationPoint->getDestinationList().size(); x++)
                     {
@@ -564,14 +567,14 @@ void CtiFDR_TextExport::threadFunctionWriteToFile( void )
                 else
                 {
                     CtiLockGuard<CtiMutex> sendGuard(getSendToList().getMutex());
-                    CtiFDRManager::CTIFdrPointIterator  myIterator(getSendToList().getPointList()->getMap());
+                    CtiFDRManager::CTIFdrPointIterator  myIterator = getSendToList().getPointList()->getMap().begin();
 
                     bool firstSurvalentPass=true;
 
 
-                    for ( ; myIterator(); )
+                    for ( ; myIterator != getSendToList().getPointList()->getMap().end(); ++myIterator)
                     {
-                        translationPoint = myIterator.value();
+                        translationPoint = (*myIterator).second;
 
                         /*****************************************
                         * This is a hack for a proof of concept with the survalent scada system DLS

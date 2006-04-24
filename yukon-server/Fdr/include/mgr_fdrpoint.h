@@ -40,7 +40,7 @@ class IM_EX_FDRBASE CtiFDRManager : public CtiRTDB< CtiFDRPoint >
         virtual ~CtiFDRManager();
     
         // change to friendly name for Iterator
-        typedef CtiRTDBIterator CTIFdrPointIterator;
+        typedef MapIterator CTIFdrPointIterator;
 
 
         string       getInterfaceName();
@@ -52,7 +52,9 @@ class IM_EX_FDRBASE CtiFDRManager : public CtiRTDB< CtiFDRPoint >
        
        //void DumpList(void);
        
-        void            DeleteList(void)   { Map.clearAndDestroy(); }
+        void            DeleteList(void)   { Map.clear();
+                                             delete_map(Map);
+                                           }
 //        CtiFDRManager & loadPointList(void);
         RWDBStatus loadPointList(void);
 //        CtiFDRManager & refreshPointList(void);

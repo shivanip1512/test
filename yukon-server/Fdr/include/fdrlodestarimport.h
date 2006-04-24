@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.10 $
-*    DATE         :  $Date: 2006/03/02 23:03:19 $
+*    REVISION     :  $Revision: 1.11 $
+*    DATE         :  $Date: 2006/04/24 14:47:33 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -20,6 +20,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrlodestarimport.h,v $
+      Revision 1.11  2006/04/24 14:47:33  tspar
+      RWreplace: replacing a few missed or new Rogue Wave elements
+
       Revision 1.10  2006/03/02 23:03:19  tspar
       Phase Three: Final  phase of RWTPtrSlist replacement.
 
@@ -84,7 +87,7 @@ public:
     virtual BOOL    run( void );
     virtual BOOL    stop( void );  
     
-    typedef CtiRTDBIterator CTIFdrLodeStarIterator;
+    typedef MapIterator CTIFdrLodeStarIterator;
     
     virtual vector<CtiFDR_LodeStarInfoTable> getFileInfoList() const = 0;
     virtual vector< CtiFDR_LodeStarInfoTable > & getFileInfoList () = 0;

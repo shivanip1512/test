@@ -205,10 +205,16 @@ RWDBStatus CtiFDRManager::loadPointList()
 
                 // check if the point id exists
                 CtiHashKey key(pointID);
-                pTempFdrPoint = Map.findValue(&key);
+                MapIterator itr = Map.find(&key);
 
-                if( Map.entries() == 0 ||  pTempFdrPoint == NULL)
+                if( itr != Map.end() )
+                    pTempFdrPoint = (*itr).second;
+                else
+                    pTempFdrPoint = NULL;
+
+                if( Map.size() == 0 ||  itr == Map.end() )
                 {
+                    
                     /*********************
                     * if the point id isn't in my list, add it and
                     * the current destination
@@ -240,7 +246,7 @@ RWDBStatus CtiFDRManager::loadPointList()
                     CtiFDRDestination tmpDestination (pTempFdrPoint, translation, destination);
                     pTempFdrPoint->getDestinationList().push_back(tmpDestination);
 
-                    Map.insert( new CtiHashKey(pointID), pTempFdrPoint);
+                    Map.insert( std::pair<CtiHashKey*,CtiFDRPoint*>(new CtiHashKey(pointID), pTempFdrPoint) );
                 }
                 else
                 {
@@ -262,7 +268,10 @@ RWDBStatus CtiFDRManager::loadPointList()
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << "Attempting to clear FDR Point list..." << endl;
         }
-        Map.clearAndDestroy();
+        
+        Map.clear();
+        delete_map(Map);
+
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << "loadFDRList:  " << e.why() << endl;
@@ -276,7 +285,8 @@ RWDBStatus CtiFDRManager::loadPointList()
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << ") loadPointList: unknown exception" << endl;
         }
-        Map.clearAndDestroy();
+        Map.clear();
+        delete_map(Map);
     }
 
 
@@ -295,9 +305,10 @@ RWDBStatus CtiFDRManager::refreshPointList()
 //CtiFDRManager & CtiFDRManager::refreshPointList()
 {
     // first clear list
-    if( Map.entries() > 0 )
+    if( Map.size() > 0 )
     {
-        Map.clearAndDestroy();
+        Map.clear();
+        delete_map(Map);
     }
 
     return loadPointList();
@@ -318,9 +329,13 @@ CtiFDRPoint * CtiFDRManager::findFDRPointID(LONG myPointID)
 
     try
     {
-        if( Map.entries() > 0 )
+        if( Map.size() > 0 )
         {
-            pFdrPoint = Map.findValue(&key);
+            MapIterator itr = Map.find(&key);
+            if (itr != Map.end() ) 
+                pFdrPoint = (*itr).second;
+            else
+                pFdrPoint = NULL;
         }
 
     }

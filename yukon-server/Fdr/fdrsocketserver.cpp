@@ -212,12 +212,12 @@ bool CtiFDRSocketServer::loadList(string &aDirection,  CtiFDRPointList &aList)
         {
             CtiLockGuard<CtiMutex> sendGuard(aList.getMutex());  
             // get iterator on list
-            CtiFDRManager::CTIFdrPointIterator  myIterator(pointList->getMap());
+            CtiFDRManager::CTIFdrPointIterator  myIterator = pointList->getMap().begin();
 
     
-            while (myIterator())
+            while (myIterator != pointList->getMap().end())
             {
-                translationPoint = myIterator.value();
+                translationPoint = (*myIterator).second;
 
                 int x;
                 for (x=0; x < translationPoint->getDestinationList().size(); x++)
@@ -227,6 +227,7 @@ bool CtiFDRSocketServer::loadList(string &aDirection,  CtiFDRPointList &aList)
                     processNewDestination(translationPoint->getDestinationList()[x], 
                                           isSend);
                 }
+                ++myIterator;
             } // end for interator
 
             // lock the list I'm inserting into so it doesn't get deleted on me
@@ -543,10 +544,10 @@ bool CtiFDRSocketServer::sendAllPoints(CtiFDRClientServerConnection* connection)
     CtiFDRPoint* point = NULL;
 
     CtiLockGuard<CtiMutex> sendGuard(getSendToList().getMutex());
-    CtiFDRManager::CTIFdrPointIterator  myIterator(getSendToList().getPointList()->getMap());
-    for ( ; myIterator(); )
+    CtiFDRManager::CTIFdrPointIterator  myIterator = getSendToList().getPointList()->getMap().begin();
+    for ( ; myIterator != getSendToList().getPointList()->getMap().end(); ++myIterator)
     {
-        point = myIterator.value();
+        point = (*myIterator).second;
         if (point->isControllable())
         {
             if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)

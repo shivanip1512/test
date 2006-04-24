@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_scheduler.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/12/20 17:25:02 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2006/04/24 14:47:33 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -31,12 +31,12 @@ void CtiMCScheduler::initEvents(const CtiTime& now)
 {
     RWRecursiveLock<class RWMutexLock>::LockGuard guard(_schedule_manager.getMux() );
 
-    CtiRTDB< CtiMCSchedule >::CtiRTDBIterator itr( _schedule_manager.getMap() );
+    CtiRTDB< CtiMCSchedule >::MapIterator itr = _schedule_manager.getMap().begin();
     CtiMCSchedule* sched;
 
-    for(;itr();)
+    for(; itr != _schedule_manager.getMap().end() ; ++itr)
     {
-        sched = itr.value();
+        sched = (*itr).second;
         initEvents(now,*sched);
 
     }

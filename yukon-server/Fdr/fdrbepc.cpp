@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrbepc.cpp-arc  $
-*    REVISION     :  $Revision: 1.4 $
-*    DATE         :  $Date: 2006/01/03 20:23:37 $
+*    REVISION     :  $Revision: 1.5 $
+*    DATE         :  $Date: 2006/04/24 14:47:32 $
 *
 *
 *    AUTHOR: David Sutton
@@ -20,6 +20,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrbepc.cpp,v $
+      Revision 1.5  2006/04/24 14:47:32  tspar
+      RWreplace: replacing a few missed or new Rogue Wave elements
+
       Revision 1.4  2006/01/03 20:23:37  tspar
       Moved non RW string utilities from rwutil.h to utility.h
 
@@ -383,13 +386,13 @@ bool CtiFDR_BEPC::loadTranslationLists()
             {
 
                 // get iterator on send list
-                CtiFDRManager::CTIFdrPointIterator  myIterator(pointList->getMap());
+                CtiFDRManager::CTIFdrPointIterator  myIterator = pointList->getMap().begin();
                 int x;
 
-                for ( ; myIterator(); )
+                for ( ; myIterator != pointList->getMap().end(); ++myIterator)
                 {
                     foundPoint = true;
-                    translationPoint = myIterator.value();
+                    translationPoint = (*myIterator).second;
 
                     for (x=0; x < translationPoint->getDestinationList().size(); x++)
                     {

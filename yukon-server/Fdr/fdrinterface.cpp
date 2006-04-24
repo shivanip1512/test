@@ -15,10 +15,13 @@
  *    Copyright (C) 2005 Cannon Technologies, Inc.  All rights reserved.
  *
  *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrinterface.cpp-arc  $
- *    REVISION     :  $Revision: 1.22 $
- *    DATE         :  $Date: 2006/02/17 17:04:31 $
+ *    REVISION     :  $Revision: 1.23 $
+ *    DATE         :  $Date: 2006/04/24 14:47:32 $
  *    History:
  *     $Log: fdrinterface.cpp,v $
+ *     Revision 1.23  2006/04/24 14:47:32  tspar
+ *     RWreplace: replacing a few missed or new Rogue Wave elements
+ *
  *     Revision 1.22  2006/02/17 17:04:31  tspar
  *     CtiMultiMsg:  replaced RWOrdered with vector<RWCollectable*> throughout the tree
  *
@@ -185,12 +188,12 @@ long CtiFDRInterface::getClientLinkStatusID(string &aClientName)
         if ( listStatus.errorCode() == (RWDBStatus::ok))
         {
             // get iterator on list
-            CtiFDRManager::CTIFdrPointIterator  myIterator(pointList->getMap());
+            CtiFDRManager::CTIFdrPointIterator  myIterator = (pointList->getMap()).begin();
             int x;
 
-            for ( ; myIterator(); )
+            for ( ; myIterator !=  (pointList->getMap()).end(); ++myIterator )
             {
-                translationPoint = myIterator.value();
+                translationPoint = (*myIterator).second;
                 for (x=0; x < translationPoint->getDestinationList().size(); x++)
                 {
                     string tempString1,tempString2;
@@ -798,11 +801,11 @@ void CtiFDRInterface::buildRegistrationPointList (CtiPointRegistrationMsg **aMsg
     testMsg = *aMsg;
 
     // get iterator on outbound list
-    CtiFDRManager::CTIFdrPointIterator  myIterator(iOutBoundPoints->getMap());
+    CtiFDRManager::CTIFdrPointIterator  myIterator = (iOutBoundPoints->getMap()).begin();
 
-    for ( ; myIterator(); )
+    for ( ; myIterator != (iOutBoundPoints->getMap()).end(); ++myIterator)
     {
-        pFdrPoint = myIterator.value();
+        pFdrPoint = (*myIterator).second;
 
         // add this point ID to register
         testMsg->insert( pFdrPoint->getPointID());
@@ -1464,9 +1467,14 @@ bool CtiFDRInterface::updatePointByIdInList(CtiFDRPointList &aList,
 
     // check if the point id exists
     CtiHashKey key(aMessage->getId());
-    point = aList.getPointList()->getMap().findValue(&key);
+    CtiFDRManager::CTIFdrPointIterator  itr;
+    itr = aList.getPointList()->getMap().find(&key);
+    if( itr != aList.getPointList()->getMap().end() )
+        point = (*itr).second;
+    else
+        point = NULL;
 
-    if ( aList.getPointList()->getMap().entries() == 0 ||  point == NULL)
+    if ( aList.getPointList()->getMap().size() == 0 ||  point == NULL)
     {
         foundFlag = false;
     }
@@ -1500,9 +1508,14 @@ bool CtiFDRInterface::findPointIdInList(long aPointId,
 
     // check if the point id exists
     CtiHashKey key(aPointId);
-    point = aList.getPointList()->getMap().findValue(&key);
+    CtiFDRManager::CTIFdrPointIterator  itr;
+    itr = aList.getPointList()->getMap().find(&key);
+    if( itr != aList.getPointList()->getMap().end() )
+        point = (*itr).second;
+    else
+        point = NULL;
 
-    if ( aList.getPointList()->getMap().entries() == 0 ||  point == NULL)
+    if ( aList.getPointList()->getMap().size() == 0 ||  point == NULL)
     {
         foundFlag = false;
     }

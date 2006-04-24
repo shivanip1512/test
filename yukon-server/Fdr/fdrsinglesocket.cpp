@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrsinglesocket.cpp-arc  $
-*    REVISION     :  $Revision: 1.9 $
-*    DATE         :  $Date: 2005/12/20 17:17:14 $
+*    REVISION     :  $Revision: 1.10 $
+*    DATE         :  $Date: 2006/04/24 14:47:33 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,9 @@
 *    ---------------------------------------------------
 *    History: 
 *     $Log: fdrsinglesocket.cpp,v $
+*     Revision 1.10  2006/04/24 14:47:33  tspar
+*     RWreplace: replacing a few missed or new Rogue Wave elements
+*
 *     Revision 1.9  2005/12/20 17:17:14  tspar
 *     Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 *
@@ -270,14 +273,14 @@ bool CtiFDRSingleSocket::loadList(string &aDirection,  CtiFDRPointList &aList)
                 (pointList->entries() > 0))
             {
                 // get iterator on list
-                CtiFDRManager::CTIFdrPointIterator  myIterator(pointList->getMap());
+                CtiFDRManager::CTIFdrPointIterator  myIterator = pointList->getMap().begin();
 //                CtiFDRManager::CTIFdrPointIterator  myIterator(aList.getPointList()->getMap());
                 int x;
 
-                for ( ; myIterator(); )
+                for ( ; myIterator != pointList->getMap().end(); ++myIterator )
                 {
                     foundPoint = true;
-                    translationPoint = myIterator.value();
+                    translationPoint = (*myIterator).second;
 
                     for (x=0; x < translationPoint->getDestinationList().size(); x++)
                     {
@@ -793,12 +796,12 @@ void CtiFDRSingleSocket::threadFunctionSendDebugData( void )
                 {
                     // for debug lock this the whole time we're sending the list
                     CtiLockGuard<CtiMutex> sendGuard(getSendToList().getMutex());  
-                    CtiFDRManager::CTIFdrPointIterator  myIterator(getSendToList().getPointList()->getMap());
+                    CtiFDRManager::CTIFdrPointIterator  myIterator = getSendToList().getPointList()->getMap().begin();
 
-                    for ( ; myIterator(); )
+                    for ( ; myIterator != getSendToList().getPointList()->getMap().end(); ++myIterator )
                     {
                         // find the point id
-                        point = *myIterator.value();
+                        point = *((*myIterator).second);
 
                         localMsg = new CtiPointDataMsg (point.getPointID(), value, quality);
 

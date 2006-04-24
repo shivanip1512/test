@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrsocketinterface.cpp-arc  $
-*    REVISION     :  $Revision: 1.12 $
-*    DATE         :  $Date: 2005/12/20 17:17:14 $
+*    REVISION     :  $Revision: 1.13 $
+*    DATE         :  $Date: 2006/04/24 14:47:33 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,9 @@
 *    ---------------------------------------------------
 *    History: 
 *     $Log: fdrsocketinterface.cpp,v $
+*     Revision 1.13  2006/04/24 14:47:33  tspar
+*     RWreplace: replacing a few missed or new Rogue Wave elements
+*
 *     Revision 1.12  2005/12/20 17:17:14  tspar
 *     Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 *
@@ -275,10 +278,10 @@ int CtiFDRSocketInterface::sendAllPoints()
                 }
 
                 CtiLockGuard<CtiMutex> sendGuard(getSendToList().getMutex());  
-                CtiFDRManager::CTIFdrPointIterator  myIterator(getSendToList().getPointList()->getMap());
-                for ( ; myIterator(); )
+                CtiFDRManager::CTIFdrPointIterator  myIterator = getSendToList().getPointList()->getMap().begin();
+                for ( ; myIterator != getSendToList().getPointList()->getMap().end(); ++myIterator)
                 {
-                    point = myIterator.value();
+                    point = (*myIterator).second;
                     if (!point->isControllable())
                     {
                         if (point->getLastTimeStamp() < CtiTime(CtiDate(1,1,2001)))

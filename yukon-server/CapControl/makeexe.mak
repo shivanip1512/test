@@ -118,8 +118,8 @@ capcontroller.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
 		exchange.h logger.h thread.h ctitime.h CtiPCPtrQueue.h \
 		message.h collectable.h rwutil.h boost_time.h msg_multi.h \
 		msg_pdata.h pointdefs.h msg_ptreg.h msg_reg.h queue.h \
-		ccmessage.h ccsubstationbus.h observe.h utility.h \
-		sorted_vector.h ccfeeder.h cccapbank.h ccpointresponse.h \
+		utility.h sorted_vector.h ccmessage.h ccsubstationbus.h \
+		observe.h ccfeeder.h cccapbank.h ccpointresponse.h \
 		ccmonitorpoint.h ctidate.h msg_pcrequest.h ccstrategy.h \
 		ccstate.h msg_cmd.h msg_signal.h msg_pcreturn.h msg_dbchg.h \
 		pointtypes.h configparms.h cparms.h capcontroller.h \
@@ -178,8 +178,8 @@ ccfeeder.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h dlldefs.h \
 		collectable.h rwutil.h ctitime.h boost_time.h \
 		ccsubstationbus.h connection.h exchange.h logger.h thread.h \
 		CtiPCPtrQueue.h msg_multi.h msg_pdata.h pointdefs.h \
-		msg_ptreg.h msg_reg.h queue.h observe.h utility.h \
-		sorted_vector.h ccfeeder.h cccapbank.h ccpointresponse.h \
+		msg_ptreg.h msg_reg.h queue.h utility.h sorted_vector.h \
+		observe.h ccfeeder.h cccapbank.h ccpointresponse.h \
 		ccmonitorpoint.h ctidate.h msg_pcrequest.h ccstrategy.h \
 		ccid.h pointtypes.h capcontroller.h msg_cmd.h configparms.h \
 		cparms.h ccsubstationbusstore.h ccstate.h ccmessage.h \
@@ -205,8 +205,8 @@ ccmessage.obj:	yukon.h precompiled.h ctidbgmem.h ccmessage.h ctitime.h \
 		cticalls.h dsm2.h mutex.h guard.h cticonnect.h netports.h \
 		sema.h connection.h exchange.h logger.h thread.h \
 		CtiPCPtrQueue.h msg_multi.h msg_pdata.h pointdefs.h \
-		msg_ptreg.h msg_reg.h queue.h observe.h utility.h \
-		sorted_vector.h ccfeeder.h cccapbank.h ccpointresponse.h \
+		msg_ptreg.h msg_reg.h queue.h utility.h sorted_vector.h \
+		observe.h ccfeeder.h cccapbank.h ccpointresponse.h \
 		ccmonitorpoint.h ctidate.h msg_pcrequest.h ccstrategy.h \
 		ccstate.h ccid.h
 ccmonitorpoint.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
@@ -254,14 +254,14 @@ ccstate.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h dlldefs.h \
 		connection.h exchange.h logger.h thread.h ctitime.h \
 		CtiPCPtrQueue.h message.h collectable.h rwutil.h boost_time.h \
 		msg_multi.h msg_pdata.h pointdefs.h msg_ptreg.h msg_reg.h \
-		queue.h observe.h utility.h sorted_vector.h
+		queue.h utility.h sorted_vector.h observe.h
 ccstrategy.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h dlldefs.h \
 		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
 		guard.h cticonnect.h netports.h sema.h msg_signal.h message.h \
 		collectable.h rwutil.h ctitime.h boost_time.h ccstrategy.h \
 		connection.h exchange.h logger.h thread.h CtiPCPtrQueue.h \
 		msg_multi.h msg_pdata.h pointdefs.h msg_ptreg.h msg_reg.h \
-		queue.h observe.h utility.h sorted_vector.h msg_pcrequest.h \
+		queue.h utility.h sorted_vector.h observe.h msg_pcrequest.h \
 		ccid.h pointtypes.h capcontroller.h msg_cmd.h configparms.h \
 		cparms.h ccsubstationbusstore.h ccsubstationbus.h ccfeeder.h \
 		cccapbank.h ccpointresponse.h ccmonitorpoint.h ctidate.h \
@@ -273,8 +273,8 @@ ccsubstationbus.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
 		message.h collectable.h rwutil.h ctitime.h boost_time.h \
 		ccsubstationbus.h connection.h exchange.h logger.h thread.h \
 		CtiPCPtrQueue.h msg_multi.h msg_pdata.h pointdefs.h \
-		msg_ptreg.h msg_reg.h queue.h observe.h utility.h \
-		sorted_vector.h ccfeeder.h cccapbank.h ccpointresponse.h \
+		msg_ptreg.h msg_reg.h queue.h utility.h sorted_vector.h \
+		observe.h ccfeeder.h cccapbank.h ccpointresponse.h \
 		ccmonitorpoint.h ctidate.h msg_pcrequest.h ccstrategy.h \
 		ccid.h pointtypes.h capcontroller.h msg_cmd.h configparms.h \
 		cparms.h ccsubstationbusstore.h ccstate.h ccmessage.h \
@@ -300,10 +300,10 @@ mgr_paosched.obj:	yukon.h precompiled.h ctidbgmem.h mgr_paosched.h \
 		netports.h sema.h connection.h exchange.h logger.h thread.h \
 		ctitime.h CtiPCPtrQueue.h message.h collectable.h rwutil.h \
 		boost_time.h msg_multi.h msg_pdata.h pointdefs.h msg_ptreg.h \
-		msg_reg.h queue.h ctibase.h ctinexus.h pao_event.h \
-		dbmemobject.h capcontroller.h msg_cmd.h pointtypes.h \
-		configparms.h cparms.h ccsubstationbusstore.h observe.h \
-		utility.h sorted_vector.h ccsubstationbus.h ccfeeder.h \
+		msg_reg.h queue.h utility.h sorted_vector.h ctibase.h \
+		ctinexus.h pao_event.h dbmemobject.h capcontroller.h \
+		msg_cmd.h pointtypes.h configparms.h cparms.h \
+		ccsubstationbusstore.h observe.h ccsubstationbus.h ccfeeder.h \
 		cccapbank.h ccpointresponse.h ccmonitorpoint.h ctidate.h \
 		msg_pcrequest.h ccstrategy.h ccid.h ccstate.h ccmessage.h \
 		ccexecutor.h ctdpcptrq.h ctitokenizer.h
@@ -313,9 +313,9 @@ pao_event.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h dlldefs.h \
 		exchange.h logger.h thread.h ctitime.h CtiPCPtrQueue.h \
 		message.h collectable.h rwutil.h boost_time.h msg_multi.h \
 		msg_pdata.h pointdefs.h msg_ptreg.h msg_reg.h queue.h \
-		msg_dbchg.h capcontroller.h msg_cmd.h pointtypes.h \
-		configparms.h cparms.h ccsubstationbusstore.h observe.h \
-		utility.h sorted_vector.h ccsubstationbus.h ccfeeder.h \
+		utility.h sorted_vector.h msg_dbchg.h capcontroller.h \
+		msg_cmd.h pointtypes.h configparms.h cparms.h \
+		ccsubstationbusstore.h observe.h ccsubstationbus.h ccfeeder.h \
 		cccapbank.h ccpointresponse.h ccmonitorpoint.h ctidate.h \
 		msg_pcrequest.h ccstrategy.h ccid.h ccstate.h ccmessage.h \
 		ccexecutor.h ctdpcptrq.h ctibase.h ctinexus.h pao_schedule.h \
@@ -326,9 +326,9 @@ pao_schedule.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
 		exchange.h logger.h thread.h ctitime.h CtiPCPtrQueue.h \
 		message.h collectable.h rwutil.h boost_time.h msg_multi.h \
 		msg_pdata.h pointdefs.h msg_ptreg.h msg_reg.h queue.h \
-		msg_dbchg.h capcontroller.h msg_cmd.h pointtypes.h \
-		configparms.h cparms.h ccsubstationbusstore.h observe.h \
-		utility.h sorted_vector.h ccsubstationbus.h ccfeeder.h \
+		utility.h sorted_vector.h msg_dbchg.h capcontroller.h \
+		msg_cmd.h pointtypes.h configparms.h cparms.h \
+		ccsubstationbusstore.h observe.h ccsubstationbus.h ccfeeder.h \
 		cccapbank.h ccpointresponse.h ccmonitorpoint.h ctidate.h \
 		msg_pcrequest.h ccstrategy.h ccid.h ccstate.h ccmessage.h \
 		ccexecutor.h ctdpcptrq.h ctibase.h ctinexus.h pao_schedule.h \

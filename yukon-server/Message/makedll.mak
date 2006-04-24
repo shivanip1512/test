@@ -130,7 +130,8 @@ connection.obj:	yukon.h precompiled.h ctidbgmem.h collectable.h \
 		types.h cticalls.h dsm2.h mutex.h guard.h cticonnect.h \
 		netports.h logger.h thread.h ctitime.h CtiPCPtrQueue.h \
 		message.h rwutil.h boost_time.h msg_multi.h msg_pdata.h \
-		pointdefs.h msg_ptreg.h msg_reg.h queue.h numstr.h
+		pointdefs.h msg_ptreg.h msg_reg.h queue.h utility.h \
+		sorted_vector.h numstr.h
 dll_msg.obj:	yukon.h precompiled.h ctidbgmem.h dsm2.h mutex.h \
 		dlldefs.h guard.h cticonnect.h netports.h os2_2w32.h types.h \
 		cticalls.h connection.h exchange.h dllbase.h logger.h \

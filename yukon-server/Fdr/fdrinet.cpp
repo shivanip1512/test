@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrinet.cpp-arc  $
-*    REVISION     :  $Revision: 1.14 $
-*    DATE         :  $Date: 2006/01/03 20:23:37 $
+*    REVISION     :  $Revision: 1.15 $
+*    DATE         :  $Date: 2006/04/24 14:47:32 $
 *
 *
 *    AUTHOR: David Sutton
@@ -22,6 +22,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrinet.cpp,v $
+      Revision 1.15  2006/04/24 14:47:32  tspar
+      RWreplace: replacing a few missed or new Rogue Wave elements
+
       Revision 1.14  2006/01/03 20:23:37  tspar
       Moved non RW string utilities from rwutil.h to utility.h
 
@@ -473,13 +476,13 @@ bool CtiFDR_Inet::loadList(string &aDirection,  CtiFDRPointList &aList)
                 (pointList->entries() > 0))
             {
                 // get iterator on send list
-                CtiFDRManager::CTIFdrPointIterator  myIterator(pointList->getMap());
+                CtiFDRManager::CTIFdrPointIterator  myIterator = pointList->getMap().begin();
     
-                for ( ; myIterator(); )
+                for ( ; myIterator != pointList->getMap().end(); ++myIterator )
                 {
                     foundPoint = true;
     
-                    translationPoint = myIterator.value();
+                    translationPoint = (*myIterator).second;
     
                     for (int x=0; x < translationPoint->getDestinationList().size(); x++)
                     {
@@ -632,13 +635,13 @@ bool CtiFDR_Inet::loadClientList()
             iClientList.erase (iClientList.begin(),iClientList.end());
 
             // get iterator on send list
-            CtiFDRManager::CTIFdrPointIterator  myIterator(pointList->getMap());
+            CtiFDRManager::CTIFdrPointIterator  myIterator = pointList->getMap().begin();
 
-            if (pointList->getMap().entries())
+            if (pointList->getMap().size())
             {
-                for ( ; myIterator(); )
+                for ( ; myIterator != pointList->getMap().end(); ++myIterator )
                 {
-                    translationPoint = myIterator.value();
+                    translationPoint = (*myIterator).second;
 
                     for (int x=0; x < translationPoint->getDestinationList().size(); x++)
                     {
@@ -1507,12 +1510,12 @@ void CtiFDR_Inet::threadFunctionSendDebugData( void )
             index=0;
             {
                 CtiLockGuard<CtiMutex> sendGuard(getSendToList().getMutex());  
-                CtiFDRManager::CTIFdrPointIterator  myIterator(getSendToList().getPointList()->getMap());
+                CtiFDRManager::CTIFdrPointIterator  myIterator = getSendToList().getPointList()->getMap().begin();
 
-                for ( ; myIterator(); )
+                for ( ; myIterator != getSendToList().getPointList()->getMap().end(); ++myIterator )
                 {
                     // find the point id
-                    point = myIterator.value();
+                    point = (*myIterator).second;
     
                     localMsg = new CtiPointDataMsg (point->getPointID(), value, quality, point->getPointType());
                     sendMessageToForeignSys (localMsg);

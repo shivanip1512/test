@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mgr_mcsched.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2005/12/20 17:25:02 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2006/04/24 14:47:33 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -27,13 +27,13 @@ ostream& operator<<( ostream& ostrm, CtiMCScheduleManager& mgr )
     {
         RWRecursiveLock<class RWMutexLock>::LockGuard guard(mgr.getMux() );
 
-        ostrm << " " << mgr.getMap().entries() << " schedules are loaded." << endl;
+        ostrm << " " << mgr.getMap().size() << " schedules are loaded." << endl;
 
-        CtiMCScheduleManager::CtiRTDBIterator itr(mgr.getMap());
+        CtiMCScheduleManager::MapIterator itr = mgr.getMap().begin();
 
-        for(;itr();)
+        for( ; itr != mgr.getMap().end() ; ++itr)
         {
-            sched = itr.value();
+            sched = (*itr).second;
 
             {
                 RWRecursiveLock<class RWMutexLock>::LockGuard sched_guard(sched->getMux());
@@ -61,7 +61,7 @@ bool CtiMCScheduleManager::refreshAllSchedules()
     // and copy it to the real one when we know that it was successful
     // so we can continue to function when the database is not cooperating
     // and so we don't block more time critical threads needlessly
-    RWTPtrHashMap<CtiHashKey, CtiMCSchedule, my_hash<CtiHashKey> , equal_to<CtiHashKey> > temp_map;
+    map<CtiHashKey*, CtiMCSchedule* > temp_map;
     try
     {
         if( !retrieveSimpleSchedules( temp_map ) )
@@ -99,14 +99,16 @@ bool CtiMCScheduleManager::refreshAllSchedules()
 
         // clean up the old schedules and replace them with
         // the new ones
-        Map.clearAndDestroy();
+        Map.clear();
+        delete_map(Map);
         Map = temp_map;
     }
     else
     {
         // Clean up the temporary map since it was never copied to
         // the real one
-        temp_map.clearAndDestroy();
+        temp_map.clear();
+        delete_map(temp_map);
 
         {
             CtiLockGuard<CtiLogger> guard(dout);
@@ -130,12 +132,12 @@ bool CtiMCScheduleManager::updateAllSchedules()
 
     RWRecursiveLock<RWMutexLock>::LockGuard guard( getMux() );
 
-    CtiMCScheduleManager::CtiRTDBIterator itr(getMap());
+    CtiMCScheduleManager::MapIterator itr = getMap().begin();
     CtiMCSchedule* sched;
 
-    for(;itr();)
+    for(; itr != getMap().end() ; ++itr)
     {
-        sched = itr.value();
+        sched = (*itr).second;
 
         {
             RWRecursiveLock<class RWMutexLock>::LockGuard sched_guard(sched->getMux());
@@ -214,7 +216,10 @@ CtiMCSchedule* CtiMCScheduleManager::addSchedule(const CtiMCSchedule& sched)
     CtiMCSchedule* sched_to_add = (CtiMCSchedule*) sched.replicateMessage();
     sched_to_add->setScheduleID( id );
 
-    if( !Map.insert( new CtiHashKey(id), sched_to_add ) )
+
+    std::pair< std::map<CtiHashKey*,CtiMCSchedule*>::iterator,bool> pair = 
+        Map.insert( std::pair<CtiHashKey*,CtiMCSchedule*>(new CtiHashKey(id), sched_to_add) );
+    if( !pair.second )
     {
         // Failed!
         delete sched_to_add;
@@ -260,20 +265,32 @@ bool CtiMCScheduleManager::deleteSchedule(long sched_id)
     RWRecursiveLock<RWMutexLock>::LockGuard guard( getMux() );
 
     CtiHashKey key(sched_id);
-    CtiMCSchedule* to_delete = Map.findValue(&key);
+    CtiMCSchedule* to_delete; 
+    MapIterator itr = Map.find(&key);
+    if ( itr != Map.end() ) 
+        to_delete = (*itr).second;
+    else
+        to_delete = NULL;
 
     // If the schedule exists, remove it from the database
     // and then remove it from memory
     if( to_delete != NULL && to_delete->Delete() )
     {
         CtiHashKey* key_ptr = NULL;
-        key_ptr = Map.remove( &key );
+        MapIterator itr = Map.find( &key );
+
+        if (itr != Map.end() ){ 
+            Map.erase( &key );
+            key_ptr =  (*itr).first;
+        }
+        else
+            key_ptr = NULL;
 
         if( key_ptr != NULL )
         {
 
             delete key_ptr;
-            //delete to_delete;
+            //delete to_delete;    //why is this commented  -TS
 
             pair< set< CtiMCSchedule* >::iterator, bool > result = _schedules_to_delete.insert( to_delete );
 
@@ -302,7 +319,11 @@ CtiMCSchedule* CtiMCScheduleManager::findSchedule(long id)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( getMux() );
     CtiHashKey key(id);
-    return Map.findValue(&key);
+    MapIterator itr = Map.find(&key);
+    if ( itr != Map.end() ) {
+        return (*itr).second;
+    }else
+        return NULL; 
 }
 
 /*----------------------------------------------------------------------------
@@ -316,12 +337,12 @@ long CtiMCScheduleManager::getID(const string& name)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( getMux() );
 
-    CtiMCScheduleManager::CtiRTDBIterator itr(Map);
+    CtiMCScheduleManager::MapIterator itr = Map.begin();
 
     CtiMCSchedule *sched = NULL;
-    for(;itr();)
+    for(; itr != Map.end() ; ++itr)
     {
-        sched = itr.value();
+        sched = (*itr).second;
 
         if( sched != NULL && string( sched->getScheduleName().c_str()) == name )
             return sched->getScheduleID();
@@ -331,9 +352,9 @@ long CtiMCScheduleManager::getID(const string& name)
 }
 
 bool CtiMCScheduleManager::retrieveSimpleSchedules(
-                                                  RWTPtrHashMap
-                                                  < CtiHashKey, CtiMCSchedule, my_hash<CtiHashKey> , equal_to<CtiHashKey> >&
-                                                  sched_map )
+                                                  std::map
+                                                  < CtiHashKey*, CtiMCSchedule* >
+                                                  &sched_map )
 {
     bool success = true;
     string sql;
@@ -382,9 +403,10 @@ bool CtiMCScheduleManager::retrieveSimpleSchedules(
                     rdr["scheduleid"] >> id;
 
                     CtiMCSchedule* temp_sched = new CtiMCSchedule();
+                    CtiHashKey* temp_key = new CtiHashKey(id);
                     // Add it to the map
                     temp_sched->setUpdatedFlag();   // Mark it updated
-                    sched_map.insert( new CtiHashKey(id), temp_sched );
+                    sched_map.insert( std::pair<CtiHashKey*,CtiMCSchedule*>(temp_key, temp_sched) );
 
                     if( !temp_sched->DecodeDatabaseReader(rdr) )
                     {
@@ -431,9 +453,9 @@ bool CtiMCScheduleManager::retrieveSimpleSchedules(
 }
 
 bool CtiMCScheduleManager::retrieveScriptedSchedules(
-                                                    RWTPtrHashMap
-                                                    < CtiHashKey, CtiMCSchedule, my_hash<CtiHashKey> , equal_to<CtiHashKey> >&
-                                                    sched_map )
+                                                    std::map
+                                                    < CtiHashKey*, CtiMCSchedule* >
+                                                    &sched_map )
 {
     bool success = true;
     string sql;
@@ -478,9 +500,10 @@ bool CtiMCScheduleManager::retrieveScriptedSchedules(
                     rdr["scheduleid"] >> id;
 
                     CtiMCSchedule* temp_sched = new CtiMCSchedule();
+                    CtiHashKey* temp_key = new CtiHashKey(id);
                     // Add it to the map
                     temp_sched->setUpdatedFlag();   // Mark it updated
-                    sched_map.insert( new CtiHashKey(id), temp_sched );
+                    sched_map.insert( std::pair<CtiHashKey*,CtiMCSchedule*>(temp_key, temp_sched) );
 
                     if( !temp_sched->DecodeDatabaseReader(rdr) )
                     {

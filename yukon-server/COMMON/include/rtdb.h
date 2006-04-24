@@ -25,6 +25,7 @@
 #include <iostream>
 #include <functional>
 #include <list>
+#include <map>
 
 #include <rw/tphdict.h>
 #include <rw/tpslist.h>
@@ -37,7 +38,7 @@
 #include "hashkey.h"
 #include "utility.h"
 using std::list;
-
+using std::map;
 /*
  *  These are the Configuration Parameters for the Port Real Time Database
  */
@@ -59,7 +60,7 @@ class IM_EX_CTIBASE CtiRTDB : public RWMonitor< RWRecursiveLock< RWMutexLock > >
 protected:
 
    // This is a keyed Mapping which does not allow duplicates!
-   RWTPtrHashMap<CtiHashKey, T, my_hash<CtiHashKey> , equal_to<CtiHashKey> > Map;
+   map<CtiHashKey*, T* > Map;
 
    list< T* > _orphans;
 
@@ -67,8 +68,8 @@ protected:
 
 public:
 
-   typedef RWTPtrHashMap<CtiHashKey, T, my_hash<CtiHashKey> , equal_to<CtiHashKey> >::value_type   val_pair;
-   typedef RWTPtrHashMapIterator<CtiHashKey, T, my_hash<CtiHashKey> , equal_to<CtiHashKey> >       CtiRTDBIterator;
+   typedef std::map< CtiHashKey*, T* >::value_type       val_pair;
+   typedef std::map< CtiHashKey*, T* >::iterator       MapIterator;
 
 
    CtiRTDB() {}
@@ -78,7 +79,8 @@ public:
       LockGuard guard(monitor());
       delete_list(_orphans);
       _orphans.clear();       // Clean up the leftovers if there are any.
-      Map.clearAndDestroy();
+      Map.clear();
+      delete_map(Map);
    }
 
    bool orphan( long id )
@@ -86,12 +88,20 @@ public:
        bool status = false;
 
        T* temp = NULL;
+       MapIterator itr;
+
        LockGuard  gaurd(monitor());
        CtiHashKey key(id);
 
-       temp = (T*)Map.findValue( &key );
-       CtiHashKey *foundKey = Map.remove( &key );
-       delete foundKey;
+       itr = Map.find( &key );
+       if ( itr != Map.end() ) {
+           CtiHashKey *foundKey = (*itr).first
+           temp = (*itr).second
+    
+           delete foundKey;
+           Map.erase( &key );
+       }else
+           temp = NULL;
 
        if(temp)
        {
@@ -105,12 +115,17 @@ public:
 
        return status;
    }
-
-   void apply(void (*applyFun)(const CtiHashKey*, T*&, void*), void* d)
-   {
-      LockGuard  gaurd(monitor());
-      Map.apply(applyFun, d);
-   }
+    template<class _II, class _Fn> inline
+    void ts_for_each(_II _F, _II _L, _Fn _Op, void* d)
+    {
+        for (; _F != _L; ++_F)
+            _Op(*_F, d);    
+    }
+    void apply(void (*applyFun)(const CtiHashKey*, T*&, void*), void* d)
+    {
+        LockGuard  gaurd(monitor());
+        ts_for_each( Map.begin(), Map.end(), applyFun, d );
+    }
 
    /*
     *  This operation will return a value to us by
@@ -120,34 +135,35 @@ public:
     *    RWBoolean yourTester(T*, void* d);
     */
 
-   T* find(RWBoolean (*testFun)(T*, void*),void* d)
+   T* find(bool (*testFun)(T*, void*),void* d)
    {
       LockGuard  gaurd(monitor());
 
-      CtiRTDBIterator   itr(Map);
+      MapIterator   itr = Map.begin();
 
-      for(; ++itr ;)
+      for( ; itr != Map.end() ; ++itr)
       {
-         if(testFun(itr.value(), d))
-            return itr.value();
+         if( testFun((*itr).second, d) )
+            return (*itr).second;
       }
 
       return NULL;
    }
 
-   T* remove(RWBoolean (*testFun)(T*, void*), void* d)
+   T* remove(bool (*testFun)(T*, void*), void* d)
    {
       T* temp = NULL;
       LockGuard  gaurd(monitor());
 
-      CtiRTDBIterator   itr(Map);
+      MapIterator   itr Map.begin();
 
-      for(; ++itr ;)
+      for( ; itr != Map.end() ; ++itr )
       {
-         if(testFun(itr.value(), d))
+         if(testFun( (*itr).second, d))
          {
-            temp = itr.value();
-            CtiHashKey *key = (CtiHashKey *)Map.remove(itr.key());
+            temp = (*itr).second;
+            CtiHashKey *key = (*itr).first;
+            Map.erase( (*itr).first );
 
             // Make sure the key gets cleaned up!
             delete key;
@@ -158,21 +174,21 @@ public:
       return temp;
    }
 
-   int removeAndDestroy(RWBoolean (*removeFunc)(T*, void*), void* d)
+   int removeAndDestroy(bool (*removeFunc)(T*, void*), void* d)
    {
        int count = 0;
 
        list< CtiHashKey* >       deleteKeys;
        list< CtiDeviceBase* >    deleteObjs;
 
-       CtiRTDBIterator mapitr(Map);
+       MapIterator mapitr = Map.begin();
        CtiDeviceBase   *pdev = 0;
        CtiHashKey      *pkey = 0;
 
-       for(;mapitr();)
+       for(; mapitr != Map.end() ; ++mapitr )
        {
-           pdev = mapitr.value();
-           pkey = mapitr.key();
+           pdev = (*mapitr).second;
+           pkey = (*mapitr).first;
 
            if((*removeFunc)(pdev, d))
            {
@@ -181,11 +197,11 @@ public:
                deleteObjs.push_back(pdev);
            }
        }
-       std::list<>::iterator itr = deleteKeys.begin();
+       std::list<CtiHashKey*>::iterator itr = deleteKeys.begin();
        while( itr != deleteKeys.end() )
        //for(int kpos = 0; kpos < deleteKeys.entries(); kpos++)
        {
-           itr = Map.erase(itr);
+           itr = Map.erase(*itr);
        }
 
        delete_list(deleteKeys);
@@ -199,10 +215,10 @@ public:
    size_t entries() const
    {
       LockGuard guard(monitor());
-      return Map.entries();
+      return Map.size();
    }
 
-   RWTPtrHashMap<CtiHashKey, T, my_hash<CtiHashKey> , equal_to<CtiHashKey> > & getMap()      { return Map; }
+   map<CtiHashKey* , T* > & getMap()      { return Map; }
    RWRecursiveLock<RWMutexLock> &      getMux()       { return mutex(); }
 
    int getErrorCode() const { return _dberrorcode; };
