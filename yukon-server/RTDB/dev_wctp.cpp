@@ -24,6 +24,7 @@
 #include "cparms.h"
 #include "dsm2.h"
 #include "logger.h"
+#include "numstr.h"
 #include "porter.h"
 
 #include "pt_base.h"
@@ -595,14 +596,17 @@ CHAR* CtiDeviceWctpTerminal::buildXMLMessage(const CHAR *recipientId,
     CHAR* xmlMsg = getXMLBuffer();
     xmlMsg[0] = 0;
 
+    string WCTP_VERSION = gConfigParms.getValueAsString(string("WCTP_VERSION_" + CtiNumStr(getPortID())), "wctp-dtd-v1r1");
+    string WCTP_DOCTYPE = gConfigParms.getValueAsString(string("WCTP_DOCTYPE_" + CtiNumStr(getPortID())), "http://dtd.wctp.org/wctp-dtd-v1r1.dtd");
+
     if( gConfigParms.isTrue("WCTP_USE_CLIENTMESSAGE") )
     {
         strcat(xmlMsg, "<?xml version=\"1.0\"?>");
         strcat(xmlMsg, "<!DOCTYPE wctp-Operation SYSTEM \"");
-        strcat(xmlMsg, WCTP_DOCTYPE);
+        strcat(xmlMsg, WCTP_DOCTYPE.c_str());
         strcat(xmlMsg, "\">");
         strcat(xmlMsg, "<wctp-Operation wctpVersion=\"");
-        strcat(xmlMsg, WCTP_VERSION);
+        strcat(xmlMsg, WCTP_VERSION.c_str());
         strcat(xmlMsg, "\">");
         strcat(xmlMsg, "<wctp-SubmitClientMessage>");
         strcat(xmlMsg, "<wctp-SubmitClientHeader submitTimestamp=\"");
@@ -639,10 +643,10 @@ CHAR* CtiDeviceWctpTerminal::buildXMLMessage(const CHAR *recipientId,
     {
         strcat(xmlMsg, "<?xml version=\"1.0\"?>");
         strcat(xmlMsg, "<!DOCTYPE wctp-Operation SYSTEM \"");
-        strcat(xmlMsg, WCTP_DOCTYPE);
+        strcat(xmlMsg, WCTP_DOCTYPE.c_str());
         strcat(xmlMsg, "\">");
         strcat(xmlMsg, "<wctp-Operation wctpVersion=\"");
-        strcat(xmlMsg, WCTP_VERSION);
+        strcat(xmlMsg, WCTP_VERSION.c_str());
         strcat(xmlMsg, "\">");
         strcat(xmlMsg, "<wctp-SubmitRequest>");
         strcat(xmlMsg, "<wctp-SubmitHeader submitTimestamp=\"");

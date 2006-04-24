@@ -25,6 +25,8 @@
 #include "dlldefs.h"
 #include "xfer.h"
 
+#define WCTP_TIMEOUT    3
+
 class SAXWctpHandler;
 
 class IM_EX_DEVDB CtiDeviceWctpTerminal  : public CtiDeviceIED
@@ -158,13 +160,6 @@ private:
    CHAR* trimMessage(CHAR *message);
 
 };
-
-
-#define WCTP_VERSION    "wctp-dtd-v1r1"
-#define WCTP_DOCTYPE    "http://dtd.wctp.org/wctp-dtd-v1r1.dtd"
-
-#define WCTP_TIMEOUT    3
-
 
 
 
