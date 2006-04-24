@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/DSM2.H-arc  $
-* REVISION     :  $Revision: 1.34 $
-* DATE         :  $Date: 2006/04/06 15:26:48 $
+* REVISION     :  $Revision: 1.35 $
+* DATE         :  $Date: 2006/04/24 19:23:22 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -949,7 +949,7 @@ public:
          Command                = aRef.Command;
          Function               = aRef.Function;
          EventCode              = aRef.EventCode;
-         MessageFlags           = aRef.MessageFlags;
+         MessageFlags           = aRef.MessageFlags & ~MessageFlag_StatisticsRequested;
 
          DeviceIDofLMGroup      = aRef.DeviceIDofLMGroup;
          TrxID                  = aRef.TrxID;
