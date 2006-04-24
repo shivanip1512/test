@@ -101,7 +101,12 @@ public class WorkOrderManager extends HttpServlet {
 			String ele = enum1.nextElement().toString();
 			 CTILogger.info(" --" + ele + "  " + req.getParameter(ele));
 		}
-
+        referer = req.getParameter( ServletUtils.ATT_REFERRER );
+        if(referer == null)
+            referer = ((CtiNavObject)session.getAttribute(ServletUtils.NAVIGATE)).getPreviousPage();
+        redirect = req.getParameter( ServletUtils.ATT_REDIRECT );
+        if (redirect == null) redirect = referer;
+            
 		StarsYukonUser user = (StarsYukonUser)
 				session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 		if (user == null) {
@@ -124,10 +129,10 @@ public class WorkOrderManager extends HttpServlet {
             }
         }
         
-		referer = req.getParameter( ServletUtils.ATT_REFERRER );
-		if (referer == null) referer = ((CtiNavObject)session.getAttribute(ServletUtils.NAVIGATE)).getPreviousPage();
-		redirect = req.getParameter( ServletUtils.ATT_REDIRECT );
-		if (redirect == null) redirect = referer;
+//		referer = req.getParameter( ServletUtils.ATT_REFERRER );
+//		if (referer == null) referer = ((CtiNavObject)session.getAttribute(ServletUtils.NAVIGATE)).getPreviousPage();
+//		redirect = req.getParameter( ServletUtils.ATT_REDIRECT );
+//		if (redirect == null) redirect = referer;
 		
 		// If parameter "ConfirmOnMessagePage" specified, the confirm/error message will be displayed on Message.jsp
 		if (req.getParameter(ServletUtils.CONFIRM_ON_MESSAGE_PAGE) != null) {
