@@ -10,8 +10,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/12/20 17:16:57 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2006/04/24 20:47:29 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -145,19 +145,19 @@ void main(int argc, char **argv)
 
             CtiCommandMsg *pCmd = new CtiCommandMsg(CtiCommandMsg::PorterConsoleInput, 15);
 
-            pCmd->getOpArgList().append(-1);    // Token
-            pCmd->getOpArgList().append(command);
+            pCmd->getOpArgList().push_back(-1);    // Token
+            pCmd->getOpArgList().push_back(command);
 
             if( (command == 0x01 || command == 0x02) )
             {
                 if( argc >= 4 )
                 {
                     dblvl = strtoul(argv[3], &pch, 0);
-                    pCmd->getOpArgList().append(dblvl);
+                    pCmd->getOpArgList().push_back(dblvl);
                 }
                 else
                 {
-                    pCmd->getOpArgList().append(0x00000000);
+                    pCmd->getOpArgList().push_back(0x00000000);
                 }
             }
 

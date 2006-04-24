@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2006/03/31 18:24:43 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2006/04/24 20:47:30 $
 *
 * HISTORY      :
 * $Log: dev_exclusion.cpp,v $
+* Revision 1.16  2006/04/24 20:47:30  tspar
+* Rogue Wave: more odds and ends in the RWreplacement
+*
 * Revision 1.15  2006/03/31 18:24:43  cplender
 * Additional (take 2) exclusion logic tweaks to accomodate East River.
 *
@@ -422,7 +425,7 @@ bool CtiDeviceExclusion::removeProhibit(unsigned long id)
 {
     bool pass = false;          // If this is set to true it means a non-infinite and valid time exclusion exists for id.
     bool removed = false;
-    RWTime eot(YUKONEOT);
+    CtiTime eot(YUKONEOT);
     CtiDeviceExclusion::prohibitions::iterator itr;
 
     try

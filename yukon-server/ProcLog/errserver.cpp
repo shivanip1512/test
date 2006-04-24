@@ -31,7 +31,7 @@ using namespace std;
 INT   ShortenLogFile(WIN32_FIND_DATA *Data, INT Days);
 
 // Must define static members in a C++ file!
-RWTPtrOrderedVector<CErrLogFile> CErrServer::FileList = RWTPtrOrderedVector<CErrLogFile>();   // Define static member at file scope!
+std::vector<CErrLogFile*> CErrServer::FileList = std::vector<CErrLogFile*>();   // Define static member at file scope!
 INT CErrServer::ClientConnections = 0;
 
 // Default
@@ -309,17 +309,34 @@ INT CErrServer::getErrMsg(CErrMsg* Err)
 
 INT CErrServer::ListHas(CErrLogFile* EFile)
 {
-   return(FileList.contains(EFile));     // get an error message
+   std::vector<CErrLogFile*>::iterator itr = FileList.begin();
+   INT ret;
+   for ( ; itr != FileList.end() ; ++itr ) {
+       if ( *itr == EFile ){
+           ret = 1;
+       }else{
+           ret = 0;
+       }
+   }
+   return ret;     // get an error message
 }
 
 VOID CErrServer::ListAdd(CErrLogFile* EFile)
 {
-   FileList.insert(EFile);
+   FileList.push_back(EFile);
 }
 
 CErrLogFile* CErrServer::ListGet(CErrLogFile* EFile)
 {
-   return(FileList.find(EFile));
+   std::vector< CErrLogFile* >::iterator itr = FileList.begin();
+
+   for ( ; itr != FileList.end() ; ++itr ) {
+       if ( *itr == EFile ){
+           return *itr;
+       }
+   }
+   return NULL;
+
 }
 
 /*

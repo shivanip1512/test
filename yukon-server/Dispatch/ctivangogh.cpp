@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.136 $
-* DATE         :  $Date: 2006/04/19 20:44:42 $
+* REVISION     :  $Revision: 1.137 $
+* DATE         :  $Date: 2006/04/24 20:47:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -876,10 +876,10 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                 Cmd->dump();
             }
 
-            for(i = 1; i + 1 < Cmd->getOpArgList().entries(); i += 2)
+            for(i = 1; i + 1 < Cmd->getOpArgList().size(); i += 2)
             {
-                pid = Cmd->getOpArgList().at(i);
-                int alarmcondition = Cmd->getOpArgList().at(i+1);
+                pid = Cmd->getOpArgList()[i];
+                int alarmcondition = Cmd->getOpArgList()[i+1];
 
                 pPt = PointMgr.getEqual(pid);
 
@@ -902,12 +902,12 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
              *  This block receives a CommandMsg from a requesting client and processes it for submission to
              *  pil/porter.
              */
-            if(Cmd->getOpArgList().entries() >= 4)
+            if(Cmd->getOpArgList().size() >= 4)
             {
-                LONG token     = Cmd->getOpArgList().at(0);
-                LONG did       = Cmd->getOpArgList().at(1);
-                LONG pid       = Cmd->getOpArgList().at(2);
-                LONG rawstate  = Cmd->getOpArgList().at(3);
+                LONG token     = Cmd->getOpArgList()[0];
+                LONG did       = Cmd->getOpArgList()[1];
+                LONG pid       = Cmd->getOpArgList()[2];
+                LONG rawstate  = Cmd->getOpArgList()[3];
                 INT  ctrl_offset = 0;
 
                 // Find PIL in the connection list.
@@ -915,11 +915,11 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                 {
                     {
                         CtiPointSPtr pPoint;
-                        if(Cmd->getOpArgList().entries() >= 5)
+                        if(Cmd->getOpArgList().size() >= 5)
                         {
                             // This is a BOOL which indicates whether a ctrl offset is spec'd by pid.
                             // If this is so, "did" MUST also be specified!
-                            ctrl_offset = Cmd->getOpArgList().at(4);
+                            ctrl_offset = Cmd->getOpArgList()[4];
 
                             if(did == 0 || ctrl_offset == 0)
                             {
@@ -1020,15 +1020,15 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
         {
             messageDump((CtiMessage*)Cmd);
 
-            if(Cmd->getOpArgList().entries() >= 4)
+            if(Cmd->getOpArgList().size() >= 4)
             {
-                LONG token     = Cmd->getOpArgList().at(0);
+                LONG token     = Cmd->getOpArgList()[0];
 
-                for(i = 1; i < Cmd->getOpArgList().entries(); i = i + 3 )
+                for(i = 1; i < Cmd->getOpArgList().size(); i = i + 3 )
                 {
-                    LONG idtype   = Cmd->getOpArgList().at(i);
-                    LONG id       = Cmd->getOpArgList().at(i+1);
-                    bool disable  = !((Cmd->getOpArgList().at(i+2) != 0));
+                    LONG idtype   = Cmd->getOpArgList()[i];
+                    LONG id       = Cmd->getOpArgList()[i+1];
+                    bool disable  = !((Cmd->getOpArgList()[i+2] != 0));
                     int  tagmask  = 0;           // This mask represents all the bits which are to be adjusted.
                     int  setmask  = 0;         // This mask represents the state of the adjusted-masked bit.. Ok, read it again.
 
@@ -1130,13 +1130,13 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
         }
     case (CtiCommandMsg::PointTagAdjust):
         {
-            if(Cmd->getOpArgList().entries() >= 4)
+            if(Cmd->getOpArgList().size() >= 4)
             {
                 // Vector contains token, pointid, tag(s) to set.
-                LONG token      = Cmd->getOpArgList().at(0);
-                LONG pointid    = Cmd->getOpArgList().at(1);
-                LONG tagstoset  = Cmd->getOpArgList().at(2);
-                LONG tagstoreset= Cmd->getOpArgList().at(3);
+                LONG token      = Cmd->getOpArgList()[0];
+                LONG pointid    = Cmd->getOpArgList()[1];
+                LONG tagstoset  = Cmd->getOpArgList()[2];
+                LONG tagstoreset= Cmd->getOpArgList()[3];
 
                 {
                     CtiPointSPtr pPt = PointMgr.getEqual( pointid );
@@ -3398,9 +3398,9 @@ INT CtiVanGogh::commandMsgUpdateFailedHandler(CtiCommandMsg *pCmd, CtiMultiWrapp
 
     CtiCommandMsg::CtiOpArgList_t &Op = pCmd->getOpArgList();
 
-    if( Op.at((size_t)1) == RWInteger(OP_DEVICEID) )    // All points on a device must be marked as nonUpdated
+    if( Op[1] == OP_DEVICEID )    // All points on a device must be marked as nonUpdated
     {
-        LONG did = Op.at((size_t)2);
+        LONG did = Op[(size_t)2];
 
         CtiServerExclusion pmguard(_server_exclusion);
         CtiPointManager::spiterator itr = PointMgr.begin();
@@ -3416,10 +3416,10 @@ INT CtiVanGogh::commandMsgUpdateFailedHandler(CtiCommandMsg *pCmd, CtiMultiWrapp
             }
         }
     }
-    else if( Op.at((size_t)1) == RWInteger(OP_POINTID) )
+    else if( Op[(size_t)1] == RWInteger(OP_POINTID) )
     {
         CtiServerExclusion pmguard(_server_exclusion);
-        CtiPointSPtr pPoint = PointMgr.getEqual(Op.at((size_t)2));
+        CtiPointSPtr pPoint = PointMgr.getEqual(Op[(size_t)2]);
 
         if(pPoint)      // We know this point..
         {

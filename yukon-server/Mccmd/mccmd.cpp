@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.53 $
-* DATE         :  $Date: 2006/03/17 23:37:55 $
+* REVISION     :  $Revision: 1.54 $
+* DATE         :  $Date: 2006/04/24 20:47:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -679,7 +679,7 @@ int mcu8100(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
     }
 
     string file = argv[1];
-    RWOrdered results;
+    std::vector<RWCollectableString*> results;
 
     if( DecodeCFDATAFile( file, &results) == false )
     {
@@ -687,15 +687,15 @@ int mcu8100(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
         return TCL_ERROR;
     }
 
-    RWOrderedIterator iter(results);
+    std::vector<RWCollectableString*>::iterator iter = results.begin();
 
-    while( iter() )
+    for( ; iter != results.end() ; ++iter )
     {
-        RWCollectableString* str = (RWCollectableString*) iter.key();
+        RWCollectableString* str = *iter;
         Tcl_Eval( interp, (char*) str->data());
     }
-
-    results.clearAndDestroy();
+    delete_vector(results);
+    results.clear();
     return TCL_OK;
 }
 
@@ -714,7 +714,7 @@ int mcu9000eoi(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[]
     }
 
     string file = argv[1];
-    RWOrdered results;
+    std::vector<RWCollectableString*> results;
 
     if( DecodeEOIFile(file, &results) == false )
     {
@@ -722,15 +722,14 @@ int mcu9000eoi(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[]
         return TCL_ERROR;
     }
 
-    RWOrderedIterator iter(results);
-
-    while( iter() )
+    std::vector<RWCollectableString*>::iterator iter = results.begin();
+    for( ; iter != results.end() ; ++iter )
     {
-        RWCollectableString* str = (RWCollectableString*) iter.key();
+        RWCollectableString* str = *iter;
         Tcl_Eval( interp, (char*) str->data());
     }
-
-    results.clearAndDestroy();
+    delete_vector(results);
+    results.clear();
     return TCL_OK;
 }
 
@@ -745,7 +744,7 @@ int mcu8100wepco(ClientData clientData, Tcl_Interp* interp, int argc, char* argv
     }
 
     string file = argv[1];
-    RWOrdered results;
+    std::vector<RWCollectableString*> results;
 
     if( DecodeWepcoFile( file, &results) == false )
     {
@@ -753,11 +752,10 @@ int mcu8100wepco(ClientData clientData, Tcl_Interp* interp, int argc, char* argv
         return TCL_ERROR;
     }
 
-    RWOrderedIterator iter(results);
-
-    while( iter() )
+    std::vector<RWCollectableString*>::iterator iter = results.begin();
+    for( ; iter != results.end() ; ++iter )
     {
-        RWCollectableString* str = (RWCollectableString*) iter.key();
+        RWCollectableString* str = *iter;
         Tcl_Eval( interp, (char*) str->data());
         Sleep(100); // CGP 051302  Buy some sanity.
 
@@ -768,8 +766,8 @@ int mcu8100wepco(ClientData clientData, Tcl_Interp* interp, int argc, char* argv
             break;
         }
     }
-
-    results.clearAndDestroy();
+    delete_vector(results);
+    results.clear();
     return tcl_ret;
 }
 
@@ -784,7 +782,7 @@ int mcu8100service(ClientData clientData, Tcl_Interp* interp, int argc, char* ar
     }
 
     string file = argv[1];
-    RWOrdered results;
+    std::vector<RWCollectableString*> results;
 
     if( DecodeWepcoFileService( file, &results) == false )
     {
@@ -793,11 +791,11 @@ int mcu8100service(ClientData clientData, Tcl_Interp* interp, int argc, char* ar
     }
 
     int num_sent = 0;
-    RWOrderedIterator iter(results);
 
-    while( iter() )
+    std::vector<RWCollectableString*>::iterator iter = results.begin();
+    for( ; iter != results.end() ; ++iter )
     {
-        RWCollectableString* str = (RWCollectableString*) iter.key();
+        RWCollectableString* str = *iter;
         Tcl_Eval( interp, (char*) str->data());
         num_sent++;
         Sleep(100); // CGP 051302  Buy some sanity.
@@ -809,8 +807,8 @@ int mcu8100service(ClientData clientData, Tcl_Interp* interp, int argc, char* ar
             break;
         }
     }
-
-    results.clearAndDestroy();
+    delete_vector(results);
+    results.clear();
 
     // set the number of pil requests sent to be the return val
     Tcl_SetResult( interp, (char*)CtiNumStr(num_sent).toString().c_str(), NULL);
@@ -828,7 +826,7 @@ int mcu8100program(ClientData clientData, Tcl_Interp* interp, int argc, char* ar
     }
 
     string file = argv[1];
-    RWOrdered results;
+    std::vector<RWCollectableString*> results;
 
     if( DecodeWepcoFileConfig( file, &results) == false )
     {
@@ -837,11 +835,10 @@ int mcu8100program(ClientData clientData, Tcl_Interp* interp, int argc, char* ar
     }
 
     int num_sent = 0;
-    RWOrderedIterator iter(results);
-
-    while( iter() )
+    std::vector<RWCollectableString*>::iterator iter = results.begin();
+    for( ; iter != results.end() ; ++iter )
     {
-        RWCollectableString* str = (RWCollectableString*) iter.key();
+        RWCollectableString* str = *iter;
         Tcl_Eval( interp, (char*) str->data());
         num_sent++;
         Sleep(100); // CGP 051302  Buy some sanity.
@@ -853,8 +850,8 @@ int mcu8100program(ClientData clientData, Tcl_Interp* interp, int argc, char* ar
             break;
         }
     }
-
-    results.clearAndDestroy();
+    delete_vector(results);
+    results.clear();
 
     // set the number of pil requests sent to be the return val
     Tcl_SetResult( interp, (char*)CtiNumStr(num_sent).toString().c_str(), NULL);
@@ -874,7 +871,7 @@ int pmsi(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
     }
 
     string file = argv[1];
-    RWOrdered results;
+    std::vector<RWCollectableString*> results;
 
     if( DecodePMSIFile( file, &results) == false )
     {
@@ -885,15 +882,15 @@ int pmsi(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
         return TCL_ERROR;
     }
 
-    RWOrderedIterator iter(results);
+    std::vector<RWCollectableString*>::iterator iter = results.begin();
 
-    while( iter() )
+    for( ; iter != results.end() ; ++iter )
     {
-        RWCollectableString* str = (RWCollectableString*) iter.key();
+        RWCollectableString* str = *iter;
         Tcl_Eval( interp, (char*) str->data());
     }
-
-    results.clearAndDestroy();
+    delete_vector(results);
+    results.clear();
     return TCL_OK;
 }
 
@@ -928,7 +925,8 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
 
         string file = argv[1];
         string temp;
-        RWOrdered results;
+
+        std::vector<RWCollectableString*> results;
         ::sprintf (newFileName,"..\\export\\sent-%02d-%02d-%04d.txt",
                  CtiDate().month(),
                  CtiDate().dayOfMonth(),
@@ -1122,15 +1120,15 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
             }
         }
         // send what we do have
-        RWOrderedIterator iter(results);
 
-        while( iter() )
+        std::vector<RWCollectableString*>::iterator itr = results.begin();
+        for( ; itr != results.end() ; ++itr )
         {
-            RWCollectableString* str = (RWCollectableString*) iter.key();
+            RWCollectableString* str = *itr;
             Tcl_Eval( interp, (char*) str->data());
         }
-
-        results.clearAndDestroy();
+        delete_vector(results);
+        results.clear();
     }
     return retVal;
 }

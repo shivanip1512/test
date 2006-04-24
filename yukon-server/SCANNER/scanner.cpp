@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.58 $
-* DATE         :  $Date: 2006/04/05 16:25:07 $
+* REVISION     :  $Revision: 1.59 $
+* DATE         :  $Date: 2006/04/24 20:47:30 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1448,7 +1448,7 @@ void DispatchMsgHandlerThread(VOID *Arg)
                         }
                     case (CtiCommandMsg::AlternateScanRate):
                         {
-                            if(Cmd->getOpArgList().entries() >= 4)
+                            if(Cmd->getOpArgList().size() >= 4)
                             {
                                 LONG token      = Cmd->getOpArgList().at(0);
                                 LONG deviceId   = Cmd->getOpArgList().at(1);

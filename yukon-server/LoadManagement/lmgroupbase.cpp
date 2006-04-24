@@ -817,12 +817,12 @@ CtiCommandMsg* CtiLMGroupBase::createLatchingRequestMsg(LONG rawState, int prior
     CtiCommandMsg* returnCommandMsg = new CtiCommandMsg();
     returnCommandMsg->setOperation(CtiCommandMsg::ControlRequest);
 
-    RWTValOrderedVector<RWInteger> opArgList;
-    opArgList.insert(RWInteger(-1));
-    opArgList.insert(RWInteger(getPAOId()));
-    opArgList.insert(RWInteger(1));//this is control offset 1
-    opArgList.insert(RWInteger(rawState));
-    opArgList.insert(RWInteger(1));//this simulates a boolean to use the third integer as a control offset rather than a point id
+    std::vector<int> opArgList;
+    opArgList.push_back(-1);
+    opArgList.push_back(getPAOId());
+    opArgList.push_back(1);//this is control offset 1
+    opArgList.push_back(rawState);
+    opArgList.push_back(1);//this simulates a boolean to use the third integer as a control offset rather than a point id
 
     returnCommandMsg->setOpArgList(opArgList);
 

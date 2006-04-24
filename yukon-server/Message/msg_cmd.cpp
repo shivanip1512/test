@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/msg_cmd.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/12/20 17:18:53 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2006/04/24 20:47:30 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -40,7 +40,7 @@ CtiCommandMsg::restoreGuts(RWvistream& aStream)
    for(i = 0; i < Count; i++)
    {
       aStream >> iTemp;
-      iOpArgList.insert(iTemp);
+      iOpArgList.push_back(iTemp);
    }
 }
 
@@ -49,11 +49,11 @@ CtiCommandMsg::saveGuts(RWvostream &aStream) const
 {
    CtiMessage::saveGuts( aStream );            // Base class is not really a RWCollectible, but could be.
 
-   aStream << iOperation << iOpString << iOpArgList.entries();
+   aStream << iOperation << iOpString << iOpArgList.size();
 
-   for(int i = 0; i < iOpArgList.entries(); i++)
+   for(std::vector<int>::const_iterator itr = iOpArgList.begin(); itr != iOpArgList.end(); ++itr)
    {
-      aStream << iOpArgList[i];
+      aStream << *itr;
    }
 
 }
@@ -75,13 +75,13 @@ void CtiCommandMsg::dump() const
    dout << " Message Operation             " << iOperation << endl;
    dout << " Message String                " << iOpString << endl;
 
-   if(iOpArgList.entries())
+   if(iOpArgList.size())
    {
-      dout << " Message Vector Size           " << iOpArgList.entries() << endl;
+      dout << " Message Vector Size           " << iOpArgList.size() << endl;
 
-      for(int i = 0; i < iOpArgList.entries(); i++)
+      for(std::vector<int>::const_iterator itr = iOpArgList.begin(); itr != iOpArgList.end(); ++itr)
       {
-         dout << " Message Vector                " << iOpArgList[i] << endl;
+         dout << " Message Vector                " << *itr << endl;
       }
    }
    else
@@ -121,25 +121,27 @@ CtiCommandMsg&    CtiCommandMsg::operator=(const CtiCommandMsg& aRef)
    return *this;
 }
 
-RWTValOrderedVector<RWInteger>& CtiCommandMsg::getOpArgList()
+std::vector<int>& CtiCommandMsg::getOpArgList()
 {
    return iOpArgList;
 }
 
-RWTValOrderedVector<RWInteger> CtiCommandMsg::getOpArgList() const
+std::vector<int> CtiCommandMsg::getOpArgList() const
 {
    return iOpArgList;
 }
 
-RWTValOrderedVector<RWInteger>& CtiCommandMsg::insert(INT i)
+std::vector<int>& CtiCommandMsg::insert(INT i)
 {
-   iOpArgList.insert(i);
+   iOpArgList.push_back(i);
    return iOpArgList;
 }
 
 INT CtiCommandMsg::removeFirst()
 {
-   return iOpArgList.removeFirst();
+   int temp = iOpArgList.front(); 
+   iOpArgList.erase(0); 
+   return temp;
 }
 
 void CtiCommandMsg::clear()
@@ -149,7 +151,7 @@ void CtiCommandMsg::clear()
 
 INT CtiCommandMsg::getOpArgument(INT i) const
 {
-   return iOpArgList[i];
+    return iOpArgList[i];
 }
 
 string CtiCommandMsg::getOpString() const

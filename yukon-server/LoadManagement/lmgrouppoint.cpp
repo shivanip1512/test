@@ -188,11 +188,11 @@ CtiCommandMsg* CtiLMGroupPoint::createLatchingRequestMsg(LONG rawState, int prio
     CtiCommandMsg* returnCommandMsg = new CtiCommandMsg();
     returnCommandMsg->setOperation(CtiCommandMsg::ControlRequest);
 
-    RWTValOrderedVector<RWInteger> opArgList;
-    opArgList.insert(RWInteger(-1));
-    opArgList.insert(RWInteger(getDeviceIdUsage()));
-    opArgList.insert(RWInteger(getPointIdUsage()));
-    opArgList.insert(RWInteger(rawState));
+    std::vector<INT> opArgList;
+    opArgList.push_back(-1);
+    opArgList.push_back(getDeviceIdUsage());
+    opArgList.push_back(getPointIdUsage());
+    opArgList.push_back(rawState);
 
     returnCommandMsg->setOpArgList(opArgList);
 

@@ -57,7 +57,7 @@ bool validateAndDecodeLine( string & line, int aProtocolFlag, RWCollectableStrin
 int decodeTextCommandFile(const string& fileName, 
                                 int aCommandsToPerform,
                                 int aProtocolFlag, 
-                                RWOrdered* commandList)
+                                std::vector<RWCollectableString*>* commandList)
 {
     FILE* fptr;
     char workBuffer[500];  // not real sure how long each line possibly is
@@ -132,7 +132,7 @@ int decodeTextCommandFile(const string& fileName,
                             CtiLockGuard< CtiLogger > guard(dout);
                             dout << "-- " << *decodedCommand << endl;
                         }
-                        commandList->insert(decodedCommand);
+                        commandList->push_back(decodedCommand);
                         // set to null for safety sakes
                         decodedCommand = NULL;
 
@@ -1310,7 +1310,7 @@ bool getToken (char **InBuffer,
 }
 
 
-int decodeDSM2VconfigFile(const string& fileName, RWOrdered* commandList)
+int decodeDSM2VconfigFile(const string& fileName, std::vector<RWCollectableString*>* commandList)
 {
     FILE* fptr;
     char workBuffer[500];  // not real sure how long each line possibly is
@@ -1377,7 +1377,7 @@ int decodeDSM2VconfigFile(const string& fileName, RWOrdered* commandList)
                             CtiLockGuard< CtiLogger > guard(dout);
                             dout << "-- " << *decodedCommand << endl;
                         }
-                        commandList->insert(decodedCommand);
+                        commandList->push_back(decodedCommand);
                         // set to null for safety sakes
                         decodedCommand = NULL;
                     }

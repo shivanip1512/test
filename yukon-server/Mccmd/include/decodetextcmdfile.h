@@ -39,8 +39,8 @@ using std::vector;
 
 
 
-int decodeTextCommandFile(const string& fileName, int aCommandLimit, int aProtocolFlag, RWOrdered* commandList);
-int decodeDSM2VconfigFile(const string& fileName,RWOrdered* commandList);
+int decodeTextCommandFile(const string& fileName, int aCommandLimit, int aProtocolFlag, std::vector<RWCollectableString*>* commandList);
+int decodeDSM2VconfigFile(const string& fileName, std::vector<RWCollectableString*>* commandList);
 static bool getToken (char** InBuffer, string &OutBuffer);
 static bool outputLogFile (vector<string> &aLog);
 static bool outputCommandFile (const string &aFileName, int aLineCnt, vector<string> &aCmdVector);

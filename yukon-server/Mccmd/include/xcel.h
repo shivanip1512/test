@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/INCLUDE/xcel.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/12/20 17:18:40 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2006/04/24 20:47:30 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -40,7 +40,7 @@ using std::iostream;
 #include "guard.h"
 #include "types.h"
 
-bool DecodePMSIFile(const string& file, RWOrdered* results);
+bool DecodePMSIFile(const string& file, std::vector<RWCollectableString*>* results);
 static bool isValidPMSILine( char* line, char &command, string &serialNum, string &programming);
 static char * getEntry (char* InBuffer, string &OutBuffer);
 

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/msg_cmd.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/12/20 17:18:54 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2006/04/24 20:47:30 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -22,6 +22,8 @@
 #include <rw/collect.h>
 #include <rw/tvordvec.h>
 
+#include <list>
+
 #include "dlldefs.h"
 #include "message.h"       // get the base class
 
@@ -32,15 +34,15 @@
 class IM_EX_MSG CtiCommandMsg : public CtiMessage
 {
 private:
-   int                              iOperation;
+   int                           iOperation;
    string                        iOpString;
-   RWTValOrderedVector<RWInteger>   iOpArgList;
+   std::vector< int >              iOpArgList;
 
 public:
    RWDECLARE_COLLECTABLE( CtiCommandMsg );
 
    typedef  CtiMessage                       Inherited;
-   typedef  RWTValOrderedVector<RWInteger>   CtiOpArgList_t;
+   typedef  std::vector< int >   CtiOpArgList_t;
 
    CtiCommandMsg(int Op = NoOp, int Pri = 7);
    CtiCommandMsg(const CtiCommandMsg &aRef, int Pri = 7);
@@ -52,7 +54,7 @@ public:
 
    CtiOpArgList_t    getOpArgList() const;
    CtiOpArgList_t&   getOpArgList();
-   INT               getOpArgument(INT i) const;
+   INT               getOpArgument(int i) const;
    string         getOpString() const;
    string&        getOpString();
 
@@ -60,8 +62,8 @@ public:
    CtiCommandMsg&    setOpString(const string &aRef);
    CtiCommandMsg&    setOperation(const INT &aInt);
 
-   CtiOpArgList_t&   insert(INT i);
-   INT               removeFirst();
+   CtiOpArgList_t&   insert(int i);
+   int               removeFirst();
    void              clear();
 
    void              saveGuts(RWvostream &aStream) const;

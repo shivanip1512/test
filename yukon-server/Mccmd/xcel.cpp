@@ -36,7 +36,7 @@ I,2355642216,KUEHN STEVEN.J,,,3440 BUCKBEE RD,WHITE BEAR LK.,MN,55110,6517772595
 *  send service commands, etc
 ****************************
 */
-bool DecodePMSIFile(const string& fileName, RWOrdered* commandList)
+bool DecodePMSIFile(const string& fileName, std::vector<RWCollectableString*>* commandList)
 {
     FILE* fptr;
     char workBuffer[500];  // not real sure how long each line possibly is
@@ -76,7 +76,7 @@ bool DecodePMSIFile(const string& fileName, RWOrdered* commandList)
 						*decodedCommand = "PutConfig versacom serial ";
 						*decodedCommand +=serialNum.c_str();
 						*decodedCommand += " service in";
-						commandList->insert(decodedCommand);
+						commandList->push_back(decodedCommand);
 						break;
 					}
 				case 'D':
@@ -85,7 +85,7 @@ bool DecodePMSIFile(const string& fileName, RWOrdered* commandList)
 						*decodedCommand = "PutConfig versacom serial ";
 						*decodedCommand +=serialNum.c_str();
 						*decodedCommand += " service out";
-						commandList->insert(decodedCommand);
+						commandList->push_back(decodedCommand);
 						break;
 					}
 				case 'I':
@@ -95,7 +95,7 @@ bool DecodePMSIFile(const string& fileName, RWOrdered* commandList)
 						*decodedCommand = "PutConfig versacom serial ";
 						*decodedCommand +=serialNum.c_str();
 						*decodedCommand += " service in";
-						commandList->insert(decodedCommand);
+						commandList->push_back(decodedCommand);
 
 						RWCollectableString* programCommand = new RWCollectableString();
 
@@ -104,7 +104,7 @@ bool DecodePMSIFile(const string& fileName, RWOrdered* commandList)
 						*programCommand +=serialNum.c_str();
 						*programCommand += " ";
 						*programCommand += programming.c_str();
-						commandList->insert(programCommand);
+						commandList->push_back(programCommand);
 						programCommand= NULL;
 						break;
 					}

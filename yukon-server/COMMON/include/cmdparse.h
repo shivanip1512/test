@@ -47,7 +47,6 @@ protected:
    std::list< string >   _actionItems;
 
    map< string, CtiParseValue > _cmd;
-   //stdext::hash_map< string, CtiParseValue > _cmd;
 
 private:
 

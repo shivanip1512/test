@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mcs8100test.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/12/20 17:18:39 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2006/04/24 20:47:30 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,20 +28,22 @@ void main(int argc, char* argv[])
 
     cout << file;
 
-    RWOrdered result;
+    std::vector<RWCollectableString*> result;
 
     if( DecodeCFDATAFile( file, &result ) == false)
     {
         cout << "decode failed" << endl;
-        result.clearAndDestroy();
+        delete_vector<result>;
+        result.clear();
         return;
     }
 
-    RWOrderedIterator iter(result);
+    std::vector<RWCollectableString*>::iterator iter = result.begin();
     RWCollectableString* str;
 
-    while( (str = (RWCollectableString*) iter()) != NULL )
+    for( ; iter != result.end() ; ++iter )
     {
+        str = *iter;
         cout << *str << endl;
         delete str;
     }

@@ -32,20 +32,20 @@ extern int gFMConfigRouteID;
 extern int gFMConfigSerialLow[10];
 extern int gFMConfigSerialHigh[10];
 
-bool DecodeCFDATAFile(const string& file, RWOrdered* results);
-bool DecodeEOIFile(const string& file, RWOrdered* results);
-bool DecodeWepcoFile(const string& file, RWOrdered* results);
+bool DecodeCFDATAFile(const string& file, std::vector<RWCollectableString*>* results);
+bool DecodeEOIFile(const string& file, std::vector<RWCollectableString*>* results);
+bool DecodeWepcoFile(const string& file, std::vector<RWCollectableString*>* results);
 
 // These two functions are DecodeWepcoFile split into two
-bool DecodeWepcoFileService(const string& file, RWOrdered* results);                                  
-bool DecodeWepcoFileConfig(const string& file, RWOrdered* results);
+bool DecodeWepcoFileService(const string& file, std::vector<RWCollectableString*>* results);                                  
+bool DecodeWepcoFileConfig(const string& file, std::vector<RWCollectableString*>* results);
 
 static bool DecodeCFDATALine( char* line, string& decoded );
-static bool DecodeEOILine(char* line, RWOrdered* results );
-static bool DecodeWepcoLine( char* line, RWOrdered* results );
+static bool DecodeEOILine(char* line, std::vector<RWCollectableString*>* results );
+static bool DecodeWepcoLine( char* line, std::vector<RWCollectableString*>* results );
 
-static bool DecodeWepcoServiceLine( char* line, RWOrdered* results );
-static bool DecodeWepcoConfigLine( char* line, RWOrdered* results );
+static bool DecodeWepcoServiceLine( char* line, std::vector<RWCollectableString*>* results );
+static bool DecodeWepcoConfigLine( char* line, std::vector<RWCollectableString*>* results );
 
 static string GetSelectCustomRouteID(long serial_num);
 #endif

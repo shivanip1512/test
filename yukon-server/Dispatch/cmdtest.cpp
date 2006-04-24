@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/cmdtest.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/12/20 17:16:57 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2006/04/24 20:47:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -108,7 +108,7 @@ void main(int argc, char **argv)
 
       for(i = 3; i < argc; i++)
       {
-         Cmd->getOpArgList().insert( atoi(argv[i]) );
+         Cmd->getOpArgList().push_back( atoi(argv[i]) );
       }
 
       Connect.WriteConnQue( Cmd );

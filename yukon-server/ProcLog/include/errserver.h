@@ -23,7 +23,7 @@ private:
    static INT ClientConnections;
    // RogueWave Collection Class
    // Collection of output files to deal with!
-   static RWTPtrOrderedVector<CErrLogFile> FileList;
+   static std::vector<CErrLogFile*> FileList;
 
 
 public:
@@ -53,7 +53,7 @@ public:
 
    CTINEXUS*      getNexus() { return (Nexus); }
 
-   INT            getListLen() { return (FileList.length()); }
+   INT            getListLen() { return (FileList.size()); }
    CErrLogFile*   getListEntry(INT n) { return (FileList[n]); }
 
 };
