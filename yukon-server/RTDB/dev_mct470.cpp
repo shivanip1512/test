@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.40 $
-* DATE         :  $Date: 2006/04/19 20:42:55 $
+* REVISION     :  $Revision: 1.41 $
+* DATE         :  $Date: 2006/04/24 20:42:30 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1128,7 +1128,7 @@ INT CtiDeviceMCT470::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS
             {
                 //  check if we're the IED sspec
                 if( (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec)         == MCT470_Sspec       &&
-                    getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) >= MCT470_SspecRevMin &&
+                     getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) >= MCT470_SspecRevMin &&
                      getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) <= MCT470_SspecRevMax)
                     || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec) == MCT430A_Sspec
                     || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec) == MCT430S_Sspec )
@@ -1485,9 +1485,9 @@ INT CtiDeviceMCT470::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
 }
 
 
-INT CtiDeviceMCT470::executeGetValue( CtiRequestMsg              *pReq,
-                                      CtiCommandParser           &parse,
-                                      OUTMESS                   *&OutMessage,
+INT CtiDeviceMCT470::executeGetValue( CtiRequestMsg        *pReq,
+                                      CtiCommandParser     &parse,
+                                      OUTMESS             *&OutMessage,
                                       list< CtiMessage* >  &vgList,
                                       list< CtiMessage* >  &retList,
                                       list< OUTMESS* >     &outList )
@@ -1630,12 +1630,12 @@ INT CtiDeviceMCT470::executeGetValue( CtiRequestMsg              *pReq,
     return nRet;
 }
 
-INT CtiDeviceMCT470::executeScan(CtiRequestMsg                  *pReq,
-                              CtiCommandParser               &parse,
-                              OUTMESS                        *&OutMessage,
-                              list< CtiMessage* >      &vgList,
-                              list< CtiMessage* >      &retList,
-                              list< OUTMESS* >         &outList)
+INT CtiDeviceMCT470::executeScan(CtiRequestMsg      *pReq,
+                              CtiCommandParser      &parse,
+                              OUTMESS              *&OutMessage,
+                              list< CtiMessage* >   &vgList,
+                              list< CtiMessage* >   &retList,
+                              list< OUTMESS* >      &outList)
 {
     bool found = false;
     INT  nRet  = NoError;
@@ -1663,7 +1663,7 @@ INT CtiDeviceMCT470::executeScan(CtiRequestMsg                  *pReq,
 
             CtiString originalString = pReq->CommandString();
             boost::regex re_scan ("scan integrity");
-            
+
             if( deviceConfig )
             {
                 options = boost::static_pointer_cast< ConfigurationPart<MCTSystemOptions> >(deviceConfig->getConfigFromType(ConfigTypeMCTSystemOptions));
@@ -1764,12 +1764,12 @@ INT CtiDeviceMCT470::executeScan(CtiRequestMsg                  *pReq,
     return nRet;
 }
 
-INT CtiDeviceMCT470::executeGetConfig( CtiRequestMsg              *pReq,
-                                       CtiCommandParser           &parse,
-                                       OUTMESS                   *&OutMessage,
-                                       list< CtiMessage* >  &vgList,
-                                       list< CtiMessage* >  &retList,
-                                       list< OUTMESS* >     &outList )
+INT CtiDeviceMCT470::executeGetConfig( CtiRequestMsg         *pReq,
+                                       CtiCommandParser      &parse,
+                                       OUTMESS              *&OutMessage,
+                                       list< CtiMessage* >   &vgList,
+                                       list< CtiMessage* >   &retList,
+                                       list< OUTMESS* >      &outList )
 {
     INT nRet = NoMethod;
 
@@ -2964,10 +2964,17 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                 //  this is CRAZY WIN32 SPECIFIC
                 _TIME_ZONE_INFORMATION tzinfo;
                 int timezone_offset = 0;
-                if( GetTimeZoneInformation(&tzinfo) != TIME_ZONE_ID_INVALID )
+
+                switch( GetTimeZoneInformation(&tzinfo) )
                 {
                     //  Bias is in minutes
-                    timezone_offset = tzinfo.Bias * 60;
+                    case TIME_ZONE_ID_STANDARD:     timezone_offset = (tzinfo.Bias + tzinfo.StandardBias) * 60; break;
+                    case TIME_ZONE_ID_DAYLIGHT:     timezone_offset = (tzinfo.Bias + tzinfo.DaylightBias) * 60; break;
+
+                    case TIME_ZONE_ID_INVALID:
+                    case TIME_ZONE_ID_UNKNOWN:
+                    default:
+                        break;
                 }
 
                 pi        = getData(DSt->Message + 5, 3, ValueType_Raw);
@@ -3057,10 +3064,17 @@ INT CtiDeviceMCT470::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, lis
                 //  this is CRAZY WIN32 SPECIFIC
                 _TIME_ZONE_INFORMATION tzinfo;
                 int timezone_offset = 0;
-                if( GetTimeZoneInformation(&tzinfo) != TIME_ZONE_ID_INVALID )
+
+                switch( GetTimeZoneInformation(&tzinfo) )
                 {
                     //  Bias is in minutes
-                    timezone_offset = tzinfo.Bias * 60;
+                    case TIME_ZONE_ID_STANDARD:     timezone_offset = (tzinfo.Bias + tzinfo.StandardBias) * 60; break;
+                    case TIME_ZONE_ID_DAYLIGHT:     timezone_offset = (tzinfo.Bias + tzinfo.DaylightBias) * 60; break;
+
+                    case TIME_ZONE_ID_INVALID:
+                    case TIME_ZONE_ID_UNKNOWN:
+                    default:
+                        break;
                 }
 
                 point_info_t pi_time  = getData(DSt->Message, 4, ValueType_Raw);
