@@ -563,15 +563,12 @@ public Object getValue(Object obj)
 			LiteYukonRole role = 
 				(LiteYukonRole)rNode.getUserObject();
 
-
-
 			LiteYukonRoleProperty[] props = RoleFuncs.getRoleProperties( role.getRoleID() );
 			for( int j = 0; j < props.length; j++ )
 			{
 				//modifies o role vector
 				createRoleEntry( role, props[j], roleContainer, roleEntryIDMap );
 			}
-
 
 /*
 			YukonUserRole userRole = new YukonUserRole();
@@ -588,17 +585,14 @@ public Object getValue(Object obj)
 		}
 	}
 	
-	
 	return obj;
 }
-
 
 /**
  * Called whenever the part throws an exception.
  * @param exception java.lang.Throwable
  */
 private void handleException(Throwable exception) {
-
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
 	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
 	com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
@@ -608,11 +602,8 @@ private void handleException(Throwable exception) {
 /**
  * Initialize the class.
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private void initialize() {
 	try {
-		// user code begin {1}
-		// user code end
 		setName("UserRolePanel");
 		setToolTipText("");
 		setLayout(new java.awt.GridBagLayout());
@@ -639,7 +630,7 @@ private void initialize() {
 
 		java.awt.GridBagConstraints constraintsJPanelProperties = new java.awt.GridBagConstraints();
 		constraintsJPanelProperties.gridx = 2; constraintsJPanelProperties.gridy = 1;
-constraintsJPanelProperties.gridheight = 2;
+		constraintsJPanelProperties.gridheight = 2;
 		constraintsJPanelProperties.fill = java.awt.GridBagConstraints.BOTH;
 		constraintsJPanelProperties.anchor = java.awt.GridBagConstraints.WEST;
 		constraintsJPanelProperties.weightx = 1.0;
@@ -651,11 +642,9 @@ constraintsJPanelProperties.gridheight = 2;
 	} catch (java.lang.Throwable ivjExc) {
 		handleException(ivjExc);
 	}
-	// user code begin {2}
 
 	initConnections();
 	updateSelectionCountNodes();
-	// user code end
 }
 
 
@@ -679,10 +668,10 @@ private String getRoleValue( int rolePropID_, String defValue_ )
 	{
 		return defValue_;
 	}
-	else
-		throw new IllegalArgumentException("Unrecognized role container: " + 
-				( getRoleContainer() == null ? "(null)" : getRoleContainer().getClass().getName()) );
-	
+	else 
+    {
+		throw new IllegalArgumentException("Unrecognized role container: " + ( getRoleContainer() == null ? "(null)" : getRoleContainer().getClass().getName()) );
+    }
 }
 
 private void initConnections()
@@ -693,10 +682,15 @@ private void initConnections()
 		public void mousePressed(final MouseEvent e) 
 		{
 			int selRow = getJTableProperties().rowAtPoint( e.getPoint() );
-			
+            int selCol = getJTableProperties().columnAtPoint( e.getPoint() );
 			if(selRow != -1) 
 			{
-				StringBuffer sBuff = new StringBuffer( getJTextPaneDescription().getText() );
+				if(getJTablePropertyModel().isCellEditable(selRow, selCol))
+                {
+                    fireInputUpdate();
+                }
+                
+                StringBuffer sBuff = new StringBuffer( getJTextPaneDescription().getText() );
 				int indx = 
 						getJTextPaneDescription().getText().indexOf(							 
 									System.getProperty("line.separator") );
@@ -707,7 +701,6 @@ private void initConnections()
 						System.getProperty("line.separator") +
 						getJTablePropertyModel().getRowAt(selRow).getLiteProperty().getKeyName() + " : " +
 						getJTablePropertyModel().getRowAt(selRow).getLiteProperty().getDescription() );
-
 
 				getJTextPaneDescription().setText( sBuff.toString() );
 			}
@@ -741,7 +734,6 @@ public void valueChanged(TreeSelectionEvent e)
                 //ly.getRoleName() + " : " +
                 ly.getDescription() );
 
-
             getJTablePropertyModel().clear();
             LiteYukonRoleProperty[] props = RoleFuncs.getRoleProperties( ly.getRoleID() );
 
@@ -751,14 +743,12 @@ public void valueChanged(TreeSelectionEvent e)
                 getJTablePropertyModel().addRolePropertyRow(
                         props[j],
                         getRoleValue(props[j].getRolePropertyID(), props[j].getDefaultValue()) );
-        
-
 
             //if we are read only, dont do any enabling/disabling
             if( isReadOnlyTree() )
             {
                 //do nothing
-            }                   
+            }
             else if( !((CheckNode)node).isSelected() )
             {
                 //always disable the property if the role is NOT selected
@@ -777,7 +767,6 @@ public void valueChanged(TreeSelectionEvent e)
                     !((LiteBaseNode)node).isSystemReserved() );
             }
 
-
         }
         else
         {
@@ -785,15 +774,13 @@ public void valueChanged(TreeSelectionEvent e)
             getJTextPaneDescription().setText("");  //clear out any text
         }
         
-        
         //this must fire here because the NodeCheckBox only fires these events
         if( node instanceof CheckNode && !isReadOnlyTree() )
             getJTableProperties().setEnabled( 
                         ((CheckNode)node).isSelected() );
 
-        fireInputUpdate();              
+        fireInputUpdate();
     }
-
 }
 
 public void setFirstFocus() 
