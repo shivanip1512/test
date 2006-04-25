@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2005/08/03 18:35:33 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2006/04/25 22:00:08 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -27,9 +27,6 @@ using namespace std;
 
 #include "prot_base.h"
 
-#include "dnp_application.h"
-#include "dnp_objects.h"
-#include "dnp_object_binaryoutput.h"
 namespace Cti {
 namespace Protocol {
 
