@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTERSU.cpp-arc  $
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2006/01/31 19:02:42 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2006/04/25 20:45:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -193,6 +193,9 @@ SendError (OUTMESS *&OutMessage, USHORT ErrorCode, INMESS *PassedInMessage)
             dout << CtiTime() << " DeviceID / TargetID " << OutMessage->DeviceID << " / " << OutMessage->TargetID << ", Error " << ErrorCode << " " << FormatError(ErrorCode) << endl;
         }
     }
+
+    //If using statistics, send an error attempt.
+    statisticsNewCompletion(OutMessage->Port, OutMessage->DeviceID, OutMessage->TargetID, ErrorCode, OutMessage->MessageFlags);
 
     /* free up the Memory */
     delete (OutMessage);
