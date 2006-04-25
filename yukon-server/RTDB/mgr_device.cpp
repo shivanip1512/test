@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.80 $
-* DATE         :  $Date: 2006/04/05 16:26:14 $
+* REVISION     :  $Revision: 1.81 $
+* DATE         :  $Date: 2006/04/25 19:07:14 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -366,6 +366,42 @@ CtiDeviceManager::ptr_type CtiDeviceManager::RemoteGetPortRemoteTypeEqual (LONG 
         p = itr->second;
 
         if( p->getType() == Type && p->getAddress() > 0 &&  p->getPortID() == Port && p->getAddress() == Remote )
+        {
+            break;
+        }
+
+        p.reset();
+    }
+
+    return p;
+}
+
+CtiDeviceManager::ptr_type CtiDeviceManager::RemoteGetPortMasterSlaveTypeEqual (LONG Port, LONG Master, LONG Slave, INT Type)
+{
+    ptr_type p;
+
+    LockGuard  dev_guard(getMux());
+
+    if(_smartMap.entries() == 0)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " There are no entries in the remote device list" << endl;
+        }
+    }
+
+    spiterator itr;
+
+    for(itr = begin(); itr != end(); itr++)
+    {
+        p = itr->second;
+
+        if( p->getType()          == Type  &&
+            p->getPortID()        == Port  &&
+            p->getAddress()       > 0      &&
+            p->getMasterAddress() > 0      &&
+            p->getAddress()       == Slave &&
+            p->getMasterAddress() == Master )
         {
             break;
         }

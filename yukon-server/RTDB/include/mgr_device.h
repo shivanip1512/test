@@ -11,8 +11,8 @@
  *
  *
  * PVCS KEYWORDS:
- * REVISION     :  $Revision: 1.26 $
- * DATE         :  $Date: 2005/12/20 17:20:30 $
+ * REVISION     :  $Revision: 1.27 $
+ * DATE         :  $Date: 2006/04/25 19:07:14 $
  *
  *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
@@ -116,9 +116,10 @@ public:
     void deleteList(void);
 
     ptr_type getEqual(LONG Remote);
+    ptr_type RemoteGetEqual(LONG Remote);
     ptr_type RemoteGetPortRemoteEqual (LONG Port, LONG Remote);
     ptr_type RemoteGetPortRemoteTypeEqual (LONG Port, LONG Remote, INT Type);
-    ptr_type RemoteGetEqual(LONG Remote);
+    ptr_type RemoteGetPortMasterSlaveTypeEqual (LONG Port, LONG Master, LONG Slave, INT Type);
     ptr_type RemoteGetEqualbyName (const string &RemoteName);
 
     void apply(void (*applyFun)(const long, ptr_type, void*), void* d);
