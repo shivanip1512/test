@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTPERF.cpp-arc  $
-* REVISION     :  $Revision: 1.43 $
-* DATE         :  $Date: 2006/04/24 19:23:06 $
+* REVISION     :  $Revision: 1.44 $
+* DATE         :  $Date: 2006/04/25 20:45:20 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -336,7 +336,7 @@ void statisticsNewAttempt(long paoportid, long devicepaoid, long targetpaoid, in
     
         statCol.push_back(tup);
     }
-    else if( gConfigParms.getValueAsULong("STATISTICS_DEBUGLEVEL", 0, 16) )
+    else if( gConfigParms.getValueAsULong("STATISTICS_DEBUGLEVEL", 0, 16) & STATISTICS_REPORT_ON_MSGFLAGS )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Statistics not requested for: Port " << paoportid << " Device " << devicepaoid << " / Target " << targetpaoid << endl;
@@ -389,7 +389,7 @@ void statisticsProcessNewAttempt(long paoportid, long devicepaoid, long targetpa
     }
 }
 
-void statisticsNewCompletion(long paoportid, long devicepaoid, long targetpaoid, int result, UINT messageFlags)
+void statisticsNewCompletion(long paoportid, long devicepaoid, long targetpaoid, int result, UINT &messageFlags)
 {
     if( messageFlags & MessageFlag_StatisticsRequested )
     {
@@ -404,7 +404,7 @@ void statisticsNewCompletion(long paoportid, long devicepaoid, long targetpaoid,
         tup.result = result;
         statCol.push_back(tup);
     }
-    else if( gConfigParms.getValueAsULong("STATISTICS_DEBUGLEVEL", 0, 16) )
+    else if( gConfigParms.getValueAsULong("STATISTICS_DEBUGLEVEL", 0, 16) & STATISTICS_REPORT_ON_MSGFLAGS )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Statistics not requested for: Port " << paoportid << " Device " << devicepaoid << " / Target " << targetpaoid << endl;
