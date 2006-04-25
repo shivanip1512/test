@@ -1,4 +1,5 @@
 <%@page import="com.cannontech.database.cache.functions.RoleFuncs"%>
+<%@page import="com.cannontech.util.ServletUtil"%>
 <%@page import="com.cannontech.roles.yukon.SystemRole"%>
 <%@page import="java.io.PrintWriter"%>
 <%@page import="java.io.StringWriter"%>
@@ -31,17 +32,8 @@ p.write(
 	"<br><b>Message</b>: " + message.toString() +
 	"<br><b>Error type</b>: " + error_type.toString() +
 	"<br><b>Request URI</b>: " + request_uri.toString() +
-	"<hr><pre>");		
-
-
-while ( throwable != null ) {
-	throwable.printStackTrace( p );
-    throwable = ExceptionUtils.getCause(throwable);
-    if (throwable != null) {
-      p.println("Caused by:");
-    }
-}
-p.write("</pre>");
+	"<hr>");		
+    ServletUtil.printNiceHtmlStackTrace(throwable, p);
 %>
 
 <html>

@@ -1,6 +1,7 @@
 package com.cannontech.util;
 
 import java.awt.Color;
+import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.DateFormat;
@@ -22,6 +23,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.TimeUtil;
@@ -1165,5 +1167,50 @@ public static Date roundToMinute(Date toRound) {
     public static String tweakHTMLRequestURI(HttpServletRequest request, String newParameter, String newValue) {
         return StringEscapeUtils.escapeHtml(tweakRequestURI(request, newParameter, newValue));
     }
-
+    
+    /**
+     * Prints out the stack trace of the Throwable. HTML characters are escaped.
+     * Certain lines will be printed as bold and red. Which lines are determined
+     * within this function, but is currently configured to be methods in any
+     * com.cannontech package and the MyFaces method that indciates which rendering
+     * phase the error was in.
+     * @param t the Throwable who's stack trace will be printed
+     * @param p the PrintWriter on which the stack trace will be printed
+     */
+    public static void printNiceHtmlStackTrace(Throwable t, PrintWriter p) {
+        String[] keyWords = {"com.cannontech", "org.apache.myfaces.lifecycle"};
+        synchronized (p) {
+            p.write("<pre>");
+            while ( t != null ) {
+                Throwable cause = ExceptionUtils.getCause(t);
+                if (cause == null) {
+                    p.println(t);
+                    StackTraceElement[] trace = t.getStackTrace();
+                    for (StackTraceElement element : trace) {
+                        String className = element.getClassName();
+                        boolean specialLine = false;
+                        for (String keyWord : keyWords) {
+                            if (className.contains(keyWord)) {
+                                specialLine = true;
+                                break;
+                            }
+                        }
+                        String thisLine = element.toString();
+                        String safeLine = StringEscapeUtils.escapeHtml(thisLine);
+                        if (specialLine) {
+                            p.println("<span style=\"font-weight: bold;\">\tat " + safeLine + "</span>");
+                        } else {
+                            p.println("<span style=\"color: #666;\">\tat " + safeLine + "</span>");
+                        }
+                    }
+                    
+                } else {
+                    p.write(t.toString());
+                    p.write("\n");
+                }
+                t = cause;
+            }
+            p.write("</pre>");
+        }
+    }
 }
