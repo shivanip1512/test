@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2006/03/22 17:28:29 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2006/04/25 19:11:40 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -27,6 +27,7 @@ using namespace std;
 #include "cparms.h"
 #include "numstr.h"
 #include "msg_trace.h"
+#include "msg_dbchg.h"
 #include "port_base.h"
 
 // Some Global Manager types to allow us some RTDB stuff.
@@ -46,6 +47,7 @@ namespace DNPUDP
 {
 
 CtiQueue< CtiOutMessage, less<CtiOutMessage> > OutMessageQueue;
+CtiFIFOQueue< CtiMessage > MessageQueue;
 
 struct packet
 {
@@ -82,8 +84,8 @@ struct device_record
     u_short port;
 };
 
-typedef map< unsigned short, device_record * > dr_address_map;
-typedef map< long,           device_record * > dr_id_map;
+typedef map< pair< unsigned short, unsigned short >, device_record * > dr_address_map;
+typedef map< long, device_record * > dr_id_map;
 
 CtiLogger portLog;
 list< CtiMessage* > traceList;
@@ -122,14 +124,13 @@ void InboundThread( void *Dummy );
 
 void applyGetUDPInfo(const long unusedid, CtiDeviceSPtr RemoteDevice, void *prtid);
 
-device_record *getDeviceRecordByAddress( unsigned short address );
+device_record *getDeviceRecordByAddress( unsigned short master, unsigned short slave );
 device_record *getDeviceRecordByID     ( long device_id );
 
 void delete_dr_id_map_value( dr_id_map::value_type map_entry )
 {
     delete map_entry.second;
 }
-
 
 
 void ExecuteThread( void *Dummy )
@@ -161,6 +162,26 @@ void ExecuteThread( void *Dummy )
     {
         try
         {
+            if( MessageQueue.size() > 0 )
+            {
+                CtiMessage *msg;
+
+                if( (msg = MessageQueue.getQueue()) && (msg->isA() == MSG_DBCHANGE) )
+                {
+                    device_record *dr;
+
+                    //  find the device record, if it exists
+                    if( dr = getDeviceRecordByID(((CtiDBChangeMsg *)msg)->getId()) )
+                    {
+                        //  then remove it from the collections
+                        devices.erase(((CtiDBChangeMsg *)msg)->getId());
+                        addresses.erase(make_pair(dr->device->getMasterAddress(), dr->device->getAddress()));
+
+                        delete dr;
+                    }
+                }
+            }
+
             if( !getOutMessages(100) && devices_idle )
             {
                 //  if we haven't gotten any new OMs and the devices aren't doing anything at the moment, we can take some time to wait for new packets
@@ -305,6 +326,7 @@ bool getOutMessages( unsigned wait )
 
             if( !vg_list.empty() || !ret_list.empty() )
             {
+                if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " Cti::Porter::DNPUDP::getOutMessages - !vg_list.isEmpty() || !ret_list.isEmpty() while creating keepalive request for device \"" << dr->device->getName() << "\" " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -457,9 +479,10 @@ bool getPackets( int wait )
                 //  check the framing bytes
                 if( p->data[0] == 0x05 && p->data[1] == 0x64 && crc == header_crc )
                 {
-                    unsigned short dnp_slave_address = p->data[6] | (p->data[7] << 8);
+                    unsigned short slave_address  = p->data[6] | (p->data[7] << 8);
+                    unsigned short master_address = p->data[4] | (p->data[5] << 8);
 
-                    device_record *dr = getDeviceRecordByAddress(dnp_slave_address);
+                    device_record *dr = getDeviceRecordByAddress(master_address, slave_address);
 
                     //  we have no record of this device, we'll try to look it up
                     if( !dr )
@@ -467,11 +490,9 @@ bool getPackets( int wait )
                         boost::shared_ptr<CtiDeviceBase> dev_base;
 
                         //  we didn't have this device in the mapping table, so look it up
-                        if( (dev_base = DeviceManager.RemoteGetPortRemoteTypeEqual(gConfigParms.getValueAsInt("PORTER_DNPUDP_DB_PORTID", 0), dnp_slave_address, TYPE_DNPRTU)) ||
-                            (dev_base = DeviceManager.RemoteGetPortRemoteTypeEqual(gConfigParms.getValueAsInt("PORTER_DNPUDP_DB_PORTID", 0), dnp_slave_address, TYPECBC7020)) )
+                        if( (dev_base = DeviceManager.RemoteGetPortMasterSlaveTypeEqual(gConfigParms.getValueAsInt("PORTER_DNPUDP_DB_PORTID", 0), master_address, slave_address, TYPE_DNPRTU)) ||
+                            (dev_base = DeviceManager.RemoteGetPortMasterSlaveTypeEqual(gConfigParms.getValueAsInt("PORTER_DNPUDP_DB_PORTID", 0), master_address, slave_address, TYPECBC7020)) )
                         {
-                            CtiDeviceSingleSPtr dev_single = boost::static_pointer_cast<CtiDeviceSingle>(dev_base);
-
                             if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -481,17 +502,19 @@ bool getPackets( int wait )
                             //  we found it, insert the new record and packet
                             dr = CTIDBG_new device_record;
 
-                            dr->device = dev_single;
+                            //  assignment - we're just grabbing a reference, so when this reference goes away, so will
+                            //    our hold on this pointer...  no need to delete it
+                            dr->device = boost::static_pointer_cast<CtiDeviceSingle>(dev_base);
 
                             dr->work.timeout = CtiTime(YUKONEOT).seconds();
 
-                            devices.insert  (make_pair(dev_single->getID(),      dr));
-                            addresses.insert(make_pair(dev_single->getAddress(), dr));
+                            devices.insert(make_pair(dr->device->getID(), dr));
+                            addresses.insert(make_pair(make_pair(dr->device->getMasterAddress(), dr->device->getAddress()), dr));
                         }
                         else if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Cti::Porter::DNPUDP::getPackets - can't find DNP slave (" << dnp_slave_address << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " Cti::Porter::DNPUDP::getPackets - can't find DNP master/slave (" << master_address << "/" << slave_address << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
                     }
 
@@ -589,6 +612,7 @@ void generateOutbound( dr_id_map::value_type element )
                 //  there is no outmessage, so we don't call recvCommRequest -
                 //    we have to call the Cti::Device::DNP-specific initUnsolicited
                 shared_ptr<Cti::Device::DNP> dev = boost::static_pointer_cast<Cti::Device::DNP>(dr->device);
+
                 dev->initUnsolicited();
 
                 dr->work.pending_decode = false;
@@ -740,7 +764,6 @@ void processInbound( dr_id_map::value_type element )
                         {
                             if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
                             {
-
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << CtiTime() << " Cti::Porter::DNPUDP::processInbound - status = READTIMEOUT (" << (p->len - p->used) << " < " << dr->work.xfer.getInCountExpected() << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             }
@@ -1019,7 +1042,6 @@ void InboundThread( void *Dummy )
                 if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-
                     dout << CtiTime() << " Cti::Porter::DNPUDP::InboundThread - **** Checkpoint - error " << WSAGetLastError() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
@@ -1076,6 +1098,7 @@ void InboundThread( void *Dummy )
 
             {
                 CtiLockGuard< CtiMutex > guard(packet_mux, 15000);
+
                 if( guard.isAcquired() )
                 {
                     packets.push(p);
@@ -1083,7 +1106,6 @@ void InboundThread( void *Dummy )
                 else if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-
                     dout << CtiTime() << " Cti::Porter::DNPUDP::InboundThread - **** Checkpoint - access_mux not aquired **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
@@ -1122,11 +1144,11 @@ device_record *getDeviceRecordByID( long device_id )
 }
 
 
-device_record *getDeviceRecordByAddress( unsigned short address )
+device_record *getDeviceRecordByAddress( unsigned short master, unsigned short slave )
 {
     device_record *retval = 0;
 
-    dr_address_map::iterator dram_itr = addresses.find(address);
+    dr_address_map::iterator dram_itr = addresses.find(make_pair(master, slave));
 
     if( dram_itr != addresses.end() )
     {
@@ -1166,8 +1188,9 @@ void applyGetUDPInfo(const long unusedid, CtiDeviceSPtr RemoteDevice, void *prti
 
             dr->work.timeout = CtiTime(YUKONEOT).seconds();
 
-            devices.insert  (make_pair(dr->device->getID(),      dr));
-            addresses.insert(make_pair(dr->device->getAddress(), dr));
+            devices.insert(make_pair(dr->device->getID(), dr));
+
+            addresses.insert(make_pair(make_pair(dr->device->getMasterAddress(), dr->device->getAddress()), dr));
         }
     }
 }
