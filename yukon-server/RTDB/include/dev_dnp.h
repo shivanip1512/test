@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_cbc.h-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2006/04/20 17:05:13 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2006/04/25 19:08:33 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -101,6 +101,7 @@ public:
     virtual void DecodeDatabaseReader(RWDBReader &rdr);
 
     LONG getAddress() const;
+    LONG getMasterAddress() const;
 
     int sendCommRequest( OUTMESS *&OutMessage, list< OUTMESS* > &outList );
     int recvCommRequest( OUTMESS *OutMessage );

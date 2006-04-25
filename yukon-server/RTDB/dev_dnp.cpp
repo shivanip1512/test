@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.49 $
-* DATE         :  $Date: 2006/04/20 17:05:13 $
+* REVISION     :  $Revision: 1.50 $
+* DATE         :  $Date: 2006/04/25 19:08:32 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -76,6 +76,12 @@ DNP &DNP::operator=(const DNP &aRef)
 LONG DNP::getAddress() const
 {
     return _dnp_address.getSlaveAddress();
+}
+
+
+LONG DNP::getMasterAddress() const
+{
+    return _dnp_address.getMasterAddress();
 }
 
 

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base.h-arc  $
-* REVISION     :  $Revision: 1.54 $
-* DATE         :  $Date: 2006/03/24 15:58:19 $
+* REVISION     :  $Revision: 1.55 $
+* DATE         :  $Date: 2006/04/25 19:08:33 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -147,6 +147,7 @@ public:
 
     virtual LONG getPortID() const;
     virtual LONG getAddress() const;
+    virtual LONG getMasterAddress() const;
     virtual INT  getPostDelay() const;
 
     virtual string getPassword() const;
@@ -348,6 +349,7 @@ inline string CtiDeviceBase::getDescription(const CtiCommandParser & parse) cons
 inline bool CtiDeviceBase::isMeter() const               { return false;}
 inline LONG CtiDeviceBase::getPortID() const             { return -1;}
 inline LONG CtiDeviceBase::getAddress() const            { return -1;}
+inline LONG CtiDeviceBase::getMasterAddress() const      { return -1;}
 inline INT  CtiDeviceBase::getPostDelay() const          { return 0;}
 inline string CtiDeviceBase::getPassword() const      { return string();}
 inline string CtiDeviceBase::getPhoneNumber() const   { return string();}
