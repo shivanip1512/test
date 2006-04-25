@@ -145,7 +145,7 @@ void CtiCalc::clearComponentDependencies( void )
         CtiHashKey componentHashKey(tmpComponent->getComponentPointId());
         CtiPointStoreElement* componentPointPtr = (CtiPointStoreElement*)((*pointStore).findValue(&componentHashKey));
 
-        if ( componentPointPtr )
+        if ( componentPointPtr != rwnil )
         {
             if( componentPointPtr->removeDependent(_pointId) == 0 )
             {//There are no dependents left, no one cares about this guy!

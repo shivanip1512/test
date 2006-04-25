@@ -66,7 +66,7 @@ void CtiCalculateThread::pointChange( long changedID, double newValue, const Cti
             dout << CtiTime() << " - Point Data ID: " << changedID << " Val: " << newValue << " Time: " << newTime << " Quality: " << newQuality << endl;
         }
 
-        if(pointPtr)
+        if( pointPtr != rwnil )
         {
             if( newTime.seconds() > pointPtr->getPointTime().seconds() ||       // Point Change is newer than last point data
                 ( pointPtr->getNumUpdates() > 0 &&                              // Point has been updated AND
@@ -123,7 +123,7 @@ void CtiCalculateThread::pointSignal( long changedID, unsigned newTags )
             dout << CtiTime() << " - Point Data ID: " << changedID << " Tags: " << newTags << endl;
         }
 
-        if(pointPtr)
+        if( pointPtr != rwnil)
         {
             if( newTags != pointPtr->getPointTags() )
             {
@@ -361,10 +361,10 @@ void CtiCalculateThread::onUpdateThread( void )
                 {
                     recalcPointID = _auAffectedPoints.removeFirst( );
                     CtiHashKey recalcKey(recalcPointID);
-                    calcPoint = (CtiCalc *)(_onUpdatePoints[&recalcKey]);
+                    calcPoint = (CtiCalc *)(_onUpdatePoints.findValue(&recalcKey));
 
                     //  if not ready
-                    if( calcPoint==NULL || !calcPoint->ready( ) )
+                    if( calcPoint==rwnil || !calcPoint->ready( ) )
                         continue;  // All the components are not ready.
 
                     CtiPointStore* pointStore = CtiPointStore::getInstance();
@@ -1555,28 +1555,38 @@ void CtiCalculateThread::setHistoricalPointMap(const CtiCalcPointMap &points)
 
 void CtiCalculateThread::clearAndDestroyPointMaps()
 {
-    if( _constantPoints.size() > 0 )
+    try
     {
-        delete_map(_constantPoints);
-        _constantPoints.clear();
+        if( _constantPoints.size() > 0 )
+        {
+            delete_map(_constantPoints);
+            _constantPoints.clear();
+        }
+    
+        if( _onUpdatePoints.size() > 0 )
+        {
+            delete_map(_onUpdatePoints);
+            _onUpdatePoints.clear();
+        }
+    
+        if( _periodicPoints.size() > 0 )
+        {
+            delete_map(_periodicPoints);
+            _periodicPoints.clear();
+        }
+    
+        if( _historicalPoints.size() > 0 )
+        {
+            delete_map(_historicalPoints);
+            _historicalPoints.clear();
+        }
     }
-
-    if( _onUpdatePoints.size() > 0 )
+    catch(...)
     {
-        delete_map(_onUpdatePoints);
-        _onUpdatePoints.clear();
-    }
-
-    if( _periodicPoints.size() > 0 )
-    {
-        delete_map(_periodicPoints);
-        _periodicPoints.clear();
-    }
-
-    if( _historicalPoints.size() > 0 )
-    {
-        delete_map(_historicalPoints);
-        _historicalPoints.clear();
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
     }
 }
 

@@ -8,26 +8,40 @@ CtiPointStoreElement *CtiPointStore::insertPointElement( long pointNum, long dep
     CtiPointStoreElement *newElement;
     CtiHashKey *newHashKey;
 
-    if( pointNum == 0 )
-        return NULL;
-
-    newElement = CTIDBG_new CtiPointStoreElement( pointNum );
-    newHashKey = CTIDBG_new CtiHashKey( pointNum );
-
-    //  if the insertion wasn't successful, that means this point is already in the pointstore
-    if( !(this->insert( newHashKey, newElement )) )
+    try
     {
-        delete newElement;
-        //  may as well use the indexing hashkey before deleting it...
-        newElement = (CtiPointStoreElement *)((*this)[newHashKey]);
-        delete newHashKey;
+        if( pointNum == 0 )
+            return NULL;
+    
+        newElement = CTIDBG_new CtiPointStoreElement( pointNum );
+        newHashKey = CTIDBG_new CtiHashKey( pointNum );
+    
+        //  if the insertion wasn't successful, that means this point is already in the pointstore
+        if( !(this->insert( newHashKey, newElement )) )
+        {
+            delete newElement;
+            //  may as well use the indexing hashkey before deleting it...
+            newElement = (CtiPointStoreElement *)((*this).findValue(newHashKey));
+            delete newHashKey;
+        }
+    
+        //  in either case, newElement now points to the CtiPointStoreElement of pointID pointNum...
+    
+        //  we append the pointID of the calc point that is dependent on it...
+        if( newElement != rwnil
+            && ( updateType == allUpdate || updateType == anyUpdate || updateType == periodicPlusUpdate || dependentId == 0) 
+            && dependentId >= 0 )// this be for the calc points cause they ain't got no dependents
+        {
+            newElement->appendDependent( dependentId, updateType );
+        }
     }
-
-    //  in either case, newElement now points to the CtiPointStoreElement of pointID pointNum...
-
-    //  we append the pointID of the calc point that is dependent on it...
-    if( ( updateType == allUpdate || updateType == anyUpdate || updateType == periodicPlusUpdate || dependentId == 0) && dependentId >= 0 )// this be for the calc points cause they ain't got no dependents
-        newElement->appendDependent( dependentId, updateType );
+    catch(...)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
 
     return newElement;
 }
@@ -37,15 +51,29 @@ void CtiPointStore::removePointElement( long pointNum )
     CtiPointStoreElement *element;
     CtiHashKey *hashKey;
 
-    if( pointNum !=0 )
+    try
     {
-        hashKey = CTIDBG_new CtiHashKey( pointNum );
+        if( pointNum !=0 )
+        {
+            hashKey = CTIDBG_new CtiHashKey( pointNum );
+    
+            element = (CtiPointStoreElement *)((*this).findValue(hashKey));
+            this->removeAll( hashKey );
 
-        element = (CtiPointStoreElement *)((*this)[hashKey]);
-        this->removeAll( hashKey );
-
-        delete element;
-        delete hashKey;
+            if( element != rwnil )
+            {
+                delete element;
+            }
+            
+            delete hashKey;
+        }
+    }
+    catch(...)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
     }
 }
 

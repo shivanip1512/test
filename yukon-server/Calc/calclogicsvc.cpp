@@ -921,7 +921,7 @@ BOOL CtiCalcLogicService::parseMessage( RWCollectable *message, CtiCalculateThre
 
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime()  << " - Database change - Point change.  Setting reload flag. Reload at " << CtiTime(_nextCheckTime) << endl;
+                                dout << CtiTime()  << " - Database change - Point change.  Setting reload flag. Reload at " << ctime(&_nextCheckTime);
                             }
                         }
                         else
@@ -1242,7 +1242,7 @@ bool CtiCalcLogicService::readCalcPoints( CtiCalculateThread *calcThread )
             unitRdr["UOMID"] >> uomid;
 
             CtiHashKey pointHashKey(pointid);
-            CtiPointStoreElement* calcPointPtr = (CtiPointStoreElement*)((*pointStore).find(&pointHashKey));
+            CtiPointStoreElement* calcPointPtr = (CtiPointStoreElement*)((*pointStore).findValue(&pointHashKey));
             if( calcPointPtr != rwnil )
             {
                 calcPointPtr->setUOMID(uomid);
@@ -1453,6 +1453,11 @@ void CtiCalcLogicService::updateCalcData()
 
             if( dbChangeMsg->getTypeOfChange() != ChangeTypeAdd )
             {
+                if( _CALC_DEBUG & CALC_DEBUG_RELOAD )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " DBUpdate changing point "<< pointID << endl;
+                }
                 calcThread->removePointStoreObject( pointID );
 
             }
@@ -1464,11 +1469,24 @@ void CtiCalcLogicService::updateCalcData()
             _dbChangeMessages.pop();//Because of the way I made the queue, there is no need to delete
         }
 
+        if( _CALC_DEBUG & CALC_DEBUG_RELOAD )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " DBUpdate done changing points"<< endl;
+        }
+
         calcThread->clearAndDestroyPointMaps();
         readCalcPoints(calcThread);
-        _registerForPoints();       //From here on Im not positive about this ordering, resume threads before or after we register?
-        calcThread->sendConstants();
+        _registerForPoints();
 
+        if( _CALC_DEBUG & CALC_DEBUG_RELOAD )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Points refreshed and registration message sent"<< endl;
+        }
+
+        //From here on Im not positive about this ordering, resume threads before or after we register?
+        calcThread->sendConstants();
         calcThread->resumeThreads();
         resumeInputThread();
 
@@ -1491,6 +1509,8 @@ void CtiCalcLogicService::updateCalcData()
             dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
         calcThread->resumeThreads();
+        calcThread->interruptThreads( CtiCalculateThread::CtiCalcThreadInterruptReason::Shutdown );
+        calcThread->joinThreads();//lets try killing them completely, then reloading?
         resumeInputThread();
         _restart = true;
     }
@@ -1523,39 +1543,48 @@ void CtiCalcLogicService::inComplain( void *la )
 
 void CtiCalcLogicService::_registerForPoints()
 {
-
-    //  iterate through the calc points' dependencies, adding them to the registration message
-    //  XXX:  Possibly add the iterator and accessor functions to the calcThread class itself, rather than
-    //          providing the iterator directly?
-    RWTPtrHashMapIterator<CtiHashKey, CtiPointStoreElement, my_hash<CtiHashKey>, equal_to<CtiHashKey> > *depIter;
-    depIter = calcThread->getPointDependencyIterator( );
-    CtiPointRegistrationMsg *msgPtReg = CTIDBG_new CtiPointRegistrationMsg(0);
-    for( ; (*depIter)( ); )
+    try
     {
-        if( _CALC_DEBUG & CALC_DEBUG_DISPATCH_INIT )
+        //  iterate through the calc points' dependencies, adding them to the registration message
+        //  XXX:  Possibly add the iterator and accessor functions to the calcThread class itself, rather than
+        //          providing the iterator directly?
+        RWTPtrHashMapIterator<CtiHashKey, CtiPointStoreElement, my_hash<CtiHashKey>, equal_to<CtiHashKey> > *depIter;
+        depIter = calcThread->getPointDependencyIterator( );
+        CtiPointRegistrationMsg *msgPtReg = CTIDBG_new CtiPointRegistrationMsg(0);
+        for( ; (*depIter)( ); )
+        {
+            if( _CALC_DEBUG & CALC_DEBUG_DISPATCH_INIT )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " - Registered for point id: " << ((CtiPointStoreElement *)depIter->value( ))->getPointNum() << endl;
+            }
+            msgPtReg->insert( ((CtiPointStoreElement *)depIter->value( ))->getPointNum( ) );
+        }
+        delete depIter;
+    
+        //  now send off the point registration
+        if(_conxion)
+        {
+            if(msgPtReg)
+            {
+                _conxion->WriteConnQue( msgPtReg );
+            }
+        }
+        else
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+            delete msgPtReg;
+        }
+    }
+    catch(...)
+    {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - Registered for point id: " << ((CtiPointStoreElement *)depIter->value( ))->getPointNum() << endl;
+            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
-        msgPtReg->insert( ((CtiPointStoreElement *)depIter->value( ))->getPointNum( ) );
-    }
-    delete depIter;
-
-    //  now send off the point registration
-    if(_conxion)
-    {
-        if(msgPtReg)
-        {
-            _conxion->WriteConnQue( msgPtReg );
-        }
-    }
-    else
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-        delete msgPtReg;
     }
 
     return;
