@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/disp_thd.cpp-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2006/01/17 17:52:11 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2006/04/25 19:10:36 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -63,7 +63,14 @@
 
 using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
 
-CtiConnection  VanGoghConnection;
+CtiConnection VanGoghConnection;
+
+namespace Cti { namespace Porter { namespace DNPUDP {
+
+    extern CtiFIFOQueue< CtiMessage > MessageQueue;
+}
+}
+}
 
 extern INT RefreshPorterRTDB(void *ptr = NULL);
 extern void applyPortQueueReport(const long unusedid, CtiPortSPtr ptPort, void *unusedPtr);
@@ -268,6 +275,8 @@ void DispatchMsgHandlerThread(VOID *Arg)
                     }
                 }
                 ResetEvent(hPorterEvents[P_REFRESH_EVENT]);
+                //  if we have a message, drop a copy in UDP's DBChangeQueue;  otherwise NULL
+                Cti::Porter::DNPUDP::MessageQueue.putQueue(pChg?pChg->replicateMessage():0);
                 RefreshPorterRTDB((void*)pChg);                 // Deletes the message!
                 RefreshTime = nextScheduledTimeAlignedOnRate( TimeNow, PorterRefreshRate );
 
@@ -280,7 +289,7 @@ void DispatchMsgHandlerThread(VOID *Arg)
                 }
             }
 
-             //Check thread watcher status
+            //  Check thread watcher status
             if((LastThreadMonitorTime.now().minute() - LastThreadMonitorTime.minute()) >= 1)
             {
                 if(pointID!=0)
