@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/12/20 17:25:50 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2006/04/25 20:43:40 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -26,6 +26,11 @@
 using std::pair;
 // Uncomment this to execute the code with the old CtiCounters instead of arrays.
 // #define CTISTATUSECOUNTERS FALSE
+
+
+#define STATISTICS_REPORT_ON_MSGFLAGS  0x00000001
+#define STATISTICS_COMPENSATED_RESULTS 0x00000010
+#define STATISTICS_REPORT_ON_RESULTS   0x00000020
 
 class IM_EX_CTIBASE CtiStatistics
 {
