@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/INCLUDE/portdecl.h-arc  $
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2006/04/17 19:30:10 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2006/04/25 20:46:25 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -56,7 +56,7 @@ VOID PerfThread (PVOID);
 VOID PerfUpdateThread (PVOID);
 void statisticsNewRequest(long paoportid, long trxpaoid, long targpaoid, UINT &messageFlags);
 void statisticsNewAttempt(long paoportid, long trxpaoid, long targpaoid, int result, UINT messageFlags);
-void statisticsNewCompletion(long paoportid, long trxpaoid, long targpaoid, int result, UINT messageFlags);
+void statisticsNewCompletion(long paoportid, long trxpaoid, long targpaoid, int result, UINT &messageFlags);
 void statisticsReport( CtiDeviceSPtr pDevice );
 void statisticsRecord();
 
