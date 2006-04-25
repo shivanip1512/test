@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2006/01/13 17:42:39 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2006/04/25 20:44:26 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -34,6 +34,7 @@ using namespace std;
 #include "rwutil.h"
 #include "utility.h"
 #include "ctidate.h"
+#include "cparms.h"
 
 CtiStatistics::CtiStatistics(long id) :
     _restoreworked(0),
@@ -138,14 +139,31 @@ void CtiStatistics::incrementCompletion(const CtiTime &stattime, int CompletionS
 {
     // CtiLockGuard<CtiMutex> guard(_statMux);
 
-    incrementAttempts(stattime, CompletionStatus);      // This may also increment the fail counter if CompletionStatus != NORMAL
-
-    if(CompletionStatus == NORMAL)
+    int hourNo = stattime.hour();
+    if( getCounter(Completions, hourNo) >= getCounter(Requests, hourNo) 
+        && CompletionStatus == NORMAL
+        && !(gConfigParms.getValueAsULong("STATISTICS_DEBUGLEVEL", 0, 16) & STATISTICS_COMPENSATED_RESULTS) )
     {
-        incrementSuccess(stattime);
+        //This is a failure mode preventative, and should not be used lightly...
+        //If the flag is set, we do not count successes (or the attempts associated)
+        //when that success would take our SUCCESS count above the request count (attempts is free to roam)
+        if( gConfigParms.getValueAsULong("STATISTICS_DEBUGLEVEL", 0, 16) & STATISTICS_REPORT_ON_RESULTS )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Statistics results have been excluded for ID " << _pid << endl;
+        }
     }
-
-    verifyThresholds();
+    else
+    {
+        incrementAttempts(stattime, CompletionStatus);      // This may also increment the fail counter if CompletionStatus != NORMAL
+    
+        if(CompletionStatus == NORMAL)
+        {
+            incrementSuccess(stattime);
+        }
+    
+        verifyThresholds();
+    }
 }
 
 void CtiStatistics::incrementFail(const CtiTime &stattime, CtiStatisticsCounters_t failtype)
