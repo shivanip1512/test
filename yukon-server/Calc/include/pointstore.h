@@ -29,6 +29,7 @@
 #define CALC_DEBUG_THREAD_REPORTING                 0x00000400
 #define CALC_DEBUG_INBOUND_MSGS                     0x00000800
 #define CALC_DEBUG_BASELINE                         0x00001000
+#define CALC_DEBUG_RELOAD                           0x00002000
 
 enum PointUpdateType
 {
