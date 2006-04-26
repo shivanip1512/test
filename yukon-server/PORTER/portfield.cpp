@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.181 $
-* DATE         :  $Date: 2006/04/25 22:17:20 $
+* REVISION     :  $Revision: 1.182 $
+* DATE         :  $Date: 2006/04/26 15:34:27 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2933,247 +2933,270 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
     struct timeb   TimeB;
     REMOTEPERF     RemotePerf;
 
-    InMessage->EventCode = (USHORT)CommResult;
-
-    switch(Device->getType())
+    if( InMessage && OutMessage)
     {
-    case TYPE_CCU711:
+        InMessage->EventCode = (USHORT)CommResult;
+    
+        switch(Device->getType())
         {
-            CtiTransmitter711Info *p711info = (CtiTransmitter711Info *)Device->getTrxInfo();
-
-            if(OutMessage->Remote == CCUGLOBAL)
+        case TYPE_CCU711:
             {
-                break;
-            }
-
-            InMessage->InLength = OutMessage->InLength;
-
-            /* Clear the RCOLQ flag if neccessary */
-            if(OutMessage->Command == CMND_RCOLQ)
-            {
-                p711info->clearStatus (INRCOLQ);
-            }
-
-            /* Clear a LGRPQ flag if neccessary */
-            if(OutMessage->Command == CMND_LGRPQ)
-            {
-                p711info->clearStatus(INLGRPQ);
-            }
-
-            if(OutMessage->EventCode & RCONT)
-            {
-                status = CCUResponseDecode (InMessage, Device, OutMessage);
-            }
-            else
-            {
-                j = InMessage->InLength;
-                InMessage->InLength = 0;
-                status = CCUResponseDecode (InMessage, Device, OutMessage);
-                InMessage->InLength = j;
-            }
-
-            if( status && CTINEXUS::CTINexusIsFatalSocketError(status))
-            {
+                CtiTransmitter711Info *p711info = (CtiTransmitter711Info *)Device->getTrxInfo();
+    
+                if(OutMessage->Remote == CCUGLOBAL)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    break;
                 }
-                blitzNexusFromQueue( Port->getPortQueueHandle(), OutMessage->ReturnNexus);
-                blitzNexusFromCCUQueue( Device, OutMessage->ReturnNexus);
-            }
-
-            //  only break if this is _not_ DTRAN
-            if( !(OutMessage->EventCode & DTRAN) )
-            {
-                break;
-            }
-        }
-    case TYPE_CCU700:
-    case TYPE_CCU710:
-        {
-            unsigned short nack1 = 0, nack2 = 0;
-
-            if(CommResult)
-            {
-                InMessage->Buffer.DSt.Time     = InMessage->Time;
-                InMessage->Buffer.DSt.DSTFlag  = InMessage->MilliTime & DSTACTIVE;
-                break;
-            }
-
-            if( (status = NackTst(InMessage->Buffer.InMessage[0], &nack1, OutMessage->Remote)) ||
-                (status = NackTst(InMessage->Buffer.InMessage[1], &nack2, OutMessage->Remote)) )
-            {
-                nack1 = nack2 = 1;
-            }
-
-
-            if( !nack1 && !nack2 )
-            {
+    
                 InMessage->InLength = OutMessage->InLength;
-
-                if( (OutMessage->EventCode     & BWORD) &&
-                    (OutMessage->Buffer.BSt.IO & READ ) )
+    
+                /* Clear the RCOLQ flag if neccessary */
+                if(OutMessage->Command == CMND_RCOLQ)
                 {
-                    DSTRUCT        DSt;
-
-                    /* This is I so decode dword(s) for the result */
-                    CommResult = InMessage->EventCode = status = D_Words (InMessage->Buffer.InMessage + 3, (USHORT)((InMessage->InLength - 3) / (DWORDLEN + 1)),  OutMessage->Remote, &DSt);
-                    DSt.Time = InMessage->Time;
-                    DSt.DSTFlag = InMessage->MilliTime & DSTACTIVE;
-                    InMessage->Buffer.DSt = DSt;
+                    p711info->clearStatus (INRCOLQ);
                 }
-            }
-            else
-            {
-                status = NACK1;
-            }
-
-            break;
-        }
-    case TYPE_LCU415:
-    case TYPE_LCU415LG:
-    case TYPE_LCU415ER:
-    case TYPE_LCUT3026:
-        {
-            LCUResultDecode(OutMessage, InMessage, Device, CommResult, true);
-            break;
-        }
-    case TYPE_TCU5500:
-        {
-            if(OutMessage->EventCode & VERSACOM)
-            {
-                if(VCUWait)
+    
+                /* Clear a LGRPQ flag if neccessary */
+                if(OutMessage->Command == CMND_LGRPQ)
                 {
-                    CtiTransmitterInfo *pInfo = Device->getTrxInfo();
-
-                    /* The assumption (for now) is overlapping coverage of VCU's on the
-                           same comm port (VCU's on another comm port better damn well not
-                           overlap this one!!!!!!!) and that we have exclusive use of the VHF
-                           channels (No paging or voice channels!!!).  Obviosly this is an
-                           extremely simplistic view of the world but will do till we can do
-                           otherwise... Queues and time tables etc.... */
-
-                    /* Another gotcha... we assume that the VCU is doing something even
-                       if this command fails... Life's a bitch but thats the way
-                       its gotta be or things could fubar beyond belief... Then again??? */
-
-                    /* get how long this command will take */
+                    p711info->clearStatus(INLGRPQ);
+                }
+    
+                if(OutMessage->EventCode & RCONT)
+                {
+                    status = CCUResponseDecode (InMessage, Device, OutMessage);
+                }
+                else
+                {
+                    j = InMessage->InLength;
+                    InMessage->InLength = 0;
+                    status = CCUResponseDecode (InMessage, Device, OutMessage);
+                    InMessage->InLength = j;
+                }
+    
+                if( status && CTINEXUS::CTINexusIsFatalSocketError(status))
+                {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
-                    // VCUTime (OutMessage, &pInfo->NextCommandTime);
-
-                    UCTFTime (&TimeB);
-
-                    pInfo->setNextCommandTime(pInfo->getNextCommandTime() + TimeB.time);
-
-#ifdef OLD_CRAP
-                    for(j = 0; j <= MAXIDLC; j++)
+                    blitzNexusFromQueue( Port->getPortQueueHandle(), OutMessage->ReturnNexus);
+                    blitzNexusFromCCUQueue( Device, OutMessage->ReturnNexus);
+                }
+    
+                //  only break if this is _not_ DTRAN
+                if( !(OutMessage->EventCode & DTRAN) )
+                {
+                    break;
+                }
+            }
+        case TYPE_CCU700:
+        case TYPE_CCU710:
+            {
+                unsigned short nack1 = 0, nack2 = 0;
+    
+                if(CommResult)
+                {
+                    InMessage->Buffer.DSt.Time     = InMessage->Time;
+                    InMessage->Buffer.DSt.DSTFlag  = InMessage->MilliTime & DSTACTIVE;
+                    break;
+                }
+    
+                if( (status = NackTst(InMessage->Buffer.InMessage[0], &nack1, OutMessage->Remote)) ||
+                    (status = NackTst(InMessage->Buffer.InMessage[1], &nack2, OutMessage->Remote)) )
+                {
+                    nack1 = nack2 = 1;
+                }
+    
+    
+                if( !nack1 && !nack2 )
+                {
+                    InMessage->InLength = OutMessage->InLength;
+    
+                    if( (OutMessage->EventCode     & BWORD) &&
+                        (OutMessage->Buffer.BSt.IO & READ ) )
                     {
-                        if(CCUInfo[ThreadPortNumber][j] != NULL && CCUInfo[ThreadPortNumber][j]->Type == TYPE_TCU5500)
+                        DSTRUCT        DSt;
+    
+                        /* This is I so decode dword(s) for the result */
+                        CommResult = InMessage->EventCode = status = D_Words (InMessage->Buffer.InMessage + 3, (USHORT)((InMessage->InLength - 3) / (DWORDLEN + 1)),  OutMessage->Remote, &DSt);
+                        DSt.Time = InMessage->Time;
+                        DSt.DSTFlag = InMessage->MilliTime & DSTACTIVE;
+                        InMessage->Buffer.DSt = DSt;
+                    }
+                }
+                else
+                {
+                    status = NACK1;
+                }
+    
+                break;
+            }
+        case TYPE_LCU415:
+        case TYPE_LCU415LG:
+        case TYPE_LCU415ER:
+        case TYPE_LCUT3026:
+            {
+                LCUResultDecode(OutMessage, InMessage, Device, CommResult, true);
+                break;
+            }
+        case TYPE_TCU5500:
+            {
+                if(OutMessage->EventCode & VERSACOM)
+                {
+                    if(VCUWait)
+                    {
+                        CtiTransmitterInfo *pInfo = Device->getTrxInfo();
+    
+                        /* The assumption (for now) is overlapping coverage of VCU's on the
+                               same comm port (VCU's on another comm port better damn well not
+                               overlap this one!!!!!!!) and that we have exclusive use of the VHF
+                               channels (No paging or voice channels!!!).  Obviosly this is an
+                               extremely simplistic view of the world but will do till we can do
+                               otherwise... Queues and time tables etc.... */
+    
+                        /* Another gotcha... we assume that the VCU is doing something even
+                           if this command fails... Life's a bitch but thats the way
+                           its gotta be or things could fubar beyond belief... Then again??? */
+    
+                        /* get how long this command will take */
                         {
-                            CCUInfo[ThreadPortNumber][j]->setNextCommandTime(CCUInfo[ThreadPortNumber][Device->getAddress()]->getNextCommandTime());
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+                        // VCUTime (OutMessage, &pInfo->NextCommandTime);
+    
+                        UCTFTime (&TimeB);
+    
+                        pInfo->setNextCommandTime(pInfo->getNextCommandTime() + TimeB.time);
+    
+    #ifdef OLD_CRAP
+                        for(j = 0; j <= MAXIDLC; j++)
+                        {
+                            if(CCUInfo[ThreadPortNumber][j] != NULL && CCUInfo[ThreadPortNumber][j]->Type == TYPE_TCU5500)
+                            {
+                                CCUInfo[ThreadPortNumber][j]->setNextCommandTime(CCUInfo[ThreadPortNumber][Device->getAddress()]->getNextCommandTime());
+                            }
+                        }
+    #else
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << "**** ADD CODE HERE **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+    #endif
+                    }
+    
+                    /* Lets check if this command needs to be queued again */
+                    if(!CommResult && (InMessage->Buffer.InMessage[4] & VCUOVERQUE) && !gIgnoreTCU5X00QueFull)
+                    {
+                        /* we need to reque this one  */
+                        /* Drop the priority an notch so we don't hog the channel */
+                        if(OutMessage->Priority) OutMessage->Priority--;
+    
+                        status = RETRY_SUBMITTED;
+    
+                        /* Put it on the queue for this port */
+                        if(PortManager.writeQueue(OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << "Error Requeing Command" << endl;
+                        }
+                        else
+                        {
+                            OutMessage = 0;
                         }
                     }
-#else
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << "**** ADD CODE HERE **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-#endif
                 }
-
-                /* Lets check if this command needs to be queued again */
-                if(!CommResult && (InMessage->Buffer.InMessage[4] & VCUOVERQUE) && !gIgnoreTCU5X00QueFull)
+                break;
+            }
+        case TYPE_TCU5000:
+            {
+                if(OutMessage->EventCode & VERSACOM)
                 {
-                    /* we need to reque this one  */
-                    /* Drop the priority an notch so we don't hog the channel */
-                    if(OutMessage->Priority) OutMessage->Priority--;
-
-                    status = RETRY_SUBMITTED;
-
-                    /* Put it on the queue for this port */
-                    if(PortManager.writeQueue(OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
+                    /* Lets check if this command needs to be queued again */
+                    if(!CommResult && (InMessage->Buffer.InMessage[4] & VCUOVERQUE) && !gIgnoreTCU5X00QueFull)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << "Error Requeing Command" << endl;
-                    }
-                    else
-                    {
-                        OutMessage = 0;
+                        if(PorterDebugLevel & PORTER_DEBUG_VERSACOM)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " " << Device->getName() << " queue full.  Will resubmit." << endl;
+                        }
+    
+                        /* we need to reque this one  */
+                        status = RETRY_SUBMITTED;
+    
+                        /* Put it on the queue for this port */
+                        if(PortManager.writeQueue(OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << "Error Requeing Command" << endl;
+                        }
+                        else
+                        {
+                            OutMessage = 0;
+                        }
                     }
                 }
+                break;
             }
-            break;
-        }
-    case TYPE_TCU5000:
-        {
-            if(OutMessage->EventCode & VERSACOM)
+        case TYPE_WELCORTU:
             {
-                /* Lets check if this command needs to be queued again */
-                if(!CommResult && (InMessage->Buffer.InMessage[4] & VCUOVERQUE) && !gIgnoreTCU5X00QueFull)
+                /* Handle the Sequencing */
+                if(!(CommResult))
                 {
-                    if(PorterDebugLevel & PORTER_DEBUG_VERSACOM)
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " " << Device->getName() << " queue full.  Will resubmit." << endl;
-                    }
-
-                    /* we need to reque this one  */
-                    status = RETRY_SUBMITTED;
-
-                    /* Put it on the queue for this port */
-                    if(PortManager.writeQueue(OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << "Error Requeing Command" << endl;
-                    }
-                    else
-                    {
-                        OutMessage = 0;
-                    }
+                    CtiTransmitterInfo *pInfo = Device->getTrxInfo();
+                    pInfo->RemoteSequence.Reply = !pInfo->RemoteSequence.Reply;
                 }
+    
+                break;
             }
-            break;
-        }
-    case TYPE_WELCORTU:
-        {
-            /* Handle the Sequencing */
-            if(!(CommResult))
+        case TYPE_SERIESVLMIRTU:
             {
-                CtiTransmitterInfo *pInfo = Device->getTrxInfo();
-                pInfo->RemoteSequence.Reply = !pInfo->RemoteSequence.Reply;
+                if( CommResult )
+                {
+                    status = CommResult;
+                }
+                break;
             }
-
-            break;
-        }
-    case TYPE_SERIESVLMIRTU:
-        {
-            if( CommResult )
+        case TYPE_ILEXRTU:
+        case TYPE_VTU:
+        case TYPE_SES92RTU:
+        default:
             {
-                status = CommResult;
+                break;
             }
-            break;
         }
-    case TYPE_ILEXRTU:
-    case TYPE_VTU:
-    case TYPE_SES92RTU:
-    default:
-        {
-            break;
-        }
-    }
-
-    // Statistics processing.
-    if(status == RETRY_SUBMITTED)
-    {
-        statisticsNewAttempt( OutMessage->Port, OutMessage->DeviceID, OutMessage->TargetID, CommResult, OutMessage->MessageFlags );
     }
     else
     {
-        statisticsNewCompletion( OutMessage->Port, OutMessage->DeviceID, OutMessage->TargetID, CommResult, OutMessage->MessageFlags );
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << " **** Checkpoint **** Missing In or Out Message " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
+
+    // Statistics processing.
+    if( OutMessage )
+    {
+        if(status == RETRY_SUBMITTED)
+        {
+            statisticsNewAttempt( OutMessage->Port, OutMessage->DeviceID, OutMessage->TargetID, CommResult, OutMessage->MessageFlags );
+        }
+        else
+        {
+            statisticsNewCompletion( OutMessage->Port, OutMessage->DeviceID, OutMessage->TargetID, CommResult, OutMessage->MessageFlags );
+        }
+    }
+    else if( InMessage )
+    {
+        if(status == RETRY_SUBMITTED)
+        {
+            statisticsNewAttempt( InMessage->Port, InMessage->DeviceID, InMessage->TargetID, CommResult, InMessage->MessageFlags );
+        }
+        else
+        {
+            statisticsNewCompletion( InMessage->Port, InMessage->DeviceID, InMessage->TargetID, CommResult, InMessage->MessageFlags );
+        }
+    }
+    
 
     return status;
 }
@@ -3183,30 +3206,38 @@ INT ReturnResultMessage(INT CommResult, INMESS *InMessage, OUTMESS *&OutMessage)
     INT         status = NORMAL;
     ULONG       BytesWritten;
 
-    if(OutMessage->EventCode & RESULT)         /* If the OutMessage indicates it this routine responds to the client */
+    if( InMessage && OutMessage )
     {
-        InMessage->EventCode = (USHORT)CommResult;
-
-        if(CommResult != NORMAL)
+        if(OutMessage->EventCode & RESULT)         /* If the OutMessage indicates it this routine responds to the client */
         {
-            status = SendError( OutMessage, CommResult, InMessage );
-        }
-        else
-        {
-            /* send message back to originating process */
-            if(OutMessage->ReturnNexus != NULL)
+            InMessage->EventCode = (USHORT)CommResult;
+    
+            if(CommResult != NORMAL)
             {
-                if(OutMessage->ReturnNexus->CTINexusWrite(InMessage, sizeof (INMESS), &BytesWritten, 15L))
+                status = SendError( OutMessage, CommResult, InMessage );
+            }
+            else
+            {
+                /* send message back to originating process */
+                if(OutMessage->ReturnNexus != NULL)
                 {
+                    if(OutMessage->ReturnNexus->CTINexusWrite(InMessage, sizeof (INMESS), &BytesWritten, 15L))
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Error Writing to Return Nexus " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "  DeviceID " << OutMessage->DeviceID << " TargetID " << OutMessage->TargetID << " " << OutMessage->Request.CommandStr << endl;
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " Error Writing to Return Nexus " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << "  DeviceID " << OutMessage->DeviceID << " TargetID " << OutMessage->TargetID << " " << OutMessage->Request.CommandStr << endl;
+                        }
+                        status = SOCKWRITE;
                     }
-                    status = SOCKWRITE;
                 }
             }
         }
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << " **** Checkpoint **** Missing In or Out Message " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return status;
