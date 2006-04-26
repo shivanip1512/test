@@ -38,7 +38,7 @@ using std::string;
 using boost::shared_ptr;
 
 
-class CtiLMGroupBase : public CtiMemDBObject, public RWCollectable
+class CtiLMGroupBase : public RWCollectable, public CtiMemDBObject 
 {
 
 public:

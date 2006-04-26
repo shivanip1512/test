@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/12/20 17:18:53 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2006/04/26 19:43:31 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,6 +23,7 @@
 #include <iomanip>
 using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
 
+#include "utility.h"
 #include "msg_notif_email.h"
 
 RWDEFINE_COLLECTABLE( CtiNotifEmailMsg, NOTIF_EMAIL_MSG_ID );
@@ -42,7 +43,8 @@ _notifGroupID(0)
 
 CtiNotifEmailMsg::~CtiNotifEmailMsg()
 {
-   _attachments.clearAndDestroy();
+    delete_vector( _attachments );
+    _attachments.clear();
 }
 
 //=====================================================================================================================
@@ -97,7 +99,7 @@ void CtiNotifEmailMsg::dump() const
 //=====================================================================================================================
 //=====================================================================================================================
 
-RWOrdered& CtiNotifEmailMsg::getAttachments( void )
+std::vector<CtiNotifEmailAttachmentMsg*>& CtiNotifEmailMsg::getAttachments( void )
 {
    return( _attachments );
 }
@@ -109,7 +111,7 @@ void CtiNotifEmailMsg::setAttachment( string file )
 {
    _notifAttachment = new CtiNotifEmailAttachmentMsg( file );
    _notifAttachment->dump();
-   _attachments.insert( _notifAttachment );
+   _attachments.push_back( _notifAttachment );
 }
 
 //=====================================================================================================================

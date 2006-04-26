@@ -255,7 +255,7 @@ DOUBLE CtiLMControlAreaTrigger::getProjectedPointValue() const
 
     Returns the timestamp of the last peak point value received by the trigger
 ---------------------------------------------------------------------------*/
-RWTValDlist<CtiLMProjectionPointEntry>& CtiLMControlAreaTrigger::getProjectionPointEntriesQueue()
+std::vector<CtiLMProjectionPointEntry>& CtiLMControlAreaTrigger::getProjectionPointEntriesQueue()
 {
 
     return _projectionpointentriesqueue;
@@ -489,11 +489,12 @@ void CtiLMControlAreaTrigger::calculateProjectedValue()
     {
         if( !stringCompareIgnoreCase(getProjectionType(), CtiLMControlAreaTrigger::LSFProjectionType ) )
         {
-            if( getProjectionPointEntriesQueue().entries() >= getProjectionPoints() )
+            if( getProjectionPointEntriesQueue().size() >= getProjectionPoints() )
             {
-                while( getProjectionPointEntriesQueue().entries() > getProjectionPoints() )
+                std::vector<CtiLMProjectionPointEntry>::iterator itr = getProjectionPointEntriesQueue().begin();
+                while( getProjectionPointEntriesQueue().size() > getProjectionPoints() )
                 {//trim excess pointvalues
-                    getProjectionPointEntriesQueue().get();
+                    getProjectionPointEntriesQueue().erase(itr);
                 }
 
                 double x       = 0.0;
@@ -506,7 +507,7 @@ void CtiLMControlAreaTrigger::calculateProjectedValue()
                 double delta;
                 double sigmaY2;
 
-                for(int i=0;i<getProjectionPointEntriesQueue().entries();i++)
+                for(int i=0;i<getProjectionPointEntriesQueue().size();i++)
                 {
                     x = getProjectionPointEntriesQueue()[i].getTimestamp().seconds() - getProjectionPointEntriesQueue()[0].getTimestamp().seconds();
 
@@ -516,13 +517,13 @@ void CtiLMControlAreaTrigger::calculateProjectedValue()
                     sumXY += (((double)x) * getProjectionPointEntriesQueue()[i].getValue());
                 }
 
-                delta = (getProjectionPointEntriesQueue().entries() * sumXX) - (sumX * sumX);
+                delta = (getProjectionPointEntriesQueue().size() * sumXX) - (sumX * sumX);
 
                 if(delta != 0.0)
                 {
-                    double slope = ( (getProjectionPointEntriesQueue().entries() * sumXY) - (sumX * sumY) ) / delta;
+                    double slope = ( (getProjectionPointEntriesQueue().size() * sumXY) - (sumX * sumY) ) / delta;
                     double intersect = ( (sumXX * sumY) - (sumX * sumXY) ) / delta;
-                    double inputX = getProjectionPointEntriesQueue()[getProjectionPointEntriesQueue().entries()-1].getTimestamp().seconds() - getProjectionPointEntriesQueue()[0].getTimestamp().seconds() + getProjectAheadDuration();
+                    double inputX = getProjectionPointEntriesQueue()[getProjectionPointEntriesQueue().size()-1].getTimestamp().seconds() - getProjectionPointEntriesQueue()[0].getTimestamp().seconds() + getProjectAheadDuration();
                     double tempProjectedValue = (slope*inputX)+intersect;
                     setProjectedPointValue(tempProjectedValue);
 
@@ -588,7 +589,7 @@ void CtiLMControlAreaTrigger::calculateProjectedValue()
             else
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Not enough getProjectionPointEntriesQueue().entries(): " << getProjectionPointEntriesQueue().entries() << " need getProjectionPoints(): " << getProjectionPoints() << " in: " << __FILE__ << " at:" << __LINE__ << endl;
+                dout << CtiTime() << " - Not enough getProjectionPointEntriesQueue().entries(): " << getProjectionPointEntriesQueue().size() << " need getProjectionPoints(): " << getProjectionPoints() << " in: " << __FILE__ << " at:" << __LINE__ << endl;
             }
         }
         else

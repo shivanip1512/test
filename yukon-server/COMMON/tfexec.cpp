@@ -46,7 +46,7 @@ CtiTimedFunctorExecutor::~CtiTimedFunctorExecutor()
 -----------------------------------------------------------------------------*/    
 void CtiTimedFunctorExecutor::enqueue(const RWFunctor0& functor)
 {
-    _functor_queue.write(functor);
+    _functor_queue.write(&functor);
 }
 
 /*-----------------------------------------------------------------------------
@@ -70,11 +70,11 @@ void CtiTimedFunctorExecutor::_timed_thr_func()
             rwRunnable().sleep(100);          
         }
 
-        RWFunctor0 func;
+        RWFunctor0* func;
         RWWaitStatus status;
-        while ( _functor_queue.read( func, 0 ) != RW_THR_TIMEOUT )
+        while ( _functor_queue.read( func, 0 ) != false )
         {
-            func();
+            *func();
         }
     }
 }

@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/12/20 17:18:54 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2006/04/26 19:43:31 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -34,13 +34,13 @@ class IM_EX_MSG CtiNotifEmailMsg : public CtiMessage
 {
 private:
    
-   int                           _notifGroupID;
-   string                     _to;          
-   string                     _subject;
-   string                     _body;
-   string                     _toCC;        
-   string                     _toBCC;       
-   RWOrdered                     _attachments;
+   int                                          _notifGroupID;
+   string                                       _to;          
+   string                                       _subject;
+   string                                       _body;
+   string                                       _toCC;        
+   string                                       _toBCC;       
+   std::vector<CtiNotifEmailAttachmentMsg*>      _attachments;
 
    CtiNotifEmailAttachmentMsg    *_notifAttachment;
 
@@ -72,7 +72,7 @@ public:
    void setToCC( string );
    string getToBCC( void );
    void setToBCC( string );
-   RWOrdered& getAttachments( void );
+   std::vector<CtiNotifEmailAttachmentMsg*>& getAttachments( void );
 
 protected:
 

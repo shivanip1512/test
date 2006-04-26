@@ -37,11 +37,8 @@ public:
 
     } CtiCalcThreadInterruptReason;
 
-
-    //typedef RWTPtrHashMap<CtiHashKey, CtiCalc, my_hash<CtiHashKey> , equal_to<CtiHashKey> > CtiCalcPointMap;
     typedef std::map<CtiHashKey*, CtiCalc* > CtiCalcPointMap;
     typedef std::map<CtiHashKey*, CtiCalc* >::iterator CtiCalcPointMapIterator;
-    //typedef RWTPtrHashMapIterator<CtiHashKey, CtiCalc, my_hash<CtiHashKey> , equal_to<CtiHashKey> > CtiCalcPointMapIterator;
     
 private:
     CtiCalcPointMap _periodicPoints, _onUpdatePoints, _constantPoints, _historicalPoints;

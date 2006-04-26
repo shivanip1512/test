@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/msg_ptreg.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/12/20 17:18:54 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2006/04/26 19:43:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -44,7 +44,8 @@ class IM_EX_MSG CtiPointRegistrationMsg : public CtiMessage
 private:
 
    int                     RegFlags;
-   RWTValSlist<LONG>       PointList;
+   //RWTValSlist<LONG>       PointList;
+   std::vector<LONG>         PointList;
 
 public:
    RWDECLARE_COLLECTABLE( CtiPointRegistrationMsg );

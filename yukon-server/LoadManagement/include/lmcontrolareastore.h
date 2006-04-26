@@ -37,16 +37,16 @@ class CtiLMSavedProjectionQueue
 {//equivalent to an inner class, only used for saving projection queues
 
 public:
-    CtiLMSavedProjectionQueue(LONG pointId, const RWTValDlist<CtiLMProjectionPointEntry>& projectionEntryList);
+    CtiLMSavedProjectionQueue(LONG pointId, const std::vector<CtiLMProjectionPointEntry>& projectionEntryList);
     CtiLMSavedProjectionQueue(const CtiLMSavedProjectionQueue& savedProjectionQueue);
 
     virtual ~CtiLMSavedProjectionQueue();
 
     LONG getPointId() const;
-    const RWTValDlist<CtiLMProjectionPointEntry>& getProjectionEntryList() const;
+    const std::vector<CtiLMProjectionPointEntry>& getProjectionEntryList() const;
 
     CtiLMSavedProjectionQueue& setPointId(LONG pointId);
-    CtiLMSavedProjectionQueue& setProjectionEntryList(const RWTValDlist<CtiLMProjectionPointEntry>& projectionEntryList);
+    CtiLMSavedProjectionQueue& setProjectionEntryList(const std::vector<CtiLMProjectionPointEntry>& projectionEntryList);
 
     CtiLMSavedProjectionQueue& operator=(const CtiLMSavedProjectionQueue& right);
 
@@ -55,7 +55,7 @@ public:
 
 private:
     LONG _pointId;
-    RWTValDlist<CtiLMProjectionPointEntry> _projectionEntryList;
+    std::vector<CtiLMProjectionPointEntry> _projectionEntryList;
 };
 
 
@@ -144,8 +144,8 @@ private:
     bool _reregisterforpoints;
     bool _wascontrolareadeletedflag;
     CtiTime _lastdbreloadtime;
-    RWTValOrderedVector<CtiLMSavedProjectionQueue> _projectionQueues;
-    RWTValOrderedVector<CtiLMSavedControlString> _controlStrings;
+    std::vector<CtiLMSavedProjectionQueue> _projectionQueues;
+    std::vector<CtiLMSavedControlString> _controlStrings;
 
     //The singleton instance of CtiLMControlAreaStore
     static CtiLMControlAreaStore* _instance;

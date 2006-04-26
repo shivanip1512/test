@@ -82,7 +82,7 @@ RWDECLARE_COLLECTABLE( CtiLMControlAreaTrigger )
     DOUBLE getPeakPointValue() const;
     const CtiTime& getLastPeakPointValueTimestamp() const;
     DOUBLE getProjectedPointValue() const;
-    RWTValDlist<CtiLMProjectionPointEntry>& getProjectionPointEntriesQueue();
+    std::vector<CtiLMProjectionPointEntry>& getProjectionPointEntriesQueue();
 
     CtiLMControlAreaTrigger& setTriggerId(LONG trigger_id);
     CtiLMControlAreaTrigger& setPAOId(LONG paoid);
@@ -150,7 +150,7 @@ private:
     CtiTime _lastpeakpointvaluetimestamp;
     DOUBLE _projectedpointvalue;
 
-    RWTValDlist<CtiLMProjectionPointEntry> _projectionpointentriesqueue;
+    std::vector<CtiLMProjectionPointEntry> _projectionpointentriesqueue;
 
     //don't stream
     BOOL _insertDynamicDataFlag;

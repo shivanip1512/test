@@ -1094,20 +1094,20 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
                     if( quality != NonUpdatedQuality &&
                         currentControlArea->getNewPointDataReceivedFlag() )
                     {
-                        if( currentTrigger->getProjectionPointEntriesQueue().entries() < currentTrigger->getProjectionPoints() )
+                        if( currentTrigger->getProjectionPointEntriesQueue().size() < currentTrigger->getProjectionPoints() )
                         {//first reading plug in multiple copies
                             LONG pass = 1;
                             LONG pluggedIntervalDuration = currentTrigger->getProjectAheadDuration()/4;
-                            while( currentTrigger->getProjectionPointEntriesQueue().entries() < currentTrigger->getProjectionPoints() )
+                            while( currentTrigger->getProjectionPointEntriesQueue().size() < currentTrigger->getProjectionPoints() )
                             {
                                 CtiTime pluggedTimestamp(timestamp.seconds() - (pluggedIntervalDuration * (currentTrigger->getProjectionPoints()-pass)));
-                                currentTrigger->getProjectionPointEntriesQueue().insert( CtiLMProjectionPointEntry(value,pluggedTimestamp) );
+                                currentTrigger->getProjectionPointEntriesQueue().push_back( CtiLMProjectionPointEntry(value,pluggedTimestamp) );
                                 pass++;
                             }
                         }
                         else
                         {//normal case
-                            currentTrigger->getProjectionPointEntriesQueue().insert( CtiLMProjectionPointEntry(value,timestamp) );
+                            currentTrigger->getProjectionPointEntriesQueue().push_back( CtiLMProjectionPointEntry(value,timestamp) );
                         }
                         currentTrigger->calculateProjectedValue();
                         if( _LM_POINT_EVENT_LOGGING &&

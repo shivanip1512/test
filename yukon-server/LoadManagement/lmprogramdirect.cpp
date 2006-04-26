@@ -4388,12 +4388,12 @@ CtiLMProgramDirectGear* CtiLMProgramDirect::getCurrentGearObject()
 void CtiLMProgramDirect::restoreGuts(RWvistream& istrm)
 {
     CtiLMProgramBase::restoreGuts( istrm );
-    //TS FLAG
-    RWOrdered* rw_groups = new RWOrdered();
+
+    RWOrdered rw_groups;
     for(CtiLMGroupIter i = _lmprogramdirectgroups.begin(); i != _lmprogramdirectgroups.end(); i++)
     {
         CtiLMGroupPtr lm_group  = *i;
-        rw_groups->insert(lm_group.get());
+        rw_groups.insert( lm_group.get() );
     }
 
     CtiTime tempTime1;
@@ -4425,8 +4425,8 @@ void CtiLMProgramDirect::restoreGuts(RWvistream& istrm)
     {
         _currentgearnumber = _currentgearnumber - 1;
     }
-    //TS delete_vector before this?
-    delete rw_groups;
+    //delete_vector(rw_groups);
+    rw_groups.clearAndDestroy();
 }
 
 /*---------------------------------------------------------------------------
@@ -4439,7 +4439,7 @@ void CtiLMProgramDirect::saveGuts(RWvostream& ostrm ) const
     CtiLMProgramBase::saveGuts( ostrm );
 
     // Only send active master/subordinate programs
-    vector<CtiLMProgramDirect*> active_masters(_master_programs.size());
+    vector<CtiLMProgramDirect*> active_masters;
     for(std::set<CtiLMProgramDirect*>::const_iterator m_iter = _master_programs.begin();
         m_iter != _master_programs.end();
         m_iter++)
@@ -4450,7 +4450,7 @@ void CtiLMProgramDirect::saveGuts(RWvostream& ostrm ) const
         }
     }
 
-    vector<CtiLMProgramDirect*> active_subordinates(_subordinate_programs.size());
+    vector<CtiLMProgramDirect*> active_subordinates;
     for(std::set<CtiLMProgramDirect*>::const_iterator s_iter = _subordinate_programs.begin();
         s_iter != _subordinate_programs.end();
         s_iter++)

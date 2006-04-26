@@ -14,7 +14,7 @@ class CtiCalc : public RWCollectable
     RWDECLARE_COLLECTABLE( CtiCalc );
 
 private:
-    RWSlistCollectables  _components;
+    std::list<CtiCalcComponent*>  _components;
     CtiStack<double>     _stack;
     PointUpdateType      _updateType;
     ULONG                _nextInterval;

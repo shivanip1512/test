@@ -361,11 +361,13 @@ void CtiCalculateThread::onUpdateThread( void )
                 {
                     recalcPointID = _auAffectedPoints.removeFirst( );
                     CtiHashKey recalcKey(recalcPointID);
-                    calcPoint = (CtiCalc *)(_onUpdatePoints.findValue(&recalcKey));
+                    std::map<CtiHashKey*, CtiCalc* >::iterator itr = _onUpdatePoints.find(&recalcKey);
 
                     //  if not ready
-                    if( calcPoint==rwnil || !calcPoint->ready( ) )
-                        continue;  // All the components are not ready.
+                    if( itr == _onUpdatePoints.end() || !calcPoint->ready( ) )
+                         continue;  // All the components are not ready.
+
+                    calcPoint = (*itr).second;
 
                     CtiPointStore* pointStore = CtiPointStore::getInstance();
                     CtiHashKey pointHashKey(calcPoint->getPointId());
@@ -679,8 +681,8 @@ void CtiCalculateThread::historicalThread( void )
                         }
                     }
                 }
-
-                if( newTime > (unsigned long)0 && unlistedPoints.find(calcPoint->getPointId()) == unlistedPoints.end() )
+                PointTimeMap::iterator Tpair = unlistedPoints.find(calcPoint->getPointId());
+                if( newTime > (unsigned long)0 && Tpair == unlistedPoints.end() )
                 {
                     updatedPoints.insert(PointTimeMap::value_type(calcPoint->getPointId(), newTime));
                 }
@@ -994,8 +996,8 @@ void CtiCalculateThread::baselineThread( void )
                         }
 
                         PointTimeMap::iterator iter;
-                        
-                        if( (iter = updatedPoints.find(pointID)) != updatedPoints.end() )
+                        iter = updatedPoints.find(pointID);
+                        if( iter != updatedPoints.end() )
                         {
                             iter->second = pointTime;
 
@@ -1005,7 +1007,7 @@ void CtiCalculateThread::baselineThread( void )
                                 dout << CtiTime( ) << "  Sending to point id " << pointID << " and time " << pointTime << endl;
                             }
                         }
-                        else if( (iter = unlistedPoints.find(pointID)) != unlistedPoints.end() )
+                        else if( iter != unlistedPoints.end() )
                         {
                             iter->second = pointTime;
 
@@ -1340,22 +1342,22 @@ void CtiCalculateThread::appendPointComponent( long pointID, string &componentTy
     CtiPointStoreElement *tmpElementPtr = NULL;
     PointUpdateType updateType;
 
-    if( _periodicPoints.find( &pointHashKey ) != NULL )
+    if( _periodicPoints.find( &pointHashKey ) != _periodicPoints.end() )
     {
         targetCalcPoint  = _periodicPoints[&pointHashKey];
         updateType = periodic;
     }
-    else if( _onUpdatePoints.find( &pointHashKey ) != NULL )
+    else if( _onUpdatePoints.find( &pointHashKey ) != _onUpdatePoints.end() )
     {
         targetCalcPoint  = _onUpdatePoints[&pointHashKey];
         updateType = targetCalcPoint->getUpdateType();
     }
-    else if( _constantPoints.find( &pointHashKey ) != NULL )
+    else if( _constantPoints.find( &pointHashKey ) != _constantPoints.end() )
     {
         targetCalcPoint  = _constantPoints[&pointHashKey];
         updateType = constant;
     }
-    else if( _historicalPoints.find( &pointHashKey ) != NULL)
+    else if( _historicalPoints.find( &pointHashKey ) != _historicalPoints.end())
     {
         targetCalcPoint = _historicalPoints[&pointHashKey];
         updateType = historical;
@@ -1619,19 +1621,19 @@ void CtiCalculateThread::removePointStoreObject( const long aPointID )
     CtiCalc *targetCalcPoint = NULL;
     CtiPointStoreElement *tmpElementPtr = NULL;
 
-    if( _periodicPoints.find( &pointHashKey ) != NULL )
+    if( _periodicPoints.find( &pointHashKey ) != _periodicPoints.end() )
     {
         targetCalcPoint  = _periodicPoints[&pointHashKey];
     }
-    else if( _onUpdatePoints.find( &pointHashKey ) != NULL )
+    else if( _onUpdatePoints.find( &pointHashKey ) != _onUpdatePoints.end() )
     {
         targetCalcPoint  = _onUpdatePoints[&pointHashKey];
     }
-    else if( _constantPoints.find( &pointHashKey ) != NULL )
+    else if( _constantPoints.find( &pointHashKey ) != _constantPoints.end() )
     {
         targetCalcPoint  = _constantPoints[&pointHashKey];
     }
-    else if( _historicalPoints.find( &pointHashKey ) != NULL)
+    else if( _historicalPoints.find( &pointHashKey ) != _historicalPoints.end())
     {
         targetCalcPoint = _historicalPoints[&pointHashKey];
     }

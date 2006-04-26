@@ -36,7 +36,7 @@ class CtiTimedFunctorExecutor
 private:
     RWThread _timer_thr;
 
-    RWPCValQueue<RWFunctor0> _functor_queue;
+    CTIPCPtrQueue<RWFunctor0> _functor_queue;
     long _millis;
 
     void _timed_thr_func();

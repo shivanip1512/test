@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/msg_ptreg.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/12/20 17:18:54 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2006/04/26 19:43:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -47,7 +47,7 @@ CtiPointRegistrationMsg::restoreGuts(RWvistream& aStream)
    {
       aStream >> itemp;
 
-      PointList.insert(itemp);
+      PointList.push_back(itemp);
    }
 }
 
@@ -57,11 +57,12 @@ CtiPointRegistrationMsg::saveGuts(RWvostream &aStream) const
    CtiMessage::saveGuts( aStream );
 
    aStream << RegFlags;
-   aStream << PointList.entries();              // How amny are on their way....
+   aStream << PointList.size();              // How many are on their way....
 
-   for(int i = 0; i < PointList.entries(); i++)
+   std::vector<LONG>::const_iterator itr = PointList.begin();
+   for( ; itr != PointList.end(); itr++)
    {
-      aStream << PointList[i];
+      aStream << *itr;
    }
 }
 
@@ -88,9 +89,10 @@ void CtiPointRegistrationMsg::dump() const
 
    dout << " Registration Flags            " << RegFlags << endl;
 
-   for(int i = 0; i < PointList.entries(); i++)
+   std::vector<LONG>::const_iterator itr = PointList.begin();
+   for( ; itr != PointList.end(); itr++)
    {
-      dout << " Registering for Point         " << PointList[i] << endl;
+      dout << " Registering for Point         " << *itr << endl;
    }
 }
 
@@ -130,7 +132,7 @@ CtiPointRegistrationMsg& CtiPointRegistrationMsg::operator=(const CtiPointRegist
 }
 
 // If list is empty, I assume you wanted them all!.
-int CtiPointRegistrationMsg::getCount() const       { return PointList.entries(); }
+int CtiPointRegistrationMsg::getCount() const       { return PointList.size(); }
 
 LONG& CtiPointRegistrationMsg::operator[](size_t i)
 {
@@ -150,7 +152,7 @@ void CtiPointRegistrationMsg::clear()
 
 void CtiPointRegistrationMsg::insert(const LONG& a)
 {
-   PointList.insert(a);
+   PointList.push_back(a);
 }
 
 int CtiPointRegistrationMsg::getFlags() const { return RegFlags; }

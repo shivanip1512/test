@@ -91,16 +91,15 @@ CtiCalc::CtiCalc( long pointId, const string &updateType, int updateInterval, co
 
 CtiCalc &CtiCalc::operator=( CtiCalc &toCopy )
 {
-    RWSlistCollectablesIterator copyIterator( toCopy._components );
-
+    std::list<CtiCalcComponent*>::iterator copyIterator = toCopy._components.begin();
     //  make sure I'm squeaky clean to prevent memory leaks
     this->cleanup( );
 
     //  must do a deep copy;  components aren't common enough to justify a reference-counted shallow copy
-    for( ; copyIterator( ); )
+    for( ; copyIterator != toCopy._components.end(); ++copyIterator)
     {
         CtiCalcComponent *tmp;
-        tmp = CTIDBG_new  CtiCalcComponent( *((CtiCalcComponent *)copyIterator.key( )) );
+        tmp = CTIDBG_new  CtiCalcComponent( *(*copyIterator) );
         this->appendComponent( tmp );
     }
     _updateInterval = toCopy._updateInterval;
@@ -111,7 +110,7 @@ CtiCalc &CtiCalc::operator=( CtiCalc &toCopy )
 
 void CtiCalc::appendComponent( CtiCalcComponent *componentToAdd )
 {
-    _components.append( componentToAdd );
+    _components.push_back( componentToAdd );
     componentToAdd->passParent( this );
 
     if( !strcmp(componentToAdd->getFunctionName().c_str(), "Baseline") )
@@ -129,17 +128,18 @@ void CtiCalc::appendComponent( CtiCalcComponent *componentToAdd )
 
 void CtiCalc::cleanup( void )
 {
-    _components.clearAndDestroy( );
+    delete_list( _components );
+    _components.clear( );
 }
 
 void CtiCalc::clearComponentDependencies( void )
 {
-    RWSlistCollectablesIterator iter( _components );
+    std::list<CtiCalcComponent*>::iterator iter = _components.begin();
     CtiCalcComponent *tmpComponent;
 
-    for( ; iter(); )
+    for( ; iter != _components.end(); ++iter )
     {
-        tmpComponent = (CtiCalcComponent *)iter.key( );
+        tmpComponent = *iter;
 
         CtiPointStore* pointStore = CtiPointStore::getInstance();
         CtiHashKey componentHashKey(tmpComponent->getComponentPointId());
@@ -159,8 +159,7 @@ void CtiCalc::clearComponentDependencies( void )
 double CtiCalc::calculate( int &calc_quality, CtiTime &calc_time, bool &calcValid )
 {
     double retVal = 0.0;
-    RWSlistCollectablesIterator iter( _components );
-
+    std::list<CtiCalcComponent*>::iterator iter = _components.begin();
     try
     {
         //  Iterate through all of the calculations in the collection
@@ -186,9 +185,9 @@ double CtiCalc::calculate( int &calc_quality, CtiTime &calc_time, bool &calcVali
         /*
          *  Iterate this calc's components passing in each succesive result (through retVal).
          */
-        for( ; iter( ) && _valid; )
+        for( ; (iter != _components.end()) && _valid; ++iter )
         {
-            CtiCalcComponent *tmpComponent = (CtiCalcComponent *)iter.key( );
+            CtiCalcComponent *tmpComponent = *iter;
             _valid = _valid & tmpComponent->isValid( );  //  Entire calculation is only valid if each component is valid
 
             retVal = tmpComponent->calculate( retVal, componentQuality, componentTime, calcValid );  //  Calculate on returned value
@@ -260,7 +259,8 @@ PointUpdateType CtiCalc::getUpdateType( void )
 
 BOOL CtiCalc::ready( void )
 {
-    RWSlistCollectablesIterator iter( _components );
+
+    std::list<CtiCalcComponent*>::iterator iter = _components.begin();
     BOOL isReady = TRUE;
 
     try
@@ -288,17 +288,17 @@ BOOL CtiCalc::ready( void )
                 }
                 break;
             case allUpdate:
-                for( ; iter( ); )
-                    isReady &= ((CtiCalcComponent *)(iter.key( )))->isUpdated( );
+                for( ; iter != _components.end() ; ++iter )
+                    isReady &= (*iter)->isUpdated( );
                 break;
             case historical:
             case constant:
                 isReady = TRUE;
                 break;
             case anyUpdate:
-                for( ; iter( ); )
+                for( ; iter != _components.end(); ++iter )
                 {
-                    isReady |= ((CtiCalcComponent *)(iter.key( )))->isUpdated( );
+                    isReady |= (*iter)->isUpdated( );
                     if( isReady )
                     {
                         break;
@@ -309,8 +309,8 @@ BOOL CtiCalc::ready( void )
                 {
                     if(CtiTime::now().seconds() >= getNextInterval())
                     {
-                        for( ; iter( ); )
-                            isReady &= ((CtiCalcComponent *)(iter.key( )))->isUpdated( _updateType, CtiTime(getNextInterval()) );
+                        for( ; iter != _components.end(); ++iter)
+                            isReady &= (*iter)->isUpdated( _updateType, CtiTime(getNextInterval()) );
                     }
                     else
                     {
@@ -382,12 +382,11 @@ int CtiCalc::getUpdateInterval( ) const
 long CtiCalc::findDemandAvgComponentPointId()
 {
     long returnPointId = 0;
-    RWSlistCollectablesIterator iter( _components );
-
+    std::list<CtiCalcComponent*>::iterator iter = _components.begin();
     //  Iterate through all of the calculations in the collection
-    for(;iter();)
+    for( ; iter != _components.end(); ++iter)
     {
-        CtiCalcComponent* tmpComponent = (CtiCalcComponent*)iter.key();
+        CtiCalcComponent* tmpComponent = *iter;
 
         // 20050202 CGP // If the push operator was used, the point we choose will be the LAST one on the stack!
         if(tmpComponent->getComponentPointId() > 0)
@@ -600,18 +599,18 @@ double CtiCalc::figureDemandAvg(long secondsInAvg)
 
 int CtiCalc::getComponentCount()
 {
-    return _components.entries();
+    return _components.size();
 }
 
 vector<long> CtiCalc::getComponentIDList()
 {
     vector<long> componentIDList;
-    RWSlistCollectablesIterator iter( _components );
+    std::list<CtiCalcComponent*>::iterator iter = _components.begin();
     CtiCalcComponent *tmpComponent;
 
-    for( ; iter(); )
+    for( ; iter != _components.end(); ++iter )
     {
-        tmpComponent = (CtiCalcComponent *)iter.key( );
+        tmpComponent = *iter;
         componentIDList.push_back(tmpComponent->getComponentPointId());
     }
     return componentIDList;

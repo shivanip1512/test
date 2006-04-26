@@ -2457,7 +2457,7 @@ bool CtiLMControlAreaStore::checkMidnightDefaultsForReset()
 ---------------------------------------------------------------------------*/
 void CtiLMControlAreaStore::saveAnyProjectionData()
 {
-    if( _projectionQueues.entries() > 0 )
+    if( _projectionQueues.size() > 0 )
         _projectionQueues.clear();
 
     for(LONG i=0;i<_controlAreas->size();i++)
@@ -2481,7 +2481,7 @@ void CtiLMControlAreaStore::saveAnyProjectionData()
                             dout << " Entry number: " << k << " value: " << currentLMControlAreaTrigger->getProjectionPointEntriesQueue()[k].getValue() << " timestamp: " << currentLMControlAreaTrigger->getProjectionPointEntriesQueue()[k].getTimestamp() << endl;
                         }
                     }*/
-                    _projectionQueues.insert(CtiLMSavedProjectionQueue(currentLMControlAreaTrigger->getPointId(), currentLMControlAreaTrigger->getProjectionPointEntriesQueue()));
+                    _projectionQueues.push_back(CtiLMSavedProjectionQueue(currentLMControlAreaTrigger->getPointId(), currentLMControlAreaTrigger->getProjectionPointEntriesQueue()));
                 }
             }
         }
@@ -2495,13 +2495,13 @@ void CtiLMControlAreaStore::saveAnyProjectionData()
 ---------------------------------------------------------------------------*/
 void CtiLMControlAreaStore::attachProjectionData(CtiLMControlAreaTrigger* trigger)
 {
-    for(LONG i=0;i<_projectionQueues.entries();i++)
+    for(LONG i=0;i<_projectionQueues.size();i++)
     {
-        CtiLMSavedProjectionQueue currentSavedQueue =  _projectionQueues.at(i);
+        CtiLMSavedProjectionQueue currentSavedQueue =  _projectionQueues[i];
         if( trigger->getPointId() == currentSavedQueue.getPointId() )
         {
-            RWTValDlist<CtiLMProjectionPointEntry> queueToCopyFrom = currentSavedQueue.getProjectionEntryList();
-            RWTValDlist<CtiLMProjectionPointEntry>& queueToFillUp = trigger->getProjectionPointEntriesQueue();
+            std::vector<CtiLMProjectionPointEntry> queueToCopyFrom = currentSavedQueue.getProjectionEntryList();
+            std::vector<CtiLMProjectionPointEntry>& queueToFillUp = trigger->getProjectionPointEntriesQueue();
             /*{
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << " - Restored Projection Point Entries Queue entries for PointId: " << trigger->getPointId() << endl;
@@ -2510,9 +2510,10 @@ void CtiLMControlAreaStore::attachProjectionData(CtiLMControlAreaTrigger* trigge
                     dout << " Entry number: " << k << " value: " << queueToCopyFrom[k].getValue() << " timestamp: " << queueToCopyFrom[k].getTimestamp() << endl;
                 }
             }*/
-            for(LONG j=0;j<queueToCopyFrom.entries();j++)
+            std::vector<CtiLMProjectionPointEntry>::iterator itr = queueToCopyFrom.begin();
+            for( ; itr != queueToCopyFrom.end(); ++itr)
             {
-                queueToFillUp.insert(queueToCopyFrom.at(j));
+                queueToFillUp.push_back( *itr );
             }
             break;
         }
@@ -2526,7 +2527,7 @@ void CtiLMControlAreaStore::attachProjectionData(CtiLMControlAreaTrigger* trigge
 ---------------------------------------------------------------------------*/
 void CtiLMControlAreaStore::saveAnyControlStringData()
 {
-    if( _controlStrings.entries() > 0 )
+    if( _controlStrings.size() > 0 )
         _controlStrings.clear();
 
     for(LONG i=0;i<_controlAreas->size();i++)
@@ -2547,7 +2548,7 @@ void CtiLMControlAreaStore::saveAnyControlStringData()
                         CtiLMGroupPtr currentLMGroup  = *k;
                         if( currentLMGroup->getLastControlString().length() > 0 )
                         {
-                            _controlStrings.insert(CtiLMSavedControlString(currentLMGroup->getPAOId(), currentLMGroup->getLastControlString()));
+                            _controlStrings.push_back(CtiLMSavedControlString(currentLMGroup->getPAOId(), currentLMGroup->getLastControlString()));
                         }
                     }
                 }
@@ -2563,9 +2564,9 @@ void CtiLMControlAreaStore::saveAnyControlStringData()
 ---------------------------------------------------------------------------*/
 void CtiLMControlAreaStore::attachControlStringData(CtiLMGroupPtr& group)
 {
-    for(LONG i=0;i<_controlStrings.entries();i++)
+    for(LONG i=0;i<_controlStrings.size();i++)
     {
-        CtiLMSavedControlString currentSavedString =  _controlStrings.at(i);
+        CtiLMSavedControlString currentSavedString =  _controlStrings[i];
         if( group->getPAOId() == currentSavedString.getPAOId() )
         {
             group->setLastControlString(currentSavedString.getControlString());
@@ -2583,7 +2584,7 @@ const string CtiLMControlAreaStore::LOAD_MANAGEMENT_DBCHANGE_MSG_SOURCE = "LOAD_
 //**********  This is equivalent to an inner class,  **********
 //**********  only used for saving projections       **********
 //*************************************************************
-CtiLMSavedProjectionQueue::CtiLMSavedProjectionQueue(LONG pointId, const RWTValDlist<CtiLMProjectionPointEntry>& projectionEntryList)
+CtiLMSavedProjectionQueue::CtiLMSavedProjectionQueue(LONG pointId, const std::vector<CtiLMProjectionPointEntry>& projectionEntryList)
 {
     setPointId(pointId);
     setProjectionEntryList(projectionEntryList);
@@ -2602,7 +2603,7 @@ LONG CtiLMSavedProjectionQueue::getPointId() const
 {
     return _pointId;
 }
-const RWTValDlist<CtiLMProjectionPointEntry>& CtiLMSavedProjectionQueue::getProjectionEntryList() const
+const std::vector<CtiLMProjectionPointEntry>& CtiLMSavedProjectionQueue::getProjectionEntryList() const
 {
     return _projectionEntryList;
 }
@@ -2612,7 +2613,7 @@ CtiLMSavedProjectionQueue& CtiLMSavedProjectionQueue::setPointId(LONG pointId)
     _pointId = pointId;
     return *this;
 }
-CtiLMSavedProjectionQueue& CtiLMSavedProjectionQueue::setProjectionEntryList(const RWTValDlist<CtiLMProjectionPointEntry>& projectionEntryList)
+CtiLMSavedProjectionQueue& CtiLMSavedProjectionQueue::setProjectionEntryList(const std::vector<CtiLMProjectionPointEntry>& projectionEntryList)
 {
     _projectionEntryList = projectionEntryList;
     return *this;
