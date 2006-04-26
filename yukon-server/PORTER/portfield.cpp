@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.182 $
-* DATE         :  $Date: 2006/04/26 15:34:27 $
+* REVISION     :  $Revision: 1.183 $
+* DATE         :  $Date: 2006/04/26 22:26:51 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -179,7 +179,7 @@ static INT OutMessageRequeueOnExclusionFail(CtiPortSPtr &Port, OUTMESS *&OutMess
 
 CtiOutMessage *GetLGRippleGroupAreaBitMatch(CtiPortSPtr Port, CtiOutMessage *&OutMessage);
 BOOL searchFuncForRippleOutMessage(void *firstOM, void* om);
-INT processCommResult(INT CommResult, LONG DeviceID, LONG TargetID, bool RetryGTZero, CtiDeviceSPtr &Device);
+bool processCommResult(INT CommResult, LONG DeviceID, LONG TargetID, bool RetryGTZero, CtiDeviceSPtr &Device);
 
 
 /* Threads that handle each port for communications */
@@ -446,10 +446,10 @@ VOID PortThread(void *pid)
             if((status = DoProcessInMessage(i, Port, &InMessage, OutMessage, Device)) != NORMAL)
             {
                 RequeueReportError(status, OutMessage);
-                processCommResult(status,did,tid,rgtz, Device);
+                processCommResult(i,did,tid,rgtz, Device);
                 continue;
             }
-            processCommResult(status,did,tid,rgtz, Device);
+            processCommResult(i,did,tid,rgtz, Device);
         }
 
         if((status = ReturnResultMessage(i, &InMessage, OutMessage)) != NORMAL)
@@ -2859,13 +2859,28 @@ INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OU
         }
 
         // This tallies success/fail on the port.  The port decides when he has become questionable.
-        bool reportablechange = Port->adjustCommCounts(CommResult);     // returns true if there is a reportable change!
+//         bool reportablechange = Port->adjustCommCounts(CommResult);     // returns true if there is a reportable change!
+        bool reportablechange = false;
+        if(OutMessage)
+        {
+            reportablechange = processCommResult(CommResult, OutMessage->DeviceID, OutMessage->TargetID, OutMessage->Retry > 0, Device);
+        }
+        else if(InMessage)
+        {
+            reportablechange = processCommResult(CommResult, InMessage->DeviceID, InMessage->TargetID, false, Device);
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
 
         if((PorterDebugLevel & PORTER_DEBUG_COMMFAIL) && reportablechange)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " Port " << Port->getName() << " has had a comm status change (or timed report).  COMM STATUS: " << (Port->isQuestionable() ? "QUESTIONABLE" : "GOOD") << endl;
+                dout << CtiTime() << " Device " << Device->getName() << " has had a comm status change (or timed report).  COMM STATUS: " << (Device->isCommFailed() ? "FAILED" : "GOOD") << endl;
             }
         }
 
@@ -4325,15 +4340,16 @@ BOOL searchFuncForRippleOutMessage(void *firstOM, void* om)
     return( match );
 }
 
-INT processCommResult(INT CommResult, LONG DeviceID, LONG TargetID, bool RetryGTZero, CtiDeviceSPtr &Device)
+bool processCommResult(INT CommResult, LONG DeviceID, LONG TargetID, bool RetryGTZero, CtiDeviceSPtr &Device)
 {
-    INT status = NORMAL;
+    bool status = false;
 
     bool iscommfailed = (CommResult == NORMAL);      // Prime with the communication status
 
     if(Device->adjustCommCounts( iscommfailed, RetryGTZero ))
     {
         commFail(Device);
+        status = true;
     }
 
     if(TargetID != 0 && TargetID != DeviceID)
@@ -4348,6 +4364,7 @@ INT processCommResult(INT CommResult, LONG DeviceID, LONG TargetID, bool RetryGT
             if( pTarget->adjustCommCounts( iscommfailed, RetryGTZero ) )
             {
                 commFail(pTarget);
+                status = true;
             }
         }
     }

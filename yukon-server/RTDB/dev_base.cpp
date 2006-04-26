@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.58 $
-* DATE         :  $Date: 2006/04/05 16:24:12 $
+* REVISION     :  $Revision: 1.59 $
+* DATE         :  $Date: 2006/04/26 22:26:51 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -686,7 +686,7 @@ bool CtiDeviceBase::adjustCommCounts( bool &isCommFail, bool retry )
     if( bStateChange || now > _lastReport )
     {
         bAdjust = true;
-        _lastReport = nextScheduledTimeAlignedOnRate(now, COMM_FAIL_REPORT_TIME);
+        _lastReport = nextScheduledTimeAlignedOnRate(now, gConfigParms.getValueAsULong("COMM_FAIL_REPORT_TIME", 300));
     }
 
     return(bAdjust);

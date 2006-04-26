@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.65 $
-* DATE         :  $Date: 2006/04/20 17:15:30 $
+* REVISION     :  $Revision: 1.66 $
+* DATE         :  $Date: 2006/04/26 22:26:51 $
 *
 * HISTORY      :
 * $Log: port_base.cpp,v $
+* Revision 1.66  2006/04/26 22:26:51  cplender
+* Altered a few commFail Functions to make certain the state is maintained.
+*
 * Revision 1.65  2006/04/20 17:15:30  cplender
 * SearchQueue needs to detect zeroeth item matches.
 *
@@ -1523,7 +1526,7 @@ bool CtiPort::adjustCommCounts( INT CommResult )
     if( bStateChange || now > _lastReport )
     {
         bAdjust = true;
-        _lastReport = ((now - (now.seconds() % COMM_FAIL_REPORT_TIME)) + COMM_FAIL_REPORT_TIME);
+        _lastReport = nextScheduledTimeAlignedOnRate(now, gConfigParms.getValueAsULong("COMM_FAIL_REPORT_TIME", 300)); // ((now - (now.seconds() % COMM_FAIL_REPORT_TIME)) + COMM_FAIL_REPORT_TIME);
     }
 
     return(bAdjust);
