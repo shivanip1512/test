@@ -2,6 +2,7 @@ package com.cannontech.notif.handler;
 
 import com.cannontech.database.cache.functions.*;
 import com.cannontech.database.data.lite.*;
+import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.message.notif.NotifAlarmMsg;
 import com.cannontech.message.util.Message;
 import com.cannontech.notif.outputs.*;
@@ -25,16 +26,27 @@ public class AlarmMessageHandler extends NotifHandler {
         final Notification notif = new Notification("alarm");
         
         LitePoint point = (LitePoint)PointFuncs.getLitePoint(msg.pointId);
+        notif.addData("pointid", Integer.toString(point.getPointID()));
         notif.addData("pointname", point.getPointName());
-        notif.addData("value", Double.toString(msg.value));
-        LiteUnitMeasure liteUnitMeasureByPointID = UnitMeasureFuncs.getLiteUnitMeasureByPointID(msg.pointId);
-        String uofmName;
-        if (liteUnitMeasureByPointID == null) {
-        	uofmName = "n/a";
+        notif.addData("rawvalue", Double.toString(msg.value));
+        notif.addData("pointtype", PointTypes.getType(point.getPointType()));
+        int pAObjectId = point.getPaobjectID();
+        notif.addData("paoname", PAOFuncs.getYukonPAOName(pAObjectId));
+        
+        String uofm = "";
+        if (point.getPointType() == PointTypes.STATUS_POINT) {
+            // handle as status
+            LiteState liteState = StateFuncs.getLiteState(point.getStateGroupID(), (int)msg.value);
+            notif.addData("value", liteState.getStateText());
         } else {
-        	uofmName = liteUnitMeasureByPointID.getUnitMeasureName();
+            // handle as analog
+            notif.addData("value", Double.toString(msg.value));
+            LiteUnitMeasure liteUnitMeasureByPointID = UnitMeasureFuncs.getLiteUnitMeasureByPointID(msg.pointId);
+            if (liteUnitMeasureByPointID != null) {
+                uofm = liteUnitMeasureByPointID.getUnitMeasureName();
+            }
         }
-        notif.addData("unitofmeasure", uofmName);
+        notif.addData("unitofmeasure", uofm);
         
         NotificationBuilder notifFormatter = new NotificationBuilder() {
             public Notification buildNotification(Contactable contact) {
