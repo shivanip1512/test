@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.41 $
-* DATE         :  $Date: 2006/04/24 20:42:30 $
+* REVISION     :  $Revision: 1.42 $
+* DATE         :  $Date: 2006/04/26 18:51:36 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1529,6 +1529,7 @@ INT CtiDeviceMCT470::executeGetValue( CtiRequestMsg        *pReq,
 
                 strncpy(OutMessage->Request.CommandStr, "getconfig ied time", COMMAND_STR_SIZE );
                 outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
+                incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
             }
         }
 
@@ -1623,6 +1624,7 @@ INT CtiDeviceMCT470::executeGetValue( CtiRequestMsg        *pReq,
 
         OutMessage->Request.RouteID   = getRouteID();
         ::strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
+        incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
 
         nRet = NoError;
     }
