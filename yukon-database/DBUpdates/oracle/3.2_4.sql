@@ -42,7 +42,41 @@ alter table DynamicLMProgramDirect
 alter table DynamicLMProgramDirect
    add constraint FK_DYNAMICL_LMPROGDIR_LMPROGRA foreign key (DeviceID)
       references LMProgramDirect (DeviceID);
- 
+
+insert into yukonlistentry values (137, 100, 0, 'Mid Level Latch', 0);
+
+insert into YukonRoleProperty values(-10810,-108, 'pop_up_appear_style','onmouseover', 'Style of the popups appearance when the user selects element in capcontrol.'); 
+
+/*@error ignore-begin */
+
+alter table RAWPOINTHISTORY
+   add constraint SYS_C0013322 primary key (CHANGEID);
+
+create index Index_PointID on RAWPOINTHISTORY (
+   POINTID ASC
+);
+
+create index Indx_TimeStamp on RAWPOINTHISTORY (
+   TIMESTAMP ASC
+);
+
+create index Indx_RwPtHisPtIDTst on RAWPOINTHISTORY (
+   POINTID ASC,
+   TIMESTAMP ASC
+);
+
+alter table RAWPOINTHISTORY
+   add constraint FK_RawPt_Point foreign key (POINTID)
+      references POINT (POINTID);
+
+/*@error ignore-end */
+
+create unique index INDX_SYSLG_PTID_TS on SYSTEMLOG (
+   LOGID ASC,
+   POINTID ASC,
+   DATETIME ASC
+);
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */

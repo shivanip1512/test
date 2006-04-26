@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     3/29/2006 11:06:50 AM                        */
+/* Created on:     4/26/2006 10:45:36 AM                        */
 /*==============================================================*/
 
 
@@ -410,6 +410,16 @@ go
 if exists (select 1
             from  sysindexes
            where  id    = object_id('RAWPOINTHISTORY')
+            and   name  = 'Indx_RwPtHisPtIDTst'
+            and   indid > 0
+            and   indid < 255)
+   drop index RAWPOINTHISTORY.Indx_RwPtHisPtIDTst
+go
+
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('RAWPOINTHISTORY')
             and   name  = 'Indx_TimeStamp'
             and   indid > 0
             and   indid < 255)
@@ -444,6 +454,16 @@ if exists (select 1
             and   indid > 0
             and   indid < 255)
    drop index STATEGROUP.Indx_STATEGRP_Nme
+go
+
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('SYSTEMLOG')
+            and   name  = 'INDX_SYSLG_PTID_TS'
+            and   indid > 0
+            and   indid < 255)
+   drop index SYSTEMLOG.INDX_SYSLG_PTID_TS
 go
 
 
@@ -6683,6 +6703,16 @@ go
 
 
 /*==============================================================*/
+/* Index: Indx_RwPtHisPtIDTst                                   */
+/*==============================================================*/
+create   index Indx_RwPtHisPtIDTst on RAWPOINTHISTORY (
+POINTID,
+TIMESTAMP
+)
+go
+
+
+/*==============================================================*/
 /* Table: RepeaterRoute                                         */
 /*==============================================================*/
 create table RepeaterRoute (
@@ -6866,6 +6896,17 @@ go
 /* Index: Indx_SYSLG_Date                                       */
 /*==============================================================*/
 create   index Indx_SYSLG_Date on SYSTEMLOG (
+DATETIME
+)
+go
+
+
+/*==============================================================*/
+/* Index: INDX_SYSLG_PTID_TS                                    */
+/*==============================================================*/
+create unique  index INDX_SYSLG_PTID_TS on SYSTEMLOG (
+LOGID,
+POINTID,
 DATETIME
 )
 go
@@ -8075,6 +8116,7 @@ insert into YukonListEntry values (133, 100, 0, 'State Timer', 0);
 insert into YukonListEntry values (134, 100, 0, 'True,False,Condition', 0); 
 insert into YukonListEntry values (135, 100, 0, 'Regression', 0); 
 insert into YukonListEntry values (136, 100, 0, 'Binary Encode', 0);
+insert into yukonlistentry values (137, 100, 0, 'Mid Level Latch', 0);
 
 insert into YukonListEntry values (1001,1001,0,'Program',1001);
 insert into YukonListEntry values (1002,1001,0,'Hardware',1002);
@@ -8779,6 +8821,7 @@ insert into YukonRoleProperty values(-10806,-108,'log_in_url','/login.jsp','The 
 insert into YukonRoleProperty values(-10807,-108,'nav_connector_bottom','yukon/BottomConnector.gif','The connector icon in the nav used for showing the hardware tree structure, in front of the last hardware under each category');
 insert into YukonRoleProperty values(-10808,-108,'nav_connector_middle','yukon/MidConnector.gif','The connector icon in the nav used for showing the hardware tree structure, in front of every hardware except the last one under each category');
 insert into YukonRoleProperty values(-10809,-108,'Standard Page Style Sheet',' ','A comma separated list of URLs for CSS files that will be included on every Standard Page');
+insert into YukonRoleProperty values(-10810,-108, 'pop_up_appear_style','onmouseover', 'Style of the popups appearance when the user selects element in capcontrol.');
 
 /* Reporting Analysis role properties */
 insert into YukonRoleProperty values(-10900,-109,'Header Label','Reporting','The header label for reporting.');
