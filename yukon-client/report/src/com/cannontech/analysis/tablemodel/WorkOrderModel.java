@@ -477,7 +477,7 @@ public class WorkOrderModel extends ReportModelBase {
 	public void collectData() {
 		
 		//Reset all objects, new data being collected!
-		setData(null);
+//		setData(null);  //perform this in loadData(...)
 		
 		if (getEnergyCompanyID() == null) return;
 		
@@ -539,6 +539,9 @@ public class WorkOrderModel extends ReportModelBase {
 	
 	public void loadData(LiteStarsEnergyCompany liteStarsEC, ArrayList<LiteWorkOrderBase> woList)
 	{
+        //Reset all objects, new data being collected!
+        setData(null);
+        
 		for (int j = 0; j < woList.size(); j++) {
 			LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) woList.get(j);
 			
@@ -547,7 +550,7 @@ public class WorkOrderModel extends ReportModelBase {
 				getData().add( wo );
 			}
 			else {
-				LiteStarsCustAccountInformation liteAcctInfo = liteStarsEC.getCustAccountInformation( liteOrder.getAccountID(), true );
+				LiteStarsCustAccountInformation liteAcctInfo = liteStarsEC.getBriefCustAccountInfo( liteOrder.getAccountID(), true );
 				
 				if (liteAcctInfo.getInventories().size() == 0) {
 					WorkOrder wo = new WorkOrder( liteOrder);
@@ -592,7 +595,7 @@ public class WorkOrderModel extends ReportModelBase {
 			LiteContact liteContact = null;
 			LiteAddress liteAddress = null;
 			if (lOrder.getAccountID() > 0) {
-				lAcctInfo = ec.getCustAccountInformation( lOrder.getAccountID(), true );
+				lAcctInfo = ec.getBriefCustAccountInfo( lOrder.getAccountID(), true );
 				liteContact = ContactFuncs.getContact( lAcctInfo.getCustomer().getPrimaryContactID() );
 				liteAddress = ec.getAddress( lAcctInfo.getAccountSite().getStreetAddressID() );
 			}
@@ -609,10 +612,21 @@ public class WorkOrderModel extends ReportModelBase {
 					{
 						LiteAddress lAddr = ec.getAddress( lc_ec.getAddressID() );
 						if (lAddr != null) {
-							returnStr += "\r\n" + lAddr.getLocationAddress1();
+                            if (StarsUtils.forceNotNone(lAddr.getLocationAddress1()).length() > 0)
+                                returnStr += "\r\n" + StarsUtils.forceNotNone(lAddr.getLocationAddress1());
 							if (StarsUtils.forceNotNone(lAddr.getLocationAddress2()).length() > 0)
-								returnStr += "\r\n" + lAddr.getLocationAddress2();
-							returnStr += "\r\n" + lAddr.getCityName()+ "  " + lAddr.getStateCode() + "  " + lAddr.getZipCode();
+								returnStr += "\r\n" + StarsUtils.forceNotNone(lAddr.getLocationAddress2());
+                            
+                            boolean addSeparator = false;
+                            returnStr += "\r\n";
+                            if (StarsUtils.forceNotNone(lAddr.getCityName()).length() > 0){
+                                returnStr += StarsUtils.forceNotNone(lAddr.getCityName());
+                                addSeparator = true;
+                            }
+                            if (StarsUtils.forceNotNone(lAddr.getStateCode()).length() > 0)
+                                returnStr += (addSeparator ? ", ":"") + StarsUtils.forceNotNone(lAddr.getStateCode());
+                            if (StarsUtils.forceNotNone(lAddr.getZipCode()).length() > 0)
+                                returnStr += " " + StarsUtils.forceNotNone(lAddr.getZipCode());
 						}
 						if(  ContactFuncs.getContactNotification(lc_ec, YukonListEntryTypes.YUK_ENTRY_ID_PHONE) != null)
 							returnStr += "\r\n" + ContactFuncs.getContactNotification(lc_ec, YukonListEntryTypes.YUK_ENTRY_ID_PHONE);
@@ -645,13 +659,15 @@ public class WorkOrderModel extends ReportModelBase {
 					else
 						return null;
 				case CONSUMPTION_TYPE_COLUMN:
-					if( lAcctInfo.getCustomer() instanceof LiteCICustomer)
-					{
-						YukonListEntry coTypeEntry = YukonListFuncs.getYukonListEntry(((LiteCICustomer)lAcctInfo.getCustomer()).getCICustType());
-						return (coTypeEntry != null ? coTypeEntry.getEntryText() : "");
-					}
-					else if( lAcctInfo.getCustomer() instanceof LiteCustomer)
-						return "Residential";
+                    if (lAcctInfo != null){
+                        if( lAcctInfo.getCustomer() instanceof LiteCICustomer)
+    					{
+    						YukonListEntry coTypeEntry = YukonListFuncs.getYukonListEntry(((LiteCICustomer)lAcctInfo.getCustomer()).getCICustType());
+    						return (coTypeEntry != null ? coTypeEntry.getEntryText() : "");
+    					}
+    					else if( lAcctInfo.getCustomer() instanceof LiteCustomer)
+    						return "Residential";
+                    }
 					return null;
 				case NAME_COLUMN:
 					if (liteContact != null)
@@ -674,8 +690,10 @@ public class WorkOrderModel extends ReportModelBase {
 					else
 						return null;
                 case PRESENCE_REQUIRED_COLUMN:
-                    if( lAcctInfo.getAccountSite().getCustAtHome().equalsIgnoreCase("Y"))
-                        return "* Appointment Required";
+                    if (lAcctInfo != null) { 
+                        if( lAcctInfo.getAccountSite().getCustAtHome().equalsIgnoreCase("Y"))
+                            return "* Appointment Required";
+                    }
                     return null;
 				case ADDRESS1_COLUMN:
 					if (liteAddress != null)
