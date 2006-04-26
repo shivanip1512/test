@@ -303,7 +303,7 @@ public class InventoryBean {
                     {
                         LiteInventoryBase liteInv = (LiteInventoryBase)
                             (showEnergyCompany? ((Pair)hardwares.get(j)).getFirst() : hardwares.get(j));
-                        LiteStarsCustAccountInformation liteCustAcctInfo = energyCompany.getCustAccountInformation(liteInv.getAccountID(), true);
+                        LiteStarsCustAccountInformation liteCustAcctInfo = energyCompany.getBriefCustAccountInfo(liteInv.getAccountID(), true);
                         LiteAddress liteAddr = energyCompany.getAddress( liteCustAcctInfo.getAccountSite().getStreetAddressID());
                         
                         //The filterText is formatted "Label: value".  By parsing for the last space char we can get just the value.
@@ -376,7 +376,7 @@ public class InventoryBean {
         				LiteInventoryBase liteInv = (LiteInventoryBase)
         						(showEnergyCompany? ((Pair)hardwares.get(i)).getFirst() : hardwares.get(i));
         				
-                        List<LiteStarsAppliance> appliances = energyCompany.getCustAccountInformation(liteInv.getAccountID(), true).getAppliances();
+                        List<LiteStarsAppliance> appliances = energyCompany.getBriefCustAccountInfo(liteInv.getAccountID(), true).getAppliances();
                         
                         for(int j = 0; j < appliances.size(); j++)
                         {
@@ -395,7 +395,7 @@ public class InventoryBean {
                     {
                         LiteInventoryBase liteInv = (LiteInventoryBase)
                                 (showEnergyCompany? ((Pair)hardwares.get(j)).getFirst() : hardwares.get(j));
-                            LiteStarsCustAccountInformation liteCustAcctInfo = energyCompany.getCustAccountInformation(liteInv.getAccountID(), true);
+                            LiteStarsCustAccountInformation liteCustAcctInfo = energyCompany.getBriefCustAccountInfo(liteInv.getAccountID(), true);
                         if( specificFilterID.intValue() == -1)  // RESIDENTIAL CUSTOMER
                         {
                             if( liteCustAcctInfo.getCustomer() instanceof LiteCustomer)
