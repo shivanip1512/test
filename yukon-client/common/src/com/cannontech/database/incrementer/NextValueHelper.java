@@ -6,11 +6,11 @@ import javax.persistence.Table;
 public class NextValueHelper {
     private KeyedIncrementer incrementer;
     
-    public long getNextValue(String tableName) {
+    public int getNextValue(String tableName) {
         return incrementer.getNextValue(tableName);
     }
     
-    public long getNextValue(Object bean) {
+    public int getNextValue(Object bean) {
         Table annotation = bean.getClass().getAnnotation(Table.class);
         String tableName = annotation.name();
         return getNextValue(tableName);

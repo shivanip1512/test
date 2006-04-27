@@ -69,7 +69,13 @@ public class XmlIncrementer implements KeyedIncrementer {
                         Element table = (Element) iter3.next();
                         // foreach table
                         String tableName = table.getAttributeValue("name");
+                        if (StringUtils.isBlank(tableName)) {
+                            throw new RuntimeException("name attribute must be set on all table elements");
+                        }
                         String identityColumn = table.getAttributeValue("identitycolumn");
+                        if (StringUtils.isBlank(identityColumn)) {
+                            throw new RuntimeException("identitycolumn attribute must be set on table element: " + tableName);
+                        }
                         boolean init = BooleanUtils.toBoolean(table.getAttributeValue("initsequence"));
                         if (init) {
                             currentIncrementer.initializeSequence(tableName, identityColumn);
@@ -100,7 +106,7 @@ public class XmlIncrementer implements KeyedIncrementer {
         this.dataSource = dataSource;
     }
 
-    public long getNextValue(String tableName) {
+    public int getNextValue(String tableName) {
         MultiTableIncrementer incrementer = getIncrementerForTable(tableName);
         return incrementer.getNextValue();
     }
