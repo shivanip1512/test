@@ -23,7 +23,8 @@ public class NotifClientConnection extends ClientConnection implements INotifCon
         new DefColl_NotifLMControlMsg(),
         new DefColl_VoiceDataRequestMsg(),
         new DefColl_VoiceDataResponseMsg(),
-        new DefColl_NotifCompletedMsg()
+        new DefColl_NotifCompletedMsg(),
+        new DefColl_NotifEmailMsg()
 	};
 	
 	public NotifClientConnection() 

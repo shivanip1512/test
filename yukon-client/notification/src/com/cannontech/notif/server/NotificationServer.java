@@ -148,6 +148,13 @@ public class NotificationServer implements Runnable, NotificationServerMBean
             VoiceDataRequestMessageHandler dataRequestMsgHandler = new VoiceDataRequestMessageHandler(
                     _voiceHandler);
             _msgHandler.registerHandler(dataRequestMsgHandler);
+            
+            // create simple email handlers
+            NotifEmailMessageHandler emailMessageHandler = new NotifEmailMessageHandler();
+            _msgHandler.registerHandler(emailMessageHandler);
+            CustomerEmailMessageHandler customerEmailMessageHandler = new CustomerEmailMessageHandler();
+            _msgHandler.registerHandler(customerEmailMessageHandler);
+            
 
             acceptThread = new Thread(this, "NotifListener");
             acceptThread.start();
