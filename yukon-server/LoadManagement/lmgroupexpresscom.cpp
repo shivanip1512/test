@@ -88,7 +88,7 @@ CtiRequestMsg* CtiLMGroupExpresscom::createSmartCycleRequestMsg(LONG percent, LO
 
     if(no_ramp)
     {
-	controlString += " noramp";
+        controlString += " noramp";
     }
     
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
@@ -120,7 +120,7 @@ CtiRequestMsg* CtiLMGroupExpresscom::createTrueCycleRequestMsg(LONG percent, LON
 
     if(no_ramp)
     {
-	controlString += " noramp";
+        controlString += " noramp";
     }
     
     if( _LM_DEBUG & LM_DEBUG_STANDARD )

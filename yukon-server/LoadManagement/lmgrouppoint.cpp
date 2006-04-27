@@ -178,33 +178,6 @@ CtiRequestMsg* CtiLMGroupPoint::createMasterCycleRequestMsg(LONG offTime, LONG p
     return NULL;
 }
 
-/*-------------------------------------------------------------------------
-    createLatchingRequestMsg
-
-    .
---------------------------------------------------------------------------*/
-CtiCommandMsg* CtiLMGroupPoint::createLatchingRequestMsg(LONG rawState, int priority) const
-{
-    CtiCommandMsg* returnCommandMsg = new CtiCommandMsg();
-    returnCommandMsg->setOperation(CtiCommandMsg::ControlRequest);
-
-    std::vector<INT> opArgList;
-    opArgList.push_back(-1);
-    opArgList.push_back(getDeviceIdUsage());
-    opArgList.push_back(getPointIdUsage());
-    opArgList.push_back(rawState);
-
-    returnCommandMsg->setOpArgList(opArgList);
-
-    returnCommandMsg->setMessagePriority(priority);
-
-    if( _LM_DEBUG & LM_DEBUG_STANDARD )
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Sending point latch command, LM Group: " << getPAOName() << ", raw state: " << rawState << ", priority: " << priority << endl;
-    }
-    return returnCommandMsg;
-}
 
 /*-------------------------------------------------------------------------
     restoreGuts
@@ -213,9 +186,6 @@ CtiCommandMsg* CtiLMGroupPoint::createLatchingRequestMsg(LONG rawState, int prio
 --------------------------------------------------------------------------*/
 void CtiLMGroupPoint::restoreGuts(RWvistream& istrm)
 {
-
-
-
     CtiLMGroupBase::restoreGuts( istrm );
 
     istrm >> _deviceidusage
@@ -230,9 +200,6 @@ void CtiLMGroupPoint::restoreGuts(RWvistream& istrm)
 ---------------------------------------------------------------------------*/
 void CtiLMGroupPoint::saveGuts(RWvostream& ostrm ) const  
 {
-
-
-        
     CtiLMGroupBase::saveGuts( ostrm );
 
     ostrm << _deviceidusage

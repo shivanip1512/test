@@ -126,7 +126,7 @@ public:
     virtual void dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime);
 
     //virtuals but not pure because only one type of group can handle each of the messages
-    virtual CtiCommandMsg* createLatchingRequestMsg(LONG rawState, int priority) const;// in CtiLMGroupPoint
+    virtual CtiRequestMsg* createLatchingRequestMsg(bool do_shed, int priority) const;// in CtiLMGroupPoint
     virtual CtiRequestMsg* createTrueCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, bool no_ramp, int priority) const;// in CtiLMGroupExpresscom
     virtual CtiRequestMsg* createSetPointRequestMsg(string settings, LONG minValue, LONG maxValue,
                                                     LONG valueB, LONG valueD, LONG valueF, LONG random,
