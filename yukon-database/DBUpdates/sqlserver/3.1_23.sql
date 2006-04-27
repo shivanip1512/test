@@ -16,4 +16,4 @@ go
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
 /**************************************************************/
-insert into CTIDatabase values('3.1', 'DBAdmin', '27-APRIL-2006', 'Manual version insert done', 22);
+insert into CTIDatabase values('3.1', 'DBAdmin', '27-APRIL-2006', 'Manual version insert done', 23);
