@@ -329,7 +329,7 @@ public class InventoryBean {
                         
                         for(int j = 0; j < warehousedInventory.size(); j++)
                         {
-                            if(liteInv.compareTo(warehousedInventory.get(j).intValue()) == 0)
+                            if(liteInv.getLiteID() == warehousedInventory.get(j).intValue())
                                 filteredHardware.add( hardwares.get(i) );
                         }
                     }
