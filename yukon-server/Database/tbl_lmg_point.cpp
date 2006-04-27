@@ -8,11 +8,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2006/04/05 16:22:18 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2006/04/27 19:38:04 $
 *
 * HISTORY      :
 * $Log: tbl_lmg_point.cpp,v $
+* Revision 1.3  2006/04/27 19:38:04  cplender
+* Removed some debug printouts.
+*
 * Revision 1.2  2006/04/05 16:22:18  cplender
 * Initial Revision
 *
@@ -143,12 +146,13 @@ void CtiTablePointGroup::DecodeDatabaseReader( RWDBReader &rdr )
     rdr["statezerocontrol"]     >> tStr;  _rawstate[0] = tStr;
     rdr["stateonecontrol"]      >> tStr;  _rawstate[1] = tStr;
 
-
+    #if 0
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         dout << getControlStartString() << " / " << getControlStopString() << endl;
     }
+    #endif
 }
 
 //=====================================================================================================================
