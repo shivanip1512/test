@@ -447,7 +447,7 @@ void CtiCalcLogicService::Run( )
                     rwnow = rwnow.now();
                     if(rwnow > LastThreadMonitorTime)
                     {
-                        LastThreadMonitorTime = nextScheduledTimeAlignedOnRate( rwnow, 300 );//If you change this timing, be sure to fix the timing on the dispatch reset
+                        LastThreadMonitorTime = nextScheduledTimeAlignedOnRate( rwnow, 60 );//If you change this timing, be sure to fix the timing on the dispatch reset
                         if(pointID!=0)
                         {
                             _conxion->WriteConnQue(CTIDBG_new CtiPointDataMsg(pointID, ThreadMonitor.getState(), NormalQuality, StatusPointType, ThreadMonitor.getString()));;
@@ -744,6 +744,7 @@ void CtiCalcLogicService::_outputThread( void )
                 }
             }
         }
+        ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc _outputThread", CtiThreadRegData::LogOut ) );
     }
     catch(...)
     {
@@ -756,8 +757,6 @@ void CtiCalcLogicService::_outputThread( void )
             dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
-
-    ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc _outputThread", CtiThreadRegData::LogOut ) );
 }
 
 void CtiCalcLogicService::_inputThread( void )
@@ -872,6 +871,7 @@ void CtiCalcLogicService::_inputThread( void )
                 }
             }
         }
+        ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc _inputThread", CtiThreadRegData::LogOut ) );
     }
     catch(...)
     {
@@ -882,7 +882,6 @@ void CtiCalcLogicService::_inputThread( void )
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
-    ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc _inputThread", CtiThreadRegData::LogOut ) );
 }
 
 // return is not used at this time
@@ -1561,7 +1560,8 @@ void CtiCalcLogicService::_registerForPoints()
             msgPtReg->insert( ((CtiPointStoreElement *)depIter->value( ))->getPointNum( ) );
         }
         delete depIter;
-    
+
+        msgPtReg->insert( ThreadMonitor.getPointIDFromOffset(ThreadMonitor.Calc) );
         //  now send off the point registration
         if(_conxion)
         {

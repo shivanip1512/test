@@ -94,9 +94,15 @@ void CtiCalculateThread::pointChange( long changedID, double newValue, const Cti
         }
         else
         {
+            if( changedID != ThreadMonitor.getPointIDFromOffset(ThreadMonitor.Calc) )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+            else if( _CALC_DEBUG & CALC_DEBUG_POINTDATA )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Recieved thread monitor update." << endl;
             }
         }
     }
@@ -279,14 +285,13 @@ void CtiCalculateThread::periodicThread( void )
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime( ) << " periodicThread interrupted. TID: " << rwThreadId() << endl;
         }
+        ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc periodicThread", CtiThreadRegData::LogOut ));
     }
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
-
-    ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc periodicThread", CtiThreadRegData::LogOut ) );
 }
 
 void CtiCalculateThread::onUpdateThread( void )
@@ -499,13 +504,13 @@ void CtiCalculateThread::onUpdateThread( void )
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime( ) << " onUpdateThread interrupted. TID: " << rwThreadId() << endl;
         }
+        ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc onUpdateThread", CtiThreadRegData::LogOut ) );
     }
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
-    ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc onUpdateThread", CtiThreadRegData::LogOut ) );
 }
 
 void CtiCalculateThread::historicalThread( void )
@@ -728,13 +733,13 @@ void CtiCalculateThread::historicalThread( void )
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime( ) << " historical interrupted. TID: " << rwThreadId() << endl;
         }
+        ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc historicalThread", CtiThreadRegData::LogOut ) );
     }
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
-    ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc historicalThread", CtiThreadRegData::LogOut ) );
 }
 
 void CtiCalculateThread::baselineThread( void )
@@ -1076,13 +1081,13 @@ void CtiCalculateThread::baselineThread( void )
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime( ) << " historical interrupted. TID: " << rwThreadId() << endl;
         }
+        ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc historicalThread", CtiThreadRegData::LogOut ) );
     }
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
-    ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc historicalThread", CtiThreadRegData::LogOut ) );
 }
 
 void CtiCalculateThread::appendCalcPoint( long pointID )
@@ -1100,15 +1105,8 @@ void CtiCalculateThread::calcThread( void )
     //  while nobody's bothering me...
     while( !_self.serviceInterrupt( ) )
     {
-       if( cnt++ % 300 == 0 )
-       {
-           ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc calcThread", CtiThreadRegData::Action, 350, &CtiCalculateThread::calcComplain, 0) );
-       }
-
        _self.sleep( 1000 );
     }
-
-    ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc calcThread", CtiThreadRegData::LogOut ) );
 
     //  scream at the other threads, tell them it's time for dinner
     interruptThreads( CtiCalcThreadInterruptReason::Shutdown );
