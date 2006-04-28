@@ -38,6 +38,7 @@ public class PersistCurrentAlarmsTable extends BasePersistElement {
 	 			case 1: {
 	 				elem.setDeviceIds(LxSaveUtils.readIntArray(in,0));
 	 			} 
+	 			break;
 	 			
 	 			case 2: {
 	 				elem.setDeviceIds(LxSaveUtils.readIntArray(in,0));

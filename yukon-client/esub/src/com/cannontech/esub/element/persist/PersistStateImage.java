@@ -37,17 +37,19 @@ public class PersistStateImage extends BasePersistElement {
 				case 1: {
 					int pointID = LxSaveUtils.readInt(in);
         			elem.setPointID(pointID);
-                    elem.setLinkTo(LxSaveUtils.readString(in));   
+                    elem.setLinkTo(LxSaveUtils.readString(in));                                          
 				}
+				
+				break;
 				case 2: {
 					int pointID = LxSaveUtils.readInt(in);
 					Map customImageMap = PersistUtils.readIntIntMap(in);
         			elem.setPointID(pointID);
         			elem.setCustomImageMap(customImageMap);
-                    elem.setLinkTo(LxSaveUtils.readString(in));					
+                    elem.setLinkTo(LxSaveUtils.readString(in));                    
 				}
 				break;
-				
+							
 				default: {
 					throw new IOException("Unknown version: " + version + " in " + elem.getClass().getName());
 				}

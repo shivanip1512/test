@@ -44,8 +44,9 @@ public class PersistAlarmText extends BasePersistElement {
 				
 				elem.setPointIds(LxSaveUtils.readIntArray(in,0));
 				
-				elem.setLinkTo(LxSaveUtils.readString(in));
+				elem.setLinkTo(LxSaveUtils.readString(in));				
 			}
+			break;
 			
 			case 2: {
 				elem.setDefaultTextColor(PersistUtils.readColor(in));
