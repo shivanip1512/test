@@ -68,7 +68,8 @@ public void delete() throws java.sql.SQLException
 	delete( "DynamicPAOStatistics", "PAObjectID", getPAObjectID() );
 	delete( "CommErrorHistory", "PAObjectID", getPAObjectID() );
 	delete( "LMControlHistory", "PAObjectID", getPAObjectID() );
-    delete( "PAOOwner", "ChildID", getPAObjectID() );
+    delete ("DynamicLMControlHistory","PAObjectID", getPAObjectID() );
+	delete( "PAOOwner", "ChildID", getPAObjectID() );
     delete( UserPaoOwner.TABLE_NAME, "PaoID", getPAObjectID() );
     delete( "DynamicPAOInfo", "PAObjectID", getPAObjectID() );
 
@@ -327,7 +328,6 @@ public void setPAOName( String name )
 {
 	getYukonPAObject().setPaoName( name );
 }
-
 /**
  * Insert the method's description here.
  * Creation date: (9/12/2001 10:25:35 AM)
