@@ -249,13 +249,13 @@ public class CapControlEventLogModel extends ReportModelBase
 				
 				tempObjects.clear();				
 
-				/*if(getData() != null)
+				if(getData() != null)
 				{
 //					Order the records
 					Collections.sort(getData(), ccStatusDataComparator);
 					if( getSortOrder() == DESCENDING)
 					    Collections.reverse(getData());				
-				}*/
+				}
 			}
 		}
 			
