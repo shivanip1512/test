@@ -68,11 +68,17 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(com.ca
             getLocalPortTypeQuestionPanel().setFirstFocus();
             return getLocalPortTypeQuestionPanel();
 		}
-		else
+		else if( ((PortTypeQuestionPanelA) currentInputPanel).isTCPTerminalServerPort())
 		{
             getTerminalServerTypeQuestionPanel().setFirstFocus();
+            getTerminalServerTypeQuestionPanel().setAsTCP();
             return getTerminalServerTypeQuestionPanel();
-		}
+		}else
+        {
+            getTerminalServerTypeQuestionPanel().setFirstFocus();
+            getTerminalServerTypeQuestionPanel().setAsUDP();
+            return getTerminalServerTypeQuestionPanel();
+        }
 	}
 	else
 	if( currentInputPanel == getLocalPortTypeQuestionPanel() ||
@@ -90,6 +96,10 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(com.ca
 		}
 		else
 		{
+            if( !getTerminalServerTypeQuestionPanel().isTCP() )
+            {
+                getSimpleTerminalServerSettingsPanel().setAsUDP();
+            }
             getSimpleTerminalServerSettingsPanel().setFirstFocus();
             return getSimpleTerminalServerSettingsPanel();
 		}

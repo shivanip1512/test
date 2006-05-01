@@ -10,10 +10,11 @@ public class TerminalServerTypeQuestionPanel extends com.cannontech.common.gui.u
 	private javax.swing.JRadioButton ivjDedicatedRadioButton = null;
 	private javax.swing.JRadioButton ivjDialupRadioButton = null;
 	private javax.swing.JLabel ivjSelectLabel = null;
+    private boolean tcp = false;
+    private boolean udp = false;
 /**
  * Constructor
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 public TerminalServerTypeQuestionPanel() {
 	super();
 	initialize();
@@ -22,32 +23,20 @@ public TerminalServerTypeQuestionPanel() {
  * Method to handle events for the ActionListener interface.
  * @param e java.awt.event.ActionEvent
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 public void actionPerformed(java.awt.event.ActionEvent e) {
-	// user code begin {1}
-	// user code end
 	if (e.getSource() == getDedicatedRadioButton()) 
 		connEtoC1(e);
 	if (e.getSource() == getDialupRadioButton()) 
 		connEtoC2(e);
-	// user code begin {2}
-	// user code end
 }
 /**
  * connEtoC1:  (DedicatedRadioButton.action.actionPerformed(java.awt.event.ActionEvent) --> PortTypeQuestionPanelB.radioButton_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
  * @param arg1 java.awt.event.ActionEvent
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private void connEtoC1(java.awt.event.ActionEvent arg1) {
 	try {
-		// user code begin {1}
-		// user code end
 		this.radioButton_ActionPerformed(arg1);
-		// user code begin {2}
-		// user code end
 	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
 		handleException(ivjExc);
 	}
 }
@@ -55,51 +44,30 @@ private void connEtoC1(java.awt.event.ActionEvent arg1) {
  * connEtoC2:  (DialupRadioButton.action.actionPerformed(java.awt.event.ActionEvent) --> PortTypeQuestionPanelB.radioButton_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
  * @param arg1 java.awt.event.ActionEvent
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private void connEtoC2(java.awt.event.ActionEvent arg1) {
 	try {
-		// user code begin {1}
-		// user code end
 		this.radioButton_ActionPerformed(arg1);
-		// user code begin {2}
-		// user code end
 	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
 		handleException(ivjExc);
 	}
 }
 /**
  * connEtoM1:  (PortTypeQuestionPanelB.initialize() --> CommLineTypeButtonGroup.add(Ljavax.swing.AbstractButton;)V)
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private void connEtoM1() {
 	try {
-		// user code begin {1}
-		// user code end
 		getCommLineTypeButtonGroup().add(getDialupRadioButton());
-		// user code begin {2}
-		// user code end
 	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
 		handleException(ivjExc);
 	}
 }
 /**
  * connEtoM3:  (PortTypeQuestionPanelB.initialize() --> CommLineTypeButtonGroup.add(Ljavax.swing.AbstractButton;)V)
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private void connEtoM3() {
 	try {
-		// user code begin {1}
-		// user code end
 		getCommLineTypeButtonGroup().add(getDedicatedRadioButton());
-		// user code begin {2}
-		// user code end
 	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
 		handleException(ivjExc);
 	}
 }
@@ -389,6 +357,7 @@ public void radioButton_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
  * @param val java.lang.Object
  */
 public void setValue(Object val) {
+    
 }
 
 public void setFirstFocus() 
@@ -401,6 +370,26 @@ public void setFirstFocus()
             getDedicatedRadioButton().requestFocus(); 
         } 
     });    
+}
+
+public void setAsTCP()
+{
+    tcp = true;
+}
+
+public void setAsUDP()
+{
+    udp = true;
+}
+
+public boolean isTCP()
+{
+    return tcp;
+}
+
+public boolean isUDP()
+{
+    return udp;
 }
 
 }

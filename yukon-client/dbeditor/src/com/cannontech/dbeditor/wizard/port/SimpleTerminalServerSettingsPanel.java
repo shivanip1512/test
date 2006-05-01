@@ -17,6 +17,7 @@ public class SimpleTerminalServerSettingsPanel extends com.cannontech.common.gui
 	private javax.swing.JLabel ivjSPortNumberLabel = null;
 	private javax.swing.JLabel ivjDescriptionLabel = null;
 	private javax.swing.JTextField ivjDescriptionTextField = null;
+
 /**
  * Constructor
  */
@@ -472,25 +473,9 @@ public boolean isInputValid() {
 	}
 	
 	java.util.StringTokenizer t = new java.util.StringTokenizer( ipAddr, ".", false );
-
-	//ip addresses have 4 1 byte #'s - in decimal anyways
-	if( t.countTokens() != 4 )
-	{
-		setErrorString("An invalid IP Address was entered");
-		return false;
-	}
-	
 	//handle the exception that could be thrown by Integer
 	try 
 	{
-		while( t.hasMoreTokens() )
-		{
-			Integer i = new Integer(t.nextToken());
-			if( i.intValue() < 0 ||
-				i.intValue() > 255 )
-				return false;
-		}
-
 		//see if the port number is ok
 		Integer i = new Integer( getPortTextField().getText() );
 	}
@@ -516,7 +501,7 @@ public static void main(java.lang.String[] args) {
 		frame.setVisible(true);
 	} catch (Throwable exception) {
 		System.err.println("Exception occurred in main() of com.cannontech.common.gui.util.DataInputPanel");
-		com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
+		com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );
 	}
 }
 /**
@@ -524,6 +509,7 @@ public static void main(java.lang.String[] args) {
  * @param val java.lang.Object
  */
 public void setValue(Object val) {
+    
 }
 
 public void setFirstFocus() 
@@ -536,6 +522,12 @@ public void setFirstFocus()
             getDescriptionTextField().requestFocus(); 
         } 
     });    
+}
+
+public void setAsUDP()
+{
+    getipAddressTextField().setText("UDP");
+    getipAddressTextField().setEnabled(false);
 }
 
 /**

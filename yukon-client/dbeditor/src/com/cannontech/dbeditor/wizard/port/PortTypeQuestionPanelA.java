@@ -8,7 +8,8 @@ import java.awt.Dimension;
 public class PortTypeQuestionPanelA extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener {
 	private javax.swing.JLabel ivjJLabel1 = null;
 	private javax.swing.JRadioButton ivjLocalSerialPortRadioButton = null;
-	private javax.swing.JRadioButton ivjTerminalServerRadioButton = null;
+	private javax.swing.JRadioButton ivjTCPTerminalServerRadioButton = null;
+    private javax.swing.JRadioButton ivjUDPTerminalServerRadioButton = null;
 	private javax.swing.ButtonGroup ivjPortTypeButtonGroup = null;
 public PortTypeQuestionPanelA() {
 	super();
@@ -18,32 +19,20 @@ public PortTypeQuestionPanelA() {
  * Method to handle events for the ActionListener interface.
  * @param e java.awt.event.ActionEvent
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-public void actionPerformed(java.awt.event.ActionEvent e) {
-	// user code begin {1}
-	// user code end
+public void actionPerformed(java.awt.event.ActionEvent e) { 
 	if (e.getSource() == getLocalSerialPortRadioButton()) 
 		connEtoC1(e);
-	if (e.getSource() == getTerminalServerRadioButton()) 
+	if (e.getSource() == getTCPTerminalServerRadioButton()) 
 		connEtoC2(e);
-	// user code begin {2}
-	// user code end
 }
 /**
  * connEtoC1:  (LocalSerialPortRadioButton.action.actionPerformed(java.awt.event.ActionEvent) --> PortTypeQuestionPanelA.radioButton_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
  * @param arg1 java.awt.event.ActionEvent
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private void connEtoC1(java.awt.event.ActionEvent arg1) {
 	try {
-		// user code begin {1}
-		// user code end
 		this.radioButton_ActionPerformed(arg1);
-		// user code begin {2}
-		// user code end
 	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
 		handleException(ivjExc);
 	}
 }
@@ -51,76 +40,54 @@ private void connEtoC1(java.awt.event.ActionEvent arg1) {
  * connEtoC2:  (TerminalServerRadioButton.action.actionPerformed(java.awt.event.ActionEvent) --> PortTypeQuestionPanelA.radioButton_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
  * @param arg1 java.awt.event.ActionEvent
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private void connEtoC2(java.awt.event.ActionEvent arg1) {
 	try {
-		// user code begin {1}
-		// user code end
 		this.radioButton_ActionPerformed(arg1);
-		// user code begin {2}
-		// user code end
 	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
 		handleException(ivjExc);
 	}
 }
 /**
  * connEtoM1:  (PortTypeQuestionPanelA.initialize() --> PortTypeButtonGroup.add(Ljavax.swing.AbstractButton;)V)
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private void connEtoM1() {
 	try {
-		// user code begin {1}
-		// user code end
 		getPortTypeButtonGroup().add(getLocalSerialPortRadioButton());
-		// user code begin {2}
-		// user code end
 	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
 		handleException(ivjExc);
 	}
 }
 /**
  * connEtoM2:  (PortTypeQuestionPanelA.initialize() --> PortTypeButtonGroup.add(Ljavax.swing.AbstractButton;)V)
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private void connEtoM2() {
 	try {
-		// user code begin {1}
-		// user code end
-		getPortTypeButtonGroup().add(getTerminalServerRadioButton());
-		// user code begin {2}
-		// user code end
+		getPortTypeButtonGroup().add(getTCPTerminalServerRadioButton());
 	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
 		handleException(ivjExc);
 	}
 }
 /**
  * connEtoM3:  (PortTypeQuestionPanelA.initialize() --> PortTypeButtonGroup.setSelected(Ljavax.swing.ButtonModel;Z)V)
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private void connEtoM3() {
 	try {
-		// user code begin {1}
-		// user code end
 		getPortTypeButtonGroup().setSelected(getLocalSerialPortRadioButton().getModel(), true);
-		// user code begin {2}
-		// user code end
 	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
 		handleException(ivjExc);
 	}
+}
+private void connEtoM4() {
+    try {
+        getPortTypeButtonGroup().add(getUDPTerminalServerRadioButton());
+    } catch (java.lang.Throwable ivjExc) {
+        handleException(ivjExc);
+    }
 }
 /**
  * Return the JLabel1 property value.
  * @return javax.swing.JLabel
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JLabel getJLabel1() {
 	if (ivjJLabel1 == null) {
 		try {
@@ -128,11 +95,7 @@ private javax.swing.JLabel getJLabel1() {
 			ivjJLabel1.setName("JLabel1");
 			ivjJLabel1.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjJLabel1.setText("Select the type of port:");
-			// user code begin {1}
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
@@ -142,7 +105,6 @@ private javax.swing.JLabel getJLabel1() {
  * Return the LocalSerialPortRadioButton property value.
  * @return javax.swing.JRadioButton
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JRadioButton getLocalSerialPortRadioButton() {
 	if (ivjLocalSerialPortRadioButton == null) {
 		try {
@@ -151,11 +113,7 @@ private javax.swing.JRadioButton getLocalSerialPortRadioButton() {
 			ivjLocalSerialPortRadioButton.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjLocalSerialPortRadioButton.setText("Local Serial Port");
 			ivjLocalSerialPortRadioButton.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-			// user code begin {1}
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
@@ -171,16 +129,11 @@ public Dimension getMinimumSize() {
  * Return the PortTypeButtonGroup property value.
  * @return javax.swing.ButtonGroup
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.ButtonGroup getPortTypeButtonGroup() {
 	if (ivjPortTypeButtonGroup == null) {
 		try {
 			ivjPortTypeButtonGroup = new javax.swing.ButtonGroup();
-			// user code begin {1}
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
@@ -196,25 +149,39 @@ public Dimension getPreferredSize() {
  * Return the TerminalServerRadioButton property value.
  * @return javax.swing.JRadioButton
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JRadioButton getTerminalServerRadioButton() {
-	if (ivjTerminalServerRadioButton == null) {
+private javax.swing.JRadioButton getTCPTerminalServerRadioButton() {
+	if (ivjTCPTerminalServerRadioButton == null) {
 		try {
-			ivjTerminalServerRadioButton = new javax.swing.JRadioButton();
-			ivjTerminalServerRadioButton.setName("TerminalServerRadioButton");
-			ivjTerminalServerRadioButton.setFont(new java.awt.Font("dialog", 0, 14));
-			ivjTerminalServerRadioButton.setText("Terminal Server");
-			ivjTerminalServerRadioButton.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-			ivjTerminalServerRadioButton.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
-			// user code begin {1}
-			// user code end
+            ivjTCPTerminalServerRadioButton = new javax.swing.JRadioButton();
+            ivjTCPTerminalServerRadioButton.setName("TerminalServerRadioButton");
+            ivjTCPTerminalServerRadioButton.setFont(new java.awt.Font("dialog", 0, 14));
+            ivjTCPTerminalServerRadioButton.setText("TCP Terminal Server");
+            ivjTCPTerminalServerRadioButton.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+            ivjTCPTerminalServerRadioButton.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
-	return ivjTerminalServerRadioButton;
+	return ivjTCPTerminalServerRadioButton;
+}
+/**
+ * Return the TerminalServerRadioButton property value.
+ * @return javax.swing.JRadioButton
+ */
+private javax.swing.JRadioButton getUDPTerminalServerRadioButton() {
+    if (ivjUDPTerminalServerRadioButton == null) {
+        try {
+            ivjUDPTerminalServerRadioButton = new javax.swing.JRadioButton();
+            ivjUDPTerminalServerRadioButton.setName("UDPTerminalServerRadioButton");
+            ivjUDPTerminalServerRadioButton.setFont(new java.awt.Font("dialog", 0, 14));
+            ivjUDPTerminalServerRadioButton.setText("UDP Terminal Server");
+            ivjUDPTerminalServerRadioButton.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+            ivjUDPTerminalServerRadioButton.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+        } catch (java.lang.Throwable ivjExc) {
+            handleException(ivjExc);
+        }
+    }
+    return ivjUDPTerminalServerRadioButton;
 }
 /**
  * This method was created in VisualAge.
@@ -237,21 +204,17 @@ private void handleException(Throwable exception) {
 /**
  * Initializes connections
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private void initConnections() throws java.lang.Exception {
-	// user code begin {1}
-	// user code end
 	getLocalSerialPortRadioButton().addActionListener(this);
-	getTerminalServerRadioButton().addActionListener(this);
+	getTCPTerminalServerRadioButton().addActionListener(this);
+    getUDPTerminalServerRadioButton().addActionListener(this);
+    
 }
 /**
  * Initialize the class.
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private void initialize() {
 	try {
-		// user code begin {1}
-		// user code end
 		setName("PortTypeQuestionPanelA");
 		setLayout(new java.awt.GridBagLayout());
 		setSize(300, 200);
@@ -267,19 +230,24 @@ private void initialize() {
 		constraintsLocalSerialPortRadioButton.anchor = java.awt.GridBagConstraints.WEST;
 		add(getLocalSerialPortRadioButton(), constraintsLocalSerialPortRadioButton);
 
-		java.awt.GridBagConstraints constraintsTerminalServerRadioButton = new java.awt.GridBagConstraints();
-		constraintsTerminalServerRadioButton.gridx = 0; constraintsTerminalServerRadioButton.gridy = 2;
-		constraintsTerminalServerRadioButton.anchor = java.awt.GridBagConstraints.WEST;
-		add(getTerminalServerRadioButton(), constraintsTerminalServerRadioButton);
+		java.awt.GridBagConstraints constraintsTCPTerminalServerRadioButton = new java.awt.GridBagConstraints();
+        constraintsTCPTerminalServerRadioButton.gridx = 0; constraintsTCPTerminalServerRadioButton.gridy = 2;
+        constraintsTCPTerminalServerRadioButton.anchor = java.awt.GridBagConstraints.WEST;
+		add(getTCPTerminalServerRadioButton(), constraintsTCPTerminalServerRadioButton);
+        
+        java.awt.GridBagConstraints constraintsUDPTerminalServerRadioButton = new java.awt.GridBagConstraints();
+        constraintsUDPTerminalServerRadioButton.gridx = 0; constraintsUDPTerminalServerRadioButton.gridy = 3;
+        constraintsUDPTerminalServerRadioButton.anchor = java.awt.GridBagConstraints.WEST;
+        add(getUDPTerminalServerRadioButton(), constraintsUDPTerminalServerRadioButton);
+        
 		initConnections();
 		connEtoM1();
 		connEtoM2();
 		connEtoM3();
+        connEtoM4();
 	} catch (java.lang.Throwable ivjExc) {
 		handleException(ivjExc);
 	}
-	// user code begin {2}
-	// user code end
 }
 /**
  * This method was created in VisualAge.
@@ -288,6 +256,11 @@ private void initialize() {
 public boolean isLocalSerialPort() {
 	return (getLocalSerialPortRadioButton().isSelected() );
 }
+
+public boolean isTCPTerminalServerPort() {
+    return (getTCPTerminalServerRadioButton().isSelected() );
+}
+
 /**
  * main entrypoint - starts the part when it is run as an application
  * @param args java.lang.String[]
@@ -313,7 +286,9 @@ public static void main(java.lang.String[] args) {
 /**
  * Comment
  */
-public void radioButton_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
+public void radioButton_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
+{
+    
 }
 
 public void setFirstFocus() 
@@ -333,6 +308,7 @@ public void setFirstFocus()
  * @param val java.lang.Object
  */
 public void setValue(Object val) {
+    
 }
 /**
  * 
