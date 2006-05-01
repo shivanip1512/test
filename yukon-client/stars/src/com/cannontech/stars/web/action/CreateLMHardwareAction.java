@@ -319,7 +319,7 @@ public class CreateLMHardwareAction implements ActionBase {
 			StarsFactory.setInventoryBase( invDB, createHw );
 			
 			int categoryID = InventoryUtils.getInventoryCategoryID(createHw.getDeviceType().getEntryID(), energyCompany);
-			if( categoryID == 0 && createHw.getCategory().equalsIgnoreCase("Non Yukon Meter"))
+			if( categoryID == 0 && createHw.getCategory() != null && createHw.getCategory().equalsIgnoreCase("Non Yukon Meter"))
 			{
 				 YukonListEntry categoryEntry = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_INV_CAT_NON_YUKON_METER);
 			     if( categoryEntry != null)
