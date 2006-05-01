@@ -1,8 +1,12 @@
 package com.cannontech.database.data.lite;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.Vector;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.PoolManager;
 import com.cannontech.database.db.contact.Contact;
 import com.cannontech.database.db.contact.ContactNotification;
 import com.cannontech.user.UserUtils;
@@ -16,12 +20,14 @@ public class LiteContact extends LiteBase
 	private int loginID = UserUtils.USER_YUKON_ID;
 	private int addressID = CtiUtilities.NONE_ZERO_ID;
 
+    private boolean extended = false;
+
 	public static final LiteContact NONE_LITE_CONTACT =
 			new LiteContact( CtiUtilities.NONE_ZERO_ID, 
 					null, CtiUtilities.STRING_NONE );
 
 	//contains instances of com.cannontech.database.data.lite.LiteContactNotification
-	private Vector liteContactNotifications = null;
+	private Vector<LiteContactNotification> liteContactNotifications = null;
 
 	/**
 	 * LiteContact
@@ -147,58 +153,89 @@ public class LiteContact extends LiteBase
 	 */
 	public void retrieve(String databaseAlias) 
 	{
-	 	com.cannontech.database.SqlStatement stmt =
-	 		new com.cannontech.database.SqlStatement(
-				"SELECT c.ContFirstName, c.ContLastName, c.LoginID, c.AddressID " + 
-		 		"FROM " + Contact.TABLE_NAME + " c " +
-		 		" WHERE c.ContactID = " + getContactID(),
-		 		databaseAlias);
-	
-	 	try
-	 	{
-	 		stmt.execute();
-
-			setContFirstName( (String) stmt.getRow(0)[0] );
-			setContLastName( (String) stmt.getRow(0)[1] );
-			setLoginID( ((java.math.BigDecimal) stmt.getRow(0)[2]).intValue() );
-			setAddressID( ((java.math.BigDecimal) stmt.getRow(0)[3]).intValue() );
-	 
-
-			//load up our ContactNotification objects			
-		 	stmt =
-		 		new com.cannontech.database.SqlStatement(
-					"SELECT cn.ContactNotifID, cn.ContactID, cn.NotificationCategoryID, " + 
-					"cn.DisableFlag, cn.Notification " + 
-					"FROM " + ContactNotification.TABLE_NAME + " cn " +
-					"where cn.ContactID = " + getContactID() + " " +
-					"order by cn.Ordering, cn.Notification",
-					databaseAlias );
-			
-			//refresh our notification list
-			getLiteContactNotifications().removeAllElements();
-			
-			stmt.execute();
+        PreparedStatement pstmt = null;
+        java.sql.Connection conn = null;
+        ResultSet rset = null;
+        try {
+            conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias());
             
-            getLiteContactNotifications().ensureCapacity(stmt.getRowCount());
+            String sql = "SELECT c.ContFirstName, c.ContLastName, c.LoginID, c.AddressID " + 
+                        " FROM " + Contact.TABLE_NAME + " c " +
+                        " WHERE c.ContactID = ? ";
+            
+            pstmt = conn.prepareStatement( sql );
+            pstmt.setInt( 1, getContactID());
+            rset = pstmt.executeQuery();                
 
-			for( int i = 0; i < stmt.getRowCount(); i++ )
-			{
-				LiteContactNotification ln = new LiteContactNotification(
-					((java.math.BigDecimal) stmt.getRow(i)[0]).intValue(),
-					((java.math.BigDecimal) stmt.getRow(i)[1]).intValue(),
-					((java.math.BigDecimal) stmt.getRow(i)[2]).intValue(),
-					(String) stmt.getRow(i)[3],
-					(String) stmt.getRow(i)[4] );
-
-				getLiteContactNotifications().add( ln );
-			}
-	 
-	 	}
-	 	catch( Exception e )
-	 	{
-	 		com.cannontech.clientutils.CTILogger.error( "Unable to load Contact", e );
-	 	}
+            if (rset.next())
+            {
+                setContFirstName( rset.getString(1));
+                setContLastName( rset.getString(2));
+                setLoginID( rset.getInt(3));
+                setAddressID( rset.getInt(4));
+            }
+        }
+        catch (Exception e) {
+            CTILogger.error( e.getMessage(), e );
+        }
+        finally {
+            try {
+                if (rset != null) rset.close();
+                if (pstmt != null) pstmt.close();
+                if (conn != null) conn.close();
+            }
+            catch (java.sql.SQLException e) {
+                com.cannontech.clientutils.CTILogger.error( "Unable to load Contact", e );
+            }
+        }
 	}
+    private synchronized void retrieveExtended() {
+        if(!isExtended()){
+                
+            PreparedStatement pstmt = null;
+            java.sql.Connection conn = null;
+            ResultSet rset = null;
+            try {
+                conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias());
+                
+//              load up our ContactNotification objects         
+                String sql = " SELECT cn.ContactNotifID, cn.ContactID, cn.NotificationCategoryID, " + 
+                        " cn.DisableFlag, cn.Notification " + 
+                        " FROM " + ContactNotification.TABLE_NAME + " cn " +
+                        " where cn.ContactID = ? " +
+                        " order by cn.Ordering, cn.Notification";
+                
+                pstmt = conn.prepareStatement( sql );
+                pstmt.setInt( 1, getContactID());
+                rset = pstmt.executeQuery();                
+
+                //refresh our notification list
+                getLiteContactNotifications().removeAllElements();
+                
+                while(rset.next()) //add the LiteContact to this Customer
+                {
+                    LiteContactNotification liteContNotif = new LiteContactNotification(rset.getInt(1));
+                    liteContNotif.setContactID(rset.getInt(2));
+                    liteContNotif.setNotificationCategoryID(rset.getInt(3));
+                    liteContNotif.setDisableFlag(rset.getString(4));
+                    liteContNotif.setNotification(rset.getString(5));
+                    getLiteContactNotifications().add( liteContNotif );
+                }
+            }
+            catch (Exception e) {
+                CTILogger.error( e.getMessage(), e );
+            }
+            finally {
+                try {
+                    if (rset != null) rset.close();
+                    if (pstmt != null) pstmt.close();
+                    if (conn != null) conn.close();
+                }
+                catch (java.sql.SQLException e) {}
+            }
+            setExtended(true);
+        }
+    }
 
 	/**
 	 * Returns the addressID.
@@ -220,13 +257,14 @@ public class LiteContact extends LiteBase
 	 * Returns the liteContactNotifications.
 	 * @return Vector
 	 */
-	public Vector getLiteContactNotifications() 
-	{
-		if( liteContactNotifications == null )
-			liteContactNotifications = new Vector(4);
-
-		return liteContactNotifications;
-	}
+    public Vector<LiteContactNotification> getLiteContactNotifications() {
+        if (liteContactNotifications == null)
+        {
+            liteContactNotifications = new Vector<LiteContactNotification>();
+            retrieveExtended();
+        }
+        return liteContactNotifications;
+    }
 
 	public String getNotifactionsStrings()
 	{		
@@ -234,9 +272,7 @@ public class LiteContact extends LiteBase
 		
 		for( int i = 0; i < getLiteContactNotifications().size(); i++ )
 		{
-			LiteContactNotification notif = 
-					(LiteContactNotification)getLiteContactNotifications().get(i);
-					
+			LiteContactNotification notif = getLiteContactNotifications().get(i);
 			ret.append( notif.getNotification() + "," );;
 		}
 
@@ -245,5 +281,15 @@ public class LiteContact extends LiteBase
 		
 		return ret.toString();
 	}
+
+    public boolean isExtended()
+    {
+        return extended;
+    }
+
+    public void setExtended(boolean extended)
+    {
+        this.extended = extended;
+    }
 	
 }
