@@ -8,6 +8,8 @@
 <%@ page import="com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation" %>
 <%@ page import="com.cannontech.database.data.lite.stars.StarsLiteFactory" %>
 <%
+    String pageName = request.getContextPath() + "/operator/Consumer/SearchResults.jsp";
+
 	StarsSearchCustomerAccountResponse resp = (StarsSearchCustomerAccountResponse)
 			session.getAttribute(ServletUtils.ATT_ACCOUNT_SEARCH_RESULTS);
 	
@@ -39,6 +41,11 @@ function selectMemberAccount(accountID, memberID) {
 	form.AccountID.value = accountID;
 	form.SwitchContext.value = memberID;
 	form.submit();
+}
+
+function navPage()
+{
+    location.href="<%=pageName%>?page="+document.getElementById("GoPage").value;
 }
 </script>
 </head>
@@ -88,7 +95,53 @@ function selectMemberAccount(accountID, memberID) {
 <% if (showEnergyCompany) { %>
 			  <input type="hidden" name="SwitchContext" value="">
 <% } %>
-              <table width="615" border="1" cellspacing="0" cellpadding="3" align="center">
+<%
+int pageIndx = 1;
+int pageSize = 250;
+pageIndx = request.getParameter("page") != null ? Integer.valueOf(request.getParameter("page")): 1;
+if (pageIndx < 1) page = 1;
+        int maxPageNo = (int) Math.ceil(resp.getStarsBriefCustAccountInfoCount() * 1.0 / pageSize);
+        if (pageIndx > maxPageNo) page = maxPageNo;
+        
+        int maxPageDigit = (int)(Math.log(maxPageNo) / Math.log(10)) + 1;
+        
+        int minOrderNo = (pageIndx- 1) * pageSize + 1;
+        int maxOrderNo = Math.min(pageIndx * pageSize, resp.getStarsBriefCustAccountInfoCount());
+        
+        String navHTML = String.valueOf(minOrderNo).toString();
+        if (maxOrderNo > minOrderNo)
+            navHTML += "-" +maxOrderNo;
+        navHTML += " of " + resp.getStarsBriefCustAccountInfoCount() + " | ";
+        if (pageIndx == 1)
+            navHTML += "<font color='#CCCCCC'>First</font>";
+        else
+            navHTML += "<a class='Link1' href='" + pageName + "?page=1'>First</a>";
+        navHTML += " | ";
+        if (pageIndx == 1)
+            navHTML += "<font color='#CCCCCC'>Previous</font>";
+        else
+            navHTML += "<a class='Link1' href='" + pageName + "?page=" + (pageIndx-1) + "'>Previous</a>";
+        navHTML += " | ";
+        if (pageIndx == maxPageNo)
+            navHTML += "<font color='#CCCCCC'>Next</font>";
+        else
+            navHTML += "<a class='Link1' href='" + pageName + "?page="+ (pageIndx+1) + "'>Next</a>";
+        navHTML += " | ";
+        if (pageIndx == maxPageNo)
+            navHTML += "<font color='#CCCCCC'>Last</font>";
+        else
+            navHTML += "<a class='Link1' href='" + pageName+ "?page=" + maxPageNo +"'>Last</a>";
+%>            
+        <table width='615' border='0' cellspacing='0' cellpadding='3' class='TableCell' align='center'>
+          <tr>
+            <td><%=navHTML%></td>
+            <td align='right'>Page(1-<%=maxPageNo%>)
+              <input type='text' id='GoPage' style='border:1px solid #666699; font:11px' size='<%=maxPageDigit%>' value='<%=pageIndx%>' onkeypress='if (event.keyCode == 13) {navPage();return false;}'>
+              <input type='button' id='Go' style='font:11px; margin-bottom:-1px' value='Go' onclick='location.href="<%=pageName%>?page="+document.getElementById("GoPage").value;'>
+            </td>
+          </tr>
+        </table>
+              <table width="615" border="1" cellspacing="0" cellpadding="3" align="center">                
                 <tr> 
                   <td width="15%" class="HeaderCell">Account #</td>
                   <td width="18%" class="HeaderCell">Name</td>
@@ -106,7 +159,8 @@ function selectMemberAccount(accountID, memberID) {
                 </tr>
 <%
             LiteStarsEnergyCompany member = liteEC;
-            for (int i = 0; i < resp.getStarsBriefCustAccountInfoCount(); i++) {
+            for (int i = minOrderNo-1; i < maxOrderNo; i++) {            
+//            for (int i = 0; i < resp.getStarsBriefCustAccountInfoCount(); i++) {
                 if (resp.getStarsBriefCustAccountInfo(i).hasEnergyCompanyID())
                 {
                     if( member.getEnergyCompanyID() != resp.getStarsBriefCustAccountInfo(i).getEnergyCompanyID())
