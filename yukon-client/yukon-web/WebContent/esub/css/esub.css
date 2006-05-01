@@ -1,3 +1,23 @@
+body {
+  margin: 7px;
+  background-color: black;
+  color: white;
+  font-family: Arial, Helvetica, sans-serif;
+  }
+
+#TopLeftLogo {
+  background-image: url(esubHeader.gif);
+  background-repeat: no-repeat;
+  width: 248px;
+  height: 101px;	
+}
+
+#CopyRight {
+    text-align: right;
+    margin-top: 1em;
+    font-size: .9em;
+    color: white;
+}
 rect.barface { fill:url(#InactiveFace); stroke:url(#gradientBorder); }
 rect.InactiveFrameTitle{fill:url(#ActiveFace); stroke:url(#gradientBorder);}
 rect.ActiveFrameTitle{fill:url(#InactiveFace); stroke:url(#gradientBorder);}

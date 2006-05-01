@@ -141,7 +141,8 @@
   </module>
   
   <module name="esub">
-  	<skin name="esub"/>
+  	<skin name="standard"/>
+  	<css file="esub.css"/>
   </module>
   
   <module name="stars">
