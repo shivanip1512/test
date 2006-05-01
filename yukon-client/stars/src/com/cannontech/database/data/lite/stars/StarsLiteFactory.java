@@ -365,9 +365,11 @@ public class StarsLiteFactory {
 		//liteAccount.setLoginID( account.getLoginID().intValue() );
 	}
 	
-	public static void setLiteCustomer(LiteCustomer liteCustomer, com.cannontech.database.data.customer.Customer customer) {
+	/*public static void setLiteCustomer(LiteCustomer liteCustomer, com.cannontech.database.data.customer.Customer customer) {
 		liteCustomer.setCustomerID( customer.getCustomer().getCustomerID().intValue() );
-		liteCustomer.setPrimaryContactID( customer.getCustomer().getPrimaryContactID().intValue() );
+//		liteCustomer.setPrimaryContactID( customer.getCustomer().getPrimaryContactID().intValue() );
+        //TODO - WARNING!!! - This only loads the contactID, not the entire Contact object!
+		liteCustomer.getLiteContact().setContactID( customer.getCustomer().getPrimaryContactID().intValue() );
 		liteCustomer.setCustomerTypeID( customer.getCustomer().getCustomerTypeID().intValue() );
 		liteCustomer.setTimeZone( customer.getCustomer().getTimeZone() );
 		liteCustomer.setCustomerNumber( customer.getCustomer().getCustomerNumber());
@@ -386,7 +388,7 @@ public class StarsLiteFactory {
 		liteCI.setCurtailAmount( ci.getCiCustomerBase().getCurtailAmount().doubleValue() );
 		liteCI.setCompanyName( ci.getCiCustomerBase().getCompanyName() );
 		liteCI.setCICustType( ci.getCiCustomerBase().getCICustType() );
-	}
+	}*/
 	
 	public static void setLiteAccountSite(LiteAccountSite liteAcctSite, com.cannontech.database.db.stars.customer.AccountSite acctSite) {
 		liteAcctSite.setAccountSiteID( acctSite.getAccountSiteID().intValue() );
