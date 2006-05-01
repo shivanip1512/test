@@ -96,7 +96,7 @@ public class SOAPClient extends HttpServlet {
 			return;
 		}
 		
-		if (req.getParameter("SwitchContext") != null) {
+		if (req.getParameter("SwitchContext") != null && req.getParameter("SwitchContext").length() > 0) {
 			try{
 				int memberID = Integer.parseInt( req.getParameter("SwitchContext") );
 				StarsAdmin.switchContext( user, req, session, memberID );
