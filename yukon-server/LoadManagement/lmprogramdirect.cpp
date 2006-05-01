@@ -4126,7 +4126,7 @@ bool CtiLMProgramDirect::startTimedProgram(unsigned long secondsFrom1901, long s
 
             CtiTime startTime(CtiTime((unsigned long)secondsFrom1901));
             CtiTime endTime(CtiTime( ((unsigned long) secondsFrom1901 - (unsigned long) secondsFromBeginningOfDay)) + controlWindow->getAvailableStopTime());
-            if(!getConstraintOverride() && !con_checker.checkProgramConstraints(startTime.seconds(), endTime.seconds()))
+            if(!getConstraintOverride() && !con_checker.checkManualProgramConstraints(startTime.seconds(), endTime.seconds()))
             {
                 if(!_announced_program_constraint_violation)
                 {

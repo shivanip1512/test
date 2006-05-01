@@ -22,7 +22,8 @@ public:
     void dumpViolations();
     
     bool checkConstraints(ULONG proposed_gear, ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901);
-    bool checkProgramConstraints(ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901);
+    bool checkManualProgramConstraints(ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901);
+    bool checkAutomaticProgramConstraints(ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901);    
     bool checkGroupConstraints(ULONG proposed_gear, ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901);
     
     bool checkSeason(ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901);

@@ -1140,7 +1140,7 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG 
         if( !currentLMProgram->getDisableFlag() &&
             (!stringCompareIgnoreCase(currentLMProgram->getControlType(), CtiLMProgramBase::AutomaticType) || !stringCompareIgnoreCase(currentLMProgram->getControlType(), "Enabled")) )
         {// HACK: == "Enabled" part above should be removed as soon as the editor is fixed
-            if( con_checker.checkProgramConstraints(secondsFrom1901, gEndOfCtiTimeSeconds) )
+            if( con_checker.checkAutomaticProgramConstraints(secondsFrom1901, gEndOfCtiTimeSeconds) )
 /*            if( currentLMProgram->isAvailableToday() &&
                 currentLMProgram->isWithinValidControlWindow(secondsFromBeginningOfDay) &&
                 currentLMProgram->hasControlHoursAvailable() &&
@@ -1573,7 +1573,7 @@ void CtiLMControlArea::manuallyStartAllProgramsNow(LONG secondsFromBeginningOfDa
             !stringCompareIgnoreCase(currentLMProgram->getControlType(),"Enabled") )
         {// HACK: == "Enabled" part above should be removed as soon as the editor is fixed
             CtiLMProgramConstraintChecker con_checker(*((CtiLMProgramDirect*)currentLMProgram), secondsFrom1901);
-            if( con_checker.checkProgramConstraints(secondsFrom1901, gEndOfCtiTimeSeconds) )
+            if( con_checker.checkManualProgramConstraints(secondsFrom1901, gEndOfCtiTimeSeconds) )
             {
                 if( getControlAreaState() == CtiLMControlArea::InactiveState )
                 {

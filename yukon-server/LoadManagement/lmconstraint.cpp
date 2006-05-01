@@ -32,12 +32,12 @@ bool CtiLMProgramConstraintChecker::checkConstraints(ULONG proposed_gear,
                                                      ULONG proposed_stop_from_1901)
 {
     bool ret_val = true;
-    ret_val = (checkProgramConstraints(proposed_start_from_1901, proposed_stop_from_1901) && ret_val);
+    ret_val = (checkManualProgramConstraints(proposed_start_from_1901, proposed_stop_from_1901) && ret_val);
     ret_val = (checkGroupConstraints(proposed_gear, proposed_start_from_1901, proposed_stop_from_1901) && ret_val);
     return ret_val;
 }
 
-bool CtiLMProgramConstraintChecker::checkProgramConstraints(ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901)
+bool CtiLMProgramConstraintChecker::checkManualProgramConstraints(ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901)
 {
     bool ret_val = true;
     ret_val = (checkSeason(proposed_start_from_1901, proposed_stop_from_1901) && ret_val);
@@ -45,6 +45,17 @@ bool CtiLMProgramConstraintChecker::checkProgramConstraints(ULONG proposed_start
     ret_val = (checkMasterActive() && ret_val);
     ret_val = (checkControlWindows(proposed_start_from_1901, proposed_stop_from_1901) && ret_val);
     ret_val = (checkNotifyActiveOffset(proposed_start_from_1901) && ret_val);
+
+    return ret_val;
+}
+
+bool CtiLMProgramConstraintChecker::checkAutomaticProgramConstraints(ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901)
+{
+    bool ret_val = true;
+    ret_val = (checkSeason(proposed_start_from_1901, proposed_stop_from_1901) && ret_val);
+    ret_val = (checkWeekDays(proposed_start_from_1901, proposed_stop_from_1901) && ret_val);
+    ret_val = (checkMasterActive() && ret_val);
+    ret_val = (checkControlWindows(proposed_start_from_1901, proposed_stop_from_1901) && ret_val);
 
     return ret_val;
 }
