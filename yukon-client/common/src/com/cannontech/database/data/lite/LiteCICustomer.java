@@ -8,6 +8,7 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.cache.functions.ContactFuncs;
+import com.cannontech.database.db.contact.Contact;
 import com.cannontech.database.db.customer.CICustomerBase;
 import com.cannontech.database.db.customer.Customer;
 
@@ -139,9 +140,12 @@ public class LiteCICustomer extends LiteCustomer
             
             String sql = "SELECT ci.MainAddressID, ci.CompanyName, ci.CustomerDemandLevel, " +
                         "ci.CurtailAmount, ci.CICustType, c.PrimaryContactID, c.CustomerTypeID, " +
-                        "c.TimeZone, c.CustomerNumber, c.RateScheduleID, c.AltTrackNum, c.TemperatureUnit" +
-                        " FROM " + Customer.TABLE_NAME + " c, " + CICustomerBase.TABLE_NAME + " ci" +
-                        " WHERE ci.CustomerID = ? AND c.CustomerID = ci.CustomerID";
+                        "c.TimeZone, c.CustomerNumber, c.RateScheduleID, c.AltTrackNum, c.TemperatureUnit, " +
+                        " cont.ContFirstName, cont.ContLastName, cont.LoginID, cont.AddressID " +
+                        " FROM " + Customer.TABLE_NAME + " c, " + CICustomerBase.TABLE_NAME + " ci, " + Contact.TABLE_NAME + " cont " +
+                        " WHERE c.CustomerID = ci.CustomerID " +
+                        " AND c.Primarycontactid = cont.contactID " +
+                        " AND ci.CustomerID = ? ";
             
             pstmt = conn.prepareStatement( sql );
             pstmt.setInt( 1, getCustomerID());
@@ -154,13 +158,19 @@ public class LiteCICustomer extends LiteCustomer
                 setDemandLevel( rset.getDouble(3) );
                 setCurtailAmount( rset.getDouble(4) );
                 setCICustType( rset.getInt(5) );
-                setPrimaryContactID(rset.getInt(6) );
+//                setPrimaryContactID(rset.getInt(6) );
                 setCustomerTypeID( rset.getInt(7) );
                 setTimeZone( rset.getString(8) );
                 setCustomerNumber( rset.getString(9) );
                 setRateScheduleID( rset.getInt(10) );
                 setAltTrackingNumber( rset.getString(11) );
                 setTemperatureUnit( rset.getString(12) );
+                LiteContact liteContact = new LiteContact(rset.getInt(6));
+                liteContact.setContFirstName( rset.getString(13));
+                liteContact.setContLastName( rset.getString(14));
+                liteContact.setLoginID( rset.getInt(15));
+                liteContact.setAddressID( rset.getInt(16));
+                setLiteContact(liteContact);
             }
             else
                 throw new IllegalStateException("Unable to find the Customer with CustomerID = " + getCustomerID() );

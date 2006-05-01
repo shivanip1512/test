@@ -8,6 +8,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.cache.functions.ContactFuncs;
+import com.cannontech.database.db.contact.Contact;
 import com.cannontech.database.db.customer.Customer;
 import com.cannontech.common.util.CtiUtilities;
 
@@ -21,14 +22,15 @@ import com.cannontech.common.util.CtiUtilities;
  */
 public class LiteCustomer extends LiteBase {
 	
-	private int primaryContactID = 0;
+//	private int primaryContactID = 0;
 	private int customerTypeID = com.cannontech.database.data.customer.CustomerTypes.INVALID;
 	private String timeZone = null;
 	private String customerNumber = CtiUtilities.STRING_NONE;
 	private int rateScheduleID = CtiUtilities.NONE_ZERO_ID;
 	private String altTrackNum = CtiUtilities.STRING_NONE;
     private String temperatureUnit = CtiUtilities.FAHRENHEIT_CHARACTER;
-	
+	private LiteContact liteContact = null;
+    
     private boolean extended = false;
 	//non-persistent data, 
 	//contains com.cannontech.database.data.lite.LiteContact
@@ -64,9 +66,11 @@ public class LiteCustomer extends LiteBase {
 		try {
 			conn = PoolManager.getInstance().getConnection( dbAlias );
 			
-            String sql = "SELECT PrimaryContactID, CustomerTypeID, TimeZone, CustomerNumber, RateScheduleID, AltTrackNum, TemperatureUnit" +
-					    " FROM " + Customer.TABLE_NAME +
-					    " WHERE CustomerID = ?";
+            String sql = "SELECT PrimaryContactID, CustomerTypeID, TimeZone, CustomerNumber, RateScheduleID, AltTrackNum, TemperatureUnit, " +
+                        " cont.ContFirstName, cont.ContLastName, cont.LoginID, cont.AddressID " +
+					    " FROM " + Customer.TABLE_NAME + " cust, " + Contact.TABLE_NAME + " cont " +
+					    " WHERE PrimaryContactID = ContactID " + 
+                        " and CustomerID = ?";
             
             pstmt = conn.prepareStatement( sql );
             pstmt.setInt( 1, getCustomerID());
@@ -74,13 +78,18 @@ public class LiteCustomer extends LiteBase {
 			
             if(rset.next())
             {
-    			setPrimaryContactID(rset.getInt(1) );
     			setCustomerTypeID( rset.getInt(2) );
     			setTimeZone( rset.getString(3) );
     			setCustomerNumber( rset.getString(4) );
     			setRateScheduleID( rset.getInt(5) );
     			setAltTrackingNumber( rset.getString(6) );
                 setTemperatureUnit( rset.getString(7) );
+                LiteContact liteContact = new LiteContact(rset.getInt(1));
+                liteContact.setContFirstName( rset.getString(8));
+                liteContact.setContLastName( rset.getString(9));
+                liteContact.setLoginID( rset.getInt(10));
+                liteContact.setAddressID( rset.getInt(11));
+                setLiteContact(liteContact);
             }
             else
                 throw new IllegalStateException("Unable to find the Customer with CustomerID = " + getCustomerID() );
@@ -172,7 +181,9 @@ public class LiteCustomer extends LiteBase {
 	 * @return int
 	 */
 	public int getPrimaryContactID() {
-		return primaryContactID;
+        if( getLiteContact() != null)
+            return getLiteContact().getContactID();
+        return 0;
 	}
 
 	/**
@@ -195,9 +206,9 @@ public class LiteCustomer extends LiteBase {
 	 * Sets the primaryContactID.
 	 * @param primaryContactID The primaryContactID to set
 	 */
-	public void setPrimaryContactID(int primaryContactID) {
-		this.primaryContactID = primaryContactID;
-	}
+//	public void setPrimaryContactID(int primaryContactID) {
+//		this.primaryContactID = primaryContactID;
+//	}
 
 	/**
 	 * Returns the timeZone.
@@ -314,6 +325,16 @@ public class LiteCustomer extends LiteBase {
     public void setExtended(boolean extended)
     {
         this.extended = extended;
+    }
+
+    public LiteContact getLiteContact()
+    {
+        return liteContact;
+    }
+
+    public void setLiteContact(LiteContact liteContact)
+    {
+        this.liteContact = liteContact;
     }
 
 }
