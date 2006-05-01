@@ -5,11 +5,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlStatement;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.contact.Contact;
 import com.cannontech.database.db.customer.CICustomerBase;
@@ -150,6 +152,151 @@ public class CustomerAccount extends DBPersistent {
         
         CTILogger.debug((new Date().getTime() - timerStart.getTime())*.001 + " Secs for searchByPrimaryContactIDs (" + accountIDs.length  + " AccountIDS loaded)" );
         return accountIDs;
+    }
+    
+    public static int[] searchByPrimaryContactLastName(String lastName_, int energyCompanyID, boolean partialMatch) {
+        if (lastName_ == null || lastName_.length() == 0) return null;
+        int [] accountIDs = null;
+        Date timerStart = new Date();
+        String lastName = lastName_.trim();
+        String firstName = null;
+        int commaIndex = lastName_.indexOf(",");
+        if( commaIndex > 0 )
+        {
+            firstName = lastName_.substring(commaIndex+1).trim();
+            lastName = lastName_.substring(0, commaIndex).trim();
+        }
+        String sql = "SELECT DISTINCT acct.AccountID " +
+                    " FROM ECToAccountMapping map, " + TABLE_NAME + " acct, " + 
+                    Customer.TABLE_NAME + " cust, " +  Contact.TABLE_NAME + " cont " + 
+                    " WHERE map.EnergyCompanyID = ? " + 
+                    " AND map.AccountID = acct.AccountID " +
+                    " AND acct.CustomerID = cust.CustomerID " + 
+                    " AND cust.primarycontactid = cont.contactid " +
+                    " AND UPPER(cont.contlastname) like ?" ;
+                    if (firstName != null && firstName.length() > 0)
+                        sql += " AND UPPER(CONTFIRSTNAME) LIKE ? ";
+
+        PreparedStatement pstmt = null;
+        Connection conn = null;
+        ResultSet rset = null;
+        
+        try {
+            conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+            
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt( 1, energyCompanyID);
+            pstmt.setString( 2, lastName.toUpperCase()+(partialMatch? "%":""));
+            if (firstName != null && firstName.length() > 0)
+                pstmt.setString(3, firstName.toUpperCase() + "%");
+            rset = pstmt.executeQuery();
+
+            CTILogger.debug((new Date().getTime() - timerStart.getTime())*.001 + " After execute" );
+            ArrayList<Integer> accountIDList = new ArrayList<Integer>();
+            while(rset.next())
+            {
+                accountIDList.add(new Integer(rset.getInt(1)));
+            }
+            accountIDs = new int[accountIDList.size()];
+            for (int i = 0; i < accountIDList.size(); i++)
+                accountIDs[i] = accountIDList.get(i).intValue();
+            
+        }
+        catch( Exception e ){
+            CTILogger.error( "Error retrieving contacts with last name " + lastName+ ": " + e.getMessage(), e );
+        }
+        finally {
+            try {
+                if (rset != null) rset.close();
+                if (pstmt != null) pstmt.close();
+                if (conn != null) conn.close();
+            }
+            catch (java.sql.SQLException e) {}
+        }
+
+        CTILogger.debug((new Date().getTime() - timerStart.getTime())*.001 + " Secs for searchByPrimaryContactLastName (" + accountIDs.length  + " AccountIDS loaded)" );
+        return accountIDs;
+    }
+    
+    
+    public static HashMap searchByPrimaryContactLastName(String lastName_, boolean partialMatch, ArrayList<Integer> energyCompanyIDList) {
+        if (lastName_ == null || lastName_.length() == 0) return null;
+        if (energyCompanyIDList == null || energyCompanyIDList.size() == 0) return null;
+        
+        //Contains EnergyCompanyID<Integer> to accountID array <int[]> objects.
+        HashMap ecToAccountIDMap = new HashMap();
+
+        Date timerStart = new Date();
+        String lastName = lastName_.trim();
+        String firstName = null;
+        int commaIndex = lastName_.indexOf(",");
+        if( commaIndex > 0 )
+        {
+            firstName = lastName_.substring(commaIndex+1).trim();
+            lastName = lastName_.substring(0, commaIndex).trim();
+        }
+        String sql = "SELECT DISTINCT map.energycompanyID, acct.AccountID " +
+                    " FROM ECToAccountMapping map, " + TABLE_NAME + " acct, " + 
+                    Customer.TABLE_NAME + " cust, " +  Contact.TABLE_NAME + " cont " +
+                    " WHERE map.AccountID = acct.AccountID " +
+                    " AND acct.CustomerID = cust.CustomerID " + 
+                    " AND cust.primarycontactid = cont.contactid " +
+                    " AND UPPER(cont.contlastname) like ?" ;
+                    if (firstName != null && firstName.length() > 0)
+                        sql += " AND UPPER(CONTFIRSTNAME) LIKE ? ";
+
+                    // Hey, if we have all the ECIDs available, don't bother adding this criteria!
+                    if( energyCompanyIDList.size() != StarsDatabaseCache.getInstance().getAllEnergyCompanies().size());
+                    {
+                        sql += " AND (map.EnergyCompanyID = " + energyCompanyIDList.get(0).toString(); 
+                        for (int i = 1; i < energyCompanyIDList.size(); i++)
+                             sql += " OR map.EnergyCompanyID = " + energyCompanyIDList.get(i).toString();
+                        sql += " ) ";
+                    }                    
+                    
+
+        PreparedStatement pstmt = null;
+        Connection conn = null;
+        ResultSet rset = null;
+        int count = 0; 
+        try {
+            conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+            
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString( 1, lastName.toUpperCase()+(partialMatch? "%":""));
+            if (firstName != null && firstName.length() > 0)
+                pstmt.setString(2, firstName.toUpperCase() + "%");
+            rset = pstmt.executeQuery();
+
+            CTILogger.debug((new Date().getTime() - timerStart.getTime())*.001 + " After execute" );
+            
+            while(rset.next())
+            {
+                Integer energyCompanyID = new Integer(rset.getInt(1));
+                Integer accountID = new Integer(rset.getInt(2));
+                ArrayList<Integer> accountIDs = (ArrayList<Integer>)ecToAccountIDMap.get(energyCompanyID);
+                if (accountIDs == null){
+                    accountIDs = new ArrayList<Integer>();
+                    ecToAccountIDMap.put(energyCompanyID, accountIDs);
+                }
+                accountIDs.add(accountID);
+                count++;
+            }
+        }
+        catch( Exception e ){
+            CTILogger.error( "Error retrieving contacts with last name " + lastName+ ": " + e.getMessage(), e );
+        }
+        finally {
+            try {
+                if (rset != null) rset.close();
+                if (pstmt != null) pstmt.close();
+                if (conn != null) conn.close();
+            }
+            catch (java.sql.SQLException e) {}
+        }
+
+        CTILogger.debug((new Date().getTime() - timerStart.getTime())*.001 + " Secs for '" + lastName + "' Search (" + count + " AccountIDS loaded; EC=" + (energyCompanyIDList.size() == StarsDatabaseCache.getInstance().getAllEnergyCompanies().size()? "ALL" : energyCompanyIDList.toString()) + ")" );
+        return ecToAccountIDMap;
     }
     
     public static int[] searchBySerialNumber(String serialNo, int energyCompanyID) {
