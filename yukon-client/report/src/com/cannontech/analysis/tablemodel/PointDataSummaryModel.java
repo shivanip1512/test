@@ -265,12 +265,12 @@ public class PointDataSummaryModel extends ReportModelBase
 	{
 		super(start_, stop_);
 		setFilterModelTypes(new int[]{
-			 	ModelFactory.MCT,
-		        ModelFactory.METER,
-		        ModelFactory.RTU,
     			ModelFactory.COLLECTIONGROUP, 
     			ModelFactory.TESTCOLLECTIONGROUP, 
-    			ModelFactory.BILLING_GROUP}
+    			ModelFactory.BILLING_GROUP,
+//    			ModelFactory.MCT,
+//		        ModelFactory.METER,
+		        ModelFactory.RTU}
 				);
 		setPointType(summaryPointType);
 	}

@@ -59,7 +59,6 @@ public class CarrierDBModel extends ReportModelBase
 	{
 		super();
 		setFilterModelTypes(new int[]{ 
-							ModelFactory.MCT,
 		        			ModelFactory.COLLECTIONGROUP, 
 		        			ModelFactory.TESTCOLLECTIONGROUP, 
 		        			ModelFactory.BILLING_GROUP}
@@ -258,9 +257,9 @@ public class CarrierDBModel extends ReportModelBase
 				new ColumnProperties(200, 1, 75, null),
 				new ColumnProperties(275, 1, 75, null),
 				new ColumnProperties(350, 1, 75, null),
-				new ColumnProperties(425, 1, 125, null),
-				new ColumnProperties(550, 1, 80, null),
-				new ColumnProperties(630, 1, 80, null)
+				new ColumnProperties(425, 1, 145, null),
+				new ColumnProperties(570, 1, 80, null),
+				new ColumnProperties(650, 1, 80, null)
 			};
 		}
 		return columnProperties;

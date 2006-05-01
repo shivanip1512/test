@@ -54,7 +54,8 @@ public class PowerFailModel extends ReportModelBase
 	{
 		super();
 		setFilterModelTypes(new int[]{
-				ModelFactory.MCT, 
+//				ModelFactory.MCT,
+//		        ModelFactory.METER,
     			ModelFactory.COLLECTIONGROUP, 
     			ModelFactory.TESTCOLLECTIONGROUP, 
     			ModelFactory.BILLING_GROUP}

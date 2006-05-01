@@ -173,9 +173,9 @@ public class MeterReadModel extends ReportModelBase
 		setFilterModelTypes(new int[]{
     			ModelFactory.COLLECTIONGROUP, 
     			ModelFactory.TESTCOLLECTIONGROUP, 
-    			ModelFactory.BILLING_GROUP,
-				ModelFactory.MCT,
-				ModelFactory.METER
+    			ModelFactory.BILLING_GROUP
+//				ModelFactory.MCT,
+//				ModelFactory.METER
 				} 
 		);
 	}
@@ -683,6 +683,9 @@ public class MeterReadModel extends ReportModelBase
 
 		html += "    <td valign='middle'>" + LINE_SEPARATOR;
 		html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
+		html += "        <tr>" + LINE_SEPARATOR;
+		html += "          <td>* Click this button to generate a list of missed meters that MACS can process.</td>"+ LINE_SEPARATOR;		
+		html += "        </tr>" + LINE_SEPARATOR;
 		html += "        <tr>" + LINE_SEPARATOR;
 		html += "          <td><input type='button' name='GenerateMissedList' value='Generate Missed List' onclick='document.reportForm.ACTION.value=\"GenerateMissedMeterList\";reportForm.submit();'>"+ LINE_SEPARATOR;
 		html += "          </td>" + LINE_SEPARATOR;
