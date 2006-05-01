@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -39,6 +40,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.stars.hardware.LMThermostatSchedule;
 import com.cannontech.database.db.macro.MacroTypes;
 import com.cannontech.database.db.stars.ECToGenericMapping;
+import com.cannontech.database.db.stars.customer.CustomerAccount;
 import com.cannontech.database.db.stars.hardware.MeterHardwareBase;
 import com.cannontech.database.db.stars.hardware.Warehouse;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -940,6 +942,21 @@ public class LiteStarsEnergyCompany extends LiteBase {
         return companies;
     }
     
+    public ArrayList<Integer> getAllEnergyCompaniesDownward()
+    {
+        ArrayList<Integer> allEnergyCompanies = new ArrayList<Integer>();
+        allEnergyCompanies.add(new Integer(getLiteID()));
+        ArrayList children = getChildren();
+        synchronized (children) {
+            for (int i = 0; i < children.size(); i++) {
+                LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) children.get(i);
+                ArrayList<Integer> memberList = company.getAllEnergyCompaniesDownward();
+                allEnergyCompanies.addAll( memberList );
+            }
+        }
+        return allEnergyCompanies;
+    }
+
     public List<Warehouse> getAllWarehousesDownward() 
     {
         List<Warehouse> warehouses = Warehouse.getAllWarehousesForEnergyCompany(getEnergyCompanyID());
@@ -2770,8 +2787,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
         }
 		}
         else {
-            int[] accountIDs = com.cannontech.database.db.stars.customer.CustomerAccount.searchByPrimaryContactIDs(
-					contactIDs, getLiteID() );
+            int[] accountIDs = com.cannontech.database.db.stars.customer.CustomerAccount.searchByPrimaryContactIDs( contactIDs, getLiteID() );
             if (accountIDs != null) {
                 for (int i = 0; i < accountIDs.length; i++) {
                     LiteStarsCustAccountInformation liteAcctInfo = getBriefCustAccountInfo( accountIDs[i], true );
@@ -2818,12 +2834,78 @@ public class LiteStarsEnergyCompany extends LiteBase {
      * If searchMembers is true, it returns a list of Pair(LiteStarsCustAccountInformation, LiteStarsEnergyCompany);
      * otherwise it returns a list of LiteStarsCustAccountInformation.
      */
-    public ArrayList searchAccountByLastName(String lastName, boolean searchMembers, boolean partialMatch) {
+    /*public ArrayList searchAccountByLastName(String lastName, boolean searchMembers, boolean partialMatch) {
         int[] contactIDs = ContactFuncs.retrieveContactIDsByLastName( lastName, partialMatch);
         return searchAccountByContactIDs( contactIDs, searchMembers );
+    }*/
+    
+    /*public ArrayList searchAccountByLastName(String lastName, boolean searchMembers, boolean partialMatch) {
+        ArrayList accountList = new ArrayList();
+        if (isAccountsLoaded()) {
+            int[] contactIDs = ContactFuncs.retrieveContactIDsByLastName( lastName, partialMatch);
+            return searchAccountByContactIDs( contactIDs, searchMembers );
+            }
+        else {
+            int[] accountIDs = com.cannontech.database.db.stars.customer.CustomerAccount.searchByPrimaryContactLastName( lastName, getLiteID(), partialMatch );
+            if (accountIDs != null) {
+                for (int i = 0; i < accountIDs.length; i++) {
+                    LiteStarsCustAccountInformation liteAcctInfo = getBriefCustAccountInfo( accountIDs[i], true );
+                    if (searchMembers)
+                        accountList.add( new Pair(liteAcctInfo, this) );
+                    else
+                        accountList.add( liteAcctInfo );
+                }
+            }
+        }
+        
+        if (searchMembers) {
+            ArrayList children = getChildren();
+            synchronized (children) {
+                for (int i = 0; i < children.size(); i++) {
+                    LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) children.get(i);
+                    ArrayList memberList = company.searchAccountByLastName( lastName, searchMembers, partialMatch );
+                    accountList.addAll( memberList );
+                }
+            }
+        }
+        
+        return accountList;
+    }*/
+    
+    public ArrayList searchAccountByLastName(String lastName, boolean searchMembers, boolean partialMatch) {
+        ArrayList accountList = new ArrayList();
+        if (isAccountsLoaded()) {
+            int[] contactIDs = ContactFuncs.retrieveContactIDsByLastName( lastName, partialMatch);
+            return searchAccountByContactIDs( contactIDs, searchMembers );
+            }
+        else {
+            ArrayList<Integer> allEnergyCompanyIDs = new ArrayList<Integer>();
+            if( searchMembers)
+                allEnergyCompanyIDs = getAllEnergyCompaniesDownward();
+            else
+                allEnergyCompanyIDs.add(new Integer(getLiteID()) );
+            
+            HashMap ecIDToAccountIDsMap = CustomerAccount.searchByPrimaryContactLastName( lastName, partialMatch, allEnergyCompanyIDs);
+            for (int i = 0; i < allEnergyCompanyIDs.size(); i++)
+            {
+                LiteStarsEnergyCompany liteStarsEC = StarsDatabaseCache.getInstance().getEnergyCompany(allEnergyCompanyIDs.get(i).intValue());
+                ArrayList<Integer> accountIDs = (ArrayList<Integer>)ecIDToAccountIDsMap.get(allEnergyCompanyIDs.get(i));
+                if( accountIDs != null)
+                {
+                    for (int j = 0; j < accountIDs.size(); j++)
+                    {
+                        LiteStarsCustAccountInformation liteAcctInfo = liteStarsEC.getBriefCustAccountInfo( accountIDs.get(j).intValue(), true);
+                        if (searchMembers)
+                            accountList.add(new Pair(liteAcctInfo, liteStarsEC) );
+                        else
+                            accountList.add(liteAcctInfo);
+                    }
+                }
+            }
+        }
+        
+        return accountList;
     }
-    
-    
     /* The following methods are only used when SOAPClient exists locally */
     
     public synchronized StarsEnergyCompanySettings getStarsEnergyCompanySettings(StarsYukonUser user) {
