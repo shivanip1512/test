@@ -37,8 +37,16 @@ public class PersistDynamicText extends BasePersistElement {
 					elem.setPointID(LxSaveUtils.readInt(in));
         			elem.setDisplayAttribs(LxSaveUtils.readInt(in));     
         			elem.setLinkTo(LxSaveUtils.readString(in));   
-				}
+                }
 				break;
+                
+                case 2: {
+                    elem.setPointID(LxSaveUtils.readInt(in));
+                    elem.setDisplayAttribs(LxSaveUtils.readInt(in));     
+                    elem.setLinkTo(LxSaveUtils.readString(in));   
+                    elem.setControlEnabled(LxSaveUtils.readBoolean(in));
+                }
+                break;
 				
 				default: {
 					throw new IOException("Unknown version: " + version + " in " + elem.getClass().getName());
@@ -55,6 +63,7 @@ public class PersistDynamicText extends BasePersistElement {
 			LxSaveUtils.writeInt(out, elem.getPointID());
   			LxSaveUtils.writeInt(out, elem.getDisplayAttribs());
    			LxSaveUtils.writeString(out, elem.getLinkTo());
+            LxSaveUtils.writeBoolean(out, elem.getControlEnabled());
 	}
 
 }

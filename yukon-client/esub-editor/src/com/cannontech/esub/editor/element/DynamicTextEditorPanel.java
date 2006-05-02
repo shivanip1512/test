@@ -4,8 +4,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
 
-import javax.swing.JColorChooser;
-import javax.swing.JDialog;
+import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 
 import com.cannontech.database.data.lite.LitePoint;
@@ -49,6 +48,7 @@ public class DynamicTextEditorPanel extends com.cannontech.common.gui.util.DataI
 	};
 	private javax.swing.JComboBox ivjDisplayAttributesComboBox = null;
 	private javax.swing.JLabel ivjDisplayAttributesLabel = null;
+    private JCheckBox controlCheckBox;
 
 class IvjEventHandler implements java.awt.event.ActionListener {
 		public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -447,6 +447,19 @@ private PointSelectionPanel getPointSelectionPanel() {
 	}
 	return ivjPointSelectionPanel;
 }
+
+private JCheckBox getControlCheckBox() {
+    if (controlCheckBox == null) {
+        try {
+            controlCheckBox = new JCheckBox("Enable Control");
+            controlCheckBox.setName("ControlCheckBox");
+        } catch (java.lang.Throwable ivjExc) {
+            handleException(ivjExc);
+        }
+    }
+    return controlCheckBox;
+}
+
 /**
  * This method was created in VisualAge.
  * @return java.lang.Object
@@ -513,7 +526,7 @@ public Object getValue(Object o) {
 	}
 
 	dynamicText.setDisplayAttribs(att);
-	
+	dynamicText.setControlEnabled(getControlCheckBox().isSelected());
 	return dynamicText;
 }
 
@@ -552,12 +565,20 @@ private void initialize() {
 		setMinimumSize(new java.awt.Dimension(405, 466));
 
 		java.awt.GridBagConstraints constraintsPointSelectionPanel = new java.awt.GridBagConstraints();
-		constraintsPointSelectionPanel.gridx = 0; constraintsPointSelectionPanel.gridy = 2;
+		constraintsPointSelectionPanel.gridx = 0; constraintsPointSelectionPanel.gridy = 3;
 		constraintsPointSelectionPanel.fill = java.awt.GridBagConstraints.BOTH;
 		constraintsPointSelectionPanel.weightx = 1.0;
 		constraintsPointSelectionPanel.weighty = 1.0;
 		constraintsPointSelectionPanel.insets = new java.awt.Insets(4, 4, 4, 4);
 		add(getPointSelectionPanel(), constraintsPointSelectionPanel);
+        
+        java.awt.GridBagConstraints constraintsControlCheckBox = new java.awt.GridBagConstraints();
+        constraintsControlCheckBox.gridx = 0; constraintsControlCheckBox.gridy = 2;
+        constraintsControlCheckBox.fill = java.awt.GridBagConstraints.BOTH;
+        constraintsControlCheckBox.weightx = 1.0;
+        constraintsControlCheckBox.weighty = 1.0;
+        constraintsControlCheckBox.insets = new java.awt.Insets(4, 4, 4, 4);
+        add(getControlCheckBox(), constraintsControlCheckBox);
 
 		java.awt.GridBagConstraints constraintsJPanel1 = new java.awt.GridBagConstraints();
 		constraintsJPanel1.gridx = 0; constraintsJPanel1.gridy = 1;
@@ -708,6 +729,8 @@ public void setValue(Object o) {
 	Color textColor = (java.awt.Color) dynamicText.getPaint();
 	getColorButton().setBackground(textColor);
 	colorChooser.setColor(textColor);
+    
+    getControlCheckBox().setSelected(dynamicText.getControlEnabled());
 }
 
 /**

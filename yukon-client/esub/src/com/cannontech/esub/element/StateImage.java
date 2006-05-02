@@ -46,6 +46,7 @@ public class StateImage extends LxAbstractImage implements DrawingElement, Yukon
 	private String linkTo = null;
 	private Properties props = new Properties();
 	private int version = CURRENT_VERSION;
+    private boolean controlEnabled = false;
 	
 /**
  * StateImage constructor comment.
@@ -105,6 +106,16 @@ public void setPointID(int pointID) {
 	public LiteState getCurrentState() {
 		return currentState;
 	}
+    
+    public boolean getControlEnabled()
+    {
+        return controlEnabled;
+    }
+    
+    public void setControlEnabled(boolean value)
+    {
+        controlEnabled = value;
+    }
 
 	/**
 	 * Sets the currentState.

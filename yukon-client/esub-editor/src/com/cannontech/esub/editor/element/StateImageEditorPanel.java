@@ -78,6 +78,7 @@ public class StateImageEditorPanel extends DataInputPanel implements ActionListe
     private JButton[] buttons = new JButton[12];
     private JLabel[] stateLabels = new JLabel[12];
     private static ImageIcon defaultIcon = null;
+    private JCheckBox controlCheckBox;
     
     static
     {
@@ -135,8 +136,16 @@ private javax.swing.JPanel getPointPanel() {
             constraintsLinkToPanel.insets = new java.awt.Insets(4, 4, 4, 4);
              getPointPanel().add(getLinkToPanel(), constraintsLinkToPanel);
             
+             java.awt.GridBagConstraints constraintsControlCheckBox = new java.awt.GridBagConstraints();
+             constraintsControlCheckBox.gridx = 0; constraintsControlCheckBox.gridy = 1;
+             constraintsControlCheckBox.fill = java.awt.GridBagConstraints.BOTH;
+             constraintsControlCheckBox.weightx = 1.0;
+             constraintsControlCheckBox.weighty = 1.0;
+             constraintsControlCheckBox.insets = new java.awt.Insets(4, 4, 4, 4);
+              getPointPanel().add(getControlCheckBox(), constraintsControlCheckBox);
+             
             java.awt.GridBagConstraints constraintsPointSelectionPanel = new java.awt.GridBagConstraints();
-			constraintsPointSelectionPanel.gridx = 0; constraintsPointSelectionPanel.gridy = 1;
+			constraintsPointSelectionPanel.gridx = 0; constraintsPointSelectionPanel.gridy = 2;
 			constraintsPointSelectionPanel.fill = java.awt.GridBagConstraints.BOTH;
 			constraintsPointSelectionPanel.weightx = 1.0;
 			constraintsPointSelectionPanel.weighty = 1.0;
@@ -311,6 +320,22 @@ private PointSelectionPanel getPointSelectionPanel() {
 	}
 	return ivjPointSelectionPanel;
 }
+
+private JCheckBox getControlCheckBox()
+{
+    if (controlCheckBox == null) {
+        try {
+            controlCheckBox = new JCheckBox("Enable Control");   
+            controlCheckBox.setName("ControlCheckBox");
+            controlCheckBox.setSelected(true);
+
+        } catch (java.lang.Throwable ivjExc) {
+            handleException(ivjExc);
+        }
+    }
+    return controlCheckBox;
+}
+
 /**
  * This method was created in VisualAge.
  * @return java.lang.Object
@@ -324,7 +349,7 @@ public Object getValue(Object o) {
 	stateImage.setPoint(getPointSelectionPanel().getSelectedPoint());
     
     stateImage.setCustomImageMap(map);
-	
+	stateImage.setControlEnabled(getControlCheckBox().isSelected());
 	return stateImage;
 }
 /**
@@ -476,6 +501,10 @@ public void setValue(Object o)
     {  // this is usually not null since the default pointid is 7 ?
 		getPointSelectionPanel().selectPoint(lp);
 	}
+    
+    boolean control = stateImage.getControlEnabled();
+    getControlCheckBox().setSelected(control);
+    
 }
 /**
  * Creation date: (12/18/2001 4:16:51 PM)
