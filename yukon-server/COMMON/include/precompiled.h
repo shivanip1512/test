@@ -9,8 +9,9 @@
 
 #pragma warning( disable : 4786)
 
+#include <winsock2.h>
 #include <windows.h>
-#include <winsock.h>
+
 
 #include <stdlib.h>
 #include <stdio.h>
