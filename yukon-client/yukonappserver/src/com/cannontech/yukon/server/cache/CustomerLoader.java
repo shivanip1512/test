@@ -7,7 +7,9 @@ import com.cannontech.common.version.VersionTools;
 import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteCICustomer;
+import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteCustomer;
+import com.cannontech.database.db.contact.Contact;
 import com.cannontech.database.db.customer.CICustomerBase;
 import com.cannontech.database.db.customer.Customer;
 
@@ -55,8 +57,10 @@ public class CustomerLoader implements Runnable
 		//get all the customer contacts that are assigned to a customer
 		String sqlString = 
          "select CustomerID, PrimaryContactID, TimeZone, CustomerTypeID, CustomerNumber, RateScheduleID, " +
-         "AltTrackNum, TemperatureUnit " +
-         "from " + Customer.TABLE_NAME;
+         "AltTrackNum, TemperatureUnit, " +
+         " cont.ContFirstName, cont.ContLastName, cont.LoginID, cont.AddressID " +
+         "from " + Customer.TABLE_NAME + " cust, " + Contact.TABLE_NAME + " cont " + 
+         " Where cust.primarycontactid = cont.contactid";
 	
 		java.sql.Connection conn = null;
 		java.sql.Statement stmt = null;
@@ -88,13 +92,21 @@ public class CustomerLoader implements Runnable
                 } else {
                     lc = new LiteCustomer( cstID );
                 }
-				lc.setPrimaryContactID(contactID);
+//				lc.setPrimaryContactID(contactID);
 				lc.setTimeZone(timeZone);
 				lc.setCustomerTypeID(custTypeID);
                 lc.setCustomerNumber(custNumber);
                 lc.setRateScheduleID(custRateScheduleID);
                 lc.setAltTrackingNumber(custAltTrackNum);
                 lc.setTemperatureUnit(temperatureUnit);
+
+                LiteContact liteContact = new LiteContact(contactID);
+                liteContact.setContFirstName( rset.getString(9).trim());
+                liteContact.setContLastName( rset.getString(10).trim());
+                liteContact.setLoginID( rset.getInt(11));
+                liteContact.setAddressID( rset.getInt(12));
+                lc.setLiteContact(liteContact);
+                
 				allCustomers.add(lc);
                 if(maxCustomerID < lc.getCustomerID())
                     maxCustomerID = lc.getCustomerID();
