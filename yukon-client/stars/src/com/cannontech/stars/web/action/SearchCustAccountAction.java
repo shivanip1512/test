@@ -216,7 +216,7 @@ public class SearchCustAccountAction implements ActionBase {
 						liteAcctInfo = (LiteStarsCustAccountInformation) accountList.get(0);
             	}
             	
-            	if (liteAcctInfo != null) {
+                if (liteAcctInfo != null) {    //liteAcctInfo will only be loaded if exactly 1 account was found in search.
             		liteAcctInfo = energyCompany.getCustAccountInformation( liteAcctInfo.getAccountID(), true );
             		
 					if (liteAcctInfo.hasTwoWayThermostat(energyCompany)) {
@@ -232,6 +232,21 @@ public class SearchCustAccountAction implements ActionBase {
 					
 					resp.setStarsCustAccountInformation( starsAcctInfo );
             	}
+                else if (searchByDefID == YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_LAST_NAME) {
+                    //Don't sort, the sort by has already been handled in the CustomerAccount.searchByPrimaryContactLastName query.
+                    for (int i = 0; i < accountList.size(); i++) {
+                        StarsBriefCustAccountInfo starsAcctInfo = new StarsBriefCustAccountInfo();
+                        LiteStarsCustAccountInformation liteStarsCustAcctInfo = (LiteStarsCustAccountInformation)
+                            (searchMembers? ((Pair)accountList.get(i)).getFirst() : accountList.get(i));
+                        
+                        starsAcctInfo.setAccountID( liteStarsCustAcctInfo.getAccountID());
+                        LiteStarsEnergyCompany company = energyCompany;
+                        if (searchMembers) company = (LiteStarsEnergyCompany) ((Pair)accountList.get(i)).getSecond();
+                        if (searchMembers) starsAcctInfo.setEnergyCompanyID( company.getLiteID() );
+                        
+                        resp.addStarsBriefCustAccountInfo( starsAcctInfo );
+                    }
+                }                
 				else {
 					// Order the search result by company name/search criteria
 					// (last name if search by last name, address if search by address, account # otherwise)
@@ -265,7 +280,8 @@ public class SearchCustAccountAction implements ActionBase {
 						acctList.toArray( accounts );
 						
 						if (searchByDefID == YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_LAST_NAME) {
-							Arrays.sort( accounts, LAST_NAME_CMP );
+						    //Do not sort the lastnames!  This is now handled in the CustomerAccount.searchByPrimaryContactLastName query!!!
+//							Arrays.sort( accounts, LAST_NAME_CMP );    
 						}
 						else if (searchByDefID == YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_ADDRESS) {
 							Pair[] pairs = new Pair[ accounts.length ];
