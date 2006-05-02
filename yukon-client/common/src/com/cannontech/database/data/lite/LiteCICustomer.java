@@ -129,8 +129,8 @@ public class LiteCICustomer extends LiteCustomer
 		return getCompanyName();
 	}
 	
-	public void retrieve( String dbalias )
-	{
+    public void retrieve( String dbalias )
+    {
         PreparedStatement pstmt = null;
         java.sql.Connection conn = null;
         ResultSet rset = null;
@@ -139,13 +139,16 @@ public class LiteCICustomer extends LiteCustomer
             conn = PoolManager.getInstance().getConnection( dbalias );
             
             String sql = "SELECT ci.MainAddressID, ci.CompanyName, ci.CustomerDemandLevel, " +
-                        "ci.CurtailAmount, ci.CICustType, c.PrimaryContactID, c.CustomerTypeID, " +
-                        "c.TimeZone, c.CustomerNumber, c.RateScheduleID, c.AltTrackNum, c.TemperatureUnit, " +
-                        " cont.ContFirstName, cont.ContLastName, cont.LoginID, cont.AddressID " +
-                        " FROM " + Customer.TABLE_NAME + " c, " + CICustomerBase.TABLE_NAME + " ci, " + Contact.TABLE_NAME + " cont " +
-                        " WHERE c.CustomerID = ci.CustomerID " +
-                        " AND c.Primarycontactid = cont.contactID " +
-                        " AND ci.CustomerID = ? ";
+                        " ci.CurtailAmount, ci.CICustType, c.PrimaryContactID, c.CustomerTypeID, " +
+                        " c.TimeZone, c.CustomerNumber, c.RateScheduleID, c.AltTrackNum, c.TemperatureUnit" +
+                        " FROM " + Customer.TABLE_NAME + " c, " + CICustomerBase.TABLE_NAME + " ci" +
+                        " WHERE ci.CustomerID = ? AND c.CustomerID = ci.CustomerID";
+/*            "c.TimeZone, c.CustomerNumber, c.RateScheduleID, c.AltTrackNum, c.TemperatureUnit, " +
+            " cont.ContFirstName, cont.ContLastName, cont.LoginID, cont.AddressID " +
+            " FROM " + Customer.TABLE_NAME + " c, " + CICustomerBase.TABLE_NAME + " ci, " + Contact.TABLE_NAME + " cont " +
+            " WHERE c.CustomerID = ci.CustomerID " +
+            " AND c.Primarycontactid = cont.contactID " +
+            " AND ci.CustomerID = ? ";*/
             
             pstmt = conn.prepareStatement( sql );
             pstmt.setInt( 1, getCustomerID());
@@ -158,19 +161,19 @@ public class LiteCICustomer extends LiteCustomer
                 setDemandLevel( rset.getDouble(3) );
                 setCurtailAmount( rset.getDouble(4) );
                 setCICustType( rset.getInt(5) );
-//                setPrimaryContactID(rset.getInt(6) );
+                setPrimaryContactID(rset.getInt(6) );
                 setCustomerTypeID( rset.getInt(7) );
                 setTimeZone( rset.getString(8) );
                 setCustomerNumber( rset.getString(9) );
                 setRateScheduleID( rset.getInt(10) );
                 setAltTrackingNumber( rset.getString(11) );
                 setTemperatureUnit( rset.getString(12) );
-                LiteContact liteContact = new LiteContact(rset.getInt(6));
+/*                LiteContact liteContact = new LiteContact(rset.getInt(6));
                 liteContact.setContFirstName( rset.getString(13));
                 liteContact.setContLastName( rset.getString(14));
                 liteContact.setLoginID( rset.getInt(15));
                 liteContact.setAddressID( rset.getInt(16));
-                setLiteContact(liteContact);
+                setLiteContact(liteContact);*/
             }
             else
                 throw new IllegalStateException("Unable to find the Customer with CustomerID = " + getCustomerID() );
@@ -186,7 +189,7 @@ public class LiteCICustomer extends LiteCustomer
             catch (java.sql.SQLException e) {}
         }
         
-	}
+    }
 
 	public int getCICustType() {
 		return ciCustType;

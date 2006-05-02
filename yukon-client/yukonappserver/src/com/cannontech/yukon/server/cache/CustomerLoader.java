@@ -55,12 +55,10 @@ public class CustomerLoader implements Runnable
 	//temp code
 	//TODO EFFICIENCY!!!
 		//get all the customer contacts that are assigned to a customer
-		String sqlString = 
-         "select CustomerID, PrimaryContactID, TimeZone, CustomerTypeID, CustomerNumber, RateScheduleID, " +
-         "AltTrackNum, TemperatureUnit, " +
-         " cont.ContFirstName, cont.ContLastName, cont.LoginID, cont.AddressID " +
-         "from " + Customer.TABLE_NAME + " cust, " + Contact.TABLE_NAME + " cont " + 
-         " Where cust.primarycontactid = cont.contactid";
+    String sqlString = 
+        "select CustomerID, PrimaryContactID, TimeZone, CustomerTypeID, CustomerNumber, RateScheduleID, " +
+        "AltTrackNum, TemperatureUnit " +
+        "from " + Customer.TABLE_NAME;
 	
 		java.sql.Connection conn = null;
 		java.sql.Statement stmt = null;
@@ -92,20 +90,13 @@ public class CustomerLoader implements Runnable
                 } else {
                     lc = new LiteCustomer( cstID );
                 }
-//				lc.setPrimaryContactID(contactID);
+				lc.setPrimaryContactID(contactID);
 				lc.setTimeZone(timeZone);
 				lc.setCustomerTypeID(custTypeID);
                 lc.setCustomerNumber(custNumber);
                 lc.setRateScheduleID(custRateScheduleID);
                 lc.setAltTrackingNumber(custAltTrackNum);
                 lc.setTemperatureUnit(temperatureUnit);
-
-                LiteContact liteContact = new LiteContact(contactID);
-                liteContact.setContFirstName( rset.getString(9).trim());
-                liteContact.setContLastName( rset.getString(10).trim());
-                liteContact.setLoginID( rset.getInt(11));
-                liteContact.setAddressID( rset.getInt(12));
-                lc.setLiteContact(liteContact);
                 
 				allCustomers.add(lc);
                 if(maxCustomerID < lc.getCustomerID())
@@ -154,6 +145,23 @@ public class CustomerLoader implements Runnable
 				allCustsMap.put( new Integer(lc.getCustomerID()), lc);
 			}
 			
+/*            sqlString = "select cust.customerid, cont.contactid, cont.ContFirstName, cont.ContLastName, cont.LoginID, cont.AddressID " +
+                       " from " + Customer.TABLE_NAME + " cust, " + Contact.TABLE_NAME + " cont " + 
+                       " Where cust.primarycontactid = cont.contactid" +
+                       " and cust.customerid <= " + maxCustomerID;
+    
+                rset = stmt.executeQuery(sqlString);
+                while( rset.next())
+                {   
+                    int customerID = rset.getInt(1);
+                    LiteContact liteContact = new LiteContact(rset.getInt(2));
+                    liteContact.setContFirstName( rset.getString(3).trim());
+                    liteContact.setContLastName( rset.getString(4).trim());
+                    liteContact.setLoginID( rset.getInt(5));
+                    liteContact.setAddressID( rset.getInt(6));
+                    ((LiteCustomer)allCustsMap.get(new Integer(customerID))).setLiteContact(liteContact);
+                }
+*/    
 			if (VersionTools.starsExists()) {
 				sqlString =	"SELECT acct.AccountID, map.EnergyCompanyID, acct.CustomerID " +
 						"FROM CustomerAccount acct, ECToAccountMapping map " +
