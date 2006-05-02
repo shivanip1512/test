@@ -77,6 +77,15 @@ create unique index INDX_SYSLG_PTID_TS on SYSTEMLOG (
    DATETIME ASC
 );
 
+create table EsubDisplayIndex (
+   SearchKey            varchar(500)         not null,
+   DisplayUrl           varchar(500)         not null
+);
+
+
+alter table EsubDisplayIndex
+   add constraint PK_ESUBDISPLAYINDEX primary key  (SearchKey);
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
