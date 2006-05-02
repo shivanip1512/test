@@ -7,11 +7,15 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2006/03/23 15:29:15 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2006/05/02 20:25:30 $
 *
 * HISTORY      :
 * $Log: pendingOpThread.cpp,v $
+* Revision 1.28  2006/05/02 20:25:30  cplender
+* Added cparm DISPATCH_COMPUTE_RESTORATION to turn on the
+* ControlStopCountdown point.  Set to true to enable.
+*
 * Revision 1.27  2006/03/23 15:29:15  jotteson
 * Mass update of point* to smart pointers. Point manager now uses smart pointers.
 *
@@ -1011,7 +1015,7 @@ void CtiPendingOpThread::postControlStopPoint(CtiPendingPointOperations &ppc, bo
 
     CtiPointNumericSPtr pPoint;
 
-    if( 0 && (doit || ppc.getControl().getPreviousStopReportTime() <= now) )
+    if( gConfigParms.isTrue("DISPATCH_COMPUTE_RESTORATION") && (doit || ppc.getControl().getPreviousStopReportTime() <= now) )
     {
         if(ppc.getControl().getControlDuration() > 0)
         {
