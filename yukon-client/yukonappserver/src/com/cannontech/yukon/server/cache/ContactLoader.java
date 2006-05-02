@@ -16,7 +16,7 @@ import com.cannontech.database.db.contact.ContactNotification;
 public class ContactLoader implements Runnable 
 {
     //if total contact number is over this, better not load this way
-    private final int MAX_CONTACT_LOAD = 50000;
+    private final int MAX_CONTACT_LOAD = 1;
     private boolean willNeedDynamicLoad = false;
     
     //Map<Integer(contactID), LiteContact>
@@ -117,8 +117,8 @@ public class ContactLoader implements Runnable
 
                 // check if the lastContact is still valid
                 if (lastContact == null || lastContact.getContactID() != ln.getContactID()) {
-                    lastContact = 
-                        (LiteContact)allContactsMap.get( new Integer(ln.getContactID()) );
+                    lastContact = (LiteContact)allContactsMap.get( new Integer(ln.getContactID()) );
+                    lastContact.setExtended(true);  //This flag will eliminate the automatic "extended" loading.
                 }
                 
                 // add this contact notif to its contact
