@@ -261,7 +261,8 @@ public class LiteContact extends LiteBase
         if (liteContactNotifications == null)
         {
             liteContactNotifications = new Vector<LiteContactNotification>();
-            retrieveExtended();
+            if( !isExtended())  //Don't load them again!  ContactLoader uses this flag to load these contactNotifs on his own.
+                retrieveExtended();
         }
         return liteContactNotifications;
     }
