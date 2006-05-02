@@ -81,7 +81,7 @@ INT StateNameGetEqual (STATENAMETABLE *StateNameRecord)
     return 0;
 }
 
-INT VConfigLocate (VERSACONFIG* vcfg, GROUP* grp)
+INT VConfigLocate (VERSACONFIG* vcfg, CTIGROUP* grp)
 {
     printf("This MUST BE FIX FIX FIX ed CGP \n");
     return 0;
@@ -2148,7 +2148,7 @@ void IM_EX_CTIBASE getCommandName (SHORT CommandCode,
 
 /* this proc fills in the versacomm word struct with addressing including E-word */
 IM_EX_CTIBASE INT VersacomWordFill (VSTRUCT *Vst,
-                                    GROUP   *GroupRecord,
+                                    CTIGROUP   *GroupRecord,
                                     USHORT  VCommandType,
                                     USHORT  ControlAmount,
                                     USHORT  Period,
