@@ -174,6 +174,7 @@ public class StarsLiteFactory {
 		liteContact.setLoginID( contact.getContact().getLogInID().intValue() );
 		liteContact.setAddressID( contact.getContact().getAddressID().intValue() );
 		
+        liteContact.setExtended(true);  //disabling the auto load!
 		liteContact.getLiteContactNotifications().removeAllElements();
 		
 		for (int i = 0; i < contact.getContactNotifVect().size(); i++) {
