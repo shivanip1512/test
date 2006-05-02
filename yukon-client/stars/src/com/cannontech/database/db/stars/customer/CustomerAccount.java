@@ -236,6 +236,7 @@ public class CustomerAccount extends DBPersistent {
             lastName = lastName_.substring(0, commaIndex).trim();
         }
         String sql = "SELECT DISTINCT map.energycompanyID, acct.AccountID " +
+                    " , contlastname, contfirstname " + //these are for the order by functionality
                     " FROM ECToAccountMapping map, " + TABLE_NAME + " acct, " + 
                     Customer.TABLE_NAME + " cust, " +  Contact.TABLE_NAME + " cont " +
                     " WHERE map.AccountID = acct.AccountID " +
@@ -252,7 +253,8 @@ public class CustomerAccount extends DBPersistent {
                         for (int i = 1; i < energyCompanyIDList.size(); i++)
                              sql += " OR map.EnergyCompanyID = " + energyCompanyIDList.get(i).toString();
                         sql += " ) ";
-                    }                    
+                    }
+                    sql += " order by map.energycompanyid, contlastname, contfirstname";
                     
 
         PreparedStatement pstmt = null;
