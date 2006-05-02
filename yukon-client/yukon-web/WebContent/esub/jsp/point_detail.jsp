@@ -29,6 +29,7 @@
 */
 	   
 	int pointID = Integer.parseInt(request.getParameter("pointid"));
+	boolean allowControl = Boolean.parseBoolean(request.getParameter("allowControl"));
 	LitePoint lPoint = PointFuncs.getLitePoint(pointID);	
 	String pointName = lPoint.getPointName();
 	int pointOffset = lPoint.getPointOffset();
@@ -54,7 +55,8 @@
 	
 	LiteYukonUser user = (LiteYukonUser) session.getAttribute(ServletUtil.ATT_YUKON_USER);
     boolean offerControl = (PointTypes.STATUS_POINT == lPoint.getPointType() &&
-    						AuthFuncs.checkRoleProperty(user, com.cannontech.roles.operator.EsubDrawingsRole.CONTROL));
+    						AuthFuncs.checkRoleProperty(user, com.cannontech.roles.operator.EsubDrawingsRole.CONTROL) &&
+    						allowControl);
 %>
 <html>
 <table border="1" bgcolor = "#CCCCCC">

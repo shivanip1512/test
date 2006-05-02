@@ -274,7 +274,7 @@ public class SVGGenerator {
 				textElem.setAttributeNS(null, "onclick", "editValue(evt)");	
 			} 
 			else {
-				textElem.setAttributeNS(null, "onclick", "showPointDetails(evt)");
+				textElem.setAttributeNS(null, "onclick", "showPointDetails(evt, allowControl)");
 			}
 		}
 		
@@ -413,7 +413,7 @@ public class SVGGenerator {
 		}
 		
 		if(!genOptions.isStaticSVG() && genOptions.isScriptingEnabled()) {
-			imgElem.setAttributeNS(null, "onclick", "showPointDetails(evt)");
+			imgElem.setAttributeNS(null, "onclick", "showPointDetails(evt, allowControl)");
 		}
 		return imgElem;
 	}	

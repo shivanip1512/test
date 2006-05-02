@@ -10,17 +10,18 @@
  * Popup a point details jsp, pass in the click event it can
  * figure out what point was clicked and where to pop up
  */
-function showPointDetails(evt) {
+function showPointDetails(evt, allowControl) {
 	// Figure out the point id that was clicked on
 	var node = evt.getTarget();
     var id = node.getAttribute('id');
+    var controlEnabled = allowControl;
 
 	// Store the location and the dimensions of the point
 	// so we can position the popup
 	popupx = parseInt(node.getAttribute('x'));
 	popupy = parseInt(node.getAttribute('y'));
 	
-	var url = "/esub/jsp/point_detail.jsp?pointid=" + id;
+	var url = "/esub/jsp/point_detail.jsp?pointid=" + id + "&allowControl=" + controlEnabled;
 		
 	getURL(url, handleShowPointReq);
 	
