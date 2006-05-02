@@ -2894,7 +2894,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
                 {
                     for (int j = 0; j < accountIDs.size(); j++)
                     {
-                        LiteStarsCustAccountInformation liteAcctInfo = liteStarsEC.getBriefCustAccountInfo( accountIDs.get(j).intValue(), true);
+                        LiteStarsCustAccountInformation liteAcctInfo = liteStarsEC.getBriefCustAccountInfo( accountIDs.get(j).intValue(), (j<250));
                         if (searchMembers)
                             accountList.add(new Pair(liteAcctInfo, liteStarsEC) );
                         else
