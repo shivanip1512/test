@@ -8,7 +8,12 @@ import com.cannontech.esub.Drawing;
 
 /**
  * Generates html for an esub drawing.
+ * 
+ * There is a dependendency on the EmbedSVGJSServlet as well as web.xml to avoid a particular bug in IE.
+ * Check out EmbedSVGJSServlet for details regarding the problem.
+ * 
  * @author alauinger
+ * @see com.cannontech.esub.servlet.EmbedSVGJSServlet
  */
 public class HTMLGenerator {
 	private static final String header = 
@@ -58,7 +63,7 @@ public class HTMLGenerator {
 			w.write(script);
 		}
 		w.write("<A NAME=\"popupanchor\" ID=\"popupanchor\"> </A>");
-		w.write("<embed src=\"" + svgFile + "\" name=\"SVGEmbed\" width=\"" + width + "\" height=\"" + height + "\" type=\"image/svg-xml\" pluginspage=\"http://www.adobe.com/svg/viewer/install\" wmode=\"transparent\" />");
+		w.write("<script src='embedSVGControl.js?svgfile=" + svgFile + "&width=" + width + "&height=" + height + "'></script>");
 		w.write(footer);		
 	}
 	
