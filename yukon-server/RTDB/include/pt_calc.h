@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_calc.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2006/04/05 16:23:53 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2006/05/02 16:12:52 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,6 +17,7 @@
 
 
 #include <rw/tpsrtvec.h>
+#include "sorted_vector"
 #include "pt_numeric.h"
 
 /*-----------------------------------------------------------------------------*
@@ -60,8 +61,7 @@ private:
 
    INT         UpdateFrequency;
 
-   RWTPtrSortedVector<CtiPointCalculation, greater<CtiPointCalculation> > CalcVector;
-
+   codeproject::sorted_vector<CtiPointCalculation*, false, greater<CtiPointCalculation> > CalcVector;
 public:
 
    typedef     CtiPointNumeric    Inherited;
@@ -129,7 +129,7 @@ public:
    void     setUpdateFrequency(INT i)           { UpdateFrequency = i; }
 
    // Just have at it ok!
-   RWTPtrSortedVector<CtiPointCalculation, greater<CtiPointCalculation> >& getCalcVector() { return CalcVector; }
+   codeproject::sorted_vector<CtiPointCalculation*, false, greater<CtiPointCalculation> >& getCalcVector() { return CalcVector; }
 
    virtual void DumpData()
    {
