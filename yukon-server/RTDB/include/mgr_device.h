@@ -11,8 +11,8 @@
  *
  *
  * PVCS KEYWORDS:
- * REVISION     :  $Revision: 1.27 $
- * DATE         :  $Date: 2006/04/25 19:07:14 $
+ * REVISION     :  $Revision: 1.28 $
+ * DATE         :  $Date: 2006/05/02 20:25:45 $
  *
  *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
@@ -135,6 +135,7 @@ public:
     bool removeInfiniteExclusion(CtiDeviceSPtr anxiousDevice);
     ptr_type chooseExclusionDevice(LONG portid);
     CtiDeviceManager &addPortExclusion(LONG paoID);
+    void refreshPointGroups(LONG paoID = 0, CtiDeviceBase* (*Factory)(RWDBReader &) = DeviceFactory);
 
 };
 

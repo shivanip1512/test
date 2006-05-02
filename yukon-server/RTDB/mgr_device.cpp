@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.81 $
-* DATE         :  $Date: 2006/04/25 19:07:14 $
+* REVISION     :  $Revision: 1.82 $
+* DATE         :  $Date: 2006/05/02 20:25:44 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1656,32 +1656,7 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
                         }
 
                         start = start.now();
-                        {
-                            RWDBConnection conn = getConnection();
-                            RWDBDatabase db = getDatabase();
-
-                            RWDBTable   keyTable;
-                            RWDBSelector selector = db.selector();
-
-                            if(DebugLevel & 0x00020000)
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Point Group Devices" << endl;
-                            }
-                            CtiDeviceGroupPoint().getSQL( db, keyTable, selector );
-                            if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
-
-                            RWDBReader rdr = selector.reader(conn);
-                            if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
-                            }
-                            refreshDevices(rowFound, rdr, Factory);
-
-                            if(DebugLevel & 0x00020000)
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for Point Group Devices" << endl;
-                            }
-                        }
+                        refreshPointGroups(paoID,Factory);
                         stop = stop.now();
                         if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
                         {
@@ -3051,5 +3026,37 @@ CtiDeviceManager &CtiDeviceManager::addPortExclusion( LONG paoID )
     }
 
     return *this;
+}
+
+
+void CtiDeviceManager::refreshPointGroups(LONG paoID, CtiDeviceBase* (*Factory)(RWDBReader &))
+{
+    bool rowFound = false;
+    RWTime start, stop, querytime;
+
+    RWDBConnection conn = getConnection();
+    RWDBDatabase db = getDatabase();
+
+    RWDBTable   keyTable;
+    RWDBSelector selector = db.selector();
+
+    if(DebugLevel & 0x00020000)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Point Group Devices" << endl;
+    }
+    CtiDeviceGroupPoint().getSQL( db, keyTable, selector );
+    if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
+
+    RWDBReader rdr = selector.reader(conn);
+    if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+    }
+    refreshDevices(rowFound, rdr, Factory);
+
+    if(DebugLevel & 0x00020000)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for Point Group Devices" << endl;
+    }
 }
 

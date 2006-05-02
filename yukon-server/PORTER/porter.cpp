@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.93 $
-* DATE         :  $Date: 2006/04/13 19:37:06 $
+* REVISION     :  $Revision: 1.94 $
+* DATE         :  $Date: 2006/05/02 20:25:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1555,6 +1555,9 @@ INT RefreshPorterRTDB(void *ptr)
                     }
                 }
             }
+
+            // We also need to reload all the point groups to make certain the control strings get updated.
+            DeviceManager.refreshPointGroups();
         }
     }
     else
