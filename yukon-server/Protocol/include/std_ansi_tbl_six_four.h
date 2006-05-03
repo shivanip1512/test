@@ -15,10 +15,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_ansi_tbl_six_four.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2006/03/31 16:18:32 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2006/05/03 17:19:33 $
 *    History: 
       $Log: std_ansi_tbl_six_four.h,v $
+      Revision 1.6  2006/05/03 17:19:33  jrichter
+      BUG FIX:  correct DST adjustment for columbia flags.  added check for _nbrFullBlocks > 0 so it wouldn't set lastLPTime to 2036
+
       Revision 1.5  2006/03/31 16:18:32  jrichter
       BUG FIX & ENHANCEMENT:  fixed a memory leak (multiple allocations of lpBlocks, but only one deallocation), added quality retrieval.
 
@@ -155,6 +158,7 @@ private:
     int   _niFmt1;
     int   _niFmt2;
     int   _timeFmt;
+    int   _meterHour;
 
 
 public:
@@ -164,13 +168,13 @@ public:
                         int numberBlockIntervalsSet, bool blockEndReadFlag,
                         bool blockEndPulseFlag, bool extendedIntervalStatusFlag, int maxIntvlTime, 
                         int intervalFmtCde, int nbrValidInts, int niFmt1, int niFmt2, 
-                        int timeFmt  );
+                        int timeFmt, int meterHour  );
    CtiAnsiTableSixFour( BYTE *dataBlob, int numberBlocksSet, int numberChansSet, 
                         bool closureStatusFlag, bool simpleIntervalStatusFlag,
                         int numberBlockIntervalsSet, bool blockEndReadFlag,
                         bool blockEndPulseFlag, bool extendedIntervalStatusFlag, int maxIntvlTime, 
                         int intervalFmtCde, int nbrValidInts, int niFmt1, int niFmt2, 
-                        int timeFmt );
+                        int timeFmt, int meterHour );
    
    virtual ~CtiAnsiTableSixFour();
 

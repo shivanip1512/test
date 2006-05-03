@@ -11,10 +11,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/prot_ansi.cpp-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2006/04/14 16:31:03 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2006/05/03 17:19:33 $
 *    History: 
       $Log: prot_ansi.cpp,v $
+      Revision 1.22  2006/05/03 17:19:33  jrichter
+      BUG FIX:  correct DST adjustment for columbia flags.  added check for _nbrFullBlocks > 0 so it wouldn't set lastLPTime to 2036
+
       Revision 1.21  2006/04/14 16:31:03  jrichter
       BUG FIX: DST adjustment
 
@@ -679,14 +682,14 @@ bool CtiProtocolANSI::decode( CtiXfer &xfer, int status )
                            }
                        }
                        //Spring Ahead DST adjustment
-                       if (_tableFiveTwo->adjustTimeForDST() )
+                       /*if (_tableFiveTwo->adjustTimeForDST() )
                        {
-                           _header->lastLoadProfileTime += 3600;                                         
+                           _header->lastLoadProfileTime += 3600;
                            {
                                    CtiLockGuard< CtiLogger > doubt_guard( dout );
                                    dout <<  "  ** DEBUG **** Last Load Profile Time Adjusted to: " <<CtiTime(_header->lastLoadProfileTime) << endl;
                            }
-                       }
+                       }  */
                    }
                    if ((_lpStartBlockIndex = calculateLPDataBlockStartIndex(_header->lastLoadProfileTime)) < 0)
                    {
@@ -1353,6 +1356,12 @@ void CtiProtocolANSI::convertToTable(  )
                             _forceProcessDispatchMsg = true;
                     }
 
+                    int meterHour = 0;
+                    if (_tableFiveTwo != NULL)
+                    {
+                        meterHour = _tableFiveTwo->getClkCldrHour();
+                    }
+
                     _tableSixFour = new CtiAnsiTableSixFour( getApplicationLayer().getCurrentTable(), _lpNbrFullBlocks + 1,
                                                            _tableSixOne->getNbrChansSet(1), _tableSixOne->getClosureStatusFlag(), 
                                                            _tableSixOne->getSimpleIntStatusFlag(), _tableSixOne->getNbrBlkIntsSet(1),
@@ -1360,7 +1369,7 @@ void CtiProtocolANSI::convertToTable(  )
                                                            _tableSixOne->getExtendedIntStatusFlag(), _tableSixOne->getMaxIntTimeSet(1),
                                                            _tableSixTwo->getIntervalFmtCde(1), validIntvls,
                                                            _tableZeroZero->getRawNIFormat1(), _tableZeroZero->getRawNIFormat2(), 
-                                                           _tableZeroZero->getRawTimeFormat() );
+                                                           _tableZeroZero->getRawTimeFormat(), meterHour );
                     
                     getApplicationLayer().setLPDataMode( false, 0 );
 
@@ -2702,7 +2711,7 @@ bool CtiProtocolANSI::retreiveLPDemand( int offset, int dataSet )
                                 _tableOneTwo->getRawIDCode(lpDemandSelect[x]) == ansiOffset) 
                             {
 
-                                if (_tableSixFour != NULL)
+                                if (_tableSixFour != NULL && _lpNbrFullBlocks > 0)
                                 {                        
                                     success = true;
                                     /*if (!_tableOneSix->getConstantsFlag(lpDemandSelect[x]) && 
@@ -2748,9 +2757,15 @@ bool CtiProtocolANSI::retreiveLPDemand( int offset, int dataSet )
                                                             {
                                                                 if (_tableFiveTwo->adjustTimeForDST() )
                                                                 {
-                                                                    _lpTimes[y] -= 3600;
+                                                                    if (CtiTime(_lpTimes[y]) > CtiTime().beginDST(RWDate().year()))
+                                                                        _lpTimes[y] -= 3600;
+                                                                    else
+                                                                    {
+                                                                        _lpTimes[y] -= ( 3600 * 2 );
+
+                                                                    }
                                                                 }
-                                                            }
+                                                            } 
                                                             if (_tableSixFour->getPowerFailFlag(blkIndex, intvlIndex))
                                                                 _lpQuality[y] = PowerfailQuality; //powerFailQuality
                                                             else
@@ -2772,9 +2787,14 @@ bool CtiProtocolANSI::retreiveLPDemand( int offset, int dataSet )
                                                             {
                                                                 if (_tableFiveTwo->adjustTimeForDST() )
                                                                 {
-                                                                    _lpTimes[y] -= 3600;
+                                                                    if (CtiTime(_lpTimes[y]) > CtiTime().beginDST(RWDate().year()))
+                                                                        _lpTimes[y] -= 3600;
+                                                                    else
+                                                                    {
+                                                                        _lpTimes[y] -= ( 3600 * 2 );
+                                                                    }
                                                                 }
-                                                            }
+                                                            } 
                                                             if (_tableSixFour->getPowerFailFlag(blkIndex, intvlIndex))
                                                                 _lpQuality[y] = PowerfailQuality; //powerFailQuality
                                                             else

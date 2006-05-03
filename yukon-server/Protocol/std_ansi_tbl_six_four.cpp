@@ -20,7 +20,7 @@ CtiAnsiTableSixFour::CtiAnsiTableSixFour( int numberBlocksSet, int numberChansSe
                                           bool closureStatusFlag, bool simpleIntervalStatusFlag,
                                           int numberBlockIntervalsSet, bool blockEndReadFlag,
                                           bool blockEndPulseFlag, bool extendedIntervalStatusFlag, int maxIntvlTime,
-                                          int intervalFmtCde, int nbrValidInts, int niFmt1, int niFmt2, int timeFmt )
+                                          int intervalFmtCde, int nbrValidInts, int niFmt1, int niFmt2, int timeFmt, int meterHour )
 {  
     _nbrBlksSet1 = numberBlocksSet;
     _nbrChnsSet1 = numberChansSet;
@@ -36,6 +36,7 @@ CtiAnsiTableSixFour::CtiAnsiTableSixFour( int numberBlocksSet, int numberChansSe
     _timeFmt = timeFmt;
     _niFmt1 = niFmt1;
     _niFmt2 = niFmt2;
+    _meterHour = meterHour;
 
 }
 
@@ -46,7 +47,7 @@ CtiAnsiTableSixFour::CtiAnsiTableSixFour( BYTE *dataBlob, int numberBlocksSet, i
                                           bool closureStatusFlag, bool simpleIntervalStatusFlag,
                                           int numberBlockIntervalsSet, bool blockEndReadFlag,
                                           bool blockEndPulseFlag, bool extendedIntervalStatusFlag, int maxIntvlTime,
-                                          int intervalFmtCde, int nbrValidInts, int niFmt1, int niFmt2, int timeFmt )
+                                          int intervalFmtCde, int nbrValidInts, int niFmt1, int niFmt2, int timeFmt, int meterHour )
 {
     int index, i, j;
     int bytes = 0;
@@ -64,8 +65,8 @@ CtiAnsiTableSixFour::CtiAnsiTableSixFour( BYTE *dataBlob, int numberBlocksSet, i
     _nbrValidInts = nbrValidInts;
     _timeFmt = timeFmt;
     _niFmt1 = niFmt1;
-    _niFmt2 = niFmt2;
-
+    _niFmt2 = niFmt2;   
+    _meterHour = meterHour;
    
     _lp_data_set1_tbl.lp_data_sets1 = new LP_BLK1_DAT_RCD[_nbrBlksSet1];
 
@@ -448,6 +449,10 @@ void CtiAnsiTableSixFour::printResult( const string& deviceName )
                         CtiLockGuard< CtiLogger > doubt_guard( dout );
                         dout << "  "<<_lp_data_set1_tbl.lp_data_sets1[index].lp_int[i].extended_int_status[j];
                     }
+                    {
+                        CtiLockGuard< CtiLogger > doubt_guard( dout );
+                        dout << " DSTFlag( "<<_lp_data_set1_tbl.lp_data_sets1[index].lp_int[i].dayLightSavingsFlag<<" )";
+                    }
                 }
                 {
                     CtiLockGuard< CtiLogger > doubt_guard( dout );
@@ -564,6 +569,17 @@ bool CtiAnsiTableSixFour::getBlkIntvlTime(int blkSet, int blkIntvl, ULONG &blkIn
             if (blkIntvl <= totIntvls)
             {
                 blkIntvlTime = blkEndTime - ((totIntvls - (blkIntvl+1)) * _maxIntvlTime * 60); //likely need to change to time, then convert to seconds.
+                /*if (CtiTime(blkEndTime) > CtiTime().beginDST(RWDate(CtiTime(blkEndTime)).year()) && ((CtiTime(blkEndTime).seconds() - CtiTime().beginDST(RWDate(CtiTime(blkEndTime)).year()).seconds())/(_maxIntvlTime) <= totIntvls ))
+                {
+                    if (CtiTime(blkIntvlTime) < CtiTime().beginDST(RWDate(CtiTime(blkEndTime)).year()))// && getDayLightSavingsFlag(blkSet, blkIntvl))
+                    {
+                        {
+                            CtiLockGuard< CtiLogger > doubt_guard( dout );
+                            dout << "  **  ADjuSTing Time + 3600  **  "<<endl;
+                        }
+                        blkIntvlTime = blkIntvlTime + 3600;
+                    }
+                } */
                 retVal = true;
             }
             else 
@@ -577,6 +593,17 @@ bool CtiAnsiTableSixFour::getBlkIntvlTime(int blkSet, int blkIntvl, ULONG &blkIn
             if (blkSet == (_nbrBlksSet1 -1) && blkIntvl < _nbrValidInts) 
             {
                 blkIntvlTime = blkEndTime - ((_nbrValidInts - (blkIntvl+1)) * _maxIntvlTime * 60);
+               /* if (CtiTime(blkEndTime) > CtiTime().beginDST(RWDate(CtiTime(blkEndTime)).year()) && ((CtiTime(blkEndTime).seconds() - CtiTime().beginDST(RWDate(CtiTime(blkEndTime)).year()).seconds())/(_maxIntvlTime) <= _nbrValidInts ))
+                {
+                    if (CtiTime(blkIntvlTime) < CtiTime().beginDST(RWDate(CtiTime(blkEndTime)).year()))
+                    {
+                        {
+                            CtiLockGuard< CtiLogger > doubt_guard( dout );
+                            dout << "  **  ADjuSTing Time + 3600  **  "<<endl;
+                        }
+                        blkIntvlTime = blkIntvlTime + 3600;
+                    }
+                } */
                 retVal = true;
             }
             else
@@ -584,6 +611,17 @@ bool CtiAnsiTableSixFour::getBlkIntvlTime(int blkSet, int blkIntvl, ULONG &blkIn
                 if (blkIntvl < _nbrBlkIntsSet1)
                 {
                     blkIntvlTime = blkEndTime - ((_nbrBlkIntsSet1 - (blkIntvl+1)) * _maxIntvlTime * 60);
+                    /*if (CtiTime(blkEndTime) > CtiTime().beginDST(RWDate(CtiTime(blkEndTime)).year()) && ((CtiTime(blkEndTime).seconds() - CtiTime().beginDST(RWDate(CtiTime(blkEndTime)).year()).seconds())/(_maxIntvlTime) <= _nbrBlkIntsSet1 ))
+                    {
+                        if (CtiTime(blkIntvlTime) < CtiTime().beginDST(RWDate(CtiTime(blkEndTime)).year()))
+                        {
+                            {
+                                CtiLockGuard< CtiLogger > doubt_guard( dout );
+                                dout << "  **  ADjuSTing Time+ 3600  **  "<<endl;
+                            }
+                            blkIntvlTime = blkIntvlTime + 3600;
+                        }
+                    }   */
                     retVal = true;
                 }
                 else
