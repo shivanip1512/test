@@ -3,7 +3,7 @@
 <%@ page import="com.cannontech.loadcontrol.data.LMProgramDirect" %>
 <%@ page import="java.util.Calendar" %>
 <%@ taglib uri="/WEB-INF/struts.tld" prefix="struts" %>
-<%@ taglib uri="/WEB-INF/cti.tld" prefix="cti" %>
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <jsp:useBean id="checker" scope="session" class="com.cannontech.validate.PageBean"/>
 <%
 /* Parameters:

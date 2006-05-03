@@ -1,6 +1,6 @@
 <%@ page language="java" %>
 
-<%@ taglib uri="../WEB-INF/cti.tld" prefix="cti" %>
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 
 <%@ page import="com.cannontech.yimp.util.ImportWebInfoObject" %>
 <!--

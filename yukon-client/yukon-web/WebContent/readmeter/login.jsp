@@ -6,7 +6,7 @@ if( loggingOut != null && loggingOut.equalsIgnoreCase("true"))
 }
 %>
 <%@ page language="java" %>
-<%@ taglib uri="/WEB-INF/cti.tld" prefix="cti" %>
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%
       //Check whether this is a second attempt
       String lastAttemptFailed = request.getParameter("failed");

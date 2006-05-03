@@ -1,4 +1,4 @@
-<%@ taglib uri="/WEB-INF/cti.tld" prefix="cti" %>
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ page import="java.io.StringWriter" %>
 <%@ page import="com.cannontech.database.cache.StarsDatabaseCache" %>
 <%@ page import="com.cannontech.database.data.lite.stars.*" %>

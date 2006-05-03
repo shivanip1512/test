@@ -7,7 +7,7 @@
 <%@ page import="com.cannontech.database.db.graph.GraphRenderers" %>
 <%@ page import="com.cannontech.util.ServletUtil" %>
 <%@ page import="com.cannontech.roles.cicustomer.CommercialMeteringRole"%>
-<%@ taglib uri="/WEB-INF/cti.tld" prefix="cti" %>
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 
 <cti:checklogin/>
 <%

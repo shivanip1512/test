@@ -7,7 +7,7 @@
 <%@ page import="com.cannontech.database.db.device.DeviceMeterGroup" %>
 <%@ page import="com.cannontech.billing.FileFormatTypes"%>
 <%@ page import="com.cannontech.util.ServletUtil" %>
-<%@ taglib uri="/WEB-INF/cti.tld" prefix="cti" %>
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 
 <cti:checklogin/>
 

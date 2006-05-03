@@ -2,7 +2,7 @@
 <%@ page language="java" %>
 <%@ page import="com.cannontech.roles.application.WebClientRole"%>
 <%@ page import="com.cannontech.database.db.graph.GraphRenderers" %>
-<%@ taglib uri="/WEB-INF/cti.tld" prefix="cti" %>
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 
 <cti:checklogin/>
 <head>

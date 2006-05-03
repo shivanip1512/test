@@ -8,7 +8,7 @@
 <%@ page import="com.cannontech.roles.application.DBEditorRole" %>
 <%@ page import="com.cannontech.roles.yukon.SystemRole" %>
 
-<%@ taglib uri="/WEB-INF/cti.tld" prefix="cti" %>
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 
 <html>
 !tag_test!<br><br>

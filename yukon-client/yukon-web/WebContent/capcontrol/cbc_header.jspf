@@ -1,5 +1,5 @@
 <!-- START Static Page Header Include -->
-<%@ taglib uri="/WEB-INF/cti.tld" prefix="cti" %>
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ page import="com.cannontech.servlet.nav.DBEditorNav" %>
 <%@ page import="com.cannontech.database.data.pao.PAOGroups" %>
 <%@ page import="com.cannontech.database.data.point.PointTypes" %>
