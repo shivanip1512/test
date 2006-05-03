@@ -16,6 +16,7 @@
 #include "yukon.h"
 
 #include <windows.h>
+#include <set>
 #include "ctidbgmem.h"      // defines CTIDBG_new for memory tracking!
 #include "types.h"
 #include "dlldefs.h"
@@ -26,6 +27,9 @@
 using namespace std;
 
 DLLEXPORT CtiSemaphore  gDBAccessSema(gMaxDBConnectionCount, gMaxDBConnectionCount);
+
+typedef set< long > ignoreCol;
+static ignoreCol dbIgnores;     // Vendor Error numbers that should be ignored for Oracle, or SQLServer.
 
 // Bookkeeping information about a database connection
 struct DBInfo
@@ -278,6 +282,14 @@ RWDBReader ExecuteQuery(RWDBConnection& conn, const string& query)
 void
 dbErrorHandler (const RWDBStatus& aStatus, DBInfo* dbInfo)
 {
+    ignoreCol::iterator itr;
+
+    if( dbIgnores.end() != (itr = dbIgnores.find(aStatus.vendorError1())) )
+    {
+        // These errors have been specified as ignores.
+        return;
+    }
+
     switch(aStatus.vendorError1())
     {
     case 547:           // This is a foreign key violation for sqlserver.
@@ -405,5 +417,17 @@ RWDBStatus ExecuteInserter(RWDBConnection& conn, RWDBInserter &inserter, const c
     }
 
     return stat;
+}
+
+
+DLLEXPORT int addDBIgnore(long ignoreError)
+{
+    dbIgnores.insert(ignoreError);
+    return (int)(dbIgnores.size());
+}
+DLLEXPORT void resetDBIgnore()
+{
+    dbIgnores.clear();
+    return;
 }
 

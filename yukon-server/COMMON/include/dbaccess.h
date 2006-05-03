@@ -55,6 +55,8 @@ IM_EX_CTIBASE RWDBReader ExecuteQuery(RWDBConnection& conn, const string& query)
 IM_EX_CTIBASE RWDBStatus::ErrorCode ExecuteUpdater(RWDBConnection& conn, RWDBUpdater &updater, const char *file = 0, int line = 0, long *rowsAffected = 0);
 
 IM_EX_CTIBASE RWDBStatus ExecuteInserter(RWDBConnection& conn, RWDBInserter &inserter, const char *file = 0, int line = 0);
+IM_EX_CTIBASE int addDBIgnore(long ignoreError);
+IM_EX_CTIBASE void resetDBIgnore();
 
 
 

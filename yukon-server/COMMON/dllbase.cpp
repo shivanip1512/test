@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/dllbase.cpp-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2005/12/20 17:25:48 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2006/05/03 19:33:30 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -165,7 +165,7 @@ DLLEXPORT void InitYukonBaseGlobals(void)
     {
         if(DebugLevel & 0x0001) cout << "Configuration Parameter NOTIFICATION_PORT   failed : " << endl;
     }
-        
+
     if( !(str = gConfigParms.getValueAsString("DB_RWDBDLL")).empty() )
     {
         if(DebugLevel & 0x0001) cout << "Configuration Parameter DB_RWDBDLL   found : " << str << endl;
@@ -366,9 +366,9 @@ DLLEXPORT void InitYukonBaseGlobals(void)
 
         boost::char_separator<char> sep(",");
         Boost_char_tokenizer tok(str, sep);
-        Boost_char_tokenizer::iterator tok_iter = tok.begin(); 
+        Boost_char_tokenizer::iterator tok_iter = tok.begin();
 
-        
+
         string id_str;
         long      id;
 
@@ -418,6 +418,29 @@ DLLEXPORT void InitYukonBaseGlobals(void)
             }
 
             cout << endl;
+        }
+    }
+
+    if( !(str = gConfigParms.getValueAsString("DB_ERROR_IGNORE")).empty() )
+    {
+        //  Examples:
+        //  DB_ERROR_IGNORE : 15,78      - the listed errors are ignored if they occur.  (15, 78)
+
+        boost::char_separator<char> sep(", ");
+        Boost_char_tokenizer tok(str, sep);
+        Boost_char_tokenizer::iterator tok_iter = tok.begin();
+
+        resetDBIgnore();
+
+        string err_str;
+        long   err;
+
+        while( (tok_iter != tok.end()) && !(err_str = *tok_iter++).empty() )
+        {
+            if( err = atol(err_str.c_str()) )
+            {
+                addDBIgnore(err);
+            }
         }
     }
 }
