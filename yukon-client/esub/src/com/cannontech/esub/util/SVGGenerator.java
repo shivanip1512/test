@@ -274,7 +274,7 @@ public class SVGGenerator {
 				textElem.setAttributeNS(null, "onclick", "editValue(evt)");	
 			} 
 			else {
-				textElem.setAttributeNS(null, "onclick", "showPointDetails(evt, allowControl)");
+				textElem.setAttributeNS(null, "onclick", "showPointDetails(evt, " + String.valueOf(text.getControlEnabled()) + " )");
 			}
 		}
 		
@@ -413,7 +413,7 @@ public class SVGGenerator {
 		}
 		
 		if(!genOptions.isStaticSVG() && genOptions.isScriptingEnabled()) {
-			imgElem.setAttributeNS(null, "onclick", "showPointDetails(evt, allowControl)");
+			imgElem.setAttributeNS(null, "onclick", "showPointDetails(evt, " + String.valueOf(img.getControlEnabled()) + " )");
 		}
 		return imgElem;
 	}	

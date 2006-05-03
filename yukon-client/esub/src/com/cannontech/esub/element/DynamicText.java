@@ -26,7 +26,7 @@ public class DynamicText extends LxAbstractText implements DrawingElement, Seria
 	private static final String ELEMENT_ID = "dynamicText";
 	public static final int INVALID_POINT = -1;	
 	
-	private static final int CURRENT_VERSION = 1;
+	private static final int CURRENT_VERSION = 2;
 	
 	static final Font DEFAULT_FONT = new java.awt.Font("arial", java.awt.Font.BOLD, 12);
 	static final Color DEFAULT_COLOR = java.awt.Color.white;

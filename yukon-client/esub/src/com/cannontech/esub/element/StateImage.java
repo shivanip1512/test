@@ -31,7 +31,7 @@ import com.loox.jloox.LxAbstractImage;
 public class StateImage extends LxAbstractImage implements DrawingElement, YukonImageElement  {
 		
 	private static final String ELEMENT_ID = "stateImage";
-	private static final int CURRENT_VERSION = 2;
+	private static final int CURRENT_VERSION = 3;
 	
 	private int pointID = PointTypes.SYSTEM_POINT;
 	
