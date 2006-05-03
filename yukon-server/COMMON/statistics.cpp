@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2006/04/25 20:44:26 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2006/05/03 21:30:49 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -139,8 +139,7 @@ void CtiStatistics::incrementCompletion(const CtiTime &stattime, int CompletionS
 {
     // CtiLockGuard<CtiMutex> guard(_statMux);
 
-    int hourNo = stattime.hour();
-    if( getCounter(Completions, hourNo) >= getCounter(Requests, hourNo) 
+    if( getCounter(Completions, Daily) >= getCounter(Requests, Daily) 
         && CompletionStatus == NORMAL
         && !(gConfigParms.getValueAsULong("STATISTICS_DEBUGLEVEL", 0, 16) & STATISTICS_COMPENSATED_RESULTS) )
     {
