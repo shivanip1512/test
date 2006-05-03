@@ -5,6 +5,7 @@ import javax.servlet.jsp.JspException;
 
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.util.ReflectivePropertySearcher;
 import com.cannontech.util.ServletUtil;
 /**
  * Writes out the value of a role property for the current user.
@@ -13,7 +14,9 @@ import com.cannontech.util.ServletUtil;
  */
 public class RoleProperty extends javax.servlet.jsp.tagext.BodyTagSupport {
 
-	public int propertyid;
+	private int propertyid;
+    private boolean useId = true;
+    private String property;
     private String defaultvalue = "";
 	public String format = null;
 	
@@ -29,7 +32,11 @@ public RoleProperty() {
  * @exception javax.servlet.jsp.JspException The exception description.
  */
 public int doEndTag() throws javax.servlet.jsp.JspException {
-	return EVAL_PAGE;
+    property = "";
+    propertyid = 0;
+    defaultvalue = "";
+    format = "";
+    return EVAL_PAGE;
 }
 /**
  * Creation date: (11/13/2001 4:35:26 PM)
@@ -41,8 +48,14 @@ public int doStartTag() throws JspException {
 		String uri = null;			
 		LiteYukonUser user = (LiteYukonUser) pageContext.getSession().getAttribute("YUKON_USER");
 		if(user != null) {
-			String missingValue = "Missing rolePropertyID:  " + Integer.toString(propertyid);
-			String text = AuthFuncs.getRolePropertyValue(user, propertyid);
+            int propId;
+            if (useId) {
+                propId = propertyid;
+            } else {
+                propId = ReflectivePropertySearcher.getRoleProperty().getIntForShortName(property);
+            }
+			String missingValue = "Missing rolePropertyID:  " + Integer.toString(propId);
+			String text = AuthFuncs.getRolePropertyValue(user, propId);
             if (text == null) {
                 text = missingValue;
             }
@@ -84,6 +97,7 @@ public int doStartTag() throws JspException {
 	 */
 	public void setPropertyid(int propertyid) {
 		this.propertyid = propertyid;
+        useId = true;
 	}
 
 	/**
@@ -115,5 +129,13 @@ public int doStartTag() throws JspException {
 	public void setDefaultvalue(String string) {
 		defaultvalue = string;
 	}
+    
+    public String getProperty() {
+        return property;
+    }
+    public void setProperty(String property) {
+        this.property = property;
+        useId = false;
+    }
 
 }

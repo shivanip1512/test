@@ -120,11 +120,17 @@
    <tag>
   	<name>getProperty</name>
 	<tagclass>com.cannontech.web.taglib.RoleProperty</tagclass>	
-	<attribute>
-		<name>propertyid</name>
-		<required>true</required>
-		<rtexprvalue>true</rtexprvalue>
-	</attribute>
+    <teiclass>com.cannontech.web.taglib.RolePropertyTEI</teiclass>
+    <attribute>
+        <name>propertyid</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+        <name>property</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
 	<attribute>
 		<name>defaultvalue</name>
 		<required>false</required>
