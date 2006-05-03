@@ -235,9 +235,9 @@
   </tag>
   
   <tag>
-    <name>outputOtherCss</name>
-    <tagclass>com.cannontech.web.taglib.OutputOtherCss</tagclass>
-    <bodycontent>empty</bodycontent>
+    <name>outputHeadContent</name>
+    <tagclass>com.cannontech.web.taglib.OutputHeadContentTag</tagclass>
+    <bodycontent>JSP</bodycontent>
     <info>This tag is only useful inside one of the pages included by the standardPage tag.</info>
   </tag>
   
