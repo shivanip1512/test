@@ -10,6 +10,8 @@ import com.cannontech.message.util.ClientConnection;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.Registration;
 import com.cannontech.roles.yukon.SystemRole;
+import com.cannontech.yukon.IServerConnection;
+import com.cannontech.yukon.conns.ConnPool;
 
 /**
  * @author rneuharth
@@ -39,45 +41,9 @@ public class GenericDBCacheHandler implements DBChangeListener, Observer
 	 * Creation date: (12/20/2001 1:46:57 PM)
 	 * @return com.cannontech.message.dispatch.ClientConnection
 	 */
-	public ClientConnection getClientConnection() 
+	public IServerConnection getClientConnection() 
 	{
-		if( connToDispatch == null )
-		{
-			String host = "127.0.0.1";
-			int port = 1510;
-			try
-			{
-				host = RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_MACHINE );
-
-				port = Integer.parseInt( 
-					RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_PORT ) );
-			
-			}
-			catch( Exception e)
-			{
-				CTILogger.error( e.getMessage(), e );
-			}
-
-			connToDispatch = new com.cannontech.message.dispatch.ClientConnection();
-			Registration reg = new Registration();
-
-			reg.setAppName( name + "_" + CtiUtilities.getAppRegistration() );
-				
-			reg.setAppIsUnique(0);
-			reg.setAppKnownPort(0);
-			reg.setAppExpirationDelay( 300 );  // 5 minutes should be OK
-
-			connToDispatch.addObserver(this);
-			connToDispatch.setHost(host);
-			connToDispatch.setPort(port);
-			connToDispatch.setAutoReconnect(true);
-			connToDispatch.setRegistrationMsg(reg);
-		
-			connToDispatch.connectWithoutWait();
-
-		}
-
-		return connToDispatch;
+		return ConnPool.getInstance().getDefDispatchConn();
 	}
 	
 	

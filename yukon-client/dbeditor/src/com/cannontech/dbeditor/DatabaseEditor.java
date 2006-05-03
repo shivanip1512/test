@@ -1,48 +1,92 @@
 package com.cannontech.dbeditor;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.net.URL;
 import java.util.Vector;
 
-import javax.swing.*;
-import javax.swing.event.*;
+import javax.swing.ImageIcon;
+import javax.swing.JComboBox;
+import javax.swing.JDesktopPane;
+import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JRootPane;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTree;
+import javax.swing.SwingUtilities;
+import javax.swing.event.InternalFrameAdapter;
+import javax.swing.event.InternalFrameEvent;
+import javax.swing.event.PopupMenuEvent;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import com.cannontech.common.editor.PropertyPanel;
 import com.cannontech.common.editor.PropertyPanelEvent;
-import com.cannontech.common.gui.util.*;
+import com.cannontech.common.gui.util.MessagePanel;
+import com.cannontech.common.gui.util.OkCancelDialog;
+import com.cannontech.common.gui.util.SplashWindow;
 import com.cannontech.common.login.ClientSession;
-import com.cannontech.common.util.*;
+import com.cannontech.common.util.ClientRights;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.FileMessageLog;
+import com.cannontech.common.util.MessageEvent;
+import com.cannontech.common.util.MessageEventListener;
 import com.cannontech.common.wizard.WizardPanel;
 import com.cannontech.common.wizard.WizardPanelEvent;
 import com.cannontech.database.DatabaseTypes;
 import com.cannontech.database.Transaction;
-import com.cannontech.database.cache.functions.*;
+import com.cannontech.database.cache.functions.DBDeleteResult;
+import com.cannontech.database.cache.functions.DBDeletionFuncs;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.lm.LMScenario;
-import com.cannontech.database.data.lite.*;
+import com.cannontech.database.data.lite.LiteBase;
+import com.cannontech.database.data.lite.LiteFactory;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
+import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.route.RouteBase;
 import com.cannontech.database.db.DBPersistent;
-import com.cannontech.database.model.*;
+import com.cannontech.database.model.DBTreeModel;
+import com.cannontech.database.model.DBTreeNode;
+import com.cannontech.database.model.DummyTreeNode;
+import com.cannontech.database.model.ModelFactory;
 import com.cannontech.dbeditor.defines.CommonDefines;
 import com.cannontech.dbeditor.editor.defaults.DefaultRoutes;
 import com.cannontech.dbeditor.editor.defaults.DefaultRoutesDialog;
 import com.cannontech.dbeditor.editor.regenerate.RegenerateDialog;
 import com.cannontech.dbeditor.editor.regenerate.RegenerateRoute;
-import com.cannontech.dbeditor.menu.*;
+import com.cannontech.dbeditor.menu.CoreCreateMenu;
+import com.cannontech.dbeditor.menu.EditMenu;
+import com.cannontech.dbeditor.menu.FileMenu;
+import com.cannontech.dbeditor.menu.HelpMenu;
+import com.cannontech.dbeditor.menu.LMCreateMenu;
+import com.cannontech.dbeditor.menu.SystemCreateMenu;
+import com.cannontech.dbeditor.menu.ToolsMenu;
+import com.cannontech.dbeditor.menu.ViewMenu;
 import com.cannontech.dbeditor.offsets.PointOffsetLegend;
 import com.cannontech.dbeditor.wizard.changetype.device.DeviceChngTypesPanel;
 import com.cannontech.dbeditor.wizard.copy.device.DeviceCopyWizardPanel;
 import com.cannontech.dbeditor.wizard.tou.TOUScheduleWizardPanel;
 import com.cannontech.debug.gui.AboutDialog;
-import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.util.Command;
-import com.cannontech.roles.application.*;
+import com.cannontech.roles.application.DBEditorRole;
+import com.cannontech.roles.application.TDCRole;
 import com.cannontech.roles.yukon.BillingRole;
-import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.yukon.IServerConnection;
+import com.cannontech.yukon.conns.ConnPool;
 
 
 public class DatabaseEditor
@@ -183,7 +227,7 @@ public class DatabaseEditor
 	private Object lastSelection = null;
 	
 	private static int decimalPlaces;
-	private com.cannontech.message.dispatch.ClientConnection connToDispatch;
+	private IServerConnection connToDispatch;
 	private boolean connToVanGoghErrorMessageSent = true;
 	private boolean copyingObject = false;
 	private boolean changingObjectType = false;
@@ -1380,26 +1424,6 @@ public void executeSortByOffsetButton_ActionPerformed(ActionEvent event)
  */
 private void exit() 
 {
-
-	try
-	{
-		if ( getConnToDispatch() != null && getConnToDispatch().isValid() )  // free up Dispatchs resources
-		{
-			Command comm = new Command();
-			comm.setPriority(15);
-			
-			comm.setOperation( Command.CLIENT_APP_SHUTDOWN );
-
-			getConnToDispatch().write( comm );
-
-			getConnToDispatch().disconnect();
-		}
-	}
-	catch ( java.io.IOException e )
-	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-	}
-
 	//There may be events in the EventQueue up to this point,
 	// let them go first then we can Exit the program.
 	SwingUtilities.invokeLater( new Runnable()
@@ -1543,27 +1567,19 @@ private JTreeEditorFrame getAvailableEditorFrame()
  * Creation date: (12/20/2001 1:45:53 PM)
  * @return com.cannontech.message.util.ClientConnection
  */
-public com.cannontech.message.util.ClientConnection getClientConnection() 
+public IServerConnection getClientConnection() 
 {
 	return getConnToDispatch();
 }
 /**
  * @return com.cannontech.message.dispatch.ClientConnection
  */
-private com.cannontech.message.dispatch.ClientConnection getConnToDispatch() 
+private IServerConnection getConnToDispatch() 
 {
-	if( connToDispatch == null )
-	{
-        connToDispatch = ClientConnection.createDefaultConnection("DatabaseEditor @" + CtiUtilities.getUserName());
+	if(connToDispatch == null) {
+		connToDispatch = ConnPool.getInstance().getDefDispatchConn();
 		connToDispatch.addObserver(this);
-		
-		try {
-			connToDispatch.connectWithoutWait();
-		} catch( Exception e ) {
-			// connectWithoutWait won't actually throw an exception
-		}
 	}
-
 	return connToDispatch;
 }
 

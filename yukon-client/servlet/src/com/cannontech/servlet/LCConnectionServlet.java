@@ -33,6 +33,8 @@ import com.cannontech.web.loadcontrol.LMCmdMsgFactory;
 import com.cannontech.web.loadcontrol.LMSession;
 import com.cannontech.web.loadcontrol.LoadcontrolCache;
 import com.cannontech.web.loadcontrol.WebCmdMsg;
+import com.cannontech.yukon.IServerConnection;
+import com.cannontech.yukon.conns.ConnPool;
 
 public class LCConnectionServlet extends javax.servlet.http.HttpServlet implements java.util.Observer {
 		
@@ -130,46 +132,9 @@ public void init(javax.servlet.ServletConfig config) throws javax.servlet.Servle
 	
 	DBChangeListener dbl = new DBChangeListener() {
 		ClientConnection dispatchConnection = null;
-		public com.cannontech.message.util.ClientConnection getClientConnection() 
+		public IServerConnection getClientConnection() 
 		{
-			if (dispatchConnection == null) {
-
-			String host;
-			int port;
-
-			try {
-				host = RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_MACHINE );
-
-				port = Integer.parseInt(
-						RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_PORT ) );
-
-			} catch (Exception e) {
-				com.cannontech.clientutils.CTILogger.error(e.getMessage(), e);
-				return null;
-			}
-
-			dispatchConnection = new com.cannontech.message.dispatch.ClientConnection();
-			com.cannontech.message.dispatch.message.Registration reg =
-				new com.cannontech.message.dispatch.message.Registration();
-			reg.setAppName( CtiUtilities.getApplicationName() );
-			reg.setAppIsUnique(0);
-			reg.setAppKnownPort(0);
-			reg.setAppExpirationDelay(300); // 5 minutes should be OK
-
-			//conn.addObserver(this);
-			dispatchConnection.setHost(host);
-			dispatchConnection.setPort(port);
-			dispatchConnection.setAutoReconnect(true);
-			dispatchConnection.setRegistrationMsg(reg);
-
-			try {
-				dispatchConnection.connectWithoutWait();
-			} catch (Exception e) {
-				com.cannontech.clientutils.CTILogger.error(e.getMessage(), e);
-			}
-		}
-		
-			return dispatchConnection;
+			return ConnPool.getInstance().getDefDispatchConn();
 		}
 		public void handleDBChangeMsg(com.cannontech.message.dispatch.message.DBChangeMsg msg, com.cannontech.database.data.lite.LiteBase lBase ) { }	
 	};

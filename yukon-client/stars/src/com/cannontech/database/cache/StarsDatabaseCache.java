@@ -57,6 +57,8 @@ import com.cannontech.stars.xml.serialize.StarsLMProgram;
 import com.cannontech.stars.xml.serialize.StarsServiceCompany;
 import com.cannontech.stars.xml.serialize.StarsServiceRequest;
 import com.cannontech.stars.xml.serialize.StarsServiceRequestHistory;
+import com.cannontech.yukon.IServerConnection;
+import com.cannontech.yukon.conns.ConnPool;
 
 /**
  * @author yao
@@ -84,40 +86,9 @@ public class StarsDatabaseCache implements com.cannontech.database.cache.DBChang
 	
 	// Map from Integer(GroupID) to LiteStarsLMControlHistory
 	private Hashtable lmCtrlHists = null;
-	
-	private com.cannontech.message.dispatch.ClientConnection connToDispatch;
-	
-	private void initDispatchConnection() {
-		String host = RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_MACHINE );
-
-		int port = Integer.parseInt(
-						RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_PORT ) );
 		
-		connToDispatch = new com.cannontech.message.dispatch.ClientConnection();
-		
-		com.cannontech.message.dispatch.message.Registration reg = new com.cannontech.message.dispatch.message.Registration();
-		reg.setAppName("Yukon STARS");
-		reg.setAppIsUnique(0);
-		reg.setAppKnownPort(0);
-		reg.setAppExpirationDelay( 1000000 );
-		
-		connToDispatch.setHost(host);
-		connToDispatch.setPort(port);
-		connToDispatch.setAutoReconnect(true);
-		connToDispatch.setRegistrationMsg(reg);
-		
-		try {
-			connToDispatch.connectWithoutWait();
-		}
-		catch ( Exception e ) {
-			CTILogger.error( e.getMessage(), e );
-		}
-	}
-	
-	private void init() {
-		initDispatchConnection();
-		
-		com.cannontech.database.cache.DefaultDatabaseCache.getInstance().addDBChangeListener(this);
+	private void init() {		
+		DefaultDatabaseCache.getInstance().addDBChangeListener(this);
 	}
 	
 	private void releaseAllCache() {
@@ -406,8 +377,8 @@ public class StarsDatabaseCache implements com.cannontech.database.cache.DBChang
 		synchronized (starsUsers) { starsUsers.remove( new Integer(userID) ); }
 	}
     
-	public com.cannontech.message.util.ClientConnection getClientConnection() {
-		return connToDispatch;
+	public IServerConnection getClientConnection() {
+		return ConnPool.getInstance().getDefDispatchConn();
 	}
     
 	public void handleDBChangeMsg(DBChangeMsg msg, LiteBase lBase)

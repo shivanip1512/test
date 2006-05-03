@@ -5,6 +5,8 @@ import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.esub.util.Util;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.util.ClientConnection;
+import com.cannontech.yukon.IServerConnection;
+import com.cannontech.yukon.conns.ConnPool;
 
 /**
  * This class glues a connection to dispatch with the cache.
@@ -15,8 +17,8 @@ public class DBChangeCaptain implements DBChangeListener {
 	/**
 	 * @see com.cannontech.database.cache.DBChangeListener#getClientConnection()
 	 */
-	public ClientConnection getClientConnection() {
-		return Util.getConnToDispatch();
+	public IServerConnection getClientConnection() {
+		return ConnPool.getInstance().getDefDispatchConn();
 	}
 
 	/**

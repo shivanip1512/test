@@ -1,6 +1,7 @@
 package com.cannontech.message.dispatch.message;
 
-import com.cannontech.message.dispatch.ClientConnection;
+import com.cannontech.yukon.IServerConnection;
+import com.cannontech.yukon.conns.ConnPool;
 
 /**
  * A class to help send System Log events in a straight forward fasion.
@@ -9,14 +10,14 @@ import com.cannontech.message.dispatch.ClientConnection;
  */
 public class SystemLogHelper {
 
-    private final ClientConnection _dispatchConnection;
+    private final IServerConnection _dispatchConnection;
     private final int _signalPointType;
 
     /**
      * Create a SystemLogHelper with an existing dispatch connection.
      * @param dispatchConnection
      */
-    public SystemLogHelper(int signalPointType, ClientConnection dispatchConnection) {
+    public SystemLogHelper(int signalPointType, IServerConnection dispatchConnection) {
         _signalPointType = signalPointType;
         _dispatchConnection = dispatchConnection;
     }
@@ -25,7 +26,7 @@ public class SystemLogHelper {
      * Create a SystemLogHelper with a default dispatch connection.
      */
     public SystemLogHelper(int signalPointType) {
-        this(signalPointType, ClientConnection.createDefaultConnection("generic system logger"));
+        this(signalPointType, ConnPool.getInstance().getDefDispatchConn());
     }
 
     /**

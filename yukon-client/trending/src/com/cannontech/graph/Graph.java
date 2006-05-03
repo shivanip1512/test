@@ -46,6 +46,8 @@ import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.dispatch.message.Registration;
 import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.yukon.IServerConnection;
+import com.cannontech.yukon.conns.ConnPool;
 
 public class Graph implements GraphDefines
 {
@@ -121,50 +123,9 @@ public JCChart getChart()
  * Creation date: (12/20/2001 5:14:03 PM)
  * @return com.cannontech.message.util.ClientConnection
  */
-public com.cannontech.message.util.ClientConnection getClientConnection()
+public IServerConnection getClientConnection()
 {
-	if( connToDispatch == null)
-		connect();	
-	return connToDispatch;
-}
-private void connect() 
-{
-	String host = "127.0.0.1";
-	int port = 1510;
-	try
-	{
-		host = RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_MACHINE );
-		port = Integer.parseInt( RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_PORT ) ); 
-	}
-	catch( Exception e)
-	{
-		CTILogger.error( e.getMessage(), e );
-	}
-
-	connToDispatch = new ClientConnection();
-
-	Registration reg = new Registration();
-	reg.setAppName(CtiUtilities.getAppRegistration());
-	reg.setAppIsUnique(0);
-	reg.setAppKnownPort(0);
-	reg.setAppExpirationDelay( 300 );
-	
-	connToDispatch.setHost(host);
-	connToDispatch.setPort(port);
-	connToDispatch.setAutoReconnect(true);
-	connToDispatch.setRegistrationMsg(reg);
-
-	try
-	{
-		connToDispatch.connectWithoutWait();
-	}
-	catch ( Exception e )
-	{
-		CTILogger.error(e.getMessage(), e);
-	}
-
-	//dbChangeListener = new DBChangeMessageListener();
-	//dbChangeListener.start();
+	return ConnPool.getInstance().getDefDispatchConn();
 }
 
 public void encodeCSV(java.io.OutputStream out) throws java.io.IOException

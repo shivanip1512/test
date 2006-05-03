@@ -177,7 +177,6 @@ public class NotificationServer implements Runnable, NotificationServerMBean
      */
 	public void stop() {
 		try {
-			dbCacheHandler.getClientConnection().disconnect();
 			DefaultDatabaseCache.getInstance().removeDBChangeListener( dbCacheHandler );
 
             if (server != null) {

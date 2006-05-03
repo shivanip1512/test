@@ -397,7 +397,6 @@ public class WebGraph implements Runnable
 	{
 		try
 		{
-			dbCacheHandler.getClientConnection().disconnect();
 			DefaultDatabaseCache.getInstance().removeDBChangeListener( dbCacheHandler );
 			
 			Thread t = strtThread;

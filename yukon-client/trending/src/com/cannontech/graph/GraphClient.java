@@ -64,6 +64,7 @@ import com.cannontech.message.util.Command;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.application.TrendingRole;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.yukon.IServerConnection;
 public class GraphClient extends javax.swing.JPanel implements com.cannontech.database.cache.DBChangeListener, GraphDefines, java.awt.event.ActionListener, java.awt.event.WindowListener, javax.swing.event.ChangeListener, javax.swing.event.TreeSelectionListener
 {
     public static final URL GRAPH_GIF = GraphClient.class.getResource("/GraphIcon.gif");
@@ -856,30 +857,12 @@ private String buildHTMLBuffer( HTMLBuffer htmlBuffer)
 
 /**
  * Writes the current application state to a file for convenient default startup display.
- * Sends CLIENT_APP_SHUTDOWN message to dispatch before exitting.
  * Creation date: (9/25/2001 11:12:24 AM)
  */
 public void exit()
 {
 	getTrendProperties().writeDefaultsFile();
-	try
-	{
-		if ( getClientConnection() != null && getClientConnection().isValid() )  // free up Dispatches resources
-		{
-			Command command = new Command();
-			command.setPriority(15);
-			command.setOperation( Command.CLIENT_APP_SHUTDOWN );
-			getClientConnection().write( command );
-			getClientConnection().disconnect();
-		}
-	}
-	catch ( java.io.IOException e )
-	{
-		e.printStackTrace();
-	}
-
 	System.exit(0);
-
 }
 
 /**
@@ -1012,7 +995,7 @@ private static void getBuilderData() {
  * Returns the getGraph().connection to dispatch.
  * @return com.cannontech.message.util.ClientConnection
  */
-public com.cannontech.message.util.ClientConnection getClientConnection() {
+public IServerConnection getClientConnection() {
 	return getGraph().getClientConnection();
 }
 

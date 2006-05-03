@@ -495,31 +495,14 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 	}
 
 	/**
-	 * Exit application.  Disconnect getConnToDispatch().
+	 * Exit application.
 	 */
 	private void exit()
 	{
 		getYC().getYCDefaults().setOutputDividerLoc(getOutputSplitPane().getDividerLocation());
 		getYC().getYCDefaults().writeDefaultsFile();
-		try
-		{
-			if ( getClientConnection() != null && getClientConnection().isValid() )  // free up Dispatchs resources
-			{
-				Command command = new Command();
-				command.setPriority(15);
-				command.setOperation( Command.CLIENT_APP_SHUTDOWN );
-	
-				getClientConnection().write( command );
-				getClientConnection().disconnect();
-			}
-		}
-		catch ( java.io.IOException e )
-		{
-			e.printStackTrace();
-		}
 	
 		System.exit(0);
-	
 	}
 
 	/**
@@ -680,46 +663,9 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 	 * @return com.cannontech.message.util.ClientConnection
 	 * @see com.cannontech.database.cache.DBChangeListener#getClientConnection()
 	 */
-	public com.cannontech.message.util.ClientConnection getClientConnection()
+	public IServerConnection getClientConnection()
 	{
-		if( connToDispatch == null )
-		{
-			String host = "127.0.0.1";
-			int port = 1510;
-			try
-			{
-				host = RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_MACHINE );
-	            
-				port = Integer.parseInt(
-							RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_PORT ) );
-			}
-			catch( Exception e)
-			{
-				CTILogger.error( e.getMessage(), e );
-			}
-	
-			connToDispatch = new com.cannontech.message.dispatch.ClientConnection();
-			com.cannontech.message.dispatch.message.Registration reg = new com.cannontech.message.dispatch.message.Registration();
-			reg.setAppName(CtiUtilities.getAppRegistration());
-			reg.setAppIsUnique(0);
-			reg.setAppKnownPort(0);
-			reg.setAppExpirationDelay( 300 );  // 5 minutes should be OK
-	
-			connToDispatch.setHost(host);
-			connToDispatch.setPort(port);
-			connToDispatch.setAutoReconnect(true);
-			connToDispatch.setRegistrationMsg(reg);
-			
-			try
-			{
-				connToDispatch.connectWithoutWait();
-			}
-			catch( Exception e ) 
-			{
-				CTILogger.error( e.getMessage(), e );
-			}
-		}
-		return connToDispatch;
+		return ConnPool.getInstance().getDefDispatchConn();
 	}
 
 	/**

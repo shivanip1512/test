@@ -7,6 +7,7 @@ import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.yc.gui.YC;
 import com.cannontech.yc.gui.YCDefaults;
+import com.cannontech.yukon.IServerConnection;
 
 /**
  * @author yao
@@ -75,7 +76,7 @@ public class ServerUtils {
 		if (msg != null) {
 			DefaultDatabaseCache.getInstance().handleDBChangeMessage( msg );
 			
-			com.cannontech.message.util.ClientConnection conn = StarsDatabaseCache.getInstance().getClientConnection();
+			IServerConnection conn = StarsDatabaseCache.getInstance().getClientConnection();
 			if (conn == null) {
 				CTILogger.error( "Cannot get dispatch client connection" );
 				return;

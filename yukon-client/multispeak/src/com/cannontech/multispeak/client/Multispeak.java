@@ -512,45 +512,11 @@ public class Multispeak implements MessageListener, DBChangeListener {
 	/* (non-Javadoc)
 	 * @see com.cannontech.database.cache.DBChangeListener#getClientConnection()
 	 */
-	public ClientConnection getClientConnection()
+	public IServerConnection getClientConnection()
 	{
-		if( connToDispatch == null )
-		{
-			String host = "127.0.0.1";
-			int port = 1510;
-			try
-			{
-				host = RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_MACHINE );
-				port = Integer.parseInt(RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_PORT ) ); 
-			}
-			catch( Exception e)
-			{
-				CTILogger.error( e.getMessage(), e );
-			}
-
-			connToDispatch = new com.cannontech.message.dispatch.ClientConnection();
-			Registration reg = new Registration();
-			reg.setAppName("Multispeak Webservices @" + CtiUtilities.getUserName() );
-			reg.setAppIsUnique(0);
-			reg.setAppKnownPort(0);
-			reg.setAppExpirationDelay( 300 );  // 5 minutes should be OK
-
-			connToDispatch.setHost(host);
-			connToDispatch.setPort(port);
-			connToDispatch.setAutoReconnect(true);
-			connToDispatch.setRegistrationMsg(reg);
-			
-			try
-			{
-				connToDispatch.connectWithoutWait();
-			}
-			catch( Exception e ) 
-			{
-				CTILogger.error( e.getMessage(), e );
-			}
-		}
-		return connToDispatch;
+		return ConnPool.getInstance().getDefDispatchConn();
 	}
+	
 	/* (non-Javadoc)
 	 * @see com.cannontech.database.cache.DBChangeListener#handleDBChangeMsg(com.cannontech.message.dispatch.message.DBChangeMsg, com.cannontech.database.data.lite.LiteBase)
 	 */
