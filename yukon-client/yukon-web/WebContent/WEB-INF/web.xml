@@ -4,11 +4,6 @@
 	<display-name>Yukon Web Application</display-name>
 	<description>The Yukon web application</description>
 
-	<context-param>
-	    <param-name>tiles-definitions</param-name>
-	    <param-value>/WEB-INF/tiles.xml</param-value>
-	</context-param>
-
 <!-- Does not seem to work for specifying many faces-config.xml files -->
 <!--    name:  javax.faces.application.CONFIG_FILES -->
 <!--    value:   /WEB-INF/cbc_faces-config.xml,/WEB-INF/lm_faces-config.xml -->
@@ -394,6 +389,8 @@
 	</servlet>
 	<!-- END AXIS servlets -->
 
+<!-- [INSERT GENERATED WEB.XML FRAGMENT HERE] -->
+
  	<servlet-mapping>
 		<servlet-name>EmbedSVGJSServlet</servlet-name>
 		<url-pattern>/esub/js/embedSVGControl.js</url-pattern>
@@ -493,6 +490,7 @@
 
 
 	<welcome-file-list>
+        <welcome-file>org.apache.jsp.login_jsp</welcome-file>
 		<welcome-file>login.jsp</welcome-file>
 	</welcome-file-list>
 
