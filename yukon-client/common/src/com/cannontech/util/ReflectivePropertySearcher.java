@@ -40,6 +40,12 @@ public class ReflectivePropertySearcher {
         if (nameLookupCache.containsKey(property)) {
             return getIntForFQN(nameLookupCache.get(property));
         }
+        // see if it a FQN
+        try {
+            return getIntForFQN(property);
+        } catch (IllegalArgumentException e) {
+            // guess not
+        }
         for (String packagePrefix : searchPath) {
             String fullQualifiedName = packagePrefix + "." + property;
             try {
