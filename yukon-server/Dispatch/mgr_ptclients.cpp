@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/mgr_ptclients.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2006/03/23 15:29:15 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2006/05/03 16:28:23 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -304,7 +304,7 @@ CtiTime CtiPointClientManager::findNextNearestArchivalTime()
         spiterator end = Inherited::end();
 
         for( ;itr != end; itr++)
-        {            
+        {
             CtiPointSPtr pPt = itr->second;
             {
                 CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)pPt->getDynamic();
@@ -337,7 +337,7 @@ void CtiPointClientManager::scanForArchival(const CtiTime &Now, CtiFIFOQueue<Cti
             {
                 CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)pPt->getDynamic();
 
-                if(pDyn != NULL)
+                if(pDyn != NULL && !(pDyn->getDispatch().getTags() & MASK_ANY_SERVICE_DISABLE))  // Point is disabled.
                 {
                     if(
                       pPt->getArchiveType() == ArchiveTypeOnTimer             ||
@@ -399,7 +399,7 @@ void CtiPointClientManager::storeDirtyRecords()
             LockGuard  guard(getMux());
             spiterator itr = Inherited::begin();
             spiterator end = Inherited::end();
-        
+
             for( ;itr != end; itr++)
             {
                 CtiPointSPtr pPt = itr->second;

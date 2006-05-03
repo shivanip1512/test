@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.137 $
-* DATE         :  $Date: 2006/04/24 20:47:29 $
+* REVISION     :  $Revision: 1.138 $
+* DATE         :  $Date: 2006/05/03 16:28:22 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1552,7 +1552,7 @@ INT CtiVanGogh::archivePointDataMessage(const CtiPointDataMsg &aPD)
         {
             CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)TempPoint->getDynamic();
 
-            if(pDyn != NULL)
+            if(pDyn != NULL && !(pDyn->getDispatch().getTags() & MASK_ANY_SERVICE_DISABLE))
             {
                 bool isNew = isPointDataNewInformation( aPD, pDyn );    // This must be checked before the setPoint() method is called.
 
