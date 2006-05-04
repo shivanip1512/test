@@ -22,7 +22,7 @@ import com.cannontech.message.server.ServerResponseMsg;
  *  LMManualControlRequest lmReq = new LMManualControlRequest();
  *  ...
  * 	ServerRequest req = ServerRequest.makeServerRequest(conn, lmReq);
- * 	ServerReponseMsg responseMsg = req.execute(60000); // could block up to 60 seconds
+ * 	ServerResponseMsg responseMsg = req.execute(60000); // could block up to 60 seconds
  *  if(responseMsg.getStatus() == ServerResponseMessage.OK) {
  *  	// good response
  *  }
