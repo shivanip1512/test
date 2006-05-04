@@ -126,7 +126,17 @@
   
   <module name="commercialcurtailment">
     <toplinks>
-      <option name="View">
+      <option name="Events">
+        <sublinks>
+          <option name="Control">
+            <link>/cc/programSelect.jsf</link>
+          </option>
+          <option name="Overview">
+            <link>/cc/eventOverview.jsf</link>
+          </option>
+        </sublinks>
+      </option>
+      <option name="Setup">
         <sublinks>
           <option name="Programs">
             <link>/cc/programList.jsf</link>
@@ -134,9 +144,36 @@
           <option name="Groups">
             <link>/cc/groupList.jsf</link>
           </option>
+          <option name="Customers">
+            <link>/cc/customerList.jsf</link>
+          </option>
         </sublinks>
       </option>
     </toplinks>
+    <css file="/cc/base.css"/>
+    <css file="/WebConfig/yukon/styles/commcurtaillogos.css"/>
+    <skin name="standard"/>
+  </module>
+  
+  <module name="commercialcurtailment_user">
+    <toplinks>
+      <option name="Events">
+        <sublinks>
+          <option name="Control">
+            <link>/cc/programSelect.jsf</link>
+          </option>
+          <option name="Overview">
+            <link>/cc/eventOverview.jsf</link>
+          </option>
+        </sublinks>
+      </option>
+    </toplinks>
+    <css file="/cc/base.css"/>
+    <css file="/WebConfig/yukon/styles/commcurtaillogos.css"/>
+    <skin name="standard"/>
+  </module>
+  
+  <module name="trending">
     <skin name="standard"/>
   </module>
   
