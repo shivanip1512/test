@@ -25,19 +25,20 @@
 
 
 	<f:verbatim><br/></f:verbatim>
-	<h:selectBooleanCheckbox id="Edit_Strategy" onclick="submit();"
+	<h:selectBooleanCheckbox id="Edit_Strategy" onclick="lockButtonsPerSubmit('Strategy_Buttons'); submit();"
 		value="#{capControlForm.editingCBCStrategy}"
 		disabled="#{capControlForm.currentStrategyID == 0}" />
 	<x:outputLabel for="Edit_Strategy" value="Edit Strategy" title="A toggle to edit the selected strategy"/>
 	<x:outputText id="stratNameWarn" styleClass="alert"
 		rendered="#{capControlForm.editingCBCStrategy}" value="  (WARNING: Modifying this strategy will affect all feeders or subs that use this strategy)"/>
 	<f:verbatim><br/></f:verbatim>
+	<x:panelGroup id="Strategy_Buttons" forceId="true">
 	<x:commandButton id="Create_Strategy" value="New Strategy" title="Create a new strategy"
 			action="#{capControlForm.createStrategy}" styleClass="stdButton" />
 	<x:commandButton id="Delete_Strategy" value="Delete Strategy" title="Delete the selected strategy" styleClass="stdButton"
 			action="#{capControlForm.deleteStrategy}" onclick="return window.confirm('Are you sure you want to delete this strategy?\r\nNote: Deleting this strategy will force all data to be saved and the current strategy will be set to (none).');"
 			disabled="#{capControlForm.currentStrategyID == 0}" />
-
+	</x:panelGroup>
 
 	<h:panelGrid id="body" columns="2" styleClass="gridLayout" columnClasses="gridColumn" >
 		<h:column rendered="#{capControlForm.currentStrategyID != 0}" >

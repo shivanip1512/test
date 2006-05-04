@@ -16,7 +16,7 @@
 
 			<f:verbatim><br/></f:verbatim>
 	       	<h:commandButton id="addAction" value="Add" styleClass="submenuLink"
-	       		action="#{capControlForm.addSchedule}"
+	       		action="#{capControlForm.addSchedule}" onclick="lockButtonsPerSubmit('buttons');"
 	       		title="Adds an existing schedule to the list below" />
 	                   	
 	        <h:dataTable id="schedData" var="paoSched" 
@@ -31,7 +31,7 @@
 						<x:outputText value="Schedule" title="A schedule use by this object" />
 					</f:facet>
 					<x:selectOneMenu id="sched" value="#{paoSched.scheduleID}"
-							onchange="submit();" >
+							onchange="lockButtonsPerSubmit('buttons'); submit();" >
 						<f:selectItem itemLabel="(none)" itemValue="-1" />
 						<f:selectItems value="#{paoScheduleForm.PAOSchedulesSelItems}" />
 					</x:selectOneMenu>
