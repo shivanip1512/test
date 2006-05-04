@@ -1,8 +1,11 @@
 package com.cannontech.common.cache;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -46,24 +49,24 @@ public class PointChangeCache  implements MessageListener  {
 
 	// Stores current PointData messages by PointID
 	// ( key = Integer, value = com.cannontech.message.dispatch.message.PointData)
-	private Map pointDataMap = new HashMap();
+	private Map<Long, PointData> pointDataMap = new HashMap<Long, PointData>();
 	
 	// Stores current Signal messages by PointID
 	// Only signals with a category > 1 will be stored
 	// ( key = Integer, value = List<Signal>
-	private Map pointSignalsMap = new HashMap();
+	private Map<Long, List<Signal>> pointSignalsMap = new HashMap<Long, List<Signal>>();
 
 	// Stores current tags by PointID
 	// (key = Integer, value = Integer)	
-	private Map pointTagMap = new HashMap();
+	private Map<Long, Integer> pointTagMap = new HashMap<Long, Integer>();
 	
 	// Stores the current Signal message by Alarm Category ID
 	// ( key = Integer, value = List<Signal>)
-	private Map categorySignalsMap = new HashMap();
+	private Map<Long, List<Signal>> categorySignalsMap = new HashMap<Long, List<Signal>>();
 	
 	// Stores current tags by alarm category id
 	// ( key = Integer, value = Integer)
-	private Map categoryTagMap = new HashMap();
+	private Map<Long, Integer> categoryTagMap = new HashMap<Long, Integer>();
 
 	//Date of the last point change received from dispatch
 	private Date lastChange = null;
@@ -139,10 +142,9 @@ public synchronized void disconnect()
 		conn.disconnect();
 		conn.deleteObservers();
 	}
-	catch( java.io.IOException io )
+	catch( IOException io )
 	{
-		com.cannontech.clientutils.CTILogger.error( io.getMessage(), io );
-		CTILogger.warn("An error occured connecting with dispatch");
+		CTILogger.error( "An error occured connecting with dispatch", io );
 	}	
 }
 /**
@@ -158,10 +160,10 @@ public Date getLastChange() {
  * @param pointId
  * @return
  */
-public List getSignals(long pointId) {
-	List sigs = (List) pointSignalsMap.get(new Long(pointId));
+public synchronized List getSignals(long pointId) {
+	List sigs = pointSignalsMap.get(new Long(pointId));
 	if(sigs == null) {
-		sigs = new ArrayList(0);
+		sigs = Collections.emptyList();
 	}
 	return sigs;
 }
@@ -171,10 +173,10 @@ public List getSignals(long pointId) {
  * @param alarmCategoryID
  * @return
  */
-public List getSignalsForCategory(long alarmCategoryID) {
-	List sigs = (List) categorySignalsMap.get(new Long(alarmCategoryID));
+public synchronized List getSignalsForCategory(long alarmCategoryID) {
+	List sigs = categorySignalsMap.get(new Long(alarmCategoryID));
 	if(sigs == null) {
-		sigs = new ArrayList(0);
+		sigs = Collections.emptyList();
 	}
 	return sigs;	
 }
@@ -185,9 +187,9 @@ public List getSignalsForCategory(long alarmCategoryID) {
  * @return com.cannontech.servlet.PointData
  * @param pointId long
  */
-public String getState(long pointId, double value) 	
+public synchronized String getState(long pointId, double value) 	
 {
-	com.cannontech.message.dispatch.message.PointData pData = (com.cannontech.message.dispatch.message.PointData) pointDataMap.get( new Long(pointId) );
+	PointData pData = pointDataMap.get( new Long(pointId) );
 
 	if( pData != null )
 	{
@@ -207,8 +209,8 @@ public String getState(long pointId, double value)
  * @param pointID
  * @return
  */
-public LiteState getCurrentState(long pointID) {
-	PointData pData = (PointData) pointDataMap.get( new Long(pointID) );
+public synchronized LiteState getCurrentState(long pointID) {
+	PointData pData = pointDataMap.get( new Long(pointID) );
 	LitePoint lp = PointFuncs.getLitePoint((int)pointID);
 	
 	return (pData == null || lp == null ? null :
@@ -219,8 +221,17 @@ public LiteState getCurrentState(long pointID) {
  * @return com.cannontech.servlet.PointData
  * @param pointId long
  */
-public com.cannontech.message.dispatch.message.PointData getValue(long pointId) {
-	return (PointData) pointDataMap.get( new Long(pointId) );
+public synchronized PointData getValue(long pointId) {
+	return pointDataMap.get( new Long(pointId) );
+}
+
+/**
+ * Updates the cache and sends the PointData message to dispatch.
+ * @param pointDataMsg
+ */
+public synchronized void putValue(PointData pointDataMsg) {
+    handleMessage(pointDataMsg);
+    getDispatchConnection().write(pointDataMsg);
 }
 
 /**
@@ -228,8 +239,8 @@ public com.cannontech.message.dispatch.message.PointData getValue(long pointId) 
  * @param pointId
  * @return
  */
-public int getTags(long pointId) {
-	Integer t = (Integer) pointTagMap.get(new Long(pointId));
+public synchronized int getTags(long pointId) {
+	Integer t = pointTagMap.get(new Long(pointId));
 	return t == null ? 0 : t.intValue();
 }
 
@@ -237,15 +248,16 @@ public int getTags(long pointId) {
  * Handles incoming messages from Dispatch.
  * @param msg com.cannontech.message.util.Message
  */
-private void handleMessage(Message msg) {
+private synchronized void handleMessage(Message msg) {
 	if (msg instanceof Multi) {
-		java.util.Vector inMessages = ((Multi) msg).getVector();
-		java.util.Iterator iter = inMessages.iterator();
-		while( iter.hasNext() )		
-			handleMessage( (Message) iter.next() );				
+		List<Message> inMessages = ((Multi) msg).getVector();
+		Iterator<Message> iter = inMessages.iterator();
+		while( iter.hasNext() ) {
+            handleMessage( iter.next() );
+        }				
 	}
-	else
-	if (msg instanceof PointData) {
+	else 
+    if (msg instanceof PointData) {
 		PointData pd = (PointData) msg;
 		Long id = new Long(pd.getId());
 		pointDataMap.put(id, pd);		
@@ -263,15 +275,15 @@ private void handleMessage(Message msg) {
 				
 		CTILogger.debug("Received signal id:  " + signal.getPointID() + " tags:  " + signal.getTags() );
 		
-		List pointSignals = (List) pointSignalsMap.get(id);
+		List<Signal> pointSignals = pointSignalsMap.get(id);
 		if(pointSignals == null) { 
-			pointSignals = new ArrayList(4);
+			pointSignals = new ArrayList<Signal>(4);
 			pointSignalsMap.put(id, pointSignals);
 		}
 
-		List categorySignals = (List) categorySignalsMap.get(categoryId);
+		List<Signal> categorySignals = categorySignalsMap.get(categoryId);
 		if(categorySignals == null) {
-			categorySignals = new ArrayList(10);
+			categorySignals = new ArrayList<Signal>(10);
 			categorySignalsMap.put(categoryId, categorySignals);
 		}
 		
