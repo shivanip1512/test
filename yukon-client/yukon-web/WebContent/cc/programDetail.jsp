@@ -1,0 +1,87 @@
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
+<%@ taglib uri="http://java.sun.com/jsf/core" prefix="f"%>
+<%@ taglib uri="http://java.sun.com/jsf/html" prefix="h"%>
+<%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="t"%>
+<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c"%>
+
+<f:view>
+<cti:standardPage title="Program Detail" module="commercialcurtailment">
+<cti:standardMenu />
+<h2>Program Detail</h2>
+<h:form>
+<div><h:messages /></div>
+
+<div class="section">
+<table class="horizBorders">
+<tr>
+  <td><t:outputLabel value="Program Type" styleClass="propertyEntry"/></td>
+  <td><t:outputText value="#{sProgramDetail.program.programType.name}"/></td>
+</tr>
+
+<tr>
+  <td><t:outputLabel value="Program Name" for="programName" styleClass="propertyEntry"/></td>
+  <td><t:inputText id="programName" value="#{sProgramDetail.program.name}" >
+    <f:validateLength minimum="4" />
+    </t:inputText></td>
+</tr>
+</table>
+</div>
+
+<div class="section">
+<div class="sectionTitle">Parameters:</div>
+<t:dataTable value="#{sProgramDetail.programParameters}" 
+             var="thisParameter" 
+             forceIdIndexFormula="#{thisParameter.id}"
+             styleClass="horizBorders">
+  <t:column><t:outputLabel for="parameterInput" 
+                           styleClass="propertyEntry"
+                           value="#{sProgramDetail.labels[thisParameter.parameterKey]}"/></t:column>
+  <t:column><t:inputText id="parameterInput" value="#{thisParameter.parameterValue}"/></t:column>
+</t:dataTable>
+</div>
+
+<div>
+<div class="section" style="float: left;">
+<div class="sectionTitle">Assigned Groups:</div>
+
+<t:dataTable value="#{sProgramDetail.assignedGroupModel}" 
+             var="group" 
+             styleClass="horizBorders"
+             forceIdIndexFormula="#{group.id}">
+  <t:column><t:outputText value="#{group.name}"/></t:column>
+  <t:column>
+    <t:commandLink actionListener="#{sProgramDetail.deleteGroup}">
+      <h:graphicImage value="/WebConfig/yukon/Icons/clearbits/subtract.gif" styleClass="cssicon" />
+    </t:commandLink>
+  </t:column>
+</t:dataTable>
+</div>
+<div class="section" style="float: left">
+<div class="sectionTitle">Available Groups:</div>
+<t:dataTable value="#{sProgramDetail.unassignedGroupModel}" 
+             var="group" 
+             styleClass="horizBorders"
+             forceIdIndexFormula="#{group.id}">
+  <t:column><t:outputText value="#{group.name}"/></t:column>
+  <t:column>
+    <t:commandLink actionListener="#{sProgramDetail.addGroup}">
+      <h:graphicImage value="/WebConfig/yukon/Icons/clearbits/add.gif" styleClass="cssicon" />
+    </t:commandLink>
+  </t:column>
+</t:dataTable>
+</div>
+<div style="clear: both;">&nbsp;</div>
+</div>
+
+<div>
+<h:commandButton action="#{sProgramDetail.apply}" value="Apply"/>
+<h:commandButton action="#{sProgramDetail.save}" value="Save"/>
+<h:commandButton action="#{sProgramDetail.delete}" value="Delete"/>
+</div>
+
+</h:form>
+
+ 
+</cti:standardPage>
+</f:view>
+

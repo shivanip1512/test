@@ -1,0 +1,110 @@
+package com.cannontech.web.cc.methods;
+
+import java.util.List;
+
+import com.cannontech.cc.model.EconomicEvent;
+import com.cannontech.cc.model.Group;
+import com.cannontech.cc.service.BaseEconomicStrategy;
+import com.cannontech.cc.service.ProgramService;
+import com.cannontech.cc.service.builder.EconomicBuilder;
+import com.cannontech.cc.service.builder.VerifiedCustomer;
+import com.cannontech.cc.service.exception.EventCreationException;
+import com.cannontech.web.util.JSFUtil;
+
+
+public class CreateEconomicBean extends EventCreationBase {
+    private ProgramService programService;
+    private EconomicBuilder builder;
+    private DetailEconomicBean detailBean;
+    
+    @Override
+    public String getStartPage() {
+        return "econStart";
+    }
+    
+    @Override
+    public void initialize() {
+        setBuilder(getMyStrategy().createBuilder(getProgram()));
+        
+        clearForm();
+    }
+
+    public String doAfterInitialEntry() {
+        try {
+            // check values so far
+            // bad use of exceptions?
+            getMyStrategy().verifyTimes(getBuilder());
+            getMyStrategy().setupPriceList(getBuilder());
+        } catch (EventCreationException e) {
+            JSFUtil.handleException("Error with initial parameters", e);
+            return null;
+        }
+        return "econPricing";
+    }
+    
+    public String doAfterPricingEntry() {
+        try {
+            // check values so far
+            // bad use of exceptions?
+            getMyStrategy().verifyPrices(getBuilder());
+        } catch (EventCreationException e) {
+            JSFUtil.handleException("Error with pricing", e);
+            return null;
+        }
+        getCustomerSelectionBean().setEventBean(this);
+        return "groupSelection";
+    }
+    
+    @Override
+    public String doAfterCustomerPage() {
+        // move parameters from getCustomerSelectionBean() to EventBuilderBase
+        getBuilder().setCustomerList(getCustomerSelectionBean().getSelectedCustomers());
+        return "econConfirmation";
+    }
+    
+    public String doCreateEvent() {
+        EconomicEvent event = getMyStrategy().createEvent(getBuilder());
+        return detailBean.showDetail(event);
+    }
+    
+    public int getWindowLength() {
+        return getMyStrategy().getWindowLengthMinutes();
+    }
+    
+    public int getEventHours() {
+        int eventMinutes = getBuilder().getEvent().getWindowLengthMinutes() 
+            * getBuilder().getNumberOfWindows();
+        return eventMinutes / 60;
+    }
+
+    public ProgramService getProgramService() {
+        return programService;
+    }
+
+    public void setProgramService(ProgramService programService) {
+        this.programService = programService;
+    }
+    
+    public BaseEconomicStrategy getMyStrategy() {
+        return (BaseEconomicStrategy) getStrategy();
+    }
+
+    public EconomicBuilder getBuilder() {
+        return builder;
+    }
+
+    public void setBuilder(EconomicBuilder builder) {
+        this.builder = builder;
+    }
+
+    @Override
+    public List<VerifiedCustomer> 
+    getVerifiedCustomerList(List<Group> selectedGroupList) {
+        return getStrategy().getVerifiedCustomerList(getBuilder(), selectedGroupList);
+    }
+
+    public void setDetailBean(DetailEconomicBean detailBean) {
+        this.detailBean = detailBean;
+    }
+
+}

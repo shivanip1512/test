@@ -1,0 +1,80 @@
+table.light_table {
+  font-size: 1em;
+  background: white;
+  border-collapse: collapse;
+}
+
+table.light_table td {
+  padding: .4em 1.5em;
+  border: 1px solid #ccc;
+}
+
+table.light_table th {
+  background: #f6f6f6;
+  padding: .2em 1.5em;
+  border: 1px solid #ccc;
+}
+
+.titledContainer .light_table {
+  margin: .2em;
+}
+
+table.econDetailTable {
+   border-collapse: collapse;
+   border: 1px solid black;
+   margin: .5em;
+}
+
+table.econDetailTable th {
+   background: #f6f6f6;
+   border: 1px solid black;
+   padding: .3em .1em;
+}
+
+table.econDetailTable td {
+  border: 1px solid black;
+  padding: .1em;
+}
+
+
+table.horizBorders {
+  border-collapse: collapse;
+  border-left: 1px solid black;
+  border-right: 1px solid black;
+  margin-left: 1em;
+  margin: .5em;
+}
+
+table.horizBorders td {
+  padding: .2em .5em;
+  border-top: 1px solid black;
+  border-bottom: 1px solid black;
+}
+
+div.actionButtons {
+  margin: .5em;
+  padding: .5em;
+}
+
+div.actionButtons * {
+  margin-right: 1em;
+}
+
+.programSelectionTable .programName {
+  font-weight: bold;
+}
+
+.section {
+  margin-top: 1em;
+  margin-left: 1em;
+}
+
+div.section div.sectionTitle {
+  font-weight: bold;
+}
+
+label.propertyEntry {
+  font-size: .8em;
+  font-weight: bold;
+}
+
