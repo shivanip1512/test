@@ -37,51 +37,48 @@ addSmartScrolling('capbankHiden', 'capbankDiv', null, null);
                     Cap Bank Info
                  </legend>
                 </f:verbatim>    
-
 <f:verbatim><br/></f:verbatim>
-            <x:outputLabel for="CapBank_Address" value="Address: " title="Geographical location of this CapBank" />
-            <x:inputText id="CapBank_Address" value="#{capControlForm.PAOBase.location}" required="true" maxlength="64" />
+			<x:outputLabel for="CapBank_Address" value="Address: " title="Geographical location of this CapBank" />
+			<x:inputText id="CapBank_Address" value="#{capControlForm.PAOBase.location}" required="true" maxlength="60" size="60"/>
 
-            <f:verbatim><br/></f:verbatim>
-            <x:outputLabel for="capMapLocID" value="Map Location ID: " title="Mapping code/string used for third-party systems" />
-            <x:inputText id="capMapLocID" value="#{capControlForm.PAOBase.capBank.mapLocationID}" required="true" maxlength="64" />
+			<f:verbatim><br/></f:verbatim>
+			<x:outputLabel for="capMapLocID" value="Map Location ID: " title="Mapping code/string used for third-party systems" />
+			<x:inputText id="capMapLocID" value="#{capControlForm.PAOBase.capBank.mapLocationID}" required="true" maxlength="64" />
 
-            <f:verbatim><br/></f:verbatim>
-            <x:outputLabel for="bankMan" value="Switch Manufacture: " title="What company manufactured this item"/>
-            <x:selectOneMenu id="bankMan" value="#{capControlForm.PAOBase.capBank.switchManufacture}" >
-                <f:selectItem itemValue="(none)"/>
-                <f:selectItem itemValue="ABB"/>
-                <f:selectItem itemValue="Cannon Tech"/>
-                <f:selectItem itemValue="Cooper"/>
-                <f:selectItem itemValue="Trinetics"/>
-                <f:selectItem itemValue="Siemens"/>
-                <f:selectItem itemValue="Westinghouse"/>
-            </x:selectOneMenu>
+			<f:verbatim><br/></f:verbatim>
+			<x:outputLabel for="bankMan" value="Switch Manufacture: " title="What company manufactured this item"/>
+			<x:selectOneMenu id="bankMan" value="#{capControlForm.PAOBase.capBank.switchManufacture}" >
+				<f:selectItem itemValue="(none)"/>
+				<f:selectItem itemValue="ABB"/>
+				<f:selectItem itemValue="Cannon Tech"/>
+				<f:selectItem itemValue="Cooper"/>
+				<f:selectItem itemValue="Trinetics"/>
+				<f:selectItem itemValue="Siemens"/>
+				<f:selectItem itemValue="Westinghouse"/>
+			</x:selectOneMenu>
 
-            <f:verbatim><br/></f:verbatim>
-            <x:outputLabel for="cntrlerType" value="Controller Type: " title="What type of switch this item is"/>
-            <x:selectOneMenu id="cntrlerType" value="#{capControlForm.PAOBase.capBank.controllerType}" >
-                <f:selectItem itemValue="(none)"/>
-                <f:selectItem itemValue="CTI DLC"/>
-                <f:selectItem itemValue="CTI Paging"/>
-                <f:selectItem itemValue="CTI FM"/>
-                <f:selectItem itemValue="FP Paging"/>
-                <f:selectItem itemValue="Telemetric"/>
-            </x:selectOneMenu>
+			<f:verbatim><br/></f:verbatim>
+			<x:outputLabel for="cntrlerType" value="Controller Type: " title="What type of switch this item is"/>
+			<x:selectOneMenu id="cntrlerType" value="#{capControlForm.PAOBase.capBank.controllerType}" >
+				<f:selectItem itemValue="(none)"/>
+				<f:selectItem itemValue="CTI DLC"/>
+				<f:selectItem itemValue="CTI Paging"/>
+				<f:selectItem itemValue="CTI FM"/>
+				<f:selectItem itemValue="FP Paging"/>
+				<f:selectItem itemValue="Telemetric"/>
+			</x:selectOneMenu>
 
-            <f:verbatim><br/></f:verbatim>
-            <x:outputLabel for="bankType" value="Type of Switch: " title="What type of switch this item is"/>
-            <x:selectOneMenu id="bankType" value="#{capControlForm.PAOBase.capBank.typeOfSwitch}" >
-                <f:selectItem itemValue="(none)"/>
-                <f:selectItem itemValue="Oil"/>
-                <f:selectItem itemValue="Vacuum"/>
-            </x:selectOneMenu>
-
-       <f:verbatim>
+			<f:verbatim><br/></f:verbatim>
+			<x:outputLabel for="bankType" value="Type of Switch: " title="What type of switch this item is"/>
+			<x:selectOneMenu id="bankType" value="#{capControlForm.PAOBase.capBank.typeOfSwitch}" >
+				<f:selectItem itemValue="(none)"/>
+				<f:selectItem itemValue="Oil"/>
+				<f:selectItem itemValue="Vacuum"/>
+			</x:selectOneMenu>
+         <f:verbatim>
              <br />
               </fieldset>
           </f:verbatim>
-                        
             <f:verbatim><br/><fieldset><legend>Configuration</legend></f:verbatim>
 
             <f:verbatim><br/></f:verbatim>
@@ -112,7 +109,7 @@ addSmartScrolling('capbankHiden', 'capbankDiv', null, null);
             <x:div id="capbankDiv" forceId="true" styleClass="scrollSmall" 
                 rendered="#{capControlForm.bankControlPtVisible}" >
 
-            <x:outputLabel for="cntrlPoint" value="Control Point: " title="Point used for monitoring the control (Only displays points that are not yet used by CapBanks)" styleClass="medStaticLabel"/>
+            <x:outputLabel for="cntrlPoint" value="Control Device/Point: " title="Point used for monitoring the control (Only displays points that are not yet used by CapBanks)" styleClass="medStaticLabel"/>
             <x:outputText id="cntrlPoint" rendered="#{capControlForm.PAOBase.capBank.controlPointID != 0}"
                 value="#{dbCache.allPAOsMap[dbCache.allPointsMap[capControlForm.PAOBase.capBank.controlPointID].paobjectID].paoName}
                 / #{dbCache.allPointsMap[capControlForm.PAOBase.capBank.controlPointID].pointName}" styleClass="medLabel"/>
@@ -206,7 +203,7 @@ addSmartScrolling('capbankHiden', 'capbankDiv', null, null);
                 <f:verbatim><br/></f:verbatim>
                 <x:outputLabel for="cntrlSerNum" value="Serial Number: " title="Serial number of the controller device" rendered="#{capControlForm.PAOBase.capBank.controlPointID != 0}"/>
                 <x:inputText id="cntrlSerNumEd" styleClass="staticLabel" disabled="true" rendered="#{capControlForm.PAOBase.capBank.controlPointID != 0}"
-                        value="#{capControlForm.CBControllerEditor.paoCBC.deviceCBC.serialNumber}" >
+                        value="#{capControlForm.CBControllerEditor.paoCBC.deviceCBC.serialNumber}" maxlength="9" size="9">
                     <f:validateLongRange minimum="0" maximum="9999999999" />
                 </x:inputText>
 
