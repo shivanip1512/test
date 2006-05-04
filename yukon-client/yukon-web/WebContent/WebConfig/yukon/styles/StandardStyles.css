@@ -195,3 +195,12 @@ table.roundedTable td.top {
     color: white;
 }
 
+/* used for "CSS" Icons in the clearbits folder */
+img.cssicon {
+  background-color: #f00;
+  background-image: url(../Icons/clearbits/bg_rounded.gif);
+  background-repeat: no-repeat;
+  border: none;
+}
+
+
