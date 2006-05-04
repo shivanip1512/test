@@ -1,6 +1,7 @@
 package com.cannontech.web.editor;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.TreeSet;
 
@@ -10,14 +11,19 @@ import javax.faces.event.ActionEvent;
 import javax.servlet.http.HttpSession;
 
 import org.apache.myfaces.custom.tree2.HtmlTree;
+import org.apache.myfaces.custom.tree2.TreeModelBase;
 import org.apache.myfaces.custom.tree2.TreeNode;
 import org.apache.myfaces.custom.tree2.TreeNodeBase;
+import org.apache.myfaces.custom.tree2.TreeStateBase;
 
+import com.cannontech.cbc.web.CBCSessionInfo;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.functions.DeviceFuncs;
 import com.cannontech.database.cache.functions.PAOFuncs;
+import com.cannontech.database.data.capcontrol.CapBankController;
+import com.cannontech.database.data.capcontrol.CapBankController701x;
 import com.cannontech.database.data.capcontrol.CapBankController702x;
 import com.cannontech.database.data.capcontrol.ICapBankController;
 import com.cannontech.database.data.device.TwoWayDevice;
@@ -29,6 +35,7 @@ import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUtil;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.db.capcontrol.DeviceCBC;
 import com.cannontech.database.db.device.DeviceAddress;
 import com.cannontech.database.db.device.DeviceScanRate;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
@@ -36,6 +43,7 @@ import com.cannontech.web.editor.point.PointForm;
 import com.cannontech.web.exceptions.MultipleDevicesOnPortException;
 import com.cannontech.web.exceptions.PortDoesntExistException;
 import com.cannontech.web.exceptions.SameMasterSlaveCombinationException;
+import com.cannontech.web.exceptions.SerialNumberExistsException;
 import com.cannontech.web.util.JSFParamUtil;
 import com.cannontech.web.util.JSFTreeUtils;
 import com.cannontech.yukon.cbc.CBCUtils;
@@ -51,6 +59,10 @@ public class CBControllerEditor {
     private String cbcControllerStatusMessage = null;
     private HtmlTree pointTree = null;
     private boolean editingController;
+    private TreeNode pointList = null;
+    private long serialNumber = 0;
+    
+    private final String pointTreeName = "cbcPointTree";
 
     /**
      * Accepts a paoID and creates the DBPersistent from it, and then retrieves the
@@ -66,15 +78,24 @@ public class CBControllerEditor {
         //insert the points into DB
         //if there was anything such as DB exception or empty points
         //message status message will be set
-        if (deviceCBC instanceof CapBankController702x) 
-            {          
-            showScanRate();
-            }
-        
         retrieveDB();
+        
         //complain if the DB object is not null and it is not a Controller
-        if (getPaoCBC() != null && !(getPaoCBC() instanceof ICapBankController))
+        if (getPaoCBC() != null && !(getPaoCBC() instanceof ICapBankController)) {
             CTILogger.warn("The CapController editor only allows PAO ids that map to a Controller, paoID=" + paoId + " is not an instance of a ICapBankController");
+        }
+        else {
+        	
+        	if (deviceCBC instanceof CapBankController702x) {          
+        		showScanRate();
+        		setSerialNumber ( ((CapBankController702x)deviceCBC).getSerialNumber().longValue());
+            
+        	}
+        	
+        	if (deviceCBC instanceof CapBankController) {
+        		setSerialNumber ( ((CapBankController)deviceCBC).getDeviceCBC().getSerialNumber().longValue());           
+        	}
+        }
     }
 
 
@@ -161,38 +182,42 @@ public class CBControllerEditor {
     }
 
     public TreeNode getPointList() {
-        TreeNode rootData = new TreeNodeBase("root", "Points", false);
-        TreeNode points = new TreeNodeBase("pointtype", "analog", false);
-        TreeNode status = new TreeNodeBase("pointtype", "status", false);
-        TreeNode accum = new TreeNodeBase("pointtype","accumulator", false);
-        
-        LitePoint[] tempArray = PAOFuncs.getLitePointsForPAObject(deviceCBC.getPAObjectID().intValue());
+        if (pointList == null) {
+	    	pointList = new TreeNodeBase("root", "Points", false);
+	        TreeNode points = new TreeNodeBase("pointtype", "analog", false);
+	        TreeNode status = new TreeNodeBase("pointtype", "status", false);
+	        TreeNode accum = new TreeNodeBase("pointtype","accumulator", false);
+	        
+	        LitePoint[] tempArray = PAOFuncs.getLitePointsForPAObject(deviceCBC.getPAObjectID().intValue());
+	
+	        TreeSet statusSet = new TreeSet();
+	        TreeSet analogSet = new TreeSet();
+	        TreeSet accumSet = new TreeSet();
+	        
+	        for (int i = 0; i < tempArray.length; i++) {
+	            LitePoint litePoint = tempArray[i];
+	            int pointType = litePoint.getPointType();
+				if (pointType == PointTypes.ANALOG_POINT || pointType == PointTypes.CALCULATED_POINT) {
+	                analogSet.add(litePoint);
+	            } else if (pointType == PointTypes.STATUS_POINT || pointType == PointTypes.CALCULATED_STATUS_POINT) {
+	                statusSet.add(litePoint);
+	            } else if (pointType == PointTypes.PULSE_ACCUMULATOR_POINT){
+	                accumSet.add(litePoint);
+	            }
+	        }
+	
+	        points = JSFTreeUtils.createTreeFromPointList(analogSet, points);
+	        status = JSFTreeUtils.createTreeFromPointList(statusSet, status);
+	        accum = JSFTreeUtils.createTreeFromPointList(accumSet, accum);
+	        
+	        pointList.getChildren().add(status);
+	        pointList.getChildren().add(points);
+	        pointList.getChildren().add(accum);
 
-        TreeSet statusSet = new TreeSet();
-        TreeSet analogSet = new TreeSet();
-        TreeSet accumSet = new TreeSet();
-        
-        for (int i = 0; i < tempArray.length; i++) {
-            LitePoint litePoint = tempArray[i];
-            int pointType = litePoint.getPointType();
-			if (pointType == PointTypes.ANALOG_POINT || pointType == PointTypes.CALCULATED_POINT) {
-                analogSet.add(litePoint);
-            } else if (pointType == PointTypes.STATUS_POINT || pointType == PointTypes.CALCULATED_STATUS_POINT) {
-                statusSet.add(litePoint);
-            } else if (pointType == PointTypes.PULSE_ACCUMULATOR_POINT){
-                accumSet.add(litePoint);
-            }
         }
-
-        points = JSFTreeUtils.createTreeFromPointList(analogSet, points);
-        status = JSFTreeUtils.createTreeFromPointList(statusSet, status);
-        accum = JSFTreeUtils.createTreeFromPointList(accumSet, accum);
-        
-        rootData.getChildren().add(status);
-        rootData.getChildren().add(points);
-        rootData.getChildren().add(accum);
-        
-        return rootData;
+        //restore any previous states of tree
+        restoreState(getPointTree());
+		return pointList;
     }
 
     public String getSelectedPointFormatString() {
@@ -209,13 +234,14 @@ public class CBControllerEditor {
 
     public HtmlTree getPointTree() {
 
-        return pointTree;
+    	return pointTree;
+    
     }
 
     public void setPointTree(HtmlTree pointTree) {
+    	this.pointTree = pointTree;
 
-        this.pointTree = pointTree;
-    }
+	}
 
     public boolean isEditingController() {
         return editingController;
@@ -226,8 +252,15 @@ public class CBControllerEditor {
     }
 
     public void checkForErrors() throws PortDoesntExistException,
-            MultipleDevicesOnPortException, SameMasterSlaveCombinationException {
-        /*        a.  Show an error and don’t save the update if the user tries to put 
+            MultipleDevicesOnPortException, SameMasterSlaveCombinationException, SQLException, SerialNumberExistsException {
+        
+    	//error handling when serial number exists
+    	if (getPaoCBC() instanceof ICapBankController) {
+        	
+        	handleSerialNumber();        		
+        }
+    	
+    	/*        a.  Show an error and don’t save the update if the user tries to put 
          the same master/slave address combination for a different device on the same communication port
          b.  Show a warning if the user uses the same master/slave address for a 
          device on a different communication port*/
@@ -268,6 +301,81 @@ public class CBControllerEditor {
             }
         }
     }
+
+
+
+	/**
+	 * checks to see if the serial number on the form is unique
+	 * @throws SQLException
+	 * @throws SerialNumberExistsException
+	 */
+	private void handleSerialNumber() throws SQLException, SerialNumberExistsException {
+			String[] paos = null;	
+			//find out if the serial number is unique
+			if (deviceCBC != null) {
+				if (deviceCBC instanceof CapBankController) {
+					CapBankController controller = (CapBankController) deviceCBC;
+					paos = DeviceCBC.isSerialNumberUnique(getSerialNumber(), controller.getDeviceCBC().getDeviceID());
+				}
+				else if (deviceCBC instanceof CapBankController702x) {
+					CapBankController702x controller = (CapBankController702x) deviceCBC;
+					paos = DeviceCBC.isSerialNumberUnique(getSerialNumber(), controller.getDevice().getDeviceID());
+				}
+				//if serial was unique then paos would be empty
+				//throw an exception to the calling class to indicate
+				if (paos != null && paos.length > 0) {
+					String paosWithSameSerialNumber = "";
+					for (int i = 0; i < paos.length; i++) {
+						if (i == paos.length - 1) 
+							paosWithSameSerialNumber += paos[i] + ".";		
+						else
+							paosWithSameSerialNumber += paos[i] + ", ";
+					}
+					throw new SerialNumberExistsException (paosWithSameSerialNumber);
+				 }
+				//if got to the point then we can set the serial number because it is unique
+				if (getPaoCBC() instanceof CapBankController) {
+					CapBankController cbc = (CapBankController) getPaoCBC();				
+					cbc.getDeviceCBC().setSerialNumber(new Integer ( (String.valueOf (getSerialNumber()))));
+				}	
+				else if (getPaoCBC() instanceof CapBankController702x) {
+					CapBankController702x cbc = (CapBankController702x) getPaoCBC();
+					cbc.getDeviceCBC().setSerialNumber(new Integer ( (String.valueOf (getSerialNumber()))));
+				}
+			}
+	}
+
+
+
+	/**
+	 * @throws SQLException
+	 * @throws SerialNumberExistsException 
+	 * @throws SerialNumberExistsException
+	 */
+	private void isSerialNumberUnique() throws SQLException, SerialNumberExistsException {
+		String[] paos = null;
+		
+		if (deviceCBC instanceof CapBankController) {
+			CapBankController controller = (CapBankController) deviceCBC;
+			paos = DeviceCBC.isSerialNumberUnique(getSerialNumber(), controller.getDeviceCBC().getDeviceID());
+		}
+		else if (deviceCBC instanceof CapBankController702x) {
+			CapBankController702x controller = (CapBankController702x) deviceCBC;
+			paos = DeviceCBC.isSerialNumberUnique(getSerialNumber(), controller.getDevice().getDeviceID());
+		}
+		
+		if (paos != null && paos.length > 0) {
+			String paosWithSameSerialNumber = "";
+			for (int i = 0; i < paos.length; i++) {
+				if (i == paos.length - 1) 
+					paosWithSameSerialNumber += paos[i] + ".";		
+				else
+					paosWithSameSerialNumber += paos[i] + ", ";
+			}
+			throw new SerialNumberExistsException (paosWithSameSerialNumber);
+		 }
+		
+	}
     
     public void showScanRate() {
         // find out if this device is TwoWay (used for 2 way CBCs)
@@ -292,6 +400,8 @@ public class CBControllerEditor {
 
     public void pointClick (ActionEvent ae){
         FacesMessage fm = new FacesMessage();
+        //save the state of the point tree before changing the page
+        saveState(getPointTree());
         try {
             //make sure the point form will have the pao id
             //of the cbc 
@@ -300,7 +410,7 @@ public class CBControllerEditor {
             String location = red + val;            
             //bookmark the current page
             HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
-            CBCNavigationUtil.bookmarkLocation(location, session);
+            new CBCNavigationUtil().bookmarkLocation(location, session);
             //go to the next page
             FacesContext.getCurrentInstance().getExternalContext().redirect(location);
             FacesContext.getCurrentInstance().responseComplete();
@@ -319,11 +429,13 @@ public class CBControllerEditor {
     
     public void addPointClick (ActionEvent ae){
         FacesMessage fm = new FacesMessage();
+        //save the state of the point tree before changing the page
+        saveState(getPointTree());        
         try {
             String val = JSFParamUtil.getJSFReqParam("parentId");
             HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
             String location = "pointWizBase.jsf?parentId=" + val;
-            CBCNavigationUtil.bookmarkLocation(location,session);            
+            new CBCNavigationUtil().bookmarkLocation(location,session);            
             FacesContext.getCurrentInstance().getExternalContext().redirect(location);
             FacesContext.getCurrentInstance().responseComplete();
         } 
@@ -358,5 +470,51 @@ public class CBControllerEditor {
           }
          
      }
+
+
+
+	public void setPointList(TreeNode pointList) {
+		this.pointList = pointList;
+	}
+
+
+
+	public long getSerialNumber() {
+		return serialNumber;
+	}
+
+
+
+	public void setSerialNumber(long serialNumber) {
+		this.serialNumber = serialNumber;
+	}
+	
+	public void resetSerialNumber () {  	
+    	if (deviceCBC != null) {
+			if (deviceCBC instanceof CapBankController702x) {          
+	    		showScanRate();
+	    		setSerialNumber ( ((CapBankController702x)deviceCBC).getSerialNumber().longValue());
+	        
+	    	}
+	    	
+	    	if (deviceCBC instanceof CapBankController) {
+	    		setSerialNumber ( ((CapBankController)deviceCBC).getDeviceCBC().getSerialNumber().longValue());           
+	    	}
+    	}
+    }
+	
+	private void saveState (HtmlTree tree) {
+        Object treeState = (Object) tree.saveState(FacesContext.getCurrentInstance());
+        CBCSessionInfo cbcSession = (CBCSessionInfo) JSFParamUtil.getJSFVar("cbcSession");
+		cbcSession.setTreeState(pointTreeName, treeState);
+	}
+
+	private void restoreState (HtmlTree tree) {
+        if (tree != null) {
+    		CBCSessionInfo cbcSession = (CBCSessionInfo) JSFParamUtil.getJSFVar("cbcSession");    		
+			if (cbcSession.getTreeState(pointTreeName) != null )
+				this.pointTree.restoreState(FacesContext.getCurrentInstance(), cbcSession.getTreeState(pointTreeName));
+        }
+	}
     
 }
