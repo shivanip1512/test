@@ -36,6 +36,17 @@ public class ReflectivePropertySearcher {
         return standardInstance;
     }
     
+    /**
+     * Uses a predefined search path to look for a constant. For instance,
+     *   getIntForShortName(SomeClass.SOMEFIELD)
+     * might return
+     *   10000
+     * if SomeClass is defined in one of the packages specified for the
+     * search path.
+     * @param property Class name and static integer field name
+     * @return the integer value
+     * @throws IllegalArgumentException if the property can't be found
+     */
     public synchronized int getIntForShortName(String property) {
         if (nameLookupCache.containsKey(property)) {
             return getIntForFQN(nameLookupCache.get(property));
