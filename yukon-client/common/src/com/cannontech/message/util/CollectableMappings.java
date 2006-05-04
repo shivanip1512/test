@@ -14,8 +14,10 @@ public class CollectableMappings {
 		new com.cannontech.message.util.DefineCollectableCommand(),
         new com.cannontech.message.server.DefineCollectableServerRequest(),
         new com.cannontech.message.server.DefineCollectableServerResponse(),
-        new com.cannontech.message.dispatch.message.DefineCollectableMulti()
+        new com.cannontech.message.dispatch.message.DefineCollectableMulti(),
+        new DefineCollectableBoolean()
 	};	
+    
 /**
  * This method was created in VisualAge.
  * @return DefineCollectable[]
