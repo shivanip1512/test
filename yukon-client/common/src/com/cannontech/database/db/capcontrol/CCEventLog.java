@@ -3,6 +3,8 @@ package com.cannontech.database.db.capcontrol;
 import java.util.Date;
 
 public class CCEventLog {
+
+public static int COL_DATETIME = 1;
 public static final String CONSTRAINT_COLUMNS[] = { "LogID" };
 public static final String COLUMNS[] = { "PointID", 
 "DateTime", "SubId", "FeederId",
