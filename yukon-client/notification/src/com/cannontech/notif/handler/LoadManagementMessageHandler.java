@@ -25,11 +25,10 @@ public class LoadManagementMessageHandler extends NotifHandler {
         super(helper);
     }
 
-    public boolean canHandle(Message msg) {
-        return msg instanceof NotifLMControlMsg;
-    }
-
-    public void handleMessage(NotifServerConnection connection,  Message msg_) {
+    public boolean handleMessage(NotifServerConnection connection,  Message msg_) {
+        if (!(msg_ instanceof NotifLMControlMsg)) {
+            return false;
+        }
         final NotifLMControlMsg msg = (NotifLMControlMsg) msg_;
         
         long durationMillis = msg.stopTime.getTime() - msg.startTime.getTime();
@@ -71,17 +70,20 @@ public class LoadManagementMessageHandler extends NotifHandler {
                 notif.addData("programname", liteYukonPAO.getPaoName());
                 notif.addData("customername", contact.getCustomerName());
 
-                
                 TimeZone timeZone = contact.getTimeZone();
-                synchronized (_timeFormatter) {
+                
+                synchronized (_dateFormatter) {
                     _timeFormatter.setTimeZone(timeZone);
                     _dateFormatter.setTimeZone(timeZone);
+                    
+                    notif.addData("timezone", timeZone.getDisplayName());
                     
                     notif.addData("starttime", _timeFormatter.format(msg.startTime));
                     notif.addData("startdate", _dateFormatter.format(msg.startTime));
                     notif.addData("stoptime", _timeFormatter.format(msg.stopTime));
                     notif.addData("stopdate", _dateFormatter.format(msg.stopTime));
                 }
+                
                 notif.addData("durationminutes", durationMinutesStr);
                 notif.addData("durationhours", durationHoursStr);
                 notif.addData("remainingminutes", remainingMinutesStr);
@@ -90,7 +92,11 @@ public class LoadManagementMessageHandler extends NotifHandler {
                 
                 notif.addData("action", actionString);
 
+
                 return notif;
+            }
+            public void notificationComplete(Contactable contact, int notifType, boolean success) {
+                // do nothing
             }
         };
 
@@ -100,6 +106,7 @@ public class LoadManagementMessageHandler extends NotifHandler {
             
             outputNotification(notifFormatter, notificationGroup);
         }
+        return true;
     }
 
 }
