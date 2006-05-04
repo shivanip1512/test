@@ -116,36 +116,34 @@ public static final PointBase retrievePoint(Integer id, String databaseAlias) th
 public static PointBase createAnalogPoint( String pointName, Integer paoID, 
 		Integer pointID, int pointOffset, int pointUnit )
 {
-	com.cannontech.database.data.point.PointBase point =
-		com.cannontech.database.data.point.PointFactory.createPoint(com.cannontech.database.data.point.PointTypes.ANALOG_POINT);
+    AnalogPoint point;
 	
-	point = PointFactory.createNewPoint(		
+	point = (AnalogPoint) PointFactory.createNewPoint(		
 			pointID,
-			com.cannontech.database.data.point.PointTypes.ANALOG_POINT,
+			PointTypes.ANALOG_POINT,
 			pointName,
 			paoID,
 			new Integer(pointOffset) );
 	
-	point.getPoint().setStateGroupID( 
-		new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_ANALOG) );
+	point.getPoint().setStateGroupID( StateGroupUtils.STATEGROUP_ANALOG);
 	
 	//defaults - pointUnit
-	((com.cannontech.database.data.point.ScalarPoint)point).setPointUnit(
-		new com.cannontech.database.db.point.PointUnit(
+	point.setPointUnit(
+		new PointUnit(
 			pointID,
-			new Integer(pointUnit),
-			new Integer(com.cannontech.database.db.point.PointUnit.DEFAULT_DECIMAL_PLACES),
-			new Double(0.0),
-			new Double(0.0)));
+			pointUnit,
+			PointUnit.DEFAULT_DECIMAL_PLACES,
+			0.0,
+			0.0));
 	
 	//defaults - pointAnalog
-	((com.cannontech.database.data.point.AnalogPoint)point).setPointAnalog(
+	point.setPointAnalog(
 		new com.cannontech.database.db.point.PointAnalog(
 			pointID,
-			new Double(-1.0),
-			com.cannontech.database.data.point.PointTypes.getType(com.cannontech.database.data.point.PointTypes.TRANSDUCER_NONE),
-			new Double(1.0),
-			new Double(0.0)));
+			-1.0,
+			PointTypes.getType(PointTypes.TRANSDUCER_NONE),
+			1.0,
+			0.0));
 
 	
 	return point;	
