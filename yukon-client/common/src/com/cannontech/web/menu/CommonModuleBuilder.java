@@ -163,7 +163,7 @@ public class CommonModuleBuilder implements ModuleBuilder {
         } else if (requireRoleElem != null) {
             String role = requireRoleElem.getAttributeValue("value");
             checker = OptionPropertyChecker.createRoleChecker(role);
-        } else if (requireRoleElem != null) {
+        } else if (requireFalsePropElem != null) {
             String prop = requireFalsePropElem.getAttributeValue("value");
             checker = OptionPropertyChecker.createFalsePropertyChecker(prop);
         }
