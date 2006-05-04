@@ -1,5 +1,7 @@
 package com.cannontech.database.data.notification;
 
+import com.cannontech.common.util.CtiUtilities;
+
 
 /**
  * @author ryan
@@ -8,15 +10,17 @@ package com.cannontech.database.data.notification;
 public class ContactNotifGroupMap extends NotifMap {
 
 	public static final String TABLE_NAME = "ContactNotifGroupMap";
+    private int id = CtiUtilities.NONE_ZERO_ID;
 	
 	public ContactNotifGroupMap( int id )
 	{
-		super( id );
+		setContactID(id);
 	}
 
 	public ContactNotifGroupMap( int id, String attribs )
 	{
-		super( id, attribs );
+		super( attribs );
+        setContactID(id);
 	}
 
 	/**
@@ -24,7 +28,7 @@ public class ContactNotifGroupMap extends NotifMap {
 	 */
 	public int getContactID()
 	{
-		return getID();
+		return id;
 	}
 
 	/**
@@ -32,7 +36,7 @@ public class ContactNotifGroupMap extends NotifMap {
 	 */
 	public void setContactID(int i)
 	{
-		setID(i);
+		id = i;
 	}
 
 }

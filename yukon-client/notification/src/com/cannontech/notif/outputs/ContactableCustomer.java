@@ -6,7 +6,7 @@ import com.cannontech.database.cache.functions.CustomerFuncs;
 import com.cannontech.database.data.lite.*;
 
 public class ContactableCustomer extends ContactableBase {
-    private List _contactList = new LinkedList();
+    private List<ContactableBase> _contactList = new LinkedList<ContactableBase>();
     private final LiteCICustomer _liteCustomer;
     
     /**
@@ -22,8 +22,8 @@ public class ContactableCustomer extends ContactableBase {
         }        
     }
     
-    public List getNotifications(NotificationTypeChecker checker) {
-        List result = new LinkedList();
+    public List<LiteContactNotification> getNotifications(NotificationTypeChecker checker) {
+        List<LiteContactNotification> result = new LinkedList<LiteContactNotification>();
         for (Iterator iter = _contactList.iterator(); iter.hasNext();) {
             ContactableBase contactable = (ContactableBase) iter.next();
             result.addAll(contactable.getNotifications(checker));

@@ -26,13 +26,13 @@ public class ContactableNotification extends ContactableBase {
         return _customer;
     }
     
-    public List getNotifications(NotificationTypeChecker checker) {
-        List result;
+    public List<LiteContactNotification> getNotifications(NotificationTypeChecker checker) {
+        List<LiteContactNotification> result;
         if (checker.validNotifcationType(_liteNotif.getNotificationCategoryID())) {
-            result = new ArrayList(1);
+            result = new ArrayList<LiteContactNotification>(1);
             result.add(_liteNotif);
         } else {
-            result = new ArrayList(0);
+            result = Collections.emptyList();
         }
         return result;
     }

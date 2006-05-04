@@ -1,5 +1,7 @@
 package com.cannontech.database.data.notification;
 
+import com.cannontech.common.util.CtiUtilities;
+
 /**
  * @author ryan
  *
@@ -7,15 +9,17 @@ package com.cannontech.database.data.notification;
 public class NotifDestinationMap extends NotifMap {
 
 	public static final String TABLE_NAME = "NotificationDestination";
+    private int id = CtiUtilities.NONE_ZERO_ID;
 
 	public NotifDestinationMap( int id )
 	{
-		super( id );
+		setRecipientID(id);
 	}
 
 	public NotifDestinationMap( int id, String attribs )
 	{
-		super( id, attribs );
+		super( attribs );
+        setRecipientID(id);
 	}
 
 	/**
@@ -23,7 +27,7 @@ public class NotifDestinationMap extends NotifMap {
 	 */
 	public int getRecipientID()
 	{
-		return getID();
+		return id;
 	}
 
 	/**
@@ -31,7 +35,7 @@ public class NotifDestinationMap extends NotifMap {
 	 */
 	public void setRecipientID(int i)
 	{
-		setID(i);
+		id = i;
 	}
 
 }

@@ -1,36 +1,20 @@
 package com.cannontech.notif.outputs;
 
-import java.util.*;
+import java.util.List;
+import java.util.TimeZone;
 
-import com.cannontech.database.cache.functions.*;
-import com.cannontech.database.data.lite.*;
-import com.cannontech.database.data.notification.*;
+import com.cannontech.database.cache.functions.EnergyCompanyFuncs;
+import com.cannontech.database.data.lite.LiteEnergyCompany;
 
 public class Contactable {
 
-    private final NotifMap _notifMap;
-
-    private final ContactableBase _contactableBase;
-
-    public Contactable(CustomerNotifGroupMap customerMap) {
-        _notifMap = customerMap;
-        LiteCICustomer liteCustomer = CustomerFuncs
-                .getLiteCICustomer(customerMap.getCustomerID());
-        _contactableBase = new ContactableCustomer(liteCustomer);
+    protected ContactableBase _contactableBase;
+    
+    public Contactable() {
     }
-
-    public Contactable(ContactNotifGroupMap contactMap) {
-        _notifMap = contactMap;
-        LiteContact liteContact = ContactFuncs.getContact(contactMap
-                .getContactID());
-        _contactableBase = new ContactableContact(liteContact);
-    }
-
-    public Contactable(NotifDestinationMap notifMap) {
-        _notifMap = notifMap;
-        LiteContactNotification liteNotif = ContactNotificationFuncs
-                .getContactNotification(notifMap.getRecipientID());
-        _contactableBase = new ContactableNotification(liteNotif);
+    
+    public Contactable(ContactableBase base) {
+        _contactableBase = base;
     }
 
     /**
@@ -80,52 +64,6 @@ public class Contactable {
         return EnergyCompanyFuncs.getEnergyCompany(energyCompanyID);
     }
 
-    /**
-     * Returns true if this Contactable supports being notifications of the
-     * indicated method. The possible method types are listed in the NotifMap
-     * class.
-     * 
-     * @param notificationMethod
-     * @return
-     */
-    public boolean supportsNotificationMethod(int notificationMethod) {
-        return _notifMap.supportsMethod(notificationMethod);
-    }
-
-    /**
-     * Returns a list of Contactables given a LiteNotificationGroup. The
-     * LiteNotificationGroup can be composed of LiteCICustomers, LiteContacts,
-     * and LiteContactNotifications. The resulting list will have one entry for
-     * each entry in the LiteNotificationGroup.
-     * 
-     * @param lng
-     *            The LiteNotificationGroup to use
-     * @return A list of Contactable objects
-     */
-    public static List getContactablesForGroup(LiteNotificationGroup lng) {
-        LinkedList resultList = new LinkedList();
-        CustomerNotifGroupMap[] customerMap = lng.getCustomerMap();
-        for (int i = 0; i < customerMap.length; i++) {
-            CustomerNotifGroupMap notifGroupMap = customerMap[i];
-            resultList.add(new Contactable(notifGroupMap));
-        }
-
-        ContactNotifGroupMap[] contactMap = lng.getContactMap();
-        for (int i = 0; i < contactMap.length; i++) {
-            ContactNotifGroupMap notifGroupMap = contactMap[i];
-            resultList.add(new Contactable(notifGroupMap));
-        }
-
-        NotifDestinationMap[] notifDestinationMap = lng
-                .getNotifDestinationMap();
-        for (int i = 0; i < notifDestinationMap.length; i++) {
-            NotifDestinationMap destinationMap = notifDestinationMap[i];
-            resultList.add(new Contactable(destinationMap));
-        }
-
-        return resultList;
-    }
-
     public String toString() {
         return _contactableBase.toString();
     }
@@ -142,5 +80,18 @@ public class Contactable {
             return "";
         }
     }
+    
+    /**
+     * Returns true if this Contactable supports being notifications of the
+     * indicated method. The possible method types are listed in the NotifMap
+     * class.
+     * 
+     * @param notificationMethod
+     * @return
+     */
+    public boolean supportsNotificationMethod(int notificationMethod) {
+        return true;
+    }
+
 
 }

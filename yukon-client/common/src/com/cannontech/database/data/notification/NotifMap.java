@@ -1,16 +1,16 @@
 package com.cannontech.database.data.notification;
 
-import com.cannontech.common.util.CtiUtilities;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
 
 /**
  * @author ryan
  *
  *	Common base class for notifcations
  */
-public class NotifMap implements java.io.Serializable
+public class NotifMap implements java.io.Serializable, Iterable<Integer>
 {
-	private int id = CtiUtilities.NONE_ZERO_ID;
-
 	//Y or N fields for the notifcation attributes:
 	// [0]:send email, [1]:make phone call, [2]:send short email
 	private String attribs = DEF_ATTRIBS;
@@ -18,22 +18,50 @@ public class NotifMap implements java.io.Serializable
     public static final int METHOD_EMAIL = 0;
     public static final int METHOD_VOICE = 1;
     public static final int METHOD_SMS = 2;
+    
+    public static final int[] ALL_METHODS = {METHOD_EMAIL,METHOD_VOICE,METHOD_SMS};
 
 
-	public NotifMap( int id )
+	public NotifMap()
 	{
-		super();
-		setID( id );
 	}
 
-	public NotifMap( int id, String attribs )
+	public NotifMap( String attribs )
 	{
-		this( id );
 		setAttribs( attribs );
 	}
     
+    public Iterator<Integer> iterator() {
+        return new Iterator<Integer>() {
+            private int nextIndex = 0;
+            public boolean hasNext() {
+                int tempNextIndex = nextIndex;
+                while (tempNextIndex < ALL_METHODS.length && !supportsMethod(ALL_METHODS[tempNextIndex])) {
+                    tempNextIndex++;
+                }
+                return (tempNextIndex < ALL_METHODS.length);
+            }
+            public Integer next() {
+                while (nextIndex < ALL_METHODS.length && !supportsMethod(ALL_METHODS[nextIndex])) {
+                    nextIndex++;
+                }
+                if (nextIndex < ALL_METHODS.length) {
+                    return ALL_METHODS[nextIndex++];
+                }
+                throw new NoSuchElementException();
+            }
+            public void remove() {
+                throw new UnsupportedOperationException();
+            }
+        };
+    }
+    
     public boolean supportsMethod(int notificationMethod) {
         return getAttribs().charAt(notificationMethod) == 'Y';
+    }
+    
+    public void setSupportsMethod(int notificationMethod, boolean support) {
+        setChars(notificationMethod, support?'Y':'N');
     }
 
     public boolean isSendEmails()
@@ -83,14 +111,6 @@ public class NotifMap implements java.io.Serializable
 	}
 
 	/**
-	 * @return
-	 */
-	protected int getID()
-	{
-		return id;
-	}
-
-	/**
 	 * @param string
 	 */
 	public void setAttribs(String string)
@@ -99,14 +119,6 @@ public class NotifMap implements java.io.Serializable
 			throw new IllegalStateException("The attribs attribute can not be null and must be " + DEF_ATTRIBS.length() + " characters long");
 
 		attribs = string;
-	}
-
-	/**
-	 * @param i
-	 */
-	protected void setID(int i)
-	{
-		id = i;
 	}
 
 }

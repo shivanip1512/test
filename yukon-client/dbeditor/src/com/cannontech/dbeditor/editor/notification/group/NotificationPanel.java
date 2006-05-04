@@ -87,7 +87,7 @@ private void doCheckBoxAction( JCheckBox checkBox )
 			(TreeNode)getJTreeNotifs().getPathForRow( selRow ).getLastPathComponent();
 
 		//create a dummy notifmap to use the attribs logic only 
-		NotifMap nm = new NotifMap(-1);
+		NotifMap nm = new NotifMap();
 
 		if( node instanceof LiteBaseNode )
 		{
@@ -732,7 +732,7 @@ public void nodeSelectionChanged( boolean checkBoxCliked )
 
 
 			//create a dummy notifmap to use the attribs logic only 
-			NotifMap dummyMap = new NotifMap(-1);
+			NotifMap dummyMap = new NotifMap();
 			dummyMap.setAttribs( lbNode.getUserValue() );
 			getJCheckBoxPhoneCall().setSelected( dummyMap.isSendOutboundCalls() );
 			getJCheckBoxEmails().setSelected( dummyMap.isSendEmails() || dummyMap.isSendSms() );
