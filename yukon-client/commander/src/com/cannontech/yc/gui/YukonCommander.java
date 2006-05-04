@@ -4,17 +4,24 @@ package com.cannontech.yc.gui;
  * This type was created in VisualAge.
  */
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseListener;
 import java.awt.print.PrinterException;
 import java.net.URL;
 import java.util.Observable;
+import java.util.Observer;
 import java.util.Vector;
 
+import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JTextPane;
 import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
 
 import com.cannontech.clientutils.CTILogger;
@@ -24,10 +31,10 @@ import com.cannontech.common.gui.util.TreeViewPanel;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.NativeIntVector;
+import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.cache.functions.CommandFuncs;
-import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteCommand;
@@ -42,9 +49,7 @@ import com.cannontech.database.db.command.CommandCategory;
 import com.cannontech.database.model.EditableTextModel;
 import com.cannontech.database.model.ModelFactory;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.util.Command;
 import com.cannontech.roles.application.CommanderRole;
-import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.yc.gui.menu.YCCommandMenu;
 import com.cannontech.yc.gui.menu.YCFileMenu;
 import com.cannontech.yc.gui.menu.YCHelpMenu;
@@ -52,7 +57,7 @@ import com.cannontech.yc.gui.menu.YCViewMenu;
 import com.cannontech.yukon.IServerConnection;
 import com.cannontech.yukon.conns.ConnPool;
 
-public class YukonCommander extends javax.swing.JFrame implements com.cannontech.database.cache.DBChangeListener, java.awt.event.ActionListener, java.awt.event.FocusListener, java.awt.event.KeyListener, javax.swing.event.TreeSelectionListener, java.awt.event.MouseListener, java.util.Observer {
+public class YukonCommander extends JFrame implements DBChangeListener, ActionListener, FocusListener, KeyListener, TreeSelectionListener, MouseListener, Observer {
 	private YC yc;
 
 	private int [] treeModels = null;
@@ -60,7 +65,6 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 	public static final String HELP_FILE = CtiUtilities.getHelpDirPath() + "Yukon Commander Help.chm";
     public static final URL COMMANDER_GIF = YukonCommander.class.getResource("/CommanderIcon.gif");
 
-	private com.cannontech.message.dispatch.ClientConnection connToDispatch;
 	private javax.swing.JPanel ivjJFrameContentPane = null;
 	private javax.swing.JPanel ivjOutputPanel = null;
 	private com.cannontech.common.gui.util.TreeViewPanel ivjTreeViewPanel = null;
@@ -658,15 +662,6 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		}
 		return ivjClearPrintPanel;
 	}
-	/**
-	 * Returns the connToDispatch.
-	 * @return com.cannontech.message.util.ClientConnection
-	 * @see com.cannontech.database.cache.DBChangeListener#getClientConnection()
-	 */
-	public IServerConnection getClientConnection()
-	{
-		return ConnPool.getInstance().getDefDispatchConn();
-	}
 
 	/**
 	 * Returns the ycClass.getCommand().
@@ -1244,7 +1239,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 	/**
 	 * @see com.cannontech.database.cache.DBChangeListener#handleDBChangeMsg(DBChangeMsg, LiteBase)
 	 */
-	public void handleDBChangeMsg(com.cannontech.message.dispatch.message.DBChangeMsg msg, com.cannontech.database.data.lite.LiteBase object)
+	public void handleDBChangeMsg(DBChangeMsg msg, LiteBase object)
 	{
 		java.awt.Cursor savedCursor = null;
 		try
@@ -1322,7 +1317,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 			
 		setRouteModel(); //fill route combo box
 
-		com.cannontech.database.cache.DefaultDatabaseCache.getInstance().addDBChangeListener(this);
+		DefaultDatabaseCache.getInstance().addDBChangeListener(this);
 	
 		addWindowListener(new java.awt.event.WindowAdapter(){
 			public void windowClosing(java.awt.event.WindowEvent e){ 
@@ -1482,8 +1477,6 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 					c.close();
 			}
 	
-			ycClient.getClientConnection();
-	
 			//set the app to start as close to the center as you can....
 			//  only works with small gui interfaces.
 			java.awt.Dimension d = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
@@ -1492,7 +1485,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 
 			splash.setVisible( false );
 			splash.dispose();			
-			ycClient.show();
+			ycClient.setVisible(true);
 //			ycClient.getTreeViewPanel().getTree().setSelectionInterval(1,1);
 			ycClient.getTreeViewPanel().getTree().requestFocusInWindow();
 

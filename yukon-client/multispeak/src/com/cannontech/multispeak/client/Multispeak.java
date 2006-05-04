@@ -34,7 +34,6 @@ import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.cache.functions.DeviceFuncs;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.PointFuncs;
-import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -43,10 +42,8 @@ import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.point.RawPointHistory;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.PointData;
-import com.cannontech.message.dispatch.message.Registration;
 import com.cannontech.message.porter.message.Request;
 import com.cannontech.message.porter.message.Return;
-import com.cannontech.message.util.ClientConnection;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
@@ -68,7 +65,6 @@ import com.cannontech.multispeak.event.MultispeakEvent;
 import com.cannontech.multispeak.event.ODEvent;
 import com.cannontech.roles.YukonGroupRoleDefs;
 import com.cannontech.roles.yukon.MultispeakRole;
-import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.yukon.IServerConnection;
 import com.cannontech.yukon.conns.ConnPool;
 
@@ -507,14 +503,6 @@ public class Multispeak implements MessageListener, DBChangeListener {
 	 */
 	public static Map getEventsMap() {
 		return eventsMap;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.cannontech.database.cache.DBChangeListener#getClientConnection()
-	 */
-	public IServerConnection getClientConnection()
-	{
-		return ConnPool.getInstance().getDefDispatchConn();
 	}
 	
 	/* (non-Javadoc)

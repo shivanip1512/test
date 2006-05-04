@@ -75,7 +75,6 @@ public class Graph implements GraphDefines
 	private boolean updateTrend = true;
 	private StringBuffer htmlString = null;
 	
-	private ClientConnection connToDispatch;
 	private TrendProperties trendProperties;
 
 	//types of generations, GDEF is the original or default, POINT is for ad-hoc or no predefined gdef exists.

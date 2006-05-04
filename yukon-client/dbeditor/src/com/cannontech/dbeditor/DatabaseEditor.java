@@ -81,6 +81,7 @@ import com.cannontech.dbeditor.wizard.changetype.device.DeviceChngTypesPanel;
 import com.cannontech.dbeditor.wizard.copy.device.DeviceCopyWizardPanel;
 import com.cannontech.dbeditor.wizard.tou.TOUScheduleWizardPanel;
 import com.cannontech.debug.gui.AboutDialog;
+import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.application.DBEditorRole;
 import com.cannontech.roles.application.TDCRole;
@@ -1562,15 +1563,7 @@ private JTreeEditorFrame getAvailableEditorFrame()
 	}
 			
 }
-/**
- * Insert the method's description here.
- * Creation date: (12/20/2001 1:45:53 PM)
- * @return com.cannontech.message.util.ClientConnection
- */
-public IServerConnection getClientConnection() 
-{
-	return getConnToDispatch();
-}
+
 /**
  * @return com.cannontech.message.dispatch.ClientConnection
  */
@@ -1579,6 +1572,7 @@ private IServerConnection getConnToDispatch()
 	if(connToDispatch == null) {
 		connToDispatch = ConnPool.getInstance().getDefDispatchConn();
 		connToDispatch.addObserver(this);
+		updateConnectionStatus(connToDispatch);
 	}
 	return connToDispatch;
 }
@@ -2994,27 +2988,35 @@ private void showWizardPanel(WizardPanel wizard) {
  */
 public void update(java.util.Observable o, Object arg) 
 {
-	if( o instanceof com.cannontech.message.dispatch.ClientConnection )
+	if( o instanceof ClientConnection )
 	{
-		if( ((com.cannontech.message.dispatch.ClientConnection)o).isValid() )
+		updateConnectionStatus((IServerConnection) o);
+	}
+}
+
+/**
+ * Update the status of out dispatch connection for the user.
+ * @param conn
+ */
+private void updateConnectionStatus(IServerConnection conn) {
+	if( conn.isValid() )
+	{
+		connToVanGoghErrorMessageSent = false;
+		fireMessage( new MessageEvent( this, "Connection to Message Dispatcher Established.") );
+		if( owner != null )
+			owner.setTitle("Yukon Database Editor [Connected to Dispatch@" +
+				 		 conn.getHost() + ":" +
+				 		 conn.getPort() + "]" );
+	}
+	else
+	{
+		if( owner != null )
+			owner.setTitle("Yukon Database Editor [Not Connected to Dispatch]");
+		if( !connToVanGoghErrorMessageSent )
 		{
-			connToVanGoghErrorMessageSent = false;
-			fireMessage( new MessageEvent( this, "Connection to Message Dispatcher Established.") );
-			if( owner != null )
-				owner.setTitle("Yukon Database Editor [Connected to Dispatch@" +
-					 		 ((com.cannontech.message.dispatch.ClientConnection)o).getHost() + ":" +
-					 		 ((com.cannontech.message.dispatch.ClientConnection)o).getPort() + "]" );
-		}
-		else
-		{
-			if( owner != null )
-				owner.setTitle("Yukon Database Editor [Not Connected to Dispatch]");
-			if( !connToVanGoghErrorMessageSent )
-			{
-				connToVanGoghErrorMessageSent = true;
-				fireMessage( new MessageEvent( this, "Lost Connection to Message Dispatcher!", MessageEvent.ERROR_MESSAGE) );
-				owner.repaint();
-			}
+			connToVanGoghErrorMessageSent = true;
+			fireMessage( new MessageEvent( this, "Lost Connection to Message Dispatcher!", MessageEvent.ERROR_MESSAGE) );
+			owner.repaint();
 		}
 	}
 }

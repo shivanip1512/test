@@ -1,94 +1,85 @@
 package com.cannontech.database.cache;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
+import com.cannontech.yukon.IServerConnection;
+import com.cannontech.yukon.conns.ConnPool;
 
 /**
- * Insert the type's description here.
+ * 
  * Creation date: (12/20/2001 1:06:33 PM)
- * @author: 
+ * 
+ * @author: finessed a little by alauinger in 2006
  */
-/* This class will scan all the listeners ClientConnections that were added to
-	 it, searching for DBChangeMessages.  Once found, the DBChangeMessage
-	 will be forwarded on to the DefaultDatabaseCache AND on to the classes
-	 handleDBChangeMsg( DBChangeMsg ) method.  That is why only classes
-	 of type DBChangeListener can be added as a listener
-	*/
-public class CacheDBChangeListener implements MessageListener
-{
-	private com.cannontech.message.util.ClientConnection connection = null;
-	private java.util.Vector dbChangeListeners = null;
+/*
+ * This class helps the cache support notifying anyone interested in a database change.
+ * When a DBChangeMsg comes in, it will tell the cache to handle it and the proceed
+ * to tell all of the dbChangeListeners registered with it.
+ * 
+ * Usually this registration is doing through the cache, don't use this class directly.
+ * This class is subject to change and you should probably not depend on it for new uses.
+ */
+public class CacheDBChangeListener implements MessageListener {
+	private IServerConnection connection = ConnPool.getInstance()
+			.getDefDispatchConn();
 
-/**
- * CacheDBChangeListener constructor comment.
- */
-public CacheDBChangeListener() 
-{
-	super();
-}
+	private List<DBChangeListener> dbChangeListeners = new ArrayList<DBChangeListener>();
 
-/**
- * Insert the method's description here.
- * Creation date: (12/20/2001 2:02:40 PM)
- * @param listener com.cannontech.database.cache.DBChangeListener
- */
-public synchronized void addDBChangeListener(DBChangeListener listener) 
-{
-	if( !getDbChangeListeners().contains(listener) )
-	{
-		getDbChangeListeners().add( listener );
-		listener.getClientConnection().addMessageListener( this );
+	/**
+	 * CacheDBChangeListener constructor comment.
+	 */
+	public CacheDBChangeListener() {
+		super();
+		connection.addMessageListener(this);
 	}
 
-}
-/**
- * Insert the method's description here.
- * Creation date: (12/20/2001 2:01:55 PM)
- * @return java.util.Vector
- */
-private synchronized java.util.Vector getDbChangeListeners() 
-{
-	if( dbChangeListeners == null )
-		dbChangeListeners = new java.util.Vector(10);
-
-	return dbChangeListeners;
-}
-/**
- * Insert the method's description here.
- * Creation date: (12/20/2001 2:02:40 PM)
- * @param listener com.cannontech.database.cache.DBChangeListener
- */
-public synchronized void removeDBChangeListener(DBChangeListener listener) 
-{
-	getDbChangeListeners().remove( listener );
-	listener.getClientConnection().removeMessageListener( this );
-}
-
-public void messageReceived( MessageEvent e )
-{
-	synchronized( getDbChangeListeners() )
-	{
-		for( int i = 0; i < getDbChangeListeners().size(); i++ )
-		{
-			DBChangeListener listener = (DBChangeListener)getDbChangeListeners().get(i);
-				
-			Object msg = e.getMessage();
-			if (msg != null && msg instanceof DBChangeMsg )
-			{
-				//handle the Cache's DBChangeMessages
-				LiteBase lBase = 
-					DefaultDatabaseCache.getInstance().handleDBChangeMessage( 
-						(DBChangeMsg)msg );
-
-				//do the listeners handler of DBChangeMessages
-				listener.handleDBChangeMsg( (DBChangeMsg)msg, lBase );
+	/**
+	 * 
+	 * @param listener
+	 *            com.cannontech.database.cache.DBChangeListener
+	 */
+	public void addDBChangeListener(DBChangeListener listener) {
+		synchronized (dbChangeListeners) {
+			if (!dbChangeListeners.contains(listener)) {
+				dbChangeListeners.add(listener);
 			}
 		}
 	}
 
-}
+	/**
+	 * 
+	 * @param listener
+	 *            com.cannontech.database.cache.DBChangeListener
+	 */
+	public void removeDBChangeListener(DBChangeListener listener) {
+		synchronized (dbChangeListeners) {
+			dbChangeListeners.remove(listener);
+		}
+	}
 
+	/**
+	 * If the message received was a DBChangeMsg the ask the cache to figure out
+	 * what what modified, is possible and call all of these DBChangeListeners
+	 */
+	public void messageReceived(MessageEvent e) {
+		Object msg = e.getMessage();
+		if (msg != null && msg instanceof DBChangeMsg) {
+			synchronized (dbChangeListeners) {
+				for (DBChangeListener listener : dbChangeListeners) {
+					// handle the Cache's DBChangeMessages
+					LiteBase lBase = DefaultDatabaseCache.getInstance()
+							.handleDBChangeMessage((DBChangeMsg) msg);
+
+					// do the listeners handler of DBChangeMessages
+					listener.handleDBChangeMsg((DBChangeMsg) msg, lBase);
+				}
+			}
+		}
+	}
 
 }

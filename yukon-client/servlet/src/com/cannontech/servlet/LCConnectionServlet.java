@@ -16,8 +16,6 @@ import javax.servlet.http.HttpSession;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.cache.DBChangeListener;
-import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.loadcontrol.LCUtils;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
@@ -25,7 +23,6 @@ import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.gui.manualentry.ResponseProg;
 import com.cannontech.loadcontrol.messages.LMManualControlRequest;
-import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.util.ServletUtil;
@@ -33,8 +30,6 @@ import com.cannontech.web.loadcontrol.LMCmdMsgFactory;
 import com.cannontech.web.loadcontrol.LMSession;
 import com.cannontech.web.loadcontrol.LoadcontrolCache;
 import com.cannontech.web.loadcontrol.WebCmdMsg;
-import com.cannontech.yukon.IServerConnection;
-import com.cannontech.yukon.conns.ConnPool;
 
 public class LCConnectionServlet extends javax.servlet.http.HttpServlet implements java.util.Observer {
 		
@@ -129,17 +124,6 @@ public void init(javax.servlet.ServletConfig config) throws javax.servlet.Servle
 
 	// Add this to the context so other servlets can access the connection
 	getServletContext().setAttribute(SERVLET_CONTEXT_ID, this);		
-	
-	DBChangeListener dbl = new DBChangeListener() {
-		ClientConnection dispatchConnection = null;
-		public IServerConnection getClientConnection() 
-		{
-			return ConnPool.getInstance().getDefDispatchConn();
-		}
-		public void handleDBChangeMsg(com.cannontech.message.dispatch.message.DBChangeMsg msg, com.cannontech.database.data.lite.LiteBase lBase ) { }	
-	};
-	
-	DefaultDatabaseCache.getInstance().addDBChangeListener(dbl);
 }
 /**
  * This is registered with the MACS Connection to receive updates

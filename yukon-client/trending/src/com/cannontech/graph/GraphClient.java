@@ -24,6 +24,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSplitPane;
 
@@ -35,6 +36,8 @@ import com.cannontech.common.gui.util.SplashWindow;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.cache.DBChangeListener;
+import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.cache.functions.GraphFuncs;
 import com.cannontech.database.data.graph.GraphDefinition;
@@ -60,12 +63,11 @@ import com.cannontech.graph.menu.ViewMenu;
 import com.cannontech.graph.model.TrendModel;
 import com.cannontech.graph.model.TrendProperties;
 import com.cannontech.jfreechart.chart.YukonChartPanel;
-import com.cannontech.message.util.Command;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.application.TrendingRole;
 import com.cannontech.util.ServletUtil;
-import com.cannontech.yukon.IServerConnection;
-public class GraphClient extends javax.swing.JPanel implements com.cannontech.database.cache.DBChangeListener, GraphDefines, java.awt.event.ActionListener, java.awt.event.WindowListener, javax.swing.event.ChangeListener, javax.swing.event.TreeSelectionListener
+
+public class GraphClient extends JPanel implements DBChangeListener, GraphDefines, java.awt.event.ActionListener, java.awt.event.WindowListener, javax.swing.event.ChangeListener, javax.swing.event.TreeSelectionListener
 {
     public static final URL GRAPH_GIF = GraphClient.class.getResource("/GraphIcon.gif");
 
@@ -989,14 +991,6 @@ private static void getBuilderData() {
 	FCA6C21135A623230F56C0C47C30DDD85B6D6869248CA4A12B7D33F6E0CBD3A43B22C9D8A775125F97A1B2CB42D6256AE6B2D14B99075998A63F2BE727FF3479FB3D62G988EFD78BD7FD57F7EEA7A15DB3D7E0670706B4C6771FFDD7B7B2B29D5E45E0D85FC4A6B684756D47DD3707E3B122D7DC60BC5B2DA7AEA2DA6729B13F597A5D1B9DF7B3FD5247E81ACA3E74AE7EB2B085C67D4B47F8FD0CB878834F5C65C50A2GGB0EBGGD0CB818294G94G88G88G8BDBF2AE34F5C65C50A2GGB0EBGG8CG
 	GGGGGGGGGGGGGGGGE2F5E9ECE4E5F2A0E4E1F4E1D0CB8586GGGG81G81GBAGGG8AA3GGGG
 **end of data**/
-}
-
-/**
- * Returns the getGraph().connection to dispatch.
- * @return com.cannontech.message.util.ClientConnection
- */
-public IServerConnection getClientConnection() {
-	return getGraph().getClientConnection();
 }
 
 /**
@@ -1961,7 +1955,7 @@ private void initializeSwingComponents()
 	trendDataAutoUpdater = new TrendDataAutoUpdater();
 	trendDataAutoUpdater.start();
 
-	com.cannontech.database.cache.DefaultDatabaseCache.getInstance().addDBChangeListener(this);	
+	DefaultDatabaseCache.getInstance().addDBChangeListener(this);	
 
 	if( getTrendProperties().getViewType() != GraphRenderers.TABULAR &&
 		getTrendProperties().getViewType() != GraphRenderers.SUMMARY )	//not tabular or summary

@@ -1,8 +1,6 @@
 /*
  * Created on Nov 9, 2004
  *
- * To change the template for this generated file go to
- * Window>Preferences>Java>Code Generation>Code and Comments
  */
 package com.cannontech.database.cache;
 
@@ -57,16 +55,13 @@ import com.cannontech.stars.xml.serialize.StarsLMProgram;
 import com.cannontech.stars.xml.serialize.StarsServiceCompany;
 import com.cannontech.stars.xml.serialize.StarsServiceRequest;
 import com.cannontech.stars.xml.serialize.StarsServiceRequestHistory;
-import com.cannontech.yukon.IServerConnection;
-import com.cannontech.yukon.conns.ConnPool;
 
 /**
+ * 
  * @author yao
  *
- * To change the template for this generated type comment go to
- * Window>Preferences>Java>Code Generation>Code and Comments
  */
-public class StarsDatabaseCache implements com.cannontech.database.cache.DBChangeListener {
+public class StarsDatabaseCache implements DBChangeListener {
 	
 	public static final int DEFAULT_ENERGY_COMPANY_ID = EnergyCompany.DEFAULT_ENERGY_COMPANY_ID;
 	
@@ -375,10 +370,6 @@ public class StarsDatabaseCache implements com.cannontech.database.cache.DBChang
 	public void deleteStarsYukonUser(int userID) {
 		Hashtable starsUsers = getAllStarsYukonUsers();
 		synchronized (starsUsers) { starsUsers.remove( new Integer(userID) ); }
-	}
-    
-	public IServerConnection getClientConnection() {
-		return ConnPool.getInstance().getDefDispatchConn();
 	}
     
 	public void handleDBChangeMsg(DBChangeMsg msg, LiteBase lBase)

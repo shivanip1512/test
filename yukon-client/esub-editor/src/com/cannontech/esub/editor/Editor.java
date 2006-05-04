@@ -429,9 +429,6 @@ public class Editor extends JPanel {
 		DefaultDatabaseCache.getInstance().getAllDevices();
 		DefaultDatabaseCache.getInstance().getAllPoints();
 		DefaultDatabaseCache.getInstance().getAllStateGroupMap();
-		
-//		fire up the db change listener
-		DefaultDatabaseCache.getInstance().addDBChangeListener(new DBChangeCaptain());	
 	}
 	/**
 	 * Creation date: (12/12/2001 3:29:49 PM)
