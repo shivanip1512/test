@@ -5,7 +5,9 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
@@ -18,16 +20,21 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.cache.functions.AuthFuncs;
+import com.cannontech.database.cache.functions.PAOFuncs;
+import com.cannontech.database.data.device.DeviceBase;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.SystemLogData;
 import com.cannontech.database.db.capcontrol.CCEventLog;
+import com.cannontech.database.db.capcontrol.CapBank;
 import com.cannontech.database.db.point.SystemLog;
 import com.cannontech.roles.capcontrol.CBCSettingsRole;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.Feeder;
+import com.cannontech.yukon.cbc.StreamableCapObject;
 import com.cannontech.yukon.cbc.SubBus;
 
 /**
@@ -288,38 +295,84 @@ public class CBCWebUtils implements CBCParamValues
 		return retLog;
 	}
 	
-	public static List getCCEventsForPAO (Long _subId_, String type) {
+	public static List getCCEventsForPAO (Long _paoId_, String type, CapControlCache theCache, int prevDaysCount) {
 	    String sqlStmt ="SELECT * FROM " + CCEventLog.TABLE_NAME + " WHERE"; 
-	    if (type.equalsIgnoreCase("CCFEEDER")){
-	    	sqlStmt += " FeederId = ?";
-	    }	    	
-	    else {
-	    	sqlStmt += " SubId = ?";
+	    List ccEvents = new ArrayList(100);
+	    long startTS = ServletUtil.getDate(- prevDaysCount).getTime();
+	    if (type.equalsIgnoreCase("CCFEEDER") || type.equalsIgnoreCase("CCSUBBUS")) {
+		    if (type.equalsIgnoreCase("CCFEEDER")){
+		    	sqlStmt += " FeederId = ?";
+		    }	    	
+		    else if (type.equalsIgnoreCase("CCSUBBUS")){
+		    	sqlStmt += " SubId = ?";
+		    }
+		    sqlStmt += " AND DateTime >= " + "'" + new java.sql.Timestamp( startTS ) + "'";
+		    sqlStmt += " ORDER BY " + CCEventLog.COLUMNS [CCEventLog.COL_DATETIME] + " DESC";
+		    JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();            	    
+		    ccEvents = yukonTemplate.query(sqlStmt, new Long[] {_paoId_},
+		    		new RowMapper() {
+		    			public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
+		    				CCEventLog row = new CCEventLog(); 
+		    				row.setLogId (new Long ( rs.getBigDecimal(1).longValue() ));
+		    				row.setPointId(new Long ( rs.getBigDecimal(2).longValue() ));
+		    				row.setDateTime((Timestamp)(( rs.getTimestamp(3))));
+		    				row.setSubId(new Long ( rs.getBigDecimal(4).longValue() ));
+		    				row.setFeederId(new Long ( rs.getBigDecimal(5).longValue() ));
+		    				row.setEventType(new Integer ( rs.getBigDecimal(6).intValue() ));
+		    				row.setSeqId(new Long ( rs.getBigDecimal(7).longValue() ));
+		    				row.setValue(new Long ( rs.getBigDecimal(8).longValue() ));
+		    				row.setText((String) ( rs.getString(9)));
+		    				row.setUserName((String) ( rs.getString(10)));
+		    				return row;        				
+		    			}
+		    		});
 	    }
-	    JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();            	    
-	    List ccEvents = yukonTemplate.query(sqlStmt, new Long[] {_subId_},
-	    		new RowMapper() {
-	    			public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
-	    				CCEventLog row = new CCEventLog(); 
-	    				row.setLogId (new Long ( rs.getBigDecimal(1).longValue() ));
-	    				row.setPointId(new Long ( rs.getBigDecimal(2).longValue() ));
-	    				row.setDateTime((Date)(( rs.getDate(3))));
-	    				row.setSubId(new Long ( rs.getBigDecimal(4).longValue() ));
-	    				row.setFeederId(new Long ( rs.getBigDecimal(5).longValue() ));
-	    				row.setEventType(new Integer ( rs.getBigDecimal(6).intValue() ));
-	    				row.setSeqId(new Long ( rs.getBigDecimal(7).longValue() ));
-	    				row.setValue(new Long ( rs.getBigDecimal(8).longValue() ));
-	    				row.setText((String) ( rs.getString(9)));
-	    				row.setUserName((String) ( rs.getString(10)));
-	    				return row;        				
-	    			}
-	    		});
-
+	    else if (type.equalsIgnoreCase("CAP BANK")){
+	    	sqlStmt = "SELECT * FROM " + SystemLog.TABLE_NAME + " WHERE PointId = ? ";
+	    	sqlStmt += " AND DateTime >= " + "'" + new java.sql.Timestamp( startTS ) + "'";
+	    	sqlStmt += " ORDER BY " + SystemLog.COLUMNS[SystemLog.COL_DATETIME]+ " DESC";
+	    	Integer statusPtId = getStatusPointFromPaoId(_paoId_, theCache);  		
+			if (statusPtId != null && statusPtId.intValue() >= 0) {
+				JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();  
+			
+				ccEvents = yukonTemplate.query(sqlStmt, new Integer[] {statusPtId},
+			    		new RowMapper() {
+			    			public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
+			    				SystemLog row = new SystemLog();
+			    				row.setLogID(new Integer (rs.getBigDecimal(1).intValue()));
+			    				row.setPointID(new Integer (rs.getBigDecimal(2).intValue()));
+			    				row.setDateTime((Timestamp)(( rs.getTimestamp(3))));			    				
+			    				row.setSoe_tag(new Integer(rs.getBigDecimal(4).intValue()));
+			    				row.setType(new Integer (rs.getBigDecimal(5).intValue()));
+			    				row.setPriority(new Integer(rs.getBigDecimal(6).intValue()));
+			    				row.setAction((String)rs.getString(7));
+			    				row.setDescription((String)rs.getString(8));
+			    				row.setUserName((String)rs.getString(9));
+			    				rs.getBigDecimal(10).intValue();
+			    				return row;        				
+			    			}
+			    		});
+			}
+					
+	    	}
+	    	
+	    
 	    return ccEvents;  	
 	}
 
-
-	
-	 
-
+	/**
+	 * @param _paoId_
+	 * @param theCache
+	 * @return TODO
+	 */
+	private static synchronized Integer getStatusPointFromPaoId(Long _paoId_, CapControlCache theCache) {
+		Integer statusPtId = null;
+		StreamableCapObject obj = theCache.getCapControlPAO(new Integer (_paoId_.intValue() ));
+			if (obj instanceof CapBankDevice) {
+				CapBankDevice capBank = (CapBankDevice) obj;
+				statusPtId = capBank.getStatusPointID();
+			}
+		
+		return statusPtId;
+	}
 }
