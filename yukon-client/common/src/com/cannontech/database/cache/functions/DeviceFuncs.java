@@ -1,18 +1,13 @@
 package com.cannontech.database.cache.functions;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Vector;
 
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.db.device.DeviceAddress;
-import com.cannontech.database.db.device.DeviceDirectCommSettings;
+import com.cannontech.database.data.pao.PAOGroups;
 
 /**
  * Insert the type's description here.
@@ -188,17 +183,61 @@ public static LiteYukonPAObject getLiteYukonPaobjectByMeterNumber(String meterNu
  */
 public static LiteYukonPAObject getLiteYukonPaobjectByDeviceName(String deviceName)
 {
-	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
-	List allDevices = cache.getAllDevices();
+    DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+    List allDevices = cache.getAllDevices();
     
-	LiteYukonPAObject lPao = null;
-	for (int i = 0; i < allDevices.size(); i++)
-	{
-		lPao = (LiteYukonPAObject)allDevices.get(i);
-		if (lPao.getPaoName().equals(deviceName))
-			return lPao;
-	}
-	return null;
+    LiteYukonPAObject lPao = null;
+    for (int i = 0; i < allDevices.size(); i++)
+    {
+        lPao = (LiteYukonPAObject)allDevices.get(i);
+        if (lPao.getPaoName().equals(deviceName))
+            return lPao;
+    }
+    return null;
+}
+
+/**
+ * Will find a device based on the four parameters that make up its unique key.
+ * This method will return null if a device couldn't be found.
+ * @param deviceName
+ * @param category
+ * @param paoClass
+ * @param type
+ * @return the LiteYukonPaoObject that matches the criteria
+ */
+public static LiteYukonPAObject getLiteYukonPAObject(String deviceName, int category, int paoClass, int type)
+{
+    DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+    List allDevices = cache.getAllDevices();
+    for (Object obj : allDevices) {
+        LiteYukonPAObject lPao = (LiteYukonPAObject) obj;
+        boolean foundMatch = true;
+        foundMatch &= lPao.getPaoName().equals(deviceName);
+        foundMatch &= lPao.getCategory() == category;
+        foundMatch &= lPao.getPaoClass() == paoClass;
+        foundMatch &= lPao.getType() == type;
+        if (foundMatch) {
+            return lPao;
+        }
+    }
+    return null;
+}
+
+/**
+ * Will find a device based on the four parameters that make up its unique key.
+ * This method will return null if a device couldn't be found.
+ * @param deviceName
+ * @param category
+ * @param paoClass
+ * @param type
+ * @return the LiteYukonPaoObject that matches the criteria
+ */
+public static LiteYukonPAObject getLiteYukonPAObject(String deviceName, String category, String paoClass, String type)
+{
+    int categoryInt = PAOGroups.getCategory(category);
+    int paoClassInt = PAOGroups.getPAOClass(category, paoClass);
+    int typeInt = PAOGroups.getPAOType(category, type);
+    return getLiteYukonPAObject(deviceName, categoryInt, paoClassInt, typeInt);
 }
 
 public static List getDevicesByPort(int portId)
