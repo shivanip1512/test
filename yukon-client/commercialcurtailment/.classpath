@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/third-party"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/common"/>
+	<classpathentry exported="true" sourcepath="Z:/java/Third-Party Sources/commons-collections-3.1-src.zip" kind="lib" path="/third-party/commons-collections-3.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/ejb3-persistence.jar"/>
+	<classpathentry exported="true" sourcepath="Z:/java/Third-Party Sources/hibernate-3.2.0.cr1.zip" kind="lib" path="/third-party/hibernate3.jar"/>
+	<classpathentry exported="true" sourcepath="Z:/java/Third-Party Sources/hibernate-annotations-3.1.0.Beta10.zip" kind="lib" path="/third-party/hibernate-annotations.jar"/>
+	<classpathentry exported="true" sourcepath="Z:/java/Third-Party Sources/lang-2.1-src.zip" kind="lib" path="/third-party/commons-lang-2.1.jar">
+		<attributes>
+			<attribute value="http://jakarta.apache.org/commons/lang/api/" name="javadoc_location"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="/third-party/cglib-2.1.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/asm.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/asm-attrs.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/antlr-2.7.6rc1.jar"/>
+	<classpathentry sourcepath="Z:/java/Third-Party Sources/spring-framework-1.2.7.zip" kind="lib" path="/third-party/spring.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

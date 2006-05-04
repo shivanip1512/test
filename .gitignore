@@ -10,6 +10,7 @@ yukon-client/cbc/build
 yukon-client/commander/.cvsignore
 yukon-client/commander/bin
 yukon-client/commander/build
+yukon-client/commercialcurtailment/bin
 yukon-client/common/.cvsignore
 yukon-client/common/bin
 yukon-client/common/build

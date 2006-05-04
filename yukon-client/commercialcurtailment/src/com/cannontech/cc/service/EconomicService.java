@@ -1,0 +1,90 @@
+package com.cannontech.cc.service;
+
+import java.util.List;
+
+import com.cannontech.cc.dao.CustomerDao;
+import com.cannontech.cc.dao.EconomicEventDao;
+import com.cannontech.cc.dao.EconomicEventParticipantDao;
+import com.cannontech.cc.model.CICustomerStub;
+import com.cannontech.cc.model.EconomicEvent;
+import com.cannontech.cc.model.EconomicEventParticipant;
+import com.cannontech.cc.model.EconomicEventParticipantSelection;
+import com.cannontech.cc.model.EconomicEventParticipantSelectionWindow;
+import com.cannontech.cc.model.EconomicEventPricing;
+import com.cannontech.cc.model.EconomicEventPricingWindow;
+import com.cannontech.database.cache.functions.CustomerFuncs;
+import com.cannontech.database.data.lite.LiteCICustomer;
+import com.cannontech.database.data.lite.LiteYukonUser;
+
+public class EconomicService {
+    private EconomicEventDao economicEventDao;
+    private EconomicEventParticipantDao economicEventParticipantDao;
+    private CustomerDao customerDao;
+
+    public EconomicService() {
+        super();
+    }
+    
+    public EconomicEvent getEvent(Integer eventId) {
+        return economicEventDao.getForId(eventId);
+    }
+
+    public List<EconomicEventParticipant> getParticipants(EconomicEvent event) {
+        return economicEventParticipantDao.getForEvent(event);
+    }
+    
+    public EconomicEventParticipant getParticipant(EconomicEvent event, LiteYukonUser yukonUser) {
+        LiteCICustomer liteCICustomer = CustomerFuncs.getCustomerForUser(yukonUser);
+        CICustomerStub customerStub = customerDao.getForLite(liteCICustomer);
+        CICustomerStub customer = customerStub;
+        return economicEventParticipantDao.getForCustomerAndEvent(customer, event);
+    }
+
+    public 
+    EconomicEventParticipantSelectionWindow 
+    getCustomerSelectionWindow(EconomicEventPricing revision,
+                         EconomicEventParticipant participant, 
+                         Integer windowOffset) {
+        EconomicEventPricingWindow window = getFallThroughWindow(revision, windowOffset);
+        EconomicEventParticipantSelection selection = participant.getSelection(window.getPricingRevision());
+        EconomicEventParticipantSelectionWindow selectionWindow = selection.getSelectionWindow(window);
+        return selectionWindow;
+    }
+
+    public EconomicEventPricingWindow getFallThroughWindow(EconomicEventPricing revision, Integer windowOffset) {
+        EconomicEventPricingWindow window = revision.getWindows().get(windowOffset);
+        while (window == null) {
+            // look for window in previous revision
+            EconomicEventPricing previousRevision = revision.getPrevious();
+            window = previousRevision.getWindows().get(windowOffset);
+        }
+        return window;
+    }
+    
+    public EconomicEventParticipantSelectionWindow 
+    getFallThroughWindowSelection(EconomicEventParticipantSelection selection, 
+                                  Integer windowOffset) {
+        
+        EconomicEventPricingWindow fallThroughWindow = getFallThroughWindow(selection.getPricingRevision(), windowOffset);
+        EconomicEventPricing revThatHasWindow = fallThroughWindow.getPricingRevision();
+        EconomicEventParticipantSelection selThatHasWindow = selection.getParticipant().getSelection(revThatHasWindow);
+        return selThatHasWindow.getSelectionWindow(fallThroughWindow);
+    }
+    
+    
+    //setters for dependency injection
+    
+    public void setEconomicEventDao(EconomicEventDao economicEventDao) {
+        this.economicEventDao = economicEventDao;
+    }
+
+    public void setEconomicEventParticipantDao(EconomicEventParticipantDao economicEventParticipantDao) {
+        this.economicEventParticipantDao = economicEventParticipantDao;
+    }
+
+    public void setCustomerDao(CustomerDao customerDao) {
+        this.customerDao = customerDao;
+    }
+
+
+}

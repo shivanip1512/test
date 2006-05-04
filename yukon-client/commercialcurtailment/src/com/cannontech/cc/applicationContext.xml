@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <bean id="programService" class="com.cannontech.cc.service.ProgramService" singleton="false" autowire="byType" />
+  <bean id="groupService" class="com.cannontech.cc.service.GroupService" singleton="false" autowire="byType" />
+  <bean id="customerPointService" class="com.cannontech.cc.service.CustomerPointService" autowire="byType" dependency-check="objects"/>
+  <bean id="customerEventService" class="com.cannontech.cc.service.CustomerEventService" autowire="byType" dependency-check="objects" />
+  <bean id="economicService" class="com.cannontech.cc.service.EconomicService" autowire="byType" />
+  <bean id="strategyFactory" class="com.cannontech.cc.service.StrategyFactory" autowire="byType" />
+  <bean id="notificationService" class="com.cannontech.cc.service.NotificationService" autowire="byType"/>
+  
+  <bean id="genericNotification" class="com.cannontech.cc.service.BaseNotificationStrategy" autowire="byType"
+        abstract="true">
+    <property name="notificationProxy" ref="notificationProxy"/>
+    <property name="parameterKeys">
+      <map>
+        <entry key="DEFAULT_EVENT_OFFSET_MINUTES" value="60"/>
+        <entry key="DEFAULT_NOTIFICATION_OFFSET_MINUTES" value="30"/>
+        <entry key="DEFAULT_EVENT_DURATION_MINUTES" value="120"/>
+      </map>
+    </property>
+    <!--  find a better way to inject the labels -->
+    <property name="viewLabels">
+      <props>
+        <prop key="DEFAULT_EVENT_OFFSET_MINUTES">Event Time Offset Minutes</prop>
+        <prop key="DEFAULT_NOTIFICATION_OFFSET_MINUTES">Notification Time Offset Minutes</prop>
+        <prop key="DEFAULT_EVENT_DURATION_MINUTES">Event Duration</prop>
+      </props>
+    </property>
+  </bean>
+  
+  <bean id="isocNotification" class="com.cannontech.cc.service.IsocNotificationStrategy" 
+        parent="genericNotification"
+        autowire="byType">
+    <property name="isocCommonStrategy" ref="isocCommonStrategy"/>
+  </bean>
+  
+  
+  <bean id="genericEconomic" class="com.cannontech.cc.service.BaseEconomicStrategy" autowire="byType"
+        abstract="true" >
+    <property name="notificationProxy" ref="notificationProxy"/>
+    <property name="parameterKeys">
+      <map>
+        <entry key="DEFAULT_EVENT_OFFSET_MINUTES" value="60"/>
+        <entry key="DEFAULT_NOTIFICATION_OFFSET_MINUTES" value="30"/>
+        <entry key="DEFAULT_EVENT_DURATION_MINUTES" value="120"/>
+        <entry key="DEFAULT_ENERGY_PRICE" value="100"/>
+      </map>
+    </property>
+    <!--  find a better way to inject the labels -->
+    <property name="viewLabels">
+      <props>
+        <prop key="DEFAULT_EVENT_OFFSET_MINUTES">Event Time Offset Minutes</prop>
+        <prop key="DEFAULT_NOTIFICATION_OFFSET_MINUTES">Notification Time Offset Minutes</prop>
+        <prop key="DEFAULT_EVENT_DURATION_MINUTES">Event Duration</prop>
+        <prop key="DEFAULT_ENERGY_PRICE">Energy Price</prop>
+      </props>
+    </property>
+  </bean>
+  
+  <bean id="isocSameDay" class="com.cannontech.cc.service.IsocEconomicStrategy" 
+        parent="genericEconomic"
+        autowire="byType">
+    <property name="isocCommonStrategy" ref="isocCommonStrategy"/>
+  </bean>
+  
+  
+  <bean id="customerPointTypeLookup" class="com.cannontech.support.CustomerPointTypeLookup" 
+   singleton="false" autowire="byType">
+   <property name="applicablePointLookup">
+     <map>
+       <entry key="ISOC">
+         <set>
+           <value>IsocDemandLevel</value>
+           <value>IsocBuyPrice</value>
+           <value>IsocMaxHours</value>
+           <value>IsocMinNoticeMin</value>
+         </set>
+       </entry>
+     </map>
+   </property>
+  </bean>
+  
+  <bean id="isocCommonStrategy" class="com.cannontech.cc.service.IsocCommonStrategy" autowire="byType">
+    <property name="strategyKeys">
+      <set>
+        <value>isocSameDay</value>
+        <value>isocNotification</value>
+      </set>
+    </property>
+  </bean>
+  
+  
+  <bean id="yukonHibeDao" abstract="true" 
+        class="com.cannontech.hibernate.YukonBaseHibernateDao">
+    <property name="sessionFactory" ref="hibernateSessionFactory" />
+  </bean>
+  
+  <bean id="programDao" class="com.cannontech.cc.daohibe.ProgramDaoImpl" parent="yukonHibeDao"/>
+  <bean id="programTypeDao" class="com.cannontech.cc.daohibe.ProgramTypeDaoImpl" parent="yukonHibeDao"/>
+  <bean id="groupDao" class="com.cannontech.cc.daohibe.GroupDaoImpl" parent="yukonHibeDao"/>
+  <bean id="availableProgramGroupDao" class="com.cannontech.cc.daohibe.AvailableProgramGroupDaoImpl" parent="yukonHibeDao"/>
+  <bean id="groupCustomerNotifDao" class="com.cannontech.cc.daohibe.GroupCustomerNotifDaoImpl" parent="yukonHibeDao"/>
+  <bean id="customerDao" class="com.cannontech.cc.daohibe.CustomerDaoImpl" parent="yukonHibeDao"/>
+  <bean id="curtailmentEventDao" class="com.cannontech.cc.daohibe.CurtailmentEventDaoImpl" parent="yukonHibeDao"/>
+  <bean id="curtailmentEventNotifDao" class="com.cannontech.cc.daohibe.CurtailmentEventNotifDaoImpl" parent="yukonHibeDao"/>
+  <bean id="curtailmentEventParticipantDao" class="com.cannontech.cc.daohibe.CurtailmentEventParticipantDaoImpl" parent="yukonHibeDao"/>
+  <bean id="programParameterDao" class="com.cannontech.cc.daohibe.ProgramParameterDaoImpl" parent="yukonHibeDao"/>
+  <bean id="economicEventDao" class="com.cannontech.cc.daohibe.EconomicEventDaoImpl" parent="yukonHibeDao"/>
+  <bean id="economicEventParticipantDao" class="com.cannontech.cc.daohibe.EconomicEventParticipantDaoImpl" parent="yukonHibeDao"/>
+  <bean id="economicEventNotifDao" class="com.cannontech.cc.daohibe.EconomicEventNotifDaoImpl" parent="yukonHibeDao"/>
+  <bean id="economicEventParticipantSelectionDao" class="com.cannontech.cc.daohibe.EconomicEventParticipantSelectionDaoImpl" parent="yukonHibeDao"/>
+  <bean id="economicEventParticipantSelectionWindowDao" class="com.cannontech.cc.daohibe.EconomicEventParticipantSelectionWindowImpl" parent="yukonHibeDao"/>
+  <bean id="economicEventPricingDao" class="com.cannontech.cc.daohibe.EconomicEventPricingDaoImpl" parent="yukonHibeDao"/>
+  <bean id="economicEventPricingWindowDao" class="com.cannontech.cc.daohibe.EconomicEventPricingWindowDaoImpl" parent="yukonHibeDao"/>
+  <bean id="baseEventDao" class="com.cannontech.cc.dao.BaseEventDao" autowire="byType">
+    <property name="childDaos">
+      <set>
+        <ref bean="curtailmentEventDao"/>
+        <ref bean="economicEventDao"/>
+      </set>
+    </property>
+  </bean>
+  
+  
+  <bean id="customerPointTypeHelper" class="com.cannontech.support.CustomerPointTypeHelper">
+      <property name="customerDao" ref="customerDao" />
+      <property name="pointTypeLookup" ref="customerPointTypeLookup" />
+  </bean>
+</beans>
