@@ -7,10 +7,8 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.GenericDBCacheHandler;
 import com.cannontech.database.cache.functions.RoleFuncs;
-import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.util.Message;
-import com.cannontech.notif.handler.*;
-import com.cannontech.notif.outputs.*;
+import com.cannontech.notif.outputs.OutputHandlerHelper;
 import com.cannontech.roles.yukon.SystemRole;
 
 /**
@@ -108,53 +106,8 @@ public class NotificationServer implements Runnable, NotificationServerMBean
             DefaultDatabaseCache.getInstance().addDBChangeListener(
                     dbCacheHandler);
 
-            ClientConnection dispatchConnection = ClientConnection
-                    .createDefaultConnection();
-            dispatchConnection.connectWithoutWait();
-
-            _outputHelper = new OutputHandlerHelper();
-            // create voice handler, add to output helper
-            VoiceHandler _voiceHandler = new VoiceHandler(dispatchConnection);
-            _outputHelper.addOutputHandler(_voiceHandler);
-
-            // create email handler, add to output helper
-            OutputHandler emailHandler = new StandardEmailHandler();
-            _outputHelper.addOutputHandler(emailHandler);
-
-            // create SMS handler, add to output helper
-            OutputHandler smsHandler = new SmsEmailHandler();
-            _outputHelper.addOutputHandler(smsHandler);
-
             // start output handlers
             _outputHelper.startup();
-
-            _msgHandler = new NotifMsgHandler();
-            // create load management handler
-            LoadManagementMessageHandler lmMsgHandler = new LoadManagementMessageHandler(
-                    _outputHelper);
-            _msgHandler.registerHandler(lmMsgHandler);
-
-            // create alarm handler
-            AlarmMessageHandler alarmMsgHandler = new AlarmMessageHandler(
-                    _outputHelper);
-            _msgHandler.registerHandler(alarmMsgHandler);
-
-            // create confirmation handler
-            CompletedMessageHandler completedMsgHandler = new CompletedMessageHandler(
-                    _voiceHandler);
-            _msgHandler.registerHandler(completedMsgHandler);
-
-            // create data request handler
-            VoiceDataRequestMessageHandler dataRequestMsgHandler = new VoiceDataRequestMessageHandler(
-                    _voiceHandler);
-            _msgHandler.registerHandler(dataRequestMsgHandler);
-            
-            // create simple email handlers
-            NotifEmailMessageHandler emailMessageHandler = new NotifEmailMessageHandler();
-            _msgHandler.registerHandler(emailMessageHandler);
-            CustomerEmailMessageHandler customerEmailMessageHandler = new CustomerEmailMessageHandler();
-            _msgHandler.registerHandler(customerEmailMessageHandler);
-            
 
             acceptThread = new Thread(this, "NotifListener");
             acceptThread.start();
@@ -184,8 +137,6 @@ public class NotificationServer implements Runnable, NotificationServerMBean
                 server = null;
                 temp.close();
             }
-            
-            //TODO how does the accept thread get shutdown?
             
             // shutdown voice handler
             _outputHelper.shutdown();
@@ -259,7 +210,23 @@ public class NotificationServer implements Runnable, NotificationServerMBean
 	}
 
     public void testInjectMessage(Message msg) {
-        _msgHandler.testHanldeMessage(msg);
+        _msgHandler.testHandleMessage(msg);
+    }
+
+    public NotifMsgHandler getMsgHandler() {
+        return _msgHandler;
+    }
+
+    public void setMsgHandler(NotifMsgHandler msgHandler) {
+        _msgHandler = msgHandler;
+    }
+
+    public OutputHandlerHelper getOutputHelper() {
+        return _outputHelper;
+    }
+
+    public void setOutputHelper(OutputHandlerHelper outputHelper) {
+        _outputHelper = outputHelper;
     }
 
 }
