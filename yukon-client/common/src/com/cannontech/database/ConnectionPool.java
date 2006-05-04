@@ -69,7 +69,7 @@ public class ConnectionPool implements ConnectionPoolMBean
                 freeConnections.add(conn);
                 notifyAll();
             } else {
-                // are maxConns must have shrunk (JMX anyone?)
+                // our maxConns must have shrunk (JMX anyone?)
                 // just close the connection
                 closeConnection(conn);
             }
@@ -85,7 +85,6 @@ public class ConnectionPool implements ConnectionPoolMBean
     
     public Connection getConnection() throws SQLException 
     {
-    
         Connection conn = getConnection(timeOut * 1000);
         ConnectionWrapper cw = new ConnectionWrapper(conn, this);
         
@@ -123,8 +122,7 @@ public class ConnectionPool implements ConnectionPoolMBean
                     connectionGetFailureCount++;
                 }
                 // Timeout has expired
-                CTILogger.debug("Time-out while waiting for connection" );
-                
+                CTILogger.info("Connection Pool Timeout\n" + getStats());
                 throw new SQLException("getConnection() timed-out");
             }
         }
@@ -174,10 +172,9 @@ public class ConnectionPool implements ConnectionPoolMBean
     
     private String getStats() 
     {
-        return "POOL STATE: Total connections: " + 
+        return "[DB Connection Pool state] Total connections: " + 
         (freeConnections.size() + checkedOut) + ", " +
-        checkedOut + "/" + freeConnections.size() +
-        " (Checked-out/Available)";
+        "checked out: " + checkedOut + ", free connections: " + freeConnections.size();
     }
     
     private void initPool() {
