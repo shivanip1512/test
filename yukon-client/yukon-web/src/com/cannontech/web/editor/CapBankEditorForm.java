@@ -48,8 +48,7 @@ public class CapBankEditorForm extends DBEditorForm {
 	}
 	
 	public void update() {
-		//make sure call capControlForm update since a lot of the functionality
-		//still resides in that class
+
 		FacesMessage facesMessage = new FacesMessage();
 		facesMessage.setDetail("Database UPDATE successful");
 		List points = new ArrayList();
@@ -236,7 +235,5 @@ public class CapBankEditorForm extends DBEditorForm {
 		}				
 		return false;
 	}
-
-
 		
 }
