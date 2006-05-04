@@ -78,54 +78,33 @@ public static int getMaxPointID()
  * @return com.cannontech.database.data.lite.LitePoint[]
  * @param uomID int
  */
-private static LitePoint[] getLitePointsByUOMID(int[] uomIDs) 
+public static List getLitePointsByUOMID(int[] uomIDs, int[] types) 
 {
    DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
    java.util.ArrayList pointList = new java.util.ArrayList(32);
    
-   synchronized( cache )
-   {
-      java.util.List points = cache.getAllPoints();
-      
-      for( int i = 0; i < points.size(); i++ )
-      {      
-			LitePoint litePoint = (LitePoint)points.get(i);
-			
-			for( int j = 0; j < uomIDs.length; j++ )
-            if( litePoint.getUofmID() == uomIDs[j] )
-            {
-               pointList.add( litePoint );
-               break;
+   synchronized( cache ) {
+      java.util.List points = cache.getAllPoints(); 
+      for( int i = 0; i < points.size(); i++ ) {      
+		LitePoint litePoint = (LitePoint)points.get(i);
+		for( int j = 0; j < uomIDs.length; j++ ) {
+            if( litePoint.getUofmID() == uomIDs[j] ) {
+            	for (int k=0; k < types.length; k ++) {
+            	   if (litePoint.getLiteType() == types[k]) {
+   						LiteYukonPAObject liteDevice = PAOFuncs.getLiteYukonPAO(litePoint.getPaobjectID());
+   						if (DeviceClasses.isCoreDeviceClass(liteDevice.getPaoClass())) {
+   							pointList.add( litePoint );
+   							break;	
+   						}
+            	   }
+            	}   
             }
-            
-      }
-
-   }
-
-   LitePoint retVal[] = new LitePoint[ pointList.size() ];
-   pointList.toArray( retVal );
-   
-   return retVal;
-}
-
-	public static List getLitePointsByUOMID (int[] uomIDs, int[] types){
-		LitePoint[] points = getLitePointsByUOMID(uomIDs);
-		List retPointList = new ArrayList();
-		for (int i = 0; i < points.length; i++) {
-			LitePoint litePoint = (LitePoint)points[i];
-			for (int j = 0; j < types.length; j++) {
-				if (litePoint.getLiteType() == types[j]) {
-					LiteYukonPAObject liteDevice = PAOFuncs
-                    	.getLiteYukonPAO(litePoint.getPaobjectID());
-					if (DeviceClasses.isCoreDeviceClass(liteDevice.getPaoClass())) {
-						retPointList.add(litePoint);
-					}
-				}
-			}
 		}
-	   Collections.sort(retPointList, LiteComparators.liteStringComparator);
-	   return retPointList;
-	}
+      }
+   }
+   Collections.sort(pointList, LiteComparators.liteStringComparator);
+   return pointList;
+}
 
 	/**
 	 * Returns the name of the point with a given id.
