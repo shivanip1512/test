@@ -1,8 +1,8 @@
 package com.cannontech.notif.server;
 
-import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.*;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.util.*;
 import com.cannontech.notif.handler.MessageHandler;
@@ -13,7 +13,7 @@ import com.cannontech.notif.handler.MessageHandler;
  */
 public class NotifMsgHandler implements MessageListener
 {
-    private LinkedList _handlers = new LinkedList();
+    private List<MessageHandler> _handlers = new LinkedList<MessageHandler>();
     
 	public NotifMsgHandler()
 	{
@@ -32,26 +32,38 @@ public class NotifMsgHandler implements MessageListener
 
 	private void handleMessage( NotifServerConnection connection, Message msg_ )
 	{
-		if( msg_ instanceof Multi )
-		{
-            Multi multiMsg = (Multi)msg_;
-			for( int i = 0; i < ((Multi)msg_).getVector().size(); i++ )
-			{
-				handleMessage( connection, (Message)multiMsg.getVector().get(i) );
-			}
-		}
-		else 
-		{
-            for (Iterator iter = _handlers.iterator(); iter.hasNext();) {
-                MessageHandler handler = (MessageHandler) iter.next();
-                if (handler.canHandle(msg_)) {
-                    handler.handleMessage(connection, msg_);
+		try {
+            if( msg_ instanceof Multi )
+            {
+                Multi multiMsg = (Multi)msg_;
+            	for( int i = 0; i < ((Multi)msg_).getVector().size(); i++ )
+            	{
+            		handleMessage( connection, (Message)multiMsg.getVector().get(i) );
+            	}
+            }
+            else 
+            {
+                for (Iterator iter = _handlers.iterator(); iter.hasNext();) {
+                    MessageHandler handler = (MessageHandler) iter.next();
+                    if (handler.handleMessage(connection, msg_)) {
+                        break;
+                    }
                 }
             }
-		}
+        } catch (Exception e) {
+            CTILogger.error("Uncaught exception handling " + msg_ + " from " + connection, e);
+        }
 	}
 
-    public void testHanldeMessage(Message msg) {
+    public void testHandleMessage(Message msg) {
         handleMessage(null, msg);
+    }
+
+    public List<MessageHandler> getHandlers() {
+        return _handlers;
+    }
+
+    public void setHandlers(List<MessageHandler> handlers) {
+        _handlers = handlers;
     }
 }
