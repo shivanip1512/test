@@ -8,6 +8,8 @@
      <constructor-arg>
        <list>
          <value>com/cannontech/spring/applicationContext.xml</value>
+         <value>com/cannontech/spring/hibernateContext.xml</value>
+         <value>com/cannontech/cc/applicationContext.xml</value>
        </list>
      </constructor-arg>
    </bean>
@@ -18,6 +20,9 @@
      <constructor-arg>
        <list>
          <value>com/cannontech/spring/applicationContext.xml</value>
+         <value>com/cannontech/spring/hibernateContext.xml</value>
+         <value>com/cannontech/cc/applicationContext.xml</value>
+         <value>com/cannontech/notif/applicationContext.xml</value>
        </list>
      </constructor-arg>
    </bean>
