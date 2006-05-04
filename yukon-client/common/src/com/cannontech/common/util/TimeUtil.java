@@ -1,6 +1,9 @@
 package com.cannontech.common.util;
 
 import java.util.Calendar;
+import java.util.Date;
+
+import org.apache.commons.lang.Validate;
 
 /**
  * This type really needs to be looked at before it is used
@@ -158,4 +161,37 @@ public static String toSimpleDateString(java.util.Date d) {
 	return retStr;
 	
 }
+
+/**
+ * Will "round up" the time associated with a Calendar object so
+ * that the minute part of the time representation is a multiple of
+ * minuteInterval. To round to the nearest hour, set minuteInterval
+ * to 60. In addition, all fields less than a minute will be set to 
+ * zero.
+ * @param date (in/out) A Calendar object representing the date to be rounded
+ * @param minuteInterval An int where 0 < minuteInterval <= 60 is true
+ */
+public static void roundDateUp(Calendar date, int minuteInterval) {
+    Validate.isTrue(minuteInterval <= 60, "minuteInterval must be less than or equal to 60");
+    Validate.isTrue(minuteInterval > 0, "minuteInterval must be greater than 0");
+    int minutePart = date.get(Calendar.MINUTE);
+    int minutesOverInterval = minutePart % minuteInterval;
+    date.add(Calendar.MINUTE, minuteInterval - minutesOverInterval);
+    date.set(Calendar.SECOND, 0);
+    date.set(Calendar.MILLISECOND, 0);
+}
+
+public static Date addMinutes(Date date, int minutes) {
+    Calendar calendar = Calendar.getInstance();
+    calendar.setTime(date);
+    calendar.add(Calendar.MINUTE, minutes);
+    return calendar.getTime();
+}
+
+public static int differenceMinutes(Date from, Date to) {
+    long diffMillis = to.getTime() - from.getTime();
+    int millisPerMinute = (60 * 1000);
+    return (int) (diffMillis / millisPerMinute);
+}
+
 }
