@@ -98,7 +98,7 @@
                     <f:verbatim><fieldset><legend>Controller Type</legend></f:verbatim>
                     <f:verbatim><br/></f:verbatim>
                     <x:outputLabel for="Controller_Name" value="Controller Name: " title="A label for the Controller in the system"/>
-                    <x:inputText id="Controller_Name" required="true" maxlength="32" styleClass="char32Label"
+                    <x:inputText id="Controller_Name" required="false" maxlength="32" styleClass="char32Label"
                             value="#{capControlForm.wizData.nestedWizard.name}"
                             disabled="#{!capControlForm.wizData.createNested}" />
 
