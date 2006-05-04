@@ -34,16 +34,16 @@
         </antcall>
     </target>
 	
-	<target name="init">
+    <target name="init">
         <echo message="JAVA_HOME=${env.JAVA_HOME}"/>
         <echo message="target=${yukon.javac.target}"/>
-	</target>
+    </target>
 	
-	<target name="cleanlib">
+    <target name="cleanlib">
         <delete quiet="true">
             <fileset dir="${yukon.lib}" includes="*"/>
         </delete>
-	</target>
+    </target>
     
     <target name="install">    	
     	<mkdir dir="${yukon.client.home}"/>
@@ -89,11 +89,11 @@
 		<ant dir="${report}" target="${dotarget}"/>        
 		<ant dir="${multispeak}" target="${dotarget}"/>
 		<ant dir="${servlet}" target="${dotarget}"/>
+        <ant dir="${commercialcurtailment}" target="${dotarget}"/>
         <ant dir="${notification}" target="${dotarget}"/>
         <ant dir="${resource}" target="${dotarget}"/>
         <ant dir="${services}" target="${dotarget}"/>
         <ant dir="${yukonappserver}" target="${dotarget}"/>
-        <ant dir="${cttp}" target="${dotarget}"/>
         <ant dir="${yukon-web}" target="${dotarget}"/>
 
     </target>
@@ -196,7 +196,6 @@
 			</fileset>
 		</signjar>
 	</target>
-	
 	
 
 </project>
