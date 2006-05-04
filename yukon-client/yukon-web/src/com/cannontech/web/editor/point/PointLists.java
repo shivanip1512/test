@@ -118,17 +118,19 @@ public class PointLists {
             for (int i = 0; i < allPoints.size(); i++) {
 
                 litePoint = (LitePoint) allPoints.get(i);
-
+                
                 int pointType = litePoint.getPointType();
                 if ((pointType == PointTypes.STATUS_POINT)
-                    || pointType == PointTypes.CALCULATED_STATUS_POINT )
-                    {
-                    int stateGrpId = litePoint.getStateGroupID();
-                    LiteStateGroup liteStateGroup = StateFuncs.getLiteStateGroup(stateGrpId);
-                    if (liteStateGroup.getStatesList().size() == 2) {
-                        pointSet.add(litePoint);
-                    }
-                }
+                    || pointType == PointTypes.CALCULATED_STATUS_POINT ) {
+                    if (!litePoint.getPointName().equals("BANK STATUS"))
+	                	{
+	                    int stateGrpId = litePoint.getStateGroupID();
+	                    LiteStateGroup liteStateGroup = StateFuncs.getLiteStateGroup(stateGrpId);
+	                    if (liteStateGroup.getStatesList().size() == 2) {
+	                        pointSet.add(litePoint);
+	                    }
+	                }
+	               }
             }
         }
 
