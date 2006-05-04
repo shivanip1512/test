@@ -1,44 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-    <classpathentry kind="src" path="src"/>
-    <classpathentry kind="lib" path="/third-party/SqlServer.jar"/>
-    <classpathentry kind="lib" path="/third-party/acme.jar"/>
-    <classpathentry kind="lib" path="/third-party/classes12.jar"/>
-    <classpathentry kind="lib" path="/third-party/j2ee.jar"/>
-    <classpathentry kind="lib" path="/third-party/jaxm-api.jar"/>
-    <classpathentry kind="lib" path="/third-party/jcchart401K.jar"/>
-    <classpathentry kind="lib" path="/third-party/jcfield401K.jar"/>
-    <classpathentry kind="lib" path="/third-party/jcpagelayout450K.jar"/>
-    <classpathentry kind="lib" path="/third-party/led.jar"/>
-    <classpathentry kind="lib" path="/third-party/rwav.jar"/>
-    <classpathentry kind="lib" path="/third-party/saaj.jar"/>
-    <classpathentry kind="lib" path="/third-party/log4j-1.2.4.jar">
-        <attributes>
-            <attribute value="http://logging.apache.org/log4j/docs/api/" name="javadoc_location"/>
-        </attributes>
-    </classpathentry>
-    <classpathentry kind="lib" path="/third-party/jfreechart.jar"/>
-    <classpathentry kind="lib" path="/third-party/junit.jar"/>
-    <classpathentry kind="lib" path="/third-party/xerces.jar"/>
-    <classpathentry kind="lib" path="/third-party/jcommon.jar"/>
-    <classpathentry kind="lib" path="/third-party/jtds.jar"/>
-    <classpathentry kind="lib" path="/third-party/jradius-client.jar"/>
-    <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-    <classpathentry kind="lib" path="/third-party/mx4j.jar"/>
-    <classpathentry kind="lib" path="/third-party/mx4j-remote.jar"/>
-    <classpathentry exported="true" sourcepath="Z:/java/Third-Party Sources/lang-2.1-src.zip" kind="lib" path="/third-party/commons-lang-2.1.jar"/>
-    <classpathentry sourcepath="Z:/java/Third-Party Sources/commons-collections-3.1-src.zip" kind="lib" path="/third-party/commons-collections-3.1.jar"/>
-    <classpathentry kind="lib" path="/third-party/elemental-construction-set/ecs-1.4.2.jar"/>
-    <classpathentry sourcepath="Z:/java/Third-Party Sources/jdom-1.0.zip" kind="lib" path="/third-party/jdom.jar"/>
-    <classpathentry kind="lib" path="/third-party/commons-logging.jar"/>
-    <classpathentry kind="lib" path="/third-party/mx4j-tools.jar"/>
-    <classpathentry kind="lib" path="/third-party/ejb3-persistence.jar"/>
-    <classpathentry exported="true" sourcepath="Z:/java/Third-Party Sources/spring-framework-1.2.6.zip" kind="lib" path="/third-party/spring-beans.jar"/>
-    <classpathentry exported="true" sourcepath="Z:/java/Third-Party Sources/spring-framework-1.2.6.zip" kind="lib" path="/third-party/spring-context.jar"/>
-    <classpathentry exported="true" sourcepath="Z:/java/Third-Party Sources/spring-framework-1.2.6.zip" kind="lib" path="/third-party/spring-core.jar"/>
-    <classpathentry exported="true" sourcepath="Z:/java/Third-Party Sources/spring-framework-1.2.6.zip" kind="lib" path="/third-party/spring-dao.jar"/>
-    <classpathentry exported="true" sourcepath="Z:/java/Third-Party Sources/spring-framework-1.2.6.zip" kind="lib" path="/third-party/spring-jdbc.jar"/>
-    <classpathentry exported="true" sourcepath="Z:/java/Third-Party Sources/spring-framework-1.2.6.zip" kind="lib" path="/third-party/spring-web.jar"/>
-	<classpathentry exported="true" sourcepath="Z:/java/Third-Party Sources/spring-framework-1.2.6.zip" kind="lib" path="/third-party/spring-orm.jar"/>
-    <classpathentry kind="output" path="bin"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="/third-party/SqlServer.jar"/>
+	<classpathentry kind="lib" path="/third-party/acme.jar"/>
+	<classpathentry kind="lib" path="/third-party/classes12.jar"/>
+	<classpathentry kind="lib" path="/third-party/j2ee.jar"/>
+	<classpathentry kind="lib" path="/third-party/jaxm-api.jar"/>
+	<classpathentry kind="lib" path="/third-party/jcchart401K.jar"/>
+	<classpathentry kind="lib" path="/third-party/jcfield401K.jar"/>
+	<classpathentry kind="lib" path="/third-party/jcpagelayout450K.jar"/>
+	<classpathentry kind="lib" path="/third-party/led.jar"/>
+	<classpathentry kind="lib" path="/third-party/rwav.jar"/>
+	<classpathentry kind="lib" path="/third-party/saaj.jar"/>
+	<classpathentry kind="lib" path="/third-party/log4j-1.2.4.jar">
+		<attributes>
+			<attribute value="http://logging.apache.org/log4j/docs/api/" name="javadoc_location"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/jfreechart.jar"/>
+	<classpathentry kind="lib" path="/third-party/junit.jar"/>
+	<classpathentry kind="lib" path="/third-party/xerces.jar"/>
+	<classpathentry kind="lib" path="/third-party/jcommon.jar"/>
+	<classpathentry kind="lib" path="/third-party/jtds.jar"/>
+	<classpathentry kind="lib" path="/third-party/jradius-client.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="/third-party/mx4j.jar"/>
+	<classpathentry exported="true" sourcepath="Z:/java/Third-Party Sources/lang-2.1-src.zip" kind="lib" path="/third-party/commons-lang-2.1.jar"/>
+	<classpathentry sourcepath="Z:/java/Third-Party Sources/commons-collections-3.1-src.zip" kind="lib" path="/third-party/commons-collections-3.1.jar"/>
+	<classpathentry kind="lib" path="/third-party/elemental-construction-set/ecs-1.4.2.jar"/>
+	<classpathentry sourcepath="Z:/java/Third-Party Sources/jdom-1.0.zip" kind="lib" path="/third-party/jdom.jar"/>
+	<classpathentry kind="lib" path="/third-party/commons-logging.jar"/>
+	<classpathentry kind="lib" path="/third-party/mx4j-tools.jar"/>
+	<classpathentry kind="lib" path="/third-party/ejb3-persistence.jar"/>
+	<classpathentry sourcepath="Z:/java/Third-Party Sources/hibernate-3.2.0.cr1.zip" kind="lib" path="/third-party/hibernate3.jar"/>
+	<classpathentry exported="true" sourcepath="Z:/java/Third-Party Sources/spring-framework-1.2.7.zip" kind="lib" path="/third-party/spring.jar"/>
+	<classpathentry kind="output" path="bin"/>
 </classpath>
