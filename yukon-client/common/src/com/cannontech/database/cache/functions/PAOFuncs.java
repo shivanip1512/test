@@ -142,9 +142,22 @@ public static LiteYukonPAObject getLiteYukonPAO( int paoID )
 	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
 	synchronized( cache )
 	{
-		return (LiteYukonPAObject) 
+		LiteYukonPAObject liteYukonPAObject = (LiteYukonPAObject) 
 			cache.getAllPAOsMap().get( new Integer(paoID) );
+		return liteYukonPAObject;
 	}
+}
+
+public static List getAllCapControlSubBuses() {
+	List subBusList = null;
+	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+	
+	synchronized (cache)
+	{
+		subBusList = cache.getAllCapControlSubBuses();
+	}
+
+	return subBusList;
 }
 /**
  * Insert the method's description here.
