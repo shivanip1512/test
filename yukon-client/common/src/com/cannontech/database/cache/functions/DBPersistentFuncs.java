@@ -6,15 +6,16 @@
  */
 package com.cannontech.database.cache.functions;
 
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
-import com.cannontech.message.util.ClientConnection;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.yukon.IServerConnection;
+import com.cannontech.yukon.conns.ConnPool;
 
 /**
  * @author snebben
@@ -46,7 +47,7 @@ public class DBPersistentFuncs
 	 * Write a DBChangeMsg for database CHANGE_TYPE_UPDATE
 	 * @param item
 	 */
-	public static void performDBChange(DBPersistent item, ClientConnection connToDispatch, int transactionType)
+	public static void performDBChange(DBPersistent item, IServerConnection connToDispatch, int transactionType)
 	{
 		int dbChangeType = -1;
 		
@@ -62,8 +63,8 @@ public class DBPersistentFuncs
 				dbChangeType = DBChangeMsg.CHANGE_TYPE_UPDATE;
 				break;
 			default:
-				CTILogger.info("Unknown Transaction type " + transactionType + ", no transaction performed");
-				return;
+				throw new IllegalArgumentException("Unknown Transaction type " + 
+                                                   transactionType + ", no transaction performed");
 		}
 
 		try
@@ -72,7 +73,8 @@ public class DBPersistentFuncs
 			item = t.execute();
 			
 			//write the DBChangeMessage out to Dispatch since it was a Successfull UPDATE
-			DBChangeMsg[] dbChange = DefaultDatabaseCache.getInstance().createDBChangeMessages((CTIDbChange)item, dbChangeType);
+			DBChangeMsg[] dbChange = DefaultDatabaseCache.getInstance()
+                .createDBChangeMessages((CTIDbChange)item, dbChangeType);
 					
 			for( int i = 0; i < dbChange.length; i++)
 			{
@@ -80,9 +82,17 @@ public class DBPersistentFuncs
 				connToDispatch.write(dbChange[i]);
 			}
 		}
-		catch( com.cannontech.database.TransactionException e )
+		catch( TransactionException e )
 		{
-			CTILogger.error( e.getMessage(), e );
+			throw new PersistenceException("Unable to save DBPersistent (item=" + 
+                                           item + ", transactionType=" + transactionType + ")", e);
 		}
 	}
+    
+    public static void performDBChange(DBPersistent item, int transactionType) {
+        //TODO maybe fix the type mismatch later
+        IServerConnection dispatchConn = ConnPool.getInstance().getDefDispatchConn();
+        performDBChange(item, dispatchConn, transactionType);
+    }
+    
 }
