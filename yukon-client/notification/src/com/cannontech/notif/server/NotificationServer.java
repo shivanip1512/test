@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.net.*;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.cache.GenericDBCacheHandler;
 import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.message.util.Message;
 import com.cannontech.notif.outputs.OutputHandlerHelper;
