@@ -16,7 +16,7 @@
         <table name="CCurtProgramParameter" identitycolumn="CCurtProgramParameterId"/>
         <table name="CCurtEconomicEvent" identitycolumn="CCurtEconomicEventId"/>
         <table name="CCurtEconomicEventNotif" identitycolumn="CCurtEconomicEventNotifId"/>
-        <table name="CCurtEconomicEventParticipant" identitycolumn="CCurtEconomicEventParticipantId"/>
+        <table name="CCurtEEParticipant" identitycolumn="CCurtEEParticipantId"/>
         <table name="CCurtEEParticipantSelection" identitycolumn="CCurtEEParticipantSelectionId"/>
         <table name="CCurtEEParticipantWindow" identitycolumn="CCurtEEParticipantWindowId"/>
         <table name="CCurtEEPricing" identitycolumn="CCurtEEPricingId"/>
