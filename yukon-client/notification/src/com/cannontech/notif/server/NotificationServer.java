@@ -34,10 +34,6 @@ public class NotificationServer implements Runnable, NotificationServerMBean
 	// The thread accept any incoming connections
 	private Thread acceptThread = null;
 	
-
-	//since this guy uses the cache, he better care about DBUpdates
-	private GenericDBCacheHandler dbCacheHandler = null;
-
 	// Total number of connections to the server made
 	private long connsMade = 0;
 
@@ -101,11 +97,7 @@ public class NotificationServer implements Runnable, NotificationServerMBean
 	public void start() {
         try {
             server = new ServerSocket(getPort(), getBacklog(), null);
-
-            dbCacheHandler = new GenericDBCacheHandler("NotificationServer");
-            DefaultDatabaseCache.getInstance().addDBChangeListener(
-                    dbCacheHandler);
-
+         
             // start output handlers
             _outputHelper.startup();
 
@@ -130,8 +122,7 @@ public class NotificationServer implements Runnable, NotificationServerMBean
      */
 	public void stop() {
 		try {
-			DefaultDatabaseCache.getInstance().removeDBChangeListener( dbCacheHandler );
-
+	
             if (server != null) {
                 ServerSocket temp = server;
                 server = null;
