@@ -11,6 +11,8 @@
   <bean id="notificationProxy" factory-bean="connectionPool" factory-method="getDefNotificationConn" singleton="false"/>
   <bean id="dispatchConnection" factory-bean="connectionPool" factory-method="getDefDispatchConn" singleton="false"/>
   
+  <bean id="databaseCache" class="com.cannontech.database.cache.DefaultDatabaseCache"
+        factory-method="getInstance" singleton="false" />
   
   <bean id="nextValueHelper" class="com.cannontech.database.incrementer.NextValueHelper">
     <property name="sequenceNameLookup" ref="sequenceNameLookup"/>
@@ -22,5 +24,16 @@
     <property name="configFile" value="classpath:com/cannontech/database/incrementer/table_sequences.xml"/>
   </bean>
   
+  <bean id="pointChangeCache" class="com.cannontech.common.cache.PointChangeCache" 
+        factory-method="getPointChangeCache" 
+        abstract="false" 
+        singleton="false" />
   
+  <bean id="pointAccess" class="com.cannontech.database.cache.functions.SimplePointAccess" 
+        abstract="false" 
+        singleton="true" >
+      <constructor-arg index="0" type="com.cannontech.common.cache.PointChangeCache">
+          <ref bean="pointChangeCache"/>
+      </constructor-arg>
+  </bean>
 </beans>
