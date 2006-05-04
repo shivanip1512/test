@@ -1,6 +1,7 @@
 package com.cannontech.web.editor;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -29,6 +30,7 @@ import com.cannontech.cbc.point.CBCPointFactory;
 import com.cannontech.cbc.web.CapControlCache;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.TransactionException;
+import com.cannontech.database.cache.functions.DeviceFuncs;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.data.capcontrol.CCYukonPAOFactory;
@@ -64,11 +66,16 @@ import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
 import com.cannontech.servlet.nav.DBEditorTypes;
 import com.cannontech.web.db.CBCDBObjCreator;
+import com.cannontech.web.db.PointFuncsWrapper;
+import com.cannontech.web.db.PointNullHelper;
 import com.cannontech.web.editor.point.PointLists;
+import com.cannontech.web.exceptions.AltBusNeedsSwitchPointException;
+import com.cannontech.web.exceptions.CBCExceptionMessages;
 import com.cannontech.web.exceptions.FormWarningException;
 import com.cannontech.web.exceptions.MultipleDevicesOnPortException;
 import com.cannontech.web.exceptions.PortDoesntExistException;
 import com.cannontech.web.exceptions.SameMasterSlaveCombinationException;
+import com.cannontech.web.exceptions.SerialNumberExistsException;
 import com.cannontech.web.util.CBCSelectionLists;
 import com.cannontech.web.util.JSFParamUtil;
 import com.cannontech.web.util.JSFTreeUtils;
@@ -496,15 +503,14 @@ public class CapControlForm extends DBEditorForm {
 
 			com.cannontech.database.db.capcontrol.CapBank capBank = ((CapBank) getDbPersistent()).getCapBank();
             capBank.setControlPointID(new Integer(val));
-
 			int controlPointId = capBank.getControlPointID().intValue();
-            int paoId = PointFuncs.getLitePoint(controlPointId).getPaobjectID();
-            Integer ctlPointid = new Integer(paoId);
-            
-            capBank.setControlDeviceID(ctlPointid);
-			cbControllerEditor = new CBControllerEditor(ctlPointid.intValue());
-            //getCBControllerEditor();
-            
+            LitePoint litePoint = PointFuncsWrapper.getLitePoint(controlPointId, capBank);			
+            if (litePoint != null) {
+	            int paoId = litePoint.getPaobjectID();
+	            Integer ctlPointid = new Integer(paoId);	            
+	            capBank.setControlDeviceID(ctlPointid);
+				cbControllerEditor = new CBControllerEditor(ctlPointid.intValue());
+			}				
 		}
 	}
 
@@ -648,8 +654,10 @@ public class CapControlForm extends DBEditorForm {
 	 */
 	private void resetCBCEditor() {
 		//setCBControllerEditor(null);
-        getCBControllerEditor().retrieveDB();
+        getCBControllerEditor().retrieveDB();        
         setEditingController(false);
+        getCBControllerEditor().resetSerialNumber();
+        
 	}
 
 	/**
@@ -790,9 +798,10 @@ public class CapControlForm extends DBEditorForm {
 	 * Executes any last minute object updates before writting the data to the
 	 * databse. The return value is where the requested value is redirected as
 	 * defined in our faces-config.xml
+	 * @throws SQLException 
 	 * 
 	 */
-	public void update() {
+	public void update() throws SQLException {
 
 		// this message will be filled in by the super class
 		FacesMessage facesMsg = new FacesMessage();
@@ -818,7 +827,7 @@ public class CapControlForm extends DBEditorForm {
 			}
 
 			// update the CBC object if we are editing it
-			String successfulUpdateMsg = "Database update was SUCCESSFUL";
+			String successfulUpdateMsg = CBCExceptionMessages.DB_UPDATE_SUCCESS;
 			facesMsg.setDetail(successfulUpdateMsg);
 			if (isEditingController()) {
                 try {
@@ -851,10 +860,6 @@ public class CapControlForm extends DBEditorForm {
             if (isDualSubBusEdited()) {
 
                 if (!checkIfDualBusHasValidPoint() && getEnableDualBus().booleanValue()) {
-                    // inform the user they need to have a point picked
-                	facesMsg.setSeverity(FacesMessage.SEVERITY_ERROR);
-                    facesMsg.setDetail("ERROR: alternative sub bus needs to have a switch point");
-
                     // save the old value
                     // reset the model bean to the old value
                     if (getOldSubBus() != null) {
@@ -862,9 +867,9 @@ public class CapControlForm extends DBEditorForm {
                                                               .setAltSubPAOId(getOldSubBus());
                         setOldSubBus(null);
                     }
-
+                    // inform the user they need to have a point picked
+                    throw new AltBusNeedsSwitchPointException();
                 }
-                //updateDBObject(((CapControlSubBus) getDbPersistent()), facesMsg);
             }
             
             updateDBObject(getDbPersistent(), facesMsg);
@@ -1435,19 +1440,28 @@ public class CapControlForm extends DBEditorForm {
 	 */
 	public void initEditorPanels() {
 		if (getDbPersistent() instanceof CapControlFeeder) {
-			int fdrVarPtID = ((CapControlFeeder) getDbPersistent())
-					.getCapControlFeeder().getCurrentVarLoadPointID()
+			com.cannontech.database.db.capcontrol.CapControlFeeder capControlFeeder = ((CapControlFeeder) getDbPersistent())
+					.getCapControlFeeder();
+			int fdrVarPtID = capControlFeeder.getCurrentVarLoadPointID()
 					.intValue();
-			kwkvarPaosChanged(new ValueChangeEvent(DUMMY_UI, null, new Integer(
-					PointFuncs.getLitePoint(fdrVarPtID).getPaobjectID())));
+			LitePoint litePoint = PointFuncsWrapper.getLitePoint(fdrVarPtID, capControlFeeder);
+			if (litePoint != null) {
+				int paobjectID = litePoint.getPaobjectID();
+				kwkvarPaosChanged(new ValueChangeEvent(DUMMY_UI, null, new Integer(
+						paobjectID)));
+			}
+
 		} else if (getDbPersistent() instanceof CapControlSubBus) {
 			int varPtID = ((CapControlSubBus) getDbPersistent())
 					.getCapControlSubstationBus().getCurrentVarLoadPointID()
 					.intValue();
-			if (varPtID > CtiUtilities.NONE_ZERO_ID)
-				kwkvarPaosChanged(new ValueChangeEvent(DUMMY_UI, null,
-						new Integer(PointFuncs.getLitePoint(varPtID)
-								.getPaobjectID())));
+			LitePoint litePoint = PointFuncsWrapper.getLitePoint(varPtID, getDbPersistent());
+			if (litePoint != null) {
+				if (varPtID > CtiUtilities.NONE_ZERO_ID) 
+					kwkvarPaosChanged(new ValueChangeEvent(DUMMY_UI, null,
+							new Integer(litePoint
+									.getPaobjectID())));
+			}
 		}
 
 		unassignedBanks = new Vector(16);
@@ -1584,13 +1598,17 @@ public class CapControlForm extends DBEditorForm {
 
 		if (getDbPersistent() instanceof CapBank) {
 
-			int paoID = PointFuncs.getLitePoint(
-					((CapBank) getDbPersistent()).getCapBank()
-							.getControlPointID().intValue()).getPaobjectID();
-
-			if (paoID != CtiUtilities.NONE_ZERO_ID)
-				return DeviceTypesFuncs.isCapBankController(PAOFuncs
-						.getLiteYukonPAO(paoID).getType());
+			int controlPointId = ((CapBank) getDbPersistent()).getCapBank()
+							.getControlPointID().intValue();
+			LitePoint litePoint = PointFuncsWrapper.getLitePoint(
+					controlPointId, getDbPersistent());
+			if (litePoint != null) {
+				int paoID = litePoint.getPaobjectID();
+	
+				if (paoID != CtiUtilities.NONE_ZERO_ID)
+					return DeviceTypesFuncs.isCapBankController(PAOFuncs
+							.getLiteYukonPAO(paoID).getType());
+			}
 		}
 
         //support for the TwoWay devices
@@ -1669,25 +1687,10 @@ public class CapControlForm extends DBEditorForm {
 	
 
 	public LiteYukonPAObject[] getSubBusList() {
-		// the plan is to get the list from capcontrolcache
-		CapControlCache capControlCache = (CapControlCache) FacesContext
-				.getCurrentInstance().getExternalContext().getApplicationMap()
-				.get("capControlCache");
-		subBusList = new ArrayList();
-		// get the sub bus list from application ctxt
-		for (int i = 0; i < capControlCache.getAreaNames().size(); i++) {
-			String areaStr = (String) capControlCache.getAreaNames().get(i);
-			SubBus[] areaBuses = capControlCache.getSubsByArea(areaStr);
-			for (int j = 0; j < areaBuses.length; j++) {
-				SubBus subBus = areaBuses[j];
-				LiteYukonPAObject liteDevice = PAOFuncs.getLiteYukonPAO(subBus
-						.getCcId().intValue());
-				subBusList.add(liteDevice);
-
-			}
-
+		
+		if (subBusList == null) {
+			subBusList = PAOFuncs.getAllCapControlSubBuses();
 		}
-
 		return (LiteYukonPAObject[]) subBusList
 				.toArray(new LiteYukonPAObject[subBusList.size()]);
 	}
@@ -1871,7 +1874,7 @@ public class CapControlForm extends DBEditorForm {
      }
 
     protected void checkForErrors() throws PortDoesntExistException, MultipleDevicesOnPortException, 
-                                           SameMasterSlaveCombinationException { 
+                                           SameMasterSlaveCombinationException, SerialNumberExistsException, SQLException { 
         getCBControllerEditor().checkForErrors();
     }
     
