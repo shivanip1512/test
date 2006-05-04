@@ -134,26 +134,27 @@ public final class CBCUtils
 	public static final double calcAvgPF( SubBus[] subs )
 	{
 		double retVal = 0.0;
+		//temp variables
+		double sumOfVars = 0.0;
+		double sumOfWatts = 0.0;
+		
 		if( subs == null )
 			return CapControlConst.PF_INVALID_VALUE;
 
-		int pfSubs = subs.length;
-		for( int i = 0; i < subs.length; i++ )
-		{
-			double val = subs[i].getPowerFactorValue().doubleValue();
-			if( val <= CapControlConst.PF_INVALID_VALUE )
-				--pfSubs;				
-			else
-				retVal += val;
+		int numberOfSubs = subs.length;
+		
+		for( int i = 0; i < numberOfSubs; i++ )
+		{			
+			sumOfVars += subs[i].getCurrentVarLoadPointValue().doubleValue();
+			sumOfWatts += Math.abs(subs[i].getCurrentWattLoadPointValue().doubleValue() ); 			
+			
+		}		
+		retVal  = sumOfWatts / ( Math.sqrt(Math.pow(sumOfVars, 2.0) + Math.pow(sumOfWatts, 2.0)) );
+		if (sumOfVars < 0) {
+			retVal = retVal * ( - 1);
 		}
-
-		//CBCDisplay.STR_NA
-		if( pfSubs > 0 )
-			retVal = (retVal / pfSubs);
-		else
-			retVal = CapControlConst.PF_INVALID_VALUE;
-
-		return retVal;
+		
+		return retVal;		
 	}
 
 	/**
@@ -164,25 +165,25 @@ public final class CBCUtils
 	public static final double calcAvgEstPF( SubBus[] subs )
 	{
 		double retVal = 0.0;
+		//temp variables
+		double sumOfVars = 0.0;
+		double sumOfWatts = 0.0;
+		
 		if( subs == null )
 			return CapControlConst.PF_INVALID_VALUE;
 
-		int pfSubs = subs.length;
-		for( int i = 0; i < subs.length; i++ )
-		{
-			double val = subs[i].getEstimatedPFValue().doubleValue();
-			if( val <= CapControlConst.PF_INVALID_VALUE )
-				--pfSubs;				
-			else
-				retVal += val;
+		int numberOfSubs = subs.length;
+		
+		for( int i = 0; i < numberOfSubs; i++ )
+		{			
+			sumOfVars += subs[i].getEstimatedVarLoadPointValue().doubleValue();
+			sumOfWatts += Math.abs(subs[i].getCurrentWattLoadPointValue().doubleValue() ); 			
+			
+		}		
+		retVal  = sumOfWatts / ( Math.sqrt(Math.pow(sumOfVars, 2.0) + Math.pow(sumOfWatts, 2.0)) );
+		if (sumOfVars < 0) {
+			retVal = retVal * ( - 1);
 		}
-
-		//CBCDisplay.STR_NA
-		if( pfSubs > 0 )
-			retVal = (retVal / pfSubs);
-		else
-			retVal = CapControlConst.PF_INVALID_VALUE;
-
 		return retVal;
 	}
 
