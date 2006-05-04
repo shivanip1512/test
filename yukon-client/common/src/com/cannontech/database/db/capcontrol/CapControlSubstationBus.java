@@ -1,8 +1,11 @@
 package com.cannontech.database.db.capcontrol;
 
+import org.springframework.jdbc.core.JdbcOperations;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.NativeIntVector;
+import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.capcontrol.CapControlSubBus;
 import com.cannontech.database.db.point.Point;
@@ -79,6 +82,7 @@ public void add() throws java.sql.SQLException
  */
 public void delete() throws java.sql.SQLException 
 {
+	handleAltSubIdOnDelete (getSubstationBusID());
 	delete( TABLE_NAME, CONSTRAINT_COLUMNS[0], getSubstationBusID() );	
 }
 
@@ -342,5 +346,21 @@ public void update() throws java.sql.SQLException
     public void setMultiMonitorControl(String multiMonitorControl) {
         this.multiMonitorControl = multiMonitorControl;
     }
+    /**
+     * takes care of setting the altsubid column to substationbusid if the dualBus is enabled
+     * if a substation is deleted.
+     */
+    private void handleAltSubIdOnDelete (Integer subBusDeletedId) {
+    	String query = 	"update capcontrolsubstationbus  " +
+    					"set  altsubid = substationbusid," +
+	    				"     dualbusenabled = 'N',		 " +
+				    	"     switchpointid = 0			 " +
+				    	"where altsubid = ?				 " +
+				    	"and							 " +
+				    	"dualbusenabled = 'Y'			 ";	   
 
+    	
+    	JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
+    	yukonTemplate.update(query, new Integer[]{subBusDeletedId});
+    }
 }
