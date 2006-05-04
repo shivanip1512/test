@@ -2,7 +2,7 @@
   <!--  set initsequence="true" on the table element to initialize the sequence
         with the max value from the identity column
     -->
-  <sequencetable name="SequenceNumber" valuecolumn="id" keycolumn="sequenceName">
+  <sequencetable name="SequenceNumber" valuecolumn="lastValue" keycolumn="sequenceName">
       <sequence name="general" >
         <table name="CCurtProgram" identitycolumn="CCurtProgramId"/>
         <table name="CCurtProgramType" identitycolumn="CCurtProgramTypeId"/>
@@ -22,7 +22,7 @@
         <table name="CCurtEEPricing" identitycolumn="CCurtEEPricingId"/>
         <table name="CCurtEEPricingWindow" identitycolumn="CCurtEEPricingWindowId"/>
       </sequence>
-      <sequence name="test">
+      <sequence name="pointid">
         <table name="Point" identitycolumn="POINTID" initsequence="true"/>
       </sequence>
   </sequencetable>
