@@ -59,8 +59,6 @@ public abstract class GenericEmailHandler extends OutputHandler {
                 }
             }
             
-            notifFormatter.notificationComplete(contact, getNotificationMethod(), true);
-
         } catch (Exception e) {
             CTILogger.error("Unable to email notification " 
                             + notifFormatter + " to " + contact + ".",
