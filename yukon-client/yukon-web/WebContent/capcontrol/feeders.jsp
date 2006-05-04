@@ -146,8 +146,8 @@ for( int i = 0; i < feeders.length; i++ )
 		style="color: <%=CBCDisplay.getHTMLFgColor(feeder)%>;"
 		href="javascript:void(0);"
 	    <%= popupEvent %> ="return overlib(
-			createIFrame('feederCmd.jsp?feederId=<%=feeder.getCcId()%>', 135, 75, 'tempIFrame', 0),
-			STICKY, WIDTH,135, HEIGHT,75, OFFSETX,-15, OFFSETY,-15,
+			createIFrame('feederCmd.jsp?feederId=<%=feeder.getCcId()%>', <%=feeder.getCcName().length() * 8%>, 75, 'tempIFrame', 0),
+			STICKY, WIDTH,<%=feeder.getCcName().length() * 8%>, HEIGHT,75, OFFSETX,-15, OFFSETY,-15,
 			MOUSEOFF, FULLHTML);"
 	    onmouseout="nd();">		
 <% } else { %>
