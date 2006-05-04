@@ -4,6 +4,21 @@
 	<display-name>Yukon Web Application</display-name>
 	<description>The Yukon web application</description>
 
+    <context-param>
+        <param-name>locatorFactorySelector</param-name>
+        <param-value>classpath*:beanRefContext.xml</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>parentContextKey</param-name>
+        <param-value>com.cannontech.context.main</param-value>
+    </context-param>
+    
+    <context-param>
+      <param-name>javax.faces.CONFIG_FILES</param-name>
+      <param-value>/WEB-INF/faces-config.xml,/WEB-INF/faces-custom-config.xml,/WEB-INF/faces-commercialcurtailment-config.xml,faces-capcontrol-config.xml</param-value>
+    </context-param>
+
 <!-- Does not seem to work for specifying many faces-config.xml files -->
 <!--    name:  javax.faces.application.CONFIG_FILES -->
 <!--    value:   /WEB-INF/cbc_faces-config.xml,/WEB-INF/lm_faces-config.xml -->
@@ -45,16 +60,18 @@
 	</filter>
 		
     <!-- A MyFaces filter used to find resources in jar files -->
-	<filter>
-		<filter-name>extensionsFilter</filter-name>
-		<filter-class>org.apache.myfaces.component.html.util.ExtensionsFilter</filter-class>
-	</filter>
+    <filter>
+        <filter-name>extensionsFilter</filter-name>
+        <filter-class>org.apache.myfaces.component.html.util.ExtensionsFilter</filter-class>
+    </filter>
+
 
 	
 	<filter-mapping>
 		<filter-name>timerFilter</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
+    
 	<filter-mapping>
 		<filter-name>noCacheFilter</filter-name>
 		<url-pattern>*.jsp</url-pattern>
@@ -74,14 +91,17 @@
 		<filter-name>jsFilter</filter-name>
 		<url-pattern>/esub/*</url-pattern>
 	</filter-mapping>
+    
 	<filter-mapping>
 		<filter-name>imageFilter</filter-name>
 		<url-pattern>/esub/*</url-pattern>
 	</filter-mapping>
+    
 	<filter-mapping>
 		<filter-name>htmlFilter</filter-name>
 		<url-pattern>/esub/*</url-pattern>
 	</filter-mapping>
+    
 	<filter-mapping>
 		<filter-name>cssFilter</filter-name>
 		<url-pattern>/esub/*</url-pattern>
@@ -94,10 +114,12 @@
 		<filter-name>jsFilter</filter-name>
 		<url-pattern>/capcontrol/oneline/*</url-pattern>
 	</filter-mapping>
+    
 	<filter-mapping>
 		<filter-name>imageFilter</filter-name>
 		<url-pattern>/capcontrol/oneline/*</url-pattern>
 	</filter-mapping>
+    
 	<filter-mapping>
 		<filter-name>htmlFilter</filter-name>
 		<url-pattern>/capcontrol/oneline/*</url-pattern>
@@ -116,15 +138,19 @@
 		<url-pattern>*.jsf</url-pattern>
 	</filter-mapping>
 
-	<filter-mapping>
-		<filter-name>extensionsFilter</filter-name>
-		<url-pattern>/faces/*</url-pattern>
-	</filter-mapping>
+    <filter-mapping>
+        <filter-name>extensionsFilter</filter-name>
+        <url-pattern>/faces/*</url-pattern>
+    </filter-mapping>
 
 
     <!-- Faces Listener, that does all the startup work (configuration, init). -->
     <listener>
         <listener-class>org.apache.myfaces.webapp.StartupServletContextListener</listener-class>
+    </listener>
+
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
 
 
@@ -134,7 +160,7 @@
         <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
-	
+    
 	<servlet>
 		<servlet-name>LoginController</servlet-name>
 		<display-name>LoginController</display-name>
@@ -272,12 +298,12 @@
 		<servlet-class>com.cannontech.servlet.TimerTaskServlet</servlet-class>
 		<load-on-startup>6</load-on-startup>
 	</servlet>
-	<servlet>
-		<servlet-name>ImportManager</servlet-name>
-		<display-name>ImportManager</display-name>
-		<description>Customer accounts importing management.</description>
-		<servlet-class>com.cannontech.servlet.ImportManager</servlet-class>
-	</servlet>
+    <servlet>
+        <servlet-name>ImportManager</servlet-name>
+        <display-name>ImportManager</display-name>
+        <description>Customer accounts importing management.</description>
+        <servlet-class>com.cannontech.servlet.ImportManager</servlet-class>
+    </servlet>
     <servlet>
         <servlet-name>HomeServlet</servlet-name>
         <display-name>HomeServlet</display-name>
@@ -411,10 +437,10 @@
 		<servlet-name>CttpServlet</servlet-name>
 		<url-pattern>/cttp</url-pattern>
 	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>CttpServlet</servlet-name>
-		<url-pattern>/cttp/</url-pattern>
-	</servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CttpServlet</servlet-name>
+        <url-pattern>/cttp/</url-pattern>
+    </servlet-mapping>
     <servlet-mapping>
         <servlet-name>HomeServlet</servlet-name>
         <url-pattern>/home</url-pattern>
@@ -502,14 +528,13 @@
 	</error-page>
 
     <taglib>
-		<taglib-uri>http://cannontech.com/tags/cti</taglib-uri>
-		<taglib-location>/WEB-INF/cti.tld</taglib-location>
-	</taglib>
+        <taglib-uri>http://cannontech.com/tags/cti</taglib-uri>
+        <taglib-location>/WEB-INF/cti.tld</taglib-location>
+    </taglib>
 
-	<taglib>
+    <taglib>
 		<taglib-uri>http://java.sun.com/jstl/core</taglib-uri>
 		<taglib-location>/WEB-INF/tld/c.tld</taglib-location>
 	</taglib>
-
 
 </web-app>
