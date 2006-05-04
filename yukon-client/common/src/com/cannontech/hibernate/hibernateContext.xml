@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <bean id="hibernateSessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+   <property name="dataSource" ref="yukonDataSource"/>
+   <property name="annotatedClasses">
+     <list>
+       <value>com.cannontech.cc.model.pojo.Group</value>
+       <value>com.cannontech.cc.model.pojo.Program</value>
+       <value>com.cannontech.cc.model.pojo.ProgramType</value>
+       <value>com.cannontech.cc.model.pojo.AvailableProgramGroup</value>
+       <value>com.cannontech.cc.model.pojo.GroupCustomerNotif</value>
+       <value>com.cannontech.cc.model.pojo.CICustomerStub</value>
+       <value>com.cannontech.cc.model.pojo.CICustomerPointData</value>
+       <value>com.cannontech.cc.model.pojo.CICustomerPointDataPk</value>
+       <value>com.cannontech.cc.model.pojo.CurtailmentEvent</value>
+       <value>com.cannontech.cc.model.pojo.CurtailmentEventNotif</value>
+       <value>com.cannontech.cc.model.pojo.CurtailmentEventParticipant</value>
+       <value>com.cannontech.cc.model.pojo.ProgramParameter</value>
+       <value>com.cannontech.cc.model.pojo.EconomicEvent</value>
+       <value>com.cannontech.cc.model.pojo.EconomicEventParticipant</value>
+       <value>com.cannontech.cc.model.pojo.EconomicEventNotif</value>
+       <value>com.cannontech.cc.model.pojo.EconomicEventParticipantSelection</value>
+       <value>com.cannontech.cc.model.pojo.EconomicEventParticipantSelectionWindow</value>
+       <value>com.cannontech.cc.model.pojo.EconomicEventPricing</value>
+       <value>com.cannontech.cc.model.pojo.EconomicEventPricingWindow</value>
+     </list>
+   </property>
+   <property name="hibernateProperties">
+     <props>
+       <prop key="hibernate.show_sql">true</prop>
+       <prop key="hibernate.cache.use_second_level_cache">false</prop>
+       <prop key="">com.cannontech.support.YukonNamingStrategy</prop>
+     </props>
+   </property>
+   <property name="eventListeners">
+     <map>
+       <!-- Install the IdTransferringMergeEventListener which makes hibernate's
+            merge() method easier to work with. This implementation is coppied
+            from the current Spring 2.0 nightly build (448 to be exact) because
+            the version included with 1.2.7 does not support Hibernate 3.1.x). 
+            It has no dependencies on any Spring classes.
+         -->
+       <entry key="merge">
+         <bean class="com.cannontech.spring.IdTransferringMergeEventListener" />
+       </entry>
+     </map>
+   </property>
+  </bean>
+  
+  <bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+    <property name="sessionFactory"><ref local="hibernateSessionFactory"/></property>
+  </bean>
+  
+  <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"/>
+  
+  <bean class="org.springframework.transaction.interceptor.TransactionAttributeSourceAdvisor">
+    <property name="transactionInterceptor" ref="txInterceptor"/>
+  </bean>
+  
+  <bean id="txInterceptor" class="org.springframework.transaction.interceptor.TransactionInterceptor">
+    <property name="transactionManager" ref="transactionManager"/>
+    <property name="transactionAttributeSource">
+      <bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
+    </property>
+  </bean>
+  
+</beans>
