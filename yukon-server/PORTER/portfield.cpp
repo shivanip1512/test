@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.184 $
-* DATE         :  $Date: 2006/05/03 21:19:53 $
+* REVISION     :  $Revision: 1.185 $
+* DATE         :  $Date: 2006/05/04 18:12:59 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2999,26 +2999,6 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                     blitzNexusFromCCUQueue( Device, OutMessage->ReturnNexus);
                 }
 
-                CtiDeviceSPtr tempDevice;
-                if( !CommResult && !status && (InMessage->DeviceID != InMessage->TargetID) && InMessage->DeviceID != 0 && InMessage->TargetID != 0 && (tempDevice = DeviceManager.RemoteGetEqual(InMessage->TargetID)) )
-                {
-                    if( InMessage->Buffer.DSt.Length && //  make sure it's not just an ACK
-                        tempDevice->getAddress() != CtiDeviceMCT::MCT_TestAddress1 &&  //  also, make sure we're not sending to an FCT-jumpered MCT,
-                        tempDevice->getAddress() != CtiDeviceMCT::MCT_TestAddress2 &&  //    since it'll return its native address and not the test address
-                        (tempDevice->getAddress() & 0x1fff) != (InMessage->Buffer.DSt.Address & 0x1fff) )
-                    {
-                        //  Address did not match, so it's a comm error
-                        status = CommResult = WRONGADDRESS;
-                        InMessage->EventCode = WRONGADDRESS;
-            
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint - Wrong DLC Address: \"" << tempDevice->getName() << "\" ";
-                            dout << "(" << tempDevice->getAddress() << ") != (" << InMessage->Buffer.DSt.Address << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
-                    }
-                }
-
                 //  only break if this is _not_ DTRAN
                 if( !(OutMessage->EventCode & DTRAN) )
                 {
@@ -3083,6 +3063,11 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                             dout << "(" << tempDevice->getAddress() << ") != (" << InMessage->Buffer.DSt.Address << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
                     }
+                }
+
+                if( !CommResult && status ) //We need to make sure we log the stats properly here
+                {
+                    CommResult = status;
                 }
 
                 break;
