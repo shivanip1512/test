@@ -374,7 +374,7 @@ private void doOutboundVoiceLogin( HttpServletRequest req, HttpServletResponse r
 					
 				initSession(user, session);
 				ActivityLogger.logEvent(
-						OUTBOUND_LOGIN_VOICE_ACTIVITY_ACTION, 
+						INBOUND_LOGIN_VOICE_ACTIVITY_ACTION, 
 							"INBOUND VOICE User " + user.getUsername() + " (userid=" + 
 							user.getUserID() + ") has logged in from " + req.getRemoteAddr());
 					
@@ -395,7 +395,7 @@ private void doOutboundVoiceLogin( HttpServletRequest req, HttpServletResponse r
 		
             ActivityLogger.logEvent(
                                     INBOUND_LOGIN_VOICE_ACTIVITY_ACTION, 
-                                    "VOICE User could not be logged in with phone: " + 
+                                    "INBOUND VOICE User could not be logged in with phone: " + 
                                         phone + " from " + 
                                         req.getRemoteAddr());
             resp.sendRedirect(req.getContextPath() + INVALID_INBOUND_URI + "?TRIES=" + tries);
