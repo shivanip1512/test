@@ -16,7 +16,7 @@
                                 
 				<x:outputLabel for="cntrlSerNum" value="Serial Number: " title="Serial number of the controller device" />
 				<x:inputText id="cntrlSerNumEd" styleClass="staticLabel"
-						value="#{capControlForm.CBControllerEditor.paoCBC.deviceCBC.serialNumber}" >
+						value="#{capControlForm.CBControllerEditor.serialNumber}" maxlength="9" size="9">
 					<f:validateLongRange minimum="0" maximum="9999999999" />
 				</x:inputText>
 
@@ -48,7 +48,7 @@
                 <f:verbatim><br/></f:verbatim>
                 <x:outputLabel for="cntrlSerNum2" value="Serial Number: " title="Serial number of the controller device" />
                 <x:inputText id="cntrlSerNumEd2" styleClass="staticLabel" disabled="#{!capControlForm.CBControllerEditor.editingController}"
-                        value="#{capControlForm.CBControllerEditor.paoCBC.serialNumber}" >
+                        value="#{capControlForm.CBControllerEditor.serialNumber}" maxlength="9" size="9" onchange="submit();" >
                     <f:validateLongRange minimum="0" maximum="9999999999" />
                 </x:inputText>
                 
