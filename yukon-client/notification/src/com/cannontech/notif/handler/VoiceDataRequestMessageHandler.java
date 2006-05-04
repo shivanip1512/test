@@ -12,6 +12,7 @@ import com.cannontech.message.notif.VoiceDataResponseMsg;
 import com.cannontech.message.server.ServerRequestMsg;
 import com.cannontech.message.server.ServerResponseMsg;
 import com.cannontech.message.util.Message;
+import com.cannontech.message.util.ServerRequestHelper;
 import com.cannontech.notif.outputs.VoiceHandler;
 import com.cannontech.notif.server.NotifServerConnection;
 
@@ -24,17 +25,10 @@ public class VoiceDataRequestMessageHandler extends MessageHandler {
         
     }
 
-    public boolean canHandle(Message msg) {
-        if (msg instanceof ServerRequestMsg) {
-            ServerRequestMsg req = (ServerRequestMsg) msg;
-            return req.getPayload() instanceof VoiceDataRequestMsg;
-        } else {
+    public boolean handleMessage(NotifServerConnection connection,  Message msg_) {
+        if (!ServerRequestHelper.isPayloadInstanceOf(msg_, VoiceDataRequestMsg.class)) {
             return false;
         }
-    }
-
-    public void handleMessage(NotifServerConnection connection,  Message msg_) {
-        
         ServerRequestMsg req = (ServerRequestMsg) msg_;
         VoiceDataRequestMsg reqMsg = (VoiceDataRequestMsg) req.getPayload();
         ServerResponseMsg responseMsg = req.createResponseMsg();
@@ -61,7 +55,7 @@ public class VoiceDataRequestMessageHandler extends MessageHandler {
         }
 
         connection.write(responseMsg);
-
+        return true;
     }
 
 }

@@ -1,8 +1,9 @@
 package com.cannontech.notif.handler;
 
+import java.util.List;
+
 import com.cannontech.database.data.lite.LiteNotificationGroup;
-import com.cannontech.notif.outputs.NotificationBuilder;
-import com.cannontech.notif.outputs.OutputHandlerHelper;
+import com.cannontech.notif.outputs.*;
 
 
 public abstract class NotifHandler extends MessageHandler {
@@ -14,7 +15,8 @@ public abstract class NotifHandler extends MessageHandler {
 
     protected void outputNotification(NotificationBuilder notif,
             LiteNotificationGroup lng) {
-        _helper.handleNotification(notif, lng);
+        List contactables = NotifMapContactable.getContactablesForGroup(lng);
+        _helper.handleNotification(notif, contactables);
     }
 
 }

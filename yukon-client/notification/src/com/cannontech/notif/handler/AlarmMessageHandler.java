@@ -9,16 +9,15 @@ import com.cannontech.notif.outputs.*;
 import com.cannontech.notif.server.NotifServerConnection;
 
 public class AlarmMessageHandler extends NotifHandler {
-
+    
     public AlarmMessageHandler(OutputHandlerHelper helper) {
         super(helper);
     }
 
-    public boolean canHandle(Message msg) {
-        return msg instanceof NotifAlarmMsg;
-    }
-
-    public void handleMessage(NotifServerConnection connection,  Message msg_) {
+    public boolean handleMessage(NotifServerConnection connection,  Message msg_) {
+        if (!(msg_ instanceof NotifAlarmMsg)) {
+            return false;
+        }
         NotifAlarmMsg msg = (NotifAlarmMsg) msg_;
         
         // building the Notification object is the main work of 
@@ -52,13 +51,18 @@ public class AlarmMessageHandler extends NotifHandler {
             public Notification buildNotification(Contactable contact) {
                 return notif;
             }
+            public void notificationComplete(Contactable contact, int notifType, boolean success) {
+                // do nothing
+            }
         };
-
+        
         for (int i = 0; i < msg.notifGroupIds.length; i++) {
             int notifGroupId = msg.notifGroupIds[i];
             LiteNotificationGroup liteNotifGroup = NotificationGroupFuncs.getLiteNotificationGroup(notifGroupId);
             outputNotification(notifFormatter, liteNotifGroup);
         }
+        
+        return true;
     }
 
 }

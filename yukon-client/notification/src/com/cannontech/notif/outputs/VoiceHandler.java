@@ -35,7 +35,7 @@ public class VoiceHandler extends OutputHandler
         
     }
     
-    public void handleNotification(NotificationBuilder notifBuilder, Contactable contact) {
+    public void handleNotification(final NotificationBuilder notifBuilder, final Contactable contact) {
         if (!_acceptNewNotifications) {
             // I could throw an exception here, but what would the caller do???
             CTILogger.error("com.cannontech.notif.outputs.VoiceHandler.handleNotification() " +
@@ -59,11 +59,11 @@ public class VoiceHandler extends OutputHandler
                    if (newState.equals(SingleNotification.STATE_COMPLETE)) {
                        _systemLogHelper.log(this + "was succesfull", 
                                             "Successful Voice Notification");
-
+                       notifBuilder.notificationComplete(contact, getNotificationMethod(), true);
                    } else if (newState.equals(SingleNotification.STATE_FAILED)) {
                        _systemLogHelper.log(this + "was not succesfull", 
                                             "Failed Voice Notification");
-
+                       notifBuilder.notificationComplete(contact, getNotificationMethod(), false);
                    }
                 } 
             });
@@ -73,6 +73,7 @@ public class VoiceHandler extends OutputHandler
             
         } catch (Exception e) {
             CTILogger.error("Unable to handle voice notification for " + contact, e);
+            notifBuilder.notificationComplete(contact, getNotificationMethod(), false);
         }
     }
 

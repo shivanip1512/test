@@ -11,8 +11,7 @@ import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
 import com.cannontech.message.notif.NotifEmailMsg;
 import com.cannontech.message.util.Message;
-import com.cannontech.notif.outputs.Contactable;
-import com.cannontech.notif.outputs.StandardEmailHandler;
+import com.cannontech.notif.outputs.*;
 import com.cannontech.notif.server.NotifServerConnection;
 import com.cannontech.tools.email.SimpleEmailMessage;
 
@@ -21,11 +20,10 @@ public class NotifEmailMessageHandler extends MessageHandler {
 	public NotifEmailMessageHandler() {
 	}
 
-	public boolean canHandle(Message msg) {
-        return msg instanceof NotifEmailMsg;
-    }
-
-    public void handleMessage(NotifServerConnection connection, Message msg_) {
+    public boolean handleMessage(NotifServerConnection connection, Message msg_) {
+        if (!(msg_ instanceof NotifEmailMsg)) {
+            return false;
+        }
         final NotifEmailMsg msg = (NotifEmailMsg) msg_;
         
         try {
@@ -37,7 +35,7 @@ public class NotifEmailMessageHandler extends MessageHandler {
 			int notifGroupId = msg.getNotifGroupID();
 			LiteNotificationGroup liteNotifGroup = NotificationGroupFuncs
 					.getLiteNotificationGroup(notifGroupId);
-			List contactables = Contactable
+			List contactables = NotifMapContactable
 					.getContactablesForGroup(liteNotifGroup);
 
 			for (Iterator iter = contactables.iterator(); iter.hasNext();) {
@@ -58,6 +56,7 @@ public class NotifEmailMessageHandler extends MessageHandler {
 		} catch (MessagingException e) {
 			CTILogger.error("Unable to create email message '" + msg.getSubject() + ".", e );
 		}
+        return true;
     }
         
 

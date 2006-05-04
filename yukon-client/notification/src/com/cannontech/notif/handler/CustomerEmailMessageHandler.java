@@ -15,17 +15,16 @@ import com.cannontech.notif.server.NotifServerConnection;
 import com.cannontech.tools.email.SimpleEmailMessage;
 
 public class CustomerEmailMessageHandler extends MessageHandler {
-    public static final Set EMAIL_NOTIFICATION_TYPES = new HashSet(1);
+    public static final Set<Integer> EMAIL_NOTIFICATION_TYPES = new HashSet<Integer>(1);
     
     static {
         EMAIL_NOTIFICATION_TYPES.add(new Integer(YukonListEntryTypes.YUK_ENTRY_ID_EMAIL));
     }
 
-    public boolean canHandle(Message msg) {
-        return msg instanceof NotifCustomerEmailMsg;
-    }
-
-    public void handleMessage(NotifServerConnection connection, Message msg_) {
+    public boolean handleMessage(NotifServerConnection connection, Message msg_) {
+        if (!(msg_ instanceof NotifCustomerEmailMsg)) {
+            return false;
+        }
         final NotifCustomerEmailMsg msg = (NotifCustomerEmailMsg) msg_;
         
         ContactableCustomer customer = new ContactableCustomer(CustomerFuncs.getLiteCICustomer(msg.getCustomerID()));
@@ -50,7 +49,7 @@ public class CustomerEmailMessageHandler extends MessageHandler {
         } catch (MessagingException e) {
             CTILogger.error("Unable to email message '" + msg.getSubject() + "' to " + customer + ".", e );
         }
-        
+        return true;
     }
 
 }

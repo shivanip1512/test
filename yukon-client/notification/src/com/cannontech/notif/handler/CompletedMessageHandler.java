@@ -13,14 +13,15 @@ public class CompletedMessageHandler extends MessageHandler {
         _voiceHandler = handler;
     }
 
-    public boolean canHandle(Message msg) {
-        return msg instanceof NotifCompletedMsg;
-    }
-
-    public void handleMessage(NotifServerConnection connection,  Message msg_) {
+    public boolean handleMessage(NotifServerConnection connection,  Message msg_) {
+        if (!(msg_ instanceof NotifCompletedMsg)) {
+            return false;
+        }
         NotifCompletedMsg msg = (NotifCompletedMsg) msg_;
         
         _voiceHandler.completeCall(msg.token, msg.gotConfirmation);
+        
+        return true;
     }
 
 }

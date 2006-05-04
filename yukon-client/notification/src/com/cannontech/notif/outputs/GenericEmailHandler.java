@@ -19,9 +19,12 @@ public abstract class GenericEmailHandler extends OutputHandler {
 
     public void handleNotification(NotificationBuilder notifFormatter,
             Contactable contact) {
+        boolean success = false;
         try {
             List emailList = contact.getNotifications(getTypeChecker());
             if (emailList.size() == 0) {
+                CTILogger.warn("Unable to email notification for " + contact 
+                               + ", no addresses exist.");
                 return;
             }
 
@@ -48,17 +51,22 @@ public abstract class GenericEmailHandler extends OutputHandler {
                 try {
                     emailMsg.setRecipient(emailTo);
                     emailMsg.send();
+                    success = true;
                 } catch (MessagingException e) {
                     CTILogger.warn("Unable to email notification for " + contact 
                                    + " to address " + emailTo + ".",
                                    e);
                 }
             }
+            
+            notifFormatter.notificationComplete(contact, getNotificationMethod(), true);
 
         } catch (Exception e) {
             CTILogger.error("Unable to email notification " 
                             + notifFormatter + " to " + contact + ".",
                             e);
+        } finally {
+            notifFormatter.notificationComplete(contact, getNotificationMethod(), success);
         }
     }
 
