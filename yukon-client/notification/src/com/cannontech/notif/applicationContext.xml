@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <bean id="notificationServer" class="com.cannontech.notif.server.NotificationServer">
+    <property name="msgHandler" ref="notificationMessageHandler"/>
+    <property name="outputHelper" ref="notificationOutputHandlerHelper"/>
+  </bean>
+  
+  <bean id="notificationOutputHandlerHelper" class="com.cannontech.notif.outputs.OutputHandlerHelper">
+    <constructor-arg>
+      <list>
+        <ref bean="voiceHandler"/>
+        <ref bean="emailHandler"/>
+        <ref bean="smsHandler"/>
+      </list>
+    </constructor-arg>
+  </bean>
+  
+  <bean id="voiceHandler" class="com.cannontech.notif.outputs.VoiceHandler">
+    <constructor-arg ref="dispatchConnection"/>
+  </bean>
+  
+  <bean id="emailHandler" class="com.cannontech.notif.outputs.StandardEmailHandler">
+  </bean>
+  
+  <bean id="smsHandler" class="com.cannontech.notif.outputs.SmsEmailHandler">
+  </bean>
+          
+  <bean id="notificationMessageHandler" class="com.cannontech.notif.server.NotifMsgHandler">
+    <property name="handlers">
+      <list>
+        <ref bean="loadManagementMessageHandler"/>
+        <ref bean="alarmMessageHandler"/>
+        <ref bean="completedMessageHandler"/>
+        <ref bean="voiceDataRequestMessageHandler"/>
+        <ref bean="curtailmentEventMessageHandler"/>
+        <ref bean="economicEventMessageHandler"/>
+        <ref bean="notifEmailMessageHandler"/>
+        <ref bean="customerEmailMessageHandler"/>
+      </list>
+    </property>
+  </bean>
+  
+  <bean id="loadManagementMessageHandler" class="com.cannontech.notif.handler.LoadManagementMessageHandler">
+    <constructor-arg ref="notificationOutputHandlerHelper"/>
+  </bean>
+  
+  <bean id="alarmMessageHandler" class="com.cannontech.notif.handler.AlarmMessageHandler">
+    <constructor-arg ref="notificationOutputHandlerHelper"/>
+  </bean>
+  
+  <bean id="completedMessageHandler" class="com.cannontech.notif.handler.CompletedMessageHandler">
+    <constructor-arg ref="voiceHandler"/>
+  </bean>
+  
+  <bean id="voiceDataRequestMessageHandler" class="com.cannontech.notif.handler.VoiceDataRequestMessageHandler">
+    <constructor-arg ref="voiceHandler"/>
+  </bean>
+  
+  <bean id="curtailmentEventMessageHandler" class="com.cannontech.notif.handler.CurtailmentEventMessageHandler"
+         autowire="byType">
+    <constructor-arg ref="notificationOutputHandlerHelper"/>
+  </bean>
+  
+  <bean id="economicEventMessageHandler" class="com.cannontech.notif.handler.EconomicEventMessageHandler"
+         autowire="byType">
+    <constructor-arg ref="economicEventScheduler"/>
+  </bean>
+  
+  <bean id="notifEmailMessageHandler" class="com.cannontech.notif.handler.NotifEmailMessageHandler"
+         autowire="byType">
+  </bean>
+  
+  <bean id="customerEmailMessageHandler" class="com.cannontech.notif.handler.CustomerEmailMessageHandler"
+         autowire="byType">
+  </bean>
+  
+  <bean id="economicEventScheduler" class="com.cannontech.notif.handler.EconomicEventScheduler" abstract="false" singleton="true" lazy-init="default" autowire="byType" dependency-check="default">
+      <constructor-arg index="0" type="com.cannontech.notif.outputs.OutputHandlerHelper">
+          <ref bean="notificationOutputHandlerHelper" />
+      </constructor-arg>
+  </bean>
+</beans>
