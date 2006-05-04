@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2006/05/04 20:51:16 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2006/05/04 22:42:36 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -29,7 +29,7 @@ RWDEFINE_COLLECTABLE( CtiSignalMsg, MSG_SIGNAL );
 
 unsigned int CtiSignalMsg::_instanceCount = 0;
 
-CtiSignalMsg::CtiSignalMsg(long pid, int soe, string text, string addl, int lt, unsigned cls, string usr, unsigned tag, int pri, unsigned millis, CtiPointDataMsg* point_data) :
+CtiSignalMsg::CtiSignalMsg(long pid, int soe, string text, string addl, int lt, unsigned cls, string usr, unsigned tag, int pri, unsigned millis, double point_data) :
 Inherited(pri),
 _id(pid),
 _logType(lt),
@@ -40,14 +40,15 @@ _tags(tag),
 _condition(-1),
 _logid(0),
 _signalMillis(millis),
-_point_data(point_data)
+_point_value(point_data)
 {
     _instanceCount++;
     Inherited::setSOE(soe);
     Inherited::setUser(usr);
 }
 
-CtiSignalMsg::CtiSignalMsg(const CtiSignalMsg& aRef)
+CtiSignalMsg::CtiSignalMsg(const CtiSignalMsg& aRef) :
+_point_value(0.0)
 {
     _instanceCount++;
     *this = aRef;
@@ -56,7 +57,6 @@ CtiSignalMsg::CtiSignalMsg(const CtiSignalMsg& aRef)
 CtiSignalMsg::~CtiSignalMsg()
 {
     _instanceCount--;
-    if(_point_data) delete _point_data;
 }
 
 CtiSignalMsg& CtiSignalMsg::operator=(const CtiSignalMsg& aRef)
@@ -76,15 +76,7 @@ CtiSignalMsg& CtiSignalMsg::operator=(const CtiSignalMsg& aRef)
         _logid         = aRef.getLogID();
         _user          = aRef.getUser();
 
-        if(_point_data) delete _point_data;
-        if(aRef.getPointData() != NULL)
-        {
-            _point_data    = (CtiPointDataMsg*)aRef.getPointData()->replicateMessage();
-        }
-        else
-        {
-            _point_data = NULL;
-        }
+        _point_value   = aRef.getPointValue();
     }
     return *this;
 }
@@ -171,15 +163,14 @@ CtiSignalMsg& CtiSignalMsg::setSignalMillis(unsigned millis)
     return *this;
 }
 
-const CtiPointDataMsg* CtiSignalMsg::getPointData() const
+double CtiSignalMsg::getPointValue() const
 {
-    return _point_data;
+    return _point_value;
 }
 
-CtiSignalMsg& CtiSignalMsg::setPointData(CtiPointDataMsg* pdata)
+CtiSignalMsg& CtiSignalMsg::setPointValue(double pval)
 {
-    if(_point_data) delete _point_data;
-    _point_data = pdata;
+    _point_value = pval;
     return *this;
 }
 

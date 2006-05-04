@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.139 $
-* DATE         :  $Date: 2006/05/04 20:51:16 $
+* REVISION     :  $Revision: 1.140 $
+* DATE         :  $Date: 2006/05/04 22:42:36 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3453,6 +3453,7 @@ INT CtiVanGogh::markPointNonUpdated(CtiPointSPtr point, CtiMultiWrapper &aWrap)
                 if(!_signalManager.isAlarmed(point->getID(), alarm)  && !pDyn->isConditionActive(alarm))
                 {
                     CtiSignalMsg *pSig = CTIDBG_new CtiSignalMsg(point->getID(), 0, "Non Updated", getAlarmStateName( point->getAlarming().getAlarmCategory(alarm) ), GeneralLogType, point->getAlarming().getAlarmCategory(alarm));
+                    pSig->setPointValue(pDyn->getDispatch().getValue());
 
                     tagSignalAsAlarm(point, pSig, alarm);
                     updateDynTagsForSignalMsg(point,pSig,alarm,true);
@@ -3564,13 +3565,6 @@ void CtiVanGogh::postSignalAsEmail( CtiSignalMsg &sig )
                 if(pPoint)
                 {
                     ngid = pPoint->getAlarming().getNotificationGroupID();
-
-                    if(sig.getPointData() == 0)
-                    {
-                        CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch *)pPoint->getDynamic();
-                        CtiDate ptdate = CtiDate(pDyn->getTimeStamp());
-                        sig.setPointData(CTIDBG_new CtiPointDataMsg(pPoint->getID(), 0, pDyn->getQuality(), pPoint->getType(), "", pDyn->getDispatch().getTags()));
-                    }
                 }
             }
 
@@ -3755,6 +3749,7 @@ INT CtiVanGogh::checkForStatusAlarms(CtiPointDataMsg *pData, CtiMultiWrapper &aW
                 }
 
                 pSig = CTIDBG_new CtiSignalMsg(point->getID(), pData->getSOE(), txt, addn);
+                pSig->setPointValue(pData->getValue());
                 if(pSig != NULL)
                 {
                     pSig->setUser(pData->getUser());
@@ -3794,10 +3789,10 @@ INT CtiVanGogh::checkForNumericAlarms(CtiPointDataMsg *pData, CtiMultiWrapper &a
                     string addn = "Manual Update";
 
                     pSig = CTIDBG_new CtiSignalMsg(point->getID(), pData->getSOE(), tstr, addn);
+                    pSig->setPointValue(pData->getValue());
                     if(pSig != NULL)
                     {
                         pSig->setUser(pData->getUser());
-                        pSig->setPointData((CtiPointDataMsg*) pData->replicateMessage());
                         aWrap.getMulti()->insert( pSig );
                         pSig = NULL;
                     }
@@ -3861,19 +3856,9 @@ INT CtiVanGogh::sendMail(const CtiSignalMsg &sig, const CtiTableNotificationGrou
 {
     INT status = NORMAL;
     vector<int> group_ids;
-    double value = 0.0;
-    const CtiPointDataMsg* pData = sig.getPointData();
+    double value = sig.getPointValue();
 
     group_ids.push_back(grp.getGroupID());
-    if(pData != NULL)
-    {
-    value = pData->getValue();
-    }
-    else
-    {
-        CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << CtiTime() << " **Checkpoint** " << " signal is missing point data " << __FILE__ << "(" << __LINE__ << ")" << endl;
-    }
 
     CtiNotifAlarmMsg* alarm_msg = new CtiNotifAlarmMsg( group_ids,
                             sig.getId(),
@@ -4909,6 +4894,7 @@ bool CtiVanGogh::ablementPoint(CtiPointSPtr &pPoint, bool &devicedifferent, UINT
 
                     {
                         CtiSignalMsg *pTagSig = CTIDBG_new CtiSignalMsg(pPoint->getID(), 0, "Tag Update", addnl);
+                        pSig->setPointValue(pDyn->getDispatch().getValue());
                         pTagSig->setMessagePriority(15);
                         pTagSig->setUser(user);
                         pTagSig->setTags( pDyn->getDispatch().getTags() | TAG_REPORT_MSG_TO_ALARM_CLIENTS);
@@ -5943,6 +5929,7 @@ int CtiVanGogh::checkNumericReasonability(CtiPointDataMsg *pData, CtiMultiWrappe
                         }
 
                         pSig = CTIDBG_new CtiSignalMsg(pointNumeric->getID(), pData->getSOE(), text, getAlarmStateName( pointNumeric->getAlarming().getAlarmCategory(CtiTablePointAlarming::lowReasonability) ), GeneralLogType, pointNumeric->getAlarming().getAlarmCategory(CtiTablePointAlarming::lowReasonability), pData->getUser());
+                        pSig->setPointValue(pData->getValue());
                     }
                     else if(!_signalManager.isAlarmActive(pointNumeric->getID(), alarm))
                     {
@@ -6011,6 +5998,7 @@ void CtiVanGogh::checkNumericRateOfChange(int alarm, CtiPointDataMsg *pData, Cti
 
                 // OK, we have an actual alarm condition to gripe about!
                 pSig = CTIDBG_new CtiSignalMsg(pointNumeric->getID(), pData->getSOE(), tstr, getAlarmStateName( pointNumeric->getAlarming().getAlarmCategory(alarm) ), GeneralLogType, pointNumeric->getAlarming().getAlarmCategory(alarm), pData->getUser());
+                pSig->setPointValue(pData->getValue());
 
                 if(pSig)
                 {
@@ -6082,13 +6070,9 @@ void CtiVanGogh::checkNumericLimits(int alarm, CtiPointDataMsg *pData, CtiMultiW
                 }
 
                 pSig = CTIDBG_new CtiSignalMsg(pointNumeric->getID(), pData->getSOE(), text, getAlarmStateName( pointNumeric->getAlarming().getAlarmCategory(alarm) ), GeneralLogType, pointNumeric->getAlarming().getAlarmCategory(alarm), pData->getUser());
+                pSig->setPointValue(pData->getValue());
                 // This is an alarm if the alarm state indicates anything other than SignalEvent.
                 tagSignalAsAlarm(pointNumeric, pSig, alarm, pData);
-        if(pSig != NULL)
-        {
-            pSig->setPointData((CtiPointDataMsg*)pData->replicateMessage());
-        }
-
 
                 if(duration > 0)  // Am I required to hold in this state for a bit before the announcement of this condition?
                 {
@@ -6171,6 +6155,7 @@ void CtiVanGogh::checkStatusUCOS(int alarm, CtiPointDataMsg *pData, CtiMultiWrap
 
             // OK, we have an actual alarm condition to gripe about!
             pSig = CTIDBG_new CtiSignalMsg(point->getID(), pData->getSOE(), string( "UCOS: " + ResolveStateName(point->getStateGroupID(), (int)pData->getValue())), getAlarmStateName( point->getAlarming().getAlarmCategory(alarm) ), GeneralLogType, point->getAlarming().getAlarmCategory(alarm), pData->getUser());                        // This is an alarm if the alarm state indicates anything other than SignalEvent.
+            pSig->setPointValue(pData->getValue());
 
             // This is an alarm if the alarm state indicates anything other than SignalEvent.
             tagSignalAsAlarm(point, pSig, alarm, pData);
@@ -6210,6 +6195,7 @@ void CtiVanGogh::checkStatusState(int alarm, CtiPointDataMsg *pData, CtiMultiWra
 
                 // OK, we have an actual alarm condition to gripe about!
                 pSig = CTIDBG_new CtiSignalMsg(point->getID(), pData->getSOE(), tstr, getAlarmStateName( point->getAlarming().getAlarmCategory(alarm) ), GeneralLogType, point->getAlarming().getAlarmCategory(alarm), pData->getUser());                        // This is an alarm if the alarm state indicates anything other than SignalEvent.
+                pSig->setPointValue(pData->getValue());
                 // This is an alarm if the alarm state indicates anything other than SignalEvent.
                 tagSignalAsAlarm(point, pSig, alarm, pData);
                 updateDynTagsForSignalMsg(point,pSig,alarm,true);
@@ -6253,6 +6239,8 @@ void CtiVanGogh::checkChangeOfState(int alarm, CtiPointDataMsg *pData, CtiMultiW
 
             // OK, we have an actual alarm condition to gripe about!
             pSig = CTIDBG_new CtiSignalMsg(point->getID(), pData->getSOE(), tstr, getAlarmStateName( point->getAlarming().getAlarmCategory(alarm) ), GeneralLogType, point->getAlarming().getAlarmCategory(alarm), pData->getUser());                        // This is an alarm if the alarm state indicates anything other than SignalEvent.
+            pSig->setPointValue(pData->getValue());
+
             // This is an alarm if the alarm state indicates anything other than SignalEvent.
             tagSignalAsAlarm(point, pSig, alarm, pData);
             updateDynTagsForSignalMsg(point,pSig,alarm,true);

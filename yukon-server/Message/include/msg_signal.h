@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/12/20 17:18:54 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2006/05/04 22:42:36 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -40,8 +40,8 @@ protected:
 
    unsigned    _logid;              // LogID in the systemlog... Zero when not in use or unknown.  No streaming.
 
-   CtiPointDataMsg* _point_data;
-   
+   double      _point_value;
+
 private:
 
     static unsigned int _instanceCount;
@@ -62,7 +62,7 @@ public:
                 unsigned   tag    = 0,
                 int        pri    = 7,
                 unsigned   millis = 0,
-		CtiPointDataMsg* point_data = 0);
+                double     ptvalue = 0.0);
 
    CtiSignalMsg(const CtiSignalMsg& aRef);
 
@@ -94,9 +94,9 @@ public:
    unsigned getSignalMillis() const;
    CtiSignalMsg& setSignalMillis(unsigned millis);
 
-   const CtiPointDataMsg* getPointData() const;
-   CtiSignalMsg& setPointData(CtiPointDataMsg* pdata);
-   
+   double getPointValue() const;
+   CtiSignalMsg& setPointValue(double pval);
+
    virtual void saveGuts(RWvostream &aStream) const;
    virtual void restoreGuts(RWvistream& aStream);
    virtual CtiMessage* replicateMessage() const;
