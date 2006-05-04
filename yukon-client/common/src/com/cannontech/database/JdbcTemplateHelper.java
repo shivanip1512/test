@@ -6,11 +6,12 @@ import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.spring.YukonSpringHook;
 
 public class JdbcTemplateHelper {
 
     public static JdbcOperations getYukonTemplate() {
-        DataSource dataSource = new YukonDataSource(CtiUtilities.getDatabaseAlias());
+        DataSource dataSource = (DataSource) YukonSpringHook.getBean("yukonDataSource");
         JdbcTemplate template = new JdbcTemplate(dataSource);
         return template;
     }
