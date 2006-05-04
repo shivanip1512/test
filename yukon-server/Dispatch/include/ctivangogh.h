@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/ctivangogh.h-arc  $
-* REVISION     :  $Revision: 1.45 $
-* DATE         :  $Date: 2006/03/23 15:29:19 $
+* REVISION     :  $Revision: 1.46 $
+* DATE         :  $Date: 2006/05/04 20:51:16 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -242,7 +242,7 @@ public:
     CtiVanGoghConnectionManager* getPILConnection();
     CtiVanGoghConnectionManager* getScannerConnection();
     void  validateConnections();
-    void  postSignalAsEmail( const CtiSignalMsg &sig );
+    void  postSignalAsEmail( CtiSignalMsg &sig );
     void  loadAlarmToDestinationTranslation();
 
     INT   sendMail(const CtiSignalMsg &sig, const CtiTableNotificationGroup &grp);

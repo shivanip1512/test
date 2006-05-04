@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2005/12/20 17:18:54 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2006/05/04 20:51:16 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -30,60 +30,63 @@ RWDEFINE_COLLECTABLE( CtiSignalMsg, MSG_SIGNAL );
 unsigned int CtiSignalMsg::_instanceCount = 0;
 
 CtiSignalMsg::CtiSignalMsg(long pid, int soe, string text, string addl, int lt, unsigned cls, string usr, unsigned tag, int pri, unsigned millis, CtiPointDataMsg* point_data) :
-   Inherited(pri),
-   _id(pid),
-   _logType(lt),
-   _signalCategory(cls),
-   _text(text),
-   _additional(addl),
-   _tags(tag),
-   _condition(-1),
-   _logid(0),
-   _signalMillis(millis),
-   _point_data(point_data)
+Inherited(pri),
+_id(pid),
+_logType(lt),
+_signalCategory(cls),
+_text(text),
+_additional(addl),
+_tags(tag),
+_condition(-1),
+_logid(0),
+_signalMillis(millis),
+_point_data(point_data)
 {
-   _instanceCount++;
-   Inherited::setSOE(soe);
-   Inherited::setUser(usr);
+    _instanceCount++;
+    Inherited::setSOE(soe);
+    Inherited::setUser(usr);
 }
 
 CtiSignalMsg::CtiSignalMsg(const CtiSignalMsg& aRef)
 {
     _instanceCount++;
-   *this = aRef;
+    *this = aRef;
 }
 
 CtiSignalMsg::~CtiSignalMsg()
 {
     _instanceCount--;
+    if(_point_data) delete _point_data;
 }
 
 CtiSignalMsg& CtiSignalMsg::operator=(const CtiSignalMsg& aRef)
 {
-   if(this != &aRef)
-   {
-      Inherited::operator=(aRef);
+    if(this != &aRef)
+    {
+        Inherited::operator=(aRef);
 
-      _id            = aRef.getId();
-      _text          = aRef.getText();
-      _signalCategory   = aRef.getSignalCategory();
-      _tags          = aRef.getTags();
-      _logType       = aRef.getLogType();
-      _additional    = aRef.getAdditionalInfo();
-      _signalMillis  = aRef.getSignalMillis();
-      _condition     = aRef.getCondition();
-      _logid         = aRef.getLogID();
-      _user          = aRef.getUser();
-      if(aRef.getPointData() != NULL)
-      {
-	  _point_data    = (CtiPointDataMsg*)aRef.getPointData()->replicateMessage();
-      }
-      else
-      {
-	  _point_data = NULL;
-      }
-   }
-   return *this;
+        _id            = aRef.getId();
+        _text          = aRef.getText();
+        _signalCategory   = aRef.getSignalCategory();
+        _tags          = aRef.getTags();
+        _logType       = aRef.getLogType();
+        _additional    = aRef.getAdditionalInfo();
+        _signalMillis  = aRef.getSignalMillis();
+        _condition     = aRef.getCondition();
+        _logid         = aRef.getLogID();
+        _user          = aRef.getUser();
+
+        if(_point_data) delete _point_data;
+        if(aRef.getPointData() != NULL)
+        {
+            _point_data    = (CtiPointDataMsg*)aRef.getPointData()->replicateMessage();
+        }
+        else
+        {
+            _point_data = NULL;
+        }
+    }
+    return *this;
 }
 
 void CtiSignalMsg::saveGuts(RWvostream &aStream) const
@@ -106,48 +109,48 @@ void CtiSignalMsg::restoreGuts(RWvistream& aStream)
 
 long CtiSignalMsg::getId() const
 {
-   return _id;
+    return _id;
 }
 
 CtiSignalMsg& CtiSignalMsg::setId( const long a_id )
 {
-   _id = a_id;
-   return *this;
+    _id = a_id;
+    return *this;
 }
 
 const string& CtiSignalMsg::getText() const
 {
-   return _text;
+    return _text;
 }
 CtiSignalMsg& CtiSignalMsg::setText(const string& string)
 {
-   _text = string;
-   return *this;
+    _text = string;
+    return *this;
 }
 
 unsigned CtiSignalMsg::getSignalCategory() const
 {
-   return _signalCategory;
+    return _signalCategory;
 }
 CtiSignalMsg& CtiSignalMsg::setSignalCategory(const unsigned id)
 {
-   _signalCategory = id;
-   return *this;
+    _signalCategory = id;
+    return *this;
 }
 
 unsigned CtiSignalMsg::getTags() const
 {
-   return _tags;
+    return _tags;
 }
 CtiSignalMsg& CtiSignalMsg::setTags(const unsigned s)
 {
-   _tags |= s;
-   return *this;
+    _tags |= s;
+    return *this;
 }
 CtiSignalMsg& CtiSignalMsg::resetTags(const unsigned s)
 {
-   _tags &= ~(s);
-   return *this;
+    _tags &= ~(s);
+    return *this;
 }
 
 unsigned CtiSignalMsg::getSignalMillis() const
@@ -157,15 +160,15 @@ unsigned CtiSignalMsg::getSignalMillis() const
 
 CtiSignalMsg& CtiSignalMsg::setSignalMillis(unsigned millis)
 {
-   _signalMillis = millis % 1000;
+    _signalMillis = millis % 1000;
 
-   if( millis > 999 )
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << CtiTime() << " **** Checkpoint - setSignalMillis(), millis = " << millis << " > 999 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-   }
+    if( millis > 999 )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** Checkpoint - setSignalMillis(), millis = " << millis << " > 999 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
 
-   return *this;
+    return *this;
 }
 
 const CtiPointDataMsg* CtiSignalMsg::getPointData() const
@@ -175,69 +178,70 @@ const CtiPointDataMsg* CtiSignalMsg::getPointData() const
 
 CtiSignalMsg& CtiSignalMsg::setPointData(CtiPointDataMsg* pdata)
 {
+    if(_point_data) delete _point_data;
     _point_data = pdata;
     return *this;
 }
 
 void CtiSignalMsg::dump() const
 {
-   Inherited::dump();
+    Inherited::dump();
 
-   CtiLockGuard<CtiLogger> doubt_guard(dout);
+    CtiLockGuard<CtiLogger> doubt_guard(dout);
 
-   dout << " Id                            " << getId() << endl;
-   dout << " Log Type                      " << getLogType() << endl;
-   dout << " Condition                     " << getCondition() << endl;
-   dout << " Signal Group                  " << getSignalCategory() << endl;
-   dout << " Text                          " << getText() << endl;
-   dout << " Additional Info Text          " << getAdditionalInfo() << endl;
-   dout << " Milliseconds                  " << getSignalMillis() << endl;
-   dout << " Log ID (if inserted)          " << _logid << endl;
-   CHAR oldfill = dout.fill();
-   dout.fill('0');
-   dout << " Tags                          0x" << hex << setw(8) << getTags() << dec << "  " << explainTags(getTags()) << endl;
-   dout.fill(oldfill);
+    dout << " Id                            " << getId() << endl;
+    dout << " Log Type                      " << getLogType() << endl;
+    dout << " Condition                     " << getCondition() << endl;
+    dout << " Signal Group                  " << getSignalCategory() << endl;
+    dout << " Text                          " << getText() << endl;
+    dout << " Additional Info Text          " << getAdditionalInfo() << endl;
+    dout << " Milliseconds                  " << getSignalMillis() << endl;
+    dout << " Log ID (if inserted)          " << _logid << endl;
+    CHAR oldfill = dout.fill();
+    dout.fill('0');
+    dout << " Tags                          0x" << hex << setw(8) << getTags() << dec << "  " << explainTags(getTags()) << endl;
+    dout.fill(oldfill);
 }
 
 
 // Return a new'ed copy of this message!
 CtiMessage* CtiSignalMsg::replicateMessage() const
 {
-   CtiSignalMsg *ret = CTIDBG_new CtiSignalMsg(*this);
+    CtiSignalMsg *ret = CTIDBG_new CtiSignalMsg(*this);
 
-   return( (CtiMessage*)ret );
+    return( (CtiMessage*)ret );
 }
 
 
 BOOL CtiSignalMsg::isAlarm() const
 {
-   return (_signalCategory > SignalEvent);  // it is indeed an alarm!
+    return(_signalCategory > SignalEvent);  // it is indeed an alarm!
 }
 
 BOOL CtiSignalMsg::isEvent() const
 {
-   return (_signalCategory == SignalEvent);
+    return(_signalCategory == SignalEvent);
 }
 
 int CtiSignalMsg::getLogType() const
 {
-   return _logType;
+    return _logType;
 }
 CtiSignalMsg& CtiSignalMsg::setLogType(const int lt)
 {
-   _logType = lt;
-   return *this;
+    _logType = lt;
+    return *this;
 }
 
 const string& CtiSignalMsg::getAdditionalInfo() const
 {
-   return _additional;
+    return _additional;
 }
 
 CtiSignalMsg& CtiSignalMsg::setAdditionalInfo(const string& string)
 {
-   _additional = string;
-   return *this;
+    _additional = string;
+    return *this;
 }
 
 int CtiSignalMsg::getCondition() const

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.138 $
-* DATE         :  $Date: 2006/05/03 16:28:22 $
+* REVISION     :  $Revision: 1.139 $
+* DATE         :  $Date: 2006/05/04 20:51:16 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3546,7 +3546,7 @@ void CtiVanGogh::validateConnections()
     return;
 }
 
-void CtiVanGogh::postSignalAsEmail( const CtiSignalMsg &sig )
+void CtiVanGogh::postSignalAsEmail( CtiSignalMsg &sig )
 {
     {
         UINT ngid = SignalEvent;
@@ -3564,6 +3564,13 @@ void CtiVanGogh::postSignalAsEmail( const CtiSignalMsg &sig )
                 if(pPoint)
                 {
                     ngid = pPoint->getAlarming().getNotificationGroupID();
+
+                    if(sig.getPointData() == 0)
+                    {
+                        CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch *)pPoint->getDynamic();
+                        CtiDate ptdate = CtiDate(pDyn->getTimeStamp());
+                        sig.setPointData(CTIDBG_new CtiPointDataMsg(pPoint->getID(), 0, pDyn->getQuality(), pPoint->getType(), "", pDyn->getDispatch().getTags()));
+                    }
                 }
             }
 
