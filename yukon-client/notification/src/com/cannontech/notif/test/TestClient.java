@@ -1,12 +1,12 @@
 package com.cannontech.notif.test;
 
 
-import com.cannontech.message.dispatch.message.DefineCollectableMulti;
-import com.cannontech.message.dispatch.message.Multi;
-import com.cannontech.message.util.ClientConnection;
-import com.cannontech.message.notif.*;
-import com.roguewave.vsj.CollectableStreamer;
-import com.roguewave.vsj.streamer.CollectableMappings;
+import java.text.DateFormat;
+import java.util.Date;
+
+import com.cannontech.message.notif.NotifLMControlMsg;
+import com.cannontech.yukon.INotifConnection;
+import com.cannontech.yukon.conns.ConnPool;
 
 /**
  * @author rneuharth
@@ -17,9 +17,6 @@ import com.roguewave.vsj.streamer.CollectableMappings;
 public class TestClient
 {
 
-	/**
-	 * 
-	 */
 	public TestClient()
 	{
 		super();
@@ -31,75 +28,19 @@ public class TestClient
 		
 		try
 		{
-			//Socket sock = new Socket( "127.0.0.1", 1515 );
-			
-			ClientConnection conn = new ClientConnection()
-			{
-				protected void registerMappings(CollectableStreamer polystreamer) 
-				{
-					super.registerMappings( polystreamer );
+            INotifConnection notificationConn = ConnPool.getInstance().getDefNotificationConn();
 
-					
-					polystreamer.register( new DefColl_NotifEmailAttchMsg() );
-					polystreamer.register( new DefColl_NotifEmailMsg() );
-					polystreamer.register( CollectableMappings.OrderedVector );
-					polystreamer.register( new DefineCollectableMulti() );
-					
-				}
-			};
-
-
-			
-			conn.setHost("127.0.0.1");
-			conn.setPort(1515);
-
-			NotifEmailMsg msg = new NotifEmailMsg();
-			msg.setBody( "This is body" );
-			msg.setSubject( "This is subject" );
-			msg.setTo( "tmack@cannontech.com" );
-			msg.setNotifGroupID( 2 );
-	/*
-			File f = new File("c:/park.txt");
-			FileReader fr = new FileReader(f);
-			char[] allBytes = new char[ (int)f.length() ];
-			fr.read( allBytes );
-			msg.getAttachments().add( new NotifEmailAttchMsg(
-					"Something.xpx", allBytes) );
-
-
-			File f1 = new File("d:/t.sql");
-			FileReader fr1 = new FileReader(f1);
-			allBytes = new char[ (int)f1.length() ];
-			fr1.read( allBytes );
-			msg.getAttachments().add( new NotifEmailAttchMsg(
-					"Something2.xpx", allBytes) );
-
-
-
-			NotifEmailMsg msg1 = new NotifEmailMsg();
-			msg1.setBody( "This is body (NO GROUP)" );
-			msg1.setSubject( "This is subject (NO GROUP)" );
-			msg1.setTo( "ryan@cannontech.com" );
-			
-			File f2 = new File("d:/park.txt");
-			FileReader fr2 = new FileReader(f2);
-			char[] allBytes2 = new char[ (int)f2.length() ];
-			fr2.read( allBytes2 );
-			msg1.getAttachments().add( new NotifEmailAttchMsg(
-					"New.xpx", allBytes2) );
-
-
-*/
-			Multi m = new Multi();
-			m.getVector().add( msg );
-//			m.getVector().add( msg1 );
-			
-			conn.connect();
-			conn.write( m );
-
-
-			//Thread.currentThread().sleep(10000);
-			conn.disconnect();
+            Thread.sleep(5000);
+            
+            NotifLMControlMsg msg = new NotifLMControlMsg();
+            int[] notifArray = {2};
+            msg.notifGroupIds = notifArray;
+            msg.notifType = NotifLMControlMsg.STARTING_CONTROL_NOTIFICATION;
+            msg.programId = 6;
+            msg.startTime = new Date();
+            msg.stopTime = DateFormat.getInstance().parse("11/1/2005 3:45 PM");
+            //notificationConn.write(msg);
+            Thread.sleep(5000);
 		}
 		catch( Throwable t )
 		{
