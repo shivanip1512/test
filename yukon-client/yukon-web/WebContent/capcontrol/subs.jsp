@@ -1,7 +1,7 @@
+<%@ page import="com.cannontech.common.constants.LoginController" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <cti:standardPage title="Substations" module="capcontrol">
 <%@include file="cbc_inc.jspf"%>
-
 
 <jsp:useBean id="capControlCache"
     class="com.cannontech.cbc.web.CapControlCache"
@@ -12,6 +12,10 @@
 <div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
 
 <%
+    LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);			
+	String popupEvent = AuthFuncs.getRolePropertyValue(user, WebClientRole.POPUP_APPEAR_STYLE);
+	if (popupEvent == null) popupEvent = "onmouseover"; 
+    
     SubBus[] areaSubs =
         capControlCache.getSubsByArea( cbcSession.getLastArea() );
 
@@ -63,7 +67,7 @@ for( int i = 0; i < areaSubs.length; i++ )
 	        <tr class="<%=css%>">
 				<td>
 				<input type="checkbox" name="cti_chkbxSubs" value="<%=subBus.getCcId()%>" />
-				<a href="#" class="<%=css%>" onclick="postMany('subForm', '<%=CBCSessionInfo.STR_SUBID%>', <%=subBus.getCcId()%>);">
+				<a href="#" class="<%=css%>" onclick="postMany('subForm', '<%=CBCSessionInfo.STR_SUBID%>', <%=subBus.getCcId()%>)">
 				<%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_NAME_COLUMN) %>
 				</a>
 				
@@ -79,7 +83,7 @@ for( int i = 0; i < areaSubs.length; i++ )
 				<a type="state" name="cti_dyn" id="<%=subBus.getCcId()%>"
 					style="color: <%=CBCDisplay.getHTMLFgColor(subBus)%>;"
 					href="javascript:void(0);"
-				    onmouseover="overlib(
+				    <%= popupEvent %> ="return overlib(
 						createIFrame('subCmd.jsp?subId=<%=subBus.getCcId()%>', 135, 90, 'tempIFrame', 0),
 						STICKY, WIDTH,135, HEIGHT,90, OFFSETX,-15,OFFSETY,-15,
 						MOUSEOFF, FULLHTML);"
