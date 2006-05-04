@@ -317,14 +317,15 @@ public class PointUtil {
     public static PointBase createPoint(int type, String name, Integer paoId) throws TransactionException {
        MultiDBPersistent dbPersistentVector = new MultiDBPersistent(); 
        PointBase point = new PointBase();
-       switch (type){
+       int validPointOffset = PointOffsetUtils.getValidPointOffset(paoId, type);
+	switch (type){
        case PointTypes.ANALOG_POINT:
            point = (AnalogPoint) PointFactory.createPoint(PointTypes.ANALOG_POINT);
            point = (AnalogPoint) PointFactory.createAnalogPoint(name,
                                                                       paoId,
                                                                       point.getPoint()
                                                                                  .getPointID(),
-                                                                      PointOffsetUtils.getValidPointOffset(paoId, type),
+                                                                      validPointOffset,
                                      
                                                                       PointUnits.UOMID_VOLTS,
                                                                       1.0);
@@ -333,7 +334,7 @@ public class PointUtil {
        case PointTypes.STATUS_POINT:
            point = (StatusPoint)PointFactory.createBankStatusPt(paoId);
            point.getPoint().setPointName(name);
-           point.getPoint().setPointOffset( new Integer (PointOffsetUtils.getValidPointOffset(paoId, type)));
+           point.getPoint().setPointOffset( new Integer ( validPointOffset) );
            dbPersistentVector.getDBPersistentVector().add(point);
            break;
            
