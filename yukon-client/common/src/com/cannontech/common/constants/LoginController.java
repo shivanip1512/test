@@ -47,7 +47,8 @@ public interface LoginController {
 	public static final String LOGIN = "LOGIN";
 	public static final String CLIENT_LOGIN = "CLIENTLOGIN";
 	public static final String LOGOUT = "LOGOUT";
-	public static final String VOICE_LOGIN = "VOICELOGIN";
+	public static final String OUTBOUND_VOICE_LOGIN = "VOICELOGIN";
+	public static final String INBOUND_VOICE_LOGIN = "INBOUNDVOICELOGIN";
 	
 	public static final String YUKON_USER = ServletUtil.ATT_YUKON_USER;
 	public static final String SAVED_YUKON_USERS = "SAVED_YUKON_USERS";

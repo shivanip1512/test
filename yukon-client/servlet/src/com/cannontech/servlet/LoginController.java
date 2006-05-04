@@ -22,7 +22,6 @@ import com.cannontech.common.util.Pair;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.cache.functions.ContactFuncs;
-import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.application.WebClientRole;
@@ -31,8 +30,8 @@ public class LoginController extends javax.servlet.http.HttpServlet {
 	
 	// These should be moved into global type properties
 	// so we can change them at runtime FIXFIX 
-	private static final String INVALID_URI = "/login.jsp?failed=true";
 	private static final String VOICE_ROOT = "/voice";
+	private static final String INVALID_URI = "/login.jsp?failed=true";
 	private static final String INVALID_PARAMS = "failed=true";
 	private static final String LOGIN_URI = "/login.jsp";
 		
@@ -41,11 +40,17 @@ public class LoginController extends javax.servlet.http.HttpServlet {
 	private static final String LOGIN = com.cannontech.common.constants.LoginController.LOGIN;
 	private static final String CLIENT_LOGIN = com.cannontech.common.constants.LoginController.CLIENT_LOGIN;
 	private static final String LOGOUT = com.cannontech.common.constants.LoginController.LOGOUT;
-	private static final String VOICE_LOGIN = com.cannontech.common.constants.LoginController.VOICE_LOGIN;
+	private static final String OUTBOUND_VOICE_LOGIN = com.cannontech.common.constants.LoginController.OUTBOUND_VOICE_LOGIN;
+	private static final String INBOUND_VOICE_LOGIN = com.cannontech.common.constants.LoginController.INBOUND_VOICE_LOGIN;
 	
 	private static final String USERNAME = com.cannontech.common.constants.LoginController.USERNAME;
 	private static final String PASSWORD = com.cannontech.common.constants.LoginController.PASSWORD;
 	private static final String TOKEN = com.cannontech.common.constants.LoginController.TOKEN;
+
+	private static final String INVALID_INBOUND_URI = "/voice/inboundLogin.jsp";
+	private static final String PHONE_NUMBER = "PHONE";
+	private static final String PIN = "PIN";
+	private static final String INBOUND_LOGIN_VOICE_ACTIVITY_ACTION = "LOG IN (INBOUND VOICE)";
 	
 	private static final String REDIRECT = com.cannontech.common.constants.LoginController.REDIRECT;
 	private static final String SAVE_CURRENT_USER = com.cannontech.common.constants.LoginController.SAVE_CURRENT_USER;
@@ -59,7 +64,7 @@ public class LoginController extends javax.servlet.http.HttpServlet {
 	private static final String LOGIN_CLIENT_ACTIVITY_ACTION = com.cannontech.database.data.activity.ActivityLogActions.LOGIN_CLIENT_ACTIVITY_ACTION;
 	private static final String LOGOUT_ACTIVITY_LOG = com.cannontech.database.data.activity.ActivityLogActions.LOGOUT_ACTIVITY_LOG;
 	private static final String LOGIN_FAILED_ACTIVITY_LOG = com.cannontech.database.data.activity.ActivityLogActions.LOGIN_FAILED_ACTIVITY_LOG;
-	private static final String LOGIN_VOICE_ACTIVITY_ACTION = com.cannontech.database.data.activity.ActivityLogActions.LOGIN_VOICE_ACTIVITY_ACTION;
+	private static final String OUTBOUND_LOGIN_VOICE_ACTIVITY_ACTION = com.cannontech.database.data.activity.ActivityLogActions.LOGIN_VOICE_ACTIVITY_ACTION;
 	
 /**
  * Handles login authentication, logout.
@@ -220,9 +225,13 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 		}
 		
 	}
-	else if(VOICE_LOGIN.equalsIgnoreCase(action))
+	else if(OUTBOUND_VOICE_LOGIN.equalsIgnoreCase(action))
 	{
-		doVoiceLogin( req, resp, redirectURI, referer );
+		doOutboundVoiceLogin( req, resp, redirectURI, referer );
+	}
+	else if(INBOUND_VOICE_LOGIN.equalsIgnoreCase(action))
+	{
+		doInboundVoiceLogin( req, resp, redirectURI, referer );
 	}
 	else {
 		resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -283,7 +292,7 @@ public static LiteYukonUser internalLogin(HttpServletRequest req, HttpSession se
  * Handles the voice login process
  * 
  */
-private void doVoiceLogin( HttpServletRequest req, HttpServletResponse resp, String redirectURI, String referer ) throws IOException
+private void doOutboundVoiceLogin( HttpServletRequest req, HttpServletResponse resp, String redirectURI, String referer ) throws IOException
 {
 	String username = req.getParameter(USERNAME);  //contactid
 	String password = req.getParameter(PASSWORD);  //pin	
@@ -313,7 +322,7 @@ private void doVoiceLogin( HttpServletRequest req, HttpServletResponse resp, Str
 				
 			initSession(user, session);
 			session.setAttribute( TOKEN, req.getParameter(TOKEN) );
-			ActivityLogger.logEvent(user.getUserID(), LOGIN_VOICE_ACTIVITY_ACTION, "VOICE User " + user.getUsername() + " (userid=" + user.getUserID() + ") (Contact=" + lContact.toString() + ") has logged in from " + req.getRemoteAddr());
+			ActivityLogger.logEvent(user.getUserID(), OUTBOUND_LOGIN_VOICE_ACTIVITY_ACTION, "VOICE User " + user.getUsername() + " (userid=" + user.getUserID() + ") (Contact=" + lContact.toString() + ") has logged in from " + req.getRemoteAddr());
 				
 		} catch(TransactionException e) {
 			if (session != null) session.invalidate();
@@ -339,5 +348,61 @@ private void doVoiceLogin( HttpServletRequest req, HttpServletResponse resp, Str
 	}
 
 }
+
+	/*
+	 * Method to login an inbound voice user
+	 * 
+	 */
+	private void doInboundVoiceLogin(HttpServletRequest req,
+			HttpServletResponse resp, String redirectURI, String referer)
+			throws IOException {
+		
+		String phone = req.getParameter(PHONE_NUMBER); // phone number
+		String pin = req.getParameter(PIN); // pin
+		String tries = req.getParameter("TRIES"); // pin
+			
+		LiteYukonUser user = AuthFuncs.inboundVoiceLogin(phone, pin);
+		
+		if( user != null) {
+			HttpSession session = req.getSession();
+				
+			try {
+				if (session != null && session.getAttribute(YUKON_USER) != null) {
+					session.invalidate();
+					session = req.getSession(true);
+				}					
+					
+				initSession(user, session);
+				ActivityLogger.logEvent(
+						OUTBOUND_LOGIN_VOICE_ACTIVITY_ACTION, 
+							"INBOUND VOICE User " + user.getUsername() + " (userid=" + 
+							user.getUserID() + ") has logged in from " + req.getRemoteAddr());
+					
+			} catch(TransactionException e) {
+				if (session != null){ 
+					session.invalidate();
+				}
+				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			}
+			
+			
+			resp.sendRedirect(
+			                  req.getContextPath() + 
+                              AuthFuncs.getRolePropertyValue(user.getUserID(), 
+                                                             WebClientRole.INBOUND_VOICE_HOME_URL));
+	
+		} else {
+		
+            ActivityLogger.logEvent(
+                                    INBOUND_LOGIN_VOICE_ACTIVITY_ACTION, 
+                                    "VOICE User could not be logged in with phone: " + 
+                                        phone + " from " + 
+                                        req.getRemoteAddr());
+            resp.sendRedirect(req.getContextPath() + INVALID_INBOUND_URI + "?TRIES=" + tries);
+		
+		}
+		
+	
+	} // doInboundVoiceLogin
 
 }

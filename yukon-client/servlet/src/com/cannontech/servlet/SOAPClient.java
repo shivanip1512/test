@@ -1,5 +1,7 @@
 package com.cannontech.servlet;
 
+import java.util.Enumeration;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -87,8 +89,13 @@ public class SOAPClient extends HttpServlet {
 			return;
 		}
 		
-		if(referer == null)
+		if(referer == null) {
+		    referer = req.getParameter( ServletUtils.ATT_REFERRER );
+		}
+		if(referer == null) {
 			referer = ((CtiNavObject)session.getAttribute(ServletUtils.NAVIGATE)).getPreviousPage();
+        }
+        
 		
 		StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 		if (user == null) {

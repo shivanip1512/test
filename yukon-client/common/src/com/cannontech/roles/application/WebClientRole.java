@@ -22,4 +22,5 @@ public interface WebClientRole {
 	public static final int NAV_CONNECTOR_MIDDLE = ApplicationRoleDefs.WEB_CLIENT_PROPERTYID_BASE - 8;	// MidConnector.gif
 	public static final int STD_PAGE_STYLE_SHEET = ApplicationRoleDefs.WEB_CLIENT_PROPERTYID_BASE - 9;	// Standard Page CSS
 	public static final int POPUP_APPEAR_STYLE = ApplicationRoleDefs.WEB_CLIENT_PROPERTYID_BASE - 10;   // If the popups are on click or on mouseover
+	public static final int INBOUND_VOICE_HOME_URL = ApplicationRoleDefs.WEB_CLIENT_PROPERTYID_BASE - 11;
 }

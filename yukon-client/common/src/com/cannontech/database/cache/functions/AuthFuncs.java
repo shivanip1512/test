@@ -1,14 +1,24 @@
 package com.cannontech.database.cache.functions;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.Validate;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.login.radius.RadiusLogin;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.data.lite.*;
+import com.cannontech.database.data.lite.LiteContact;
+import com.cannontech.database.data.lite.LiteContactNotification;
+import com.cannontech.database.data.lite.LiteYukonGroup;
+import com.cannontech.database.data.lite.LiteYukonRole;
+import com.cannontech.database.data.lite.LiteYukonRoleProperty;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.yukon.AuthenticationRole;
 import com.cannontech.user.UserUtils;
 
@@ -429,6 +439,45 @@ public class AuthFuncs {
         return false;
     }    
 
+    /**
+     * Attemps to login a voice user by phone number and voice pin.  The phone number will 
+     * be matched against Home Phone and Work Phone.  
+     * 
+     * @param phoneNumber - User's phone number
+     * @param pin - User's pin
+     * 
+     * @return Logged in user or null if login was unsuccessful
+     */
+    public static LiteYukonUser inboundVoiceLogin(String phoneNumber, String pin){
+        
+        LiteYukonUser user = null;
+        
+        int[] phoneTypes = new int[]{YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE};
+        
+        LiteContact[] contacts = ContactFuncs.getContactsByPhoneNo(phoneNumber, phoneTypes);
+            
+        // If no contact is found, try adding '-'s to the phone number
+        if((contacts == null || contacts.length == 0) && phoneNumber.length() == 10) {
+
+            String dashedPhoneNumber = phoneNumber.substring(0, 3) + "-" + phoneNumber.substring(3, 6) + "-" + phoneNumber.substring(6);
+
+            contacts = ContactFuncs.getContactsByPhoneNo(dashedPhoneNumber, phoneTypes);
+
+        } 
+        
+        // If still no contact is found, login failed - return null
+        if(contacts == null || contacts.length != 1) {
+
+            return user;
+        
+        }
+        
+        LiteContact contact = contacts[0];
+
+        user = AuthFuncs.voiceLogin(contact.getContactID(), pin);
+        
+        return user;
+    }
 
 	/**
 	 * Attempts to log a voice user into the system using the
