@@ -9,6 +9,7 @@ import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteCustomer;
+import com.cannontech.database.data.lite.LiteYukonUser;
 
 /**
  * Insert the type's description here.
@@ -162,5 +163,11 @@ public static Vector getAllLiteCustomersByEnergyCompany(int energyCompanyID)
 		}
 	}
 	return liteCustomers;
+}
+
+public static LiteCICustomer getCustomerForUser(LiteYukonUser user) {
+    LiteContact liteContact = YukonUserFuncs.getLiteContact(user.getUserID());
+    LiteCICustomer customer = ContactFuncs.getCICustomer(liteContact.getContactID());
+    return customer;
 }
 }
