@@ -1,6 +1,5 @@
-package com.cannontech.notif.outputs;
+package com.cannontech.notif.voice;
 
-import com.cannontech.notif.voice.PhoneNumber;
 
 public class ContactPhone {
     PhoneNumber _phoneNumber;

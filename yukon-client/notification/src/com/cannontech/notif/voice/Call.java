@@ -6,7 +6,6 @@ import java.util.TreeMap;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.concurrent.PropertyChangeMulticaster;
-import com.cannontech.notif.outputs.ContactPhone;
 import com.cannontech.notif.voice.callstates.*;
 
 import edu.emory.mathcs.backport.java.util.concurrent.atomic.AtomicInteger;
