@@ -12,5 +12,7 @@ Class-Path: ./
  SqlServer.jar 
  backport-util-concurrent.jar 
  classes12.jar 
+ spring.jar 
+ hibernate3.jar 
  ../log/ 
  ../export/
