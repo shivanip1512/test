@@ -4,6 +4,7 @@ Class-Path: ./
  stars.jar 
  graph.jar 
  esub.jar 
+ commercialcurtailment.jar 
  notification.jar 
  jloox30.jar 
  cbc.jar 
