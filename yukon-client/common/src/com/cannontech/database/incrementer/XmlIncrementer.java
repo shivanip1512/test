@@ -14,11 +14,15 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.exception.BadConfigurationException;
+
 public class XmlIncrementer implements KeyedIncrementer {
     private Map<String,MultiTableIncrementer> sequenceLookup = 
         new TreeMap<String, MultiTableIncrementer>();
     private URL configFile;
     private DataSource dataSource;
+    private RuntimeException initializationException = null;
     
     
     public URL getConfigFile() {
@@ -85,7 +89,12 @@ public class XmlIncrementer implements KeyedIncrementer {
                 }
             }
         } catch (Exception e) {
-            throw new RuntimeException("Unable to read sequence config file " + configFile, e);
+            initializationException =  
+                new BadConfigurationException("Delayed exception: " +
+                                              "XMLIncrementer threw an exception durring startup", 
+                                              e);
+            CTILogger.error("Could not parse XMLIncrementer configuration. The following " +
+                            "error will be thrown when it is first accessed.", e);
         }
     }
 
@@ -107,6 +116,9 @@ public class XmlIncrementer implements KeyedIncrementer {
     }
 
     public int getNextValue(String tableName) {
+        if (initializationException != null) {
+            throw initializationException;
+        }
         MultiTableIncrementer incrementer = getIncrementerForTable(tableName);
         return incrementer.getNextValue();
     }
