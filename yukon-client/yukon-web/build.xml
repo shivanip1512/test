@@ -66,6 +66,9 @@
                 <fileset dir="${yukon.build}/lib">
                     <include name="**/*.jar"/>
                 </fileset>   
+                <fileset dir="${yukon-web}/WebContent/WEB-INF/lib">
+                   <include name="*.jar"/>
+                 </fileset>
                 <fileset dir="${yukon.lib}">
                     <include name="**/*.jar"/>
                 </fileset>   
