@@ -1252,6 +1252,12 @@ void CtiCalculateThread::interruptThreads( CtiCalcThreadInterruptReason reason )
             dout << " Unable to interrupt the baselineThread. Calc may become unstable!" << endl;
         }
     }
+
+    if( _CALC_DEBUG & CALC_DEBUG_RELOAD )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " CalcThreads interrupted"<< endl;
+    }
     
 }
 
@@ -1683,8 +1689,17 @@ void CtiCalculateThread::sendConstants()
                 CtiHashKey pointHashKey(calcPoint->getPointId());
                 CtiPointStoreElement* calcPointPtr = (CtiPointStoreElement*)((*pointStore)[&pointHashKey]);
 
-                oldPointValue = calcPointPtr->getPointValue();
-                pointValue = calcPoint->calculate( calcQuality, calcTime, calcValid );    // Here is the MATH
+                if( calcPointPtr != NULL ) //Exception preventative
+                {
+                    oldPointValue = calcPointPtr->getPointValue();
+                    pointValue = calcPoint->calculate( calcQuality, calcTime, calcValid );    // Here is the MATH
+                }
+                else
+                {
+                    calcValid = false;
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint **** Point " << pointId << " constant not in pointstore" << endl;
+                }
             }
 
             if(!calcValid)

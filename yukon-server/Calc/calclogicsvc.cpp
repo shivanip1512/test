@@ -1399,6 +1399,11 @@ void CtiCalcLogicService::pauseInputThread()
             dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
+    if( _CALC_DEBUG & CALC_DEBUG_RELOAD )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Input Thread Paused"<< endl;
+    }
 }
 
 void CtiCalcLogicService::resumeInputThread()
