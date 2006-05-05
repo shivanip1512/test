@@ -295,7 +295,7 @@ function disableAllButtons()
 									if( i < 10)	{
 										iStr = "0" + iStr;
 									}%>
-											<option value="<%=i%>"><%=iStr%></option>
+											<option value="<%=iStr%>"><%=iStr%></option>
 								<%}%>
 								  </select>
 								</td>
@@ -307,7 +307,7 @@ function disableAllButtons()
 									if( i < 10)	{
 										iStr = "0" + iStr;
 									}%>
-											<option value="<%=i%>"><%=iStr%></option>
+											<option value="<%=iStr%>"><%=iStr%></option>
 								<%}%>			  
 								  </select>
 								</td>
