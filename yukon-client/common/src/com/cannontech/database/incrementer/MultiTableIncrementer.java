@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 
 import javax.sql.DataSource;
 
@@ -101,6 +102,7 @@ public class MultiTableIncrementer {
     }
     
     public void initializeSequence(final String tableName, final String identityColumn) {
+        initializeSql();
         final JdbcTemplate jdbc = new JdbcTemplate(dataSource);
         PlatformTransactionManager transactionManager = new DataSourceTransactionManager(dataSource);
         TransactionTemplate tt = new TransactionTemplate(transactionManager);
@@ -110,6 +112,14 @@ public class MultiTableIncrementer {
                 // get current max
                 String maxSql = "select max(" + identityColumn + ") from " + tableName;
                 long currentMax = jdbc.queryForLong(maxSql);
+                
+                // make sure row exists
+                String checkSql = "select " + keyColumnName + " from " + sequenceTableName + 
+                                  " where " + keyColumnName + " = '" + sequenceKey + "'";
+                List matches = jdbc.queryForList(checkSql, String.class);
+                if (matches.isEmpty()) {
+                    jdbc.execute(insertSql);
+                }
                 
                 String updateSql = "update " + sequenceTableName + " set " 
                     + valueColumnName +  " = " + currentMax 
