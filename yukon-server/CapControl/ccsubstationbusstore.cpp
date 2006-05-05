@@ -36,10 +36,13 @@
 #include "msg_signal.h"
 #include "capcontroller.h"
 #include "utility.h"
+#include "thread_monitor.h"
 #include <string>
 #include <rwutil.h>
 
+
 extern ULONG _CC_DEBUG;
+extern ULONG _DB_RELOAD_WAIT;
 
 using namespace std;
 
@@ -48,7 +51,7 @@ CtiTime timeSaver;
 /*---------------------------------------------------------------------------
     Constructor
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBusStore::CtiCCSubstationBusStore() : _isvalid(FALSE), _reregisterforpoints(TRUE), _reloadfromamfmsystemflag(FALSE), _lastdbreloadtime(CtiTime(CtiDate(1,1,1990),0,0,0)), _wassubbusdeletedflag(FALSE)
+CtiCCSubstationBusStore::CtiCCSubstationBusStore() : _isvalid(FALSE), _reregisterforpoints(TRUE), _reloadfromamfmsystemflag(FALSE), _lastdbreloadtime(CtiTime(CtiDate(1,1,1990),0,0,0)), _wassubbusdeletedflag(FALSE), _lastindividualdbreloadtime(CtiTime(CtiDate(1,1,1990),0,0,0))
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
     _ccSubstationBuses = new CtiCCSubstationBus_vec;
@@ -116,7 +119,7 @@ CtiCCSubstationBus_vec* CtiCCSubstationBusStore::getCCSubstationBuses(ULONG seco
     {//is not valid and has been at 0.5 minutes from last db reload, so we don't do this a bunch of times in a row on multiple updates
         reset();
     }
-    else
+    else if (secondsFrom1901 >= _lastindividualdbreloadtime.seconds() + _DB_RELOAD_WAIT)
     {
         dumpAllDynamicData();
         checkDBReloadList();
@@ -1734,6 +1737,10 @@ void CtiCCSubstationBusStore::doResetThr()
     }
 
     CtiTime lastPeriodicDatabaseRefresh = CtiTime();
+    ThreadMonitor.start(); 
+    CtiTime rwnow;
+    CtiTime announceTime((unsigned long) 0);
+    CtiTime tickleTime((unsigned long) 0);
 
     while(TRUE)
     {
@@ -1759,7 +1766,30 @@ void CtiCCSubstationBusStore::doResetThr()
         {
             rwRunnable().sleep(500);
         }
+      /*  rwnow = rwnow.now();
+        if(rwnow.seconds() > tickleTime.seconds())
+        {
+            tickleTime = nextScheduledTimeAlignedOnRate( rwnow, CtiThreadMonitor::StandardTickleTime );
+            if( rwnow.seconds() > announceTime.seconds() )
+            {
+                announceTime = nextScheduledTimeAlignedOnRate( rwnow, CtiThreadMonitor::StandardMonitorTime );
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " CapControl doResetThr. TID: " << rwThreadId() << endl;
+            }
+
+           /* if(!_shutdownOnThreadTimeout)
+            {
+                ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl doAMFMThr", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCCSubstationBusStore::periodicComplain, 0) );
+            }
+            else
+            {   
+                ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl doResetThr", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCCSubstationBusStore::sendUserQuit, CTIDBG_new string("CapControl doResetThr")) );
+            //}
+        }  */
+
     }
+
+   // ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl doResetThr", CtiThreadRegData::LogOut ) );
 }
 
 /*---------------------------------------------------------------------------
@@ -1772,6 +1802,7 @@ void CtiCCSubstationBusStore::doAMFMThr()
     string str;
     char var[128];
     string amfm_interface = "NONE";
+    ThreadMonitor.start(); 
 
     strcpy(var, "CAP_CONTROL_AMFM_INTERFACE");
     if( !(str = gConfigParms.getValueAsString(var)).empty() )
@@ -1893,6 +1924,11 @@ void CtiCCSubstationBusStore::doAMFMThr()
             ULONG tempsum = (currenttime.seconds()-(currenttime.seconds()%refreshrate))+(2*refreshrate);
             CtiTime nextAMFMRefresh = CtiTime(CtiTime(tempsum));
 
+            CtiTime rwnow;
+            CtiTime announceTime((unsigned long) 0);
+            CtiTime tickleTime((unsigned long) 0);
+
+
             while(TRUE)
             {
                 rwRunnable().serviceCancellation();
@@ -1916,7 +1952,30 @@ void CtiCCSubstationBusStore::doAMFMThr()
                 {
                     rwRunnable().sleep(500);
                 }
+               /* rwnow = rwnow.now();
+                if(rwnow.seconds() > tickleTime.seconds())
+                {
+                    tickleTime = nextScheduledTimeAlignedOnRate( rwnow, CtiThreadMonitor::StandardTickleTime );
+                    if( rwnow.seconds() > announceTime.seconds() )
+                    {
+                        announceTime = nextScheduledTimeAlignedOnRate( rwnow, CtiThreadMonitor::StandardMonitorTime );
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " CapControl doAMFMThr. TID: " << rwThreadId() << endl;
+                    }
+
+                   /* if(!_shutdownOnThreadTimeout)
+                    {
+                        ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl doAMFMThr", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCCSubstationBusStore::periodicComplain, 0) );
+                    }
+                    else
+                    {   
+                        ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl doAMFMThr", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCCSubstationBusStore::sendUserQuit, CTIDBG_new string("CapControl doAMFMThr")) );
+                    //}
+                } */
+
             }
+
+         //   ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl doAMFMThr", CtiThreadRegData::LogOut ) );
         }
         else
         {
@@ -2156,43 +2215,47 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
         }
         else//sub bus not recently controlled
         {
-            CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
 
-            for(int j=0;j<ccFeeders.size();j++)
+            if (!currentSubstationBus->getPerformingVerificationFlag())
             {
-                numberOfCapBanksPending = 0;
-                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders.at(j);
+                CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
 
-                if( currentFeeder->getRecentlyControlledFlag() )
+                for(int j=0;j<ccFeeders.size();j++)
                 {
-                    currentFeeder->setRecentlyControlledFlag(FALSE);
+                    numberOfCapBanksPending = 0;
+                    CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders.at(j);
+
+                    if( currentFeeder->getRecentlyControlledFlag() )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Feeder: " << currentFeeder->getPAOName() << ", no longer recently controlled because sub bus not recently controlled in: " << __FILE__ << " at: " << __LINE__ << endl;
-                    }
-                }
-
-                CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
-
-                for(int k=0;k<ccCapBanks.size();k++)
-                {
-                    CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
-
-                    if( currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending && !(currentCapBank->getVerificationFlag() && currentCapBank->getPerformingVerificationFlag()) && currentCapBank->getStatusPointId() > 0)
-                    {
+                        currentFeeder->setRecentlyControlledFlag(FALSE);
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Setting status to close questionable, Cap Bank: " << currentCapBank->getPAOName() << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+                            dout << CtiTime() << " - Feeder: " << currentFeeder->getPAOName() << ", no longer recently controlled because sub bus not recently controlled in: " << __FILE__ << " at: " << __LINE__ << endl;
                         }
-                        CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::CloseQuestionable,NormalQuality,StatusPointType));
                     }
-                    else if( currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending && !(currentCapBank->getVerificationFlag() && currentCapBank->getPerformingVerificationFlag()) && currentCapBank->getStatusPointId() > 0)
+
+                    CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
+
+                    for(int k=0;k<ccCapBanks.size();k++)
                     {
+                        CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
+
+                        if( currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending && !(currentCapBank->getVerificationFlag() && currentCapBank->getPerformingVerificationFlag()) && currentCapBank->getStatusPointId() > 0)
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Setting status to open questionable, Cap Bank: " << currentCapBank->getPAOName() << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - Setting status to close questionable, Cap Bank: " << currentCapBank->getPAOName() << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+                            }
+                            CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::CloseQuestionable,NormalQuality,StatusPointType));
                         }
-                        CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::OpenQuestionable,NormalQuality,StatusPointType));
+                        else if( currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending && !(currentCapBank->getVerificationFlag() && currentCapBank->getPerformingVerificationFlag()) && currentCapBank->getStatusPointId() > 0)
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - Setting status to open questionable, Cap Bank: " << currentCapBank->getPAOName() << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+                            }
+                            CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::OpenQuestionable,NormalQuality,StatusPointType));
+                        }
                     }
                 }
             }
@@ -3730,7 +3793,7 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
                         if (capBankId > 0)
                         {                
                             selector.where(yukonPAObjectTable["paobjectid"]==capBankTable["controldeviceid"] &&
-                                           yukonPAObjectTable["paobjectid"] == capBankId );
+                                           capBankTable["deviceid"] == capBankId );
                         }
                         else
                             selector.where(yukonPAObjectTable["paobjectid"]==capBankTable["controldeviceid"] );
@@ -4743,8 +4806,13 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                 _reloadList.pop_front();
             }
 
+
             if (sendBusInfo)
-            {              
+            {     
+                locateOrphans(&_orphanedCapBanks, &_orphanedFeeders, _paobject_capbank_map, _paobject_feeder_map,
+                                     _capbank_feeder_map, _feeder_subbus_map);
+
+                _lastindividualdbreloadtime.now();
                 ULONG msgBitMask = CtiCCSubstationBusMsg::AllSubBusesSent;
                 if ( _wassubbusdeletedflag )
                 {
@@ -4786,6 +4854,31 @@ void CtiCCSubstationBusStore::checkDBReloadList()
         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 }
+
+void CtiCCSubstationBusStore::sendUserQuit(void *who)
+{
+    string *strPtr = (string *) who;
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** Checkpoint **** " << *strPtr << " has asked for shutdown."<< endl;
+    }
+    //UserQuit = TRUE;
+    CtiCCExecutorFactory f;
+    CtiCCExecutor* executor = f.createExecutor(new CtiCCShutdown());
+    executor->Execute();
+
+
+}
+
+
+void CtiCCSubstationBusStore::periodicComplain( void *la )
+{
+   {
+       CtiLockGuard<CtiLogger> doubt_guard(dout);
+       dout << CtiTime( ) << " CapControl periodic thread is AWOL" << endl;
+   }
+}
+
 
 void CtiCCSubstationBusStore::insertDBReloadList(CC_DBRELOAD_INFO x)
 {

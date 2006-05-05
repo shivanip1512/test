@@ -19,7 +19,7 @@
 #include "ccexecutor.h"
 #include "logger.h"
 #include "utility.h"
-
+#include "thread_monitor.h"
 
 #include <rw/toolpro/inetaddr.h>
 
@@ -224,6 +224,11 @@ void CtiCCClientListener::BroadcastMessage(CtiMessage* msg)
 void CtiCCClientListener::_listen()
 {  
     _socketListener = new RWSocketListener( RWInetAddr( (int) _port )  );
+    ThreadMonitor.start(); 
+
+    CtiTime rwnow;
+    CtiTime announceTime((unsigned long) 0);
+    CtiTime tickleTime((unsigned long) 0);
 
     do
     {
@@ -268,12 +273,42 @@ void CtiCCClientListener::_listen()
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
         }
+
+        /*if(rwnow.now().seconds() > tickleTime.seconds())
+        {
+            tickleTime = nextScheduledTimeAlignedOnRate( rwnow, CtiThreadMonitor::StandardTickleTime );
+            if( rwnow.seconds() > announceTime.seconds() )
+            {
+                announceTime = nextScheduledTimeAlignedOnRate( rwnow, CtiThreadMonitor::StandardMonitorTime );
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " CapControl _clientListen. TID: " << rwThreadId() << endl;
+            }
+
+           /* if(!_shutdownOnThreadTimeout)
+            {
+                ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl doAMFMThr", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCCSubstationBusStore::periodicComplain, 0) );
+            }
+            else
+            {   
+                ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl _clientListen", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCCSubstationBusStore::sendUserQuit, CTIDBG_new string("CapControl _clientListen")) );
+            //}
+        } */
+
+
     } while ( !_doquit );
+
+
+    //ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl _clientListen", CtiThreadRegData::LogOut ) );
 
 }
 
 void CtiCCClientListener::_check()
 {
+    ThreadMonitor.start(); 
+    CtiTime rwnow;
+    CtiTime announceTime((unsigned long) 0);
+    CtiTime tickleTime((unsigned long) 0);
+
     do        
     {
         try
@@ -311,8 +346,31 @@ void CtiCCClientListener::_check()
             dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
         }
         rwSleep(500);
+       /* rwnow = rwnow.now();
+        if(rwnow.seconds() > tickleTime.seconds())
+        {
+            tickleTime = nextScheduledTimeAlignedOnRate( rwnow, CtiThreadMonitor::StandardTickleTime );
+            if( rwnow.seconds() > announceTime.seconds() )
+            {
+                announceTime = nextScheduledTimeAlignedOnRate( rwnow, CtiThreadMonitor::StandardMonitorTime );
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " CapControl _clientCheck. TID: " << rwThreadId() << endl;
+            }
+
+           /* if(!_shutdownOnThreadTimeout)
+            {
+                ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl doAMFMThr", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCCSubstationBusStore::periodicComplain, 0) );
+            }
+            else
+            {   
+                ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl _clientCheck", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCCSubstationBusStore::sendUserQuit, CTIDBG_new string("CapControl _clientCheck")) );
+            //}
+        }  */
+
+
     } while ( !_doquit );
 
+   // ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl _clientCheck", CtiThreadRegData::LogOut ) );
     {   
  
         RWRecursiveLock<RWMutexLock>::LockGuard guard( _connmutex );

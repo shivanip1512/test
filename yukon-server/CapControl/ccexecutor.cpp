@@ -1185,6 +1185,9 @@ void CtiCCCommandExecutor::ConfirmSub()
             string additional1 = string("Sub: ");
             additional1 += currentSubstationBus->getPAOName();
             pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
+            currentSubstationBus->setEventSequence(currentSubstationBus->getEventSequence() +1);
+            ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSubstationBus->getPAOId(), 0, capControlManualCommand, currentSubstationBus->getEventSequence(), 0, text1, _command->getUser()));
+
             CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
 
             for(LONG j=0;j<ccFeeders.size();j++)
@@ -1293,111 +1296,48 @@ void CtiCCCommandExecutor::ConfirmArea()
     BOOL found = FALSE;
     CtiMultiMsg* multi = new CtiMultiMsg();
     CtiMultiMsg* eventMulti = new CtiMultiMsg();
+    CtiMultiMsg* confirmMulti = new CtiMultiMsg();
     CtiMultiMsg_vec& pointChanges = multi->getData();
     CtiMultiMsg_vec& ccEvents = eventMulti->getData();
 
     CtiCCSubstationBusPtr currentSubstationBus = store->findSubBusByPAObjectID(subId);
     if (currentSubstationBus != NULL)
     {
+        string text1 = string("Manual Confirm Area");
+        string additional1 = string("Area: ");
+        additional1 += currentSubstationBus->getPAODescription();
+        pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
+       // currentSubstationBus->setEventSequence(currentSubstationBus->getEventSequence() +1);
+        ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSubstationBus->getPAOId(), 0, capControlManualCommand, currentSubstationBus->getEventSequence(), 0, text1, _command->getUser()));
 
-        if (!currentSubstationBus->getVerificationFlag() && currentSubstationBus->getStrategyId() > 0)
+
+
+        string areaName = currentSubstationBus->getPAODescription();
+        CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
+
+        for(LONG i=0;i<ccSubstationBuses.size();i++)
         {
+            currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
 
-            string text1 = string("Manual Confirm Sub");
-            string additional1 = string("Sub: ");
-            additional1 += currentSubstationBus->getPAOName();
-            pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
-            CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
-
-            for(LONG j=0;j<ccFeeders.size();j++)
+            if (!stringCompareIgnoreCase(currentSubstationBus->getPAODescription(), areaName))
             {
-                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders.at(j);
-                CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
-
-                for(LONG k=0;k<ccCapBanks.size();k++)
+                if (!currentSubstationBus->getVerificationFlag() && currentSubstationBus->getStrategyId() > 0)
                 {
-                    CtiCCCapBankPtr currentCapBank = (CtiCCCapBankPtr)ccCapBanks[k];
-
-                    if (!currentCapBank->getDisableFlag() && currentCapBank->getControlDeviceId() > 0 &&
-                         currentCapBank->getStatusPointId() > 0)
-                    {
-
-                        currentSubstationBus->setRecentlyControlledFlag(FALSE);
-                        currentFeeder->setRecentlyControlledFlag(FALSE);
-                        controlID = currentCapBank->getControlDeviceId();
-                        currentFeeder->setLastCapBankControlledDeviceId(currentCapBank->getPAOId());
-                        currentSubstationBus->setLastFeederControlledPAOId(currentFeeder->getPAOId());
-                        currentSubstationBus->setLastFeederControlledPosition(j);
-                        currentSubstationBus->setLastOperationTime(CtiTime());
-                        currentFeeder->setLastOperationTime(CtiTime());
-
-
-                        currentSubstationBus->setBusUpdatedFlag(TRUE);
-
-
-                        char tempchar[80] = "";
-                        char tempchar1[80] = "";
-                        string additional = string("Sub: ");
-                        additional += currentSubstationBus->getPAOName();
-                        additional += string("  Feeder: ");
-                        additional += currentFeeder->getPAOName();
-
-                        string text = string("Manual Confirm ");
-
-                        if (currentCapBank->getControlStatus() == CtiCCCapBank::Open ||
-                            currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending ||
-                            currentCapBank->getControlStatus() == CtiCCCapBank::OpenQuestionable ||
-                            currentCapBank->getControlStatus() == CtiCCCapBank::OpenFail )
-                        {
-                            text += "Open Sent, Sub VarLoad = ";
-                            currentCapBank->setControlStatus(CtiCCCapBank::Open);
-
-                        }
-                        else if (currentCapBank->getControlStatus() == CtiCCCapBank::Close ||
-                            currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending ||
-                            currentCapBank->getControlStatus() == CtiCCCapBank::CloseQuestionable ||
-                            currentCapBank->getControlStatus() == CtiCCCapBank::CloseFail )
-                        {
-                            text += "Close Sent, Sub VarLoad = ";
-                            currentCapBank->setControlStatus(CtiCCCapBank::Close);
-                        }
-
-                        _snprintf(tempchar,80,"%.*f",currentSubstationBus->getDecimalPlaces(),currentSubstationBus->getCurrentVarLoadPointValue());
-                        text += tempchar;
-                        text += string(" Feeder VarLoad = ");
-                        _snprintf(tempchar1,80,"%.*f",currentSubstationBus->getDecimalPlaces(),currentFeeder->getCurrentVarLoadPointValue());
-                        text += tempchar1;
-                        pointChanges.push_back(new CtiSignalMsg(currentCapBank->getStatusPointId(),1,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
-
-                        INT seqId = CCEventSeqIdGen();
-                        currentSubstationBus->setEventSequence(seqId);
-                        ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text, _command->getUser()));
-
-
-                        if( controlID > 0 )
-                        {
-                            CtiRequestMsg* reqMsg = new CtiRequestMsg(controlID,"control open");
-                            reqMsg->setSOE(2);
-                            CtiCapController::getInstance()->confirmCapBankControl( reqMsg );
-                        }
-                        else
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Could not create Porter Request Message in: " << __FILE__ << " at: " << __LINE__ << endl;
-                        }
-
-
-                    }
-
+                    confirmMulti->insert(new CtiCCCommand(CtiCCCommand::CONFIRM_SUB, currentSubstationBus->getPAOId()));
                 }
             }
         }
+        if (confirmMulti->getCount() > 0)
+        {
+            CtiCCExecutorFactory f;
+            CtiCCExecutor* executor = f.createExecutor(confirmMulti);
+            executor->Execute();
+        }
+        if (eventMulti->getCount() > 0)
+            CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
+        if (multi->getCount() > 0)
+            CtiCapController::getInstance()->sendMessageToDispatch(multi);
     }
-    if (multi->getCount() > 0)
-        CtiCapController::getInstance()->sendMessageToDispatch(multi);
-    if (eventMulti->getCount() > 0)
-        CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
-    
 }
 
 
@@ -1528,7 +1468,23 @@ void CtiCCCommandExecutor::ConfirmOpen()
                                 ((savedFeederLastOperationTime.seconds()+(currentSubstationBus->getMaxConfirmTime()/_SEND_TRIES)) >= currentFeeder->getLastOperationTime().seconds()) ||
                                 ((savedFeederLastOperationTime.seconds()+(currentSubstationBus->getMaxConfirmTime()/(sendRetries+1))) >= currentFeeder->getLastOperationTime().seconds()) )
                             {
-                                confirmImmediately = TRUE;
+                                CtiCCCapBank_SVector& banks = currentFeeder->getCCCapBanks();
+
+                                for(LONG l=0;l<banks.size();l++)
+                                {
+                                    CtiCCCapBank* bank = (CtiCCCapBank*)banks[l];
+                                    if (bank->getStatusPointId() > 0)
+                                    {
+                                        if ((bank->getControlDeviceId() != bankID && (bank->getControlStatus() == CtiCCCapBank::OpenPending || bank->getControlStatus() == CtiCCCapBank::ClosePending ) ) ||
+                                             savedControlStatus == CtiCCCapBank::OpenPending )
+                                        {
+                                            confirmImmediately = TRUE;
+                                            break;
+                                        }
+
+                                    }
+                                    //confirmImmediately = TRUE;
+                                }
                             }
                             if( _IGNORE_NOT_NORMAL_FLAG &&
                                 currentFeeder->getCurrentVarPointQuality() != NormalQuality )
@@ -1614,6 +1570,8 @@ void CtiCCCommandExecutor::ConfirmOpen()
         CtiRequestMsg* reqMsg = new CtiRequestMsg(controlID,"control open");
         reqMsg->setSOE(5);
         CtiCapController::getInstance()->manualCapBankControl( reqMsg, multi );
+        if (eventMulti->getCount() >0)
+            CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
     }
     else
     {
@@ -1748,8 +1706,23 @@ void CtiCCCommandExecutor::ConfirmClose()
                                 ((savedFeederLastOperationTime.seconds()+(currentSubstationBus->getMaxConfirmTime()/_SEND_TRIES)) >= currentFeeder->getLastOperationTime().seconds()) ||
                                 ((savedFeederLastOperationTime.seconds()+(currentSubstationBus->getMaxConfirmTime()/(sendRetries+1))) >= currentFeeder->getLastOperationTime().seconds()) )
                             {
-                                confirmImmediately = TRUE;
-                            }
+                                CtiCCCapBank_SVector& banks = currentFeeder->getCCCapBanks();
+
+                                for(LONG l=0;l<banks.size();l++)
+                                {
+                                    CtiCCCapBank* bank = (CtiCCCapBank*)banks[l];
+                                    if (bank->getStatusPointId() > 0)
+                                    {
+                                        if ((bank->getControlDeviceId() != bankID && (bank->getControlStatus() == CtiCCCapBank::OpenPending || bank->getControlStatus() == CtiCCCapBank::ClosePending ) ) ||
+                                             savedControlStatus == CtiCCCapBank::ClosePending )
+                                        {
+                                            confirmImmediately = TRUE;
+                                            break;
+                                        }
+
+                                    }
+                                    //confirmImmediately = TRUE;
+                                }                            }
                             if( _IGNORE_NOT_NORMAL_FLAG &&
                                 currentFeeder->getCurrentVarPointQuality() != NormalQuality )
                             {
@@ -1783,10 +1756,11 @@ void CtiCCCommandExecutor::ConfirmClose()
                         }
                         else
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Unknown Control Method: " << currentSubstationBus->getControlMethod()
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - Unknown Control Method: " << currentSubstationBus->getControlMethod()
                                           << " PAOID: " << currentSubstationBus->getPAOId() << " Name: " << currentSubstationBus->getPAOName() << endl;
-                            
+                            }
                             /*if (currentSubstationBus->getStrategyId() <= 0)
                             {
                                 confirmImmediately = TRUE;
@@ -1810,7 +1784,7 @@ void CtiCCCommandExecutor::ConfirmClose()
                         {                                              
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << CtiTime() << " - Cap Bank Verification is ENABLED on SubstationsBus: "<< currentSubstationBus->getPAOName() <<" PAOID: "<< currentSubstationBus->getPAOId() 
-								<<".  Cannot perform CONFIRM CLOSE on Cap Bank: " << currentCapBank->getPAOName() << " PAOID: " << currentCapBank->getPAOId() << "."<<endl;
+                                         <<".  Cannot perform CONFIRM CLOSE on Cap Bank: " << currentCapBank->getPAOName() << " PAOID: " << currentCapBank->getPAOId() << "."<<endl;
                         }
                         else
                         {
@@ -1838,6 +1812,8 @@ void CtiCCCommandExecutor::ConfirmClose()
         CtiRequestMsg* reqMsg = new CtiRequestMsg(controlID,"control close");
         reqMsg->setSOE(5);
         CtiCapController::getInstance()->manualCapBankControl( reqMsg, multi );
+        if (eventMulti->getCount() >0)
+            CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
     }
     else
     {

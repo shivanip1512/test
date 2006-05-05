@@ -152,6 +152,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     BOOL getPreOperationMonitorPointScanFlag() const;
     BOOL getOperationSentWaitFlag() const;
     BOOL getPostOperationMonitorPointScanFlag() const;
+    BOOL getWaitForReCloseDelayFlag() const;
     LONG getCurrentVerificationCapBankId() const;
     LONG getCurrentVerificationCapBankOrigState() const;
     int getMultiBusCurrentState() const;
@@ -228,6 +229,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiCCFeeder& setPreOperationMonitorPointScanFlag( BOOL flag);
     CtiCCFeeder& setOperationSentWaitFlag( BOOL flag);
     CtiCCFeeder& setPostOperationMonitorPointScanFlag( BOOL flag);
+    CtiCCFeeder& setWaitForReCloseDelayFlag(BOOL flag);
     CtiCCFeeder& setCurrentVerificationCapBankId(LONG capBankId);
     CtiCCFeeder& setCurrentVerificationCapBankState(LONG status);
     CtiCCFeeder& setMultiBusCurrentState(int state);
@@ -246,6 +248,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     BOOL isAlreadyControlled(LONG minConfirmPercent);
     void fillOutBusOptimizedInfo(BOOL peakTimeFlag);
     BOOL attemptToResendControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages, LONG maxConfirmTime);
+    BOOL checkForAndPerformVerificationSendRetry(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages, LONG maxConfirmTime, LONG sendRetries);
     BOOL checkMaxDailyOpCountExceeded();
     void voltControlBankSelectProcess(CtiCCMonitorPoint* point, CtiMultiMsg_vec &pointChanges, CtiMultiMsg_vec &ccEvents, CtiMultiMsg_vec& pilMessages);
     void updatePointResponsePreOpValues();
@@ -263,11 +266,14 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiRequestMsg* createIncreaseVarVerificationRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, string textInfo);
     CtiRequestMsg* createDecreaseVarVerificationRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, string textInfo);
     CtiCCFeeder& startVerificationOnCapBank(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
+    BOOL sendNextCapBankVerificationControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
 
     std::list <LONG>* getPointIds() {return &_pointIds;};
 
-    BOOL isFeederPerformingVerification();
     BOOL isVerificationAlreadyControlled(LONG minConfirmPercent); 
+    BOOL areThereMoreCapBanksToVerify();
+    CtiCCFeeder& getNextCapBankToVerify();
+
     BOOL capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, LONG minConfirmPercent, LONG failurePercent, DOUBLE varValueBeforeControl, DOUBLE currentVarLoadPointValue, LONG currentVarPointQuality);
     
     BOOL isDirty() const;
@@ -374,6 +380,8 @@ private:
     BOOL _operationSentWaitFlag;
     BOOL _postOperationMonitorPointScanFlag;
     BOOL _porterRetFailFlag;
+    BOOL _waitForReCloseDelayFlag;
+
     LONG   _eventSeq;
 
     LONG _currentVerificationCapBankId;

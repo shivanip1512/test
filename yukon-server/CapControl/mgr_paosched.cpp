@@ -14,6 +14,7 @@
 #include "pao_event.h"
 #include "capcontroller.h"
 #include "ctitokenizer.h"
+#include "thread_monitor.h"
 #include "utility.h"
 
 #include <rw/thr/prodcons.h>
@@ -98,9 +99,12 @@ void CtiPAOScheduleManager::stop()
 
 void CtiPAOScheduleManager::doResetThr()
 {
+    ThreadMonitor.start(); 
     Sleep(1000);
     CtiTime lastPeriodicDatabaseRefresh = CtiTime();
 
+    CtiTime rwnow, announceTime, tickleTime;
+    tickleTime.now();
     while (TRUE)
     {   
         {
@@ -126,14 +130,34 @@ void CtiPAOScheduleManager::doResetThr()
         {
             rwRunnable().sleep(500);
         }
+        /*rwnow = rwnow.now();
+        if(rwnow.seconds() > tickleTime.seconds())
+        {
+            tickleTime = nextScheduledTimeAlignedOnRate( rwnow, CtiThreadMonitor::StandardTickleTime );
+            if( rwnow.seconds() > announceTime.seconds() )
+            {
+                announceTime = nextScheduledTimeAlignedOnRate( rwnow, CtiThreadMonitor::StandardMonitorTime );
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " CapControl mgrPAOSchedule doResetThr. TID: " << rwThreadId() << endl;
+            }
         
+           /* if(!_shutdownOnThreadTimeout)
+            {
+                ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl doAMFMThr", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCCSubstationBusStore::periodicComplain, 0) );
+            }
+            else
+            {   
+                ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl mgrPAOSchedule doResetThr", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCCSubstationBusStore::sendUserQuit, CTIDBG_new string("CapControl mgrPAOSchedule doResetThr")) );
+            //}
+        } */   
     }
 
-    
+    //ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl mgrPAOSchedule doResetThr", CtiThreadRegData::LogOut ) );
 }
 
 void CtiPAOScheduleManager::mainLoop()
 {
+    ThreadMonitor.start(); 
     try
     {
         {
@@ -146,6 +170,10 @@ void CtiPAOScheduleManager::mainLoop()
         std::list <CtiPAOSchedule*> mySchedules;
         std::list <CtiPAOSchedule*> updateSchedules;
         std::list <CtiPAOEvent*> myEvents;
+
+        CtiTime rwnow;
+        CtiTime announceTime((unsigned long) 0);
+        CtiTime tickleTime((unsigned long) 0);
 
         CtiPAOSchedule *currentSched = NULL;
         CtiPAOEvent *currentEvent = NULL;
@@ -238,8 +266,30 @@ void CtiPAOScheduleManager::mainLoop()
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
             }
+            /*rwnow = rwnow.now();
+            if(rwnow.seconds() > tickleTime.seconds())
+            {
+                tickleTime = nextScheduledTimeAlignedOnRate( rwnow, CtiThreadMonitor::StandardTickleTime );
+                if( rwnow.seconds() > announceTime.seconds() )
+                {
+                    announceTime = nextScheduledTimeAlignedOnRate( rwnow, CtiThreadMonitor::StandardMonitorTime );
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " CapControl mgrPAOSchedule mainLoop TID: " << rwThreadId() << endl;
+                }
+          
+               /* if(!_shutdownOnThreadTimeout)
+                {
+                    ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl doAMFMThr", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCCSubstationBusStore::periodicComplain, 0) );
+                }
+                else
+                {   
+                    ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl mgrPAOSchedule mainLoop", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCCSubstationBusStore::sendUserQuit, CTIDBG_new string("CapControl mgrPAOSchedule mainLoop")) );
+                //}
+            }*/
 
         }
+
+        //ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl mgrPAOSchedule mainLoop", CtiThreadRegData::LogOut ) );
     }
     catch (...)
     {

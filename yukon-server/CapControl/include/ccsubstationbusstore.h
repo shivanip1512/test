@@ -160,6 +160,9 @@ public:
     map <long, CtiCCSubstationBusPtr>* getPAOSubMap();
 
     static const string CAP_CONTROL_DBCHANGE_MSG_SOURCE;
+    static void sendUserQuit(void *who);
+    static void periodicComplain( void *la );
+
 
     RWRecursiveLock<RWMutexLock> & getMux() { return mutex(); };
 
@@ -205,6 +208,8 @@ private:
     BOOL _reloadfromamfmsystemflag;
     BOOL _wassubbusdeletedflag;
     CtiTime _lastdbreloadtime;
+    CtiTime _lastindividualdbreloadtime;
+
 
     //The singleton instance of CtiCCSubstationBusStore
     static CtiCCSubstationBusStore* _instance;

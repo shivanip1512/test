@@ -28,6 +28,8 @@ ULONG _SEND_TRIES;
 BOOL _USE_FLIP_FLAG;
 ULONG _POINT_AGE;
 ULONG _SCAN_WAIT_EXPIRE;
+BOOL _ALLOW_PARALLEL_TRUING;
+ULONG _DB_RELOAD_WAIT;
 
 CtiDate gInvalidCtiDate = CtiTime(1990,1,1);
 CtiTime gInvalidCtiTime = CtiTime(gInvalidCtiDate,0,0,0);
@@ -160,6 +162,26 @@ void CtiCCService::Init()
         dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
     }
 
+    _DB_RELOAD_WAIT = 30;  //30 seconds
+
+    strcpy(var, "CAP_CONTROL_DB_RELOAD_WAIT");
+    if( !(str = gConfigParms.getValueAsString(var)).empty() )
+    {
+        _DB_RELOAD_WAIT = atoi(str.c_str());
+
+        if( _CC_DEBUG & CC_DEBUG_STANDARD )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - " << var << ":  " << str << endl;
+        }
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+    }
+
+
     _IGNORE_NOT_NORMAL_FLAG = FALSE;
     
     strcpy(var, "CAP_CONTROL_IGNORE_NOT_NORMAL");
@@ -253,6 +275,26 @@ void CtiCCService::Init()
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
     }
+
+    _ALLOW_PARALLEL_TRUING = FALSE;
+
+    strcpy(var, "CAP_CONTROL_ALLOW_PARALLEL_TRUING");
+    if ( !(str = gConfigParms.getValueAsString(var)).empty() )
+    {
+        std::transform(str.begin(), str.end(), str.begin(), ::tolower);
+        _ALLOW_PARALLEL_TRUING = (str=="true"?TRUE:FALSE);
+        if ( _CC_DEBUG & CC_DEBUG_STANDARD)
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - " << var << ":  " << str << endl;
+        }
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+    }
+
 
 
 

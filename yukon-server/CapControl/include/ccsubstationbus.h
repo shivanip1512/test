@@ -138,6 +138,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     LONG getEventSequence() const;
     BOOL getReEnableBusFlag() const;
     BOOL getMultiMonitorFlag() const;
+    BOOL getWaitForReCloseDelayFlag() const;
     int getMultiBusCurrentState() const;
 
     CtiFeeder_vec& getCCFeeders();
@@ -211,6 +212,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setEventSequence(LONG eventSeq);
     CtiCCSubstationBus& setReEnableBusFlag(BOOL flag);
     CtiCCSubstationBus& setMultiMonitorFlag(BOOL flag);
+    CtiCCSubstationBus& setWaitForReCloseDelayFlag(BOOL flag);
     CtiCCSubstationBus& setMultiBusCurrentState(int state);
     CtiCCSubstationBus& setAllAltSubValues(DOUBLE volt, DOUBLE var, DOUBLE watt);
 
@@ -235,8 +237,8 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     DOUBLE convertKQToKVAR(DOUBLE kq, DOUBLE kw);
     DOUBLE convertKVARToKQ(DOUBLE kvar, DOUBLE kw);
     static DOUBLE calculateKVARSolution(const string& controlUnits, DOUBLE setPoint, DOUBLE varValue, DOUBLE wattValue);
-
     BOOL checkForAndPerformSendRetry(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
+    BOOL checkForAndPerformVerificationSendRetry(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
     void voltControlProcess();
     void updatePointResponsePreOpValues();
     void updatePointResponseDeltas();
@@ -259,12 +261,11 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     //CtiCCSubstationBus& checkForAndProvideNeededVerificationControl();
     CtiCCSubstationBus& startVerificationOnCapBank(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
     BOOL isVerificationAlreadyControlled();
+    CtiCCSubstationBus& analyzeVerificationByFeeder(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
     CtiCCSubstationBus& setCapBanksToVerifyFlags(int verificationStrategy);
     CtiCCSubstationBus& recompileCapBanksToVerifyList();
     CtiCCSubstationBus& getNextCapBankToVerify();
-
-    CtiCCSubstationBus& sendNextCapBankVerificationControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
-
+    BOOL sendNextCapBankVerificationControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
     CtiCCSubstationBus& setVerificationFlag(BOOL verificationFlag);
     CtiCCSubstationBus& setPerformingVerificationFlag(BOOL performingVerificationFlag);
     CtiCCSubstationBus& setVerificationDoneFlag(BOOL verificationDoneFlag);
@@ -275,7 +276,6 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     list <LONG>* getPointIds() {return &_pointIds;};
 
     CtiCCSubstationBus& setVerificationAlreadyStartedFlag(BOOL verificationFlag);
-    list <LONG> getVerificationCapBankList();
     void setVerificationStrategy(int verificationStrategy);
     int getVerificationStrategy(void) const;
     string getVerificationString();
@@ -402,6 +402,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     BOOL _operationSentWaitFlag;
     BOOL _postOperationMonitorPointScanFlag;
     BOOL _reEnableBusFlag;
+    BOOL _waitForReCloseDelayFlag;
 
     LONG _currentCapBankToVerifyAssumedOrigState;
     int _verificationStrategy;
