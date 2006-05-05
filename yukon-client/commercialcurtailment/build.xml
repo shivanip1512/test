@@ -23,19 +23,13 @@
 				<include name="**/*.gif"/>
 		 		<include name="**/*.au"/>
 			</fileset>
+		    <fileset dir="src">
+		        <include name="**/*.xml"/>
+			</fileset>
        	</jar>
 
    </target>
 
-   <target name="install" depends="build">
-   		<jar jarfile="${yukon.client.bin}/commercialcurtailment.jar" basedir="build/" manifest="resource/manifest.mf">
-		    <fileset dir="resource">
-				<include name="**/*.gif"/>
-		 		<include name="**/*.au"/>
-			</fileset>
-		</jar>
-   </target>
-   
    <target name="clean">
        <delete dir="build"/>        
 
