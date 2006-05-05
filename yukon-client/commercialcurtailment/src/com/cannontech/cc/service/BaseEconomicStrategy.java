@@ -103,8 +103,8 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
         return getParameterValueInt(program, "DEFAULT_EVENT_DURATION_MINUTES");
     }
     
-    protected int getDefaultEnergyPrice(Program program) {
-        return getParameterValueInt(program, "DEFAULT_ENERGY_PRICE");
+    protected float getDefaultEnergyPrice(Program program) {
+        return getParameterValueFloat(program, "DEFAULT_ENERGY_PRICE");
     }
     
     private int getStopNotifOffsetMinutes() {
@@ -115,13 +115,9 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
         return 60;
     }
     
-    public BigDecimal getCustomerElectionPrice(EconomicEventParticipant customer) {
-        return getPointValue(customer, "IsocBuyPrice");
-    }
+    public abstract BigDecimal getCustomerElectionPrice(EconomicEventParticipant customer);
 
-    public BigDecimal getCustomerElectionBuyThrough(EconomicEventParticipant customer) {
-        return getPointValue(customer, "IsocDemandLevel");
-    }
+    public abstract BigDecimal getCustomerElectionBuyThrough(EconomicEventParticipant customer);
     
     protected BigDecimal getPointValue(EconomicEventParticipant customer, String type) {
         CICustomerPointData data = customer.getCustomer().getPointData().get(type);
@@ -355,7 +351,6 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
                 EconomicEventPricingWindow previousRevWindow = 
                     previousRevision.getWindows().get(offset);
                 
-                BigDecimal currentPrice = window.getEnergyPrice();
                 EconomicEventParticipantSelection previousSelection = 
                     participant.getSelection(previousRevision);
                 EconomicEventParticipantSelectionWindow previousSelectionWindow = 
@@ -366,21 +361,7 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
                 nextSelectionWindow.setSelection(nextSelection);
                 nextSelectionWindow.setWindow(window);
                 
-                BigDecimal buyThroughPrice = getCustomerElectionPrice(participant);
-                BigDecimal buyThroughAmount = getCustomerElectionBuyThrough(participant);
-                if (lastHourBuy != null && isCurtailPrice(lastHourBuy)) {
-                    // you curtailed last hour, you shall curtail this hour
-                    nextSelectionWindow.setEnergyToBuy(BigDecimal.ZERO);
-                } else if (isCurtailPrice(previousSelectionWindow.getEnergyToBuy())) {
-                    // you previously elected to curtail for this hour, you shall curtail again
-                    nextSelectionWindow.setEnergyToBuy(BigDecimal.ZERO);
-                } else if (currentPrice.compareTo(buyThroughPrice) > 0) {
-                    // the price went over your threshold, you shall curtail
-                    nextSelectionWindow.setEnergyToBuy(BigDecimal.ZERO);
-                } else {
-                    // you're going to buy
-                    nextSelectionWindow.setEnergyToBuy(previousSelectionWindow.getEnergyToBuy());
-                }
+                nextSelectionWindow.setEnergyToBuy(previousSelectionWindow.getEnergyToBuy());
                 lastHourBuy = nextSelectionWindow.getEnergyToBuy();
                 nextSelection.addWindow(nextSelectionWindow);
             }

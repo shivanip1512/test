@@ -1,6 +1,7 @@
 package com.cannontech.cc.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -60,7 +61,9 @@ public class CustomerPointService {
     }
     
     public List<String> getPointTypeList(CICustomerStub customer) {
-        return new ArrayList<String>(pointTypeLookup.getApplicablePoints(customer.getLite()));
+        ArrayList<String> arrayList = new ArrayList<String>(pointTypeLookup.getApplicablePoints(customer.getLite()));
+        Collections.sort(arrayList);
+        return arrayList;
     }
 
     public void createPoint(CICustomerStub customer, String pointType) {

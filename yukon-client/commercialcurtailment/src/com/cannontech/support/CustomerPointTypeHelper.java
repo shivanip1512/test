@@ -9,6 +9,7 @@ import org.apache.commons.lang.Validate;
 import com.cannontech.cc.dao.CustomerDao;
 import com.cannontech.cc.model.CICustomerPointData;
 import com.cannontech.cc.model.CICustomerStub;
+import com.cannontech.cc.service.enums.PointTypes;
 import com.cannontech.cc.service.exception.NoPointException;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.functions.DBPersistentFuncs;
@@ -46,6 +47,10 @@ public class CustomerPointTypeHelper {
         }
         LitePoint litePoint = PointFuncs.getLitePoint(data.getPointId());
         return litePoint;
+    }
+    
+    public LitePoint getPoint(CICustomerStub customer, PointTypes type) throws NoPointException {
+        return getPoint(customer, type.name());
     }
     
     public boolean doRequiredPointsExist(CICustomerStub customer) {
@@ -102,6 +107,10 @@ public class CustomerPointTypeHelper {
         customer.addPoint(customerPoint);
         
         customerDao.save(customer);
+    }
+    
+    public void createPoint(CICustomerStub customer, PointTypes type) {
+        createPoint(customer, type.name());
     }
     
     protected LiteYukonPAObject getCustomerDevice(CICustomerStub customer) {

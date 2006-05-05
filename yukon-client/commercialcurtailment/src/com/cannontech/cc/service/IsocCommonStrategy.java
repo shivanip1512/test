@@ -6,6 +6,7 @@ import java.util.TimeZone;
 
 import com.cannontech.cc.model.CICustomerStub;
 import com.cannontech.cc.service.builder.VerifiedCustomer;
+import com.cannontech.cc.service.enums.IsocPointTypes;
 import com.cannontech.cc.service.exception.NoPointException;
 import com.cannontech.database.cache.functions.SimplePointAccess;
 import com.cannontech.database.data.lite.LitePoint;
@@ -43,7 +44,7 @@ public class IsocCommonStrategy extends StrategyGroupBase {
     }
     
     private boolean hasCustomerExceededAllowedHours(CICustomerStub customer, int propossedEventLength) throws NoPointException {
-        LitePoint allowedHoursPoint = pointTypeHelper.getPoint(customer, "IsocMaxHours");
+        LitePoint allowedHoursPoint = pointTypeHelper.getPoint(customer, IsocPointTypes.InterruptHours);
         int allowedHours = (int) pointAccess.getPointValue(allowedHoursPoint);
         // applies to current year
         int actualHours = getTotalEventHours(customer);
@@ -67,7 +68,7 @@ public class IsocCommonStrategy extends StrategyGroupBase {
     }
     
     private boolean isEventNoticeTooShort(CICustomerStub customer, int notifMinutes) throws NoPointException {
-        LitePoint minimumNoticeMinutesPoint = pointTypeHelper.getPoint(customer, "IsocMinNoticeMin");
+        LitePoint minimumNoticeMinutesPoint = pointTypeHelper.getPoint(customer, IsocPointTypes.MinimumNotice);
         int minimumNoticeMinutes = (int) pointAccess.getPointValue(minimumNoticeMinutesPoint);
         return notifMinutes < minimumNoticeMinutes;
     }

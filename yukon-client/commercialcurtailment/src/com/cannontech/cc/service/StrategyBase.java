@@ -92,6 +92,10 @@ public abstract class StrategyBase {
         return Integer.parseInt(getParameterValue(program, key));
     }
     
+    public float getParameterValueFloat(Program program, String key) {
+        return Float.parseFloat(getParameterValue(program, key));
+    }
+    
     public abstract String getMethodKey();
     
     public 

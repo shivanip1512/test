@@ -1,15 +1,18 @@
 package com.cannontech.cc.service;
 
+import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import com.cannontech.cc.model.EconomicEventParticipant;
 import com.cannontech.cc.model.EconomicEventParticipantSelection;
 import com.cannontech.cc.model.EconomicEventParticipantSelectionWindow;
 import com.cannontech.cc.service.builder.EconomicBuilder;
 import com.cannontech.cc.service.builder.EventBuilderBase;
 import com.cannontech.cc.service.builder.VerifiedCustomer;
+import com.cannontech.cc.service.enums.IsocPointTypes;
 import com.cannontech.cc.service.exception.EventModificationException;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -63,6 +66,16 @@ public class IsocEconomicStrategy extends BaseEconomicStrategy {
 
     public void setIsocCommonStrategy(IsocCommonStrategy isocCommonStrategy) {
         this.isocCommonStrategy = isocCommonStrategy;
+    }
+
+
+    public BigDecimal getCustomerElectionPrice(EconomicEventParticipant customer) {
+        return getPointValue(customer, IsocPointTypes.AdvBuyThrough$.name());
+    }
+
+
+    public BigDecimal getCustomerElectionBuyThrough(EconomicEventParticipant customer) {
+        return getPointValue(customer, IsocPointTypes.AdvBuyThroughKw.name());
     }
 
 }

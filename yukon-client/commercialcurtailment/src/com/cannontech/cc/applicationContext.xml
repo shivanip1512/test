@@ -72,12 +72,7 @@
    <property name="applicablePointLookup">
      <map>
        <entry key="ISOC">
-         <set>
-           <value>IsocDemandLevel</value>
-           <value>IsocBuyPrice</value>
-           <value>IsocMaxHours</value>
-           <value>IsocMinNoticeMin</value>
-         </set>
+         <value type="java.lang.Class">com.cannontech.cc.service.enums.IsocPointTypes</value>
        </entry>
      </map>
    </property>

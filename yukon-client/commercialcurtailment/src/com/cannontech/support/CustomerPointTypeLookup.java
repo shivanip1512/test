@@ -1,11 +1,11 @@
 package com.cannontech.support;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.apache.commons.lang.Validate;
@@ -84,7 +84,6 @@ public class CustomerPointTypeLookup {
         return getPointTypeGroups(energyCompany);
     }
 
-        
     /**
      * Conveneince method that determines the customer's Energy Company and then
      * calls getApplicablePoints(LiteEnergyCompany).
@@ -98,8 +97,17 @@ public class CustomerPointTypeLookup {
     }
 
     
-    public void setApplicablePointLookup(Map<String, Set<String>> applicablePointLookup) {
-        this.applicablePointLookup = applicablePointLookup;
+    public void setApplicablePointLookup(Map<String, Class<Enum<?>>> applicablePointEnums) {
+        applicablePointLookup = new TreeMap<String, Set<String>>();
+        for (String key : applicablePointEnums.keySet()) {
+            Class<Enum<?>> enumClass = applicablePointEnums.get(key);
+            Set<String> enumSet = new TreeSet<String>();
+            Enum<?>[] enumConstants = enumClass.getEnumConstants();
+            for (Enum<?> e : enumConstants) {
+                enumSet.add(e.name());
+            }
+            applicablePointLookup.put(key, enumSet);
+        }
     }
 
     
