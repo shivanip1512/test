@@ -44,4 +44,20 @@ public class SystemLogHelper {
         _dispatchConnection.write(sig);
     }
 
+    /**
+     * Send a log message to dispatch.
+     * @param action
+     * @param description
+     */
+    public void log(int signalPointID, String action, String description, String username) {
+        Signal sig = new Signal();
+        sig.setPointID(signalPointID);
+        sig.setDescription(description);
+        sig.setAction(action);
+        if( username != null)
+            sig.setUserName(username);
+        sig.setCategoryID(Signal.EVENT_SIGNAL);
+
+        _dispatchConnection.write(sig);
+    }    
 }
