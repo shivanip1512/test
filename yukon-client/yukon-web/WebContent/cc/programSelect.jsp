@@ -11,10 +11,10 @@
 <h:form>
 <t:dataTable id="programList" value="#{rProgramList.programList}" var="thisProgram" 
    styleClass="horizBorders programSelectionTable">
-  <t:column styleClass="programName">
+  <t:column styleClass="programName"><h:outputText value="#{thisProgram.programType.name}"/></t:column>
+  <t:column>
   <h:outputText value="#{thisProgram.name}"/>
   </t:column>
-  <t:column><h:outputText value="#{thisProgram.programType.name}"/></t:column>
   <t:column>
     <h:commandLink action="#{sProgramDetail.editEvent}">
       <f:param name="programId" value="#{thisProgram.id}"/>
@@ -32,6 +32,140 @@
       <f:param name="programId" value="#{thisProgram.id}"/>
       <h:outputText value="History"/>
     </h:commandLink>
+  </t:column>
+</t:dataTable>
+
+
+
+<h3>Current Events</h3>
+<t:dataTable value="#{sEventOverview.currentEventListModel}" 
+             var="thisEvent"
+             forceIdIndexFormula="#{thisEvent.id}">
+  <t:column>
+    <h:outputText value="#{thisEvent.program.programType.name}"/>
+  </t:column>
+  <t:column>
+    <h:outputText value="#{thisEvent.program.name}"/>
+  </t:column>
+  <t:column>
+    <h:commandLink action="#{sEventOverview.showDetailCurrent}">
+      <h:outputText value="#{thisEvent.displayName}"/>
+    </h:commandLink>
+  </t:column>
+  <t:column>
+    <h:outputText value="#{thisEvent.startTime}">
+      <f:convertDateTime 
+            timeStyle="short" 
+            dateStyle="short"
+            timeZone="#{sCommercialCurtailment.timeZone}"
+            type="date" />
+    </h:outputText>
+  </t:column>
+  <t:column>
+    <h:outputText value="#{thisEvent.startTime}">
+      <f:convertDateTime 
+            timeStyle="short" 
+            dateStyle="short"
+            timeZone="#{sCommercialCurtailment.timeZone}"
+            type="time" />
+    </h:outputText>
+  </t:column>
+  <t:column>
+    <h:outputText value="#{thisEvent.stopTime}">
+      <f:convertDateTime 
+            timeStyle="short" 
+            dateStyle="short"
+            timeZone="#{sCommercialCurtailment.timeZone}"
+            type="time" />
+    </h:outputText>
+  </t:column>
+</t:dataTable>
+
+<h3>Pending Events</h3>
+<t:dataTable value="#{sEventOverview.pendingEventListModel}" 
+             var="thisEvent"
+             forceIdIndexFormula="#{thisEvent.id}">
+  <t:column>
+    <h:outputText value="#{thisEvent.program.programType.name}"/>
+  </t:column>
+  <t:column>
+    <h:outputText value="#{thisEvent.program.name}"/>
+  </t:column>
+  <t:column>
+    <h:commandLink action="#{sEventOverview.showDetailPending}">
+      <h:outputText value="#{thisEvent.displayName}"/>
+    </h:commandLink>
+  </t:column>
+  <t:column>
+    <h:outputText value="#{thisEvent.startTime}">
+      <f:convertDateTime 
+            timeStyle="short" 
+            dateStyle="short"
+            timeZone="#{sCommercialCurtailment.timeZone}"
+            type="date" />
+    </h:outputText>
+  </t:column>
+  <t:column>
+    <h:outputText value="#{thisEvent.startTime}">
+      <f:convertDateTime 
+            timeStyle="short" 
+            dateStyle="short"
+            timeZone="#{sCommercialCurtailment.timeZone}"
+            type="time" />
+    </h:outputText>
+  </t:column>
+  <t:column>
+    <h:outputText value="#{thisEvent.stopTime}">
+      <f:convertDateTime 
+            timeStyle="short" 
+            dateStyle="short"
+            timeZone="#{sCommercialCurtailment.timeZone}"
+            type="time" />
+    </h:outputText>
+  </t:column>
+</t:dataTable>
+
+<h3>Recent Events</h3>
+<t:dataTable value="#{sEventOverview.recentEventListModel}" 
+             var="thisEvent"
+             forceIdIndexFormula="#{thisEvent.id}">
+  <t:column>
+    <h:outputText value="#{thisEvent.program.programType.name}"/>
+  </t:column>
+  <t:column>
+    <h:outputText value="#{thisEvent.program.name}"/>
+  </t:column>
+  <t:column>
+    <h:commandLink action="#{sEventOverview.showDetailRecent}">
+      <h:outputText value="#{thisEvent.displayName}"/>
+    </h:commandLink>
+  </t:column>
+  <t:column>
+    <h:outputText value="#{thisEvent.startTime}">
+      <f:convertDateTime 
+            timeStyle="short" 
+            dateStyle="short"
+            timeZone="#{sCommercialCurtailment.timeZone}"
+            type="date" />
+    </h:outputText>
+  </t:column>
+  <t:column>
+    <h:outputText value="#{thisEvent.startTime}">
+      <f:convertDateTime 
+            timeStyle="short" 
+            dateStyle="short"
+            timeZone="#{sCommercialCurtailment.timeZone}"
+            type="time" />
+    </h:outputText>
+  </t:column>
+  <t:column>
+    <h:outputText value="#{thisEvent.stopTime}">
+      <f:convertDateTime 
+            timeStyle="short" 
+            dateStyle="short"
+            timeZone="#{sCommercialCurtailment.timeZone}"
+            type="time" />
+    </h:outputText>
   </t:column>
 </t:dataTable>
 

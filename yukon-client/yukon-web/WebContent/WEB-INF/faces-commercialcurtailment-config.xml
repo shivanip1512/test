@@ -161,9 +161,9 @@
     </managed-bean>
 
     <managed-bean>
-        <managed-bean-name>rNotificationDetail</managed-bean-name>
+        <managed-bean-name>sNotificationDetail</managed-bean-name>
         <managed-bean-class>com.cannontech.web.cc.methods.DetailNotificationBean</managed-bean-class>
-        <managed-bean-scope>request</managed-bean-scope>
+        <managed-bean-scope>session</managed-bean-scope>
         <managed-property>
             <property-name>programService</property-name>
             <value>#{programService}</value>
@@ -171,10 +171,6 @@
         <managed-property>
             <property-name>notificationService</property-name>
             <value>#{notificationService}</value>
-        </managed-property>
-        <managed-property>
-            <property-name>eventId</property-name>
-            <value>#{param.eventId}</value>
         </managed-property>
         <managed-property>
           <property-name>strategyFactory</property-name>
@@ -467,6 +463,14 @@
         <navigation-case>
             <from-outcome>notifConfirmation</from-outcome>
             <to-view-id>/cc/notif/confirmation.jsp</to-view-id>
+            <redirect></redirect>
+        </navigation-case>
+    </navigation-rule>
+
+    <navigation-rule>
+        <navigation-case>
+            <from-outcome>notifDetail</from-outcome>
+            <to-view-id>/cc/notif/detail.jsp</to-view-id>
             <redirect></redirect>
         </navigation-case>
     </navigation-rule>

@@ -2,6 +2,7 @@ package com.cannontech.web.cc.methods;
 
 import java.util.TimeZone;
 
+import com.cannontech.cc.model.BaseEvent;
 import com.cannontech.cc.model.CurtailmentEvent;
 import com.cannontech.cc.model.Program;
 import com.cannontech.cc.service.BaseNotificationStrategy;
@@ -9,19 +10,21 @@ import com.cannontech.cc.service.NotificationService;
 import com.cannontech.cc.service.ProgramService;
 import com.cannontech.cc.service.StrategyFactory;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.web.util.JSFUtil;
 
 
-public class DetailNotificationBean {
+public class DetailNotificationBean implements BaseDetailBean {
     private DetailNotificationHelperBean helper;
     private ProgramService programService;
     private NotificationService notificationService;
     private BaseNotificationStrategy strategy;
     private StrategyFactory strategyFactory;
     private CurtailmentEvent event;
-    private Integer eventId;
     private LiteYukonUser yukonUser;
     
+    public String showDetail(BaseEvent event) {
+        setEvent((CurtailmentEvent) event);
+        return "notifDetail";
+    }
 
     public ProgramService getProgramService() {
         return programService;
@@ -52,7 +55,7 @@ public class DetailNotificationBean {
     public String cancelEvent() {
         getStrategy().cancelEvent(event,getYukonUser());
         
-        return JSFUtil.redirect("/cc/notif/detail.jsf?eventId=" + getEventId());
+        return null;
     }
 
     public String deleteEvent() {
@@ -60,34 +63,22 @@ public class DetailNotificationBean {
         return "programSelect";
     }
 
-    public Integer getEventId() {
-        return eventId;
-    }
-
-    public void setEventId(Integer eventId) {
-        this.eventId = eventId;
-    }
-
     public CurtailmentEvent getEvent() {
-        initialize();
         return event;
     }
 
     public BaseNotificationStrategy getStrategy() {
-        initialize();
         return strategy;
     }
     
-    private void initialize() {
-        if (event == null) {
-            event = getNotificationService().getEvent(eventId);
-            strategy = (BaseNotificationStrategy) strategyFactory.getStrategy(event.getProgram());
-            getHelper().setEvent(event);
-        }
-    }
-
     public void setEvent(CurtailmentEvent event) {
         this.event = event;
+        strategy = (BaseNotificationStrategy) strategyFactory.getStrategy(event.getProgram());
+        getHelper().setEvent(event);
+        updateModels();
+    }
+
+    private void updateModels() {
     }
 
     public NotificationService getNotificationService() {

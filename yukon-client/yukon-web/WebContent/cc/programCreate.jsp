@@ -10,19 +10,19 @@
 <div> Messages: <h:messages /></div>
 <h:form>
 <div>
-Program Name: <t:inputText value="#{rProgramDetail.program.name}">
+Program Name: <t:inputText value="#{sProgramDetail.program.name}">
   <f:validateLength minimum="4" />
 </t:inputText>
 </div>
 <div>Program Type: 
-<t:selectOneMenu value="#{rProgramDetail.program.programType}" >
-  <f:selectItems value="#{rProgramDetail.availableTypes}"/>
+<t:selectOneMenu value="#{sProgramDetail.program.programType}" >
+  <f:selectItems value="#{sProgramDetail.availableTypes}"/>
   <f:converter converterId="objectConverter"/>
 </t:selectOneMenu></div>
 
 <div>
-<h:commandButton action="#{rProgramDetail.save}" value="Create"/>
-<h:commandButton action="#{rProgramDetail.cancel}" value="Cancel"/>
+<h:commandButton action="#{sProgramDetail.save}" value="Create"/>
+<h:commandButton action="#{sProgramDetail.cancel}" value="Cancel"/>
 </div>
 
 </h:form>

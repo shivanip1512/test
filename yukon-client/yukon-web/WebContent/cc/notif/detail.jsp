@@ -1,4 +1,5 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
+<%@ taglib uri="http://cannontech.com/tags/faces/ctif" prefix="ctif" %>
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f"%>
 <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h"%>
 <%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="t"%>
@@ -8,58 +9,60 @@
 <cti:standardPage title="Notification Event Detail" module="commercialcurtailment">
 <cti:standardMenu />
 
-<h2><t:outputText value="#{rNotificationDetail.event.program.name}"/> Event</h2>
+<h2><t:outputText value="#{sNotificationDetail.event.program.name}"/> Event</h2>
 <div> <t:messages showDetail="false" showSummary="true"/> </div>
 
 <h:form>
-<t:inputHidden id="eventId" forceId="true" value="#{rNotificationDetail.eventId}"/>
 
-<div>
-Notification Time:
-<t:outputText 
-   value="#{rNotificationDetail.event.notificationTime}">
-   <f:convertDateTime 
-      timeStyle="short" 
-      dateStyle="short"
-      timeZone="#{sCommercialCurtailment.timeZone}"
-      type="both" />
-</t:outputText>
-(<t:outputText value="#{sCommercialCurtailment.timeZone.ID}"/>)
-</div>
+<table class="horizBorders">
+  <tr>
+    <td>Notification Time</td>
+    <td><t:outputText 
+       value="#{sNotificationDetail.event.notificationTime}">
+       <f:convertDateTime 
+          timeStyle="short" 
+          dateStyle="short"
+          timeZone="#{sCommercialCurtailment.timeZone}"
+          type="both" />
+    </t:outputText>
+    (<t:outputText value="#{sCommercialCurtailment.timeZone.ID}"/>)
+    </td>
+  </tr>
+  <tr>
+    <td>Start Time</td>
+    <td><t:outputText 
+       value="#{sNotificationDetail.event.startTime}">
+       <f:convertDateTime 
+          timeStyle="short" 
+          dateStyle="short"
+          timeZone="#{sCommercialCurtailment.timeZone}"
+          type="both" />
+    </t:outputText>
+    (<t:outputText value="#{sCommercialCurtailment.timeZone.ID}"/>)
+    </td>
+  </tr>
+  <tr>
+    <td>Duration</td>
+    <td><t:outputText value="#{sNotificationDetail.event.duration}"/></td>
+  </tr>
+  <tr>
+    <td>Modification State</td>
+    <td><t:outputText value="#{sNotificationDetail.event.state}"/></td>
+  </tr>
+  <tr>
+    <td>Message</td>
+    <td><t:outputText value="#{sNotificationDetail.event.message}"/></td>
+  </tr>
+  <tr>
+    <td>Operations</td>
+    <td>
+      <t:commandButton action="#{sNotificationDetail.deleteEvent}" value="Delete" rendered="#{sNotificationDetail.showDeleteButton}"/>
+      <t:commandButton action="#{sNotificationDetail.cancelEvent}" value="Cancel" rendered="#{sNotificationDetail.showCancelButton}"/>
+      <t:commandButton action="#{sNotificationDetail.adjustEvent}" value="Adjust" rendered="#{sNotificationDetail.showAdjustButton}"/>
+    </td>
+  </tr>
+</table>
 
-<div>
-Start Time:
-<t:outputText 
-   value="#{rNotificationDetail.event.startTime}">
-   <f:convertDateTime 
-      timeStyle="short" 
-      dateStyle="short"
-      timeZone="#{sCommercialCurtailment.timeZone}"
-      type="both" />
-</t:outputText>
-(<t:outputText value="#{sCommercialCurtailment.timeZone.ID}"/>)
-</div>
-
-<div>
-Duration:
-<t:outputText value="#{rNotificationDetail.event.duration}"/>
-</div>
-
-<div>
-Modification State:
-<t:outputText value="#{rNotificationDetail.event.state}"/>
-</div>
-
-<div>
-Message:
-<t:outputText value="#{rNotificationDetail.event.message}"/>
-</div>
-
-<div>
-<t:commandButton action="#{rNotificationDetail.deleteEvent}" value="Delete" rendered="#{rNotificationDetail.showDeleteButton}"/>
-<t:commandButton action="#{rNotificationDetail.cancelEvent}" value="Cancel" rendered="#{rNotificationDetail.showCancelButton}"/>
-<t:commandButton action="#{rNotificationDetail.adjustEvent}" value="Adjust" rendered="#{rNotificationDetail.showAdjustButton}"/>
-</div>
 
 <div>
 <cti:titledContainer title="Customer Notification Status">
@@ -86,7 +89,7 @@ Message:
        <f:convertDateTime 
       timeStyle="medium" 
       dateStyle="medium"
-      timeZone="#{rNotificationDetail.timeZone}"
+      timeZone="#{sCommercialCurtailment.timeZone}"
       type="both" />
     </t:outputText>
   </t:column>

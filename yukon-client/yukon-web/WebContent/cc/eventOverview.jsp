@@ -13,6 +13,9 @@
              var="thisEvent"
              forceIdIndexFormula="#{thisEvent.id}">
   <t:column>
+    <h:outputText value="#{thisEvent.program.programType.name}"/>
+  </t:column>
+  <t:column>
     <h:outputText value="#{thisEvent.program.name}"/>
   </t:column>
   <t:column>
@@ -54,6 +57,9 @@
              var="thisEvent"
              forceIdIndexFormula="#{thisEvent.id}">
   <t:column>
+    <h:outputText value="#{thisEvent.program.programType.name}"/>
+  </t:column>
+  <t:column>
     <h:outputText value="#{thisEvent.program.name}"/>
   </t:column>
   <t:column>
@@ -94,6 +100,9 @@
 <t:dataTable value="#{sEventOverview.recentEventListModel}" 
              var="thisEvent"
              forceIdIndexFormula="#{thisEvent.id}">
+  <t:column>
+    <h:outputText value="#{thisEvent.program.programType.name}"/>
+  </t:column>
   <t:column>
     <h:outputText value="#{thisEvent.program.name}"/>
   </t:column>
