@@ -41,5 +41,6 @@ Class-Path: ./
  commons-discovery.jar 
  commons-httpclient.jar 
  wsdl4j.jar 
+ spring.jar 
  ../log/ 
  ../export/
