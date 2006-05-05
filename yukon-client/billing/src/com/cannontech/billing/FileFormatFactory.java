@@ -73,6 +73,9 @@ public final static FileFormatBase createFileFormat(int type)
 	    
 	    case FileFormatTypes.SEDC_yyyyMMdd:
 	        return new SEDCFormat_yyyyMMdd();
+            
+        case FileFormatTypes.IVUE_BI_T65:
+            return new IVUE_BI_T65Format();
 		
 		default: //this is bad
 			throw new Error("FileFormatFactory::createFileFormat - Unrecognized file format type");

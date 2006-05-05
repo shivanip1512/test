@@ -1,6 +1,10 @@
 package com.cannontech.billing;
 
+import java.sql.Timestamp;
 import java.util.Date;
+import java.util.Vector;
+
+import com.cannontech.billing.record.CADPXL2Record;
 
 /**
  * Insert the type's description here.
@@ -26,8 +30,6 @@ public CADPXL2Format()
  */
 public boolean retrieveBillingData(String dbAlias)
 {
-	java.text.SimpleDateFormat TEST_FORMAT = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	
 	long timer = System.currentTimeMillis();
 	
 	if( dbAlias == null )
@@ -173,8 +175,7 @@ public boolean retrieveBillingData(String dbAlias)
 									break inValidTimestamp;
 		
 								//** Get the last record and add to it the other pointOffsets' values. **//								
-								com.cannontech.billing.record.CADPXL2Record lastRecord =
-								(com.cannontech.billing.record.CADPXL2Record)getRecordVector().get(recCount -1);
+								CADPXL2Record lastRecord = getRecord(recCount);
 	
 								lastRecord.getKwhReadingVector().add( new Double(value));
 							}
@@ -184,8 +185,7 @@ public boolean retrieveBillingData(String dbAlias)
 									break inValidTimestamp;
 									
 								//** Get the last record and add to it the other pointOffsets' values. **//
-								com.cannontech.billing.record.CADPXL2Record lastRecord =
-									(com.cannontech.billing.record.CADPXL2Record)getRecordVector().get(recCount -1);
+								CADPXL2Record lastRecord = getRecord(recCount);
 								lastRecord.getKwReadingVector().add (new Double(value));
 								
 								/* registerNumCount needs to be incremented with every register loop through.
@@ -200,8 +200,7 @@ public boolean retrieveBillingData(String dbAlias)
 									break inValidTimestamp;
 									
 								//** Get the last record and add to it the other pointOffsets' values. **//
-								com.cannontech.billing.record.CADPXL2Record lastRecord =
-									(com.cannontech.billing.record.CADPXL2Record)getRecordVector().get(recCount -1);
+								CADPXL2Record lastRecord = getRecord(recCount);
 							
 								lastRecord.getKvarReadingVector().add(new Double(value));
 							}
@@ -275,15 +274,15 @@ public boolean retrieveBillingData(String dbAlias)
 							
 							registerNumberVector.add(new Integer(registerNumCount));
 															
-							com.cannontech.billing.record.CADPXL2Record cadpxl2Rec =
-								new com.cannontech.billing.record.CADPXL2Record(accountNumber, 
-																		meterNumber, 
-																		meterPositionNumber,
-																		ts,
-																		registerNumberVector,
-																		kwhValueVector, 
-																		kwValueVector, 
-																		kvarValueVector);
+							CADPXL2Record cadpxl2Rec = createRecord(accountNumber,
+                                                                    meterNumber,
+                                                                    meterPositionNumber,
+                                                                    ts,
+                                                                    registerNumberVector,
+                                                                    kwhValueVector,
+                                                                    kwValueVector,
+                                                                    kvarValueVector);
+
 							getRecordVector().addElement(cadpxl2Rec);
 	
 							lastDeviceID = deviceID;
@@ -315,4 +314,49 @@ public boolean retrieveBillingData(String dbAlias)
 	
 	return true;
 }
+
+    /**
+     * Helper method to create a new CADPXL2Record
+     * 
+     * @param accountNumber
+     * @param meterNumber
+     * @param meterPositionNumber
+     * @param ts
+     * @param registerNumberVector
+     * @param kwhValueVector
+     * @param kwValueVector
+     * @param kvarValueVector
+     * 
+     * @return new CADPXL2Record
+     */
+    public CADPXL2Record createRecord(String accountNumber,
+                                    String meterNumber, 
+                                    Integer meterPositionNumber, 
+                                    Timestamp ts,
+                                    Vector registerNumberVector,
+                                    Vector kwhValueVector,
+                                    Vector kwValueVector,
+                                    Vector kvarValueVector){
+        
+        return new CADPXL2Record(accountNumber, 
+                                 meterNumber, 
+                                 meterPositionNumber,
+                                 ts,
+                                 registerNumberVector,
+                                 kwhValueVector, 
+                                 kwValueVector, 
+                                 kvarValueVector);
+    }
+
+    /**
+     * Helper method to get a CADPXL2Record
+     * 
+     * @param recCount
+     * 
+     * @return CADPXL2Record
+     */
+    public CADPXL2Record getRecord(int recCount){
+        return (CADPXL2Record)getRecordVector().get(recCount -1);
+    }
+
 }

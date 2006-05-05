@@ -36,6 +36,7 @@ public final class FileFormatTypes {
 	public static final int SEDC_yyyyMMdd = 17;
 	public static final int ATS = 18;
 	public static final int NISC_TURTLE_NO_LIMIT_KWH = 19;
+	public static final int IVUE_BI_T65 = 20;
 
 	public static final String SEDC_STRING = "SEDC";
 	public static final String CADP_STRING = "CADP";
@@ -55,6 +56,7 @@ public final class FileFormatTypes {
 	public static final String SEDC_yyyyMMdd_STRING = "SEDC (yyyyMMdd)";
 	public static final String ATS_STRING = "ATS";
 	public static final String NISC_TURTLE_NO_LIMIT_KWH_STRING = "NISC-Turtle No Limit kWh";
+	public static final String IVUE_BI_T65_STRING = "IVUE_BI_T65";
 	
 	private static int[] validFormatIDs = null;
 	private static String[] validFormatTypes = null;
@@ -196,7 +198,8 @@ public static synchronized boolean retrieveFileFormats()
                 		NISC_TURTLE,
                 		NISC_NCDC,
                 		NCDC_HANDHELD,
-                		ATS
+                		ATS,
+                        IVUE_BI_T65
                 };
             }
         }
@@ -223,7 +226,8 @@ public static synchronized boolean retrieveFileFormats()
 	            		NISC_TURTLE_STRING,
 	            		NISC_NCDC_STRING,
 	            		NCDC_HANDHELD_STRING,
-	            		ATS_STRING
+	            		ATS_STRING,
+                        IVUE_BI_T65_STRING
 	            };
 	        }
 	    }
