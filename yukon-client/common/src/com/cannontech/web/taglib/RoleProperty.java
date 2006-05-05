@@ -52,7 +52,7 @@ public int doStartTag() throws JspException {
             if (useId) {
                 propId = propertyid;
             } else {
-                propId = ReflectivePropertySearcher.getRoleProperty().getIntForShortName(property);
+                propId = ReflectivePropertySearcher.getRoleProperty().getIntForName(property);
             }
 			String missingValue = "Missing rolePropertyID:  " + Integer.toString(propId);
 			String text = AuthFuncs.getRolePropertyValue(user, propId);

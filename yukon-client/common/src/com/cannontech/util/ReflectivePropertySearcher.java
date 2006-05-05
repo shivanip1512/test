@@ -47,7 +47,7 @@ public class ReflectivePropertySearcher {
      * @return the integer value
      * @throws IllegalArgumentException if the property can't be found
      */
-    public synchronized int getIntForShortName(String property) {
+    public synchronized int getIntForName(String property) {
         if (nameLookupCache.containsKey(property)) {
             return getIntForFQN(nameLookupCache.get(property));
         }

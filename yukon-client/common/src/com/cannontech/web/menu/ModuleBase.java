@@ -25,6 +25,7 @@ public class ModuleBase {
     private List scriptFiles = new LinkedList();
     private String skin;
     private MenuBase menuBase;
+    private OptionPropertyChecker authorizationChecker;
     
     public ModuleBase(String moduleName) {
         this.moduleName = moduleName;
@@ -56,6 +57,10 @@ public class ModuleBase {
     
     public Iterator getValidQuickLinks(LiteYukonUser user) {
         return new FilterIterator(quickLinks.iterator(), new CheckUserPredicate(user));
+    }
+    
+    public boolean isUserAuthorized(LiteYukonUser user) {
+        return authorizationChecker.check(user);
     }
 
     public MenuBase getMenuBase() {
@@ -104,5 +109,9 @@ public class ModuleBase {
     
     public void addScriptFiles(String scriptFile) {
         scriptFiles.add(scriptFile);
+    }
+
+    public void setModuleChecker(OptionPropertyChecker authorizationChecker) {
+        this.authorizationChecker = authorizationChecker;
     }
 }

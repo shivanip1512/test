@@ -45,7 +45,9 @@ public class CommonModuleBuilder implements ModuleBuilder {
         for (Iterator iter = linkList.iterator(); iter.hasNext();) {
             Element optionElem = (Element) iter.next();
             SimpleMenuOption menuOption = createSimpleMenuOption(optionElem);
-            addCheckersToElement(optionElem, menuOption);
+            OptionPropertyChecker checker = getCheckerForElement(optionElem);
+            
+            menuOption.setPropertyChecker(checker);
             quickLinkList.add(menuOption);
         }
     }
@@ -72,7 +74,9 @@ public class CommonModuleBuilder implements ModuleBuilder {
             for (Iterator iterator = topOptions.iterator(); iterator.hasNext();) {
                 Element topOptionElement = (Element) iterator.next();
                 BaseMenuOption topLevelOption = processTopOption(topOptionElement);
-                addCheckersToElement(topOptionElement, topLevelOption);
+                OptionPropertyChecker checker = getCheckerForElement(topOptionElement);
+                
+                topLevelOption.setPropertyChecker(checker);
                 menuBase.addTopLevelOption(topLevelOption);
             }
         }
@@ -96,6 +100,9 @@ public class CommonModuleBuilder implements ModuleBuilder {
             Element scriptElement = (Element) iter.next();
             moduleBase.addScriptFiles(scriptElement.getAttributeValue("file"));
         }
+        OptionPropertyChecker checkerForElement = getCheckerForElement(moduleElement);
+        moduleBase.setModuleChecker(checkerForElement);
+        
         moduleMap.put(moduleBase.getModuleName(), moduleBase);
     }
 
@@ -122,7 +129,9 @@ public class CommonModuleBuilder implements ModuleBuilder {
                 if (subLevelOption == null) {
                     throw new CommonMenuException("Illegal value found under: " + topOptionName);
                 }
-                addCheckersToElement(subElement, subLevelOption);
+                OptionPropertyChecker checker = getCheckerForElement(subElement);
+                
+                subLevelOption.setPropertyChecker(checker);
                 topLevelOptionTemp.addSubLevelOption(subLevelOption);
             }
             topLevelOption = topLevelOptionTemp;
@@ -152,24 +161,32 @@ public class CommonModuleBuilder implements ModuleBuilder {
         return subLevelOption;
     }
 
-    private void addCheckersToElement(Element topOptionElement, BaseMenuOption topLevelOption) {
-        Element requirePropElem = topOptionElement.getChild("requireProperty");
-        Element requireFalsePropElem = topOptionElement.getChild("requireFalseProperty");
-        Element requireRoleElem = topOptionElement.getChild("requireRole");
-        OptionPropertyChecker checker  = null;
-        if (requirePropElem != null) {
-            String prop = requirePropElem.getAttributeValue("value");
-            checker = OptionPropertyChecker.createPropertyChecker(prop);
-        } else if (requireRoleElem != null) {
-            String role = requireRoleElem.getAttributeValue("value");
-            checker = OptionPropertyChecker.createRoleChecker(role);
-        } else if (requireFalsePropElem != null) {
-            String prop = requireFalsePropElem.getAttributeValue("value");
-            checker = OptionPropertyChecker.createFalsePropertyChecker(prop);
+    private OptionPropertyChecker getCheckerForElement(Element topOptionElement) {
+        List<OptionPropertyChecker> checkers = new ArrayList<OptionPropertyChecker>(1);
+        List children = topOptionElement.getChildren();
+        for (Iterator iter = children.iterator(); iter.hasNext();) {
+            Element child = (Element) iter.next();
+            OptionPropertyChecker checker  = null;
+            String prop = child.getAttributeValue("value");
+            if (child.getName().equals("requireProperty")) {
+                checker = OptionPropertyChecker.createPropertyChecker(prop);
+            } else if (child.getName().equals("requireFalseProperty")) {
+                checker = OptionPropertyChecker.createFalsePropertyChecker(prop);
+            } else if (child.getName().equals("requireRole")) {
+                checker = OptionPropertyChecker.createRoleChecker(prop);
+            }
+            
+            if (checker != null) {
+                checkers.add(checker);
+            }
         }
-        
-        if (checker != null) {
-            topLevelOption.setPropertyChecker(checker);
+        if (checkers.isEmpty()) {
+            return OptionPropertyChecker.createNullChecker();
+        } else if (checkers.size() == 1){
+            // not needed, but saves a little memory and processing time
+            return checkers.get(0);
+        } else {
+            return OptionPropertyChecker.createAggregateChecker(checkers);
         }
     }
     

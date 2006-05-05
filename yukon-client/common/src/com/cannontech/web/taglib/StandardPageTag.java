@@ -1,16 +1,17 @@
 package com.cannontech.web.taglib;
 
-import java.net.MalformedURLException;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.RequestDispatcher;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
-import com.cannontech.web.menu.CommonMenuException;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.menu.CommonModuleBuilder;
 import com.cannontech.web.menu.ModuleBase;
 import com.cannontech.web.menu.ModuleBuilder;
@@ -46,11 +47,38 @@ public class StandardPageTag extends BodyTagSupport {
     private String breadCrumbData = "";
     private boolean debugMode = false;
     private boolean showMenu = false;
+    private boolean skipPage;
     
     public int doStartTag() throws JspException {
+        // check if the user is logged in
+        skipPage = false;
+        if (!CheckLoginTag.checkLogin(pageContext)) {
+            // the checkLogin calls sets a redirect
+            skipPage = true;
+            return SKIP_BODY;
+        }
+        
+        // check if authorized for this page
+        ModuleBuilder moduleBuilder = getModuleBuilder();
+        
+        ModuleBase moduleBase = moduleBuilder.getModuleBase(getModule());
+        LiteYukonUser user = 
+            (LiteYukonUser) pageContext.getSession().getAttribute("YUKON_USER");
+        if (!moduleBase.isUserAuthorized(user)) {
+            HttpServletResponse response = 
+                (HttpServletResponse) pageContext.getResponse();
+            try {
+                response.sendRedirect("/home");
+                skipPage = true;
+                return SKIP_BODY;
+            } catch (IOException e) {
+                throw new JspException("Not authorized and can't redirect");
+            }
+        }
+        
         cssFiles = new ArrayList();
         scriptFiles = new ArrayList();
-        return EVAL_BODY_BUFFERED;
+         return EVAL_BODY_BUFFERED;
     }
     
     public int doAfterBody() throws JspException {
@@ -59,10 +87,13 @@ public class StandardPageTag extends BodyTagSupport {
     
     public int doEndTag() throws JspException {
         try {
+            if (skipPage) {
+                return SKIP_PAGE;
+            }
             // get ModuleBase for this page
-            ModuleBuilder menuBuilder = getModuleBuilder();
+            ModuleBuilder moduleBuilder = getModuleBuilder();
             
-            ModuleBase moduleBase = menuBuilder.getModuleBase(getModule());
+            ModuleBase moduleBase = moduleBuilder.getModuleBase(getModule());
             
             pageContext.setAttribute(CTI_PAGE_TITLE, getTitle(), PageContext.REQUEST_SCOPE);
             pageContext.setAttribute(CTI_MODULE_NAME, getModule(), PageContext.REQUEST_SCOPE);
@@ -73,19 +104,21 @@ public class StandardPageTag extends BodyTagSupport {
             pageContext.setAttribute(CTI_MODULE_BASE, moduleBase, PageContext.REQUEST_SCOPE);
             pageContext.setAttribute(CTI_BREADCRUMBS, getBreadCrumb(), PageContext.REQUEST_SCOPE);
             pageContext.setAttribute(CTI_SHOW_MENU, new Boolean(isShowMenu()), PageContext.REQUEST_SCOPE);
-
+            
             TemplateReslover resolver = new BasicTemplateResolver();
             String wrapperPage = resolver.getTemplatePage(moduleBase, pageContext);
-            // Now use the RequestDispatcher to process the wrapper page (the wrapper page
-            // has a tag to include the content in the middle of itself). We don't use
-            // pageContext.include() here because that flushes the output which makes error
-            // handling very difficult.
-            RequestDispatcher requestDispatcher = pageContext.getServletContext().getRequestDispatcher(wrapperPage);
-            requestDispatcher.forward(pageContext.getRequest(), pageContext.getResponse());
-            return EVAL_PAGE;
-        } catch (Exception e) {
-            throw new JspException("Can't build standard page.", e);
-        } finally {
+            try {
+                // Now use the RequestDispatcher to process the wrapper page (the wrapper page
+                // has a tag to include the content in the middle of itself). We don't use
+                // pageContext.include() here because that flushes the output which makes error
+                // handling very difficult.
+                RequestDispatcher requestDispatcher = pageContext.getServletContext().getRequestDispatcher(wrapperPage);
+                requestDispatcher.forward(pageContext.getRequest(), pageContext.getResponse());
+                return EVAL_PAGE;
+            } catch (Exception e) {
+                throw new JspException("Can't build standard page.", e);
+            } 
+        }finally {
             cleanup();
         }
     }
@@ -138,19 +171,23 @@ public class StandardPageTag extends BodyTagSupport {
         return breadCrumbData;
     }
 
-    private ModuleBuilder getModuleBuilder() throws MalformedURLException, CommonMenuException {
-        final String menuBuilderName = "ctiMenuBuilder";
-        CommonModuleBuilder menuBuilder = 
-            (CommonModuleBuilder) pageContext.getAttribute(menuBuilderName,
-                                                         PageContext.APPLICATION_SCOPE);
-        if (menuBuilder == null || debugMode ) {
-            URL menuConfigFile = pageContext.getServletContext().getResource("/WEB-INF/module_config.xml");
-            menuBuilder = new CommonModuleBuilder(menuConfigFile);
-            pageContext.setAttribute(menuBuilderName,
-                                     menuBuilder,
-                                     PageContext.APPLICATION_SCOPE);
+    private ModuleBuilder getModuleBuilder() throws JspException {
+        try {
+            final String menuBuilderName = "ctiMenuBuilder";
+            CommonModuleBuilder menuBuilder = 
+                (CommonModuleBuilder) pageContext.getAttribute(menuBuilderName,
+                                                             PageContext.APPLICATION_SCOPE);
+            if (menuBuilder == null || debugMode ) {
+                URL menuConfigFile = pageContext.getServletContext().getResource("/WEB-INF/module_config.xml");
+                menuBuilder = new CommonModuleBuilder(menuConfigFile);
+                pageContext.setAttribute(menuBuilderName,
+                                         menuBuilder,
+                                         PageContext.APPLICATION_SCOPE);
+            }
+            return menuBuilder;
+        } catch (Exception e) {
+            throw new JspException(e);
         }
-        return menuBuilder;
     }
 
     public boolean isShowMenu() {

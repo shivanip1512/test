@@ -1,9 +1,10 @@
 package com.cannontech.web.menu;
 
+import java.util.Collection;
+
 import org.apache.commons.lang.BooleanUtils;
 
 import com.cannontech.database.cache.functions.AuthFuncs;
-import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.util.ReflectivePropertySearcher;
 
@@ -31,7 +32,7 @@ public abstract class OptionPropertyChecker {
      * @return an OptionPropertyChecker 
      */
     public static OptionPropertyChecker createRoleChecker(String role) {
-        final int roleId = ReflectivePropertySearcher.getIntForFQN(role);
+        final int roleId = ReflectivePropertySearcher.getRoleProperty().getIntForName(role);
         OptionPropertyChecker checker = new OptionPropertyChecker() {
             public boolean check(LiteYukonUser user) {
                 if (user == null) {
@@ -50,7 +51,7 @@ public abstract class OptionPropertyChecker {
      * @return an OptionPropertyChecker
      */
     public static OptionPropertyChecker createPropertyChecker(String property) {
-        final int propertyId = ReflectivePropertySearcher.getIntForFQN(property);
+        final int propertyId = ReflectivePropertySearcher.getRoleProperty().getIntForName(property);
         
         OptionPropertyChecker checker = new OptionPropertyChecker() {
             public boolean check(LiteYukonUser user) {
@@ -67,7 +68,7 @@ public abstract class OptionPropertyChecker {
      * @return an OptionPropertyChecker
      */
     public static OptionPropertyChecker createFalsePropertyChecker(String property) {
-        final int propertyId = ReflectivePropertySearcher.getIntForFQN(property);
+        final int propertyId = ReflectivePropertySearcher.getRoleProperty().getIntForName(property);
         
         OptionPropertyChecker checker = new OptionPropertyChecker() {
             public boolean check(LiteYukonUser user) {
@@ -85,6 +86,20 @@ public abstract class OptionPropertyChecker {
         return nullChecker;
     }
     
+    public static OptionPropertyChecker createAggregateChecker(final Collection<OptionPropertyChecker> list) {
+        OptionPropertyChecker checker = new OptionPropertyChecker() {
+            public boolean check(LiteYukonUser user) {
+                for (OptionPropertyChecker checker2 : list) {
+                    if (!checker2.check(user)) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        };
+        return checker;
+    }
+    
     /**
      * @param user The current user owning the session
      * @return true if they should be able to see the option for which this
@@ -96,13 +111,9 @@ public abstract class OptionPropertyChecker {
         if (user == null) {
             return false;
         }
-        LiteYukonRoleProperty liteProp =
-            AuthFuncs.getRoleProperty(propertyId);
-        if (liteProp == null) {
-            return false;
-        }
+        
         String val = AuthFuncs.getRolePropertyValue(user,
-                                                    liteProp.getRolePropertyID() );
+                                                    propertyId );
         return BooleanUtils.toBoolean(val);
     }
 
