@@ -115,6 +115,9 @@ public final static String getClass(int classInt)
 
 		case LOADMANAGEMENT:
 			return STRING_CLASS_LOADMANAGER;
+            
+        case PAOGroups.CAT_CAPCONTROL:
+            return PAOGroups.STRING_CAT_CAPCONTROL;
 			
 		default:
 			return PAOGroups.STRING_INVALID;
