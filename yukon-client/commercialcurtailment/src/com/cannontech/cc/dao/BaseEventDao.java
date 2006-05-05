@@ -51,21 +51,17 @@ public class BaseEventDao implements CommonEventOperations {
 
     public List<BaseEvent> getRecentEvents(LiteEnergyCompany energyCompany) {
         Date now = new Date();
-        // calculate when yesterday began
+        // get for last six months
         TimeZone timeZone = EnergyCompanyFuncs.getEnergyCompanyTimeZone(energyCompany);
         Calendar calendar = Calendar.getInstance(timeZone);
         calendar.setTime(now);
-        calendar.add(Calendar.DATE, -1);
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
-        Date midnightYesterday = calendar.getTime();
+        calendar.add(Calendar.MONTH, -6);
+        Date sixMonthsAgo = calendar.getTime();
         
         List<BaseEvent> allEvents = getAllForEnergyCompany(energyCompany);
         for (Iterator iter = allEvents.iterator(); iter.hasNext();) {
             BaseEvent event = (BaseEvent) iter.next();
-            if (event.getStopTime().before(midnightYesterday)) {
+            if (event.getStopTime().before(sixMonthsAgo)) {
                 iter.remove();
             } else if (event.getStopTime().after(now)) {
                 iter.remove();
