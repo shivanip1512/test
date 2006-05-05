@@ -57,8 +57,12 @@ public void delete() throws java.sql.SQLException
          getDevice().getDeviceID(), getDbConnection() );
 
 	delete( DynamicVerification.TABLE_NAME, 
-		DynamicVerification.CONSTRAINT_COLUMNS[0], 
+		"TransmitterID",
 		getDevice().getDeviceID() );
+    
+    delete( DynamicVerification.TABLE_NAME, 
+            "ReceiverID",
+            getDevice().getDeviceID() );
 	
 	delete( DeviceCustomerList.TABLE_NAME, 
 		DeviceCustomerList.CONSTRAINT_COLUMNS[0], 
