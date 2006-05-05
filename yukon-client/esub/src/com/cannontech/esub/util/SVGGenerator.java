@@ -9,7 +9,6 @@ import java.awt.geom.PathIterator;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.batik.dom.svg.SVGDOMImplementation;
