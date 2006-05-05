@@ -25,6 +25,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 public class ProgramDetailBean {
     private LiteYukonUser yukonUser;
     private ProgramService programService;
+    private CommercialCurtailmentBean commercialCurtailmentBean;
     private Program program = null;
     private DataModel assignedGroupModel = new ListDataModel();
     private DataModel unassignedGroupModel = new ListDataModel();
@@ -45,7 +46,7 @@ public class ProgramDetailBean {
         return program;
     }
     
-    public String editEvent() {
+    public String editProgram() {
         ExternalContext externalContext = 
             FacesContext.getCurrentInstance().getExternalContext();
         String programIdStr = 
@@ -56,6 +57,21 @@ public class ProgramDetailBean {
         
         return "programDetail";
     }
+    
+    public String createNewProgram() {
+        program = new Program();
+        assignedGroups = new ArrayList<Group>();
+        assignedGroupModel.setWrappedData(assignedGroups);
+        
+        int energyCompanyID = commercialCurtailmentBean.getEnergyCompany().getEnergyCompanyID();
+        Set<Group> allGroups = programService.getAllGroups(energyCompanyID);
+
+        unassignedGroups = new ArrayList<Group>(allGroups);
+        unassignedGroupModel.setWrappedData(unassignedGroups);
+        
+        return "create";
+    }
+    
 
     protected void updateGroupData() {
         List<AvailableProgramGroup> availableProgramGroups = 
@@ -161,6 +177,14 @@ public class ProgramDetailBean {
     public Properties getLabels() {
         StrategyBase strategy = getStrategyFactory().getStrategy(getProgram());
         return strategy.getViewLabels();
+    }
+
+    public CommercialCurtailmentBean getCommercialCurtailmentBean() {
+        return commercialCurtailmentBean;
+    }
+
+    public void setCommercialCurtailmentBean(CommercialCurtailmentBean commercialCurtailmentBean) {
+        this.commercialCurtailmentBean = commercialCurtailmentBean;
     }
 
 }

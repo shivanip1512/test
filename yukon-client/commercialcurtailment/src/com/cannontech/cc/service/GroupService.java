@@ -73,7 +73,9 @@ public class GroupService {
         return groupDao.getForId(groupId);
     }
 
+    @Transactional
     public void deleteGroup(Group group) {
+        groupDao.delete(group);
     }
 
     @Transactional

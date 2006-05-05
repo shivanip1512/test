@@ -48,8 +48,4 @@ public class ProgramListBean {
         this.programService = programService;
     }
 
-    public String createNewProgram() {
-        return "create";
-    }
-    
 }

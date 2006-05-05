@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.TreeSet;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -76,6 +77,10 @@ public class ProgramService {
             }
         }
         return unassignedGroups;
+    }
+    
+    public Set<Group> getAllGroups(Integer energyCompanyId) {
+        return new TreeSet<Group>(groupDao.getGroupsForEnergyCompany(energyCompanyId));
     }
 
     public Program getProgram(Integer programId) {
@@ -148,6 +153,7 @@ public class ProgramService {
         for (AvailableProgramGroup group : allForProgram) {
             availableProgramGroupDao.delete(group);
         }
+        programParameterDao.deleteAllForProgram(program);
         programDao.delete(program);
     }
 

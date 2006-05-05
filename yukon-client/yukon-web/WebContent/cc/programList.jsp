@@ -11,7 +11,7 @@
 <t:dataList id="programList" value="#{rProgramList.programTypeList}" var="thisType" layout="unorderedList">
   <h:outputText value="#{thisType.self.name}"/>
   <t:dataList value="#{thisType.children}" var="thisProgram" layout="unorderedList">
-    <h:commandLink action="#{sProgramDetail.editEvent}">
+    <h:commandLink action="#{sProgramDetail.editProgram}">
       <f:param name="programId" value="#{thisProgram.id}"/>
       <h:outputText value="#{thisProgram.name}" />
     </h:commandLink>
@@ -19,7 +19,7 @@
 </t:dataList>
 
 
-<t:commandButton action="#{rProgramList.createNewProgram}" value="Create New Program"/>
+<t:commandButton action="#{sProgramDetail.createNewProgram}" value="Create New Program"/>
 
 </h:form>
 

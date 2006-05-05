@@ -9,4 +9,5 @@ public interface ProgramParameterDao extends StandardDaoOperations<com.cannontec
 
     ProgramParameter getFor(String parameterKey, Program program) throws UnknownParameterException;
     public List<ProgramParameter> getAllForProgram(Program program);
+    void deleteAllForProgram(Program program);
 }

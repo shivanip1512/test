@@ -43,5 +43,10 @@ public class ProgramParameterDaoImpl extends YukonBaseHibernateDao implements
             "where pp.program = ?";
         return getHibernateTemplate().find(query, program);
     }
+    
+    public void deleteAllForProgram(Program program) {
+        getHibernateTemplate().bulkUpdate("delete ProgramParameter pp " +
+                "where pp.program = ?", program);
+    }
 
 }
