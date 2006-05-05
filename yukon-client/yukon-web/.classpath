@@ -42,7 +42,6 @@
 	<classpathentry sourcepath="Z:/java/Third-Party Sources/myfaces-1.1.1-src.zip" kind="lib" path="WebContent/WEB-INF/lib/myfaces-api.jar"/>
 	<classpathentry sourcepath="Z:/java/Third-Party Sources/myfaces-1.1.1-src.zip" kind="lib" path="WebContent/WEB-INF/lib/myfaces-impl.jar"/>
 	<classpathentry sourcepath="Z:/java/Third-Party Sources/myfaces-1.1.1-src.zip" kind="lib" path="WebContent/WEB-INF/lib/tomahawk.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/commecialcurtailment"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/cttp"/>
 	<classpathentry kind="lib" path="/third-party/mx4j.jar"/>
 	<classpathentry kind="lib" path="/third-party/mx4j-tools.jar"/>
@@ -60,5 +59,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry sourcepath="Z:/java/Third-Party Sources/spring-framework-1.2.7.zip" kind="lib" path="/third-party/spring.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/commercialcurtailment"/>
 	<classpathentry kind="output" path="WebContent/WEB-INF/classes"/>
 </classpath>

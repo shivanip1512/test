@@ -13,7 +13,7 @@
         <webClassPathEntry>/cbc/bin</webClassPathEntry>
         <webClassPathEntry>/commander/bin</webClassPathEntry>
         <webClassPathEntry>/commander/resource</webClassPathEntry>
-        <webClassPathEntry>/commecialcurtailment/bin</webClassPathEntry>
+        <webClassPathEntry>/commercialcurtailment/bin</webClassPathEntry>
         <webClassPathEntry>/common/bin</webClassPathEntry>
         <webClassPathEntry>/common/resource</webClassPathEntry>
         <webClassPathEntry>/cttp/bin</webClassPathEntry>
