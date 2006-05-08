@@ -100,7 +100,7 @@ body {
 }
 
 #Menu #topMenu a:hover, #Menu #topMenu a.stdhdr_selected {
-    color: rgb(204,204,204);
+    color: #f90;
 }
 
 #Menu .stdhdr_rightSide {
