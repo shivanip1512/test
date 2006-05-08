@@ -20,6 +20,7 @@ public class EconomicService {
     private EconomicEventDao economicEventDao;
     private EconomicEventParticipantDao economicEventParticipantDao;
     private CustomerDao customerDao;
+    private StrategyFactory strategyFactory;
 
     public EconomicService() {
         super();
@@ -27,6 +28,11 @@ public class EconomicService {
     
     public EconomicEvent getEvent(Integer eventId) {
         return economicEventDao.getForId(eventId);
+    }
+    
+    public BaseEconomicStrategy getEconomicStrategy(EconomicEvent event) {
+        StrategyBase strategy = strategyFactory.getStrategy(event.getProgram());
+        return (BaseEconomicStrategy) strategy;
     }
 
     public List<EconomicEventParticipant> getParticipants(EconomicEvent event) {
