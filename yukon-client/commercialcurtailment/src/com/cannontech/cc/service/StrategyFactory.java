@@ -10,7 +10,7 @@ import com.cannontech.cc.model.Program;
 import com.cannontech.cc.service.exception.NoSuchStrategyException;
 
 /**
- * Given the strategy key (e.g. "genericNotification") returns an instance
+ * Given the strategy key (e.g. "isocNotification") returns an instance
  * of a StrategyBase class the implements the given curtailment strategy.
  * 
  * I'm not sure if I'm in love with the way this currently works because
