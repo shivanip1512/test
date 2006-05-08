@@ -1,5 +1,6 @@
 package com.cannontech.web.cc;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.faces.context.ExternalContext;
@@ -35,6 +36,7 @@ public class EventListBean {
             eventDetailHelper.getStrategyFactory().getStrategy(getProgram());
         
         List<? extends BaseEvent> eventList = strategy.getEventsForProgram(getProgram());
+        Collections.reverse(eventList);
         eventListModel = new ListDataModel(eventList);
         
         return "eventList";

@@ -1,12 +1,12 @@
 package com.cannontech.web.cc;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.faces.model.ListDataModel;
 
 import com.cannontech.cc.dao.BaseEventDao;
 import com.cannontech.cc.model.BaseEvent;
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.web.cc.methods.BaseDetailBean;
 
@@ -34,6 +34,7 @@ public class EventOverviewBean {
         if (pendingEventListModel == null) {
             LiteEnergyCompany energyCompany = commercialCurtailmentBean.getEnergyCompany();
             List<BaseEvent> eventList = baseEventDao.getPendingEvents(energyCompany);
+            Collections.reverse(eventList);
             pendingEventListModel = new ListDataModel(eventList);
         }
         return pendingEventListModel;
@@ -47,6 +48,7 @@ public class EventOverviewBean {
         if (currentEventListModel == null) {
             LiteEnergyCompany energyCompany = commercialCurtailmentBean.getEnergyCompany();
             List<BaseEvent> eventList = baseEventDao.getCurrentEvents(energyCompany);
+            Collections.reverse(eventList);
             currentEventListModel = new ListDataModel(eventList);
         }
         return currentEventListModel;
@@ -60,6 +62,7 @@ public class EventOverviewBean {
         if (recentEventListModel == null) {
             LiteEnergyCompany energyCompany = commercialCurtailmentBean.getEnergyCompany();
             List<BaseEvent> eventList = baseEventDao.getRecentEvents(energyCompany);
+            Collections.reverse(eventList);
             recentEventListModel = new ListDataModel(eventList);
         }
         return recentEventListModel;
