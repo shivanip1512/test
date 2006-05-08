@@ -16,12 +16,6 @@
   <h:outputText value="#{thisProgram.name}"/>
   </t:column>
   <t:column>
-    <h:commandLink action="#{sProgramDetail.editEvent}">
-      <f:param name="programId" value="#{thisProgram.id}"/>
-      <h:outputText value="Edit"/>
-    </h:commandLink>
-  </t:column>
-  <t:column>
     <h:commandLink action="#{rEventInit.initEvent}">
       <f:param name="programId" value="#{thisProgram.id}"/>
       <h:outputText value="Start" />
@@ -34,7 +28,6 @@
     </h:commandLink>
   </t:column>
 </t:dataTable>
-
 
 
 <h3>Current Events</h3>
