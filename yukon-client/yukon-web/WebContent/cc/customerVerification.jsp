@@ -11,18 +11,28 @@
 <div> <t:messages showDetail="false" showSummary="true"/> </div>
 
 <h:form>
-<t:dataList value="#{sCustomerSelectionBean.customerList}" var="thisCustomer">
-  <f:verbatim><div></f:verbatim>
-  <t:selectBooleanCheckbox value="#{thisCustomer.selected}" disabled="#{!thisCustomer.allowOverride}"/>
-  <t:outputText value="#{thisCustomer.customer.companyName}"/>
-  <t:outputText value=" - " rendered="#{thisCustomer.exclude}"/>
-  <t:outputText value="#{thisCustomer.reasonForExclusion}" rendered="#{thisCustomer.exclude}"/>
-  <f:verbatim></div></f:verbatim>
-</t:dataList>
+<t:dataTable value="#{sCustomerSelectionBean.customerListModel}" var="thisCustomer">
+  <t:column>
+    <f:facet name="header">
+      <t:outputText value="Customer"/>
+    </f:facet>
+    <t:selectBooleanCheckbox value="#{thisCustomer.selected}" disabled="#{!thisCustomer.allowOverride}"/>
+    <t:outputText value="#{thisCustomer.customer.companyName}"/>
+  </t:column>
+  <t:column>
+    <f:facet name="header">
+      <t:outputText value="Interruptible Load"/>
+    </f:facet>
+    <t:outputText value="#{sCustomerSelectionBean.interruptibleLoad}"/>
+  </t:column>
+  <t:column>
+    <t:outputText value="#{thisCustomer.reasonForExclusion}" rendered="#{thisCustomer.exclude}"/>
+  </t:column>
+</t:dataTable>
 
 <div class="actionButtons">
 <t:commandButton action="#{sCustomerSelectionBean.doCustomerVerificationComplete}" value="Next"/>
-<h:commandButton action="#{sCustomerSelectionBean.cancel}" value="Cancel"/>
+<h:commandButton action="#{sCustomerSelectionBean.cancel}" value="Cancel" immediate="true"/>
 </div>
 </h:form>
 
