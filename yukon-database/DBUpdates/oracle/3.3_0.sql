@@ -103,6 +103,10 @@ insert into YukonListEntry values (1091, 1007, 0, 'Dual Stage', 1410);
 
 insert into YukonListEntry values (1355,1056,0,'Customer Type',3505);
 
+insert into billingfileformats values( -19, ' NISC-Turtle No Limit kWh ');
+
+insert into YukonListEntry values (1034,1003,0,'Non Yukon Meter',1204);
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */

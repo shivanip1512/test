@@ -29,7 +29,14 @@ go
 insert into YukonRoleProperty values(-10809,-108,'Standard Page Style Sheet',' ','A comma separated list of URLs for CSS files that will be included on every Standard Page');
 go
 
+insert into YukonGroupRole values (-1098,-2, -108, -10809, '(none)');
+insert into yukongrouprole values (-2008,-303,-108,-10809,'(none)');
+insert into yukongrouprole values (-2209,-304,-108,-10809,'(none)');
+insert into YukonUserRole values (-409, -1, -108, -10809, '(none)');
+go
+
 drop table dynamiclmprogramdirect;
+go
 
 create table DynamicLMProgramDirect (
    DeviceID             numeric              not null,
@@ -107,6 +114,22 @@ go
 alter table EsubDisplayIndex
    add constraint PK_ESUBDISPLAYINDEX primary key  (SearchKey)
 go
+
+delete from display where displaynum = -2;
+go
+
+/*@error ignore-begin */
+insert into YukonRoleProperty values(-20158,-201,'Disable Switch Sending','false','Disables the ability to send configs and connects/disconnects to switches.');
+go
+insert into yukongrouprole values (-758,-301,-201,-20158,'(none)');
+go
+insert into YukonGroupRole values (-1258,-2,-201,-20158,'(none)');
+go
+insert into yukongrouprole values (-2058,-303,-201,-20158,'(none)');
+go
+insert into YukonUserRole values (-758,-1,-201,-20158,'(none)');
+go
+/*@error ignore-end */
 
 /******************************************************************************/
 /* Run the Stars Update if needed here */

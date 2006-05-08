@@ -23,15 +23,15 @@ insert into YukonRoleProperty values(-10809,-108,'Standard Page Style Sheet',' '
 drop table dynamiclmprogramdirect;
 
 create table DynamicLMProgramDirect (
-   DeviceID             numeric              not null,
-   CurrentGearNumber    numeric              not null,
-   LastGroupControlled  numeric              not null,
-   StartTime            datetime             not null,
-   StopTime             datetime             not null,
-   TimeStamp            datetime             not null,
-   NotifyActiveTime     datetime             not null,
-   StartedRampingOut    datetime             not null,
-   NotifyInactiveTime   datetime             not null,
+   DeviceID             number              not null,
+   CurrentGearNumber    number              not null,
+   LastGroupControlled  number              not null,
+   StartTime            date             not null,
+   StopTime             date             not null,
+   TimeStamp            date             not null,
+   NotifyActiveTime     date             not null,
+   StartedRampingOut    date             not null,
+   NotifyInactiveTime   date             not null,
    ConstraintOverride   char(1)              not null
 );
 
@@ -46,6 +46,11 @@ alter table DynamicLMProgramDirect
 insert into yukonlistentry values (137, 100, 0, 'Mid Level Latch', 0);
 
 insert into YukonRoleProperty values(-10810,-108, 'pop_up_appear_style','onmouseover', 'Style of the popups appearance when the user selects element in capcontrol.'); 
+
+insert into YukonGroupRole values (-1098,-2, -108, -10809, '(none)');
+insert into yukongrouprole values (-2008,-303,-108,-10809,'(none)');
+insert into yukongrouprole values (-2209,-304,-108,-10809,'(none)');
+insert into YukonUserRole values (-409, -1, -108, -10809, '(none)');
 
 /*@error ignore-begin */
 
@@ -85,6 +90,16 @@ create table EsubDisplayIndex (
 
 alter table EsubDisplayIndex
    add constraint PK_ESUBDISPLAYINDEX primary key  (SearchKey);
+
+delete from display where displaynum = -2;
+
+/*@error ignore-begin */
+insert into YukonRoleProperty values(-20158,-201,'Disable Switch Sending','false','Disables the ability to send configs and connects/disconnects to switches.');
+insert into yukongrouprole values (-758,-301,-201,-20158,'(none)');
+insert into YukonGroupRole values (-1258,-2,-201,-20158,'(none)');
+insert into yukongrouprole values (-2058,-303,-201,-20158,'(none)');
+insert into YukonUserRole values (-758,-1,-201,-20158,'(none)');
+/*@error ignore-end */
 
 /******************************************************************************/
 /* Run the Stars Update if needed here */

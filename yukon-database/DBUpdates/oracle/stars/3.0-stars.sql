@@ -16,7 +16,7 @@ alter table ApplianceHeatPump
 alter table CustomerAccount drop constraint FK_YkUs_CstAcc;
 alter table CustomerAccount drop column LoginID;
 
-alter table LMProgramWebPublishing add ProgramOrder numeric;
+alter table LMProgramWebPublishing add ProgramOrder number;
 update LMProgramWebPublishing set ProgramOrder = 0;
 
 update YukonUserRole set Value=(select GroupID from YukonGroup where GroupName=YukonUserRole.Value or GroupName=YukonUserRole.Value || ' Grp') where RolePropertyID in (-1105,-1106) and Value <> '(none)';

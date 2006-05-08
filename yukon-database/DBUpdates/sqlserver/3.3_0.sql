@@ -125,6 +125,11 @@ go
 insert into YukonListEntry values (1355,1056,0,'Customer Type',3505);
 go
 
+insert into billingfileformats values( -19, ' NISC-Turtle No Limit kWh ');
+go
+
+insert into YukonListEntry values (1034,1003,0,'Non Yukon Meter',1204);
+go
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */

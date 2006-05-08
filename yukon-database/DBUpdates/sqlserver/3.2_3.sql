@@ -276,11 +276,46 @@ go
 alter table   Capcontrolsubstationbus alter column  multiMonitorControl char(1) not null;
 go
 
+alter table Capcontrolfeeder add multiMonitorControl char(1);
+go
+update  Capcontrolfeeder set  multiMonitorControl = 'N';
+go
+alter table   Capcontrolfeeder alter column  multiMonitorControl char(1) not null;
+go
+
 alter table NotificationDestination drop constraint PKey_NotDestID;
 go
 alter table NotificationDestination drop column DestinationOrder;
 go
 alter table NotificationDestination add constraint PKey_NotDestID primary key (NotificationGroupID, RecipientID);
+go
+
+alter table dynamicccsubstationbus add eventSeq numeric;
+go
+update dynamicccsubstationbus  set eventSeq = 0;
+go 
+alter table dynamicccsubstationbus alter column eventSeq numeric not null;
+go
+
+alter table dynamicccfeeder add eventSeq numeric;
+go
+update dynamicccfeeder  set eventSeq = 0;
+go 
+alter table dynamicccfeeder alter column eventSeq numeric not null;
+go
+
+alter table dynamicccfeeder add currVerifyCBId numeric;
+go
+update dynamicccfeeder  set currVerifyCBId = -1;
+go 
+alter table dynamicccfeeder alter column currVerifyCBId numeric not null;
+go
+
+alter table dynamicccfeeder add currVerifyCBOrigState numeric;
+go
+update dynamicccfeeder  set currVerifyCBOrigState = 0;
+go 
+alter table dynamicccfeeder alter column currVerifyCBOrigState numeric not null;
 go
 
 /* @error ignore-begin */
@@ -4471,7 +4506,7 @@ go
 create table CCEventLog  (
    LogID                numeric                          not null,
    PointID              numeric                          not null,
-   DateTime             DATE                            not null,
+   DateTime             datetime                          not null,
    SubID                numeric                          not null,
    FeederID             numeric                         not null,
    EventType            numeric                          not null,
