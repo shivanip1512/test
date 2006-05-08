@@ -13,11 +13,11 @@
           <cti:includeScript link="/JavaScript/CtiMenu.js"/>
         </cti:outputHeadContent>
     </head>
-<body>
+<body class="<c:out value="${ctiModuleName}"/>_module">
 <div id="Header">
-    <div class="stdhdr_left"><div id="TopLeftLogo"></div></div>
+    <div class="stdhdr_left"><div id="TopLeftLogo"></div><div id="TopLeftLogo2"></div></div>
     <div class="stdhdr_right"><div id="TopRightLogo"></div></div>
-    <div class="stdhdr_clear">&nbsp;</div>
+    <div class="stdhdr_clear"></div>
 </div>
 <cti:outputMenu/>
 
