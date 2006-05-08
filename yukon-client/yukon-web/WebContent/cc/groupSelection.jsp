@@ -21,7 +21,7 @@
 
 <div class="actionButtons">
 <t:commandButton action="#{sCustomerSelectionBean.doGroupSelectionComplete}" value="Next"/>
-<h:commandButton action="#{sCustomerSelectionBean.cancel}" value="Cancel"/>
+<h:commandButton action="#{sCustomerSelectionBean.cancel}" value="Cancel" immediate="true"/>
 </div>
 </h:form>
 

@@ -65,7 +65,7 @@
 
 <div class="actionButtons">
 <h:commandButton action="#{sEconomicCreate.doAfterInitialEntry}" value="Next"/>
-<h:commandButton action="#{sEconomicCreate.cancel}" value="Cancel"/>
+<h:commandButton action="#{sEconomicCreate.cancel}" value="Cancel" immediate="true"/>
 </div>
 
 </h:form>

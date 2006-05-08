@@ -59,7 +59,7 @@
 
 <div>
 <h:commandButton action="#{sNotificationCreate.doAfterParameterEntry}" value="Next"/>
-<h:commandButton action="#{sNotificationCreate.cancel}" value="Cancel"/>
+<h:commandButton action="#{sNotificationCreate.cancel}" value="Cancel" immediate="true"/>
 </div>
 
 </h:form>

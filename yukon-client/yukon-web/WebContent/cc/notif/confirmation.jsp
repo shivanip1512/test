@@ -58,7 +58,7 @@ Customers:
 
 <div>
 <h:commandButton action="#{sNotificationCreate.doCreateEvent}" value="Create"/>
-<h:commandButton action="#{sNotificationCreate.cancel}" value="Cancel"/>
+<h:commandButton action="#{sNotificationCreate.cancel}" value="Cancel" immediate="true"/>
 </div>
 
 </h:form>

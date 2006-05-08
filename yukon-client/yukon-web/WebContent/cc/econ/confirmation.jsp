@@ -86,7 +86,7 @@
 
 <div class="actionButtons">
 <h:commandButton action="#{sEconomicCreate.doCreateEvent}" value="Create"/>
-<h:commandButton action="#{sEconomicCreate.cancel}" value="Cancel"/>
+<h:commandButton action="#{sEconomicCreate.cancel}" value="Cancel" immediate="true"/>
 </div>
 
 </h:form>
