@@ -1,6 +1,7 @@
 package com.cannontech.cc.service;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -51,6 +52,7 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
     private EconomicEventParticipantSelectionDao eventParticipantSelectionDao;
     private EconomicEventParticipantSelectionWindowDao eventParticipantSelectionWindowDao;
     private SimplePointAccess pointAccess;
+    private EconomicService economicService;
     
     @Override
     public String getMethodKey() {
@@ -76,13 +78,17 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
         Date now = new Date();
         Calendar calendar = Calendar.getInstance(tz);
         calendar.setTime(now);
-        calendar.add(Calendar.MINUTE, getDefaultStartTimeOffsetMinutes(program));
-        TimeUtil.roundDateUp(calendar, 60);
+        int startTimeOffsetMinutes = getDefaultStartTimeOffsetMinutes(program);
+        calendar.add(Calendar.MINUTE, startTimeOffsetMinutes);
+        if (startTimeOffsetMinutes < 60) {
+            TimeUtil.roundDateUp(calendar, 5);
+        } else {
+            TimeUtil.roundDateUp(calendar, 60);
+        }
         builder.getEvent().setStartTime(calendar.getTime());
         
         calendar.add(Calendar.MINUTE, 
-                     getDefaultNotifTimeOffsetMinutes(program)
-                     - getDefaultStartTimeOffsetMinutes(program));
+                     -getDefaultNotifTimeBacksetMinutes(program));
         builder.getEvent().setNotificationTime(calendar.getTime());
         
         builder.getEvent().setWindowLengthMinutes(getWindowLengthMinutes());
@@ -91,7 +97,7 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
         return builder;
     }
 
-    protected int getDefaultNotifTimeOffsetMinutes(Program program) {
+    protected int getDefaultNotifTimeBacksetMinutes(Program program) {
         return getParameterValueInt(program, "DEFAULT_NOTIFICATION_OFFSET_MINUTES");
     }
     
@@ -103,8 +109,10 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
         return getParameterValueInt(program, "DEFAULT_EVENT_DURATION_MINUTES");
     }
     
-    protected float getDefaultEnergyPrice(Program program) {
-        return getParameterValueFloat(program, "DEFAULT_ENERGY_PRICE");
+    protected BigDecimal getDefaultEnergyPrice(Program program) {
+        float value = getParameterValueFloat(program, "DEFAULT_ENERGY_PRICE");
+        // specify rounding to five decimal places
+        return new BigDecimal(value, new MathContext(5));
     }
     
     private int getStopNotifOffsetMinutes() {
@@ -144,7 +152,7 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
         int windows = builder.getNumberOfWindows();
         List<EconomicEventPricingWindow> windowList = new ArrayList<EconomicEventPricingWindow>(windows);
         
-        BigDecimal bigDecimal = new BigDecimal(getDefaultEnergyPrice(builder.getProgram()));
+        BigDecimal bigDecimal = getDefaultEnergyPrice(builder.getProgram());
         for (int i = 0; i < windows; i++) {
             EconomicEventPricingWindow window = new EconomicEventPricingWindow();
             window.setPricingRevision(builder.getEventRevision());
@@ -276,12 +284,21 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
         int lastWindowOffset = event.getInitialWindows() - 1;
         Date lastWindowStart = latestRevision.getWindows().get(lastWindowOffset).getStartTime();
         
-        Date minStartTime = TimeUtil.addMinutes(lastWindowStart, -getMinimumRevisionNoticeMinutes());
+        Date earliestStartTime = TimeUtil.addMinutes(lastWindowStart, -getMinimumRevisionNoticeMinutes());
         
         Date now = new Date();
         Date paddedNow = TimeUtil.addMinutes(now, PADDING_MINUTES);
         
-        return paddedNow.before(minStartTime);
+        if (paddedNow.after(earliestStartTime)) {
+            return false;
+        }
+        
+        // check that event notice has been sent 
+        if (now.before(event.getNotificationTime())) {
+            return false;
+        }
+        
+        return true;
     }
 
     public EconomicEventPricing createEventRevision(EconomicEvent event, LiteYukonUser yukonUser) 
@@ -325,6 +342,7 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
         event.addRevision(nextRevision);
         economicEventDao.save(event);
         fillInDefaultPricesForRevision(nextRevision);
+        notificationProxy.sendEconomicNotification(event.getId(), nextRevision.getRevision(), EconomicEventAction.REVISING);
         
     }
 
@@ -345,7 +363,6 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
             ArrayList<EconomicEventPricingWindow> windows = 
                 new ArrayList<EconomicEventPricingWindow>(nextRevision.getWindows().values());
             Collections.sort(windows);
-            BigDecimal lastHourBuy = null;
             for (EconomicEventPricingWindow window : windows) {
                 Integer offset = window.getOffset();
                 EconomicEventPricingWindow previousRevWindow = 
@@ -362,7 +379,6 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
                 nextSelectionWindow.setWindow(window);
                 
                 nextSelectionWindow.setEnergyToBuy(previousSelectionWindow.getEnergyToBuy());
-                lastHourBuy = nextSelectionWindow.getEnergyToBuy();
                 nextSelection.addWindow(nextSelectionWindow);
             }
             participant.addSelection(nextSelection);
@@ -422,6 +438,10 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
         if (!pricingRevision.getEvent().getLatestRevision().equals(pricingRevision)) {
             return false;
         }
+        
+        if (!isRevisionEditable(selection.getPricingRevision(), selection.getParticipant())) {
+            return false;
+        }
         // first window of revision must not have started
         Date now = new Date();
         Date revisionStartTime = pricingRevision.getFirstAffectedWindow().getStartTime();
@@ -445,28 +465,63 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
             return false;
         }
         // check that customer didn't curtail durring the last revision
-        if (revisionNumber > 1) {
-            // get previous revision
-            EconomicEventPricing previousRevision = 
-                selectionWindow.getSelection().getPricingRevision().getPrevious();
-            // get previous selection
-            EconomicEventParticipantSelection previousSelection = 
-                selectionWindow.getSelection().getParticipant().getSelection(previousRevision);
-            // get this window for previous revision
-            EconomicEventPricingWindow pricingWindow = 
-                previousRevision.getWindows().get(currentOffset);
-            // get this selection for previous selection
-            EconomicEventParticipantSelectionWindow previousSelectionWindow = 
-                previousSelection.getSelectionWindow(pricingWindow);
-            if (isCurtailPrice(previousSelectionWindow.getEnergyToBuy())) {
-                return false;
+        return isSelectionWindowEditable(selectionWindow);
+    }
+    
+    public List<EconomicEventParticipant> getRevisionParticipantForNotif(EconomicEventPricing eventRevision) {
+        List<EconomicEventParticipant> participants = 
+            economicEventParticipantDao.getForEvent(eventRevision.getEvent());
+        List<EconomicEventParticipant> result = new ArrayList<EconomicEventParticipant>(participants.size());
+        for (EconomicEventParticipant participant : participants) {
+            // if participant can edit any of the windows, they should get a notif
+            if (isRevisionEditable(eventRevision, participant)) {
+                result.add(participant);
+            }
+            
+        }
+        return participants;
+    }
+    
+    private boolean isRevisionEditable(EconomicEventPricing eventRevision, EconomicEventParticipant participant) {
+        if (eventRevision.getRevision() == 1) {
+            return true;
+        }
+        int offset = eventRevision.getFirstAffectedWindowOffset();
+        int numOfWindows = eventRevision.getNumberOfWindows();
+        
+        for (;offset < numOfWindows; offset++) {
+            EconomicEventPricingWindow pricingWindow = eventRevision.getWindows().get(offset);
+            EconomicEventParticipantSelection selection = participant.getSelection(eventRevision);
+            EconomicEventParticipantSelectionWindow selectionWindow = selection.getSelectionWindow(pricingWindow);
+            if (isSelectionWindowEditable(selectionWindow)) {
+                return true;
             }
         }
-        return true;
+        return false;
+    }
+    
+    public boolean isSelectionWindowEditable(EconomicEventParticipantSelectionWindow selectionWindow) {
+        EconomicEventParticipantSelection selection = selectionWindow.getSelection();
+        EconomicEventPricing pricingRevision = selection.getPricingRevision();
+        int revision = pricingRevision.getRevision();
+        if (revision == 1) {
+            return true;
+        }
+        EconomicEventPricing previousRevision = pricingRevision.getPrevious();
+        EconomicEventPricingWindow previousWindow = 
+            previousRevision.getWindows().get(selectionWindow.getWindow().getOffset());
+        BigDecimal previousPrice = previousWindow.getEnergyPrice();
+        BigDecimal currentPrice = selectionWindow.getWindow().getEnergyPrice();
+        boolean priceUp = currentPrice.compareTo(previousPrice) > 0;
+        EconomicEventParticipantSelection previousSelection = selection.getParticipant().getSelection(previousRevision);
+        EconomicEventParticipantSelectionWindow previousSelectionWindow = 
+            previousSelection.getSelectionWindow(previousWindow);
+        BigDecimal previousEnergyBought = previousSelectionWindow.getEnergyToBuy();
+        return priceUp && isCurtailPrice(previousEnergyBought);
     }
     
     protected boolean isCurtailPrice(BigDecimal buyThrough) {
-        // see not about compareTo vs. equals for BigDecimals
+        // see note about compareTo vs. equals for BigDecimals
         return buyThrough.compareTo(BigDecimal.ZERO) == 0;
     }
     
@@ -543,6 +598,14 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
     public void setPointAccess(SimplePointAccess pointAccess) {
         this.pointAccess = pointAccess;
     }
-    
+
+    public EconomicService getEconomicService() {
+        return economicService;
+    }
+
+    public void setEconomicService(EconomicService economicService) {
+        this.economicService = economicService;
+    }
+
 
 }

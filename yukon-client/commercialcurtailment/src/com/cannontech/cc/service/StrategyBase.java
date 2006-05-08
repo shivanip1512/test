@@ -1,13 +1,15 @@
 package com.cannontech.cc.service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
@@ -22,6 +24,7 @@ import com.cannontech.cc.model.Program;
 import com.cannontech.cc.model.ProgramParameter;
 import com.cannontech.cc.service.builder.EventBuilderBase;
 import com.cannontech.cc.service.builder.VerifiedCustomer;
+import com.cannontech.cc.service.exception.NoPointException;
 
 public abstract class StrategyBase {
     private ProgramService programService;
@@ -103,21 +106,31 @@ public abstract class StrategyBase {
     getVerifiedCustomerList(EventBuilderBase builder, 
                             Collection<Group> selectedGroups) {
         List<VerifiedCustomer> result = new ArrayList<VerifiedCustomer>();
-        Set<CICustomerStub> seenCustomers = new HashSet<CICustomerStub>();
+        Map<CICustomerStub, GroupCustomerNotif> seenCustomers = new HashMap<CICustomerStub, GroupCustomerNotif>();
         for (Group group : selectedGroups) {
             List<GroupCustomerNotif> customers = getGroupService().getAssignedCustomers(group);
             for (GroupCustomerNotif customerNotif : customers) {
                 VerifiedCustomer vCustoemr = new VerifiedCustomer(customerNotif);
-                if (seenCustomers.contains(customerNotif.getCustomer())) {
-                    vCustoemr.setStatus(VerifiedCustomer.Status.ALLOW);
-                    vCustoemr.setReasonForExclusion("Duplicate");
+                if (seenCustomers.containsKey(customerNotif.getCustomer())) {
+                    // This customer has already been included as a member of a different
+                    // group. We will make sure that the original customer notif
+                    // object has all of the notif methods set that this one does.
+                    GroupCustomerNotif previousNotif = seenCustomers.get(customerNotif.getCustomer());
+                    for (Integer method : customerNotif.getNotifMap()) {
+                        previousNotif.getNotifMap().setSupportsMethod(method, true);
+                    }
                 } else {
                     verifyCustomer(builder, vCustoemr);
-                    seenCustomers.add(customerNotif.getCustomer());
+                    seenCustomers.put(customerNotif.getCustomer(), customerNotif);
+                    result.add(vCustoemr);
                 }
-                result.add(vCustoemr);
             }
         }
+        Collections.sort(result, new Comparator<VerifiedCustomer>() {
+            public int compare(VerifiedCustomer o1, VerifiedCustomer o2) {
+                return o1.getCustomer().getCompanyName().compareTo(o2.getCustomer().getCompanyName());
+            }
+        });
         return result;
     }
     
@@ -145,6 +158,8 @@ public abstract class StrategyBase {
     
     public abstract
     List<? extends BaseEvent> getEventsForProgram(Program program);
+
+    public abstract BigDecimal getInterruptibleLoad(CICustomerStub customer) throws NoPointException;
 
 
 }

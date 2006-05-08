@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import com.cannontech.cc.model.CICustomerStub;
 import com.cannontech.cc.model.EconomicEventParticipant;
 import com.cannontech.cc.model.EconomicEventParticipantSelection;
 import com.cannontech.cc.model.EconomicEventParticipantSelectionWindow;
@@ -14,6 +15,7 @@ import com.cannontech.cc.service.builder.EventBuilderBase;
 import com.cannontech.cc.service.builder.VerifiedCustomer;
 import com.cannontech.cc.service.enums.IsocPointTypes;
 import com.cannontech.cc.service.exception.EventModificationException;
+import com.cannontech.cc.service.exception.NoPointException;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
@@ -58,6 +60,11 @@ public class IsocEconomicStrategy extends BaseEconomicStrategy {
                                                      date + " at this time");
             }
         }
+    }
+    
+    @Override
+    public BigDecimal getInterruptibleLoad(CICustomerStub customer) throws NoPointException {
+        return isocCommonStrategy.getInterruptibleLoad(customer);
     }
     
     public IsocCommonStrategy getIsocCommonStrategy() {

@@ -1,5 +1,7 @@
 package com.cannontech.cc.service;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
@@ -51,6 +53,13 @@ public class IsocCommonStrategy extends StrategyGroupBase {
         return (actualHours + propossedEventLength) > allowedHours;
     }
     
+    public BigDecimal getInterruptibleLoad(CICustomerStub customer) throws NoPointException {
+        LitePoint point = pointTypeHelper.getPoint(customer, IsocPointTypes.ContractIntLoad);
+        double interruptLoad = pointAccess.getPointValue(point);
+        
+        return new BigDecimal(interruptLoad, new MathContext(0));
+    }
+
     public void checkEventCustomer(VerifiedCustomer vCustomer, int durationHours, int notifMinutes) {
         CICustomerStub customer = vCustomer.getCustomer();
         try {

@@ -1,11 +1,13 @@
 package com.cannontech.cc.service;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import com.cannontech.cc.model.CICustomerStub;
 import com.cannontech.cc.service.builder.CurtailmentBuilder;
 import com.cannontech.cc.service.builder.EventBuilderBase;
 import com.cannontech.cc.service.builder.VerifiedCustomer;
+import com.cannontech.cc.service.exception.NoPointException;
 import com.cannontech.common.util.TimeUtil;
 
 public class IsocNotificationStrategy extends BaseNotificationStrategy {
@@ -29,6 +31,11 @@ public class IsocNotificationStrategy extends BaseNotificationStrategy {
         int notifMinutes = TimeUtil.differenceMinutes(notifTime, startTime);
         
         isocCommonStrategy.checkEventCustomer(vCustomer, durationHours, notifMinutes);
+    }
+    
+    @Override
+    public BigDecimal getInterruptibleLoad(CICustomerStub customer) throws NoPointException {
+        return isocCommonStrategy.getInterruptibleLoad(customer);
     }
     
     public IsocCommonStrategy getIsocCommonStrategy() {
