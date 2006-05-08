@@ -2,12 +2,15 @@ package com.cannontech.cc.service;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeSet;
 
+import org.apache.commons.lang.builder.CompareToBuilder;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.cc.dao.AvailableProgramGroupDao;
@@ -50,6 +53,15 @@ public class ProgramService {
         List<Program> programs = 
             programDao.getProgramsForEnergyCompany(energyCompany.getEnergyCompanyID());
         
+        Comparator<Program> comp = new Comparator<Program>() {
+            public int compare(Program o1, Program o2) {
+                CompareToBuilder builder = new CompareToBuilder();
+                builder.append(o1.getProgramType().getName(), o2.getProgramType().getName());
+                builder.append(o1.getName(), o2.getName());
+                return builder.toComparison();
+            };
+        };
+        Collections.sort(programs, comp);
         return programs;
     }
     
