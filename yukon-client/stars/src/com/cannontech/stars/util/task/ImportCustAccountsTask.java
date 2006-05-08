@@ -14,6 +14,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.List;
 
 import org.apache.commons.fileupload.FileItem;
 
@@ -21,8 +22,11 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.cache.functions.PAOFuncs;
+import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -32,6 +36,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
+import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.stars.util.ImportProblem;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.StarsUtils;
@@ -76,9 +81,10 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 		"SERV_VOLT",
 		"USERNAME",
 		"PASSWORD",
-		"LOGIN_GROUP"
+		"LOGIN_GROUP",
+        "COMPANY_NAME"
 	};
-	
+    
 	private static final String[] HW_COLUMNS = {
 		"ACCOUNT_NO",
 		"HW_ACTION",
@@ -91,6 +97,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 		"ADDR_GROUP",
 		"APP_TYPE",
 		"APP_KW",
+        "APP_RELAY_NUM"
 	};
 	
 	// Column indices of the generic customer info file
@@ -117,8 +124,9 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 	private static final int COL_USERNAME = acct_col++;
 	private static final int COL_PASSWORD = acct_col++;
 	private static final int COL_LOGIN_GROUP = acct_col++;
+    private static final int COL_COMPANY_NAME = acct_col++;
 	
-	// Column indices of the generic hardware info file
+    // Column indices of the generic hardware info file
 	private static int hw_col = 0;
 	private static final int COL_HW_ACCOUNT_NO = hw_col++;
 	private static final int COL_HW_ACTION = hw_col++;
@@ -131,13 +139,15 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 	private static final int COL_ADDR_GROUP = hw_col++;
 	private static final int COL_APP_TYPE = hw_col++;
 	private static final int COL_APP_KW = hw_col++;
-	
+    private static final int COL_APP_RELAY_NUMBER = hw_col++;
+    
 	LiteStarsEnergyCompany energyCompany = null;
 	FileItem custFile = null;
 	FileItem hwFile = null;
 	String email = null;
 	boolean preScan = false;
-	
+    ArrayList existingSULMPrograms;
+    
 	PrintWriter importLog = null;
 	String position = null;
 	
@@ -152,6 +162,8 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 	int numHwAdded = 0;
 	int numHwUpdated = 0;
 	int numHwRemoved = 0;
+    
+    int comparableDigitEndIndex = 0;
 	
 	public ImportCustAccountsTask (LiteStarsEnergyCompany energyCompany, FileItem custFile, FileItem hwFile, String email, boolean preScan) {
 		this.energyCompany = energyCompany;
@@ -190,7 +202,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
         
         File logFile = null;
 		
-		ArrayList custFieldsList = null;
+        ArrayList custFieldsList = null;
 		ArrayList hwFieldsList = null;
 		ArrayList appFieldsList = null;
 		
@@ -211,7 +223,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 		
 		status = STATUS_RUNNING;
 		
-		try {
+        try {
 			final String fs = System.getProperty( "file.separator" );
 			File uploadDir = new File(
 					ServerUtils.getStarsTempDir() + fs + ServerUtils.UPLOAD_DIR + fs + energyCompany.getName());
@@ -292,7 +304,14 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 					if (custFields[ImportManagerUtil.IDX_ACCOUNT_NO].trim().length() == 0)
 						throw new WebClientException( "Account # cannot be empty" );
 					
-					LiteStarsCustAccountInformation liteAcctInfo = energyCompany.searchAccountByAccountNo( custFields[ImportManagerUtil.IDX_ACCOUNT_NO] );
+                    /*
+                     * Some customers use rotation digits on the end of account numbers.
+                     * EXAMPLE: if a customer changed at account 123456, the whole account number
+                     * plus rotation digits might change like this: 12345610 to 12345620, so we want
+                     * to only consider the accountnumber itself.  The number of digits to consider
+                     * as valid comparable, non-rotation digits of the account number is expressed in a role property. 
+                     */
+                    LiteStarsCustAccountInformation liteAcctInfo = energyCompany.searchAccountByAccountNo( custFields[ImportManagerUtil.IDX_ACCOUNT_NO] );
 					
 					if (!preScan) {
 						liteAcctInfo = importAccount( custFields, energyCompany );
@@ -596,8 +615,16 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 							}
 						}
 					}
-					else {
-						liteAcctInfo = energyCompany.searchAccountByAccountNo( hwFields[ImportManagerUtil.IDX_ACCOUNT_ID] );
+					else 
+                    {
+                        /*
+                         * Some customers use rotation digits on the end of account numbers.
+                         * EXAMPLE: if a customer changed at account 123456, the whole account number
+                         * plus rotation digits might change like this: 12345610 to 12345620, so we want
+                         * to only consider the accountnumber itself.  The number of digits to consider
+                         * as valid comparable, non-rotation digits of the account number is expressed in a role property. 
+                         */
+                        liteAcctInfo = energyCompany.searchAccountByAccountNo( hwFields[ImportManagerUtil.IDX_ACCOUNT_ID] );
 						if (liteAcctInfo == null) {
 							if (hwFields[ImportManagerUtil.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE")) {
 								importLog.println( "WARNING at " + position + ": account #" + hwFields[ImportManagerUtil.IDX_ACCOUNT_ID] + " doesn't exist, record ignored" );
@@ -625,7 +652,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 						{
 							int[][] programs = getEnrolledProgram( hwFields, energyCompany );
 							if (programs != null)
-								programSignUp( programs, appFields, liteAcctInfo, liteInv, energyCompany );
+                                programSignUp( programs, appFields, liteAcctInfo, liteInv, energyCompany );
 						}
 					}
 					else {
@@ -675,7 +702,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 			}
 			
 			if (preScan) {
-				// The data has been pre-scaned, now actually import the data
+				// The data has been pre-scanned, now actually import the data
 				// set the preScan flag to false so the import log will be sent later
 				preScan = false;
 				
@@ -867,7 +894,9 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 			fields[ImportManagerUtil.IDX_PASSWORD] = columns[ colIdx[COL_PASSWORD] ];
 		if (colIdx[COL_LOGIN_GROUP] >= 0 && colIdx[COL_LOGIN_GROUP] < columns.length)
 			fields[ImportManagerUtil.IDX_LOGIN_GROUP] = columns[ colIdx[COL_LOGIN_GROUP] ];
-	}
+        if (colIdx[COL_COMPANY_NAME] >= 0 && colIdx[COL_COMPANY_NAME] < columns.length)
+            fields[ImportManagerUtil.IDX_COMPANY_NAME] = columns[ colIdx[COL_COMPANY_NAME] ];
+    }
 	
 	private void setHardwareFields(String[] fields, String[] columns, int[] colIdx) {
 		if (colIdx[COL_HW_ACCOUNT_NO] >= 0 && colIdx[COL_HW_ACCOUNT_NO] < columns.length)
@@ -895,6 +924,8 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 			fields[ImportManagerUtil.IDX_APP_TYPE] = columns[ colIdx[COL_APP_TYPE] ];
 		if (colIdx[COL_APP_KW] >= 0 && colIdx[COL_APP_KW] < columns.length)
 			fields[ImportManagerUtil.IDX_APP_KW] = columns[ colIdx[COL_APP_KW] ];
+		if (colIdx[COL_APP_RELAY_NUMBER] >= 0 && colIdx[COL_APP_RELAY_NUMBER] < columns.length)
+            fields[ImportManagerUtil.IDX_RELAY_NUM] = columns[ colIdx[COL_APP_RELAY_NUMBER] ];
 	}
 	
 	private int[][] getEnrolledProgram(String[] fields, LiteStarsEnergyCompany energyCompany) throws WebClientException {
@@ -904,7 +935,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 			for (int i = 0; i < programs.size(); i++) {
 				LiteLMProgramWebPublishing liteProg = (LiteLMProgramWebPublishing) programs.get(i);
 				String progName = StarsUtils.getPublishedProgramName( liteProg );
-				
+
 				if (progName.equalsIgnoreCase( fields[ImportManagerUtil.IDX_PROGRAM_NAME] )) {
 					int[] suProg = new int[4];
 					suProg[0] = liteProg.getProgramID();
@@ -1006,13 +1037,58 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 	private void programSignUp(int[][] programs, String[] appFields, LiteStarsCustAccountInformation liteAcctInfo,
 		LiteInventoryBase liteInv, LiteStarsEnergyCompany energyCompany) throws Exception
 	{
-		for (int i = 0; i < liteAcctInfo.getAppliances().size(); i++) {
-			LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(i);
-			if (liteApp.getProgramID() == programs[0][0] && liteApp.getInventoryID() == liteInv.getInventoryID())
-				return;
+        int relay = 0;
+        boolean relayNotFound = true;
+        ArrayList currentProgramIDs = new ArrayList(liteAcctInfo.getAppliances().size());
+        if(appFields[ImportManagerUtil.IDX_RELAY_NUM].trim().length() > 0)
+        {
+            relay = Integer.parseInt(appFields[ImportManagerUtil.IDX_RELAY_NUM]);
+        }
+        
+        for (int i = 0; i < liteAcctInfo.getAppliances().size(); i++) 
+        {
+            LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(i);
+             if(liteApp.getInventoryID() == liteInv.getInventoryID())
+             {
+                 if (liteApp.getProgramID() == programs[0][0] && (liteApp.getLoadNumber() == relay))
+                 {
+                    return;
+                 }
+                 
+                 if(liteApp.getLoadNumber() == relay)
+                 {
+                     relayNotFound = false;
+                 }
+                 else
+                 {
+                     currentProgramIDs.add(new Integer(liteApp.getProgramID()));
+                 }
+             }
 		}
 		
-		ImportManagerUtil.programSignUp( programs, liteAcctInfo, liteInv, energyCompany );
+        /*
+         * We are looking for the specified relay.  If it exists on any appliance connected to
+         * the same switch, then we will want to update that specific appliance
+         * and enrollment.  If it doesn't exist on any app for this switch, then we know that it
+         * should be a new separate app and enrollment while maintaining the old enrollment.
+         */
+        if(relayNotFound && relay > -1)
+        {
+            int[] newEnrollment = programs[0];
+            programs = new int[currentProgramIDs.size() + 1][];
+            programs[0] = newEnrollment;
+            for(int j = 0; j < currentProgramIDs.size(); j++)
+            {
+                int[] suProg = new int[4];
+                suProg[0] = ((Integer)currentProgramIDs.get(j)).intValue();
+                suProg[1] = -1; // ApplianceCategoryID (optional)
+                suProg[2] = -1; // GroupID (optional)
+                suProg[3] = -1; // LoadNumber (optional)
+                programs[j + 1] = suProg; 
+            }
+        }
+
+        ImportManagerUtil.programSignUp( programs, liteAcctInfo, liteInv, energyCompany );
 		
 		if (appFields != null && appFields[ImportManagerUtil.IDX_APP_TYPE].trim().length() > 0) {
 			int appID = -1;

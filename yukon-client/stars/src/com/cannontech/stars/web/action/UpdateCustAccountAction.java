@@ -8,6 +8,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.StarsDatabaseCache;
+import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteCICustomer;
@@ -22,6 +23,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.db.customer.Address;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
@@ -285,8 +287,16 @@ public class UpdateCustAccountAction implements ActionBase {
     		
 			/* Update customer account */
 			LiteCustomerAccount liteAccount = liteAcctInfo.getCustomerAccount();
-        	
-			if (!liteAccount.getAccountNumber().equalsIgnoreCase( updateAccount.getAccountNumber() )) {
+            String comparableAcctNum = updateAccount.getAccountNumber();
+            /*
+             * More new rotation digit stuff.  It always thinks the account exists if rotation digits
+             * enter the picture; we need to make sure this doesn't happen.
+             */
+            String comparableDigitProperty = AuthFuncs.getRolePropertyValue(energyCompany.getUserID(), ConsumerInfoRole.ACCOUNT_NUMBER_LENGTH);
+            if(comparableDigitProperty.compareTo(CtiUtilities.STRING_NONE) != 0 && Integer.parseInt(comparableDigitProperty) > 0)
+                comparableAcctNum = comparableAcctNum.substring(0, Integer.parseInt(comparableDigitProperty));
+                
+            if (!liteAccount.getAccountNumber().equalsIgnoreCase( comparableAcctNum )) {
 				// Check to see if the account number has duplicates
 				if (energyCompany.searchAccountByAccountNo(updateAccount.getAccountNumber()) != null)
 					throw new WebClientException( "Account number already exists" );

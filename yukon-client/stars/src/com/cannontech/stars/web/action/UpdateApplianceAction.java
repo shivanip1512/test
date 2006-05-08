@@ -417,6 +417,7 @@ public class UpdateApplianceAction implements ActionBase {
 		com.cannontech.database.data.stars.appliance.ApplianceBase app =
 				(com.cannontech.database.data.stars.appliance.ApplianceBase) StarsLiteFactory.createDBPersistent( liteApp );
 		com.cannontech.database.db.stars.appliance.ApplianceBase appDB = app.getApplianceBase();
+        com.cannontech.database.db.stars.hardware.LMHardwareConfiguration appConfig = app.getLMHardwareConfig();
     	
 		if (updateApp.hasApplianceCategoryID())
 			appDB.setApplianceCategoryID( new Integer(updateApp.getApplianceCategoryID()) );
@@ -431,9 +432,12 @@ public class UpdateApplianceAction implements ActionBase {
 			appDB.setKWCapacity( new Double(updateApp.getKWCapacity()) );
 		if (updateApp.hasEfficiencyRating())
 			appDB.setEfficiencyRating( new Double(updateApp.getEfficiencyRating()) );
+        
+        appConfig.setLoadNumber(new Integer(updateApp.getLoadNumber()));
     	
 		Transaction.createTransaction(Transaction.UPDATE, appDB).execute();
-		StarsLiteFactory.setLiteStarsAppliance( liteApp, app );
+        Transaction.createTransaction(Transaction.UPDATE, appConfig).execute();
+        StarsLiteFactory.setLiteStarsAppliance( liteApp, app );
 		
 		if (updateApp.getAirConditioner() != null) {
 			ApplianceAirConditioner appAC = new ApplianceAirConditioner();

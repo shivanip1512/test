@@ -2428,15 +2428,16 @@ public class LiteStarsEnergyCompany extends LiteBase {
     /**
      * Search customer account by account # within the energy company.
      */
-    public LiteStarsCustAccountInformation searchAccountByAccountNo(String accountNo) {
+    public LiteStarsCustAccountInformation searchAccountByAccountNo(String accountNo) 
+    {
         ArrayList custAcctInfoList = getAllCustAccountInformation();
-        for (int i = 0; i < custAcctInfoList.size(); i++) {
-            LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) custAcctInfoList.get(i);
-            if (liteAcctInfo.getCustomerAccount().getAccountNumber().equalsIgnoreCase( accountNo ))
-            {
-                if (!liteAcctInfo.isExtended()) extendCustAccountInfo( liteAcctInfo );
-                return liteAcctInfo;
-            }
+        String comparableDigitProperty = AuthFuncs.getRolePropertyValue(getUserID(), ConsumerInfoRole.ACCOUNT_NUMBER_LENGTH);
+        int comparableDigitEndIndex = 0;
+        if(comparableDigitProperty.compareTo(CtiUtilities.STRING_NONE) != 0 && Integer.parseInt(comparableDigitProperty) > 0)
+        {
+            comparableDigitEndIndex = Integer.parseInt(comparableDigitProperty);
+            if(accountNo.length() >= comparableDigitEndIndex)
+                accountNo = accountNo.substring(0, comparableDigitEndIndex);
         }
         
         if (!isAccountsLoaded()) {

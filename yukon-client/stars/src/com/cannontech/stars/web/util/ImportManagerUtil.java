@@ -199,7 +199,7 @@ public class ImportManagerUtil {
 	public static final int IDX_R1_STATUS = inv_idx++;
 	public static final int IDX_R2_STATUS = inv_idx++;
 	public static final int IDX_R3_STATUS = inv_idx++;
-	public static final int NUM_INV_FIELDS = inv_idx;
+    public static final int NUM_INV_FIELDS = inv_idx;
 	
 	// Appliance fields
 	// IDX_LINE_NUM = 0
@@ -454,7 +454,7 @@ public class ImportManagerUtil {
 	
 	private static void setStarsCustAccount(StarsCustAccount account, String[] fields, LiteStarsEnergyCompany energyCompany, ImportProblem problem) {
 	    account.setAccountNumber( fields[IDX_ACCOUNT_NO] );
-	    account.setIsCommercial( fields[IDX_CUSTOMER_TYPE].equalsIgnoreCase("COM") );
+	    account.setIsCommercial( fields[IDX_CUSTOMER_TYPE].equalsIgnoreCase("COM") || fields[IDX_COMPANY_NAME].length() > 0);
 	    account.setCompany( fields[IDX_COMPANY_NAME] );
 	    account.setAccountNotes( fields[IDX_ACCOUNT_NOTES] );
 	    account.setPropertyNumber( fields[IDX_MAP_NO] );
@@ -518,6 +518,7 @@ public class ImportManagerUtil {
 	    PrimaryContact primContact = new PrimaryContact();
 	    primContact.setLastName( fields[IDX_LAST_NAME] );
 	    primContact.setFirstName( fields[IDX_FIRST_NAME] );
+        primContact.setLoginID(UserUtils.USER_DEFAULT_ID);
 	    
 	    if (fields[IDX_HOME_PHONE].trim().length() > 0) {
 			try {
@@ -870,7 +871,7 @@ public class ImportManagerUtil {
 		energyCompany.deleteStarsCustAccountInformation( liteAcctInfo.getAccountID() );
 	}
 	
-	private static int getApplianceCategoryID(LiteStarsEnergyCompany energyCompany, String appType) {
+	public static int getApplianceCategoryID(LiteStarsEnergyCompany energyCompany, String appType) {
 		ArrayList appCats = energyCompany.getAllApplianceCategories();
 		for (int i = 0; i < appCats.size(); i++) {
 			LiteApplianceCategory appCat = (LiteApplianceCategory) appCats.get(i);
@@ -902,6 +903,11 @@ public class ImportManagerUtil {
 			double kwCap = Double.parseDouble(fields[IDX_APP_KW]);
 			if (kwCap >= 0) app.setKWCapacity( kwCap );
 		}
+
+        if (fields[IDX_RELAY_NUM].length() > 0) {
+            int relay = Integer.parseInt(fields[IDX_RELAY_NUM]);
+            if (relay >= 0) app.setLoadNumber(relay);
+        }
 		
 		Location location = new Location();
 		location.setEntryID( CtiUtilities.NONE_ZERO_ID );
@@ -1113,14 +1119,15 @@ public class ImportManagerUtil {
 			}
 		}
 		
-		if (liteApp != null) {
+		if (liteApp != null) 
+		{
 			StarsUpdateAppliance updateApp = new StarsUpdateAppliance();
 			updateApp.setApplianceID( appID );
 			setStarsAppliance( updateApp, fields, energyCompany );
 			
 			UpdateApplianceAction.updateAppliance( updateApp, liteAcctInfo );
 			energyCompany.deleteStarsCustAccountInformation( liteAcctInfo.getAccountID() );
-		}
+        }
 		else
 			newAppliance( fields, liteAcctInfo, energyCompany );
 	}
