@@ -88,6 +88,10 @@
           <property-name>strategyFactory</property-name>
           <value>#{strategyFactory}</value>
         </managed-property>
+        <managed-property>
+            <property-name>commercialCurtailmentBean</property-name>
+            <value>#{sCommercialCurtailment}</value>
+        </managed-property>
     </managed-bean>
 
     <managed-bean>
