@@ -3,6 +3,7 @@ package com.cannontech.web.cc.methods;
 import java.util.List;
 
 import javax.faces.component.UIComponent;
+import javax.faces.context.FacesContext;
 
 import com.cannontech.cc.model.Group;
 import com.cannontech.cc.model.Program;
@@ -40,6 +41,10 @@ public abstract class EventCreationBase {
     public abstract String doAfterCustomerPage();
     
     public abstract void initialize();
+    
+    public String cancel() {
+        return "programSelect";
+    }
 
     public void setStrategy(StrategyBase strategy) {
         this.strategy = strategy;
