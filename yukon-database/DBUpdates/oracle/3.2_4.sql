@@ -23,15 +23,15 @@ insert into YukonRoleProperty values(-10809,-108,'Standard Page Style Sheet',' '
 drop table dynamiclmprogramdirect;
 
 create table DynamicLMProgramDirect (
-   DeviceID             number              not null,
-   CurrentGearNumber    number              not null,
-   LastGroupControlled  number              not null,
-   StartTime            date             not null,
-   StopTime             date             not null,
-   TimeStamp            date             not null,
-   NotifyActiveTime     date             not null,
-   StartedRampingOut    date             not null,
-   NotifyInactiveTime   date             not null,
+   DeviceID             numeric              not null,
+   CurrentGearNumber    numeric              not null,
+   LastGroupControlled  numeric              not null,
+   StartTime            datetime             not null,
+   StopTime             datetime             not null,
+   TimeStamp            datetime             not null,
+   NotifyActiveTime     datetime             not null,
+   StartedRampingOut    datetime             not null,
+   NotifyInactiveTime   datetime             not null,
    ConstraintOverride   char(1)              not null
 );
 
@@ -47,10 +47,7 @@ insert into yukonlistentry values (137, 100, 0, 'Mid Level Latch', 0);
 
 insert into YukonRoleProperty values(-10810,-108, 'pop_up_appear_style','onmouseover', 'Style of the popups appearance when the user selects element in capcontrol.'); 
 
-insert into YukonGroupRole values (-1098,-2, -108, -10809, '(none)');
-insert into yukongrouprole values (-2008,-303,-108,-10809,'(none)');
-insert into yukongrouprole values (-2209,-304,-108,-10809,'(none)');
-insert into YukonUserRole values (-409, -1, -108, -10809, '(none)');
+insert into YukonRoleProperty values(-10811,-108, 'inbound_voice_home_url', '/voice/inboundOptOut.jsp', 'Home URL for inbound voice logins');
 
 /*@error ignore-begin */
 
@@ -112,4 +109,4 @@ insert into YukonUserRole values (-758,-1,-201,-20158,'(none)');
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
 /**************************************************************/
-/* __YUKON_VERSION__ */
+insert into CTIDatabase values('3.2', 'DBMaintainer', '10-MAY-2006', 'Manual version insert done', 4 );

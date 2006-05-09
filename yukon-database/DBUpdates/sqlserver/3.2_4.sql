@@ -29,14 +29,7 @@ go
 insert into YukonRoleProperty values(-10809,-108,'Standard Page Style Sheet',' ','A comma separated list of URLs for CSS files that will be included on every Standard Page');
 go
 
-insert into YukonGroupRole values (-1098,-2, -108, -10809, '(none)');
-insert into yukongrouprole values (-2008,-303,-108,-10809,'(none)');
-insert into yukongrouprole values (-2209,-304,-108,-10809,'(none)');
-insert into YukonUserRole values (-409, -1, -108, -10809, '(none)');
-go
-
 drop table dynamiclmprogramdirect;
-go
 
 create table DynamicLMProgramDirect (
    DeviceID             numeric              not null,
@@ -67,6 +60,9 @@ insert into yukonlistentry values (137, 100, 0, 'Mid Level Latch', 0);
 go
 
 insert into YukonRoleProperty values(-10810,-108, 'pop_up_appear_style','onmouseover', 'Style of the popups appearance when the user selects element in capcontrol.');
+go
+
+insert into YukonRoleProperty values(-10811,-108, 'inbound_voice_home_url', '/voice/inboundOptOut.jsp', 'Home URL for inbound voice logins');
 go
 
 /*@error ignore-begin */
@@ -142,4 +138,4 @@ go
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
 /**************************************************************/
-/* __YUKON_VERSION__ */
+insert into CTIDatabase values('3.2', 'Ryan', '10-MAY-2006', 'Manual version insert done', 4 );
