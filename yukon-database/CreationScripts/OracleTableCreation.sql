@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     5/9/2006 12:16:31 PM                         */
+/* Created on:     5/9/2006 12:51:33 PM                         */
 /*==============================================================*/
 
 
@@ -467,6 +467,8 @@ drop table STATEGROUP cascade constraints;
 drop table SYSTEMLOG cascade constraints;
 
 drop table SeasonSchedule cascade constraints;
+
+drop table SequenceNumber cascade constraints;
 
 drop table SettlementConfig cascade constraints;
 
@@ -4539,6 +4541,17 @@ alter table SeasonSchedule
    add constraint PK_SEASONSCHEDULE primary key (ScheduleID);
 
 /*==============================================================*/
+/* Table: SequenceNumber                                        */
+/*==============================================================*/
+create table SequenceNumber  (
+   LastValue            NUMBER                          not null,
+   SequenceName         VARCHAR2(20)                    not null
+);
+
+alter table SequenceNumber
+   add constraint PK_SEQUENCENUMBER primary key (SequenceName);
+
+/*==============================================================*/
 /* Table: SettlementConfig                                      */
 /*==============================================================*/
 create table SettlementConfig  (
@@ -5239,8 +5252,6 @@ insert into YukonGroupRole values(-1023,-2,-101,-10103,'(none)');
 insert into YukonGroupRole values(-1024,-2,-101,-10104,'(none)');
 insert into YukonGroupRole values(-1027,-2,-101,-10107,'(none)');
 insert into YukonGroupRole values(-1028,-2,-101,-10108,'(none)');
-insert into YukonGroupRole values(-1029,-2,-101,-10109,'(none)');
-insert into YukonGroupRole values(-1030,-2,-101,-10110,'(none)');
 insert into YukonGroupRole values(-1031,-2,-101,-10111,'(none)');
 
 insert into YukonGroupRole values(-1048,-2,-102,-10221,'(none)');

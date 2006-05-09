@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     5/9/2006 12:15:48 PM                         */
+/* Created on:     5/9/2006 12:50:45 PM                         */
 /*==============================================================*/
 
 
@@ -1926,6 +1926,14 @@ if exists (select 1
            where  id = object_id('SeasonSchedule')
             and   type = 'U')
    drop table SeasonSchedule
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('SequenceNumber')
+            and   type = 'U')
+   drop table SequenceNumber
 go
 
 
@@ -6928,6 +6936,21 @@ go
 
 
 /*==============================================================*/
+/* Table: SequenceNumber                                        */
+/*==============================================================*/
+create table SequenceNumber (
+   LastValue            numeric              not null,
+   SequenceName         varchar(20)          not null
+)
+go
+
+
+alter table SequenceNumber
+   add constraint PK_SEQUENCENUMBER primary key  (SequenceName)
+go
+
+
+/*==============================================================*/
 /* Table: SettlementConfig                                      */
 /*==============================================================*/
 create table SettlementConfig (
@@ -7684,8 +7707,6 @@ insert into YukonGroupRole values(-1023,-2,-101,-10103,'(none)');
 insert into YukonGroupRole values(-1024,-2,-101,-10104,'(none)');
 insert into YukonGroupRole values(-1027,-2,-101,-10107,'(none)');
 insert into YukonGroupRole values(-1028,-2,-101,-10108,'(none)');
-insert into YukonGroupRole values(-1029,-2,-101,-10109,'(none)');
-insert into YukonGroupRole values(-1030,-2,-101,-10110,'(none)');
 insert into YukonGroupRole values(-1031,-2,-101,-10111,'(none)');
 
 insert into YukonGroupRole values(-1048,-2,-102,-10221,'(none)');
