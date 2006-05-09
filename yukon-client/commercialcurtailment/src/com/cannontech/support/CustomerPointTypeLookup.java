@@ -67,6 +67,10 @@ public class CustomerPointTypeLookup {
             EnergyCompanyFuncs.getEnergyCompanyProperty(energyCompany, 
                                                         EnergyCompanyRole.APPLICABLE_POINT_TYPE_KEY);
         
+        if (property == null) {
+            return Collections.emptySet();
+        }
+        property = property.trim();
         List<String> keys = Arrays.asList(property.split("\\s*,\\s*"));
         
         return new TreeSet<String>(keys);
