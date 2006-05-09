@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     5/8/2006 4:41:31 PM                          */
+/* Created on:     5/9/2006 12:16:31 PM                         */
 /*==============================================================*/
 
 
@@ -5450,9 +5450,9 @@ insert into yukongrouprole values (-2005,-303,-108,-10805,'(none)');
 insert into yukongrouprole values (-2006,-303,-108,-10806,'(none)');
 insert into yukongrouprole values (-2007,-303,-108,-10807,'(none)');
 insert into yukongrouprole values (-2008,-303,-108,-10808,'(none)');
-insert into yukongrouprole values (-2008,-303,-108,-10809,'(none)');
-insert into yukongrouprole values (-2009,-303,-108,-10810,'(none)');
-insert into yukongrouprole values (-2010,-303,-108,-10811,'(none)');
+insert into yukongrouprole values (-2009,-303,-108,-10809,'(none)');
+insert into yukongrouprole values (-2010,-303,-108,-10810,'(none)');
+insert into yukongrouprole values (-2011,-303,-108,-10811,'(none)');
 
 insert into yukongrouprole values (-2021,-303,-201,-20101,'(none)');
 insert into yukongrouprole values (-2022,-303,-201,-20102,'true');
