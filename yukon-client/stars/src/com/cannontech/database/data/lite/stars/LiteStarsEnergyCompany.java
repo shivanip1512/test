@@ -2440,6 +2440,19 @@ public class LiteStarsEnergyCompany extends LiteBase {
                 accountNo = accountNo.substring(0, comparableDigitEndIndex);
         }
         
+        for (int i = 0; i < custAcctInfoList.size(); i++) 
+        {
+            LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) custAcctInfoList.get(i);
+            String comparableAcctNum = liteAcctInfo.getCustomerAccount().getAccountNumber();
+            if(comparableDigitEndIndex > 0 && comparableAcctNum.length() >= comparableDigitEndIndex)
+                comparableAcctNum = comparableAcctNum.substring(0, comparableDigitEndIndex);
+            if (comparableAcctNum.equalsIgnoreCase( accountNo ))
+            {
+                if (!liteAcctInfo.isExtended()) extendCustAccountInfo( liteAcctInfo );
+                return liteAcctInfo;
+            }
+        }
+        
         if (!isAccountsLoaded()) {
             try {
                 int[] accountIDs = com.cannontech.database.db.stars.customer.CustomerAccount.searchByAccountNumber( accountNo, getLiteID() );
