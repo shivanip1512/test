@@ -1,6 +1,7 @@
 package com.cannontech.database.incrementer;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -44,8 +45,9 @@ public class MultiTableIncrementer {
                 + " = '" + sequenceKey + "'";
     
             incrementSql = "update " + sequenceTableName + " set " 
-                + valueColumnName +  "= (" + valueColumnName + " + 1)"
-                + " where " + keyColumnName + " = '" + sequenceKey + "'";
+                + valueColumnName +  "= ? "
+                + " where " + keyColumnName + " = '" + sequenceKey + "'"
+                + " and " + valueColumnName +  " = ?";
             dirty = false;
         }
     }
@@ -57,28 +59,33 @@ public class MultiTableIncrementer {
             public Object doInConnection(Connection con) throws SQLException, DataAccessException {
                 boolean previousAutoCommit = con.getAutoCommit();
                 con.setAutoCommit(false);
-                int previousIsolationLevel = con.getTransactionIsolation();
-                con.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
+                //int previousIsolationLevel = con.getTransactionIsolation();
+                //con.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
                 Statement statement = con.createStatement();
                 try {
-                    // update the table
-                    int affected = doUpdate(statement);
-                    if (affected == 0) {
-                        doInsert(statement);
-                        affected = doUpdate(statement);
+                    ResultSet resultSet = statement.executeQuery(valueSql);
+                    int  lastValue;
+                    if (resultSet.next()) {
+                        lastValue = resultSet.getInt(1);
+                    } else {
+                        statement.executeUpdate(insertSql);
+                        lastValue = 0;
                     }
+                    
+                    // update the table
+                    PreparedStatement pStatement = con.prepareStatement(incrementSql);
+                    pStatement.setInt(1, lastValue + 1);
+                    pStatement.setInt(2, lastValue);
+                    int affected = pStatement.executeUpdate();
                     if (affected != 1) {
                         throw new IncorrectUpdateSemanticsDataAccessException("More than one row affected :" + affected);
                     }
-                    
                     // get the current value
-                    ResultSet resultSet = doSelect(statement);
-                    resultSet.next();
-                    return resultSet.getLong(1);
+                    return lastValue + 1;
                 } finally {
                     statement.close();
                     con.commit();
-                    con.setTransactionIsolation(previousIsolationLevel);
+                    //con.setTransactionIsolation(previousIsolationLevel);
                     con.setAutoCommit(previousAutoCommit);
                 }
             }
@@ -87,26 +94,11 @@ public class MultiTableIncrementer {
         return result.intValue();
     }
 
-    protected void doInsert(Statement statement) throws SQLException {
-        statement.executeUpdate(insertSql);
-    }
-
-    private ResultSet doSelect(Statement statement) throws SQLException {
-        ResultSet resultSet = 
-            statement.executeQuery(valueSql);
-        return resultSet;
-    }
-
-    private int doUpdate(Statement statement) throws SQLException {
-        return statement.executeUpdate(incrementSql);
-    }
-    
     public void initializeSequence(final String tableName, final String identityColumn) {
         initializeSql();
         final JdbcTemplate jdbc = new JdbcTemplate(dataSource);
         PlatformTransactionManager transactionManager = new DataSourceTransactionManager(dataSource);
         TransactionTemplate tt = new TransactionTemplate(transactionManager);
-        tt.setIsolationLevelName("ISOLATION_REPEATABLE_READ");
         tt.execute(new TransactionCallback() {
             public Object doInTransaction(TransactionStatus status) {
                 // get current max
