@@ -127,9 +127,9 @@ Today is <xsl:value-of select="startdate" />. Utility is extending the event whi
 
     <!-- Standard Message Scripts -->
     <xsl:template name="closing">
-You may log-in to the web site to view your load profile at http://www.xxx.com using your assigned login name and password.
+You may log-in to the web site to view your load profile using your assigned login name and password.
 
-If you have questions regarding this control period, please call 1-555-123-4567 or your local utility representative.
+If you have questions regarding this control period, please call your local utility representative.
 
 Thank you for your cooperation.
     </xsl:template>
