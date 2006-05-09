@@ -675,7 +675,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 							}
 						}
 						else {
-							if (acctNo != null && !acctNo.equals("") && !acctNo.equalsIgnoreCase( custFields[ImportManagerUtil.IDX_ACCOUNT_NO] ))
+							if (acctNo != null && !acctNo.equals("") && (custFields != null && !acctNo.equalsIgnoreCase( custFields[ImportManagerUtil.IDX_ACCOUNT_NO] )))
 								throw new WebClientException("Cannot import hardware, serial #" + hwFields[ImportManagerUtil.IDX_SERIAL_NO] + " already exists in another account");
 							
 							if (acctNo != null && acctNo.equals( hwFields[ImportManagerUtil.IDX_ACCOUNT_ID] ))

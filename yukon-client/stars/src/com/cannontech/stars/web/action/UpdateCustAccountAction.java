@@ -8,8 +8,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.StarsDatabaseCache;
-import com.cannontech.database.cache.functions.AuthFuncs;
-import com.cannontech.database.cache.functions.ContactFuncs;
+import com.cannontech.database.cache.functions.*;
 import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
@@ -288,15 +287,20 @@ public class UpdateCustAccountAction implements ActionBase {
 			/* Update customer account */
 			LiteCustomerAccount liteAccount = liteAcctInfo.getCustomerAccount();
             String comparableAcctNum = updateAccount.getAccountNumber();
+            String existingAcctNum = liteAccount.getAccountNumber();
             /*
              * More new rotation digit stuff.  It always thinks the account exists if rotation digits
              * enter the picture; we need to make sure this doesn't happen.
              */
-            String comparableDigitProperty = AuthFuncs.getRolePropertyValue(energyCompany.getUserID(), ConsumerInfoRole.ACCOUNT_NUMBER_LENGTH);
+            String comparableDigitProperty = AuthFuncs.getRolePropertyValue(YukonUserFuncs.getLiteYukonUser(energyCompany.getUserID()), ConsumerInfoRole.ACCOUNT_NUMBER_LENGTH);
             if(comparableDigitProperty.compareTo(CtiUtilities.STRING_NONE) != 0 && Integer.parseInt(comparableDigitProperty) > 0)
-                comparableAcctNum = comparableAcctNum.substring(0, Integer.parseInt(comparableDigitProperty));
-                
-            if (!liteAccount.getAccountNumber().equalsIgnoreCase( comparableAcctNum )) {
+            { 
+                if(comparableAcctNum.length() >= Integer.parseInt(comparableDigitProperty))
+                    comparableAcctNum = comparableAcctNum.substring(0, Integer.parseInt(comparableDigitProperty));
+                if(existingAcctNum.length() >= Integer.parseInt(comparableDigitProperty))
+                    existingAcctNum = existingAcctNum.substring(0, Integer.parseInt(comparableDigitProperty));
+            }    
+            if (!existingAcctNum.equalsIgnoreCase( comparableAcctNum )) {
 				// Check to see if the account number has duplicates
 				if (energyCompany.searchAccountByAccountNo(updateAccount.getAccountNumber()) != null)
 					throw new WebClientException( "Account number already exists" );
