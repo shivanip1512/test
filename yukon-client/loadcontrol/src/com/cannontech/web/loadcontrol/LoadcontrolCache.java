@@ -609,6 +609,7 @@ private void handleCurtailmentProgram(LMProgramCurtailment prog)
  */
 private void handleDirectProgram(LMProgramDirect prog) 
 {
+	directPrograms.remove(prog);
 	directPrograms.add(prog);
 	//replaceProgram(prog,directPrograms);
 }
