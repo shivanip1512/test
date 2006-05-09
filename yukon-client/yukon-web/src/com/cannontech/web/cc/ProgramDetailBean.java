@@ -1,6 +1,7 @@
 package com.cannontech.web.cc;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
@@ -53,27 +54,23 @@ public class ProgramDetailBean {
             (String) externalContext.getRequestParameterMap().get("programId");
         int programId = Integer.parseInt(programIdStr);
         program = programService.getProgram(programId);
-        updateGroupData();
+        updateData();
         
         return "programDetail";
     }
     
     public String createNewProgram() {
         program = new Program();
-        assignedGroups = new ArrayList<Group>();
-        assignedGroupModel.setWrappedData(assignedGroups);
         
-        int energyCompanyID = commercialCurtailmentBean.getEnergyCompany().getEnergyCompanyID();
-        Set<Group> allGroups = programService.getAllGroups(energyCompanyID);
-
-        unassignedGroups = new ArrayList<Group>(allGroups);
-        unassignedGroupModel.setWrappedData(unassignedGroups);
+        programParameters = Collections.emptyList();
+        assignedGroups = Collections.emptyList();
+        
         
         return "create";
     }
     
 
-    protected void updateGroupData() {
+    protected void updateData() {
         List<AvailableProgramGroup> availableProgramGroups = 
             programService.getAvailableProgramGroups(getProgram());
         assignedGroups = new ArrayList<Group>(availableProgramGroups.size());
@@ -86,6 +83,9 @@ public class ProgramDetailBean {
         Set<Group> allGroups = programService.getUnassignedGroups(getProgram());
         unassignedGroups = new ArrayList<Group>(allGroups);
         unassignedGroupModel.setWrappedData(unassignedGroups);
+
+        StrategyBase strategy = getStrategyFactory().getStrategy(getProgram());
+        programParameters = strategy.getParameters(getProgram());
     }
     
     public void setProgram(Program program) {
@@ -123,6 +123,12 @@ public class ProgramDetailBean {
     
     public String save() {
         doSave();
+        return "success";
+    }
+    
+    public String saveNew() {
+        doSave();
+        updateData();
         return "success";
     }
     
@@ -165,8 +171,6 @@ public class ProgramDetailBean {
     }
 
     public List<ProgramParameter> getProgramParameters() {
-        StrategyBase strategy = getStrategyFactory().getStrategy(getProgram());
-        programParameters = strategy.getParameters(getProgram());
         return programParameters;
     }
 

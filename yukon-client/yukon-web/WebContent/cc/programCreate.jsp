@@ -21,7 +21,7 @@ Program Name: <t:inputText value="#{sProgramDetail.program.name}">
 </t:selectOneMenu></div>
 
 <div>
-<h:commandButton action="#{sProgramDetail.save}" value="Create"/>
+<h:commandButton action="#{sProgramDetail.saveNew}" value="Create"/>
 <h:commandButton action="#{sProgramDetail.cancel}" value="Cancel"/>
 </div>
 
