@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.140 $
-* DATE         :  $Date: 2006/05/04 22:42:36 $
+* REVISION     :  $Revision: 1.141 $
+* DATE         :  $Date: 2006/05/09 20:07:44 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -952,8 +952,12 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                                     did = pPoint->getDeviceID();
                                 }
 
+                                bool is_a_control = writeControlMessageToPIL(did, rawstate, boost::static_pointer_cast<CtiPointStatus>(pPoint), Cmd);
+
                                 if(isDeviceGroupType(did))      // Only group class paos can accumulate control history.
                                 {
+                                    CtiPointDataMsg *pPseudoValPD = 0;
+
                                     CtiPendingPointOperations *pendingControlRequest = CTIDBG_new CtiPendingPointOperations(pPoint->getID());
                                     pendingControlRequest->setType(CtiPendingPointOperations::pendingControl);
                                     pendingControlRequest->setControlState( CtiPendingPointOperations::controlSentToPorter );
@@ -966,16 +970,26 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                                     pendingControlRequest->getControl().setControlDuration(0);
 
                                     string devicename= resolveDeviceName(pPoint);
-                                    CtiSignalMsg *pFailSig = CTIDBG_new CtiSignalMsg(pPoint->getID(), Cmd->getSOE(), devicename + " / " + pPoint->getName() + ": Commanded Control " + ResolveStateName(pPoint->getStateGroupID(), rawstate) + " Failed", getAlarmStateName( pPoint->getAlarming().getAlarmCategory(CtiTablePointAlarming::commandFailure) ), GeneralLogType, pPoint->getAlarming().getAlarmCategory(CtiTablePointAlarming::commandFailure), Cmd->getUser());
 
-                                    if(pFailSig->getSignalCategory() > SignalEvent)
+                                    if( pPoint->isPseudoPoint() )
                                     {
-                                        pFailSig->setTags((pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) | (pPoint->getAlarming().isAutoAcked(CtiTablePointAlarming::commandFailure) ? 0 : TAG_UNACKNOWLEDGED_ALARM));
-                                        pFailSig->setLogType(AlarmCategoryLogType);
+                                        // We are going to fake a rawstate behavior here since no one else is likely to do it for us...
+                                        pPseudoValPD = CTIDBG_new CtiPointDataMsg(pPoint->getID(), (DOUBLE) rawstate, NormalQuality, pPoint->getType());
                                     }
-                                    pFailSig->setCondition(CtiTablePointAlarming::commandFailure);
+                                    else if( is_a_control )
+                                    {
+                                        CtiSignalMsg *pFailSig = CTIDBG_new CtiSignalMsg(pPoint->getID(), Cmd->getSOE(), devicename + " / " + pPoint->getName() + ": Commanded Control " + ResolveStateName(pPoint->getStateGroupID(), rawstate) + " Failed", getAlarmStateName( pPoint->getAlarming().getAlarmCategory(CtiTablePointAlarming::commandFailure) ), GeneralLogType, pPoint->getAlarming().getAlarmCategory(CtiTablePointAlarming::commandFailure), Cmd->getUser());
 
-                                    pendingControlRequest->setSignal( pFailSig );
+                                        if(pFailSig->getSignalCategory() > SignalEvent)
+                                        {
+                                            pFailSig->setTags((pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) | (pPoint->getAlarming().isAutoAcked(CtiTablePointAlarming::commandFailure) ? 0 : TAG_UNACKNOWLEDGED_ALARM));
+                                            pFailSig->setLogType(AlarmCategoryLogType);
+                                        }
+                                        pFailSig->setCondition(CtiTablePointAlarming::commandFailure);
+
+                                        pendingControlRequest->setSignal( pFailSig );
+                                    }
+
                                     addToPendingSet(pendingControlRequest, Cmd->getMessageTime());
 
                                     if(gDispatchDebugLevel & DISPATCH_DEBUG_CONTROLS)
@@ -987,6 +1001,8 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                                     CtiSignalMsg *pCRP = CTIDBG_new CtiSignalMsg(pPoint->getID(), Cmd->getSOE(), "Control " + ResolveStateName(pPoint->getStateGroupID(), rawstate) + " Sent", string(), GeneralLogType, SignalEvent, Cmd->getUser());
                                     MainQueue_.putQueue( pCRP );
                                     pCRP = 0;
+                                    if(pPseudoValPD) MainQueue_.putQueue( pPseudoValPD );
+                                    pPseudoValPD = 0;
 
                                     pDyn->getDispatch().setTags( TAG_CONTROL_PENDING );
                                 }
@@ -995,8 +1011,6 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                                     dout << CtiTime() << " " << resolveDeviceName(pPoint) << " / " << pPoint->getName() << " CONTROL SENT to port control. Control expires at " << CtiTime( Cmd->getMessageTime() + pPoint->getControlExpirationTime()) << endl;
                                 }
-
-                                writeControlMessageToPIL(did, rawstate, boost::static_pointer_cast<CtiPointStatus>(pPoint), Cmd);
                             }
                         }
                     }
@@ -5470,8 +5484,9 @@ void CtiVanGogh::reportOnThreads()
     }
 }
 
-void CtiVanGogh::writeControlMessageToPIL(LONG deviceid, LONG rawstate, CtiPointStatusSPtr pPoint, const CtiCommandMsg *&Cmd  )
+bool CtiVanGogh::writeControlMessageToPIL(LONG deviceid, LONG rawstate, CtiPointStatusSPtr pPoint, const CtiCommandMsg *&Cmd  )
 {
+    bool control = false;
     string  cmdstr;
     CtiRequestMsg *pReq = 0;
 
@@ -5485,6 +5500,8 @@ void CtiVanGogh::writeControlMessageToPIL(LONG deviceid, LONG rawstate, CtiPoint
         cmdstr += ResolveStateName(pPoint->getStateGroupID(), rawstate);
     }
 
+    if( stringContainsIgnoreCase( cmdstr, "control ") ) control = true;  // Do this before we append the point name.  It will likely include "control"
+
     cmdstr += string(" select pointid " + CtiNumStr(pPoint->getPointID()));
 
     if(pReq = CTIDBG_new CtiRequestMsg( deviceid, cmdstr ))
@@ -5496,6 +5513,8 @@ void CtiVanGogh::writeControlMessageToPIL(LONG deviceid, LONG rawstate, CtiPoint
 
     delete pReq;
     pReq = 0;
+
+    return control;
 }
 
 void CtiVanGogh::writeMessageToClient(CtiMessage *&pReq, string clientName)
