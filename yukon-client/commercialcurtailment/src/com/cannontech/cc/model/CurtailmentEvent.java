@@ -43,7 +43,7 @@ public class CurtailmentEvent extends BaseEvent {
         this.id = id;
     }
 
-    @Column(name="CCurtCurtailmentEventMessage", nullable=false)
+    @Column(name="message", nullable=false)
     public String getMessage() {
         return message;
     }
@@ -52,7 +52,7 @@ public class CurtailmentEvent extends BaseEvent {
         this.message = message;
     }
     
-    @Column(name="CCurtCurtailmentEventNotificationTime", nullable=false)
+    @Column(name="notificationTime", nullable=false)
     public Date getNotificationTime() {
         return notificationTime;
     }
@@ -71,7 +71,7 @@ public class CurtailmentEvent extends BaseEvent {
         this.program = program;
     }
     
-    @Column(name="CCurtCurtailmentEventStartTime", nullable=false)
+    @Column(name="startTime", nullable=false)
     public Date getStartTime() {
         return startTime;
     }
@@ -94,7 +94,7 @@ public class CurtailmentEvent extends BaseEvent {
         return state;
     }
     
-    @Column(name="CCurtCurtailmentEventDuration", nullable=false)
+    @Column(name="duration", nullable=false)
     public Integer getDuration() {
         return duration;
     }

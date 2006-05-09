@@ -20,7 +20,7 @@ import com.cannontech.enums.NotificationReason;
 import com.cannontech.enums.NotificationState;
 
 @Entity
-@Table(name = "CCurtCurtailmentEventNotif")
+@Table(name = "CCurtCENotif")
 public class CurtailmentEventNotif {
     private Integer id;
     private Integer notifTypeId;
@@ -32,7 +32,7 @@ public class CurtailmentEventNotif {
     @Id
     @GenericGenerator(name="yukon", strategy="com.cannontech.database.incrementer.HibernateIncrementer")
     @GeneratedValue(generator="yukon")
-    @Column(name = "CCurtCurtailmentEventNotifId")
+    @Column(name = "CCurtCENotifId")
     public Integer getId() {
         return id;
     }
@@ -69,7 +69,7 @@ public class CurtailmentEventNotif {
     }
     
     @ManyToOne
-    @JoinColumn(name="CCurtCurtailmentParticipantId", nullable=false)
+    @JoinColumn(name="CCurtCEParticipantId", nullable=false)
     public CurtailmentEventParticipant getParticipant() {
         return participant;
     }

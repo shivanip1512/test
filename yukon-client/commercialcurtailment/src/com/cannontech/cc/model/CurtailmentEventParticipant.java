@@ -17,7 +17,7 @@ import org.hibernate.annotations.GenericGenerator;
 import com.cannontech.database.data.notification.NotifMap;
 
 @Entity
-@Table(name = "CCurtCurtailmentEventParticipant",
+@Table(name = "CCurtCEParticipant",
        uniqueConstraints=@UniqueConstraint(columnNames={"CCurtCurtailmentEventId","CustomerId"}))
 public class CurtailmentEventParticipant {
     private Integer id;
@@ -28,7 +28,7 @@ public class CurtailmentEventParticipant {
     @Id
     @GenericGenerator(name="yukon", strategy="com.cannontech.database.incrementer.HibernateIncrementer")
     @GeneratedValue(generator="yukon")
-    @Column(name = "CCurtCurtailmentEventParticipantId")
+    @Column(name = "CCurtCEParticipantId")
     public Integer getId() {
         return id;
     }

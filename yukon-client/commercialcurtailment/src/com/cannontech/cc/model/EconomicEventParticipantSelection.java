@@ -24,7 +24,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name = "CCurtEEParticipantSelection",
-       uniqueConstraints=@UniqueConstraint(columnNames={"CCurtEconomicEventParticipantId","CCurtEEPricingId"}))
+       uniqueConstraints=@UniqueConstraint(columnNames={"CCurtEEParticipantId","CCurtEEPricingId"}))
 public class EconomicEventParticipantSelection {
     public enum SelectionState {DEFAULT, MANUAL};
     private String connectionAudit;
@@ -53,7 +53,7 @@ public class EconomicEventParticipantSelection {
     }
 
     @ManyToOne
-    @JoinColumn(name="CCurtEconomicEventParticipantId", nullable=false)
+    @JoinColumn(name="CCurtEEParticipantId", nullable=false)
     public EconomicEventParticipant getParticipant() {
         return participant;
     }
