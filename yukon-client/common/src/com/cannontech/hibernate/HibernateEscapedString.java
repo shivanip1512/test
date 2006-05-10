@@ -10,6 +10,8 @@ import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
 import org.hibernate.usertype.UserType;
 
+import com.cannontech.common.util.CtiUtilities;
+
 /**
  * Stores Strings in the Yukon standard where null types are
  * represented by the string "(none)".
@@ -20,7 +22,7 @@ import org.hibernate.usertype.UserType;
  */
 public class HibernateEscapedString implements UserType {
 
-    private static final String MARK_EMPTY = "(none)";
+    private static final String MARK_EMPTY = CtiUtilities.STRING_NONE;
     private static final int[] TYPES = { Types.VARCHAR };
 
     public int[] sqlTypes() {
