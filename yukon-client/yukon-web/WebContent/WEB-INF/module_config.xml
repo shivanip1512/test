@@ -23,28 +23,27 @@
      respectively.
 -->
   <quicklinks>
-    <option name="CapControl">
-      <link>/capcontrol/subareas.jsp</link>
-      <requireProperty value="CBCSettingsRole.ACCESS"/>
-    </option>
-    <option name="Commander">
-      <link>/apps/SelectDevice.jsp</link>
-      <requireRole value="CommanderRole.ROLEID"/>
-    </option>
     <option name="Home">
       <link>/home</link>
     </option>
-    <option name="Reporting">
-      <link>/analysis/Reports.jsp</link>
-      <requireRole value="ReportingRole.ROLEID"/>
+    <option name="CapControl">
+      <link>/capcontrol/subareas.jsp</link>
+      <requireProperty value="capcontrol.CBCSettingsRole.ACCESS"/>
     </option>
-    
+    <option name="Commander">
+      <link>/apps/SelectDevice.jsp</link>
+      <requireRole value="application.CommanderRole.ROLEID"/>
+    </option>
+     <option name="Reporting">
+      <link>/analysis/Reports.jsp</link>
+      <requireRole value="application.ReportingRole.ROLEID"/>
+    </option>
   </quicklinks>
   
   <module name="capcontrol">
     <toplinks>
       <option name="Create">
-        <requireProperty value="CBCSettingsRole.CBC_DATABASE_EDIT"/>
+        <requireProperty value="capcontrol.CBCSettingsRole.CBC_DATABASE_EDIT"/>
         <sublinks>
           <option name="Substation">
             <link>/editor/cbcWizBase.jsf?type=4000</link>
@@ -64,7 +63,7 @@
         </sublinks>
       </option>
       <option name="Modify">
-        <requireProperty value="CBCSettingsRole.CBC_DATABASE_EDIT"/>
+        <requireProperty value="capcontrol.CBCSettingsRole.CBC_DATABASE_EDIT"/>
         <sublinks>
           <option name="Edit">
             <script>editorPost()</script>
@@ -75,22 +74,22 @@
         </sublinks>
       </option>
       <option name="Analysis">
-        <requireFalseProperty value="CBCSettingsRole.HIDE_REPORTS"/>
+        <requireFalseProperty value="capcontrol.CBCSettingsRole.HIDE_REPORTS"/>
         <sublinks>
           <option name="Today kVAR/Watt">
-	        <requireFalseProperty value="CBCSettingsRole.HIDE_GRAPHS"/>
+	        <requireFalseProperty value="capcontrol.CBCSettingsRole.HIDE_GRAPHS"/>
             <script>showPopUpChkBoxes('charts.jsp?type=VW&amp;period=Today')</script>
           </option>
           <option name="Today PF">
-	        <requireFalseProperty value="CBCSettingsRole.HIDE_GRAPHS"/>
+	        <requireFalseProperty value="capcontrol.CBCSettingsRole.HIDE_GRAPHS"/>
             <script>showPopUpChkBoxes('charts.jsp?type=PF&amp;period=Today')</script>
           </option>
           <option name="30 Day kVAR/Watt">
-	        <requireFalseProperty value="CBCSettingsRole.HIDE_GRAPHS"/>
+	        <requireFalseProperty value="capcontrol.CBCSettingsRole.HIDE_GRAPHS"/>
             <script>showPopUpChkBoxes('charts.jsp?type=VW')</script>
           </option>
           <option name="30 Day PF">
-	        <requireFalseProperty value="CBCSettingsRole.HIDE_GRAPHS"/>
+	        <requireFalseProperty value="capcontrol.CBCSettingsRole.HIDE_GRAPHS"/>
             <script>showPopUpChkBoxes('charts.jsp?type=PF')</script>
           </option>
         </sublinks>
@@ -110,7 +109,7 @@
             <script>post('/editor/paoSchedListBase.jsf')</script>
           </option>
           <option name="One-Line">
-	        <requireFalseProperty value="CBCSettingsRole.HIDE_ONELINE"/>
+	        <requireFalseProperty value="capcontrol.CBCSettingsRole.HIDE_ONELINE"/>
             <script>showConfirmWin(this)</script>
           </option>
           <option name="Recent Controls">
@@ -160,28 +159,25 @@
     <css file="/cc/base.css"/>
     <css file="/WebConfig/yukon/styles/commcurtaillogos.css"/>
     <skin name="standard"/>
+    <requireRole value="operator.CommercialMeteringRole.ROLEID"/>
   </module>
   
   <module name="commercialcurtailment_user">
     <toplinks>
-      <option name="Events">
-        <sublinks>
-          <option name="Control">
-            <link>/cc/programSelect.jsf</link>
-          </option>
-          <option name="Overview">
-            <link>/cc/eventOverview.jsf</link>
-          </option>
-        </sublinks>
+      <option name="Control">
+        <link>/cc/user/overview.jsf</link>
+      </option>
+      <option name="Trending">
+        <link>/user/CILC/user_trending_sp.jsp</link>
+      </option>
+      <option name="Profile">
+        <link>/user/CILC/user_ee_profile_sp.jsp</link>
       </option>
     </toplinks>
     <css file="/cc/base.css"/>
     <css file="/WebConfig/yukon/styles/commcurtaillogos.css"/>
     <skin name="standard"/>
-  </module>
-  
-  <module name="trending">
-    <skin name="standard"/>
+    <requireRole value="cicustomer.CommercialMeteringRole.ROLEID"/>
   </module>
   
   <module name="esub">
