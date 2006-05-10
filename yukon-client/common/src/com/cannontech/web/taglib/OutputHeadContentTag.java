@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -14,10 +13,9 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.cache.functions.EnergyCompanyFuncs;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.roles.application.WebClientRole;
+import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.menu.ModuleBase;
 
@@ -54,13 +52,13 @@ public class OutputHeadContentTag extends BodyTagSupport {
     private void handleJavaScriptFiles() throws IOException {
         Set finalScriptList = new LinkedHashSet();
         
-        // get script file declared in the layout file
+        // get script files declared in the layout file
         for (Iterator iter = layoutScriptFiles.iterator(); iter.hasNext();) {
             String file = (String) iter.next();
             finalScriptList.add(file);
         }
         
-        // get script files declared in the 
+        // get script files declared in the module
         ModuleBase moduleBase = (ModuleBase) pageContext.getAttribute(StandardPageTag.CTI_MODULE_BASE, 
                                                                       PageContext.REQUEST_SCOPE);
         for (Iterator iter = moduleBase.getScriptFiles().iterator(); iter.hasNext();) {
@@ -105,10 +103,10 @@ public class OutputHeadContentTag extends BodyTagSupport {
                                                        PageContext.REQUEST_SCOPE);
         outputCssFiles(cssList);
         
-        pageContext.getOut().write("\n<!-- Energy Company specific style sheets (Web Client Role)-->\n");
+        pageContext.getOut().write("\n<!-- Energy Company specific style sheets (EnergyCompanyRole)-->\n");
         LiteYukonUser user = 
             (LiteYukonUser) pageContext.getSession().getAttribute(ServletUtil.ATT_YUKON_USER);
-        String cssLocations = EnergyCompanyFuncs.getEnergyCompanyProperty(user, WebClientRole.STD_PAGE_STYLE_SHEET);
+        String cssLocations = EnergyCompanyFuncs.getEnergyCompanyProperty(user, EnergyCompanyRole.STD_PAGE_STYLE_SHEET);
         if (cssLocations != null) {
             String[] cssLocationArray = cssLocations.split("\\s*,\\s*");
             outputCssFiles(Arrays.asList(cssLocationArray));
