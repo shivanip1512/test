@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.cannontech.spring;
+package com.cannontech.hibernate;
 
 import java.io.Serializable;
 import java.util.Map;
