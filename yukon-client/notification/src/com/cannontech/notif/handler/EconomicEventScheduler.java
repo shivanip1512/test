@@ -4,8 +4,9 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import com.cannontech.cc.dao.*;
+import com.cannontech.cc.dao.EconomicEventNotifDao;
 import com.cannontech.cc.model.*;
+import com.cannontech.cc.service.BaseEconomicStrategy;
 import com.cannontech.cc.service.EconomicService;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.cache.functions.CustomerFuncs;
@@ -15,10 +16,7 @@ import com.cannontech.enums.NotificationState;
 import com.cannontech.notif.outputs.*;
 
 public class EconomicEventScheduler {
-    private EconomicEventDao economicEventDao;
-    private EconomicEventPricingDao economicEventPricingDao;
     private EconomicEventNotifDao economicEventNotifDao;
-    private EconomicEventParticipantDao economicEventParticipantDao;
     private EconomicService economicService;
 
     private Timer timer = new Timer("Economic Notification Schedular", true);
@@ -56,7 +54,9 @@ public class EconomicEventScheduler {
     
     public void eventRevisionNotification(EconomicEventPricing eventRevision) {
         EconomicEvent event = eventRevision.getEvent();
-        List<EconomicEventParticipant> participants = economicService.getParticipants(event);
+        BaseEconomicStrategy strategy = economicService.getEconomicStrategy(event);
+        List<EconomicEventParticipant> participants = 
+            strategy.getRevisionParticipantForNotif(eventRevision);
         Date now = new Date();
         createNotification(participants, 
                            eventRevision, 
@@ -132,6 +132,7 @@ public class EconomicEventScheduler {
         final Notification notif = new Notification("economic");
         notif.addData("programname", event.getProgram().getName());
         notif.addData("programtype", event.getProgram().getProgramType().getName());
+        notif.addData("eventname", "FILL ME IN"); //TODO
         notif.addData("action", reason.toString());
         notif.addData("durationminutes", durationMinutesStr);
         notif.addData("durationhours", durationHoursStr);
@@ -215,20 +216,8 @@ public class EconomicEventScheduler {
         }
     }
 
-    public void setEconomicEventDao(EconomicEventDao economicEventDao) {
-        this.economicEventDao = economicEventDao;
-    }
-
     public void setEconomicEventNotifDao(EconomicEventNotifDao economicEventNotifDao) {
         this.economicEventNotifDao = economicEventNotifDao;
-    }
-
-    public void setEconomicEventParticipantDao(EconomicEventParticipantDao economicEventParticipantDao) {
-        this.economicEventParticipantDao = economicEventParticipantDao;
-    }
-
-    public void setEconomicEventPricingDao(EconomicEventPricingDao economicEventPricingDao) {
-        this.economicEventPricingDao = economicEventPricingDao;
     }
 
     public void setEconomicService(EconomicService economicService) {
