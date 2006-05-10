@@ -466,10 +466,17 @@ public class AuthFuncs {
         } 
         
         // If still no contact is found, login failed - return null
-        if(contacts == null || contacts.length != 1) {
+        if(contacts == null || contacts.length == 0) {
+            CTILogger.info("An INBOUND VOICE login with phone number: " + phoneNumber + " and pin: " + pin + " was unsuccessful - No contacts were found.");
 
             return user;
         
+        }
+        if(contacts.length > 1) {
+            CTILogger.info("An INBOUND VOICE login with phone number: " + phoneNumber + " and pin: " + pin + " was unsuccessful - More than one contact was found.");
+            
+            return user;
+            
         }
         
         LiteContact contact = contacts[0];
