@@ -30,9 +30,8 @@
    </property>
    <property name="hibernateProperties">
      <props>
-       <prop key="hibernate.show_sql">true</prop>
+       <prop key="hibernate.show_sql">false</prop>
        <prop key="hibernate.cache.use_second_level_cache">false</prop>
-       <prop key="">com.cannontech.support.YukonNamingStrategy</prop>
      </props>
    </property>
    <property name="eventListeners">
@@ -44,7 +43,7 @@
             It has no dependencies on any Spring classes.
          -->
        <entry key="merge">
-         <bean class="com.cannontech.spring.IdTransferringMergeEventListener" />
+         <bean class="com.cannontech.hibernate.IdTransferringMergeEventListener" />
        </entry>
      </map>
    </property>
