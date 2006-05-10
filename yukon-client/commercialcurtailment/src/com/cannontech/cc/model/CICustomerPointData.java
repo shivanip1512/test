@@ -6,6 +6,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Type;
+
 /**
  * Yep. This class is pretty ugly. Maybe when the EJB3 Persistence stuff
  * is better documented I'll be able to figure out how to have a foreign key
@@ -44,6 +46,7 @@ public class CICustomerPointData {
         super();
     }
 
+    @Type(type="com.cannontech.hibernate.HibernateEscapedString")
     @Column(length=32, nullable=false)
     public String getOptionalLabel() {
         return optionalLabel;
