@@ -156,6 +156,8 @@ public class CurtailmentEventMessageHandler extends MessageHandler {
         final String remainingMinutesStr = Long.toString(remainingMinutes);
 
         final Notification notif = new Notification("curtailment");
+        notif.addData("programname", event.getProgram().getName());
+        notif.addData("programtype", event.getProgram().getProgramType().getName());
         notif.addData("action", reason.toString());
         notif.addData("message", event.getMessage());
         notif.addData("durationminutes", durationMinutesStr);
