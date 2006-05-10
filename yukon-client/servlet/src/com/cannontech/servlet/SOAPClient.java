@@ -1,7 +1,5 @@
 package com.cannontech.servlet;
 
-import java.util.Enumeration;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
