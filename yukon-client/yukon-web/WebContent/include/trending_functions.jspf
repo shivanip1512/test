@@ -1,4 +1,4 @@
-<SCRIPT> <!--trend/view menu items-->
+<script  type="text/javascript"> <!--trend/view menu items-->
 //view types
 var DEFAULT = parseInt(<%=GraphRenderers.DEFAULT %>);
 var LINE  = parseInt(<%=GraphRenderers.LINE%>);
@@ -219,4 +219,4 @@ function exportData(extension)
 }
 
 
-</SCRIPT> <!--end javascript for trend/view menus-->
+</script> <!--end javascript for trend/view menus-->
