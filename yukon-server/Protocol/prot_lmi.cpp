@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.52 $
-* DATE         :  $Date: 2006/04/21 15:20:05 $
+* REVISION     :  $Revision: 1.53 $
+* DATE         :  $Date: 2006/05/11 15:35:47 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -311,6 +311,7 @@ int CtiProtocolLMI::recvCommRequest( OUTMESS *OutMessage )
 
     _transmitter_id = OutMessage->DeviceID;
     _transaction_complete = false;
+    _retries = RetryCount;
     _transmission_end = 0;
     _first_code_block = true;
     _final_code_block = false;
@@ -469,7 +470,7 @@ bool CtiProtocolLMI::isTransactionComplete( void )
 {
     bool retval = false;
 
-    if( _comm_end_time && _comm_end_time < CtiTime::now().seconds() )
+    if( _comm_end_time && _comm_end_time <= CtiTime::now().seconds() )
     {
         retval = true;
 
@@ -682,8 +683,11 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
                         _outbound.body_header.flush_codes  = _first_code_block;
                         _outbound.data[0] = _outbound_code_count;
 
-                        //  if we have no more codes OR we have no more space
-                        if( _codes.empty() || !slots_available || viable_codes.size() >= slots_available )
+                        //  if we have no more codes OR we have no more space OR we have no more time
+                        if( _codes.empty()   ||
+                            !slots_available ||
+                            (viable_codes.size() >= slots_available) ||
+                            (_comm_end_time && ((_comm_end_time + 1) <= CtiTime::now().seconds())) )
                         {
                             _final_code_block = true;
 
@@ -903,6 +907,8 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
 
     if( !status )
     {
+        _retries = RetryCount;
+
         _in_total += xfer.getInCountActual();
 
         if( _in_total >= PacketHeaderLen && _in_total >= (_inbound.length + PacketOverheadLen) )
@@ -1269,8 +1275,12 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
     }
     else if( status )
     {
-        //  retry logic will go here eventually
-        _transaction_complete = true;
+        _retries--;
+
+        if( !_retries )
+        {
+            _transaction_complete = true;
+        }
 
         retval = status;
     }

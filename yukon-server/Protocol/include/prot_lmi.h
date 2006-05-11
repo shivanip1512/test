@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2006/03/02 23:03:19 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2006/05/11 15:35:47 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -50,6 +50,7 @@ private:
     unsigned char _address;
     bool          _deadbands_sent,
                   _transaction_complete;
+    int           _retries;
 
     long          _transmitter_id;
 
@@ -118,6 +119,8 @@ private:
         SendCodes_LastCodeGroup   = 0x40,
         SendCodes_SendImmediately = 0x80,
         SendCodes_CountBitmask    = 0x3f,
+
+        RetryCount = 3,
     };
 
 #pragma pack(push, 1)
