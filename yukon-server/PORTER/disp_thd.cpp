@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/disp_thd.cpp-arc  $
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2006/04/25 19:10:36 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2006/05/11 19:05:34 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -157,6 +157,9 @@ void DispatchMsgHandlerThread(VOID *Arg)
                             dout << TimeNow << " Porter has received a " << ((CtiDBChangeMsg*)MsgPtr)->getCategory() << " DBCHANGE message from Dispatch." << endl;
                         }
 
+                        //  the UDP thread needs to reload each item individually, so we can't ever discard any
+                        Cti::Porter::DNPUDP::MessageQueue.putQueue(MsgPtr->replicateMessage());
+
                         if(pChg)
                         {
                             delete pChg;
@@ -275,8 +278,6 @@ void DispatchMsgHandlerThread(VOID *Arg)
                     }
                 }
                 ResetEvent(hPorterEvents[P_REFRESH_EVENT]);
-                //  if we have a message, drop a copy in UDP's DBChangeQueue;  otherwise NULL
-                Cti::Porter::DNPUDP::MessageQueue.putQueue(pChg?pChg->replicateMessage():0);
                 RefreshPorterRTDB((void*)pChg);                 // Deletes the message!
                 RefreshTime = nextScheduledTimeAlignedOnRate( TimeNow, PorterRefreshRate );
 
