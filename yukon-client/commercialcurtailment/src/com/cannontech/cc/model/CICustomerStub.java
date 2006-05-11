@@ -28,7 +28,7 @@ import com.cannontech.database.data.lite.LiteCICustomer;
 
 @Entity
 @Table(name = "CICustomerBase")
-public class CICustomerStub {
+public class CICustomerStub implements Comparable<CICustomerStub> {
     private Integer id;
     //private Float customerDemandLevel;
     //private String curtailmentAgreement;
@@ -110,6 +110,10 @@ public class CICustomerStub {
     public void addPoint(CICustomerPointData customerPoint) {
         customerPoint.setCustomer(this);
         pointData.put(customerPoint.getType(), customerPoint);
+    }
+
+    public int compareTo(CICustomerStub o) {
+        return companyName.compareTo(o.companyName);
     }
 
 
