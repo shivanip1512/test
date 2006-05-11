@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2006/04/25 19:11:40 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2006/05/11 19:04:04 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -168,13 +168,14 @@ void ExecuteThread( void *Dummy )
 
                 if( (msg = MessageQueue.getQueue()) && (msg->isA() == MSG_DBCHANGE) )
                 {
+                    CtiDBChangeMsg *db_msg = (CtiDBChangeMsg *)msg;
                     device_record *dr;
 
                     //  find the device record, if it exists
-                    if( dr = getDeviceRecordByID(((CtiDBChangeMsg *)msg)->getId()) )
+                    if( db_msg->getId() && (dr = getDeviceRecordByID(db_msg->getId())) )
                     {
                         //  then remove it from the collections
-                        devices.erase(((CtiDBChangeMsg *)msg)->getId());
+                        devices.erase(db_msg->getId());
                         addresses.erase(make_pair(dr->device->getMasterAddress(), dr->device->getAddress()));
 
                         delete dr;
