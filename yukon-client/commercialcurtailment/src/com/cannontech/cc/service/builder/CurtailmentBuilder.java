@@ -3,39 +3,36 @@ package com.cannontech.cc.service.builder;
 import java.util.Date;
 import java.util.TimeZone;
 
+import com.cannontech.cc.model.CurtailmentEvent;
 import com.cannontech.cc.model.Program;
 
 public class CurtailmentBuilder extends EventBuilderBase {
-    private Date notificationTime = new Date();
-    private Date startTime = new Date();
-    private Integer eventDuration = new Integer(0);
-    private String message = "";
     private TimeZone timeZone;
-    private Program program;
+    private CurtailmentEvent event;
     
     public Integer getEventDuration() {
-        return eventDuration;
+        return event.getDuration();
     }
     public void setEventDuration(Integer duration) {
-        this.eventDuration = duration;
+        event.setDuration(duration);
     }
     public String getMessage() {
-        return message;
+        return event.getMessage();
     }
     public void setMessage(String message) {
-        this.message = message;
+        event.setMessage(message);
     }
     public Date getNotificationTime() {
-        return notificationTime;
+        return event.getNotificationTime();
     }
     public void setNotificationTime(Date notificationTime) {
-        this.notificationTime = notificationTime;
+        event.setNotificationTime(notificationTime);
     }
     public Date getStartTime() {
-        return startTime;
+        return event.getStartTime();
     }
     public void setStartTime(Date startTime) {
-        this.startTime = startTime;
+        event.setStartTime(startTime);
     }
     public void setTimeZone(TimeZone tz) {
         timeZone = tz;
@@ -44,10 +41,16 @@ public class CurtailmentBuilder extends EventBuilderBase {
         return timeZone;
     }
     public Program getProgram() {
-        return program;
+        return event.getProgram();
     }
     public void setProgram(Program program) {
-        this.program = program;
+        event.setProgram(program);
+    }
+    public CurtailmentEvent getEvent() {
+        return event;
+    }
+    public void setEvent(CurtailmentEvent event) {
+        this.event = event;
     }
     
 }
