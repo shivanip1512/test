@@ -1,6 +1,7 @@
 package com.cannontech.database.cache.functions;
 
 import com.cannontech.common.cache.PointChangeCache;
+import com.cannontech.common.exception.PointDataException;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointQualities;
 import com.cannontech.database.data.point.PointTypes;
@@ -17,14 +18,14 @@ public class SimplePointAccess {
         cache = pointChangeCache;
     }
     
-    public double getPointValue(LitePoint point) {
+    public double getPointValue(LitePoint point) throws PointDataException {
         PointData pointData = cache.getValue(point.getPointID());
         //Validate.notNull(pointData, "No PointData in cache for pointId " + point.getPointID());
         if (pointData != null) {
             return pointData.getValue();
         }
         // okay, try something else
-        throw new IllegalStateException("No point data found for point: " + point);
+        throw new PointDataException(point);
     }
     
     public void setPointValue(LitePoint point, double value) {
