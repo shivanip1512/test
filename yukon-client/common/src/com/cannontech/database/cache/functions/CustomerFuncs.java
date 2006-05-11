@@ -167,6 +167,9 @@ public static Vector getAllLiteCustomersByEnergyCompany(int energyCompanyID)
 
 public static LiteCICustomer getCustomerForUser(LiteYukonUser user) {
     LiteContact liteContact = YukonUserFuncs.getLiteContact(user.getUserID());
+    if (liteContact == null) {
+        return null;
+    }
     LiteCICustomer customer = ContactFuncs.getCICustomer(liteContact.getContactID());
     return customer;
 }
