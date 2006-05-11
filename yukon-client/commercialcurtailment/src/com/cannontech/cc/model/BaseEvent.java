@@ -9,6 +9,7 @@ public abstract class BaseEvent implements Comparable<BaseEvent> {
     public abstract Date getStartTime();
     public abstract Program getProgram();
     public abstract Date getStopTime();
+    public abstract Date getNotificationTime();
     
     public int compareTo(BaseEvent o) {
         return getStartTime().compareTo(o.getStartTime());
