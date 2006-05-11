@@ -10,4 +10,5 @@ public interface EconomicEventParticipantDao extends StandardDaoOperations<Econo
     public List<EconomicEventParticipant> getForEvent(EconomicEvent event);
     public void deleteForEvent(EconomicEvent event);
     public EconomicEventParticipant getForCustomerAndEvent(CICustomerStub customer, EconomicEvent event);
+    public List<EconomicEventParticipant> getForCustomer(CICustomerStub customer);
 }

@@ -34,6 +34,13 @@ public class EconomicEventParticipantDaoImpl extends YukonBaseHibernateDao imple
         }
         return (EconomicEventParticipant) find.get(0);
     }
+    
+    @SuppressWarnings("unchecked")
+    public List<EconomicEventParticipant> getForCustomer(CICustomerStub customer) {
+        String query = "select eep from EconomicEventParticipant eep " +
+        "where eep.customer = ?";
+        return getHibernateTemplate().find(query, customer);
+    }
 
     public void deleteForEvent(EconomicEvent event) {
         getHibernateTemplate().lock(event, LockMode.NONE);
