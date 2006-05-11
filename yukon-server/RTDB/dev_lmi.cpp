@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.32 $
-* DATE         :  $Date: 2006/03/24 15:58:19 $
+* REVISION     :  $Revision: 1.33 $
+* DATE         :  $Date: 2006/05/11 15:31:16 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -481,6 +481,9 @@ CtiTime CtiDeviceLMI::getPreloadEndTime() const
             {
                 preload_end += (_seriesv.getTickTime() * 60);
             }
+
+            //  make sure to end comms well before the device's transmit time
+            preload_end -= gConfigParms.getValueAsULong("PORTER_LMI_PRELOAD_MARGIN", 2);
         }
     }
 
