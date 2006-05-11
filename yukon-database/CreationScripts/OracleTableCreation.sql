@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     5/9/2006 12:51:33 PM                         */
+/* Created on:     5/11/2006 6:01:22 PM                         */
 /*==============================================================*/
 
 
@@ -41,6 +41,26 @@ drop index Indx_ClcBaseUpdTyp;
 drop index Indx_CalcCmpCmpType;
 
 drop index Indx_CSUBVPT;
+
+drop index INDX_CCURTCEPART_EVTID_CUSTID;
+
+drop index INDX_CCURTEEPARTSEL_CCURTEEPR;
+
+drop index INDX_CCRTEEPRTWIN_PWNID_PSID;
+
+drop index INDX_CCURTECONSVTID_REV;
+
+drop index INDX_CCURTEEPRWIN;
+
+drop index INDX_CCURTGROUP_ECID_GRPNM;
+
+drop index INDX_CCRTGRPCSTNOTIF_GID_CID;
+
+drop index INDX_CCURTPGM_PRGNM_PRGTYPEID;
+
+drop index INDX_CCURTPRGGRP_GRPID_PRGID;
+
+drop index INDX_CCRTPRGPRM_PGID_PMKEY;
 
 drop index Indx_CPCNFDVARPT;
 
@@ -145,6 +165,38 @@ drop table CCFeederBankList cascade constraints;
 drop table CCFeederSubAssignment cascade constraints;
 
 drop table CCMONITORBANKLIST cascade constraints;
+
+drop table CCurtCENotif cascade constraints;
+
+drop table CCurtCEParticipant cascade constraints;
+
+drop table CCurtCurtailmentEvent cascade constraints;
+
+drop table CCurtEEParticipant cascade constraints;
+
+drop table CCurtEEParticipantSelection cascade constraints;
+
+drop table CCurtEEParticipantWindow cascade constraints;
+
+drop table CCurtEEPricing cascade constraints;
+
+drop table CCurtEEPricingWindow cascade constraints;
+
+drop table CCurtEconomicEvent cascade constraints;
+
+drop table CCurtEconomicEventNotif cascade constraints;
+
+drop table CCurtGroup cascade constraints;
+
+drop table CCurtGroupCustomerNotif cascade constraints;
+
+drop table CCurtProgram cascade constraints;
+
+drop table CCurtProgramGroup cascade constraints;
+
+drop table CCurtProgramParameter cascade constraints;
+
+drop table CCurtProgramType cascade constraints;
 
 drop table CICUSTOMERPOINTDATA cascade constraints;
 
@@ -645,6 +697,7 @@ insert into billingfileformats values( 16, 'NISC TOU (kVarH)');
 insert into billingfileformats values( -17, 'SEDC (yyyyMMdd)');
 insert into billingfileformats values( -18, 'ATS');
 insert into billingfileformats values( -19, ' NISC-Turtle No Limit kWh ');
+insert into billingfileformats values(20, 'IVUE_BI_T65');
 alter table BillingFileFormats
    add constraint PK_BILLINGFILEFORMATS primary key (FormatID);
 
@@ -796,6 +849,305 @@ create table CCMONITORBANKLIST  (
 
 alter table CCMONITORBANKLIST
    add constraint PK_CCMONITORBANKLIST primary key (BankID, PointID);
+
+/*==============================================================*/
+/* Table: CCurtCENotif                                          */
+/*==============================================================*/
+create table CCurtCENotif  (
+   CCurtCENotif         NUMBER                          not null,
+   NotificationTime     DATE,
+   NotifTypeID          NUMBER                          not null,
+   State                VARCHAR2(10)                    not null,
+   Reason               VARCHAR2(10)                    not null,
+   CCurtCEParticipantID NUMBER                          not null
+);
+
+alter table CCurtCENotif
+   add constraint PK_CCURTCENOTIF primary key (CCurtCENotif);
+
+/*==============================================================*/
+/* Table: CCurtCEParticipant                                    */
+/*==============================================================*/
+create table CCurtCEParticipant  (
+   CCurtCEParticipantID NUMBER                          not null,
+   NotifAttribs         VARCHAR2(256)                   not null,
+   CustomerID           NUMBER                          not null,
+   CCurtCurtailmentEventID NUMBER                          not null
+);
+
+alter table CCurtCEParticipant
+   add constraint PK_CCURTCEPARTICIPANT primary key (CCurtCEParticipantID);
+
+/*==============================================================*/
+/* Index: INDX_CCURTCEPART_EVTID_CUSTID                         */
+/*==============================================================*/
+create unique index INDX_CCURTCEPART_EVTID_CUSTID on CCurtCEParticipant (
+   CustomerID ASC,
+   CCurtCurtailmentEventID ASC
+);
+
+/*==============================================================*/
+/* Table: CCurtCurtailmentEvent                                 */
+/*==============================================================*/
+create table CCurtCurtailmentEvent  (
+   CCurtCurtailmentEventID NUMBER                          not null,
+   CCurtProgramID       NUMBER,
+   NotificationTime     DATE                            not null,
+   Duration             NUMBER                          not null,
+   Message              VARCHAR2(255)                   not null,
+   State                VARCHAR2(10)                    not null,
+   StartTime            DATE                            not null,
+   CCurtProgramTypeID   NUMBER                          not null
+);
+
+alter table CCurtCurtailmentEvent
+   add constraint PK_CCURTCURTAILMENTEVENT primary key (CCurtCurtailmentEventID);
+
+/*==============================================================*/
+/* Table: CCurtEEParticipant                                    */
+/*==============================================================*/
+create table CCurtEEParticipant  (
+   CCurtEEParticipantID NUMBER                          not null,
+   NotifAttribs         VARCHAR2(255)                   not null,
+   CustomerID           NUMBER                          not null,
+   CCurtEconomicEventID NUMBER                          not null
+);
+
+alter table CCurtEEParticipant
+   add constraint PK_CCURTEEPARTICIPANT primary key (CCurtEEParticipantID);
+
+/*==============================================================*/
+/* Table: CCurtEEParticipantSelection                           */
+/*==============================================================*/
+create table CCurtEEParticipantSelection  (
+   CCurtEEParticipantSelectionID NUMBER                          not null,
+   ConnectionAudit      VARCHAR2(255)                   not null,
+   SubmitTime           DATE                            not null,
+   State                VARCHAR2(255)                   not null,
+   CCurtEEParticipantID NUMBER                          not null,
+   CCurtEEPricingID     NUMBER                          not null
+);
+
+alter table CCurtEEParticipantSelection
+   add constraint PK_CCURTEEPARTICIPANTSELECTION primary key (CCurtEEParticipantSelectionID);
+
+/*==============================================================*/
+/* Index: INDX_CCURTEEPARTSEL_CCURTEEPR                         */
+/*==============================================================*/
+create unique index INDX_CCURTEEPARTSEL_CCURTEEPR on CCurtEEParticipantSelection (
+   CCurtEEParticipantID ASC,
+   CCurtEEPricingID ASC
+);
+
+/*==============================================================*/
+/* Table: CCurtEEParticipantWindow                              */
+/*==============================================================*/
+create table CCurtEEParticipantWindow  (
+   CCurtEEParticipantWindowID NUMBER                          not null,
+   EnergyToBuy          NUMBER(19,2)                    not null,
+   CCurtEEPricingWindowID NUMBER,
+   CCurtEEParticipantSelectionID NUMBER
+);
+
+alter table CCurtEEParticipantWindow
+   add constraint PK_CCURTEEPARTICIPANTWINDOW primary key (CCurtEEParticipantWindowID);
+
+/*==============================================================*/
+/* Index: INDX_CCRTEEPRTWIN_PWNID_PSID                          */
+/*==============================================================*/
+create unique index INDX_CCRTEEPRTWIN_PWNID_PSID on CCurtEEParticipantWindow (
+   CCurtEEPricingWindowID ASC,
+   CCurtEEParticipantSelectionID ASC
+);
+
+/*==============================================================*/
+/* Table: CCurtEEPricing                                        */
+/*==============================================================*/
+create table CCurtEEPricing  (
+   CCurtEEPricingID     NUMBER                          not null,
+   Revision             NUMBER                          not null,
+   CreationTime         DATE                            not null,
+   CCurtEconomicEventID NUMBER                          not null
+);
+
+alter table CCurtEEPricing
+   add constraint PK_CCURTEEPRICING primary key (CCurtEEPricingID);
+
+/*==============================================================*/
+/* Index: INDX_CCURTECONSVTID_REV                               */
+/*==============================================================*/
+create unique index INDX_CCURTECONSVTID_REV on CCurtEEPricing (
+   Revision ASC,
+   CCurtEconomicEventID ASC
+);
+
+/*==============================================================*/
+/* Table: CCurtEEPricingWindow                                  */
+/*==============================================================*/
+create table CCurtEEPricingWindow  (
+   CCurtEEPricingWindow NUMBER                          not null,
+   EnergyPrice          NUMBER(19,2)                    not null,
+   Offset               NUMBER                          not null,
+   CCurtEEPricingID     NUMBER
+);
+
+alter table CCurtEEPricingWindow
+   add constraint PK_CCURTEEPRICINGWINDOW primary key (CCurtEEPricingWindow);
+
+/*==============================================================*/
+/* Index: INDX_CCURTEEPRWIN                                     */
+/*==============================================================*/
+create unique index INDX_CCURTEEPRWIN on CCurtEEPricingWindow (
+   Offset ASC,
+   CCurtEEPricingID ASC
+);
+
+/*==============================================================*/
+/* Table: CCurtEconomicEvent                                    */
+/*==============================================================*/
+create table CCurtEconomicEvent  (
+   CCurtEconomicEventID NUMBER                          not null,
+   NotificationTime     DATE,
+   WindowLengthMinutes  NUMBER                          not null,
+   State                VARCHAR2(10)                    not null,
+   StartTime            DATE                            not null,
+   CCurtProgramID       NUMBER                          not null,
+   InitialEventID       NUMBER
+);
+
+alter table CCurtEconomicEvent
+   add constraint PK_CCURTECONOMICEVENT primary key (CCurtEconomicEventID);
+
+/*==============================================================*/
+/* Table: CCurtEconomicEventNotif                               */
+/*==============================================================*/
+create table CCurtEconomicEventNotif  (
+   CCurtEconomicEventNotifID NUMBER                          not null,
+   NotificationTime     DATE,
+   NotifTypeID          NUMBER                          not null,
+   State                VARCHAR2(10)                    not null,
+   Reason               VARCHAR2(10)                    not null,
+   CCurtEEPricingID     NUMBER                          not null,
+   CCurtEconomicParticipantID NUMBER                          not null
+);
+
+alter table CCurtEconomicEventNotif
+   add constraint PK_CCURTECONOMICEVENTNOTIF primary key (CCurtEconomicEventNotifID);
+
+/*==============================================================*/
+/* Table: CCurtGroup                                            */
+/*==============================================================*/
+create table CCurtGroup  (
+   CCurtGroupID         NUMBER                          not null,
+   EnergyCompanyID      NUMBER,
+   CCurtGroupName       VARCHAR2(255)                   not null
+);
+
+alter table CCurtGroup
+   add constraint PK_CCURTGROUP primary key (CCurtGroupID);
+
+/*==============================================================*/
+/* Index: INDX_CCURTGROUP_ECID_GRPNM                            */
+/*==============================================================*/
+create unique index INDX_CCURTGROUP_ECID_GRPNM on CCurtGroup (
+   EnergyCompanyID ASC,
+   CCurtGroupName ASC
+);
+
+/*==============================================================*/
+/* Table: CCurtGroupCustomerNotif                               */
+/*==============================================================*/
+create table CCurtGroupCustomerNotif  (
+   CCurtGroupCustomerNotifID NUMBER                          not null,
+   Attribs              VARCHAR2(255)                   not null,
+   CustomerID           NUMBER,
+   CCurtGroupID         NUMBER
+);
+
+alter table CCurtGroupCustomerNotif
+   add constraint PK_CCURTGROUPCUSTOMERNOTIF primary key (CCurtGroupCustomerNotifID);
+
+/*==============================================================*/
+/* Index: INDX_CCRTGRPCSTNOTIF_GID_CID                          */
+/*==============================================================*/
+create unique index INDX_CCRTGRPCSTNOTIF_GID_CID on CCurtGroupCustomerNotif (
+   CustomerID ASC,
+   CCurtGroupID ASC
+);
+
+/*==============================================================*/
+/* Table: CCurtProgram                                          */
+/*==============================================================*/
+create table CCurtProgram  (
+   CCurtProgramID       NUMBER                          not null,
+   CCurtProgramName     VARCHAR2(255)                   not null,
+   CCurtProgramTypeID   NUMBER
+);
+
+alter table CCurtProgram
+   add constraint PK_CCURTPROGRAM primary key (CCurtProgramID);
+
+/*==============================================================*/
+/* Index: INDX_CCURTPGM_PRGNM_PRGTYPEID                         */
+/*==============================================================*/
+create index INDX_CCURTPGM_PRGNM_PRGTYPEID on CCurtProgram (
+   CCurtProgramName ASC,
+   CCurtProgramTypeID ASC
+);
+
+/*==============================================================*/
+/* Table: CCurtProgramGroup                                     */
+/*==============================================================*/
+create table CCurtProgramGroup  (
+   CCurtProgramGroupID  NUMBER                          not null,
+   CCurtProgramID       NUMBER,
+   CCurtGroupID         NUMBER
+);
+
+alter table CCurtProgramGroup
+   add constraint PK_CCURTPROGRAMGROUP primary key (CCurtProgramGroupID);
+
+/*==============================================================*/
+/* Index: INDX_CCURTPRGGRP_GRPID_PRGID                          */
+/*==============================================================*/
+create unique index INDX_CCURTPRGGRP_GRPID_PRGID on CCurtProgramGroup (
+   CCurtProgramID ASC,
+   CCurtGroupID ASC
+);
+
+/*==============================================================*/
+/* Table: CCurtProgramParameter                                 */
+/*==============================================================*/
+create table CCurtProgramParameter  (
+   CCurtProgramParameterID NUMBER                          not null,
+   ParameterValue       VARCHAR2(255)                   not null,
+   ParameterKey         VARCHAR2(255)                   not null,
+   CCurtProgramID       NUMBER
+);
+
+alter table CCurtProgramParameter
+   add constraint PK_CCURTPROGRAMPARAMETER primary key (CCurtProgramParameterID);
+
+/*==============================================================*/
+/* Index: INDX_CCRTPRGPRM_PGID_PMKEY                            */
+/*==============================================================*/
+create index INDX_CCRTPRGPRM_PGID_PMKEY on CCurtProgramParameter (
+   ParameterKey ASC,
+   CCurtProgramID ASC
+);
+
+/*==============================================================*/
+/* Table: CCurtProgramType                                      */
+/*==============================================================*/
+create table CCurtProgramType  (
+   CCurtProgramTypeID   NUMBER                          not null,
+   EnergyCompanyID      NUMBER,
+   CCurtProgramTypeStrategy VARCHAR2(255),
+   CCurtProgramTypeName VARCHAR2(255)
+);
+
+alter table CCurtProgramType
+   add constraint PK_CCURTPROGRAMTYPE primary key (CCurtProgramTypeID);
 
 /*==============================================================*/
 /* Table: CICUSTOMERPOINTDATA                                   */
@@ -4993,7 +5345,6 @@ insert into yukongrouprole values (-405, -302, -108, -10805, '(none)');
 insert into yukongrouprole values (-406, -302, -108, -10806, '(none)');
 insert into yukongrouprole values (-40700, -302, -108, -10807, '(none)');
 insert into yukongrouprole values (-40701, -302, -108, -10808, '(none)');
-insert into yukongrouprole values (-40702, -302, -108, -10809, '(none)');
 insert into yukongrouprole values (-40703, -302, -108, -10810, '(none)');
 insert into yukongrouprole values (-40704, -302, -108, -10811, '(none)');
 
@@ -5026,7 +5377,6 @@ insert into yukongrouprole values (-505,-300,-108, -10805,'yukon/DemoHeaderCES.g
 insert into yukongrouprole values (-506,-300,-108,-10806,'(none)');
 insert into yukongrouprole values (-507,-300,-108,-10807,'(none)');
 insert into yukongrouprole values (-508,-300,-108,-10808,'(none)');
-insert into yukongrouprole values (-509,-300,-108,-10809,'(none)');
 insert into yukongrouprole values (-510,-300,-108,-10810,'(none)');
 insert into yukongrouprole values (-511,-300,-108,-10811,'(none)');
 
@@ -5104,7 +5454,6 @@ insert into yukongrouprole values (-705,-301,-108,-10805,'(none)');
 insert into yukongrouprole values (-706,-301,-108,-10806,'(none)');
 insert into yukongrouprole values (-707,-301,-108,-10807,'(none)');
 insert into yukongrouprole values (-708,-301,-108,-10808,'(none)');
-insert into yukongrouprole values (-709,-301,-108,-10809,'(none)');
 insert into yukongrouprole values (-710,-301,-108,-10810,'(none)');
 insert into yukongrouprole values (-711,-301,-108,-10811,'(none)');
 
@@ -5300,7 +5649,6 @@ insert into YukonGroupRole values (-1094,-2, -108, -10805, '(none)');
 insert into YukonGroupRole values (-1095,-2, -108, -10806, '(none)');
 insert into YukonGroupRole values (-1096,-2, -108, -10807, '(none)');
 insert into YukonGroupRole values (-1097,-2, -108, -10808, '(none)');
-insert into YukonGroupRole values (-1098,-2, -108, -10809, '(none)');
 insert into YukonGroupRole values (-10990,-2, -108, -10810, '(none)');
 insert into YukonGroupRole values (-10991,-2, -108, -10811, '(none)');
 
@@ -5461,7 +5809,6 @@ insert into yukongrouprole values (-2005,-303,-108,-10805,'(none)');
 insert into yukongrouprole values (-2006,-303,-108,-10806,'(none)');
 insert into yukongrouprole values (-2007,-303,-108,-10807,'(none)');
 insert into yukongrouprole values (-2008,-303,-108,-10808,'(none)');
-insert into yukongrouprole values (-2009,-303,-108,-10809,'(none)');
 insert into yukongrouprole values (-2010,-303,-108,-10810,'(none)');
 insert into yukongrouprole values (-2011,-303,-108,-10811,'(none)');
 
@@ -5574,7 +5921,6 @@ insert into yukongrouprole values (-2205,-304,-108, -10805,'yukon/DemoHeaderCES.
 insert into yukongrouprole values (-2206,-304,-108,-10806,'(none)');
 insert into yukongrouprole values (-2207,-304,-108,-10807,'(none)');
 insert into yukongrouprole values (-2208,-304,-108,-10808,'(none)');
-insert into yukongrouprole values (-2209,-304,-108,-10809,'(none)');
 insert into yukongrouprole values (-2210,-304,-108,-10810,'(none)');
 insert into yukongrouprole values (-2211,-304,-108,-10811,'(none)');
 
@@ -6299,6 +6645,9 @@ insert into YukonRoleProperty values(-1109,-2,'z_optional_product_dev','00000000
 insert into YukonRoleProperty values(-1110,-2,'Default Temperature Unit','F','Default temperature unit for an energy company, F(ahrenheit) or C(elsius)');
 insert into YukonRoleProperty values(-1111,-2,'z_meter_mct_base_desig','yukon','Allow meters to be used general STARS entries versus Yukon MCTs');
 
+insert into YukonRoleProperty values(-1113,-2,'Standard Page Style Sheet',' ','A comma separated list of URLs for CSS files that will be included on every Standard Page');
+
+
 insert into YukonRoleProperty values(-1300,-4,'server_address','127.0.0.1','Authentication server machine address');
 insert into YukonRoleProperty values(-1301,-4,'auth_port','1812','Authentication port.');
 insert into YukonRoleProperty values(-1302,-4,'acct_port','1813','Accounting port.');
@@ -6414,7 +6763,6 @@ insert into YukonRoleProperty values(-10805,-108,'header_logo','yukon/DefaultHea
 insert into YukonRoleProperty values(-10806,-108,'log_in_url','/login.jsp','The url where the user login from. It is used as the url to send the users to when they log off.');
 insert into YukonRoleProperty values(-10807,-108,'nav_connector_bottom','yukon/BottomConnector.gif','The connector icon in the nav used for showing the hardware tree structure, in front of the last hardware under each category');
 insert into YukonRoleProperty values(-10808,-108,'nav_connector_middle','yukon/MidConnector.gif','The connector icon in the nav used for showing the hardware tree structure, in front of every hardware except the last one under each category');
-insert into YukonRoleProperty values(-10809,-108,'Standard Page Style Sheet',' ','A comma separated list of URLs for CSS files that will be included on every Standard Page');
 insert into YukonRoleProperty values(-10810,-108, 'pop_up_appear_style','onmouseover', 'Style of the popups appearance when the user selects element in capcontrol.');
 insert into YukonRoleProperty values(-10811,-108, 'inbound_voice_home_url', '/voice/inboundOptOut.jsp', 'Home URL for inbound voice logins');
 
@@ -6942,7 +7290,6 @@ insert into YukonUserRole values (-405, -1, -108, -10805, '(none)');
 insert into YukonUserRole values (-406, -1, -108, -10806, '(none)');
 insert into YukonUserRole values (-407, -1, -108, -10807, '(none)');
 insert into YukonUserRole values (-408, -1, -108, -10808, '(none)');
-insert into YukonUserRole values (-409, -1, -108, -10809, '(none)');
 insert into YukonUserRole values (-41000,-1, -108, -10810, '(none)');
 insert into YukonUserRole values (-41001,-1, -108, -10811, '(none)');
 
@@ -7331,6 +7678,90 @@ alter table CCMONITORBANKLIST
    add constraint FK_CCMONBNKLST_PTID foreign key (PointID)
       references POINT (POINTID);
 
+alter table CCurtCENotif
+   add constraint FK_CCCURTCE_NOTIF_PART foreign key (CCurtCEParticipantID)
+      references CCurtCEParticipant (CCurtCEParticipantID);
+
+alter table CCurtCEParticipant
+   add constraint FK_CCURTCE_PART_CURTEVT foreign key (CCurtCurtailmentEventID)
+      references CCurtCurtailmentEvent (CCurtCurtailmentEventID);
+
+alter table CCurtCEParticipant
+   add constraint FK_CCURTCURTEVENTCICUST_CICUST foreign key (CustomerID)
+      references CICustomerBase (CustomerID);
+
+alter table CCurtCurtailmentEvent
+   add constraint FK_CCURTCURTEVT_CCURTPGM foreign key (CCurtProgramID)
+      references CCurtProgram (CCurtProgramID);
+
+alter table CCurtEEParticipant
+   add constraint FK_CCURTEEPART_CCURTEE foreign key (CCurtEconomicEventID)
+      references CCurtEconomicEvent (CCurtEconomicEventID);
+
+alter table CCurtEEParticipantSelection
+   add constraint FK_CCURTEEPARTSEL_CCURTEEPR foreign key (CCurtEEPricingID)
+      references CCurtEEPricing (CCurtEEPricingID);
+
+alter table CCurtEEParticipantSelection
+   add constraint FK_CCURTEEPARTSEL_CCURTPART foreign key (CCurtEEParticipantID)
+      references CCurtEEParticipant (CCurtEEParticipantID);
+
+alter table CCurtEEParticipantWindow
+   add constraint FK_CCRTEEPRTWIN_CCRTEEPRTSEL foreign key (CCurtEEParticipantSelectionID)
+      references CCurtEEParticipantSelection (CCurtEEParticipantSelectionID);
+
+alter table CCurtEEParticipantWindow
+   add constraint FK_CCRTEEPRTWN_CCRTEEPRIWN foreign key (CCurtEEPricingWindowID)
+      references CCurtEEPricingWindow (CCurtEEPricingWindow);
+
+alter table CCurtEEPricing
+   add constraint FK_CCURTEEPR_CCURTECONEVT foreign key (CCurtEconomicEventID)
+      references CCurtEconomicEvent (CCurtEconomicEventID);
+
+alter table CCurtEEPricingWindow
+   add constraint FK_CCURTEEPRWIN_CCURTEEPR foreign key (CCurtEEPricingID)
+      references CCurtEEPricing (CCurtEEPricingID);
+
+alter table CCurtEconomicEvent
+   add constraint FK_CCURTEEVT_CCURTPGM foreign key (CCurtProgramID)
+      references CCurtProgram (CCurtProgramID);
+
+alter table CCurtEconomicEvent
+   add constraint FK_CCURTINITEVT_CCURTECONEVT foreign key (InitialEventID)
+      references CCurtEconomicEvent (CCurtEconomicEventID);
+
+alter table CCurtEconomicEventNotif
+   add constraint FK_CCURTEENOTIF_CCURTEEPARTID foreign key (CCurtEconomicParticipantID)
+      references CCurtEEParticipant (CCurtEEParticipantID);
+
+alter table CCurtEconomicEventNotif
+   add constraint FK_CCURTEENOTIF_CCURTEEPR foreign key (CCurtEEPricingID)
+      references CCurtEEPricing (CCurtEEPricingID);
+
+alter table CCurtGroupCustomerNotif
+   add constraint FK_CCURTGRO_FK_CCURTG_CCURTGRO foreign key (CCurtGroupID)
+      references CCurtGroup (CCurtGroupID);
+
+alter table CCurtGroupCustomerNotif
+   add constraint FK_CCURTGRPCUSTNOTIF_CUST foreign key (CustomerID)
+      references CICustomerBase (CustomerID);
+
+alter table CCurtProgram
+   add constraint FK_CCURTPRG_CCURTPRGTYPE foreign key (CCurtProgramTypeID)
+      references CCurtProgramType (CCurtProgramTypeID);
+
+alter table CCurtProgramGroup
+   add constraint FK_CCURTPRGGRP_CCURTGRP foreign key (CCurtGroupID)
+      references CCurtGroup (CCurtGroupID);
+
+alter table CCurtProgramGroup
+   add constraint FK_CCURTPRGGRP_CCURTPRG foreign key (CCurtProgramID)
+      references CCurtProgram (CCurtProgramID);
+
+alter table CCurtProgramParameter
+   add constraint FK_CCURTPRGPARAM_CCURTPRGID foreign key (CCurtProgramID)
+      references CCurtProgram (CCurtProgramID);
+
 alter table CICUSTOMERPOINTDATA
    add constraint FK_CICstPtD_CICst foreign key (CustomerID)
       references CICustomerBase (CustomerID);
@@ -7338,6 +7769,10 @@ alter table CICUSTOMERPOINTDATA
 alter table CICUSTOMERPOINTDATA
    add constraint FK_CICUSTOM_REF_CICST_POINT foreign key (PointID)
       references POINT (POINTID);
+
+alter table CICustomerBase
+   add constraint FK_CCURTEEPART_CUST foreign key (CustomerID)
+      references CCurtEEParticipant (CustomerID);
 
 alter table CICustomerBase
    add constraint FK_CUSTTYPE_ENTRYID foreign key (CiCustType)
