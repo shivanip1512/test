@@ -416,6 +416,33 @@ function editorPost()
 //Posts to the correct URL with the checked item
 // for editing
 // -------------------------------------------
+function copyPost()
+{
+
+	var elemSubs = document.getElementsByName('cti_chkbxSubs');
+	var elemFdrs = document.getElementsByName('cti_chkbxFdrs');
+	var elemBanks = document.getElementsByName('cti_chkbxBanks');
+	var elemPoints = document.getElementsByName('cti_chkbxPoints');
+
+	var validElems = new Array();
+	getValidChecks( elemSubs, validElems );
+	getValidChecks( elemFdrs, validElems );
+	getValidChecks( elemBanks, validElems );
+	getValidChecks( elemPoints, validElems );
+
+	//only allow the editing of the zeroth element for now
+	if ( validElems.length <= 0 )
+		alert('You must check the item you want to edit first');
+	else 
+		window.location = getUrlType(validElems, 'copy') + '&itemid=' + validElems[0].getAttribute('value');		
+		
+	
+}
+
+// -------------------------------------------
+//Posts to the correct URL with the checked item
+// for editing
+// -------------------------------------------
 function deletePost()
 {
 	var elemSubs = document.getElementsByName('cti_chkbxSubs');
@@ -504,7 +531,7 @@ CtiNonScrollTable.prototype = {
     this.mainTable = mainTable;
     this.headerTable = headerTable;
     this._alignHeaders();
-    Event.observe(window, 'resize', this._alignHeaders.bind(this)  ,false);
+    Event.observe(window, 'resizeend', this._alignHeaders.bind(this)  ,false);
 },
 
 _alignHeaders: function() {
@@ -564,4 +591,14 @@ for (var i=0; i < button_els.length; i++)
 }
 });
 
+}
+
+function lockButtonsPerSubmit (groupId) {
+var button_group = document.getElementById(groupId);
+var buttons = button_group.getElementsByTagName("input");
+
+for (var i=0; i<buttons.length; i++) {
+    var button_el =  buttons.item(i);
+    button_el.disabled = true;
+	}
 }
