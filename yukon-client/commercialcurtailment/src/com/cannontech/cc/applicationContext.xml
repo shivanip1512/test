@@ -44,8 +44,8 @@
     <property name="parameterKeys">
       <map>
         <entry key="DEFAULT_EVENT_OFFSET_MINUTES" value="60"/>
-        <entry key="DEFAULT_NOTIFICATION_OFFSET_MINUTES" value="30"/>
-        <entry key="DEFAULT_EVENT_DURATION_MINUTES" value="120"/>
+        <entry key="DEFAULT_NOTIFICATION_OFFSET_MINUTES" value="60"/>
+        <entry key="DEFAULT_EVENT_DURATION_MINUTES" value="240"/>
         <entry key="DEFAULT_ENERGY_PRICE" value="100"/>
       </map>
     </property>
