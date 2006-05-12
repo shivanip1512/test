@@ -20,10 +20,8 @@ public class CurtailmentEventParticipantDaoImpl extends YukonBaseHibernateDao im
     }
 
     public void deleteForEvent(CurtailmentEvent event) {
-        List<CurtailmentEventParticipant> particips = getForEvent(event);
-        for (CurtailmentEventParticipant partic : particips) {
-            delete(partic);
-        }
+        getHibernateTemplate().bulkUpdate("delete CurtailmentEventParticipant cep " +
+                                          "where cep.event = ?", event);
     }
 
     public void save(CurtailmentEventParticipant object) {
