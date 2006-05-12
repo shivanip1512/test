@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.185 $
-* DATE         :  $Date: 2006/05/04 18:12:59 $
+* REVISION     :  $Revision: 1.186 $
+* DATE         :  $Date: 2006/05/12 15:35:38 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2537,13 +2537,23 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                             }
                         case TYPE_CCU711:
                             {
-                                CtiTransmitterInfo *pInfo = Device->getTrxInfo();
+                                // CtiTransmitterInfo *pInfo = Device->getTrxInfo();
+                                CtiTransmitter711Info *pInfo = (CtiTransmitter711Info *)Device->getTrxInfo();
 
                                 /* get the first 5 bytes in the return message */
                                 trx.setInBuffer( InMessage->IDLCStat );
                                 trx.setInCountExpected( 5 );
                                 trx.setInCountActual( &InMessage->InLength );
-                                trx.setInTimeout(OutMessage->TimeOut);
+
+                                INT lto = OutMessage->TimeOut;
+                                if(pInfo->FreeSlots < MAXQUEENTRIES && (OutMessage->EventCode & DTRAN))
+                                {
+                                    // If the CCU has queued work and we are sendind a DTRAN we need to allow for a QUEUE read to
+                                    // complete prior to the DTRAN getting submitted.  Otherwise a timeout may happen.
+                                    lto *= 2;   // Let's allow twice as much time in this instance.
+                                }
+
+                                trx.setInTimeout(lto);
                                 trx.setMessageStart();                           // This is the first "in" of this message
                                 trx.setMessageComplete(0);                       // This is NOT the last "in" of this message
                                 trx.setCRCFlag(0);
@@ -2951,32 +2961,32 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
     if( InMessage && OutMessage)
     {
         InMessage->EventCode = (USHORT)CommResult;
-    
+
         switch(Device->getType())
         {
         case TYPE_CCU711:
             {
                 CtiTransmitter711Info *p711info = (CtiTransmitter711Info *)Device->getTrxInfo();
-    
+
                 if(OutMessage->Remote == CCUGLOBAL)
                 {
                     break;
                 }
-    
+
                 InMessage->InLength = OutMessage->InLength;
-    
+
                 /* Clear the RCOLQ flag if neccessary */
                 if(OutMessage->Command == CMND_RCOLQ)
                 {
                     p711info->clearStatus (INRCOLQ);
                 }
-    
+
                 /* Clear a LGRPQ flag if neccessary */
                 if(OutMessage->Command == CMND_LGRPQ)
                 {
                     p711info->clearStatus(INLGRPQ);
                 }
-    
+
                 if(OutMessage->EventCode & RCONT)
                 {
                     status = CCUResponseDecode (InMessage, Device, OutMessage);
@@ -2988,7 +2998,7 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                     status = CCUResponseDecode (InMessage, Device, OutMessage);
                     InMessage->InLength = j;
                 }
-    
+
                 if( status && CTINEXUS::CTINexusIsFatalSocketError(status))
                 {
                     {
@@ -3009,30 +3019,30 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
         case TYPE_CCU710:
             {
                 unsigned short nack1 = 0, nack2 = 0;
-    
+
                 if(CommResult)
                 {
                     InMessage->Buffer.DSt.Time     = InMessage->Time;
                     InMessage->Buffer.DSt.DSTFlag  = InMessage->MilliTime & DSTACTIVE;
                     break;
                 }
-    
+
                 if( (status = NackTst(InMessage->Buffer.InMessage[0], &nack1, OutMessage->Remote)) ||
                     (status = NackTst(InMessage->Buffer.InMessage[1], &nack2, OutMessage->Remote)) )
                 {
                     nack1 = nack2 = 1;
                 }
-    
-    
+
+
                 if( !nack1 && !nack2 )
                 {
                     InMessage->InLength = OutMessage->InLength;
-    
+
                     if( (OutMessage->EventCode     & BWORD) &&
                         (OutMessage->Buffer.BSt.IO & READ ) )
                     {
                         DSTRUCT        DSt;
-    
+
                         /* This is I so decode dword(s) for the result */
                         CommResult = InMessage->EventCode = status = D_Words (InMessage->Buffer.InMessage + 3, (USHORT)((InMessage->InLength - 3) / (DWORDLEN + 1)),  OutMessage->Remote, &DSt);
                         DSt.Time = InMessage->Time;
@@ -3056,7 +3066,7 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                         //  Address did not match, so it's a comm error
                         status = CommResult = WRONGADDRESS;
                         InMessage->EventCode = WRONGADDRESS;
-            
+
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " **** Checkpoint - Wrong DLC Address: \"" << tempDevice->getName() << "\" ";
@@ -3087,29 +3097,29 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                     if(VCUWait)
                     {
                         CtiTransmitterInfo *pInfo = Device->getTrxInfo();
-    
+
                         /* The assumption (for now) is overlapping coverage of VCU's on the
                                same comm port (VCU's on another comm port better damn well not
                                overlap this one!!!!!!!) and that we have exclusive use of the VHF
                                channels (No paging or voice channels!!!).  Obviosly this is an
                                extremely simplistic view of the world but will do till we can do
                                otherwise... Queues and time tables etc.... */
-    
+
                         /* Another gotcha... we assume that the VCU is doing something even
                            if this command fails... Life's a bitch but thats the way
                            its gotta be or things could fubar beyond belief... Then again??? */
-    
+
                         /* get how long this command will take */
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
                         // VCUTime (OutMessage, &pInfo->NextCommandTime);
-    
+
                         UCTFTime (&TimeB);
-    
+
                         pInfo->setNextCommandTime(pInfo->getNextCommandTime() + TimeB.time);
-    
+
     #ifdef OLD_CRAP
                         for(j = 0; j <= MAXIDLC; j++)
                         {
@@ -3125,16 +3135,16 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                         }
     #endif
                     }
-    
+
                     /* Lets check if this command needs to be queued again */
                     if(!CommResult && (InMessage->Buffer.InMessage[4] & VCUOVERQUE) && !gIgnoreTCU5X00QueFull)
                     {
                         /* we need to reque this one  */
                         /* Drop the priority an notch so we don't hog the channel */
                         if(OutMessage->Priority) OutMessage->Priority--;
-    
+
                         status = RETRY_SUBMITTED;
-    
+
                         /* Put it on the queue for this port */
                         if(PortManager.writeQueue(OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
                         {
@@ -3161,10 +3171,10 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " " << Device->getName() << " queue full.  Will resubmit." << endl;
                         }
-    
+
                         /* we need to reque this one  */
                         status = RETRY_SUBMITTED;
-    
+
                         /* Put it on the queue for this port */
                         if(PortManager.writeQueue(OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
                         {
@@ -3187,7 +3197,7 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                     CtiTransmitterInfo *pInfo = Device->getTrxInfo();
                     pInfo->RemoteSequence.Reply = !pInfo->RemoteSequence.Reply;
                 }
-    
+
                 break;
             }
         case TYPE_SERIESVLMIRTU:
@@ -3236,7 +3246,7 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
             statisticsNewCompletion( InMessage->Port, InMessage->DeviceID, InMessage->TargetID, CommResult, InMessage->MessageFlags );
         }
     }
-    
+
 
     return status;
 }
@@ -3251,7 +3261,7 @@ INT ReturnResultMessage(INT CommResult, INMESS *InMessage, OUTMESS *&OutMessage)
         if(OutMessage->EventCode & RESULT)         /* If the OutMessage indicates it this routine responds to the client */
         {
             InMessage->EventCode = (USHORT)CommResult;
-    
+
             if(CommResult != NORMAL)
             {
                 status = SendError( OutMessage, CommResult, InMessage );
