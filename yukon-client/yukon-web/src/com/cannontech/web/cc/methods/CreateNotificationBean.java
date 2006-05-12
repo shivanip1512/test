@@ -1,9 +1,6 @@
 package com.cannontech.web.cc.methods;
 
-import java.io.IOException;
 import java.util.List;
-
-import javax.faces.context.FacesContext;
 
 import com.cannontech.cc.model.CurtailmentEvent;
 import com.cannontech.cc.model.Group;
@@ -18,6 +15,7 @@ import com.cannontech.web.util.JSFUtil;
 public class CreateNotificationBean extends EventCreationBase {
     private ProgramService programService;
     private CurtailmentBuilder builder;
+    private DetailNotificationBean detailBean;
     
     @Override
     public String getStartPage() {
@@ -52,19 +50,16 @@ public class CreateNotificationBean extends EventCreationBase {
     }
     
     public String doCreateEvent() {
-        CurtailmentEvent event = getMyStrategy().createEvent(getBuilder());
-        
-        String url = "/cc/notif/detail.jsf?eventId=" + event.getId();
+        CurtailmentEvent event;
         try {
-            FacesContext.getCurrentInstance().getExternalContext().redirect(url);
-            FacesContext.getCurrentInstance().responseComplete();
-        } catch (IOException e) {
-            JSFUtil.addNullMessage("Unable to redirect: " + e);
-            return "error";
+            event = getMyStrategy().createEvent(getBuilder());
+            return detailBean.showDetail(event);
+        } catch (EventCreationException e) {
+            JSFUtil.handleException("Unable to create event", e);
+            return null;
         }
-        return null;
     }
-
+    
     public ProgramService getProgramService() {
         return programService;
     }
@@ -90,5 +85,14 @@ public class CreateNotificationBean extends EventCreationBase {
     getVerifiedCustomerList(List<Group> selectedGroupList) {
         return getStrategy().getVerifiedCustomerList(getBuilder(), selectedGroupList);
     }
+
+    public DetailNotificationBean getDetailBean() {
+        return detailBean;
+    }
+
+    public void setDetailBean(DetailNotificationBean detailBean) {
+        this.detailBean = detailBean;
+    }
+
 
 }

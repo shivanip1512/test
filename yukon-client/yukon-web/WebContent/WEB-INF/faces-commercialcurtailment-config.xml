@@ -162,6 +162,10 @@
           <property-name>customerSelectionBean</property-name>
           <value>#{sCustomerSelectionBean}</value>
         </managed-property>
+        <managed-property>
+          <property-name>detailBean</property-name>
+          <value>#{sNotificationDetail}</value>
+        </managed-property>
     </managed-bean>
 
     <managed-bean>
