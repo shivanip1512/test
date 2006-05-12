@@ -14,6 +14,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 
 import com.cannontech.cc.service.enums.CurtailmentEventState;
 import com.cannontech.common.util.TimeUtil;
@@ -43,6 +44,7 @@ public class CurtailmentEvent extends BaseEvent {
         this.id = id;
     }
 
+    @Type(type="com.cannontech.hibernate.HibernateEscapedString")
     @Column(name="message", nullable=false)
     public String getMessage() {
         return message;
