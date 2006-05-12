@@ -65,6 +65,10 @@ public class CustomerDetailBean {
         return null;
     }
     
+    public String cancel() {
+        return "customerList";
+    }
+    
     public String save() {
         savePoints();
         return "customerList";

@@ -26,7 +26,19 @@ public class CustomerEventService {
     
     public List<BaseEvent> getCurrentEvents(LiteYukonUser user) {
         CICustomerStub customer = getCustomer(user);
-        List<BaseEvent> allEvents = baseEventDao.getAllForCustomer(customer);
+        List<BaseEvent> allEvents = baseEventDao.getCurrentEvents(customer);
+        return allEvents;
+    }
+    
+    public List<BaseEvent> getPendingEvents(LiteYukonUser user) {
+        CICustomerStub customer = getCustomer(user);
+        List<BaseEvent> allEvents = baseEventDao.getPendingEvents(customer);
+        return allEvents;
+    }
+    
+    public List<BaseEvent> getRecentEvents(LiteYukonUser user) {
+        CICustomerStub customer = getCustomer(user);
+        List<BaseEvent> allEvents = baseEventDao.getRecentEvents(customer);
         return allEvents;
     }
     

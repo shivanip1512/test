@@ -26,6 +26,7 @@ import com.cannontech.web.util.JSFUtil;
 
 
 public class DetailEconomicBean implements BaseDetailBean {
+    private CreateEconomicBean createEconomicBean;
     private ProgramService programService;
     private BaseEconomicStrategy strategy;
     private EconomicService economicService;
@@ -186,6 +187,11 @@ public class DetailEconomicBean implements BaseDetailBean {
         return "reviseEconomicEvent";
     }
     
+    public String extendEvent() {
+        return createEconomicBean.initExtension(getEvent());
+        
+    }
+    
     public String doCreateRevision() {
         strategy.saveRevision(nextRevision);
         return "econDetail";
@@ -248,6 +254,19 @@ public class DetailEconomicBean implements BaseDetailBean {
 
     public EconomicEventPricing getNextRevision() {
         return nextRevision;
+    }
+
+    public CreateEconomicBean getCreateEconomicBean() {
+        return createEconomicBean;
+    }
+
+    /**
+     * This should be set not by the framework, but by CreateEconomicBean
+     * when this class is set on it.
+     * @param createEconomicBean
+     */
+    public void setCreateEconomicBean(CreateEconomicBean createEconomicBean) {
+        this.createEconomicBean = createEconomicBean;
     }
 
 }

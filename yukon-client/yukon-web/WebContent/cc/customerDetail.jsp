@@ -37,8 +37,8 @@
 </t:dataTable>
 
 <div>
-<h:commandButton action="#{sCustomerDetail.apply}" value="Apply"/>
 <h:commandButton action="#{sCustomerDetail.save}" value="Save"/>
+<h:commandButton action="#{sCustomerDetail.cancel}" value="Cancel"/>
 </div>
 
 </h:form>

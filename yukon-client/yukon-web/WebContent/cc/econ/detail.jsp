@@ -8,7 +8,7 @@
 <cti:standardPage title="Economic Event Detail" module="commercialcurtailment">
 <cti:standardMenu />
 
-<h2><t:outputText value="#{sEconomicDetail.event.program.name}"/> Event</h2>
+<h2><t:outputText value="#{sEconomicCreate.program.programType.name} #{sEconomicCreate.program.name}"/> Event</h2>
 <div> <t:messages showDetail="false" showSummary="true"/> </div>
 
 <h:form>

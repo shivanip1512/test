@@ -123,18 +123,22 @@ public class ProgramDetailBean {
     
     public String save() {
         doSave();
-        return "success";
+        return "programList";
     }
     
     public String saveNew() {
         doSave();
         updateData();
-        return "success";
+        return "programList";
     }
     
     public String apply() {
         doSave();
         return null;
+    }
+    
+    public String cancel() {
+        return "programList";
     }
     
     public void deleteGroup(ActionEvent event) {

@@ -8,11 +8,16 @@
 <cti:standardPage title="Create Notification Event" module="commercialcurtailment">
 <cti:standardMenu />
 
-<h2>Create <t:outputText value="#{sNotificationCreate.program.name}"/> Event</h2>
+<h2>Create <t:outputText value="#{sEconomicCreate.program.programType.name} #{sEconomicCreate.program.name}"/> Event</h2>
 <h3>Confirm</h3>
 <div> <t:messages showDetail="false" showSummary="true"/> </div>
 
 <h:form>
+
+<div>
+<h:commandButton action="#{sNotificationCreate.doCreateEvent}" value="Create"/>
+<h:commandButton action="#{sNotificationCreate.cancel}" value="Cancel" immediate="true"/>
+</div>
 
 <div>
 Notification Time:
@@ -55,11 +60,6 @@ Customers:
 <t:dataList value="#{sNotificationCreate.builder.customerList}" var="thisCustomer" layout="unorderedlist">
 <t:outputText value="#{thisCustomer.customer.companyName}"/>
 </t:dataList>
-
-<div>
-<h:commandButton action="#{sNotificationCreate.doCreateEvent}" value="Create"/>
-<h:commandButton action="#{sNotificationCreate.cancel}" value="Cancel" immediate="true"/>
-</div>
 
 </h:form>
 

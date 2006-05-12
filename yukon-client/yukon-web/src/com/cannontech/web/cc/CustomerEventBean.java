@@ -13,21 +13,52 @@ import com.cannontech.web.cc.methods.BaseDetailBean;
 public class CustomerEventBean {
     private CommercialCurtailmentBean commercialCurtailmentBean;
     private CustomerEventService customerEventService;
-    private ListDataModel eventListModel = null;
+    private ListDataModel currentEventListModel = null;
     private EventDetailHelper eventDetailHelper;
+    private ListDataModel pendingEventListModel;
+    private ListDataModel recentEventListModel;
 
-    
-    public DataModel getEventListModel() {
-        if (eventListModel == null) {
-            LiteYukonUser yukonUser = commercialCurtailmentBean.getYukonUser();
-            List<BaseEvent> currentEvents = customerEventService.getCurrentEvents(yukonUser);
-            eventListModel = new ListDataModel(currentEvents);
-        }
-        return eventListModel;
+    private void updateListModels() {
+        LiteYukonUser yukonUser = commercialCurtailmentBean.getYukonUser();
+        
+        List<BaseEvent> currentEvents = customerEventService.getCurrentEvents(yukonUser);
+        currentEventListModel = new ListDataModel(currentEvents);
+        
+        List<BaseEvent> pendingEvents = customerEventService.getPendingEvents(yukonUser);
+        pendingEventListModel = new ListDataModel(pendingEvents);
+
+        List<BaseEvent> recentEvents = customerEventService.getRecentEvents(yukonUser);
+        recentEventListModel = new ListDataModel(recentEvents);
+    }
+    public DataModel getCurrentEventListModel() {
+        updateListModels();
+        return currentEventListModel;
     }
     
-    public String showEventDetail() {
-        BaseEvent event = (BaseEvent) getEventListModel().getRowData();
+    public String showCurrentEventDetail() {
+        BaseEvent event = (BaseEvent) getCurrentEventListModel().getRowData();
+        BaseDetailBean detailBean = eventDetailHelper.getUserEventDetailBean(event);
+        return detailBean.showDetail(event);
+    }
+    
+    public DataModel getPendingEventListModel() {
+        updateListModels();
+        return pendingEventListModel;
+    }
+    
+    public String showPendingEventDetail() {
+        BaseEvent event = (BaseEvent) getPendingEventListModel().getRowData();
+        BaseDetailBean detailBean = eventDetailHelper.getUserEventDetailBean(event);
+        return detailBean.showDetail(event);
+    }
+    
+    public DataModel getRecentEventListModel() {
+        updateListModels();
+        return recentEventListModel;
+    }
+    
+    public String showRecentEventDetail() {
+        BaseEvent event = (BaseEvent) getRecentEventListModel().getRowData();
         BaseDetailBean detailBean = eventDetailHelper.getUserEventDetailBean(event);
         return detailBean.showDetail(event);
     }

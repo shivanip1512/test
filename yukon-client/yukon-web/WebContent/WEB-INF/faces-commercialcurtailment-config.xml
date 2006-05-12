@@ -371,9 +371,8 @@
 <!--  Navigation rules --> 
 
     <navigation-rule>
-        <from-view-id>/cc/programDetail.jsp</from-view-id>
         <navigation-case>
-            <from-outcome>success</from-outcome>
+            <from-outcome>programList</from-outcome>
             <to-view-id>/cc/programList.jsp</to-view-id>
             <redirect></redirect>
         </navigation-case>
@@ -423,9 +422,8 @@
     </navigation-rule>
     
     <navigation-rule>
-        <from-view-id>/cc/groupDetail.jsp</from-view-id>
         <navigation-case>
-            <from-outcome>success</from-outcome>
+            <from-outcome>groupList</from-outcome>
             <to-view-id>/cc/groupList.jsp</to-view-id>
             <redirect></redirect>
         </navigation-case>

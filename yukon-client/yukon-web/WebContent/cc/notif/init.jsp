@@ -8,7 +8,7 @@
 <cti:standardPage title="Create Notification Event" module="commercialcurtailment">
 <cti:standardMenu />
 
-<h2>Create <t:outputText value="#{sNotificationCreate.program.name}"/> Event</h2>
+<h2>Create <t:outputText value="#{sEconomicCreate.program.programType.name} #{sEconomicCreate.program.name}"/> Event</h2>
 <h3>Enter Parameters</h3>
 <div> <t:messages showDetail="false" showSummary="true"/> </div>
 

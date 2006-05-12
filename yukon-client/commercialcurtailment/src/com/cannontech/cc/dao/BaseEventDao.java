@@ -7,12 +7,10 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.TimeZone;
 import java.util.TreeSet;
 
 import com.cannontech.cc.model.BaseEvent;
 import com.cannontech.cc.model.CICustomerStub;
-import com.cannontech.database.cache.functions.EnergyCompanyFuncs;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 
 /**
@@ -48,17 +46,43 @@ public class BaseEventDao implements CommonEventOperations {
         Collections.sort(allEvents);
         return allEvents;
     }
+    
+    public List<BaseEvent> getRecentEvents(CICustomerStub customer) {
+        List<BaseEvent> allForCustomer = getAllForCustomer(customer);
+        filterForRecent(allForCustomer);
+        return allForCustomer;
+    }
+    
+    public List<BaseEvent> getCurrentEvents(CICustomerStub customer) {
+        List<BaseEvent> allForCustomer = getAllForCustomer(customer);
+        filterForCurrent(allForCustomer);
+        return allForCustomer;
+    }
+    
+    public List<BaseEvent> getPendingEvents(CICustomerStub customer) {
+        List<BaseEvent> allForCustomer = getAllForCustomer(customer);
+        filterForPending(allForCustomer);
+        return allForCustomer;
+    }
+    
+    
 
     public List<BaseEvent> getRecentEvents(LiteEnergyCompany energyCompany) {
+        List<BaseEvent> allEvents = getAllForEnergyCompany(energyCompany);
+        filterForRecent(allEvents);
+        
+        return allEvents;  // which have now been filtered
+    }
+
+    private void filterForRecent(List<BaseEvent> allEvents) {
         Date now = new Date();
         // get for last six months
-        TimeZone timeZone = EnergyCompanyFuncs.getEnergyCompanyTimeZone(energyCompany);
-        Calendar calendar = Calendar.getInstance(timeZone);
+        // used computer's TZ because the length of time is so long it won't matter
+        Calendar calendar = Calendar.getInstance();
         calendar.setTime(now);
         calendar.add(Calendar.MONTH, -6);
         Date sixMonthsAgo = calendar.getTime();
         
-        List<BaseEvent> allEvents = getAllForEnergyCompany(energyCompany);
         for (Iterator iter = allEvents.iterator(); iter.hasNext();) {
             BaseEvent event = (BaseEvent) iter.next();
             if (event.getStopTime().before(sixMonthsAgo)) {
@@ -67,14 +91,18 @@ public class BaseEventDao implements CommonEventOperations {
                 iter.remove();
             }
         }
+    }
+
+    public List<BaseEvent> getCurrentEvents(LiteEnergyCompany energyCompany) {
+        List<BaseEvent> allEvents = getAllForEnergyCompany(energyCompany);
+        filterForCurrent(allEvents);
         
         return allEvents;  // which have now been filtered
     }
 
-    public List<BaseEvent> getCurrentEvents(LiteEnergyCompany energyCompany) {
+    private void filterForCurrent(List<BaseEvent> allEvents) {
         Date now = new Date();
         
-        List<BaseEvent> allEvents = getAllForEnergyCompany(energyCompany);
         for (Iterator iter = allEvents.iterator(); iter.hasNext();) {
             BaseEvent event = (BaseEvent) iter.next();
             if (event.getStopTime().before(now)) {
@@ -83,22 +111,24 @@ public class BaseEventDao implements CommonEventOperations {
                 iter.remove();
             }
         }
+    }
+
+    public List<BaseEvent> getPendingEvents(LiteEnergyCompany energyCompany) {
+        List<BaseEvent> allEvents = getAllForEnergyCompany(energyCompany);
+        filterForPending(allEvents);
         
         return allEvents;  // which have now been filtered
     }
 
-    public List<BaseEvent> getPendingEvents(LiteEnergyCompany energyCompany) {
+    private void filterForPending(List<BaseEvent> allEvents) {
         Date now = new Date();
         
-        List<BaseEvent> allEvents = getAllForEnergyCompany(energyCompany);
         for (Iterator iter = allEvents.iterator(); iter.hasNext();) {
             BaseEvent event = (BaseEvent) iter.next();
             if (event.getStartTime().before(now)) {
                 iter.remove();
             }
         }
-        
-        return allEvents;  // which have now been filtered
     }
     
     /**

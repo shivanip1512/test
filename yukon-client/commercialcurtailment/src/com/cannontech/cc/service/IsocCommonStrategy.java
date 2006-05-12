@@ -4,12 +4,16 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
 
+import com.cannontech.cc.dao.BaseEventDao;
+import com.cannontech.cc.model.BaseEvent;
 import com.cannontech.cc.model.CICustomerStub;
 import com.cannontech.cc.service.builder.VerifiedCustomer;
 import com.cannontech.cc.service.enums.IsocPointTypes;
-import com.cannontech.cc.service.exception.NoPointException;
+import com.cannontech.common.exception.PointException;
+import com.cannontech.common.util.TimeUtil;
 import com.cannontech.database.cache.functions.SimplePointAccess;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.support.CustomerPointTypeHelper;
@@ -17,6 +21,7 @@ import com.cannontech.support.CustomerPointTypeHelper;
 public class IsocCommonStrategy extends StrategyGroupBase {
     private SimplePointAccess pointAccess;
     private CustomerPointTypeHelper pointTypeHelper;
+    private BaseEventDao baseEventDao;
 
     public IsocCommonStrategy() {
         super();
@@ -45,7 +50,7 @@ public class IsocCommonStrategy extends StrategyGroupBase {
         return getBaseEventDao().getTotalEventDuration(customer, getStrategyKeys(), from, to) / 60;
     }
     
-    private boolean hasCustomerExceededAllowedHours(CICustomerStub customer, int propossedEventLength) throws NoPointException {
+    private boolean hasCustomerExceededAllowedHours(CICustomerStub customer, int propossedEventLength) throws PointException {
         LitePoint allowedHoursPoint = pointTypeHelper.getPoint(customer, IsocPointTypes.InterruptHours);
         int allowedHours = (int) pointAccess.getPointValue(allowedHoursPoint);
         // applies to current year
@@ -53,30 +58,51 @@ public class IsocCommonStrategy extends StrategyGroupBase {
         return (actualHours + propossedEventLength) > allowedHours;
     }
     
-    public BigDecimal getInterruptibleLoad(CICustomerStub customer) throws NoPointException {
+    public BigDecimal getInterruptibleLoad(CICustomerStub customer) throws PointException {
         LitePoint point = pointTypeHelper.getPoint(customer, IsocPointTypes.ContractIntLoad);
         double interruptLoad = pointAccess.getPointValue(point);
         
         return new BigDecimal(interruptLoad, new MathContext(0));
     }
 
-    public void checkEventCustomer(VerifiedCustomer vCustomer, int durationHours, int notifMinutes) {
+    public void checkEventCustomer(VerifiedCustomer vCustomer, BaseEvent event) {
         CICustomerStub customer = vCustomer.getCustomer();
-        try {
-            if (hasCustomerExceededAllowedHours(customer, durationHours)) {
-                vCustomer.setStatus(VerifiedCustomer.Status.EXCLUDE);
-                vCustomer.setReasonForExclusion("has exceeded allowed hours");
-            } else if (isEventNoticeTooShort(customer, notifMinutes)) {
-                vCustomer.setStatus(VerifiedCustomer.Status.EXCLUDE_OVERRIDABLE);
-                vCustomer.setReasonForExclusion("requires longer notification time");
+        List<BaseEvent> forCustomer = baseEventDao.getAllForCustomer(customer);
+        //TODO clean up how the ordering of the above call works
+        
+        for (BaseEvent otherEvent : forCustomer) {
+            // rely on ordering from dao (reverse)
+            if (otherEvent.getStopTime().before(event.getStartTime())) {
+                // because of the event ordering, no more possible collisions exist
+                break;
             }
-        } catch (NoPointException e) {
-            vCustomer.setStatus(VerifiedCustomer.Status.EXCLUDE);
-            vCustomer.setReasonForExclusion("does not have required points assigned (" + e.getPointType() + ")");
+            if (otherEvent.getStartTime().before(event.getStopTime())) {
+                // we have a collision
+                vCustomer.addExclusion(VerifiedCustomer.Status.EXCLUDE, 
+                "already in an event (" + event.getDisplayName() + ") at that time");
+                break;
+            }
+            
+        }
+        try {
+            int durationHours = event.getDuration() / 60;
+            if (hasCustomerExceededAllowedHours(customer, durationHours)) {
+                vCustomer.addExclusion(VerifiedCustomer.Status.EXCLUDE, 
+                                       "has exceeded allowed hours");
+            } 
+            
+            int notifMinutes = TimeUtil.differenceMinutes(event.getNotificationTime(), event.getStartTime());
+            if (isEventNoticeTooShort(customer, notifMinutes)) {
+                vCustomer.addExclusion(VerifiedCustomer.Status.EXCLUDE_OVERRIDABLE, 
+                                       "requires longer notification time");
+            }
+        } catch (PointException e) {
+            vCustomer.addExclusion(VerifiedCustomer.Status.EXCLUDE, 
+                                   "couldn't get point value (" + e.getMessage() + ")");
         }
     }
     
-    private boolean isEventNoticeTooShort(CICustomerStub customer, int notifMinutes) throws NoPointException {
+    private boolean isEventNoticeTooShort(CICustomerStub customer, int notifMinutes) throws PointException {
         LitePoint minimumNoticeMinutesPoint = pointTypeHelper.getPoint(customer, IsocPointTypes.MinimumNotice);
         int minimumNoticeMinutes = (int) pointAccess.getPointValue(minimumNoticeMinutesPoint);
         return notifMinutes < minimumNoticeMinutes;
@@ -88,6 +114,14 @@ public class IsocCommonStrategy extends StrategyGroupBase {
 
     public void setPointTypeHelper(CustomerPointTypeHelper pointTypeHelper) {
         this.pointTypeHelper = pointTypeHelper;
+    }
+
+    public BaseEventDao getBaseEventDao() {
+        return baseEventDao;
+    }
+
+    public void setBaseEventDao(BaseEventDao baseEventDao) {
+        this.baseEventDao = baseEventDao;
     }
 
 }

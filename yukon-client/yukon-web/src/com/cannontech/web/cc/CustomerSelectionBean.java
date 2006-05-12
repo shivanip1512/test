@@ -15,7 +15,7 @@ import com.cannontech.cc.model.GroupCustomerNotif;
 import com.cannontech.cc.service.GroupService;
 import com.cannontech.cc.service.ProgramService;
 import com.cannontech.cc.service.builder.VerifiedCustomer;
-import com.cannontech.cc.service.exception.NoPointException;
+import com.cannontech.common.exception.PointException;
 import com.cannontech.web.cc.methods.EventCreationBase;
 import com.cannontech.web.cc.util.SelectableCustomer;
 import com.cannontech.web.util.JSFUtil;
@@ -76,6 +76,7 @@ public class CustomerSelectionBean {
     public String doCustomerVerificationComplete() {
         if (getSelectedCustomers().isEmpty()) {
             JSFUtil.addNullMessage("At least one Customer must be selected.");
+            return null;
         }
         return eventBean.doAfterCustomerPage();
     }
@@ -84,7 +85,7 @@ public class CustomerSelectionBean {
         SelectableCustomer sCustomer = (SelectableCustomer) customerListModel.getRowData();
         try {
             return eventBean.getStrategy().getInterruptibleLoad(sCustomer.getCustomer()).toPlainString();
-        } catch (NoPointException e) {
+        } catch (PointException e) {
             return "n/a";
         }
     }

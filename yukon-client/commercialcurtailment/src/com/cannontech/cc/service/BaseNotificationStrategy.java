@@ -36,7 +36,10 @@ public abstract class BaseNotificationStrategy extends StrategyBase {
 
     public CurtailmentBuilder createBuilder(Program program) {
         CurtailmentBuilder builder = new CurtailmentBuilder();
-        builder.setProgram(program);
+        CurtailmentEvent event = new CurtailmentEvent();
+        event.setState(CurtailmentEventState.INITIAL);
+        event.setProgram(program);
+        builder.setEvent(event);
         
         TimeZone tz = getProgramService().getTimeZone(program);
         builder.setTimeZone(tz);
@@ -90,13 +93,7 @@ public abstract class BaseNotificationStrategy extends StrategyBase {
     @Transactional
     protected CurtailmentEvent createDatabaseObjects(CurtailmentBuilder builder) {
         // create curtail event
-        CurtailmentEvent event = new CurtailmentEvent();
-        event.setMessage(builder.getMessage());
-        event.setStartTime(builder.getStartTime());
-        event.setNotificationTime(builder.getNotificationTime());
-        event.setDuration(builder.getEventDuration());
-        event.setProgram(builder.getProgram());
-        event.setState(CurtailmentEventState.INITIAL);
+        CurtailmentEvent event = builder.getEvent();
         
         getCurtailmentEventDao().save(event);
         

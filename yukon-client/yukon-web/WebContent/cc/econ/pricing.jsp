@@ -8,7 +8,7 @@
 <cti:standardPage title="Create Economic Event" module="commercialcurtailment">
 <cti:standardMenu />
 
-<h2>Create <t:outputText value="#{sEconomicCreate.program.name}"/> Event</h2>
+<h2>Create <t:outputText value="#{sEconomicCreate.program.programType.name} #{sEconomicCreate.program.name}"/> Event</h2>
 <h3>Enter Energy Prices</h3>
 <div> <t:messages showDetail="false" showSummary="true"/> </div>
 
@@ -31,7 +31,7 @@
     <t:inputText value="#{thisPrice.energyPrice}">
       <f:validateLongRange minimum="0" maximum="10000"/>
     </t:inputText>
-    <t:outputText value="($/MWh)"/>
+    <t:outputText value="($/kWh)"/>
     
   </t:column>
 </t:dataTable>

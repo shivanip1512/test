@@ -26,7 +26,9 @@
     <t:outputText value="#{sCustomerSelectionBean.interruptibleLoad}"/>
   </t:column>
   <t:column>
-    <t:outputText value="#{thisCustomer.reasonForExclusion}" rendered="#{thisCustomer.exclude}"/>
+    <t:outputText value="#{thisCustomer.reasonForExclusion}" 
+                  rendered="#{thisCustomer.exclude}" 
+                  styleClass="exclusionReason"/>
   </t:column>
 </t:dataTable>
 

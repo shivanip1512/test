@@ -28,6 +28,12 @@ public class CreateEconomicBean extends EventCreationBase {
         
         clearForm();
     }
+    
+    public String initExtension(EconomicEvent oldEvent) {
+        setBuilder(getMyStrategy().createExtensionBuilder(oldEvent));
+        clearForm();
+        return getStartPage();
+    }
 
     public String doAfterInitialEntry() {
         try {
@@ -63,8 +69,14 @@ public class CreateEconomicBean extends EventCreationBase {
     }
     
     public String doCreateEvent() {
-        EconomicEvent event = getMyStrategy().createEvent(getBuilder());
-        return detailBean.showDetail(event);
+        EconomicEvent event;
+        try {
+            event = getMyStrategy().createEvent(getBuilder());
+            return detailBean.showDetail(event);
+        } catch (EventCreationException e) {
+            JSFUtil.handleException("Unable to create event", e);
+            return null;
+        }
     }
     
     public int getWindowLength() {
@@ -105,6 +117,9 @@ public class CreateEconomicBean extends EventCreationBase {
 
     public void setDetailBean(DetailEconomicBean detailBean) {
         this.detailBean = detailBean;
+        
+        // return the favor
+        detailBean.setCreateEconomicBean(this);
     }
 
 }

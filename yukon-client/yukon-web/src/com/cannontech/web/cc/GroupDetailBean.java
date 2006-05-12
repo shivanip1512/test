@@ -1,6 +1,8 @@
 package com.cannontech.web.cc;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.faces.context.ExternalContext;
@@ -15,6 +17,12 @@ import com.cannontech.cc.service.GroupService;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 public class GroupDetailBean {
+    private final class CustomerListComparator implements Comparator<GroupCustomerNotif> {
+        public int compare(GroupCustomerNotif o1, GroupCustomerNotif o2) {
+            return o1.getCustomer().compareTo(o2.getCustomer());
+        }
+    }
+
     private LiteYukonUser yukonUser;
     private GroupService groupService;
     private Group group = null;
@@ -87,7 +95,7 @@ public class GroupDetailBean {
     
     public String save() {
         doSave();
-        return "success";
+        return "groupList";
     }
     
     public String apply() {
@@ -95,21 +103,27 @@ public class GroupDetailBean {
         return null;
     }
     
+    public String cancel() {
+        return "groupList";
+    }
+    
     public String delete() {
         groupService.deleteGroup(getGroup());
-        return "success";
+        return "groupList";
     }
     
     public void deleteNotif(ActionEvent event) {
         GroupCustomerNotif rowData = (GroupCustomerNotif) groupCustomerModel.getRowData();
         groupCustomerList.remove(rowData);
         customerList.add(rowData);
+        Collections.sort(customerList, new CustomerListComparator());
     }
 
     public void addNotif(ActionEvent event) {
         GroupCustomerNotif rowData = (GroupCustomerNotif) customerModel.getRowData();
         customerList.remove(rowData);
         groupCustomerList.add(rowData);
+        Collections.sort(groupCustomerList, new CustomerListComparator());
     }
 
     public DataModel getCustomerModel() {

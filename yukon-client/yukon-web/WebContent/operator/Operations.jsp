@@ -11,6 +11,7 @@
 <%@ page import="com.cannontech.roles.loadcontrol.DirectLoadcontrolRole" %>
 <%@ page import="com.cannontech.roles.operator.EnergyBuybackRole" %>
 <%@ page import="com.cannontech.roles.operator.OddsForControlRole" %>
+<%@ page import="com.cannontech.roles.operator.CICurtailmentRole" %>
 
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ include file="Consumer/include/StarsHeader.jsp" %>
@@ -202,13 +203,19 @@ function confirmDelete() {
 
 <cti:checkRole roleid="<%= DirectCurtailmentRole.ROLEID %>"> 
           <td width="25%" class = "MainText"> 
-            <div align = "center" style = "border:solid 1px #666999;"><a href = "LoadControl/oper_mand.jsp" class = "Link1" style = "text-decoration:none;"><cti:getProperty propertyid="<%= DirectCurtailmentRole.CURTAILMENT_LABEL%>" defaultvalue="Notification"/></a></div>
+            <div align = "center" style = "border:solid 1px #666999;"><a href = "LoadControl/oper_mand.jsp" class = "Link1" style = "text-decoration:none;"><cti:getProperty propertyid="<%= DirectCurtailmentRole.CURTAILMENT_LABEL%>"/></a></div>
           </td>
 </cti:checkRole>
 
 <cti:checkRole roleid="<%= EnergyBuybackRole.ROLEID %>"> 
           <td width="25%" class = "MainText"> 
-            <div align = "center" style = "border:solid 1px #666999;"><a href = "LoadControl/oper_ee.jsp" class = "Link1" style = "text-decoration:none;"><cti:getProperty propertyid="<%= EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>" defaultvalue="Energy Buyback"/></a></div>
+            <div align = "center" style = "border:solid 1px #666999;"><a href = "LoadControl/oper_ee.jsp" class = "Link1" style = "text-decoration:none;"><cti:getProperty propertyid="<%= EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>"/></a></div>
+          </td>
+</cti:checkRole>
+
+<cti:checkRole roleid="<%= CICurtailmentRole.ROLEID %>"> 
+          <td width="25%" class="MainText"> 
+            <div align="center" style="border:solid 1px #666999;"><a href="/cc/programSelect.jsf" class="Link1" style="text-decoration:none;"><cti:getProperty property="com.cannontech.roles.operator.CICurtailmentRole.CURTAILMENT_LABEL"/></a></div>
           </td>
 </cti:checkRole>
 

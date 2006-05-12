@@ -9,12 +9,13 @@ import java.util.TreeMap;
 
 import com.cannontech.cc.dao.CustomerDao;
 import com.cannontech.cc.model.CICustomerStub;
-import com.cannontech.cc.service.exception.NoPointException;
+import com.cannontech.common.exception.PointDataException;
 import com.cannontech.database.cache.functions.SimplePointAccess;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.support.CustomerPointTypeHelper;
 import com.cannontech.support.CustomerPointTypeLookup;
+import com.cannontech.support.NoPointException;
 
 public class CustomerPointService {
     private CustomerDao customerDao;
@@ -36,6 +37,8 @@ public class CustomerPointService {
                 pointValueCache.put(pointType, pointValue);
             } catch (NoPointException e) {
                 // then it doesn't belong in the cache!
+            } catch (PointDataException e) {
+                //pointValueCache.put(pointType, 99999999999.1);
             }
         }
         return pointValueCache;

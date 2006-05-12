@@ -24,7 +24,7 @@ import com.cannontech.cc.model.Program;
 import com.cannontech.cc.model.ProgramParameter;
 import com.cannontech.cc.service.builder.EventBuilderBase;
 import com.cannontech.cc.service.builder.VerifiedCustomer;
-import com.cannontech.cc.service.exception.NoPointException;
+import com.cannontech.common.exception.PointException;
 
 public abstract class StrategyBase {
     private ProgramService programService;
@@ -159,7 +159,7 @@ public abstract class StrategyBase {
     public abstract
     List<? extends BaseEvent> getEventsForProgram(Program program);
 
-    public abstract BigDecimal getInterruptibleLoad(CICustomerStub customer) throws NoPointException;
+    public abstract BigDecimal getInterruptibleLoad(CICustomerStub customer) throws PointException;
 
 
 }

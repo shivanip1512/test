@@ -48,7 +48,7 @@ public class GroupCustomerNotif {
     }
 
     @ManyToOne()
-    @JoinColumn(name="GroupId")
+    @JoinColumn(name="GroupId")  //TODO change to "CCurtGroupID" when Aaron does update
     public Group getGroup() {
         return group;
     }

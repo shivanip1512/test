@@ -26,6 +26,7 @@
 <div>
 <div class="section" style="float: left;">
 <div class="sectionTitle">Customers:</div>
+<div class="sectionBody">
 <t:dataTable value="#{sGroupDetail.customerNotifsModel}" 
              var="customerNotif" 
              forceIdIndexFormula="#{customerNotif.id}"
@@ -54,9 +55,11 @@
   </t:column>
 </t:dataTable>
 </div>
+</div>
 
 <div class="section" style="float: left;">
 <div class="sectionTitle">Available Customers:</div>
+<div class="sectionBody">
 <t:dataTable value="#{sGroupDetail.customerModel}" 
              var="customerNotif" 
              forceIdIndexFormula="#{customerNotif.id}"
@@ -71,13 +74,14 @@
   </t:column>
 </t:dataTable>
 </div>
+</div>
 <div style="clear: both;">&nbsp;</div>
 </div>
 
 <div>
-<h:commandButton action="#{sGroupDetail.apply}" value="Apply"/>
 <h:commandButton action="#{sGroupDetail.save}" value="Save"/>
 <h:commandButton action="#{sGroupDetail.delete}" value="Delete"/>
+<h:commandButton action="#{sGroupDetail.cancel}" value="Cancel"/>
 </div>
 
 </h:form>

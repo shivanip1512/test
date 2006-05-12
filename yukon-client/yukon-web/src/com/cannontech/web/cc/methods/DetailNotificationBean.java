@@ -113,6 +113,4 @@ public class DetailNotificationBean implements BaseDetailBean {
         this.helper = helper;
     }
 
-    
-
 }

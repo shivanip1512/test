@@ -10,10 +10,10 @@ import com.cannontech.cc.dao.CustomerDao;
 import com.cannontech.cc.model.CICustomerPointData;
 import com.cannontech.cc.model.CICustomerStub;
 import com.cannontech.cc.service.enums.PointTypes;
-import com.cannontech.cc.service.exception.NoPointException;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.functions.DBPersistentFuncs;
 import com.cannontech.database.cache.functions.DeviceFuncs;
+import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.data.device.VirtualDevice;
 import com.cannontech.database.data.lite.LiteCICustomer;
@@ -93,17 +93,31 @@ public class CustomerPointTypeHelper {
     public void createPoint(CICustomerStub customer, String type) {
         LiteYukonPAObject customerDevice = getCustomerDevice(customer);
         String pointName = customer.getCompanyName() + "-" + type;
-        int pointId = Point.getNextPointID();
-        PointBase point = PointFactory.createAnalogPoint(pointName, 
-                                                         customerDevice.getYukonID(), 
-                                                         pointId, 
-                                                         0, 
-                                                         PointUnits.UOMID_UNDEF);
-        DBPersistentFuncs.performDBChange(point, Transaction.INSERT);
-        
+        int pointId = 0;
+        boolean found = false;
+        // see if point already exists
+        LitePoint[] litePointsForPAObject = 
+            PAOFuncs.getLitePointsForPAObject(customerDevice.getLiteID());
+        for (int i = 0; i < litePointsForPAObject.length; i++) {
+            LitePoint point = litePointsForPAObject[i];
+            if (point.getPointName().equals(pointName)) {
+                pointId = point.getPointID();
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            pointId = Point.getNextPointID();
+            PointBase point = PointFactory.createAnalogPoint(pointName, 
+                                                             customerDevice.getYukonID(), 
+                                                             pointId, 
+                                                             0, 
+                                                             PointUnits.UOMID_UNDEF);
+            DBPersistentFuncs.performDBChange(point, Transaction.INSERT);
+        }
         CICustomerPointData customerPoint = new CICustomerPointData();
         customerPoint.setType(type);
-        customerPoint.setPointId(point.getPoint().getPointID());
+        customerPoint.setPointId(pointId);
         customer.addPoint(customerPoint);
         
         customerDao.save(customer);

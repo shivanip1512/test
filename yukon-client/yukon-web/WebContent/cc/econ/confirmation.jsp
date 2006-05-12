@@ -8,11 +8,16 @@
 <cti:standardPage title="Create Economic Event" module="commercialcurtailment">
 <cti:standardMenu />
 
-<h2>Create <t:outputText value="#{sEconomicCreate.program.name}"/> Event</h2>
+<h2>Create <t:outputText value="#{sEconomicCreate.program.programType.name} #{sEconomicCreate.program.name}"/> Event</h2>
 <h3>Confirm</h3>
 <div> <t:messages showDetail="false" showSummary="true"/> </div>
 
 <h:form>
+
+<div class="actionButtons">
+<h:commandButton action="#{sEconomicCreate.doCreateEvent}" value="Create"/>
+<h:commandButton action="#{sEconomicCreate.cancel}" value="Cancel" immediate="true"/>
+</div>
 
 <table class="horizBorders">
   <tr>
@@ -84,10 +89,6 @@
 </t:dataList>
 </div>
 
-<div class="actionButtons">
-<h:commandButton action="#{sEconomicCreate.doCreateEvent}" value="Create"/>
-<h:commandButton action="#{sEconomicCreate.cancel}" value="Cancel" immediate="true"/>
-</div>
 
 </h:form>
 

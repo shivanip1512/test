@@ -34,6 +34,7 @@ import com.cannontech.cc.service.builder.EconomicBuilder;
 import com.cannontech.cc.service.enums.EconomicEventState;
 import com.cannontech.cc.service.exception.EventCreationException;
 import com.cannontech.cc.service.exception.EventModificationException;
+import com.cannontech.common.exception.PointException;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.cache.functions.SimplePointAccess;
@@ -97,6 +98,38 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
         return builder;
     }
 
+    public EconomicBuilder createExtensionBuilder(EconomicEvent previous) {
+        EconomicBuilder builder = new EconomicBuilder();
+        Program program = previous.getProgram();
+        builder.setProgram(program);
+        
+        TimeZone tz = getProgramService().getTimeZone(program);
+        builder.setTimeZone(tz);
+        
+        EconomicEvent event = new EconomicEvent();
+        event.setInitialEvent(previous);
+        event.setProgram(program);
+        event.setState(EconomicEventState.INITIAL);
+        builder.setEvent(event);
+        EconomicEventPricing revision = new EconomicEventPricing();
+        revision.setRevision(1); // the first pricing rev is 1
+        event.addRevision(revision);
+        builder.setEventRevision(revision);
+        
+        Calendar calendar = Calendar.getInstance(tz);
+        builder.getEvent().setStartTime(previous.getStopTime());
+        
+        calendar.setTime(builder.getEvent().getStartTime());
+        calendar.add(Calendar.MINUTE, 
+                     -getDefaultNotifTimeBacksetMinutes(program));
+        builder.getEvent().setNotificationTime(calendar.getTime());
+        
+        builder.getEvent().setWindowLengthMinutes(getWindowLengthMinutes());
+        builder.setNumberOfWindows(getDefaultDurationMinutes(program) / getWindowLengthMinutes() / 2);
+        
+        return builder;
+    }
+
     protected int getDefaultNotifTimeBacksetMinutes(Program program) {
         return getParameterValueInt(program, "DEFAULT_NOTIFICATION_OFFSET_MINUTES");
     }
@@ -123,11 +156,11 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
         return 60;
     }
     
-    public abstract BigDecimal getCustomerElectionPrice(EconomicEventParticipant customer);
+    public abstract BigDecimal getCustomerElectionPrice(EconomicEventParticipant customer) throws PointException;
 
-    public abstract BigDecimal getCustomerElectionBuyThrough(EconomicEventParticipant customer);
+    public abstract BigDecimal getCustomerElectionBuyThrough(EconomicEventParticipant customer) throws PointException;
     
-    protected BigDecimal getPointValue(EconomicEventParticipant customer, String type) {
+    protected BigDecimal getPointValue(EconomicEventParticipant customer, String type) throws PointException {
         CICustomerPointData data = customer.getCustomer().getPointData().get(type);
         Validate.notNull(data, "Customer " + customer + " does not have a point for IsocBuyPrice");
         LitePoint litePoint = PointFuncs.getLitePoint(data.getPointId());
@@ -167,7 +200,7 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
     }
 
     @Transactional
-    public EconomicEvent createEvent(EconomicBuilder builder) {
+    public EconomicEvent createEvent(EconomicBuilder builder) throws EventCreationException {
         // verify event
 
         EconomicEvent event = createDatabaseObjects(builder);
@@ -177,64 +210,69 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
         return event;
     }
 
-    protected EconomicEvent createDatabaseObjects(EconomicBuilder builder) {
+    protected EconomicEvent createDatabaseObjects(EconomicBuilder builder) throws EventCreationException {
         // create curtail event
         EconomicEvent event = builder.getEvent();
         
         
-        EconomicEventPricing revision = builder.getEventRevision();
-        Date now = new Date(); // now
-        revision.setCreationTime(now); 
-        event.addRevision(revision);
-        //getEconomicEventPricingDao().save(revision);
-        
-        for (EconomicEventPricingWindow window : builder.getPrices()) {
-            revision.addWindow(window);
-            //getEconomicEventPricingWindowDao().save(window);
-        }
-        getEconomicEventDao().save(event);
-        
-        List<GroupCustomerNotif> customerList = builder.getCustomerList();
-        for (GroupCustomerNotif notif : customerList) {
-            EconomicEventParticipant participant = new EconomicEventParticipant();
-            participant.setCustomer(notif.getCustomer());
-            participant.setEvent(event);
-            participant.setNotifAttribs(notif.getAttribs());
-            
-            // create "default" selections for first revision
-            EconomicEventParticipantSelection initialSelection = new EconomicEventParticipantSelection();
-            initialSelection.setPricingRevision(revision);
-            initialSelection.setSubmitTime(now);
-            initialSelection.setState(SelectionState.DEFAULT);
-            initialSelection.setConnectionAudit("default entries");
-            participant.addSelection(initialSelection);
-            //getEventParticipantSelectionDao().save(initialSelection);
-            
-            Collections.sort(builder.getPrices());
-            BigDecimal lastHourBuy = null;
+        try {
+
+            EconomicEventPricing revision = builder.getEventRevision();
+            Date now = new Date(); // now
+            revision.setCreationTime(now);
+            event.addRevision(revision);
+            //getEconomicEventPricingDao().save(revision);
+
             for (EconomicEventPricingWindow window : builder.getPrices()) {
-                BigDecimal energyPrice = window.getEnergyPrice();
-                BigDecimal buyThroughPrice = getCustomerElectionPrice(participant);
-                BigDecimal energyToBuy = null;
-                if (lastHourBuy != null && isCurtailPrice(lastHourBuy)) {
-                    // you curtailed last hour, you shall curtail this hour
-                    energyToBuy = BigDecimal.ZERO;
-                } else if (energyPrice.compareTo(buyThroughPrice) > 0) {
-                    // curtail
-                    energyToBuy = BigDecimal.ZERO;
-                } else {
-                    // buy through
-                    energyToBuy = getCustomerElectionBuyThrough(participant);
-                }
-                EconomicEventParticipantSelectionWindow selectionWindow = new EconomicEventParticipantSelectionWindow();
-                selectionWindow.setEnergyToBuy(energyToBuy);
-                selectionWindow.setWindow(window);
-                initialSelection.addWindow(selectionWindow);
-                //getEventParticipantSelectionWindowDao().save(selectionWindow);
-                
-                lastHourBuy = energyToBuy;
+                revision.addWindow(window);
+                //getEconomicEventPricingWindowDao().save(window);
             }
-            getEconomicEventParticipantDao().save(participant);
+            getEconomicEventDao().save(event);
+
+            List<GroupCustomerNotif> customerList = builder.getCustomerList();
+            for (GroupCustomerNotif notif : customerList) {
+                EconomicEventParticipant participant = new EconomicEventParticipant();
+                participant.setCustomer(notif.getCustomer());
+                participant.setEvent(event);
+                participant.setNotifAttribs(notif.getAttribs());
+
+                // create "default" selections for first revision
+                EconomicEventParticipantSelection initialSelection = new EconomicEventParticipantSelection();
+                initialSelection.setPricingRevision(revision);
+                initialSelection.setSubmitTime(now);
+                initialSelection.setState(SelectionState.DEFAULT);
+                initialSelection.setConnectionAudit("default entries");
+                participant.addSelection(initialSelection);
+                //getEventParticipantSelectionDao().save(initialSelection);
+
+                Collections.sort(builder.getPrices());
+                BigDecimal lastHourBuy = null;
+                for (EconomicEventPricingWindow window : builder.getPrices()) {
+                    BigDecimal energyPrice = window.getEnergyPrice();
+                    BigDecimal buyThroughPrice = getCustomerElectionPrice(participant);
+                    BigDecimal energyToBuy = null;
+                    if (lastHourBuy != null && isCurtailPrice(lastHourBuy)) {
+                        // you curtailed last hour, you shall curtail this hour
+                        energyToBuy = BigDecimal.ZERO;
+                    } else if (energyPrice.compareTo(buyThroughPrice) > 0) {
+                        // curtail
+                        energyToBuy = BigDecimal.ZERO;
+                    } else {
+                        // buy through
+                        energyToBuy = getCustomerElectionBuyThrough(participant);
+                    }
+                    EconomicEventParticipantSelectionWindow selectionWindow = new EconomicEventParticipantSelectionWindow();
+                    selectionWindow.setEnergyToBuy(energyToBuy);
+                    selectionWindow.setWindow(window);
+                    initialSelection.addWindow(selectionWindow);
+                    //getEventParticipantSelectionWindowDao().save(selectionWindow);
+
+                    lastHourBuy = energyToBuy;
+                }
+                getEconomicEventParticipantDao().save(participant);
+            }
+        } catch (Exception e) {
+            throw new EventCreationException("Unable to create event", e);
         }
 
         return event;
