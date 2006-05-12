@@ -5,7 +5,6 @@
 
 <%@ include file="../include/user_header.jsp" %>
 <cti:includeScript link="/JavaScript/calendar.js"/>
-<cti:includeCss link="sp_version.css" />
 
 <%@ include file="../../include/trending_functions.jspf" %>
 
@@ -26,7 +25,7 @@ function dispStatusMsg(msgStr)
 </script>
 
 
-<div class="leftColumn">
+<table width="96%" align="center"><tr><td class="leftColumn" valign="top" style="font-size: 9px;">
 <%   /* Retrieve all the predefined graphs for this user*/                       
 if( gData != null )
 {%>
@@ -51,9 +50,8 @@ if( gData != null )
     }%>
 </table>
 <%}%>
-</div>
+</td><td>
 
-<div class="centerColumn">
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
   <tr> 
     <td>
@@ -83,6 +81,5 @@ if( gData != null )
     </td>
   </tr>
 </table>
-</div>
-
+</td></tr></table>
 </cti:standardPage>
