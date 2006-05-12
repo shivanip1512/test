@@ -80,7 +80,7 @@ public abstract class BaseNotificationStrategy extends StrategyBase {
         }
     }
 
-    public CurtailmentEvent createEvent(CurtailmentBuilder builder) {
+    public CurtailmentEvent createEvent(CurtailmentBuilder builder) throws EventCreationException {
         // verify event
 
         CurtailmentEvent event = createDatabaseObjects(builder);
