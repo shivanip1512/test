@@ -118,10 +118,10 @@ CtiCCSubstationBus_vec* CtiCCSubstationBusStore::getCCSubstationBuses(ULONG seco
     if( !_isvalid && secondsFrom1901 >= _lastdbreloadtime.seconds()+30 )
     {//is not valid and has been at 0.5 minutes from last db reload, so we don't do this a bunch of times in a row on multiple updates
         reset();
+        clearDBReloadList();
     }
     else if (secondsFrom1901 >= _lastindividualdbreloadtime.seconds() + _DB_RELOAD_WAIT)
     {
-        dumpAllDynamicData();
         checkDBReloadList();
     } 
     
@@ -2210,6 +2210,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
             if( numberOfFeedersRecentlyControlled == 0 )
             {
                 currentSubstationBus->setRecentlyControlledFlag(FALSE);
+                currentSubstationBus->setWaitToFinishRegularControlFlag(FALSE);
                 currentSubstationBus->setBusUpdatedFlag(TRUE);
             }
         }
@@ -2218,6 +2219,8 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
 
             if (!currentSubstationBus->getPerformingVerificationFlag())
             {
+
+                currentSubstationBus->setWaitToFinishRegularControlFlag(FALSE);
                 CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
 
                 for(int j=0;j<ccFeeders.size();j++)
@@ -4034,9 +4037,11 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
                     {
                         currentMonPoint = new CtiCCMonitorPoint(rdr);
                         CtiCCCapBankPtr currentCCCapBank = paobject_capbank_map->find(currentMonPoint->getBankId())->second;
-
+                        if (currentCCCapBank != NULL) 
+                        {
                         currentCCCapBank->getMonitorPoint().push_back(currentMonPoint);
                         pointid_capbank_map->insert(make_pair(currentMonPoint->getBankId(),currentCCCapBank));
+                        }
 
 
                     }
@@ -4715,6 +4720,8 @@ void CtiCCSubstationBusStore::checkDBReloadList()
 
             while (!_reloadList.empty())
             {
+                dumpAllDynamicData();
+        
                 CC_DBRELOAD_INFO reloadTemp = _reloadList.front();
 
                 switch (reloadTemp.objecttype)
@@ -4778,6 +4785,10 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                         else  // ChangeTypeAdd, ChangeTypeUpdate
                         {
                             reloadSubBusFromDatabase(reloadTemp.objectId, &_strategyid_strategy_map, &_paobject_subbus_map, &_pointid_subbus_map, &_altsub_sub_idmap, _ccSubstationBuses);
+
+                            /*for ()
+                            {
+                            }*/
                             
                         }
                         break;
@@ -4890,6 +4901,15 @@ void CtiCCSubstationBusStore::insertDBReloadList(CC_DBRELOAD_INFO x)
     {
         _reloadList.push_back(x);
     }
+} 
+
+void CtiCCSubstationBusStore::clearDBReloadList()
+{
+    if (!_reloadList.empty())
+    { 
+        _reloadList.clear();
+    }
+    
 } 
 
 

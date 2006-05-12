@@ -39,6 +39,9 @@ CtiCCCapBank::CtiCCCapBank()
 CtiCCCapBank::CtiCCCapBank(RWDBReader& rdr)
 {
     restore(rdr);
+     _monitorPoint.clear();
+     _pointResponses.clear();
+
 }
 
 CtiCCCapBank::CtiCCCapBank(const CtiCCCapBank& cap)

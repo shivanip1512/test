@@ -309,7 +309,7 @@ void CtiCapController::controlLoop()
                         }
                         else if (currentSubstationBus->isBusAnalysisNeeded(currentDateTime))
                         {
-                            if( currentSubstationBus->getRecentlyControlledFlag() )
+                            if( currentSubstationBus->getRecentlyControlledFlag() || currentSubstationBus->getWaitToFinishRegularControlFlag())
                             {
                                 try
                                 {
@@ -350,6 +350,7 @@ void CtiCapController::controlLoop()
                                 {
                                     if (currentSubstationBus->isBusPerformingVerification())
                                     {
+                                        currentSubstationBus->setLastVerificationCheck(currentDateTime);
                                         if (currentSubstationBus->isVerificationAlreadyControlled() ||
                                             currentSubstationBus->isVerificationPastMaxConfirmTime(currentDateTime))
                                         {
@@ -460,6 +461,8 @@ void CtiCapController::controlLoop()
                                     }
                                     else
                                     {
+                                        currentSubstationBus->setLastVerificationCheck(currentDateTime);
+
                                         try
                                         {
                                             if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
@@ -2294,12 +2297,15 @@ void CtiCapController::manualCapBankControl( CtiRequestMsg* pilRequest, CtiMulti
     field state.  Just sends a command, does not look for var changes or
     update cap bank control status point.
 ---------------------------------------------------------------------------*/
-void CtiCapController::confirmCapBankControl( CtiRequestMsg* pilRequest )
+void CtiCapController::confirmCapBankControl( CtiMultiMsg* pilMultiMsg, CtiMultiMsg* multiMsg )
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     try
     {
-        getPILConnection()->WriteConnQue(pilRequest);
+        if (pilMultiMsg->getCount() > 0) 
+            getPILConnection()->WriteConnQue(pilMultiMsg);
+        if( multiMsg->getCount() > 0 )
+            getDispatchConnection()->WriteConnQue(multiMsg);
     }
     catch(...)
     {

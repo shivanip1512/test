@@ -3049,7 +3049,7 @@ BOOL CtiCCFeeder::attemptToResendControl(const CtiTime& currentDateTime, CtiMult
         CtiCCCapBank* currentCapBank = (CtiCCCapBank*)_cccapbanks[i];
         if( currentCapBank->getPAOId() == getLastCapBankControlledDeviceId() )
         {
-            if (!(_USE_FLIP_FLAG && stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 70")) )
+            if (!(_USE_FLIP_FLAG && stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 70") && getVerificationFlag()) )
             {
             
                 if( currentDateTime.seconds() < currentCapBank->getLastStatusChangeTime().seconds() + maxConfirmTime )
@@ -4323,6 +4323,9 @@ void CtiCCFeeder::restore(RWDBReader& rdr)
         _currentvoltloadpointvalue = 0;
     }
 
+    _currentvarloadpointvalue = 0; 
+    _currentwattloadpointvalue = 0; 
+    _currentvoltloadpointvalue = 0; 
 }
 
 void CtiCCFeeder::setStrategyValues(CtiCCStrategyPtr strategy)

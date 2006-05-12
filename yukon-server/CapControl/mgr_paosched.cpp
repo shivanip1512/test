@@ -51,6 +51,8 @@ CtiPAOScheduleManager::CtiPAOScheduleManager()
     _schedules.clear();
     _events.clear();
 
+    _initialCapControlStartUp = TRUE;
+
     _valid = FALSE;
 }
 
@@ -188,6 +190,7 @@ void CtiPAOScheduleManager::mainLoop()
                 {
                     if (checkSchedules(currentTime, mySchedules))
                     {
+                        _initialCapControlStartUp = FALSE;
                         updateSchedules.clear();
 
                         while (!mySchedules.empty())
@@ -315,9 +318,28 @@ bool CtiPAOScheduleManager::checkSchedules(const CtiTime& currentTime, std::list
                 if ((*iter)->getNextRunTime() < currentTime)
                 {
                     if ((*iter)->getIntervalRate() > 0 && !(*iter)->isDisabled())
-                    {                               
-                        schedules.push_back(*iter);
-                        retVal = true;
+                    {   
+                        if (_initialCapControlStartUp) 
+                        {
+                            _initialCapControlStartUp = FALSE;
+                            (*iter)->setLastRunTime((*iter)->getNextRunTime());
+                            CtiTime tempNextTime = CtiTime((*iter)->getNextRunTime().seconds() + (*iter)->getIntervalRate());
+                            if (tempNextTime < currentTime) 
+                            {
+                                (*iter)->setNextRunTime(CtiTime(currentTime.seconds() + (*iter)->getIntervalRate()));
+                            }
+                            else
+                                (*iter)->setNextRunTime(tempNextTime);
+                            list <CtiPAOSchedule*> tempList;
+                            tempList.clear();
+                            tempList.push_back(*iter);
+                            updateDataBaseSchedules(tempList);
+                        }
+                        else
+                        {
+                            schedules.push_back(*iter);
+                            retVal = true;
+                        }
                     }
                     else
                     {
@@ -331,6 +353,8 @@ bool CtiPAOScheduleManager::checkSchedules(const CtiTime& currentTime, std::list
                 iter++;
             }
         }
+        _initialCapControlStartUp = FALSE;
+
     }
     catch(...)
     {

@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/INCLUDE/mgr_mcsched.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2005/12/20 17:15:21 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2006/05/12 14:51:15 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -91,7 +91,8 @@ private:
     list <CtiPAOSchedule*> _schedules;
     list <CtiPAOEvent*>    _events;
 
-    bool _valid;
+    bool _valid;      
+    bool _initialCapControlStartUp;
     mutable RWRecursiveLock<RWMutexLock> _mutex;
 
 };

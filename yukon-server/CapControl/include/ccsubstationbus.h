@@ -139,6 +139,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     BOOL getReEnableBusFlag() const;
     BOOL getMultiMonitorFlag() const;
     BOOL getWaitForReCloseDelayFlag() const;
+    BOOL getWaitToFinishRegularControlFlag() const;
     int getMultiBusCurrentState() const;
 
     CtiFeeder_vec& getCCFeeders();
@@ -192,6 +193,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setPeakTimeFlag(LONG peaktime);
     CtiCCSubstationBus& setRecentlyControlledFlag(BOOL recentlycontrolled);
     CtiCCSubstationBus& setLastOperationTime(const CtiTime& lastoperation);
+    CtiCCSubstationBus& setLastVerificationCheck(const CtiTime& checkTime);
     CtiCCSubstationBus& setVarValueBeforeControl(DOUBLE oldvarval);
     CtiCCSubstationBus& setLastFeederControlledPAOId(LONG lastfeederpao);
     CtiCCSubstationBus& setLastFeederControlledPosition(LONG lastfeederposition);
@@ -213,6 +215,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setReEnableBusFlag(BOOL flag);
     CtiCCSubstationBus& setMultiMonitorFlag(BOOL flag);
     CtiCCSubstationBus& setWaitForReCloseDelayFlag(BOOL flag);
+    CtiCCSubstationBus& setWaitToFinishRegularControlFlag(BOOL flag);
     CtiCCSubstationBus& setMultiBusCurrentState(int state);
     CtiCCSubstationBus& setAllAltSubValues(DOUBLE volt, DOUBLE var, DOUBLE watt);
 
@@ -403,6 +406,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     BOOL _postOperationMonitorPointScanFlag;
     BOOL _reEnableBusFlag;
     BOOL _waitForReCloseDelayFlag;
+    BOOL _waitToFinishRegularControlFlag;
 
     LONG _currentCapBankToVerifyAssumedOrigState;
     int _verificationStrategy;
@@ -413,6 +417,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     DOUBLE _altSubVoltVal;
     DOUBLE _altSubVarVal;
     DOUBLE _altSubWattVal;
+    CtiTime _lastVerificationCheck;
 
     //don't stream
     BOOL _insertDynamicDataFlag;

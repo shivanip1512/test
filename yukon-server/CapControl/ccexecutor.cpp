@@ -163,6 +163,26 @@ void CtiCCSubstationVerificationExecutor::EnableSubstationBusVerification()
             {    
                 if (!currentSubstationBus->getVerificationFlag())
                 {
+                    //Check to see if sub is already being operated on.  Set flag, which will finish out normal control
+                    //before verification controls start.
+                    CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
+                    for(LONG j=0;j<ccFeeders.size();j++)
+                    {
+                        CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders.at(j);
+                        CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
+
+                        for(LONG k=0;k<ccCapBanks.size();k++)
+                        {
+                            CtiCCCapBankPtr currentCapBank = (CtiCCCapBankPtr)ccCapBanks[k];
+                            if (currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending ||
+                                currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending) 
+                            {
+                                currentSubstationBus->setWaitToFinishRegularControlFlag(TRUE);
+                                break;
+                            }
+                        }
+                    }
+                    
                     currentSubstationBus->setVerificationFlag(TRUE);
                     currentSubstationBus->setVerificationStrategy(_subVerificationMsg->getStrategy());
                     currentSubstationBus->setCapBankInactivityTime(_subVerificationMsg->getInactivityTime());
@@ -197,7 +217,6 @@ void CtiCCSubstationVerificationExecutor::EnableSubstationBusVerification()
                         currentSubstationBus->setBusUpdatedFlag(TRUE);
                        //store->UpdateBusVerificationFlagInDB(currentSubstationBus);
                         string text = currentSubstationBus->getVerificationString();
-;
                         text += " Enabled";
                         string additional("Bus: ");
                         additional += currentSubstationBus->getPAOName();
@@ -236,45 +255,109 @@ void CtiCCSubstationVerificationExecutor::DisableSubstationBusVerification()
         CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses.at(i);
         if( subID == currentSubstationBus->getPAOId() )
         {
-            currentSubstationBus->setVerificationFlag(FALSE);
-            currentSubstationBus->setPerformingVerificationFlag(FALSE);
-            currentSubstationBus->setOverlappingVerificationFlag( FALSE );
-
-            currentSubstationBus->setBusUpdatedFlag(TRUE);
-
-            CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
-
-            for(LONG j=0;j<ccFeeders.size();j++)
+            if (currentSubstationBus->getPerformingVerificationFlag()) 
             {
-                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)(ccFeeders.at(j));
+                CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
 
-                currentFeeder->setVerificationFlag(FALSE);
-                currentFeeder->setPerformingVerificationFlag(FALSE);
-                currentFeeder->setVerificationDoneFlag(FALSE);
-
-                CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
-                
-                for(LONG k=0;k<ccCapBanks.size();k++)
+                for(LONG j=0;j<ccFeeders.size();j++)
                 {
-                    CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
+                    CtiCCFeeder* currentFeeder = (CtiCCFeeder*)(ccFeeders.at(j));
+                    if (currentFeeder->getPerformingVerificationFlag()) 
+                    {
 
-                    currentCapBank->setVerificationFlag(FALSE);
-                    currentCapBank->setPerformingVerificationFlag(FALSE);
-                    currentCapBank->setVerificationDoneFlag(FALSE);
+                        CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
+
+                        for(LONG k=0;k<ccCapBanks.size();k++)
+                        {
+                            CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
+                            if (currentCapBank->getControlStatus() != CtiCCCapBank::OpenPending ||
+                                currentCapBank->getControlStatus() != CtiCCCapBank::ClosePending) 
+                            {
+                                currentCapBank->setVerificationFlag(FALSE);
+                                currentCapBank->setPerformingVerificationFlag(FALSE);
+                                currentCapBank->setVerificationDoneFlag(FALSE);
+                                //wouldn't hurt to set this.
+                                currentCapBank->setVCtrlIndex(0);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        currentFeeder->setVerificationFlag(FALSE);
+                        currentFeeder->setPerformingVerificationFlag(FALSE);
+                        currentFeeder->setVerificationDoneFlag(FALSE);
+
+                        CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
+                    
+                        for(LONG k=0;k<ccCapBanks.size();k++)
+                        {
+                            CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
+
+                            currentCapBank->setVerificationFlag(FALSE);
+                            currentCapBank->setPerformingVerificationFlag(FALSE);
+                            currentCapBank->setVerificationDoneFlag(FALSE);
+                            //wouldn't hurt to set this.
+                            currentCapBank->setVCtrlIndex(0);
+                        }
+                    }
                 }
+                string text = currentSubstationBus->getVerificationString();
+                text += " Stopping after currentBank";
+                string additional = string("Bus: ");
+                additional += currentSubstationBus->getPAOName();
+                CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_subVerificationMsg->getUser()));
+
+                //currentSubstationBus->setEventSequence(currentSubstationBus->getEventSequence() + 1);
+                CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSubstationBus->getPAOId(), 0, capControlManualCommand, currentSubstationBus->getEventSequence(), 0, text, "cap control"));
+
             }
+            else
+            {
+                currentSubstationBus->setVerificationFlag(FALSE);
+                currentSubstationBus->setPerformingVerificationFlag(FALSE);
+                currentSubstationBus->setOverlappingVerificationFlag( FALSE );
+                currentSubstationBus->setVerificationDoneFlag(FALSE);
 
-            //store->UpdateBusVerificationFlagInDB(currentSubstationBus);
-            //string text("Substation Bus Verification Disabled");
-            string text = currentSubstationBus->getVerificationString();
-            text += " Stopping";
-            string additional("Bus: ");
-            additional += currentSubstationBus->getPAOName();
-            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_subVerificationMsg->getUser()));
+                currentSubstationBus->setWaitToFinishRegularControlFlag(FALSE);
 
-            //currentSubstationBus->setEventSequence(currentSubstationBus->getEventSequence() + 1);
-            CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSubstationBus->getPAOId(), 0, capControlDisableVerification, currentSubstationBus->getEventSequence(), 0, text, "cap control"));
-            break;
+                currentSubstationBus->setBusUpdatedFlag(TRUE);
+
+                CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
+
+                for(LONG j=0;j<ccFeeders.size();j++)
+                {
+                    CtiCCFeeder* currentFeeder = (CtiCCFeeder*)(ccFeeders.at(j));
+
+                    currentFeeder->setVerificationFlag(FALSE);
+                    currentFeeder->setPerformingVerificationFlag(FALSE);
+                    currentFeeder->setVerificationDoneFlag(FALSE);
+
+                    CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
+                    
+                    for(LONG k=0;k<ccCapBanks.size();k++)
+                    {
+                        CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
+
+                        currentCapBank->setVerificationFlag(FALSE);
+                        currentCapBank->setPerformingVerificationFlag(FALSE);
+                        currentCapBank->setVerificationDoneFlag(FALSE);
+                        //wouldn't hurt to set this.
+                        currentCapBank->setVCtrlIndex(0);
+                    }
+                }
+
+                //store->UpdateBusVerificationFlagInDB(currentSubstationBus);
+                //CtiString text = CtiString("Substation Bus Verification Disabled");
+                string text = currentSubstationBus->getVerificationString();
+                text += " Stopping";
+                string additional = string("Bus: ");
+                additional += currentSubstationBus->getPAOName();
+                CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_subVerificationMsg->getUser()));
+
+                //currentSubstationBus->setEventSequence(currentSubstationBus->getEventSequence() + 1);
+                CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSubstationBus->getPAOId(), 0, capControlDisableVerification, currentSubstationBus->getEventSequence(), 0, text, "cap control"));
+                break;
+            }
         }
     }
 }
@@ -1171,6 +1254,8 @@ void CtiCCCommandExecutor::ConfirmSub()
     BOOL found = FALSE;
     CtiMultiMsg* multi = new CtiMultiMsg();
     CtiMultiMsg* eventMulti = new CtiMultiMsg();
+    CtiMultiMsg* multiPilMsg = new CtiMultiMsg();
+    CtiMultiMsg_vec& pilMessages = multiPilMsg->getData();
     CtiMultiMsg_vec& pointChanges = multi->getData();
     CtiMultiMsg_vec& ccEvents = eventMulti->getData();
 
@@ -1250,6 +1335,10 @@ void CtiCCCommandExecutor::ConfirmSub()
                         text += tempchar1;
                         pointChanges.push_back(new CtiSignalMsg(currentCapBank->getStatusPointId(),1,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
 
+                        pointChanges.push_back(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
+                        ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(2);
+                        currentCapBank->setLastStatusChangeTime(CtiTime());
+
                         INT seqId = CCEventSeqIdGen();
                         currentSubstationBus->setEventSequence(seqId);
                         ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text, _command->getUser()));
@@ -1257,9 +1346,18 @@ void CtiCCCommandExecutor::ConfirmSub()
 
                         if( controlID > 0 )
                         {
-                            CtiRequestMsg* reqMsg = new CtiRequestMsg(controlID,"control open");
-                            reqMsg->setSOE(2);
-                            CtiCapController::getInstance()->confirmCapBankControl( reqMsg );
+                            if (currentCapBank->getControlStatus() == CtiCCCapBank::Open) 
+                            {
+                                CtiRequestMsg* reqMsg = new CtiRequestMsg(controlID,"control open");
+                                reqMsg->setSOE(2);
+                                pilMessages.push_back(reqMsg);
+                            }
+                            else //CLOSE
+                            {
+                                CtiRequestMsg* reqMsg = new CtiRequestMsg(controlID,"control close");
+                                reqMsg->setSOE(2);
+                                pilMessages.push_back(reqMsg);
+                            }
                         }
                         else
                         {
@@ -1274,8 +1372,8 @@ void CtiCCCommandExecutor::ConfirmSub()
             }
         }
     }
-    if (multi->getCount() > 0)
-        CtiCapController::getInstance()->sendMessageToDispatch(multi);
+    if (multi->getCount() > 0 || multiPilMsg->getCount() > 0)
+        CtiCapController::getInstance()->confirmCapBankControl(multiPilMsg, multi);
     if (eventMulti->getCount() > 0)
         CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
     

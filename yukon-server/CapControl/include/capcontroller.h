@@ -54,7 +54,7 @@ public:
 
     void sendMessageToDispatch(CtiMessage* message);
     void manualCapBankControl(CtiRequestMsg* pilRequest, CtiMultiMsg* multiMsg);
-    void confirmCapBankControl(CtiRequestMsg* pilRequest);
+    void confirmCapBankControl(CtiMultiMsg* pilMultiMsg, CtiMultiMsg* multiMsg);
     CtiPCPtrQueue< RWCollectable > &getInClientMsgQueueHandle();
     CtiPCPtrQueue< RWCollectable > &getOutClientMsgQueueHandle();
     CtiPCPtrQueue< RWCollectable > &getCCEventMsgQueueHandle();

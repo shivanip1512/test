@@ -722,6 +722,11 @@ BOOL CtiCCSubstationBus::getWaitForReCloseDelayFlag() const
     return _waitForReCloseDelayFlag;
 }
 
+BOOL CtiCCSubstationBus::getWaitToFinishRegularControlFlag() const
+{
+    return _waitToFinishRegularControlFlag;
+}
+
 LONG CtiCCSubstationBus::getCurrentVerificationFeederId() const
 {
     return _currentVerificationFeederId;
@@ -1445,6 +1450,12 @@ CtiCCSubstationBus& CtiCCSubstationBus::setLastOperationTime(const CtiTime& last
         _dirty = TRUE;
     }
     _lastoperationtime = lastoperation;
+    return *this;
+}
+
+CtiCCSubstationBus& CtiCCSubstationBus::setLastVerificationCheck(const CtiTime& checkTime)
+{
+    _lastVerificationCheck = checkTime;
     return *this;
 }
 
@@ -2860,6 +2871,7 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChange
         }
         if( recentlyControlledFeeders == 0 )
         {
+            setWaitToFinishRegularControlFlag(FALSE);
             setRecentlyControlledFlag(FALSE);
         }
         figureEstimatedVarLoadPointValue();
@@ -3929,6 +3941,16 @@ CtiCCSubstationBus& CtiCCSubstationBus::setWaitForReCloseDelayFlag(BOOL flag)
     return *this;
 }
 
+CtiCCSubstationBus& CtiCCSubstationBus::setWaitToFinishRegularControlFlag(BOOL flag)
+{
+    if (_waitToFinishRegularControlFlag != flag) 
+    {
+        _dirty = TRUE;
+    }
+    _waitToFinishRegularControlFlag = flag;
+    return *this;
+}
+
  
 
 CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVerificationFeederId(LONG feederId)
@@ -4746,10 +4768,11 @@ void CtiCCSubstationBus::dumpDynamicData(RWDBConnection& conn, CtiTime& currentD
             addFlags[6] = (_postOperationMonitorPointScanFlag?'Y':'N');
             addFlags[7] = (_reEnableBusFlag?'Y':'N');
             addFlags[8] = (_waitForReCloseDelayFlag?'Y':'N');
+            addFlags[9] = (_waitToFinishRegularControlFlag?'Y':'N');
 			_additionalFlags = string(char2string(*addFlags) + char2string(*(addFlags+1)) + char2string(*(addFlags+2))+ 
                                          char2string(*(addFlags+3)) + char2string(*(addFlags+4)) +  char2string(*(addFlags+5)) +
-                                         char2string(*(addFlags+6)) + char2string(*(addFlags+7)) + char2string(*(addFlags+8))) +
-                                         string(*(addFlags + 9), 11);
+                                         char2string(*(addFlags+6)) + char2string(*(addFlags+7)) + char2string(*(addFlags+8)) +
+                                         char2string(*(addFlags+9))) + string(*(addFlags + 10), 10);
 
             updater.clear();
 
@@ -5921,9 +5944,25 @@ BOOL CtiCCSubstationBus::isBusAnalysisNeeded(const CtiTime& currentDateTime)
                 retVal = TRUE;
 
         }
-        else if ( isVarCheckNeeded(currentDateTime) || isConfirmCheckNeeded() || (getVerificationFlag() && !isBusPerformingVerification()) ||
-                  (isBusPerformingVerification() && isPastMaxConfirmTime(currentDateTime)) ) 
-            retVal = TRUE;
+        else if ( isVarCheckNeeded(currentDateTime) || isConfirmCheckNeeded() )/*|| 
+                  (getRecentlyControlledFlag() && isPastMaxConfirmTime(currentDateTime) ) ) */
+        {
+                retVal = TRUE;
+        }
+        else if (getVerificationFlag()) 
+        {
+            if (!isBusPerformingVerification())
+                retVal = TRUE;
+            else if (isBusPerformingVerification() && isPastMaxConfirmTime(currentDateTime)) 
+            {   
+                if (_lastVerificationCheck.seconds() + 30 < currentDateTime.seconds())
+                    retVal = TRUE;
+            }
+            else if (_lastVerificationCheck.seconds() + 30 < currentDateTime.seconds()) 
+            {
+                retVal = TRUE;
+            }
+        }
     }
 
     return retVal;
@@ -6156,6 +6195,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::operator=(const CtiCCSubstationBus& righ
         _postOperationMonitorPointScanFlag = right._postOperationMonitorPointScanFlag;   
         _reEnableBusFlag = right._reEnableBusFlag;                     
         _waitForReCloseDelayFlag = right._waitForReCloseDelayFlag;
+        _waitToFinishRegularControlFlag = right._waitToFinishRegularControlFlag;
 
         _altDualSubId = right._altDualSubId;
         _switchOverPointId = right._switchOverPointId;
@@ -6168,6 +6208,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::operator=(const CtiCCSubstationBus& righ
         _altSubVoltVal = right._altSubVoltVal;
         _altSubVarVal  = right._altSubVarVal;
         _altSubWattVal = right._altSubWattVal;
+        _lastVerificationCheck = right._lastVerificationCheck;
 
         
         _ccfeeders.clear();
@@ -6296,6 +6337,7 @@ void CtiCCSubstationBus::restore(RWDBReader& rdr)
     setPostOperationMonitorPointScanFlag(FALSE);
     setReEnableBusFlag(FALSE);
     setWaitForReCloseDelayFlag(FALSE);
+    setWaitToFinishRegularControlFlag(FALSE);
     setCurrentVerificationCapBankId(-1);
     setCurrentVerificationFeederId(-1);
     setCurrentVerificationCapBankState(0);
@@ -6304,6 +6346,7 @@ void CtiCCSubstationBus::restore(RWDBReader& rdr)
 
     setSwitchOverStatus(FALSE);
     setEventSequence(0);
+    _lastVerificationCheck = gInvalidCtiTime;
 
     _insertDynamicDataFlag = TRUE;
 
@@ -6320,6 +6363,11 @@ void CtiCCSubstationBus::restore(RWDBReader& rdr)
         _currentvoltloadpointvalue = 0;
         setAltSubControlValue(0);
     }
+    _currentvarloadpointvalue = 0; 
+    _currentwattloadpointvalue = 0; 
+    _currentvoltloadpointvalue = 0;
+    _altSubControlValue = 0;
+    
     if ( _switchOverPointId <= 0 )
     {
         _switchOverPointId = 0;
@@ -6404,9 +6452,10 @@ void CtiCCSubstationBus::setDynamicData(RWDBReader& rdr)
         _overlappingSchedulesVerificationFlag = (_additionalFlags[3]=='y'?TRUE:FALSE);
         _preOperationMonitorPointScanFlag = (_additionalFlags[4]=='y'?TRUE:FALSE);
         _operationSentWaitFlag = (_additionalFlags[5]=='y'?TRUE:FALSE);
-        _postOperationMonitorPointScanFlag = (_additionalFlags.data()[6]=='y'?TRUE:FALSE);
-        _reEnableBusFlag = (_additionalFlags.data()[7]=='y'?TRUE:FALSE);
-        _waitForReCloseDelayFlag = (_additionalFlags.data()[8]=='y'?TRUE:FALSE);
+        _postOperationMonitorPointScanFlag = (_additionalFlags[6]=='y'?TRUE:FALSE);
+        _reEnableBusFlag = (_additionalFlags[7]=='y'?TRUE:FALSE);
+        _waitForReCloseDelayFlag = (_additionalFlags[8]=='y'?TRUE:FALSE);
+        _waitToFinishRegularControlFlag = (_additionalFlags[9]=='y'?TRUE:FALSE);
 
         rdr["currverifycbid"] >> _currentVerificationCapBankId;
         rdr["currverifyfeederid"] >> _currentVerificationFeederId;

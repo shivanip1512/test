@@ -156,6 +156,7 @@ public:
     list <CC_DBRELOAD_INFO> getDBReloadList() { return _reloadList; };
     void insertDBReloadList(CC_DBRELOAD_INFO x);
     void checkDBReloadList();
+    void clearDBReloadList();
 
     map <long, CtiCCSubstationBusPtr>* getPAOSubMap();
 
