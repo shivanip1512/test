@@ -16,7 +16,7 @@ import org.hibernate.annotations.GenericGenerator;
 @Entity
 @Table(name = "CCurtGroup",
        uniqueConstraints=@UniqueConstraint(columnNames={"energyCompanyId","CCurtGroupName"}))
-public class Group implements Serializable {
+public class Group implements Serializable, Comparable<Group> {
     private String name;
     private Integer id;
     private Integer energyCompanyId;
@@ -69,6 +69,10 @@ public class Group implements Serializable {
     @Override
     public String toString() {
         return "Group [" + id + "]@" + Integer.toHexString(System.identityHashCode(this));
+    }
+
+    public int compareTo(Group o) {
+        return name.compareTo(o.name);
     }
     
 
