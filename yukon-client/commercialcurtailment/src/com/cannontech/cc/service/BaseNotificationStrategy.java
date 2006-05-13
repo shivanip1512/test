@@ -47,21 +47,27 @@ public abstract class BaseNotificationStrategy extends StrategyBase {
         Date now = new Date();
         Calendar calendar = Calendar.getInstance(tz);
         calendar.setTime(now);
-        calendar.add(Calendar.MINUTE, getDefaultNotifTimeOffsetMinutes(program));
-        TimeUtil.roundDateUp(calendar, 15);
-        builder.setNotificationTime(calendar.getTime());
+        int startTimeOffsetMinutes = getDefaultStartTimeOffsetMinutes(program);
+        calendar.add(Calendar.MINUTE, startTimeOffsetMinutes);
+        if (startTimeOffsetMinutes < 60) {
+            TimeUtil.roundDateUp(calendar, 5);
+        } else {
+            TimeUtil.roundDateUp(calendar, 60);
+        }
+        builder.getEvent().setStartTime(calendar.getTime());
         
         calendar.add(Calendar.MINUTE, 
-                     getDefaultStartTimeOffsetMinutes(program)
-                     - getDefaultNotifTimeOffsetMinutes(program));
-        builder.setStartTime(calendar.getTime());
+                     -getDefaultNotifTimeBacksetMinutes(program));
+        builder.getEvent().setNotificationTime(calendar.getTime());
+
+        
         
         builder.setEventDuration(getDefaultDurationMinutes(program));
         
         return builder;
     }
 
-    protected int getDefaultNotifTimeOffsetMinutes(Program program) {
+    protected int getDefaultNotifTimeBacksetMinutes(Program program) {
         return getParameterValueInt(program, "DEFAULT_NOTIFICATION_OFFSET_MINUTES");
     }
     
