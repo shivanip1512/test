@@ -43,7 +43,7 @@
 <div>
 <div class="section" style="float: left;">
 <div class="sectionTitle">Assigned Groups:</div>
-
+<div class="sectionBody">
 <t:dataTable value="#{sProgramDetail.assignedGroupModel}" 
              var="group" 
              styleClass="horizBorders"
@@ -56,8 +56,10 @@
   </t:column>
 </t:dataTable>
 </div>
+</div>
 <div class="section" style="float: left">
 <div class="sectionTitle">Available Groups:</div>
+<div class="sectionBody">
 <t:dataTable value="#{sProgramDetail.unassignedGroupModel}" 
              var="group" 
              styleClass="horizBorders"
@@ -69,6 +71,7 @@
     </t:commandLink>
   </t:column>
 </t:dataTable>
+</div>
 </div>
 <div style="clear: both;">&nbsp;</div>
 </div>
