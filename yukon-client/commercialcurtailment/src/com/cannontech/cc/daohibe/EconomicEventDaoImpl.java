@@ -57,10 +57,13 @@ public class EconomicEventDaoImpl extends YukonBaseHibernateDao implements
     public EconomicEvent getChildEvent(EconomicEvent event) {
         String query = 
             "select ee from EconomicEvent ee " +
-            "where ee.initialEventId = ?";
+            "where ee.initialEvent = ?";
         List results = getHibernateTemplate().find(query, event);
-        if (results.size() != 1) {
+        if (results.size() > 1) {
             throw new IncorrectResultSizeDataAccessException(1, results.size());
+        }
+        if (results.size() == 0) {
+            return null;
         }
         return (EconomicEvent) results.get(0);
     }
