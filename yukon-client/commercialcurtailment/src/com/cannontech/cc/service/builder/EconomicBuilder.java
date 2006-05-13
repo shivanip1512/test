@@ -1,10 +1,12 @@
 package com.cannontech.cc.service.builder;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.TimeZone;
 
 import com.cannontech.cc.model.EconomicEvent;
+import com.cannontech.cc.model.EconomicEventParticipant;
 import com.cannontech.cc.model.EconomicEventPricing;
 import com.cannontech.cc.model.EconomicEventPricingWindow;
 import com.cannontech.cc.model.Program;
@@ -13,6 +15,8 @@ public class EconomicBuilder extends EventBuilderBase {
     private EconomicEvent event = null;
     private EconomicEventPricing eventRevision = null;
     private List<EconomicEventPricingWindow> prices = Collections.emptyList();
+    private List<EconomicEventParticipant> participantList = 
+        new ArrayList<EconomicEventParticipant>();
     
     private Integer numberOfWindows = new Integer(0);
     private TimeZone timeZone;
@@ -53,6 +57,12 @@ public class EconomicBuilder extends EventBuilderBase {
     }
     public void setEventRevision(EconomicEventPricing eventRevision) {
         this.eventRevision = eventRevision;
+    }
+    public List<EconomicEventParticipant> getParticipantList() {
+        return participantList;
+    }
+    public void setParticipantList(List<EconomicEventParticipant> participantList) {
+        this.participantList = participantList;
     }
     
 }

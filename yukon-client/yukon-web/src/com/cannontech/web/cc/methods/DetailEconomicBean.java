@@ -44,6 +44,11 @@ public class DetailEconomicBean implements BaseDetailBean {
         return "econDetail";
     }
     
+    public String showInitialEvent() {
+        setEvent(getEvent().getInitialEvent());
+        return "econDetail";
+    }
+    
     public void updateModels() {
         participantDataModel = null;
         windowDataModel = null;
@@ -188,6 +193,7 @@ public class DetailEconomicBean implements BaseDetailBean {
     }
     
     public String extendEvent() {
+        createEconomicBean.setStrategy(getStrategy());
         return createEconomicBean.initExtension(getEvent());
         
     }

@@ -57,14 +57,20 @@ public class CreateEconomicBean extends EventCreationBase {
             JSFUtil.handleException("Error with pricing", e);
             return null;
         }
-        getCustomerSelectionBean().setEventBean(this);
-        return "groupSelection";
+        if (getBuilder().getEvent().isEventExtension()) {
+            getMyStrategy().setupExtensionCustomers(getBuilder());
+            return "econConfirmation";
+        } else {
+            getCustomerSelectionBean().setEventBean(this);
+            return "groupSelection";
+        }
     }
     
     @Override
     public String doAfterCustomerPage() {
         // move parameters from getCustomerSelectionBean() to EventBuilderBase
         getBuilder().setCustomerList(getCustomerSelectionBean().getSelectedCustomers());
+        getMyStrategy().setupCustomers(getBuilder());
         return "econConfirmation";
     }
     

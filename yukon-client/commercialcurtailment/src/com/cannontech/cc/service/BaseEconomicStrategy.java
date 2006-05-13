@@ -21,6 +21,7 @@ import com.cannontech.cc.dao.EconomicEventPricingDao;
 import com.cannontech.cc.dao.EconomicEventPricingWindowDao;
 import com.cannontech.cc.model.BaseEvent;
 import com.cannontech.cc.model.CICustomerPointData;
+import com.cannontech.cc.model.CICustomerStub;
 import com.cannontech.cc.model.EconomicEvent;
 import com.cannontech.cc.model.EconomicEventParticipant;
 import com.cannontech.cc.model.EconomicEventParticipantSelection;
@@ -179,6 +180,10 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
             // start time is equal to or less than notification time
             throw new EventCreationException("Start time must be after notification time.");
         }
+        Date now  = new Date();
+        if (builder.getEvent().getNotificationTime().before(now)) {
+            throw new EventCreationException("Notification time must not be in the past.");
+        }
     }
     
     public void setupPriceList(EconomicBuilder builder) {
@@ -196,6 +201,41 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
         builder.setPrices(windowList);
     }
     
+    public void setupExtensionCustomers(EconomicBuilder builder) {
+        EconomicEvent event = builder.getEvent();
+        if (!event.isEventExtension()) {
+            throw new IllegalArgumentException("Event must be an extension.");
+        }
+        // plan: copy customers from previous event, remove if they've exceeded their limit
+        List<EconomicEventParticipant> initialParticipants = 
+            economicEventParticipantDao.getForEvent(event.getInitialEvent());
+        for (EconomicEventParticipant originalParticipant : initialParticipants) {
+            CICustomerStub customer = originalParticipant.getCustomer();
+            if (canCustomerParticipateInExtension(builder, customer)) {
+                EconomicEventParticipant participant = new EconomicEventParticipant();
+                participant.setCustomer(customer);
+                participant.setEvent(event);
+                participant.setNotifAttribs(originalParticipant.getNotifAttribs());
+                
+                builder.getParticipantList().add(participant);
+            }
+        }
+        
+    }
+    
+    public void setupCustomers(EconomicBuilder builder) {
+        EconomicEvent event = builder.getEvent();
+        List<GroupCustomerNotif> customerList = builder.getCustomerList();
+        for (GroupCustomerNotif notif : customerList) {
+            EconomicEventParticipant participant = new EconomicEventParticipant();
+            participant.setCustomer(notif.getCustomer());
+            participant.setEvent(event);
+            participant.setNotifAttribs(notif.getAttribs());
+
+            builder.getParticipantList().add(participant);
+        }        
+    }
+
     public void verifyPrices(EconomicBuilder builder) throws EventCreationException {
     }
 
@@ -205,7 +245,11 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
 
         EconomicEvent event = createDatabaseObjects(builder);
         
-        getNotificationProxy().sendEconomicNotification(event.getId(), 1, EconomicEventAction.STARTING);
+        if (event.isEventExtension()) {
+            getNotificationProxy().sendEconomicNotification(event.getId(), 1, EconomicEventAction.EXTENDING);
+        } else {
+            getNotificationProxy().sendEconomicNotification(event.getId(), 1, EconomicEventAction.STARTING);
+        }
         
         return event;
     }
@@ -220,7 +264,7 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
             EconomicEventPricing revision = builder.getEventRevision();
             Date now = new Date(); // now
             revision.setCreationTime(now);
-            event.addRevision(revision);
+            //event.addRevision(revision);
             //getEconomicEventPricingDao().save(revision);
 
             for (EconomicEventPricingWindow window : builder.getPrices()) {
@@ -229,12 +273,8 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
             }
             getEconomicEventDao().save(event);
 
-            List<GroupCustomerNotif> customerList = builder.getCustomerList();
-            for (GroupCustomerNotif notif : customerList) {
-                EconomicEventParticipant participant = new EconomicEventParticipant();
-                participant.setCustomer(notif.getCustomer());
-                participant.setEvent(event);
-                participant.setNotifAttribs(notif.getAttribs());
+            List<EconomicEventParticipant> participantList = builder.getParticipantList();
+            for (EconomicEventParticipant participant : participantList) {
 
                 // create "default" selections for first revision
                 EconomicEventParticipantSelection initialSelection = new EconomicEventParticipantSelection();
@@ -243,7 +283,6 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
                 initialSelection.setState(SelectionState.DEFAULT);
                 initialSelection.setConnectionAudit("default entries");
                 participant.addSelection(initialSelection);
-                //getEventParticipantSelectionDao().save(initialSelection);
 
                 Collections.sort(builder.getPrices());
                 BigDecimal lastHourBuy = null;
@@ -265,7 +304,6 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
                     selectionWindow.setEnergyToBuy(energyToBuy);
                     selectionWindow.setWindow(window);
                     initialSelection.addWindow(selectionWindow);
-                    //getEventParticipantSelectionWindowDao().save(selectionWindow);
 
                     lastHourBuy = energyToBuy;
                 }
@@ -298,7 +336,16 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
         Date now = new Date();
         Date paddedStop = TimeUtil.addMinutes(event.getStopTime(), -UNSTOPPABLE_WINDOW_MINUTES);
         
-        return now.before(paddedStop);
+        if (!now.before(paddedStop)) {
+            // too late, event is already over
+            return false;
+        }
+        EconomicEvent childEvent = economicEventDao.getChildEvent(event);
+        if (childEvent != null) {
+            // already been extended 
+            return false;
+        }
+        return true;
     }
 
     public Boolean canEventBeRevised(EconomicEvent event, LiteYukonUser user) {
@@ -644,6 +691,8 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
     public void setEconomicService(EconomicService economicService) {
         this.economicService = economicService;
     }
+
+    protected abstract boolean canCustomerParticipateInExtension(EconomicBuilder builder, CICustomerStub customer);
 
 
 }

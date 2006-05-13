@@ -50,7 +50,7 @@ public class IsocCommonStrategy extends StrategyGroupBase {
         return getBaseEventDao().getTotalEventDuration(customer, getStrategyKeys(), from, to) / 60;
     }
     
-    private boolean hasCustomerExceededAllowedHours(CICustomerStub customer, int propossedEventLength) throws PointException {
+    public boolean hasCustomerExceededAllowedHours(CICustomerStub customer, int propossedEventLength) throws PointException {
         LitePoint allowedHoursPoint = pointTypeHelper.getPoint(customer, IsocPointTypes.InterruptHours);
         int allowedHours = (int) pointAccess.getPointValue(allowedHoursPoint);
         // applies to current year

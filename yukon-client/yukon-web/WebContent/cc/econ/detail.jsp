@@ -64,6 +64,17 @@
     </td>
   </tr>
   <tr>
+    <td>Initial Event</td>
+    <td><t:commandLink 
+         value="#{sEconomicDetail.event.initialEvent.displayName}" 
+         action="#{sEconomicDetail.showInitialEvent}"
+         rendered="#{sEconomicDetail.event.eventExtension}"/>
+        <t:outputText
+         value="none" 
+         rendered="#{!sEconomicDetail.event.eventExtension}"/>
+    </td>
+  </tr>
+  <tr>
     <td>Most Recent Revision</td>
     <td>Revision 
       <t:outputText 

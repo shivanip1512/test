@@ -84,8 +84,8 @@
 
 <div>
 <h3>Customers</h3>
-<t:dataList value="#{sEconomicCreate.builder.customerList}" var="thisCustomer" layout="unorderedList">
-  <t:outputText value="#{thisCustomer.customer.companyName}"/>
+<t:dataList value="#{sEconomicCreate.builder.participantList}" var="thisParticipant" layout="unorderedList">
+  <t:outputText value="#{thisParticipant.customer.companyName}"/>
 </t:dataList>
 </div>
 

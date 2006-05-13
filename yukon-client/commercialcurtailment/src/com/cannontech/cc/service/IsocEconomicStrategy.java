@@ -17,6 +17,7 @@ import com.cannontech.cc.service.builder.EventBuilderBase;
 import com.cannontech.cc.service.builder.VerifiedCustomer;
 import com.cannontech.cc.service.enums.IsocPointTypes;
 import com.cannontech.cc.service.exception.EventModificationException;
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.exception.PointException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
@@ -48,7 +49,7 @@ public class IsocEconomicStrategy extends BaseEconomicStrategy {
             calendar.setTime(startTime);
             if (calendar.get(Calendar.YEAR) == propossedYear
                 && calendar.get(Calendar.DAY_OF_YEAR) == propossedDay) {
-                String msg = "already in an event (" + event.getDisplayName() + ") today";
+                String msg = "already in an economic event (" + event.getDisplayName() + ") that day";
                 vCustomer.addExclusion(VerifiedCustomer.Status.EXCLUDE, msg);
                 break;
             }
@@ -75,6 +76,17 @@ public class IsocEconomicStrategy extends BaseEconomicStrategy {
                 throw new EventModificationException("Prices cannont be entered for " + 
                                                      date + " at this time");
             }
+        }
+    }
+    
+    protected boolean canCustomerParticipateInExtension(EconomicBuilder builder,
+                                                        CICustomerStub customer) {
+        try {
+            int duration = builder.getEvent().getDuration() / 60;
+            return isocCommonStrategy.hasCustomerExceededAllowedHours(customer, duration);
+        } catch (PointException e) {
+            CTILogger.warn("Silently dropping " + customer + " from event extension because of point access error.", e);
+            return false;
         }
     }
     

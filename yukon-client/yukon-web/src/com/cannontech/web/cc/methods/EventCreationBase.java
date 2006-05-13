@@ -3,7 +3,6 @@ package com.cannontech.web.cc.methods;
 import java.util.List;
 
 import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
 
 import com.cannontech.cc.model.Group;
 import com.cannontech.cc.model.Program;

@@ -22,7 +22,8 @@
     <td>
       <t:inputText 
          id="notifTimeInput"
-         value="#{sEconomicCreate.builder.event.notificationTime}">
+         value="#{sEconomicCreate.builder.event.notificationTime}"
+         readonly="#{sEconomicCreate.builder.event.eventExtension}">
          <f:convertDateTime 
             timeStyle="short" 
             dateStyle="short"
@@ -39,7 +40,8 @@
     <td>
       <t:inputText 
          id="startTimeInput"
-         value="#{sEconomicCreate.builder.event.startTime}">
+         value="#{sEconomicCreate.builder.event.startTime}"
+         readonly="#{sEconomicCreate.builder.event.eventExtension}">
          <f:convertDateTime 
             timeStyle="short" 
             dateStyle="short"
