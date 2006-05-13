@@ -35,7 +35,7 @@ public class CreateNotificationBean extends EventCreationBase {
             // bad use of exceptions?
             getMyStrategy().verifyTimes(getBuilder());
         } catch (EventCreationException e) {
-            JSFUtil.addNullMessage(e.getMessage());
+            JSFUtil.handleException("Invalid times", e);
             return null;
         }
         getCustomerSelectionBean().setEventBean(this);
