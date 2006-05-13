@@ -17,6 +17,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapKey;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -91,7 +92,7 @@ public class EconomicEvent extends BaseEvent {
         return state;
     }
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name="InitialEventId")
     public EconomicEvent getInitialEvent() {
         return initialEvent;
@@ -99,6 +100,11 @@ public class EconomicEvent extends BaseEvent {
     
     public void setInitialEvent(EconomicEvent initialEvent) {
         this.initialEvent = initialEvent;
+    }
+    
+    @Transient
+    public boolean isEventExtension() {
+        return initialEvent != null;
     }
     
     public void setState(EconomicEventState state) {
