@@ -10,17 +10,25 @@
 
 <h2>Create <t:outputText value="#{sEconomicCreate.program.programType.name} #{sEconomicCreate.program.name}"/> Event</h2>
 <h3>Confirm</h3>
-<div> <t:messages showDetail="false" showSummary="true"/> </div>
+<div class="jsfMessages"> 
+<t:messages showSummary="false" showDetail="true" 
+            errorClass="jsfError" 
+            warnClass="jsfWarn" 
+            infoClass="jsfInfo" 
+            fatalClass="jsfFatal"/> 
+</div>
 
 <h:form>
 
-<div>
+<div class="actionButtons">
 <h:commandButton action="#{sNotificationCreate.doCreateEvent}" value="Create"/>
 <h:commandButton action="#{sNotificationCreate.cancel}" value="Cancel" immediate="true"/>
 </div>
 
-<div>
-Notification Time:
+<table class="horizBorders">
+  <tr>
+    <td>Notification Time</td>
+    <td>
 <t:outputText 
    value="#{sNotificationCreate.builder.notificationTime}">
    <f:convertDateTime 
@@ -30,10 +38,12 @@ Notification Time:
       type="both" />
 </t:outputText>
 (<t:outputText value="#{sCommercialCurtailment.timeZone.ID}"/>)
-</div>
-
-<div>
-Start Time:
+</td>
+    </td>
+  </tr>
+  <tr>
+    <td>Start Time</td>
+    <td>
 <t:outputText 
    value="#{sNotificationCreate.builder.startTime}">
    <f:convertDateTime 
@@ -43,23 +53,30 @@ Start Time:
       type="both" />
 </t:outputText>
 (<t:outputText value="#{sCommercialCurtailment.timeZone.ID}"/>)
-</div>
+    </td>
+  </tr>
 
-<div>
-Duration:
+  <tr>
+    <td>Duration</td>
+    <td>
 <t:outputText value="#{sNotificationCreate.builder.eventDuration}"/>
-</div>
+    </td>
+  </tr>
 
-<div>
-Message:
+  <tr>
+    <td>Message</td>
+    <td>
 <t:outputText value="#{sNotificationCreate.builder.message}"/>
-</div>
+    </td>
+  </tr>
+</table>
 
 <div>
-Customers:
+<h3>Customers</h3>
 <t:dataList value="#{sNotificationCreate.builder.customerList}" var="thisCustomer" layout="unorderedlist">
-<t:outputText value="#{thisCustomer.customer.companyName}"/>
+  <t:outputText value="#{thisCustomer.customer.companyName}"/>
 </t:dataList>
+</div>
 
 </h:form>
 

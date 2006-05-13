@@ -97,3 +97,15 @@ label.propertyEntry {
   color: red;
 }
 
+
+.jsfInfo {
+}
+
+.jsfError, .jsfWarn {
+  color: red;
+  font-size: .9em;
+}
+
+.jsfFatal {
+}
+

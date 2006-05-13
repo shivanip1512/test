@@ -10,8 +10,13 @@
 
 <h2>Create <t:outputText value="#{sEconomicCreate.program.programType.name} #{sEconomicCreate.program.name}"/> Event</h2>
 <h3>Enter Parameters</h3>
-<div> <t:messages showDetail="true" showSummary="false" /> </div>
-
+<div class="jsfMessages"> 
+<t:messages showSummary="false" showDetail="true" 
+            errorClass="jsfError" 
+            warnClass="jsfWarn" 
+            infoClass="jsfInfo" 
+            fatalClass="jsfFatal"/> 
+</div>
 <h:form binding="#{sEconomicCreate.form}">
 
 <table class="horizBorders">

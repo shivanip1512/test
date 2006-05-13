@@ -8,8 +8,13 @@
 
 <h2>Create <t:outputText value="#{sCustomerSelectionBean.eventBean.program.name}"/> Event</h2>
 <h3>Verify Customers</h3>
-<div> <t:messages showDetail="false" showSummary="true"/> </div>
-
+<div class="jsfMessages"> 
+<t:messages showSummary="false" showDetail="true" 
+            errorClass="jsfError" 
+            warnClass="jsfWarn" 
+            infoClass="jsfInfo" 
+            fatalClass="jsfFatal"/> 
+</div>
 <h:form>
 <t:dataTable value="#{sCustomerSelectionBean.customerListModel}" var="thisCustomer">
   <t:column>

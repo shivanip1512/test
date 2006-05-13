@@ -10,12 +10,22 @@
 
 <h2>Create <t:outputText value="#{sEconomicCreate.program.programType.name} #{sEconomicCreate.program.name}"/> Event</h2>
 <h3>Enter Parameters</h3>
-<div> <t:messages showDetail="false" showSummary="true"/> </div>
+<div class="jsfMessages"> 
+<t:messages showSummary="false" showDetail="true" 
+            errorClass="jsfError" 
+            warnClass="jsfWarn" 
+            infoClass="jsfInfo" 
+            fatalClass="jsfFatal"/> 
+</div>
 
 <h:form binding="#{sNotificationCreate.form}">
 
-<div>
-<t:outputLabel value="Notification Time" for="notifTimeInput"/>:
+<table class="horizBorders">
+  <tr>
+    <td>
+<t:outputLabel value="Notification Time" for="notifTimeInput"/>
+    </td>
+    <td>
 <t:inputText 
    id="notifTimeInput"
    value="#{sNotificationCreate.builder.notificationTime}">
@@ -26,11 +36,13 @@
       type="both" />
 </t:inputText>
 (<t:outputText value="#{sCommercialCurtailment.timeZone.ID}"/>)
-<t:message for="notifTimeInput" showDetail="true" showSummary="false" detailFormat="{0}" />
-</div>
-
-<div>
-<t:outputLabel value="Start Time" for="startTimeInput"/>:
+    </td>
+  </tr>
+  <tr>
+    <td>
+<t:outputLabel value="Start Time" for="startTimeInput"/>
+    </td>
+    <td>
 <t:inputText 
    id="startTimeInput"
    value="#{sNotificationCreate.builder.startTime}">
@@ -41,21 +53,27 @@
       type="both" />
 </t:inputText>
 (<t:outputText value="#{sCommercialCurtailment.timeZone.ID}"/>)
-<t:message for="startTimeInput" showDetail="true" showSummary="false" detailFormat="{0}" />
-</div>
-
-<div>
-<t:outputLabel value="Duration" for="durationInput"/>:
+    </td>
+  </tr>
+  <tr>
+    <td>
+<t:outputLabel value="Duration" for="durationInput"/>
+    </td>
+    <td>
 <t:inputText id="durationInput" value="#{sNotificationCreate.builder.eventDuration}" size="5">
-</t:inputText>
-<t:message for="durationInput" showDetail="true" showSummary="false" detailFormat="{0}" />
-</div>
-
-<div>
-<t:outputLabel value="Message" for="messageInput"/>:
+        <f:validateLongRange minimum="1"/>
+        <f:validateLength minimum="1"/></t:inputText>
+    </td>
+  </tr>
+  <tr>
+    <td>
+<t:outputLabel value="Message" for="messageInput"/>
+    </td>
+    <td>
 <t:inputTextarea id="messageInput" value="#{sNotificationCreate.builder.message}"/>
-<t:message for="messageInput" showDetail="true" showSummary="false" detailFormat="{0}" />
-</div>
+    </td>
+  </tr>
+</table>
 
 <div>
 <h:commandButton action="#{sNotificationCreate.doAfterParameterEntry}" value="Next"/>
