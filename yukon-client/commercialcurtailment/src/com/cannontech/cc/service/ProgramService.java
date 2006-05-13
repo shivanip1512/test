@@ -196,7 +196,13 @@ public class ProgramService {
     }
 
     public List<AvailableProgramGroup> getAvailableProgramGroups(Program program) {
-        return availableProgramGroupDao.getAllForProgram(program);
+        List<AvailableProgramGroup> allForProgram = availableProgramGroupDao.getAllForProgram(program);
+        Collections.sort(allForProgram, new Comparator<AvailableProgramGroup>() {
+            public int compare(AvailableProgramGroup o1, AvailableProgramGroup o2) {
+                return o1.getGroup().compareTo(o2.getGroup());
+            }
+        });
+        return allForProgram;
     }
 
     public TimeZone getTimeZone(Program program) {
