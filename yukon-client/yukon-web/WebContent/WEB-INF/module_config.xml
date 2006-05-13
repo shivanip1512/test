@@ -133,14 +133,7 @@
   <module name="commercialcurtailment">
     <toplinks>
       <option name="Events">
-        <sublinks>
-          <option name="Control">
-            <link>/cc/programSelect.jsf</link>
-          </option>
-          <option name="Overview">
-            <link>/cc/eventOverview.jsf</link>
-          </option>
-        </sublinks>
+        <link>/cc/programSelect.jsf</link>
       </option>
       <option name="Setup">
         <sublinks>
