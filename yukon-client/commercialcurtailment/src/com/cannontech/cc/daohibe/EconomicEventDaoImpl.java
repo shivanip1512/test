@@ -2,6 +2,8 @@ package com.cannontech.cc.daohibe;
 
 import java.util.List;
 
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
+
 import com.cannontech.cc.dao.EconomicEventDao;
 import com.cannontech.cc.model.BaseEvent;
 import com.cannontech.cc.model.CICustomerStub;
@@ -50,6 +52,17 @@ public class EconomicEventDaoImpl extends YukonBaseHibernateDao implements
             "select eep.event from EconomicEventParticipant eep " +
             "where eep.customer = ?";
         return getHibernateTemplate().find(query, customer);
+    }
+
+    public EconomicEvent getChildEvent(EconomicEvent event) {
+        String query = 
+            "select ee from EconomicEvent ee " +
+            "where ee.initialEventId = ?";
+        List results = getHibernateTemplate().find(query, event);
+        if (results.size() != 1) {
+            throw new IncorrectResultSizeDataAccessException(1, results.size());
+        }
+        return (EconomicEvent) results.get(0);
     }
 
 }

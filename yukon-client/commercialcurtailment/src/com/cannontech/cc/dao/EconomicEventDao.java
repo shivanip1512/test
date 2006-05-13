@@ -9,5 +9,9 @@ public interface EconomicEventDao extends StandardDaoOperations<EconomicEvent>, 
 
     List<EconomicEvent> getAllForProgram(Program program);
 
+    /**
+     * @return the child even or null if one doesn't exist
+     */
+    EconomicEvent getChildEvent(EconomicEvent event);
 
 }
