@@ -31,13 +31,18 @@ public abstract class JSFUtil {
         }
     }
     
-    public static void addNullMessage(String message) {
-        FacesMessage msg = new FacesMessage(message);
+    public static void addNullWarnMessage(String message) {
+        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, message, null);
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+    }
+    
+    public static void addNullInfoMessage(String message) {
+        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, message, null);
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
     
     public static void handleException(String message, Throwable t) {
-        FacesMessage msg = new FacesMessage(message, t.getMessage());
+        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, message = ": " + t.getMessage(), null);
         FacesContext.getCurrentInstance().addMessage(null, msg);
         CTILogger.error(message, t);
     }

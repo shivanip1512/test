@@ -58,7 +58,7 @@ public class CustomerSelectionBean {
     
     public String doGroupSelectionComplete() {
         if (selectedGroupList.isEmpty()) {
-            JSFUtil.addNullMessage("At least one Group must be selected.");
+            JSFUtil.addNullWarnMessage("At least one Group must be selected.");
             return null;
         }
         customerList = new ArrayList<SelectableCustomer>();
@@ -75,7 +75,7 @@ public class CustomerSelectionBean {
     
     public String doCustomerVerificationComplete() {
         if (getSelectedCustomers().isEmpty()) {
-            JSFUtil.addNullMessage("At least one Customer must be selected.");
+            JSFUtil.addNullWarnMessage("At least one Customer must be selected.");
             return null;
         }
         return eventBean.doAfterCustomerPage();
