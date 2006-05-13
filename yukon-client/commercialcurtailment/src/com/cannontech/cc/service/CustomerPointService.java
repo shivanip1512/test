@@ -2,6 +2,7 @@ package com.cannontech.cc.service;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -74,7 +75,9 @@ public class CustomerPointService {
     }
     
     public List<CICustomerStub> getCustomers(LiteEnergyCompany energyCompany) {
-        return customerDao.getCustomersForEC(energyCompany.getEnergyCompanyID());
+        List<CICustomerStub> customersForEC = customerDao.getCustomersForEC(energyCompany.getEnergyCompanyID());
+        Collections.sort(customersForEC);
+        return customersForEC;
     }
     
     public void setCustomerDao(CustomerDao customerDao) {
