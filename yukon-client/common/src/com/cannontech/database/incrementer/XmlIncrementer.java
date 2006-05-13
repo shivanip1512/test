@@ -104,7 +104,11 @@ public class XmlIncrementer implements KeyedIncrementer {
     }
     
     private MultiTableIncrementer getIncrementerForTable(String tableName) {
-        return sequenceLookup.get(tableName.toLowerCase());
+        String lcTableName = tableName.toLowerCase();
+        if (!sequenceLookup.containsKey(lcTableName)) {
+            throw new IllegalArgumentException("Table '" + tableName + "' is not contained in " + configFile);
+        }
+        return sequenceLookup.get(lcTableName);
     }
 
     public DataSource getDataSource() {
