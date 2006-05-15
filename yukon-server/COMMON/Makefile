@@ -6,6 +6,7 @@ all:
          @$(MAKE) -nologo -f makebase.mak
          @$(MAKE) -nologo -f makecmdline.mak
 	 @$(MAKE) -nologo -f maketest.mak
+	 @$(MAKE) -nologo -f .\DLL\makedll.mak $@
 
 
 clean:
@@ -26,6 +27,7 @@ copy:
         @$(MAKE) -nologo -f makepch.mak $@
         @$(MAKE) -nologo -f makebase.mak $@
         @$(MAKE) -nologo -f makecmdline.mak $@
+	@$(MAKE) -nologo -f .\DLL\makedll.mak $@
 	@$(MAKE) -nologo -f maketest.mak $@
 
 
