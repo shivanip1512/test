@@ -803,7 +803,7 @@ public final static String getYukonBase()
 public final static String getApplicationName()
 {
 	if( System.getProperty("cti.app.name") == null )
-		return "Webserver";
+		return "DefaultConnection";
 	else
 		return System.getProperty("cti.app.name");
 }
