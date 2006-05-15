@@ -8,6 +8,7 @@ package com.cannontech.yimp.importer;
 
 
 import java.util.GregorianCalendar;
+import java.util.Observable;
 import java.util.Vector;
 import java.util.HashMap;
 
@@ -40,6 +41,8 @@ import com.cannontech.message.porter.message.Request;
 import com.cannontech.database.db.NestedDBPersistent;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.yukon.IServerConnection;
+import com.cannontech.yukon.conns.ConnPool;
 
 /**
  * @author jdayton
@@ -47,15 +50,15 @@ import com.cannontech.database.data.point.PointTypes;
  * To change the template for this generated type comment go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-public final class BulkImporter410 
+public final class BulkImporter410 implements java.util.Observer
 {
 	private Thread starter = null;
 	
 	private Thread worker = null;
 	private Vector paoIDsForPorter = new Vector();
 	
-	private com.cannontech.message.dispatch.ClientConnection dispatchConn = null;
-	private static com.cannontech.message.porter.ClientConnection connToPorter = null;
+	private IServerConnection dispatchConn = null;
+	private static IServerConnection connToPorter = null;
 	public Request porterRequest = null;
 
 	private GregorianCalendar nextImportTime = null;
@@ -71,7 +74,8 @@ public final class BulkImporter410
 	
 	private final int PORTER_PRIORITY = 6;
 	private final String INTERVAL_COMMAND = "putconfig emetcon intervals";
-	private final long PORTER_WAIT = 900000;
+	//15 min
+    private final long PORTER_WAIT = 900000;
 	private final int SAVETHEAMPCARDS_AMOUNT = 50;
 	
 	
@@ -180,7 +184,7 @@ public void start()
 						runImport(importEntries);
 					}
 					
-					if(paoIDsForPorter.size() < 1)
+					if(paoIDsForPorter.size() > 1)
 					{
 						//make sure the worker bee is doing his thing
 						porterWorker();
@@ -194,20 +198,16 @@ public void start()
 					//scrub out the ImportData table
 					ImportFuncs.flushImportTable(conn);
 					*/
-										
-					
 				}
 				
 				try
 				{
 					Thread.sleep(SLEEP);
-
 				}
 				catch (InterruptedException ie)
 				{
 					CTILogger.info("Exiting the yimp unexpectedly...sleep failed!!!");
 					logger = ImportFuncs.writeToImportLog(logger, 'N', "Exiting the Imp unexpectedly...sleep failed!!!" + ie.toString(), "", "");
-						
 					break;
 				}
 			} while (isService);
@@ -228,7 +228,6 @@ public void start()
 		starter = new Thread( runner, "Importer" );
 		starter.start();
 	}
-
 }
 
 /*
@@ -490,33 +489,25 @@ public void runImport(Vector imps)
 			
 			try
 			{
-				/*
-				 * Do we want to do this every iteration or just use one
-				 * connection for the whole import run??
-				 */
-				conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-				
 				if(hasPoints)
 				{				
-					objectsToAdd.setDbConnection(conn);
-					objectsToAdd.add();
-					
-				}
+                    Transaction.createTransaction(Transaction.INSERT, objectsToAdd).execute();
+                }
 				else
 				{
-					current410.setDbConnection(conn);
-					current410.add();
-				}
+                    Transaction.createTransaction(Transaction.INSERT, current410).execute();
+                }
 				
 				successVector.addElement(imps.elementAt(j));
 				logger = ImportFuncs.writeToImportLog(logger, 'S', "MCT-410 " + name + " with address " + address + ".", "", "");
 				synchronized(paoIDsForPorter)
 				{				
-					paoIDsForPorter.addElement(current410.getPAObjectID());
+                    CTILogger.info("Writing to porter array.");
+                    paoIDsForPorter.addElement(current410.getPAObjectID());
 				}
 				successCounter++;
 			}
-			catch( java.sql.SQLException e )
+			catch( TransactionException e )
 			{
 				e.printStackTrace();
 				StringBuffer tempErrorMsg = new StringBuffer(e.toString());
@@ -613,17 +604,6 @@ public void runImport(Vector imps)
 	Date now = new Date();
 	DBFuncs.writeLastImportTime(now);
 	
-	try
-	{
-		getDispatchConnection().disconnect();
-		dispatchConn = null;
-	}
-	catch(java.io.IOException ioe)
-	{
-		logger = ImportFuncs.writeToImportLog(logger, 'N', "Error disconnecting from dispatch: " + ioe.toString(), "", "");
-		CTILogger.info("An exception occured disconnecting from dispatch");
-	}
-	
 }
 
 /** 
@@ -674,81 +654,29 @@ public void stopApplication()
 	//System.exit(0);
 }
 
-private synchronized com.cannontech.message.dispatch.ClientConnection getDispatchConnection()
+private synchronized IServerConnection getDispatchConnection()
 {
-	if( dispatchConn == null || !dispatchConn.isValid() )
-	{
-		String host = RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_MACHINE );
-		String portStr = RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_PORT );
-		int port = 1510;
-		
-		try 
-		{
-			port = Integer.parseInt(portStr);
-		} 
-		catch(NumberFormatException nfe) 
-		{
-			CTILogger.warn("Bad value for DISPATCH-PORT");		
-		}
-		
-		CTILogger.debug("attempting to connect to dispatch @" + host + ":" + port);	
-		dispatchConn = new com.cannontech.message.dispatch.ClientConnection();
-
-		Registration reg = new Registration();
-		reg.setAppName("410 Bulk Importer");
-		reg.setAppIsUnique(0);
-		reg.setAppKnownPort(0);
-		reg.setAppExpirationDelay( 3600 );  // 1 hour should be OK
-
-		dispatchConn.setHost(host);
-		dispatchConn.setPort(port);
-		dispatchConn.setAutoReconnect(true);
-		dispatchConn.setRegistrationMsg(reg);
-		
-		try
-		{
-			dispatchConn.connectWithoutWait();
-		}
-		catch( Exception e )
-		{
-			e.printStackTrace();
-		}
-	}
-	return dispatchConn;
+    if(dispatchConn == null) 
+    {
+        dispatchConn = ConnPool.getInstance().getDefDispatchConn();
+        dispatchConn.addObserver(this);
+        
+        CTILogger.info("Porter connection created.");
+    }
+    
+    return dispatchConn;
 }
 
-private synchronized com.cannontech.message.porter.ClientConnection getPorterConnection()
+private synchronized IServerConnection getPorterConnection()
 {	
 	if(connToPorter == null)
 	{
-		String host = "127.0.0.1";
-		int port = 1540;
-		try
-		{
-			host = RoleFuncs.getGlobalPropertyValue( SystemRole.PORTER_MACHINE );
-			port = Integer.parseInt( RoleFuncs.getGlobalPropertyValue( SystemRole.PORTER_PORT ) ); 
-		}
-		catch( Exception e)
-		{
-			CTILogger.error( e.getMessage(), e );
-		}
-
-		connToPorter = new com.cannontech.message.porter.ClientConnection();
-		connToPorter.setQueueMessages(false);	//don't keep messages, toss once read.
-		connToPorter.setHost(host);
-		connToPorter.setPort(port);
-		connToPorter.setAutoReconnect(true);
-					
-		try 
-		{
-			connToPorter.connect(30000);
-		}
-		catch( Exception e ) 
-		{
-			CTILogger.error( e.getMessage(), e );
-		}
-		CTILogger.info(" ************ CONNECTION TO PORTER ESTABLISHED ********************");
+        connToPorter = ConnPool.getInstance().getDefPorterConn();
+        connToPorter.addObserver(this);
+        
+		CTILogger.info("Porter connection created.");
 	}
+    
 	return connToPorter;	
 }
 
@@ -769,11 +697,13 @@ private void porterWorker()
 		{
 			public void run()
 			{
-				while(true)
+                CTILogger.info("Porter submission thread created.");
+                
+                while(true)
 				{
 					Integer[] paoIDs = null;
 					int counter = 0;
-		
+                    
 					synchronized(paoIDsForPorter)
 					{
 						if(paoIDsForPorter.size() > 0 && paoIDsForPorter.size() <= SAVETHEAMPCARDS_AMOUNT)
@@ -814,16 +744,8 @@ private void porterWorker()
 							porterRequest.setPriority(PORTER_PRIORITY);
 							if( getPorterConnection() != null )
 							{
-								if( getPorterConnection().isValid())
-								{		
-									getPorterConnection().write( porterRequest );
-									counter++;
-								}
-								else	
-								{
-									CTILogger.info(paoIDs[j].toString() + " REQUEST NOT SENT: CONNECTION TO PORTER IS NOT VALID");
-									logger = ImportFuncs.writeToImportLog(logger, 'N', "("+ paoIDs[j].toString() + ")REQUEST NOT SENT: CONNECTION TO PORTER IS NOT VALID", "", "");
-								}
+								getPorterConnection().write( porterRequest );
+								counter++;
 							}
 							else
 							{
@@ -834,17 +756,7 @@ private void porterWorker()
 					
 						CTILogger.info(counter + " intervals written to porter.");
 						logger = ImportFuncs.writeToImportLog(logger, 'N', "Intervals for " + counter + " MCTs written to porter.", "", "");
-				
-						try
-						{
-							getPorterConnection().disconnect();
-							connToPorter = null;
-						}
-						catch(java.io.IOException ioe)
-						{
-							logger = ImportFuncs.writeToImportLog(logger, 'N', "Error disconnecting from porter: " + ioe.toString(), "", "");
-							CTILogger.info("An exception occured disconnecting from porter");
-						}
+						
 					}
 				}
 			}
@@ -854,6 +766,9 @@ private void porterWorker()
 		worker.start();
 	}
 }
+
+public void update(Observable o, Object arg) 
+{}
 						
 
 }
