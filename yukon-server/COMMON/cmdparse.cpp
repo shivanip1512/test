@@ -192,22 +192,22 @@ void  CtiCommandParser::parse()
                 //Removes the ' " ' character from "something"
                 token.erase(0,1);token.erase(token.length()-1,token.length()-1);
                 _cmd["altgroup"] = CtiParseValue( token, -1 );
-                	             }
-  	             CmdStr.replace(re_altg, "");
-  	         }
-  	         else if(!(token = CmdStr.match(re_billg)).empty())
-  	         {
-  	             size_t nstart;
-  	             size_t nstop;
-  	             nstart = token.index("billgroup ", &nstop);
-  	 
-  	             nstop += nstart;
-  	 
-  	             if(!(token = token.match(str_quoted_token, nstop)).empty())   // get the value
-  	             {
-  	                 //Removes the ' " ' character from "something"
-  	                 token.erase(0,1);token.erase(token.length()-1,token.length()-1);
-  	                 _cmd["billgroup"] = CtiParseValue( token, -1 );
+                                 }
+                 CmdStr.replace(re_altg, "");
+             }
+             else if(!(token = CmdStr.match(re_billg)).empty())
+             {
+                 size_t nstart;
+                 size_t nstop;
+                 nstart = token.index("billgroup ", &nstop);
+
+                 nstop += nstart;
+
+                 if(!(token = token.match(str_quoted_token, nstop)).empty())   // get the value
+                 {
+                     //Removes the ' " ' character from "something"
+                     token.erase(0,1);token.erase(token.length()-1,token.length()-1);
+                     _cmd["billgroup"] = CtiParseValue( token, -1 );
             }
             CmdStr.replace(re_altg, "");
         }
@@ -1227,7 +1227,7 @@ void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
     boost::regex    re_address("address (group|uniq)");
     boost::regex    re_lp_channel(" lp channel " + str_num);
     boost::regex    re_centron("centron (ratio|parameters)");
-
+    boost::regex    re_tou("tou schedule [0-9]");
 
     char *p;
 
@@ -1245,6 +1245,15 @@ void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
         if(CmdStr.contains(" options"))
         {
             _cmd["options"] = CtiParseValue( "TRUE" );
+        }
+        if(CmdStr.contains(" tou"))
+        {
+            _cmd["tou"] = CtiParseValue( "TRUE" );
+
+            if(!(token = CmdStr.match(re_tou)).empty())
+            {
+                _cmd["tou_schedule"] = CtiParseValue(atoi(token.data() + 13));
+            }
         }
         if(CmdStr.contains(" address"))
         {
@@ -1467,7 +1476,7 @@ void  CtiCommandParser::doParsePutConfig(const string &_CmdStr)
 
             }
         }
-        
+
         if(CmdStr.contains(" tou"))
         {
             string tou_schedule;
@@ -1730,7 +1739,7 @@ DOUBLE   CtiCommandParser::getdValue(const string key, DOUBLE valifnotfound) con
     if(isKeyValid(key.c_str()))
     {
         CtiParseValue& pv = CtiParseValue(); // = _cmd["command"];
-        map_itr_type itr;        
+        map_itr_type itr;
         itr = _cmd.find(key.c_str() );
         if (itr != _cmd.end()) {
             pv = (*itr).second;
