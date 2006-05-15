@@ -21,17 +21,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.xml.utils.IntVector;
 import org.jfree.report.JFreeReport;
 import org.jfree.report.function.FunctionInitializeException;
-import org.jfree.report.modules.output.csv.CSVQuoter;
 
 import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.analysis.ReportTypes;
-import com.cannontech.analysis.data.stars.WorkOrder;
 import com.cannontech.analysis.gui.ReportBean;
 import com.cannontech.analysis.report.YukonReportBase;
-import com.cannontech.analysis.tablemodel.MeterReadModel;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
 import com.cannontech.analysis.tablemodel.WorkOrderModel;
 import com.cannontech.clientutils.CTILogger;
@@ -56,14 +52,11 @@ import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.util.WebClientException;
-import com.cannontech.stars.util.task.ManipulateInventoryTask;
 import com.cannontech.stars.util.task.ManipulateWorkOrderTask;
 import com.cannontech.stars.util.task.TimeConsumingTask;
-import com.cannontech.stars.util.task.UpdateSNRangeTask;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.action.CreateServiceRequestAction;
 import com.cannontech.stars.web.action.UpdateServiceRequestAction;
-import com.cannontech.stars.web.bean.InventoryBean;
 import com.cannontech.stars.web.bean.ManipulationBean;
 import com.cannontech.stars.web.bean.WorkOrderBean;
 import com.cannontech.stars.web.util.WorkOrderManagerUtil;
@@ -330,14 +323,14 @@ public class WorkOrderManager extends HttpServlet {
                 
                 task = ProgressChecker.getTask(id);
                 
-                if (task.getStatus() == UpdateSNRangeTask.STATUS_FINISHED) {
+                if (task.getStatus() == TimeConsumingTask.STATUS_FINISHED) {
                     session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, task.getProgressMsg());
                     ProgressChecker.removeTask( id );
                     if (redir != null) redirect = redir;
                     return;
                 }
                 
-                if (task.getStatus() == UpdateSNRangeTask.STATUS_ERROR) {
+                if (task.getStatus() == TimeConsumingTask.STATUS_ERROR) {
                     session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, task.getErrorMsg());
                     ProgressChecker.removeTask( id );
                     redirect = referer;
