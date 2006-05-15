@@ -88,7 +88,8 @@ public void init(javax.servlet.ServletConfig config) throws javax.servlet.Servle
 {
 	super.init(config);
 
-
+    System.setProperty("cti.app.name", "Webserver");
+       
 	String lcHost = "127.0.0.1";
 	int lcPort = 1920;
 
