@@ -98,6 +98,7 @@ $(COMPILEBASE)\lib\ctidbsrc.lib \
 $(COMPILEBASE)\lib\service.lib \
 $(COMPILEBASE)\lib\cticparms.lib \
 $(COMPILEBASE)\lib\ctiholidaydb.lib \
+$(COMPILEBASE)\lib\clrdump.lib \
 advapi32.lib
 
 
@@ -232,13 +233,13 @@ calc_logic.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h dlldefs.h \
 		guard.h cticonnect.h netports.h sema.h CServiceConfig.h \
 		rtdb.h hashkey.h hash_functions.h utility.h ctitime.h \
 		sorted_vector.h ctibase.h ctinexus.h cparms.h rwutil.h \
-		boost_time.h configparms.h calclogicsvc.h connection.h \
-		exchange.h logger.h thread.h CtiPCPtrQueue.h message.h \
-		collectable.h msg_multi.h msg_pdata.h pointdefs.h msg_ptreg.h \
-		msg_reg.h queue.h cservice.h calcthread.h calc.h ctiqueues.h \
-		calccomponent.h ctidate.h pointstore.h regression.h \
-		thread_monitor.h smartmap.h thread_register_data.h \
-		msg_dbchg.h
+		boost_time.h dbghelp.h clrdump.h configparms.h calclogicsvc.h \
+		connection.h exchange.h logger.h thread.h CtiPCPtrQueue.h \
+		message.h collectable.h msg_multi.h msg_pdata.h pointdefs.h \
+		msg_ptreg.h msg_reg.h queue.h cservice.h calcthread.h calc.h \
+		ctiqueues.h calccomponent.h ctidate.h pointstore.h \
+		regression.h thread_monitor.h smartmap.h \
+		thread_register_data.h msg_dbchg.h
 log.obj:	yukon.h precompiled.h ctidbgmem.h connection.h dlldefs.h \
 		exchange.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
 		mutex.h guard.h cticonnect.h netports.h logger.h thread.h \

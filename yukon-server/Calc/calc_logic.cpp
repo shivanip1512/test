@@ -11,6 +11,8 @@
 #include "rtdb.h"
 #include "ctibase.h"
 #include "cparms.h"
+#include "dbghelp.h"
+#include "clrdump.h"
 #include "configparms.h"
 
 #include "calclogicsvc.h"
@@ -28,6 +30,7 @@ int main( int argc, char *argv[] )
     RWWinSockInfo sock_init;        // global declare for winsock
 
     HANDLE hExclusion;
+    RegisterFilter( L"CALC_LOGIC_MAIN.DMP", MiniDumpWithDataSegs );
     // If set console does not fail then we are running as a console application
     if( (hExclusion = OpenEvent(EVENT_ALL_ACCESS, FALSE, "CalcLogic")) != NULL )
     {
