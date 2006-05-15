@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     5/11/2006 6:01:22 PM                         */
+/* Created on:     5/15/2006 8:36:43 AM                         */
 /*==============================================================*/
 
 
@@ -7155,7 +7155,6 @@ create table YukonServices  (
    ParamValues          VARCHAR2(300)                   not null
 );
 
-insert into YukonServices values( -1, 'Notification_Server', 'com.cannontech.notif.server.NotificationServer', '(none)', '(none)' );
 insert into YukonServices values( -2, 'WebGraph', 'com.cannontech.jmx.services.DynamicWebGraph', '(none)', '(none)' );
 insert into YukonServices values( -3, 'Calc_Historical', 'com.cannontech.jmx.services.DynamicCalcHist', '(none)', '(none)' );
 insert into YukonServices values( -4, 'CBC_OneLine_Gen', 'com.cannontech.jmx.services.DynamicCBCOneLine', '(none)', '(none)');

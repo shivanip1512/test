@@ -6,6 +6,7 @@
 /* @error ignore */
 insert into YukonRoleProperty values(-10811,-108, 'inbound_voice_home_url', '/voice/inboundOptOut.jsp', 'Home URL for inbound voice logins');
 
+insert into billingfileformats values(20, 'IVUE_BI_T65');
 
 /******************************************************************************/
 /* Run the Stars Update if needed here */
@@ -18,4 +19,4 @@ insert into YukonRoleProperty values(-10811,-108, 'inbound_voice_home_url', '/vo
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
 /**************************************************************/
-/* __YUKON_VERSION__ */
+insert into CTIDatabase values('3.2', 'DBMaintainer', '15-MAY-2006', 'Manual version insert done', 5 );
