@@ -149,3 +149,67 @@ begin
     
     
 end;
+//---------------------------------------------------------------------------
+// The Installing event is sent just before the feature 
+// Yukon Server\Notification Server is installed.
+//---------------------------------------------------------------------------
+ 
+export prototype NotificationServer_Installing();
+function NotificationServer_Installing()
+string szCmdLine, szPathAndFile;
+
+begin
+
+//stop the Yukon Notification Server
+szCmdLine = 'stop "Yukon Notification Server"';
+LaunchAppAndWait ("net.exe" , szCmdLine, WAIT );
+
+Delay(3);
+
+//remove the Yukon Notification Server
+szPathAndFile = TARGETDIR ^ "\\client\\bin\\wrapper.exe";
+szCmdLine = "-r notifserver.conf";
+LaunchAppAndWait ( szPathAndFile, szCmdLine, WAIT );  
+
+end;
+//---------------------------------------------------------------------------
+// The Installed event is sent after the feature Yukon Server\Notification Server
+// is installed.
+//---------------------------------------------------------------------------
+ 
+export prototype NotificationServer_Installed();
+function NotificationServer_Installed()
+string szCmdLine, szPathAndFile;
+
+begin
+
+//The following sets up the Yukon Notification Server
+szPathAndFile = TARGETDIR ^ "\\client\\bin\\wrapper.exe";
+szCmdLine = "-i notifserver.conf";
+LaunchAppAndWait ( szPathAndFile, szCmdLine, WAIT );
+
+end;
+//---------------------------------------------------------------------------
+// The UnInstalling event is sent just before the feature 
+// Yukon Server\Notification Server is uninstalled.
+//---------------------------------------------------------------------------
+ 
+export prototype NotificationServer_UnInstalling();
+function NotificationServer_UnInstalling()
+string szCmdLine, szPathAndFile;
+
+begin
+
+//stop the Yukon Notification Server
+szCmdLine = 'stop "Yukon Notification Server"';
+LaunchAppAndWait ("net.exe" , szCmdLine, WAIT );     
+
+Delay(4);   
+
+//remove the Yukon Notification Server
+szPathAndFile = TARGETDIR ^ "\\client\\bin\\wrapper.exe";
+szCmdLine = "-r notifserver.conf";
+LaunchAppAndWait ( szPathAndFile, szCmdLine, WAIT );  
+
+end;
+

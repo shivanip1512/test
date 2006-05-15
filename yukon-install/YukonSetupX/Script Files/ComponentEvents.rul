@@ -252,6 +252,7 @@ if(dirSearch = 0) then
    	DeleteDir ( szPath + "\\analysis" , ALLCONTENTS );
    	DeleteDir ( szPath + "\\WebConfig\\yukon", ALLCONTENTS );
    	DeleteDir ( szPath + "\\WebConfig\\CILC", ALLCONTENTS ); 
+   	DeleteFile ( szPath + "\\*.*" );
 endif;
 
 

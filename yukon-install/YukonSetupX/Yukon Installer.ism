@@ -119,8 +119,9 @@
 		<row><td>Initial Server Config</td><td>{2A29ABC8-AB74-453B-BCD5-A2734E40465C}</td><td>SERVER</td><td>16</td><td/><td/><td>10753</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Java Service Manager</td><td>{BD673D38-EFB5-4405-950F-B4BF50190A2A}</td><td>TARGETDIR</td><td>0</td><td/><td/><td>281089</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Load Management</td><td>{70724B8A-16D6-4800-B7FB-752C0F31E590}</td><td>SERVER</td><td>0</td><td/><td/><td>281089</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>MACS Server</td><td>{10C988E4-A975-41EF-AC11-A56DF1CBD643}</td><td>SERVER</td><td>0</td><td/><td/><td>281089</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>MACS Server</td><td>{10C988E4-A975-41EF-AC11-A56DF1CBD643}</td><td>SERVER</td><td>0</td><td/><td/><td>264705</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Message Dispatcher</td><td>{955F515A-D38D-444A-9B1B-091D2E6B8429}</td><td>SERVER</td><td>0</td><td/><td/><td>281089</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>Notification</td><td>{054F4508-F404-409E-8877-0B26421CCAAD}</td><td>BIN</td><td>0</td><td/><td/><td>264705</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Port Control</td><td>{73DC694D-F725-4C09-A12F-70D7643594B7}</td><td>SERVER</td><td>0</td><td/><td/><td>281089</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Scanner</td><td>{99E72965-B85A-4BEB-81FE-F7E985453A1C}</td><td>SERVER</td><td>0</td><td/><td/><td>281089</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Tabular Data Console</td><td>{7FE662D9-03C5-49CE-B2A3-49A9E178D51F}</td><td>CLIENT</td><td>0</td><td/><td/><td>281089</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
@@ -301,6 +302,7 @@
 		<row><td>{B5BF87E8-FF15-40CF-9003-838D672C71C8}</td><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td><td>Database Editor</td><td/><td>8</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Database Editor</td></row>
 		<row><td>{CAEEBC8B-716D-4DC2-A248-89CA71879A6B}</td><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td><td>Commander</td><td/><td>2</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Commander</td></row>
 		<row><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td><td/><td>Yukon Client</td><td/><td>4</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Yukon Client</td></row>
+		<row><td>{DB8BF790-EC25-4438-B29B-00CB57ED9746}</td><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>##ID_STRING19##</td><td/><td>24</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Notification Server</td></row>
 		<row><td>{E6E81A5E-ACA3-4C5B-8FD1-6A1881FCE8C6}</td><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td><td>Alarm Monitor</td><td/><td>14</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Alarm Monitor</td></row>
 		<row><td>{EAD0CD5F-F093-42DE-84B9-4FEE393972DE}</td><td>{3B752146-EC34-49F0-B636-E9DCA5C40CF6}</td><td>##ID_STRING17##</td><td/><td>6</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>ScannerService</td></row>
 		<row><td>{FB0E9936-56A9-4E00-B8C9-E3E82682657B}</td><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td><td>ESubstation Editor</td><td/><td>12</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>ESubstation Editor</td></row>
@@ -354,6 +356,7 @@
 		<row><td>{B5BF87E8-FF15-40CF-9003-838D672C71C8}</td><td>Database Editor</td></row>
 		<row><td>{CAEEBC8B-716D-4DC2-A248-89CA71879A6B}</td><td>Common Bin</td></row>
 		<row><td>{CAEEBC8B-716D-4DC2-A248-89CA71879A6B}</td><td>Yukon Commander</td></row>
+		<row><td>{DB8BF790-EC25-4438-B29B-00CB57ED9746}</td><td>Notification</td></row>
 		<row><td>{E6E81A5E-ACA3-4C5B-8FD1-6A1881FCE8C6}</td><td>Alarm Monitor</td></row>
 		<row><td>{FB0E9936-56A9-4E00-B8C9-E3E82682657B}</td><td>ESub Editor</td></row>
 		<row><td>{FB279D35-43A8-441C-8B56-F98EC5504F2F}</td><td>Common Bin</td></row>
@@ -493,6 +496,7 @@
 		<row><td>mx4j_tools.jar</td><td>Common Bin</td><td>mx4j-tools.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\mx4j-tools.jar</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>net15d.dll</td><td>Common Dlls</td><td>net15d.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_ROGUEWAVE&gt;\net15d.dll</td><td>1</td><td>NewSubFolder72</td></row>
 		<row><td>notification.jar</td><td>Common Bin</td><td>notification.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\notification.jar</td><td>1</td><td>NewSubFolder85</td></row>
+		<row><td>notifserver.conf</td><td>Notification</td><td>notifserver.conf</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\notifserver.conf</td><td>1</td><td/></row>
 		<row><td>odb15d.dll</td><td>Common Dlls</td><td>odb15d.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_ROGUEWAVE&gt;\odb15d.dll</td><td>1</td><td>NewSubFolder72</td></row>
 		<row><td>ora15d.dll</td><td>Common Dlls</td><td>ora15d.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_ROGUEWAVE&gt;\ora15d.dll</td><td>1</td><td>NewSubFolder72</td></row>
 		<row><td>parsetest.exe</td><td>Test Applications</td><td>parsetest.exe</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\parsetest.exe</td><td>1</td><td>NewSubFolder83</td></row>
@@ -606,6 +610,7 @@
 		<row><td>Load Management</td><td>0</td><td/><td>_019F0DA4_96F4_482A_B54E_1E401C865E6E_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>MACS Server</td><td>0</td><td/><td>_FE5E9873_D169_4D60_82DB_F1BA971B72A8_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Message Dispatcher</td><td>0</td><td/><td>_E3E3A7A5_B241_48E4_B5B6_9B07A20256B5_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>Notification</td><td/><td/><td>_B63BCCE2_416D_4701_A212_CBDD7F292383_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Port Control</td><td>0</td><td/><td>_88520290_19E7_4C67_9BB6_DF5CC61ACE94_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Scanner</td><td>0</td><td/><td>_5AC4F3D2_6CA9_4E97_B95A_092959853ACB_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Tabular Data Console</td><td>0</td><td/><td>_5724FC49_DEC9_4BD2_924E_9CE4C6F4C7E1_FILTER</td><td/><td/><td/><td/></row>
@@ -711,6 +716,7 @@
 		<row><td>{B5BF87E8-FF15-40CF-9003-838D672C71C8}</td><td/><td/><td/><td/><td/><td/><td/><td/><td>36</td><td/><td/><td/></row>
 		<row><td>{CAEEBC8B-716D-4DC2-A248-89CA71879A6B}</td><td>YukonCommander_Installing</td><td>YukonCommander_Installed</td><td>YukonCommander_UnInstalling</td><td/><td/><td/><td/><td/><td>36</td><td/><td/><td/></row>
 		<row><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td><td>YukonClient_Installing</td><td/><td/><td/><td/><td/><td/><td/><td>36</td><td/><td/><td/></row>
+		<row><td>{DB8BF790-EC25-4438-B29B-00CB57ED9746}</td><td>NotificationServer_Installing</td><td>NotificationServer_Installed</td><td>NotificationServer_UnInstalling</td><td>NotificationServer_UnInstalled</td><td/><td/><td/><td/><td>36</td><td/><td/><td/></row>
 		<row><td>{E6E81A5E-ACA3-4C5B-8FD1-6A1881FCE8C6}</td><td/><td>AlarmMonitor_Installed</td><td/><td/><td/><td/><td/><td/><td>36</td><td/><td/><td/></row>
 		<row><td>{EAD0CD5F-F093-42DE-84B9-4FEE393972DE}</td><td/><td/><td/><td/><td/><td/><td/><td/><td>20</td><td/><td/><td>@ismk10:C9FE0DD0-2F11-11D3-8B0C-00105A9846E9</td></row>
 		<row><td>{FB0E9936-56A9-4E00-B8C9-E3E82682657B}</td><td/><td/><td/><td/><td/><td/><td/><td/><td>36</td><td/><td/><td/></row>
@@ -1147,6 +1153,8 @@
 		<row><td>{54FF9F5F-5E39-45F8-B799-BA8F0AD883AD}</td><td>{7E0C5FC7-B54D-4F6D-8D1A-0946CFF2CE2E}</td></row>
 		<row><td>{9910613D-86BA-428E-8798-FD86096FFE62}</td><td>{9A11D821-45F6-4C85-9F68-BEE18E837F37}</td></row>
 		<row><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td><td>{7E0C5FC7-B54D-4F6D-8D1A-0946CFF2CE2E}</td></row>
+		<row><td>{DB8BF790-EC25-4438-B29B-00CB57ED9746}</td><td>{7E0C5FC7-B54D-4F6D-8D1A-0946CFF2CE2E}</td></row>
+		<row><td>{DB8BF790-EC25-4438-B29B-00CB57ED9746}</td><td>{B5BF87E8-FF15-40CF-9003-838D672C71C8}</td></row>
 		<row><td>{FB0E9936-56A9-4E00-B8C9-E3E82682657B}</td><td>{3AAABB93-964B-43CA-9691-90F8B5E7455A}</td></row>
 		<row><td>{FB0E9936-56A9-4E00-B8C9-E3E82682657B}</td><td>{B5BF87E8-FF15-40CF-9003-838D672C71C8}</td></row>
 		<row><td>{FB0E9936-56A9-4E00-B8C9-E3E82682657B}</td><td>{FB279D35-43A8-441C-8B56-F98EC5504F2F}</td></row>
@@ -1254,6 +1262,7 @@
 	<table name="ISSetupTypeFeatures">
 		<col key="yes" def="s38">ISSetupType_</col>
 		<col key="yes" def="s38">Feature_</col>
+		<row><td>Cannon Custom Install</td><td>{DB8BF790-EC25-4438-B29B-00CB57ED9746}</td></row>
 	</table>
 
 	<table name="ISShortcutComponents">
@@ -1443,6 +1452,7 @@
 		<row><td>ID_STRING16</td><td>1033</td><td>DispatchService</td><td>0</td><td/><td>857329843</td></row>
 		<row><td>ID_STRING17</td><td>1033</td><td>ScannerService</td><td>0</td><td/><td>857333939</td></row>
 		<row><td>ID_STRING18</td><td>1033</td><td>PorterService</td><td>0</td><td/><td>857276627</td></row>
+		<row><td>ID_STRING19</td><td>1033</td><td>Notification Server</td><td>0</td><td/><td>1654297233</td></row>
 		<row><td>ID_STRING2</td><td>1033</td><td>Client Service Manager</td><td>0</td><td/><td>857287090</td></row>
 		<row><td>ID_STRING3</td><td>1033</td><td>All Yukon server and client applications</td><td>0</td><td/><td>1620663024</td></row>
 		<row><td>ID_STRING4</td><td>1033</td><td>Only the client applications are installed</td><td>0</td><td/><td>1620673328</td></row>
