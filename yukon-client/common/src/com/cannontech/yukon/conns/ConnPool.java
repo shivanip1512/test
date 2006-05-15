@@ -13,6 +13,7 @@ import com.cannontech.yukon.INotifConnection;
 import com.cannontech.yukon.IServerConnection;
 import com.cannontech.yukon.cbc.CBCClientConnection;
 import com.cannontech.yukon.cbc.CBCCommand;
+import com.cannontech.common.util.CtiUtilities;
 
 /**
  * @author rneuharth
@@ -133,7 +134,10 @@ public class ConnPool
 		ClientConnection connToDispatch = new ClientConnection();
 
 		Registration reg = new Registration();
-		reg.setAppName("Generic_Dispatch_Conn");
+         /*
+         * App name will be value of cti.app.name environment variable
+         */
+        reg.setAppName(CtiUtilities.getApplicationName());
 		reg.setAppIsUnique(0);
 		reg.setAppKnownPort(0);
 		reg.setAppExpirationDelay(300); // 5 minutes should be OK
@@ -169,7 +173,10 @@ public class ConnPool
 	
 			connToDispatch = (ClientConnection)createDispatchConn();
 			Registration reg = new Registration();
-			reg.setAppName("Default_Conn");
+             /*
+             * App name will be value of cti.app.name environment variable
+             */
+            reg.setAppName(CtiUtilities.getApplicationName());
 			reg.setAppIsUnique(0);
 			reg.setAppKnownPort(0);
 			reg.setAppExpirationDelay(300); // 5 minutes should be OK
