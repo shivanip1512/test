@@ -515,17 +515,5 @@ public class LoadGroupModel extends ReportModelBase
 	    return restore;
 	    
 	}
-	
-	/*
-	 * Returns a List of Objects (Strings for DeviceMeterGroup stuff, and LiteYukonPaobjects for pao stuff)
-	 * List is from cache.
-	 */
-//	public List getObjectsByModelType(int model)
-//	{
-//		/** TODO Add restrictions for load groups for EC (paoowner) only!  */
-//		List objects = super.getObjectsByModelType(model);
-//		
-//		return objects;
-//	}
 }
 	

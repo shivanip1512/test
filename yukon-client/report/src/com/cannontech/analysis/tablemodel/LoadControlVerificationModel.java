@@ -53,8 +53,6 @@ public class LoadControlVerificationModel extends ReportModelBase
 	
 	private int[] receiverIDs = null;
 	private int[] transmitterIDs = null;
-//	private Integer receiverID = null;
-//	private Integer transmitterID = null;
 
 	private String command = null;
 	private String code = null;
