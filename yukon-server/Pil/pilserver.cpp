@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.80 $
-* DATE         :  $Date: 2006/05/09 20:07:52 $
+* REVISION     :  $Revision: 1.81 $
+* DATE         :  $Date: 2006/05/16 15:25:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1023,6 +1023,7 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
                 try
                 {
                     status = Dev->ExecuteRequest(pExecReq, parse, vgList, retList, tempOutList);    // Defined ONLY in dev_base.cpp
+                    reportClientRequests(Dev, parse, pReq, pExecReq, vgList, retList);
                 }
                 catch(...)
                 {
@@ -1862,5 +1863,60 @@ static bool findBillingGroupName(const long key, CtiDeviceSPtr otherdevice, void
     }
 
     return bstat;
+}
+
+/*
+ *  This method takes a look at the parsed request and processes the command into the event log.  This will happen if and only if
+ *  1. The device is known.
+ *  2. The parse is of type control, putvalue, putconfig, or putstatus.
+ *  3. Username will be acquired from pExecReq first, and then pReqOrig if not specified.
+ */
+int CtiPILServer::reportClientRequests(CtiDeviceSPtr &Dev, const CtiCommandParser &parse, const CtiRequestMsg *&pReqOrig, const CtiRequestMsg *&pExecReq, list< CtiMessage* > &vgList, list< CtiMessage* > &retList)
+{
+    int status = NORMAL;
+
+    long pid = SYS_PID_PORTER;
+    static unsigned soe = 0;
+    string text, addl;
+
+    if( !gConfigParms.isTrue("PIL_OMIT_COMMAND_LOGGING") )   // Set this to true if you want to skip the excessive logs from pil.
+    {
+        bool name_none = !pReqOrig->getUser().empty() && (!stringCompareIgnoreCase(pReqOrig->getUser(), "none") || !stringCompareIgnoreCase(pReqOrig->getUser(), "(none)"));
+        bool user_valid = !pReqOrig->getUser().empty() && (!name_none || gConfigParms.isTrue("PIL_LOG_UNKNOWN_USERS") );
+
+        if(Dev && user_valid &&
+            (parse.getCommand() == ControlRequest ||
+             parse.getCommand() == PutConfigRequest ||
+             parse.getCommand() == PutStatusRequest ||
+             parse.getCommand() == PutValueRequest) )
+        {
+
+            addl = Dev->getName() + " / (" + CtiNumStr(Dev->getID()) + ")";
+            text = string("Command Request: ") + parse.getCommandStr();
+
+            // The user has requested an "outbound" field action.  We have everything we need to generate a log.
+            CtiSignalMsg *pSig = CTIDBG_new CtiSignalMsg(pid, ++soe, text, addl, PILLogType, SignalEvent, pReqOrig->getUser() );
+            vgList.push_back(pSig);
+
+            std::list< CtiMessage* >::const_iterator itr;
+
+            for(itr = retList.begin(); itr != retList.end(); itr++)
+            {
+                const CtiReturnMsg *&pcRet = (const CtiReturnMsg*&)*itr;
+
+                addl = Dev->getName() + " / (" + CtiNumStr(Dev->getID()) + "): " + pcRet->CommandString();
+                if(pcRet->Status() == NORMAL)
+                    text = string("Success: ");
+                else
+                    text = string("Failed (Err ") + CtiNumStr(pcRet->Status()) + "): ";
+
+                text += pcRet->ResultString();
+                CtiSignalMsg *pSig = CTIDBG_new CtiSignalMsg(pid, soe, text, addl, PILLogType, SignalEvent, pReqOrig->getUser() );
+                vgList.push_back(pSig);
+            }
+        }
+    }
+
+    return status;
 }
 
