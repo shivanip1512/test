@@ -51,10 +51,20 @@ public abstract class FileFormatBase
 	{
 		1, 2, 3
 	};
+
+    public static final int validTOUAccPtOffsets[] =
+	{
+        1, 2, 3, 101, 121, 141, 161
+	};
 	
 	public static final int validPeakDemandAccOffsets[] =
 	{
 		11 // 410, 470 (12, 13, 14 needs to be added for the other buckets at some time)
+	};
+
+    public static final int validTOUPeakDemandAccOffsets[] =
+	{
+	    11, 111, 131, 151, 171
 	};
 	
 	public static final int validProfileDemandAccOffsets[] =

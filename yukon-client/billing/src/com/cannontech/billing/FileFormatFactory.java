@@ -76,6 +76,12 @@ public final static FileFormatBase createFileFormat(int type)
             
         case FileFormatTypes.IVUE_BI_T65:
             return new IVUE_BI_T65Format();
+        
+        case FileFormatTypes.SIMPLE_TOU:
+            return new SimpleTOUFormat();
+        
+        case FileFormatTypes.EXTENDED_TOU:
+            return new ExtendedTOUFormat();
 		
 		default: //this is bad
 			throw new Error("FileFormatFactory::createFileFormat - Unrecognized file format type");
