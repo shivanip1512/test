@@ -271,6 +271,10 @@ public final static int getDeviceType(String typeString)
      return DNP_CBC_6510;
    else if (isStringDevice(compareString, STRING_REPEATER_800))
 	  return REPEATER_800;
+   else if (isStringDevice(compareString, STRING_REPEATER_801))
+      return REPEATER_801;
+   else if (isStringDevice(compareString, STRING_REPEATER_921))
+      return REPEATER_921;
    else if (isStringDevice(compareString, STRING_SIXNET))
 	  return SIXNET;
    else if (isStringDevice(compareString, STRING_SERIES_5_LMI))
@@ -533,6 +537,10 @@ public final static String getPAOTypeString(int type)
         	return STRING_DNP_CBC_6510[0];
 	  	case REPEATER_800:
 		  	return STRING_REPEATER_800[0];
+        case REPEATER_801:
+            return STRING_REPEATER_801[0];
+        case REPEATER_921:
+            return STRING_REPEATER_921[0];
 	  	case SIXNET:
 		  	return STRING_SIXNET[0];
 		  

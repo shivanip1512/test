@@ -189,6 +189,12 @@ public final static DeviceBase createDevice(int deviceType) {
 		case PAOGroups.REPEATER_800:
 			returnDevice = new Repeater800();
 			break;
+        case PAOGroups.REPEATER_801:
+            returnDevice = new Repeater801();
+            break;
+        case PAOGroups.REPEATER_921:
+            returnDevice = new Repeater921();
+            break;
 		case PAOGroups.TAPTERMINAL:
 			returnDevice = new PagingTapTerminal();
 			break;

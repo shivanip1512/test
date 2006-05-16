@@ -219,6 +219,8 @@ public final static boolean isCarrier(int deviceType)
 		case MCT370:
 		case REPEATER:
 		case REPEATER_800:
+        case REPEATER_801:
+        case REPEATER_921:
 		case DCT_501:
 		case LMT_2:
 		case MCTBROADCAST:
@@ -718,6 +720,8 @@ public final static boolean isRepeater(int deviceType)
 	{	
 		case REPEATER:
 		case REPEATER_800:
+        case REPEATER_801:
+        case REPEATER_921:
 			return true;
 	
 		default:
@@ -788,6 +792,8 @@ public final static boolean isTransmitter(int deviceType)
 		case LCU_T3026:
 		case REPEATER:
 		case REPEATER_800:
+        case REPEATER_801:
+        case REPEATER_921:
 		case TAPTERMINAL:
 		case WCTP_TERMINAL:
 		case SNPP_TERMINAL:

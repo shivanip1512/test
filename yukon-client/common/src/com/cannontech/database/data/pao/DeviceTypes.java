@@ -117,11 +117,13 @@ public interface DeviceTypes extends TypeBase
     
     public final static int CBC_7011                = DEVICE_OFFSET + 91;
     public final static int CBC_7012                = DEVICE_OFFSET + 92;
+    public final static int REPEATER_801        = DEVICE_OFFSET + 93;
+    public final static int REPEATER_921        = DEVICE_OFFSET + 94;
     
     
     
     //***IMPORTANT ** If you add a deviceType, please update the total device type count!
-	public final static int DEVICE_TYPES_COUNT = 92;
+	public final static int DEVICE_TYPES_COUNT = 94;
 	
 
 	//all the possible text representation of each device type.
@@ -196,6 +198,8 @@ public interface DeviceTypes extends TypeBase
 	public static final String[] STRING_DCT_501 = {"DCT-501"};
 	public static final String[] STRING_CBC_FP_2800 = {"CBC FP-2800", "CBC FP 2800"};
 	public static final String[] STRING_REPEATER_800 = {"REPEATER 800"};
+    public static final String[] STRING_REPEATER_801 = {"REPEATER 801"};
+    public static final String[] STRING_REPEATER_921 = {"REPEATER 921"};
 	public static final String[] STRING_LM_ENERGY_EXCHANGE_PROGRAM = {"LM ENERGY EXCHANGE", "ENERGY EXCHANGE" };
 	public static final String[] STRING_SIXNET = {"SIXNET"};
    	public static final String[] STRING_DNP_CBC_6510 = {"CBC 6510", "CBC-6510" };
