@@ -225,12 +225,19 @@ void CtiCapController::controlLoop()
         loadControlLoopCParms();
 
         CtiTime currentDateTime;
+        CtiTime registerTimeElapsed;
         CtiCCSubstationBus_vec substationBusChanges;
         CtiMultiMsg* multiDispatchMsg = new CtiMultiMsg();
         CtiMultiMsg* multiPilMsg = new CtiMultiMsg();
         CtiMultiMsg* multiCCEventMsg = new CtiMultiMsg();
         LONG lastThreadPulse = 0;
         LONG lastDailyReset = 0;
+        BOOL waitToBroadCastEverything = FALSE;
+
+        CtiTime rwnow;
+        CtiTime announceTime((unsigned long) 0);
+        CtiTime tickleTime((unsigned long) 0);
+
         while(TRUE)
         {
             long main_wait = control_loop_delay;
@@ -269,6 +276,9 @@ void CtiCapController::controlLoop()
                     {
                         registerForPoints(ccSubstationBuses);
                         store->setReregisterForPoints(FALSE);
+                        waitToBroadCastEverything = TRUE;
+                        registerTimeElapsed.now();
+
                     }
                 }
                 catch(...)
@@ -688,7 +698,7 @@ void CtiCapController::controlLoop()
                 /*******************************************************************/
                 try
                 {
-                    if( substationBusChanges.size() > 0 )
+                    if( substationBusChanges.size() > 0 && !waitToBroadCastEverything)
                     {
                         try
                         {
@@ -700,7 +710,16 @@ void CtiCapController::controlLoop()
                                 for(LONG j=0;j<ccFeeders.size();j++)
                                 {
                                     CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j];
-                                    currentFeeder->setPeakTimeFlag(currentSubstationBus->isPeakTime(currentDateTime));
+                                    if (!stringCompareIgnoreCase(currentSubstationBus->getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod)  &&
+                                        stringCompareIgnoreCase(currentFeeder->getStrategyName(),"(none)")  &&
+                                        (currentFeeder->getPeakStartTime() > 0 && currentFeeder->getPeakStopTime() > 0 ))
+                                    {
+                                        currentFeeder->isPeakTime(currentDateTime);
+                                    }
+                                    else
+                                    {
+                                        currentFeeder->setPeakTimeFlag(currentSubstationBus->isPeakTime(currentDateTime));
+                                    }
                                 }
                             }
                         }
@@ -731,6 +750,52 @@ void CtiCapController::controlLoop()
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                         }
+                        
+                        try
+                        {
+                            delete executor1;
+                        }
+                        catch(...)
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        }
+                        try
+                        {
+                            substationBusChanges.clear();
+                        }
+                        catch(...)
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        }
+                    }
+                    else if (waitToBroadCastEverything && (registerTimeElapsed.seconds() + 15) < currentDateTime.seconds() )
+                    {
+
+                        //send the substation bus changes to all cap control clients
+                        try
+                        {
+                            store->dumpAllDynamicData();
+                        }
+                        catch(...)
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        }
+
+                        CtiCCExecutorFactory f1;
+                        CtiCCExecutor* executor1 = f1.createExecutor(new CtiCCSubstationBusMsg(ccSubstationBuses));
+                        try
+                        {
+                            executor1->Execute();
+                        }
+                        catch(...)
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        }
+                        
                         try
                         {
                             delete executor1;
@@ -749,6 +814,8 @@ void CtiCapController::controlLoop()
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                         }
+                        waitToBroadCastEverything = FALSE;
+
                     }
                 }
                 catch(...)
@@ -855,7 +922,31 @@ void CtiCapController::controlLoop()
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
             }
+           /* rwnow = rwnow.now();
+            if(rwnow.seconds() > tickleTime.seconds())
+            {
+                tickleTime = nextScheduledTimeAlignedOnRate( rwnow, CtiThreadMonitor::StandardTickleTime );
+                if( rwnow.seconds() > announceTime.seconds() )
+                {
+                    announceTime = nextScheduledTimeAlignedOnRate( rwnow, CtiThreadMonitor::StandardMonitorTime );
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " CapControl controlLoop. TID: " << rwThreadId() << endl;
+                }
+          
+               /* if(!_shutdownOnThreadTimeout)
+                {
+                    ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl doAMFMThr", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCCSubstationBusStore::periodicComplain, 0) );
+                }
+                else
+                {   
+                    ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl controlLoop", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCCSubstationBusStore::sendUserQuit, CTIDBG_new string("CapControl controlLoop")) );
+                //}
+            }  */
+
+
         }
+
+        //ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl controlLoop", CtiThreadRegData::LogOut ) );
     }
     catch(RWCancellation& )
     {
@@ -1497,6 +1588,10 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
                 {
                     msgMulti = (CtiMultiMsg *)message;
                     CtiMultiMsg_vec& temp = msgMulti->getData( );
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - ParseMessage MsgMulti has "<< temp.size() <<" entries."<< endl;
+                    }
                     for(i=0;i<temp.size( );i++)
                     {
                         parseMessage(temp[i],secondsFrom1901);

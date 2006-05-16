@@ -24,6 +24,7 @@
 #include "pointtypes.h"
 #include "logger.h"
 #include "capcontroller.h"
+#include "mgr_holiday.h"
 #include "resolvers.h"
 #include "numstr.h"
 #include "utility.h"
@@ -1553,7 +1554,6 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution)
     Creates a CtiRequestMsg to open the next cap bank to increase the
     var level for a strategy.
 ---------------------------------------------------------------------------*/
-
 CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, string textInfo)
 {
     CtiRequestMsg* reqMsg = NULL;
@@ -1845,7 +1845,7 @@ CtiCCFeeder& CtiCCFeeder::figureEstimatedVarLoadPointValue()
 
     Returns a boolean if it is peak time it also sets the peak time flag.
 ---------------------------------------------------------------------------*/
-/*BOOL CtiCCFeeder::isPeakTime(const CtiTime& currentDateTime)
+BOOL CtiCCFeeder::isPeakTime(const CtiTime& currentDateTime)
 {
     unsigned secondsFromBeginningOfDay = (currentDateTime.hour() * 3600) + (currentDateTime.minute() * 60) + currentDateTime.second();
     if( isPeakDay() && getPeakStartTime() <= secondsFromBeginningOfDay && secondsFromBeginningOfDay <= getPeakStopTime() )
@@ -1856,8 +1856,34 @@ CtiCCFeeder& CtiCCFeeder::figureEstimatedVarLoadPointValue()
     {
         setPeakTimeFlag(FALSE);
     }
-    return _peaktimeflag;
-} */  
+    return _peakTimeFlag;
+}  
+
+/*---------------------------------------------------------------------------
+    isPeakDay
+
+    Returns a boolean if the current day of the week can be a peak day
+---------------------------------------------------------------------------*/
+BOOL CtiCCFeeder::isPeakDay()
+{
+    //-------------------------------------
+    //Need to check if it is a holiday today
+    //also, but we must wait until there is
+    //a dll with a function to do this
+    //-------------------------------------
+    CtiTime now;
+    struct tm start_tm;
+
+    now.extract(&start_tm);
+
+    if( _daysofweek[start_tm.tm_wday] == 'Y' &&
+        ( _daysofweek[7] == 'Y' ||
+          !CtiHolidayManager::getInstance().isHoliday() ) )
+        return TRUE;
+    else
+        return FALSE;
+}
+
 
 /*---------------------------------------------------------------------------
     checkForAndProvideNeededIndividualControl
@@ -1868,7 +1894,8 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
 {
     BOOL returnBoolean = FALSE;
 
-    setPeakTimeFlag(peakTimeFlag);
+    //setPeakTimeFlag(peakTimeFlag);
+    isPeakTime(currentDateTime);
     DOUBLE lagLevel = (peakTimeFlag?getPeakLag():getOffPeakLag());
     DOUBLE leadLevel = (peakTimeFlag?getPeakLead():getOffPeakLead());
     DOUBLE setpoint = (lagLevel + leadLevel)/2;
@@ -2714,8 +2741,9 @@ BOOL CtiCCFeeder::sendNextCapBankVerificationControl(const CtiTime& currentDateT
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " ***WARNING*** Should not get here! vCtrlIdx = 1, sendNextVControl? NO. " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " ***WARNING*** Adjusting VerificationControlIndex! setting vCtrlIdx = 2. " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
+                currentCapBank->setVCtrlIndex(2);
             }
             else if (currentCapBank->getVCtrlIndex() == 2)
             {
@@ -3863,9 +3891,10 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime
             addFlags[4] = (_operationSentWaitFlag?'Y':'N');
             addFlags[5] = (_postOperationMonitorPointScanFlag?'Y':'N');
             addFlags[6] = (_waitForReCloseDelayFlag?'Y':'N');
+            addFlags[7] = (_peakTimeFlag?'Y':'N');
             _additionalFlags = string(char2string(*addFlags) + char2string(*(addFlags+1)) + char2string(*(addFlags+2)) + 
                                          char2string(*(addFlags+3)) + char2string(*(addFlags+4)) + char2string(*(addFlags+5)) +
-                                         char2string(*(addFlags+6))) + string(*(addFlags + 7), 13);
+                                         char2string(*(addFlags+6)) + char2string(*(addFlags+7))) + string(*(addFlags + 8), 12);
 
             updater.clear();
 
@@ -4303,6 +4332,7 @@ void CtiCCFeeder::restore(RWDBReader& rdr)
     setOperationSentWaitFlag(FALSE);
     setPostOperationMonitorPointScanFlag(FALSE);
     setWaitForReCloseDelayFlag(FALSE);
+    setPeakTimeFlag(FALSE);
     setEventSequence(0);
     setCurrentVerificationCapBankId(-1);
     setCurrentVerificationCapBankState(0);
@@ -4390,6 +4420,7 @@ void CtiCCFeeder::setDynamicData(RWDBReader& rdr)
     _operationSentWaitFlag = (_additionalFlags[4]=='y'?TRUE:FALSE);
     _postOperationMonitorPointScanFlag = (_additionalFlags[5]=='y'?TRUE:FALSE);
     _waitForReCloseDelayFlag = (_additionalFlags[6]=='y'?TRUE:FALSE);
+    _peakTimeFlag = (_additionalFlags[7]=='y'?TRUE:FALSE);
     rdr["eventSeq"] >> _eventSeq;
     rdr["currverifycbid"] >> _currentVerificationCapBankId;
     rdr["currverifycborigstate"] >> _currentCapBankToVerifyAssumedOrigState;

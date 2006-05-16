@@ -270,7 +270,7 @@ void CtiCCSubstationVerificationExecutor::DisableSubstationBusVerification()
                         for(LONG k=0;k<ccCapBanks.size();k++)
                         {
                             CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
-                            if (currentCapBank->getControlStatus() != CtiCCCapBank::OpenPending ||
+                            if (currentCapBank->getControlStatus() != CtiCCCapBank::OpenPending &&
                                 currentCapBank->getControlStatus() != CtiCCCapBank::ClosePending) 
                             {
                                 currentCapBank->setVerificationFlag(FALSE);
@@ -309,6 +309,12 @@ void CtiCCSubstationVerificationExecutor::DisableSubstationBusVerification()
 
                 //currentSubstationBus->setEventSequence(currentSubstationBus->getEventSequence() + 1);
                 CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSubstationBus->getPAOId(), 0, capControlManualCommand, currentSubstationBus->getEventSequence(), 0, text, "cap control"));
+
+                if( _CC_DEBUG & CC_DEBUG_STANDARD )
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " - Verification Stop Message received from client.  Current Cap Bank Verification will complete first."<< endl;
+                }
 
             }
             else

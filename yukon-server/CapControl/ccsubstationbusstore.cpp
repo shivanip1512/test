@@ -4823,6 +4823,7 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                 locateOrphans(&_orphanedCapBanks, &_orphanedFeeders, _paobject_capbank_map, _paobject_feeder_map,
                                      _capbank_feeder_map, _feeder_subbus_map);
 
+                _reregisterforpoints = TRUE;
                 _lastindividualdbreloadtime.now();
                 ULONG msgBitMask = CtiCCSubstationBusMsg::AllSubBusesSent;
                 if ( _wassubbusdeletedflag )
@@ -4837,7 +4838,16 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                     for(LONG j=0;j<ccFeeders.size();j++)
                     {
                         CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j];
-                        currentFeeder->setPeakTimeFlag(currentSubstationBus->isPeakTime(currentDateTime));
+                        if (!stringCompareIgnoreCase(currentSubstationBus->getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod)  &&
+                            stringCompareIgnoreCase(currentFeeder->getStrategyName(),"(none)")  &&
+                            (currentFeeder->getPeakStartTime() > 0 && currentFeeder->getPeakStopTime() > 0 ))
+                        {
+                            currentFeeder->isPeakTime(currentDateTime);
+                        }
+                        else
+                        {
+                            currentFeeder->setPeakTimeFlag(currentSubstationBus->isPeakTime(currentDateTime));
+                        }
                     }
                 }
 

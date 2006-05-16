@@ -933,8 +933,13 @@ BOOL CtiCCCapBank::updateVerificationState(void)
         }
     default:
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " ***WARNING*** Shouldn't get HERE ==> " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " ***WARNING*** Adjusting CapBank Verification Control Index = 5 and setting Verification Done Flag ==> " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+            _verificationDoneFlag = TRUE;
+            ctrlIdx = 5;
+            _retryFlag = FALSE;
         }
         break;
     }

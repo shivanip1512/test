@@ -1795,7 +1795,16 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
         for(LONG i=0;i<_ccfeeders.size();i++)
         {
             CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders[i];
-            currentFeeder->setPeakTimeFlag(isPeakTime(currentDateTime));
+            if (!stringCompareIgnoreCase(getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod) &&
+                 stringCompareIgnoreCase(currentFeeder->getStrategyName(),"(none)") &&
+                (currentFeeder->getPeakStartTime() > 0 && currentFeeder->getPeakStopTime() > 0))
+            {
+                currentFeeder->isPeakTime(currentDateTime);
+            }
+            else
+            {
+                currentFeeder->setPeakTimeFlag(isPeakTime(currentDateTime));
+            }
         }
         if( currentDateTime.seconds() >= getLastOperationTime().seconds() + getControlDelayTime() )
         {
@@ -4023,8 +4032,9 @@ BOOL CtiCCSubstationBus::sendNextCapBankVerificationControl(const CtiTime& curre
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " ***WARNING*** Should not get here! vCtrlIdx = 1, sendNextVControl? NO. " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " ***WARNING*** Adjusting VerificationControlIndex! setting vCtrlIdx = 2. " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
+                        currentCapBank->setVCtrlIndex(2);
                     }
                     else if (currentCapBank->getVCtrlIndex() == 2)
                     {
@@ -4163,8 +4173,25 @@ CtiCCSubstationBus& CtiCCSubstationBus::startVerificationOnCapBank(const CtiTime
     for (LONG i = 0; i < _ccfeeders.size(); i++)
     {
         CtiCCFeeder* currentFeeder = (CtiCCFeeder*) _ccfeeders.at(i);
-        currentFeeder->setPeakTimeFlag(getPeakTimeFlag());
-        if( currentFeeder->getPAOId() == _currentVerificationFeederId )
+        if (!stringCompareIgnoreCase(getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod)  &&
+            stringCompareIgnoreCase(currentFeeder->getStrategyName(),"(none)")  &&
+            (currentFeeder->getPeakStartTime() > 0 && currentFeeder->getPeakStopTime() > 0 ))
+        {
+            currentFeeder->isPeakTime(currentDateTime);
+        }
+        else
+        {
+            currentFeeder->setPeakTimeFlag(isPeakTime(currentDateTime));
+        }       
+
+       /* if( !_controlmethod.compareTo(CtiCCSubstationBus::IndividualFeederControlMethod,CtiString::ignoreCase) ||
+            !_controlmethod.compareTo(CtiCCSubstationBus::BusOptimizedFeederControlMethod,CtiString::ignoreCase) )
+        { 
+            currentFeeder->startVerificationOnCapBank(currentDateTime, pointChanges, ccEvents, pilMessages);
+            setBusUpdatedFlag(TRUE);
+
+        }
+        else*/ if( currentFeeder->getPAOId() == _currentVerificationFeederId )
         {
             CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
             for(LONG j=0;j<ccCapBanks.size();j++)
