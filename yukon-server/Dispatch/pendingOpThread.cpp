@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2006/05/02 20:25:30 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2006/05/16 15:25:52 $
 *
 * HISTORY      :
 * $Log: pendingOpThread.cpp,v $
+* Revision 1.29  2006/05/16 15:25:52  cplender
+* Problems were found in the processing of the control stop point at ER.
+*
 * Revision 1.28  2006/05/02 20:25:30  cplender
 * Added cparm DISPATCH_COMPUTE_RESTORATION to turn on the
 * ControlStopCountdown point.  Set to true to enable.
@@ -804,6 +807,7 @@ void CtiPendingOpThread::updateControlHistory( CtiPendingPointOperations &ppc, i
                         ppc.getControl().setActiveRestore( LMAR_LOGTIMER );             // Record this as a start or continue interval.
                         insertControlHistoryRow(ppc, __LINE__);
                         postControlHistoryPoints(ppc);                                  // May ignore this if it has been posted recently.
+                        postControlStopPoint(ppc, true);                               // Let everyone know when control should end.  Force the update.
 
                         // OK, set them out for the next run ok. Undo the lies.
                         ppc.getControl().setActiveRestore( ppc.getControl().getDefaultActiveRestore() );        // Reset to the original completion state.
@@ -1022,7 +1026,9 @@ void CtiPendingOpThread::postControlStopPoint(CtiPendingPointOperations &ppc, bo
             // We want to post to the analog which records seconds until control STOPS.
             ULONG remainingseconds = 0;
 
-            if( ppc.getControl().getControlCompleteTime() > now )
+            if( ppc.getControl().getControlCompleteTime() > now &&
+                ppc.getControl().getActiveRestore().compare(LMAR_MANUAL_RESTORE) &&
+                ppc.getControl().getActiveRestore().compare(LMAR_TIMED_RESTORE) )
             {
                 remainingseconds = ppc.getControl().getControlCompleteTime().seconds() - now.seconds();
             }
