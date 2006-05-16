@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_ccu.cpp-arc  $
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2006/04/11 20:54:22 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2006/05/16 15:26:04 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -271,7 +271,7 @@ INT CtiRouteCCU::assembleVersacomRequest(CtiRequestMsg                  *pReq,
 
     if(Versacom.entries() > 0)
     {
-        resultString = CtiNumStr(Versacom.entries()) + " Versacom commands sent on route " + getName() + "\n" + byteString;
+        resultString = CtiNumStr(Versacom.entries()) + " Versacom commands sent on route " + getName() + " \n" + byteString;
     }
     else
     {
@@ -759,7 +759,7 @@ INT CtiRouteCCU::assembleExpresscomRequest(CtiRequestMsg                  *pReq,
 
     if(xcom.entries() > 0 && !status)
     {
-        resultString = CtiNumStr(xcom.entries()) + " Expresscom commands sent on route " + getName() + "\n" + byteString;
+        resultString = CtiNumStr(xcom.entries()) + " Expresscom commands sent on route " + getName() + " \n" + byteString;
     }
     else
     {

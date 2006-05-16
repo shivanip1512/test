@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_xcu.cpp-arc  $
-* REVISION     :  $Revision: 1.55 $
-* DATE         :  $Date: 2006/04/21 18:51:51 $
+* REVISION     :  $Revision: 1.56 $
+* DATE         :  $Date: 2006/05/16 15:26:04 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -327,7 +327,7 @@ INT CtiRouteXCU::assembleVersacomRequest(CtiRequestMsg               *pReq,
 
     if(Versacom.entries() > 0)
     {
-        resultString = CtiNumStr(Versacom.entries()) + " Versacom commands sent on route " + getName() + "\n" + byteString;
+        resultString = CtiNumStr(Versacom.entries()) + " Versacom commands sent on route " + getName() + " \n" + byteString;
     }
     else
     {
@@ -672,7 +672,7 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
             }
         }
 
-        resultString = CtiNumStr(xcom.entries()) + string(" Expresscom commands (") + CtiNumStr(xcom.messageSize()) + " bytes) sent on route " + getName() + "\n" + byteString;
+        resultString = CtiNumStr(xcom.entries()) + string(" Expresscom commands (") + CtiNumStr(xcom.messageSize()) + " bytes) sent on route " + getName() + " \n" + byteString;
     }
     else
     {
@@ -789,7 +789,7 @@ INT CtiRouteXCU::assembleSA305Request(CtiRequestMsg *pReq,
                     outList.push_back( NewOutMessage );
                     NewOutMessage = 0;
 
-                    resultString = " Command successfully sent on route " + getName() + "\n" + byteString;
+                    resultString = " Command successfully sent on route " + getName() + " \n" + byteString;
 
                     break;
                 }
@@ -820,7 +820,7 @@ INT CtiRouteXCU::assembleSA305Request(CtiRequestMsg *pReq,
 
     if(prot305.messageReady())
     {
-        resultString = " Command successfully sent on route " + getName() + "\n" + byteString;
+        resultString = " Command successfully sent on route " + getName() + " \n" + byteString;
     }
     else
     {
@@ -891,7 +891,7 @@ INT CtiRouteXCU::assembleSA105205Request(CtiRequestMsg *pReq,
                 outList.push_back( NewOutMessage );
 
                 prot.copyMessage(byteString);
-                resultString = " Command successfully sent on route " + getName() + "\n" + byteString;
+                resultString = " Command successfully sent on route " + getName() + " \n" + byteString;
             }
             break;
         }
@@ -977,7 +977,7 @@ INT CtiRouteXCU::assembleSASimpleRequest(CtiRequestMsg *pReq,
 
             outList.push_back( CTIDBG_new OUTMESS( *OutMessage ) );
 
-            resultString = " Command successfully sent on route " + getName() + "\n" + byteString;
+            resultString = " Command successfully sent on route " + getName() + " \n" + byteString;
             break;
         }
     case TYPE_SERIESVLMIRTU:
@@ -988,7 +988,7 @@ INT CtiRouteXCU::assembleSASimpleRequest(CtiRequestMsg *pReq,
             OutMessage->Sequence = CtiProtocolLMI::Sequence_Code;  //  these are the only commands that can be queued to an LMI
             outList.push_back( CTIDBG_new OUTMESS( *OutMessage ) );
 
-            resultString = " Command successfully sent on route " + getName() + "\n" + byteString;
+            resultString = " Command successfully sent on route " + getName() + " \n" + byteString;
 
             break;
         }
@@ -1009,7 +1009,7 @@ INT CtiRouteXCU::assembleSASimpleRequest(CtiRequestMsg *pReq,
                 outList.push_back( CTIDBG_new OUTMESS( *OutMessage ) );
 
                 prot.copyMessage(byteString);
-                resultString = " Command successfully sent on route " + getName() + "\n" + byteString;
+                resultString = " Command successfully sent on route " + getName() + " \n" + byteString;
             }
             break;
         }
