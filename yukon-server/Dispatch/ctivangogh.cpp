@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.141 $
-* DATE         :  $Date: 2006/05/09 20:07:44 $
+* REVISION     :  $Revision: 1.142 $
+* DATE         :  $Date: 2006/05/16 19:55:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -4908,7 +4908,7 @@ bool CtiVanGogh::ablementPoint(CtiPointSPtr &pPoint, bool &devicedifferent, UINT
 
                     {
                         CtiSignalMsg *pTagSig = CTIDBG_new CtiSignalMsg(pPoint->getID(), 0, "Tag Update", addnl);
-                        pSig->setPointValue(pDyn->getDispatch().getValue());
+                        pTagSig->setPointValue(pDyn->getDispatch().getValue());
                         pTagSig->setMessagePriority(15);
                         pTagSig->setUser(user);
                         pTagSig->setTags( pDyn->getDispatch().getTags() | TAG_REPORT_MSG_TO_ALARM_CLIENTS);

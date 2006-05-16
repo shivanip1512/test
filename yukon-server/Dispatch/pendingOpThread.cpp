@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2006/05/16 15:25:52 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2006/05/16 19:55:40 $
 *
 * HISTORY      :
 * $Log: pendingOpThread.cpp,v $
+* Revision 1.30  2006/05/16 19:55:40  cplender
+* Problems were found in the processing of the control stop point at ER.
+*
 * Revision 1.29  2006/05/16 15:25:52  cplender
 * Problems were found in the processing of the control stop point at ER.
 *
@@ -1026,9 +1029,7 @@ void CtiPendingOpThread::postControlStopPoint(CtiPendingPointOperations &ppc, bo
             // We want to post to the analog which records seconds until control STOPS.
             ULONG remainingseconds = 0;
 
-            if( ppc.getControl().getControlCompleteTime() > now &&
-                ppc.getControl().getActiveRestore().compare(LMAR_MANUAL_RESTORE) &&
-                ppc.getControl().getActiveRestore().compare(LMAR_TIMED_RESTORE) )
+            if( ppc.getControl().getControlCompleteTime() > now && ppc.getControl().getActiveRestore().compare(LMAR_MANUAL_RESTORE) )
             {
                 remainingseconds = ppc.getControl().getControlCompleteTime().seconds() - now.seconds();
             }
