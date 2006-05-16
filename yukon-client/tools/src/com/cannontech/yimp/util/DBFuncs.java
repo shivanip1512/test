@@ -76,11 +76,11 @@ public class DBFuncs
 	{
 		MCT400SeriesBase template410 = new MCT400SeriesBase();
 		template410.setDeviceID(new Integer(-12));
-		Integer id = new Integer(1);
+		Integer id = new Integer(0);
         String type = new String();
-
+        
 		SqlStatement stmt = new SqlStatement("SELECT PAOBJECTID,TYPE FROM YUKONPAOBJECT WHERE PAONAME = '" 
-			+ name + "' AND (TYPE = 'MCT-410IL' OR TYPE = 'MCT-410CL')", "yukon");
+			+ name + "' AND TYPE LIKE 'MCT-4%'", "yukon");
         
 		try
 		{
@@ -93,18 +93,8 @@ public class DBFuncs
                 
                 if(type.length() > 0)
                 {
-                    if(type.compareTo(DeviceTypes.STRING_MCT_410CL[0]) == 0)
-                    {
-                        template410 = new MCT410CL();
-                        template410.setDeviceID(id);
-                        template410 = (MCT410CL) Transaction.createTransaction(Transaction.RETRIEVE, template410).execute();
-                    }
-                    else
-                    {
-                        template410 = new MCT410IL();
-                        template410.setDeviceID(id);
-                        template410 = (MCT410IL) Transaction.createTransaction(Transaction.RETRIEVE, template410).execute();
-                    }
+                    template410.setDeviceID(id);
+                    template410 = (MCT400SeriesBase) Transaction.createTransaction(Transaction.RETRIEVE, template410).execute();
                 }
 			}
 		}

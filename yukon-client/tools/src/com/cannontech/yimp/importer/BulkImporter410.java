@@ -28,9 +28,7 @@ import com.cannontech.database.db.device.DeviceMeterGroup;
 import com.cannontech.database.db.device.DeviceRoutes;
 import com.cannontech.database.db.importer.ImportFail;
 import com.cannontech.database.db.importer.ImportData;
-import com.cannontech.database.data.device.MCT400SeriesBase;
-import com.cannontech.database.data.device.MCT410CL;
-import com.cannontech.database.data.device.MCT410IL;
+import com.cannontech.database.data.device.*;
 import com.cannontech.message.dispatch.message.Registration;
 import com.cannontech.roles.yukon.SystemRole;
 import java.sql.Connection;
@@ -41,6 +39,7 @@ import com.cannontech.message.porter.message.Request;
 import com.cannontech.database.db.NestedDBPersistent;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.device.range.DeviceAddressRange;
 import com.cannontech.yukon.IServerConnection;
 import com.cannontech.yukon.conns.ConnPool;
 
@@ -230,7 +229,7 @@ public void start()
 	}
 }
 
-/*
+    /*
 	 * This performs the actual import, taking in a vector
 	 * filled with ImportData objects and converting them to 410s 
 	 * which it writes to the database.
@@ -243,9 +242,7 @@ public void runImport(Vector imps)
 	
 	ImportData currentEntry = null;
 	ImportFail currentFailure = null;
-	MCT410CL currentCL = null;
-	MCT410IL currentIL = null;
-    MCT400SeriesBase template410 = null;
+    MCT400SeriesBase template400SeriesBase = null;
 	Vector failures = new Vector();
 	Vector successVector = new Vector();
 	boolean badEntry = false;
@@ -283,26 +280,16 @@ public void runImport(Vector imps)
         }
         else
         {
-            template410 = DBFuncs.get410FromTemplateName(templateName);
-            if(template410.getDevice().getDeviceID().intValue() == -12)
+            template400SeriesBase = DBFuncs.get410FromTemplateName(templateName);
+            if(template400SeriesBase.getDevice().getDeviceID().intValue() == -12)
             {
-                CTILogger.info("Import entry with name " + name + " specifies a template MCT410 not in the Yukon database.");
-                logger = ImportFuncs.writeToImportLog(logger, 'F', "Import entry with name " + name + " specifies a template MCT410 not in the Yukon database.", "", "");
+                CTILogger.info("Import entry with name " + name + " specifies a template MCT not in the Yukon database.");
+                logger = ImportFuncs.writeToImportLog(logger, 'F', "Import entry with name " + name + " specifies a template MCT not in the Yukon database.", "", "");
                 badEntry = true;
-                errorMsg.append("has an unknown MCT410 template; ");
+                errorMsg.append("has an unknown MCT template; ");
             }
         }
         
-        if(template410 instanceof MCT410CL)
-        {
-            currentIL = null;
-            currentCL = new MCT410CL();
-        }
-        else
-        {
-            currentCL = null;
-            currentIL = new MCT410IL();
-        }
 		if(name.length() < 1 || name.length() > 60)
 		{
 			CTILogger.info("Import entry with address " + address + " has a name with an improper length.");
@@ -322,32 +309,59 @@ public void runImport(Vector imps)
 			updateDeviceID = DBFuncs.getDeviceIDByAddress(address);
 			if( updateDeviceID != null)
 		   	{
-				CTILogger.info("Address " + address + " is already used by an MCT-410 in the Yukon database.  Attempting to modify device.");
-			   	logger = ImportFuncs.writeToImportLog(logger, 'F', "Address " + address + " is already used by an MCT-410 in the Yukon database.  Attempting to modify device.", "", "");
+				CTILogger.info("Address " + address + " is already used by a 400 series MCT in the Yukon database.  Attempting to modify device.");
+			   	logger = ImportFuncs.writeToImportLog(logger, 'F', "Address " + address + " is already used by a 400 series MCT in the Yukon database.  Attempting to modify device.", "", "");
 		   	}
 			boolean isDuplicate = DBFuncs.IsDuplicateName(name);
 			if(isDuplicate)
 			{
-				CTILogger.info("Name " + name + " is already used by an MCT-410 in the Yukon database.");
-				logger = ImportFuncs.writeToImportLog(logger, 'F', "Name " + name + " is already used by an MCT-410 in the Yukon database.", "", "");
+				CTILogger.info("Name " + name + " is already used by a 400 series MCT in the Yukon database.");
+				logger = ImportFuncs.writeToImportLog(logger, 'F', "Name " + name + " is already used by a 400 series MCT in the Yukon database.", "", "");
 				badEntry = true;
-				errorMsg.append("is using an existing MCT-410 name; ");
+				errorMsg.append("is using an existing MCT name; ");
 			}
-		}		
-		if(template410 instanceof MCT410IL && (new Integer(address).intValue() < 1000000 || new Integer(address).intValue() > 2796201))
+		}
+        
+        /*Address range check for 400 series*/
+		if(template400SeriesBase instanceof MCT410IL && !DeviceAddressRange.isValidRange(DeviceTypes.MCT410IL, Long.parseLong(address)))
 		{
-			CTILogger.info("Import entry with name " + name + " has an incorrect MCT410 address.");
-			logger = ImportFuncs.writeToImportLog(logger, 'F', "Import entry with name " + name + " has an incorrect MCT410 address.", "", "");
+			CTILogger.info("Import entry with name " + name + " has an incorrect MCT410IL address.");
+			logger = ImportFuncs.writeToImportLog(logger, 'F', "Import entry with name " + name + " has an incorrect MCT410IL address.", "", "");
 			badEntry = true;
 			errorMsg.append("address out of MCT410IL range; ");	
 		}
-        else if(template410 instanceof MCT410CL && (new Integer(address).intValue() < 0 || new Integer(address).intValue() > 2796201))
+        else if(template400SeriesBase instanceof MCT410CL && !DeviceAddressRange.isValidRange(DeviceTypes.MCT410CL, Long.parseLong(address)))
         {
-            CTILogger.info("Import entry with name " + name + " has an incorrect MCT410 address.");
-            logger = ImportFuncs.writeToImportLog(logger, 'F', "Import entry with name " + name + " has an incorrect MCT410 address.", "", "");
+            CTILogger.info("Import entry with name " + name + " has an incorrect MCT410CL address.");
+            logger = ImportFuncs.writeToImportLog(logger, 'F', "Import entry with name " + name + " has an incorrect MCT410CL address.", "", "");
             badEntry = true;
             errorMsg.append("address out of MCT410CL range; "); 
         }
+        else if(template400SeriesBase instanceof MCT430S && !DeviceAddressRange.isValidRange(DeviceTypes.MCT430S, Long.parseLong(address)))
+        {
+            CTILogger.info("Import entry with name " + name + " has an incorrect MCT430S address.");
+            logger = ImportFuncs.writeToImportLog(logger, 'F', "Import entry with name " + name + " has an incorrect MCT430S address.", "", "");
+            badEntry = true;
+            errorMsg.append("address out of MCT430S range; "); 
+        }
+        else if(template400SeriesBase instanceof MCT430A && !DeviceAddressRange.isValidRange(DeviceTypes.MCT430A, Long.parseLong(address)))
+        {
+            CTILogger.info("Import entry with name " + name + " has an incorrect MCT430A address.");
+            logger = ImportFuncs.writeToImportLog(logger, 'F', "Import entry with name " + name + " has an incorrect MCT430A address.", "", "");
+            badEntry = true;
+            errorMsg.append("address out of MCT430A range; "); 
+        }
+        else if(template400SeriesBase instanceof MCT470 && !DeviceAddressRange.isValidRange(DeviceTypes.MCT470, Long.parseLong(address)))
+        {
+            CTILogger.info("Import entry with name " + name + " has an incorrect MCT470 address.");
+            logger = ImportFuncs.writeToImportLog(logger, 'F', "Import entry with name " + name + " has an incorrect MCT470 address.", "", "");
+            badEntry = true;
+            errorMsg.append("address out of MCT470 range; "); 
+        }
+        /*New 400 series MCTs will each need a clause added above if address range
+         * validation is desired
+         */
+        
 		if(meterNumber.length() < 1)
 		{
 			CTILogger.info("Import entry with name " + name + " has no meter number.");
@@ -429,7 +443,7 @@ public void runImport(Vector imps)
 					dmg = (DeviceMeterGroup)t.execute();
 				}
         
-				//update teh deviceRotues table if hte routeID has changed.
+				//update the deviceRoutes table if the routeID has changed.
 				DeviceRoutes dr = new DeviceRoutes();
 				dr.setDeviceID(updateDeviceID);
 				t = Transaction.createTransaction(Transaction.RETRIEVE, dr);
@@ -453,28 +467,18 @@ public void runImport(Vector imps)
 			Integer deviceID = DBFuncs.getNextMCTID();
 			GregorianCalendar now = new GregorianCalendar();
 			lastImportTime = now;
-			Integer templateID = template410.getPAObjectID();
-			MCT400SeriesBase current410;
-			if(currentIL != null)
-			{
-				currentIL = (MCT410IL)template410;
-				current410 = currentIL;
-			}
-			else if(currentCL != null)
-			{
-				currentCL = (MCT410CL)template410;
-				current410 = currentCL;
-			}
-			current410 = template410;
-			current410.setPAOName(name);
-			current410.setDeviceID(deviceID);
-			current410.setAddress(new Integer(address));
-			current410.getDeviceMeterGroup().setMeterNumber(meterNumber);
-			current410.getDeviceMeterGroup().setCollectionGroup(collectionGrp);
-			current410.getDeviceMeterGroup().setTestCollectionGroup(altGrp);
-			current410.getDeviceRoutes().setRouteID(routeID);
+			Integer templateID = template400SeriesBase.getPAObjectID();
+			
+            MCT400SeriesBase current400Series = template400SeriesBase;
+			current400Series.setPAOName(name);
+			current400Series.setDeviceID(deviceID);
+			current400Series.setAddress(new Integer(address));
+			current400Series.getDeviceMeterGroup().setMeterNumber(meterNumber);
+			current400Series.getDeviceMeterGroup().setCollectionGroup(collectionGrp);
+			current400Series.getDeviceMeterGroup().setTestCollectionGroup(altGrp);
+			current400Series.getDeviceRoutes().setRouteID(routeID);
 			com.cannontech.database.data.multi.MultiDBPersistent objectsToAdd = new com.cannontech.database.data.multi.MultiDBPersistent();
-			objectsToAdd.getDBPersistentVector().add(current410);
+			objectsToAdd.getDBPersistentVector().add(current400Series);
 			
 			//grab the points we need off the template
 			Vector points = DBFuncs.getPointsForPAO(templateID);
@@ -495,15 +499,15 @@ public void runImport(Vector imps)
                 }
 				else
 				{
-                    Transaction.createTransaction(Transaction.INSERT, current410).execute();
+                    Transaction.createTransaction(Transaction.INSERT, current400Series).execute();
                 }
 				
 				successVector.addElement(imps.elementAt(j));
-				logger = ImportFuncs.writeToImportLog(logger, 'S', "MCT-410 " + name + " with address " + address + ".", "", "");
+				logger = ImportFuncs.writeToImportLog(logger, 'S', current400Series.getPAOClass() + "with name " + name + " with address " + address + ".", "", "");
 				synchronized(paoIDsForPorter)
 				{				
                     CTILogger.info("Writing to porter array.");
-                    paoIDsForPorter.addElement(current410.getPAObjectID());
+                    paoIDsForPorter.addElement(current400Series.getPAObjectID());
 				}
 				successCounter++;
 			}
@@ -513,7 +517,7 @@ public void runImport(Vector imps)
 				StringBuffer tempErrorMsg = new StringBuffer(e.toString());
 				currentFailure = new ImportFail(address, name, routeName, meterNumber, collectionGrp, altGrp, templateName, tempErrorMsg.toString(), now.getTime());
 				failures.addElement(currentFailure);
-				logger = ImportFuncs.writeToImportLog(logger, 'F', "MCT410 with name " + name + "failed on INSERT into database.", e.toString(), e.toString());
+				logger = ImportFuncs.writeToImportLog(logger, 'F', current400Series.getPAOClass() + "with name " + name + "failed on INSERT into database.", e.toString(), e.toString());
 			}
 			finally
 			{
@@ -597,6 +601,9 @@ public void runImport(Vector imps)
 	//send off a big DBChangeMsg so all Yukon entities know what's goin' on...
 	DBFuncs.generateBulkDBChangeMsg(DBChangeMsg.CHANGE_PAO_DB, "DEVICE", DeviceTypes.STRING_MCT_410IL[1], getDispatchConnection());
     DBFuncs.generateBulkDBChangeMsg(DBChangeMsg.CHANGE_PAO_DB, "DEVICE", DeviceTypes.STRING_MCT_410CL[1], getDispatchConnection());
+    DBFuncs.generateBulkDBChangeMsg(DBChangeMsg.CHANGE_PAO_DB, "DEVICE", DeviceTypes.STRING_MCT_430S[1], getDispatchConnection());
+    DBFuncs.generateBulkDBChangeMsg(DBChangeMsg.CHANGE_PAO_DB, "DEVICE", DeviceTypes.STRING_MCT_430A[1], getDispatchConnection());
+    DBFuncs.generateBulkDBChangeMsg(DBChangeMsg.CHANGE_PAO_DB, "DEVICE", DeviceTypes.STRING_MCT_470[1], getDispatchConnection());
 	DBFuncs.generateBulkDBChangeMsg(DBChangeMsg.CHANGE_POINT_DB, DBChangeMsg.CAT_POINT, PointTypes.getType(PointTypes.SYSTEM_POINT), getDispatchConnection());
 	
 	DBFuncs.writeTotalSuccess(successCounter);
