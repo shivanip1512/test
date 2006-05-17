@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_xcu.cpp-arc  $
-* REVISION     :  $Revision: 1.56 $
-* DATE         :  $Date: 2006/05/16 15:26:04 $
+* REVISION     :  $Revision: 1.57 $
+* DATE         :  $Date: 2006/05/17 22:02:38 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -590,9 +590,9 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
 
     CtiProtocolExpresscom  xcom;
     xcom.parseAddressing(parse);                    // The parse holds all the addressing for the group.
-    xcom.parseRequest(parse, *OutMessage);          // OutMessage->Buffer.TAPSt has been filled with xcom.entries() messages.
+    status = xcom.parseRequest(parse, *OutMessage);          // OutMessage->Buffer.TAPSt has been filled with xcom.entries() messages.
 
-    if(xcom.entries() > 0)
+    if(!status  && xcom.entries() > 0)
     {
         OutMessage->EventCode |= ENCODED;               // Make the OM be ignored by porter...
 
@@ -676,22 +676,22 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
     }
     else
     {
+        status = BADPARAM;
         xmore = false;
-        resultString = "Route " + getName() + " did not transmit Expresscom commands";
+        resultString = "Route " + getName() + " did not transmit Expresscom commands. Error " + CtiNumStr(status) + " - " + FormatError(status);
 
         string desc, actn;
 
         desc = "Route: " + getName();
-        actn = "FAILURE: Command \"" + parse.getCommandStr() + "\" failed on route";
+        actn = "FAILURE: Command \"" + parse.getCommandStr() + "\" failed on route. Error " + CtiNumStr(status) + " - " + FormatError(status);
 
         vgList.push_back(CTIDBG_new CtiSignalMsg(0, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
     }
 
-
-    retReturn->setResultString( resultString );
-
     if(retReturn)
     {
+        retReturn->setResultString( resultString );
+        retReturn->setStatus( status );
         if(parse.isTwoWay()) retReturn->setExpectMore(xmore);
         retList.push_back(retReturn);
     }
