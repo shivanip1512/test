@@ -7,15 +7,15 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.32 $
-* DATE         :  $Date: 2005/12/20 17:19:54 $
+* REVISION     :  $Revision: 1.33 $
+* DATE         :  $Date: 2006/05/17 22:02:30 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 #include "expresscom.h"
-#include "logger.h"    
+#include "logger.h"
 #include <boost/tokenizer.hpp>
 #include "numstr.h"
 #include "cparms.h"
@@ -28,7 +28,7 @@
 
 
 
-using namespace std;                          
+using namespace std;
 
 
 CtiProtocolExpresscom::CtiProtocolExpresscom() :
@@ -872,7 +872,7 @@ INT CtiProtocolExpresscom::parseRequest(CtiCommandParser &parse, CtiOutMessage &
         }
     case PutConfigRequest:
         {
-            assemblePutConfig( parse, OutMessage );
+            status = assemblePutConfig( parse, OutMessage );
             break;
         }
     case PutStatusRequest:
@@ -1090,10 +1090,47 @@ INT CtiProtocolExpresscom::assemblePutConfig(CtiCommandParser &parse, CtiOutMess
         }
     }
 
-    if(serial != 0 && parse.isKeyValid("xcaddress"))
+    if(parse.isKeyValid("xcaddress"))
     {
-        configureGeoAddressing(parse);
-        configureLoadAddressing(parse);
+        /*  Truths:
+            1. Any load checkbox on the "from group" will be ignored in favor of the standard load specification in in the parse.
+            2. If the "from group" specifies program and/or splinter, only program and/or splinter may be sent.
+            3. If the "from group" does not specify program or splinter ANY addressing is allowed.
+            4. Any serial number can be sent any message.
+        */
+        if(!_addressLevel || (_addressLevel & ~atSpid))  // Allow only serial, or levels BEYOND SPID only.
+        {
+            // Now we need to make certain that we have a match between "from" and "to" if group addressing is used.
+            bool go = false;
+            bool from_loads = _addressLevel & (atProgram|atSplinter);       // Does the "from group" specify load addresses
+            bool to_lcr = (parse.isKeyValid("xca_spid") ||
+                           parse.isKeyValid("xca_geo") ||
+                           parse.isKeyValid("xca_sub") ||
+                           parse.isKeyValid("xca_feeder") ||
+                           parse.isKeyValid("xca_zip") ||
+                           parse.isKeyValid("xca_uda"));           // true iff the to addresses include LCR level addresses.
+
+            bool to_loads = (parse.isKeyValid("xca_program") || parse.isKeyValid("xca_splinter") );  // true iff the to addresses include load level addresses.
+
+            if(!_addressLevel || !from_loads)    // Serially addressed, or the from address is not load based.
+                go = true;
+            else if(from_loads && !to_lcr && to_loads)
+                go = true;
+            else
+            {
+                status = BADPARAM;
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " Incompatible addressing modes.  Assigning load level addressing to a group without load level addressing is not allowed." << endl;
+                }
+            }
+
+            if(go)
+            {
+                configureGeoAddressing(parse);
+                configureLoadAddressing(parse);
+            }
+        }
     }
 
     if(parse.isKeyValid("xcsync"))
@@ -1501,7 +1538,7 @@ int CtiProtocolExpresscom::messageSize(int messageNum)
 {
     try
     {
-    
+
         if(messageNum == 1)
         {
             return _lengths.at(0);
