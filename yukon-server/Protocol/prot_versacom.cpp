@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2006/03/02 23:03:19 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2006/05/17 22:02:20 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -124,7 +124,7 @@ INT CtiProtocolVersacom::assembleCommandToMessage()
 
             /* see if we have anything to send */
             if(!(i) && !(Mask))
-                return(NORMAL);
+                return(BADPARAM);               // There is no valids relay specified on this command.
             else
                 setNibble ( 2, (USHORT)i);
 
@@ -1837,7 +1837,8 @@ INT CtiProtocolVersacom::assembleControl(CtiCommandParser  &parse, const VSTRUCT
         {
             // Assume the VSTRUCT RelayMask is set, otherwise use default relay 0
             primeAndAppend(aVst);  // Get a new one in the system
-            VersacomShedCommand(shed_time);
+            if(VersacomShedCommand(shed_time))
+                removeLastVStruct();
         }
         else
         {
@@ -1883,7 +1884,8 @@ INT CtiProtocolVersacom::assembleControl(CtiCommandParser  &parse, const VSTRUCT
             parse.Map()["control_interval"]  = CtiParseValue( 60 * 30 * 8 );    // Assume a bit here!
 
             primeAndAppend(aVst);  // Get a new one in the system
-            VersacomCycleCommand(parse.getiValue("cycle"));
+            if(VersacomCycleCommand(parse.getiValue("cycle")))
+                removeLastVStruct();
         }
         else
         {
@@ -2078,7 +2080,7 @@ bool CtiProtocolVersacom::isConfigFullAddressValid(LONG sn) const
                 boost::regex e1("[0-9]*-[0-9]*,?");
                 boost::match_results<std::string::const_iterator> what;
                 boost::regex_search(vcrangestr, what, e1, boost::match_default);
-                
+
                 string rstr = what[0];
 
                 if(!rstr.empty())
@@ -2110,7 +2112,7 @@ bool CtiProtocolVersacom::isConfigFullAddressValid(LONG sn) const
                         break;
                     }
                 }
-				e1.assign("[0-9]*-[0-9]*,?");
+                e1.assign("[0-9]*-[0-9]*,?");
                 vcrangestr = boost::regex_replace(vcrangestr, e1, " ", boost::match_default | boost::format_all | boost::format_first_only);
                 if(loopcnt++ > 256)
                 {
