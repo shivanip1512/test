@@ -254,7 +254,7 @@ public class CustomerAccount extends DBPersistent {
                              sql += " OR map.EnergyCompanyID = " + energyCompanyIDList.get(i).toString();
                         sql += " ) ";
                     }
-                    sql += " order by map.energycompanyid, contlastname, contfirstname";
+                    sql += " order by contlastname, contfirstname";
                     
 
         PreparedStatement pstmt = null;
