@@ -177,7 +177,7 @@ SendMessage ( HWND_BROADCAST , WM_SETTINGCHANGE , 0 , pEnv );
 //install Tomcat as a service (behold this lumbering behemoth of a command line)
 szServPath = TomcatPath ^ "\\bin\\";
 szCmdLine = '-install "Yukon Web Applications Service" "' + JavaPath + '\\jre\\bin\\server\\jvm.dll" -Djava.class.path="'+ TomcatPath + '\\bin\\bootstrap.jar;' + JavaPath + '\\lib\\tools.jar" -Dcatalina.home="'+ TomcatPath + '" '; 
-szCmdLine2 = '-Dyukon.base=%YUKON_BASE% -Dyukon.logdir="%YUKON_BASE%\\server\\log" -Djava.endorsed.dirs="'+ TomcatPath + '\\common\\endorsed" -Xms128M -Xmx256M -start org.apache.catalina.startup.BootstrapService ';                                                          
+szCmdLine2 = '-Dyukon.base=%YUKON_BASE% -Dyukon.logdir="%YUKON_BASE%\\server\\log" -Djava.endorsed.dirs="'+ TomcatPath + '\\common\\endorsed" -Xms128M -Xmx384M -start org.apache.catalina.startup.BootstrapService ';                                                          
 szCmdLine3 = '-params start -stop org.apache.catalina.startup.BootstrapService -params stop -out "'+ TomcatPath + '\\logs\\yukon_out.log" -err "'+ TomcatPath + '\\logs\\yukon_err.log"';
 /*nvResult = AskYesNo ( "Would you like to install Tomcat as a service?" , NO );
 if(nvResult = 1) then */
