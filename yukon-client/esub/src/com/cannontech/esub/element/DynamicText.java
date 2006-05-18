@@ -38,7 +38,7 @@ public class DynamicText extends LxAbstractText implements DrawingElement, Seria
 	private String linkTo = null;
 	private Properties props = new Properties();
 	private int version = CURRENT_VERSION;
-    private boolean controlEnabled = false;
+    private boolean controlEnabled = true;
 	
 /**
  * DynamicText constructor comment.

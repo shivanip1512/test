@@ -46,7 +46,7 @@ public class StateImage extends LxAbstractImage implements DrawingElement, Yukon
 	private String linkTo = null;
 	private Properties props = new Properties();
 	private int version = CURRENT_VERSION;
-    private boolean controlEnabled = false;
+    private boolean controlEnabled = true;
 	
 /**
  * StateImage constructor comment.
