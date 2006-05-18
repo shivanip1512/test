@@ -43,7 +43,6 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.device.DeviceLoadProfile;
@@ -62,8 +61,6 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 			resp.sendRedirect(req.getContextPath() + "/login.jsp");
 			return;
 		}
-		//I'm sure I need this for something but not sure what yet.  SN 12/18/03
-		LiteYukonUser user = (LiteYukonUser) session.getAttribute(ServletUtil.ATT_YUKON_USER);
 
 		/**Create a YC bean for the session if one does not already exist.*/
 		YCBean localBean = (YCBean)session.getAttribute(ServletUtil.ATT_YC_BEAN);
@@ -240,8 +237,6 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 				String schedID = req.getParameter("scheduleID");
 				if( schedID != null)
 					command = localBean.buildTOUScheduleCommand(Integer.valueOf(schedID).intValue());
-			    
-				System.out.println(command);
 			}
 			//Set our yc bean command string by using a function lookup if null
 			if( command == null )
@@ -283,15 +278,15 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 					localBean.setTimeOut(new Integer(timeOut).intValue());
 					localBean.setCommandString(command);
 					localBean.setErrorMsg("");	//clear out any old error messages
+                    
 					localBean.executeCommand();
 		
 					/** Don't return to the jsp until we have the message or we've timed out.*/
-					while( (localBean.getRequestMessageIDs().size() > 0 && localBean.isWatchRunning()))// || 
-							//localBean.getExecuteCmdsVector().size() > 0)
+					while( (localBean.getRequestMessageIDs_Executing().size() > 0 && localBean.isWatchRunning()))
 					{
 						try
 						{
-							Thread.sleep(1000);
+							Thread.sleep(5000);
 						}
 						catch (InterruptedException e)
 						{
@@ -299,8 +294,7 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 							e.printStackTrace();
 						}
 					}
-					System.out.println("MessageSize " + localBean.getRequestMessageIDs().size() + " |Watching " + localBean.isWatchRunning() + 
-							" |VectorSize " + localBean.getExecuteCmdsVector().size());
+					CTILogger.debug("ExecutingMessageIDs:" + localBean.getRequestMessageIDs_Executing().size() + " | Watching:" + localBean.isWatchRunning());
 				}
 			}
 			
