@@ -1,230 +1,216 @@
 package com.cannontech.billing.record;
 
-/**
- * Insert the type's description here.
- * Creation date: (3/4/2002 1:29:27 PM)
- * @author: 
- */
-public class CTICSVRecord implements BillingRecordBase
-{
-	private String name;		//20
-	private Double reading;			//12
-	private String measureLabel;	//6
-	private String status;			//1
+import java.sql.Timestamp;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
-	private String date;
-	private String time;
+/**
+ * Billing record for CTICSV format
+ */
+public class CTICSVRecord implements BillingRecordBase {
+    private String name; // 20
+    private Double reading; // 12
+    private String measureLabel; // 6
+    private String status; // 1
 
-	private static java.text.SimpleDateFormat DATE_FORMAT = new java.text.SimpleDateFormat("MM-dd-yy");
-	private static java.text.SimpleDateFormat TIME_FORMAT = new java.text.SimpleDateFormat("HH:mm");
-	private static java.text.DecimalFormat DECIMAL_FORMAT_10V2 = new java.text.DecimalFormat("##########.00");
-/**
- * CTICSV constructor comment.
- */
-public CTICSVRecord()
-{
-	super();
-}
-/**
- * CTICSV constructor comment.
- */
-public CTICSVRecord(String nameString, double readingValue, String label, java.sql.Timestamp timeStamp)
-{
-	super();
-	setName( nameString );
-	setReading( readingValue );
-	setMeasureLabel( label);
-	setDate( timeStamp );
-	setTime( timeStamp );
-	//status defaults to N
-}
-/**
- * CTICSV constructor comment.
- */
-public CTICSVRecord(String nameString, double readingValue, String label, java.sql.Timestamp timeStamp, String readingStatus)
-{
-	super();
-	setName( nameString );
-	setReading( readingValue );
-	setMeasureLabel( measureLabel );
-	setDate( timeStamp );
-	setTime( timeStamp );
-	setStatus( readingStatus );
-}
-/**
- * CTICSV constructor comment.
- */
-public CTICSVRecord(String nameString, double readingValue, java.sql.Timestamp timeStamp)
-{
-	super();
-	setName( nameString );
-	setReading( readingValue );
-	setDate( timeStamp );
-	setTime( timeStamp );
-	
-	//measureLabel defaults to KWH
-	//status defaults to N
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/4/2002 1:40:35 PM)
- * @return java.lang.String
-//nnnnnnnnnnnnnnnnnnnn,rrrrrrrrrr.rr,llllll,mm-dd-yy,hh:mm,s
-//n - 20 name filed
-//r - 10.2 reading
-//l - 6 measure label
-//s - 1 status
- */
-public String dataToString()
-{
-	StringBuffer writeToFile = new StringBuffer();
+    private String date;
+    private String time;
 
-	writeToFile.append(getName());
-	for ( int i = name.length(); i < 20; i++)
-	{
-		writeToFile.append(" ");
-	}
-	writeToFile.append(",");
+    private static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("MM-dd-yy");
+    private static SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
+    private static DecimalFormat DECIMAL_FORMAT_10V2 = new DecimalFormat("##########.00");
 
-	for ( int i = 0; i < (13 -  DECIMAL_FORMAT_10V2.format(getReading()).length());i++)
-	{
-		//technically this field is 13 places (if you include the decimal)
-		writeToFile.append(" ");
-	}
-	writeToFile.append(DECIMAL_FORMAT_10V2.format(getReading()) + ",");
-	writeToFile.append(getMeasureLabel());
-	for (int i = getMeasureLabel().length(); i < 6; i++)
-	{
-		writeToFile.append(" ");
-	}
-	writeToFile.append(",");
+    /**
+     * CTICSV constructor comment.
+     */
+    public CTICSVRecord() {
+        super();
+    }
 
-	writeToFile.append(getDate() + ",");
-	writeToFile.append(getTime() + ",");
-	writeToFile.append(getStatus() + "\r\n");
-			
-	return writeToFile.toString();
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/4/2002 1:34:53 PM)
- * @return java.lang.String
- */
-public String getDate()
-{
-	return date;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/4/2002 1:36:10 PM)
- * @return java.lang.String
- */
-public String getMeasureLabel()
-{
-	if( measureLabel == null)
-		return "kWh";
-	return measureLabel;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/4/2002 1:35:23 PM)
- * @return java.lang.String
- */
-public String getName()
-{
-	return name;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/4/2002 1:35:47 PM)
- * @return double
- */
-public Double getReading()
-{
-	return reading;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/4/2002 1:36:52 PM)
- * @return java.lang.String
- */
-public String getStatus()
-{
-	if (status == null)
-		return "N";
-		
-	return status;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/4/2002 1:34:53 PM)
- * @return java.lang.String
- */
-public String getTime()
-{
-	return time;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/4/2002 4:02:16 PM)
- * @param newDate java.lang.String
- */
-public void setDate(java.sql.Timestamp timeStamp)
-{
-	java.util.Date d = new java.util.Date(timeStamp.getTime());
-	date = DATE_FORMAT.format(d);
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/4/2002 4:01:04 PM)
- * @param newLabel java.lang.String
- */
-public void setMeasureLabel(String newLabel)
-{
-	if( newLabel.length() > 6)
-		measureLabel = newLabel.substring(0, 5);
-	else
-		measureLabel = newLabel;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/4/2002 4:00:45 PM)
- * @param newName java.lang.String
- */
-public void setName(String newName) 
-{
-	if( newName.length() > 20)
-		name = newName.substring(0, 19);
-	else 
-		name = newName;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/4/2002 4:01:21 PM)
- * @param newReading java.lang.Double
- */
-public void setReading(double newReading)
-{
-	reading = new Double(newReading);
-	
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/4/2002 4:01:36 PM)
- * @param newStatus java.lang.String
- */
-public void setStatus(String newStatus)
-{
-	status = newStatus;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/4/2002 4:01:56 PM)
- * @param newTime java.lang.String
- */
-public void setTime(java.sql.Timestamp timestamp)
-{
-	java.util.Date d = new java.util.Date(timestamp.getTime());
-	time = TIME_FORMAT.format(d);
-}
+    /**
+     * CTICSV constructor comment.
+     */
+    public CTICSVRecord(String nameString, double readingValue, String label, Timestamp timeStamp) {
+        super();
+        setName(nameString);
+        setReading(readingValue);
+        setMeasureLabel(label);
+        setDate(timeStamp);
+        setTime(timeStamp);
+        // status defaults to N
+    }
+
+    /**
+     * CTICSV constructor comment.
+     */
+    public CTICSVRecord(String nameString, double readingValue, String label, Timestamp timeStamp,
+            String readingStatus) {
+        super();
+        setName(nameString);
+        setReading(readingValue);
+        setMeasureLabel(measureLabel);
+        setDate(timeStamp);
+        setTime(timeStamp);
+        setStatus(readingStatus);
+    }
+
+    /**
+     * CTICSV constructor comment.
+     */
+    public CTICSVRecord(String nameString, double readingValue, Timestamp timeStamp) {
+        super();
+        setName(nameString);
+        setReading(readingValue);
+        setDate(timeStamp);
+        setTime(timeStamp);
+
+        // measureLabel defaults to KWH
+        // status defaults to N
+    }
+
+    /**
+     * Method to turn the record into a string to be used in the billing output
+     * file
+     * @return String representation of the record
+     *         //nnnnnnnnnnnnnnnnnnnn,rrrrrrrrrr.rr,llllll,mm-dd-yy,hh:mm,s //n -
+     *         20 name filed //r - 10.2 reading //l - 6 measure label //s - 1
+     *         status
+     */
+    public String dataToString() {
+        StringBuffer writeToFile = new StringBuffer();
+
+        writeToFile.append(getName());
+        for (int i = name.length(); i < 20; i++) {
+            writeToFile.append(" ");
+        }
+        writeToFile.append(",");
+
+        for (int i = 0; i < (13 - DECIMAL_FORMAT_10V2.format(getReading()).length()); i++) {
+            // technically this field is 13 places (if you include the decimal)
+            writeToFile.append(" ");
+        }
+        writeToFile.append(DECIMAL_FORMAT_10V2.format(getReading()) + ",");
+        writeToFile.append(getMeasureLabel());
+        for (int i = getMeasureLabel().length(); i < 6; i++) {
+            writeToFile.append(" ");
+        }
+        writeToFile.append(",");
+
+        writeToFile.append(getDate() + ",");
+        writeToFile.append(getTime() + ",");
+        writeToFile.append(getStatus() + "\r\n");
+
+        return writeToFile.toString();
+    }
+
+    /**
+     * Getter for date member
+     * @return String date (mm-dd-yy)
+     */
+    public String getDate() {
+        return date;
+    }
+
+    /**
+     * Getter for label member
+     * @return String label
+     */
+    public String getMeasureLabel() {
+        if (measureLabel == null)
+            return "kWh";
+        return measureLabel;
+    }
+
+    /**
+     * Getter for name member
+     * @return String name
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Getter for reading member
+     * @return double reading
+     */
+    public Double getReading() {
+        return reading;
+    }
+
+    /**
+     * Getter for status member
+     * @return String status
+     */
+    public String getStatus() {
+        if (status == null)
+            return "N";
+
+        return status;
+    }
+
+    /**
+     * Getter for time
+     * @return String time (HH:mm)
+     */
+    public String getTime() {
+        return time;
+    }
+
+    /**
+     * Setter for date
+     * @param timeStamp
+     */
+    public void setDate(Timestamp timeStamp) {
+        Date d = new Date(timeStamp.getTime());
+        date = DATE_FORMAT.format(d);
+    }
+
+    /**
+     * Setter for label
+     * @param newLabel String
+     */
+    public void setMeasureLabel(String newLabel) {
+        if (newLabel.length() > 6)
+            measureLabel = newLabel.substring(0, 5);
+        else
+            measureLabel = newLabel;
+    }
+
+    /**
+     * Setter for naem
+     * @param newName String
+     */
+    public void setName(String newName) {
+        if (newName.length() > 20)
+            name = newName.substring(0, 19);
+        else
+            name = newName;
+    }
+
+    /**
+     * Setter for reading
+     * @param newReading
+     */
+    public void setReading(double newReading) {
+        reading = new Double(newReading);
+
+    }
+
+    /**
+     * Setter for status
+     * @param newStatus
+     */
+    public void setStatus(String newStatus) {
+        status = newStatus;
+    }
+
+    /**
+     * Setter for time
+     * @param newTime
+     */
+    public void setTime(java.sql.Timestamp timestamp) {
+        Date d = new Date(timestamp.getTime());
+        time = TIME_FORMAT.format(d);
+    }
 }
