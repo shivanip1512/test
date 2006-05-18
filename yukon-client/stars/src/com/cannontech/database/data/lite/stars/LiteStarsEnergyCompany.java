@@ -2902,8 +2902,10 @@ public class LiteStarsEnergyCompany extends LiteBase {
             HashMap ecIDToAccountIDsMap = CustomerAccount.searchByPrimaryContactLastName( lastName, partialMatch, allEnergyCompanyIDs);
             for (int i = 0; i < allEnergyCompanyIDs.size(); i++)
             {
-                LiteStarsEnergyCompany liteStarsEC = StarsDatabaseCache.getInstance().getEnergyCompany(allEnergyCompanyIDs.get(i).intValue());
-                ArrayList<Integer> accountIDs = (ArrayList<Integer>)ecIDToAccountIDsMap.get(allEnergyCompanyIDs.get(i));
+                Date timerStart = new Date();
+                Integer ecID = allEnergyCompanyIDs.get(i);
+                LiteStarsEnergyCompany liteStarsEC = StarsDatabaseCache.getInstance().getEnergyCompany(ecID.intValue());
+                ArrayList<Integer> accountIDs = (ArrayList<Integer>)ecIDToAccountIDsMap.get(ecID);
                 if( accountIDs != null)
                 {
                     for (int j = 0; j < accountIDs.size(); j++)
@@ -2915,9 +2917,9 @@ public class LiteStarsEnergyCompany extends LiteBase {
                             accountList.add(liteAcctInfo);
                     }
                 }
+                CTILogger.debug("** " + (new Date().getTime() - timerStart.getTime())*.001 + " Secs to load Accounts ("+accountIDs.size()+") for lastname: " + lastName + " EC: " + allEnergyCompanyIDs.get(i));
             }
         }
-        
         return accountList;
     }
     /* The following methods are only used when SOAPClient exists locally */
