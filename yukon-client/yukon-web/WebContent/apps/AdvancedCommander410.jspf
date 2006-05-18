@@ -2,7 +2,7 @@
 <%
 if( request.getParameter("clearids") != null)
 {
-	YC_BEAN.getRequestMessageIDs().clear();
+	YC_BEAN.clearRequestMessage();
 	com.cannontech.clientutils.CTILogger.info("Clearing the RequestMessageIDs, they aren't coming back!");
 }
 

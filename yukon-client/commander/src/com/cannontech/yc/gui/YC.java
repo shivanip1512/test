@@ -1149,7 +1149,7 @@ public class YC extends Observable implements MessageListener
         getRequestMessageIDs().add(new Long(userMessageID));
         getRequestMessageIDs_Executing().add(new Long(userMessageID));
     }
-    protected void clearRequestMessage()
+    public void clearRequestMessage()
     {
         getRequestMessageIDs().clear();
         getRequestMessageIDs_Executing().clear();
