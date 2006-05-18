@@ -34,14 +34,18 @@ import com.cannontech.database.data.lite.LiteCommand;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteTOUSchedule;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.command.Command;
 import com.cannontech.database.db.command.CommandCategory;
+import com.cannontech.database.db.device.Device;
 import com.cannontech.database.db.device.DeviceMeterGroup;
 import com.cannontech.database.model.ModelFactory;
+import com.cannontech.message.dispatch.message.SystemLogHelper;
 import com.cannontech.message.porter.message.Request;
 import com.cannontech.message.porter.message.Return;
 import com.cannontech.message.util.Message;
@@ -52,11 +56,20 @@ import com.cannontech.yukon.conns.ConnPool;
 
 public class YC extends Observable implements MessageListener
 {
+    private final SystemLogHelper _systemLogHelper;
+    private String appNameStr = "YukonCommander";
+    private String logUserName = null;
+
+    
     /** Flag to write command to database, if applicable */
     private boolean updateToDB = false;
     
 	/** HashSet of userMessageIds for this instance */
 	private java.util.Set requestMessageIDs = new java.util.HashSet(10);
+
+    /** HashSet of userMessageIds for this instance, we will remove from this list on ExpectMore flag (which is no longer guaranteed
+     *  but very useful for refreshing the custom web interface in a timely fashion */
+    private java.util.Set requestMessageIDs_executing = new java.util.HashSet(10);
 
 	/** Time in millis (yes I realize this is an int) to wait for command response messages */
 	private int timeOut = 0;
@@ -179,10 +192,11 @@ public class YC extends Observable implements MessageListener
 		super();
 		loadCustomCommandsFromDatabase();
 		ycDefaults = new YCDefaults(loadDefaultsFromFile_);
+        _systemLogHelper = new SystemLogHelper(PointTypes.SYS_PID_SYSTEM);
 		getPilConn().addMessageListener(this);
 	}
 
-	private IServerConnection getPilConn()
+    private IServerConnection getPilConn()
     {
         return ConnPool.getInstance().getDefPorterConn();        
     }
@@ -820,7 +834,8 @@ public class YC extends Observable implements MessageListener
 		{
 			startStopWatch(getTimeOut());
             getPilConn().write( request_ );
-			getRequestMessageIDs().add(new Long(currentUserMessageID));
+            logSystemEvent(request_.getCommandString(), request_.getDeviceID());
+            addRequestMessage(currentUserMessageID);
 			generateMessageID();
 		}
 		else
@@ -878,14 +893,13 @@ public class YC extends Observable implements MessageListener
 				}
 				else
 				{
-					/**TODO Should the ids be removed after being processed ? */
-					//Remove the messageID from the set of this ids.
+					//Remove the messageID from the set of Executing ids.
 					if(sendMore == 0 && returnMsg.getExpectMore() == 0)	//nothing more is coming, remove from list.
-					{
-						getRequestMessageIDs().remove( new Long(returnMsg.getUserMessageID()));
+					{//Do not remove these from the "master" requestMessageIDs anymore, Per Corey 20060501
+						getRequestMessageIDs_Executing().remove( new Long(returnMsg.getUserMessageID()));
 					}
 				}
-				System.out.println(" - " + getRequestMessageIDs().size());
+				CTILogger.debug("Total Messages: " + getRequestMessageIDs().size()+ " | Commands Executing: " + getRequestMessageIDs_Executing().size());
 				java.awt.Color textColor = getYCDefaults().getDisplayTextColor();
 				String debugOutput = "";
 				String displayOutput = "";
@@ -1130,14 +1144,33 @@ public class YC extends Observable implements MessageListener
 		return deviceType;
 	}
 
+    protected void addRequestMessage(long userMessageID)
+    {
+        getRequestMessageIDs().add(new Long(userMessageID));
+        getRequestMessageIDs_Executing().add(new Long(userMessageID));
+    }
+    protected void clearRequestMessage()
+    {
+        getRequestMessageIDs().clear();
+        getRequestMessageIDs_Executing().clear();
+    }    
 	/**
+     * A set of request messageIDs that have been sent.  This set is NOT effected by the expectMore flag returning.
 	 * @return
 	 */
-	public java.util.Set getRequestMessageIDs()
+	private java.util.Set getRequestMessageIDs()
 	{
 		return requestMessageIDs;
 	}
-
+    /**
+     * A set of request messageIDS that are currently executing. This set IS effected by the expectMore flag returning
+     * @return
+     */
+    public java.util.Set getRequestMessageIDs_Executing()
+    {
+        return requestMessageIDs_executing;
+    }
+    
 	/**
 	 * @return
 	 */
@@ -1522,4 +1555,64 @@ public class YC extends Observable implements MessageListener
 		int min = temp / 60;
 		return hour + ":" + format.format(min);
 	}    
+    
+    public String getAppNameStr()
+    {
+        return appNameStr;
+}
+    public void setAppNameStr(String appNameStr)
+    {
+        this.appNameStr = appNameStr;
+    }
+    private void logSystemEvent(String command, int deviceID)
+    {
+        String commandStr = command.toLowerCase();
+        String logDescr = "";        
+        if( commandStr.startsWith("control") || commandStr.startsWith("putconfig") ||
+            commandStr.startsWith("putstatus") || commandStr.startsWith("putvalue") )
+        {
+            int pointID = PointTypes.SYS_PID_SYSTEM;
+            LiteYukonPAObject liteYukonPAObject = PAOFuncs.getLiteYukonPAO(deviceID);            
+            logDescr = PAOGroups.getPAOClass(liteYukonPAObject.getCategory(), liteYukonPAObject.getPaoClass()) + ": " +
+                        liteYukonPAObject.getPaoName() + 
+                        " (ID:" + liteYukonPAObject.getLiteID() + ")";
+                        
+            if( DeviceTypesFuncs.isCapBankController(liteYukonPAObject.getType()) )
+                pointID = getLogPointID(PointTypes.STATUS_POINT, 1); //the Bank Status Point
+
+            else if (DeviceTypesFuncs.isLmGroup(liteYukonPAObject.getType()) )
+                pointID = getLogPointID(PointTypes.STATUS_POINT, 0); //the Control Status (Pseudo) Point
+
+            else if (DeviceTypesFuncs.isMCT(liteYukonPAObject.getType()) )
+            {
+                if( commandStr.indexOf(" connect") > -1 || commandStr.indexOf(" disconnect") > -1)    //the leading space helps find the right string
+                    pointID = getLogPointID(PointTypes.STATUS_POINT, 1); //the Disconnect Status Point
+            }
+            else if( liteYukonPAObject.getLiteID() == Device.SYSTEM_DEVICE_ID)  //serial number I suppose?
+                logDescr = "Serial: " + getSerialNumber();
+
+            
+            _systemLogHelper.log(pointID, "Manual: " + command, logDescr, logUserName);
+        }
+    }
+    
+    private int getLogPointID( int pointType, int pointOffset)
+    {
+        LitePoint[] litePoints = PAOFuncs.getLitePointsForPAObject(deviceID);
+        for (int i = 0; i < litePoints.length; i++)
+        {
+            LitePoint litePoint = litePoints[i];
+            if( litePoint.getPointType() == pointType && litePoint.getPointOffset() == pointOffset)
+                return litePoint.getPointID();
+        }
+        return PointTypes.SYS_PID_SYSTEM;
+    }
+    public String getLogUserName()
+    {
+        return logUserName;
+    }
+    public void setLogUserName(String logUserName)
+    {
+        this.logUserName = logUserName;
+    }
 }

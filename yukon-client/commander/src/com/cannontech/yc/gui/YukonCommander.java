@@ -1570,7 +1570,7 @@ public class YukonCommander extends JFrame implements DBChangeListener, ActionLi
 			
 			//load all data from the database to the cache for update to catch anything new.		
 			com.cannontech.database.cache.DefaultDatabaseCache.getInstance().releaseAllCache();
-			setRouteModel();
+			//release the stored routes
 			restoreCurrentTree();
 		}
 		catch( Exception e )

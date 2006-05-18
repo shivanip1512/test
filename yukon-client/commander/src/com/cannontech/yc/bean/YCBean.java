@@ -20,12 +20,13 @@ import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.cache.PointChangeCache;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.cache.functions.CommandFuncs;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.PointFuncs;
-import com.cannontech.database.cache.functions.RoleFuncs;
+import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteRawPointHistory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -33,15 +34,11 @@ import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.pao.RouteTypes;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.device.Device;
-import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.dispatch.message.PointData;
-import com.cannontech.message.dispatch.message.PointRegistration;
-import com.cannontech.message.dispatch.message.Registration;
 import com.cannontech.message.porter.message.Return;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
-import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.yc.gui.YC;
 
@@ -54,15 +51,11 @@ import com.cannontech.yc.gui.YC;
 public class YCBean extends YC implements MessageListener, HttpSessionBindingListener
 {
 	private Vector deviceIDs = null;
+    //Contains <String>serialType to <Vector<String>> serialNumbers
 	private HashMap serialTypeToNumberMap = null;
-	/** Singleton counter for pointRegistration messages sent to dispatch connection */
-	private volatile int pointRegCounter = 0;
-	
-	private com.cannontech.message.dispatch.ClientConnection connToDispatch;
-	
-	/** Contains Integer(pointID), Object(PointData -from pointRegistration) values */
-	private Map pointIDToRegPDMap = null;
 
+	private int userID = 0;
+	
 	/** Contains Integer(pointID), Object(PointData) values */
 	private Map pointIDToRecentPDMap = null;
 	
@@ -71,9 +64,6 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 	
 	/** Contains String(name from returnMessage parse), Object(PointData, made up one though) values */
 	private Map returnNameToRecentPDMap = null;
-
-	/** A collection of pointIDs registered with.*/
-	private Vector pointIDs = new Vector();
 
 	/** A Parameter for LPDate that a "bean" understands" */
 	private String lpDateStr = "";
@@ -106,13 +96,12 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 	public YCBean()
 	{
 		super();
-		System.setProperty("cti.app.name", "Commander_Web");		
+        setAppNameStr(getAppNameStr() +"Web");
 	}
 
 	/* (non-Javadoc)
 	 * Sets the current deviceID from the session.
 	 * Loads a collection of points to register with dispatch.
-	 * Writes the pointRegistration message to dispatch.
 	 * @see com.cannontech.yc.gui.YC#setDeviceID(int)
 	 */
 	public void setDeviceID(int deviceID_)
@@ -126,14 +115,6 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 			//Remove data from other devices..we don't care about it anymore
 			clearResultText();
 			setErrorMsg("");
-			LitePoint [] litePoints = PAOFuncs.getLitePointsForPAObject(deviceID_);
-
-			for(int i = 0; i < litePoints.length; i++)
-			{
-				if( !pointIDs.contains(new Integer(((LitePoint)litePoints[i]).getPointID())))
-					pointIDs.addElement(new Integer(((LitePoint)litePoints[i]).getPointID()));
-			}
-			getClientConnection().write(getPointRegistration(pointIDs));
 		}
 	}
 
@@ -149,9 +130,9 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 			super.setSerialNumber(serialNumber_);
 			if( serialNumber_.length() > 0)// && !getSerialNumbers().contains(serialNumber_))
 			{
-				Vector serialNumbers = (Vector)getSerialTypeToNumberMap().get(serialType_);
+				Vector<String> serialNumbers = getSerialNumbers(serialType_);
 				if( serialNumbers == null)
-					serialNumbers = new Vector();
+					serialNumbers = new Vector<String>();
 				
 				if( !serialNumbers.contains(serialNumber_))
 					serialNumbers.add(serialNumber_);
@@ -171,52 +152,7 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 	{
 		setSerialNumber(getDeviceType(), serialNumber_);
 	}	
-	/**
-	 * Returns the connToDispatch.
-	 * @return com.cannontech.message.util.ClientConnection
-	 * @see com.cannontech.database.cache.DBChangeListener#getClientConnection()
-	 */
-	public com.cannontech.message.util.ClientConnection getClientConnection()
-	{
-		if( connToDispatch == null )
-		{
-			String host = "127.0.0.1";
-			int port = 1510;
-			try
-			{
-				host = RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_MACHINE );
-	            
-				port = Integer.parseInt(
-							RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_PORT ) );
-			}
-			catch( Exception e)
-			{
-				CTILogger.error( e.getMessage(), e );
-			}
 	
-			connToDispatch = new ClientConnection();
-			Registration reg = new Registration();
-			reg.setAppName(CtiUtilities.getAppRegistration());
-			reg.setAppIsUnique(0);
-			reg.setAppKnownPort(0);
-			reg.setAppExpirationDelay( 300 );  // 5 minutes should be OK
-	
-			connToDispatch.setHost(host);
-			connToDispatch.setPort(port);
-			connToDispatch.setAutoReconnect(true);
-			connToDispatch.setRegistrationMsg(reg);
-			
-			try
-			{
-				connToDispatch.connectWithoutWait();
-			}
-			catch( Exception e ) 
-			{
-				CTILogger.error( e.getMessage(), e );
-			}
-		}
-		return connToDispatch;
-	}
 	/* (non-Javadoc)
 	 * Load the data maps with the returned pointData 
 	 * @see com.cannontech.message.util.MessageListener#messageReceived(com.cannontech.message.util.MessageEvent)
@@ -224,32 +160,9 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 	public void messageReceived(MessageEvent e)
 	{
 		Message in = e.getMessage();
-		if( in instanceof PointData )
-		{   
-			PointData point = (PointData) in;
-			if( point.getPointDataTimeStamp().after(CtiUtilities.get1990GregCalendar().getTime()) )
-			{
-				Integer x = new Integer(point.getId());
-				getPointIDToRegPDMap().put(x, point);
-				
-				if( isEnergyPoint(point.getId()))
-				{
-					TreeMap tempTSToValueMap = (TreeMap)getPrevMonthTSToValueMap(point.getId());
-					tempTSToValueMap.put(point.getPointDataTimeStamp(), new Double(point.getValue()));
-					//This is the newest point, set it as the selected value
-					CTILogger.info("Updated the TS to Value Map for PointID: " + point.getId());
-				}
-				CTILogger.info("Put (pointIDToRegPDMap): " +x + ":"+point.getId()+"-"+point.getValue()+"-"+ point.getPointDataTimeStamp());
-			}
-			pointRegCounter--;
-		}
-		else if( in instanceof Return)
+		if( in instanceof Return)
 		{
 			Return returnMsg = (Return)in;
-			
-			if( !getRequestMessageIDs().contains( new Long(returnMsg.getUserMessageID())))
-				return;
-			
 			if ( returnMsg.getStatus() != 0)	//Error Message!
 			{
 				if( getErrorMsg().indexOf(returnMsg.getCommandString()) < 0)	//command string not displayed yet
@@ -484,47 +397,6 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 	}
 
 	/**
-	 * Vector pointIDs contains Integer values
-	 * @param pointIDs
-	 * @return
-	 */
-	public PointRegistration getPointRegistration( Vector pointIDs)
-	{
-		//Register for points
-		PointRegistration pReg = new PointRegistration();	 		
-		com.roguewave.tools.v2_0.Slist list = new com.roguewave.tools.v2_0.Slist();
-		getClientConnection().getRegistrationMsg();
-
-		if(pointIDs != null)		
-		{
-			for(int i = 0; i < pointIDs.size(); i++)
-			{
-				list.insert(new Long( ((Integer)pointIDs.get(i)).longValue() ));
-				pointRegCounter++;
-				CTILogger.info("Registered for ID: " + ((Integer)pointIDs.get(i)).intValue());
-			}	
-			pReg.setPointList( list );
-		}
-		else
-		{	// just register for everything
-			pReg.setRegFlags( PointRegistration.REG_NOTHING);
-		}
-		
-		return pReg;
-	}
-
-	/**
-	 * @return
-	 */
-	public Map getPointIDToRegPDMap()
-	{
-		if( pointIDToRegPDMap == null)
-		{
-			pointIDToRegPDMap = new HashMap(5);
-		}
-		return pointIDToRegPDMap;
-	}
-	/**
 	 * A map of points found in the DB.
 	 * A map of (Integer, PointData) values.
 	 * Integer - the pointID of the read data
@@ -546,7 +418,6 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 	public void valueBound(HttpSessionBindingEvent arg0)
 	{
 		CTILogger.info("YCBean value bound to session.");
-		getClientConnection().addMessageListener(this);		
 	}
 	/* (non-Javadoc)
 	 * @see javax.servlet.http.HttpSessionBindingListener#valueUnbound(javax.servlet.http.HttpSessionBindingEvent)
@@ -554,16 +425,7 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 	public void valueUnbound(HttpSessionBindingEvent arg0)
 	{
 		CTILogger.info("YCBean value UnBound from session.");
-		getClientConnection().removeMessageListener(this);
-	}
-	/**
-	 * A count of Points Registered with Dispatch.
-	 * Will return 0 when all message registations have been returned from dispatch.
-	 * @return
-	 */
-	public int getPointRegCounter()
-	{
-		return pointRegCounter;
+        clearRequestMessage();
 	}
 	/**
 	 * A map of points NOT found in the DB, stored by name instead of PointID. 
@@ -592,8 +454,8 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 	public PointData getPointDataReg(int deviceID, int pointOffset, int pointType)
 	{
 		int pointID_ = PointFuncs.getPointIDByDeviceID_Offset_PointType(deviceID, pointOffset, pointType);
-		PointData pd = (PointData)getPointIDToRegPDMap().get(new Integer( pointID_));
-		return pd;		
+        PointData pointData = PointChangeCache.getPointChangeCache().getValue(pointID_);
+        return pointData;		
 	}
 	
 	/**
@@ -802,9 +664,9 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 	 * Returns a vector of serialNumbers from the serialTypeToNumbersMap with key value of serialType_
 	 * @return
 	 */
-	public Vector getSerialNumbers(String serialType_)
+	public Vector<String> getSerialNumbers(String serialType_)
 	{
-		return (Vector)getSerialTypeToNumberMap().get(serialType_);
+		return (Vector<String>)getSerialTypeToNumberMap().get(serialType_);
 	}
 	/**
 	 * @return
@@ -835,6 +697,14 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 			if( tsToValMap != null)
 				energyPtToPrevTSMapToValueMap.put(new Integer(pointID_), tsToValMap);
 		}
+        //Always add the most recent one from PointChangeCache.  If it already exists, it will simply be overwritten
+        PointData pointData = PointChangeCache.getPointChangeCache().getValue((long)pointID_);
+        if (pointData != null)
+        {
+            TreeMap tsToValMap = (TreeMap)energyPtToPrevTSMapToValueMap.get(new Integer(pointID_));
+            tsToValMap.put(pointData.getPointDataTimeStamp(), new Double(pointData.getValue()));
+        }
+            
 		return (TreeMap)energyPtToPrevTSMapToValueMap.get(new Integer(pointID_));
 	}
 	
@@ -986,7 +856,6 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 		java.sql.Connection conn = null;
 		java.sql.PreparedStatement pstmt = null;
 		java.sql.ResultSet rset = null;
-		int rowCount = 0;
 
 		try
 		{
@@ -1079,7 +948,6 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 			java.sql.Connection conn = null;
 			java.sql.PreparedStatement pstmt = null;
 			java.sql.ResultSet rset = null;
-			int rowCount = 0;
 	
 			try
 			{
@@ -1178,4 +1046,14 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 	{
 		return PAOFuncs.getRoutesByType(validRouteTypes);
 	}
+
+    public int getUserID()
+    {
+        return userID;
+}
+    public void setUserID(int userID)
+    {
+        this.userID = userID;
+        setLogUserName(YukonUserFuncs.getLiteYukonUser(userID).getUsername());
+    }
 }
