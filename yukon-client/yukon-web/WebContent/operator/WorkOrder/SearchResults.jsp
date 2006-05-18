@@ -51,6 +51,12 @@
               <% String header = "SEARCH RESULTS"; %>
               <%@ include file="include/SearchBar.jspf" %>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
+                        <form name="MForm" method="post" action="<%=request.getContextPath()%>/servlet/WorkOrderManager">
+                            <input type="hidden" name="page" value="1">
+                            <input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>">
+                            <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>">
+                            <input type="hidden" name="showAll" value="0">
+                            <input type="hidden" name="action" value=""> 
 
 <%
 	if (errorMsg == null) {
@@ -78,6 +84,7 @@
 	}
 %>
               <p>&nbsp; </p>
+              </form>
             </div>
           </td>
         <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
