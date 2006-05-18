@@ -10,6 +10,7 @@
 <%@ page import="com.cannontech.database.db.point.RawPointHistory"%>
 
 <jsp:useBean id="YC_BEAN" class="com.cannontech.yc.bean.YCBean" scope="session"/>
+<jsp:setProperty name="YC_BEAN" property="userID" value="<%= lYukonUser.getUserID()%>"/>
 
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%

@@ -14,6 +14,7 @@
 <cti:checklogin/> 
 
 <jsp:useBean id="YC_BEAN" class="com.cannontech.yc.bean.YCBean" scope="session"/>
+<jsp:setProperty name="YC_BEAN" property="userID" value="<%= lYukonUser.getUserID()%>"/>
 <%-- Grab the search criteria --%>
 
 <%

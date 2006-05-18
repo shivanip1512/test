@@ -14,48 +14,6 @@ if( request.getParameter("clearids") != null)
 }
 //set the deviceID of the YC_BEAN
 YC_BEAN.setDeviceID(deviceID);
-long maxTime = 3000;	//max sleep time will be 3 seconds
-long totalTime = 0;
-while( YC_BEAN.getPointRegCounter() > 0 && totalTime < maxTime )
-{
-	try
-	{
-		//Wait for all pointRegistration messages to be heard back from
-		Thread.sleep(100);
-		totalTime+=100;
-		com.cannontech.clientutils.CTILogger.info("Waiting for pointRegistions to come back!");
-	}
-	catch (InterruptedException e)
-	{
-		e.printStackTrace();
-	}
-}
-
-%>
-<%
-String[] defaultKeys = {
-	"Read Energy", 
-	"Read Energy (update)"
-};
-String[] defaultValues = {
-	"getvalue kwh", 
-	"getvalue kwh update"
-};
-//comands for disconnect meters
-String[] disconnectKeys = {
-	"Read Energy", 
-	"Read Energy (update)", 
-	"Read Disconnect Status", 
-	"Disconnect Meter", 
-	"Connect Meter"
-};
-String[] disconnectValues = {
-	"getvalue kwh", 
-	"getvalue kwh update", 
-	"getstatus disconnect", 
-	"control disconnect", 
-	"control connect"
-};
 %>
 
 <SCRIPT language="JavaScript">

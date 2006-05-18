@@ -9,6 +9,7 @@
 <%@ page import="com.cannontech.database.data.pao.RouteTypes"%>
 <%@ page import="com.cannontech.device.range.*"%>
 <jsp:useBean id="YC_BEAN" class="com.cannontech.yc.bean.YCBean" scope="session"/>
+<jsp:setProperty name="YC_BEAN" property="userID" value="<%= lYukonUser.getUserID()%>"/>
 
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } 
 	int invNo = Integer.parseInt(request.getParameter("InvNo"));
