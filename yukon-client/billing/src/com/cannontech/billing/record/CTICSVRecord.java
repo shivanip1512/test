@@ -178,7 +178,7 @@ public class CTICSVRecord implements BillingRecordBase {
     }
 
     /**
-     * Setter for naem
+     * Setter for name
      * @param newName String
      */
     public void setName(String newName) {

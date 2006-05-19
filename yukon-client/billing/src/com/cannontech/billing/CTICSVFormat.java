@@ -55,7 +55,8 @@ public class CTICSVFormat extends FileFormatBase {
                                                            FROM_TABLES,
                                                            getBillingDefaults(),
                                                            validAnalogPtOffsets,
-                                                           validAccPtOffsets)).toString());
+                                                           validAccPtOffsets,
+                                                           validPeakDemandAccOffsets)).toString());
         sql += " ORDER BY " + SQLStringBuilder.PAO_PAONAME + ", " + SQLStringBuilder.PT_POINTOFFSET + ", " + SQLStringBuilder.PT_POINTID + ", " + SQLStringBuilder.RPH_TIMESTAMP + " DESC ";
 
         /*
@@ -111,16 +112,15 @@ public class CTICSVFormat extends FileFormatBase {
                         }
 
                         // Our break label so we can exit the if-else checks
-                        inValidTimestamp: if (currentPointID != lastPointID)
                         // just getting max time for each point
-                        {
+                        inValidTimestamp: if (currentPointID != lastPointID) {
                             int ptOffset = rset.getInt(6);
 
                             if (isKWH(ptOffset) || ptOffset == 1) {
                                 if (tsDate.compareTo(getBillingDefaults().getEnergyStartDate()) <= 0)
                                     // ts <= mintime, fail!
                                     break inValidTimestamp;
-                            } else if (isKW(ptOffset) || isKVAR(ptOffset)) {
+                            } else if (isKW(ptOffset) || isKVAR(ptOffset) || ptOffset == 11) {
                                 if (tsDate.compareTo(getBillingDefaults().getDemandStartDate()) <= 0)
                                     // ts <= mintime, fail!
                                     break inValidTimestamp;
