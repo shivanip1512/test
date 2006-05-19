@@ -372,6 +372,7 @@ public class WorkOrderManager extends HttpServlet {
 	            filterWrappers.add(wrapper);
 	        }
         }
+        woBean.setViewAllResults(false);    //reset the view option
         session.setAttribute( ServletUtil.FILTER_WORKORDER_LIST, filterWrappers );
         redirect = req.getContextPath() + "/operator/WorkOrder/WorkOrder.jsp";
     };
