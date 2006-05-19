@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.65 $
-* DATE         :  $Date: 2006/02/13 17:24:38 $
+* REVISION     :  $Revision: 1.66 $
+* DATE         :  $Date: 2006/05/19 15:27:53 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -300,11 +300,13 @@ INT resolveDeviceType(const string& _rwsTemp)
     {
         nRet = TYPE_CCU700;
     }
-    else if(rwsTemp == "repeater")
+    else if(rwsTemp == "repeater" ||
+            rwsTemp == "repeater 921")
     {
         nRet = TYPE_REPEATER900;
     }
-    else if(rwsTemp == "repeater 800")
+    else if(rwsTemp == "repeater 800" ||
+            rwsTemp == "repeater 801")
     {
         nRet = TYPE_REPEATER800;
     }
