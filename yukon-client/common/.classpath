@@ -26,7 +26,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="/third-party/mx4j.jar"/>
 	<classpathentry exported="true" sourcepath="Z:/java/Third-Party Sources/lang-2.1-src.zip" kind="lib" path="/third-party/commons-lang-2.1.jar"/>
-	<classpathentry sourcepath="Z:/java/Third-Party Sources/commons-collections-3.1-src.zip" kind="lib" path="/third-party/commons-collections-3.1.jar"/>
 	<classpathentry kind="lib" path="/third-party/elemental-construction-set/ecs-1.4.2.jar"/>
 	<classpathentry sourcepath="Z:/java/Third-Party Sources/jdom-1.0.zip" kind="lib" path="/third-party/jdom.jar"/>
 	<classpathentry kind="lib" path="/third-party/commons-logging.jar"/>
@@ -34,5 +33,6 @@
 	<classpathentry kind="lib" path="/third-party/ejb3-persistence.jar"/>
 	<classpathentry sourcepath="Z:/java/Third-Party Sources/hibernate-3.2.0.cr1.zip" kind="lib" path="/third-party/hibernate3.jar"/>
 	<classpathentry exported="true" sourcepath="Z:/java/Third-Party Sources/spring-framework-1.2.7.zip" kind="lib" path="/third-party/spring.jar"/>
+	<classpathentry kind="lib" path="/third-party/commons-collections-3.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
