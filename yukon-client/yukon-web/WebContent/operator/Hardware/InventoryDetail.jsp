@@ -107,11 +107,13 @@ function saveConfigOnly(form) {
 }
 
 function validate(form) {
-	if (form.SerialNo.value == "") {
-		alert("Serial # cannot be empty");
-		return false;
-	}
-	return true;
+	<%if(inventory.getLMHardware() != null) {%>
+    if (form.SerialNo.value == "") {
+        alert("Serial # cannot be empty");
+        return false;
+    }
+    <%}%>
+    return true;
 }
 
 function revealLog() {
