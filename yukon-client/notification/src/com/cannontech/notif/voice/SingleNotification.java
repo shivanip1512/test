@@ -3,6 +3,7 @@ package com.cannontech.notif.voice;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Iterator;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.concurrent.PropertyChangeMulticaster;
@@ -10,11 +11,11 @@ import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
-import com.cannontech.notif.outputs.*;
+import com.cannontech.notif.outputs.Contactable;
+import com.cannontech.notif.outputs.NotificationTypeChecker;
 import com.cannontech.notif.voice.callstates.*;
 import com.cannontech.user.UserUtils;
 
-import edu.emory.mathcs.backport.java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * 

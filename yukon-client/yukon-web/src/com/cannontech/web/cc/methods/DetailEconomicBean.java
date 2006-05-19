@@ -1,6 +1,7 @@
 package com.cannontech.web.cc.methods;
 
 import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -38,6 +39,7 @@ public class DetailEconomicBean implements BaseDetailBean {
     private CommercialCurtailmentBean commercialCurtailment;
     private EconomicEventPricing nextRevision;
     private ListDataModel otherRevisionsModel;
+    private List<EconomicEventParticipant> participantList;
     
     public String showDetail(BaseEvent event) {
         setEvent((EconomicEvent) event);
@@ -50,7 +52,8 @@ public class DetailEconomicBean implements BaseDetailBean {
     }
     
     public void updateModels() {
-        participantDataModel = null;
+        participantList = economicService.getParticipants(event);
+        participantDataModel = new ListDataModel(participantList);
         windowDataModel = null;
         otherRevisionsModel = null;
     }
@@ -60,10 +63,6 @@ public class DetailEconomicBean implements BaseDetailBean {
     }
 
     public DataModel getParticipantModel() {
-        if (participantDataModel == null) {
-            List<EconomicEventParticipant> participants = economicService.getParticipants(event);
-            participantDataModel = new ListDataModel(participants);
-        }
         return participantDataModel;
     }
     
@@ -90,7 +89,23 @@ public class DetailEconomicBean implements BaseDetailBean {
         return null;
     }
     
-    public String getColumnValue() {
+    public BigDecimal getColumnTotal() {
+        DataModel columnModel = getWindowModel();
+        if (columnModel.isRowAvailable()) { // read: isColumnAvailable()
+            EconomicEventPricingWindow pricingWindow = 
+                (EconomicEventPricingWindow) columnModel.getRowData(); // read: getColumnData()
+            long total = 0;
+            for (EconomicEventParticipant participant : participantList) {
+                EconomicEventParticipantSelection selection = participant.getSelection(getCurrentRevision());
+                EconomicEventParticipantSelectionWindow selectionWindow = selection.getSelectionWindow(pricingWindow);
+                total += selectionWindow.getEnergyToBuy().longValue();
+            }
+            return BigDecimal.valueOf(total);
+        }
+        return null;
+    }
+    
+    public BigDecimal getColumnValue() {
         DataModel rowModel = getParticipantModel();
         if (rowModel.isRowAvailable()) {
             EconomicEventParticipant row = 
@@ -102,7 +117,7 @@ public class DetailEconomicBean implements BaseDetailBean {
                 Integer column = pricingWindow.getOffset();
                 EconomicEventParticipantSelectionWindow selection = 
                     economicService.getCustomerSelectionWindow(getCurrentRevision(),row,column);
-                return selection.getEnergyToBuy().toPlainString();
+                return selection.getEnergyToBuy();
             }
         }
         return null;
@@ -130,6 +145,13 @@ public class DetailEconomicBean implements BaseDetailBean {
         default:
             return "-";
         }
+    }
+    
+    public String getCustomerNotifForRow() {
+        DataModel participantModel = getParticipantModel();
+        EconomicEventParticipant participant = (EconomicEventParticipant) participantModel.getRowData();
+        float percent = strategy.getNotificationSuccessRate(participant);
+        return NumberFormat.getPercentInstance().format(percent);
     }
     
     public String switchRevision() {
@@ -196,6 +218,11 @@ public class DetailEconomicBean implements BaseDetailBean {
         createEconomicBean.setStrategy(getStrategy());
         return createEconomicBean.initExtension(getEvent());
         
+    }
+    
+    public String refresh() {
+        updateModels();
+        return null;
     }
     
     public String doCreateRevision() {

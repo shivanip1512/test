@@ -8,12 +8,25 @@
 <cti:standardPage title="Economic Event Detail" module="commercialcurtailment">
 <cti:standardMenu />
 
-<h2><t:outputText value="#{sEconomicCreate.program.programType.name} #{sEconomicCreate.program.name}"/> Event</h2>
-<div> <t:messages showDetail="false" showSummary="true"/> </div>
+<h2><t:outputText value="#{sEconomicDetail.event.program.programType.name} #{sEconomicDetail.event.program.name}"/> Event</h2>
+<div class="jsfMessages"> 
+<t:messages showSummary="false" showDetail="true" 
+            errorClass="jsfError" 
+            warnClass="jsfWarn" 
+            infoClass="jsfInfo" 
+            fatalClass="jsfFatal"/> 
+</div>
 
 <h:form>
 
 <table class="horizBorders">
+  <tr>
+    <td>Event Number</td>
+    <td>
+      <t:outputText 
+         value="#{sEconomicDetail.event.displayName}"/>
+    </td>
+  </tr>
   <tr>
     <td>Start Date</td>
     <td>
@@ -89,6 +102,7 @@
     <t:commandButton action="#{sEconomicDetail.cancelEvent}" value="Cancel" rendered="#{sEconomicDetail.showCancelButton}"/>
     <t:commandButton action="#{sEconomicDetail.reviseEvent}" value="Revise" rendered="#{sEconomicDetail.showReviseButton}"/>
     <t:commandButton action="#{sEconomicDetail.extendEvent}" value="Extend" rendered="#{sEconomicDetail.showExtendButton}"/>
+    <t:commandButton action="#{sEconomicDetail.refresh}" value="Refresh"/>
     </div>
     </td>
   </tr>
@@ -105,11 +119,19 @@
      styleClass="econDetailTable">
   <t:column>
     <f:facet name="header"><h:outputText value="Customer"/></f:facet>
-    <t:outputText value="#{thisParticipant.customer.companyName}"/>
+    <t:commandLink action="#{sNotifEconomicDetail.show}">
+      <t:outputText value="#{thisParticipant.customer.companyName}"/>
+      <t:updateActionListener property="#{sNotifEconomicDetail.participant}" value="#{thisParticipant}"/>
+    </t:commandLink>
+    <f:facet name="footer"><h:outputText value="Total"/></f:facet>
   </t:column>
   <t:column>
     <f:facet name="header"><h:outputText value="ACK"/></f:facet>
     <t:outputText value="#{sEconomicDetail.customerAckForRow}"/>
+  </t:column>
+  <t:column>
+    <f:facet name="header"><h:outputText value="NOTIF"/></f:facet>
+    <t:outputText value="#{sEconomicDetail.customerNotifForRow}"/>
   </t:column>
   <t:columns value="#{sEconomicDetail.windowModel}" var="window">
     <f:facet name="header">
@@ -124,11 +146,20 @@
         <h:outputText value="$#{sEconomicDetail.columnPrice} / kWH"/>
       </h:panelGroup>
     </f:facet>
-    <t:outputText value="#{sEconomicDetail.columnValue}"/>  
+    <t:outputText value="#{sEconomicDetail.columnValue}">
+      <f:convertNumber 
+        groupingUsed="true" />
+    </t:outputText>
+    <f:facet name="footer">
+      <h:outputText value="#{sEconomicDetail.columnTotal}">
+        <f:convertNumber 
+          groupingUsed="true" />
+      </h:outputText>
+    </f:facet>
   </t:columns>
 </t:dataTable>
+<div>Legend: D-Default Values, A-Customer Acknowledged Values</div>
 </div>
-
 <t:dataList value="#{sEconomicDetail.otherRevisionsModel}" 
             var="thisRevision">
    <t:commandLink action="#{sEconomicDetail.switchRevision}">

@@ -15,6 +15,7 @@ import com.cannontech.cc.model.CurtailmentEvent;
 import com.cannontech.cc.model.CurtailmentEventParticipant;
 import com.cannontech.cc.model.GroupCustomerNotif;
 import com.cannontech.cc.model.Program;
+import com.cannontech.cc.model.ProgramParameterKey;
 import com.cannontech.cc.service.builder.CurtailmentBuilder;
 import com.cannontech.cc.service.enums.CurtailmentEventState;
 import com.cannontech.cc.service.exception.EventCreationException;
@@ -60,23 +61,21 @@ public abstract class BaseNotificationStrategy extends StrategyBase {
                      -getDefaultNotifTimeBacksetMinutes(program));
         builder.getEvent().setNotificationTime(calendar.getTime());
 
-        
-        
         builder.setEventDuration(getDefaultDurationMinutes(program));
         
         return builder;
     }
 
     protected int getDefaultNotifTimeBacksetMinutes(Program program) {
-        return getParameterValueInt(program, "DEFAULT_NOTIFICATION_OFFSET_MINUTES");
+        return getParameterValueInt(program, ProgramParameterKey.DEFAULT_NOTIFICATION_OFFSET_MINUTES);
     }
     
     protected int getDefaultStartTimeOffsetMinutes(Program program) {
-        return getParameterValueInt(program, "DEFAULT_EVENT_OFFSET_MINUTES");
+        return getParameterValueInt(program, ProgramParameterKey.DEFAULT_EVENT_OFFSET_MINUTES);
     }
     
     protected int getDefaultDurationMinutes(Program program) {
-        return getParameterValueInt(program, "DEFAULT_EVENT_DURATION_MINUTES");
+        return getParameterValueInt(program, ProgramParameterKey.DEFAULT_EVENT_DURATION_MINUTES);
     }
     
     public void verifyTimes(CurtailmentBuilder builder) throws EventCreationException {

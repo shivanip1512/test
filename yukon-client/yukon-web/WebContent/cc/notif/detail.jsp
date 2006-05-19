@@ -9,12 +9,18 @@
 <cti:standardPage title="Notification Event Detail" module="commercialcurtailment">
 <cti:standardMenu />
 
-<h2><t:outputText value="#{sEconomicCreate.program.programType.name} #{sEconomicCreate.program.name}"/> Event</h2>
+<h2><t:outputText value="#{sNotificationDetail.event.program.programType.name} #{sNotificationDetail.event.program.name}"/> Event</h2>
 <div> <t:messages showDetail="false" showSummary="true"/> </div>
 
 <h:form>
 
 <table class="horizBorders">
+  <tr>
+    <td>Event Number</td>
+    <td><t:outputText 
+       value="#{sNotificationDetail.event.displayName}"/>
+    </td>
+  </tr>
   <tr>
     <td>Notification Time</td>
     <td><t:outputText 
@@ -59,47 +65,19 @@
       <t:commandButton action="#{sNotificationDetail.deleteEvent}" value="Delete" rendered="#{sNotificationDetail.showDeleteButton}"/>
       <t:commandButton action="#{sNotificationDetail.cancelEvent}" value="Cancel" rendered="#{sNotificationDetail.showCancelButton}"/>
       <t:commandButton action="#{sNotificationDetail.adjustEvent}" value="Adjust" rendered="#{sNotificationDetail.showAdjustButton}"/>
+      <t:commandButton action="#{sNotificationDetail.refresh}" value="Refresh"/>
     </td>
   </tr>
 </table>
 
-
-<div>
-<cti:titledContainer title="Customer Notification Status">
-<ctif:autoUpdateDataTable 
-     value="#{sNotificationDetailHelper.notifList}" 
-     var="thisNotif" 
-     styleClass="light_table" 
-     frequency="5">
-  <t:column>
-    <f:facet name="header"><h:outputText value="Company"/></f:facet>
-    <t:outputText value="#{thisNotif.participant.customer.companyName}"/>
-  </t:column>
-  <t:column>
-    <f:facet name="header"><h:outputText value="Reason"/></f:facet>
-    <t:outputText value="#{thisNotif.reason}"/>
-  </t:column>
-  <t:column>
-    <f:facet name="header"><h:outputText value="NotifType"/></f:facet>
-    <t:outputText value="#{thisNotif.notifTypeId}"/>
-  </t:column>
-  <t:column>
-    <f:facet name="header"><h:outputText value="Time"/></f:facet>
-    <t:outputText value="#{thisNotif.notificationTime}">
-       <f:convertDateTime 
-      timeStyle="medium" 
-      dateStyle="medium"
-      timeZone="#{sCommercialCurtailment.timeZone}"
-      type="both" />
-    </t:outputText>
-  </t:column>
-  <t:column>
-    <f:facet name="header"><h:outputText value="State"/></f:facet>
-    <t:outputText value="#{thisNotif.state}"/>
-  </t:column>
-</ctif:autoUpdateDataTable>
-</cti:titledContainer>
+<h3>Customer Notification Status</h3>
+<div id="detailInner"> 
+  <t:aliasBean alias="#{notifTableData}" value="#{sNotificationDetailHelper.notifList}">
+    <jsp:include page="../include/notifTable.jsp"/>
+  </t:aliasBean>
 </div>
+
+
 
 </h:form>
 

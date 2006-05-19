@@ -5,6 +5,7 @@ import java.util.TimeZone;
 
 import com.cannontech.database.cache.functions.EnergyCompanyFuncs;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
+import com.cannontech.database.data.notification.NotifType;
 
 public class Contactable {
 
@@ -89,7 +90,7 @@ public class Contactable {
      * @param notificationMethod
      * @return
      */
-    public boolean supportsNotificationMethod(int notificationMethod) {
+    public boolean supportsNotificationMethod(NotifType notificationMethod) {
         return true;
     }
 

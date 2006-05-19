@@ -6,7 +6,7 @@ import java.beans.PropertyChangeListener;
 import org.jdom.Document;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.database.data.notification.NotifMap;
+import com.cannontech.database.data.notification.NotifType;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.dispatch.message.SystemLogHelper;
@@ -109,8 +109,8 @@ public class VoiceHandler extends OutputHandler
         return (Document)call.getMessage();
     }
 
-    public int getNotificationMethod() {
-        return NotifMap.METHOD_VOICE;
+    public NotifType getNotificationMethod() {
+        return NotifType.VOICE;
     }
     
 }

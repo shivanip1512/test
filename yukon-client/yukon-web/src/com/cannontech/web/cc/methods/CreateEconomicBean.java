@@ -25,13 +25,10 @@ public class CreateEconomicBean extends EventCreationBase {
     @Override
     public void initialize() {
         setBuilder(getMyStrategy().createBuilder(getProgram()));
-        
-        clearForm();
     }
     
     public String initExtension(EconomicEvent oldEvent) {
         setBuilder(getMyStrategy().createExtensionBuilder(oldEvent));
-        clearForm();
         return getStartPage();
     }
 

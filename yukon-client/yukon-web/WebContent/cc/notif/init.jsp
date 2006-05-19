@@ -8,7 +8,7 @@
 <cti:standardPage title="Create Notification Event" module="commercialcurtailment">
 <cti:standardMenu />
 
-<h2>Create <t:outputText value="#{sEconomicCreate.program.programType.name} #{sEconomicCreate.program.name}"/> Event</h2>
+<h2>Create <t:outputText value="#{sNotificationCreate.program.programType.name} #{sNotificationCreate.program.name}"/> Event</h2>
 <h3>Enter Parameters</h3>
 <div class="jsfMessages"> 
 <t:messages showSummary="false" showDetail="true" 
@@ -18,7 +18,7 @@
             fatalClass="jsfFatal"/> 
 </div>
 
-<h:form binding="#{sNotificationCreate.form}">
+<h:form>
 
 <table class="horizBorders">
   <tr>
@@ -26,15 +26,13 @@
 <t:outputLabel value="Notification Time" for="notifTimeInput"/>
     </td>
     <td>
-<t:inputText 
+<t:inputDate
    id="notifTimeInput"
-   value="#{sNotificationCreate.builder.notificationTime}">
-   <f:convertDateTime 
-      timeStyle="short" 
-      dateStyle="short"
-      timeZone="#{sCommercialCurtailment.timeZone}"
-      type="both" />
-</t:inputText>
+   value="#{sNotificationCreate.builder.notificationTime}"
+   popupCalendar="false"
+   ampm="false"
+   timeZone="#{sCommercialCurtailment.timeZone.ID}"
+   type="both" />
 (<t:outputText value="#{sCommercialCurtailment.timeZone.ID}"/>)
     </td>
   </tr>
@@ -43,15 +41,13 @@
 <t:outputLabel value="Start Time" for="startTimeInput"/>
     </td>
     <td>
-<t:inputText 
+<t:inputDate 
    id="startTimeInput"
-   value="#{sNotificationCreate.builder.startTime}">
-   <f:convertDateTime 
-      timeStyle="short" 
-      dateStyle="short"
-      timeZone="#{sCommercialCurtailment.timeZone}"
-      type="both" />
-</t:inputText>
+   value="#{sNotificationCreate.builder.startTime}"
+   popupCalendar="false"
+   ampm="false"
+   timeZone="#{sCommercialCurtailment.timeZone.ID}"
+   type="both" />
 (<t:outputText value="#{sCommercialCurtailment.timeZone.ID}"/>)
     </td>
   </tr>

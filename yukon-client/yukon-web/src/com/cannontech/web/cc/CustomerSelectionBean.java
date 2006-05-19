@@ -81,10 +81,10 @@ public class CustomerSelectionBean {
         return eventBean.doAfterCustomerPage();
     }
     
-    public String getInterruptibleLoad() {
+    public String getLoad() {
         SelectableCustomer sCustomer = (SelectableCustomer) customerListModel.getRowData();
         try {
-            return eventBean.getStrategy().getInterruptibleLoad(sCustomer.getCustomer()).toPlainString();
+            return eventBean.getStrategy().getCurrentLoad(sCustomer.getCustomer()).toPlainString();
         } catch (PointException e) {
             return "n/a";
         }

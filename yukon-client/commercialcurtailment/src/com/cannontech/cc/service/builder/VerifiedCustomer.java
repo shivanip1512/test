@@ -38,5 +38,8 @@ public class VerifiedCustomer {
     public GroupCustomerNotif getCustomerNotif() {
         return customerNotif;
     }
+    public boolean isIncludable() {
+        return !(status == Status.EXCLUDE);
+    }
 
 }

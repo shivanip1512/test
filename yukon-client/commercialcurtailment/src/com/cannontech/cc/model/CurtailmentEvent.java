@@ -64,7 +64,7 @@ public class CurtailmentEvent extends BaseEvent {
     }
     
     @ManyToOne
-    @JoinColumn(name="CCurtProgramTypeId", nullable=false)
+    @JoinColumn(name="CCurtProgramId", nullable=false)
     public Program getProgram() {
         return program;
     }
@@ -114,7 +114,7 @@ public class CurtailmentEvent extends BaseEvent {
     @Override
     @Transient
     public String getDisplayName() {
-        return startTime.toString();
+        return "#" + id;
     }
 
 

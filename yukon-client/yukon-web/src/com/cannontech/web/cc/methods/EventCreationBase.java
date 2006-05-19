@@ -9,7 +9,6 @@ import com.cannontech.cc.model.Program;
 import com.cannontech.cc.service.StrategyBase;
 import com.cannontech.cc.service.builder.VerifiedCustomer;
 import com.cannontech.web.cc.CustomerSelectionBean;
-import com.cannontech.web.util.JSFUtil;
 
 public abstract class EventCreationBase {
 
@@ -51,28 +50,6 @@ public abstract class EventCreationBase {
     
     public StrategyBase getStrategy() {
         return strategy;
-    }
-
-    /**
-     * This will cause the stored values in the form
-     * to be cleared. To work, the JSF page must bind
-     * its form element to the "form" property of this
-     * bean.
-     */
-    protected void clearForm() {
-        doClear = true;
-    }
-    
-    public UIComponent getForm() {
-        return form;
-    }
-
-    public void setForm(UIComponent form) {
-        this.form = form;
-        if (doClear) {
-            JSFUtil.clearComponent(form);
-            doClear = false;
-        }
     }
 
     public abstract 

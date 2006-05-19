@@ -18,7 +18,6 @@
 	<classpathentry kind="src" path="/yukonappserver"/>
 	<classpathentry kind="src" path="/esub"/>
 	<classpathentry kind="src" path="/tdc"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-logging.jar"/>
 	<classpathentry kind="src" path="/tools"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="src" path="/cbc"/>
@@ -26,22 +25,13 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/web.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-validator.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/log4j-1.2.8.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-digester-1.5.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jsp-2.0.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-codec-1.2.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-fileupload-1.0.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-beanutils-1.6.1.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-el.jar"/>
 	<classpathentry kind="lib" path="/third-party/activation.jar"/>
 	<classpathentry kind="lib" path="/third-party/mail.jar"/>
 	<classpathentry kind="src" path="/multispeak"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-lang-2.1.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jstl.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/standard.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-collections-3.1.jar"/>
-	<classpathentry sourcepath="Z:/java/Third-Party Sources/myfaces-1.1.1-src.zip" kind="lib" path="WebContent/WEB-INF/lib/myfaces-api.jar"/>
-	<classpathentry sourcepath="Z:/java/Third-Party Sources/myfaces-1.1.1-src.zip" kind="lib" path="WebContent/WEB-INF/lib/myfaces-impl.jar"/>
-	<classpathentry sourcepath="Z:/java/Third-Party Sources/myfaces-1.1.1-src.zip" kind="lib" path="WebContent/WEB-INF/lib/tomahawk.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/cttp"/>
 	<classpathentry kind="lib" path="/third-party/mx4j.jar"/>
 	<classpathentry kind="lib" path="/third-party/mx4j-tools.jar"/>
@@ -60,5 +50,16 @@
 	</classpathentry>
 	<classpathentry sourcepath="Z:/java/Third-Party Sources/spring-framework-1.2.7.zip" kind="lib" path="/third-party/spring.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/commercialcurtailment"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jdom.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-beanutils-1.7.0.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-codec-1.3.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-digester-1.6.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-el-1.0.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-logging-1.0.4.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jstl-1.1.0.jar"/>
+	<classpathentry sourcepath="Z:/java/Third-Party Sources/myfaces" kind="lib" path="WebContent/WEB-INF/lib/myfaces-api-1.1.3.jar"/>
+	<classpathentry sourcepath="Z:/java/Third-Party Sources/myfaces" kind="lib" path="WebContent/WEB-INF/lib/myfaces-impl-1.1.3.jar"/>
+	<classpathentry sourcepath="Z:/java/Third-Party Sources/myfaces" kind="lib" path="WebContent/WEB-INF/lib/tomahawk-1.1.2.jar"/>
+	<classpathentry kind="lib" path="/third-party/commons-collections-3.2.jar"/>
 	<classpathentry kind="output" path="WebContent/WEB-INF/classes"/>
 </classpath>

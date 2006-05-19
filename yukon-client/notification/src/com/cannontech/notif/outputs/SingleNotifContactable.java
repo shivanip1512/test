@@ -1,17 +1,19 @@
 package com.cannontech.notif.outputs;
 
+import com.cannontech.database.data.notification.NotifType;
+
 public class SingleNotifContactable extends Contactable {
 
-    private final int _notifMethodId;
+    private final NotifType _notifMethod;
 
-    public SingleNotifContactable(ContactableBase base, int notifMethodId) {
+    public SingleNotifContactable(ContactableBase base, NotifType notifMethod) {
         super(base);
-        _notifMethodId = notifMethodId;
+        _notifMethod = notifMethod;
     }
     
     @Override
-    public boolean supportsNotificationMethod(int notificationMethod) {
-        return _notifMethodId == notificationMethod;
+    public boolean supportsNotificationMethod(NotifType notificationMethod) {
+        return _notifMethod.equals(notificationMethod);
     }
 
 }

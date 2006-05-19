@@ -45,7 +45,7 @@ public class NotifMapContactable extends Contactable {
      * @param notificationMethod
      * @return
      */
-    public boolean supportsNotificationMethod(int notificationMethod) {
+    public boolean supportsNotificationMethod(NotifType notificationMethod) {
         return _notifMap.supportsMethod(notificationMethod);
     }
     

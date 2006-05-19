@@ -17,7 +17,7 @@
             infoClass="jsfInfo" 
             fatalClass="jsfFatal"/> 
 </div>
-<h:form binding="#{sEconomicCreate.form}">
+<h:form>
 
 <table class="horizBorders">
   <tr>
@@ -25,16 +25,14 @@
       <t:outputLabel value="Notification Time" for="notifTimeInput"/>
     </td>
     <td>
-      <t:inputText 
+      <t:inputDate 
          id="notifTimeInput"
          value="#{sEconomicCreate.builder.event.notificationTime}"
-         readonly="#{sEconomicCreate.builder.event.eventExtension}">
-         <f:convertDateTime 
-            timeStyle="short" 
-            dateStyle="short"
-            timeZone="#{sCommercialCurtailment.timeZone}"
-            type="both" />
-      </t:inputText>
+         popupCalendar="false"
+         ampm="false"
+         type="both"
+         timeZone="#{sCommercialCurtailment.timeZone.ID}"
+         readonly="#{sEconomicCreate.builder.event.eventExtension}"/>
       <t:outputText value="#{sCommercialCurtailment.timeZone.ID}"/>
     </td>
   </tr>
@@ -43,16 +41,14 @@
       <t:outputLabel value="Start Time" for="startTimeInput"/>
     </td>
     <td>
-      <t:inputText 
+      <t:inputDate
          id="startTimeInput"
          value="#{sEconomicCreate.builder.event.startTime}"
-         readonly="#{sEconomicCreate.builder.event.eventExtension}">
-         <f:convertDateTime 
-            timeStyle="short" 
-            dateStyle="short"
-            timeZone="#{sCommercialCurtailment.timeZone}"
-            type="both" />
-      </t:inputText>
+         readonly="#{sEconomicCreate.builder.event.eventExtension}"
+         popupCalendar="false"
+         ampm="false"
+         timeZone="#{sCommercialCurtailment.timeZone.ID}"
+         type="both" />
       <t:outputText value="#{sCommercialCurtailment.timeZone.ID}"/>
     </td>
   </tr>

@@ -57,7 +57,7 @@ public class ProgramService {
             public int compare(Program o1, Program o2) {
                 CompareToBuilder builder = new CompareToBuilder();
                 builder.append(o1.getProgramType().getName(), o2.getProgramType().getName());
-                builder.append(o1.getName(), o2.getName());
+                builder.append(o1, o2);
                 return builder.toComparison();
             };
         };
@@ -161,11 +161,6 @@ public class ProgramService {
 
     @Transactional
     public void deleteProgram(Program program) {
-        List<AvailableProgramGroup> allForProgram = availableProgramGroupDao.getAllForProgram(program);
-        for (AvailableProgramGroup group : allForProgram) {
-            availableProgramGroupDao.delete(group);
-        }
-        programParameterDao.deleteAllForProgram(program);
         programDao.delete(program);
     }
 

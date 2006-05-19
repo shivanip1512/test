@@ -44,9 +44,11 @@ public class GroupDetailBean {
         group = groupService.getGroup(groupId);
         
         groupCustomerList = groupService.getAssignedCustomers(group);
+        Collections.sort(groupCustomerList, new CustomerListComparator());
         groupCustomerModel.setWrappedData(groupCustomerList);
         
         customerList = groupService.getUnassignedCustomers(getGroup(), false);
+        Collections.sort(customerList, new CustomerListComparator());
         customerModel.setWrappedData(customerList);
         
         return "groupDetail";
@@ -60,6 +62,7 @@ public class GroupDetailBean {
         groupCustomerModel.setWrappedData(groupCustomerList);
         
         customerList = groupService.getUnassignedCustomers(getGroup(), true);
+        Collections.sort(customerList, new CustomerListComparator());
         customerModel.setWrappedData(customerList);
 
         return "groupDetail";

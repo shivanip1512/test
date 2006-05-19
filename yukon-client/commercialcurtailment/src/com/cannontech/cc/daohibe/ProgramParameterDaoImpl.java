@@ -6,6 +6,7 @@ import com.cannontech.cc.dao.ProgramParameterDao;
 import com.cannontech.cc.dao.UnknownParameterException;
 import com.cannontech.cc.model.Program;
 import com.cannontech.cc.model.ProgramParameter;
+import com.cannontech.cc.model.ProgramParameterKey;
 import com.cannontech.hibernate.YukonBaseHibernateDao;
 
 public class ProgramParameterDaoImpl extends YukonBaseHibernateDao implements
@@ -23,7 +24,7 @@ public class ProgramParameterDaoImpl extends YukonBaseHibernateDao implements
         return (ProgramParameter) getHibernateTemplate().get(ProgramParameter.class, id);
     }
     
-    public ProgramParameter getFor(String parameterKey, Program program) 
+    public ProgramParameter getFor(ProgramParameterKey parameterKey, Program program) 
     throws UnknownParameterException {
         String query = 
             "select pp from ProgramParameter pp " +

@@ -1,7 +1,5 @@
 package com.cannontech.notif.handler;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 import com.cannontech.cc.dao.EconomicEventNotifDao;
@@ -9,33 +7,19 @@ import com.cannontech.cc.model.*;
 import com.cannontech.cc.service.BaseEconomicStrategy;
 import com.cannontech.cc.service.EconomicService;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.database.cache.functions.CustomerFuncs;
-import com.cannontech.database.data.lite.LiteCICustomer;
+import com.cannontech.database.data.notification.NotifType;
 import com.cannontech.enums.NotificationReason;
 import com.cannontech.enums.NotificationState;
 import com.cannontech.notif.outputs.*;
 
-public class EconomicEventScheduler {
+public class EconomicEventScheduler extends EventScheduler {
     private EconomicEventNotifDao economicEventNotifDao;
     private EconomicService economicService;
 
-    private Timer timer = new Timer("Economic Notification Schedular", true);
     
-    private static final DateFormat _dateFormatter = new SimpleDateFormat("EEEE, MMMM d"); // e.g. "Tuesday, May 31"
-    private static final DateFormat _timeFormatter = new SimpleDateFormat("h:mm a"); // e.g. "3:45 PM"
-
-    private final OutputHandlerHelper _helper;
-    
-    private class DoScheduledTask extends TimerTask {
-        @Override
-        public void run() {
-            doScheduledNotifs();
-        }
-    };
 
     public EconomicEventScheduler(OutputHandlerHelper helper) {
-        super();
-        _helper = helper;
+        super(helper);
     }
     
     public void eventCreationNotification(EconomicEvent event) {
@@ -101,10 +85,10 @@ public class EconomicEventScheduler {
             if (!particip.getEvent().equals(economicEventPricing.getEvent())) {
                 throw new IllegalArgumentException("Participant event and pricing event do not match.");
             }
-            for (Integer type : particip.getNotifMap()) {
+            for (NotifType type : particip.getNotifMap()) {
                 EconomicEventNotif notif = new EconomicEventNotif();
                 notif.setNotificationTime(notifTime);
-                notif.setNotifTypeId(type);
+                notif.setNotifType(type);
                 notif.setRevision(economicEventPricing);
                 notif.setParticipant(particip);
                 notif.setReason(reason);
@@ -112,51 +96,28 @@ public class EconomicEventScheduler {
                 economicEventNotifDao.save(notif);
             }
         }
-        timer.schedule(new DoScheduledTask(), notifTime);
+        scheduleNotif(notifTime);
     }
     
-    private NotificationBuilder createBuilder(final EconomicEventNotif eventNotif) {
+    protected NotificationBuilder createBuilder(final EventNotif _eventNotif) {
+        final EconomicEventNotif eventNotif = (EconomicEventNotif) _eventNotif;
         final EconomicEvent event = eventNotif.getParticipant().getEvent();
         final EconomicEventPricing eventRevision = eventNotif.getRevision();
         NotificationReason reason = eventNotif.getReason();
         
-        final Date stopTime = event.getStopTime();
-        
-        int durationMinutes = event.getDuration();
-        long durationHours = durationMinutes / 60;
-        long remainingMinutes = durationMinutes % 60;
-        final String durationMinutesStr = Long.toString(durationMinutes);
-        final String durationHoursStr = Long.toString(durationHours);
-        final String remainingMinutesStr = Long.toString(remainingMinutes);
-
         final Notification notif = new Notification("economic");
-        notif.addData("programname", event.getProgram().getName());
-        notif.addData("programtype", event.getProgram().getProgramType().getName());
-        notif.addData("eventname", "FILL ME IN"); //TODO
+        fillInBaseAttribs(notif, event);
         notif.addData("action", reason.toString());
-        notif.addData("durationminutes", durationMinutesStr);
-        notif.addData("durationhours", durationHoursStr);
-        notif.addData("remainingminutes", remainingMinutesStr);
         
         final NotificationBuilder notifBuilder = new NotificationBuilder() {
 
             public Notification buildNotification(Contactable contact) {
                 TimeZone timeZone = contact.getTimeZone();
-                synchronized (_timeFormatter) {
-                    // we will use _dateFormatter as if we'd explicitly synched on it too
-                    _timeFormatter.setTimeZone(timeZone);
-                    _dateFormatter.setTimeZone(timeZone);
-                    
-                    notif.addData("timezone", timeZone.getDisplayName());
-                    notif.addData("starttime", _timeFormatter.format(event.getStartTime()));
-                    notif.addData("startdate", _dateFormatter.format(event.getStartTime()));
-                    notif.addData("stoptime", _timeFormatter.format(stopTime));
-                    notif.addData("stopdate", _dateFormatter.format(stopTime));
-                    return notif;
-                }
+                fillInFormattedTimes(notif, event, timeZone);
+                return notif;
             }
 
-            public void notificationComplete(Contactable contact, int notifType, boolean success) {
+            public void notificationComplete(Contactable contact, NotifType notifType, boolean success) {
                 // set status on eventNotif
                 // probably shouldn't directly manipulate
                 eventNotif.setState(success ? NotificationState.SUCCEEDED : NotificationState.FAILED);
@@ -192,28 +153,13 @@ public class EconomicEventScheduler {
        }
        return true;
     }
-
-    private void doScheduledNotifs() {
-        List<EconomicEventNotif> notifsPending;
-        synchronized (this) {
-            //TODO we might want to look for any notifs in the pending state 
-            // and set them to some error state
-            notifsPending = economicEventNotifDao.getScheduledNotifs();
-            for (EconomicEventNotif notif : notifsPending) {
-                notif.setState(NotificationState.PENDING);
-                economicEventNotifDao.save(notif);
-            }
-        }
-        
-        for (EconomicEventNotif notif : notifsPending) {
-            Integer customerId = notif.getParticipant().getCustomer().getId();
-            LiteCICustomer liteCICustomer = CustomerFuncs.getLiteCICustomer(customerId);
-            ContactableCustomer cc = new ContactableCustomer(liteCICustomer);
-            Contactable contactable = new SingleNotifContactable(cc, notif.getNotifTypeId());
-
-            NotificationBuilder builder = createBuilder(notif);
-            _helper.handleNotification(builder, contactable);
-        }
+    
+    protected List<? extends EventNotif> getScheduledNotifs() {
+        return economicEventNotifDao.getScheduledNotifs();
+    }
+    
+    protected void updateNotif(EventNotif notif) {
+        economicEventNotifDao.save((EconomicEventNotif) notif);
     }
 
     public void setEconomicEventNotifDao(EconomicEventNotifDao economicEventNotifDao) {

@@ -2,6 +2,8 @@ package com.cannontech.cc.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -17,7 +19,7 @@ import org.hibernate.annotations.GenericGenerator;
 public class ProgramParameter {
     private Integer id;
     private Program program;
-    private String parameterKey;
+    private ProgramParameterKey parameterKey;
     private String parameterValue;
     
     
@@ -53,11 +55,12 @@ public class ProgramParameter {
     }
 
     @Column(nullable=false)
-    public String getParameterKey() {
+    @Enumerated(EnumType.STRING)
+    public ProgramParameterKey getParameterKey() {
         return parameterKey;
     }
 
-    public void setParameterKey(String parameterKey) {
+    public void setParameterKey(ProgramParameterKey parameterKey) {
         this.parameterKey = parameterKey;
     }
 

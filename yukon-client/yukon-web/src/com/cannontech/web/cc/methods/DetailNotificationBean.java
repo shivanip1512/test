@@ -62,6 +62,11 @@ public class DetailNotificationBean implements BaseDetailBean {
         getStrategy().deleteEvent(event,getYukonUser());
         return "programSelect";
     }
+    
+    public String refresh() {
+        updateModels();
+        return null;
+    }
 
     public CurtailmentEvent getEvent() {
         return event;

@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.cannontech.cc.model.EconomicEvent;
 import com.cannontech.cc.model.EconomicEventNotif;
+import com.cannontech.cc.model.EconomicEventParticipant;
 import com.cannontech.enums.NotificationReason;
 
 public interface EconomicEventNotifDao extends StandardDaoOperations<EconomicEventNotif> {
@@ -11,4 +12,5 @@ public interface EconomicEventNotifDao extends StandardDaoOperations<EconomicEve
     public void deleteForEvent(EconomicEvent event);
     public List<EconomicEventNotif> getScheduledNotifs();
     public List<EconomicEventNotif> getForEventAndReason(EconomicEvent event, NotificationReason reason);
+    public List<EconomicEventNotif> getForParticipant(EconomicEventParticipant participant);
 }

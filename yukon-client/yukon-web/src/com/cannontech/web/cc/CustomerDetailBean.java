@@ -14,14 +14,15 @@ import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.cc.model.CICustomerStub;
 import com.cannontech.cc.service.CustomerPointService;
+import com.cannontech.database.db.customer.CICustomerPointType;
 
 public class CustomerDetailBean {
     private CICustomerStub customer;
     private CommercialCurtailmentBean commercialCurtailmentBean;
     private CustomerPointService customerService;
     private DataModel pointsModel;
-    private Map<String, Double> pointValueCache = new TreeMap<String, Double>();
-    private List<String> pointTypeList;
+    private Map<CICustomerPointType, Double> pointValueCache = new TreeMap<CICustomerPointType, Double>();
+    private List<CICustomerPointType> pointTypeList;
 
     public CustomerDetailBean() {
         super();
@@ -39,7 +40,7 @@ public class CustomerDetailBean {
     private void initializePointCache() {
         pointValueCache = customerService.getPointValueCache(getCustomer());
         pointTypeList = customerService.getPointTypeList(getCustomer());
-        pointsModel = new ListDataModel(new ArrayList<String>(pointTypeList));
+        pointsModel = new ListDataModel(new ArrayList<CICustomerPointType>(pointTypeList));
     }
 
     public String showCustomer() {
@@ -54,7 +55,7 @@ public class CustomerDetailBean {
     }
     
     public String createPoint() {
-        String pointType = (String) pointsModel.getRowData();
+        CICustomerPointType pointType = (CICustomerPointType) pointsModel.getRowData();
         customerService.createPoint(getCustomer(), pointType);
         pointValueCache.put(pointType, 0.0);
         return null;
@@ -83,7 +84,7 @@ public class CustomerDetailBean {
     }
     
     public boolean getRowPointExists() {
-        String pointType = (String) pointsModel.getRowData();
+        CICustomerPointType pointType = (CICustomerPointType) pointsModel.getRowData();
         return getCustomer().getPointData().containsKey(pointType);
     }
     
@@ -112,11 +113,11 @@ public class CustomerDetailBean {
         return customerService;
     }
 
-    public Map<String, Double> getPointValueCache() {
+    public Map<CICustomerPointType, Double> getPointValueCache() {
         return pointValueCache;
     }
 
-    public void setPointValueCache(Map<String, Double> pointValueCache) {
+    public void setPointValueCache(Map<CICustomerPointType, Double> pointValueCache) {
         this.pointValueCache = pointValueCache;
     }
 

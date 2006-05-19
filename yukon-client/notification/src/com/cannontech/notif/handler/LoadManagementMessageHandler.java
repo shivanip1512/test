@@ -8,6 +8,7 @@ import com.cannontech.database.cache.functions.NotificationGroupFuncs;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.notification.NotifType;
 import com.cannontech.message.notif.NotifLMControlMsg;
 import com.cannontech.message.util.Message;
 import com.cannontech.notif.outputs.*;
@@ -95,7 +96,7 @@ public class LoadManagementMessageHandler extends NotifHandler {
 
                 return notif;
             }
-            public void notificationComplete(Contactable contact, int notifType, boolean success) {
+            public void notificationComplete(Contactable contact, NotifType notifType, boolean success) {
                 // do nothing
             }
         };

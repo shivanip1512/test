@@ -2,6 +2,7 @@ package com.cannontech.notif.handler;
 
 import com.cannontech.database.cache.functions.*;
 import com.cannontech.database.data.lite.*;
+import com.cannontech.database.data.notification.NotifType;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.message.notif.NotifAlarmMsg;
 import com.cannontech.message.util.Message;
@@ -51,7 +52,7 @@ public class AlarmMessageHandler extends NotifHandler {
             public Notification buildNotification(Contactable contact) {
                 return notif;
             }
-            public void notificationComplete(Contactable contact, int notifType, boolean success) {
+            public void notificationComplete(Contactable contact, NotifType notifType, boolean success) {
                 // do nothing
             }
         };

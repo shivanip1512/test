@@ -9,10 +9,10 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.Validate;
 
 import com.cannontech.cc.dao.ProgramParameterDao;
 import com.cannontech.cc.dao.UnknownParameterException;
@@ -22,16 +22,18 @@ import com.cannontech.cc.model.Group;
 import com.cannontech.cc.model.GroupCustomerNotif;
 import com.cannontech.cc.model.Program;
 import com.cannontech.cc.model.ProgramParameter;
+import com.cannontech.cc.model.ProgramParameterKey;
 import com.cannontech.cc.service.builder.EventBuilderBase;
 import com.cannontech.cc.service.builder.VerifiedCustomer;
+import com.cannontech.cc.service.exception.EventCreationException;
 import com.cannontech.common.exception.PointException;
+import com.cannontech.database.data.notification.NotifType;
 
 public abstract class StrategyBase {
     private ProgramService programService;
     private GroupService groupService;
     private ProgramParameterDao programParameterDao;
-    private Map<String, String> parameterKeys;
-    private Properties viewLabels;
+    private Set<ProgramParameterKey> parameters = new TreeSet<ProgramParameterKey>();
     
     public ProgramParameterDao getProgramParameterDao() {
         return programParameterDao;
@@ -39,22 +41,6 @@ public abstract class StrategyBase {
 
     public void setProgramParameterDao(ProgramParameterDao programParameterDao) {
         this.programParameterDao = programParameterDao;
-    }
-
-    public Properties getViewLabels() {
-        return viewLabels;
-    }
-
-    public void setViewLabels(Properties viewLabels) {
-        this.viewLabels = viewLabels;
-    }
-
-    public Map<String, String> getParameterKeys() {
-        return parameterKeys;
-    }
-
-    public void setParameterKeys(Map<String, String> parameterKeys) {
-        this.parameterKeys = parameterKeys;
     }
 
     public GroupService getGroupService() {
@@ -73,8 +59,7 @@ public abstract class StrategyBase {
         this.programService = programService;
     }
     
-    public String getParameterValue(Program program, String key) {
-        Validate.isTrue(parameterKeys.containsKey(key), "Not a valid parameter: ", key);
+    public String getParameterValue(Program program, ProgramParameterKey key) {
         String result = null;
         try {
             ProgramParameter parameter;
@@ -86,16 +71,16 @@ public abstract class StrategyBase {
         }
         if (result == null) {
             // get default
-            result = parameterKeys.get(key);
+            result = key.getDefaultValue();
         }
         return result;
     }
     
-    public int getParameterValueInt(Program program, String key) {
+    public int getParameterValueInt(Program program, ProgramParameterKey key) {
         return Integer.parseInt(getParameterValue(program, key));
     }
     
-    public float getParameterValueFloat(Program program, String key) {
+    public float getParameterValueFloat(Program program, ProgramParameterKey key) {
         return Float.parseFloat(getParameterValue(program, key));
     }
     
@@ -116,7 +101,7 @@ public abstract class StrategyBase {
                     // group. We will make sure that the original customer notif
                     // object has all of the notif methods set that this one does.
                     GroupCustomerNotif previousNotif = seenCustomers.get(customerNotif.getCustomer());
-                    for (Integer method : customerNotif.getNotifMap()) {
+                    for (NotifType method : customerNotif.getNotifMap()) {
                         previousNotif.getNotifMap().setSupportsMethod(method, true);
                     }
                 } else {
@@ -134,6 +119,25 @@ public abstract class StrategyBase {
         return result;
     }
     
+    /**
+     * Using the existing plumbing that sets up the customer selection page
+     * to re-check the customers after the fact. It short-circuits is it finds
+     * a single customer that can't be included.
+     * @param builder
+     * @throws EventCreationException if a customer can not be included
+     */
+    protected void verifyCustomers(EventBuilderBase builder) throws EventCreationException {
+        List<GroupCustomerNotif> customerList = builder.getCustomerList();
+        for (GroupCustomerNotif notif : customerList) {
+            VerifiedCustomer vCustoemr = new VerifiedCustomer(notif);
+            verifyCustomer(builder, vCustoemr);
+            if (!vCustoemr.isIncludable()) {
+                throw new EventCreationException("Customer " + notif.getCustomer() +
+                                                 " can no longer be included: " + vCustoemr.getReasonForExclusion());
+            }
+        }
+    }
+    
     protected abstract 
     void 
     verifyCustomer(EventBuilderBase builder, 
@@ -141,7 +145,7 @@ public abstract class StrategyBase {
 
     public List<ProgramParameter> getParameters(Program program) {
         List<ProgramParameter> result = new LinkedList<ProgramParameter>();
-        for (String key : getParameterKeys().keySet()) {
+        for (ProgramParameterKey key : parameters) {
             ProgramParameter parameter;
             try {
                 parameter = programParameterDao.getFor(key, program);
@@ -149,7 +153,7 @@ public abstract class StrategyBase {
                 parameter = new ProgramParameter();
                 parameter.setParameterKey(key);
                 parameter.setProgram(program);
-                parameter.setParameterValue(parameterKeys.get(key));
+                parameter.setParameterValue(key.getDefaultValue());
             }
             result.add(parameter);
         }
@@ -159,7 +163,22 @@ public abstract class StrategyBase {
     public abstract
     List<? extends BaseEvent> getEventsForProgram(Program program);
 
-    public abstract BigDecimal getInterruptibleLoad(CICustomerStub customer) throws PointException;
+    public abstract BigDecimal getCurrentLoad(CICustomerStub customer) throws PointException;
+
+    public void setParameterStrings(Set<String> parameterStrings) {
+        for (String string : parameterStrings) {
+            ProgramParameterKey key = ProgramParameterKey.valueOf(string);
+            parameters.add(key);
+        }
+    }
+
+    public Set<ProgramParameterKey> getParameters() {
+        return parameters;
+    }
+
+    public void setParameters(Set<ProgramParameterKey> parameters) {
+        this.parameters = parameters;
+    }
 
 
 }

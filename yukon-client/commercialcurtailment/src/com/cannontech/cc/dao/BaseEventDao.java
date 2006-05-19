@@ -36,6 +36,7 @@ public class BaseEventDao implements CommonEventOperations {
     
     /**
      * Returns all events for a given customer.
+     * Events are sorted chronological order.
      */
     public List<BaseEvent> getAllForCustomer(CICustomerStub customer) {
         List<BaseEvent> allEvents = new ArrayList<BaseEvent>(100);

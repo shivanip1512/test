@@ -1,6 +1,7 @@
 package com.cannontech.cc.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -33,7 +34,9 @@ public class GroupService {
 
     public List<Group> getAllGroups(LiteYukonUser user) {
         LiteEnergyCompany energyCompany = EnergyCompanyFuncs.getEnergyCompany(user);
-        return groupDao.getGroupsForEnergyCompany(energyCompany.getEnergyCompanyID());
+        List<Group> groupsForEnergyCompany = groupDao.getGroupsForEnergyCompany(energyCompany.getEnergyCompanyID());
+        Collections.sort(groupsForEnergyCompany);
+        return groupsForEnergyCompany;
     }
     
     public Set<String> getSatisfiedPointGroups(List<GroupCustomerNotif> notifList) {

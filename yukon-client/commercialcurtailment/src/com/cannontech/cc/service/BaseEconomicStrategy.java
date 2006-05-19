@@ -23,6 +23,7 @@ import com.cannontech.cc.model.BaseEvent;
 import com.cannontech.cc.model.CICustomerPointData;
 import com.cannontech.cc.model.CICustomerStub;
 import com.cannontech.cc.model.EconomicEvent;
+import com.cannontech.cc.model.EconomicEventNotif;
 import com.cannontech.cc.model.EconomicEventParticipant;
 import com.cannontech.cc.model.EconomicEventParticipantSelection;
 import com.cannontech.cc.model.EconomicEventParticipantSelectionWindow;
@@ -30,6 +31,7 @@ import com.cannontech.cc.model.EconomicEventPricing;
 import com.cannontech.cc.model.EconomicEventPricingWindow;
 import com.cannontech.cc.model.GroupCustomerNotif;
 import com.cannontech.cc.model.Program;
+import com.cannontech.cc.model.ProgramParameterKey;
 import com.cannontech.cc.model.EconomicEventParticipantSelection.SelectionState;
 import com.cannontech.cc.service.builder.EconomicBuilder;
 import com.cannontech.cc.service.enums.EconomicEventState;
@@ -41,7 +43,9 @@ import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.cache.functions.SimplePointAccess;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.db.customer.CICustomerPointType;
 import com.cannontech.enums.EconomicEventAction;
+import com.cannontech.enums.NotificationState;
 import com.cannontech.yukon.INotifConnection;
 
 public abstract class BaseEconomicStrategy extends StrategyBase {
@@ -132,19 +136,19 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
     }
 
     protected int getDefaultNotifTimeBacksetMinutes(Program program) {
-        return getParameterValueInt(program, "DEFAULT_NOTIFICATION_OFFSET_MINUTES");
+        return getParameterValueInt(program, ProgramParameterKey.DEFAULT_NOTIFICATION_OFFSET_MINUTES);
     }
     
     protected int getDefaultStartTimeOffsetMinutes(Program program) {
-        return getParameterValueInt(program, "DEFAULT_EVENT_OFFSET_MINUTES");
+        return getParameterValueInt(program, ProgramParameterKey.DEFAULT_EVENT_OFFSET_MINUTES);
     }
     
     protected int getDefaultDurationMinutes(Program program) {
-        return getParameterValueInt(program, "DEFAULT_EVENT_DURATION_MINUTES");
+        return getParameterValueInt(program, ProgramParameterKey.DEFAULT_EVENT_DURATION_MINUTES);
     }
     
     protected BigDecimal getDefaultEnergyPrice(Program program) {
-        float value = getParameterValueFloat(program, "DEFAULT_ENERGY_PRICE");
+        float value = getParameterValueFloat(program, ProgramParameterKey.DEFAULT_ENERGY_PRICE);
         // specify rounding to five decimal places
         return new BigDecimal(value, new MathContext(5));
     }
@@ -161,9 +165,9 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
 
     public abstract BigDecimal getCustomerElectionBuyThrough(EconomicEventParticipant customer) throws PointException;
     
-    protected BigDecimal getPointValue(EconomicEventParticipant customer, String type) throws PointException {
+    protected BigDecimal getPointValue(EconomicEventParticipant customer, CICustomerPointType type) throws PointException {
         CICustomerPointData data = customer.getCustomer().getPointData().get(type);
-        Validate.notNull(data, "Customer " + customer + " does not have a point for IsocBuyPrice");
+        Validate.notNull(data, "Customer " + customer.getCustomer() + " does not have a point for " + type);
         LitePoint litePoint = PointFuncs.getLitePoint(data.getPointId());
         double pointValue = pointAccess.getPointValue(litePoint);
         return new BigDecimal(pointValue);
@@ -237,11 +241,20 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
     }
 
     public void verifyPrices(EconomicBuilder builder) throws EventCreationException {
+        // for the time being, there are no restrictions on what can be entered
     }
 
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public EconomicEvent createEvent(EconomicBuilder builder) throws EventCreationException {
-        // verify event
+        // verify times
+        verifyTimes(builder);
+        
+        // verify prices
+        verifyTimes(builder);
+        
+        // verify customers
+        verifyCustomers(builder);
+        
 
         EconomicEvent event = createDatabaseObjects(builder);
         
@@ -254,13 +267,12 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
         return event;
     }
 
+    
     protected EconomicEvent createDatabaseObjects(EconomicBuilder builder) throws EventCreationException {
         // create curtail event
         EconomicEvent event = builder.getEvent();
         
-        
         try {
-
             EconomicEventPricing revision = builder.getEventRevision();
             Date now = new Date(); // now
             revision.setCreationTime(now);
@@ -309,8 +321,8 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
                 }
                 getEconomicEventParticipantDao().save(participant);
             }
-        } catch (Exception e) {
-            throw new EventCreationException("Unable to create event", e);
+        } catch (PointException e) {
+            throw new EventCreationException(e.getMessage(), e);
         }
 
         return event;
@@ -515,6 +527,9 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
     }
     
     public void cancelEvent(EconomicEvent event, LiteYukonUser user) {
+        event.setState(EconomicEventState.CANCELLED);
+        economicEventDao.save(event);
+        notificationProxy.sendEconomicNotification(event.getId(), event.getLatestRevision().getRevision(), EconomicEventAction.CANCELING);
     }
     
     public boolean canUserSubmitSelectionForRevision(EconomicEventParticipantSelection selection, LiteYukonUser user, Date time) {
@@ -610,6 +625,22 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
         return buyThrough.compareTo(BigDecimal.ZERO) == 0;
     }
     
+    public float getNotificationSuccessRate(EconomicEventParticipant participant) {
+        int success = 0;
+        int total = 0;
+        List<EconomicEventNotif> notifs = economicEventNotifDao.getForParticipant(participant);
+        for (EconomicEventNotif notif : notifs) {
+            total++;
+            if (notif.getState().equals(NotificationState.SUCCEEDED)) {
+                success++;
+            }
+        }
+        if (total == 0) {
+            return 0;
+        }
+        return (float)success/(float)total;
+    }
+
     @Override
     public List<? extends BaseEvent> getEventsForProgram(Program program) {
         return economicEventDao.getAllForProgram(program);

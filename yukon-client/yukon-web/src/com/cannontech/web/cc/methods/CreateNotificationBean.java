@@ -25,8 +25,6 @@ public class CreateNotificationBean extends EventCreationBase {
     @Override
     public void initialize() {
         setBuilder(getMyStrategy().createBuilder(getProgram()));
-        
-        clearForm();
     }
 
     public String doAfterParameterEntry() {

@@ -42,7 +42,7 @@ public abstract class JSFUtil {
     }
     
     public static void handleException(String message, Throwable t) {
-        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, message = ": " + t.getMessage(), null);
+        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, message + ": " + t.getMessage(), null);
         FacesContext.getCurrentInstance().addMessage(null, msg);
         CTILogger.error(message, t);
     }

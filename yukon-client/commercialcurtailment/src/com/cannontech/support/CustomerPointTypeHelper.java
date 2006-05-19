@@ -9,7 +9,6 @@ import org.apache.commons.lang.Validate;
 import com.cannontech.cc.dao.CustomerDao;
 import com.cannontech.cc.model.CICustomerPointData;
 import com.cannontech.cc.model.CICustomerStub;
-import com.cannontech.cc.service.enums.PointTypes;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.functions.DBPersistentFuncs;
 import com.cannontech.database.cache.functions.DeviceFuncs;
@@ -26,6 +25,7 @@ import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointUnits;
+import com.cannontech.database.db.customer.CICustomerPointType;
 import com.cannontech.database.db.point.Point;
 
 public class CustomerPointTypeHelper {
@@ -38,9 +38,14 @@ public class CustomerPointTypeHelper {
         super();
     }
     
-    public LitePoint getPoint(CICustomerStub customer, String type) throws NoPointException {
+    /**
+     * @param customer
+     * @param type
+     * @return
+     * @throws NoPointException
+     */
+    public LitePoint getPoint(CICustomerStub customer, CICustomerPointType type) throws NoPointException {
         Validate.notNull(customer);
-        Validate.notEmpty(type);
         CICustomerPointData data = customer.getPointData().get(type);
         if (data == null) {
             throw new NoPointException(customer.getId(), type);
@@ -49,25 +54,21 @@ public class CustomerPointTypeHelper {
         return litePoint;
     }
     
-    public LitePoint getPoint(CICustomerStub customer, PointTypes type) throws NoPointException {
-        return getPoint(customer, type.name());
-    }
-    
     public boolean doRequiredPointsExist(CICustomerStub customer) {
         LiteCICustomer liteCICustomer = customer.getLite();
-        Collection<String> applicablePoints = pointTypeLookup.getApplicablePoints(liteCICustomer);
+        Collection<CICustomerPointType> applicablePoints = pointTypeLookup.getApplicablePoints(liteCICustomer);
         return customer.getPointData().keySet().containsAll(applicablePoints);
     }
     
     public boolean isPointGroupSatisfied(CICustomerStub customer, String pointGroup) {
-        Collection<String> applicablePoints = pointTypeLookup.getApplicablePoints(pointGroup);
+        Collection<CICustomerPointType> applicablePoints = pointTypeLookup.getApplicablePoints(pointGroup);
         
         return customer.getPointData().keySet().containsAll(applicablePoints);
     }
     
     public Set<String> getSatisfiedPointGroups(CICustomerStub customer) {
         Set<String> result = new TreeSet<String>();
-        Set<String> currentPoints = customer.getPointData().keySet();
+        Set<CICustomerPointType> currentPoints = customer.getPointData().keySet();
         Collection<String> typeGroups = pointTypeLookup.getPointTypeGroups(customer.getLite());
         for (String typeGroup : typeGroups) {
             if (isPointGroupSatisfied(customer, typeGroup)) {
@@ -90,7 +91,11 @@ public class CustomerPointTypeHelper {
         return result;
     }
     
-    public void createPoint(CICustomerStub customer, String type) {
+    /**
+     * @param customer
+     * @param type
+     */
+    public void createPoint(CICustomerStub customer, CICustomerPointType type) {
         LiteYukonPAObject customerDevice = getCustomerDevice(customer);
         String pointName = customer.getCompanyName() + "-" + type;
         int pointId = 0;
@@ -121,10 +126,6 @@ public class CustomerPointTypeHelper {
         customer.addPoint(customerPoint);
         
         customerDao.save(customer);
-    }
-    
-    public void createPoint(CICustomerStub customer, PointTypes type) {
-        createPoint(customer, type.name());
     }
     
     protected LiteYukonPAObject getCustomerDevice(CICustomerStub customer) {

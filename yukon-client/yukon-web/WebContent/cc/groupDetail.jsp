@@ -48,7 +48,7 @@
       <t:outputText value="SMS"/>
     </t:outputLabel>
   </t:column>
-  <t:column>
+  <t:column width="25">
     <t:commandLink actionListener="#{sGroupDetail.deleteNotif}">
       <h:graphicImage value="/WebConfig/yukon/Icons/clearbits/subtract.gif" styleClass="cssicon" />
     </t:commandLink>
@@ -67,7 +67,7 @@
   <t:column>
     <t:outputText value="#{customerNotif.customer.companyName}"/>
   </t:column>
-  <t:column>
+  <t:column width="25">
     <t:commandLink actionListener="#{sGroupDetail.addNotif}">
       <h:graphicImage value="/WebConfig/yukon/Icons/clearbits/add.gif" styleClass="cssicon" />
     </t:commandLink>

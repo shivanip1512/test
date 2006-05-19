@@ -155,7 +155,7 @@ public class ProgramDetailBean {
 
     public String delete() {
         programService.deleteProgram(program);
-        return "success";
+        return "programList";
     }
 
     public DataModel getAssignedGroupModel() {
@@ -180,11 +180,6 @@ public class ProgramDetailBean {
 
     public void setProgramParameters(List<ProgramParameter> programParameters) {
         this.programParameters = programParameters;
-    }
-
-    public Properties getLabels() {
-        StrategyBase strategy = getStrategyFactory().getStrategy(getProgram());
-        return strategy.getViewLabels();
     }
 
     public CommercialCurtailmentBean getCommercialCurtailmentBean() {

@@ -1,6 +1,7 @@
 package com.cannontech.cc.model;
 
 import java.io.Serializable;
+import java.util.Comparator;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,6 +14,8 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.hibernate.annotations.GenericGenerator;
 
+import com.cannontech.util.NaturalOrderComparator;
+
 @Entity
 @Table(name = "CCurtGroup",
        uniqueConstraints=@UniqueConstraint(columnNames={"energyCompanyId","CCurtGroupName"}))
@@ -20,6 +23,7 @@ public class Group implements Serializable, Comparable<Group> {
     private String name;
     private Integer id;
     private Integer energyCompanyId;
+    static private Comparator<String> comparator = new NaturalOrderComparator();
 
     public Integer getEnergyCompanyId() {
         return energyCompanyId;
@@ -72,7 +76,7 @@ public class Group implements Serializable, Comparable<Group> {
     }
 
     public int compareTo(Group o) {
-        return name.compareTo(o.name);
+        return comparator.compare(name, o.name);
     }
     
 

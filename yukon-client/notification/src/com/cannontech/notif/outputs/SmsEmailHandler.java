@@ -1,7 +1,7 @@
 package com.cannontech.notif.outputs;
 
 import com.cannontech.database.cache.functions.YukonListFuncs;
-import com.cannontech.database.data.notification.NotifMap;
+import com.cannontech.database.data.notification.NotifType;
 
 public class SmsEmailHandler extends GenericEmailHandler {
 
@@ -19,8 +19,8 @@ public class SmsEmailHandler extends GenericEmailHandler {
         return checker;
     }
 
-    public int getNotificationMethod() {
-        return NotifMap.METHOD_SMS;
+    public NotifType getNotificationMethod() {
+        return NotifType.SMS;
     }
 
 }

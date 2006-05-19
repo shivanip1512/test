@@ -1,5 +1,7 @@
 package com.cannontech.notif.outputs;
 
+import com.cannontech.database.data.notification.NotifType;
+
 
 
 /**
@@ -23,7 +25,7 @@ public abstract class OutputHandler {
     public void startup() {};
     public void shutdown() {}
 
-    public abstract int getNotificationMethod();
+    public abstract NotifType getNotificationMethod();
     
     
 

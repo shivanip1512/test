@@ -6,6 +6,7 @@ import org.hibernate.LockMode;
 
 import com.cannontech.cc.dao.AvailableProgramGroupDao;
 import com.cannontech.cc.model.AvailableProgramGroup;
+import com.cannontech.cc.model.Group;
 import com.cannontech.cc.model.Program;
 import com.cannontech.hibernate.YukonBaseHibernateDao;
 
@@ -33,6 +34,16 @@ public class AvailableProgramGroupDaoImpl extends YukonBaseHibernateDao implemen
         // objects would refer internally to a different Program than the one passed in
         getHibernateTemplate().lock(program, LockMode.NONE);
         return getHibernateTemplate().find("from AvailableProgramGroup where program = ?", program);
+    }
+
+    public void deleteFor(Group object) {
+        getHibernateTemplate().bulkUpdate("delete AvailableProgramGroup apg " +
+                                          "where apg.group = ?", object);
+    }
+
+    public void deleteFor(Program object) {
+        getHibernateTemplate().bulkUpdate("delete AvailableProgramGroup apg " +
+                                          "where apg.program = ?", object);
     }
 
 }

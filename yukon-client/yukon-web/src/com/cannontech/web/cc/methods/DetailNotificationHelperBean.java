@@ -23,7 +23,8 @@ public class DetailNotificationHelperBean {
     }
 
     public List<CurtailmentEventNotif> getNotifList() {
-        return getNotificationService().getEventNotifs(getEvent());
+        List<CurtailmentEventNotif> eventNotifs = getNotificationService().getEventNotifs(getEvent());
+        return eventNotifs;
     }
     
     public NotificationService getNotificationService() {

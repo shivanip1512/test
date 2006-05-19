@@ -51,4 +51,10 @@ public class GroupCustomerNotifDaoImpl extends YukonBaseHibernateDao implements
         }
     }
 
+    public void deleteFor(Group object) {
+        getHibernateTemplate().bulkUpdate("delete GroupCustomerNotif gcn " +
+                                          "where gcn.group = ?", object);
+
+    }
+
 }

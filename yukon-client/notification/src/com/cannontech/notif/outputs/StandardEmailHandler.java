@@ -1,7 +1,7 @@
 package com.cannontech.notif.outputs;
 
 import com.cannontech.database.cache.functions.YukonListFuncs;
-import com.cannontech.database.data.notification.NotifMap;
+import com.cannontech.database.data.notification.NotifType;
 
 /**
  * Handles all outgoing email messages for the NotificationServer.
@@ -22,8 +22,8 @@ public class StandardEmailHandler extends GenericEmailHandler {
         return checker;
     }
 
-    public int getNotificationMethod() {
-        return NotifMap.METHOD_EMAIL;
+    public NotifType getNotificationMethod() {
+        return NotifType.EMAIL;
     }
 
 }

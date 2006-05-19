@@ -150,9 +150,9 @@ public class UserDetailEconomicBean implements BaseDetailBean {
         selection.setConnectionAudit(previousAudit + "; Modified by " + username + " from " + ip);
         try {
             strategy.saveParticipantSelection(selection, commercialCurtailment.getYukonUser());
-            JSFUtil.addNullInfoMessage("Prices have been saved");
+            JSFUtil.addNullInfoMessage("kW Buy Through has been saved");
         } catch (EventModificationException e) {
-            JSFUtil.handleException("Cannot save prices", e);
+            JSFUtil.handleException("Unable to save prices", e);
         }
         return null;
     }

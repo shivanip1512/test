@@ -4,10 +4,14 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+
+import com.cannontech.database.db.customer.CICustomerPointType;
 
 @Embeddable
 public class CICustomerPointDataPk implements Serializable {
-    private String type;
+    private CICustomerPointType type;
     private Integer customerId;
     
     public Integer getCustomerId() {
@@ -19,11 +23,12 @@ public class CICustomerPointDataPk implements Serializable {
     }
     
     @Column(length=16, nullable=false)
-    public String getType() {
+    @Enumerated(EnumType.STRING)
+    public CICustomerPointType getType() {
         return type;
     }
     
-    public void setType(String type) {
+    public void setType(CICustomerPointType type) {
         this.type = type;
     }
     

@@ -6,7 +6,7 @@
 <cti:standardPage title="Group List" module="commercialcurtailment">
 <cti:standardMenu />
 
-<h2>Create <t:outputText value="#{sCustomerSelectionBean.eventBean.program.name}"/> Event</h2>
+<h2>Create <t:outputText value="#{sCustomerSelectionBean.eventBean.program.programType.name} #{sCustomerSelectionBean.eventBean.program.name}"/> Event</h2>
 <h3>Select Groups</h3>
 <div class="jsfMessages"> 
 <t:messages showSummary="false" showDetail="true" 

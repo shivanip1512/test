@@ -4,18 +4,21 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.TimeZone;
+
+import org.apache.commons.collections.iterators.ReverseListIterator;
 
 import com.cannontech.cc.dao.BaseEventDao;
 import com.cannontech.cc.model.BaseEvent;
 import com.cannontech.cc.model.CICustomerStub;
 import com.cannontech.cc.service.builder.VerifiedCustomer;
-import com.cannontech.cc.service.enums.IsocPointTypes;
 import com.cannontech.common.exception.PointException;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.database.cache.functions.SimplePointAccess;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.db.customer.CICustomerPointType;
 import com.cannontech.support.CustomerPointTypeHelper;
 
 public class IsocCommonStrategy extends StrategyGroupBase {
@@ -51,15 +54,15 @@ public class IsocCommonStrategy extends StrategyGroupBase {
     }
     
     public boolean hasCustomerExceededAllowedHours(CICustomerStub customer, int propossedEventLength) throws PointException {
-        LitePoint allowedHoursPoint = pointTypeHelper.getPoint(customer, IsocPointTypes.InterruptHours);
+        LitePoint allowedHoursPoint = pointTypeHelper.getPoint(customer, CICustomerPointType.InterruptHours);
         int allowedHours = (int) pointAccess.getPointValue(allowedHoursPoint);
         // applies to current year
         int actualHours = getTotalEventHours(customer);
         return (actualHours + propossedEventLength) > allowedHours;
     }
     
-    public BigDecimal getInterruptibleLoad(CICustomerStub customer) throws PointException {
-        LitePoint point = pointTypeHelper.getPoint(customer, IsocPointTypes.ContractIntLoad);
+    public BigDecimal getCurrentLoad(CICustomerStub customer) throws PointException {
+        LitePoint point = pointTypeHelper.getPoint(customer, CICustomerPointType.CurrentLoad);
         double interruptLoad = pointAccess.getPointValue(point);
         
         return new BigDecimal(interruptLoad, new MathContext(0));
@@ -68,9 +71,10 @@ public class IsocCommonStrategy extends StrategyGroupBase {
     public void checkEventCustomer(VerifiedCustomer vCustomer, BaseEvent event) {
         CICustomerStub customer = vCustomer.getCustomer();
         List<BaseEvent> forCustomer = baseEventDao.getAllForCustomer(customer);
-        //TODO clean up how the ordering of the above call works
-        
-        for (BaseEvent otherEvent : forCustomer) {
+        //TODO reverse list here
+        Iterator iterator = new ReverseListIterator(forCustomer);
+        for (Iterator iter = new ReverseListIterator(forCustomer); iter.hasNext();) {
+            BaseEvent otherEvent = (BaseEvent) iter.next();
             // rely on ordering from dao (reverse)
             if (otherEvent.getStopTime().before(event.getStartTime())) {
                 // because of the event ordering, no more possible collisions exist
@@ -79,7 +83,7 @@ public class IsocCommonStrategy extends StrategyGroupBase {
             if (otherEvent.getStartTime().before(event.getStopTime())) {
                 // we have a collision
                 vCustomer.addExclusion(VerifiedCustomer.Status.EXCLUDE, 
-                "already in an event (" + event.getDisplayName() + ") at that time");
+                "already in an event (" + otherEvent.getDisplayName() + ") at that time");
                 break;
             }
             
@@ -103,7 +107,7 @@ public class IsocCommonStrategy extends StrategyGroupBase {
     }
     
     private boolean isEventNoticeTooShort(CICustomerStub customer, int notifMinutes) throws PointException {
-        LitePoint minimumNoticeMinutesPoint = pointTypeHelper.getPoint(customer, IsocPointTypes.MinimumNotice);
+        LitePoint minimumNoticeMinutesPoint = pointTypeHelper.getPoint(customer, CICustomerPointType.MinimumNotice);
         int minimumNoticeMinutes = (int) pointAccess.getPointValue(minimumNoticeMinutesPoint);
         return notifMinutes < minimumNoticeMinutes;
     }

@@ -1,13 +1,11 @@
 package com.cannontech.cc.dao;
 
+import com.cannontech.cc.model.ProgramParameterKey;
+
 public class UnknownParameterException extends Exception {
 
-    public UnknownParameterException(String message) {
-        super(message);
-    }
-
-    public UnknownParameterException(String message, Throwable cause) {
-        super(message, cause);
+    public UnknownParameterException(ProgramParameterKey message) {
+        super(message.toString());
     }
 
 }

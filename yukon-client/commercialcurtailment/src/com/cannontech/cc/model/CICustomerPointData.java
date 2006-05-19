@@ -8,6 +8,8 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Type;
 
+import com.cannontech.database.db.customer.CICustomerPointType;
+
 /**
  * Yep. This class is pretty ugly. Maybe when the EJB3 Persistence stuff
  * is better documented I'll be able to figure out how to have a foreign key
@@ -62,7 +64,7 @@ public class CICustomerPointData {
     }
 
     @Transient
-    public String getType() {
+    public CICustomerPointType getType() {
         return id.getType();
     }
 
@@ -70,7 +72,7 @@ public class CICustomerPointData {
         id.setCustomerId(customerId);
     }
 
-    public void setType(String type) {
+    public void setType(CICustomerPointType type) {
         id.setType(type);
     }
     

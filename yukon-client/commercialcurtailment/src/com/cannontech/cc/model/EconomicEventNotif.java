@@ -11,17 +11,19 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.hibernate.annotations.GenericGenerator;
 
+import com.cannontech.database.data.notification.NotifType;
 import com.cannontech.enums.NotificationReason;
 import com.cannontech.enums.NotificationState;
 
 @Entity
 @Table(name = "CCurtEconomicEventNotif")
-public class EconomicEventNotif {
+public class EconomicEventNotif implements EventNotif {
     private Integer id;
     private Integer notifTypeId;
     private Date notificationTime;
@@ -57,6 +59,15 @@ public class EconomicEventNotif {
 
     public void setNotifTypeId(Integer notifTypeId) {
         this.notifTypeId = notifTypeId;
+    }
+    
+    @Transient
+    public NotifType getNotifType() {
+        return NotifType.values()[notifTypeId];
+    }
+    
+    public void setNotifType(NotifType type) {
+        this.notifTypeId = type.ordinal();
     }
 
     @Enumerated(EnumType.STRING)
@@ -97,6 +108,11 @@ public class EconomicEventNotif {
     
     public void setRevision(EconomicEventPricing revision) {
         this.revision = revision;
+    }
+    
+    @Transient
+    public CICustomerStub getCustomer() {
+        return participant.getCustomer();
     }
 
     @Override

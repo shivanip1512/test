@@ -1,3 +1,12 @@
+#Content textarea {
+  font-family: sans-serif;
+  width: 200px;
+}
+
+#Content input, #Content select {
+  font-family: sans-serif;
+}
+
 table.light_table {
   font-size: 1em;
   background: white;
@@ -41,14 +50,14 @@ table.horizBorders {
   border-collapse: collapse;
   border-left: 1px solid black;
   border-right: 1px solid black;
-  border-bottom: 1px solid black;
+  border-top: 1px solid black;
   margin-left: 1em;
   margin: .5em;
 }
 
 table.horizBorders td {
   padding: .2em .5em;
-  border-top: 1px solid black;
+  border-bottom: 1px solid black;
   /*border-bottom: 1px solid black;*/
 }
 
@@ -71,16 +80,18 @@ div.actionButtons * {
 }
 
 .section .sectionBody {
-  max-height: 250px;
+  font-size: .9em;
+  height: 200px;
+  width: 420px;
   overflow: auto;
   border: 1px black solid;
 }
 
-.section .sectionBody table.horizBorders{
+.section .sectionBody table.horizBorders {
   margin: 0;
-  border-left: none;
-  border-right: none;
-  border-bottom: none;
+  width: 400px;
+  border: none;
+  
 }
 
 div.section div.sectionTitle {

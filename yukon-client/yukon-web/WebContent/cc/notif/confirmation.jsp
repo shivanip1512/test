@@ -8,7 +8,7 @@
 <cti:standardPage title="Create Notification Event" module="commercialcurtailment">
 <cti:standardMenu />
 
-<h2>Create <t:outputText value="#{sEconomicCreate.program.programType.name} #{sEconomicCreate.program.name}"/> Event</h2>
+<h2>Create <t:outputText value="#{sNotificationCreate.program.programType.name} #{sNotificationCreate.program.name}"/> Event</h2>
 <h3>Confirm</h3>
 <div class="jsfMessages"> 
 <t:messages showSummary="false" showDetail="true" 
@@ -73,7 +73,7 @@
 
 <div>
 <h3>Customers</h3>
-<t:dataList value="#{sNotificationCreate.builder.customerList}" var="thisCustomer" layout="unorderedlist">
+<t:dataList value="#{sNotificationCreate.builder.customerList}" var="thisCustomer" layout="unorderedList">
   <t:outputText value="#{thisCustomer.customer.companyName}"/>
 </t:dataList>
 </div>

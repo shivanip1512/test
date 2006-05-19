@@ -1,0 +1,158 @@
+package com.cannontech.notif.handler;
+
+import java.util.*;
+
+import com.cannontech.cc.dao.*;
+import com.cannontech.cc.model.*;
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.data.notification.NotifType;
+import com.cannontech.enums.NotificationReason;
+import com.cannontech.enums.NotificationState;
+import com.cannontech.message.notif.CurtailmentEventMsg;
+import com.cannontech.notif.outputs.*;
+
+public class CurtailmentEventScheduler extends EventScheduler {
+    private CurtailmentEventDao curtailmentEventDao;
+    private CurtailmentEventParticipantDao curtailmentEventParticipantDao;
+    private CurtailmentEventNotifDao curtailmentEventNotifDao;
+
+    public CurtailmentEventScheduler(OutputHandlerHelper helper) {
+        super(helper);
+    }
+    
+    public boolean deleteEventNotification(CurtailmentEvent event) {
+        boolean startCancelled = attemptDeleteNotification(event, NotificationReason.STARTING);
+        boolean stopCancelled = false;
+        if (startCancelled) {
+            stopCancelled = attemptDeleteNotification(event, NotificationReason.STOPPING);
+        }
+        boolean success = startCancelled && stopCancelled;
+        if (!success) {
+            CTILogger.error("Potential error while deleting curtailment notifications (startCancelled="
+                            + startCancelled + ", stopCancelled=" + stopCancelled + ")");
+        }
+        return success;
+    }
+
+    /**
+     * Deletes all pending notifs for an event.
+     * @param msg
+     * @return true if all notifs were prevented from running
+     */
+    private synchronized boolean attemptDeleteNotification(CurtailmentEvent event, 
+                                                           NotificationReason reason) {
+       // this should be serialized with any other method that updates the state
+       // this should be optimized within the dao
+       List<CurtailmentEventNotif> forEvent = curtailmentEventNotifDao.getForEventAndReason(event, reason);
+       boolean missedOne = false;
+       //TODO this loop should be changed to check if it could delete all and the
+       // go through and delete, it probably doesn't make a big difference, though
+       for (CurtailmentEventNotif notif : forEvent) {
+           if (notif.getState().equals(NotificationState.SCHEDULED)) {
+               curtailmentEventNotifDao.delete(notif);
+           } else {
+               missedOne = true;
+           }
+       }
+       return !missedOne;
+    }
+
+    public void handleCurtailmentMessage(CurtailmentEventMsg msg) {
+        // should I be talking to the services layer instead???
+        final CurtailmentEvent event = curtailmentEventDao.getForId(msg.curtailmentEventId);
+        List<CurtailmentEventParticipant> participants = curtailmentEventParticipantDao.getForEvent(event);
+        
+        if (msg.action == CurtailmentEventMsg.STARTING) {
+            createNotification(participants,
+                               NotificationReason.STARTING,
+                               event.getNotificationTime());
+    
+            createNotification(participants,
+                               NotificationReason.STOPPING,
+                               event.getStopTime()); 
+        } else if (msg.action == CurtailmentEventMsg.CANCELLING) {
+            Date now = new Date();
+            createNotification(participants, NotificationReason.CANCELING, now);
+        }
+
+    }
+
+    
+    private void createNotification(List<CurtailmentEventParticipant> customers,
+                                    NotificationReason reason,
+                                    Date notifTime) {
+        
+        for (CurtailmentEventParticipant particip : customers) {
+            for (NotifType type : particip.getNotifMap()) {
+                CurtailmentEventNotif notif = new CurtailmentEventNotif();
+                notif.setNotificationTime(notifTime);
+                notif.setNotifType(type);
+                notif.setParticipant(particip);
+                notif.setReason(reason);
+                notif.setState(NotificationState.SCHEDULED);
+                curtailmentEventNotifDao.save(notif);
+            }
+        }
+        scheduleNotif(notifTime);
+    }
+    
+
+
+    @Override
+    protected void updateNotif(EventNotif notif) {
+        curtailmentEventNotifDao.save((CurtailmentEventNotif) notif);
+    }
+
+    @Override
+    protected List<? extends EventNotif> getScheduledNotifs() {
+        return curtailmentEventNotifDao.getScheduledNotifs();
+    }
+
+    @Override
+    protected NotificationBuilder createBuilder(EventNotif _eventNotif) {
+        final CurtailmentEventNotif eventNotif = (CurtailmentEventNotif) _eventNotif;
+        final CurtailmentEvent event = eventNotif.getParticipant().getEvent();
+        
+        final Notification notif = new Notification("curtailment");
+        
+        fillInBaseAttribs(notif, event);
+        NotificationReason reason = eventNotif.getReason();
+        notif.addData("action", reason.toString());
+        notif.addData("message", event.getMessage());
+        
+        final NotificationBuilder notifBuilder = new NotificationBuilder() {
+
+            public Notification buildNotification(Contactable contact) {
+                TimeZone timeZone = contact.getTimeZone();
+                fillInFormattedTimes(notif, event, timeZone);
+                return notif;
+            }
+
+            public void notificationComplete(Contactable contact, NotifType notifType, boolean success) {
+                // set status on eventNotif
+                // probably shouldn't directly manipulate
+                eventNotif.setState(success ? NotificationState.SUCCEEDED : NotificationState.FAILED);
+                eventNotif.setNotificationTime(new Date());
+                curtailmentEventNotifDao.save(eventNotif);
+            }
+        };
+        return notifBuilder;
+    }
+    
+    
+    public void setCurtailmentEventDao(CurtailmentEventDao curtailmentEventDao) {
+        this.curtailmentEventDao = curtailmentEventDao;
+    }
+
+    public void setCurtailmentEventNotifDao(CurtailmentEventNotifDao curtailmentEventNotifDao) {
+        this.curtailmentEventNotifDao = curtailmentEventNotifDao;
+    }
+
+    public void setCurtailmentEventParticipantDao(
+                                                  CurtailmentEventParticipantDao curtailmentEventParticipantDao) {
+        this.curtailmentEventParticipantDao = curtailmentEventParticipantDao;
+    }
+
+
+
+}

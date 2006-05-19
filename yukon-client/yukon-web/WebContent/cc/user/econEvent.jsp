@@ -6,11 +6,24 @@
 <cti:standardPage title="Event Overview" module="commercialcurtailment_user">
 <cti:standardMenu />
 
-<div> <t:messages showDetail="true" showSummary="false" /> </div>
+<div class="jsfMessages"> 
+<t:messages showSummary="false" showDetail="true" 
+            errorClass="jsfError" 
+            warnClass="jsfWarn" 
+            infoClass="jsfInfo" 
+            fatalClass="jsfFatal"/> 
+</div>
 
 <h:form>
 
 <table class="horizBorders">
+  <tr>
+    <td>Event Number</td>
+    <td>
+      <t:outputText 
+         value="#{sEconomicUserDetail.event.displayName}"/>
+    </td>
+  </tr>
   <tr>
     <td>Start Date</td>
     <td>
@@ -98,7 +111,7 @@
   </t:column>
 </t:dataTable>
 
-<t:commandButton value="Save Prices" rendered="#{sEconomicUserDetail.showSaveButton}" action="#{sEconomicUserDetail.savePrices}" />
+<t:commandButton value="Save Buy Through" rendered="#{sEconomicUserDetail.showSaveButton}" action="#{sEconomicUserDetail.savePrices}" />
 
 
 </h:form>

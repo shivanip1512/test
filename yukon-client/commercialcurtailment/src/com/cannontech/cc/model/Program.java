@@ -1,6 +1,7 @@
 package com.cannontech.cc.model;
 
 import java.io.Serializable;
+import java.util.Comparator;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,14 +16,17 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.hibernate.annotations.GenericGenerator;
 
+import com.cannontech.util.NaturalOrderComparator;
+
 @Entity
 @Table(name="CCurtProgram", 
        uniqueConstraints=@UniqueConstraint(columnNames={"CCurtProgramName","CCurtProgramTypeId"}))
 
-public class Program implements Serializable {
+public class Program implements Serializable, Comparable<Program> {
     private String name = "";
     private ProgramType programType;
     private Integer id;
+    static private Comparator<String> comparator = new NaturalOrderComparator();
     
     @Column(name="CCurtProgramName", nullable=false)
     public String getName() {
@@ -74,6 +78,10 @@ public class Program implements Serializable {
     @Override
     public String toString() {
         return "Program [" + id + "]@" + Integer.toHexString(System.identityHashCode(this));
+    }
+
+    public int compareTo(Program o) {
+        return comparator.compare(name, o.name);
     }
     
 }

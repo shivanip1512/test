@@ -11,17 +11,19 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.hibernate.annotations.GenericGenerator;
 
+import com.cannontech.database.data.notification.NotifType;
 import com.cannontech.enums.NotificationReason;
 import com.cannontech.enums.NotificationState;
 
 @Entity
 @Table(name = "CCurtCENotif")
-public class CurtailmentEventNotif {
+public class CurtailmentEventNotif implements EventNotif {
     private Integer id;
     private Integer notifTypeId;
     private Date notificationTime;
@@ -58,6 +60,15 @@ public class CurtailmentEventNotif {
         this.notifTypeId = notifTypeId;
     }
 
+    @Transient
+    public NotifType getNotifType() {
+        return NotifType.values()[notifTypeId];
+    }
+    
+    public void setNotifType(NotifType type) {
+        this.notifTypeId = type.ordinal();
+    }
+
     @Enumerated(EnumType.STRING)
     @Column(nullable=false, length=10)
     public NotificationState getState() {
@@ -86,6 +97,11 @@ public class CurtailmentEventNotif {
     
     public void setReason(NotificationReason reason) {
         this.reason = reason;
+    }
+    
+    @Transient
+    public CICustomerStub getCustomer() {
+        return participant.getCustomer();
     }
 
     @Override

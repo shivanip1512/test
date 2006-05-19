@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import com.cannontech.cc.model.CICustomerStub;
 import com.cannontech.cc.model.EconomicEvent;
@@ -15,15 +16,25 @@ import com.cannontech.cc.model.EconomicEventParticipantSelectionWindow;
 import com.cannontech.cc.service.builder.EconomicBuilder;
 import com.cannontech.cc.service.builder.EventBuilderBase;
 import com.cannontech.cc.service.builder.VerifiedCustomer;
-import com.cannontech.cc.service.enums.IsocPointTypes;
 import com.cannontech.cc.service.exception.EventModificationException;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.exception.PointException;
+import com.cannontech.database.cache.functions.CustomerFuncs;
+import com.cannontech.database.cache.functions.EnergyCompanyFuncs;
+import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.db.customer.CICustomerPointType;
+import com.cannontech.support.CustomerPointTypeHelper;
 
 public class IsocEconomicStrategy extends BaseEconomicStrategy {
     IsocCommonStrategy isocCommonStrategy;
+    private CustomerPointTypeHelper pointTypeHelper;
     
+    public void setPointTypeHelper(CustomerPointTypeHelper pointTypeHelper) {
+        this.pointTypeHelper = pointTypeHelper;
+    }
+
+
     public IsocEconomicStrategy() {
         super();
     }
@@ -55,19 +66,28 @@ public class IsocEconomicStrategy extends BaseEconomicStrategy {
             }
         }
         
+        boolean pointSatisfied = 
+            pointTypeHelper.isPointGroupSatisfied(vCustomer.getCustomer(), "ISOC");
+        if (!pointSatisfied) {
+            vCustomer.addExclusion(VerifiedCustomer.Status.EXCLUDE, "all 'ISOC' points do not exist");
+        }
+        
         isocCommonStrategy.checkEventCustomer(vCustomer, myBuilder.getEvent());
     }
 
     protected void checkPropossedSelections(EconomicEventParticipantSelection selection, 
                                             LiteYukonUser user, Date time) throws EventModificationException {
+        LiteEnergyCompany energyCompany = EnergyCompanyFuncs.getEnergyCompany(user);
+        TimeZone timeZone = EnergyCompanyFuncs.getEnergyCompanyTimeZone(energyCompany);
         DateFormat dateFormat = SimpleDateFormat.getTimeInstance(SimpleDateFormat.SHORT);
+        dateFormat.setTimeZone(timeZone);
         List<EconomicEventParticipantSelectionWindow> selectionWindows = selection.getSelectionWindows();
         boolean curtailedLastWindow = false;
         for (EconomicEventParticipantSelectionWindow window : selectionWindows) {
             boolean curtailedThisWindow = isCurtailPrice(window.getEnergyToBuy());
             if (curtailedLastWindow && !curtailedThisWindow) {
                 String date = dateFormat.format(window.getWindow().getStartTime());
-                throw new EventModificationException("Must curtail for all segments after " 
+                throw new EventModificationException("Illegal Buy-through kW; Once Interrupted (okW) must stay interrupted." 
                                                      + date);
             }
             curtailedLastWindow = curtailedThisWindow;
@@ -91,8 +111,8 @@ public class IsocEconomicStrategy extends BaseEconomicStrategy {
     }
     
     @Override
-    public BigDecimal getInterruptibleLoad(CICustomerStub customer) throws PointException {
-        return isocCommonStrategy.getInterruptibleLoad(customer);
+    public BigDecimal getCurrentLoad(CICustomerStub customer) throws PointException {
+        return isocCommonStrategy.getCurrentLoad(customer);
     }
     
     public IsocCommonStrategy getIsocCommonStrategy() {
@@ -105,12 +125,12 @@ public class IsocEconomicStrategy extends BaseEconomicStrategy {
 
 
     public BigDecimal getCustomerElectionPrice(EconomicEventParticipant customer) throws PointException {
-        return getPointValue(customer, IsocPointTypes.AdvBuyThrough$.name());
+        return getPointValue(customer, CICustomerPointType.AdvBuyThrough$);
     }
 
 
     public BigDecimal getCustomerElectionBuyThrough(EconomicEventParticipant customer) throws PointException {
-        return getPointValue(customer, IsocPointTypes.AdvBuyThroughKw.name());
+        return getPointValue(customer, CICustomerPointType.AdvBuyThroughKw);
     }
 
 }

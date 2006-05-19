@@ -14,20 +14,12 @@
   <bean id="genericNotification" class="com.cannontech.cc.service.BaseNotificationStrategy" autowire="byType"
         abstract="true">
     <property name="notificationProxy" ref="notificationProxy"/>
-    <property name="parameterKeys">
-      <map>
-        <entry key="DEFAULT_EVENT_OFFSET_MINUTES" value="60"/>
-        <entry key="DEFAULT_NOTIFICATION_OFFSET_MINUTES" value="30"/>
-        <entry key="DEFAULT_EVENT_DURATION_MINUTES" value="120"/>
-      </map>
-    </property>
-    <!--  find a better way to inject the labels -->
-    <property name="viewLabels">
-      <props>
-        <prop key="DEFAULT_EVENT_OFFSET_MINUTES">Event Time Offset Minutes</prop>
-        <prop key="DEFAULT_NOTIFICATION_OFFSET_MINUTES">Notification Time Offset Minutes</prop>
-        <prop key="DEFAULT_EVENT_DURATION_MINUTES">Event Duration</prop>
-      </props>
+    <property name="parameterStrings">
+      <set>
+        <value>DEFAULT_EVENT_OFFSET_MINUTES</value>
+        <value>DEFAULT_NOTIFICATION_OFFSET_MINUTES</value>
+        <value>DEFAULT_EVENT_DURATION_MINUTES</value>
+      </set>
     </property>
   </bean>
   
@@ -41,22 +33,13 @@
   <bean id="genericEconomic" class="com.cannontech.cc.service.BaseEconomicStrategy" autowire="byType"
         abstract="true" >
     <property name="notificationProxy" ref="notificationProxy"/>
-    <property name="parameterKeys">
-      <map>
-        <entry key="DEFAULT_EVENT_OFFSET_MINUTES" value="60"/>
-        <entry key="DEFAULT_NOTIFICATION_OFFSET_MINUTES" value="60"/>
-        <entry key="DEFAULT_EVENT_DURATION_MINUTES" value="240"/>
-        <entry key="DEFAULT_ENERGY_PRICE" value="100"/>
-      </map>
-    </property>
-    <!--  find a better way to inject the labels -->
-    <property name="viewLabels">
-      <props>
-        <prop key="DEFAULT_EVENT_OFFSET_MINUTES">Event Time Offset Minutes</prop>
-        <prop key="DEFAULT_NOTIFICATION_OFFSET_MINUTES">Notification Time Offset Minutes</prop>
-        <prop key="DEFAULT_EVENT_DURATION_MINUTES">Event Duration</prop>
-        <prop key="DEFAULT_ENERGY_PRICE">Energy Price</prop>
-      </props>
+    <property name="parameterStrings">
+      <set>
+        <value>DEFAULT_EVENT_OFFSET_MINUTES</value>
+        <value>DEFAULT_NOTIFICATION_OFFSET_MINUTES</value>
+        <value>DEFAULT_EVENT_DURATION_MINUTES</value>
+        <value>DEFAULT_ENERGY_PRICE</value>
+      </set>
     </property>
   </bean>
   
@@ -72,7 +55,19 @@
    <property name="applicablePointLookup">
      <map>
        <entry key="ISOC">
-         <value type="java.lang.Class">com.cannontech.cc.service.enums.IsocPointTypes</value>
+         <set>
+           <value>ContractFrmDmd</value>
+           <value>AdvBuyThroughKw</value>
+           <value>AdvBuyThrough$</value>
+           <value>InterruptHours</value>
+           <value>MinimumNotice</value>
+           <value>ContractIntLoad</value>
+         </set>
+       </entry>
+       <entry key="ISOC-load">
+         <set>
+           <value>CurrentLoad</value>
+         </set>
        </entry>
      </map>
    </property>
@@ -93,9 +88,15 @@
     <property name="sessionFactory" ref="hibernateSessionFactory" />
   </bean>
   
-  <bean id="programDao" class="com.cannontech.cc.daohibe.ProgramDaoImpl" parent="yukonHibeDao"/>
+  <bean id="programDao" class="com.cannontech.cc.daohibe.ProgramDaoImpl" parent="yukonHibeDao">
+    <property name="programGroupDao" ref="availableProgramGroupDao"/>
+    <property name="programParameterDao" ref="programParameterDao"/>
+  </bean>
   <bean id="programTypeDao" class="com.cannontech.cc.daohibe.ProgramTypeDaoImpl" parent="yukonHibeDao"/>
-  <bean id="groupDao" class="com.cannontech.cc.daohibe.GroupDaoImpl" parent="yukonHibeDao"/>
+  <bean id="groupDao" class="com.cannontech.cc.daohibe.GroupDaoImpl" parent="yukonHibeDao">
+    <property name="groupCustomerNotifDao" ref="groupCustomerNotifDao"/>
+    <property name="programGroupDao" ref="availableProgramGroupDao"/>
+  </bean>
   <bean id="availableProgramGroupDao" class="com.cannontech.cc.daohibe.AvailableProgramGroupDaoImpl" parent="yukonHibeDao"/>
   <bean id="groupCustomerNotifDao" class="com.cannontech.cc.daohibe.GroupCustomerNotifDaoImpl" parent="yukonHibeDao"/>
   <bean id="customerDao" class="com.cannontech.cc.daohibe.CustomerDaoImpl" parent="yukonHibeDao"/>

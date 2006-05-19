@@ -13,6 +13,7 @@ import org.apache.commons.lang.Validate;
 import com.cannontech.database.cache.functions.EnergyCompanyFuncs;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
+import com.cannontech.database.db.customer.CICustomerPointType;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 
 public class CustomerPointTypeLookup {
@@ -29,13 +30,13 @@ public class CustomerPointTypeLookup {
      * 
      * @param applicablePointLookup
      */
-    private Map<String, Set<String>> applicablePointLookup;
+    private Map<String, Set<CICustomerPointType>> applicablePointLookup;
 
     public CustomerPointTypeLookup() {
         super();
     }
     
-    protected Set<String> getApplicablePoints(String key) {
+    protected Set<CICustomerPointType> getApplicablePoints(String key) {
         Validate.notEmpty(key, "Key must not be null");
         if (!applicablePointLookup.containsKey(key)) {
             throw new IllegalArgumentException("Applicable Point Type key '" +
@@ -50,12 +51,12 @@ public class CustomerPointTypeLookup {
      * @param energyCompany
      * @return List of applicable point types
      */
-    public Set<String> getApplicablePoints(LiteEnergyCompany energyCompany) {
+    public Set<CICustomerPointType> getApplicablePoints(LiteEnergyCompany energyCompany) {
         Set<String> keys = getPointTypeGroups(energyCompany);
         if (keys.isEmpty()) {
             return Collections.emptySet();
         }
-        Set<String> result = new TreeSet<String>();
+        Set<CICustomerPointType> result = new TreeSet<CICustomerPointType>();
         for (String key : keys) {
             result.addAll(getApplicablePoints(key));
         }
@@ -94,21 +95,20 @@ public class CustomerPointTypeLookup {
      * @param liteCICustomer
      * @return List of applicable point types
      */
-    public Set<String> getApplicablePoints(LiteCICustomer liteCICustomer) {
+    public Set<CICustomerPointType> getApplicablePoints(LiteCICustomer liteCICustomer) {
         int energyCompanyID = liteCICustomer.getEnergyCompanyID();
         LiteEnergyCompany energyCompany = EnergyCompanyFuncs.getEnergyCompany(energyCompanyID);
         return getApplicablePoints(energyCompany);
     }
 
     
-    public void setApplicablePointLookup(Map<String, Class<Enum<?>>> applicablePointEnums) {
-        applicablePointLookup = new TreeMap<String, Set<String>>();
+    public void setApplicablePointLookup(Map<String, Set<String>> applicablePointEnums) {
+        applicablePointLookup = new TreeMap<String, Set<CICustomerPointType>>();
         for (String key : applicablePointEnums.keySet()) {
-            Class<Enum<?>> enumClass = applicablePointEnums.get(key);
-            Set<String> enumSet = new TreeSet<String>();
-            Enum<?>[] enumConstants = enumClass.getEnumConstants();
-            for (Enum<?> e : enumConstants) {
-                enumSet.add(e.name());
+            Set<String> enumStrings = applicablePointEnums.get(key);
+            Set<CICustomerPointType> enumSet = new TreeSet<CICustomerPointType>();
+            for (String enumString : enumStrings) {
+                enumSet.add(CICustomerPointType.valueOf(enumString));
             }
             applicablePointLookup.put(key, enumSet);
         }

@@ -34,6 +34,10 @@
      value="Create Point" 
      rendered="#{!sCustomerDetail.rowPointExists}"/>
   </t:column>
+  <t:column>
+    <h:outputText value="#{thisType.unit}"
+                  rendered="#{sCustomerDetail.rowPointExists}"/>
+  </t:column>
 </t:dataTable>
 
 <div>

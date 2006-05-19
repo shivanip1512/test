@@ -7,7 +7,13 @@
 <f:view>
 <cti:standardPage title="Program Detail" module="commercialcurtailment">
 <cti:standardMenu />
-<div> Messages: <h:messages /></div>
+<div class="jsfMessages"> 
+<t:messages showSummary="false" showDetail="true" 
+            errorClass="jsfError" 
+            warnClass="jsfWarn" 
+            infoClass="jsfInfo" 
+            fatalClass="jsfFatal"/> 
+</div>
 <h:form>
 <div>
 Program Name: <t:inputText value="#{sProgramDetail.program.name}">

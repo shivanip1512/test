@@ -9,17 +9,17 @@ import java.util.NoSuchElementException;
  *
  *	Common base class for notifcations
  */
-public class NotifMap implements java.io.Serializable, Iterable<Integer>
+public class NotifMap implements java.io.Serializable, Iterable<NotifType>
 {
 	//Y or N fields for the notifcation attributes:
 	// [0]:send email, [1]:make phone call, [2]:send short email
 	private String attribs = DEF_ATTRIBS;
 	public static final String DEF_ATTRIBS = "YNYNNNNNNNNNNNNN";
-    public static final int METHOD_EMAIL = 0;
-    public static final int METHOD_VOICE = 1;
-    public static final int METHOD_SMS = 2;
+    //public static final int METHOD_EMAIL = 0;
+    //public static final int METHOD_VOICE = 1;
+    //public static final int METHOD_SMS = 2;
     
-    public static final int[] ALL_METHODS = {METHOD_EMAIL,METHOD_VOICE,METHOD_SMS};
+    //public static final int[] ALL_METHODS = {METHOD_EMAIL,METHOD_VOICE,METHOD_SMS};
 
 
 	public NotifMap()
@@ -31,22 +31,22 @@ public class NotifMap implements java.io.Serializable, Iterable<Integer>
 		setAttribs( attribs );
 	}
     
-    public Iterator<Integer> iterator() {
-        return new Iterator<Integer>() {
+    public Iterator<NotifType> iterator() {
+        return new Iterator<NotifType>() {
             private int nextIndex = 0;
             public boolean hasNext() {
                 int tempNextIndex = nextIndex;
-                while (tempNextIndex < ALL_METHODS.length && !supportsMethod(ALL_METHODS[tempNextIndex])) {
+                while (tempNextIndex < NotifType.values().length && !supportsMethod(NotifType.values()[tempNextIndex])) {
                     tempNextIndex++;
                 }
-                return (tempNextIndex < ALL_METHODS.length);
+                return (tempNextIndex < NotifType.values().length);
             }
-            public Integer next() {
-                while (nextIndex < ALL_METHODS.length && !supportsMethod(ALL_METHODS[nextIndex])) {
+            public NotifType next() {
+                while (nextIndex < NotifType.values().length && !supportsMethod(NotifType.values()[nextIndex])) {
                     nextIndex++;
                 }
-                if (nextIndex < ALL_METHODS.length) {
-                    return ALL_METHODS[nextIndex++];
+                if (nextIndex < NotifType.values().length) {
+                    return NotifType.values()[nextIndex++];
                 }
                 throw new NoSuchElementException();
             }
@@ -56,42 +56,42 @@ public class NotifMap implements java.io.Serializable, Iterable<Integer>
         };
     }
     
-    public boolean supportsMethod(int notificationMethod) {
-        return getAttribs().charAt(notificationMethod) == 'Y';
+    public boolean supportsMethod(NotifType notificationMethod) {
+        return getAttribs().charAt(notificationMethod.getAttribPosition()) == 'Y';
     }
     
-    public void setSupportsMethod(int notificationMethod, boolean support) {
-        setChars(notificationMethod, support?'Y':'N');
+    public void setSupportsMethod(NotifType notificationMethod, boolean support) {
+        setChars(notificationMethod.getAttribPosition(), support?'Y':'N');
     }
 
     public boolean isSendEmails()
     {
-        return supportsMethod(METHOD_EMAIL);
+        return supportsMethod(NotifType.EMAIL);
     }
 
     public boolean isSendSms()
     {
-        return supportsMethod(METHOD_SMS);
+        return supportsMethod(NotifType.SMS);
     }
 
 	public boolean isSendOutboundCalls()
 	{
-		return supportsMethod(METHOD_VOICE);
+		return supportsMethod(NotifType.VOICE);
 	}
 
     public void setSendEmails( boolean t )
     {
-        setChars( METHOD_EMAIL, (t ? 'Y' : 'N') );
+        setChars( NotifType.EMAIL.getAttribPosition(), (t ? 'Y' : 'N') );
     }
 
     public void setSendSms( boolean t )
     {
-        setChars( METHOD_SMS, (t ? 'Y' : 'N') );
+        setChars( NotifType.SMS.getAttribPosition(), (t ? 'Y' : 'N') );
     }
 
 	public void setSendOutboundCalls( boolean t )
 	{
-		setChars( METHOD_VOICE, (t ? 'Y' : 'N') );
+		setChars( NotifType.VOICE.getAttribPosition(), (t ? 'Y' : 'N') );
 	}
 	
 	private void setChars( int indx, char theChar )

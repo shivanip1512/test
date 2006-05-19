@@ -2,7 +2,6 @@ package com.cannontech.cc.service;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -14,6 +13,7 @@ import com.cannontech.common.exception.PointDataException;
 import com.cannontech.database.cache.functions.SimplePointAccess;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.db.customer.CICustomerPointType;
 import com.cannontech.support.CustomerPointTypeHelper;
 import com.cannontech.support.CustomerPointTypeLookup;
 import com.cannontech.support.NoPointException;
@@ -28,10 +28,10 @@ public class CustomerPointService {
         super();
     }
 
-    public Map<String, Double> getPointValueCache(CICustomerStub customer) {
-        Map<String, Double> pointValueCache = new TreeMap<String, Double>();
-        Set<String> pointTypeList = pointTypeLookup.getApplicablePoints(customer.getLite());
-        for (String pointType : pointTypeList) {
+    public Map<CICustomerPointType, Double> getPointValueCache(CICustomerStub customer) {
+        Map<CICustomerPointType, Double> pointValueCache = new TreeMap<CICustomerPointType, Double>();
+        Set<CICustomerPointType> pointTypeList = pointTypeLookup.getApplicablePoints(customer.getLite());
+        for (CICustomerPointType pointType : pointTypeList) {
             try {
                 LitePoint point = pointTypeHelper.getPoint(customer, pointType);
                 double pointValue = pointAccess.getPointValue(point);
@@ -39,17 +39,21 @@ public class CustomerPointService {
             } catch (NoPointException e) {
                 // then it doesn't belong in the cache!
             } catch (PointDataException e) {
-                //pointValueCache.put(pointType, 99999999999.1);
+                // I'm not sure this is the best idea, bascially the calling code
+                // expects there to be something in this map for every type that
+                // exists on the customer, so we might as well put something here.
+                pointValueCache.put(pointType, 0.0);
             }
         }
         return pointValueCache;
     }
     
-    public void savePointValues(CICustomerStub customer, Map<String, Double> pointValueCache) {
-        for (Map.Entry<String, Double> entry : pointValueCache.entrySet()) {
+    public void savePointValues(CICustomerStub customer, Map<CICustomerPointType, Double> pointValueCache) {
+        for (Map.Entry<CICustomerPointType, Double> entry : pointValueCache.entrySet()) {
             try {
                 LitePoint point = pointTypeHelper.getPoint(customer, entry.getKey());
-                pointAccess.setPointValue(point, entry.getValue());
+                Double value = entry.getValue();
+                pointAccess.setPointValue(point, value);
             } catch (NoPointException e) {
                 // if points are to be created on save, this would be
                 // the place to do it
@@ -64,13 +68,13 @@ public class CustomerPointService {
         return new ArrayList<String>(satisfiedPointGroups);
     }
     
-    public List<String> getPointTypeList(CICustomerStub customer) {
-        ArrayList<String> arrayList = new ArrayList<String>(pointTypeLookup.getApplicablePoints(customer.getLite()));
+    public List<CICustomerPointType> getPointTypeList(CICustomerStub customer) {
+        ArrayList<CICustomerPointType> arrayList = new ArrayList<CICustomerPointType>(pointTypeLookup.getApplicablePoints(customer.getLite()));
         Collections.sort(arrayList);
         return arrayList;
     }
 
-    public void createPoint(CICustomerStub customer, String pointType) {
+    public void createPoint(CICustomerStub customer, CICustomerPointType pointType) {
         pointTypeHelper.createPoint(customer, pointType);
     }
     

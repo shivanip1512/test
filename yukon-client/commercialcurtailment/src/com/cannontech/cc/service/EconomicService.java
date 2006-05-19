@@ -4,9 +4,11 @@ import java.util.List;
 
 import com.cannontech.cc.dao.CustomerDao;
 import com.cannontech.cc.dao.EconomicEventDao;
+import com.cannontech.cc.dao.EconomicEventNotifDao;
 import com.cannontech.cc.dao.EconomicEventParticipantDao;
 import com.cannontech.cc.model.CICustomerStub;
 import com.cannontech.cc.model.EconomicEvent;
+import com.cannontech.cc.model.EconomicEventNotif;
 import com.cannontech.cc.model.EconomicEventParticipant;
 import com.cannontech.cc.model.EconomicEventParticipantSelection;
 import com.cannontech.cc.model.EconomicEventParticipantSelectionWindow;
@@ -19,6 +21,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 public class EconomicService {
     private EconomicEventDao economicEventDao;
     private EconomicEventParticipantDao economicEventParticipantDao;
+    private EconomicEventNotifDao economicEventNotifDao;
     private CustomerDao customerDao;
     private StrategyFactory strategyFactory;
 
@@ -57,12 +60,13 @@ public class EconomicService {
         return selectionWindow;
     }
 
-    public EconomicEventPricingWindow getFallThroughWindow(EconomicEventPricing revision, Integer windowOffset) {
-        EconomicEventPricingWindow window = revision.getWindows().get(windowOffset);
+    public EconomicEventPricingWindow getFallThroughWindow(EconomicEventPricing startingRevision, Integer windowOffset) {
+        EconomicEventPricingWindow window = startingRevision.getWindows().get(windowOffset);
+        EconomicEventPricing revision = startingRevision;
         while (window == null) {
             // look for window in previous revision
-            EconomicEventPricing previousRevision = revision.getPrevious();
-            window = previousRevision.getWindows().get(windowOffset);
+            revision = revision.getPrevious();
+            window = revision.getWindows().get(windowOffset);
         }
         return window;
     }
@@ -77,6 +81,10 @@ public class EconomicService {
         return selThatHasWindow.getSelectionWindow(fallThroughWindow);
     }
     
+    public List<EconomicEventNotif> getNotifications(EconomicEventParticipant participant) {
+        return economicEventNotifDao.getForParticipant(participant);
+    }
+
     
     //setters for dependency injection
     
@@ -90,6 +98,14 @@ public class EconomicService {
 
     public void setCustomerDao(CustomerDao customerDao) {
         this.customerDao = customerDao;
+    }
+
+    public EconomicEventNotifDao getEconomicEventNotifDao() {
+        return economicEventNotifDao;
+    }
+
+    public void setEconomicEventNotifDao(EconomicEventNotifDao economicEventNotifDao) {
+        this.economicEventNotifDao = economicEventNotifDao;
     }
 
 

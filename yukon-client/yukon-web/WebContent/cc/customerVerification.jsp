@@ -6,7 +6,7 @@
 <cti:standardPage title="Group List" module="commercialcurtailment">
 <cti:standardMenu />
 
-<h2>Create <t:outputText value="#{sCustomerSelectionBean.eventBean.program.name}"/> Event</h2>
+<h2>Create <t:outputText value="#{sCustomerSelectionBean.eventBean.program.programType.name} #{sCustomerSelectionBean.eventBean.program.name}"/> Event</h2>
 <h3>Verify Customers</h3>
 <div class="jsfMessages"> 
 <t:messages showSummary="false" showDetail="true" 
@@ -26,9 +26,9 @@
   </t:column>
   <t:column>
     <f:facet name="header">
-      <t:outputText value="Interruptible Load"/>
+      <t:outputText value="Current Load"/>
     </f:facet>
-    <t:outputText value="#{sCustomerSelectionBean.interruptibleLoad}"/>
+    <t:outputText value="#{sCustomerSelectionBean.load}"/>
   </t:column>
   <t:column>
     <t:outputText value="#{thisCustomer.reasonForExclusion}" 

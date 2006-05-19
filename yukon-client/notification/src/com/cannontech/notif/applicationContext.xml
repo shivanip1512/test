@@ -61,7 +61,7 @@
   
   <bean id="curtailmentEventMessageHandler" class="com.cannontech.notif.handler.CurtailmentEventMessageHandler"
          autowire="byType">
-    <constructor-arg ref="notificationOutputHandlerHelper"/>
+    <constructor-arg ref="curtailmentEventScheduler"/>
   </bean>
   
   <bean id="economicEventMessageHandler" class="com.cannontech.notif.handler.EconomicEventMessageHandler"
@@ -77,7 +77,13 @@
          autowire="byType">
   </bean>
   
-  <bean id="economicEventScheduler" class="com.cannontech.notif.handler.EconomicEventScheduler" abstract="false" singleton="true" lazy-init="default" autowire="byType" dependency-check="default">
+  <bean id="economicEventScheduler" class="com.cannontech.notif.handler.EconomicEventScheduler" abstract="false" singleton="true" autowire="byType" dependency-check="objects">
+      <constructor-arg index="0" type="com.cannontech.notif.outputs.OutputHandlerHelper">
+          <ref bean="notificationOutputHandlerHelper" />
+      </constructor-arg>
+  </bean>
+  
+  <bean id="curtailmentEventScheduler" class="com.cannontech.notif.handler.CurtailmentEventScheduler" abstract="false" singleton="true" autowire="byType" dependency-check="objects">
       <constructor-arg index="0" type="com.cannontech.notif.outputs.OutputHandlerHelper">
           <ref bean="notificationOutputHandlerHelper" />
       </constructor-arg>

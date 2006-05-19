@@ -25,6 +25,7 @@ import com.cannontech.database.cache.functions.CustomerFuncs;
 import com.cannontech.database.data.customer.CICustomerBase;
 import com.cannontech.database.data.customer.CustomerFactory;
 import com.cannontech.database.data.lite.LiteCICustomer;
+import com.cannontech.database.db.customer.CICustomerPointType;
 
 @Entity
 @Table(name = "CICustomerBase")
@@ -34,7 +35,7 @@ public class CICustomerStub implements Comparable<CICustomerStub> {
     //private String curtailmentAgreement;
     //private Float curtailAmount;
     private String companyName;
-    private Map<String, CICustomerPointData> pointData = new HashMap<String, CICustomerPointData>();
+    private Map<CICustomerPointType, CICustomerPointData> pointData = new HashMap<CICustomerPointType, CICustomerPointData>();
     
     @Id
     @GenericGenerator(name="yukon", strategy="com.cannontech.database.incrementer.HibernateIncrementer")
@@ -69,11 +70,11 @@ public class CICustomerStub implements Comparable<CICustomerStub> {
     @JoinColumn(name="CustomerId", referencedColumnName="CustomerId")
     @MapKey(name="id.type")
     @BatchSize(size=10)
-    public Map<String, CICustomerPointData> getPointData() {
+    public Map<CICustomerPointType, CICustomerPointData> getPointData() {
         return pointData;
     }
     
-    public void setPointData(Map<String, CICustomerPointData> pointData) {
+    public void setPointData(Map<CICustomerPointType, CICustomerPointData> pointData) {
         this.pointData = pointData;
     }
     

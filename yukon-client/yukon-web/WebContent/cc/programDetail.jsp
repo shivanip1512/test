@@ -35,7 +35,7 @@
              styleClass="horizBorders">
   <t:column><t:outputLabel for="parameterInput" 
                            styleClass="propertyEntry"
-                           value="#{sProgramDetail.labels[thisParameter.parameterKey]}"/></t:column>
+                           value="#{thisParameter.parameterKey.description}"/></t:column>
   <t:column><t:inputText id="parameterInput" value="#{thisParameter.parameterValue}"/></t:column>
 </t:dataTable>
 </div>
@@ -48,12 +48,12 @@
              var="group" 
              styleClass="horizBorders"
              forceIdIndexFormula="#{group.id}">
-  <t:column><t:outputText value="#{group.name}"/></t:column>
-  <t:column>
+  <t:column width="20">
     <t:commandLink actionListener="#{sProgramDetail.deleteGroup}">
       <h:graphicImage value="/WebConfig/yukon/Icons/clearbits/subtract.gif" styleClass="cssicon" />
     </t:commandLink>
   </t:column>
+  <t:column><t:outputText value="#{group.name}"/></t:column>
 </t:dataTable>
 </div>
 </div>
@@ -64,12 +64,12 @@
              var="group" 
              styleClass="horizBorders"
              forceIdIndexFormula="#{group.id}">
-  <t:column><t:outputText value="#{group.name}"/></t:column>
-  <t:column>
+  <t:column width="20">
     <t:commandLink actionListener="#{sProgramDetail.addGroup}">
       <h:graphicImage value="/WebConfig/yukon/Icons/clearbits/add.gif" styleClass="cssicon" />
     </t:commandLink>
   </t:column>
+  <t:column><t:outputText value="#{group.name}"/></t:column>
 </t:dataTable>
 </div>
 </div>

@@ -6,6 +6,7 @@ import java.util.List;
 import com.cannontech.cc.dao.EconomicEventNotifDao;
 import com.cannontech.cc.model.EconomicEvent;
 import com.cannontech.cc.model.EconomicEventNotif;
+import com.cannontech.cc.model.EconomicEventParticipant;
 import com.cannontech.enums.NotificationReason;
 import com.cannontech.enums.NotificationState;
 import com.cannontech.hibernate.YukonBaseHibernateDao;
@@ -44,24 +45,31 @@ public class EconomicEventNotifDaoImpl extends YukonBaseHibernateDao
 
     @SuppressWarnings("unchecked")
     public List<EconomicEventNotif> getScheduledNotifs() {
-        //TODO use my def of now in case DB time is different
+        //use my def of now in case DB time is different
         String query = "select cen from EconomicEventNotif cen " +
                 "inner join fetch cen.participant p " +
                 "inner join fetch p.event e " +
                 "where cen.state = ? " +
-                "  and cen.notificationTime < ?";
+                "  and cen.notificationTime <= ?";
         Object[] args = {NotificationState.SCHEDULED, new Date()};
         return getHibernateTemplate().find(query, args);
     }
 
     @SuppressWarnings("unchecked")
     public List<EconomicEventNotif> getForEventAndReason(EconomicEvent event, NotificationReason reason) {
-        String query = "select cen from EconomicEventNotif cen " +
-                "inner join fetch cen.participant p " +
+        String query = "select een from EconomicEventNotif een " +
+                "inner join fetch een.participant p " +
                 "inner join fetch p.event " +
                 "where p.event = ? " +
-                "  and cen.reason = ?";
+                "  and een.reason = ?";
         return getHibernateTemplate().find(query, new Object[]{event, reason});
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<EconomicEventNotif> getForParticipant(EconomicEventParticipant participant) {
+        String query = "select een from EconomicEventNotif een " +
+            "where een.participant = ? ";
+        return getHibernateTemplate().find(query, participant);
     }
 
 }
