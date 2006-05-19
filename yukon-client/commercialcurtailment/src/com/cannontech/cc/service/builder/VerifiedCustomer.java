@@ -1,22 +1,18 @@
 package com.cannontech.cc.service.builder;
 
 import com.cannontech.cc.model.CICustomerStub;
-import com.cannontech.cc.model.GroupCustomerNotif;
 
-public class VerifiedCustomer {
+public abstract class VerifiedCustomer {
     public enum Status {ALLOW, EXCLUDE_OVERRIDABLE, EXCLUDE};
-    private GroupCustomerNotif customerNotif;
+    //private GroupCustomerNotif customerNotif;
     private Status status;
     private StringBuilder reasonForExclusion;
     
-    public VerifiedCustomer(GroupCustomerNotif customerNotif) {
-        this.customerNotif = customerNotif;
+    public VerifiedCustomer() {
         status = Status.ALLOW;
         reasonForExclusion = new StringBuilder();
     }
-    public CICustomerStub getCustomer() {
-        return customerNotif.getCustomer();
-    }
+    public abstract CICustomerStub getCustomer();
     public String getReasonForExclusion() {
         return reasonForExclusion.toString();
     }
@@ -35,9 +31,6 @@ public class VerifiedCustomer {
         return status;
     }
     
-    public GroupCustomerNotif getCustomerNotif() {
-        return customerNotif;
-    }
     public boolean isIncludable() {
         return !(status == Status.EXCLUDE);
     }

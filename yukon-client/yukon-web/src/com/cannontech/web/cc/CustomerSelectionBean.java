@@ -14,7 +14,7 @@ import com.cannontech.cc.model.Group;
 import com.cannontech.cc.model.GroupCustomerNotif;
 import com.cannontech.cc.service.GroupService;
 import com.cannontech.cc.service.ProgramService;
-import com.cannontech.cc.service.builder.VerifiedCustomer;
+import com.cannontech.cc.service.builder.VerifiedNotifCustomer;
 import com.cannontech.common.exception.PointException;
 import com.cannontech.web.cc.methods.EventCreationBase;
 import com.cannontech.web.cc.util.SelectableCustomer;
@@ -62,9 +62,9 @@ public class CustomerSelectionBean {
             return null;
         }
         customerList = new ArrayList<SelectableCustomer>();
-        List<VerifiedCustomer> availableCustomerList = 
+        List<VerifiedNotifCustomer> availableCustomerList = 
             eventBean.getVerifiedCustomerList(selectedGroupList);
-        for (VerifiedCustomer vCustomer : availableCustomerList) {
+        for (VerifiedNotifCustomer vCustomer : availableCustomerList) {
             customerList.add(new SelectableCustomer(vCustomer));
         }
         customerListModel = new ListDataModel(customerList);

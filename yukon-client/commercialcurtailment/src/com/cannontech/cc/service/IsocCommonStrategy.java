@@ -65,7 +65,8 @@ public class IsocCommonStrategy extends StrategyGroupBase {
         LitePoint point = pointTypeHelper.getPoint(customer, CICustomerPointType.CurrentLoad);
         double interruptLoad = pointAccess.getPointValue(point);
         
-        return new BigDecimal(interruptLoad, new MathContext(0));
+        BigDecimal bigDecimal = new BigDecimal(interruptLoad, new MathContext(7));
+        return bigDecimal;
     }
 
     public void checkEventCustomer(VerifiedCustomer vCustomer, BaseEvent event) {

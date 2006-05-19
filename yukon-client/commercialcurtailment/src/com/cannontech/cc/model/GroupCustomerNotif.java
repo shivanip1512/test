@@ -18,7 +18,7 @@ import com.cannontech.database.data.notification.NotifMap;
 
 @Entity
 @Table(name = "CCurtGroupCustomerNotif",
-       uniqueConstraints=@UniqueConstraint(columnNames={"GroupId","CustomerId"}))
+       uniqueConstraints=@UniqueConstraint(columnNames={"CCurtGroupId","CustomerId"}))
 public class GroupCustomerNotif {
     private Integer id;
     private CICustomerStub customer;
@@ -48,7 +48,7 @@ public class GroupCustomerNotif {
     }
 
     @ManyToOne()
-    @JoinColumn(name="GroupId")  //TODO change to "CCurtGroupID" when Aaron does update
+    @JoinColumn(name="CCurtGroupId")
     public Group getGroup() {
         return group;
     }

@@ -30,6 +30,7 @@ public class CurtailmentEvent extends BaseEvent {
     private String message;
     private Integer duration;
     private Integer id;
+    private Integer identifier = new Integer(0);
     private CurtailmentEventState state;
 
     @Id
@@ -106,6 +107,15 @@ public class CurtailmentEvent extends BaseEvent {
         return TimeUtil.addMinutes(getStartTime(), getDuration());
     }
     
+    @Column(nullable=false)
+    public Integer getIdentifier() {
+        return identifier;
+    }
+
+    public void setIdentifier(Integer identifier) {
+        this.identifier = identifier;
+    }
+
     @Override
     public String toString() {
         return "CurtailmentEvent [" + id + "]@" + Integer.toHexString(System.identityHashCode(this));

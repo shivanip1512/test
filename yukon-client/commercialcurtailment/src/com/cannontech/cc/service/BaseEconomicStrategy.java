@@ -34,6 +34,8 @@ import com.cannontech.cc.model.Program;
 import com.cannontech.cc.model.ProgramParameterKey;
 import com.cannontech.cc.model.EconomicEventParticipantSelection.SelectionState;
 import com.cannontech.cc.service.builder.EconomicBuilder;
+import com.cannontech.cc.service.builder.VerifiedCustomer;
+import com.cannontech.cc.service.builder.VerifiedPlainCustomer;
 import com.cannontech.cc.service.enums.EconomicEventState;
 import com.cannontech.cc.service.exception.EventCreationException;
 import com.cannontech.cc.service.exception.EventModificationException;
@@ -229,6 +231,7 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
     
     public void setupCustomers(EconomicBuilder builder) {
         EconomicEvent event = builder.getEvent();
+        builder.getParticipantList().clear();
         List<GroupCustomerNotif> customerList = builder.getCustomerList();
         for (GroupCustomerNotif notif : customerList) {
             EconomicEventParticipant participant = new EconomicEventParticipant();
@@ -266,7 +269,18 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
         
         return event;
     }
-
+    
+    protected void verifyCustomers(EconomicBuilder builder) throws EventCreationException {
+        List<EconomicEventParticipant> participantList = builder.getParticipantList();
+        for (EconomicEventParticipant participant : participantList) {
+            VerifiedCustomer vCustoemr = new VerifiedPlainCustomer(participant.getCustomer());
+            verifyCustomer(builder, vCustoemr);
+            if (!vCustoemr.isIncludable()) {
+                throw new EventCreationException("Customer " + participant.getCustomer() +
+                                                 " can no longer be included: " + vCustoemr.getReasonForExclusion());
+            }
+        }
+    }
     
     protected EconomicEvent createDatabaseObjects(EconomicBuilder builder) throws EventCreationException {
         // create curtail event

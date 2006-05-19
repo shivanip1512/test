@@ -36,6 +36,24 @@ public class EconomicEventScheduler extends EventScheduler {
                            event.getStopTime());
     }
     
+    public void eventExtensionNotification(EconomicEvent event) {
+        List<EconomicEventParticipant> participants = economicService.getParticipants(event);
+        EconomicEventPricing eventPricing = event.getRevisions().get(1);
+        
+        if (!attemptDeleteNotification(event, NotificationReason.STOPPING)) {
+            CTILogger.warn("Stop message for initial event was not stopped (current event = " + event + ")");
+        }
+        
+        createNotification(participants,
+                           eventPricing,
+                           NotificationReason.EXTENDING,
+                           event.getNotificationTime());  
+        createNotification(participants, 
+                           eventPricing, 
+                           NotificationReason.STOPPING, 
+                           event.getStopTime());
+    }
+
     public void eventRevisionNotification(EconomicEventPricing eventRevision) {
         EconomicEvent event = eventRevision.getEvent();
         BaseEconomicStrategy strategy = economicService.getEconomicStrategy(event);
@@ -169,7 +187,5 @@ public class EconomicEventScheduler extends EventScheduler {
     public void setEconomicService(EconomicService economicService) {
         this.economicService = economicService;
     }
-
-
 
 }

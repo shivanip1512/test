@@ -39,6 +39,7 @@ public class EconomicEvent extends BaseEvent {
     private Integer windowLengthMinutes;
     private EconomicEventState state;
     private EconomicEvent initialEvent;
+    private Integer identifier = new Integer(0);
     private Map<Integer,EconomicEventPricing> revisions = 
         new HashMap<Integer, EconomicEventPricing>();
 
@@ -171,6 +172,15 @@ public class EconomicEvent extends BaseEvent {
         revisions.put(nextRevision.getRevision(), nextRevision);
     }
     
+    @Column(nullable=false)
+    public Integer getIdentifier() {
+        return identifier;
+    }
+
+    public void setIdentifier(Integer identifier) {
+        this.identifier = identifier;
+    }
+    
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof EconomicEvent == false) {
@@ -191,5 +201,6 @@ public class EconomicEvent extends BaseEvent {
     public String toString() {
         return "EconomicEvent [" + id + "]";
     }
-    
+
+
 }

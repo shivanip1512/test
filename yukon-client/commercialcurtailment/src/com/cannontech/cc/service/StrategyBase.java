@@ -25,7 +25,7 @@ import com.cannontech.cc.model.ProgramParameter;
 import com.cannontech.cc.model.ProgramParameterKey;
 import com.cannontech.cc.service.builder.EventBuilderBase;
 import com.cannontech.cc.service.builder.VerifiedCustomer;
-import com.cannontech.cc.service.exception.EventCreationException;
+import com.cannontech.cc.service.builder.VerifiedNotifCustomer;
 import com.cannontech.common.exception.PointException;
 import com.cannontech.database.data.notification.NotifType;
 
@@ -87,15 +87,15 @@ public abstract class StrategyBase {
     public abstract String getMethodKey();
     
     public 
-    List<VerifiedCustomer> 
+    List<VerifiedNotifCustomer> 
     getVerifiedCustomerList(EventBuilderBase builder, 
                             Collection<Group> selectedGroups) {
-        List<VerifiedCustomer> result = new ArrayList<VerifiedCustomer>();
+        List<VerifiedNotifCustomer> result = new ArrayList<VerifiedNotifCustomer>();
         Map<CICustomerStub, GroupCustomerNotif> seenCustomers = new HashMap<CICustomerStub, GroupCustomerNotif>();
         for (Group group : selectedGroups) {
             List<GroupCustomerNotif> customers = getGroupService().getAssignedCustomers(group);
             for (GroupCustomerNotif customerNotif : customers) {
-                VerifiedCustomer vCustoemr = new VerifiedCustomer(customerNotif);
+                VerifiedNotifCustomer vCustoemr = new VerifiedNotifCustomer(customerNotif);
                 if (seenCustomers.containsKey(customerNotif.getCustomer())) {
                     // This customer has already been included as a member of a different
                     // group. We will make sure that the original customer notif
@@ -117,25 +117,6 @@ public abstract class StrategyBase {
             }
         });
         return result;
-    }
-    
-    /**
-     * Using the existing plumbing that sets up the customer selection page
-     * to re-check the customers after the fact. It short-circuits is it finds
-     * a single customer that can't be included.
-     * @param builder
-     * @throws EventCreationException if a customer can not be included
-     */
-    protected void verifyCustomers(EventBuilderBase builder) throws EventCreationException {
-        List<GroupCustomerNotif> customerList = builder.getCustomerList();
-        for (GroupCustomerNotif notif : customerList) {
-            VerifiedCustomer vCustoemr = new VerifiedCustomer(notif);
-            verifyCustomer(builder, vCustoemr);
-            if (!vCustoemr.isIncludable()) {
-                throw new EventCreationException("Customer " + notif.getCustomer() +
-                                                 " can no longer be included: " + vCustoemr.getReasonForExclusion());
-            }
-        }
     }
     
     protected abstract 

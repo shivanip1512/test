@@ -19,7 +19,6 @@ import com.cannontech.cc.service.builder.VerifiedCustomer;
 import com.cannontech.cc.service.exception.EventModificationException;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.exception.PointException;
-import com.cannontech.database.cache.functions.CustomerFuncs;
 import com.cannontech.database.cache.functions.EnergyCompanyFuncs;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;

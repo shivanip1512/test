@@ -3,6 +3,7 @@ package com.cannontech.notif.handler;
 import com.cannontech.cc.model.EconomicEvent;
 import com.cannontech.cc.model.EconomicEventPricing;
 import com.cannontech.cc.service.EconomicService;
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.message.notif.EconomicEventDeleteMsg;
 import com.cannontech.message.notif.EconomicEventMsg;
 import com.cannontech.message.server.ServerRequestMsg;
@@ -61,6 +62,12 @@ public class EconomicEventMessageHandler extends MessageHandler {
             break;
         case REVISING:
             _scheduler.eventRevisionNotification(economicEventPricing);
+            break;
+        case EXTENDING:
+            _scheduler.eventExtensionNotification(economicEvent);
+            break;
+        default:
+            CTILogger.error("Unknown action: " + msg.action);
         }
     }
     

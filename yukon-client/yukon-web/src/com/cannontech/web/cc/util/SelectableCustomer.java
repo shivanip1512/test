@@ -3,13 +3,14 @@ package com.cannontech.web.cc.util;
 import com.cannontech.cc.model.CICustomerStub;
 import com.cannontech.cc.model.GroupCustomerNotif;
 import com.cannontech.cc.service.builder.VerifiedCustomer;
+import com.cannontech.cc.service.builder.VerifiedNotifCustomer;
 
 public class SelectableCustomer {
 
-    private final VerifiedCustomer customerDelegate;
+    private final VerifiedNotifCustomer customerDelegate;
     private boolean selected;
 
-    public SelectableCustomer(VerifiedCustomer customer) {
+    public SelectableCustomer(VerifiedNotifCustomer customer) {
         customerDelegate = customer;
         selected = !isExclude();
     }

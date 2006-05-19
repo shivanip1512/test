@@ -7,6 +7,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import javax.faces.context.FacesContext;
+import javax.faces.el.VariableResolver;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 
@@ -27,7 +29,7 @@ import com.cannontech.web.util.JSFUtil;
 
 
 public class DetailEconomicBean implements BaseDetailBean {
-    private CreateEconomicBean createEconomicBean;
+    //private CreateEconomicBean createEconomicBean;
     private ProgramService programService;
     private BaseEconomicStrategy strategy;
     private EconomicService economicService;
@@ -215,8 +217,8 @@ public class DetailEconomicBean implements BaseDetailBean {
     }
     
     public String extendEvent() {
-        createEconomicBean.setStrategy(getStrategy());
-        return createEconomicBean.initExtension(getEvent());
+        getCreateEconomicBean().setStrategy(getStrategy());
+        return getCreateEconomicBean().initExtension(getEvent());
         
     }
     
@@ -290,7 +292,12 @@ public class DetailEconomicBean implements BaseDetailBean {
     }
 
     public CreateEconomicBean getCreateEconomicBean() {
-        return createEconomicBean;
+        // this kind of sucks, but there is a circular refernce that can't be expressed
+        // in the xml config file alone
+        FacesContext currentInstance = FacesContext.getCurrentInstance();
+        VariableResolver variableResolver = currentInstance.getApplication().getVariableResolver();
+        Object object = variableResolver.resolveVariable(currentInstance, "sEconomicCreate");
+        return (CreateEconomicBean) object;
     }
 
     /**
@@ -299,7 +306,7 @@ public class DetailEconomicBean implements BaseDetailBean {
      * @param createEconomicBean
      */
     public void setCreateEconomicBean(CreateEconomicBean createEconomicBean) {
-        this.createEconomicBean = createEconomicBean;
+        //this.createEconomicBean = createEconomicBean;
     }
 
 }

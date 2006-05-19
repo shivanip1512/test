@@ -32,7 +32,17 @@
          ampm="false"
          type="both"
          timeZone="#{sCommercialCurtailment.timeZone.ID}"
-         readonly="#{sEconomicCreate.builder.event.eventExtension}"/>
+         rendered="#{!sEconomicCreate.builder.event.eventExtension}"/>
+      <t:outputText
+         id="notifTimeInput2"
+         value="#{sEconomicCreate.builder.event.notificationTime}"
+         rendered="#{sEconomicCreate.builder.event.eventExtension}">
+         <f:convertDateTime
+           timeStyle="short" 
+           dateStyle="medium"
+           timeZone="#{sCommercialCurtailment.timeZone}"
+           type="both"/>
+      </t:outputText>
       <t:outputText value="#{sCommercialCurtailment.timeZone.ID}"/>
     </td>
   </tr>
@@ -44,11 +54,21 @@
       <t:inputDate
          id="startTimeInput"
          value="#{sEconomicCreate.builder.event.startTime}"
-         readonly="#{sEconomicCreate.builder.event.eventExtension}"
+         rendered="#{!sEconomicCreate.builder.event.eventExtension}"
          popupCalendar="false"
          ampm="false"
          timeZone="#{sCommercialCurtailment.timeZone.ID}"
          type="both" />
+      <t:outputText
+         id="startTimeInput2"
+         value="#{sEconomicCreate.builder.event.startTime}"
+         rendered="#{sEconomicCreate.builder.event.eventExtension}">
+         <f:convertDateTime
+           timeStyle="short" 
+           dateStyle="medium"
+           timeZone="#{sCommercialCurtailment.timeZone}"
+           type="both"/>
+      </t:outputText>
       <t:outputText value="#{sCommercialCurtailment.timeZone.ID}"/>
     </td>
   </tr>

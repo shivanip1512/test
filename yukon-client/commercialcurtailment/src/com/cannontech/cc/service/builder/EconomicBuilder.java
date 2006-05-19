@@ -61,8 +61,5 @@ public class EconomicBuilder extends EventBuilderBase {
     public List<EconomicEventParticipant> getParticipantList() {
         return participantList;
     }
-    public void setParticipantList(List<EconomicEventParticipant> participantList) {
-        this.participantList = participantList;
-    }
     
 }

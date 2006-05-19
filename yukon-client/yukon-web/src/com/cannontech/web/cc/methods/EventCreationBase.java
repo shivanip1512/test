@@ -7,7 +7,7 @@ import javax.faces.component.UIComponent;
 import com.cannontech.cc.model.Group;
 import com.cannontech.cc.model.Program;
 import com.cannontech.cc.service.StrategyBase;
-import com.cannontech.cc.service.builder.VerifiedCustomer;
+import com.cannontech.cc.service.builder.VerifiedNotifCustomer;
 import com.cannontech.web.cc.CustomerSelectionBean;
 
 public abstract class EventCreationBase {
@@ -15,7 +15,6 @@ public abstract class EventCreationBase {
     private CustomerSelectionBean customerSelectionBean;
     private Program program;
     private StrategyBase strategy;
-    private boolean doClear = false;
     UIComponent form;
 
     public CustomerSelectionBean getCustomerSelectionBean() {
@@ -53,6 +52,6 @@ public abstract class EventCreationBase {
     }
 
     public abstract 
-    List<VerifiedCustomer> getVerifiedCustomerList(List<Group> selectedGroupList);
+    List<VerifiedNotifCustomer> getVerifiedCustomerList(List<Group> selectedGroupList);
 
 }
