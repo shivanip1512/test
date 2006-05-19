@@ -8,6 +8,8 @@
 <%@ page import="com.cannontech.database.data.pao.PAOGroups"%>
 <%@ page import="com.cannontech.database.data.pao.RouteTypes"%>
 <%@ page import="com.cannontech.device.range.*"%>
+<%@ page import="com.cannontech.yukon.conns.ConnPool" %>
+<%@ page import="com.cannontech.message.dispatch.message.DBChangeMsg" %>
 <jsp:useBean id="YC_BEAN" class="com.cannontech.yc.bean.YCBean" scope="session"/>
 <jsp:setProperty name="YC_BEAN" property="userID" value="<%= lYukonUser.getUserID()%>"/>
 
@@ -131,7 +133,7 @@ if (request.getParameter("Submit") != null)
 
 	//Update the database when change is true.
 	if( updateYukonPAO )
-		DBPersistentFuncs.performDBChange(yukonPao, YC_BEAN.getClientConnection(), com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_UPDATE);
+		DBPersistentFuncs.performDBChange(yukonPao, ConnPool.getInstance().getDefDispatchConn(), DBChangeMsg.CHANGE_TYPE_UPDATE);
 }%>	
 
 
