@@ -5,27 +5,5 @@
 
 
 <faces-config xmlns="http://java.sun.com/JSF/Configuration">
-
-  <component>
-    <component-type>org.apache.myfaces.AutoUpdateDataTable</component-type>
-    <component-class>com.cannontech.web.custom.autoupdate.AutoUpdateDataTable</component-class>
-  </component>
-
-  <render-kit>
-
-    <render-kit-id>HTML_BASIC</render-kit-id>
-
-    <renderer>
-      <component-family>javax.faces.Data</component-family>
-      <renderer-type>org.apache.myfaces.AutoUpdateDataTable</renderer-type>
-<!--      <renderer-class>org.apache.myfaces.renderkit.html.ext.HtmlTableRenderer</renderer-class>    -->
-      <renderer-class>com.cannontech.web.custom.autoupdate.AutoUpdateDataTableRenderer</renderer-class>
-    </renderer>
-  </render-kit>
-
-
-  <lifecycle>
-      <phase-listener>com.cannontech.web.custom.ajax.AjaxPhaseListener</phase-listener>
-  </lifecycle>
-  
+  <!-- They've all been removed for now. -->
 </faces-config>
