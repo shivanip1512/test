@@ -25,7 +25,8 @@ function dispStatusMsg(msgStr)
 </script>
 
 
-<table width="96%" align="center"><tr><td class="leftColumn" valign="top" style="font-size: 9px;">
+<table width="96%" align="center"><tr><td class="leftColumn" valign="top" style="font-size: 10px;">
+<h3>Available Trends</h3>
 <%   /* Retrieve all the predefined graphs for this user*/                       
 if( gData != null )
 {%>
