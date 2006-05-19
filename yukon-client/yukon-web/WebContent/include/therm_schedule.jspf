@@ -52,14 +52,20 @@
 	String visibleC = isCooling ? "visible" : "hidden";
 	String visibleH = isCooling ? "hidden" : "visible";
     
-    int customerId = accountInfo.getStarsCustomerAccount().getCustomerID();
-    LiteCustomer customer = CustomerFuncs.getLiteCustomer(customerId);
-    String tempUnit = customer.getTemperatureUnit();
+    String tempUnit = "F";
+    LiteCustomer customer = null;
+    if(accountInfo != null)
+    {
+        int customerId = accountInfo.getStarsCustomerAccount().getCustomerID();
+        customer = CustomerFuncs.getLiteCustomer(customerId);
+        tempUnit = customer.getTemperatureUnit();
+    }
     
     if (request.getParameter("tempUnit") != null) {
         String tempTemperatureUnit = request.getParameter("tempUnit");
         // update database
-        ServletUtils.updateCustomerTemperatureUnit(customer, tempTemperatureUnit);
+        if(customer != null)
+            ServletUtils.updateCustomerTemperatureUnit(customer, tempTemperatureUnit);
         tempUnit = tempTemperatureUnit;
     }
 	
