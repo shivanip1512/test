@@ -146,13 +146,19 @@ public class SearchCustAccountAction implements ActionBase {
         	LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
         	
             StarsSearchCustomerAccount searchAccount = reqOper.getStarsSearchCustomerAccount();
+            int searchByDefID = YukonListFuncs.getYukonListEntry( searchAccount.getSearchBy().getEntryID() ).getYukonDefID();
+
+            //Require at least 2 characters for last name search.
+            if (searchByDefID == YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_LAST_NAME && searchAccount.getSearchValue().trim().length() < 2) {
+               respOper.setStarsFailure( StarsFactory.newStarsFailure( StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Please enter at least the 2 characters for last name search.") );
+               return SOAPUtil.buildSOAPMessage( respOper );
+            }
+            //Require at least something for all other searches
             if (searchAccount.getSearchValue().trim().length() == 0) {
-            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "The search value cannot be empty") );
+            	respOper.setStarsFailure( StarsFactory.newStarsFailure(StarsConstants.FAILURE_CODE_OPERATION_FAILED, "The search value cannot be empty") );
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
-            
-			int searchByDefID = YukonListFuncs.getYukonListEntry( searchAccount.getSearchBy().getEntryID() ).getYukonDefID();
+           
 			boolean searchMembers = AuthFuncs.checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS )
 					&& (energyCompany.getChildren().size() > 0);
 			ArrayList accountList = null;
