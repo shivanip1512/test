@@ -96,7 +96,6 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 	public YCBean()
 	{
 		super();
-        setAppNameStr(getAppNameStr() +"Web");
 	}
 
 	/* (non-Javadoc)

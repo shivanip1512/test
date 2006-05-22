@@ -57,7 +57,6 @@ import com.cannontech.yukon.conns.ConnPool;
 public class YC extends Observable implements MessageListener
 {
     private final SystemLogHelper _systemLogHelper;
-    private String appNameStr = "YukonCommander";
     private String logUserName = null;
 
     
@@ -1556,14 +1555,6 @@ public class YC extends Observable implements MessageListener
 		return hour + ":" + format.format(min);
 	}    
     
-    public String getAppNameStr()
-    {
-        return appNameStr;
-}
-    public void setAppNameStr(String appNameStr)
-    {
-        this.appNameStr = appNameStr;
-    }
     private void logSystemEvent(String command, int deviceID)
     {
         String commandStr = command.toLowerCase();
