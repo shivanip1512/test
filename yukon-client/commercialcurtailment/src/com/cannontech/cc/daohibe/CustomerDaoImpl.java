@@ -46,7 +46,7 @@ public class CustomerDaoImpl extends YukonBaseHibernateDao implements
             "where cust.CustomerID not in  (" + 
             "   select CCurtGroupCustomerNotif.CustomerId " + 
             "   from CCurtGroupCustomerNotif " + 
-            "   where CCurtGroupCustomerNotif.GroupId = :groupId" + 
+            "   where CCurtGroupCustomerNotif.CCurtGroupId = :groupId" + 
             ")" + 
             "  and eta.EnergyCompanyId = :ecId";
         return getHibernateTemplate().executeFind(new HibernateCallback() {
