@@ -541,7 +541,8 @@ public class WorkOrderModel extends ReportModelBase {
 	{
         //Reset all objects, new data being collected!
         setData(null);
-        
+        Date startTimer = new Date();
+        CTILogger.info("Reporting Data Loading for " + woList.size() + " Work Orders.");
 		for (int j = 0; j < woList.size(); j++) {
 			LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) woList.get(j);
 			
@@ -579,6 +580,7 @@ public class WorkOrderModel extends ReportModelBase {
 				}
 			}
 		}
+        CTILogger.info("Loading of Data Object took " + (new Date().getTime() - startTimer.getTime()*.001) + " secs.");
 	}
 
 	/* (non-Javadoc)
