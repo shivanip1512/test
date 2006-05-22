@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/mgr_ptclients.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2006/05/03 16:28:23 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2006/05/22 18:44:13 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -210,7 +210,8 @@ int CtiPointClientManager::InsertConnectionManager(CtiConnectionManager* CM, con
     CtiTime   NowTime;
     int ptcnt = aReg.getCount();
 
-    RemoveConnectionManager(CM);
+    if(!(aReg.getFlags() & (REG_ADD_POINTS || REG_REMOVE_POINTS)) )     // If add/remove is set, we are augmenting or removing an existing registration (Not the whole thing).
+        RemoveConnectionManager(CM);
 
     /*
      *  if count is greater than zero (there are point id's in the list),
@@ -252,7 +253,10 @@ int CtiPointClientManager::InsertConnectionManager(CtiConnectionManager* CM, con
                     {
                         if(pDyn->getAttachment() != NULL)
                         {
-                            ((CtiPointConnection*)(pDyn->getAttachment()))->AddConnectionManager(CM);
+                            if(aReg.getFlags() & REG_REMOVE_POINTS)
+                                ((CtiPointConnection*)(pDyn->getAttachment()))->RemoveConnectionManager(CM);
+                            else
+                                ((CtiPointConnection*)(pDyn->getAttachment()))->AddConnectionManager(CM);
                         }
                     }
                 }

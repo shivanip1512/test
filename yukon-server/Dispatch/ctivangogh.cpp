@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.142 $
-* DATE         :  $Date: 2006/05/16 19:55:40 $
+* REVISION     :  $Revision: 1.143 $
+* DATE         :  $Date: 2006/05/22 18:44:13 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -108,6 +108,8 @@ DLLEXPORT BOOL  bGCtrlC = FALSE;
 /* Global Variables */
 CtiPointClientManager      PointMgr;  // The RTDB for memory points....
 CtiVanGoghExecutorFactory  ExecFactory;
+
+static map< long, CtiPointDataMsg* > fullBoatMap;
 
 static const CtiTime MAXTime(YUKONEOT);
 int CntlHistInterval = 3600;
@@ -830,7 +832,7 @@ int CtiVanGogh::registration(CtiVanGoghConnectionManager *CM, const CtiPointRegi
         PointMgr.InsertConnectionManager(CM, aReg, gDispatchDebugLevel & DISPATCH_DEBUG_REGISTRATION);
 
 
-        if(!(aReg.getFlags() & REG_NO_UPLOAD))
+        if(!(aReg.getFlags() & (REG_NO_UPLOAD | REG_ADD_POINTS | REG_REMOVE_POINTS)))
         {
             postMOAUploadToConnection(*CM, aReg.getFlags());
         }
@@ -1243,6 +1245,58 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                 dout << CtiTime() << " Shutdown requests by command messages are ignored by dispatch." << endl;
             }
             // bGCtrlC = TRUE;
+            break;
+        }
+    case (CtiCommandMsg::PointDataRequest):
+        {
+            // Vector contains ONLY PointIDs that need to be sent to the client.
+            // LONG token = Cmd->getOpArgList().at(0);
+
+            try
+            {
+                CtiMultiMsg *pMulti = CTIDBG_new CtiMultiMsg;
+
+                CtiServerExclusion pmguard(_server_exclusion);
+
+                for(i = 0; i < Cmd->getOpArgList().size(); i++ )
+                {
+                    long pid = Cmd->getOpArgList()[i];
+                    CtiPointSPtr pPt = PointMgr.getEqual( pid );
+                    if(pPt)
+                    {
+                        CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)pPt->getDynamic();
+
+                        CtiPointDataMsg *pDat = CTIDBG_new CtiPointDataMsg(pPt->getID(),
+                                                                           pDyn->getValue(),
+                                                                           pDyn->getQuality(),
+                                                                           pPt->getType(),
+                                                                           string(),
+                                                                           pDyn->getDispatch().getTags());
+
+                        if(pDat != NULL)
+                        {
+                            pDat->setTime( pDyn->getTimeStamp() );  // Make the time match the point's last received time
+                            pMulti->getData().push_back(pDat);
+                        }
+                    }
+                }
+
+                CtiConnectionManager *CM = ((CtiConnectionManager*)Cmd->getConnectionHandle());
+
+                if(CM && pMulti && pMulti->getCount())
+                    CM->WriteConnQue(pMulti);
+                else delete
+                    pMulti;
+
+            }
+            catch(...)
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+            }
+
             break;
         }
     default:
@@ -2540,8 +2594,72 @@ INT CtiVanGogh::postMOAUploadToConnection(CtiVanGoghConnectionManager &VGCM, int
     CtiTableSignal *pSig;
     CtiMultiMsg    *pMulti  = CTIDBG_new CtiMultiMsg;
 
+    CtiTime now;
 
-    if(pMulti != NULL)
+    static CtiMultiMsg *pFullBoat = 0;                      // This is a multi of multis that is stored and used for clients requesting all points.  It is aged and recreated every 15 minutes.
+    bool isFullBoat = VGCM.isRegForAll();                   // Is this connection asking for everything?
+    bool isFullBoatAged = isFullBoat && (!pFullBoat || (pFullBoat->getMessageTime() + gConfigParms.getValueAsULong("DISPATCH_MOA_MAX_AGE", 300) < now));
+
+    if(isFullBoatAged)
+    {
+        delete pFullBoat;
+        pFullBoat = CTIDBG_new CtiMultiMsg;
+        pFullBoat->setMessagePriority(15);
+    }
+
+    LARGE_INTEGER startTime, completeTime;
+
+    QueryPerformanceCounter(&startTime);
+    if(isFullBoat && pFullBoat && pFullBoat->getCount())
+    {
+        try
+        {
+            // This is a connection that can use the existing and non-aged message pFullBoat!
+            // We will iterate the pFullBoat multi and send replicas of the contents.  Message timestamps will be bumped up on each send.
+            for(int i = 0; i < pFullBoat->getData().size(); i++)
+            {
+                CtiMessage *pMsg = ((CtiMessage*)pFullBoat->getData()[i])->replicateMessage();  // Pull out a copy.
+                pMsg->setMessageTime(now);                                                      // Update the message time (should leave the data times alone)
+
+                if(gDispatchDebugLevel & DISPATCH_DEBUG_MSGSTOCLIENT)    // Temp debug
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << now << " **** MOA UPLOAD **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << now << " Client Connection " << VGCM.getClientName() << " on " << VGCM.getPeer() << endl;
+                    }
+                    pMsg->dump();
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << now << " **** MOA UPLOAD **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                }
+
+                if(VGCM.WriteConnQue(pMsg, 5000))
+                {
+                    delete pMsg;
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << " Connection is having issues : " << VGCM.getClientName() << " / " << VGCM.getClientAppId() << endl;
+                }
+            }
+
+            QueryPerformanceCounter(&completeTime);
+
+            if(PERF_TO_MS(completeTime, startTime, perfFrequency))
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " FULL BOAT MOA " << PERF_TO_MS(completeTime, startTime, perfFrequency) << endl;
+            }
+        }
+        catch(...)
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+        }
+    }
+    else if(pMulti != NULL)
     {
         pMulti->setMessagePriority(15);
 
@@ -2627,6 +2745,12 @@ INT CtiVanGogh::postMOAUploadToConnection(CtiVanGoghConnectionManager &VGCM, int
                     }
                 }
 
+                if(isFullBoat && isFullBoatAged && pFullBoat)
+                {
+                    // We need to store a copy of this since we are building up our message
+                    pFullBoat->insert(pMulti->replicateMessage());
+                }
+
                 if(VGCM.WriteConnQue(pMulti, 5000))
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -2654,6 +2778,12 @@ INT CtiVanGogh::postMOAUploadToConnection(CtiVanGoghConnectionManager &VGCM, int
                 }
             }
 
+            if(isFullBoat && isFullBoatAged && pFullBoat)
+            {
+                // We need to store a copy of this since we are building up our message
+                pFullBoat->insert(pMulti->replicateMessage());
+            }
+
             if(VGCM.WriteConnQue(pMulti, 5000))
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -2663,6 +2793,14 @@ INT CtiVanGogh::postMOAUploadToConnection(CtiVanGoghConnectionManager &VGCM, int
         else
         {
             delete pMulti;
+        }
+
+        QueryPerformanceCounter(&completeTime);
+
+        if(PERF_TO_MS(completeTime, startTime, perfFrequency))
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " NORMAL MOA " << PERF_TO_MS(completeTime, startTime, perfFrequency) << endl;
         }
     }
 

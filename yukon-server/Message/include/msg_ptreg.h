@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/msg_ptreg.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2006/05/02 16:12:38 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2006/05/22 18:44:13 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -32,6 +32,9 @@
 #define REG_EVENTS            0x00000010     // I wish to hear about events.
 #define REG_ALARMS            0x00000020     // I wish to hear about alarms.
 #define REG_LOAD_PROFILE      0x00000040     // This guy wants to know about LP data too.  NOTE: ONLY points in the PointList are reported.
+
+#define REG_ADD_POINTS        0x00000100     // This registration is intended to add points to an existing registration.
+#define REG_REMOVE_POINTS     0x00000200     // This registration is intended to remove specified points from an existing registration.
 
 #define REG_NO_UPLOAD         0x00010000     // Dispatch will not do a MOA if set.
 #define REG_TAG_MARKMOA       0x00020000     // Dispatch will mark each pointin the MOA upload with TAG_POINT_MOA_REPORT

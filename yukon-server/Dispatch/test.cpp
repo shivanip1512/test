@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/test.cpp-arc  $
-* REVISION     :  $Revision: 1.44 $
-* DATE         :  $Date: 2006/04/21 18:52:08 $
+* REVISION     :  $Revision: 1.45 $
+* DATE         :  $Date: 2006/05/22 18:44:13 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -79,6 +79,8 @@ void booya( void *haha );
 void ha( void *la );
 void pilExecute(int argc, char **argv);
 void pilHelp();
+void pointReqExecute(int argc, char **argv);
+void pointReqHelp();
 
 typedef void (*XFUNC)(int argc, char **argv);       // Execution function
 typedef void (*HFUNC)();                           // Help Function
@@ -91,6 +93,24 @@ typedef struct
 
 } TESTFUNC_t;
 
+
+TESTFUNC_t testfunction[] = {
+    {"shutdown", shutdown, defaultHelp},
+    {"seasonreset", seasonExecute, defaultHelp},
+    {"tags", tagExecute, tagHelp},
+    {"multi", multiExecute, multiHelp},
+    {"dbchange", dbchangeExecute, defaultHelp},
+    {"default", defaultExecute, defaultHelp},
+    {"notif", notifEmailExecute, defaultHelp},
+    {"lm", lmExecute, lmHelp},
+    {"socket", socketExecute, lmHelp},
+    {"thread", testThreads, defaultHelp },
+    {"history", historyExecute, historyHelp},
+    {"dbtime", dbtimeExecute, dbtimeHelp},
+    {"pil", pilExecute, pilHelp},
+    {"ptreq", pointReqExecute, pointReqHelp},
+    {"", 0, 0}
+};
 
 
 
@@ -347,22 +367,6 @@ void booya( void *haha )
 
 //===========================================================================================================
 //===========================================================================================================
-
-TESTFUNC_t testfunction[] = {
-    {"shutdown", shutdown, defaultHelp},
-    {"seasonreset", seasonExecute, defaultHelp},
-    {"tags", tagExecute, tagHelp},
-    {"multi", multiExecute, multiHelp},
-    {"dbchange", dbchangeExecute, defaultHelp},
-    {"default", defaultExecute, defaultHelp},
-    {"notif", notifEmailExecute, defaultHelp},
-    {"lm", lmExecute, lmHelp},
-    {"socket", socketExecute, lmHelp},
-    {"thread", testThreads, defaultHelp },
-    {"history", historyExecute, historyHelp},
-    {"dbtime", dbtimeExecute, dbtimeHelp},
-    {"", 0, 0}
-};
 
 static double GetPointValue(int pointtype)
 {
@@ -2002,6 +2006,125 @@ void pilHelp()
         dout << " Arg1: multi " << endl <<
             " Arg2: <porter_machine_or_ip> " <<
             endl;
+    }
+    return;
+}
+
+void pointReqExecute(int argc, char **argv)
+{
+    int Op, k;
+
+    unsigned    timeCnt = rwEpoch;
+    unsigned    pt = 1;
+    CtiMessage  *pMsg;
+
+    CtiPointManager PointMgr;
+
+    try
+    {
+        int Op, k;
+
+        unsigned    timeCnt = rwEpoch;
+        unsigned    pt = 1;
+        CtiMessage  *pMsg;
+
+        if(argc < 3)
+        {
+            pointReqHelp();
+            return;
+        }
+
+        CtiConnection  Connect(VANGOGHNEXUS, argv[2]);
+        CtiMultiMsg   *pM  = CTIDBG_new CtiMultiMsg;
+
+        pM->setMessagePriority(15);
+
+        Connect.WriteConnQue(CTIDBG_new CtiRegistrationMsg("pointReqExecute", rwThreadId(), FALSE));
+        CtiPointRegistrationMsg    *PtRegMsg = CTIDBG_new CtiPointRegistrationMsg(REG_ALL_PTS_MASK);
+        PtRegMsg->setMessagePriority(15);
+        Connect.WriteConnQue( PtRegMsg );
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Reading inbound messages from registration" << endl;
+        }
+
+        while( NULL != (pMsg = Connect.ReadConnQue(10000)))
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Inbound message Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                pMsg->dump();
+            }
+
+            delete pMsg;
+        }
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Done reading registration messages" << endl;
+        }
+
+
+        //
+        // ACH
+        //
+
+        CtiCommandMsg *pCmd = CTIDBG_new CtiCommandMsg(CtiCommandMsg::PointDataRequest, 15);
+
+        // Ask for the first ten points.
+        pCmd->insert(1);
+        pCmd->insert(2);
+        pCmd->insert(3);
+        pCmd->insert(4);
+        pCmd->insert(5);
+        pCmd->insert(6);
+        pCmd->insert(7);
+        pCmd->insert(8);
+        pCmd->insert(9);
+        pCmd->insert(10);
+
+        Connect.WriteConnQue( pCmd );
+        pCmd = 0;
+
+
+        while( NULL != (pMsg = Connect.ReadConnQue(2500)))
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Inbound message Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                pMsg->dump();
+            }
+
+            delete pMsg;
+        }
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Request application shutdown." << endl;
+        }
+
+        Sleep(1000);
+        Connect.WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 15));
+        Connect.ShutdownConnection();
+        Sleep(2500);
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+
+    return;
+}
+
+void pointReqHelp()
+{
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " pointReqExecute - Help" << endl;
+        dout << " Arg1: <dispatch_machine_or_ip> " << endl;
     }
     return;
 }
