@@ -96,18 +96,17 @@ function navPage()
 			  <input type="hidden" name="SwitchContext" value="">
 <% } %>
 <%
-int pageIndx = 1;
-int pageSize = 250;
-pageIndx = request.getParameter("page") != null ? Integer.valueOf(request.getParameter("page")): 1;
-if (pageIndx < 1) page = 1;
-        int maxPageNo = (int) Math.ceil(resp.getStarsBriefCustAccountInfoCount() * 1.0 / pageSize);
-        if (pageIndx > maxPageNo) page = maxPageNo;
-        
+    
+    int pageSize = 250;
+    int pageIndx = request.getParameter("page") != null ? Integer.valueOf(request.getParameter("page")): 1;
+    if (pageIndx < 1) pageIndx = 1;
+    int maxPageNo = (int) Math.ceil(resp.getStarsBriefCustAccountInfoCount() * 1.0 / pageSize);
+    if (pageIndx > maxPageNo) page = maxPageNo;
+    int minOrderNo = (pageIndx- 1) * pageSize + 1;
+    int maxOrderNo = Math.min(pageIndx * pageSize, resp.getStarsBriefCustAccountInfoCount());
+   
+    if( resp.getStarsBriefCustAccountInfoCount() > 250) {
         int maxPageDigit = (int)(Math.log(maxPageNo) / Math.log(10)) + 1;
-        
-        int minOrderNo = (pageIndx- 1) * pageSize + 1;
-        int maxOrderNo = Math.min(pageIndx * pageSize, resp.getStarsBriefCustAccountInfoCount());
-        
         String navHTML = String.valueOf(minOrderNo).toString();
         if (maxOrderNo > minOrderNo)
             navHTML += "-" +maxOrderNo;
@@ -141,6 +140,7 @@ if (pageIndx < 1) page = 1;
             </td>
           </tr>
         </table>
+<%}%>
               <table width="615" border="1" cellspacing="0" cellpadding="3" align="center">                
                 <tr> 
                   <td width="15%" class="HeaderCell">Account #</td>
