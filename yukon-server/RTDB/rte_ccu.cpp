@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_ccu.cpp-arc  $
-* REVISION     :  $Revision: 1.31 $
-* DATE         :  $Date: 2006/05/16 15:26:04 $
+* REVISION     :  $Revision: 1.32 $
+* DATE         :  $Date: 2006/05/22 18:44:21 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -179,11 +179,16 @@ INT CtiRouteCCU::assembleVersacomRequest(CtiRequestMsg                  *pReq,
             BSt.Function = VSt.Message[2];
             if( VSt.Nibbles < 5 )
             {
-                BSt.Function |= ((VSt.Nibbles + 1) / 2) & 0x000f;
+                // This code does not appear to function correctly even though it seems to represent the documentation correctly.
+                // By skipping this, we are assuming a 6 byte message!
+                if(gConfigParms.isTrue("PORTER_EMETCON_VERSACOM_CONFORM"))
+                {
+                    BSt.Function |= ((VSt.Nibbles + 1) / 2) & 0x000f;
+                }
             }
 
             /* Now build the IO function */
-            if( VSt.Nibbles < 5 )
+            if( VSt.Nibbles < 6 && gConfigParms.isTrue("PORTER_EMETCON_VERSACOM_CONFORM"))
                 BSt.IO = 2;
             else
                 BSt.IO = 0;
@@ -201,6 +206,8 @@ INT CtiRouteCCU::assembleVersacomRequest(CtiRequestMsg                  *pReq,
             }
             else
             {
+                /* clear the memory buffer */
+                ::memset (BSt.Message, 0, sizeof (BSt.Message));
                 BSt.Length = 0;
             }
 
