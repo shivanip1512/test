@@ -1,10 +1,12 @@
 package com.cannontech.database.data.lite.stars;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -19,6 +21,7 @@ import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
+import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
@@ -29,6 +32,7 @@ import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.cache.functions.YukonUserFuncs;
+import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
@@ -38,6 +42,9 @@ import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.stars.hardware.LMThermostatSchedule;
+import com.cannontech.database.db.contact.Contact;
+import com.cannontech.database.db.customer.Address;
+import com.cannontech.database.db.customer.Customer;
 import com.cannontech.database.db.macro.MacroTypes;
 import com.cannontech.database.db.stars.ECToGenericMapping;
 import com.cannontech.database.db.stars.customer.CustomerAccount;
@@ -1502,10 +1509,9 @@ public class LiteStarsEnergyCompany extends LiteBase {
         
         if (autoLoad) {
             try {
-                com.cannontech.database.db.customer.Address addr = new com.cannontech.database.db.customer.Address();
+                Address addr = new Address();
                 addr.setAddressID( new Integer(addressID) );
-                addr = (com.cannontech.database.db.customer.Address)
-                        Transaction.createTransaction( Transaction.RETRIEVE, addr ).execute();
+                addr = (Address) Transaction.createTransaction( Transaction.RETRIEVE, addr ).execute();
                 
                 liteAddr = (LiteAddress) StarsLiteFactory.createLite( addr );
                 addAddress( liteAddr );
@@ -2207,13 +2213,14 @@ public class LiteStarsEnergyCompany extends LiteBase {
      * @param liteStarsCustAccountInfo
      */
     private void addBriefCustAccountInfo(LiteStarsCustAccountInformation liteStarsCustAccountInfo) {
-        LiteAddress streetLiteAddress = new LiteAddress(liteStarsCustAccountInfo.getAccountSite().getStreetAddressID());
+        //Don't get these addresses unless they are needed!
+        /*LiteAddress streetLiteAddress = new LiteAddress(liteStarsCustAccountInfo.getAccountSite().getStreetAddressID());
         streetLiteAddress.retrieve();
         addAddress( streetLiteAddress );
         
         LiteAddress billingLiteAddress = new LiteAddress(liteStarsCustAccountInfo.getCustomerAccount().getBillingAddressID());
         billingLiteAddress.retrieve();
-        addAddress( billingLiteAddress );
+        addAddress( billingLiteAddress );*/
 
         addCustAccountInformation( liteStarsCustAccountInfo);
     }
@@ -2898,7 +2905,9 @@ public class LiteStarsEnergyCompany extends LiteBase {
                 allEnergyCompanyIDs = getAllEnergyCompaniesDownward();
             else
                 allEnergyCompanyIDs.add(new Integer(getLiteID()) );
-            
+
+            accountList = searchByPrimaryContactLastName( lastName, partialMatch, allEnergyCompanyIDs, searchMembers);
+/*
             HashMap ecIDToAccountIDsMap = CustomerAccount.searchByPrimaryContactLastName( lastName, partialMatch, allEnergyCompanyIDs);
             for (int i = 0; i < allEnergyCompanyIDs.size(); i++)
             {
@@ -2918,7 +2927,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
                     }
                 }
                 CTILogger.debug("** " + (new Date().getTime() - timerStart.getTime())*.001 + " Secs to load Accounts ("+accountIDs.size()+") for lastname: " + lastName + " EC: " + allEnergyCompanyIDs.get(i));
-            }
+            }*/
         }
         return accountList;
     }
@@ -3396,4 +3405,140 @@ public class LiteStarsEnergyCompany extends LiteBase {
         hierarchyLoaded = false;
     }
 
+    private static ArrayList searchByPrimaryContactLastName(String lastName_, boolean partialMatch, ArrayList<Integer> energyCompanyIDList, boolean searchMembers) {
+        if (lastName_ == null || lastName_.length() == 0) return null;
+        if (energyCompanyIDList == null || energyCompanyIDList.size() == 0) return null;
+        
+        Date timerStart = new Date();
+        String lastName = lastName_.trim();
+        String firstName = null;
+        int commaIndex = lastName_.indexOf(",");
+        if( commaIndex > 0 )
+        {
+            firstName = lastName_.substring(commaIndex+1).trim();
+            lastName = lastName_.substring(0, commaIndex).trim();
+        }
+        String sql = "SELECT map.energycompanyID, acct.AccountID, contlastname, contfirstname, " + //1-4" +
+                    " acct.AccountSiteID, acct.AccountNumber, acct.CustomerID, acct.BillingAddressID, acct.AccountNotes, " + //5-9 
+                    " acs.SiteInformationID, acs.SiteNumber, acs.StreetAddressID, acs.PropertyNotes, acs.CustAtHome, acs.CustomerStatus, " + //10-15
+                    " si.Feeder, si.Pole, si.TransformerSize, si.ServiceVoltage, si.SubstationID, " + //16-20
+                    " PrimaryContactID, CustomerTypeID, TimeZone, CustomerNumber, RateScheduleID, AltTrackNum, TemperatureUnit " + //21-27
+                    " FROM ECToAccountMapping map, " + CustomerAccount.TABLE_NAME + " acct, " + 
+                    Customer.TABLE_NAME + " cust, " +  Contact.TABLE_NAME + " cont, " +
+                    " AccountSite acs, SiteInformation si " +  
+                    " WHERE map.AccountID = acct.AccountID " +
+                    " AND acct.AccountSiteID = acs.AccountSiteID " + 
+                    " AND acs.SiteInformationID = si.SiteID " + 
+                    " AND acct.CustomerID = cust.CustomerID " + 
+                    " AND cust.primarycontactid = cont.contactid " +
+                    " AND UPPER(cont.contlastname) like ? " ;
+                    if (firstName != null && firstName.length() > 0)
+                        sql += " AND UPPER(CONTFIRSTNAME) LIKE ? ";
+
+                    // Hey, if we have all the ECIDs available, don't bother adding this criteria!
+                    if( energyCompanyIDList.size() != StarsDatabaseCache.getInstance().getAllEnergyCompanies().size());
+                    {
+                        sql += " AND (map.EnergyCompanyID = " + energyCompanyIDList.get(0).toString(); 
+                        for (int i = 1; i < energyCompanyIDList.size(); i++)
+                             sql += " OR map.EnergyCompanyID = " + energyCompanyIDList.get(i).toString();
+                        sql += " ) ";
+                    }
+                    sql += " order by contlastname, contfirstname";                    
+        
+        ArrayList accountList = new ArrayList();
+        PreparedStatement pstmt = null;
+        Connection conn = null;
+        ResultSet rset = null;
+        int count = 0; 
+        try {
+            conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+            
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString( 1, lastName.toUpperCase()+(partialMatch? "%":""));
+            if (firstName != null && firstName.length() > 0)
+                pstmt.setString(2, firstName.toUpperCase() + "%");
+            rset = pstmt.executeQuery();
+
+            CTILogger.debug((new Date().getTime() - timerStart.getTime())*.001 + " After execute" );
+  
+            int prevECID = -1;
+            LiteStarsEnergyCompany liteStarsEC = null;
+            LiteStarsCustAccountInformation liteAcctInfo = null;
+            while(rset.next())
+            {
+                Integer energyCompanyID = new Integer(rset.getInt(1));
+                if(prevECID != energyCompanyID.intValue())
+                    liteStarsEC = StarsDatabaseCache.getInstance().getEnergyCompany(energyCompanyID.intValue());
+                prevECID = energyCompanyID.intValue();
+
+                Integer accountID = new Integer(rset.getInt(2));
+                liteAcctInfo = (LiteStarsCustAccountInformation) liteStarsEC.getCustAccountInfoMap().get( new Integer(accountID) );
+                if (liteAcctInfo != null) continue; //its already loaded
+            
+                liteAcctInfo = new LiteStarsCustAccountInformation(accountID);                
+
+                LiteCustomerAccount customerAccount = new LiteCustomerAccount( accountID.intValue() );
+                customerAccount.setAccountSiteID( rset.getInt(5));
+                customerAccount.setAccountNumber( rset.getString(6));
+                customerAccount.setCustomerID( rset.getInt(7) );
+                customerAccount.setBillingAddressID( rset.getInt(8));
+                customerAccount.setAccountNotes( rset.getString(9) );
+                liteAcctInfo.setCustomerAccount(customerAccount);
+                
+                LiteAccountSite accountSite = new LiteAccountSite( customerAccount.getAccountSiteID());
+                accountSite.setSiteInformationID( rset.getInt(10) );
+                accountSite.setSiteNumber( rset.getString(11) );
+                accountSite.setStreetAddressID( rset.getInt(12) );
+                accountSite.setPropertyNotes( rset.getString(13));
+                accountSite.setCustAtHome( rset.getString(14));
+                accountSite.setCustStatus( rset.getString(15) );
+                liteAcctInfo.setAccountSite(accountSite);
+
+                LiteSiteInformation siteInformation = new LiteSiteInformation(accountSite.getAccountSiteID() );
+                siteInformation.setFeeder( rset.getString(16) );
+                siteInformation.setPole( rset.getString(17));
+                siteInformation.setTransformerSize( rset.getString(18) );
+                siteInformation.setServiceVoltage( rset.getString(19) );
+                siteInformation.setSubstationID( rset.getInt(20) );
+                liteAcctInfo.setSiteInformation(siteInformation);
+             
+                LiteCustomer customer = new LiteCustomer(customerAccount.getCustomerID());
+                customer.setPrimaryContactID(rset.getInt(21) );
+                customer.setCustomerTypeID( rset.getInt(22) );
+                customer.setTimeZone( rset.getString(23) );
+                customer.setCustomerNumber( rset.getString(24) );
+                customer.setRateScheduleID( rset.getInt(25) );
+                customer.setAltTrackingNumber( rset.getString(26) );
+                customer.setTemperatureUnit( rset.getString(27) );
+                if(customer.getCustomerTypeID() == CustomerTypes.CUSTOMER_CI)
+                {   //retrieve the CICustomerBase object instead.
+                    customer = new LiteCICustomer(customer.getCustomerID());
+                    customer.retrieve(CtiUtilities.getDatabaseAlias());
+                }
+                liteAcctInfo.setCustomer(customer);
+                
+                if (searchMembers)
+                    accountList.add(new Pair(liteAcctInfo, liteStarsEC) );
+                else
+                    accountList.add(liteAcctInfo);
+
+                count++;
+                liteStarsEC.addBriefCustAccountInfo( liteAcctInfo);
+            }
+        }
+        catch( Exception e ){
+            CTILogger.error( "Error retrieving contacts with last name " + lastName+ ": " + e.getMessage(), e );
+        }
+        finally {
+            try {
+                if (rset != null) rset.close();
+                if (pstmt != null) pstmt.close();
+                if (conn != null) conn.close();
+            }
+            catch (java.sql.SQLException e) {}
+        }
+
+        CTILogger.debug((new Date().getTime() - timerStart.getTime())*.001 + " Secs for '" + lastName + "' Search (" + count + " AccountIDS loaded; EC=" + (energyCompanyIDList.size() == StarsDatabaseCache.getInstance().getAllEnergyCompanies().size()? "ALL" : energyCompanyIDList.toString()) + ")" );
+        return accountList;
+    }
 }
