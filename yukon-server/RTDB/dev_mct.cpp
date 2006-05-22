@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.83 $
-* DATE         :  $Date: 2006/04/11 20:49:25 $
+* REVISION     :  $Revision: 1.84 $
+* DATE         :  $Date: 2006/05/22 20:22:04 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1704,7 +1704,7 @@ INT CtiDeviceMCT::executePutValue(CtiRequestMsg                  *pReq,
                 dial = parse.getdValue("dial");
             }
 
-            CtiPointSPtr tmpPoint = getDevicePointOffsetTypeEqual(parse.getiValue("offset"), PulseAccumulatorPointType);
+            CtiPointSPtr tmpPoint = getDevicePointOffsetTypeEqual(parse.getiValue("kyz_offset"), PulseAccumulatorPointType);
 
             if( tmpPoint && tmpPoint->isA() == PulseAccumulatorPointType)
             {
