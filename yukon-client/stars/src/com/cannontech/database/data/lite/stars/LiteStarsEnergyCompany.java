@@ -3424,12 +3424,14 @@ public class LiteStarsEnergyCompany extends LiteBase {
                     " acct.AccountSiteID, acct.AccountNumber, acct.CustomerID, acct.BillingAddressID, acct.AccountNotes, " + //5-9 
                     " acs.SiteInformationID, acs.SiteNumber, acs.StreetAddressID, acs.PropertyNotes, acs.CustAtHome, acs.CustomerStatus, " + //10-15
                     " si.Feeder, si.Pole, si.TransformerSize, si.ServiceVoltage, si.SubstationID, " + //16-20
-                    " PrimaryContactID, CustomerTypeID, TimeZone, CustomerNumber, RateScheduleID, AltTrackNum, TemperatureUnit " + //21-27
+                    " PrimaryContactID, CustomerTypeID, TimeZone, CustomerNumber, RateScheduleID, AltTrackNum, TemperatureUnit, " + //21-27
+                    " LocationAddress1, LocationAddress2, CityName, StateCode, ZipCode, County " + //28-33
                     " FROM ECToAccountMapping map, " + CustomerAccount.TABLE_NAME + " acct, " + 
                     Customer.TABLE_NAME + " cust, " +  Contact.TABLE_NAME + " cont, " +
-                    " AccountSite acs, SiteInformation si " +  
+                    " AccountSite acs, SiteInformation si, Address adr " +  
                     " WHERE map.AccountID = acct.AccountID " +
-                    " AND acct.AccountSiteID = acs.AccountSiteID " + 
+                    " AND acct.AccountSiteID = acs.AccountSiteID " +
+                    " AND acs.streetaddressID = adr.addressID " +
                     " AND acs.SiteInformationID = si.SiteID " + 
                     " AND acct.CustomerID = cust.CustomerID " + 
                     " AND cust.primarycontactid = cont.contactid " +
@@ -3463,19 +3465,13 @@ public class LiteStarsEnergyCompany extends LiteBase {
 
             CTILogger.debug((new Date().getTime() - timerStart.getTime())*.001 + " After execute" );
   
-            int prevECID = -1;
             LiteStarsEnergyCompany liteStarsEC = null;
             LiteStarsCustAccountInformation liteAcctInfo = null;
             while(rset.next())
             {
                 Integer energyCompanyID = new Integer(rset.getInt(1));
-                if(prevECID != energyCompanyID.intValue()){
-                    Date ecDate = new Date();
-                    liteStarsEC = StarsDatabaseCache.getInstance().getEnergyCompany(energyCompanyID.intValue());
-                    CTILogger.debug((new Date().getTime() - ecDate.getTime())*.001 + " For EC cache retrieve" );
-                }
-                prevECID = energyCompanyID.intValue();
-
+                liteStarsEC = StarsDatabaseCache.getInstance().getEnergyCompany(energyCompanyID.intValue());
+                
                 Integer accountID = new Integer(rset.getInt(2));
                 liteAcctInfo = (LiteStarsCustAccountInformation) liteStarsEC.getCustAccountInfoMap().get( new Integer(accountID) );
                 if (liteAcctInfo == null){
@@ -3522,6 +3518,15 @@ public class LiteStarsEnergyCompany extends LiteBase {
                         customer.retrieve(CtiUtilities.getDatabaseAlias());
                     }
                     liteAcctInfo.setCustomer(customer);
+                                        
+                    LiteAddress address = new LiteAddress(accountSite.getStreetAddressID());
+                    address.setLocationAddress1( rset.getString(28) );
+                    address.setLocationAddress2( rset.getString(29) );
+                    address.setCityName( rset.getString(30) );
+                    address.setStateCode( rset.getString(31) );
+                    address.setZipCode( rset.getString(32) );
+                    address.setCounty( rset.getString(33) );
+                    liteStarsEC.addAddress(address);
                 }                
                 if (searchMembers)
                     accountList.add(new Pair(liteAcctInfo, liteStarsEC) );
