@@ -2434,14 +2434,27 @@ public class LiteStarsEnergyCompany extends LiteBase {
         }
     }
     
-    /**
-     * Search customer account by account # within the energy company.
-     */
-    public LiteStarsCustAccountInformation searchAccountByAccountNo(String accountNo) 
+	/**
+	 * Search customer account by account # within the energy company.
+     * int totalComparableDigits is for use with rotation digit billing systems: the field
+     * represents the total length of the account number to be considered in the search (i.e. 
+     * the account number sans the rotation digits, most commonly the last two digits).  If
+     * normal length, then 0 or lower will result in the whole account number being used.  This would
+     * be default.  
+	 */
+	public LiteStarsCustAccountInformation searchAccountByAccountNo(String accountNo) 
     {
-        ArrayList custAcctInfoList = getAllCustAccountInformation();
-        String comparableDigitProperty = AuthFuncs.getRolePropertyValue(getUserID(), ConsumerInfoRole.ACCOUNT_NUMBER_LENGTH);
+		ArrayList custAcctInfoList = getAllCustAccountInformation();
+        String comparableDigitProperty = AuthFuncs.getRolePropertyValue(YukonUserFuncs.getLiteYukonUser(getUserID()), ConsumerInfoRole.ACCOUNT_NUMBER_LENGTH);
         int comparableDigitEndIndex = 0;
+        String rotationDigitProperty = AuthFuncs.getRolePropertyValue(YukonUserFuncs.getLiteYukonUser(getUserID()), ConsumerInfoRole.ROTATION_DIGIT_LENGTH);
+        int accountNumSansRotationDigitsIndex = accountNo.length();
+        if(rotationDigitProperty.compareTo(CtiUtilities.STRING_NONE) != 0 && Integer.parseInt(rotationDigitProperty) > 0
+                && Integer.parseInt(rotationDigitProperty) < accountNo.length())
+        {
+            accountNumSansRotationDigitsIndex = accountNo.length() - Integer.parseInt(rotationDigitProperty);
+            accountNo = accountNo.substring(0, accountNumSansRotationDigitsIndex);
+        }
         if(comparableDigitProperty.compareTo(CtiUtilities.STRING_NONE) != 0 && Integer.parseInt(comparableDigitProperty) > 0)
         {
             comparableDigitEndIndex = Integer.parseInt(comparableDigitProperty);
@@ -2449,40 +2462,41 @@ public class LiteStarsEnergyCompany extends LiteBase {
                 accountNo = accountNo.substring(0, comparableDigitEndIndex);
         }
         
-        for (int i = 0; i < custAcctInfoList.size(); i++) 
-        {
-            LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) custAcctInfoList.get(i);
-            String comparableAcctNum = liteAcctInfo.getCustomerAccount().getAccountNumber();
+		for (int i = 0; i < custAcctInfoList.size(); i++) {
+			LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) custAcctInfoList.get(i);
+			String comparableAcctNum = liteAcctInfo.getCustomerAccount().getAccountNumber();
+            if(accountNumSansRotationDigitsIndex > 0 && comparableAcctNum.length() >= accountNumSansRotationDigitsIndex)
+                comparableAcctNum = comparableAcctNum.substring(0, accountNumSansRotationDigitsIndex);
             if(comparableDigitEndIndex > 0 && comparableAcctNum.length() >= comparableDigitEndIndex)
                 comparableAcctNum = comparableAcctNum.substring(0, comparableDigitEndIndex);
             if (comparableAcctNum.equalsIgnoreCase( accountNo ))
-            {
-                if (!liteAcctInfo.isExtended()) extendCustAccountInfo( liteAcctInfo );
-                return liteAcctInfo;
-            }
-        }
-        
-        if (!isAccountsLoaded()) {
-            try {
-                int[] accountIDs = com.cannontech.database.db.stars.customer.CustomerAccount.searchByAccountNumber( accountNo, getLiteID() );
-                if (accountIDs == null || accountIDs.length == 0) return null;
-
-                // There shouldn't be more than one customer accounts with the same account number
-                com.cannontech.database.data.stars.customer.CustomerAccount account =
-                        new com.cannontech.database.data.stars.customer.CustomerAccount();
-                account.setAccountID( new Integer(accountIDs[0]) );
-                account = (com.cannontech.database.data.stars.customer.CustomerAccount)
-                        Transaction.createTransaction(Transaction.RETRIEVE, account).execute();
-                
-                return addCustAccountInformation( account );
-            }
-            catch (Exception e) {
-                CTILogger.error( e.getMessage(), e );
-            }
-        }
-        
-        return null;
-    }
+			{
+				if (!liteAcctInfo.isExtended()) extendCustAccountInfo( liteAcctInfo );
+				return liteAcctInfo;
+			}
+		}
+		
+		if (!isAccountsLoaded()) {
+			try {
+				int[] accountIDs = com.cannontech.database.db.stars.customer.CustomerAccount.searchByAccountNumber( accountNo, getLiteID() );
+				if (accountIDs == null || accountIDs.length == 0) return null;
+				
+				// There shouldn't be more than one customer accounts with the same account number
+				com.cannontech.database.data.stars.customer.CustomerAccount account =
+						new com.cannontech.database.data.stars.customer.CustomerAccount();
+				account.setAccountID( new Integer(accountIDs[0]) );
+				account = (com.cannontech.database.data.stars.customer.CustomerAccount)
+						Transaction.createTransaction(Transaction.RETRIEVE, account).execute();
+				
+				return addCustAccountInformation( account );
+			}
+			catch (Exception e) {
+				CTILogger.error( e.getMessage(), e );
+			}
+		}
+		
+		return null;
+	}
     
     /**
      * Search customer accounts by account #, search results based on partial match.

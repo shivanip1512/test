@@ -38,7 +38,8 @@ public interface ConsumerInfoRole {
     public static final int METER_SWITCH_ASSIGNMENT = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 59;
     public static final int CREATE_LOGIN_FOR_ACCOUNT = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 60;
     public static final int ACCOUNT_NUMBER_LENGTH = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 61;
-	
+    public static final int ROTATION_DIGIT_LENGTH = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 62;
+    
 	public static final int WEB_LINK_FAQ = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2;
 	public static final int WEB_LINK_THERM_INSTRUCTIONS = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 1;
 	public static final int WEB_TEXT_CONTROL = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 10;

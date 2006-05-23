@@ -293,6 +293,15 @@ public class UpdateCustAccountAction implements ActionBase {
              * enter the picture; we need to make sure this doesn't happen.
              */
             String comparableDigitProperty = AuthFuncs.getRolePropertyValue(YukonUserFuncs.getLiteYukonUser(energyCompany.getUserID()), ConsumerInfoRole.ACCOUNT_NUMBER_LENGTH);
+            String rotationDigitProperty = AuthFuncs.getRolePropertyValue(YukonUserFuncs.getLiteYukonUser(energyCompany.getUserID()), ConsumerInfoRole.ROTATION_DIGIT_LENGTH);
+            if(rotationDigitProperty.compareTo(CtiUtilities.STRING_NONE) != 0 && Integer.parseInt(rotationDigitProperty) > 0)
+            {
+                if(comparableAcctNum.length() >= Integer.parseInt(rotationDigitProperty))
+                    comparableAcctNum = comparableAcctNum.substring(0, comparableAcctNum.length() - Integer.parseInt(rotationDigitProperty));
+                if(existingAcctNum.length() >= Integer.parseInt(rotationDigitProperty)
+                    && existingAcctNum.length() > comparableAcctNum.length())
+                    existingAcctNum = existingAcctNum.substring(0, existingAcctNum.length() - Integer.parseInt(rotationDigitProperty));
+            }
             if(comparableDigitProperty.compareTo(CtiUtilities.STRING_NONE) != 0 && Integer.parseInt(comparableDigitProperty) > 0)
             { 
                 if(comparableAcctNum.length() >= Integer.parseInt(comparableDigitProperty))
