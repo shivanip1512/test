@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrdsm2import.cpp-arc  $
-*    REVISION     :  $Revision: 1.8 $
-*    DATE         :  $Date: 2006/01/03 20:23:37 $
+*    REVISION     :  $Revision: 1.9 $
+*    DATE         :  $Date: 2006/05/23 17:17:43 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrdsm2import.cpp,v $
+      Revision 1.9  2006/05/23 17:17:43  tspar
+      bug fix: boost iterator used incorrectly in loop.
+
       Revision 1.8  2006/01/03 20:23:37  tspar
       Moved non RW string utilities from rwutil.h to utility.h
 
@@ -260,8 +263,9 @@ bool CtiFDR_Dsm2Import::validateAndDecodeLine (string &aLine, CtiMessage **retMs
     string desc;
 
     // do we have an of these
-    if (!(tempString1 = *tok_iter++).empty())
+    if ( tok_iter != cmdLine.end())
     {
+        tempString1 = *tok_iter; tok_iter++;
         {
             CtiLockGuard<CtiMutex> receiveGuard(getReceiveFromList().getMutex());  
             flag = findTranslationNameInList (tempString1, getReceiveFromList(), point);
@@ -279,18 +283,21 @@ bool CtiFDR_Dsm2Import::validateAndDecodeLine (string &aLine, CtiMessage **retMs
             tempString1 = *tok_iter++;
 
             // value
-            if (!(tempString1 = *tok_iter++).empty())
+            if ( tok_iter != cmdLine.end())
             {
+                tempString1 = *tok_iter; tok_iter++;
                 float value = atof (tempString1.c_str());
 
                 // quality
-                if (!(tempString1 = *tok_iter++).empty())
+                if ( tok_iter != cmdLine.end())
                 {
+                    tempString1 = *tok_iter; tok_iter++;
                     int quality = Dsm2ToYukonQuality (tempString1[0]);
 
                     // timestamp
-                    if (!(tempString1 = *tok_iter++).empty())
+                    if ( tok_iter != cmdLine.end())
                     {
+                        tempString1 = *tok_iter; tok_iter++;
                         CtiTime timestamp = Dsm2ToYukonTime (tempString1);
 
                         if (timestamp != PASTDATE)

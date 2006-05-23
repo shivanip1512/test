@@ -1214,8 +1214,9 @@ bool CtiFDRTelegyr::loadGroupLists( void )
                   Boost_char_tokenizer nextTranslate(translationPoint->getDestinationList()[x].getTranslation(), sep1);
                   Boost_char_tokenizer::iterator tok_iter = nextTranslate.begin(); 
 
-                  if( !(myTranslateName = *tok_iter++).empty() )
+                  if( tok_iter != nextTranslate.end() )
                   {
+                     myTranslateName = *tok_iter;tok_iter++;
                      boost::char_separator<char> sep2(":");
                      Boost_char_tokenizer nextTempToken(myTranslateName, sep2);
                      Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
@@ -1229,8 +1230,9 @@ bool CtiFDRTelegyr::loadGroupLists( void )
                   }
 
                   //note: we're making a brand new token (string) out of the data before the ';'
-                  if( !(myTranslateName = *tok_iter++ ).empty() )
+                  if( tok_iter != nextTranslate.end() )
                   {
+                     myTranslateName = *tok_iter; tok_iter++;
                      // this in the form of GROUP:xxxx (really, this is interval now)
                      boost::char_separator<char> sep2(":");
                      Boost_char_tokenizer nextTempToken(myTranslateName, sep2);
@@ -1240,8 +1242,9 @@ bool CtiFDRTelegyr::loadGroupLists( void )
                      pointStr = *tok_iter1;
                   }
 
-                  if( !(myTranslateName = *tok_iter++ ).empty() )
+                  if( tok_iter != nextTranslate.end() )
                   {
+                     myTranslateName = *tok_iter; tok_iter++;
                      // this in the form of GROUP:xxxx (really, this is interval now)
                      boost::char_separator<char> sep2(":");
                      Boost_char_tokenizer nextTempToken(myTranslateName, sep2);
@@ -1251,8 +1254,9 @@ bool CtiFDRTelegyr::loadGroupLists( void )
                      groupStr = *tok_iter1;
                   }
 
-                  if( !(myTranslateName = *tok_iter++ ).empty() )
+                  if( tok_iter != nextTranslate.end() )
                   {
+                     myTranslateName = *tok_iter; tok_iter++;
                      // this in the form of POINTTYPE:xxxx
                      boost::char_separator<char> sep2(":");
                      Boost_char_tokenizer nextTempToken(myTranslateName, sep2);

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/12/20 17:17:14 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2006/05/23 17:17:43 $
 *
 * AUTHOR: Ben Wallace
 *
@@ -176,11 +176,13 @@ void CtiFDRService::Init( )
         string       tempString;
 
         // parse the interfaces
-        while (!(myInterfaceName=*tok_iter++).empty())
+        //while (!(myInterfaceName=*tok_iter++).empty())
+        for( ;tok_iter != next.end(); tok_iter++ )
         {
             HMODULE     ModuleHandle = (HMODULE) NULL;
             HINSTANCE   hInterfaceLib;
 
+            myInterfaceName = *tok_iter;
             myInterfaceName+= ".DLL";
 
             //  load DLL
@@ -219,8 +221,7 @@ void CtiFDRService::Init( )
 
                 }
             }
-
-        } // end while (!(myInterfaceName=next
+        } // end for
 
     }
     catch( RWxmsg &msg )

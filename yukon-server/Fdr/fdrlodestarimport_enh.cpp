@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.10 $
-*    DATE         :  $Date: 2006/02/08 20:12:23 $
+*    REVISION     :  $Revision: 1.11 $
+*    DATE         :  $Date: 2006/05/23 17:17:43 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -19,6 +19,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrlodestarimport_enh.cpp,v $
+      Revision 1.11  2006/05/23 17:17:43  tspar
+      bug fix: boost iterator used incorrectly in loop.
+
       Revision 1.10  2006/02/08 20:12:23  jrichter
       BUG:  Fixed getSubtractValue to compare stopTime seconds format instead of the mistaken startTime.
 
@@ -887,7 +890,7 @@ bool CtiFDR_EnhancedLodeStar::decodeDataRecord(string& aLine, CtiMultiMsg* multi
     Boost_char_tokenizer::iterator tok_iter = cmdLine.begin();     
 
     string           tokedStr = *tok_iter;
-    char*               tempCharPtr = (char*)tokedStr.c_str();
+    char*               tempCharPtr = (char*)tokedStr.c_str();//TS_FLAG
     int                 fieldNumber = 1;
     double              intervalValue;
     unsigned            importedQuality;

@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.21 $
-*    DATE         :  $Date: 2006/04/24 14:47:33 $
+*    REVISION     :  $Revision: 1.22 $
+*    DATE         :  $Date: 2006/05/23 17:17:43 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -19,6 +19,9 @@
 *    ---------------------------------------------------
 *    History:
       $Log: fdrlodestarimport.cpp,v $
+      Revision 1.22  2006/05/23 17:17:43  tspar
+      bug fix: boost iterator used incorrectly in loop.
+
       Revision 1.21  2006/04/24 14:47:33  tspar
       RWreplace: replacing a few missed or new Rogue Wave elements
 
@@ -462,8 +465,9 @@ bool CtiFDR_LodeStarImportBase::loadTranslationLists()
                         Boost_char_tokenizer nextTranslate(translationPoint->getDestinationList()[x].getTranslation(), sep1);
                         Boost_char_tokenizer::iterator tok_iter = nextTranslate.begin(); 
 
-                        if (!(tempString1 = *tok_iter).empty())
+                        if ( tok_iter != nextTranslate.end())
                         {
+                            tempString1 = *tok_iter;
                             boost::char_separator<char> sep2(":");
                             Boost_char_tokenizer nextTempToken(tempString1, sep2);
                             Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
@@ -482,8 +486,9 @@ bool CtiFDR_LodeStarImportBase::loadTranslationLists()
 
                                 // next token is the channel
                                 tok_iter++;
-                                if (!(tempString1 = *tok_iter).empty())
+                                if ( tok_iter != nextTranslate.end())
                                 {
+                                        tempString1 = *tok_iter;
                                     boost::char_separator<char> sep2(":");
                                     Boost_char_tokenizer nextTempToken(tempString1, sep2);
                                     Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
@@ -498,9 +503,10 @@ bool CtiFDR_LodeStarImportBase::loadTranslationLists()
                                         translationName += tempString2;
 
                                         transform(translationName.begin(), translationName.end(), translationName.begin(), toupper);
-
-                                        if (!(tempString1 = *(++tok_iter)).empty())
+                                        ++tok_iter;
+                                        if ( tok_iter != nextTranslate.end())
                                         {
+                                            tempString1 = *tok_iter;
                                             boost::char_separator<char> sep2(":");
                                             Boost_char_tokenizer nextTempToken(tempString1, sep2);
                                             Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
@@ -529,8 +535,10 @@ bool CtiFDR_LodeStarImportBase::loadTranslationLists()
                                                 translationName += " ";
                                                 translationName += tempString2;
                                                 transform(translationName.begin(), translationName.end(), translationName.begin(), toupper);
-                                                if (!(tempString1 = *(++tok_iter)).empty())
+                                                ++tok_iter;
+                                                if ( tok_iter != nextTranslate.end())
                                                 {
+                                                    tempString1 = *tok_iter;
                                                     boost::char_separator<char> sep2(":");
                                                     Boost_char_tokenizer nextTempToken(tempString1, sep2);
                                                     Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 

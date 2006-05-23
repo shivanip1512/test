@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrasciiimportbase.cpp-arc  $
-*    REVISION     :  $Revision: 1.9 $
-*    DATE         :  $Date: 2006/04/24 14:47:32 $
+*    REVISION     :  $Revision: 1.10 $
+*    DATE         :  $Date: 2006/05/23 17:17:43 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrasciiimportbase.cpp,v $
+      Revision 1.10  2006/05/23 17:17:43  tspar
+      bug fix: boost iterator used incorrectly in loop.
+
       Revision 1.9  2006/04/24 14:47:32  tspar
       RWreplace: replacing a few missed or new Rogue Wave elements
 
@@ -321,8 +324,9 @@ bool CtiFDRAsciiImportBase::loadTranslationLists()
                         Boost_char_tokenizer nextTranslate(translationPoint->getDestinationList()[x].getTranslation(), sep1);
                         Boost_char_tokenizer::iterator tok_iter = nextTranslate.begin(); 
 
-                        if (!(tempString1 = *tok_iter).empty())
+                        if ( tok_iter != nextTranslate.end())
                         {
+                            tempString1 = *tok_iter;
                             boost::char_separator<char> sep2(":");
                             Boost_char_tokenizer nextTempToken(tempString1, sep2);
                             Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 

@@ -15,10 +15,13 @@
  *    Copyright (C) 2005 Cannon Technologies, Inc.  All rights reserved.
  *
  *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrinterface.cpp-arc  $
- *    REVISION     :  $Revision: 1.23 $
- *    DATE         :  $Date: 2006/04/24 14:47:32 $
+ *    REVISION     :  $Revision: 1.24 $
+ *    DATE         :  $Date: 2006/05/23 17:17:43 $
  *    History:
  *     $Log: fdrinterface.cpp,v $
+ *     Revision 1.24  2006/05/23 17:17:43  tspar
+ *     bug fix: boost iterator used incorrectly in loop.
+ *
  *     Revision 1.23  2006/04/24 14:47:32  tspar
  *     RWreplace: replacing a few missed or new Rogue Wave elements
  *
@@ -201,8 +204,9 @@ long CtiFDRInterface::getClientLinkStatusID(string &aClientName)
                     Boost_char_tokenizer nextTranslate(translationPoint->getDestinationList()[x].getTranslation(), sep);
                     Boost_char_tokenizer::iterator tok_iter = nextTranslate.begin(); 
                     
-                    if (!(tempString1 = *tok_iter++).empty())
+                    if ( tok_iter != nextTranslate.end() )
                     {
+                        tempString1 = *tok_iter++;tok_iter++;
                         // this contains Interface:name of the interface
                         boost::char_separator<char> sep1(":");
                         Boost_char_tokenizer nextTempToken(tempString1, sep1);

@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.10 $
-*    DATE         :  $Date: 2005/12/20 17:17:13 $
+*    REVISION     :  $Revision: 1.11 $
+*    DATE         :  $Date: 2006/05/23 17:17:43 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -19,6 +19,9 @@
 *    ---------------------------------------------------
 *    History:
       $Log: fdrlodestarimport_std.cpp,v $
+      Revision 1.11  2006/05/23 17:17:43  tspar
+      bug fix: boost iterator used incorrectly in loop.
+
       Revision 1.10  2005/12/20 17:17:13  tspar
       Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 
@@ -402,8 +405,9 @@ bool CtiFDR_StandardLodeStar::decodeFirstHeaderRecord(string& aLine, int fileInd
                         string      tokenStrPartCID;// = tokenizer(" ");
                         string      tokenStr = "";
                         bool firstTime = true;
-                        while (!(tokenStrPartCID = *tok_iter++).empty())
+                        while ( tok_iter != tokenizer.end() )
                         {
+                            tokenStrPartCID = *tok_iter;tok_iter++;
                             if (firstTime) 
                             { 
                                 tokenStr = tokenStrPartCID;

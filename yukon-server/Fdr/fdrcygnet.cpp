@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive$
-*    REVISION     :  $Revision: 1.11 $
-*    DATE         :  $Date: 2006/04/24 14:47:32 $
+*    REVISION     :  $Revision: 1.12 $
+*    DATE         :  $Date: 2006/05/23 17:17:43 $
 *
 *
 *    AUTHOR: Ben Wallace
@@ -23,6 +23,9 @@
 *    ---------------------------------------------------
 *    History:
       $Log: fdrcygnet.cpp,v $
+      Revision 1.12  2006/05/23 17:17:43  tspar
+      bug fix: boost iterator used incorrectly in loop.
+
       Revision 1.11  2006/04/24 14:47:32  tspar
       RWreplace: replacing a few missed or new Rogue Wave elements
 
@@ -1342,8 +1345,9 @@ bool CtiFDRCygnet::loadLists(CtiFDRPointList &aList)
                     Boost_char_tokenizer nextTranslate(translationPoint->getDestinationList()[x].getTranslation(), sep1);
                     Boost_char_tokenizer::iterator tok_iter = nextTranslate.begin(); 
 
-                    if (!(tempString1 = *tok_iter).empty())
+                    if ( tok_iter != nextTranslate.end())
                     {
+                        tempString1 = *tok_iter;
                         boost::char_separator<char> sep2(":");
                         Boost_char_tokenizer nextTempToken(tempString1, sep2);
                         Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 

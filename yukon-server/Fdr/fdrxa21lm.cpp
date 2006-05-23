@@ -378,8 +378,9 @@ bool CtiFDR_XA21LM::translateAndUpdatePoint(CtiFDRPoint *translationPoint, int a
         Boost_char_tokenizer nextTranslate(translationPoint->getDestinationList()[aDestinationIndex].getTranslation(), sep1);
         Boost_char_tokenizer::iterator tok_iter = nextTranslate.begin(); 
 
-        if (!(tempString1 = *tok_iter).empty())
+        if ( tok_iter != nextTranslate.end() )
         {
+            tempString1 = *tok_iter;
             boost::char_separator<char> sep2(":");
             Boost_char_tokenizer nextTempToken(tempString1, sep2);
             Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 

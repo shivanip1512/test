@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdracs.cpp-arc  $
-*    REVISION     :  $Revision: 1.13 $
-*    DATE         :  $Date: 2006/01/03 20:23:37 $
+*    REVISION     :  $Revision: 1.14 $
+*    DATE         :  $Date: 2006/05/23 17:17:42 $
 *
 *
 *    AUTHOR: David Sutton
@@ -23,6 +23,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdracs.cpp,v $
+      Revision 1.14  2006/05/23 17:17:42  tspar
+      bug fix: boost iterator used incorrectly in loop.
+
       Revision 1.13  2006/01/03 20:23:37  tspar
       Moved non RW string utilities from rwutil.h to utility.h
 
@@ -377,8 +380,9 @@ bool CtiFDR_ACS::translateAndUpdatePoint(CtiFDRPoint *translationPoint, int aDes
         Boost_char_tokenizer nextTranslate(translationPoint->getDestinationList()[aDestinationIndex].getTranslation(), sep1);
         Boost_char_tokenizer::iterator tok_iter = nextTranslate.begin(); 
 
-        if (!(tempString1 = *tok_iter++).empty())
+        if ( tok_iter != nextTranslate.end() )
         {
+            tempString1 = *tok_iter; tok_iter++;
             boost::char_separator<char> sep2(":");
             Boost_char_tokenizer nextTempToken(tempString1, sep2);
             Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
@@ -395,8 +399,9 @@ bool CtiFDR_ACS::translateAndUpdatePoint(CtiFDRPoint *translationPoint, int aDes
                 translationName += tempString2[0];
         
                 // next token is the remote number
-                if (!(tempString1 = *tok_iter++).empty())
+                if ( tok_iter != nextTranslate.end())
                 {
+                    tempString1 = *tok_iter; tok_iter++;
                     Boost_char_tokenizer nextTempToken(tempString1, sep2);
                     Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
 
@@ -411,8 +416,9 @@ bool CtiFDR_ACS::translateAndUpdatePoint(CtiFDRPoint *translationPoint, int aDes
                         translationName= "R"+tempString2 + translationName;
         
                         // next token is the point number
-                        if (!(tempString1 = *tok_iter++).empty())
+                        if ( tok_iter != nextTranslate.end())
                         {
+                            tempString1 = *tok_iter; tok_iter++;
                             Boost_char_tokenizer nextTempToken(tempString1, sep2);
                             Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
 
