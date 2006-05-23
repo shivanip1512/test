@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.64 $
-* DATE         :  $Date: 2006/04/19 20:42:42 $
+* REVISION     :  $Revision: 1.65 $
+* DATE         :  $Date: 2006/05/23 19:27:09 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -91,7 +91,7 @@ CtiDeviceMCT410 &CtiDeviceMCT410::operator=( const CtiDeviceMCT410 &aRef )
 
 
 //  eventually allow this function to construct the pointdata string as well
-CtiPointDataMsg *CtiDeviceMCT410::makePointDataMsg(CtiPointSPtr  p, const point_info_t &pi, const string &pointString)
+CtiPointDataMsg *CtiDeviceMCT410::makePointDataMsg(CtiPointSPtr p, const point_info_t &pi, const string &pointString)
 {
     CtiPointDataMsg *pdm = 0;
 
@@ -646,9 +646,9 @@ CtiDeviceMCT410::DLCCommandSet CtiDeviceMCT410::initCommandStore( )
     cs._funcLen = make_pair((int)Memory_OverVThresholdPos, Memory_OverVThresholdLen + Memory_UnderVThresholdLen);
     s.insert(cs);
 
-    cs._cmd     = Emetcon::PutConfig_Holiday;
+    cs._cmd     = Emetcon::PutConfig_Holiday;  //  used by both the putconfig install and putconfig holiday commands
     cs._io      = Emetcon::IO_Write;
-    cs._funcLen = make_pair((int)Memory_Holiday1Pos, Memory_Holiday1Len+Memory_Holiday2Len+Memory_Holiday3Len);
+    cs._funcLen = make_pair((int)Memory_Holiday1Pos, Memory_Holiday1Len + Memory_Holiday2Len + Memory_Holiday3Len);
     s.insert(cs);
 
     cs._cmd     = Emetcon::PutConfig_Options;
@@ -1485,11 +1485,95 @@ INT CtiDeviceMCT410::executePutConfig( CtiRequestMsg              *pReq,
     OutMessage->Request.RouteID   = getRouteID();
     strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
 
-    //  these Centron guys are very specialized writes, so we won't put them in the command store at the
-    //    moment - at least not until we get a better command store than the Cti::Protocol::Emetcon:: thing...
-    //  it's too flat, too much is exposed
-    if( parse.isKeyValid("centron_ratio") )
+    if( parse.isKeyValid("holiday_offset") )
     {
+        function = Emetcon::PutConfig_Holiday;
+
+        if( found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO) )
+        {
+            unsigned long holidays[3];
+            int holiday_count = 0;
+
+            int holiday_offset = parse.getiValue("holiday_offset");
+
+            //  grab up to three potential dates
+            for( int i = 0; i < 3 && parse.isKeyValid("holiday_date" + CtiNumStr(i)); i++ )
+            {
+                RWCTokenizer date_tokenizer(parse.getsValue("holiday_date" + CtiNumStr(i)));
+
+                int month = atoi(date_tokenizer("/").data()),
+                    day   = atoi(date_tokenizer("/").data()),
+                    year  = atoi(date_tokenizer("/").data());
+
+                if( year > 2000 )
+                {
+                    RWDate holiday_date(day, month, year);
+
+                    if( holiday_date.isValid() && holiday_date > RWDate::now() )
+                    {
+                        holidays[holiday_count++] = RWTime(holiday_date).seconds() - rwEpoch;
+                    }
+                }
+            }
+
+            if( holiday_offset >= 1 && holiday_offset <= 3 )
+            {
+                if( holiday_count > 0 )
+                {
+                    //  change to 0-based offset;  it just makes things easier
+                    holiday_offset--;
+
+                    if( holiday_count > (3 - holiday_offset) )
+                    {
+                        holiday_count = 3 - holiday_offset;
+                    }
+
+                    OutMessage->Buffer.BSt.Function += holiday_offset * 4;
+                    OutMessage->Buffer.BSt.Length    = holiday_count  * 4;
+
+                    for( int i = 0; i < holiday_count; i++ )
+                    {
+                        OutMessage->Buffer.BSt.Message[i*4+0] = holidays[i] >> 24;
+                        OutMessage->Buffer.BSt.Message[i*4+1] = holidays[i] >> 16;
+                        OutMessage->Buffer.BSt.Message[i*4+2] = holidays[i] >>  8;
+                        OutMessage->Buffer.BSt.Message[i*4+3] = holidays[i] >>  0;
+                    }
+                }
+                else
+                {
+                    found = false;
+
+                    if( errRet )
+                    {
+                        errRet->setResultString("Specified dates are invalid");
+                        errRet->setStatus(NoMethod);
+                        retList.insert(errRet);
+
+                        errRet = NULL;
+                    }
+                }
+            }
+            else
+            {
+                found = false;
+
+                if( errRet )
+                {
+                    errRet->setResultString("Invalid holiday offset specified");
+                    errRet->setStatus(NoMethod);
+                    retList.insert(errRet);
+
+                    errRet = NULL;
+                }
+            }
+        }
+    }
+    else if( parse.isKeyValid("centron_ratio") )
+    {
+        //  these Centron guys are very specialized writes, so we won't put them in the command store at the
+        //    moment - at least not until we get a better command store than the Cti::Protocol::Emetcon:: thing...
+        //  it's too flat, too much is exposed
+
         int centron_ratio = parse.getiValue("centron_ratio");
 
         if( centron_ratio > 0 && centron_ratio <= 255 )
