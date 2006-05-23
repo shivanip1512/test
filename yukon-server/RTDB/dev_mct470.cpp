@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.42 $
-* DATE         :  $Date: 2006/04/26 18:51:36 $
+* REVISION     :  $Revision: 1.43 $
+* DATE         :  $Date: 2006/05/23 20:03:08 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -22,6 +22,7 @@
 #include "dev_mct470.h"
 #include "logger.h"
 #include "mgr_point.h"
+#include "pt_accum.h"
 #include "numstr.h"
 #include "porter.h"
 #include "dllyukon.h"
@@ -32,7 +33,6 @@
 #include "ctistring.h"
 #include <string>
 
-#define MaxIEDReadMinutes 10
 using namespace std;
 using Cti::Protocol::Emetcon;
 using namespace Cti::Config::MCT;
@@ -137,6 +137,12 @@ CtiDeviceMCT470::DLCCommandSet CtiDeviceMCT470::initCommandStore( )
     cs._io       = Emetcon::IO_Function_Read;
     cs._funcLen  = make_pair((int)MCT470_FuncRead_PeakDemandBasePos,
                              (int)MCT470_FuncRead_PeakDemandLen );
+    s.insert(cs);
+
+    cs._cmd      = Emetcon::PutValue_KYZ;
+    cs._io       = Emetcon::IO_Write;
+    cs._funcLen  = make_pair((int)MCT470_FuncWrite_CurrentReading,
+                             (int)MCT470_FuncWrite_CurrentReadingLen );
     s.insert(cs);
 
     cs._cmd     = Emetcon::PutConfig_Raw;
@@ -252,7 +258,7 @@ CtiDeviceMCT470::DLCCommandSet CtiDeviceMCT470::initCommandStore( )
     cs._funcLen = make_pair((int)MCT_Command_FreezeTwo, 0);
     s.insert(cs);
 
-        //**************************************** Config Related starts here*************************
+    //**************************************** Config Related starts here*************************
     cs._cmd     = Emetcon::PutConfig_Addressing;
     cs._io      = Emetcon::IO_Write;
     cs._funcLen  = make_pair((int)MCT470_Memory_AddressingPos,(int)MCT470_Memory_AddressingLen);
@@ -273,9 +279,9 @@ CtiDeviceMCT470::DLCCommandSet CtiDeviceMCT470::initCommandStore( )
     cs._funcLen = make_pair((int)MCT470_Memory_DSTBeginPos, (int)(MCT470_Memory_DSTBeginLen+MCT470_Memory_DSTEndLen+MCT470_Memory_TimeZoneOffsetLen));
     s.insert(cs);
 
-    cs._cmd     = Emetcon::PutConfig_Holiday;
+    cs._cmd     = Emetcon::PutConfig_Holiday;  //  used for both "putconfig install" and "putconfig holiday" commands
     cs._io      = Emetcon::IO_Write;
-    cs._funcLen = make_pair((int)MCT470_Memory_Holiday1Pos, (int)(MCT470_Memory_Holiday1Len+MCT470_Memory_Holiday2Len+MCT470_Memory_Holiday3Len));
+    cs._funcLen = make_pair((int)MCT470_Memory_Holiday1Pos, (int)(MCT470_Memory_Holiday1Len + MCT470_Memory_Holiday2Len + MCT470_Memory_Holiday3Len));
     s.insert(cs);
 
     cs._cmd     = Emetcon::PutConfig_Options;
@@ -822,7 +828,7 @@ void CtiDeviceMCT470::requestDynamicInfo(CtiTableDynamicPaoInfo::Keys key, OUTME
     {
         //  the ideal case - the correct, non-development sspec
         if( (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec)         == MCT470_Sspec       &&
-            getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) >= MCT470_SspecRevMin &&
+             getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) >= MCT470_SspecRevMin &&
              getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) <= MCT470_SspecRevMax)
             || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec) == MCT430A_Sspec
             || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec) == MCT430S_Sspec )
@@ -1511,7 +1517,7 @@ INT CtiDeviceMCT470::executeGetValue( CtiRequestMsg        *pReq,
 
     if( parse.getFlags() & CMD_FLAG_GV_IED )  //  This parse has the token "IED" in it!
     {
-        if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) < MCT470_SspecRev_IED_Zero_Write_Min )
+        if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) < MCT470_SspecRev_IEDZeroWriteMin )
         {
             //If we need to read out the time, do so.
             function = Emetcon::GetConfig_IEDTime;
@@ -1697,7 +1703,7 @@ INT CtiDeviceMCT470::executeScan(CtiRequestMsg      *pReq,
             if( !options || (options && ( !stringCompareIgnoreCase(options->getValueFromKey(DemandMetersToScan), "all")
                           || !stringCompareIgnoreCase(options->getValueFromKey(DemandMetersToScan), "ied"))) )
             {
-                if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) < MCT470_SspecRev_IED_Zero_Write_Min )
+                if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) < MCT470_SspecRev_IEDZeroWriteMin )
                 {
                     //If we need to read out the time, do so.
                     function = Emetcon::GetConfig_IEDTime;
@@ -1837,6 +1843,127 @@ INT CtiDeviceMCT470::executeGetConfig( CtiRequestMsg         *pReq,
     return nRet;
 }
 
+
+INT CtiDeviceMCT470::executePutValue( CtiRequestMsg              *pReq,
+                                      CtiCommandParser           &parse,
+                                      OUTMESS                   *&OutMessage,
+                                      RWTPtrSlist< CtiMessage >  &vgList,
+                                      RWTPtrSlist< CtiMessage >  &retList,
+                                      RWTPtrSlist< OUTMESS >     &outList )
+{
+    INT nRet = NoMethod;
+
+    bool found = false;
+    int function;
+
+    CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ),
+                                                   RWCString(OutMessage->Request.CommandStr),
+                                                   RWCString(),
+                                                   nRet,
+                                                   OutMessage->Request.RouteID,
+                                                   OutMessage->Request.MacroOffset,
+                                                   OutMessage->Request.Attempt,
+                                                   OutMessage->Request.TrxID,
+                                                   OutMessage->Request.UserID,
+                                                   OutMessage->Request.SOE,
+                                                   RWOrdered( ));
+
+    if( parse.getFlags() & CMD_FLAG_PV_DIAL )
+    {
+        function = Emetcon::PutValue_KYZ;
+        if( found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO) )
+        {
+            if(parse.isKeyValid("kyz_offset") && parse.isKeyValid("dial") )
+            {
+                int    offset = parse.getiValue("kyz_offset");
+                double dial   = parse.getdValue("dial", -1.0);
+
+                if( offset >= 1 && offset <= 4 )
+                {
+                    offset--;
+
+                    OutMessage->Buffer.BSt.Function += offset * MCT470_Memory_ChannelOffset;
+
+                    if( dial >= 0.0 )
+                    {
+                        long pulses;
+
+                        CtiPointBase *tmpPoint = getDevicePointOffsetTypeEqual(offset, PulseAccumulatorPointType);
+
+                        if( tmpPoint && tmpPoint->isA() == PulseAccumulatorPointType)
+                        {
+                            pulses = (long)(dial / (((CtiPointAccumulator *)tmpPoint)->getMultiplier()));
+                        }
+                        else
+                        {
+                            pulses = (long)dial;
+                        }
+
+                        OutMessage->Buffer.BSt.Message[0] = gMCT400SeriesSPID;
+                        OutMessage->Buffer.BSt.Message[1] = offset & 0xff;
+
+                        OutMessage->Buffer.BSt.Message[2] = (pulses >> 16) & 0xff;
+                        OutMessage->Buffer.BSt.Message[3] = (pulses >>  8) & 0xff;
+                        OutMessage->Buffer.BSt.Message[4] = (pulses)       & 0xff;
+
+                        OutMessage->Buffer.BSt.Length = 5;
+                    }
+                    else
+                    {
+                        found = false;
+
+                        if( errRet )
+                        {
+                            errRet->setResultString("Invalid reading specified for command");
+                            errRet->setStatus(NoMethod);
+                            retList.insert(errRet);
+
+                            errRet = NULL;
+                        }
+                    }
+                }
+                else
+                {
+                    found = false;
+
+                    if( errRet )
+                    {
+                        errRet->setResultString("Invalid offset specified (" + CtiNumStr(offset) + ")");
+                        errRet->setStatus(NoMethod);
+                        retList.insert(errRet);
+
+                        errRet = NULL;
+                    }
+                }
+            }
+        }
+    }
+    else
+    {
+        nRet = Inherited::executePutValue(pReq, parse, OutMessage, vgList, retList, outList);
+    }
+
+    if( found )
+    {
+        // Load all the other stuff that is needed
+        //  FIXME:  most of this is taken care of in propagateRequest - we could probably trim a lot of this out
+        OutMessage->DeviceID  = getID();
+        OutMessage->TargetID  = getID();
+        OutMessage->Port      = getPortID();
+        OutMessage->Remote    = getAddress();
+        OutMessage->TimeOut   = 2;
+        OutMessage->Sequence  = function;         // Helps us figure it out later!
+        OutMessage->Retry     = 2;
+
+        OutMessage->Request.RouteID   = getRouteID();
+        strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
+
+        nRet = NoError;
+    }
+
+    return nRet;
+}
+
 int CtiDeviceMCT470::executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList)
 {
     int nRet = NORMAL;
@@ -1854,14 +1981,14 @@ int CtiDeviceMCT470::executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiC
             MCTLoadProfileChannelsSPtr config = boost::static_pointer_cast< ConfigurationPart<MCTLoadProfileChannels> >(tempBasePtr);
             channel1 = config->getLongValueFromKey(ChannelConfig1);
             channel2 = config->getLongValueFromKey(ChannelConfig2);
-            ratio1 = config->getLongValueFromKey(MeterRatio1);
-            ratio2 = config->getLongValueFromKey(MeterRatio2);
-            kRatio1 = config->getLongValueFromKey(KRatio1);
-            kRatio2 = config->getLongValueFromKey(KRatio2);
+            ratio1   = config->getLongValueFromKey(MeterRatio1);
+            ratio2   = config->getLongValueFromKey(MeterRatio2);
+            kRatio1  = config->getLongValueFromKey(KRatio1);
+            kRatio2  = config->getLongValueFromKey(KRatio2);
 
-            if( channel1 == numeric_limits<long>::min() || channel2 == numeric_limits<long>::min()
-                || ratio1 == numeric_limits<long>::min() || ratio2 == numeric_limits<long>::min()
-                || kRatio1 == numeric_limits<long>::min() || kRatio2 == numeric_limits<long>::min() )
+            if( channel1   == numeric_limits<long>::min() || channel2 == numeric_limits<long>::min()
+                || ratio1  == numeric_limits<long>::min() || ratio2   == numeric_limits<long>::min()
+                || kRatio1 == numeric_limits<long>::min() || kRatio2  == numeric_limits<long>::min() )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -2276,7 +2403,7 @@ INT CtiDeviceMCT470::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
     unsigned long pulses;
     point_info_t  pi;
 
-    CtiPointSPtr         pPoint;
+    CtiPointSPtr          pPoint;
     CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg      *pData = NULL;
 
@@ -2498,7 +2625,7 @@ INT CtiDeviceMCT470::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
 
     CtiCommandParser parse(InMessage->Return.CommandStr);
 
-    CtiPointSPtr    pPoint;
+    CtiPointSPtr     pPoint;
     CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg *pData = NULL;
 
@@ -2657,7 +2784,7 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
         bool dataInvalid = true;
-        for( int i=0; i<13; i++)
+        for( int i = 0; i < 13; i++)
         {
             if( DSt->Message[i] != 0 )
             {
@@ -2666,19 +2793,20 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
             }
         }
 
-        //If before fix and the timestamp is at least 10 minutes old
-        if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) < MCT470_SspecRev_IED_Zero_Write_Min
-                && _iedTime.seconds()/60 < (CtiTime::now().seconds()/60-MaxIEDReadMinutes))
+        //  If this rev is before the SSPEC fix and the timestamp is at least 10 minutes old
+        if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) < MCT470_SspecRev_IEDZeroWriteMin
+            && (CtiTime::now().seconds() > (_iedTime.seconds() + MCT470_MaxIEDReadAge)) )
         {
             dataInvalid = true;
         }
+
         //  should we archive non-frozen points?
 
         if( parse.getFlags() & CMD_FLAG_GV_DEMAND )
         {
             if( dataInvalid )
             {
-                //If we are here, we believe the data is incorrect!
+                //  If we are here, we believe the data is incorrect!
                 resultString += "Device: " + getName() + "\nData buffer is bad, retry command" ;
                 status = ALPHABUFFERERROR;
 
@@ -2983,7 +3111,7 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                 time_info = getData(DSt->Message + 8, 4, ValueType_Raw);
                 peak_time = CtiTime((unsigned long)time_info.value + timezone_offset);
 
-                if(kw = getDevicePointOffsetTypeEqual(offset + rate, AnalogPointType))
+                if(kw = getDevicePointOffsetTypeEqual(offset + rate * 2, AnalogPointType))
                 {
                     CtiPointDataMsg *peak_msg;
 
