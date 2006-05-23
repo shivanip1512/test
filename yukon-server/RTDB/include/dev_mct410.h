@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT410.h-arc  $
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2006/03/23 15:29:19 $
+* REVISION     :  $Revision: 1.34 $
+* DATE         :  $Date: 2006/05/23 16:12:53 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -179,7 +179,7 @@ protected:
         Memory_Holiday2Pos        = 0xd4,
         Memory_Holiday2Len        =    4,
 
-        Memory_Holiday3Pos        = 0xd9,
+        Memory_Holiday3Pos        = 0xd8,
         Memory_Holiday3Len        =    4,
 
     };
