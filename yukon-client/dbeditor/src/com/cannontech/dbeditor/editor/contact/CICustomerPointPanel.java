@@ -280,6 +280,7 @@ private void addNewPanel(CICustomerPointData pd)
     
     pointPanel.setPointComboBox( pd.getPointID().intValue(), pointPanel.getJComboBoxPoint(), pointPanel.getJComboDevice() );
     pointPanel.getJTextFieldLabel().setText( pd.getOptionalLabel() );
+    pointPanel.getJComboBoxType().setSelectedItem(pd.getType());
     pointPanel.setType(pd.getType());
     getJPanelScroller().add(pointPanel);
     
