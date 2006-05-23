@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_welco.cpp-arc  $
-* REVISION     :  $Revision: 1.35 $
-* DATE         :  $Date: 2006/05/23 21:02:00 $
+* REVISION     :  $Revision: 1.36 $
+* DATE         :  $Date: 2006/05/23 21:14:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1011,7 +1011,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
                             { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " " << PointRecord->getName() << " Status " << PointOffset << " was " << ResolveStateName(PointRecord->getStateGroupID(), (LONG)(PValue)) << endl; }
 #endif
                         }
-                        tempTS = ResolveStateName(PointRecord->getStateGroupID(), (LONG)(PValue));
+                        string tempTS = ResolveStateName(PointRecord->getStateGroupID(), (LONG)(PValue));
                         _snprintf(tStr, 126, "%s point %s = %s", getName(), PointRecord->getName(), tempTS.c_str() );
 
                         pData = CTIDBG_new CtiPointDataMsg(PointRecord->getPointID(),
