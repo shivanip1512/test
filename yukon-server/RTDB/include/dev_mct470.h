@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT470.h-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2006/03/24 15:21:58 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2006/05/23 16:22:53 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -29,7 +29,9 @@ public:
 
     enum
     {
-        MCT470_ChannelCount = 4,
+        MCT470_ChannelCount  = 4,
+
+        MCT470_MaxIEDReadAge = 600,  //  in seconds
 
         MCT430A_Sspec       = 1037,
         MCT430S_Sspec       = 1046,
@@ -37,7 +39,8 @@ public:
         MCT470_Sspec        = 1030,
         MCT470_SspecRevMin  =    5,  //  rev e
         MCT470_SspecRevMax  =   15,  //  rev o is max for now
-        MCT470_SspecRev_IED_Zero_Write_Min    =   13,
+
+        MCT470_SspecRev_IEDZeroWriteMin = 13,
 
         MCT470_Memory_ChannelOffset = 0x1a,
 
@@ -48,11 +51,14 @@ public:
         MCT470_FuncRead_LPStatusCh3Ch4Pos = 0x9c,
         MCT470_FuncRead_LPStatusLen       =   11,
 
-        MCT470_FuncWrite_IEDCommand     = 0xd0,
-        MCT470_FuncWrite_IEDCommandLen  =    4,
+        MCT470_FuncWrite_IEDCommand            = 0xd0,
+        MCT470_FuncWrite_IEDCommandLen         =    4,
 
         MCT470_FuncWrite_IEDCommandData        = 0xd1,
         MCT470_FuncWrite_IEDCommandDataBaseLen =    5,
+
+        MCT470_FuncWrite_CurrentReading        = 0xd5,
+        MCT470_FuncWrite_CurrentReadingLen     =    5,
     };
 
 protected:
@@ -329,7 +335,7 @@ private:
 
 public:
 
-    typedef CtiDeviceMCT Inherited;
+    typedef CtiDeviceMCT4xx Inherited;
 
     CtiDeviceMCT470( );
     CtiDeviceMCT470( const CtiDeviceMCT470 &aRef );
@@ -356,9 +362,11 @@ public:
 
     virtual INT ModelDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
 
-    virtual INT executeScan (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS* >&outList);
+    virtual INT executeScan     (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS* >&outList);
     virtual INT executeGetValue (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS* >&outList);
+    virtual INT executePutValue (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS* >&outList);
     virtual INT executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS* >&outList);
+
     int executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList);
     int executePutConfigRelays(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList);
     int executePutConfigPrecannedTable(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList);
