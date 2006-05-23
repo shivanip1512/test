@@ -2449,13 +2449,13 @@ public class LiteStarsEnergyCompany extends LiteBase {
         int comparableDigitEndIndex = 0;
         String rotationDigitProperty = AuthFuncs.getRolePropertyValue(YukonUserFuncs.getLiteYukonUser(getUserID()), ConsumerInfoRole.ROTATION_DIGIT_LENGTH);
         int accountNumSansRotationDigitsIndex = accountNo.length();
-        if(rotationDigitProperty.compareTo(CtiUtilities.STRING_NONE) != 0 && Integer.parseInt(rotationDigitProperty) > 0
+        if(rotationDigitProperty != null && rotationDigitProperty.compareTo(CtiUtilities.STRING_NONE) != 0 && Integer.parseInt(rotationDigitProperty) > 0
                 && Integer.parseInt(rotationDigitProperty) < accountNo.length())
         {
             accountNumSansRotationDigitsIndex = accountNo.length() - Integer.parseInt(rotationDigitProperty);
             accountNo = accountNo.substring(0, accountNumSansRotationDigitsIndex);
         }
-        if(comparableDigitProperty.compareTo(CtiUtilities.STRING_NONE) != 0 && Integer.parseInt(comparableDigitProperty) > 0)
+        if(comparableDigitProperty != null && comparableDigitProperty.compareTo(CtiUtilities.STRING_NONE) != 0 && Integer.parseInt(comparableDigitProperty) > 0)
         {
             comparableDigitEndIndex = Integer.parseInt(comparableDigitProperty);
             if(accountNo.length() >= comparableDigitEndIndex)
