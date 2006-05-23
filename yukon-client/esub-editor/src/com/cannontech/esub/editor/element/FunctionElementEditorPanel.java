@@ -134,6 +134,7 @@ public class FunctionElementEditorPanel  extends com.cannontech.common.gui.util.
                 functionComboBox = new JComboBox(functions);
                 functionComboBox.setName("FunctionComboBox");
                 functionComboBox.setPreferredSize(new java.awt.Dimension(150, 23));
+                functionComboBox.setMinimumSize(new Dimension( 100, 23 ));
             } catch (java.lang.Throwable ivjExc) {
                 handleException(ivjExc);
             }
@@ -149,6 +150,7 @@ public class FunctionElementEditorPanel  extends com.cannontech.common.gui.util.
                 rawStateComboBox = new JComboBox(states);
                 rawStateComboBox.setName("RawStateComboBox");
                 rawStateComboBox.setPreferredSize(new java.awt.Dimension(150, 23));
+                rawStateComboBox.setMinimumSize(new Dimension( 100, 23 ));
             } catch (java.lang.Throwable ivjExc) {
                 handleException(ivjExc);
             }
@@ -167,6 +169,8 @@ public class FunctionElementEditorPanel  extends com.cannontech.common.gui.util.
             try {
                 pointSelectionPanel = com.cannontech.esub.editor.Util.getPointSelectionPanel();
                 pointSelectionPanel.setName("PointSelectionPanel");
+                pointSelectionPanel.setPreferredSize(new Dimension(220, 361));
+                pointSelectionPanel.setMinimumSize(new Dimension(220, 200));
                 
             } catch (java.lang.Throwable ivjExc) {
                 handleException(ivjExc);
