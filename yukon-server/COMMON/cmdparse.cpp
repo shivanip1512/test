@@ -2222,7 +2222,8 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
 
                 _cmd["class"] = CtiParseValue( _num );
 
-                _snprintf(tbuf, sizeof(tbuf), "CONFIG CLASS = %s", convertVersacomAddressToHumanForm(_num).c_str());
+                string tempTS = convertVersacomAddressToHumanForm(_num);
+                _snprintf(tbuf, sizeof(tbuf), "CONFIG CLASS = %s", tempTS.c_str());
                 _actionItems.push_back(tbuf);
 
             }
@@ -2265,8 +2266,8 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
                 }
 
                 _cmd["class"] = CtiParseValue( _num );
-
-                _snprintf(tbuf, sizeof(tbuf), "CONFIG CLASS = %s", convertVersacomAddressToHumanForm(_num).c_str());
+                string tempTS = convertVersacomAddressToHumanForm(_num);
+                _snprintf(tbuf, sizeof(tbuf), "CONFIG CLASS = %s", tempTS.c_str());
                 _actionItems.push_back(tbuf);
             }
         }
@@ -2295,8 +2296,8 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
                 _num = itemp;
 
                 _cmd["division"] = CtiParseValue( _num );
-
-                _snprintf(tbuf, sizeof(tbuf), "CONFIG DIVISION = %s", convertVersacomAddressToHumanForm(_num).c_str());
+                string tempTS = convertVersacomAddressToHumanForm(_num);
+                _snprintf(tbuf, sizeof(tbuf), "CONFIG DIVISION = %s", tempTS.c_str());
                 _actionItems.push_back(tbuf);
 
             }
@@ -2339,8 +2340,8 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
                 }
 
                 _cmd["division"] = CtiParseValue( _num );
-
-                _snprintf(tbuf, sizeof(tbuf), "CONFIG DIVISION = %s", convertVersacomAddressToHumanForm(_num).c_str());
+                string tempTS = convertVersacomAddressToHumanForm(_num);
+                _snprintf(tbuf, sizeof(tbuf), "CONFIG DIVISION = %s", tempTS.c_str());
                 _actionItems.push_back(tbuf);
             }
         }
@@ -2402,8 +2403,8 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
                 _num = itemp;
 
                 _cmd["fromclass"] = CtiParseValue( _num );
-
-                _snprintf(tbuf, sizeof(tbuf), "CONFIG FROM CLASS = %s", convertVersacomAddressToHumanForm(_num).c_str());
+                string tempTS = convertVersacomAddressToHumanForm(_num);
+                _snprintf(tbuf, sizeof(tbuf), "CONFIG FROM CLASS = %s", tempTS.c_str());
                 _actionItems.push_back(tbuf);
 
             }
@@ -2430,8 +2431,8 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
                 _num = itemp;
 
                 _cmd["fromdivision"] = CtiParseValue( _num );
-
-                _snprintf(tbuf, sizeof(tbuf), "CONFIG FROM DIVISION = %s", convertVersacomAddressToHumanForm(_num).c_str());
+                string tempTS = convertVersacomAddressToHumanForm(_num);
+                _snprintf(tbuf, sizeof(tbuf), "CONFIG FROM DIVISION = %s", tempTS.c_str());
                 _actionItems.push_back(tbuf);
 
             }
@@ -2499,7 +2500,8 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
                     _num = itemp;
 
                     _cmd["class"] = CtiParseValue( _num );
-                    _snprintf(tbuf, sizeof(tbuf), "CONFIG CLASS = %s", convertVersacomAddressToHumanForm(_num).c_str());
+                    string tempTS = convertVersacomAddressToHumanForm(_num);
+                    _snprintf(tbuf, sizeof(tbuf), "CONFIG CLASS = %s", tempTS.c_str());
                     _actionItems.push_back(tbuf);
 
                 }
@@ -2525,8 +2527,8 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
                     _num = itemp;
 
                     _cmd["division"] = CtiParseValue( _num );
-
-                    _snprintf(tbuf, sizeof(tbuf), "CONFIG DIVISION = %s", convertVersacomAddressToHumanForm(_num).c_str());
+                    string tempTS = convertVersacomAddressToHumanForm(_num);
+                    _snprintf(tbuf, sizeof(tbuf), "CONFIG DIVISION = %s", tempTS.c_str());
                     _actionItems.push_back(tbuf);
 
                 }

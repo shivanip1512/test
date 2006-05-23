@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrftpinterface.cpp-arc  $
-*    REVISION     :  $Revision: 1.12 $
-*    DATE         :  $Date: 2006/05/23 17:17:43 $
+*    REVISION     :  $Revision: 1.13 $
+*    DATE         :  $Date: 2006/05/23 21:01:42 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrftpinterface.cpp,v $
+      Revision 1.13  2006/05/23 21:01:42  tspar
+      Bug fix: .c_str() is volatile in a threaded environment. Making a local copy before calling  .c_str()
+
       Revision 1.12  2006/05/23 17:17:43  tspar
       bug fix: boost iterator used incorrectly in loop.
 
@@ -629,8 +632,8 @@ void CtiFDRFtpInterface::threadFunctionRetrieveFrom( void )
                 }
                 else
                 {
-
-                    _snprintf (fileName, 200, "%s\\%s%d.txt",getFTPDirectory(),getInterfaceName().c_str(),fileNumber);
+                    string tempTS = getInterfaceName();
+                    _snprintf (fileName, 200, "%s\\%s%d.txt",getFTPDirectory(),tempTS.c_str(),fileNumber);
                     iLocalFileName = string (fileName);
                     iThreadInternetConnect.start();
 //                    workerThreadReturnStatus = iThreadInternetConnect.join( 5000);

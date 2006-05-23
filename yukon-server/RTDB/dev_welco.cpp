@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_welco.cpp-arc  $
-* REVISION     :  $Revision: 1.34 $
-* DATE         :  $Date: 2006/03/23 15:29:18 $
+* REVISION     :  $Revision: 1.35 $
+* DATE         :  $Date: 2006/05/23 21:02:00 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -940,8 +940,8 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
                             }
 #endif
                         }
-
-                        _snprintf(tStr, 126, "%s point %s = %s", getName(), PointRecord->getName(), ResolveStateName(PointRecord->getStateGroupID(), (LONG)(PValue)).c_str() );
+                        string tempTS = ResolveStateName(PointRecord->getStateGroupID(), (LONG)(PValue));
+                        _snprintf(tStr, 126, "%s point %s = %s", getName(), PointRecord->getName(), tempTS.c_str() );
 
                         pData = CTIDBG_new CtiPointDataMsg(PointRecord->getPointID(), PValue, NormalQuality, StatusPointType, tStr);
                         if(pData != NULL)
@@ -955,8 +955,8 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
                         if((MyInMessage[4 + 2 * ((PointOffset - StartPoint) / 8) + 1] >> ((PointOffset - StartPoint) % 8)) & 0x01)
                         {
                             PValue = ( (PValue == CLOSED) ? OPENED : CLOSED );
-
-                            _snprintf(tStr, 126, "%s point %s = %s", getName(), PointRecord->getName(), ResolveStateName(PointRecord->getStateGroupID(), (LONG)(PValue)).c_str() );
+                            tempTS = ResolveStateName(PointRecord->getStateGroupID(), (LONG)(PValue));
+                            _snprintf(tStr, 126, "%s point %s = %s", getName(), PointRecord->getName(), tempTS.c_str() );
 
                             pData = CTIDBG_new CtiPointDataMsg(PointRecord->getPointID(), PValue, NormalQuality, StatusPointType, tStr);
 
@@ -1011,8 +1011,8 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
                             { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " " << PointRecord->getName() << " Status " << PointOffset << " was " << ResolveStateName(PointRecord->getStateGroupID(), (LONG)(PValue)) << endl; }
 #endif
                         }
-
-                        _snprintf(tStr, 126, "%s point %s = %s", getName(), PointRecord->getName(), ResolveStateName(PointRecord->getStateGroupID(), (LONG)(PValue)).c_str() );
+                        tempTS = ResolveStateName(PointRecord->getStateGroupID(), (LONG)(PValue));
+                        _snprintf(tStr, 126, "%s point %s = %s", getName(), PointRecord->getName(), tempTS.c_str() );
 
                         pData = CTIDBG_new CtiPointDataMsg(PointRecord->getPointID(),
                                                     PValue,
@@ -1029,7 +1029,8 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
                         if(MyInMessage[(StartPoint * 2) + 3] & 0x40)
                         {
                             PValue = ( (PValue == CLOSED) ? OPENED : CLOSED );
-                            _snprintf(tStr, 126, "%s point %s = %s", getName(), PointRecord->getName(), ResolveStateName(PointRecord->getStateGroupID(), (LONG)(PValue)).c_str() );
+                            tempTS = ResolveStateName(PointRecord->getStateGroupID(), (LONG)(PValue));
+                            _snprintf(tStr, 126, "%s point %s = %s", getName(), PointRecord->getName(), tempTS.c_str() );
                             pData = CTIDBG_new CtiPointDataMsg(PointRecord->getPointID(),
                                                         PValue,
                                                         NormalQuality,
