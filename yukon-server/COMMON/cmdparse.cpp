@@ -1782,6 +1782,7 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
     boost::regex  re_centron("centron ((ratio [0-9]+)|(reading [0-9]+( [0-9]+)?))");
     boost::regex  re_loadlimit("load limit " + str_num + " "
                                          + str_num);
+    boost::regex  re_holiday("holiday " + str_num + "( " + str_date + ")+");
 
     char *p;
 
@@ -2077,11 +2078,31 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
                 }
 #endif
 
-                _cmd["multi_rolefixed"] = CtiParseValue( strFixed.strip() );
-                _cmd["multi_roleout"] = CtiParseValue( strVarOut.strip() );
-                _cmd["multi_rolein"] = CtiParseValue( strVarIn.strip() );
-                _cmd["multi_rolerpt"] = CtiParseValue( strStages.strip() );
-                _cmd["multi_rolecount"] = CtiParseValue( rolecount );
+                _cmd["multi_rolefixed"] = CtiParseValue(strFixed.strip());
+                _cmd["multi_roleout"]   = CtiParseValue(strVarOut.strip());
+                _cmd["multi_rolein"]    = CtiParseValue(strVarIn.strip());
+                _cmd["multi_rolerpt"]   = CtiParseValue(strStages.strip());
+                _cmd["multi_rolecount"] = CtiParseValue(rolecount);
+            }
+        }
+        if(CmdStr.contains(" holiday"))
+        {
+            if(!(token = CmdStr.match(re_holiday)).empty())
+            {
+                CtiTokenizer cmdtok(token);
+                string holiday_str;
+
+                cmdtok();  //  move past "holiday"
+
+                //  get the count for the holiday offset
+                _cmd["holiday_offset"] = atoi(cmdtok().data());
+
+                for( int i = 0; !(holiday_str = cmdtok().data()).empty(); i++ )
+                {
+                    string holiday_offset = "holiday_date" + CtiNumStr(i);
+
+                    _cmd[holiday_offset.data()] = CtiParseValue(holiday_str.data());
+                }
             }
         }
     }
