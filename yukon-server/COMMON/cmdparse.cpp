@@ -37,7 +37,7 @@ static boost::regex   re_hexnum  (str_hexnum);
 static boost::regex   re_anynum  (str_anynum);
 
 CtiCommandParser::CtiCommandParser(const string str) :
-  _cmdString(str)
+_cmdString(str)
 {
     _actionItems.clear();
     _cmd.clear();
@@ -192,22 +192,22 @@ void  CtiCommandParser::parse()
                 //Removes the ' " ' character from "something"
                 token.erase(0,1);token.erase(token.length()-1,token.length()-1);
                 _cmd["altgroup"] = CtiParseValue( token, -1 );
-                                 }
-                 CmdStr.replace(re_altg, "");
-             }
-             else if(!(token = CmdStr.match(re_billg)).empty())
-             {
-                 size_t nstart;
-                 size_t nstop;
-                 nstart = token.index("billgroup ", &nstop);
+            }
+            CmdStr.replace(re_altg, "");
+        }
+        else if(!(token = CmdStr.match(re_billg)).empty())
+        {
+            size_t nstart;
+            size_t nstop;
+            nstart = token.index("billgroup ", &nstop);
 
-                 nstop += nstart;
+            nstop += nstart;
 
-                 if(!(token = token.match(str_quoted_token, nstop)).empty())   // get the value
-                 {
-                     //Removes the ' " ' character from "something"
-                     token.erase(0,1);token.erase(token.length()-1,token.length()-1);
-                     _cmd["billgroup"] = CtiParseValue( token, -1 );
+            if(!(token = token.match(str_quoted_token, nstop)).empty())   // get the value
+            {
+                //Removes the ' " ' character from "something"
+                token.erase(0,1);token.erase(token.length()-1,token.length()-1);
+                _cmd["billgroup"] = CtiParseValue( token, -1 );
             }
             CmdStr.replace(re_altg, "");
         }
@@ -1011,12 +1011,12 @@ void  CtiCommandParser::doParseControl(const string &_CmdStr)
     _cmd["flag"]      = CtiParseValue( flag   );
     _cmd["offset"]    = CtiParseValue( offset );
 
-    #if 1
+#if 1
 
     doParseControlExpresscom(CmdStr);
     doParseControlSA(CmdStr);
 
-    #else
+#else
     if(isKeyValid("type"))
     {
         switch( getiValue("type") )
@@ -1051,7 +1051,7 @@ void  CtiCommandParser::doParseControl(const string &_CmdStr)
             }
         }
     }
-    #endif
+#endif
 }
 
 
@@ -1150,31 +1150,31 @@ void  CtiCommandParser::doParsePutStatus(const string &_CmdStr)
 
         switch( type )
         {
-            case ProtocolVersacomType:
+        case ProtocolVersacomType:
             {
                 doParsePutStatusVersacom(CmdStr);
                 break;
             }
-            case ProtocolExpresscomType:
+        case ProtocolExpresscomType:
             {
                 doParsePutStatusExpresscom(CmdStr);
                 break;
             }
-            case ProtocolFisherPierceType:
+        case ProtocolFisherPierceType:
             {
                 doParsePutStatusFisherP(CmdStr);
                 break;
             }
-            case ProtocolEmetconType:
+        case ProtocolEmetconType:
             {
                 doParsePutStatusEmetcon(CmdStr);
                 break;
             }
-            case ProtocolSADigitalType:
-            case ProtocolGolayType:
-            case ProtocolSA105Type:
-            case ProtocolSA205Type:
-            case ProtocolSA305Type:
+        case ProtocolSADigitalType:
+        case ProtocolGolayType:
+        case ProtocolSA105Type:
+        case ProtocolSA205Type:
+        case ProtocolSA305Type:
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1182,7 +1182,7 @@ void  CtiCommandParser::doParsePutStatus(const string &_CmdStr)
                 }
                 break;
             }
-            default:
+        default:
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1194,7 +1194,7 @@ void  CtiCommandParser::doParsePutStatus(const string &_CmdStr)
 
         if(CmdStr.contains(" reset"))
         {
-            if( _cmd.find("flag") != NULL )
+            if( _cmd.find("flag") != _cmd.end() )
             {
                 flag = _cmd["flag"].getInt();
             }
@@ -1680,7 +1680,8 @@ UINT     CtiCommandParser::getCommand() const
     map_itr_type itr;
 
     itr = _cmd.find("command");
-    if (itr != NULL) {
+    if(itr != _cmd.end())
+    {
         pv = (*itr).second;
     }
     //_cmd.findValue("command", pv);
@@ -1700,7 +1701,7 @@ UINT     CtiCommandParser::getOffset() const
 
 bool  CtiCommandParser::isKeyValid(const string key) const
 {
-    return ( _cmd.find(key.c_str()) != NULL );
+    return( _cmd.find(key.c_str()) != _cmd.end() );
 }
 
 UINT     CtiCommandParser::getOffset(const string key) const
@@ -1709,7 +1710,8 @@ UINT     CtiCommandParser::getOffset(const string key) const
     map_itr_type itr;
 
     itr = _cmd.find(key.c_str());
-    if (itr != _cmd.end()) {
+    if(itr != _cmd.end())
+    {
         pv = (*itr).second;
     }
     return pv.getInt();
@@ -1723,7 +1725,8 @@ INT      CtiCommandParser::getiValue(const string key, INT valifnotfound) const
         CtiParseValue& pv = CtiParseValue(); // = _cmd["command"];
         map_itr_type itr;
         itr = _cmd.find(key.c_str());
-        if ( itr != _cmd.end() ) {
+        if( itr != _cmd.end() )
+        {
             pv = (*itr).second;
         }
         val = pv.getInt();
@@ -1741,7 +1744,8 @@ DOUBLE   CtiCommandParser::getdValue(const string key, DOUBLE valifnotfound) con
         CtiParseValue& pv = CtiParseValue(); // = _cmd["command"];
         map_itr_type itr;
         itr = _cmd.find(key.c_str() );
-        if (itr != _cmd.end()) {
+        if(itr != _cmd.end())
+        {
             pv = (*itr).second;
         }
         val = pv.getReal();
@@ -1755,7 +1759,8 @@ string CtiCommandParser::getsValue(const string key) const
     CtiParseValue& pv = CtiParseValue();
     map_itr_type itr;
     itr = _cmd.find(key.c_str() );
-    if (itr != _cmd.end()) {
+    if(itr != _cmd.end())
+    {
         pv = (*itr).second;
     }
     return pv.getString().c_str();
@@ -1781,7 +1786,7 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
     boost::regex  re_address("address ((uniq(ue)? [0-9]+)|(gold [0-9]+ silver [0-9]+)|(bronze [0-9]+)|(lead meter [0-9]+ load [0-9]+))");
     boost::regex  re_centron("centron ((ratio [0-9]+)|(reading [0-9]+( [0-9]+)?))");
     boost::regex  re_loadlimit("load limit " + str_num + " "
-                                         + str_num);
+                               + str_num);
     boost::regex  re_holiday("holiday " + str_num + "( " + str_date + ")+");
 
     char *p;
@@ -2222,21 +2227,21 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
 
             }
             else if(!(token = CmdStr.match(" class [0-9]+" \
-                                            "( *, *[0-9]+)?" \
-                                            "( *, *[0-9]+)?" \
-                                            "( *, *[0-9]+)?" \
-                                            "( *, *[0-9]+)?" \
-                                            "( *, *[0-9]+)?" \
-                                            "( *, *[0-9]+)?" \
-                                            "( *, *[0-9]+)?" \
-                                            "( *, *[0-9]+)?" \
-                                            "( *, *[0-9]+)?" \
-                                            "( *, *[0-9]+)?" \
-                                            "( *, *[0-9]+)?" \
-                                            "( *, *[0-9]+)?" \
-                                            "( *, *[0-9]+)?" \
-                                            "( *, *[0-9]+)?" \
-                                            "( *, *[0-9]+)?" \
+                                           "( *, *[0-9]+)?" \
+                                           "( *, *[0-9]+)?" \
+                                           "( *, *[0-9]+)?" \
+                                           "( *, *[0-9]+)?" \
+                                           "( *, *[0-9]+)?" \
+                                           "( *, *[0-9]+)?" \
+                                           "( *, *[0-9]+)?" \
+                                           "( *, *[0-9]+)?" \
+                                           "( *, *[0-9]+)?" \
+                                           "( *, *[0-9]+)?" \
+                                           "( *, *[0-9]+)?" \
+                                           "( *, *[0-9]+)?" \
+                                           "( *, *[0-9]+)?" \
+                                           "( *, *[0-9]+)?" \
+                                           "( *, *[0-9]+)?" \
                                           )).empty())
             {
                 CtiTokenizer   tok( token );
@@ -2296,22 +2301,22 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
 
             }
             else if(!(token = CmdStr.match(" divi(sion)? [0-9]+" \
-                                                  "( *, *[0-9]+)?" \
-                                                  "( *, *[0-9]+)?" \
-                                                  "( *, *[0-9]+)?" \
-                                                  "( *, *[0-9]+)?" \
-                                                  "( *, *[0-9]+)?" \
-                                                  "( *, *[0-9]+)?" \
-                                                  "( *, *[0-9]+)?" \
-                                                  "( *, *[0-9]+)?" \
-                                                  "( *, *[0-9]+)?" \
-                                                  "( *, *[0-9]+)?" \
-                                                  "( *, *[0-9]+)?" \
-                                                  "( *, *[0-9]+)?" \
-                                                  "( *, *[0-9]+)?" \
-                                                  "( *, *[0-9]+)?" \
-                                                  "( *, *[0-9]+)?" \
-                                                  )).empty())
+                                           "( *, *[0-9]+)?" \
+                                           "( *, *[0-9]+)?" \
+                                           "( *, *[0-9]+)?" \
+                                           "( *, *[0-9]+)?" \
+                                           "( *, *[0-9]+)?" \
+                                           "( *, *[0-9]+)?" \
+                                           "( *, *[0-9]+)?" \
+                                           "( *, *[0-9]+)?" \
+                                           "( *, *[0-9]+)?" \
+                                           "( *, *[0-9]+)?" \
+                                           "( *, *[0-9]+)?" \
+                                           "( *, *[0-9]+)?" \
+                                           "( *, *[0-9]+)?" \
+                                           "( *, *[0-9]+)?" \
+                                           "( *, *[0-9]+)?" \
+                                          )).empty())
             {
                 CtiTokenizer   tok( token );
                 _num = 0;
@@ -2704,9 +2709,9 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
             _cmd["led"] = CtiParseValue( flag );
 
             _snprintf(tbuf, sizeof(tbuf), "CONFIG LED = Load %s, Status %s, Report %s",
-                    ((flag & 0x80) ? "ON" : "OFF"),
-                    ((flag & 0x40) ? "ON" : "OFF"),
-                    ((flag & 0x20) ? "ON" : "OFF"));
+                      ((flag & 0x80) ? "ON" : "OFF"),
+                      ((flag & 0x40) ? "ON" : "OFF"),
+                      ((flag & 0x20) ? "ON" : "OFF"));
             _actionItems.push_back(tbuf);
         }
 
@@ -3467,7 +3472,7 @@ void CtiCommandParser::resolveProtocolType(const string &_CmdStr)
 
 const string& CtiCommandParser::getCommandStr() const
 {
-    return (_cmdString);
+    return(_cmdString);
 }
 
 INT CtiCommandParser::convertTimeInputToSeconds(const string& _inStr) const
@@ -3591,7 +3596,7 @@ int CtiCommandParser::getControlled() const
 
 bool CtiCommandParser::isControlled() const
 {
-    return ( CONTROLLED == getControlled() );
+    return( CONTROLLED == getControlled() );
 }
 
 bool CtiCommandParser::isTwoWay() const
@@ -5012,7 +5017,7 @@ void CtiCommandParser::doParsePutConfigSA(const string &_CmdStr)
 
 CtiCommandParser& CtiCommandParser::parseAsString(const string str)
 {
-    #if 0
+#if 0
     _cmdString = CtiString("built from string");
     _actionItems.clear();
     _cmd.clear();
@@ -5037,7 +5042,7 @@ CtiCommandParser& CtiCommandParser::parseAsString(const string str)
         }
     }
 
-    #endif
+#endif
 
 
     return *this;
