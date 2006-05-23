@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.43 $
-* DATE         :  $Date: 2006/05/23 20:03:08 $
+* REVISION     :  $Revision: 1.44 $
+* DATE         :  $Date: 2006/05/23 21:08:24 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1844,12 +1844,12 @@ INT CtiDeviceMCT470::executeGetConfig( CtiRequestMsg         *pReq,
 }
 
 
-INT CtiDeviceMCT470::executePutValue( CtiRequestMsg              *pReq,
-                                      CtiCommandParser           &parse,
-                                      OUTMESS                   *&OutMessage,
-                                      RWTPtrSlist< CtiMessage >  &vgList,
-                                      RWTPtrSlist< CtiMessage >  &retList,
-                                      RWTPtrSlist< OUTMESS >     &outList )
+INT CtiDeviceMCT470::executePutValue( CtiRequestMsg         *pReq,
+                                      CtiCommandParser      &parse,
+                                      OUTMESS              *&OutMessage,
+                                      list< CtiMessage* >   &vgList,
+                                      list< CtiMessage* >   &retList,
+                                      list< OUTMESS* >      &outList )
 {
     INT nRet = NoMethod;
 
@@ -1857,8 +1857,8 @@ INT CtiDeviceMCT470::executePutValue( CtiRequestMsg              *pReq,
     int function;
 
     CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ),
-                                                   RWCString(OutMessage->Request.CommandStr),
-                                                   RWCString(),
+                                                   CtiString(OutMessage->Request.CommandStr),
+                                                   CtiString(),
                                                    nRet,
                                                    OutMessage->Request.RouteID,
                                                    OutMessage->Request.MacroOffset,
@@ -1866,7 +1866,7 @@ INT CtiDeviceMCT470::executePutValue( CtiRequestMsg              *pReq,
                                                    OutMessage->Request.TrxID,
                                                    OutMessage->Request.UserID,
                                                    OutMessage->Request.SOE,
-                                                   RWOrdered( ));
+                                                   CtiMultiMsg_vec( ));
 
     if( parse.getFlags() & CMD_FLAG_PV_DIAL )
     {
@@ -1888,11 +1888,11 @@ INT CtiDeviceMCT470::executePutValue( CtiRequestMsg              *pReq,
                     {
                         long pulses;
 
-                        CtiPointBase *tmpPoint = getDevicePointOffsetTypeEqual(offset, PulseAccumulatorPointType);
+                        CtiPointSPtr tmpPoint = getDevicePointOffsetTypeEqual(offset, PulseAccumulatorPointType);
 
                         if( tmpPoint && tmpPoint->isA() == PulseAccumulatorPointType)
                         {
-                            pulses = (long)(dial / (((CtiPointAccumulator *)tmpPoint)->getMultiplier()));
+                            pulses = (long)(dial / (boost::static_pointer_cast<CtiPointAccumulator>(tmpPoint)->getMultiplier()));
                         }
                         else
                         {
@@ -1916,7 +1916,7 @@ INT CtiDeviceMCT470::executePutValue( CtiRequestMsg              *pReq,
                         {
                             errRet->setResultString("Invalid reading specified for command");
                             errRet->setStatus(NoMethod);
-                            retList.insert(errRet);
+                            retList.push_back(errRet);
 
                             errRet = NULL;
                         }
@@ -1930,7 +1930,7 @@ INT CtiDeviceMCT470::executePutValue( CtiRequestMsg              *pReq,
                     {
                         errRet->setResultString("Invalid offset specified (" + CtiNumStr(offset) + ")");
                         errRet->setStatus(NoMethod);
-                        retList.insert(errRet);
+                        retList.push_back(errRet);
 
                         errRet = NULL;
                     }
@@ -1956,7 +1956,7 @@ INT CtiDeviceMCT470::executePutValue( CtiRequestMsg              *pReq,
         OutMessage->Retry     = 2;
 
         OutMessage->Request.RouteID   = getRouteID();
-        strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
+        strncpy(OutMessage->Request.CommandStr, pReq->CommandString().data(), COMMAND_STR_SIZE);
 
         nRet = NoError;
     }

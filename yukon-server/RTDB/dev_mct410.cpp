@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.65 $
-* DATE         :  $Date: 2006/05/23 19:27:09 $
+* REVISION     :  $Revision: 1.66 $
+* DATE         :  $Date: 2006/05/23 21:08:24 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1499,7 +1499,7 @@ INT CtiDeviceMCT410::executePutConfig( CtiRequestMsg              *pReq,
             //  grab up to three potential dates
             for( int i = 0; i < 3 && parse.isKeyValid("holiday_date" + CtiNumStr(i)); i++ )
             {
-                RWCTokenizer date_tokenizer(parse.getsValue("holiday_date" + CtiNumStr(i)));
+                CtiTokenizer date_tokenizer(parse.getsValue("holiday_date" + CtiNumStr(i)));
 
                 int month = atoi(date_tokenizer("/").data()),
                     day   = atoi(date_tokenizer("/").data()),
@@ -1507,11 +1507,11 @@ INT CtiDeviceMCT410::executePutConfig( CtiRequestMsg              *pReq,
 
                 if( year > 2000 )
                 {
-                    RWDate holiday_date(day, month, year);
+                    CtiDate holiday_date(day, month, year);
 
-                    if( holiday_date.isValid() && holiday_date > RWDate::now() )
+                    if( holiday_date.isValid() && holiday_date > CtiDate::now() )
                     {
-                        holidays[holiday_count++] = RWTime(holiday_date).seconds() - rwEpoch;
+                        holidays[holiday_count++] = CtiTime(holiday_date).seconds() - rwEpoch;
                     }
                 }
             }
@@ -1547,7 +1547,7 @@ INT CtiDeviceMCT410::executePutConfig( CtiRequestMsg              *pReq,
                     {
                         errRet->setResultString("Specified dates are invalid");
                         errRet->setStatus(NoMethod);
-                        retList.insert(errRet);
+                        retList.push_back(errRet);
 
                         errRet = NULL;
                     }
@@ -1561,7 +1561,7 @@ INT CtiDeviceMCT410::executePutConfig( CtiRequestMsg              *pReq,
                 {
                     errRet->setResultString("Invalid holiday offset specified");
                     errRet->setStatus(NoMethod);
-                    retList.insert(errRet);
+                    retList.push_back(errRet);
 
                     errRet = NULL;
                 }
