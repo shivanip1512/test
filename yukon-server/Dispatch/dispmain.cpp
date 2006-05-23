@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/dispmain.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/12/20 17:16:57 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2006/05/23 21:48:52 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -30,6 +30,9 @@ using namespace std;
 #include "logger.h"
 #include "utility.h"
 
+#include "clrdump.h"
+#include "dbghelp.h"
+
 extern INT DispatchMainFunction(INT, CHAR**);
 
 int main(int argc, char* argv[] )
@@ -39,6 +42,9 @@ int main(int argc, char* argv[] )
    LPTSTR szDisplay = "Yukon Dispatch Service";
 
    HANDLE hExclusion = INVALID_HANDLE_VALUE;
+
+   RegisterFilter( L"CALC_LOGIC_MAIN.DMP", MiniDumpWithDataSegs );
+   SetFilterOptions( CLRDMP_OPT_CALLDEFAULTHANDLER );
 
    if( (hExclusion = OpenEvent(EVENT_ALL_ACCESS, FALSE, szName)) != NULL )
    {
