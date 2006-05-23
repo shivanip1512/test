@@ -557,8 +557,10 @@ public class LiteStarsEnergyCompany extends LiteBase {
     }
     
     public void init() {
-        loadAllInventory( false );
-        loadAllWorkOrders( false );
+        if (!isInventoryLoaded())
+            loadAllInventory( false );
+        if (!isWorkOrdersLoaded())
+            loadAllWorkOrders( false );
     }
     
     public void clear() {
