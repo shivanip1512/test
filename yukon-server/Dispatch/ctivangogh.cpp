@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.144 $
-* DATE         :  $Date: 2006/05/23 21:01:31 $
+* REVISION     :  $Revision: 1.145 $
+* DATE         :  $Date: 2006/05/23 21:51:06 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -6347,9 +6347,7 @@ void CtiVanGogh::checkStatusState(int alarm, CtiPointDataMsg *pData, CtiMultiWra
                     "   Point: " << point->getID() << " " << ResolveStateName(point->getStateGroupID(), (int)pData->getValue()) << endl;
                 }
 
-                char tstr[80];
-                string tempTS = ResolveStateName(point->getStateGroupID(), (int)pData->getValue());
-                _snprintf(tstr, sizeof(tstr)-1, "%s", tempTS.c_str() );
+                string tstr(ResolveStateName(point->getStateGroupID(), (int)pData->getValue()));
 
                 // OK, we have an actual alarm condition to gripe about!
                 pSig = CTIDBG_new CtiSignalMsg(point->getID(), pData->getSOE(), tstr, getAlarmStateName( point->getAlarming().getAlarmCategory(alarm) ), GeneralLogType, point->getAlarming().getAlarmCategory(alarm), pData->getUser());                        // This is an alarm if the alarm state indicates anything other than SignalEvent.
@@ -6392,8 +6390,7 @@ void CtiVanGogh::checkChangeOfState(int alarm, CtiPointDataMsg *pData, CtiMultiW
                 "   Point: " << point->getID() << " " << ResolveStateName(point->getStateGroupID(), (int)pData->getValue()) << endl;
             }
 
-            char tstr[80];
-            _snprintf(tstr, sizeof(tstr)-1, "%s", ResolveStateName(point->getStateGroupID(), (int)pData->getValue()));
+            string tstr(ResolveStateName(point->getStateGroupID(), (int)pData->getValue()));
 
             // OK, we have an actual alarm condition to gripe about!
             pSig = CTIDBG_new CtiSignalMsg(point->getID(), pData->getSOE(), tstr, getAlarmStateName( point->getAlarming().getAlarmCategory(alarm) ), GeneralLogType, point->getAlarming().getAlarmCategory(alarm), pData->getUser());                        // This is an alarm if the alarm state indicates anything other than SignalEvent.

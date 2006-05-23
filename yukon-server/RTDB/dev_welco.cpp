@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_welco.cpp-arc  $
-* REVISION     :  $Revision: 1.36 $
-* DATE         :  $Date: 2006/05/23 21:14:11 $
+* REVISION     :  $Revision: 1.37 $
+* DATE         :  $Date: 2006/05/23 21:50:50 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -359,7 +359,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
     bool last_sectn;
     LONG  PointOffset;
 
-    CHAR  tStr[128];
+    string str;
     /* Misc. definitions */
     ULONG i;
     ULONG Pointer;
@@ -669,9 +669,8 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
                                 /* Apply offset */
                                 PValue += pAccumPoint->getDataOffset();
 
-                                _snprintf(tStr, 126, "%s point %s = %f", getName(), pAccumPoint->getName(), PValue);
-
-                                pData = CTIDBG_new CtiPointDataMsg(pAccumPoint->getPointID(), PValue, NormalQuality, DemandAccumulatorPointType, tStr);
+                                str = string(getName() + " point " + pAccumPoint->getName() + " = " + CtiNumStr(PValue));
+                                pData = CTIDBG_new CtiPointDataMsg(pAccumPoint->getPointID(), PValue, NormalQuality, DemandAccumulatorPointType, str);
                                 if(pData != NULL)
                                 {
                                     ReturnMsg->PointData().push_back(pData);
@@ -695,9 +694,8 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
                             /* Apply offset */
                             PValue += pAccumPoint->getDataOffset();
 
-                            _snprintf(tStr, 126, "%s point %s = %f", getName(), pAccumPoint->getName(), PValue);
-
-                            pData = CTIDBG_new CtiPointDataMsg(pAccumPoint->getPointID(), PValue, NormalQuality, PulseAccumulatorPointType, tStr);
+                            str = string(getName() + " point " + pAccumPoint->getName() + " = " + CtiNumStr(PValue));
+                            pData = CTIDBG_new CtiPointDataMsg(pAccumPoint->getPointID(), PValue, NormalQuality, PulseAccumulatorPointType, str);
 
                             if(pData != NULL)
                             {
@@ -831,9 +829,8 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
                                 /* Apply offset */
                                 PValue += dataoffset;
 
-                                _snprintf(tStr, 126, "%s point %s = %f", getName(), pAccumPoint->getName(), PValue);
-
-                                pData = CTIDBG_new CtiPointDataMsg(pAccumPoint->getPointID(), PValue, NormalQuality, DemandAccumulatorPointType, tStr);
+                                str = string(getName() + " point " + pAccumPoint->getName() + " = " + CtiNumStr(PValue));
+                                pData = CTIDBG_new CtiPointDataMsg(pAccumPoint->getPointID(), PValue, NormalQuality, DemandAccumulatorPointType, str);
                                 if(pData != NULL)
                                 {
                                     ReturnMsg->PointData().push_back(pData);
@@ -871,9 +868,8 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
                             /* Apply offset */
                             PValue += pAccumPoint->getDataOffset();
 
-                            _snprintf(tStr, 126, "%s point %s = %f", getName(), pAccumPoint->getName(), PValue);
-
-                            pData = CTIDBG_new CtiPointDataMsg(pAccumPoint->getPointID(), PValue, NormalQuality, PulseAccumulatorPointType, tStr);
+                            str = string(getName() + " point " + pAccumPoint->getName() + " = " + CtiNumStr(PValue));
+                            pData = CTIDBG_new CtiPointDataMsg(pAccumPoint->getPointID(), PValue, NormalQuality, PulseAccumulatorPointType, str);
                             if(pData != NULL)
                             {
                                 ReturnMsg->PointData().push_back(pData);
@@ -940,10 +936,9 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
                             }
 #endif
                         }
-                        string tempTS = ResolveStateName(PointRecord->getStateGroupID(), (LONG)(PValue));
-                        _snprintf(tStr, 126, "%s point %s = %s", getName(), PointRecord->getName(), tempTS.c_str() );
 
-                        pData = CTIDBG_new CtiPointDataMsg(PointRecord->getPointID(), PValue, NormalQuality, StatusPointType, tStr);
+                        str = string(getName() + " point " + PointRecord->getName() + " = " + ResolveStateName(PointRecord->getStateGroupID(), (LONG)(PValue)));
+                        pData = CTIDBG_new CtiPointDataMsg(PointRecord->getPointID(), PValue, NormalQuality, StatusPointType, str);
                         if(pData != NULL)
                         {
                             pData->setTime( pData->getTime() - 1 );
@@ -955,10 +950,8 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
                         if((MyInMessage[4 + 2 * ((PointOffset - StartPoint) / 8) + 1] >> ((PointOffset - StartPoint) % 8)) & 0x01)
                         {
                             PValue = ( (PValue == CLOSED) ? OPENED : CLOSED );
-                            tempTS = ResolveStateName(PointRecord->getStateGroupID(), (LONG)(PValue));
-                            _snprintf(tStr, 126, "%s point %s = %s", getName(), PointRecord->getName(), tempTS.c_str() );
-
-                            pData = CTIDBG_new CtiPointDataMsg(PointRecord->getPointID(), PValue, NormalQuality, StatusPointType, tStr);
+                            str = string(getName() + " point " + PointRecord->getName() + " = " + ResolveStateName(PointRecord->getStateGroupID(), (LONG)(PValue)));
+                            pData = CTIDBG_new CtiPointDataMsg(PointRecord->getPointID(), PValue, NormalQuality, StatusPointType, str);
 
                             if(pData != NULL)
                             {
@@ -1011,14 +1004,9 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
                             { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " " << PointRecord->getName() << " Status " << PointOffset << " was " << ResolveStateName(PointRecord->getStateGroupID(), (LONG)(PValue)) << endl; }
 #endif
                         }
-                        string tempTS = ResolveStateName(PointRecord->getStateGroupID(), (LONG)(PValue));
-                        _snprintf(tStr, 126, "%s point %s = %s", getName(), PointRecord->getName(), tempTS.c_str() );
 
-                        pData = CTIDBG_new CtiPointDataMsg(PointRecord->getPointID(),
-                                                    PValue,
-                                                    NormalQuality,
-                                                    StatusPointType,
-                                                    tStr);
+                        str = string(getName() + " point " + PointRecord->getName() + " = " + ResolveStateName(PointRecord->getStateGroupID(), (LONG)(PValue)));
+                        pData = CTIDBG_new CtiPointDataMsg(PointRecord->getPointID(), PValue, NormalQuality, StatusPointType, str);
                         if(pData != NULL)
                         {
                             ReturnMsg->PointData().push_back(pData);
@@ -1029,13 +1017,8 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
                         if(MyInMessage[(StartPoint * 2) + 3] & 0x40)
                         {
                             PValue = ( (PValue == CLOSED) ? OPENED : CLOSED );
-                            tempTS = ResolveStateName(PointRecord->getStateGroupID(), (LONG)(PValue));
-                            _snprintf(tStr, 126, "%s point %s = %s", getName(), PointRecord->getName(), tempTS.c_str() );
-                            pData = CTIDBG_new CtiPointDataMsg(PointRecord->getPointID(),
-                                                        PValue,
-                                                        NormalQuality,
-                                                        StatusPointType,
-                                                        tStr);
+                            str = string(getName() + " point " + PointRecord->getName() + " = " + ResolveStateName(PointRecord->getStateGroupID(), (LONG)(PValue)));
+                            pData = CTIDBG_new CtiPointDataMsg(PointRecord->getPointID(), PValue, NormalQuality, StatusPointType, str);
                             if(pData != NULL)
                             {
                                 ReturnMsg->PointData().push_back(pData);
@@ -1101,13 +1084,12 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
 
                         PValue = Value * NumericPoint->getMultiplier() + NumericPoint->getDataOffset();
 
-                        _snprintf(tStr, 126, "%s point %s = %f", getName(), NumericPoint->getName(), PValue );
-
+                        str = string(getName() + " point " + NumericPoint->getName() + " = " + CtiNumStr(PValue));
                         pData = CTIDBG_new CtiPointDataMsg(NumericPoint->getPointID(),
                                                     PValue,
                                                     NormalQuality,
                                                     AnalogPointType,
-                                                    tStr);
+                                                    str);
                         if(pData != NULL)
                         {
                             ReturnMsg->PointData().push_back(pData);
@@ -1193,13 +1175,8 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
 
                         PValue = Value * NumericPoint->getMultiplier() + NumericPoint->getDataOffset();
 
-                        _snprintf(tStr, 126, "%s point %s = %f", getName(), NumericPoint->getName(), PValue );
-
-                        pData = CTIDBG_new CtiPointDataMsg(NumericPoint->getPointID(),
-                                                    PValue,
-                                                    NormalQuality,
-                                                    AnalogPointType,
-                                                    tStr);
+                        str = string(getName() + " point " + NumericPoint->getName() + " = " + CtiNumStr(PValue));
+                        pData = CTIDBG_new CtiPointDataMsg(NumericPoint->getPointID(), PValue, NormalQuality, AnalogPointType, str);
                         if(pData != NULL)
                         {
                             ReturnMsg->PointData().push_back(pData);
