@@ -3467,56 +3467,60 @@ public class LiteStarsEnergyCompany extends LiteBase {
             while(rset.next())
             {
                 Integer energyCompanyID = new Integer(rset.getInt(1));
-                if(prevECID != energyCompanyID.intValue())
+                if(prevECID != energyCompanyID.intValue()){
+                    Date ecDate = new Date();
                     liteStarsEC = StarsDatabaseCache.getInstance().getEnergyCompany(energyCompanyID.intValue());
+                    CTILogger.debug((new Date().getTime() - ecDate.getTime())*.001 + " For EC cache retrieve" );
+                }
                 prevECID = energyCompanyID.intValue();
 
                 Integer accountID = new Integer(rset.getInt(2));
                 liteAcctInfo = (LiteStarsCustAccountInformation) liteStarsEC.getCustAccountInfoMap().get( new Integer(accountID) );
-                if (liteAcctInfo != null) continue; //its already loaded
+                if (liteAcctInfo == null){
             
-                liteAcctInfo = new LiteStarsCustAccountInformation(accountID);                
-
-                LiteCustomerAccount customerAccount = new LiteCustomerAccount( accountID.intValue() );
-                customerAccount.setAccountSiteID( rset.getInt(5));
-                customerAccount.setAccountNumber( rset.getString(6));
-                customerAccount.setCustomerID( rset.getInt(7) );
-                customerAccount.setBillingAddressID( rset.getInt(8));
-                customerAccount.setAccountNotes( rset.getString(9) );
-                liteAcctInfo.setCustomerAccount(customerAccount);
-                
-                LiteAccountSite accountSite = new LiteAccountSite( customerAccount.getAccountSiteID());
-                accountSite.setSiteInformationID( rset.getInt(10) );
-                accountSite.setSiteNumber( rset.getString(11) );
-                accountSite.setStreetAddressID( rset.getInt(12) );
-                accountSite.setPropertyNotes( rset.getString(13));
-                accountSite.setCustAtHome( rset.getString(14));
-                accountSite.setCustStatus( rset.getString(15) );
-                liteAcctInfo.setAccountSite(accountSite);
-
-                LiteSiteInformation siteInformation = new LiteSiteInformation(accountSite.getAccountSiteID() );
-                siteInformation.setFeeder( rset.getString(16) );
-                siteInformation.setPole( rset.getString(17));
-                siteInformation.setTransformerSize( rset.getString(18) );
-                siteInformation.setServiceVoltage( rset.getString(19) );
-                siteInformation.setSubstationID( rset.getInt(20) );
-                liteAcctInfo.setSiteInformation(siteInformation);
-             
-                LiteCustomer customer = new LiteCustomer(customerAccount.getCustomerID());
-                customer.setPrimaryContactID(rset.getInt(21) );
-                customer.setCustomerTypeID( rset.getInt(22) );
-                customer.setTimeZone( rset.getString(23) );
-                customer.setCustomerNumber( rset.getString(24) );
-                customer.setRateScheduleID( rset.getInt(25) );
-                customer.setAltTrackingNumber( rset.getString(26) );
-                customer.setTemperatureUnit( rset.getString(27) );
-                if(customer.getCustomerTypeID() == CustomerTypes.CUSTOMER_CI)
-                {   //retrieve the CICustomerBase object instead.
-                    customer = new LiteCICustomer(customer.getCustomerID());
-                    customer.retrieve(CtiUtilities.getDatabaseAlias());
-                }
-                liteAcctInfo.setCustomer(customer);
-                
+                    liteAcctInfo = new LiteStarsCustAccountInformation(accountID);                
+    
+                    LiteCustomerAccount customerAccount = new LiteCustomerAccount( accountID.intValue() );
+                    customerAccount.setAccountSiteID( rset.getInt(5));
+                    customerAccount.setAccountNumber( rset.getString(6));
+                    customerAccount.setCustomerID( rset.getInt(7) );
+                    customerAccount.setBillingAddressID( rset.getInt(8));
+                    customerAccount.setAccountNotes( rset.getString(9) );
+                    liteAcctInfo.setCustomerAccount(customerAccount);
+                    
+                    LiteAccountSite accountSite = new LiteAccountSite( customerAccount.getAccountSiteID());
+                    accountSite.setSiteInformationID( rset.getInt(10) );
+                    accountSite.setSiteNumber( rset.getString(11) );
+                    accountSite.setStreetAddressID( rset.getInt(12) );
+                    accountSite.setPropertyNotes( rset.getString(13));
+                    accountSite.setCustAtHome( rset.getString(14));
+                    accountSite.setCustStatus( rset.getString(15) );
+                    liteAcctInfo.setAccountSite(accountSite);
+    
+                    LiteSiteInformation siteInformation = new LiteSiteInformation(accountSite.getAccountSiteID() );
+                    siteInformation.setFeeder( rset.getString(16) );
+                    siteInformation.setPole( rset.getString(17));
+                    siteInformation.setTransformerSize( rset.getString(18) );
+                    siteInformation.setServiceVoltage( rset.getString(19) );
+                    siteInformation.setSubstationID( rset.getInt(20) );
+                    liteAcctInfo.setSiteInformation(siteInformation);
+                 
+                    LiteCustomer customer = new LiteCustomer(customerAccount.getCustomerID());
+                    customer.setPrimaryContactID(rset.getInt(21) );
+                    customer.setCustomerTypeID( rset.getInt(22) );
+                    customer.setTimeZone( rset.getString(23) );
+                    customer.setCustomerNumber( rset.getString(24) );
+                    customer.setRateScheduleID( rset.getInt(25) );
+                    customer.setAltTrackingNumber( rset.getString(26) );
+                    customer.setTemperatureUnit( rset.getString(27) );
+                    
+                    if(customer.getCustomerTypeID() == CustomerTypes.CUSTOMER_CI)
+                    {   //retrieve the CICustomerBase object instead.
+                        customer = new LiteCICustomer(customer.getCustomerID());
+                        customer.retrieve(CtiUtilities.getDatabaseAlias());
+                    }
+                    liteAcctInfo.setCustomer(customer);
+                }                
                 if (searchMembers)
                     accountList.add(new Pair(liteAcctInfo, liteStarsEC) );
                 else
@@ -3527,7 +3531,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
             }
         }
         catch( Exception e ){
-            CTILogger.error( "Error retrieving contacts with last name " + lastName+ ": " + e.getMessage(), e );
+            CTILogger.error( "Error retrieving contacts with last name " + lastName_+ ": " + e.getMessage(), e );
         }
         finally {
             try {
@@ -3538,7 +3542,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
             catch (java.sql.SQLException e) {}
         }
 
-        CTILogger.debug((new Date().getTime() - timerStart.getTime())*.001 + " Secs for '" + lastName + "' Search (" + count + " AccountIDS loaded; EC=" + (energyCompanyIDList.size() == StarsDatabaseCache.getInstance().getAllEnergyCompanies().size()? "ALL" : energyCompanyIDList.toString()) + ")" );
+        CTILogger.debug((new Date().getTime() - timerStart.getTime())*.001 + " Secs for '" + lastName_ + "' Search (" + count + " AccountIDS loaded; EC=" + (energyCompanyIDList.size() == StarsDatabaseCache.getInstance().getAllEnergyCompanies().size()? "ALL" : energyCompanyIDList.toString()) + ")" );
         return accountList;
     }
 }
