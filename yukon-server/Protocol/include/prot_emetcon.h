@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_emetcon.h-arc  $
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2006/02/24 00:19:10 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2006/05/23 16:09:20 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -240,13 +240,6 @@ public:
 
         DLCCmd_LAST                // PLACEHOLDER!!!
     };
-
-#ifdef OLD_CODE
-    bool dlcGeneralFunctionAddress(BSTRUCT &BSt) const;
-    bool dlcIntegrityFunctionAddress(BSTRUCT &BSt) const;
-    bool dlcAccumulatorFunctionAddress(BSTRUCT &BSt) const;
-#endif
-
 };
 
 
