@@ -18,12 +18,12 @@
 #include <boost/thread/xtime.hpp>
 
 using std::string;
-using std::cout;
+using std::cerr;
 using std::endl;
 
 // Template Queuing class
 template <class T,  class C>
-class IM_EX_CTIBASE CtiQueue 
+class IM_EX_CTIBASE CtiQueue
 {
 private:
     boost::condition           dataAvailable;
@@ -43,15 +43,24 @@ public:
             if(pt != NULL)
             {
                 boost::mutex::scoped_lock scoped_lock(mux);
-                _sortedCol.push_back(pt);
-                _sortedCol.sort();
                 dataAvailable.notify_one();
+                _sortedCol.push_back(pt);
+
+                try
+                {
+                    _sortedCol.sort();
+                }
+                catch(...)
+                {
+                    cerr << "Exception: " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
                 // mutex automatically released in LockGuard destructor
             }
         }
         catch(...)
         {
-            cout << "Exception: " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            cerr << "Exception: " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
@@ -62,18 +71,18 @@ public:
         {
             boost::mutex::scoped_lock scoped_lock(mux);
             while( !(_sortedCol.size() > 0) )
-            {              
+            {
                 dataAvailable.wait(scoped_lock);
             }
 
             pval = _sortedCol.front();
             _sortedCol.pop_front();
-            
-            // cout << "Number of entries " << _sortedCol.entries() << endl;
+
+            // cerr << "Number of entries " << _sortedCol.entries() << endl;
         }
         catch(...)
         {
-            cout << "Exception: " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            cerr << "Exception: " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         return pval;
@@ -87,7 +96,7 @@ public:
             boost::mutex::scoped_lock scoped_lock(mux);
             bool wRes = false;
             struct boost::xtime xt;
-            boost::xtime_get(&xt, boost::TIME_UTC); 
+            boost::xtime_get(&xt, boost::TIME_UTC);
             xt.sec  += (time/1000);
             xt.nsec += (time%1000)*1000;
 
@@ -111,7 +120,7 @@ public:
         }
         catch(...)
         {
-            cout << "Exception: " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            cerr << "Exception: " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
         return pval;
     }
@@ -126,16 +135,23 @@ public:
                 boost::mutex::scoped_lock scoped_lock(mux);
                 {
                     _sortedCol.push_back(pt);
-                    _sortedCol.sort();
                     dataAvailable.notify_one();
-                    // mutex automatically released in LockGuard destructor
                     putWasDone = true;
+
+                    try
+                    {
+                        _sortedCol.sort();
+                    }
+                    catch(...)
+                    {
+                        cerr << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
                 }
             }
         }
         catch(...)
         {
-            cout << "Exception: " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            cerr << "Exception: " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         return putWasDone;
@@ -194,7 +210,7 @@ public:
     {
         for (; _F != _L; ++_F)
             _Op(*_F, d);
-         
+
     }
     void apply(void (*fn)(T*&,void*), void* d)
     {
@@ -206,7 +222,7 @@ public:
 
 // Template Queuing class
 template <class T>
-class IM_EX_CTIBASE CtiFIFOQueue 
+class IM_EX_CTIBASE CtiFIFOQueue
 {
 private:
 
@@ -237,7 +253,7 @@ public:
         }
         catch(...)
         {
-            cout << "Exception: " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            cerr << "Exception: " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
@@ -248,17 +264,17 @@ public:
         {
             boost::mutex::scoped_lock scoped_lock(mux);
             while( !(_col.size() > 0) )
-            {              
+            {
                 dataAvailable.wait(scoped_lock);
-            }            
+            }
             pval = _col.front();
             _col.pop_front();
-        
-            // cout << "Number of entries " << _sortedCol.entries() << endl;
+
+            // cerr << "Number of entries " << _sortedCol.entries() << endl;
         }
         catch(...)
         {
-            cout << "Exception: " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            cerr << "Exception: " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         return pval;
@@ -272,7 +288,7 @@ public:
             boost::mutex::scoped_lock scoped_lock(mux);
             bool wRes = true;
             struct boost::xtime xt;
-            boost::xtime_get(&xt, boost::TIME_UTC); 
+            boost::xtime_get(&xt, boost::TIME_UTC);
             xt.sec  += (time/1000);
             xt.nsec += (time%1000)*1000;
 
@@ -296,7 +312,7 @@ public:
         }
         catch(...)
         {
-            cout << "Exception: " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            cerr << "Exception: " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
         return pval;
     }
@@ -319,7 +335,7 @@ public:
         }
         catch(...)
         {
-            cout << "Exception: " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            cerr << "Exception: " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         return putWasDone;
@@ -384,7 +400,7 @@ public:
     {
         for (; _F != _L; ++_F)
             _Op(*_F, d);
-         
+
     }
     void apply(void (*fn)(T*&,void*), void* d)
     {
