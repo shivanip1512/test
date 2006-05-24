@@ -6,6 +6,7 @@
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
 <%@ page import="com.cannontech.database.db.graph.GraphRenderers" %>
 <%@ page import="com.cannontech.util.ServletUtil" %>
+<%@ page import="com.cannontech.database.db.company.EnergyCompany" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 
 <cti:checklogin/>
@@ -34,7 +35,7 @@
     Class[] types = { Integer.class,String.class };    
     java.lang.String sqlString =  "SELECT DISTINCT GDEF.GRAPHDEFINITIONID, GDEF.NAME " +
                                   " FROM GRAPHDEFINITION GDEF ";
-	if( energyCompanyID != null)
+	if( energyCompanyID != null && energyCompanyID.intValue() != EnergyCompany.DEFAULT_ENERGY_COMPANY_ID)
 	{
 		sqlString += ", GRAPHCUSTOMERLIST GCL, ENERGYCOMPANYCUSTOMERLIST ECCL "+
                      " WHERE ECCL.ENERGYCOMPANYID = " + energyCompanyID.intValue() + 
