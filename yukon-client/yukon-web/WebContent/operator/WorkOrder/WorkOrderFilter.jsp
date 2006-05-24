@@ -157,11 +157,6 @@ function showAll(form) {
 	                    </select>
 	            	</td>
 	            	<td width="240"> 
-            			
-            			<input type="button" name="MoveUp" value="Move Up" style="width:80" onclick="moveUp(this.form)">
-                        <br>
-                        <input type="button" name="MoveDown" value="Move Down" style="width:80" onclick="moveDown(this.form)">
-                        <br>
                         <input type="button" name="Remove" value="Remove" style="width:80" onclick="deleteEntry(this.form)">
                         <br>
                         <input type="button" name="RemoveAll" value="Remove All" style="width:80" onclick="deleteAllEntries(this.form)">
