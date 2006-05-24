@@ -267,6 +267,7 @@ public class WorkOrder extends YukonReportBase
 
 		factory = ReportFactory.createTextFieldElementDefault(getModel(), WorkOrderModel.EC_INFO_COLUMN);
 		factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(getModel().getColumnProperties(WorkOrderModel.EC_INFO_COLUMN).getPositionX(),14));
+        factory.setHorizontalAlignment(ElementAlignment.CENTER);
 		factory.setFontSize(new Integer(12));
 		factory.setNullString("");
 		header.addElement(factory.createElement());
