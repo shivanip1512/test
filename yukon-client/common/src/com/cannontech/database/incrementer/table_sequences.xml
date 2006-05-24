@@ -1,6 +1,7 @@
 <sequencetables>
   <!--  set initsequence="true" on the table element to initialize the sequence
-        with the max value from the identity column
+        with the max value from the identity column.  initsequence should be true
+        for any objects whose tables may have been populated in the past.
     -->
   <sequencetable name="SequenceNumber" valuecolumn="lastValue" keycolumn="sequenceName">
       <sequence name="general" >
@@ -24,6 +25,9 @@
       </sequence>
       <sequence name="pointid">
         <table name="Point" identitycolumn="POINTID" initsequence="true"/>
+      </sequence>
+      <sequence name="inventoryid">
+        <table name="InventoryBase" identitycolumn="INVENTORYID" initsequence="true"/>
       </sequence>
   </sequencetable>
 </sequencetables>
