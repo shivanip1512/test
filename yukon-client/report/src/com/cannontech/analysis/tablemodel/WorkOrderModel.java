@@ -28,7 +28,6 @@ import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.cache.functions.YukonListFuncs;
-import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteCustomer;
@@ -40,12 +39,9 @@ import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
-import com.cannontech.database.data.stars.hardware.MeterHardwareBase;
 import com.cannontech.roles.operator.WorkOrderRole;
-import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
-import com.cannontech.user.UserUtils;
 
 /**
  * @author yao
@@ -200,8 +196,8 @@ public class WorkOrderModel extends ReportModelBase {
 			
 			/*if (result == 0) {
 				// If order IDs are the same, compare serial numbers as numeric values
-				String serialNo1 = "(none)";
-				String serialNo2 = "(none)";
+				String serialNo1 = CtiUtilities.STRING_NONE;
+				String serialNo2 = CtiUtilities.STRING_NONE;
 				
 				Long sn1 = null;
 				Long sn2 = null;
@@ -413,7 +409,7 @@ public class WorkOrderModel extends ReportModelBase {
 	 * (Integer):String).
 	 * @return String an Sqlstatement
 	 */
-	public String getInventoryMeterNumber(LiteInventoryBase liteInvBase)
+	public synchronized String getInventoryMeterNumber(LiteInventoryBase liteInvBase)
 	{
 		String meterNumber = getLiteInvToMeterNumberMap().get(liteInvBase);
 		if( meterNumber == null)
@@ -450,10 +446,11 @@ public class WorkOrderModel extends ReportModelBase {
 				
 				pstmt = conn.prepareStatement( sql );
 				rset = pstmt.executeQuery();
-				while (rset.next()) {
+                if (rset.next())
 					meterNumber = rset.getString(1);
-					break;
-				}
+                else
+                    meterNumber = CtiUtilities.STRING_NONE; //default it to nothing so we don't look for it again!
+                
 				getLiteInvToMeterNumberMap().put(liteInvBase, meterNumber);
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -559,24 +556,36 @@ public class WorkOrderModel extends ReportModelBase {
 					getData().add( wo );
 				}
 				else {
+                    //First loop through, find all LiteStarsLMHardware, forcing this type to be first in the list.
+                    ArrayList<String> ignoreMeterNumbers = new ArrayList<String>();
 					for (int k = 0; k < liteAcctInfo.getInventories().size(); k++) {
 						int invID = ((Integer) liteAcctInfo.getInventories().get(k)).intValue();
 						LiteInventoryBase liteInvBase = liteStarsEC.getInventoryBrief(invID, true);
-						//Add the WO to begining or end based on liteInvBase type to attempt to keep similar items together.
+						 
 						if (liteInvBase instanceof LiteStarsLMHardware)
 						{
 							WorkOrder wo = new WorkOrder( liteOrder , liteInvBase);
 							getData().add(wo);	//add to the begining
+                            String meterNumber = getInventoryMeterNumber(liteInvBase);
+                            if (!meterNumber.equalsIgnoreCase(CtiUtilities.STRING_NONE));
+                                ignoreMeterNumbers.add(meterNumber);
 						}
-						else if (liteInvBase instanceof LiteMeterHardwareBase) {
-							//TODO Do not add to list if already attached to serial number
-							WorkOrder wo = new WorkOrder( liteOrder , liteInvBase);
-							getData().add(wo);	//add to the end
-						}
-						else{
-							WorkOrder wo = new WorkOrder( liteOrder , liteInvBase);
-							getData().add(wo);	//add to the end
-						}						
+                    }
+                    //Second loop through and find anything that is not LiteStarsLMHardware, forcing other types to be last in the list.
+                    for (int k = 0; k < liteAcctInfo.getInventories().size(); k++) {
+                        int invID = ((Integer) liteAcctInfo.getInventories().get(k)).intValue();
+                        LiteInventoryBase liteInvBase = liteStarsEC.getInventoryBrief(invID, true);
+                        if (liteInvBase instanceof LiteMeterHardwareBase) {
+                            if( !ignoreMeterNumbers.contains(((LiteMeterHardwareBase)liteInvBase).getMeterNumber()))
+                            {   //Only add unassigned meternumbers to the data object
+                                WorkOrder wo = new WorkOrder( liteOrder , liteInvBase);
+                                getData().add(wo);  //add to the end
+                            }
+                        }
+                        else if (! (liteInvBase instanceof LiteStarsLMHardware)){ 
+                            WorkOrder wo = new WorkOrder( liteOrder , liteInvBase);
+                            getData().add(wo);  //add to the end
+                        }
 					}
 				}
 			}
@@ -651,7 +660,7 @@ public class WorkOrderModel extends ReportModelBase {
 					if (sc != null)
 						return sc.getCompanyName();
 					else
-						return "(none)";
+						return CtiUtilities.STRING_NONE;
 				case WORK_DESC_COLUMN:
 					return lOrder.getDescription();
 				case ACTION_TAKEN_COLUMN:
@@ -700,12 +709,12 @@ public class WorkOrderModel extends ReportModelBase {
                     return null;
 				case ADDRESS1_COLUMN:
 					if (liteAddress != null)
-						return (liteAddress.getLocationAddress1().equals("(none)") ? null : liteAddress.getLocationAddress1());
+						return (liteAddress.getLocationAddress1().equalsIgnoreCase(CtiUtilities.STRING_NONE) ? null : liteAddress.getLocationAddress1());
 					else
 						return null;
 				case ADDRESS2_COLUMN:
 					if (liteAddress != null)
-                        return (liteAddress.getLocationAddress2().equals("(none)") ? null : liteAddress.getLocationAddress2());
+                        return (liteAddress.getLocationAddress2().equalsIgnoreCase(CtiUtilities.STRING_NONE) ? null : liteAddress.getLocationAddress2());
 					else
 						return null;					
 				case CITY_STATE_ZIP_COLUMN:
@@ -766,7 +775,8 @@ public class WorkOrderModel extends ReportModelBase {
 					{
 						if( liteInvBase instanceof LiteMeterHardwareBase)
 							return ((LiteMeterHardwareBase)liteInvBase).getMeterNumber();
-						return getInventoryMeterNumber(liteInvBase);
+                        String meterNumber = getInventoryMeterNumber(liteInvBase);
+						return (meterNumber.equalsIgnoreCase(CtiUtilities.STRING_NONE) ? null : meterNumber);
 					}
 					return null;
 				case DEVICE_TYPE_COLUMN:
@@ -789,7 +799,7 @@ public class WorkOrderModel extends ReportModelBase {
 						if (ic != null)
 							return ic.getCompanyName();
 						else
-							return "(none)";
+							return CtiUtilities.STRING_NONE;
 					}
 					else
 						return null;
