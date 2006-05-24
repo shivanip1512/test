@@ -76,22 +76,23 @@ public class WorkOrderModel extends ReportModelBase {
     public final static int PRESENCE_REQUIRED_COLUMN = 14;
 	public final static int ADDRESS1_COLUMN = 15;
 	public final static int ADDRESS2_COLUMN = 16;
-	public final static int CITY_STATE_ZIP_COLUMN = 17;
+	public final static int CITY_STATE_COLUMN = 17;
+    public final static int ZIP_COLUMN = 18;
 	
-	public final static int COMPANY_NAME_COLUMN = 18;
-	public final static int ADDTL_ORDER_NO_COLUMN = 19;
-	public final static int MAP_NO_COLUMN = 20;
-	public final static int METER_NO_COLUMN = 21;
-	public final static int ACCOUNT_NOTES_COLUMN = 22;
+	public final static int COMPANY_NAME_COLUMN = 19;
+	public final static int ADDTL_ORDER_NO_COLUMN = 20;
+	public final static int MAP_NO_COLUMN = 21;
+	public final static int METER_NO_COLUMN = 22;
+	public final static int ACCOUNT_NOTES_COLUMN = 23;
 	
-	public final static int SERIAL_NO_COLUMN = 23;
-	public final static int METER_NO_TO_SERIAL_COLUMN = 24;
-	public final static int DEVICE_TYPE_COLUMN = 25;
-	public final static int INSTALL_DATE_COLUMN = 26;
-	public final static int INSTALL_COMPANY_COLUMN = 27;
+	public final static int SERIAL_NO_COLUMN = 24;
+	public final static int METER_NO_TO_SERIAL_COLUMN = 25;
+	public final static int DEVICE_TYPE_COLUMN = 26;
+	public final static int INSTALL_DATE_COLUMN = 27;
+	public final static int INSTALL_COMPANY_COLUMN = 28;
 
-	public final static int WORK_DESC_COLUMN = 28;
-	public final static int ACTION_TAKEN_COLUMN = 29;
+	public final static int WORK_DESC_COLUMN = 29;
+	public final static int ACTION_TAKEN_COLUMN = 30;
 
 	public final static int HEADER_START_INDEX = ORDER_NO_COLUMN;
 	public final static int HEADER_END_INDEX = ACCOUNT_NOTES_COLUMN; 
@@ -121,7 +122,8 @@ public class WorkOrderModel extends ReportModelBase {
     public final static String PRESENCE_REQUIRED_STRING = "";
 	public final static String ADDRESS1_STRING = "Address";
 	public final static String ADDRESS2_STRING = "Address ";
-	public final static String CITY_STATE_ZIP_STRING = "City State Zip";
+	public final static String CITY_STATE_STRING = "City State";
+    public final static String ZIP_STRING = "Zip";
 	
 	public final static String COMPANY_NAME_STRING = "Company Name";
 	public final static String ADDTL_ORDER_NO_STRING = "Addtl Order Number";
@@ -717,11 +719,16 @@ public class WorkOrderModel extends ReportModelBase {
                         return (liteAddress.getLocationAddress2().equalsIgnoreCase(CtiUtilities.STRING_NONE) ? null : liteAddress.getLocationAddress2());
 					else
 						return null;					
-				case CITY_STATE_ZIP_COLUMN:
+				case CITY_STATE_COLUMN:
 					if (liteAddress != null)
-						return liteAddress.getCityName()+ ", " + liteAddress.getStateCode() + " " + liteAddress.getZipCode();
+						return liteAddress.getCityName()+ ", " + liteAddress.getStateCode();
 					else
 						return "";
+                case ZIP_COLUMN:
+                    if (liteAddress != null)
+                        return liteAddress.getZipCode();
+                    else
+                        return "";                    
 				case COMPANY_NAME_COLUMN:
 					if (lAcctInfo != null && lAcctInfo.getCustomer() instanceof LiteCICustomer)
 						return ((LiteCICustomer)lAcctInfo.getCustomer()).getCompanyName();
@@ -836,7 +843,8 @@ public class WorkOrderModel extends ReportModelBase {
                 PRESENCE_REQUIRED_STRING,
 				ADDRESS1_STRING,
 				ADDRESS2_STRING,
-				CITY_STATE_ZIP_STRING,
+				CITY_STATE_STRING,
+                ZIP_STRING,
 				COMPANY_NAME_STRING,
 				addtlOrderNumberStr,
 				MAP_NO_STRING,
@@ -908,12 +916,13 @@ public class WorkOrderModel extends ReportModelBase {
                 new ColumnProperties(_1half, (colHeight*9), _halfWidth, null),      //PRESENCE_REQUIRED,
 				new ColumnProperties(_home, (colHeight*9), _halfWidth, null),		//ADDRESS1_STRING,				
 				new ColumnProperties(_home, (colHeight*10), _halfWidth, null),		//ADDRESS2_STRING,
-				new ColumnProperties(_home, (colHeight*11), _thirdWidth, null),		//CITY_STATE_ZIP_STRING,
+				new ColumnProperties(_home, (colHeight*11), _halfWidth, null),		//CITY_STATE_STRING,
+                new ColumnProperties(_home, (colHeight*12), _halfWidth, null),      //ZIP_STRING,                
 				new ColumnProperties(_home, (colHeight*7), _halfWidth, null),		//COMPANY_NAME_STRING,
 				new ColumnProperties(_1half, (colHeight*12), _halfWidth, null),		//ADDTL_ORDER_NO_STRING,
 				new ColumnProperties(_1half, (colHeight*13), _halfWidth, null),		//MAP_NO_STRING,
-				new ColumnProperties(_home, (colHeight*13), _wholeWidth, null),		//METER_NO_STRING,				
-				new ColumnProperties(_home, (colHeight*14), _wholeWidth, null),		//ACCOUNT_NOTES_STRING,
+				new ColumnProperties(_1half, (colHeight*14), _halfWidth, null),		//METER_NO_STRING,				
+				new ColumnProperties(_home, (colHeight*15), _wholeWidth, null),		//ACCOUNT_NOTES_STRING,
 				//ITEMBAND
 				new ColumnProperties(_home+5, _yPos, _fifthWidth, null),			//SERIAL_NO_STRING,
 				new ColumnProperties(_1fifth, _yPos, _fifthWidth, null),			//METER_NO_TO_SERIAL_STRING,
