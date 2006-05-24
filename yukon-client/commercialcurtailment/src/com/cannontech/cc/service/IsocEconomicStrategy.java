@@ -86,7 +86,7 @@ public class IsocEconomicStrategy extends BaseEconomicStrategy {
             boolean curtailedThisWindow = isCurtailPrice(window.getEnergyToBuy());
             if (curtailedLastWindow && !curtailedThisWindow) {
                 String date = dateFormat.format(window.getWindow().getStartTime());
-                throw new EventModificationException("Illegal Buy-through kW; Once Interrupted (okW) must stay interrupted." 
+                throw new EventModificationException("Illegal Buy-through kW; Once Interrupted (0kW) must stay interrupted." 
                                                      + date);
             }
             curtailedLastWindow = curtailedThisWindow;
