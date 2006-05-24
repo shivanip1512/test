@@ -36,6 +36,12 @@ function viewAll(form)
 	form.action.value = "ViewInventoryResults";
     form.submit();
 }
+
+function viewDisabled(form)
+{
+    if (!confirm("Displaying this many results could temporarily decrease system performance.  Do you wish to continue?")) return;
+    viewAll(form);    
+}
         
 function manipulateAll(form)
 {
@@ -127,12 +133,19 @@ function applyOrdering(form)
 							 <table width="80%" border="0" cellspacing="0" cellpadding="0" align="center" class="TableCell">
 							 	<tr>
 									<td width="100" align="right"> 
-					                   	<c:if test="${inventoryBean.viewResults}">
-					                   		<input type="button" name="ViewSet" value="Hide All Results" onclick="viewAll(this.form)">
-					               		</c:if>
-					               		<c:if test="${!inventoryBean.viewResults}">
-					                   		<input type="button" name="ViewSet" value="View All Results" onclick="viewAll(this.form)">
-					               		</c:if>
+                                        <c:if test="${inventoryBean.viewResults}">
+                                            <input type="button" name="ViewSet" value="Hide All Results" onclick="viewAll(this.form)">
+                                        </c:if>
+                                        <c:if test="${!inventoryBean.viewResults}">
+                                            <c:choose>
+        					                   	<c:when test="${inventoryBean.overHardwareDisplayLimit}">
+                                                    <input type="button" name="ViewSet" value="View All Results" onclick="viewDisabled(this.form)">
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <input type="button" name="ViewSet" value="View All Results" onclick="viewAll(this.form)">
+                                                </c:otherwise>
+                                            </c:choose>
+                                         </c:if>                    
 					               	</td>
 					               	<td width="200"> 
 					                   	<input type="button" name="Manipulate" value="Manipulate Results" onclick="manipulateAll(this.form)">
@@ -147,7 +160,7 @@ function applyOrdering(form)
 				                </tr>
 							</table>
 				      		<br>
-				      		<c:if test="${inventoryBean.viewResults}">
+				      		<c:if test="${inventoryBean.viewResults && !inventoryBean.overHardwareDisplayLimit}">
 					      		<table width="80%" border="0" cellspacing="0" cellpadding="0">
 						      		<tr>
 			                    		<td width="75%"> 
@@ -186,7 +199,7 @@ function applyOrdering(form)
 		                		</table>
 					 		</c:if>
 	              		</form>
-				  		<c:if test="${inventoryBean.viewResults}">
+				  		<c:if test="${inventoryBean.viewResults && !inventoryBean.overHardwareDisplayLimit}">
 					  		<table width="80%" border="0" cellspacing="0" cellpadding="0" class="MainText">
 		                		<tr>
 				                	<td>Click on a serial # (device name) to view the hardware details, 
