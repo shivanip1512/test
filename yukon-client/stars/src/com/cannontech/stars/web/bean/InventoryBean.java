@@ -59,6 +59,8 @@ public class InventoryBean {
     public static final int HTML_STYLE_FILTERED_INVENTORY_SUMMARY = 9;
 	
 	private static final int DEFAULT_PAGE_SIZE = 250;
+    
+    private final int MAX_ALLOW_DISPLAY = 500;
 	
 	private static final java.text.SimpleDateFormat dateFormat =
 			new java.text.SimpleDateFormat("MM/dd/yyyy");
@@ -80,6 +82,7 @@ public class InventoryBean {
     private String numberOfRecords = "0";
     private boolean viewResults = false;
     private boolean shipmentCheck = false;
+    private boolean overHardwareDisplayLimit = false;
 	
 	/**
 	 * Comparator of serial # and device names. Serial # is always "less than"
@@ -258,6 +261,7 @@ public class InventoryBean {
          */
         if(getHtmlStyle() != HTML_STYLE_INVENTORY_SET)
         {
+            List<FilterWrapper> slowFilters = new ArrayList<FilterWrapper>();
             for(int x = 0; x < getFilterByList().size(); x++)
             {
                 ArrayList filteredHardware = new ArrayList();
@@ -299,33 +303,13 @@ public class InventoryBean {
         		}
                 else if( filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_POSTAL_CODES)
                 {
-                    for (int j = 0; j < hardwares.size(); j++)
-                    {
-                        LiteInventoryBase liteInv = (LiteInventoryBase)
-                            (showEnergyCompany? ((Pair)hardwares.get(j)).getFirst() : hardwares.get(j));
-                        LiteStarsCustAccountInformation liteCustAcctInfo = energyCompany.getBriefCustAccountInfo(liteInv.getAccountID(), true);
-                        LiteAddress liteAddr = energyCompany.getAddress( liteCustAcctInfo.getAccountSite().getStreetAddressID());
-                        
-                        //The filterText is formatted "Label: value".  By parsing for the last space char we can get just the value.
-                        String tempCode = specificFilterString.substring(specificFilterString.lastIndexOf(" ")+1);
-                        if( liteAddr.getZipCode().startsWith(tempCode))
-                            filteredHardware.add( hardwares.get(j) );
-                    }
+                    /*Put away until easier filters have been processed.  This should help performance.*/
+                    slowFilters.add((FilterWrapper)getFilterByList().get(x));
                 }
                 else if (filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_WAREHOUSE) 
                 {
-                    List<Integer> warehousedInventory = Warehouse.getAllInventoryInAWarehouse(specificFilterID);
-                    for (int i = 0; i < hardwares.size(); i++) 
-                    {
-                        LiteInventoryBase liteInv = (LiteInventoryBase)
-                            (showEnergyCompany? ((Pair)hardwares.get(i)).getFirst() : hardwares.get(i));
-                        
-                        for(int j = 0; j < warehousedInventory.size(); j++)
-                        {
-                            if(liteInv.getLiteID() == warehousedInventory.get(j).intValue())
-                                filteredHardware.add( hardwares.get(i) );
-                        }
-                    }
+                    /*Put away until easier filters have been processed.  This should help performance.*/
+                    slowFilters.add((FilterWrapper)getFilterByList().get(x));
                 }
                 else if (filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SERIAL_RANGE_MIN)
                 {
@@ -361,50 +345,15 @@ public class InventoryBean {
                 }
         		else if (filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_APPLIANCE_TYPE) 
                 {
-        			/**TODO Figure out where the big memory leak is in this guy
-                     * 
-        			 */
-                    for (int i = 0; i < hardwares.size(); i++) 
-                    {
-        				LiteInventoryBase liteInv = (LiteInventoryBase)
-        						(showEnergyCompany? ((Pair)hardwares.get(i)).getFirst() : hardwares.get(i));
-        				
-                        List<LiteStarsAppliance> appliances = energyCompany.getBriefCustAccountInfo(liteInv.getAccountID(), true).getAppliances();
-                        
-                        for(int j = 0; j < appliances.size(); j++)
-                        {
-                            if(appliances.get(j).getApplianceCategoryID() == specificFilterID.intValue() &&
-                                    appliances.get(j).getInventoryID() == liteInv.getInventoryID())
-                            {
-                                filteredHardware.add( hardwares.get(j) );
-                                break;
-                            }
-                        }
-                    }
+                    /*Put away until easier filters have been processed.  This should help performance.*/
+                    slowFilters.add((FilterWrapper)getFilterByList().get(x));
         		}
                 else if( filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_CUST_TYPE)
                 {
-                    for (int j = 0; j < hardwares.size(); j++)
-                    {
-                        LiteInventoryBase liteInv = (LiteInventoryBase)
-                                (showEnergyCompany? ((Pair)hardwares.get(j)).getFirst() : hardwares.get(j));
-                            LiteStarsCustAccountInformation liteCustAcctInfo = energyCompany.getBriefCustAccountInfo(liteInv.getAccountID(), true);
-                        if( specificFilterID.intValue() == -1)  // RESIDENTIAL CUSTOMER
-                        {
-                            if( liteCustAcctInfo.getCustomer() instanceof LiteCustomer)
-                                filteredHardware.add(hardwares.get(j));
-                        }
-                        else
-                        {   //Some type of CICustomer Type
-                            if( liteCustAcctInfo.getCustomer() instanceof LiteCICustomer)
-                            {
-                                if( ((LiteCICustomer)liteCustAcctInfo.getCustomer()).getCICustType() == specificFilterID.intValue())
-                                    filteredHardware.add(hardwares.get(j));
-                            }
-                        }
-                    }
+                    /*Put away until easier filters have been processed.  This should help performance.*/
+                    slowFilters.add((FilterWrapper)getFilterByList().get(x));
                 }
-        		/*else if (filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_CONFIG) {
+                /*else if (filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_CONFIG) {
         			Hashtable ecHwCfgMap = new Hashtable();
         			
         			for (int i = 0; i < hardwares.size(); i++) {
@@ -482,6 +431,92 @@ public class InventoryBean {
         		else {
         			filteredHardware.addAll( hardwares );
         		}
+                
+                hardwares = filteredHardware;
+            }
+            
+            /*
+             * Do the meatier filters now, after the total number of hardware has become a little bit more reasonable
+             */
+            for(int y = 0; y < slowFilters.size(); y++)
+            {
+                Integer filterType = new Integer(slowFilters.get(y).getFilterTypeID());
+                String specificFilterString = slowFilters.get(y).getFilterID(); 
+                Integer specificFilterID = InventoryUtils.returnIntegerIfPossible(specificFilterString);
+                ArrayList filteredHardware = new ArrayList();
+                
+                if( filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_CUST_TYPE)
+                {
+                    for (int j = 0; j < hardwares.size(); j++)
+                    {
+                        LiteInventoryBase liteInv = (LiteInventoryBase)
+                                (showEnergyCompany? ((Pair)hardwares.get(j)).getFirst() : hardwares.get(j));
+                            LiteStarsCustAccountInformation liteCustAcctInfo = energyCompany.getBriefCustAccountInfo(liteInv.getAccountID(), true);
+                        if( specificFilterID.intValue() == -1)  // RESIDENTIAL CUSTOMER
+                        {
+                            if( liteCustAcctInfo.getCustomer() instanceof LiteCustomer)
+                                filteredHardware.add(hardwares.get(j));
+                        }
+                        else
+                        {   //Some type of CICustomer Type
+                            if( liteCustAcctInfo.getCustomer() instanceof LiteCICustomer)
+                            {
+                                if( ((LiteCICustomer)liteCustAcctInfo.getCustomer()).getCICustType() == specificFilterID.intValue())
+                                    filteredHardware.add(hardwares.get(j));
+                            }
+                        }
+                    }
+                }
+                else if (filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_APPLIANCE_TYPE) 
+                {
+                    for (int i = 0; i < hardwares.size(); i++) 
+                    {
+                        LiteInventoryBase liteInv = (LiteInventoryBase)
+                                (showEnergyCompany? ((Pair)hardwares.get(i)).getFirst() : hardwares.get(i));
+                        
+                        List<LiteStarsAppliance> appliances = energyCompany.getBriefCustAccountInfo(liteInv.getAccountID(), true).getAppliances();
+                        
+                        for(int j = 0; j < appliances.size(); j++)
+                        {
+                            if(appliances.get(j).getApplianceCategoryID() == specificFilterID.intValue() &&
+                                    appliances.get(j).getInventoryID() == liteInv.getInventoryID())
+                            {
+                                filteredHardware.add( hardwares.get(j) );
+                                break;
+                            }
+                        }
+                    }
+                }
+                else if (filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_WAREHOUSE) 
+                {
+                    List<Integer> warehousedInventory = Warehouse.getAllInventoryInAWarehouse(specificFilterID);
+                    for (int i = 0; i < hardwares.size(); i++) 
+                    {
+                        LiteInventoryBase liteInv = (LiteInventoryBase)
+                            (showEnergyCompany? ((Pair)hardwares.get(i)).getFirst() : hardwares.get(i));
+                        
+                        for(int j = 0; j < warehousedInventory.size(); j++)
+                        {
+                            if(liteInv.getLiteID() == warehousedInventory.get(j).intValue())
+                                filteredHardware.add( hardwares.get(i) );
+                        }
+                    }
+                }
+                else if( filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_POSTAL_CODES)
+                {
+                    for (int j = 0; j < hardwares.size(); j++)
+                    {
+                        LiteInventoryBase liteInv = (LiteInventoryBase)
+                            (showEnergyCompany? ((Pair)hardwares.get(j)).getFirst() : hardwares.get(j));
+                        LiteStarsCustAccountInformation liteCustAcctInfo = energyCompany.getBriefCustAccountInfo(liteInv.getAccountID(), true);
+                        LiteAddress liteAddr = energyCompany.getAddress( liteCustAcctInfo.getAccountSite().getStreetAddressID());
+                        
+                        //The filterText is formatted "Label: value".  By parsing for the last space char we can get just the value.
+                        String tempCode = specificFilterString.substring(specificFilterString.lastIndexOf(" ")+1);
+                        if( liteAddr.getZipCode().startsWith(tempCode))
+                            filteredHardware.add( hardwares.get(j) );
+                    }
+                }
                 
                 hardwares = filteredHardware;
             }
@@ -1213,5 +1248,10 @@ public class InventoryBean {
 
     public void setShipmentCheck(boolean shipmentCheck) {
         this.shipmentCheck = shipmentCheck;
+    }
+
+    public boolean isOverHardwareDisplayLimit() {
+        overHardwareDisplayLimit = Integer.parseInt(numberOfRecords) > MAX_ALLOW_DISPLAY;
+        return overHardwareDisplayLimit;
     }
 }

@@ -7,6 +7,8 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.spring.YukonSpringHook;
 
 
 /**
@@ -136,7 +138,18 @@ public class InventoryBase extends DBPersistent {
 			throw new Error(getClass() + " - Incorrect number of results retrieved");
 	}
 
-	public final Integer getNextInventoryID() {
+    /* --As of 05/24/2006, getNextInventoryID will use the shared maxID methods from
+     * com.cannontech.database.incrementer so as to avoid id collisions during
+     * heavy STARS use by multiple users.
+     * --Chucks a an uncaught exception; we want this to make some noise if it isn't working.
+     * Also, this means we don't need to worry about checking for null, etc.
+     */
+    public final Integer getNextInventoryID()
+    {
+        return new Integer(YukonSpringHook.getNextValueHelper().getNextValue("InventoryBase"));
+    }
+    
+	/*public final Integer getNextInventoryID() {
 		java.sql.PreparedStatement pstmt = null;
 		java.sql.ResultSet rset = null;
 
@@ -161,7 +174,7 @@ public class InventoryBase extends DBPersistent {
 		}
 
 		return new Integer( nextInventoryID );
-	}
+	}*/
     
 	public static int[] searchByAccountID(int accountID) {
 		String sql = "SELECT InventoryID FROM " + TABLE_NAME + " WHERE AccountID = " + accountID;
