@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.145 $
-* DATE         :  $Date: 2006/05/23 21:51:06 $
+* REVISION     :  $Revision: 1.146 $
+* DATE         :  $Date: 2006/05/24 21:26:30 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2598,7 +2598,7 @@ INT CtiVanGogh::postMOAUploadToConnection(CtiVanGoghConnectionManager &VGCM, int
 
     static CtiMultiMsg *pFullBoat = 0;                      // This is a multi of multis that is stored and used for clients requesting all points.  It is aged and recreated every 15 minutes.
     bool isFullBoat = VGCM.isRegForAll();                   // Is this connection asking for everything?
-    bool isFullBoatAged = isFullBoat && (!pFullBoat || (pFullBoat->getMessageTime() + gConfigParms.getValueAsULong("DISPATCH_MOA_MAX_AGE", 300) < now));
+    bool isFullBoatAged = isFullBoat && (!pFullBoat || (pFullBoat->getMessageTime() + gConfigParms.getValueAsULong("DISPATCH_MOA_MAX_AGE", 30) < now));
 
     if(isFullBoatAged)
     {
@@ -5049,7 +5049,7 @@ bool CtiVanGogh::ablementPoint(CtiPointSPtr &pPoint, bool &devicedifferent, UINT
                         pTagSig->setPointValue(pDyn->getDispatch().getValue());
                         pTagSig->setMessagePriority(15);
                         pTagSig->setUser(user);
-                        pTagSig->setTags( pDyn->getDispatch().getTags() | TAG_REPORT_MSG_TO_ALARM_CLIENTS);
+                        pTagSig->setTags( pDyn->getDispatch().getTags());
                         postMessageToClients(pTagSig);
                         delete pTagSig;
                     }
@@ -5361,12 +5361,16 @@ void CtiVanGogh::VGAppMonitorThread()
             {
                 if(*pointListWalker !=0)
                 {
-                    pPt = PointMgr.getEqual(*pointListWalker);
-                    pDynPt = (CtiDynamicPointDispatch*)pPt->getDynamic();
-                    if((pDynPt->getTimeStamp()).seconds()<(compareTime))
+                    if( pPt = PointMgr.getEqual(*pointListWalker) )
                     {
-                        //its been more than 15 minutes, set the alarms!!!
-                        MainQueue_.putQueue((CtiMessage *)CTIDBG_new CtiPointDataMsg(*pointListWalker, CtiThreadMonitor::State::Dead, NormalQuality, StatusPointType, "Thread has not responded for 15 minutes."));
+                        if(pDynPt = (CtiDynamicPointDispatch*)pPt->getDynamic())
+                        {
+                            if((pDynPt->getTimeStamp()).seconds()<(compareTime))
+                            {
+                                //its been more than 15 minutes, set the alarms!!!
+                                MainQueue_.putQueue((CtiMessage *)CTIDBG_new CtiPointDataMsg(*pointListWalker, CtiThreadMonitor::State::Dead, NormalQuality, StatusPointType, "Thread has not responded for 15 minutes."));
+                            }
+                        }
                     }
                 }
             }
