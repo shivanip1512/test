@@ -53,11 +53,11 @@ public class RefreshTimerTask extends StarsTimerTask {
 		CTILogger.debug( "*** Start Refresh timer task ***" );
 		
 		ArrayList companies = StarsDatabaseCache.getInstance().getAllEnergyCompanies();
-		
+
 		for (int i = 0; i < companies.size(); i++) {
 			LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) companies.get(i);
 			if (ECUtils.isDefaultEnergyCompany( company )) continue;
-			
+            int delCount = 0;
 			// Update the real-time data for EnergyPro thermostats
 			ArrayList activeAccounts = company.getActiveAccounts();
 			for (int j = 0; j < activeAccounts.size(); j++) {
@@ -66,6 +66,7 @@ public class RefreshTimerTask extends StarsTimerTask {
 				// If account is no longer active, remove it from the active account list
 				if (System.currentTimeMillis() - starsAcctInfo.getLastActiveTime().getTime() > INACTIVE_INTERVAL) {
 					company.deleteStarsCustAccountInformation( starsAcctInfo.getStarsCustomerAccount().getAccountID() );
+                    delCount++;
 					continue;
 				}
 				
@@ -74,6 +75,8 @@ public class RefreshTimerTask extends StarsTimerTask {
 				if (liteAcctInfo != null)
 					company.updateThermostatSettings( liteAcctInfo );
 			}
+            if( delCount > 0)
+                CTILogger.debug("Deleted " + delCount + " Accounts from " + activeAccounts.size() + " Active Accounts for EC:" + company.getName());
 		}
 		
 		CTILogger.debug( "*** End Refresh timer task ***" );
