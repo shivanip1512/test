@@ -18,8 +18,6 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
 import com.cannontech.database.cache.StarsDatabaseCache;
-import com.cannontech.database.cache.functions.AuthFuncs;
-import com.cannontech.database.cache.functions.EnergyCompanyFuncs;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteCustomer;
@@ -31,7 +29,6 @@ import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.stars.event.EventWorkOrder;
 import com.cannontech.database.data.stars.report.WorkOrderBase;
-import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.stars.util.FilterWrapper;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
@@ -56,7 +53,9 @@ public class WorkOrderBean {
 	public static final int HTML_STYLE_LIST_ALL = 2;
 	
 	private static final int DEFAULT_PAGE_SIZE = 20;
-	
+    private final int MAX_ALLOW_DISPLAY = 500;
+    private boolean maxDisplayLimit = false;
+    
 	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 	
 	private static final Comparator ORDER_ID_CMPTOR = new Comparator() {
@@ -880,4 +879,10 @@ public class WorkOrderBean {
 	public void setManageMembers(boolean manageMembers) {
 		this.manageMembers = manageMembers;
 	}
+
+    public boolean isMaxDisplayLimit()
+    {
+        maxDisplayLimit = getNumberOfRecords() > MAX_ALLOW_DISPLAY;
+        return maxDisplayLimit;
+    }
 }
