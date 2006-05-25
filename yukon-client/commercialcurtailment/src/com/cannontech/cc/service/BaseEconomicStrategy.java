@@ -10,7 +10,10 @@ import java.util.List;
 import java.util.TimeZone;
 
 import org.apache.commons.lang.Validate;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import com.cannontech.cc.dao.EconomicEventDao;
 import com.cannontech.cc.dao.EconomicEventNotifDao;
@@ -48,6 +51,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.customer.CICustomerPointType;
 import com.cannontech.enums.EconomicEventAction;
 import com.cannontech.enums.NotificationState;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.INotifConnection;
 
 public abstract class BaseEconomicStrategy extends StrategyBase {
@@ -247,27 +251,54 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
         // for the time being, there are no restrictions on what can be entered
     }
 
-    @Transactional(rollbackFor=Exception.class)
-    public EconomicEvent createEvent(EconomicBuilder builder) throws EventCreationException {
-        // verify times
-        verifyTimes(builder);
+    public EconomicEvent createEvent(final EconomicBuilder builder) throws EventCreationException {
         
-        // verify prices
-        verifyTimes(builder);
-        
-        // verify customers
-        verifyCustomers(builder);
-        
-
-        EconomicEvent event = createDatabaseObjects(builder);
-        
-        if (event.isEventExtension()) {
-            getNotificationProxy().sendEconomicNotification(event.getId(), 1, EconomicEventAction.EXTENDING);
-        } else {
-            getNotificationProxy().sendEconomicNotification(event.getId(), 1, EconomicEventAction.STARTING);
+        try {
+            TransactionTemplate template = YukonSpringHook.getTransactionTemplate();
+            EconomicEvent event;
+            event = (EconomicEvent) template.execute(new TransactionCallback() {
+                public Object doInTransaction(TransactionStatus status) {
+                    EconomicEvent event;
+                    try {
+                        // verify times
+                        verifyTimes(builder);
+                        
+                        // verify prices
+                        verifyPrices(builder);
+                        
+                        if (!builder.getEvent().isEventExtension()) {
+                            // verify customers for non-extension events
+                            verifyCustomers(builder);
+                        }
+                        event = createDatabaseObjects(builder);
+                    } catch (EventCreationException e) {
+                        throw new EventCreationWrapperException(e);
+                    }
+                    return event;
+                }
+            });
+            
+            
+            if (event.isEventExtension()) {
+                getNotificationProxy().sendEconomicNotification(event.getId(), 1, EconomicEventAction.EXTENDING);
+            } else {
+                getNotificationProxy().sendEconomicNotification(event.getId(), 1, EconomicEventAction.STARTING);
+            }
+            
+            return event;
+        } catch (EventCreationWrapperException e) {
+            throw e.getNestedException();
         }
-        
-        return event;
+    }
+    
+    class EventCreationWrapperException extends RuntimeException {
+        private final EventCreationException ex;
+        public EventCreationWrapperException(EventCreationException ex) {
+            this.ex = ex;
+        }
+        public EventCreationException getNestedException() {
+            return ex;
+        }
     }
     
     protected void verifyCustomers(EconomicBuilder builder) throws EventCreationException {
