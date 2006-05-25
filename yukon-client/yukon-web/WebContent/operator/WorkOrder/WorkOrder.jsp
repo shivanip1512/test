@@ -133,7 +133,7 @@ function applyOrdering(form)
 					                   		<input type="button" name="ViewSet" value="Hide All Results" onclick="viewAll(this.form, false)">
 					               		</c:if>
 					               		<c:if test="${!workOrderBean.viewAllResults}">
-					                   		<input type="button" name="ViewSet" value="View All Results" <c:if test="${workOrderBean.numberOfRecords > 500 }">disabled</c:if> onclick="viewAll(this.form, true)">
+					                   		<input type="button" name="ViewSet" value="View All Results" onclick="viewAll(this.form, true)">
 					               		</c:if>
 					               	</td>
 					               	<td width="500"> 
