@@ -116,7 +116,8 @@ public class SearchCustAccountAction implements ActionBase {
             
             // Remember the last search option
 			session.setAttribute( ServletUtils.ATT_LAST_ACCOUNT_SEARCH_OPTION, new Integer(searchBy.getEntryID()) );
-
+            session.setAttribute( ServletUtils.ATT_LAST_ACCOUNT_SEARCH_VALUE, new String(searchAccount.getSearchValue()) );
+            
             StarsOperation operation = new StarsOperation();
             operation.setStarsSearchCustomerAccount( searchAccount );
 

@@ -128,7 +128,8 @@ function confirmDelete() {
 %>
               </select>
               &nbsp; 
-              <input type="text" name="SearchValue" size="15">
+<%    String lastAcctValue = (String) session.getAttribute(ServletUtils.ATT_LAST_ACCOUNT_SEARCH_VALUE);%>
+              <input type="text" name="SearchValue" size="15" value='<%=(lastAcctValue!=null?lastAcctValue:"")%>'>
               &nbsp; </td>
             <td class = "MainText" width="7%" valign = "top"><img class="Clickable" src="../WebConfig/yukon/Buttons/GoButton.gif" width="23" height="20" onClick = "Javascript:document.custSearchForm.submit();"> 
             </td>
