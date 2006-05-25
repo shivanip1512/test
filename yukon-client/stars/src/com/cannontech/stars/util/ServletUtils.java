@@ -77,7 +77,9 @@ public class ServletUtils {
 	public static final String ATT_LAST_ACCOUNT_SEARCH_OPTION = "LAST_ACCOUNT_SEARCH_OPTION";
     public static final String ATT_LAST_ACCOUNT_SEARCH_VALUE = "LAST_ACCOUNT_SEARCH_VALUE";
     public static final String ATT_LAST_INVENTORY_SEARCH_OPTION = "LAST_INVENTORY_SEARCH_OPTION";
+    public static final String ATT_LAST_INVENTORY_SEARCH_VALUE = "LAST_INVENTORY_SEARCH_VALUE";
 	public static final String ATT_LAST_SERVICE_SEARCH_OPTION = "LAST_SERVICE_SEARCH_OPTION";
+    public static final String ATT_LAST_SERVICE_SEARCH_VALUE = "LAST_SERVICE_SEARCH_VALUE";
 	
 	public static final String ATT_MULTI_ACTIONS = "MULTI_ACTIONS";
 	public static final String ATT_NEW_ACCOUNT_WIZARD = "NEW_ACCOUNT_WIZARD";

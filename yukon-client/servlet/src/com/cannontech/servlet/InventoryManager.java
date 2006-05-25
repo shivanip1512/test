@@ -1261,6 +1261,7 @@ public class InventoryManager extends HttpServlet {
 		
 		// Remember the last search option
 		session.setAttribute( ServletUtils.ATT_LAST_INVENTORY_SEARCH_OPTION, new Integer(searchBy) );
+        session.setAttribute( ServletUtils.ATT_LAST_INVENTORY_SEARCH_VALUE, new String(searchValue) );
 		
 		boolean searchMembers = AuthFuncs.checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS )
 				&& (energyCompany.getChildren().size() > 0);

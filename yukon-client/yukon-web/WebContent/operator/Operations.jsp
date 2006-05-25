@@ -127,8 +127,8 @@ function confirmDelete() {
 	}
 %>
               </select>
-              &nbsp; 
 <%    String lastAcctValue = (String) session.getAttribute(ServletUtils.ATT_LAST_ACCOUNT_SEARCH_VALUE);%>
+              &nbsp;
               <input type="text" name="SearchValue" size="15" value='<%=(lastAcctValue!=null?lastAcctValue:"")%>'>
               &nbsp; </td>
             <td class = "MainText" width="7%" valign = "top"><img class="Clickable" src="../WebConfig/yukon/Buttons/GoButton.gif" width="23" height="20" onClick = "Javascript:document.custSearchForm.submit();"> 
@@ -299,8 +299,9 @@ function confirmDelete() {
 	}
 %>
 			  </select>
-			  &nbsp; 
-              <input type="text" name="SearchValue" size="15">
+<%    String lastInvValue = (String) session.getAttribute(ServletUtils.ATT_LAST_INVENTORY_SEARCH_VALUE);%>
+              &nbsp;
+            <input type="text" name="SearchValue" size="15" value='<%=(lastInvValue!=null?lastInvValue:"")%>'>
               &nbsp; </td>
             <td valign = "top" class="MainText" width="7%"><img class="Clickable" src="../WebConfig/yukon/Buttons/GoButton.gif" width="23" height="20" onclick = "Javascript:document.invSearchForm.submit();" > 
             </td>
@@ -354,8 +355,9 @@ function confirmDelete() {
 	}
 %>
             </select>
-            &nbsp; 
-            <input type="text" name="SearchValue" size="15">
+<%          String lastSrvcValue = (String) session.getAttribute(ServletUtils.ATT_LAST_SERVICE_SEARCH_VALUE);%>
+            &nbsp;
+            <input type="text" name="SearchValue" size="15" value='<%=(lastSrvcValue!=null?lastSrvcValue:"")%>'>
             &nbsp; </td>
             <td width="7%" valign="top" class="MainText"><img class="Clickable" src="../WebConfig/yukon/Buttons/GoButton.gif" width="23" height="20" onClick = "Javascript:document.soSearchForm.submit();" ></td>
 		  </form>

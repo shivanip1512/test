@@ -8,6 +8,7 @@
         <select name="SearchBy">
           <%
 	Integer lastSrvcOption = (Integer) session.getAttribute(ServletUtils.ATT_LAST_SERVICE_SEARCH_OPTION);
+    String lastSrvcValue = (String) session.getAttribute(ServletUtils.ATT_LAST_SERVICE_SEARCH_VALUE);
 	StarsCustSelectionList searchByList = (StarsCustSelectionList) selectionListTable.get(YukonSelectionListDefs.YUK_LIST_NAME_SO_SEARCH_BY);
 	for (int i = 0; i < searchByList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = searchByList.getStarsSelectionListEntry(i);
@@ -18,7 +19,7 @@
 	}
 %>
         </select>
-        <input type="text" name="SearchValue" size = "15">
+        <input type="text" name="SearchValue" size="15" value='<%=(lastSrvcValue!=null?lastSrvcValue:"")%>'>
         <input type="submit" name="Submit" value="Search">
 	  </form>
     </span></td>
