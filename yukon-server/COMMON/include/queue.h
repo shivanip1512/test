@@ -21,20 +21,36 @@ using std::string;
 using std::cerr;
 using std::endl;
 
+
+
+
 // Template Queuing class
 template <class T,  class C>
 class IM_EX_CTIBASE CtiQueue
 {
 private:
     boost::condition           dataAvailable;
-    mutable boost::mutex                mux;
-    std::list<T*>               _sortedCol;
-    string                  _name;
+    mutable boost::timed_mutex mux;
+    std::list<T*>              _sortedCol;
+    string                     _name;
+
+    struct boost::xtime xt_eot;
+
 public:
 
     CtiQueue() :
     _name("Unnamed Queue")
-    { }
+    {
+        xt_eot.sec  = INT_MAX;
+        xt_eot.nsec = 0;
+    }
+
+    virtual ~CtiQueue()
+    {
+        boost::timed_mutex::scoped_timed_lock scoped_lock(mux, xt_eot);
+        delete_list(_sortedCol);
+        _sortedCol.clear();
+    }
 
     void putQueue(T *pt)
     {
@@ -42,7 +58,7 @@ public:
         {
             if(pt != NULL)
             {
-                boost::mutex::scoped_lock scoped_lock(mux);
+                boost::timed_mutex::scoped_timed_lock scoped_lock(mux, xt_eot);
                 dataAvailable.notify_one();
                 _sortedCol.push_back(pt);
 
@@ -69,8 +85,8 @@ public:
         T *pval = NULL;
         try
         {
-            boost::mutex::scoped_lock scoped_lock(mux);
-            while( !(_sortedCol.size() > 0) )
+            boost::timed_mutex::scoped_timed_lock scoped_lock(mux, xt_eot);
+            while( _sortedCol.empty() )
             {
                 dataAvailable.wait(scoped_lock);
             }
@@ -93,29 +109,29 @@ public:
         T *pval = NULL;
         try
         {
-            boost::mutex::scoped_lock scoped_lock(mux);
             bool wRes = false;
             struct boost::xtime xt;
             boost::xtime_get(&xt, boost::TIME_UTC);
             xt.sec  += (time/1000);
             xt.nsec += (time%1000)*1000;
+            boost::timed_mutex::scoped_timed_lock scoped_lock(mux,xt);
 
-            if(!(_sortedCol.size() > 0))
+            if(scoped_lock.locked())
             {
-                wRes = dataAvailable.timed_wait(scoped_lock,xt); // monitor mutex released automatically
-                // thread must have been signalled AND mutex reacquired to reach here OR RW_THR_TIMEOUT
-                if(wRes == true)
+                if(_sortedCol.empty())
                 {
+                    wRes = dataAvailable.timed_wait(scoped_lock,xt); // monitor mutex released automatically
+                    // thread must have been signalled AND mutex reacquired to reach here OR RW_THR_TIMEOUT
+                    if(wRes == true)
+                    {
+                        pval = _sortedCol.front();
+                        _sortedCol.pop_front();
+                    }
+                }else{
                     pval = _sortedCol.front();
                     _sortedCol.pop_front();
                 }
-            }else{
-                pval = _sortedCol.front();
-                _sortedCol.pop_front();
             }
-
-
-
             // mutex automatically released in LockGuard destructor
         }
         catch(...)
@@ -132,7 +148,7 @@ public:
         {
             if(pt != NULL)
             {
-                boost::mutex::scoped_lock scoped_lock(mux);
+                boost::timed_mutex::scoped_timed_lock scoped_lock(mux, xt_eot);
                 {
                     _sortedCol.push_back(pt);
                     dataAvailable.notify_one();
@@ -162,7 +178,7 @@ public:
      */
     size_t   resize(size_t addition = 1)
     {
-        boost::mutex::scoped_lock scoped_lock(mux);
+        boost::timed_mutex::scoped_timed_lock scoped_lock(mux, xt_eot);
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -190,7 +206,7 @@ public:
 
     void     clearAndDestroy(void)      // Destroys pointed to objects as well.
     {
-        boost::mutex::scoped_lock scoped_lock(mux);
+        boost::timed_mutex::scoped_timed_lock scoped_lock(mux, xt_eot);
         delete_list(_sortedCol);
         _sortedCol.clear();
     }
@@ -214,7 +230,7 @@ public:
     }
     void apply(void (*fn)(T*&,void*), void* d)
     {
-        boost::mutex::scoped_lock scoped_lock(mux);
+        boost::timed_mutex::scoped_timed_lock scoped_lock(mux, xt_eot);
         ts_for_each(_sortedCol.begin(),_sortedCol.end(),fn,d);
     }
 
@@ -228,14 +244,27 @@ private:
 
     std::list<T*> _col;
     boost::condition           dataAvailable;
-    mutable boost::mutex                mux;
+    mutable boost::timed_mutex                mux;
 
     string       _name;
+
+    struct boost::xtime xt_eot;
+
 public:
 
     CtiFIFOQueue() :
     _name("Unnamed Queue")
-    {}
+    {
+        xt_eot.sec  = INT_MAX;
+        xt_eot.nsec = 0;
+    }
+
+    virtual ~CtiFIFOQueue()
+    {
+        boost::timed_mutex::scoped_timed_lock scoped_lock(mux, xt_eot);
+        delete_list(_col);
+        _col.clear();
+    }
 
     void putQueue(T *pt)
     {
@@ -244,7 +273,7 @@ public:
             if(pt != NULL)
             {
                 {
-                boost::mutex::scoped_lock scoped_lock(mux);
+                boost::timed_mutex::scoped_timed_lock scoped_lock(mux, xt_eot);
                 _col.push_back(pt);
                 dataAvailable.notify_one();
                 // mutex automatically released in LockGuard destructor
@@ -262,8 +291,8 @@ public:
         T *pval = NULL;
         try
         {
-            boost::mutex::scoped_lock scoped_lock(mux);
-            while( !(_col.size() > 0) )
+            boost::timed_mutex::scoped_timed_lock scoped_lock(mux, xt_eot);
+            while( _col.empty() )
             {
                 dataAvailable.wait(scoped_lock);
             }
@@ -285,29 +314,31 @@ public:
         T *pval = NULL;
         try
         {
-            boost::mutex::scoped_lock scoped_lock(mux);
             bool wRes = true;
             struct boost::xtime xt;
             boost::xtime_get(&xt, boost::TIME_UTC);
             xt.sec  += (time/1000);
             xt.nsec += (time%1000)*1000;
 
-            if(!(_col.size() > 0))
+            boost::timed_mutex::scoped_timed_lock scoped_lock(mux,xt);
+
+            if(scoped_lock.locked())
             {
-                wRes = dataAvailable.timed_wait(scoped_lock,xt); // monitor mutex released automatically
-                // thread must have been signalled AND mutex reacquired to reach here OR RW_THR_TIMEOUT
-                if(wRes == true)
+
+                if(_col.empty())
                 {
+                    wRes = dataAvailable.timed_wait(scoped_lock,xt); // monitor mutex released automatically
+                    // thread must have been signalled AND mutex reacquired to reach here OR RW_THR_TIMEOUT
+                    if(wRes == true)
+                    {
+                        pval = _col.front();
+                        _col.pop_front();
+                    }
+                }else{
                     pval = _col.front();
                     _col.pop_front();
                 }
-            }else{
-                pval = _col.front();
-                _col.pop_front();
             }
-
-
-
             // mutex automatically released in LockGuard destructor
         }
         catch(...)
@@ -325,7 +356,7 @@ public:
             if(pt != NULL)
             {
                 {
-                    boost::mutex::scoped_lock scoped_lock(mux);
+                    boost::timed_mutex::scoped_timed_lock scoped_lock(mux, xt_eot);
                     _col.push_back(pt);
                     dataAvailable.notify_one();
                     // mutex automatically released in LockGuard destructor
@@ -347,7 +378,7 @@ public:
     size_t   resize(size_t addition = 1)
     {
         {
-        boost::mutex::scoped_lock scoped_lock(mux);
+        boost::timed_mutex::scoped_timed_lock scoped_lock(mux, xt_eot);
         //LockGuard lock(monitor());   // acquire monitor mutex
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -379,7 +410,7 @@ public:
     void     clearAndDestroy(void)      // Destroys pointed to objects as well.
     {
         {
-        boost::mutex::scoped_lock scoped_lock(mux);
+        boost::timed_mutex::scoped_timed_lock scoped_lock(mux, xt_eot);
         delete_list(_col);
         _col.clear();
         }
@@ -405,7 +436,7 @@ public:
     void apply(void (*fn)(T*&,void*), void* d)
     {
         {
-        boost::mutex::scoped_lock scoped_lock(mux);
+        boost::timed_mutex::scoped_timed_lock scoped_lock(mux, xt_eot);
         //_col.apply(fn,d);
         ts_for_each(_col.begin(),_col.end(),fn,d);
         }
