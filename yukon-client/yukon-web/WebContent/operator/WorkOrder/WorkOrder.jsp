@@ -34,7 +34,12 @@ function goFilter(form)
 function viewAll(form, viewAll)
 {
 	if( viewAll)
+    {
+		<c:if test="${workOrderBean.maxDisplayLimit}">
+		    if (!confirm("Displaying this many results could temporarily decrease system performance.  Do you wish to continue?")) return;
+        </c:if>            
 		form.action.value = "ViewAllResults";
+    }
 	else
 		form.action.value = "HideAllResults";
 		
