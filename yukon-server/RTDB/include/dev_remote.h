@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_remote.h-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2006/03/09 22:44:57 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2006/05/25 22:25:44 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -243,13 +243,14 @@ public:
         if(pDialup)
         {
             string num;
+            CHAR ch[2] = {'\0', '\0'};
 
             for(int i = 0; i < pDialup->getPhoneNumber().length(); i++ )
             {
-                CHAR ch = pDialup->getPhoneNumber()[(size_t)i];
+                ch[0] = pDialup->getPhoneNumber()[(size_t)i];
 
-                if( ::isdigit(ch) )
-                    num.append((char*)ch);
+                if( ::isdigit(ch[0]) )
+                    num += string(ch);
             }
 
             // Now get a standard CRC
