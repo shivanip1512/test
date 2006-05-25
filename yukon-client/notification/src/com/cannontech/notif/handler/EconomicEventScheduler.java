@@ -40,7 +40,8 @@ public class EconomicEventScheduler extends EventScheduler {
         List<EconomicEventParticipant> participants = economicService.getParticipants(event);
         EconomicEventPricing eventPricing = event.getRevisions().get(1);
         
-        if (!attemptDeleteNotification(event, NotificationReason.STOPPING)) {
+        EconomicEvent initialEvent = event.getInitialEvent();
+        if (!attemptDeleteNotification(initialEvent, NotificationReason.STOPPING)) {
             CTILogger.warn("Stop message for initial event was not stopped (current event = " + event + ")");
         }
         
