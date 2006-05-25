@@ -4,6 +4,7 @@ import org.springframework.beans.factory.access.BeanFactoryLocator;
 import org.springframework.beans.factory.access.BeanFactoryReference;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.access.ContextSingletonBeanFactoryLocator;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import com.cannontech.database.incrementer.NextValueHelper;
 
@@ -33,5 +34,8 @@ public class YukonSpringHook {
         return (NextValueHelper) getBean("nextValueHelper");
     }
     
-
+    public static TransactionTemplate getTransactionTemplate() {
+        return (TransactionTemplate) getBean("transactionTemplate");
+    }
+    
 }

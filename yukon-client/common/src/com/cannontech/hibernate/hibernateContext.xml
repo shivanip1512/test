@@ -53,6 +53,10 @@
     <property name="sessionFactory"><ref local="hibernateSessionFactory"/></property>
   </bean>
   
+  <bean id="transactionTemplate" class="org.springframework.transaction.support.TransactionTemplate">
+    <constructor-arg ref="transactionManager" index="0"/>
+  </bean>
+  
   <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"/>
   
   <bean class="org.springframework.transaction.interceptor.TransactionAttributeSourceAdvisor">
