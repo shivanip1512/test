@@ -98,13 +98,13 @@
   </t:column>
   <t:column>
     <f:facet name="header">
-      <t:outputText value="Current Price"/>
+      <t:outputText value="Current Price ($/kW)"/>
     </f:facet>
     <t:outputText value="#{sEconomicUserDetail.currentRowPrice}" />
   </t:column>
   <t:column>
     <f:facet name="header">
-      <t:outputText value="Energy Buy Through"/>
+      <t:outputText value="Energy Buy Through (kW)"/>
     </f:facet>
     <t:inputText value="#{sEconomicUserDetail.currentRowBuyThrough}" 
                   displayValueOnly="#{!sEconomicUserDetail.currentRowPriceEditable}"/>
