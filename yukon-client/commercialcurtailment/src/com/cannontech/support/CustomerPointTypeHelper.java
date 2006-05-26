@@ -30,8 +30,8 @@ import com.cannontech.database.db.point.Point;
 
 public class CustomerPointTypeHelper {
     private CustomerPointTypeLookup pointTypeLookup;
-    private String customerDevicePrefix = "Customer ";
-    private String customerDeviceSuffix = " Point Data Device";
+    private String customerDevicePrefix = "";
+    private String customerDeviceSuffix = " Point Data";
     private CustomerDao customerDao;
 
     public CustomerPointTypeHelper() {
