@@ -8,6 +8,8 @@ import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.message.util.Message;
 import com.cannontech.notif.outputs.OutputHandlerHelper;
 import com.cannontech.roles.yukon.SystemRole;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.util.MBeanUtil;
 
 /**
  * @author rneuharth
@@ -180,13 +182,13 @@ public class NotificationServer implements Runnable, NotificationServerMBean
 				 
 	}
 	
-	
-	
 	public static void main( String[] argsv )
 	{
 		System.setProperty("cti.app.name", "Notification-Server");
-		NotificationServer ns = new NotificationServer();
+		NotificationServer ns = (NotificationServer)YukonSpringHook.getServicesContext().getBean("notificationServer");
 		
+        MBeanUtil.tryRegisterMBean("type=notificationserver", ns);
+        
 		try 
 		{
 			ns.start();

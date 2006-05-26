@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.util.MBeanUtil;
 
 
 public class ConnectionPool implements ConnectionPoolMBean
@@ -52,8 +53,9 @@ public class ConnectionPool implements ConnectionPoolMBean
         //create the pools
         initPool();
         
-        
         CTILogger.debug( getStats() );
+        
+        MBeanUtil.tryRegisterMBean("type=connectionpool", this);
     }
     
     public void freeConnection(Connection conn)
