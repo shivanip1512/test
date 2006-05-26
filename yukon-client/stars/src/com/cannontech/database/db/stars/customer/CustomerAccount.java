@@ -3,9 +3,7 @@ package com.cannontech.database.db.stars.customer;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
+import java.util.*;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
@@ -14,8 +12,7 @@ import com.cannontech.database.SqlStatement;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.contact.Contact;
-import com.cannontech.database.db.customer.CICustomerBase;
-import com.cannontech.database.db.customer.Customer;
+import com.cannontech.database.db.customer.*;
 import com.cannontech.database.db.stars.hardware.InventoryBase;
 import com.cannontech.database.db.stars.hardware.LMHardwareBase;
 
@@ -712,5 +709,164 @@ public class CustomerAccount extends DBPersistent {
 
     public void setAccountNotes(String newAccountNotes) {
         accountNotes = newAccountNotes;
+    }
+    
+    /*
+     * For use in inventory filtering
+     */
+    public static List<Integer> getAccountIDsFromZipCode(String zipCode) 
+    {
+        if (zipCode == null || zipCode.length() == 0) return null;
+        
+        List<Integer> accounts = new ArrayList<Integer>();
+        
+        Date timerStart = new Date();
+        
+        String sql = "SELECT AccountID FROM " + TABLE_NAME + ", " + AccountSite.TABLE_NAME + 
+                ", " + Address.TABLE_NAME + " WHERE " + CustomerAccount.TABLE_NAME + ".AccountSiteID = " + AccountSite.TABLE_NAME +
+                ".AccountSiteID AND" + AccountSite.TABLE_NAME + ".StreetAddressID = " + Address.TABLE_NAME + ".AddressID AND" +
+                "ZipCode LIKE ?";   
+
+        ArrayList accountList = new ArrayList();
+        PreparedStatement pstmt = null;
+        Connection conn = null;
+        ResultSet rset = null;
+        int count = 0; 
+        try 
+        {
+            conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+            
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString( 1, zipCode + "%");
+            rset = pstmt.executeQuery();
+
+            CTILogger.debug((new Date().getTime() - timerStart.getTime())*.001 + " After accountIDFromZipCode execute" );
+  
+            while(rset.next())
+            {
+                accounts.add(new Integer(rset.getInt(1)));
+            }
+        }
+        catch( Exception e )
+        {
+            CTILogger.error( "Error retrieving accounts with zipcode " + zipCode + ": " + e.getMessage(), e );
+        }
+        finally 
+        {
+            try 
+            {
+                if (rset != null) rset.close();
+                if (pstmt != null) pstmt.close();
+                if (conn != null) conn.close();
+            }
+            catch (java.sql.SQLException e) {}
+        }
+
+        CTILogger.debug((new Date().getTime() - timerStart.getTime())*.001 + " Secs for '" + zipCode + "' zip to account load (" + count + " AccountIDS loaded...)" );
+        return accountList;
+    }
+    
+    /*
+     * For use in inventory filtering
+     */
+    public static List<Integer> getAccountIDsFromCustomerType(int ciCustType) 
+    {
+        List<Integer> accounts = new ArrayList<Integer>();
+        
+        Date timerStart = new Date();
+        
+        String sql = "SELECT AccountID FROM " + TABLE_NAME + ", " + CICustomerBase.TABLE_NAME + 
+        " WHERE " + CustomerAccount.TABLE_NAME + ".CustomerID = " + CICustomerBase.TABLE_NAME +
+        ".CustomerID AND CICustType = ?"; 
+
+        ArrayList accountList = new ArrayList();
+        PreparedStatement pstmt = null;
+        Connection conn = null;
+        ResultSet rset = null;
+        int count = 0; 
+        try 
+        {
+            conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+            
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt( 1, ciCustType);
+            rset = pstmt.executeQuery();
+
+            CTILogger.debug((new Date().getTime() - timerStart.getTime())*.001 + " After accountIDFromCICustomerType execute" );
+  
+            while(rset.next())
+            {
+                accounts.add(new Integer(rset.getInt(1)));
+            }
+        }
+        catch( Exception e )
+        {
+            CTILogger.error( "Error retrieving accounts with ciCustomerType " + ciCustType + ": " + e.getMessage(), e );
+        }
+        finally 
+        {
+            try 
+            {
+                if (rset != null) rset.close();
+                if (pstmt != null) pstmt.close();
+                if (conn != null) conn.close();
+            }
+            catch (java.sql.SQLException e) {}
+        }
+
+        CTILogger.debug((new Date().getTime() - timerStart.getTime())*.001 + " Secs for '" + ciCustType + "' cicusttype to account load (" + count + " AccountIDS loaded...)" );
+        return accountList;
+    }
+    
+    /*
+     * For use in inventory filtering
+     */
+    public static List<Integer> getAccountIDsNonCommercial() 
+    {
+        List<Integer> accounts = new ArrayList<Integer>();
+        
+        Date timerStart = new Date();
+        
+        String sql = "SELECT AccountID FROM " + TABLE_NAME + ", " + Customer.TABLE_NAME +
+        ", " + CICustomerBase.TABLE_NAME + 
+        " WHERE " + CustomerAccount.TABLE_NAME + ".CustomerID = " + Customer.TABLE_NAME +
+        ".CustomerID AND NOT " + CICustomerBase.TABLE_NAME + ".CustomerID"; 
+
+        ArrayList accountList = new ArrayList();
+        PreparedStatement pstmt = null;
+        Connection conn = null;
+        ResultSet rset = null;
+        int count = 0; 
+        try 
+        {
+            conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+            
+            pstmt = conn.prepareStatement(sql);
+            rset = pstmt.executeQuery();
+
+            CTILogger.debug((new Date().getTime() - timerStart.getTime())*.001 + " After accountIDFromCICustomerType execute" );
+  
+            while(rset.next())
+            {
+                accounts.add(new Integer(rset.getInt(1)));
+            }
+        }
+        catch( Exception e )
+        {
+            CTILogger.error( "Error retrieving accounts with ciCustomerType res: " + e.getMessage(), e );
+        }
+        finally 
+        {
+            try 
+            {
+                if (rset != null) rset.close();
+                if (pstmt != null) pstmt.close();
+                if (conn != null) conn.close();
+            }
+            catch (java.sql.SQLException e) {}
+        }
+
+        CTILogger.debug((new Date().getTime() - timerStart.getTime())*.001 + " Secs for res ci customer type to account load (" + count + " AccountIDS loaded...)" );
+        return accountList;
     }
 }

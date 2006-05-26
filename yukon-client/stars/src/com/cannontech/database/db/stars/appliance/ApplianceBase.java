@@ -1,9 +1,13 @@
 package com.cannontech.database.db.stars.appliance;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.db.stars.hardware.Warehouse;
 
 
 /**
@@ -190,6 +194,32 @@ public class ApplianceBase extends DBPersistent {
 			CTILogger.error( e.getMessage(), e );
 		}
 	}
+
+    public static List<Integer> getAllAccountIDsFromApplianceCategory(int appCatID)
+    {
+        List<Integer> accountIDs = new ArrayList<Integer>();
+        
+        SqlStatement stmt = new SqlStatement("SELECT ACCOUNTID FROM " + TABLE_NAME + " WHERE APPLIANCECATEGORYID = " + appCatID, CtiUtilities.getDatabaseAlias());
+        
+        try
+        {
+            stmt.execute();
+            
+            if( stmt.getRowCount() > 0 )
+            {
+                for( int i = 0; i < stmt.getRowCount(); i++ )
+                {
+                    accountIDs.add(new Integer(stmt.getRow(i)[0].toString()));
+                }
+            }
+        }
+        catch( Exception e )
+        {
+            e.printStackTrace();
+        }
+        
+        return accountIDs;
+    }
 
 	public Integer getApplianceID() {
 		return applianceID;
