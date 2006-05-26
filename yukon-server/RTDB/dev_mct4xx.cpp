@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2006/04/19 20:42:42 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2006/05/26 15:11:04 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -699,7 +699,7 @@ int CtiDeviceMCT4xx::executePutConfigLongLoadProfile(CtiRequestMsg *pReq,CtiComm
 
         if(tempBasePtr && tempBasePtr->getType() == ConfigTypeMCTLongLoadProfile)
         {
-            long channel1, channel2, channel3, channel4, ssid;
+            long channel1, channel2, channel3, channel4, spid;
             USHORT function, length, io;
 
 
@@ -708,7 +708,19 @@ int CtiDeviceMCT4xx::executePutConfigLongLoadProfile(CtiRequestMsg *pReq,CtiComm
             channel2 = config->getLongValueFromKey(Channel2Length);
             channel3 = config->getLongValueFromKey(Channel3Length);
             channel4 = config->getLongValueFromKey(Channel4Length);
-            ssid = CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_AddressServiceProviderID);
+            spid = CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_AddressServiceProviderID);
+
+            if( spid == numeric_limits<long>::min() )
+            {
+                //We dont have it in dynamic pao info yet, we will get it from the config tables
+                BaseSPtr addressTempBasePtr = deviceConfig->getConfigFromType(ConfigTypeMCTAddressing);
+
+                if(addressTempBasePtr && addressTempBasePtr->getType() == ConfigTypeMCTAddressing)
+                {
+                    MCTAddressingSPtr addressConfig = boost::static_pointer_cast< ConfigurationPart<MCTAddressing> >(addressTempBasePtr);
+                    spid = addressConfig->getLongValueFromKey(ServiceProviderID);
+                }
+            }
 
             if(!getOperation(Emetcon::PutConfig_LongloadProfile, function, length, io))
             {
@@ -718,7 +730,7 @@ int CtiDeviceMCT4xx::executePutConfigLongLoadProfile(CtiRequestMsg *pReq,CtiComm
             }
             else
             if(channel1 == numeric_limits<long>::min() || channel3 == numeric_limits<long>::min() || channel2 == numeric_limits<long>::min()
-               || channel4 == numeric_limits<long>::min() || ssid == numeric_limits<long>::min())
+               || channel4 == numeric_limits<long>::min() || spid == numeric_limits<long>::min())
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -734,7 +746,7 @@ int CtiDeviceMCT4xx::executePutConfigLongLoadProfile(CtiRequestMsg *pReq,CtiComm
                     OutMessage->Buffer.BSt.Function   = function;
                     OutMessage->Buffer.BSt.Length     = length;
                     OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Write;
-                    OutMessage->Buffer.BSt.Message[0] = (ssid);
+                    OutMessage->Buffer.BSt.Message[0] = (spid);
                     OutMessage->Buffer.BSt.Message[1] = (channel1);
                     OutMessage->Buffer.BSt.Message[2] = (channel2);
                     OutMessage->Buffer.BSt.Message[3] = (channel3);
