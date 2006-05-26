@@ -97,9 +97,13 @@ public class SettlementCustomer
 		Double returnVal = null;
 		PointData pointData = PointChangeCache.getPointChangeCache().getValue(pointID);
 		if (pointData != null)
-			returnVal = new Double(pointData.getValue());
+        {
+            if( pointData.getPointDataTimeStamp().after(startDate) &&           //after the startDate
+                pointData.getPointDataTimeStamp().compareTo(stopDate) <= 0 )    //before or equal stopDate
+                    returnVal = new Double(pointData.getValue());
+        }
 		
-		if( returnVal == null)	//we weren't able to get the value from Cache
+		if( returnVal == null)	//we weren't able to get the value from Cache, or it was not in the correct date range.
 		{
 			String sqlString = "SELECT TIMESTAMP, VALUE FROM " + RawPointHistory.TABLE_NAME +
 				" WHERE POINTID = ?" + 
