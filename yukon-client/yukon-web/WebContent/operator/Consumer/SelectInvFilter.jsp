@@ -215,7 +215,7 @@
 			selectedFilter = type.options[type.selectedIndex].text;  
 			selectedFilter += ": ";
 			if(filterBy == '<c:out value="${filterDeviceSerialRangeMax}"/>' || filterBy == '<c:out value="${filterDeviceSerialRangeMin}"/>' ||
-							filterBy == '<c:out value="${filterDeviceSerialRangeMax}"/>')
+							filterBy == '<c:out value="${filterDevicePostalCode}"/>')
 			{
 				selectedFilter += document.getElementById(comboID).value;
 				selectedFilterID = 0; 
