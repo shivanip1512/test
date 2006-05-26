@@ -88,7 +88,7 @@
 	                    <div id='<c:out value="${filterApplianceType}"/>' style="display:none"> 
 	                    	<select id='<c:out value="${filterApplianceType}"/>1' name='<c:out value="${filterApplianceType}"/>1' size="1" style="width: 200px" onChange="selectFilter(this.value)">
 	                            <c:forEach var="appliance" items="${filterBean.availableApplianceCategories}">
-									<option value='<c:out value="${appliance.categoryID}"/>'> <c:out value="${appliance.description}"/> </option>
+									<option value='<c:out value="${appliance.liteID}"/>'> <c:out value="${appliance.description}"/> </option>
 								</c:forEach>
 							</select>
 	                    </div>
