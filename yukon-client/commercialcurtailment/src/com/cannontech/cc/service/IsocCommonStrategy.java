@@ -72,12 +72,14 @@ public class IsocCommonStrategy extends StrategyGroupBase {
     public void checkEventCustomer(VerifiedCustomer vCustomer, BaseEvent event) {
         CICustomerStub customer = vCustomer.getCustomer();
         List<BaseEvent> forCustomer = baseEventDao.getAllForCustomer(customer);
-        //TODO reverse list here
+        // technically this list should be sorted by stop time, but because
+        // events can't overlap, sorting by start time produces the same order
         Iterator iterator = new ReverseListIterator(forCustomer);
         for (Iterator iter = new ReverseListIterator(forCustomer); iter.hasNext();) {
             BaseEvent otherEvent = (BaseEvent) iter.next();
-            // rely on ordering from dao (reverse)
-            if (otherEvent.getStopTime().before(event.getStartTime())) {
+            // rely on ordering to short circuit
+            if (!otherEvent.getStopTime().after(event.getStartTime())) {
+                // don't use before because stop and start could be equal
                 // because of the event ordering, no more possible collisions exist
                 break;
             }
