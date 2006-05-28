@@ -99,7 +99,8 @@ public class DetailEconomicBean implements BaseDetailBean {
             long total = 0;
             for (EconomicEventParticipant participant : participantList) {
                 EconomicEventParticipantSelection selection = participant.getSelection(getCurrentRevision());
-                EconomicEventParticipantSelectionWindow selectionWindow = selection.getSelectionWindow(pricingWindow);
+                EconomicEventParticipantSelectionWindow selectionWindow = 
+                    economicService.getFallThroughWindowSelection(selection, pricingWindow.getOffset());
                 total += selectionWindow.getEnergyToBuy().longValue();
             }
             return BigDecimal.valueOf(total);
@@ -214,6 +215,10 @@ public class DetailEconomicBean implements BaseDetailBean {
         }
         updateModels();
         return "reviseEconomicEvent";
+    }
+    
+    public String cancelRevision() {
+        return "econDetail";
     }
     
     public String extendEvent() {
