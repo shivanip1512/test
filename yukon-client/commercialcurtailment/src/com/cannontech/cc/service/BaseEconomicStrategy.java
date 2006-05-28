@@ -662,7 +662,7 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
         EconomicEventParticipantSelectionWindow previousSelectionWindow = 
             previousSelection.getSelectionWindow(previousWindow);
         BigDecimal previousEnergyBought = previousSelectionWindow.getEnergyToBuy();
-        return priceUp && isCurtailPrice(previousEnergyBought);
+        return priceUp && !isCurtailPrice(previousEnergyBought);
     }
     
     protected boolean isCurtailPrice(BigDecimal buyThrough) {
