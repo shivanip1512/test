@@ -9,9 +9,8 @@
 
 <h:form>
 <h3>Current Events</h3>
-<t:dataTable value="#{sCustomerEventBean.currentEventListModel}" 
-             var="thisEvent"
-             forceIdIndexFormula="#{thisEvent.id}">
+<t:dataTable value="#{sCustomerEventBean.currentEventList}" 
+             var="thisEvent">
   <t:column>
     <h:outputText value="#{thisEvent.program.name}"/>
   </t:column>
@@ -20,6 +19,7 @@
   </t:column>
   <t:column>
     <h:commandLink action="#{sCustomerEventBean.showCurrentEventDetail}">
+      <t:updateActionListener property="#{sCustomerEventBean.selectedEvent}" value="#{thisEvent}"/>
       <h:outputText value="#{thisEvent.displayName}"/>
     </h:commandLink>
   </t:column>
@@ -51,12 +51,11 @@
     </h:outputText>
   </t:column>
 </t:dataTable>
-<t:outputText rendered="#{sCustomerEventBean.currentEventListModel.rowCount == 0}" value="(none)"/>
+<t:outputText rendered="#{empty sCustomerEventBean.currentEventList}" value="(none)"/>
 
 <h3>Pending Events</h3>
-<t:dataTable value="#{sCustomerEventBean.pendingEventListModel}" 
-             var="thisEvent"
-             forceIdIndexFormula="#{thisEvent.id}">
+<t:dataTable value="#{sCustomerEventBean.pendingEventList}" 
+             var="thisEvent">
   <t:column>
     <h:outputText value="#{thisEvent.program.programType.name}"/>
   </t:column>
@@ -64,7 +63,8 @@
     <h:outputText value="#{thisEvent.program.name}"/>
   </t:column>
   <t:column>
-    <h:commandLink action="#{sCustomerEventBean.showPendingEventDetail}">
+    <h:commandLink action="#{sCustomerEventBean.showEventDetail}">
+      <t:updateActionListener property="#{sCustomerEventBean.selectedEvent}" value="#{thisEvent}"/>
       <h:outputText value="#{thisEvent.displayName}"/>
     </h:commandLink>
   </t:column>
@@ -96,12 +96,11 @@
     </h:outputText>
   </t:column>
 </t:dataTable>
-<t:outputText rendered="#{sCustomerEventBean.pendingEventListModel.rowCount == 0}" value="(none)"/>
+<t:outputText rendered="#{empty sCustomerEventBean.pendingEventList}" value="(none)"/>
 
 <h3>Recent Events</h3>
-<t:dataTable value="#{sCustomerEventBean.recentEventListModel}" 
-             var="thisEvent"
-             forceIdIndexFormula="#{thisEvent.id}">
+<t:dataTable value="#{sCustomerEventBean.recentEventList}" 
+             var="thisEvent">
   <t:column>
     <h:outputText value="#{thisEvent.program.programType.name}"/>
   </t:column>
@@ -110,6 +109,7 @@
   </t:column>
   <t:column>
     <h:commandLink action="#{sCustomerEventBean.showRecentEventDetail}">
+      <t:updateActionListener property="#{sCustomerEventBean.selectedEvent}" value="#{thisEvent}"/>
       <h:outputText value="#{thisEvent.displayName}"/>
     </h:commandLink>
   </t:column>
@@ -141,7 +141,7 @@
     </h:outputText>
   </t:column>
 </t:dataTable>
-<t:outputText rendered="#{sCustomerEventBean.recentEventListModel.rowCount == 0}" value="(none)"/>
+<t:outputText rendered="#{empty sCustomerEventBean.recentEventList}" value="(none)"/>
 
 </h:form>
 
