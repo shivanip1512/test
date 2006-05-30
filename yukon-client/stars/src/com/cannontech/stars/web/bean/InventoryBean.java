@@ -458,7 +458,7 @@ public class InventoryBean {
                         {
                             if(accounts.get(j).intValue() == liteInv.getInventoryID())
                             {
-                                filteredHardware.add( hardwares.get(j) );
+                                filteredHardware.add( hardwares.get(i) );
                                 break;
                             }
                         }
@@ -507,7 +507,7 @@ public class InventoryBean {
                         {
                             if(accounts.get(j).intValue() == liteInv.getInventoryID())
                             {
-                                filteredHardware.add( hardwares.get(j) );
+                                filteredHardware.add( hardwares.get(i) );
                                 break;
                             }
                         }
@@ -529,7 +529,7 @@ public class InventoryBean {
                         {
                             if(accounts.get(j).intValue() == liteInv.getInventoryID())
                             {
-                                filteredHardware.add( hardwares.get(j) );
+                                filteredHardware.add( hardwares.get(i) );
                                 break;
                             }
                         }
