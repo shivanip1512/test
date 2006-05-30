@@ -724,7 +724,7 @@ public class CustomerAccount extends DBPersistent {
         
         String sql = "SELECT AccountID FROM " + TABLE_NAME + ", " + AccountSite.TABLE_NAME + 
                 ", " + Address.TABLE_NAME + " WHERE " + CustomerAccount.TABLE_NAME + ".AccountSiteID = " + AccountSite.TABLE_NAME +
-                ".AccountSiteID AND" + AccountSite.TABLE_NAME + ".StreetAddressID = " + Address.TABLE_NAME + ".AddressID AND" +
+                ".AccountSiteID AND " + AccountSite.TABLE_NAME + ".StreetAddressID = " + Address.TABLE_NAME + ".AddressID AND " +
                 "ZipCode LIKE ?";   
 
         ArrayList accountList = new ArrayList();
