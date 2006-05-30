@@ -727,7 +727,6 @@ public class CustomerAccount extends DBPersistent {
                 ".AccountSiteID AND " + AccountSite.TABLE_NAME + ".StreetAddressID = " + Address.TABLE_NAME + ".AddressID AND " +
                 "ZipCode LIKE ?";   
 
-        ArrayList accountList = new ArrayList();
         PreparedStatement pstmt = null;
         Connection conn = null;
         ResultSet rset = null;
@@ -765,7 +764,7 @@ public class CustomerAccount extends DBPersistent {
         }
 
         CTILogger.debug((new Date().getTime() - timerStart.getTime())*.001 + " Secs for '" + zipCode + "' zip to account load (" + count + " AccountIDS loaded...)" );
-        return accountList;
+        return accounts;
     }
     
     /*
@@ -781,7 +780,6 @@ public class CustomerAccount extends DBPersistent {
         " WHERE " + CustomerAccount.TABLE_NAME + ".CustomerID = " + CICustomerBase.TABLE_NAME +
         ".CustomerID AND CICustType = ?"; 
 
-        ArrayList accountList = new ArrayList();
         PreparedStatement pstmt = null;
         Connection conn = null;
         ResultSet rset = null;
@@ -818,7 +816,7 @@ public class CustomerAccount extends DBPersistent {
         }
 
         CTILogger.debug((new Date().getTime() - timerStart.getTime())*.001 + " Secs for '" + ciCustType + "' cicusttype to account load (" + count + " AccountIDS loaded...)" );
-        return accountList;
+        return accounts;
     }
     
     /*
@@ -835,7 +833,6 @@ public class CustomerAccount extends DBPersistent {
         " WHERE " + CustomerAccount.TABLE_NAME + ".CustomerID = " + Customer.TABLE_NAME +
         ".CustomerID AND " + Customer.TABLE_NAME + ".CustomerTypeID = " + CustomerTypes.CUSTOMER_RESIDENTIAL;
 
-        ArrayList accountList = new ArrayList();
         PreparedStatement pstmt = null;
         Connection conn = null;
         ResultSet rset = null;
@@ -871,6 +868,6 @@ public class CustomerAccount extends DBPersistent {
         }
 
         CTILogger.debug((new Date().getTime() - timerStart.getTime())*.001 + " Secs for res ci customer type to account load (" + count + " AccountIDS loaded...)" );
-        return accountList;
+        return accounts;
     }
 }
