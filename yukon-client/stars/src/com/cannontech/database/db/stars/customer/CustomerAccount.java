@@ -830,7 +830,8 @@ public class CustomerAccount extends DBPersistent {
         String sql = "SELECT AccountID FROM " + TABLE_NAME + ", " + Customer.TABLE_NAME +
         ", " + CICustomerBase.TABLE_NAME + 
         " WHERE " + CustomerAccount.TABLE_NAME + ".CustomerID = " + Customer.TABLE_NAME +
-        ".CustomerID AND NOT " + CICustomerBase.TABLE_NAME + ".CustomerID"; 
+        ".CustomerID AND NOT " + CICustomerBase.TABLE_NAME + ".CustomerID = " + Customer.TABLE_NAME +
+        CICustomerBase.TABLE_NAME + ".CustomerID";
 
         ArrayList accountList = new ArrayList();
         PreparedStatement pstmt = null;
