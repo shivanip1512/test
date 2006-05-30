@@ -831,7 +831,7 @@ public class CustomerAccount extends DBPersistent {
         ", " + CICustomerBase.TABLE_NAME + 
         " WHERE " + CustomerAccount.TABLE_NAME + ".CustomerID = " + Customer.TABLE_NAME +
         ".CustomerID AND NOT " + CICustomerBase.TABLE_NAME + ".CustomerID = " + Customer.TABLE_NAME +
-        CICustomerBase.TABLE_NAME + ".CustomerID";
+        ".CustomerID";
 
         ArrayList accountList = new ArrayList();
         PreparedStatement pstmt = null;
