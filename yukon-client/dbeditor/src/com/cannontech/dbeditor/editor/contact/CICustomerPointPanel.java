@@ -56,6 +56,10 @@ public void actionPerformed(java.awt.event.ActionEvent e)
 public void addButton_ActionPerformed(java.awt.event.ActionEvent e) 
 {
             addDefaultPanel();
+            getJScrollPane().invalidate();
+            getJScrollPane().doLayout();
+            getJScrollPane().repaint();
+            getJScrollPane().revalidate();
 }
 
 public void removeButton_ActionPerformed(CICustomerPointDataPanel p) 
@@ -63,9 +67,8 @@ public void removeButton_ActionPerformed(CICustomerPointDataPanel p)
     
     getJPanelScroller().remove(p);
     pointPanelVector.remove(p);
-    getJPanelScroller().doLayout();
     getJPanelScroller().invalidate();
-    getJPanelScroller().repaint();
+    getJPanelScroller().doLayout();
     getJPanelScroller().repaint();
     getJPanelScroller().revalidate();
     
@@ -125,13 +128,11 @@ private javax.swing.JPanel getJPanelScroller() {
 		try {
 			ivjJPanelScroller = new javax.swing.JPanel();
 			ivjJPanelScroller.setName("JPanelScroller");
-			ivjJPanelScroller.setPreferredSize(new java.awt.Dimension(163, 600));
             BoxLayout boxLayout = new BoxLayout(getJPanelScroller(), BoxLayout.Y_AXIS);
 			ivjJPanelScroller.setLayout(boxLayout);
             ivjJPanelScroller.setBackground(Color.GRAY);
 			ivjJPanelScroller.setBounds(0, 0, 160, 120);
-			ivjJPanelScroller.setMaximumSize(new java.awt.Dimension(160, 32767));
-			ivjJPanelScroller.setMinimumSize(new java.awt.Dimension(163, 600));
+
 		} catch (java.lang.Throwable ivjExc) {
 			handleException(ivjExc);
 		}
