@@ -459,7 +459,7 @@ public class InventoryBean {
                         
                         for(int j = 0; j < accounts.size(); j++)
                         {
-                            if(accounts.get(j).intValue() == liteInv.getInventoryID())
+                            if(accounts.get(j).intValue() == liteInv.getAccountID())
                             {
                                 filteredHardware.add( hardwares.get(i) );
                                 break;
@@ -515,7 +515,7 @@ public class InventoryBean {
                          
                         for(int j = 0; j < accounts.size(); j++)
                         {
-                            if(accounts.get(j).intValue() == liteInv.getInventoryID())
+                            if(accounts.get(j).intValue() == liteInv.getAccountID())
                             {
                                 filteredHardware.add( hardwares.get(i) );
                                 break;
@@ -537,7 +537,7 @@ public class InventoryBean {
                          
                         for(int j = 0; j < accounts.size(); j++)
                         {
-                            if(accounts.get(j).intValue() == liteInv.getInventoryID())
+                            if(accounts.get(j).intValue() == liteInv.getAccountID())
                             {
                                 filteredHardware.add( hardwares.get(i) );
                                 break;
