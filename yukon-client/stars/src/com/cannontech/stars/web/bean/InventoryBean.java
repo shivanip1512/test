@@ -4,6 +4,7 @@ import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
@@ -449,6 +450,8 @@ public class InventoryBean {
                     if(hardwares.size() > 0)
                          accounts = ApplianceBase.getAllAccountIDsFromApplianceCategory(specificFilterID.intValue());
                     
+                    Date timerStart = new Date();
+                    
                     for (int i = 0; i < hardwares.size(); i++) 
                     {
                         LiteInventoryBase liteInv = (LiteInventoryBase)
@@ -463,6 +466,8 @@ public class InventoryBean {
                             }
                         }
                     }
+                    
+                    CTILogger.debug((new Date().getTime() - timerStart.getTime())*.001 + " seconds for appliance type filter to complete iterations." );
                 }
                 else if (filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_WAREHOUSE) 
                 {
@@ -479,7 +484,12 @@ public class InventoryBean {
                         for(int j = 0; j < warehousedInventory.size(); j++)
                         {
                             if(liteInv.getLiteID() == warehousedInventory.get(j).intValue())
+                            {
                                 filteredHardware.add( hardwares.get(i) );
+//                              let's try to speed this up over time
+                                warehousedInventory.remove(j);
+                                break;
+                            }
                         }
                     }
                 }
