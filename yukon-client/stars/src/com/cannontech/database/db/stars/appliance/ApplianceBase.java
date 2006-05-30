@@ -1,5 +1,6 @@
 package com.cannontech.database.db.stars.appliance;
 
+import java.util.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -199,6 +200,8 @@ public class ApplianceBase extends DBPersistent {
     {
         List<Integer> accountIDs = new ArrayList<Integer>();
         
+        Date timerStart = new Date();
+        
         SqlStatement stmt = new SqlStatement("SELECT ACCOUNTID FROM " + TABLE_NAME + " WHERE APPLIANCECATEGORYID = " + appCatID, CtiUtilities.getDatabaseAlias());
         
         try
@@ -217,6 +220,8 @@ public class ApplianceBase extends DBPersistent {
         {
             e.printStackTrace();
         }
+        
+        CTILogger.debug((new Date().getTime() - timerStart.getTime())*.001 + " After accountIDFromApplianceCategory execute" );
         
         return accountIDs;
     }
