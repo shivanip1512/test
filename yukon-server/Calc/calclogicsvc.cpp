@@ -925,6 +925,13 @@ BOOL CtiCalcLogicService::parseMessage( RWCollectable *message, CtiCalculateThre
                         }
                         else
                         {
+                            if( ((CtiDBChangeMsg*)message)->getId() == 0 )
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << CtiTime()  << " - Database change does not affect Calculations.  Will not reload." << endl;
+                                dout << CtiTime()  << " *** Checkpoint *** Change was a full reload, which is currently not acted upon." << endl;
+                            }
+                            else
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << CtiTime()  << " - Database change does not affect Calculations.  Will not reload." << endl;
