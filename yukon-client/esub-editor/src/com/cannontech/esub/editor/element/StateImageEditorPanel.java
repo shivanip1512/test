@@ -127,20 +127,24 @@ private javax.swing.JPanel getPointPanel() {
 			pointPanel.setName("JPanel1");
 			pointPanel.setLayout(new java.awt.GridBagLayout());
 			pointPanel.setBorder(new TitleBorder("Point Selection:"));
-            pointPanel.setPreferredSize(new Dimension(300  ,520));
+//            pointPanel.setPreferredSize(new Dimension(300  ,520));
+//            pointPanel.setMinimumSize(new Dimension(300,520));
             
             java.awt.GridBagConstraints constraintsLinkToPanel = new java.awt.GridBagConstraints();
             constraintsLinkToPanel.gridx = 0; constraintsLinkToPanel.gridy = 0;
             constraintsLinkToPanel.gridwidth = 1;
-            constraintsLinkToPanel.fill = java.awt.GridBagConstraints.BOTH;
+            constraintsLinkToPanel.anchor = java.awt.GridBagConstraints.WEST;
+            constraintsLinkToPanel.fill = java.awt.GridBagConstraints.HORIZONTAL;
             constraintsLinkToPanel.insets = new java.awt.Insets(4, 4, 4, 4);
              getPointPanel().add(getLinkToPanel(), constraintsLinkToPanel);
             
              java.awt.GridBagConstraints constraintsControlCheckBox = new java.awt.GridBagConstraints();
              constraintsControlCheckBox.gridx = 0; constraintsControlCheckBox.gridy = 1;
-             constraintsControlCheckBox.fill = java.awt.GridBagConstraints.BOTH;
-             constraintsControlCheckBox.weightx = 1.0;
-             constraintsControlCheckBox.weighty = 1.0;
+             constraintsControlCheckBox.fill = java.awt.GridBagConstraints.HORIZONTAL;
+//             constraintsControlCheckBox.weightx = 1.0;
+//             constraintsControlCheckBox.weighty = 1.0;
+             constraintsControlCheckBox.gridwidth = 1;
+             constraintsControlCheckBox.anchor = java.awt.GridBagConstraints.WEST;
              constraintsControlCheckBox.insets = new java.awt.Insets(4, 4, 4, 4);
               getPointPanel().add(getControlCheckBox(), constraintsControlCheckBox);
              
@@ -149,6 +153,8 @@ private javax.swing.JPanel getPointPanel() {
 			constraintsPointSelectionPanel.fill = java.awt.GridBagConstraints.BOTH;
 			constraintsPointSelectionPanel.weightx = 1.0;
 			constraintsPointSelectionPanel.weighty = 1.0;
+            constraintsPointSelectionPanel.gridwidth = 1;
+            constraintsPointSelectionPanel.anchor = java.awt.GridBagConstraints.WEST;
 			constraintsPointSelectionPanel.insets = new java.awt.Insets(4, 4, 4, 4);
              getPointPanel().add(getPointSelectionPanel(), constraintsPointSelectionPanel);
 
@@ -311,9 +317,8 @@ private PointSelectionPanel getPointSelectionPanel() {
 		try {
 			ivjPointSelectionPanel = com.cannontech.esub.editor.Util.getPointSelectionPanel();		
 			ivjPointSelectionPanel.setName("PointSelectionPanel");
-//            ivjPointSelectionPanel.setPreferredSize(new Dimension(150,200));
-//            ivjPointSelectionPanel.setSize(new Dimension(150,200));
-//            ivjPointSelectionPanel.setMaximumSize(new Dimension(150,200));
+            ivjPointSelectionPanel.setPreferredSize(new Dimension(150,400));
+            ivjPointSelectionPanel.setMinimumSize(new Dimension(150,400));
 		} catch (java.lang.Throwable ivjExc) {
 			handleException(ivjExc);
 		}
@@ -369,7 +374,7 @@ private void initialize() {
 	try {
 		setName("StateImageEditorPanel");
         setLayout(new java.awt.GridBagLayout());
-        
+
         defaultIcon.setImage(
                 defaultIcon.getImage().getScaledInstance( 
                       30,
@@ -380,14 +385,17 @@ private void initialize() {
         java.awt.GridBagConstraints constraintsPointPanel = new java.awt.GridBagConstraints();
         constraintsPointPanel.gridx = 0; constraintsPointPanel.gridy = 0;
         constraintsPointPanel.gridwidth = 1;
-        constraintsPointPanel.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        constraintsPointPanel.fill = java.awt.GridBagConstraints.BOTH;
+        constraintsPointPanel.anchor = java.awt.GridBagConstraints.NORTH;
         constraintsPointPanel.insets = new java.awt.Insets(4, 4, 4, 4);
+        constraintsPointPanel.weightx = .5;
         add(getPointPanel(), constraintsPointPanel);
 
         java.awt.GridBagConstraints constraintsPreviewPanel = new java.awt.GridBagConstraints();
         constraintsPreviewPanel.gridx = 1; constraintsPreviewPanel.gridy = 0;
         constraintsPreviewPanel.gridwidth = 1;
-        constraintsPreviewPanel.anchor = java.awt.GridBagConstraints.NORTHEAST;
+        constraintsPreviewPanel.fill = java.awt.GridBagConstraints.BOTH;
+        constraintsPreviewPanel.weightx = .5;
         constraintsPreviewPanel.insets = new java.awt.Insets(4, 4, 4, 4);
         add(getPreviewPanel(), constraintsPreviewPanel);
         

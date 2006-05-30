@@ -107,8 +107,7 @@ private void initialize() {
 		setLayout(new java.awt.GridBagLayout());
         
 		setPreferredSize(new java.awt.Dimension(540, 630));
-		setSize(540, 630);
-		setMinimumSize(new java.awt.Dimension(540, 630));
+		
 	} catch (java.lang.Throwable ivjExc) {
 		handleException(ivjExc);
 	}
