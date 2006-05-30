@@ -7,9 +7,9 @@ import java.util.*;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.PoolManager;
-import com.cannontech.database.SqlStatement;
+import com.cannontech.database.*;
 import com.cannontech.database.cache.StarsDatabaseCache;
+import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.contact.Contact;
 import com.cannontech.database.db.customer.*;
@@ -732,6 +732,7 @@ public class CustomerAccount extends DBPersistent {
         Connection conn = null;
         ResultSet rset = null;
         int count = 0; 
+        
         try 
         {
             conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
@@ -745,6 +746,7 @@ public class CustomerAccount extends DBPersistent {
             while(rset.next())
             {
                 accounts.add(new Integer(rset.getInt(1)));
+                count++;
             }
         }
         catch( Exception e )
@@ -797,6 +799,7 @@ public class CustomerAccount extends DBPersistent {
             while(rset.next())
             {
                 accounts.add(new Integer(rset.getInt(1)));
+                count++;
             }
         }
         catch( Exception e )
@@ -830,8 +833,7 @@ public class CustomerAccount extends DBPersistent {
         String sql = "SELECT AccountID FROM " + TABLE_NAME + ", " + Customer.TABLE_NAME +
         ", " + CICustomerBase.TABLE_NAME + 
         " WHERE " + CustomerAccount.TABLE_NAME + ".CustomerID = " + Customer.TABLE_NAME +
-        ".CustomerID AND NOT " + CICustomerBase.TABLE_NAME + ".CustomerID = " + Customer.TABLE_NAME +
-        ".CustomerID";
+        ".CustomerID AND " + Customer.TABLE_NAME + ".CustomerTypeID = " + CustomerTypes.CUSTOMER_RESIDENTIAL;
 
         ArrayList accountList = new ArrayList();
         PreparedStatement pstmt = null;
@@ -850,11 +852,12 @@ public class CustomerAccount extends DBPersistent {
             while(rset.next())
             {
                 accounts.add(new Integer(rset.getInt(1)));
+                count++;
             }
         }
         catch( Exception e )
         {
-            CTILogger.error( "Error retrieving accounts with ciCustomerType res: " + e.getMessage(), e );
+            CTILogger.error( "Error retrieving accounts with res customer type: " + e.getMessage(), e );
         }
         finally 
         {
