@@ -12,6 +12,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.cache.functions.PAOFuncs;
+import com.cannontech.database.db.company.EnergyCompany;
 import com.cannontech.database.db.device.lm.LMProgramDirectGroup;
 import com.cannontech.database.db.macro.GenericMacro;
 import com.cannontech.database.db.macro.MacroTypes;
@@ -195,7 +196,7 @@ public class LoadGroupModel extends ReportModelBase
 //				if(!isShowAllActiveRestore())
 //					sql.append(" AND LMCH.ActiveRestore IN ('R', 'T', 'O', 'M') ");
 
-				if( getEnergyCompanyID() != null)
+				if( getEnergyCompanyID() != null && getEnergyCompanyID().intValue() != EnergyCompany.DEFAULT_ENERGY_COMPANY_ID )
 				{
 					sql.append("AND (LMCH.PAOBJECTID IN " +
 					"(SELECT DISTINCT DG.LMGROUPDEVICEID " +
