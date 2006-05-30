@@ -5,6 +5,7 @@ package com.cannontech.message.notif;
  */
 import java.util.Vector;
 
+import com.cannontech.message.util.VectorExtract;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
@@ -75,7 +76,8 @@ public class DefColl_NotifEmailMsg extends com.cannontech.message.util.DefineCol
 		nEmailMsg.setBody( (String)vstr.restoreObject(SimpleMappings.CString) );
 		nEmailMsg.setTo_CC( (String)vstr.restoreObject(SimpleMappings.CString) );
 		nEmailMsg.setTo_BCC( (String)vstr.restoreObject(SimpleMappings.CString) );
-		nEmailMsg.setAttachments( (Vector)vstr.restoreObject( polystr ) );
+//		nEmailMsg.setAttachments( (Vector)vstr.restoreObject( polystr ) );
+        nEmailMsg.setAttachments( VectorExtract.extractVector(vstr, polystr) );
 	}
 	
 	/**

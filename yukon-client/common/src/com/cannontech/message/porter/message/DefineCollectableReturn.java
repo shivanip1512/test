@@ -5,6 +5,7 @@ package com.cannontech.message.porter.message;
  * Creation date: (5/17/00 1:15:05 PM)
  * @author: 
  */
+import com.cannontech.message.util.VectorExtract;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
@@ -80,8 +81,9 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
  
 	Return ret = (Return) obj;
 
-	ret.setVector( (java.util.Vector)vstr.restoreObject( polystr ) );
-
+//	ret.setVector( (java.util.Vector)vstr.restoreObject( polystr ) );
+    ret.setVector( VectorExtract.extractVector(vstr, polystr) );
+    
 	ret.setDeviceID( vstr.extractInt() );
 	ret.setCommandString( (String) vstr.restoreObject(SimpleMappings.CString));
 	ret.setResultString( (String) vstr.restoreObject( SimpleMappings.CString));
