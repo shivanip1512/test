@@ -19,6 +19,7 @@ import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.Validate;
 import org.apache.myfaces.custom.tree2.HtmlTree;
 import org.apache.myfaces.custom.tree2.TreeModel;
 import org.apache.myfaces.custom.tree2.TreeModelBase;
@@ -27,10 +28,8 @@ import org.apache.myfaces.custom.tree2.TreeNodeBase;
 import org.apache.myfaces.custom.tree2.TreeStateBase;
 
 import com.cannontech.cbc.point.CBCPointFactory;
-import com.cannontech.cbc.web.CapControlCache;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.TransactionException;
-import com.cannontech.database.cache.functions.DeviceFuncs;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.data.capcontrol.CCYukonPAOFactory;
@@ -67,12 +66,12 @@ import com.cannontech.servlet.nav.CBCNavigationUtil;
 import com.cannontech.servlet.nav.DBEditorTypes;
 import com.cannontech.web.db.CBCDBObjCreator;
 import com.cannontech.web.db.PointFuncsWrapper;
-import com.cannontech.web.db.PointNullHelper;
 import com.cannontech.web.editor.point.PointLists;
 import com.cannontech.web.exceptions.AltBusNeedsSwitchPointException;
 import com.cannontech.web.exceptions.CBCExceptionMessages;
 import com.cannontech.web.exceptions.FormWarningException;
 import com.cannontech.web.exceptions.MultipleDevicesOnPortException;
+import com.cannontech.web.exceptions.PAODoesntHaveNameException;
 import com.cannontech.web.exceptions.PortDoesntExistException;
 import com.cannontech.web.exceptions.SameMasterSlaveCombinationException;
 import com.cannontech.web.exceptions.SerialNumberExistsException;
@@ -80,7 +79,6 @@ import com.cannontech.web.util.CBCSelectionLists;
 import com.cannontech.web.util.JSFParamUtil;
 import com.cannontech.web.util.JSFTreeUtils;
 import com.cannontech.web.wizard.CBCWizardModel;
-import com.cannontech.yukon.cbc.SubBus;
 
 /**
  * @author ryan
@@ -854,7 +852,13 @@ public class CapControlForm extends DBEditorForm {
                 
                 }
 
-                
+        		if (getDbPersistent() instanceof ICapBankController) {
+
+        			setDbPersistent( (YukonPAObject) DeviceTypesFuncs.changeCBCType(PAOGroups.getPAOTypeString( getCBControllerEditor().getDeviceType() ) , 
+    						(ICapBankController)getDbPersistent()));
+    			
+    			
+    			}
             }
 			
             if (isDualSubBusEdited()) {
@@ -908,6 +912,7 @@ public class CapControlForm extends DBEditorForm {
 	/**
 	 * Creates extra points or any other supporting object for the given parent
 	 * based on the paoType
+	 * @throws PAODoesntHaveNameException 
 	 */
 	private void createPostItems(int paoType, int parentID,
 			final FacesMessage facesMsg) throws TransactionException {
@@ -931,9 +936,10 @@ public class CapControlForm extends DBEditorForm {
 	/**
 	 * Creates extra supporting object(s) for the given parent based on the
 	 * paoType
+	 * @throws PAODoesntHaveNameException 
 	 */
 	private void createPreItems(int paoType, DBPersistent dbObj,
-			final FacesMessage facesMsg) throws TransactionException {
+			final FacesMessage facesMsg) throws TransactionException, PAODoesntHaveNameException {
 
 		// store the objects we add to the DB
 		CBCDBObjCreator cbObjCreator = new CBCDBObjCreator(getWizData());
@@ -941,6 +947,21 @@ public class CapControlForm extends DBEditorForm {
 		SmartMultiDBPersistent smartMulti = cbObjCreator
 				.createParentItems(paoType);
 
+		//make sure we are inserting the right object
+		try {			
+			Validate.notNull(smartMulti.getOwnerDBPersistent());
+			errorCheckOnCreate(smartMulti.getOwnerDBPersistent(), cbObjCreator.getCbcWizardModel().getNestedWizard());
+		} 
+		catch (IllegalArgumentException nullArg) {
+		//don't do anything since we just want to avoid exception thrown to the user
+		
+		}
+		catch (PAODoesntHaveNameException e) {
+			
+			throw e;
+		}
+		
+		
 		addDBObject(smartMulti, facesMsg);
 
 		// set the parent to use the newly created supporting items
@@ -1005,8 +1026,8 @@ public class CapControlForm extends DBEditorForm {
 
 				((YukonPAObject) dbObj).setDisabled(getWizData().getDisabled()
 						.booleanValue());
-				((YukonPAObject) dbObj).setPAOName(getWizData().getName());
-
+				
+				
 				// for CBCs that have a portID with it
 				if (DeviceTypesFuncs.cbcHasPort(paoType))
 					((ICapBankController) dbObj).setCommID(getWizData()
@@ -1014,7 +1035,11 @@ public class CapControlForm extends DBEditorForm {
                 
 
 				createPreItems(paoType, dbObj, facesMsg);
-
+				
+				//make sure we configured the object correctly
+				//before we insert it into DB
+				errorCheckOnCreate(dbObj, getWizData());
+	
 				addDBObject(dbObj, facesMsg);
 				itemID = ((YukonPAObject) dbObj).getPAObjectID().intValue();
 				editorType = DBEditorTypes.EDITOR_CAPCONTROL;
@@ -1040,7 +1065,12 @@ public class CapControlForm extends DBEditorForm {
 			// redirect to this form as the editor for this new DB object
 			return "cbcEditor";
 
-		} catch (TransactionException te) {
+		} 
+		catch (PAODoesntHaveNameException noNameE){
+			facesMsg.setDetail(noNameE.getMessage());
+			facesMsg.setSeverity(FacesMessage.SEVERITY_ERROR);
+		}
+		catch (TransactionException te) {
 			// do nothing since the appropriate actions was taken in the super
 		} finally {
 			FacesContext.getCurrentInstance()
@@ -1048,6 +1078,22 @@ public class CapControlForm extends DBEditorForm {
 		}
 
 		return ""; // go nowhere since this action failed
+	}
+
+
+	/**
+	 * @param dbObj
+	 * @param wizData TODO
+	 * @throws PAODoesntHaveNameException
+	 */
+	private void errorCheckOnCreate(DBPersistent dbObj, CBCWizardModel wizData) throws PAODoesntHaveNameException {
+		if (!getWizData().getName().equalsIgnoreCase("")){
+			((YukonPAObject) dbObj).setPAOName(wizData.getName());			
+		}
+		else {		
+			
+			throw new PAODoesntHaveNameException();
+		}
 	}
 
 	/**
@@ -1470,7 +1516,10 @@ public class CapControlForm extends DBEditorForm {
 
 		for (int i = 0; i < unassignedBankIDs.length; i++) {
 
-			unassignedBanks.add(PAOFuncs.getLiteYukonPAO(unassignedBankIDs[i]));
+		
+			LiteYukonPAObject liteYukonPAO = PAOFuncs.getLiteYukonPAO(unassignedBankIDs[i]);
+			if (liteYukonPAO != null)
+				unassignedBanks.add(liteYukonPAO);
 		}
 		Collections.sort(unassignedBanks, LiteComparators.liteStringComparator);
 
@@ -1875,7 +1924,11 @@ public class CapControlForm extends DBEditorForm {
 
     protected void checkForErrors() throws PortDoesntExistException, MultipleDevicesOnPortException, 
                                            SameMasterSlaveCombinationException, SerialNumberExistsException, SQLException { 
-        getCBControllerEditor().checkForErrors();
+        if (getDbPersistent() != null)
+		{
+			getCBControllerEditor().checkForErrors();
+		}
+        
     }
     
     public String getPaoName() {
