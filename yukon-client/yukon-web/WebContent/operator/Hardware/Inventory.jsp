@@ -160,7 +160,7 @@ function applyOrdering(form)
 				                </tr>
 							</table>
 				      		<br>
-				      		<c:if test="${inventoryBean.viewResults && !inventoryBean.overHardwareDisplayLimit}">
+				      		<c:if test="${inventoryBean.viewResults}">
 					      		<table width="80%" border="0" cellspacing="0" cellpadding="0">
 						      		<tr>
 			                    		<td width="75%"> 
@@ -199,7 +199,7 @@ function applyOrdering(form)
 		                		</table>
 					 		</c:if>
 	              		</form>
-				  		<c:if test="${inventoryBean.viewResults && !inventoryBean.overHardwareDisplayLimit}">
+				  		<c:if test="${inventoryBean.viewResults  && inventoryBean.differentOrigin}">
 					  		<table width="80%" border="0" cellspacing="0" cellpadding="0" class="MainText">
 		                		<tr>
 				                	<td>Click on a serial # (device name) to view the hardware details, 
