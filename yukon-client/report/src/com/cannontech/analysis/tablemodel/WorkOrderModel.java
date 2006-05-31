@@ -55,7 +55,7 @@ public class WorkOrderModel extends ReportModelBase {
 	private static String title = "Work Order";
 	
 	/** Number of columns */
-	protected final int NUMBER_COLUMNS = 30;
+	protected final int NUMBER_COLUMNS = 31;
 	
 	/** Enum values for column representation */
 	public final static int EC_NAME_COLUMN = 0;
