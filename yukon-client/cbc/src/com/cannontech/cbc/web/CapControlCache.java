@@ -18,7 +18,10 @@ import java.util.Vector;
 
 import javax.swing.Timer;
 
+import org.apache.commons.lang.Validate;
+
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.WebUpdatedDAO;
 import com.cannontech.clientutils.commonutils.ModifiedDate;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.NativeIntVector;
@@ -45,7 +48,7 @@ import com.cannontech.yukon.cbc.StreamableCapObject;
 import com.cannontech.yukon.cbc.SubBus;
 import com.cannontech.yukon.conns.ConnPool;
 
-public class CapControlCache implements MessageListener, ActionListener
+public class CapControlCache implements MessageListener, ActionListener, CapControlDAO
 {
 	private static final int STARTUP_REF_RATE = 15 * 1000;
 	private static final int NORMAL_REF_RATE = 60 * 5 * 1000; //5 minutes
@@ -62,6 +65,10 @@ public class CapControlCache implements MessageListener, ActionListener
 	private HashMap subToBankMap = new HashMap();
 	// Map<areaName(String), subIDs(NativeIntVector)>
 	private HashMap subIDToAreaMap = new HashMap();
+	
+//	private LiteYukonUser yukonUser = null;
+	
+	private CBCWebUpdatedObjectMap updatedObjMap = null;
 
 
 	// Vector:String
@@ -114,9 +121,8 @@ public StreamableCapObject getCapControlPAO( Integer paoID )
 	return retObj;
 }
 
-/**
- * 
- * @return Feeder
+/* (non-Javadoc)
+ * @see com.cannontech.cbc.web.CapControlDAO#getFeeder(java.lang.Integer)
  */
 public Feeder getFeeder( Integer feederID )
 {
@@ -205,9 +211,8 @@ public synchronized CapBankDevice[] getCapBanksBySub(Integer subBusID)
 	return retVal;
 }
 
-/**
- * Returns all SubBuses for a given Area
- * 
+/* (non-Javadoc)
+ * @see com.cannontech.cbc.web.CapControlDAO#getSubsByArea(java.lang.String)
  */
 public synchronized SubBus[] getSubsByArea(String area)
 {
@@ -436,6 +441,7 @@ private void handleDeletedSubs( int itemID )
 /**
  * Process multiple SubBuses
  * @param busesMsg
+ * @param owner TODO
  */
 private void handleSubBuses( CBCSubstationBuses busesMsg )
 {
@@ -478,6 +484,7 @@ private void handleCBCCommand( CBCCommand cbcCmd ) {
  */
 private synchronized void handleSubBus( SubBus subBus ) 
 {	
+	Validate.notNull(subBus, "subBus can't be null");
 	//remove the old subBus from the area hashmap just in case the area changed
 	removeSubIDToAreaMap( subBus.getCcId() );
 
@@ -503,6 +510,8 @@ private synchronized void handleSubBus( SubBus subBus )
 	subToBankMap.put( subBus.getCcId(), capBankIDs.toArray() );
 
 	addSubIDToAreaMap( subBus );
+	//server side update to the objMap
+	getUpdatedObjMap().handleCBCChangeEvent(subBus, new Date());
 }
 
 /**
@@ -620,6 +629,10 @@ public String getParentNames(int id){
     }
  }
 
-
+public CBCWebUpdatedObjectMap getUpdatedObjMap() {
+	if (updatedObjMap == null)
+		updatedObjMap = new CBCWebUpdatedObjectMap();
+	return updatedObjMap;
+}
 
 }
