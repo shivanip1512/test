@@ -7,14 +7,19 @@ package com.cannontech.servlet;
  * @author: ryan
  */ 
 import java.io.Writer;
+import java.util.Date;
 
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
 import com.cannontech.cbc.web.CBCCommandExec;
 import com.cannontech.cbc.web.CBCWebUtils;
 import com.cannontech.cbc.web.CapControlCache;
+import com.cannontech.cbc.web.CapControlDAO;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.WebUpdatedDAO;
 import com.cannontech.common.constants.LoginController;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -23,7 +28,6 @@ import com.cannontech.servlet.nav.DBEditorNav;
 import com.cannontech.servlet.xml.DynamicUpdate;
 import com.cannontech.servlet.xml.ResultXML;
 import com.cannontech.util.ParamUtil;
-import com.cannontech.web.navigation.CtiNavObject;
 import com.cannontech.yukon.cbc.CBCDisplay;
 import com.cannontech.yukon.cbc.CBCUtils;
 import com.cannontech.yukon.cbc.CapBankDevice;
@@ -206,18 +210,31 @@ private String createXMLResponse(HttpServletRequest req, HttpServletResponse res
 
 	String type = ParamUtil.getString( req, "type" );
 	String method = ParamUtil.getString( req, "method" );
-	String[] ids = ParamUtil.getStrings( req, "id" );
-
+	String[] allIds = ParamUtil.getStrings( req, "id" );
+	Date timeFrame = new Date(ParamUtil.getLong(req, "lastUpdate"));
+	//ParamUtil.getInts( req, "id");
+	//filter the ids into the ones that has been updated by the server 
+	//since the last update
+	WebUpdatedDAO updatedObjMap = getCapControlCache().getUpdatedObjMap();		
+	String[] updatedIds = updatedObjMap.getUpdatedIdsSince (allIds, timeFrame);
 	try
 	{
-		ResultXML[] xmlMsgs = new ResultXML[ ids.length ];
-		boolean fnd = false;
-		
-		for( int i = 0; i < ids.length; i++, fnd = false ) {
+		ResultXML[] xmlMsgs = new ResultXML[ updatedIds.length ];
+		//check to see if the id was updated
+				
+		for( int i = 0; i < updatedIds.length; i++) {
 			//go get the XML data for the specific type of element
-			if(!fnd) fnd |= handleSubGET(ids[i], xmlMsgs, i);
-			if(!fnd) fnd |= handleFeederGET(ids[i], xmlMsgs, i);
-			if(!fnd) fnd |= handleCapBankGET(ids[i], xmlMsgs, i);
+			if(handleSubGET(updatedIds[i], xmlMsgs, i)) {
+				continue;
+			}
+				
+			if (handleFeederGET(updatedIds[i], xmlMsgs, i)) {
+				continue;
+			}
+			
+			if (handleCapBankGET(updatedIds[i], xmlMsgs, i)) {
+				continue;
+			}
 		}
 
 
@@ -356,6 +373,10 @@ private String createNavigation( HttpServletRequest req ) {
 	}
 	else if( DBEditorNav.PAGE_TYPE_DELETE.equals(pageType) ) {
 		retURL = DBEditorNav.getDeleteURL(modType);
+	}
+	
+	else if (DBEditorNav.PAGE_TYPE_COPY.equals(pageType)) {
+		retURL = DBEditorNav.getCopyURL(modType);
 	}
 
 	//add any additional parameters need for the page we are redirecting to
