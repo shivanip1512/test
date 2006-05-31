@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -13,6 +14,8 @@ import java.util.List;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.clientutils.CTILogger;
@@ -53,7 +56,7 @@ public class CBCWebUtils implements CBCParamValues
 	 *  or SUBUBUS id
 	 * 
 	 */
-	public static synchronized String genGraphURL( int theId, CapControlCache theCache, String period, String type )
+	public static synchronized String genGraphURL( int theId, CapControlDAO theCache, String period, String type )
 	{
 		if( theCache == null )
 			return null;
@@ -80,7 +83,7 @@ public class CBCWebUtils implements CBCParamValues
 		return retURL;
 	}
 
-	public static synchronized String genGraphURL( int theId, CapControlCache theCache, String type )
+	public static synchronized String genGraphURL( int theId, CapControlDAO theCache, String type )
 	{
 		return genGraphURL( theId, theCache, ServletUtil.PREVTHIRTYDAYS, type );
 	}
@@ -260,7 +263,7 @@ public class CBCWebUtils implements CBCParamValues
 	 * Returns events that have occured on the the given PaoID. The events
      * will be retrieved from the SystemLog table
 	 */
-	public static synchronized SystemLogData[] getRecentControls( int theId, CapControlCache theCache, int prevDayCount )
+	public static synchronized SystemLogData[] getRecentControls( int theId, CapControlDAO theCache, int prevDayCount )
 	{
 		SystemLogData[] retLog = new SystemLogData[0];
 		if( theCache == null )
@@ -295,10 +298,12 @@ public class CBCWebUtils implements CBCParamValues
 		return retLog;
 	}
 	
-	public static List getCCEventsForPAO (Long _paoId_, String type, CapControlCache theCache, int prevDaysCount) {
+	public static List getCCEventsForPAO (Long _paoId_, String type, CapControlDAO theCache, int prevDaysCount) {
 	    String sqlStmt ="SELECT * FROM " + CCEventLog.TABLE_NAME + " WHERE"; 
 	    List ccEvents = new ArrayList(100);
 	    long startTS = ServletUtil.getDate(- prevDaysCount).getTime();
+	    java.sql.Timestamp timestamp = new java.sql.Timestamp( startTS );
+			    
 	    if (type.equalsIgnoreCase("CCFEEDER") || type.equalsIgnoreCase("CCSUBBUS")) {
 		    if (type.equalsIgnoreCase("CCFEEDER")){
 		    	sqlStmt += " FeederId = ?";
@@ -306,10 +311,12 @@ public class CBCWebUtils implements CBCParamValues
 		    else if (type.equalsIgnoreCase("CCSUBBUS")){
 		    	sqlStmt += " SubId = ?";
 		    }
-		    sqlStmt += " AND DateTime >= " + "'" + new java.sql.Timestamp( startTS ) + "'";
+		    sqlStmt += " AND DateTime >= ? ";
+		    
 		    sqlStmt += " ORDER BY " + CCEventLog.COLUMNS [CCEventLog.COL_DATETIME] + " DESC";
-		    JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();            	    
-		    ccEvents = yukonTemplate.query(sqlStmt, new Long[] {_paoId_},
+		    JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
+		    
+		    ccEvents = yukonTemplate.query(sqlStmt, new Object[] {_paoId_, timestamp}, new int[] {Types.BIGINT, Types.TIMESTAMP},
 		    		new RowMapper() {
 		    			public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
 		    				CCEventLog row = new CCEventLog(); 
@@ -329,13 +336,13 @@ public class CBCWebUtils implements CBCParamValues
 	    }
 	    else if (type.equalsIgnoreCase("CAP BANK")){
 	    	sqlStmt = "SELECT * FROM " + SystemLog.TABLE_NAME + " WHERE PointId = ? ";
-	    	sqlStmt += " AND DateTime >= " + "'" + new java.sql.Timestamp( startTS ) + "'";
+	    	sqlStmt += " AND DateTime >= ?";
 	    	sqlStmt += " ORDER BY " + SystemLog.COLUMNS[SystemLog.COL_DATETIME]+ " DESC";
 	    	Integer statusPtId = getStatusPointFromPaoId(_paoId_, theCache);  		
 			if (statusPtId != null && statusPtId.intValue() >= 0) {
 				JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();  
 			
-				ccEvents = yukonTemplate.query(sqlStmt, new Integer[] {statusPtId},
+				ccEvents = yukonTemplate.query(sqlStmt, new Object[] {statusPtId, timestamp}, new int[] {Types.INTEGER, Types.TIMESTAMP},
 			    		new RowMapper() {
 			    			public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
 			    				SystemLog row = new SystemLog();
@@ -365,7 +372,7 @@ public class CBCWebUtils implements CBCParamValues
 	 * @param theCache
 	 * @return TODO
 	 */
-	private static synchronized Integer getStatusPointFromPaoId(Long _paoId_, CapControlCache theCache) {
+	private static synchronized Integer getStatusPointFromPaoId(Long _paoId_, CapControlDAO theCache) {
 		Integer statusPtId = null;
 		StreamableCapObject obj = theCache.getCapControlPAO(new Integer (_paoId_.intValue() ));
 			if (obj instanceof CapBankDevice) {
