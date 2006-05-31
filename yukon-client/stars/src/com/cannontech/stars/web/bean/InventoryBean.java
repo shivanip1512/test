@@ -77,7 +77,8 @@ public class InventoryBean {
     private boolean viewResults = false;
     private boolean shipmentCheck = false;
     private boolean overHardwareDisplayLimit = false;
-	
+	private boolean differentOrigin = true;
+    
 	/**
 	 * Comparator of serial # and device names. Serial # is always "less than"
 	 * device name. To compare two serial #s, try to convert them into decimal
@@ -445,7 +446,7 @@ public class InventoryBean {
                 
                 if (filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_APPLIANCE_TYPE) 
                 {
-                    List<Integer> accounts = new ArrayList<Integer>();
+                    HashMap<Integer, Integer> accounts = new HashMap<Integer, Integer>();
                     /*If there is already zero hardware, by bother the db at all?*/
                     if(hardwares.size() > 0)
                          accounts = ApplianceBase.getAllAccountIDsFromApplianceCategory(specificFilterID.intValue());
@@ -457,13 +458,9 @@ public class InventoryBean {
                         LiteInventoryBase liteInv = (LiteInventoryBase)
                                 (showEnergyCompany? ((Pair)hardwares.get(i)).getFirst() : hardwares.get(i));
                         
-                        for(int j = 0; j < accounts.size(); j++)
+                        if(accounts.get(liteInv.getAccountID()) != null && liteInv instanceof LiteStarsLMHardware)
                         {
-                            if(accounts.get(j).intValue() == liteInv.getAccountID())
-                            {
-                                filteredHardware.add( hardwares.get(i) );
-                                break;
-                            }
+                            filteredHardware.add( hardwares.get(i) );
                         }
                     }
                     
@@ -486,7 +483,7 @@ public class InventoryBean {
                             if(liteInv.getLiteID() == warehousedInventory.get(j).intValue())
                             {
                                 filteredHardware.add( hardwares.get(i) );
-//                              let's try to speed this up over time
+                                //let's try to speed this up over time
                                 warehousedInventory.remove(j);
                                 break;
                             }
@@ -495,7 +492,7 @@ public class InventoryBean {
                 }
                 else if( filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_CUST_TYPE)
                 {
-                    List<Integer> accounts = new ArrayList<Integer>();
+                    HashMap<Integer, Integer> accounts = new HashMap<Integer, Integer>();
                     /*If there is already zero hardware, by bother the db at all?*/
                     if(hardwares.size() > 0)
                     {
@@ -513,19 +510,15 @@ public class InventoryBean {
                         LiteInventoryBase liteInv = (LiteInventoryBase)
                             (showEnergyCompany? ((Pair)hardwares.get(i)).getFirst() : hardwares.get(i));
                          
-                        for(int j = 0; j < accounts.size(); j++)
+                        if(accounts.get(liteInv.getAccountID()) != null && liteInv instanceof LiteStarsLMHardware)
                         {
-                            if(accounts.get(j).intValue() == liteInv.getAccountID())
-                            {
-                                filteredHardware.add( hardwares.get(i) );
-                                break;
-                            }
+                            filteredHardware.add( hardwares.get(i) );
                         }
                     }
                 }
                 else if( filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_POSTAL_CODES)
                 {
-                    List<Integer> accounts = new ArrayList<Integer>();
+                    HashMap<Integer, Integer> accounts = new HashMap<Integer, Integer>();
                     /*If there is already zero hardware, by bother the db at all?*/
                     if(hardwares.size() > 0)
                          accounts = CustomerAccount.getAccountIDsFromZipCode(specificFilterString);
@@ -535,13 +528,9 @@ public class InventoryBean {
                         LiteInventoryBase liteInv = (LiteInventoryBase)
                             (showEnergyCompany? ((Pair)hardwares.get(i)).getFirst() : hardwares.get(i));
                          
-                        for(int j = 0; j < accounts.size(); j++)
+                        if(accounts.get(liteInv.getAccountID()) != null && liteInv instanceof LiteStarsLMHardware)
                         {
-                            if(accounts.get(j).intValue() == liteInv.getAccountID())
-                            {
-                                filteredHardware.add( hardwares.get(i) );
-                                break;
-                            }
+                            filteredHardware.add( hardwares.get(i) );
                         }
                     }
                 }
@@ -1270,16 +1259,30 @@ public class InventoryBean {
         
     }
 
-    public boolean isShipmentCheck() {
+    public boolean isShipmentCheck() 
+    {
         return shipmentCheck;
     }
 
-    public void setShipmentCheck(boolean shipmentCheck) {
+    public void setShipmentCheck(boolean shipmentCheck) 
+    {
         this.shipmentCheck = shipmentCheck;
     }
 
-    public boolean isOverHardwareDisplayLimit() {
+    public boolean isOverHardwareDisplayLimit() 
+    {
         overHardwareDisplayLimit = Integer.parseInt(numberOfRecords) > MAX_ALLOW_DISPLAY;
         return overHardwareDisplayLimit;
+    }
+    
+    public boolean isDifferentOrigin() 
+    {
+        setViewResults(!isOverHardwareDisplayLimit());
+        return differentOrigin;
+    }
+
+    public void setDifferentOrigin(boolean truth) 
+    {
+        this.differentOrigin = differentOrigin;
     }
 }
