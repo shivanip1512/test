@@ -1,5 +1,24 @@
 package com.cannontech.database.data.device;
 
+import java.sql.SQLException;
+import java.util.Vector;
+
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionException;
+import com.cannontech.database.data.capcontrol.CapBankController;
+import com.cannontech.database.data.capcontrol.CapBankController702x;
+import com.cannontech.database.data.capcontrol.ICapBankController;
+import com.cannontech.database.data.device.lm.IGroupRoute;
+import com.cannontech.database.data.multi.SmartMultiDBPersistent;
+import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.data.point.PointFactory;
+import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.db.capcontrol.DeviceCBC;
+import com.cannontech.database.db.device.DeviceAddress;
+
 /**
  * This type was created in VisualAge.
  */
@@ -895,4 +914,334 @@ public final static boolean isReceiver(int deviceType)
 			return true;
 	return false;
 }
+
+
+public static  ICapBankController changeCBCType (String newType, ICapBankController val) {
+	return (ICapBankController) changeType (newType, val, null, null, false, false, false);
+}
+
+public static Object changeType (String newType, Object val, DBPersistent extraObj, 
+										Vector extra410Objs, boolean loadProfileExists, 
+												boolean blinkCountExists, boolean totalKWhExists) {
+	
+
+	String type = newType;
+
+
+		DBPersistent oldDevice = null;
+		
+		//get a deep copy of val
+		try
+		{
+			oldDevice =
+					(DBPersistent)CtiUtilities.copyObject( val );
+
+			Transaction t =
+				Transaction.createTransaction(
+					Transaction.DELETE_PARTIAL,
+					((DBPersistent) val));
+
+			val = t.execute();
+		}
+		catch( Exception e )
+		{
+			CTILogger.error( e );
+			CTILogger.info(
+					"*** An exception occured when trying to change type of " +
+					val + ", action aborted.");
+			
+			return val;
+		}
+
+		//create a brand new DeviceBase object
+		val = DeviceFactory.createDevice( PAOGroups.getDeviceType(type) );
+		
+		//set all the device specific stuff here
+		((DeviceBase) val).setDevice(
+			((DeviceBase) oldDevice).getDevice() );
+			
+		((DeviceBase) val).setPAOName(
+			((DeviceBase) oldDevice).getPAOName() );
+
+		((DeviceBase) val).setDisableFlag(
+			((DeviceBase) oldDevice).getPAODisableFlag() );
+
+		((DeviceBase) val).setPAOStatistics(
+			((DeviceBase) oldDevice).getPAOStatistics() );
+
+		//remove then add the new elements for PAOExclusion
+		((DeviceBase) val).getPAOExclusionVector().removeAllElements();
+		((DeviceBase) val).getPAOExclusionVector().addAll(
+			((DeviceBase) oldDevice).getPAOExclusionVector() );
+
+		if( val instanceof CarrierBase
+			 && oldDevice instanceof CarrierBase )
+		{
+			((CarrierBase) val).getDeviceCarrierSettings().setAddress(
+				((CarrierBase) oldDevice).getDeviceCarrierSettings().getAddress() );
+
+			((CarrierBase) val).getDeviceRoutes().setRouteID(
+				((CarrierBase) oldDevice).getDeviceRoutes().getRouteID() );
+
+		}
+		else if( val instanceof IGroupRoute
+		          && oldDevice instanceof IGroupRoute )
+		{
+			 ((IGroupRoute) val).setRouteID(
+					((IGroupRoute) oldDevice).getRouteID() );
+		}
+		else if( val instanceof IDLCBase
+			 	  && oldDevice instanceof IDLCBase)
+		{
+			 ((IDLCBase) val).getDeviceIDLCRemote().setAddress(
+					((IDLCBase) oldDevice).getDeviceIDLCRemote().getAddress() );
+		}
+			 
+		if( val instanceof RemoteBase
+	 	    && oldDevice instanceof RemoteBase )
+		{
+			 ((RemoteBase) val).getDeviceDirectCommSettings().setPortID(
+					((RemoteBase) oldDevice).getDeviceDirectCommSettings().getPortID() );			 
+		}
+
+		if( val instanceof IDeviceMeterGroup
+	 	    && oldDevice instanceof IDeviceMeterGroup )
+		{
+			 ((IDeviceMeterGroup) val).setDeviceMeterGroup(
+					((IDeviceMeterGroup) oldDevice).getDeviceMeterGroup() );			 			
+		}
+
+		if( val instanceof TwoWayDevice
+	 	    && oldDevice instanceof TwoWayDevice )
+		{
+			((TwoWayDevice) val).setDeviceScanRateMap(
+					((TwoWayDevice) oldDevice).getDeviceScanRateMap() );
+		}
+		
+		if( val instanceof CapBankController)
+		{
+			((CapBankController) val).setDeviceCBC(((CapBankController)oldDevice).getDeviceCBC());
+		}
+		
+		//support for the 702x devices - wasn't in the old device change type panel
+		if (val instanceof CapBankController702x) {
+			CapBankController702x device702 = (CapBankController702x) val;
+			DeviceCBC deviceCBC = ((CapBankController702x) oldDevice).getDeviceCBC();		
+			DeviceAddress deviceAddress = ((CapBankController702x) oldDevice).getDeviceAddress();
+			device702.setDeviceAddress( deviceAddress);			
+			device702.setDeviceCBC( deviceCBC);	
+		}
+		
+		if( val instanceof MCT410IL)
+		{
+			Integer[] insertedIDs = new Integer[10];
+			
+			if(loadProfileExists)
+			{
+				StringBuffer lp = new StringBuffer(((MCTBase)oldDevice).getDeviceLoadProfile().getLoadProfileCollection());
+				lp.delete(1, 4);
+				lp.append("NNN");
+				((MCT410IL)val).getDeviceLoadProfile().setLoadProfileCollection(lp.toString());
+				((MCT410IL)val).getDeviceLoadProfile().setLoadProfileDemandRate(((MCTBase)oldDevice).getDeviceLoadProfile().getLoadProfileDemandRate());
+			}
+			else
+			{
+				((MCT410IL)val).getDeviceLoadProfile().setLoadProfileCollection("NNNN");
+				((MCT410IL)val).getDeviceLoadProfile().setLoadProfileDemandRate(new Integer(3600));
+			}
+			
+			((MCT410IL)val).getDeviceLoadProfile().setVoltageDmdRate(new Integer(3600));
+			((MCT410IL)val).getDeviceLoadProfile().setVoltageDmdInterval(new Integer(60));
+			
+			try
+			{
+				for(int j = 0; j < extra410Objs.size(); j++)
+				{
+					Transaction.createTransaction(Transaction.UPDATE,
+						((DBPersistent) extra410Objs.elementAt(j))).execute();
+				}
+			
+				if(!totalKWhExists)
+				{
+					Transaction.createTransaction(Transaction.INSERT, 
+						PointFactory.createPulseAccumPoint(
+						   "kWh",
+						   ((DeviceBase) val).getDevice().getDeviceID(),
+						   new Integer(com.cannontech.database.db.point.Point.getNextPointID()),
+						   PointTypes.PT_OFFSET_TOTAL_KWH,
+						   com.cannontech.database.data.point.PointUnits.UOMID_KWH,
+						   0.1) ).execute();
+				}
+				
+				if(!blinkCountExists)	
+				{   
+					Transaction.createTransaction(Transaction.INSERT, 
+						PointFactory.createPulseAccumPoint(
+						   "Blink Count",
+						   ((DeviceBase) val).getDevice().getDeviceID(),
+						   new Integer(com.cannontech.database.db.point.Point.getNextPointID()),
+						   PointTypes.PT_OFFSET_BLINK_COUNT,
+						   com.cannontech.database.data.point.PointUnits.UOMID_COUNTS,
+						   1.0) ).execute();
+				}
+				
+				if(!loadProfileExists)
+				{
+					Transaction.createTransaction(Transaction.INSERT,  
+						PointFactory.createDmdAccumPoint(
+						   "kW-LP",
+						   ((DeviceBase) val).getDevice().getDeviceID(),
+						   new Integer(com.cannontech.database.db.point.Point.getNextPointID()),
+						   PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND,
+						   com.cannontech.database.data.point.PointUnits.UOMID_KW,
+						   0.1) ).execute();
+				}
+				
+				Transaction.createTransaction(Transaction.INSERT,  
+					PointFactory.createDmdAccumPoint(
+						"Voltage-LP",
+						((DeviceBase) val).getDevice().getDeviceID(),
+						new Integer(com.cannontech.database.db.point.Point.getNextPointID()),
+						PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND,
+						com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
+						0.1) ).execute();
+		   	
+				Transaction.createTransaction(Transaction.INSERT, 
+					PointFactory.createDmdAccumPoint(
+						"Peak kW",
+						((DeviceBase) val).getDevice().getDeviceID(),
+						new Integer(com.cannontech.database.db.point.Point.getNextPointID()),
+						PointTypes.PT_OFFSET_PEAK_KW_DEMAND,
+						com.cannontech.database.data.point.PointUnits.UOMID_KW,
+						0.1) ).execute();
+			
+				Transaction.createTransaction(Transaction.INSERT, 
+					PointFactory.createDmdAccumPoint(
+						"Max Volts",
+						((DeviceBase) val).getDevice().getDeviceID(),
+						new Integer(com.cannontech.database.db.point.Point.getNextPointID()),
+						PointTypes.PT_OFFSET_MAX_VOLT_DEMAND,
+						com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
+						0.1) ).execute();
+			
+				Transaction.createTransaction(Transaction.INSERT, 
+					PointFactory.createDmdAccumPoint(
+						"Min Volts",
+						((DeviceBase) val).getDevice().getDeviceID(),
+						new Integer(com.cannontech.database.db.point.Point.getNextPointID()),
+						PointTypes.PT_OFFSET_MIN_VOLT_DEMAND,
+						com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
+						0.1) ).execute();
+			
+				Transaction.createTransaction(Transaction.INSERT, 
+					PointFactory.createDmdAccumPoint(
+						"Frozen Peak Demand",
+						((DeviceBase) val).getDevice().getDeviceID(),
+						new Integer(com.cannontech.database.db.point.Point.getNextPointID()),
+						PointTypes.PT_OFFSET_FROZEN_PEAK_DEMAND,
+						com.cannontech.database.data.point.PointUnits.UOMID_KW,
+						0.1) ).execute();			
+			
+				Transaction.createTransaction(Transaction.INSERT, 
+					PointFactory.createDmdAccumPoint(
+						"Frozen Max Volts",
+						((DeviceBase) val).getDevice().getDeviceID(),
+						new Integer(com.cannontech.database.db.point.Point.getNextPointID()),
+						PointTypes.PT_OFFSET_FROZEN_MAX_VOLT,
+						com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
+						0.1) ).execute();
+			
+				Transaction.createTransaction(Transaction.INSERT, 
+					PointFactory.createDmdAccumPoint(
+						"Frozen Min Volts",
+						((DeviceBase) val).getDevice().getDeviceID(),
+						new Integer(com.cannontech.database.db.point.Point.getNextPointID()),
+						PointTypes.PT_OFFSET_FROZEN_MIN_VOLT,
+						com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
+						0.1) ).execute();
+			
+				Transaction.createTransaction(Transaction.INSERT, 
+					PointFactory.createDmdAccumPoint(
+						"kW",
+						((DeviceBase) val).getDevice().getDeviceID(),
+						new Integer(com.cannontech.database.db.point.Point.getNextPointID()),
+						PointTypes.PT_OFFSET_KW_DEMAND,
+						com.cannontech.database.data.point.PointUnits.UOMID_KW,
+						0.1) ).execute();
+			
+				Transaction.createTransaction(Transaction.INSERT, 
+					PointFactory.createDmdAccumPoint(
+						"Voltage",
+						((DeviceBase) val).getDevice().getDeviceID(),
+						new Integer(com.cannontech.database.db.point.Point.getNextPointID()),
+						PointTypes.PT_OFFSET_VOLTAGE_DEMAND,
+						com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
+						0.1) ).execute();
+				
+				Transaction t2 =
+					Transaction.createTransaction(
+						Transaction.ADD_PARTIAL,
+						((DBPersistent) val));
+						val = t2.execute();
+						
+				
+			}
+			catch (TransactionException e)
+			{
+				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+
+			}	
+			
+			return val;
+		}
+		
+		else
+		{//execute the actual command in the database 
+			try
+			{
+				Transaction t2 =
+					Transaction.createTransaction(
+						Transaction.ADD_PARTIAL,
+						((DBPersistent) val));
+	
+				val = t2.execute();
+	
+			}
+			catch (TransactionException e)
+			{
+				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+	
+			}
+		
+			//execute the actual command in the database to create extra objects 
+			try
+			{
+				if( extraObj != null )  {
+					Transaction.createTransaction(
+						Transaction.INSERT,
+						((DBPersistent) extraObj)).execute();
+				
+					SmartMultiDBPersistent multi = new SmartMultiDBPersistent();
+					multi.addDBPersistent( (DBPersistent)val );
+					multi.addDBPersistent( extraObj );
+					multi.setOwnerDBPersistent( (DBPersistent)val );
+					
+					return multi;
+				}
+	
+			}
+			catch (TransactionException e)
+			{
+				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+	
+			}
+	
+			return val;
+		}
+	}
+
+
+
+
+
 }
