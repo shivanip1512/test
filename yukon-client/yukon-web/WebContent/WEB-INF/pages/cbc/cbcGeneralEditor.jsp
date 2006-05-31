@@ -1,7 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h" %>
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %>
 <%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x" %>
-
+<%@ page import="com.cannontech.database.data.device.DeviceTypesFuncs" %>
 
 <f:subview id="general" rendered="#{capControlForm.visibleTabs['General']}" >
 
@@ -11,7 +11,18 @@
 		
 		<h:panelGroup id="generalPao" rendered="#{capControlForm.visibleTabs['GeneralPAO']}" >		
 	        <x:outputText value="Type: " title="System specific type of CapControl object" />
-	        <x:outputText value="#{capControlForm.PAOBase.PAOType} (id: #{capControlForm.PAOBase.PAObjectID})" styleClass="staticLabel"/>
+	        <x:outputText value="#{capControlForm.PAOBase.PAOType} (id: #{capControlForm.PAOBase.PAObjectID})" 
+	        styleClass="staticLabel" rendered="#{!capControlForm.editingController}"/>
+	        <x:selectOneMenu id = "Select_702XCBC_PAOType" value="#{capControlForm.CBControllerEditor.deviceType}" 
+	        rendered="#{capControlForm.CBControllerEditor.device702X && capControlForm.PAOBase.PAOType != 'CAP BANK'}"
+	        >
+			<f:selectItems value="#{selLists.typeList702X}"/>	        
+	        </x:selectOneMenu>
+			<x:selectOneMenu id = "Select_701XCBC_PAOType" value="#{capControlForm.CBControllerEditor.deviceType}" 
+	        rendered="#{capControlForm.CBControllerEditor.device701X && capControlForm.PAOBase.PAOType != 'CAP BANK'}"
+	        >
+			<f:selectItems value="#{selLists.typeList701X}"/>	        
+	        </x:selectOneMenu>
 			<f:verbatim><br/></f:verbatim>
 	        <x:outputText value="Class: " title="System specific class of CapControl object" />
 	        <x:outputText value="#{capControlForm.PAOBase.PAOClass}" styleClass="staticLabel"/>
