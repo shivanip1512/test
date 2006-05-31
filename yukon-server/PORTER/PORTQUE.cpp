@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.48 $
-* DATE         :  $Date: 2006/04/24 19:23:06 $
+* REVISION     :  $Revision: 1.49 $
+* DATE         :  $Date: 2006/05/31 22:08:22 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -81,6 +81,7 @@ using namespace std;
 extern CtiPortManager   PortManager;
 extern HCTIQUEUE*       QueueHandle(LONG pid);
 
+static ULONG MAX_CCU_QUEUE_TIME = 900;
 USHORT QueSequence = {0x8000};
 
 static CHAR tempstr[100];
@@ -88,6 +89,7 @@ static CHAR tempstr[100];
 bool findAllQueueEntries(void *unused, void* d);
 bool findReturnNexusMatch(void *nid, void* d);
 void cleanupOrphanOutMessages(void *unusedptr, void* d);
+int  ReturnQueuedResult(CtiDeviceSPtr Dev, CtiTransmitter711Info *pInfo, USHORT QueTabEnt);
 
 
 void blitzNexusFromQueue(HCTIQUEUE q, CtiConnect *&Nexus)
@@ -242,7 +244,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
 
     if(ErrorReturnCode                       &&
        InMessage->Sequence & 0x8000          &&
-       !(ErrorReturnCode == REQACK && OutMessage->Retry > 0))
+       (ErrorReturnCode != REQACK || OutMessage->Retry == 0))
     {
         return DeQueue(InMessage);       // Removes all queue entries placed upon in the queue via this message.
     }
@@ -979,37 +981,6 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
             pInfo->QueTable[QueTabEnt].TimeSent = -1L;
             pInfo->FreeSlots++;
         }
-
-        if(Offset == 1)
-        {
-            /* We didn't process anything so see if we have gotten out of step with the ccu */
-            if(pInfo->FreeSlots != 32 && pInfo->ReadyN == 32)
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << Dev->getName() << "'s bookkeeping has gotten out of sync with the field device" << endl;
-                    dout << CtiTime() << "   Attempting to purge queue's and ccu queues." << endl;
-                }
-                CCUQueueFlush(Dev);     /* Flush whatever we think is in the ccu */
-
-                if(pInfo->FreeSlots != 32)    /* Now check it again */
-                {
-                    if(!(pInfo->PortQueueEnts)) /* See if we have any outstanding messages */
-                    {
-                        QueueFlush(Dev); /* Bummer */
-                    }
-                }
-            }
-            else if(pInfo->FreeSlots == 32 && pInfo->ReadyN == 32 && pInfo->getStatus(INLGRPQ))
-            {
-                // 20050506 CGP.  Should never have all info saying no queue entries and the INLGRPQ status preventing loading the queue.
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " FreeSlots is 32 and CCU reports 32 command slots available on device \"" << Dev->getName() << "\".  INLGRPQ must be cleared." << endl;
-                }
-                pInfo->clearStatus(INLGRPQ);
-            }
-        }
     }
 
     /* see if anything is in the ccu queues */
@@ -1095,6 +1066,7 @@ static ULONG sleepTime = 15000L;
 static void applyKick(const long unusedid, CtiDeviceSPtr Dev, void *usprtid)
 {
 
+    bool none_found = true;
     int i;
 
     switch(Dev->getType())
@@ -1121,13 +1093,27 @@ static void applyKick(const long unusedid, CtiDeviceSPtr Dev, void *usprtid)
 #endif
             if(pInfo->FreeSlots < MAXQUEENTRIES)
             {
+                ULONG nowtime = LongTime();
                 /* Check if we have anything done yet */
                 for(i = 0; i < MAXQUEENTRIES; i++)
                 {
                     if(pInfo->QueTable[i].InUse & INCCU)
                     {
-                        ULONG nowtime = LongTime();
+                        none_found = false;
+                        if(pInfo->QueTable[i].TimeSent <= nowtime - MAX_CCU_QUEUE_TIME)       // Is it ancient?
+                        {
+                            // Ancient queue entries indicate bad things!
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << CtiTime() << " " << Dev->getName() << " INCCU queue entry is more than " << MAX_CCU_QUEUE_TIME << " seconds old. " << endl;
+                            }
 
+                            /* send a message to the calling process */
+                            if(pInfo->QueTable[i].EventCode & RESULT) ReturnQueuedResult(Dev, pInfo, i);
+                            pInfo->QueTable[i].InUse = 0;
+                            pInfo->QueTable[i].TimeSent = -1L;
+                            pInfo->FreeSlots++;
+                        }
                         if(pInfo->QueTable[i].TimeSent <= nowtime - 5L)
                         {
                             IDLCRColQ(Dev);
@@ -1144,6 +1130,25 @@ static void applyKick(const long unusedid, CtiDeviceSPtr Dev, void *usprtid)
                             sleepTime = 2500L;                             // Wake every 2.5 seconds in this case.
                         }
                     }
+                    else if((pInfo->QueTable[i].InUse & INUSE) && (pInfo->QueTable[i].TimeSent <= nowtime - MAX_CCU_QUEUE_TIME))
+                    {
+                        none_found = false;
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " " << Dev->getName() << " INUSE queue entry is more than " << MAX_CCU_QUEUE_TIME << " seconds old. " << endl;
+                        }
+
+                        /* send a message to the calling process */
+                        if(pInfo->QueTable[i].EventCode & RESULT) ReturnQueuedResult(Dev, pInfo, i);
+                        pInfo->QueTable[i].InUse = 0;
+                        pInfo->QueTable[i].TimeSent = -1L;
+                        pInfo->FreeSlots++;
+                    }
+                }
+
+                if(none_found)  // If there are no InUse queue entries, and we are looping through here, there is a problem.  Fix it.
+                {
+                    pInfo->FreeSlots = MAXQUEENTRIES;
                 }
             }
             else if(pInfo->NCOcts)
@@ -1203,7 +1208,7 @@ VOID KickerThread (VOID *Arg)
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " CCU Kicker thread active. TID:  " << rwThreadId() << endl;
             }
-        
+
             CtiThreadRegData *data;
             data = CTIDBG_new CtiThreadRegData( GetCurrentThreadId(), "CCU Kicker Thread", CtiThreadRegData::None, CtiThreadMonitor::StandardMonitorTime );
             ThreadMonitor.tickle( data );
@@ -1218,8 +1223,6 @@ VOID KickerThread (VOID *Arg)
 CCUQueueFlush (CtiDeviceSPtr Dev)
 {
     USHORT QueTabEnt;
-    INMESS InMessage;
-    ULONG  BytesWritten;
 
     CtiTransmitter711Info *pInfo = (CtiTransmitter711Info *)Dev->getTrxInfo();
 
@@ -1238,32 +1241,7 @@ CCUQueueFlush (CtiDeviceSPtr Dev)
                 /* send a message to the calling process */
                 if(pInfo->QueTable[QueTabEnt].EventCode & RESULT)
                 {
-                    InMessage.Port = Dev->getPortID();
-                    InMessage.Remote = Dev->getAddress();
-                    InMessage.Sequence = pInfo->QueTable[QueTabEnt].OriginalOutMessageSequence;
-                    InMessage.ReturnNexus = pInfo->QueTable[QueTabEnt].ReturnNexus;
-                    InMessage.SaveNexus = pInfo->QueTable[QueTabEnt].SaveNexus;
-                    InMessage.Priority = pInfo->QueTable[QueTabEnt].Priority;
-                    InMessage.Return = pInfo->QueTable[QueTabEnt].Request;
-                    InMessage.MessageFlags = pInfo->QueTable[QueTabEnt].MessageFlags;
-                    InMessage.Time = LongTime();
-                    InMessage.MilliTime =  0;
-                    InMessage.EventCode = QUEUEFLUSHED | DECODED;
-
-                    if(pInfo->QueTable[QueTabEnt].EventCode & BWORD)
-                    {
-                        InMessage.Buffer.DSt.Address = pInfo->QueTable[QueTabEnt].Address;
-                    }
-
-                    /* send message back to originating process */
-                    if(InMessage.ReturnNexus->CTINexusWrite (&InMessage, sizeof (InMessage), &BytesWritten, 60L) || BytesWritten == 0)
-                    {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Error Writing to nexus on device \"" << Dev->getName() << "\" " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
-                        InMessage.ReturnNexus->CTINexusClose();
-                    }
+                    ReturnQueuedResult(Dev, pInfo, QueTabEnt);
                 }
 
                 pInfo->QueTable[QueTabEnt].InUse = 0;
@@ -1281,8 +1259,6 @@ CCUQueueFlush (CtiDeviceSPtr Dev)
 QueueFlush (CtiDeviceSPtr Dev)
 {
     USHORT QueTabEnt;
-    INMESS InMessage;
-    ULONG BytesWritten;
 
     CtiTransmitter711Info *pInfo = (CtiTransmitter711Info*)Dev->getTrxInfo();
 
@@ -1301,34 +1277,7 @@ QueueFlush (CtiDeviceSPtr Dev)
                 /* send a message to the calling process */
                 if(pInfo->QueTable[QueTabEnt].EventCode & RESULT)
                 {
-                    InMessage.DeviceID      = Dev->getID();
-                    InMessage.Port          = Dev->getPortID();
-                    InMessage.Remote        = Dev->getAddress();
-                    InMessage.TargetID      = pInfo->QueTable[QueTabEnt].TargetID;    // This is the DID of the target DLC device ( MCT_XYZ )
-                    InMessage.Sequence      = pInfo->QueTable[QueTabEnt].OriginalOutMessageSequence;    // Client identifier?
-                    InMessage.ReturnNexus   = pInfo->QueTable[QueTabEnt].ReturnNexus; // This is who asked for it.
-                    InMessage.SaveNexus     = pInfo->QueTable[QueTabEnt].SaveNexus;
-                    InMessage.Priority      = pInfo->QueTable[QueTabEnt].Priority;
-                    InMessage.Return        = pInfo->QueTable[QueTabEnt].Request;
-                    InMessage.MessageFlags  = pInfo->QueTable[QueTabEnt].MessageFlags;
-                    InMessage.Time          = LongTime();
-                    InMessage.MilliTime     =  0;
-                    InMessage.EventCode     = QUEUEFLUSHED | DECODED;                 // Indicates the result of the request.. The CCU queue was blown away!
-
-                    if(pInfo->QueTable[QueTabEnt].EventCode & BWORD)                  // If the outbound request was a BWORD then...
-                    {
-                        InMessage.Buffer.DSt.Address = pInfo->QueTable[QueTabEnt].Address;
-                    }
-
-                    /* send message back to originating process */
-                    if(InMessage.ReturnNexus->CTINexusWrite(&InMessage, sizeof (InMessage), &BytesWritten, 60L) || BytesWritten == 0)
-                    {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Error Writing to nexus on device \"" << Dev->getName() << "\" " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
-                        InMessage.ReturnNexus->CTINexusClose();
-                    }
+                    ReturnQueuedResult(Dev, pInfo, QueTabEnt);
                 }
 
                 pInfo->QueTable[QueTabEnt].InUse = 0;
@@ -1470,7 +1419,7 @@ BuildLGrpQ (CtiDeviceSPtr Dev)
             /*
              *  20020703 CGP
              *  In a perfect world, the loop above will never have NOT found an open slot...  What if we didn't though?
-             *  It is never nice to stomp memory.  The block below will attempt something CTIDBG_new and exciting.
+             *  It is never nice to stomp memory.  The block below will attempt something new and exciting.
              *  This "could" happen if FreeSlots had gone south.
              */
             if(QueTabEnt == MAXQUEENTRIES)
@@ -1819,9 +1768,9 @@ DeQueue (INMESS *InMessage)
 {
     INT status = NORMAL;
     INT SocketError = NORMAL;
-    INMESS ResultMessage;
     struct timeb TimeB;
     ULONG i;
+    INMESS ResultMessage;
     ULONG BytesWritten;
 
     /* set the time */
@@ -1930,5 +1879,39 @@ void cleanupOrphanOutMessages(void *unusedptr, void* d)
     return;
 }
 
+int ReturnQueuedResult(CtiDeviceSPtr Dev, CtiTransmitter711Info *pInfo, USHORT QueTabEnt)
+{
+    INMESS InMessage;
+    ULONG BytesWritten;
 
+    InMessage.DeviceID      = Dev->getID();
+    InMessage.Port          = Dev->getPortID();
+    InMessage.Remote        = Dev->getAddress();
+    InMessage.TargetID      = pInfo->QueTable[QueTabEnt].TargetID;    // This is the DID of the target DLC device ( MCT_XYZ )
+    InMessage.Sequence      = pInfo->QueTable[QueTabEnt].OriginalOutMessageSequence;    // Client identifier?
+    InMessage.ReturnNexus   = pInfo->QueTable[QueTabEnt].ReturnNexus; // This is who asked for it.
+    InMessage.SaveNexus     = pInfo->QueTable[QueTabEnt].SaveNexus;
+    InMessage.Priority      = pInfo->QueTable[QueTabEnt].Priority;
+    InMessage.Return        = pInfo->QueTable[QueTabEnt].Request;
+    InMessage.MessageFlags  = pInfo->QueTable[QueTabEnt].MessageFlags;
+    InMessage.Time          = LongTime();
+    InMessage.MilliTime     = 0;
+    InMessage.EventCode     = QUEUEFLUSHED | DECODED;                 // Indicates the result of the request.. The CCU queue was blown away!
 
+    if(pInfo->QueTable[QueTabEnt].EventCode & BWORD)                  // If the outbound request was a BWORD then...
+    {
+        InMessage.Buffer.DSt.Address = pInfo->QueTable[QueTabEnt].Address;
+    }
+
+    /* send message back to originating process */
+    if(InMessage.ReturnNexus->CTINexusWrite(&InMessage, sizeof (InMessage), &BytesWritten, 60L) || BytesWritten == 0)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Error Writing to nexus on device \"" << Dev->getName() << "\" " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+        InMessage.ReturnNexus->CTINexusClose();
+    }
+
+    return NORMAL;
+}

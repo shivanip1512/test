@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.94 $
-* DATE         :  $Date: 2006/05/02 20:25:45 $
+* REVISION     :  $Revision: 1.95 $
+* DATE         :  $Date: 2006/05/31 22:08:22 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -488,10 +488,15 @@ static char* metric_names[] = {
 void applyDeviceQueueReport(const long unusedid, CtiDeviceSPtr RemoteDevice, void *lprtid)
 {
     LONG PortID = (LONG)lprtid;
+    ULONG QueWorkCnt = 0L;
     ULONG QueEntCnt = 0L;
+    ULONG AQueEntCnt = 0L;
 
     if(lprtid == NULL || PortID == RemoteDevice->getPortID())
     {
+        QueWorkCnt = RemoteDevice->queuedWorkCount();
+        CtiTime ent(RemoteDevice->getExclusion().getEvaluateNextAt());
+
         if(RemoteDevice->getType() == TYPE_CCU711)
         {
             CtiTransmitter711Info *pInfo = (CtiTransmitter711Info *)RemoteDevice->getTrxInfo();
@@ -499,32 +504,30 @@ void applyDeviceQueueReport(const long unusedid, CtiDeviceSPtr RemoteDevice, voi
             if(pInfo != NULL)
             {
                 QueryQueue (pInfo->QueueHandle, &QueEntCnt);
+                QueryQueue (pInfo->ActinQueueHandle, &AQueEntCnt);
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "    CCU:  " << RemoteDevice->getName() << endl;
-                    dout << "                   Queue Queue Entries:  " << QueEntCnt << endl;
-                }
-                QueryQueue (pInfo->ActinQueueHandle, &QueEntCnt);
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    CHAR oldfill = dout.fill('0');
-                    dout << "                   Actin Queue Entries:  " << QueEntCnt << endl;
-                    dout << "                   Status Byte:          " << hex << setw(4) << (int)pInfo->getStatus() << endl;
-                    dout.fill(oldfill);
+                    dout << " " << RemoteDevice->getName() << ": the time is now " << CtiTime( LongTime() + rwEpoch ) << endl;
+                    if(QueWorkCnt) dout << "       " << setw(8) << QueWorkCnt  << " queued work elements. Evaluate next at " << ent << "." << endl;
+                    dout << "       Queue Entries:  Queue: " << setw(8) << QueEntCnt << " Actin:  " << setw(8) << AQueEntCnt << " Status Byte: " << hex << setw(4) << (int)pInfo->getStatus() << dec << " FreeSlots: " << pInfo->FreeSlots << endl;
+                    for(int i = 0; i < 32; i++)
+                    {
+                        if(pInfo->QueTable[i].InUse)
+                        {
+                            dout << "       CCU QueTable Slot " << setw(3)  << i << " is " <<
+                                ((pInfo->QueTable[i].InUse & INUSE) ? "    INUSE" : "NOT INUSE" ) << " and " <<
+                                ((pInfo->QueTable[i].InUse & INCCU) ? "    INCCU" : "NOT INCCU" ) << " TimeSent = " << CtiTime( pInfo->QueTable[i].TimeSent + rwEpoch ) << " Sequence " << hex << setw(5) << pInfo->QueTable[i].QueueEntrySequence << dec << endl;
+                        }
+                    }
                 }
             }
         }
-
-        QueEntCnt = RemoteDevice->queuedWorkCount();
-
-        if(QueEntCnt > 0)
+        else if(QueWorkCnt > 0)
         {
-            CtiTime ent(RemoteDevice->getExclusion().getEvaluateNextAt());
             {
 
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                // dout << "    Transmitter:  " << setw(50) << RemoteDevice->getName() << " queued commands:  " << setw(4) << QueEntCnt << " Evaluate Next at " << ent << (ent < ent.now() ? ". *** PAST DUE ***" : ".") << endl;
-                dout << "  " << setw(4) << QueEntCnt  << " queued commands. Evaluate next at " << ent << ". Transmitter: " << RemoteDevice->getName() << (ent < ent.now() ? ". *** PAST DUE ***" + CtiNumStr(ent.now().seconds() - ent.seconds()) : ".") << endl;
+                dout << " " << setw(8) << QueWorkCnt  << " queued commands. Evaluate next at " << ent << ". Transmitter: " << RemoteDevice->getName() << (ent < ent.now() ? ". *** PAST DUE *** " + CtiNumStr(ent.now().seconds() - ent.seconds()) : " seconds.") << endl;
             }
         }
     }
