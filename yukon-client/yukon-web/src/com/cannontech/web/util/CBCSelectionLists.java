@@ -54,7 +54,23 @@ public class CBCSelectionLists {
         new SelectItem(new Integer (PointTypes.CALCULATED_STATUS_POINT), "Status Output"),
         };
 
-	private static final SelectItem[] wizardCBCTypes =  {
+	
+    private static final SelectItem[] typeList701X = {
+		new SelectItem(new Integer(PAOGroups.CBC_EXPRESSCOM), PAOGroups.getPAOTypeString(PAOGroups.CBC_EXPRESSCOM) ),
+		new SelectItem(new Integer(PAOGroups.CAPBANKCONTROLLER), PAOGroups.getPAOTypeString(PAOGroups.CAPBANKCONTROLLER) ),
+		new SelectItem(new Integer(PAOGroups.CBC_7010), PAOGroups.getPAOTypeString(PAOGroups.CBC_7010) ),
+        new SelectItem(new Integer(PAOGroups.CBC_7011), PAOGroups.getPAOTypeString(PAOGroups.CBC_7011) ),
+        new SelectItem(new Integer(PAOGroups.CBC_7012), PAOGroups.getPAOTypeString(PAOGroups.CBC_7012) )	
+    };
+    
+    private static final SelectItem[] typeList702X = {
+		new SelectItem(new Integer(PAOGroups.CBC_7020), PAOGroups.getPAOTypeString(PAOGroups.CBC_7020) ),
+        new SelectItem(new Integer(PAOGroups.CBC_7022), PAOGroups.getPAOTypeString(PAOGroups.CBC_7022) ),
+        new SelectItem(new Integer(PAOGroups.CBC_7023), PAOGroups.getPAOTypeString(PAOGroups.CBC_7023) ),
+        new SelectItem(new Integer(PAOGroups.CBC_7024), PAOGroups.getPAOTypeString(PAOGroups.CBC_7024) )
+    };
+    
+    private static final SelectItem[] wizardCBCTypes =  {
 		//value, label
 		new SelectItem(new Integer(PAOGroups.CBC_EXPRESSCOM), PAOGroups.getPAOTypeString(PAOGroups.CBC_EXPRESSCOM) ),
 		new SelectItem(new Integer(PAOGroups.CAPBANKCONTROLLER), PAOGroups.getPAOTypeString(PAOGroups.CAPBANKCONTROLLER) ),
@@ -406,5 +422,13 @@ public class CBCSelectionLists {
     public SelectItem[] getPointSubtypes() {
         return pSubtypes;
     }
+
+	public  SelectItem[] getTypeList701X() {
+		return typeList701X;
+	}
+
+	public  SelectItem[] getTypeList702X() {
+		return typeList702X;
+	}
 
 }

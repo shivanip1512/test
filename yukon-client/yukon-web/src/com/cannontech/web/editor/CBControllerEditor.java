@@ -11,10 +11,8 @@ import javax.faces.event.ActionEvent;
 import javax.servlet.http.HttpSession;
 
 import org.apache.myfaces.custom.tree2.HtmlTree;
-import org.apache.myfaces.custom.tree2.TreeModelBase;
 import org.apache.myfaces.custom.tree2.TreeNode;
 import org.apache.myfaces.custom.tree2.TreeNodeBase;
-import org.apache.myfaces.custom.tree2.TreeStateBase;
 
 import com.cannontech.cbc.web.CBCSessionInfo;
 import com.cannontech.clientutils.CTILogger;
@@ -26,6 +24,7 @@ import com.cannontech.database.data.capcontrol.CapBankController;
 import com.cannontech.database.data.capcontrol.CapBankController701x;
 import com.cannontech.database.data.capcontrol.CapBankController702x;
 import com.cannontech.database.data.capcontrol.ICapBankController;
+import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.TwoWayDevice;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -39,7 +38,6 @@ import com.cannontech.database.db.capcontrol.DeviceCBC;
 import com.cannontech.database.db.device.DeviceAddress;
 import com.cannontech.database.db.device.DeviceScanRate;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
-import com.cannontech.web.editor.point.PointForm;
 import com.cannontech.web.exceptions.MultipleDevicesOnPortException;
 import com.cannontech.web.exceptions.PortDoesntExistException;
 import com.cannontech.web.exceptions.SameMasterSlaveCombinationException;
@@ -61,6 +59,10 @@ public class CBControllerEditor {
     private boolean editingController;
     private TreeNode pointList = null;
     private long serialNumber = 0;
+    private int deviceType = 0;
+    
+
+    
     
     private final String pointTreeName = "cbcPointTree";
 
@@ -95,6 +97,8 @@ public class CBControllerEditor {
         	if (deviceCBC instanceof CapBankController) {
         		setSerialNumber ( ((CapBankController)deviceCBC).getDeviceCBC().getSerialNumber().longValue());           
         	}
+//        	setDeviceType(PAOGroups.getDeviceType(deviceCBC.getPAOType()));
+        	this.deviceType = PAOGroups.getDeviceType(deviceCBC.getPAOType());
         }
     }
 
@@ -516,5 +520,36 @@ public class CBControllerEditor {
 				this.pointTree.restoreState(FacesContext.getCurrentInstance(), cbcSession.getTreeState(pointTreeName));
         }
 	}
-    
+
+
+
+	public boolean isDevice702X() {
+		int deviceType = PAOGroups.getDeviceType(getPaoCBC().getPAOType());
+		if (DeviceTypesFuncs.isCapBankController (deviceType) && 
+				DeviceTypesFuncs.cbcHasPort(deviceType))
+			return true;
+		return false;		
+	}
+
+	public boolean isDevice701X() {
+		int deviceType = PAOGroups.getDeviceType(getPaoCBC().getPAOType());
+		if (DeviceTypesFuncs.isCapBankController (deviceType) && 
+				(! DeviceTypesFuncs.cbcHasPort(deviceType) ) )
+			return true;
+		return false;		
+	}
+
+
+
+	public int getDeviceType() {
+		return deviceType;
+	}
+
+
+
+	public void setDeviceType(int deviceType) {
+		this.deviceType = deviceType;
+
+		}
+
 }
