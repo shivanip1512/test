@@ -8,32 +8,32 @@ var manMsgID = 0;
 // -------------------------------------------
 function postMany( frmName )
 {
-	if( !validateData(frmName) )
-		return false;
+    if( !validateData(frmName) )
+        return false;
 
-	var f = document.getElementById(frmName);
+    var f = document.getElementById(frmName);
 
-	if( arguments.length > 1 )
-	{
-		//each ParamName must have a corresponding ParamValue
-		if( ((arguments.length-1) % 2) != 0 )
-			alert('Incorrect number of parameters for postMany() function');
-		else
-		{
-			for( i = 1; i < arguments.length; i+=2 )
-			{			
-				if( !validateData(arguments[i]) )
-					return false;
-	
-				var ev = eval('f.'+arguments[i]);
-				ev.value = arguments[i+1];
+    if( arguments.length > 1 )
+    {
+        //each ParamName must have a corresponding ParamValue
+        if( ((arguments.length-1) % 2) != 0 )
+            alert('Incorrect number of parameters for postMany() function');
+        else
+        {
+            for( i = 1; i < arguments.length; i+=2 )
+            {           
+                if( !validateData(arguments[i]) )
+                    return false;
+    
+                var ev = eval('f.'+arguments[i]);
+                ev.value = arguments[i+1];
 //alert('f.'+arguments[i]+' = ' + arguments[i+1]);
 
-			}
-		}
-	}
+            }
+        }
+    }
 
-	f.submit();
+    f.submit();
 }
 
 // -------------------------------------------
@@ -41,19 +41,19 @@ function postMany( frmName )
 // -------------------------------------------
 function validateData( elemName )
 {
-	if( !document.getElementsByName(elemName) )
-	{
-		alert('Unable to find element for given operation ('+elemName+'), try again');
-		return false;
-	}
-	return true;
+    if( !document.getElementsByName(elemName) )
+    {
+        alert('Unable to find element for given operation ('+elemName+'), try again');
+        return false;
+    }
+    return true;
 }
 
 // -------------------------------------------
 // Any javascript that is needed to init a page
 // -------------------------------------------
 function init()
-{	
+{   
 }
 
 // -------------------------------------------
@@ -62,10 +62,10 @@ function init()
 // -------------------------------------------
 function includeJSinJS( jsFileName )
 {
-	myscript = document.createElement('script');
-	myscript.type = 'text/javasript';
-	myscript.src = jsFileName; //'myscript.js'
-	document.getElementsByTagName('head')[0].appendChild(myscript);
+    myscript = document.createElement('script');
+    myscript.type = 'text/javasript';
+    myscript.src = jsFileName; //'myscript.js'
+    document.getElementsByTagName('head')[0].appendChild(myscript);
 }
 
 // -------------------------------------------
@@ -73,12 +73,12 @@ function includeJSinJS( jsFileName )
 // -------------------------------------------
 function checkAll(chkAll, itemName)
 {
-	if(!document.getElementsByName(itemName) )
-		return;
-		
-	var fields = document.getElementsByName(itemName);
-	for( i = 0; i < fields.length; i++ )
-		fields[i].checked = chkAll.checked;
+    if(!document.getElementsByName(itemName) )
+        return;
+        
+    var fields = document.getElementsByName(itemName);
+    for( i = 0; i < fields.length; i++ )
+        fields[i].checked = chkAll.checked;
 }
 
 // -------------------------------------------
@@ -86,13 +86,13 @@ function checkAll(chkAll, itemName)
 // -------------------------------------------
 function changeOptionStyle(t)
 {
-	t.className = 'optSelect';
+    t.className = 'optSelect';
 
-	t.onmouseout = function (e)
-	{
-	  t.className = 'optDeselect';
-	  return false;
-	};	
+    t.onmouseout = function (e)
+    {
+      t.className = 'optDeselect';
+      return false;
+    };  
 
 }
 
@@ -119,15 +119,15 @@ function elementContains(elmOuter, elmInner)
 // -------------------------------------------
 function menuShow(menuDiv, visIndx)
 {
-	var subDiv = document.getElementById(menuDiv);
-	var currentMenus = subDiv.getElementsByTagName('div');
+    var subDiv = document.getElementById(menuDiv);
+    var currentMenus = subDiv.getElementsByTagName('div');
 
-	for( i = 0; i < currentMenus.length; i++ )
-	{
-		currentMenus[i].style.display = 'none';
-	}
+    for( i = 0; i < currentMenus.length; i++ )
+    {
+        currentMenus[i].style.display = 'none';
+    }
 
-	currentMenus[visIndx].style.display = 'inline';
+    currentMenus[visIndx].style.display = 'inline';
 }
 
 // -------------------------------------------
@@ -136,14 +136,14 @@ function menuShow(menuDiv, visIndx)
 // -------------------------------------------
 function showRowElems( elemName, visible )
 {
-	var elem = document.getElementById(elemName);
-	var rows = elem.getElementsByTagName('tr');
-	//var currentMenus = elem.childNodes;
+    var elem = document.getElementById(elemName);
+    var rows = elem.getElementsByTagName('tr');
+    //var currentMenus = elem.childNodes;
 
-	for( i = 0; i < rows.length; i++ ) {
-		rows[i].style.display = 
-			(visible ? 'inline' : 'none');
-	}
+    for( i = 0; i < rows.length; i++ ) {
+        rows[i].style.display = 
+            (visible ? 'inline' : 'none');
+    }
 }
 
 // -------------------------------------------
@@ -153,22 +153,22 @@ function showRowElems( elemName, visible )
 // -------------------------------------------
 function showSubMenu( elemName, visible )
 {
-	var currentMenus = document.getElementsByName(elemName);
-	var toggle = visible != null;
+    var currentMenus = document.getElementsByName(elemName);
+    var toggle = visible != null;
 
-	for (i = 0; i < currentMenus.length; i++)
-	{
-		if( visible == null )
-		{
-			if( currentMenus[i].style.display == 'none' )
-				currentMenus[i].style.display = 'inline';
-			else
-				currentMenus[i].style.display = 'none';
-		}
-		else
-			currentMenus[i].style.display = 
-				(visible ? 'inline' : 'none');
-	}
+    for (i = 0; i < currentMenus.length; i++)
+    {
+        if( visible == null )
+        {
+            if( currentMenus[i].style.display == 'none' )
+                currentMenus[i].style.display = 'inline';
+            else
+                currentMenus[i].style.display = 'none';
+        }
+        else
+            currentMenus[i].style.display = 
+                (visible ? 'inline' : 'none');
+    }
 }
 
 // -------------------------------------------
@@ -176,20 +176,27 @@ function showSubMenu( elemName, visible )
 // Uses a proxy JSP to get around security concerns
 // in XMLhttp
 // -------------------------------------------
-function callBack( response )
+function callBack( response)
 {
-	if( response != null )
-	{ 
-		// Response mode
-		updateHTML(response);
-	}
-	else
-	{	
-		// Input mode
-		var elems = document.getElementsByName('cti_dyn');
-		var url = createURLreq( elems, '/servlet/CBCServlet?method=callBack', 'id' );
-		loadXMLDoc(url);
-	}
+    if( response != null )
+    { 
+        // Response mode
+        updateHTML(response);
+    }
+    else
+    {   
+        // Input mode
+        var elems = document.getElementsByName('cti_dyn');
+        var url = createURLreq( elems, '/servlet/CBCServlet?method=callBack', 'id' );
+        var lastUpdate = document.getElementById ('lastUpdate');
+        if (lastUpdate != null)
+        	url += '&lastUpdate=' + lastUpdate.value;
+        else {
+        	alert('Web page is not timestamped. Values will not be updated dynamically!');
+        	return;
+        	}
+        loadXMLDoc(url);
+    }
 }
 
 // -------------------------------------------
@@ -200,59 +207,63 @@ function callBack( response )
 // -------------------------------------------
 function createURLreq( elems, initialURL, attrib )
 {
-	var lastID = '';
-	var sepChar = '?';
-	if( initialURL.indexOf('?') >= 0 ) sepChar = '&';
+    var lastID = '';
+    var sepChar = '?';
+    if( initialURL.indexOf('?') >= 0 ) sepChar = '&';
 
-	for (var i = 0; i < elems.length; i++, sepChar='&')
-	{
-		lastID = sepChar + attrib + '=' + elems[i].getAttribute(attrib);
+    for (var i = 0; i < elems.length; i++, sepChar='&')
+    {
+        lastID = sepChar + attrib + '=' + elems[i].getAttribute(attrib);
 
-		//only add the IDs that we do not have yet
-		if( lastID != initialURL.substring(initialURL.lastIndexOf('&'), initialURL.length) )
-			initialURL += lastID;
-	}
+        //only add the IDs that we do not have yet
+        if( lastID != initialURL.substring(initialURL.lastIndexOf('&'), initialURL.length) )
+            initialURL += lastID;
+    }
 
-	return initialURL;
+    return initialURL;
 }
 
 // -------------------------------------------
 //Update the HTML on the screen with the results
 // returned from the XMLhttp call
 // -------------------------------------------
-function updateHTML( result )
+function updateHTML( result)
 {
-	if( result != null )
-	{
-		var elems = document.getElementsByName('cti_dyn');
-		for (var i = 0; i < result.length; i++)
-		{
-			var xmlID = getElementTextNS(result[i], 0, 'id');
+	//since IE has problem with large size updates do it
+	//in smaller size chunks
+    if( result != null )
+    {
+        var elems = document.getElementsByName('cti_dyn');
+        for (var i = 0; i < result.length; i++)
+        {
+            var xmlID = getElementTextNS(result[i], 0, 'id');
 
-			for( var j = 0; j < elems.length; j++ )
-			{
-				if( elems[j].getAttribute('id') == xmlID )
-				{
-					var elemType = elems[j].getAttribute('type');
-					switch( elemType )
-					{
-						//special case since 2 elements are involved with 1 TAG
-						case 'state':
-							var xmlColor = getElementTextNS(result[i], 0, 'param0');							
-							elems[j].style.color = xmlColor;
+            for( var j = 0; j < elems.length; j++ )
+            {
+                if( elems[j].getAttribute('id') == xmlID )
+                {
+                    var elemType = elems[j].getAttribute('type');
+                    switch( elemType )
+                    {
+                        //special case since 2 elements are involved with 1 TAG
+                        case 'state':
+                            var xmlColor = getElementTextNS(result[i], 0, 'param0');                            
+                            elems[j].style.color = xmlColor;
 
-						
-						//most of this time this will suffice
-						default:
-							elems[j].innerHTML = getElementTextNS(result[i], 0, elemType);
-							break;
-					}
-				}
-			}
-		}
-
-		setTimeout('callBack()', clientRefresh );
-	}
+                        
+                        //most of this time this will suffice
+                        default:
+                            elems[j].innerHTML = getElementTextNS(result[i], 0, elemType);
+                            break;
+                    }
+                }
+            }
+        }
+		var lastUpdate = document.getElementById('lastUpdate');
+        lastUpdate.value = new Date().getTime();
+        setTimeout('callBack()', clientRefresh );
+      
+    }
 
 }
 
@@ -267,20 +278,20 @@ function processMenuReq()
 
     // only if req shows "complete" and HTTP code is "OK"
     if( xmlHTTPreq != null
-    	&& getReq(manMsgID).req != null
-    	&& getReq(manMsgID).req.readyState == 4 
-    	&& getReq(manMsgID).req.status == 200 )
+        && getReq(manMsgID).req != null
+        && getReq(manMsgID).req.readyState == 4 
+        && getReq(manMsgID).req.status == 200 )
     {    
-    	var req = getReq(manMsgID).req;
+        var req = getReq(manMsgID).req;
 
-		//store the response of the request
- 		response = req.responseText;
+        //store the response of the request
+        response = req.responseText;
 
-		overlib(
-			response, FULLHTML, STICKY, MOUSEOFF, FIXX, 25, FIXY, 95);
+        overlib(
+            response, FULLHTML, STICKY, MOUSEOFF, FIXX, 25, FIXY, 95);
 
-		//always do this
-		freeReq( manMsgID );		
+        //always do this
+        freeReq( manMsgID );        
     }
 
 }
@@ -291,11 +302,11 @@ function processMenuReq()
 // -------------------------------------------
 function statusMsg(elem, msgStr)
 {
-	elem.onmouseout = function (e)
-	{
-		nd();
-	};	
-	overlib( msgStr, WIDTH, 160, CSSCLASS, TEXTFONTCLASS, 'flyover' );
+    elem.onmouseout = function (e)
+    {
+        nd();
+    };  
+    overlib( msgStr, WIDTH, 160, CSSCLASS, TEXTFONTCLASS, 'flyover' );
 }
 
 // -------------------------------------------
@@ -306,20 +317,20 @@ function statusMsg(elem, msgStr)
 // -------------------------------------------
 function showPopUpChkBoxes( baseUrl )
 {
-	if( baseUrl == null )
-		return;
+    if( baseUrl == null )
+        return;
 
-	var elemSubs = document.getElementsByName('cti_chkbxSubs');
-	var elemFdrs = document.getElementsByName('cti_chkbxFdrs');
-	//var elemBanks = document.getElementsByName('cti_chkbxBanks');
+    var elemSubs = document.getElementsByName('cti_chkbxSubs');
+    var elemFdrs = document.getElementsByName('cti_chkbxFdrs');
+    //var elemBanks = document.getElementsByName('cti_chkbxBanks');
 
-	var validElems = new Array();
-	getValidChecks( elemSubs, validElems );
-	getValidChecks( elemFdrs, validElems );
-	//getValidChecks( elemBanks, validElems );
+    var validElems = new Array();
+    getValidChecks( elemSubs, validElems );
+    getValidChecks( elemFdrs, validElems );
+    //getValidChecks( elemBanks, validElems );
 
-	var url = createURLreq( validElems, baseUrl, 'value' );
-	manMsgID = loadXMLDoc(url, 'processMenuReq');
+    var url = createURLreq( validElems, baseUrl, 'value' );
+    manMsgID = loadXMLDoc(url, 'processMenuReq');
 }
 
 // -------------------------------------------
@@ -330,20 +341,20 @@ function showPopUpChkBoxes( baseUrl )
 // -------------------------------------------
 function showRecentCmds( baseUrl )
 {
-	if( baseUrl == null )
-		return;
+    if( baseUrl == null )
+        return;
 
-	var elemSubs = document.getElementsByName('cti_chkbxSubs');
-	var elemFdrs = document.getElementsByName('cti_chkbxFdrs');
-	var elemBanks = document.getElementsByName('cti_chkbxBanks');
+    var elemSubs = document.getElementsByName('cti_chkbxSubs');
+    var elemFdrs = document.getElementsByName('cti_chkbxFdrs');
+    var elemBanks = document.getElementsByName('cti_chkbxBanks');
 
-	var validElems = new Array();
-	getValidChecks( elemSubs, validElems );
-	getValidChecks( elemFdrs, validElems );
-	getValidChecks( elemBanks, validElems );
+    var validElems = new Array();
+    getValidChecks( elemSubs, validElems );
+    getValidChecks( elemFdrs, validElems );
+    getValidChecks( elemBanks, validElems );
 
-	var url = createURLreq( validElems, baseUrl, 'value' );
-	window.location = url;
+    var url = createURLreq( validElems, baseUrl, 'value' );
+    window.location = url;
 }
 
 // -------------------------------------------
@@ -353,11 +364,11 @@ function showRecentCmds( baseUrl )
 // -------------------------------------------
 function showPopUp( urlStr )
 {
-	if( urlStr == null )
-		return;
+    if( urlStr == null )
+        return;
 
-	//var url = createURLreq( validElems, 'charts.jsp?type='+typeStr, 'value' );
-	manMsgID = loadXMLDoc(urlStr, 'processMenuReq');
+    //var url = createURLreq( validElems, 'charts.jsp?type='+typeStr, 'value' );
+    manMsgID = loadXMLDoc(urlStr, 'processMenuReq');
 }
 
 // -------------------------------------------
@@ -366,24 +377,24 @@ function showPopUp( urlStr )
 // -------------------------------------------
 function getUrlType( selElems, type ) {
 
-	if( type == null )
-		type = 'editor';
+    if( type == null )
+        type = 'editor';
 
-	if ( selElems.length > 0 ) {
+    if ( selElems.length > 0 ) {
 
-		elemName = selElems[0].getAttribute('name');
+        elemName = selElems[0].getAttribute('name');
 
-		if( elemName == 'cti_chkbxSubs' || elemName == 'cti_chkbxFdrs'
-				|| elemName == 'cti_chkbxBanks' ) {
-			return '/servlet/CBCServlet?type=nav&pageType='+type+'&modType=capcontrol';
-		}
-		else if( elemName == 'cti_chkbxPoints' ) {
-		
-			return '/servlet/CBCServlet?type=nav&pageType='+type+'&modType=point';
-		}
-	}
+        if( elemName == 'cti_chkbxSubs' || elemName == 'cti_chkbxFdrs'
+                || elemName == 'cti_chkbxBanks' ) {
+            return '/servlet/CBCServlet?type=nav&pageType='+type+'&modType=capcontrol';
+        }
+        else if( elemName == 'cti_chkbxPoints' ) {
+        
+            return '/servlet/CBCServlet?type=nav&pageType='+type+'&modType=point';
+        }
+    }
 
-	return '';
+    return '';
 }
 
 // -------------------------------------------
@@ -393,23 +404,23 @@ function getUrlType( selElems, type ) {
 function editorPost()
 {
 
-	var elemSubs = document.getElementsByName('cti_chkbxSubs');
-	var elemFdrs = document.getElementsByName('cti_chkbxFdrs');
-	var elemBanks = document.getElementsByName('cti_chkbxBanks');
-	var elemPoints = document.getElementsByName('cti_chkbxPoints');
+    var elemSubs = document.getElementsByName('cti_chkbxSubs');
+    var elemFdrs = document.getElementsByName('cti_chkbxFdrs');
+    var elemBanks = document.getElementsByName('cti_chkbxBanks');
+    var elemPoints = document.getElementsByName('cti_chkbxPoints');
 
-	var validElems = new Array();
-	getValidChecks( elemSubs, validElems );
-	getValidChecks( elemFdrs, validElems );
-	getValidChecks( elemBanks, validElems );
-	getValidChecks( elemPoints, validElems );
+    var validElems = new Array();
+    getValidChecks( elemSubs, validElems );
+    getValidChecks( elemFdrs, validElems );
+    getValidChecks( elemBanks, validElems );
+    getValidChecks( elemPoints, validElems );
 
-	//only allow the editing of the zeroth element for now
-	if ( validElems.length <= 0 )
-		alert('You must check the item you want to edit first');
-	else
-		window.location =
-			getUrlType(validElems) + '&itemid=' + validElems[0].getAttribute('value');
+    //only allow the editing of the zeroth element for now
+    if ( validElems.length <= 0 )
+        alert('You must check the item you want to edit first');
+    else
+        window.location =
+            getUrlType(validElems) + '&itemid=' + validElems[0].getAttribute('value');
 }
 
 // -------------------------------------------
@@ -419,24 +430,24 @@ function editorPost()
 function copyPost()
 {
 
-	var elemSubs = document.getElementsByName('cti_chkbxSubs');
-	var elemFdrs = document.getElementsByName('cti_chkbxFdrs');
-	var elemBanks = document.getElementsByName('cti_chkbxBanks');
-	var elemPoints = document.getElementsByName('cti_chkbxPoints');
+    var elemSubs = document.getElementsByName('cti_chkbxSubs');
+    var elemFdrs = document.getElementsByName('cti_chkbxFdrs');
+    var elemBanks = document.getElementsByName('cti_chkbxBanks');
+    var elemPoints = document.getElementsByName('cti_chkbxPoints');
 
-	var validElems = new Array();
-	getValidChecks( elemSubs, validElems );
-	getValidChecks( elemFdrs, validElems );
-	getValidChecks( elemBanks, validElems );
-	getValidChecks( elemPoints, validElems );
+    var validElems = new Array();
+    getValidChecks( elemSubs, validElems );
+    getValidChecks( elemFdrs, validElems );
+    getValidChecks( elemBanks, validElems );
+    getValidChecks( elemPoints, validElems );
 
-	//only allow the editing of the zeroth element for now
-	if ( validElems.length <= 0 )
-		alert('You must check the item you want to edit first');
-	else 
-		window.location = getUrlType(validElems, 'copy') + '&itemid=' + validElems[0].getAttribute('value');		
-		
-	
+    //only allow the editing of the zeroth element for now
+    if ( validElems.length <= 0 )
+        alert('You must check the item you want to edit first');
+    else 
+        window.location = getUrlType(validElems, 'copy') + '&itemid=' + validElems[0].getAttribute('value');        
+        
+    
 }
 
 // -------------------------------------------
@@ -445,27 +456,27 @@ function copyPost()
 // -------------------------------------------
 function deletePost()
 {
-	var elemSubs = document.getElementsByName('cti_chkbxSubs');
-	var elemFdrs = document.getElementsByName('cti_chkbxFdrs');
-	var elemBanks = document.getElementsByName('cti_chkbxBanks');
-	var elemPoints = document.getElementsByName('cti_chkbxPoints');
+    var elemSubs = document.getElementsByName('cti_chkbxSubs');
+    var elemFdrs = document.getElementsByName('cti_chkbxFdrs');
+    var elemBanks = document.getElementsByName('cti_chkbxBanks');
+    var elemPoints = document.getElementsByName('cti_chkbxPoints');
 
-	var validElems = new Array();
-	getValidChecks( elemSubs, validElems );
-	getValidChecks( elemFdrs, validElems );
-	getValidChecks( elemBanks, validElems );
-	
-	//only add the points if we do not have any PAOs selected
-	if( validElems.length <= 0 )
-		getValidChecks( elemPoints, validElems );
+    var validElems = new Array();
+    getValidChecks( elemSubs, validElems );
+    getValidChecks( elemFdrs, validElems );
+    getValidChecks( elemBanks, validElems );
+    
+    //only add the points if we do not have any PAOs selected
+    if( validElems.length <= 0 )
+        getValidChecks( elemPoints, validElems );
 
-	//force the selection of something
-	if ( validElems.length <= 0 )
-		alert('You must check one or more items that you want to delete');
-	else {
-		window.location =	
-			createURLreq( validElems, getUrlType(validElems, 'delete'), 'value' );
-	}
+    //force the selection of something
+    if ( validElems.length <= 0 )
+        alert('You must check one or more items that you want to delete');
+    else {
+        window.location =   
+            createURLreq( validElems, getUrlType(validElems, 'delete'), 'value' );
+    }
 }
 
 // -------------------------------------------
@@ -473,7 +484,7 @@ function deletePost()
 // -------------------------------------------
 function post( href )
 {
-	window.location = href;
+    window.location = href;
 }
 
 // -------------------------------------------
@@ -482,17 +493,17 @@ function post( href )
 // -------------------------------------------
 function getValidChecks( elems, validElems )
 {
-	var cnt = validElems.length;
-	for( var i = 0; i < elems.length; i++ )
-	{
-		//validate the elements
-		//if( elems[i].getAttribute('value') != '0' && elems[i].checked )
-		if( elems[i].checked )
-		{
-			validElems[cnt++] = elems[i];
-		}
+    var cnt = validElems.length;
+    for( var i = 0; i < elems.length; i++ )
+    {
+        //validate the elements
+        //if( elems[i].getAttribute('value') != '0' && elems[i].checked )
+        if( elems[i].checked )
+        {
+            validElems[cnt++] = elems[i];
+        }
 
-	}
+    }
 
 }
 
@@ -502,27 +513,27 @@ function getValidChecks( elems, validElems )
 // -------------------------------------------
 function createIFrame(src, width, height, name, frameborder) {
 
-	return '<iframe src="'+src+'" width="'+width+'" height="'+height+'"'
-		+ (name!=null?' name="'+name+'" id="'+name+'"':'')
-		+ (frameborder!=null?' frameborder="'+frameborder+'"':'')
-		+ ' scrolling="auto" marginwidth="1" marginheight="1" >'
-		+ '<div>[iframe not supported]</div></iframe>';
+    return '<iframe src="'+src+'" width="'+width+'" height="'+height+'"'
+        + (name!=null?' name="'+name+'" id="'+name+'"':'')
+        + (frameborder!=null?' frameborder="'+frameborder+'"':'')
+        + ' scrolling="auto" marginwidth="1" marginheight="1" >'
+        + '<div>[iframe not supported]</div></iframe>';
 }
 
 // -------------------------------------------
 //Toggles the img from an expanded state to a collapsed state
 // -------------------------------------------
-function toggleImg( imgID ) {	
-	var imgElem = document.getElementById(imgID);
+function toggleImg( imgID ) {   
+    var imgElem = document.getElementById(imgID);
 
-	if( imgElem.src.indexOf('images/nav-minus.gif') > 0 ) {
-		imgElem.src='images/nav-plus.gif';
-		return false;
-	}
-	else {
-		imgElem.src = 'images/nav-minus.gif';
-		return true;
-	}
+    if( imgElem.src.indexOf('images/nav-minus.gif') > 0 ) {
+        imgElem.src='images/nav-plus.gif';
+        return false;
+    }
+    else {
+        imgElem.src = 'images/nav-minus.gif';
+        return true;
+    }
 }
 
 var CtiNonScrollTable = Class.create();
@@ -600,5 +611,15 @@ var buttons = button_group.getElementsByTagName("input");
 for (var i=0; i<buttons.length; i++) {
     var button_el =  buttons.item(i);
     button_el.disabled = true;
-	}
+    }
 }
+
+function pause(numberMillis) {
+        var now = new Date();
+        var exitTime = now.getTime() + numberMillis;
+        while (true) {
+            now = new Date();
+            if (now.getTime() > exitTime)
+                return;
+        }
+    }
