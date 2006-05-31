@@ -86,4 +86,17 @@ public class DBEditorNav implements DBEditorTypes {
 		}
 
 	}
+
+	public static String getCopyURL(String modType) {
+		if( DBEditorNav.EDTYPE_CAPCONTROL.equals(modType) ) {
+			return "/editor/copyBase.jsf";
+		}		
+		else if( DBEditorNav.EDTYPE_POINT.equals(modType) ) {
+			return "/editor/copyBase.jsf";
+		}
+		else {
+			CTILogger.warn("Uknown CopyType ("+modType+"), redirecting to same page");
+			return "";
+		}
+	}
 }

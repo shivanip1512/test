@@ -9,7 +9,8 @@ import com.cannontech.database.data.pao.TypeBase;
 public interface DBEditorTypes {
 
 	public static final String PAGE_TYPE_EDITOR = "editor";
-	public static final String PAGE_TYPE_DELETE = "delete";	
+	public static final String PAGE_TYPE_DELETE = "delete";
+	public static final String PAGE_TYPE_COPY = "copy";
 
 	public static final String EDTYPE_POINT = "point";
 	public static final String EDTYPE_CAPCONTROL = "capcontrol";
