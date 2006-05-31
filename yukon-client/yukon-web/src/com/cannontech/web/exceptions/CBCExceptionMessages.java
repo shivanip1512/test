@@ -12,7 +12,9 @@ public class CBCExceptionMessages {
 
 	public static final String MSG_ALTSUB_NEEDS_SWITCH_PT = "ERROR: alternative sub bus needs to have a switch point";
 
-	public static String DB_UPDATE_SUCCESS = "Database update was SUCCESSFUL"; 
+	public static final String DB_UPDATE_SUCCESS = "Database update was SUCCESSFUL";
+
+	public static final String MSG_NONAME_PAO = "Provide a name for the object you would like to create"; 
 
     
 	public CBCExceptionMessages() {
