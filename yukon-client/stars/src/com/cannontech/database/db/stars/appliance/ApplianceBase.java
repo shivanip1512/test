@@ -196,9 +196,9 @@ public class ApplianceBase extends DBPersistent {
 		}
 	}
 
-    public static List<Integer> getAllAccountIDsFromApplianceCategory(int appCatID)
+    public static HashMap<Integer, Integer> getAllAccountIDsFromApplianceCategory(int appCatID)
     {
-        List<Integer> accountIDs = new ArrayList<Integer>();
+        HashMap<Integer, Integer> accountIDs = new HashMap<Integer, Integer>();
         
         Date timerStart = new Date();
         
@@ -212,7 +212,8 @@ public class ApplianceBase extends DBPersistent {
             {
                 for( int i = 0; i < stmt.getRowCount(); i++ )
                 {
-                    accountIDs.add(new Integer(stmt.getRow(i)[0].toString()));
+                    Integer newID = new Integer(stmt.getRow(i)[0].toString());
+                    accountIDs.put(newID, newID);
                 }
             }
         }

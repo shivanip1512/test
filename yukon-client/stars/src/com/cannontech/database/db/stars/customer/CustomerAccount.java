@@ -714,11 +714,11 @@ public class CustomerAccount extends DBPersistent {
     /*
      * For use in inventory filtering
      */
-    public static List<Integer> getAccountIDsFromZipCode(String zipCode) 
+    public static HashMap<Integer, Integer> getAccountIDsFromZipCode(String zipCode) 
     {
         if (zipCode == null || zipCode.length() == 0) return null;
         
-        List<Integer> accounts = new ArrayList<Integer>();
+        HashMap<Integer, Integer> accounts = new HashMap<Integer, Integer>();
         
         Date timerStart = new Date();
         
@@ -744,7 +744,8 @@ public class CustomerAccount extends DBPersistent {
   
             while(rset.next())
             {
-                accounts.add(new Integer(rset.getInt(1)));
+                Integer newID = new Integer(rset.getInt(1));
+                accounts.put(newID, newID);
                 count++;
             }
         }
@@ -770,9 +771,9 @@ public class CustomerAccount extends DBPersistent {
     /*
      * For use in inventory filtering
      */
-    public static List<Integer> getAccountIDsFromCustomerType(int ciCustType) 
+    public static HashMap<Integer, Integer> getAccountIDsFromCustomerType(int ciCustType) 
     {
-        List<Integer> accounts = new ArrayList<Integer>();
+        HashMap<Integer, Integer> accounts = new HashMap<Integer, Integer>();
         
         Date timerStart = new Date();
         
@@ -796,7 +797,8 @@ public class CustomerAccount extends DBPersistent {
   
             while(rset.next())
             {
-                accounts.add(new Integer(rset.getInt(1)));
+                Integer newID = new Integer(rset.getInt(1));
+                accounts.put(newID, newID);
                 count++;
             }
         }
@@ -822,9 +824,9 @@ public class CustomerAccount extends DBPersistent {
     /*
      * For use in inventory filtering
      */
-    public static List<Integer> getAccountIDsNonCommercial() 
+    public static HashMap<Integer, Integer> getAccountIDsNonCommercial() 
     {
-        List<Integer> accounts = new ArrayList<Integer>();
+        HashMap<Integer, Integer> accounts = new HashMap<Integer, Integer>();
         
         Date timerStart = new Date();
         
@@ -848,7 +850,8 @@ public class CustomerAccount extends DBPersistent {
   
             while(rset.next())
             {
-                accounts.add(new Integer(rset.getInt(1)));
+                Integer newID = new Integer(rset.getInt(1));
+                accounts.put(newID, newID);
                 count++;
             }
         }
