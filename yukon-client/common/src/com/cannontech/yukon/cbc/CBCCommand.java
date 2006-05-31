@@ -39,6 +39,12 @@ public class CBCCommand extends com.cannontech.yukon.cbc.CBCMessage
 	public static final int CMD_MANUAL_ENTRY = 30;
 	public static final int CMD_BANK_TEMP_MOVE	= 31;
 
+	public static final int VERIFY_OFFSET = 40;
+	public static final int CMD_ALL_BANKS = VERIFY_OFFSET + 0;
+	public static final int CMD_FQ_BANKS = VERIFY_OFFSET + 1;
+	public static final int CMD_FAILED_BANKS = VERIFY_OFFSET + 2;
+	public static final int CMD_QUESTIONABLE_BANKS = VERIFY_OFFSET + 3;
+	public static final int CMD_DISABLE_VERIFY = VERIFY_OFFSET + 4;
 
 	public static final String[] COMMAND_STRINGS =
 	{
@@ -70,6 +76,19 @@ public class CBCCommand extends com.cannontech.yukon.cbc.CBCMessage
 		//below are not used by the server
 		"Manual Entry", //30
 		"Bank Temp Move", //31
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"AllBanks", //40 
+		"FailedAndQuestionableBanks",
+		"FailedBanks",
+		"QuestionableBanks", //43
+		"DisableVerify", //44
 	};
 	
 
