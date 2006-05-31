@@ -55,7 +55,7 @@
 
                     <f:verbatim><br/></f:verbatim>
                     <x:outputLabel for="Name" value="Name: " title="A label for the item in the system"/>
-                    <x:inputText id="Name" required="true" maxlength="32" styleClass="char32Label"
+                    <x:inputText id="Name" maxlength="32" styleClass="char32Label"
                             value="#{capControlForm.wizData.name}" />
     
                     <f:verbatim><br/></f:verbatim>

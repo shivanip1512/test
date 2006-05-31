@@ -2,6 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %>
 <%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x" %>
 
+
 <f:subview id="cbcController" rendered="#{capControlForm.visibleTabs['CBCController']}" >
 
 
@@ -48,7 +49,7 @@
                 <f:verbatim><br/></f:verbatim>
                 <x:outputLabel for="cntrlSerNum2" value="Serial Number: " title="Serial number of the controller device" />
                 <x:inputText id="cntrlSerNumEd2" styleClass="staticLabel" disabled="#{!capControlForm.CBControllerEditor.editingController}"
-                        value="#{capControlForm.CBControllerEditor.serialNumber}" maxlength="9" size="9" onchange="submit();" >
+                        value="#{capControlForm.CBControllerEditor.serialNumber}" maxlength="9" size="9" >
                     <f:validateLongRange minimum="0" maximum="9999999999" />
                 </x:inputText>
                 
