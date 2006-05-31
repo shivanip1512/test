@@ -50,7 +50,7 @@ public class CBCDBObjCreator {
         if( DeviceTypesFuncs.isCapBankController(paoType) && !isTwoWay) {
 			//create the Status Point for this CBC
 			PointBase statusPt = CapBankController.createStatusControlPoint(parentID);
-			
+		
 			retSmart.addDBPersistent( statusPt );
 		}
 		
@@ -122,14 +122,14 @@ public class CBCDBObjCreator {
 	/**
 	 * @return
 	 */
-	private CBCWizardModel getCbcWizardModel() {
+	public CBCWizardModel getCbcWizardModel() {
 		return cbcWizardModel;
 	}
 
 	/**
 	 * @param model
 	 */
-	private void setCbcWizardModel(CBCWizardModel model) {
+	public void setCbcWizardModel(CBCWizardModel model) {
 		cbcWizardModel = model;
 	}
 
