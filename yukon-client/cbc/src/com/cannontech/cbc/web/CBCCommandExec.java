@@ -1,14 +1,14 @@
 package com.cannontech.cbc.web;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.data.point.PointQualities;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.yukon.cbc.CBCCommand;
 import com.cannontech.yukon.cbc.CBCTempMoveCapBank;
+import com.cannontech.yukon.cbc.CBCVerifySub;
 import com.cannontech.yukon.cbc.CapBankDevice;
-import com.cannontech.yukon.cbc.Feeder;
-import com.cannontech.yukon.cbc.SubBus;
 
 /**
  * @author rneuharth
@@ -39,7 +39,15 @@ public class CBCCommandExec
 			 || _cmdID == CBCCommand.CONFIRM_OPEN )
 		{
 			_executeConfirmSub( _paoID );
-		} 
+		}
+		if ((_cmdID == CBCCommand.CMD_ALL_BANKS) ||
+			(_cmdID == CBCCommand.CMD_FQ_BANKS) ||
+			(_cmdID == CBCCommand.CMD_FAILED_BANKS) ||
+			(_cmdID == CBCCommand.CMD_QUESTIONABLE_BANKS) ||
+			(_cmdID == CBCCommand.CMD_DISABLE_VERIFY))	
+		{
+			_executeVerifySub (_paoID, _cmdID);
+		}
 		else 
 		{
 			_executeCommand( 
@@ -48,6 +56,15 @@ public class CBCCommandExec
 		}
 	  
 		return true;
+	}
+
+	private void _executeVerifySub(int _paoid, int _cmdid) {
+		int action = 0;
+		if (_cmdid == CBCCommand.CMD_DISABLE_VERIFY)
+			action = 1;
+		int strat = _cmdid - CBCCommand.VERIFY_OFFSET;	
+		CBCVerifySub msg = new CBCVerifySub (action, _paoid, strat, CBCVerifySub.DEFAULT_CB_INACT_TIME);
+		cbcCache.getConnection().write(msg);
 	}
 
 	public boolean execute_FeederCmd( int _cmdID, int _paoID )
