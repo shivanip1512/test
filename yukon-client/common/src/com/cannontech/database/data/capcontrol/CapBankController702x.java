@@ -82,9 +82,10 @@ public class CapBankController702x extends com.cannontech.database.data.device.R
     */
    public void delete() throws java.sql.SQLException
    {
-      getDeviceAddress().delete();
-      getDeviceCBC().delete();
-     
+      if (!isPartialDelete) {
+    	 getDeviceAddress().delete();
+      	 getDeviceCBC().delete();
+      }
       super.delete();
    }
 
@@ -164,8 +165,10 @@ public class CapBankController702x extends com.cannontech.database.data.device.R
 
     public void setDeviceCBC(DeviceCBC deviceCBC) {
         this.deviceCBC = deviceCBC;
+        
     }
     
+
 }
 
 
