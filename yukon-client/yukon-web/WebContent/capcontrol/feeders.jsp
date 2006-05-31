@@ -13,6 +13,8 @@
 <div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
 
 <%
+	
+	String nd = "\"return nd(5000);\"";
 	int subid = cbcSession.getLastSubID();
 	LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);			
 	String popupEvent = AuthFuncs.getRolePropertyValue(user, WebClientRole.POPUP_APPEAR_STYLE);
@@ -73,10 +75,10 @@ if( subBus != null ) {
 							style="color: <%=CBCDisplay.getHTMLFgColor(subBus)%>;"
 							href="javascript:void(0);"
 						    <%= popupEvent %> ="return overlib(
-								createIFrame('subCmd.jsp?subId=<%=subBus.getCcId()%>', 135, 90, 'tempIFrame', 0),
-								STICKY, WIDTH,135, HEIGHT,90, OFFSETX,-15,OFFSETY,-15,
-								MOUSEOFF, FULLHTML);"
-						    onmouseout="nd();">
+								createIFrame('subCmd.jsp?subId=<%=subBus.getCcId()%>', 210, 170, 'tempIFrame', 0),
+								STICKY, WIDTH,210, HEIGHT,170, OFFSETX,-15,OFFSETY,-15, FULLHTML);"
+						    onmouseout = <%=nd %> > 
+						    
 					<% } else { %>
 						<a type="state" name="cti_dyn" id="<%=subBus.getCcId()%>" style="color: <%=CBCDisplay.getHTMLFgColor(subBus)%>;" >
 					<% } %>
@@ -146,10 +148,10 @@ for( int i = 0; i < feeders.length; i++ )
 		style="color: <%=CBCDisplay.getHTMLFgColor(feeder)%>;"
 		href="javascript:void(0);"
 	    <%= popupEvent %> ="return overlib(
-			createIFrame('feederCmd.jsp?feederId=<%=feeder.getCcId()%>', <%=feeder.getCcName().length() * 8%>, 75, 'tempIFrame', 0),
-			STICKY, WIDTH,<%=feeder.getCcName().length() * 8%>, HEIGHT,75, OFFSETX,-15, OFFSETY,-15,
-			MOUSEOFF, FULLHTML);"
-	    onmouseout="nd();">		
+			createIFrame('feederCmd.jsp?feederId=<%=feeder.getCcId()%>', <%=feeder.getCcName().length() * 8 +  75%>, 75, 'tempIFrame', 0),
+			STICKY, WIDTH,<%=feeder.getCcName().length() * 8 +  75%>, HEIGHT,75, OFFSETX,-15, OFFSETY,-15,
+			 FULLHTML);"
+	    onmouseout = <%=nd %> >	
 <% } else { %>
 	<a type="state" name="cti_dyn" id="<%=feeder.getCcId()%>" style="color: <%=CBCDisplay.getHTMLFgColor(feeder)%>;" >
 <% } %>
@@ -229,8 +231,8 @@ for( int i = 0; i < capBanks.length; i++ )
 						    <%= popupEvent %>="return overlib(
 								createIFrame('capBankCmd.jsp?capBankId=<%=capBank.getCcId()%>&cmdType=field', 155, 110, 'tempIFrame', 0),
 								STICKY, WIDTH,155, HEIGHT,110, OFFSETX,-15,OFFSETY,-15,
-								MOUSEOFF, FULLHTML);"
-						    onmouseout="nd();">
+								 FULLHTML);"
+						    onmouseout = <%=nd %> >	
 							
 							<%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_NAME_COLUMN) %>
 						</a>
@@ -249,9 +251,9 @@ for( int i = 0; i < capBanks.length; i++ )
 						    <%= popupEvent %>	= "return overlib(
 								createIFrame('capBankCmd.jsp?capBankId=<%=capBank.getCcId()%>&cmdType=system', 155, 200, 'tempIFrame', 0),
 								STICKY, WIDTH,155, HEIGHT,200, OFFSETX,-15,OFFSETY,-15,
-								MOUSEOFF, FULLHTML);"
+								 FULLHTML);"
 						    
-						    onmouseout="nd();" >
+						    onmouseout = <%=nd %> >	
 							
 					<% } else { %>
 						<a type="state" name="cti_dyn" id="<%=capBank.getCcId()%>" href="javascript:void(0);" style="color: <%=CBCDisplay.getHTMLFgColor(capBank)%>;" >
@@ -274,8 +276,9 @@ for( int i = 0; i < capBanks.length; i++ )
 		          			class="warning" <%= popupEvent %>="return overlib(
 								createIFrame('capBankMove.jsp?capBankId=<%=capBank.getCcId()%>&cmdType=system', 155, 200, 'tempIFrame', 0),
 								STICKY, WIDTH,155, HEIGHT,200, OFFSETX,-15,OFFSETY,-15,
-								MOUSEOFF, FULLHTML);"
-								onmouseout="nd();" 
+								 FULLHTML);"
+								onmouseout = <%=nd %> >	
+								
 		          			
 		          		<% } else { %>
 							onmouseover="statusMsg(this, 'Click here to temporarily move this CapBank from it\'s current parent feeder');"
@@ -293,6 +296,7 @@ for( int i = 0; i < capBanks.length; i++ )
 				
 			</table>
 		</div>
+		<input type="hidden" id="lastUpdate" value="">
     </form>
 <script type="text/javascript">
 Event.observe(window, 'load', function() { new CtiNonScrollTable('capBankTable','capBankHeaderTable');});

@@ -12,6 +12,7 @@
 <div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
 
 <%
+    String nd = "\"return nd(5000);\"";
     LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);			
 	String popupEvent = AuthFuncs.getRolePropertyValue(user, WebClientRole.POPUP_APPEAR_STYLE);
 	if (popupEvent == null) popupEvent = "onmouseover"; 
@@ -84,10 +85,10 @@ for( int i = 0; i < areaSubs.length; i++ )
 					style="color: <%=CBCDisplay.getHTMLFgColor(subBus)%>;"
 					href="javascript:void(0);"
 				    <%= popupEvent %> ="return overlib(
-						createIFrame('subCmd.jsp?subId=<%=subBus.getCcId()%>', 135, 90, 'tempIFrame', 0),
-						STICKY, WIDTH,135, HEIGHT,90, OFFSETX,-15,OFFSETY,-15,
-						MOUSEOFF, FULLHTML);"
-				    onmouseout="nd();">
+						createIFrame('subCmd.jsp?subId=<%=subBus.getCcId()%>', 210, 170 ,'tempIFrame', 0),
+						STICKY, WIDTH,210, HEIGHT,170, OFFSETX,-15,OFFSETY,-15,
+						 FULLHTML);"
+				    onmouseout= <%=nd%> >
 
 			<% } else { %>
 				<a type="state" name="cti_dyn" id="<%=subBus.getCcId()%>" style="color: <%=CBCDisplay.getHTMLFgColor(subBus)%>;" >
@@ -95,7 +96,6 @@ for( int i = 0; i < areaSubs.length; i++ )
 			<%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_CURRENT_STATE_COLUMN)%>
 			</a>
 				</td>
-
                 <td><a type="param1" name="cti_dyn" id="<%=subBus.getCcId()%>">
                 <%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_TARGET_COLUMN)%></a>
                 </td>
@@ -119,11 +119,12 @@ for( int i = 0; i < areaSubs.length; i++ )
 
             </table>
 	</div>
+	<input type="hidden" id="lastUpdate" value="">
         </form>
 
 <script type="text/javascript">
 Event.observe(window, 'load', function() { new CtiNonScrollTable('subTable','subHeaderTable');});
 </script>
       </cti:titledContainer>
-      
+
 </cti:standardPage>
