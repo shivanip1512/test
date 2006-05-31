@@ -5,16 +5,9 @@
        com.cannontech.web.menu.CommonMenuBuilder
        com.cannontech.web.menu.StandardMenuRenderer
        
-     The <require***> tags can be used under the <option> and <module> elements.
-     More than one tag can be specified if needed. The "value" attribute currently
-     accepts either a fully qualified field name (e.g. com.cannontech.something.Class.PROPERTY)
-     or a shortend version if the class is under com.cannontech.roles 
-     (e.g. CBCSettingsRole.ACCESS).
-
-     If you need to add a new "permission" types (like requireProperty) see:
+     If you need to add a new "permissions" type (like requireProperty) see:
        com.cannontech.web.menu.OptionPropertyChecker
-       com.cannontech.web.menu.CommonMenuBuilder
-       
+
      Be sure to use <link> for normal URLs (context path will be added)
      and <action> to call a JavaScript function via the javascript: protocol.
      
@@ -23,27 +16,28 @@
      respectively.
 -->
   <quicklinks>
-    <option name="Home">
-      <link>/home</link>
-    </option>
     <option name="CapControl">
       <link>/capcontrol/subareas.jsp</link>
-      <requireProperty value="capcontrol.CBCSettingsRole.ACCESS"/>
+      <requireProperty value="com.cannontech.roles.capcontrol.CBCSettingsRole.ACCESS"/>
     </option>
     <option name="Commander">
       <link>/apps/SelectDevice.jsp</link>
-      <requireRole value="application.CommanderRole.ROLEID"/>
+      <requireRole value="com.cannontech.roles.application.CommanderRole.ROLEID"/>
     </option>
-     <option name="Reporting">
+    <option name="Home">
+      <link>/home</link>
+    </option>
+    <option name="Reporting">
       <link>/analysis/Reports.jsp</link>
-      <requireRole value="application.ReportingRole.ROLEID"/>
+      <requireRole value="com.cannontech.roles.application.ReportingRole.ROLEID"/>
     </option>
+    
   </quicklinks>
   
   <module name="capcontrol">
     <toplinks>
       <option name="Create">
-        <requireProperty value="capcontrol.CBCSettingsRole.CBC_DATABASE_EDIT"/>
+        <requireProperty value="com.cannontech.roles.capcontrol.CBCSettingsRole.CBC_DATABASE_EDIT"/>
         <sublinks>
           <option name="Substation">
             <link>/editor/cbcWizBase.jsf?type=4000</link>
@@ -63,7 +57,7 @@
         </sublinks>
       </option>
       <option name="Modify">
-        <requireProperty value="capcontrol.CBCSettingsRole.CBC_DATABASE_EDIT"/>
+        <requireProperty value="com.cannontech.roles.capcontrol.CBCSettingsRole.CBC_DATABASE_EDIT"/>
         <sublinks>
           <option name="Edit">
             <script>editorPost()</script>
@@ -71,25 +65,28 @@
           <option name="Delete">
             <script>deletePost()</script>
           </option>
+          <option name="Copy">
+            <script>copyPost()</script>
+          </option>
         </sublinks>
       </option>
       <option name="Analysis">
-        <requireFalseProperty value="capcontrol.CBCSettingsRole.HIDE_REPORTS"/>
+        <requireFalseProperty value="com.cannontech.roles.capcontrol.CBCSettingsRole.HIDE_REPORTS"/>
         <sublinks>
           <option name="Today kVAR/Watt">
-	        <requireFalseProperty value="capcontrol.CBCSettingsRole.HIDE_GRAPHS"/>
+	        <requireFalseProperty value="com.cannontech.roles.capcontrol.CBCSettingsRole.HIDE_GRAPHS"/>
             <script>showPopUpChkBoxes('charts.jsp?type=VW&amp;period=Today')</script>
           </option>
           <option name="Today PF">
-	        <requireFalseProperty value="capcontrol.CBCSettingsRole.HIDE_GRAPHS"/>
+	        <requireFalseProperty value="com.cannontech.roles.capcontrol.CBCSettingsRole.HIDE_GRAPHS"/>
             <script>showPopUpChkBoxes('charts.jsp?type=PF&amp;period=Today')</script>
           </option>
           <option name="30 Day kVAR/Watt">
-	        <requireFalseProperty value="capcontrol.CBCSettingsRole.HIDE_GRAPHS"/>
+	        <requireFalseProperty value="com.cannontech.roles.capcontrol.CBCSettingsRole.HIDE_GRAPHS"/>
             <script>showPopUpChkBoxes('charts.jsp?type=VW')</script>
           </option>
           <option name="30 Day PF">
-	        <requireFalseProperty value="capcontrol.CBCSettingsRole.HIDE_GRAPHS"/>
+	        <requireFalseProperty value="com.cannontech.roles.capcontrol.CBCSettingsRole.HIDE_GRAPHS"/>
             <script>showPopUpChkBoxes('charts.jsp?type=PF')</script>
           </option>
         </sublinks>
@@ -109,7 +106,7 @@
             <script>post('/editor/paoSchedListBase.jsf')</script>
           </option>
           <option name="One-Line">
-	        <requireFalseProperty value="capcontrol.CBCSettingsRole.HIDE_ONELINE"/>
+	        <requireFalseProperty value="com.cannontech.roles.capcontrol.CBCSettingsRole.HIDE_ONELINE"/>
             <script>showConfirmWin(this)</script>
           </option>
           <option name="Recent Controls">
@@ -132,10 +129,7 @@
   
   <module name="commercialcurtailment">
     <toplinks>
-      <option name="Events">
-        <link>/cc/programSelect.jsf</link>
-      </option>
-      <option name="Setup">
+      <option name="View">
         <sublinks>
           <option name="Programs">
             <link>/cc/programList.jsf</link>
@@ -143,34 +137,10 @@
           <option name="Groups">
             <link>/cc/groupList.jsf</link>
           </option>
-          <option name="Customers">
-            <link>/cc/customerList.jsf</link>
-          </option>
         </sublinks>
       </option>
     </toplinks>
-    <css file="/cc/base.css"/>
-    <css file="/WebConfig/yukon/styles/commcurtaillogos.css"/>
     <skin name="standard"/>
-    <requireRole value="operator.CommercialMeteringRole.ROLEID"/>
-  </module>
-  
-  <module name="commercialcurtailment_user">
-    <toplinks>
-      <option name="Control">
-        <link>/cc/user/overview.jsf</link>
-      </option>
-      <option name="Trending">
-        <link>/user/CILC/user_trending_sp.jsp</link>
-      </option>
-      <option name="Profile">
-        <link>/user/CILC/user_ee_profile_sp.jsp</link>
-      </option>
-    </toplinks>
-    <css file="/cc/base.css"/>
-    <css file="/WebConfig/yukon/styles/commcurtaillogos.css"/>
-    <skin name="standard"/>
-    <requireRole value="cicustomer.CommercialMeteringRole.ROLEID"/>
   </module>
   
   <module name="esub">
