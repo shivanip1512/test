@@ -61,6 +61,42 @@
 				>Reset Op Counts</a>
 		  </td></tr>
 
+<% if(! subBus.getVerificationFlag().booleanValue() ) { %>
+          <tr><td>
+          	<a href="javascript:void(0);" class="optDeselect"
+				onmouseover="changeOptionStyle(this)"
+				onclick="postMany('frmSubCmd', 'paoID', <%=subId%>, 'cmdID', <%=CBCCommand.CMD_ALL_BANKS%>); top.document.getElementById('tempIFrame').style.display='none';"
+		  >Verify AllBanks </a>
+		  </td></tr>
+          <tr><td>
+          	<a href="javascript:void(0);" class="optDeselect"
+				onmouseover="changeOptionStyle(this)"
+				onclick="postMany('frmSubCmd', 'paoID', <%=subId%>, 'cmdID', <%=CBCCommand.CMD_FQ_BANKS%>); top.document.getElementById('tempIFrame').style.display='none';"
+		  >Verify FailedAndQuestionableBanks </a>
+		  </td></tr>
+		  <tr><td>
+          	<a href="javascript:void(0);" class="optDeselect"
+				onmouseover="changeOptionStyle(this)"
+				onclick="postMany('frmSubCmd', 'paoID', <%=subId%>, 'cmdID', <%=CBCCommand.CMD_FAILED_BANKS%>); top.document.getElementById('tempIFrame').style.display='none';"
+		  >Verify FailedBanks </a>
+		  </td></tr>
+		  <tr><td>
+          	<a href="javascript:void(0);" class="optDeselect"
+				onmouseover="changeOptionStyle(this)"
+				onclick="postMany('frmSubCmd', 'paoID', <%=subId%>, 'cmdID', <%=CBCCommand.CMD_QUESTIONABLE_BANKS%>); top.document.getElementById('tempIFrame').style.display='none';"
+		  >Verify QuestionableBanks  </a>
+		  </td></tr>
+
+<% } else { %>
+          <tr><td>
+          	<a href="javascript:void(0);" class="optDeselect"
+				onmouseover="changeOptionStyle(this)"
+				onclick="postMany('frmSubCmd', 'paoID', <%=subId%>, 'cmdID', <%=CBCCommand.CMD_DISABLE_VERIFY%>); top.document.getElementById('tempIFrame').style.display='none';"
+				>Verify Stop</a>
+		  </td></tr>
+<% } %>		  
+		  
+
 
 <% } %>
 
