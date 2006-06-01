@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTFILL.cpp-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2005/12/20 17:19:22 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2006/06/01 17:04:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -318,6 +318,7 @@ static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid
                                                 }
 
                                                 NewOutMessage->Buffer.TAPSt.Message[i + 1] = 'g';
+                                                NewOutMessage->Buffer.TAPSt.Message[i + 2] = '\0';
 
                                                 /* Now add it to the collection of outbound messages */
                                                 WriteMessageToPorter(NewOutMessage);
@@ -378,6 +379,7 @@ static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid
                                             }
                                         }
                                         OutMessage.Buffer.TAPSt.Message[i + 1] = xcom.getStopByte();
+                                        OutMessage.Buffer.TAPSt.Message[i + 2] = '\0';
 
                                         for(i = 0; i < OutMessage.OutLength; i++)
                                         {
@@ -475,6 +477,7 @@ static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid
                                                 }
 
                                                 NewOutMessage->Buffer.TAPSt.Message[i + 1] = 'g';
+                                                NewOutMessage->Buffer.TAPSt.Message[i + 2] = '\0';
 
                                                 /* Now add it to the collection of outbound messages */
                                                 WriteMessageToPorter(NewOutMessage);
@@ -535,6 +538,7 @@ static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid
                                             }
                                         }
                                         OutMessage.Buffer.TAPSt.Message[i + 1] = xcom.getStopByte();
+                                        OutMessage.Buffer.TAPSt.Message[i + 2] = '\0';
 
                                         for(i = 0; i < OutMessage.OutLength; i++)
                                         {

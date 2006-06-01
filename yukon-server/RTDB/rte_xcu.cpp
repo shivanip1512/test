@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_xcu.cpp-arc  $
-* REVISION     :  $Revision: 1.57 $
-* DATE         :  $Date: 2006/05/17 22:02:38 $
+* REVISION     :  $Revision: 1.58 $
+* DATE         :  $Date: 2006/06/01 17:04:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -260,6 +260,7 @@ INT CtiRouteXCU::assembleVersacomRequest(CtiRequestMsg               *pReq,
                     }
 
                     NewOutMessage->Buffer.TAPSt.Message[i + 1] = 'g';
+                    NewOutMessage->Buffer.TAPSt.Message[i + 2] = '\0';
 
                     for(i = 0; i < NewOutMessage->OutLength; i++)
                     {
@@ -647,6 +648,7 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
                     }
                 }
                 OutMessage->Buffer.TAPSt.Message[i + 1 + j] = xcom.getStopByte();
+                OutMessage->Buffer.TAPSt.Message[i + 2 + j] = '\0';
 
                 for(i = 0; i < OutMessage->OutLength; i++)
                 {
