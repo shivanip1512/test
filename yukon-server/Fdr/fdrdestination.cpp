@@ -111,27 +111,36 @@ CtiFDRDestination& CtiFDRDestination::setParentPoint (CtiFDRPoint* aParentPoint)
 
 string CtiFDRDestination::getTranslationValue(string propertyName) const {
   string result("");
+  string nameValuePair;
+  int n, pos;
+  //n being 100 is a possible limitation is the value will be more than 100 chars.
+  //I do not see that happening but if it is. oops   TS 6/1/06
+  char *buf;
 
   boost::char_separator<char> sep(";");
   Boost_char_tokenizer pairTokenizer(getTranslation(), sep);
 
-  string nameValuePair = *pairTokenizer.begin();
-  while (!nameValuePair.empty()) {
-      boost::char_separator<char> sep1(":");
-      Boost_char_tokenizer valueTokenizer(nameValuePair, sep1);
-      Boost_char_tokenizer::iterator ite = valueTokenizer.begin();
+  //string nameValuePair = *pairTokenizer.begin();
+  for ( Boost_char_tokenizer::iterator itr = pairTokenizer.begin() ;
+        itr != pairTokenizer.end() ; 
+        ++itr) 
+  {
+      nameValuePair = *itr;
+      n = nameValuePair.size();
+      buf = new char [n];
+      //grab the name so we can tell if this is the token we want.
 
-    string thisPropertyName = *ite;
-    if (thisPropertyName == propertyName) {
-      // right now the string looks like this: ":thisvalue;nextproperty:nextvalue"
-      // we're going to return up to the ';', and then trim the first character
-      ite++;
-      Boost_char_tokenizer valueTokenizer_(ite.base(), ite.end(), sep);
+      //Find the  ':' and copy everything before it into a string. This is the name.
+      pos = nameValuePair.find(":",0);
+      pos = nameValuePair.copy(buf,pos);
+      buf[pos] = '\0';
 
-
-      string valueWithColon = *valueTokenizer_.begin();
-
-      result = valueWithColon[1, valueWithColon.length() - 1];
+    if (buf == propertyName) {
+      //matched. Everything after pos is the value we want to return.
+      pos = nameValuePair.copy(buf,n,++pos);
+      buf[pos] = '\0';
+      
+      result = buf;
       break;
     }
   }

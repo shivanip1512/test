@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.22 $
-*    DATE         :  $Date: 2006/05/23 17:17:43 $
+*    REVISION     :  $Revision: 1.23 $
+*    DATE         :  $Date: 2006/06/01 21:17:30 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -19,6 +19,9 @@
 *    ---------------------------------------------------
 *    History:
       $Log: fdrlodestarimport.cpp,v $
+      Revision 1.23  2006/06/01 21:17:30  tspar
+      Changes to the loadTranslationLists()
+
       Revision 1.22  2006/05/23 17:17:43  tspar
       bug fix: boost iterator used incorrectly in loop.
 
@@ -461,142 +464,55 @@ bool CtiFDR_LodeStarImportBase::loadTranslationLists()
                             dout << " translate: " << translationPoint->getDestinationList()[x].getTranslation() << endl;
                         }
 
-                        boost::char_separator<char> sep1(";");
-                        Boost_char_tokenizer nextTranslate(translationPoint->getDestinationList()[x].getTranslation(), sep1);
-                        Boost_char_tokenizer::iterator tok_iter = nextTranslate.begin(); 
+                        translationFolderName = translationPoint->getDestinationList()[x].getTranslationValue("DrivePath");
 
-                        if ( tok_iter != nextTranslate.end())
+                        translationDrivePath = getFileImportBaseDrivePath();
+                        translationDrivePath += translationFolderName;
+
+                        translationFilename = translationPoint->getDestinationList()[x].getTranslationValue("Filename");
+
+                        
+
+                        CtiFDR_LodeStarInfoTable tempFileInfoList (translationDrivePath, translationFilename, translationFolderName);
+                        _snprintf(fileName, 200, "%s\\%s",tempFileInfoList.getLodeStarDrivePath(),tempFileInfoList.getLodeStarFileName());
+                        int matchFlag = 0;
+                        for (int xx = 0; xx < getFileInfoList().size(); xx++)
                         {
-                            tempString1 = *tok_iter;
-                            boost::char_separator<char> sep2(":");
-                            Boost_char_tokenizer nextTempToken(tempString1, sep2);
-                            Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
-
-                            tok_iter1++;
-                            Boost_char_tokenizer nextTempToken_(tok_iter1.base(), tok_iter1.end(), sep1);
-
-
-                            tempString2 = *nextTempToken_.begin();
-                            tempString2.replace(0,tempString2.length(), tempString2.substr(1,(tempString2.length()-1)));
-
-                            // now we have a customer identifier
-                            if ( !tempString2.empty() )
+                            _snprintf(fileName2, 200, "%s\\%s",getFileInfoList()[xx].getLodeStarDrivePath(),getFileInfoList()[xx].getLodeStarFileName());
+                            if (!strcmp(fileName,fileName2))
                             {
-                                translationName = tempString2;
-
-                                // next token is the channel
-                                tok_iter++;
-                                if ( tok_iter != nextTranslate.end())
-                                {
-                                        tempString1 = *tok_iter;
-                                    boost::char_separator<char> sep2(":");
-                                    Boost_char_tokenizer nextTempToken(tempString1, sep2);
-                                    Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
-
-                                    tok_iter1++;
-                                    tempString2 = *tok_iter1;
-
-                                    // now we have a channel
-                                    if ( !tempString2.empty() )
-                                    {
-                                        translationName += " ";
-                                        translationName += tempString2;
-
-                                        transform(translationName.begin(), translationName.end(), translationName.begin(), toupper);
-                                        ++tok_iter;
-                                        if ( tok_iter != nextTranslate.end())
-                                        {
-                                            tempString1 = *tok_iter;
-                                            boost::char_separator<char> sep2(":");
-                                            Boost_char_tokenizer nextTempToken(tempString1, sep2);
-                                            Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
-
-                                            tok_iter1++;
-                                            Boost_char_tokenizer nextTempToken_(tok_iter1.base(), tok_iter1.end(), sep1);
-
-
-                                            tempString2 = *nextTempToken_.begin();
-
-                                            tempString2.replace(0,tempString2.length(), tempString2.substr(1,(tempString2.length()-1)));
-
-                                            // now we have a Drive/Path
-                                            if ( !tempString2.empty() )
-                                            {
-                                                translationFolderName = tempString2;
-                                                transform(translationFolderName.begin(), translationFolderName.end(), translationFolderName.begin(), tolower);
-
-                                                
-
-                                                translationDrivePath = getFileImportBaseDrivePath();
-                                                translationDrivePath += tempString2;
-                                                transform(translationDrivePath.begin(), translationDrivePath.end(), translationDrivePath.begin(), toupper);
-                                                setDriveAndPath(translationDrivePath);
-
-                                                translationName += " ";
-                                                translationName += tempString2;
-                                                transform(translationName.begin(), translationName.end(), translationName.begin(), toupper);
-                                                ++tok_iter;
-                                                if ( tok_iter != nextTranslate.end())
-                                                {
-                                                    tempString1 = *tok_iter;
-                                                    boost::char_separator<char> sep2(":");
-                                                    Boost_char_tokenizer nextTempToken(tempString1, sep2);
-                                                    Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
-
-                                                    tok_iter1++;
-                                                    Boost_char_tokenizer nextTempToken_(tok_iter1.base(), tok_iter1.end(), sep1);
-
-
-                                                    tempString2 = *nextTempToken_.begin();
-
-                                                    tempString2.replace(0,tempString2.length(), tempString2.substr(1,(tempString2.length()-1)));
-
-                                                    // now we have a Drive/Path
-                                                    if ( !tempString2.empty() )
-                                                    {
-                                                        translationFilename = tempString2;
-                                                        transform(translationFilename.begin(), translationFilename.end(), translationFilename.begin(), tolower);                                                        
-                                                        setFileName(translationFilename);
-
-                                                        translationName += " ";
-                                                        translationName += translationFilename;
-                                                        transform(translationName.begin(), translationName.end(), translationName.begin(), toupper);
-                                                    }
-                                                }
-                                            }
-
-                                        }
-                                        CtiFDR_LodeStarInfoTable tempFileInfoList (translationDrivePath, translationFilename, translationFolderName);
-                                        _snprintf(fileName, 200, "%s\\%s",tempFileInfoList.getLodeStarDrivePath(),tempFileInfoList.getLodeStarFileName());
-                                        int matchFlag = 0;
-                                        for (int xx = 0; xx < getFileInfoList().size(); xx++)
-                                        {
-                                            _snprintf(fileName2, 200, "%s\\%s",getFileInfoList()[xx].getLodeStarDrivePath(),getFileInfoList()[xx].getLodeStarFileName());
-                                            if (!strcmp(fileName,fileName2))
-                                            {
-                                                matchFlag = 1;
-                                            }
-
-                                        }
-                                        if (!matchFlag)
-                                        {
-                                            getFileInfoList().push_back(tempFileInfoList);
-                                        }
-                                        translationPoint->getDestinationList()[x].setTranslation(translationName);
-                                        successful = true;
-
-                                        if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
-                                        {
-                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << CtiTime() << " Point ID " << translationPoint->getPointID();
-                                            dout << " translated: " << translationName << endl;
-                                        }
-                                    }
-                                }
+                                matchFlag = 1;
                             }
-                        }   // first token invalid
+
+                        }
+                        if (!matchFlag)
+                        {
+                            getFileInfoList().push_back(tempFileInfoList);
+                        }
+                        translationPoint->getDestinationList()[x].setTranslation(translationName);
+                        successful = true;
+
+                        if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " Point ID " << translationPoint->getPointID();
+
+                            boost::char_separator<char> sep1(";");
+                            Boost_char_tokenizer nextTranslate(translationPoint->getDestinationList()[x].getTranslation(), sep1);
+                            Boost_char_tokenizer::iterator tok_iter = nextTranslate.begin(); 
+                          
+                            /*----------------------------------- */
+                                for ( ; tok_iter != nextTranslate.end() ; ++tok_iter){
+                                    translationName += *tok_iter;
+                                    translationName += " ";
+                                }
+                            /*-----------------------------------*/
+
+                            dout << " translated: " << translationName << endl;//
+                        }
                     }
                 }   // end for interator
+                            
 
                 // lock the receive list and remove the old one
                 CtiLockGuard<CtiMutex> receiveGuard(getReceiveFromList().getMutex());
