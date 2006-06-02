@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.23 $
-*    DATE         :  $Date: 2006/06/01 21:17:30 $
+*    REVISION     :  $Revision: 1.24 $
+*    DATE         :  $Date: 2006/06/02 15:38:49 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -19,6 +19,9 @@
 *    ---------------------------------------------------
 *    History:
       $Log: fdrlodestarimport.cpp,v $
+      Revision 1.24  2006/06/02 15:38:49  tspar
+      Changes to the loadTranslationLists()
+
       Revision 1.23  2006/06/01 21:17:30  tspar
       Changes to the loadTranslationLists()
 
@@ -413,7 +416,6 @@ bool CtiFDR_LodeStarImportBase::loadTranslationLists()
     bool                successful(FALSE);
     CtiFDRPoint *       translationPoint = NULL;
     string           tempString1;
-    string           tempString2;
     string           translationName;
     string           translationDrivePath;
     string           translationFilename;
@@ -489,7 +491,7 @@ bool CtiFDR_LodeStarImportBase::loadTranslationLists()
                         {
                             getFileInfoList().push_back(tempFileInfoList);
                         }
-                        translationPoint->getDestinationList()[x].setTranslation(translationName);
+                        
                         successful = true;
 
                         if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)

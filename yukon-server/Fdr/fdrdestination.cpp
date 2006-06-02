@@ -113,8 +113,6 @@ string CtiFDRDestination::getTranslationValue(string propertyName) const {
   string result("");
   string nameValuePair;
   int n, pos;
-  //n being 100 is a possible limitation is the value will be more than 100 chars.
-  //I do not see that happening but if it is. oops   TS 6/1/06
   char *buf;
 
   boost::char_separator<char> sep(";");
@@ -141,6 +139,7 @@ string CtiFDRDestination::getTranslationValue(string propertyName) const {
       buf[pos] = '\0';
       
       result = buf;
+      delete buf;
       break;
     }
   }
