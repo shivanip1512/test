@@ -176,7 +176,10 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
         Validate.notNull(data, "Customer " + customer.getCustomer() + " does not have a point for " + type);
         LitePoint litePoint = PointFuncs.getLitePoint(data.getPointId());
         double pointValue = pointAccess.getPointValue(litePoint);
-        return new BigDecimal(pointValue);
+        // It is now somewhat important to round our double. I'm guessing that
+        // ten digits of precision is a good number. This will ensure that
+        // ==, <=, and >= operations on "normal" numbers will work as expected.
+        return new BigDecimal(pointValue, new MathContext(10));
     }
     
     public Date getStopNotificationTime(EconomicEvent event) {
