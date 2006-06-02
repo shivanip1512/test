@@ -192,7 +192,7 @@ public class CommonModuleBuilder implements ModuleBuilder {
     
     public ModuleBase getModuleBase(String moduleName) {
         ModuleBase moduleBase = (ModuleBase) moduleMap.get(moduleName);
-        Validate.notNull(moduleBase, "Unknown module name (check menu_structure.xml).");
+        Validate.notNull(moduleBase, "Unknown module name \"" + moduleName + "\" (check menu_structure.xml).");
         return moduleBase;
     }
     
