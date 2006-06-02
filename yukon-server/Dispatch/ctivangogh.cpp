@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.146 $
-* DATE         :  $Date: 2006/05/24 21:26:30 $
+* REVISION     :  $Revision: 1.147 $
+* DATE         :  $Date: 2006/06/02 18:43:09 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -4007,23 +4007,24 @@ INT CtiVanGogh::checkForNumericAlarms(CtiPointDataMsg *pData, CtiMultiWrapper &a
 INT CtiVanGogh::sendMail(const CtiSignalMsg &sig, const CtiTableNotificationGroup &grp)
 {
     INT status = NORMAL;
-    vector<int> group_ids;
-    double value = sig.getPointValue();
+    vector<int> group_ids;    
 
     group_ids.push_back(grp.getGroupID());
-
+    
     CtiNotifAlarmMsg* alarm_msg = new CtiNotifAlarmMsg( group_ids,
-                            sig.getId(),
-                            sig.getCondition(),
-                            value,
-                            !(sig.getTags() & TAG_UNACKNOWLEDGED_ALARM),
-                            sig.getTags() & TAG_ACTIVE_ALARM);
+                                                        sig.getSignalCategory(),
+                                                        sig.getId(),
+                                                        sig.getCondition(),
+                                                        sig.getPointValue(),
+                                                        sig.getMessageTime(),
+                                                        !(sig.getTags() & TAG_UNACKNOWLEDGED_ALARM),
+                                                        sig.getTags() & TAG_ACTIVE_ALARM);
 
 
     if(gDispatchDebugLevel & DISPATCH_DEBUG_NOTIFICATION)
     {
-    dout << CtiTime() << " Sending alarm notification" << endl;
-    alarm_msg->dump();
+        dout << CtiTime() << " Sending alarm notification" << endl;
+        alarm_msg->dump();
     }
 
     if(!getNotificationConnection()->valid())

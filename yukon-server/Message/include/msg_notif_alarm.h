@@ -22,23 +22,35 @@ public:
     RWDECLARE_COLLECTABLE( CtiNotifAlarmMsg );
 
     CtiNotifAlarmMsg();
-    CtiNotifAlarmMsg(const vector<int>& group_ids, int point_id, int condition, double value, bool acknowledged, bool abnormal);
+    CtiNotifAlarmMsg(const vector<int>& group_ids,
+                     int category_id,
+                     int point_id,
+                     int condition,
+                     double value,
+                     const CtiTime& alarm_timestamp,
+                     bool acknowledged,
+                     bool abnormal);
     
     virtual ~CtiNotifAlarmMsg();
 
-    const vector<int>& getNotifGroupIDs() const;
+    const vector<int>& getNotifGroupIDs() const;    
+    int getCategoryID() const;    
     int getPointID() const;
     int getCondition() const;
     double getValue() const;
+    const CtiTime& getAlarmTimestamp() const;
     bool isAcknowledged() const;
     bool isAbnormal() const;
-    
-    CtiNotifAlarmMsg& setNotifGroupIDs(const vector<int>& group_ids);
+
+    CtiNotifAlarmMsg& setNotifGroupIDs(const vector<int>& group_ids);    
+    CtiNotifAlarmMsg& setCategoryID(int category);
     CtiNotifAlarmMsg& setPointID(int point_id);
     CtiNotifAlarmMsg& setCondition(int condition);
+    CtiNotifAlarmMsg& setValue(double value);
+    CtiNotifAlarmMsg& setAlarmTimestamp(const CtiTime& alarm_timestamp);
     CtiNotifAlarmMsg& setAcknowledged(bool acknowledged);
     CtiNotifAlarmMsg& setAbnormal(bool abnormal);
-	
+        
     virtual void saveGuts(RWvostream &aStream) const;
     virtual void restoreGuts(RWvistream& aStream);
     virtual CtiMessage* replicateMessage() const;
@@ -47,10 +59,12 @@ public:
 
     
 private:
-    vector<int> _notif_group_ids;
+    vector<int> _notif_group_ids;    
+    int _category_id;
     int _point_id;
     int _condition;
     double _value;
+    CtiTime _alarm_timestamp;
     bool _acknowledged;
     bool _abnormal;
 };
