@@ -4,6 +4,7 @@ import java.io.IOException;
 import com.cannontech.message.util.DefineCollectableMessage;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.*;
+import com.roguewave.vsj.streamer.SimpleMappings;
 
 public class DefColl_NotifAlarmMsg extends DefineCollectableMessage {
     // RogueWave classId
@@ -45,10 +46,12 @@ public class DefColl_NotifAlarmMsg extends DefineCollectableMessage {
         msg.notifGroupIds = new int[vstr.extractInt()];
         for(int i = 0; i < msg.notifGroupIds.length; i++) {
         	msg.notifGroupIds[i] = vstr.extractInt();
-        }        
+        }       
+        msg.alarmCategoryId = vstr.extractInt();
         msg.pointId = vstr.extractInt();
         msg.condition = vstr.extractInt();
         msg.value = vstr.extractDouble();
+        msg.alarmTimestamp = (java.util.Date) vstr.restoreObject( SimpleMappings.Time );
         msg.acknowledged = (vstr.extractInt() != 0);
         msg.abnormal = (vstr.extractInt()  != 0);
     }
@@ -62,9 +65,11 @@ public class DefColl_NotifAlarmMsg extends DefineCollectableMessage {
         for(int i = 0; i < msg.notifGroupIds.length; i++) {
         	vstr.insertInt(msg.notifGroupIds[i]);
         }        
+        vstr.insertInt(msg.alarmCategoryId);
         vstr.insertInt(msg.pointId);
         vstr.insertInt(msg.condition);
         vstr.insertDouble(msg.value);
+        vstr.saveObject( msg.alarmTimestamp, SimpleMappings.Time );
         vstr.insertUnsignedInt(msg.acknowledged ? 1 : 0);
         vstr.insertUnsignedInt(msg.abnormal ? 1 : 0);
     }
