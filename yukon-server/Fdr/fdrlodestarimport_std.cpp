@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.11 $
-*    DATE         :  $Date: 2006/05/23 17:17:43 $
+*    REVISION     :  $Revision: 1.12 $
+*    DATE         :  $Date: 2006/06/02 18:17:55 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -19,6 +19,10 @@
 *    ---------------------------------------------------
 *    History:
       $Log: fdrlodestarimport_std.cpp,v $
+      Revision 1.12  2006/06/02 18:17:55  dsutton
+      Added support to use the yukon point offset and multiplier on the values
+      being imported
+
       Revision 1.11  2006/05/23 17:17:43  tspar
       bug fix: boost iterator used incorrectly in loop.
 
@@ -1025,6 +1029,10 @@ bool CtiFDR_StandardLodeStar::decodeDataRecord(string& aLine, CtiMultiMsg* multi
                             importedQuality = ForeignToYukonQuality(tempTest);
                             intervalStatus = atoi(tempTest);
                             tempCharPtr += 1;
+
+                            // apply our multiplier and offset
+                            intervalValue *= pointMultiplier;
+                            intervalValue += pointOffset;
 
                             /*if (intervalValue == 0 && intervalStatus == 9) 
                             {
