@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PHLIDLC.cpp-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2006/04/24 19:23:06 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2006/06/02 20:05:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -293,6 +293,9 @@ IDLCRColQ (CtiDeviceSPtr &Dev, INT priority)
                 }
             }
         }
+
+        /* Check the priority and do not let it be less than 11 */
+        if(OutMessage->Priority < 11) OutMessage->Priority = 11;
 
         /* Calculate the length we should get */
         if(p711Info->NCOcts < (MaxOcts - 20))        // Can I get it all in one?

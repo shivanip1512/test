@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.49 $
-* DATE         :  $Date: 2006/05/31 22:08:22 $
+* REVISION     :  $Revision: 1.50 $
+* DATE         :  $Date: 2006/06/02 20:05:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -81,7 +81,7 @@ using namespace std;
 extern CtiPortManager   PortManager;
 extern HCTIQUEUE*       QueueHandle(LONG pid);
 
-static ULONG MAX_CCU_QUEUE_TIME = 900;
+static ULONG MAX_CCU_QUEUE_TIME = 1800;
 USHORT QueSequence = {0x8000};
 
 static CHAR tempstr[100];
@@ -977,9 +977,16 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
             }
 
             /* Free up the entry in the QueTable */
+            if(pInfo->QueTable[QueTabEnt].InUse) InterlockedIncrement( &(pInfo->FreeSlots) );
+            if(pInfo->FreeSlots > MAXQUEENTRIES)
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+            }
             pInfo->QueTable[QueTabEnt].InUse = 0;
             pInfo->QueTable[QueTabEnt].TimeSent = -1L;
-            pInfo->FreeSlots++;
         }
     }
 
@@ -1065,99 +1072,79 @@ static ULONG sleepTime = 15000L;
 
 static void applyKick(const long unusedid, CtiDeviceSPtr Dev, void *usprtid)
 {
-
-    bool none_found = true;
     int i;
+    bool rcol_sent = false;
 
-    switch(Dev->getType())
+    if(Dev->getType() == TYPE_CCU711)
     {
-    case TYPE_CCU711:
+        RWRecursiveLock<RWMutexLock>::LockGuard   devguard(Dev->getMux());                  // Protect our device!
+        CtiTransmitter711Info *pInfo = (CtiTransmitter711Info*)Dev->getTrxInfo();
+
+        // Verify FreeSlots!
+        LONG FreeQents = 0;
+        LONG OldFreeEnts;
+
+        ULONG nowtime = LongTime();
+        /* Check if we have anything done yet */
+        for(i = 0; i < MAXQUEENTRIES; i++)
         {
-            RWRecursiveLock<RWMutexLock>::LockGuard   devguard(Dev->getMux());                  // Protect our device!
+            if((pInfo->QueTable[i].InUse & INUSE) && (pInfo->QueTable[i].TimeSent <= nowtime - MAX_CCU_QUEUE_TIME))
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " " << Dev->getName() << " INUSE queue entry is more than " << MAX_CCU_QUEUE_TIME << " seconds old. " << endl;
+                }
 
-            CtiTransmitter711Info *pInfo = (CtiTransmitter711Info*)Dev->getTrxInfo();
+                /* send a message to the calling process */
+                if(pInfo->QueTable[i].EventCode & RESULT) ReturnQueuedResult(Dev, pInfo, i);
+                if(pInfo->QueTable[i].InUse) InterlockedIncrement( &(pInfo->FreeSlots) );
+                if(pInfo->FreeSlots > MAXQUEENTRIES)
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                }
+                pInfo->QueTable[i].InUse = 0;
+                pInfo->QueTable[i].TimeSent = -1L;
+            }
+            else if(pInfo->QueTable[i].InUse & INCCU)
+            {
+                if(pInfo->QueTable[i].TimeSent <= nowtime - 5L)
+                {
+                    if(!rcol_sent)
+                    {
+                        rcol_sent = true;
+                        IDLCRColQ(Dev);
+                    }
+                }
+                else if(pInfo->QueTable[i].TimeSent == -1L)
+                {
+                    // 20051129 CGP - This should never hapen if we are INCCU.  I've become paranoid!
+                    pInfo->QueTable[i].TimeSent = nowtime;
+                    sleepTime = 2500L;                             // Wake every 2.5 seconds in this case.
+                }
+                else
+                {
+                    sleepTime = 2500L;                             // Wake every 2.5 seconds in this case.
+                }
+            }
 
-#if 0
+            if(!pInfo->QueTable[i].InUse) FreeQents++;          // Counting the number of Open slots.
+        }
 
-            /* see if anything is in the ccu queues */
-            if(pInfo->FreeSlots != MAXQUEENTRIES || pInfo->PortQueueEnts > 1 || pInfo->NCOcts != 0)
+        if( FreeQents != (OldFreeEnts = InterlockedExchange(&(pInfo->FreeSlots), FreeQents)) )
+        {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << Dev->getName() << " (on-device) Queue Report: " << endl;
-                dout << "Port: " << Dev->getPortID() <<
-                "  Remote: " << Dev->getAddress() <<
-                "  FreeSlots: " << pInfo->FreeSlots <<
-                "  PortQueEnts: " << pInfo->PortQueueEnts <<
-                "  NCOcts: " << pInfo->PortQueueConts << endl;
+                dout << CtiTime() << " **** FREESLOTS CORRECTION!  **** " << __FILE__ << " (" << __LINE__ << ") " << OldFreeEnts << " != " << FreeQents << endl;
             }
-#endif
-            if(pInfo->FreeSlots < MAXQUEENTRIES)
-            {
-                ULONG nowtime = LongTime();
-                /* Check if we have anything done yet */
-                for(i = 0; i < MAXQUEENTRIES; i++)
-                {
-                    if(pInfo->QueTable[i].InUse & INCCU)
-                    {
-                        none_found = false;
-                        if(pInfo->QueTable[i].TimeSent <= nowtime - MAX_CCU_QUEUE_TIME)       // Is it ancient?
-                        {
-                            // Ancient queue entries indicate bad things!
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " " << Dev->getName() << " INCCU queue entry is more than " << MAX_CCU_QUEUE_TIME << " seconds old. " << endl;
-                            }
+        }
 
-                            /* send a message to the calling process */
-                            if(pInfo->QueTable[i].EventCode & RESULT) ReturnQueuedResult(Dev, pInfo, i);
-                            pInfo->QueTable[i].InUse = 0;
-                            pInfo->QueTable[i].TimeSent = -1L;
-                            pInfo->FreeSlots++;
-                        }
-                        if(pInfo->QueTable[i].TimeSent <= nowtime - 5L)
-                        {
-                            IDLCRColQ(Dev);
-                            break;
-                        }
-                        else if(pInfo->QueTable[i].TimeSent == -1L)
-                        {
-                            // 20051129 CGP - This should never hapen if we are INCCU.  I've become paranoid!
-                            pInfo->QueTable[i].TimeSent = nowtime;
-                            sleepTime = 2500L;                             // Wake every 2.5 seconds in this case.
-                        }
-                        else
-                        {
-                            sleepTime = 2500L;                             // Wake every 2.5 seconds in this case.
-                        }
-                    }
-                    else if((pInfo->QueTable[i].InUse & INUSE) && (pInfo->QueTable[i].TimeSent <= nowtime - MAX_CCU_QUEUE_TIME))
-                    {
-                        none_found = false;
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " " << Dev->getName() << " INUSE queue entry is more than " << MAX_CCU_QUEUE_TIME << " seconds old. " << endl;
-                        }
-
-                        /* send a message to the calling process */
-                        if(pInfo->QueTable[i].EventCode & RESULT) ReturnQueuedResult(Dev, pInfo, i);
-                        pInfo->QueTable[i].InUse = 0;
-                        pInfo->QueTable[i].TimeSent = -1L;
-                        pInfo->FreeSlots++;
-                    }
-                }
-
-                if(none_found)  // If there are no InUse queue entries, and we are looping through here, there is a problem.  Fix it.
-                {
-                    pInfo->FreeSlots = MAXQUEENTRIES;
-                }
-            }
-            else if(pInfo->NCOcts)
-            {
-                /* Opps... something got left behind */
-                IDLCRColQ(Dev);
-            }
-
-            break;
+        if(!rcol_sent && pInfo->FreeSlots == MAXQUEENTRIES && pInfo->NCOcts)
+        {
+            /* Opps... something got left behind */
+            IDLCRColQ(Dev);
         }
     }
 }
@@ -1244,9 +1231,16 @@ CCUQueueFlush (CtiDeviceSPtr Dev)
                     ReturnQueuedResult(Dev, pInfo, QueTabEnt);
                 }
 
+                if(pInfo->QueTable[QueTabEnt].InUse) InterlockedIncrement( &(pInfo->FreeSlots) );
+                if(pInfo->FreeSlots > MAXQUEENTRIES)
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                }
                 pInfo->QueTable[QueTabEnt].InUse = 0;
                 pInfo->QueTable[QueTabEnt].TimeSent = -1L;
-                pInfo->FreeSlots++;
             }
         }
     }
@@ -1284,7 +1278,7 @@ QueueFlush (CtiDeviceSPtr Dev)
                 pInfo->QueTable[QueTabEnt].TimeSent = -1L;
             }
         }
-        pInfo->FreeSlots = MAXQUEENTRIES;
+        InterlockedExchange(&(pInfo->FreeSlots), MAXQUEENTRIES);
         pInfo->clearStatus(INLGRPQ);            // 20050506 CGP on a wh.
     }
     return(NORMAL);
@@ -1453,7 +1447,7 @@ BuildLGrpQ (CtiDeviceSPtr Dev)
                 SETLPos = Offset++;
 
                 /* tick off free slots available */
-                pInfo->FreeSlots--;
+                InterlockedDecrement( &(pInfo->FreeSlots) );
                 pInfo->QueTable[QueTabEnt].InUse |= INUSE;
                 pInfo->QueTable[QueTabEnt].TimeSent = LongTime();          // Erroneous, but not totally evil.  20020703 CGP.  pInfo->QueTable[i].TimeSent = LongTime();
 
@@ -1837,9 +1831,16 @@ DeQueue (INMESS *InMessage)
                         }
                     }
                     /* Now free up the table entry */
+                    if(pInfo->QueTable[i].InUse) InterlockedIncrement( &(pInfo->FreeSlots) );
+                    if(pInfo->FreeSlots > MAXQUEENTRIES)
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+                    }
                     pInfo->QueTable[i].InUse = 0;
                     pInfo->QueTable[i].TimeSent = -1L;
-                    pInfo->FreeSlots++;
                 }
             }
         }
@@ -1884,33 +1885,63 @@ int ReturnQueuedResult(CtiDeviceSPtr Dev, CtiTransmitter711Info *pInfo, USHORT Q
     INMESS InMessage;
     ULONG BytesWritten;
 
-    InMessage.DeviceID      = Dev->getID();
-    InMessage.Port          = Dev->getPortID();
-    InMessage.Remote        = Dev->getAddress();
-    InMessage.TargetID      = pInfo->QueTable[QueTabEnt].TargetID;    // This is the DID of the target DLC device ( MCT_XYZ )
-    InMessage.Sequence      = pInfo->QueTable[QueTabEnt].OriginalOutMessageSequence;    // Client identifier?
-    InMessage.ReturnNexus   = pInfo->QueTable[QueTabEnt].ReturnNexus; // This is who asked for it.
-    InMessage.SaveNexus     = pInfo->QueTable[QueTabEnt].SaveNexus;
-    InMessage.Priority      = pInfo->QueTable[QueTabEnt].Priority;
-    InMessage.Return        = pInfo->QueTable[QueTabEnt].Request;
-    InMessage.MessageFlags  = pInfo->QueTable[QueTabEnt].MessageFlags;
-    InMessage.Time          = LongTime();
-    InMessage.MilliTime     = 0;
-    InMessage.EventCode     = QUEUEFLUSHED | DECODED;                 // Indicates the result of the request.. The CCU queue was blown away!
-
-    if(pInfo->QueTable[QueTabEnt].EventCode & BWORD)                  // If the outbound request was a BWORD then...
+    try
     {
-        InMessage.Buffer.DSt.Address = pInfo->QueTable[QueTabEnt].Address;
-    }
+        try
+        {
+            InMessage.DeviceID      = Dev->getID();
+            InMessage.Port          = Dev->getPortID();
+            InMessage.Remote        = Dev->getAddress();
+            InMessage.TargetID      = pInfo->QueTable[QueTabEnt].TargetID;    // This is the DID of the target DLC device ( MCT_XYZ )
+            InMessage.Sequence      = pInfo->QueTable[QueTabEnt].OriginalOutMessageSequence;    // Client identifier?
+            InMessage.ReturnNexus   = pInfo->QueTable[QueTabEnt].ReturnNexus; // This is who asked for it.
+            InMessage.SaveNexus     = pInfo->QueTable[QueTabEnt].SaveNexus;
+            InMessage.Priority      = pInfo->QueTable[QueTabEnt].Priority;
+            InMessage.Return        = pInfo->QueTable[QueTabEnt].Request;
+            InMessage.MessageFlags  = pInfo->QueTable[QueTabEnt].MessageFlags;
+            InMessage.Time          = LongTime();
+            InMessage.MilliTime     = 0;
+            InMessage.EventCode     = QUEUEFLUSHED | DECODED;                 // Indicates the result of the request.. The CCU queue was blown away!
+        }
+        catch(...)
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+        }
 
-    /* send message back to originating process */
-    if(InMessage.ReturnNexus->CTINexusWrite(&InMessage, sizeof (InMessage), &BytesWritten, 60L) || BytesWritten == 0)
+        try
+        {
+            if(pInfo->QueTable[QueTabEnt].EventCode & BWORD)                  // If the outbound request was a BWORD then...
+            {
+                InMessage.Buffer.DSt.Address = pInfo->QueTable[QueTabEnt].Address;
+            }
+
+            /* send message back to originating process */
+            if(InMessage.ReturnNexus->CTINexusWrite(&InMessage, sizeof (InMessage), &BytesWritten, 60L) || BytesWritten == 0)
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " Error Writing to nexus on device \"" << Dev->getName() << "\" " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+                InMessage.ReturnNexus->CTINexusClose();
+            }
+        }
+        catch(...)
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+        }
+    }
+    catch(...)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Error Writing to nexus on device \"" << Dev->getName() << "\" " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
-        InMessage.ReturnNexus->CTINexusClose();
     }
 
     return NORMAL;

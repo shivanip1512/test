@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/trx_711.h-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2006/01/16 19:57:29 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2006/06/02 20:05:57 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -34,7 +34,7 @@ public:
     USHORT           ReadyN;
     USHORT           NCsets;
     USHORT           NCOcts;
-    USHORT           FreeSlots;
+    LONG             FreeSlots;
     USHORT           RColQMin;
     QUEENT           QueTable[MAXQUEENTRIES];
 

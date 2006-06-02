@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/disp_thd.cpp-arc  $
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2006/05/11 19:05:34 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2006/06/02 20:05:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -120,14 +120,8 @@ void DispatchMsgHandlerThread(VOID *Arg)
 
             if(omc > 10 && nowTime > nextTime)
             {
-                nextTime = nowTime.seconds() - (nowTime.seconds() % 300) + 300;
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Porter's OM Count = " << omc << endl;
-                }
-
-                PortManager.apply( applyPortQueueReport, (void*)1 );
-                DeviceManager.apply( applyDeviceQueueReport, NULL );
+                nextTime = nextScheduledTimeAlignedOnRate(nowTime, gConfigParms.getValueAsULong("PORTER_ALTQ_RATE", 300));
+                processInputFunction(0x71);  //  do an alt-q every n seconds
             }
 
             if( PIL.isBroken() && !bServerClosing )
