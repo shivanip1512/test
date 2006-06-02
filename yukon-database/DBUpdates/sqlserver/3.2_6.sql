@@ -16,4 +16,4 @@ go
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
 /**************************************************************/
-/* __YUKON_VERSION__ */
+insert into CTIDatabase values('3.2', 'DBUPdater', '01-JUNE-2006', 'Manual version insert done', 6 );

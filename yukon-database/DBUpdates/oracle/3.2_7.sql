@@ -2,7 +2,12 @@
 /**** Oracle 9.2 DBupdates             ****/
 /******************************************/
 
-delete from YukonServices where serviceid=-1;
+delete from YukonServices where servicename='Notification_Server';
+
+/* @error ignore */
+insert into YukonRoleProperty values(-20161,-201,'Account Number Length','(none)','Specifies the number of account number characters to consider for comparison purposes during the customer account import process.');
+/* @error ignore */
+insert into YukonRoleProperty values(-20162,-201,'Rotation Digit Length','(none)','Specifies the number of rotation digit characters to ignore during the customer account import process.');
 
 /******************************************************************************/
 /* Run the Stars Update if needed here */
@@ -15,4 +20,4 @@ delete from YukonServices where serviceid=-1;
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
 /**************************************************************/
-insert into CTIDatabase values('3.2', 'DBUPdater', '01-JUNE-2006', 'Manual version insert done', 6 );
+/* __YUKON_VERSION__ */

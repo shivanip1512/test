@@ -1,7 +1,7 @@
 /******************************************/
 /**** Oracle 9.2 DBupdates             ****/
 /******************************************/
-set scan off;
+set define off;
 
 /* @error ignore */
 alter table command modify command VARCHAR2(256);

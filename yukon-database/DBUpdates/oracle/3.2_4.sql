@@ -23,15 +23,15 @@ insert into YukonRoleProperty values(-10809,-108,'Standard Page Style Sheet',' '
 drop table dynamiclmprogramdirect;
 
 create table DynamicLMProgramDirect (
-   DeviceID             numeric              not null,
-   CurrentGearNumber    numeric              not null,
-   LastGroupControlled  numeric              not null,
-   StartTime            datetime             not null,
-   StopTime             datetime             not null,
-   TimeStamp            datetime             not null,
-   NotifyActiveTime     datetime             not null,
-   StartedRampingOut    datetime             not null,
-   NotifyInactiveTime   datetime             not null,
+   DeviceID             number              not null,
+   CurrentGearNumber    number              not null,
+   LastGroupControlled  number              not null,
+   StartTime            date             not null,
+   StopTime             date             not null,
+   TimeStamp            date             not null,
+   NotifyActiveTime     date             not null,
+   StartedRampingOut    date             not null,
+   NotifyInactiveTime   date             not null,
    ConstraintOverride   char(1)              not null
 );
 
@@ -76,7 +76,7 @@ alter table RAWPOINTHISTORY
 create unique index INDX_SYSLG_PTID_TS on SYSTEMLOG (
    LOGID ASC,
    POINTID ASC,
-   DATETIME ASC
+   date ASC
 );
 
 create table EsubDisplayIndex (

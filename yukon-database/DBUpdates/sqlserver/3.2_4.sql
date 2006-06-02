@@ -103,12 +103,12 @@ go
 create table EsubDisplayIndex (
    SearchKey            varchar(500)         not null,
    DisplayUrl           varchar(500)         not null
-)
+);
 go
 
 
 alter table EsubDisplayIndex
-   add constraint PK_ESUBDISPLAYINDEX primary key  (SearchKey)
+   add constraint PK_ESUBDISPLAYINDEX primary key  (SearchKey);
 go
 
 delete from display where displaynum = -2;

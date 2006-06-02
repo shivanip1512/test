@@ -210,28 +210,19 @@ alter table   Capcontrolsubstationbus modify multiMonitorControl not null;
 
 alter table Capcontrolfeeder add multiMonitorControl char(1);
 update  Capcontrolfeeder set  multiMonitorControl = 'N';
-alter table   Capcontrolfeeder alter column  multiMonitorControl char(1) not null;
+alter table   Capcontrolfeeder modify  multiMonitorControl char(1) not null;
 
 alter table NotificationDestination drop constraint PKey_NotDestID;
 alter table NotificationDestination drop column DestinationOrder;
 alter table NotificationDestination add constraint PKey_NotDestID primary key (NotificationGroupID, RecipientID);
 
-alter table dynamicccsubstationbus add eventSeq number;
+alter table dynamicccsubstationbus add eventSeq numeric;
 update dynamicccsubstationbus  set eventSeq = 0;
-alter table dynamicccsubstationbus alter column eventSeq number not null;
+alter table dynamicccsubstationbus alter column eventSeq numeric not null;
 
-alter table dynamicccfeeder add eventSeq number;
+alter table dynamicccfeeder add eventSeq numeric;
 update dynamicccfeeder  set eventSeq = 0;
-alter table dynamicccfeeder alter column eventSeq number not null;
-
-alter table dynamicccfeeder add currVerifyCBId number;
-update dynamicccfeeder  set currVerifyCBId = -1;
-alter table dynamicccfeeder alter column currVerifyCBId number not null;
-
-alter table dynamicccfeeder add currVerifyCBOrigState number;
-update dynamicccfeeder  set currVerifyCBOrigState = 0;
-alter table dynamicccfeeder alter column currVerifyCBOrigState number not null;
-
+alter table dynamicccfeeder alter column eventSeq numeric not null;
 
 /* @error ignore-begin */
 /* Below is an attempt to create every table and constraint
