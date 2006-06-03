@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.147 $
-* DATE         :  $Date: 2006/06/02 18:43:09 $
+* REVISION     :  $Revision: 1.148 $
+* DATE         :  $Date: 2006/06/03 18:41:53 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -355,6 +355,9 @@ void CtiVanGogh::VGMainThread()
 
         _appMonitorThread  = rwMakeThreadFunction(*this, &CtiVanGogh::VGAppMonitorThread);
         _appMonitorThread.start();
+
+         // Prime the connection to the notification server
+         getNotificationConnection();
 
         // all that is good and ready has been started, open up for business from clients
         ConnThread_ = rwMakeThreadFunction(*this, &CtiVanGogh::VGConnectionHandlerThread);
