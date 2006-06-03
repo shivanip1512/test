@@ -336,7 +336,7 @@ void CtiConfigParameters::HeadAndTail(char *source, char *dest, size_t len)
 
     for(i = 0; i < len; i++)
     {
-        if(source[i] != ' ')                // Leading Spaces are Gone Gone Gone...
+        if(isgraph(source[i]))                // Leading Spaces and other unprintables are Gone Gone Gone...
         {
             if( source[i] != '#' && source[i] != ';' )
             {
