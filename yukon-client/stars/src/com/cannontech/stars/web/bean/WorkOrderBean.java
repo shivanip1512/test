@@ -52,7 +52,8 @@ public class WorkOrderBean {
 	public static final int HTML_STYLE_SEARCH_RESULTS = 1;
 	public static final int HTML_STYLE_LIST_ALL = 2;
 	
-	private final int MAX_ALLOW_DISPLAY = 500;
+	private static final int DEFAULT_PAGE_SIZE = 250;
+    private final int MAX_ALLOW_DISPLAY = 500;
     private boolean maxDisplayLimit = false;
     
 	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
@@ -183,7 +184,7 @@ public class WorkOrderBean {
 	private int serviceType = CtiUtilities.NONE_ZERO_ID;
 	private int serviceCompany = CtiUtilities.NONE_ZERO_ID;
 	private int page = 1;
-	private int pageSize = MAX_ALLOW_DISPLAY;
+	private int pageSize = DEFAULT_PAGE_SIZE;
 	private int energyCompanyID = 0;
 	private int htmlStyle = HTML_STYLE_WORK_ORDERS;
 	private String referer = null;
