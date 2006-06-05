@@ -52,8 +52,7 @@ public class WorkOrderBean {
 	public static final int HTML_STYLE_SEARCH_RESULTS = 1;
 	public static final int HTML_STYLE_LIST_ALL = 2;
 	
-	private static final int DEFAULT_PAGE_SIZE = 20;
-    private final int MAX_ALLOW_DISPLAY = 500;
+	private final int MAX_ALLOW_DISPLAY = 500;
     private boolean maxDisplayLimit = false;
     
 	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
@@ -184,7 +183,7 @@ public class WorkOrderBean {
 	private int serviceType = CtiUtilities.NONE_ZERO_ID;
 	private int serviceCompany = CtiUtilities.NONE_ZERO_ID;
 	private int page = 1;
-	private int pageSize = DEFAULT_PAGE_SIZE;
+	private int pageSize = MAX_ALLOW_DISPLAY;
 	private int energyCompanyID = 0;
 	private int htmlStyle = HTML_STYLE_WORK_ORDERS;
 	private String referer = null;
@@ -381,23 +380,29 @@ public class WorkOrderBean {
 							
 							for (int k = 0; k < workOrderBase.getEventWorkOrders().size(); k++)
 							{
+                                boolean addWorkOrder = false;
 								EventWorkOrder eventWorkOrder = workOrderBase.getEventWorkOrders().get(k);
 								if( getStartDate() != null && getStopDate() == null)
 								{
 									if( eventWorkOrder.getEventBase().getEventTimestamp().compareTo(getStartDate()) >= 0 )
-										filteredWorkOrders.add(liteOrder);
+                                        addWorkOrder = true;
 								}
 								else if (getStopDate() != null && getStartDate() == null)
 								{
 									if( eventWorkOrder.getEventBase().getEventTimestamp().compareTo(getStopDate()) <= 0 )
-										filteredWorkOrders.add(liteOrder);
+									    addWorkOrder = true;
 								}
 								else 
 								{
 									if( (eventWorkOrder.getEventBase().getEventTimestamp().compareTo(getStartDate()) >= 0) &&
 										( eventWorkOrder.getEventBase().getEventTimestamp().compareTo(getStopDate()) <= 0 ) )
-										filteredWorkOrders.add(liteOrder);
+									    addWorkOrder = true;
 								}
+                                if (addWorkOrder)
+                                {
+                                    filteredWorkOrders.add(liteOrder);
+                                    break;
+                                }
 							}
 						}
 					}
@@ -475,22 +480,22 @@ public class WorkOrderBean {
 		if (page == 1)
 			navBuf.append("<font color='#CCCCCC'>First</font>");
 		else
-			navBuf.append("<a class='Link1' href='").append(pageName).append("?page=1'>First</a>");
+			navBuf.append("<a class='Link1' href='").append(pageName).append("?page_=1'>First</a>");
 		navBuf.append(" | ");
 		if (page == 1)
 			navBuf.append("<font color='#CCCCCC'>Previous</font>");
 		else
-			navBuf.append("<a class='Link1' href='").append(pageName).append("?page=").append(page-1).append("'>Previous</a>");
+			navBuf.append("<a class='Link1' href='").append(pageName).append("?page_=").append(page-1).append("'>Previous</a>");
 		navBuf.append(" | ");
 		if (page == maxPageNo)
 			navBuf.append("<font color='#CCCCCC'>Next</font>");
 		else
-			navBuf.append("<a class='Link1' href='").append(pageName).append("?page=").append(page+1).append("'>Next</a>");
+			navBuf.append("<a class='Link1' href='").append(pageName).append("?page_=").append(page+1).append("'>Next</a>");
 		navBuf.append(" | ");
 		if (page == maxPageNo)
 			navBuf.append("<font color='#CCCCCC'>Last</font>");
 		else
-			navBuf.append("<a class='Link1' href='").append(pageName).append("?page=").append(maxPageNo).append("'>Last</a>");
+			navBuf.append("<a class='Link1' href='").append(pageName).append("?page_=").append(maxPageNo).append("'>Last</a>");
 		
 		StringBuffer htmlBuf = new StringBuffer();
 		
@@ -532,20 +537,20 @@ public class WorkOrderBean {
         htmlBuf.append("<input type=\"hidden\" name=\"SwitchContext\" value=\"").append(getEnergyCompany().getEnergyCompanyID().intValue()).append("\">");
         
 		htmlBuf.append("<table width='95%' border='0' cellspacing='0' cellpadding='3'>").append(LINE_SEPARATOR);
-		/*htmlBuf.append("  <tr>").append(LINE_SEPARATOR);
+		htmlBuf.append("  <tr>").append(LINE_SEPARATOR);
 		htmlBuf.append("    <td>").append(LINE_SEPARATOR);
 		htmlBuf.append("      <table width='100%' border='0' cellspacing='0' cellpadding='3' class='TableCell'>").append(LINE_SEPARATOR);
 		htmlBuf.append("        <tr>").append(LINE_SEPARATOR);
 		htmlBuf.append("          <td>").append(navBuf).append("</td>").append(LINE_SEPARATOR);
 		htmlBuf.append("          <td align='right'>Page(1-").append(maxPageNo).append("): ")
 				.append("<input type='text' id='GoPage' style='border:1px solid #666699; font:11px' size='").append(maxPageDigit).append("' value='").append(page).append("'> ")
-				.append("<input type='button' style='font:11px; margin-bottom:-1px' value='Go' onclick='location.href=\"").append(pageName).append("?page=\" + document.getElementById(\"GoPage\").value;'>")
+				.append("<input type='button' style='font:11px; margin-bottom:-1px' value='Go' onclick='location.href=\"").append(pageName).append("?page_=\" + document.getElementById(\"GoPage\").value;'>")
 				.append("</td>").append(LINE_SEPARATOR);
 		htmlBuf.append("        </tr>").append(LINE_SEPARATOR);
 		htmlBuf.append("      </table>").append(LINE_SEPARATOR);
 		htmlBuf.append("    </td>").append(LINE_SEPARATOR);
 		htmlBuf.append("  </tr>").append(LINE_SEPARATOR);
-*/		
+		
 		htmlBuf.append("  <tr>").append(LINE_SEPARATOR);
 		htmlBuf.append("    <td>").append(LINE_SEPARATOR);
 		htmlBuf.append("      <table width='100%' border='1' cellspacing='0' cellpadding='3'>").append(LINE_SEPARATOR);
@@ -562,10 +567,11 @@ public class WorkOrderBean {
 //		htmlBuf.append("          <td  class='HeaderCell' width='34%' >Description</td>").append(LINE_SEPARATOR);
 		htmlBuf.append("        </tr>").append(LINE_SEPARATOR);
 		
-//		for (int i = minOrderNo; i <= maxOrderNo; i++) {
+		for (int i = minOrderNo; i <= maxOrderNo; i++) {
         LiteStarsEnergyCompany liteStarsEC_Order = null;
-		for (int i = 0; i < soList.size(); i++) {
-			LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) soList.get(i);
+//		for (int i = 0; i < soList.size(); i++) {
+//			LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) soList.get(i);
+            LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) soList.get(i-1);
             if( liteStarsEC_Order == null || liteStarsEC_Order.getEnergyCompanyID().intValue() != liteOrder.getEnergyCompanyID())
                 liteStarsEC_Order = StarsDatabaseCache.getInstance().getEnergyCompany(liteOrder.getEnergyCompanyID());
             
@@ -606,7 +612,7 @@ public class WorkOrderBean {
 		htmlBuf.append("    <td>").append(LINE_SEPARATOR);
 		htmlBuf.append("      <table width='100%' border='0' cellspacing='0' cellpadding='3' class='TableCell'>").append(LINE_SEPARATOR);
 		htmlBuf.append("        <tr>").append(LINE_SEPARATOR);
-//		htmlBuf.append("          <td>").append(navBuf).append("</td>").append(LINE_SEPARATOR);
+		htmlBuf.append("          <td>").append(navBuf).append("</td>").append(LINE_SEPARATOR);
 		htmlBuf.append("        </tr>").append(LINE_SEPARATOR);
 		htmlBuf.append("      </table>").append(LINE_SEPARATOR);
 		htmlBuf.append("    </td>").append(LINE_SEPARATOR);
@@ -750,6 +756,7 @@ public class WorkOrderBean {
 		{
 			this.filters = newFilters;
 			workOrderList = null;	//TODO dump the existing list!
+			setPage(1);
 		}
 	}
 
