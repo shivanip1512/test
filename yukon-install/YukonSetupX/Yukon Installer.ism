@@ -393,6 +393,7 @@
 		<row><td>cmdtest.exe</td><td>Test Applications</td><td>cmdtest.exe</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\cmdtest.exe</td><td>1</td><td>NewSubFolder83</td></row>
 		<row><td>commandericon.ico</td><td>Common Bin</td><td>CommanderIcon.ico</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\CommanderIcon.ico</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>common.jar</td><td>Common Bin</td><td>common.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\common.jar</td><td>1</td><td>NewSubFolder85</td></row>
+		<row><td>commons_lang_2.1.jar</td><td>Common Bin</td><td>commons-lang-2.1.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\commons-lang-2.1.jar</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>conftest.exe</td><td>Test Applications</td><td>conftest.exe</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\conftest.exe</td><td>1</td><td>NewSubFolder83</td></row>
 		<row><td>contest.exe</td><td>Test Applications</td><td>contest.exe</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\contest.exe</td><td>1</td><td>NewSubFolder83</td></row>
 		<row><td>cparms.dll</td><td>Common Dlls</td><td>cparms.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\cparms.dll</td><td>1</td><td>NewSubFolder72</td></row>
