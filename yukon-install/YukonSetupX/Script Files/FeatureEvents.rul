@@ -156,7 +156,8 @@ end;
  
 export prototype NotificationServer_Installing();
 function NotificationServer_Installing()
-string szCmdLine, szPathAndFile;
+string szCmdLine, szPathAndFile, szSrcFile, szTargetPath, time, timeHour, timeMin, date, fileFound, fileNameOnly, szFileName;
+number nvResult, check, fileLooper;
 
 begin
 
@@ -171,6 +172,31 @@ szPathAndFile = TARGETDIR ^ "\\client\\bin\\wrapper.exe";
 szCmdLine = "-r notifserver.conf";
 LaunchAppAndWait ( szPathAndFile, szCmdLine, WAIT );  
 
+//need to disable LOGGING so that these directories are not marked for uninstallation
+Disable(LOGGING);
+
+szSrcFile = TARGETDIR ^ "\\Server\\web\\webapps\\yukon\\WebConfig\\custom\\notif_templates";
+szTargetPath = TARGETDIR ^ "\\Server\\web\\webapps\\yukon\\WebConfig\\custom\\notif_templates\\backup";
+
+//make sure dir exists or this is pointless
+if(ExistsDir ( szSrcFile ) == 0) then
+ 	//get date and time for unique backup dir naming
+ 	GetSystemInfo ( DATE , nvResult , date );
+    GetSystemInfo ( TIME, nvResult, time);
+    //get rid of : so it is a legal file name
+    StrSub ( timeHour , time , 0, 2 );
+    StrSub ( timeMin , time , 3, 2 );
+    szTargetPath = szTargetPath ^ "\\" ^ date + "-" + timeHour + "-" + timeMin; 
+	//create backup dir
+	CreateDir ( szTargetPath); 
+
+    //copy existing .xsl files in notif_templates folder into backup
+    XCopyFile ( szSrcFile + "\\*.xsl", szTargetPath, COMP_NORMAL );
+endif;
+                
+//make sure we reactivate uninstall logging                
+Enable(LOGGING);
+
 end;
 //---------------------------------------------------------------------------
 // The Installed event is sent after the feature Yukon Server\Notification Server
@@ -179,10 +205,51 @@ end;
  
 export prototype NotificationServer_Installed();
 function NotificationServer_Installed()
-string szCmdLine, szPathAndFile;
+string szCmdLine, szPathAndFile, szSrcFile, szTargetPath, time, timeHour, timeMin, date, fileFound, fileNameOnly, szFileName;
+number nvResult, check, fileLooper;
 
 begin
 
+/*szSrcFile = TARGETDIR ^ "\\Server\\web\\webapps\\yukon\\WebConfig\\custom\\notif_templates";
+szTargetPath = TARGETDIR ^ "\\Server\\web\\webapps\\yukon\\WebConfig\\custom\\notif_templates\\backup";
+
+//make sure dir exists or this is pointless
+if(ExistsDir ( szSrcFile ) == 0) then
+ 	//get date and time for unique backup dir naming
+ 	GetSystemInfo ( DATE , nvResult , date );
+    GetSystemInfo ( TIME, nvResult, time);
+    //get rid of : so it is a legal file name
+    StrSub ( timeHour , time , 0, 2 );
+    StrSub ( timeMin , time , 3, 2 );
+    szTargetPath = szTargetPath ^ "\\" ^ date + "-" + timeHour + "-" + timeMin; 
+	//create backup dir
+	CreateDir ( szTargetPath); 
+	
+    check = -1;
+    //copy existing .xsl files in notif_templates folder into backup
+    check = XCopyFile ( szSrcFile + "\\*.xsl", szTargetPath, COMP_NORMAL );
+	//if(check == 0) then 
+		szFileName = "*.sample.xsl";
+		//find first occurrence of newly placed .sample files
+		fileLooper = FindAllFiles ( szSrcFile , szFileName , fileFound , RESET );
+		//get rid of the .sample part, change to just .xsl
+		ParsePath ( fileNameOnly , fileFound , FILENAME_ONLY );
+		ParsePath ( fileNameOnly , fileNameOnly , FILENAME_ONLY );
+		RenameFile ( fileFound , szSrcFile + "\\" + fileNameOnly + ".xsl" );  
+		//MessageBox(szSrcFile + "\\" + fileNameOnly + ".sample.xsl", SEVERE);
+	  	//find and rename the rest
+		while(fileLooper == 0)
+			fileLooper = FindAllFiles ( szSrcFile , szFileName , fileFound , CONTINUE );
+			ParsePath ( fileNameOnly , fileFound , FILENAME_ONLY );
+			ParsePath ( fileNameOnly , fileNameOnly , FILENAME_ONLY );
+			RenameFile ( fileFound , szSrcFile + "\\" + fileNameOnly + ".xsl" );  
+			//MessageBox(szSrcFile + "\\" + fileNameOnly + ".sample.xsl", SEVERE);
+	  	endwhile;	    
+		//windows NT requires a cancel
+		FindAllFiles ( szSrcFile, szFileName , fileFound , CANCEL );	    
+	//endif;
+endif;
+   */
 //The following sets up the Yukon Notification Server
 szPathAndFile = TARGETDIR ^ "\\client\\bin\\wrapper.exe";
 szCmdLine = "-i notifserver.conf";
@@ -196,7 +263,8 @@ end;
  
 export prototype NotificationServer_UnInstalling();
 function NotificationServer_UnInstalling()
-string szCmdLine, szPathAndFile;
+string szCmdLine, szPathAndFile, szSrcFile, szTargetPath, time, timeHour, timeMin, date, fileFound, fileNameOnly, szFileName;
+number nvResult, check, fileLooper;
 
 begin
 
@@ -211,5 +279,28 @@ szPathAndFile = TARGETDIR ^ "\\client\\bin\\wrapper.exe";
 szCmdLine = "-r notifserver.conf";
 LaunchAppAndWait ( szPathAndFile, szCmdLine, WAIT );  
 
-end;
+//need to disable LOGGING so that these directories are not marked for uninstallation
+Disable(LOGGING);
 
+szSrcFile = TARGETDIR ^ "\\Server\\web\\webapps\\yukon\\WebConfig\\custom\\notif_templates";
+szTargetPath = TARGETDIR ^ "\\Server\\web\\webapps\\yukon\\WebConfig\\custom\\notif_templates\\backup";
+
+//make sure dir exists or this is pointless
+if(ExistsDir ( szSrcFile ) == 0) then
+ 	//get date and time for unique backup dir naming
+ 	GetSystemInfo ( DATE , nvResult , date );
+    GetSystemInfo ( TIME, nvResult, time);
+    //get rid of : so it is a legal file name
+    StrSub ( timeHour , time , 0, 2 );
+    StrSub ( timeMin , time , 3, 2 );
+    szTargetPath = szTargetPath ^ "\\" ^ date + "-" + timeHour + "-" + timeMin; 
+	//create backup dir
+	CreateDir ( szTargetPath); 
+
+    //copy existing .xsl files in notif_templates folder into backup
+    XCopyFile ( szSrcFile + "\\*.xsl", szTargetPath, COMP_NORMAL );
+endif;
+
+Enable(LOGGING);
+
+end;
