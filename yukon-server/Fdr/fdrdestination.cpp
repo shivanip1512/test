@@ -112,34 +112,26 @@ CtiFDRDestination& CtiFDRDestination::setParentPoint (CtiFDRPoint* aParentPoint)
 string CtiFDRDestination::getTranslationValue(string propertyName) const {
   string result("");
   string nameValuePair;
-  int n, pos;
-  char *buf;
+  int pos;
+
 
   boost::char_separator<char> sep(";");
   Boost_char_tokenizer pairTokenizer(getTranslation(), sep);
 
-  //string nameValuePair = *pairTokenizer.begin();
   for ( Boost_char_tokenizer::iterator itr = pairTokenizer.begin() ;
         itr != pairTokenizer.end() ; 
         ++itr) 
   {
       nameValuePair = *itr;
-      n = nameValuePair.size();
-      buf = new char [n];
+
       //grab the name so we can tell if this is the token we want.
-
       //Find the  ':' and copy everything before it into a string. This is the name.
-      pos = nameValuePair.find(":",0);
-      pos = nameValuePair.copy(buf,pos);
-      buf[pos] = '\0';
-
-    if (buf == propertyName) {
-      //matched. Everything after pos is the value we want to return.
-      pos = nameValuePair.copy(buf,n,++pos);
-      buf[pos] = '\0';
+      pos = nameValuePair.find(":",0);     
+      string name(nameValuePair,0,pos);
       
-      result = buf;
-      delete buf;
+    if (name == propertyName) {
+      //matched. Everything after pos is the value we want to return.
+      result = string (nameValuePair,pos+1,nameValuePair.size());
       break;
     }
   }

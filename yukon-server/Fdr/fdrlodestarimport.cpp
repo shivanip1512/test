@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.24 $
-*    DATE         :  $Date: 2006/06/02 15:38:49 $
+*    REVISION     :  $Revision: 1.25 $
+*    DATE         :  $Date: 2006/06/06 19:16:22 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -19,6 +19,9 @@
 *    ---------------------------------------------------
 *    History:
       $Log: fdrlodestarimport.cpp,v $
+      Revision 1.25  2006/06/06 19:16:22  tspar
+      Tokenizer fixed
+
       Revision 1.24  2006/06/02 15:38:49  tspar
       Changes to the loadTranslationLists()
 
@@ -413,7 +416,7 @@ int CtiFDR_LodeStarImportBase::readConfig( void )
 */
 bool CtiFDR_LodeStarImportBase::loadTranslationLists()
 {
-    bool                successful(FALSE);
+    bool                successful(TRUE);
     CtiFDRPoint *       translationPoint = NULL;
     string           tempString1;
     string           translationName;
@@ -465,14 +468,30 @@ bool CtiFDR_LodeStarImportBase::loadTranslationLists()
                             dout << "Parsing Yukon Point ID " << translationPoint->getPointID();
                             dout << " translate: " << translationPoint->getDestinationList()[x].getTranslation() << endl;
                         }
+                        //123 1 C:/ASD ASD.EXE
+                        translationName = translationPoint->getDestinationList()[x].getTranslationValue("Customer");
+                        if ( translationName.empty() ) 
+                            successful = false;
+                        string translationChannel = translationPoint->getDestinationList()[x].getTranslationValue("Channel");
+                        if ( translationChannel.empty() ) 
+                            successful = false;
+
+                        translationName += (string)" " + translationChannel;
+
 
                         translationFolderName = translationPoint->getDestinationList()[x].getTranslationValue("DrivePath");
-
+                        if ( translationFolderName.empty() ) 
+                            successful = false;
                         translationDrivePath = getFileImportBaseDrivePath();
+
+                        translationName += (string)" " + translationFolderName;
                         translationDrivePath += translationFolderName;
 
                         translationFilename = translationPoint->getDestinationList()[x].getTranslationValue("Filename");
-
+                        if ( translationFilename.empty() ) 
+                            successful = false;
+                        translationName += (string)" " + translationFilename;
+                        transform(translationName.begin(), translationName.end(), translationName.begin(), toupper);
                         
 
                         CtiFDR_LodeStarInfoTable tempFileInfoList (translationDrivePath, translationFilename, translationFolderName);
@@ -491,25 +510,13 @@ bool CtiFDR_LodeStarImportBase::loadTranslationLists()
                         {
                             getFileInfoList().push_back(tempFileInfoList);
                         }
+                        translationPoint->getDestinationList()[x].setTranslation(translationName);                      
                         
-                        successful = true;
 
                         if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " Point ID " << translationPoint->getPointID();
-
-                            boost::char_separator<char> sep1(";");
-                            Boost_char_tokenizer nextTranslate(translationPoint->getDestinationList()[x].getTranslation(), sep1);
-                            Boost_char_tokenizer::iterator tok_iter = nextTranslate.begin(); 
-                          
-                            /*----------------------------------- */
-                                for ( ; tok_iter != nextTranslate.end() ; ++tok_iter){
-                                    translationName += *tok_iter;
-                                    translationName += " ";
-                                }
-                            /*-----------------------------------*/
-
                             dout << " translated: " << translationName << endl;//
                         }
                     }
