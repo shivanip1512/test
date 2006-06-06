@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.25 $
-*    DATE         :  $Date: 2006/06/06 19:16:22 $
+*    REVISION     :  $Revision: 1.26 $
+*    DATE         :  $Date: 2006/06/06 22:12:29 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -19,6 +19,9 @@
 *    ---------------------------------------------------
 *    History:
       $Log: fdrlodestarimport.cpp,v $
+      Revision 1.26  2006/06/06 22:12:29  tspar
+      quick fix. _snprintf issues
+
       Revision 1.25  2006/06/06 19:16:22  tspar
       Tokenizer fixed
 
@@ -495,11 +498,15 @@ bool CtiFDR_LodeStarImportBase::loadTranslationLists()
                         
 
                         CtiFDR_LodeStarInfoTable tempFileInfoList (translationDrivePath, translationFilename, translationFolderName);
-                        _snprintf(fileName, 200, "%s\\%s",tempFileInfoList.getLodeStarDrivePath(),tempFileInfoList.getLodeStarFileName());
+                        string t1 = tempFileInfoList.getLodeStarDrivePath();
+                        string t2 = tempFileInfoList.getLodeStarFileName();
+                        _snprintf(fileName, 200, "%s\\%s",t1.c_str(),t2.c_str());
                         int matchFlag = 0;
                         for (int xx = 0; xx < getFileInfoList().size(); xx++)
                         {
-                            _snprintf(fileName2, 200, "%s\\%s",getFileInfoList()[xx].getLodeStarDrivePath(),getFileInfoList()[xx].getLodeStarFileName());
+                            string t3 = getFileInfoList()[xx].getLodeStarDrivePath();
+                            string t4 = getFileInfoList()[xx].getLodeStarFileName();
+                            _snprintf(fileName2, 200, "%s\\%s",t3.c_str(),t4.c_str());
                             if (!strcmp(fileName,fileName2))
                             {
                                 matchFlag = 1;
@@ -620,12 +627,16 @@ void CtiFDR_LodeStarImportBase::threadFunctionReadFromFile( void )
 
 
                         HANDLE hSearch;
-                         _snprintf(fileName, 200, "%s\\%s",getFileInfoList()[fileIndex].getLodeStarDrivePath(),getFileInfoList()[fileIndex].getLodeStarFileName());
+                        string t1 = getFileInfoList()[fileIndex].getLodeStarDrivePath();
+                        string t2 = getFileInfoList()[fileIndex].getLodeStarFileName();
+                         _snprintf(fileName, 200, "%s\\%s",t1.c_str(),t2.c_str());
                          hSearch = FindFirstFile(fileName, fileData);
                                                            
 
                          //_snprintf(fileNameAndPath, 250, "%s",fileName);
-                         _snprintf(fileNameAndPath, 250, "%s\\%s",getFileInfoList()[fileIndex].getLodeStarDrivePath(),fileData->cFileName);
+                         string t3 = getFileInfoList()[fileIndex].getLodeStarDrivePath();
+                         string t4 = fileData->cFileName;
+                         _snprintf(fileNameAndPath, 250, "%s\\%s",t3.c_str(),t4.c_str());
                          if (hSearch != INVALID_HANDLE_VALUE)
                          {
                          
