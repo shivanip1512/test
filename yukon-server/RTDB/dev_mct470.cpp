@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.45 $
-* DATE         :  $Date: 2006/05/26 15:11:04 $
+* REVISION     :  $Revision: 1.46 $
+* DATE         :  $Date: 2006/06/06 20:36:50 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2851,40 +2851,11 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                 resultString += "Device: " + getName() + "\nData buffer is bad, retry command" ;
                 status = ALPHABUFFERERROR;
 
-                CtiPointSPtr kw, km, volts;
-
-                pi.value = 0;
-                pi.quality = NonUpdatedQuality;
-
-                if(kw = getDevicePointOffsetTypeEqual(MCT470_PointOffset_TotalKW, AnalogPointType))
-                {
-                    point_string = getName() + " / " + kw->getName() + " = Non Updated";
-                    ReturnMsg->PointData().push_back(makePointDataMsg(kw, pi, point_string));
-                }
-
-                if(km = getDevicePointOffsetTypeEqual(MCT470_PointOffset_TotalKM, AnalogPointType))
-                {
-                    point_string = getName() + " / " + km->getName() + " = Non Updated";
-                    ReturnMsg->PointData().push_back(makePointDataMsg(km, pi, point_string));
-                }
-
-                if(volts = getDevicePointOffsetTypeEqual(MCT470_PointOffset_VoltsPhaseA, AnalogPointType))
-                {
-                    point_string = getName() + " / " + volts->getName() + " = Non Updated";
-                    ReturnMsg->PointData().push_back(makePointDataMsg(volts, pi, point_string));
-                }
-
-                if(volts = getDevicePointOffsetTypeEqual(MCT470_PointOffset_VoltsPhaseB, AnalogPointType))
-                {
-                    point_string = getName() + " / " + volts->getName() + " = Non Updated";
-                    ReturnMsg->PointData().push_back(makePointDataMsg(volts, pi, point_string));
-                }
-
-                if(volts = getDevicePointOffsetTypeEqual(MCT470_PointOffset_VoltsPhaseC, AnalogPointType))
-                {
-                    point_string = getName() + " / " + volts->getName() + " = Non Updated";
-                    ReturnMsg->PointData().push_back(makePointDataMsg(volts, pi, point_string));
-                }
+                insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, MCT470_PointOffset_TotalKW, AnalogPointType);
+                insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, MCT470_PointOffset_TotalKM, AnalogPointType);
+                insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, MCT470_PointOffset_VoltsPhaseA, AnalogPointType);
+                insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, MCT470_PointOffset_VoltsPhaseB, AnalogPointType);
+                insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, MCT470_PointOffset_VoltsPhaseC, AnalogPointType);
             }
             else
             {
@@ -3000,22 +2971,8 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                 resultString += "Device: " + getName() + "\nData buffer is bad, retry command" ;
                 status = ALPHABUFFERERROR;
 
-                CtiPointSPtr kwh, kmh;
-
-                pi.value = 0;
-                pi.quality = NonUpdatedQuality;
-
-                if(kwh = getDevicePointOffsetTypeEqual(MCT470_PointOffset_TotalKWH, AnalogPointType))
-                {
-                    point_string = getName() + " / " + kwh->getName() + " = Non Updated";
-                    ReturnMsg->PointData().push_back(makePointDataMsg(kwh, pi, point_string));
-                }
-
-                if(kmh = getDevicePointOffsetTypeEqual(MCT470_PointOffset_TotalKMH, AnalogPointType))
-                {
-                    point_string = getName() + " / " + kmh->getName() + " = Non Updated";
-                    ReturnMsg->PointData().push_back(makePointDataMsg(kmh, pi, point_string));
-                }
+                insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, MCT470_PointOffset_TotalKWH, AnalogPointType);
+                insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, MCT470_PointOffset_TotalKMH, AnalogPointType);
             }
             else
             {
@@ -3064,11 +3021,7 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                 resultString += "Device: " + getName() + "\nData buffer is bad, retry command" ;
                 status = ALPHABUFFERERROR;
 
-                CtiPointSPtr kwh, kw;
                 int rate;
-
-                pi.value = 0;
-                pi.quality = NonUpdatedQuality;
 
                 if( parse.getFlags() & CMD_FLAG_GV_KVARH || parse.getFlags() & CMD_FLAG_GV_KVAH  )
                 {
@@ -3084,18 +3037,8 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                 else if( parse.getFlags() & CMD_FLAG_GV_RATEC )  rate = 2;
                 else if( parse.getFlags() & CMD_FLAG_GV_RATED )  rate = 3;
 
-                if(kwh = getDevicePointOffsetTypeEqual(offset + rate * 2 + 1, AnalogPointType))
-
-                {
-                    point_string = getName() + " / " + kwh->getName() + " = Non Updated";
-                    ReturnMsg->PointData().push_back(makePointDataMsg(kwh, pi, point_string));
-                }
-
-                if(kw = getDevicePointOffsetTypeEqual(offset + rate * 2, AnalogPointType))
-                {
-                    point_string = getName() + " / " + kw->getName() + " = Non Updated";
-                    ReturnMsg->PointData().push_back(makePointDataMsg(kw, pi, point_string));
-                }
+                insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, (offset + rate * 2 + 1), AnalogPointType);
+                insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, (offset + rate * 2), AnalogPointType);
             }
             else
             {
