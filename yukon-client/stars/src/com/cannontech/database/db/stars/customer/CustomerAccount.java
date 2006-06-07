@@ -831,7 +831,6 @@ public class CustomerAccount extends DBPersistent {
         Date timerStart = new Date();
         
         String sql = "SELECT AccountID FROM " + TABLE_NAME + ", " + Customer.TABLE_NAME +
-        ", " + CICustomerBase.TABLE_NAME + 
         " WHERE " + CustomerAccount.TABLE_NAME + ".CustomerID = " + Customer.TABLE_NAME +
         ".CustomerID AND " + Customer.TABLE_NAME + ".CustomerTypeID = " + CustomerTypes.CUSTOMER_RESIDENTIAL;
 
@@ -853,6 +852,7 @@ public class CustomerAccount extends DBPersistent {
                 Integer newID = new Integer(rset.getInt(1));
                 accounts.put(newID, newID);
                 count++;
+                System.out.println(count);
             }
         }
         catch( Exception e )
