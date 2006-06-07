@@ -853,7 +853,8 @@ public class CustomerAccount extends DBPersistent {
             conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
             
             pstmt = conn.prepareStatement(sql);
-            pstmt.setInt( 1, ecID);
+            if(ecID > -1)
+                pstmt.setInt( 1, ecID);
             rset = pstmt.executeQuery();
 
             CTILogger.debug((new Date().getTime() - timerStart.getTime())*.001 + " After accountIDFromCICustomerType execute" );
