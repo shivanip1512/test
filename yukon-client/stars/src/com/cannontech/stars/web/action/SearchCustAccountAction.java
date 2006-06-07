@@ -56,7 +56,7 @@ public class SearchCustAccountAction implements ActionBase {
     	}
     };
     
-    private static Comparator LAST_NAME_CMP = new Comparator() {
+    /*private static Comparator LAST_NAME_CMP = new Comparator() {
     	public int compare(Object o1, Object o2) {
 			LiteStarsCustAccountInformation acct1 = (LiteStarsCustAccountInformation) o1;
 			LiteStarsCustAccountInformation acct2 = (LiteStarsCustAccountInformation) o2;
@@ -70,9 +70,9 @@ public class SearchCustAccountAction implements ActionBase {
 				result = acct1.getCustomerAccount().getAccountNumber().compareTo( acct2.getCustomerAccount().getAccountNumber() );
     		return result;
     	}
-    };
+    };*/
     
-    private static Comparator ADDRESS_CMP = new Comparator() {
+    /*private static Comparator ADDRESS_CMP = new Comparator() {
 		public int compare(Object o1, Object o2) {
 			LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) ((Pair)o1).getSecond();
 			LiteStarsCustAccountInformation acct1 = (LiteStarsCustAccountInformation) ((Pair)o1).getFirst();
@@ -90,7 +90,7 @@ public class SearchCustAccountAction implements ActionBase {
 				result = acct1.getCustomerAccount().getAccountNumber().compareTo( acct2.getCustomerAccount().getAccountNumber() );
 			return result;
 		}
-	};
+	};*/
     
     public SearchCustAccountAction() {
         super();
@@ -149,9 +149,9 @@ public class SearchCustAccountAction implements ActionBase {
             StarsSearchCustomerAccount searchAccount = reqOper.getStarsSearchCustomerAccount();
             int searchByDefID = YukonListFuncs.getYukonListEntry( searchAccount.getSearchBy().getEntryID() ).getYukonDefID();
 
-            //Require at least 2 characters for last name search.
-            if (searchByDefID == YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_LAST_NAME && searchAccount.getSearchValue().trim().length() < 2) {
-               respOper.setStarsFailure( StarsFactory.newStarsFailure( StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Please enter at least the 2 characters for last name search.") );
+            //Require at least 2 characters for all searches except accountnumber.
+            if (!(searchByDefID == YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_ACCT_NO) && searchAccount.getSearchValue().trim().length() < 2) {
+               respOper.setStarsFailure( StarsFactory.newStarsFailure( StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Please enter at least the first 2 characters to search.") );
                return SOAPUtil.buildSOAPMessage( respOper );
             }
             //Require at least something for all other searches
@@ -166,7 +166,7 @@ public class SearchCustAccountAction implements ActionBase {
             
             if (searchByDefID == YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_ACCT_NO) {
             	/* Search by account number */
-				accountList = energyCompany.searchAccountByAccountNo( searchAccount.getSearchValue(), searchMembers );
+				accountList = energyCompany.searchAccountByAccountNumber( searchAccount.getSearchValue(), searchMembers, true );
             }
             else if (searchByDefID == YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_PHONE_NO) {
             	/* Search by phone number */
@@ -194,7 +194,7 @@ public class SearchCustAccountAction implements ActionBase {
             }
             else if (searchByDefID == YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_ADDRESS) {
             	/* Search by address */
-            	accountList = energyCompany.searchAccountByAddress( searchAccount.getSearchValue(), searchMembers );
+            	accountList = energyCompany.searchAccountByAddress( searchAccount.getSearchValue(), searchMembers, true );
             }
             else if (searchByDefID == YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_ALT_TRACK_NO) {
             	/* Search by alternate tracking number */
@@ -287,16 +287,17 @@ public class SearchCustAccountAction implements ActionBase {
 						acctList.toArray( accounts );
 						
 						if (searchByDefID == YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_LAST_NAME) {
-						    //Do not sort the lastnames!  This is now handled in the CustomerAccount.searchByPrimaryContactLastName query!!!
+						    //Do not sort the lastnames!  This is now handled in the LiteStarsEnergyCompany.searchByPrimaryContactLastName query!!!
 //							Arrays.sort( accounts, LAST_NAME_CMP );    
 						}
 						else if (searchByDefID == YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_ADDRESS) {
-							Pair[] pairs = new Pair[ accounts.length ];
+                            //Do not sort the addresses!  This is now handled in the LiteStarsEnergyCompany.searchByStreetAddress query!!!
+							/*Pair[] pairs = new Pair[ accounts.length ];
 							for (int i = 0; i < accounts.length; i++)
 								pairs[i] = new Pair( accounts[i], company );
 							Arrays.sort( pairs, ADDRESS_CMP );
 							for (int i = 0; i < accounts.length; i++)
-								accounts[i] = (LiteStarsCustAccountInformation) pairs[i].getFirst();
+								accounts[i] = (LiteStarsCustAccountInformation) pairs[i].getFirst();*/
 						}
 						else {
 							Arrays.sort( accounts, ACCOUNT_NO_CMP );
