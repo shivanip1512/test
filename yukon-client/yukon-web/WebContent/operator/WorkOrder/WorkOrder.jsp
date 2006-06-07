@@ -7,8 +7,8 @@
 <%-- request.getParameter("page") == null) workOrderBean.resetInventoryList();--%>
 
 <%--<jsp:setProperty name="workOrderBean" property="sortBy" param="SortBy"/>
-<jsp:setProperty name="workOrderBean" property="sortOrder" param="SortOrder"/>
-<jsp:setProperty name="workOrderBean" property="page" param="page"/>--%>
+<jsp:setProperty name="workOrderBean" property="sortOrder" param="SortOrder"/>--%>
+<jsp:setProperty name="workOrderBean" property="page" param="page_"/>
 
 <html>
 <head>
@@ -89,7 +89,7 @@ function applyOrdering(form)
 		            	<%@ include file="include/SearchBar.jspf" %>
 		            	<% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 	              		<form name="MForm" method="post" action="<%=request.getContextPath()%>/servlet/WorkOrderManager">
-						    <input type="hidden" name="page" value="1">
+						    <input type="hidden" name="page_" value="1">
 						    <input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>">
 						    <input type="hidden" name="showAll" value="0">
 						    <input type="hidden" name="action" value=""> 
