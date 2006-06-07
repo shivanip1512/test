@@ -85,7 +85,7 @@ function navPage()
 		else {
 %>
             <div align="center">
-              <span class="MainText">The following customer accounts are found:</span> 
+              <span class="MainText">The following customer accounts were found:</span> 
             </div>
 			<form name="resultForm" method="POST" action="<%= request.getContextPath() %>/servlet/SOAPClient">
 		      <input type="hidden" name="action" value="GetCustAccount">
@@ -105,42 +105,41 @@ function navPage()
     int minOrderNo = (pageIndx- 1) * pageSize + 1;
     int maxOrderNo = Math.min(pageIndx * pageSize, resp.getStarsBriefCustAccountInfoCount());
    
-    if( resp.getStarsBriefCustAccountInfoCount() > 250) {
-        int maxPageDigit = (int)(Math.log(maxPageNo) / Math.log(10)) + 1;
-        String navHTML = String.valueOf(minOrderNo).toString();
-        if (maxOrderNo > minOrderNo)
-            navHTML += "-" +maxOrderNo;
-        navHTML += " of " + resp.getStarsBriefCustAccountInfoCount() + " | ";
-        if (pageIndx == 1)
-            navHTML += "<font color='#CCCCCC'>First</font>";
-        else
-            navHTML += "<a class='Link1' href='" + pageName + "?page=1'>First</a>";
-        navHTML += " | ";
-        if (pageIndx == 1)
-            navHTML += "<font color='#CCCCCC'>Previous</font>";
-        else
-            navHTML += "<a class='Link1' href='" + pageName + "?page=" + (pageIndx-1) + "'>Previous</a>";
-        navHTML += " | ";
-        if (pageIndx == maxPageNo)
-            navHTML += "<font color='#CCCCCC'>Next</font>";
-        else
-            navHTML += "<a class='Link1' href='" + pageName + "?page="+ (pageIndx+1) + "'>Next</a>";
-        navHTML += " | ";
-        if (pageIndx == maxPageNo)
-            navHTML += "<font color='#CCCCCC'>Last</font>";
-        else
-            navHTML += "<a class='Link1' href='" + pageName+ "?page=" + maxPageNo +"'>Last</a>";
+
+    int maxPageDigit = (int)(Math.log(maxPageNo) / Math.log(10)) + 1;
+    String navHTML = String.valueOf(minOrderNo).toString();
+    if (maxOrderNo > minOrderNo)
+        navHTML += "-" +maxOrderNo;
+    navHTML += " of " + resp.getStarsBriefCustAccountInfoCount() + " | ";
+    if (pageIndx == 1)
+        navHTML += "<font color='#CCCCCC'>First</font>";
+    else
+        navHTML += "<a class='Link1' href='" + pageName + "?page=1'>First</a>";
+    navHTML += " | ";
+    if (pageIndx == 1)
+        navHTML += "<font color='#CCCCCC'>Previous</font>";
+    else
+        navHTML += "<a class='Link1' href='" + pageName + "?page=" + (pageIndx-1) + "'>Previous</a>";
+    navHTML += " | ";
+    if (pageIndx == maxPageNo)
+        navHTML += "<font color='#CCCCCC'>Next</font>";
+    else
+        navHTML += "<a class='Link1' href='" + pageName + "?page="+ (pageIndx+1) + "'>Next</a>";
+    navHTML += " | ";
+    if (pageIndx == maxPageNo)
+        navHTML += "<font color='#CCCCCC'>Last</font>";
+    else
+        navHTML += "<a class='Link1' href='" + pageName+ "?page=" + maxPageNo +"'>Last</a>";
 %>            
-        <table width='615' border='0' cellspacing='0' cellpadding='3' class='TableCell' align='center'>
-          <tr>
-            <td><%=navHTML%></td>
-            <td align='right'>Page(1-<%=maxPageNo%>)
-              <input type='text' id='GoPage' style='border:1px solid #666699; font:11px' size='<%=maxPageDigit%>' value='<%=pageIndx%>' onkeypress='if (event.keyCode == 13) {navPage();return false;}'>
-              <input type='button' id='Go' style='font:11px; margin-bottom:-1px' value='Go' onclick='location.href="<%=pageName%>?page="+document.getElementById("GoPage").value;'>
-            </td>
-          </tr>
-        </table>
-<%}%>
+    <table width='615' border='0' cellspacing='0' cellpadding='3' class='TableCell' align='center'>
+      <tr>
+        <td><%=navHTML%></td>
+        <td align='right'>Page(1-<%=maxPageNo%>)
+          <input type='text' id='GoPage' style='border:1px solid #666699; font:11px' size='<%=maxPageDigit%>' value='<%=pageIndx%>' onkeypress='if (event.keyCode == 13) {navPage();return false;}'>
+          <input type='button' id='Go' style='font:11px; margin-bottom:-1px' value='Go' onclick='location.href="<%=pageName%>?page="+document.getElementById("GoPage").value;'>
+        </td>
+      </tr>
+    </table>
               <table width="615" border="1" cellspacing="0" cellpadding="3" align="center">                
                 <tr> 
                   <td width="15%" class="HeaderCell">Account #</td>

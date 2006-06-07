@@ -111,7 +111,7 @@ function confirmDelete() {
           <form name = "custSearchForm" method="POST" action="<%=request.getContextPath()%>/servlet/SOAPClient">
             <input type="hidden" name="action" value="SearchCustAccount">
             <td class = "MainText" width="43%" align = "right" nowrap> 
-              <select name="SearchBy">
+              <select name="SearchBy" onchange="document.custSearchForm.SearchValue.value=''">
 <%
 	if (selectionListTable != null) {
 		Integer lastAcctOption = (Integer) session.getAttribute(ServletUtils.ATT_LAST_ACCOUNT_SEARCH_OPTION);
@@ -280,7 +280,7 @@ function confirmDelete() {
 		    <input type="hidden" name="action" value="SearchInventory">
 			<input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Hardware/ResultSet.jsp">
             <td width="43%" class="MainText" align="right" nowrap> 
-              <select name="SearchBy">
+              <select name="SearchBy" onchange="document.invSearchForm.SearchValue.value=''">
 <%
 	if (selectionListTable != null) {
 		Integer lastInvOption = (Integer) session.getAttribute(ServletUtils.ATT_LAST_INVENTORY_SEARCH_OPTION);
@@ -340,7 +340,7 @@ function confirmDelete() {
 		    <input type="hidden" name="action" value="SearchWorkOrder">
 			<input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/WorkOrder/SearchResults.jsp">
             <td width="43%" align="right" class = "MainText" nowrap> 
-              <select name="SearchBy">
+              <select name="SearchBy" onchange="document.soSearchForm.SearchValue.value=''">
 <%
 	if (selectionListTable != null) {
 		Integer lastSrvcOption = (Integer) session.getAttribute(ServletUtils.ATT_LAST_SERVICE_SEARCH_OPTION);

@@ -17,9 +17,9 @@
       <span class="NavText"><%= ServletUtils.getOneLineAddress(propAddr) %></span><br>
     </td>
     <td align = "right" width="50%"><span class="TitleHeader"> 
-	  <form method="POST" action="<%= request.getContextPath() %>/servlet/SOAPClient">
+	  <form name="searchForm" method="POST" action="<%= request.getContextPath() %>/servlet/SOAPClient">
 		<input type="hidden" name="action" value="SearchCustAccount">
-        <select name="SearchBy">
+        <select name="SearchBy" onchange="document.searchForm.SearchValue.value=''">
 <%
 	Integer lastAcctOption = (Integer) session.getAttribute(ServletUtils.ATT_LAST_ACCOUNT_SEARCH_OPTION);
     String lastAcctValue = (String) session.getAttribute(ServletUtils.ATT_LAST_ACCOUNT_SEARCH_VALUE);

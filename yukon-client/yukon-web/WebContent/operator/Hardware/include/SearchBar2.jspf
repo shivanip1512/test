@@ -2,8 +2,8 @@
   <tr> 
     <td width="50%" valign = "top" align = "left">&nbsp;</td>
     <td align = "right" width="50%"><span class="TitleHeader">
-	  <form method="POST" action="">
-        <select name="SearchBy">
+	  <form name="searchForm" method="POST" action="">
+        <select name="SearchBy" onchange="document.searchForm.SearchValue.value=''">
 <%
 {
 	Integer lastInvOption = (Integer) session.getAttribute(ServletUtils.ATT_LAST_INVENTORY_SEARCH_OPTION);

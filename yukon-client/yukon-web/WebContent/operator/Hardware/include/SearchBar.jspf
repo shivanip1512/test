@@ -2,10 +2,10 @@
   <tr> 
     <td width="50%" valign = "top" align = "left">&nbsp;</td>
     <td align = "right" width="50%"><span class="TitleHeader">
-	  <form method="POST" action="<%= request.getContextPath() %>/servlet/InventoryManager">
+	  <form name="searchForm" method="POST" action="<%= request.getContextPath() %>/servlet/InventoryManager">
 	    <input type="hidden" name="action" value="SearchInventory">
 		<input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Hardware/ResultSet.jsp">
-        <select name="SearchBy">
+        <select name="SearchBy" onchange="document.searchForm.SearchValue.value=''">
 <%
 	Integer lastInvOption = (Integer) session.getAttribute(ServletUtils.ATT_LAST_INVENTORY_SEARCH_OPTION);
     String lastInvValue = (String) session.getAttribute(ServletUtils.ATT_LAST_INVENTORY_SEARCH_VALUE);
