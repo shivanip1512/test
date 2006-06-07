@@ -414,7 +414,7 @@ public class WorkOrderManager extends HttpServlet {
 			liteWorkOrderList = energyCompany.searchWorkOrderByOrderNo( searchValue, searchMembers );
 		}
 		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_ACCT_NO) {
-			ArrayList accounts = energyCompany.searchAccountByAccountNo( searchValue, searchMembers );
+			ArrayList accounts = energyCompany.searchAccountByAccountNumber( searchValue, searchMembers, true );
 			liteWorkOrderList.addAll(getOrderIDsByAccounts( accounts, energyCompany ) );
 		}
 		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_PHONE_NO) {
@@ -437,7 +437,7 @@ public class WorkOrderManager extends HttpServlet {
             liteWorkOrderList.addAll(getOrderIDsByAccounts( accounts, energyCompany ) );
 		}
 		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_ADDRESS) {
-			ArrayList accounts = energyCompany.searchAccountByAddress( searchValue, searchMembers );
+			ArrayList accounts = energyCompany.searchAccountByAddress( searchValue, searchMembers, true);
             liteWorkOrderList.addAll(getOrderIDsByAccounts( accounts, energyCompany ) );
 		}
 		

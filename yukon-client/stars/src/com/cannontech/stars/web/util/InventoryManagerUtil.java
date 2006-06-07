@@ -519,7 +519,7 @@ public class InventoryManagerUtil {
 			return energyCompany.searchInventoryByAltTrackNo( searchValue, searchMembers );
 		}
 		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_ACCT_NO) {
-			ArrayList accounts = energyCompany.searchAccountByAccountNo( searchValue, searchMembers );
+			ArrayList accounts = energyCompany.searchAccountByAccountNumber( searchValue, searchMembers, true);
 			return getInventoryByAccounts( accounts, energyCompany );
 		}
 		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_PHONE_NO) {
@@ -537,7 +537,7 @@ public class InventoryManagerUtil {
 			return getInventoryByAccounts( accounts, energyCompany );
 		}
 		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_ADDRESS) {
-			ArrayList accounts = energyCompany.searchAccountByAddress( searchValue, searchMembers );
+			ArrayList accounts = energyCompany.searchAccountByAddress( searchValue, searchMembers, true );
 			return getInventoryByAccounts( accounts, energyCompany );
 		}
 		else {
