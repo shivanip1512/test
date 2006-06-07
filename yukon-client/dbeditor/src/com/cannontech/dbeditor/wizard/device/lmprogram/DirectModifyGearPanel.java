@@ -4,19 +4,16 @@ package com.cannontech.dbeditor.wizard.device.lmprogram;
  */
 
 import com.cannontech.common.editor.PropertyPanelEvent;
-import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.database.db.device.lm.LMProgramDirectGear;
 import com.cannontech.common.gui.util.TextFieldDocument;
 
 public class DirectModifyGearPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.klg.jclass.util.value.JCValueListener, java.awt.event.ActionListener, javax.swing.event.CaretListener, com.cannontech.common.gui.util.DataInputPanelListener {
 	private String gearType = null;
-	private java.util.Hashtable paoHashTable = null;
 	private javax.swing.JLabel ivjJLabelGearName = null;
 	private javax.swing.JTextField ivjJTextFieldGearName = null;
 	private javax.swing.JComboBox ivjJComboBoxGearType = null;
 	private javax.swing.JLabel ivjJLabelGearType = null;
-	private boolean thermoWasLast = false;
 	private javax.swing.JScrollPane ivjJScrollPane1 = null;
 	private GenericGearPanel ivjGenericGearPanel1 = null;
 	private LatchingGearPanel ivjLatchingGearPanel1 = null;
@@ -377,22 +374,6 @@ private javax.swing.JTextField getJTextFieldGearName() {
 	}
 	return ivjJTextFieldGearName;
 }
-
-
-/**
- * Insert the method's description here.
- * Creation date: (6/18/2001 5:46:52 PM)
- * @return java.util.Hashtable
- */
-private java.util.Hashtable getPAOHashTable() 
-{
-	//store the references to our cached PAOs and points in this class
-	if( paoHashTable == null )
-		paoHashTable = com.cannontech.database.cache.functions.PAOFuncs.getAllLitePAOWithPoints();
-
-	return paoHashTable;
-}
-
 
 /**
  * getValue method comment.

@@ -11,7 +11,6 @@ public class LMControlAreaTriggerPanel extends com.cannontech.common.gui.util.Da
 {
 	public static final int MAX_TRIGGER_COUNT = 2;
 
-	private java.util.Hashtable paoHashTable = null;
 	private javax.swing.JButton ivjJButtonDeleteTrigger = null;
 	private javax.swing.JButton ivjJButtonNewTrigger = null;
 	private javax.swing.JComboBox ivjJComboBoxTrigger = null;
@@ -295,19 +294,7 @@ private LMControlAreaTriggerModifyPanel getLMControlAreaTriggerModifyPanel() {
 	}
 	return ivjLMControlAreaTriggerModifyPanel;
 }
-/**
- * Insert the method's description here.
- * Creation date: (6/18/2001 5:46:52 PM)
- * @return java.util.Hashtable
- */
-private java.util.Hashtable getPAOHashTable() 
-{
-	//store the references to our cached PAOs and points in this class
-	if( paoHashTable == null )
-		paoHashTable = com.cannontech.database.cache.functions.PAOFuncs.getAllLitePAOWithPoints();
 
-	return paoHashTable;
-}
 /**
  * getValue method comment.
  */
