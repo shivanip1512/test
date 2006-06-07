@@ -833,9 +833,9 @@ public class CustomerAccount extends DBPersistent {
         String sql;
         if(ecID > -1)
         {
-            sql = "SELECT ecAc.AccountID FROM " + TABLE_NAME + " ca, " + Customer.TABLE_NAME + "cust, ECToAccountMapping ecAc" +
-            " WHERE ecAc.AccountID = ca.AccountID AND ecAc.EnergyCompanyID = ? AND " + CustomerAccount.TABLE_NAME + ".CustomerID = " + Customer.TABLE_NAME +
-            ".CustomerID AND " + Customer.TABLE_NAME + ".CustomerTypeID = " + CustomerTypes.CUSTOMER_RESIDENTIAL;
+            sql = "SELECT ecAc.AccountID FROM " + TABLE_NAME + " ca, " + Customer.TABLE_NAME + " cust, ECToAccountMapping ecAc" +
+            " WHERE ecAc.AccountID = ca.AccountID AND ecAc.EnergyCompanyID = ? AND ca.CustomerID = cust" +
+            ".CustomerID AND cust.CustomerTypeID = " + CustomerTypes.CUSTOMER_RESIDENTIAL;
         }
         else
         {
