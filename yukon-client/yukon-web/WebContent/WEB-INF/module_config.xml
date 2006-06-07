@@ -40,6 +40,10 @@
     </option>
   </quicklinks>
   
+  <module name="amr">    
+    <skin name="standard"/>
+  </module>
+  
   <module name="capcontrol">
     <toplinks>
       <option name="Create">
