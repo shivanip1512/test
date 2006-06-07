@@ -73,6 +73,14 @@
 						<input type="text" name="authorizedBy" maxlength="30" size="24" value='<c:out value="${purchaseBean.currentInvoice.authorizedBy}"/>' onchange="setContentChanged(true)">
 		            </td>
 		        </tr>
+                <tr>
+                    <td width="20%" class="TableCell"> 
+                        <div align="right">Authorization Number:</div>
+                        </td>
+                    <td width="80%"> 
+                        <input type="text" name="authorizedNum" maxlength="30" size="24" value='<c:out value="${purchaseBean.currentInvoice.authorizedNumber}"/>' onchange="setContentChanged(true)">
+                    </td>
+                </tr>
 		      	<tr>
 		        	<td width="20%" class="TableCell"> 
 		            	<div align="right">Pay Status:</div>

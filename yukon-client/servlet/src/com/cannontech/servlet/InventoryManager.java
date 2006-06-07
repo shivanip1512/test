@@ -2363,6 +2363,7 @@ public class InventoryManager extends HttpServlet {
             currentInvoice.setHasPaid("N");
         currentInvoice.setAuthorizedBy(req.getParameter("authorizedBy"));
         currentInvoice.setTotalQuantity(new Integer(req.getParameter("quantity")));
+        currentInvoice.setAuthorizedNumber(req.getParameter("authorizedNum"));
                 
         try
         {
@@ -2446,6 +2447,6 @@ public class InventoryManager extends HttpServlet {
             session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Invoice could not be saved to the database.  Transaction failed.");
         }
         
-        redirect = req.getContextPath() + "/operator/Hardware/PurchaseTrack.jsp";
+        redirect = req.getContextPath() + "/operator/Hardware/Invoice.jsp";
     }
 }

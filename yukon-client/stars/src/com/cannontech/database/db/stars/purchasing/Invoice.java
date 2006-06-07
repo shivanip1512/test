@@ -18,11 +18,12 @@ public class Invoice extends DBPersistent {
     private String hasPaid = "N";
     private Date datePaid = new Date();
     private Integer totalQuantity = new Integer(0);
+    private String authorizedNumber = "";
     
     public static final String CONSTRAINT_COLUMNS[] = { "InvoiceID" };
 
     public static final String SETTER_COLUMNS[] = { "PurchasePlanID", "InvoiceDesignation", "DateSubmitted",
-                            "Authorized", "AuthorizedBy", "HasPaid", "DatePaid", "TotalQuantity" };
+                            "Authorized", "AuthorizedBy", "HasPaid", "DatePaid", "TotalQuantity", "AuthorizedNumber" };
 
     public static final String TABLE_NAME = "Invoice";
     
@@ -38,7 +39,7 @@ public void add() throws java.sql.SQLException
 {
     Object setValues[] = { getInvoiceID(), getPurchasePlanID(), getInvoiceDesignation(), 
                     getDateSubmitted(), getAuthorized(), getAuthorizedBy(), getHasPaid(),
-                    getDatePaid(), getTotalQuantity()};
+                    getDatePaid(), getTotalQuantity(), getAuthorizedNumber()};
 
     add( TABLE_NAME, setValues );
 }
@@ -80,6 +81,7 @@ public void retrieve() throws java.sql.SQLException
         setHasPaid( (String) results[5] );
         setDatePaid( (Date) results[6] );
         setTotalQuantity( (Integer) results[7]);
+        setAuthorizedNumber( (String) results[8]);
     } 
     else
         throw new Error( getClass() + "::retrieve - Incorrect number of results" );
@@ -90,7 +92,7 @@ public void update() throws java.sql.SQLException
 {
     Object setValues[] = { getPurchasePlanID(), getInvoiceDesignation(), 
             getDateSubmitted(), getAuthorized(), getAuthorizedBy(), getHasPaid(),
-            getDatePaid(), getTotalQuantity()};		
+            getDatePaid(), getTotalQuantity(), getAuthorizedNumber()};		
     
     Object constraintValues[] = { getInvoiceID() };
 
@@ -147,6 +149,7 @@ public static List<Invoice> getAllInvoicesForPurchasePlan(Integer planID)
                 currentInvoice.setHasPaid( stmt.getRow(i)[6].toString() );
                 currentInvoice.setDatePaid(new Date(((java.sql.Timestamp)stmt.getRow(i)[7]).getTime()));
                 currentInvoice.setTotalQuantity( new Integer(stmt.getRow(i)[8].toString()));
+                currentInvoice.setAuthorizedNumber( stmt.getRow(i)[9].toString() );
                 
                 invoices.add(currentInvoice);
             }
@@ -240,5 +243,11 @@ public void setShipmentID(Integer shipmentID) {
     this.shipmentID = shipmentID;
 }
 
+public String getAuthorizedNumber() {
+    return authorizedNumber;
+}
 
+public void setAuthorizedNumber(String authorizedNum) {
+    this.authorizedNumber = authorizedNum;
+}
 }
