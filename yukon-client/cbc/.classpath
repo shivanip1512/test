@@ -23,14 +23,5 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="/third-party/j2ee.jar"/>
 	<classpathentry kind="lib" path="/third-party/spring.jar"/>
-	<classpathentry kind="lib" path="/third-party/spring-aop.jar"/>
-	<classpathentry kind="lib" path="/third-party/spring-beans.jar"/>
-	<classpathentry kind="lib" path="/third-party/spring-context.jar"/>
-	<classpathentry kind="lib" path="/third-party/spring-core.jar"/>
-	<classpathentry kind="lib" path="/third-party/spring-dao.jar"/>
-	<classpathentry kind="lib" path="/third-party/spring-hibernate.jar"/>
-	<classpathentry kind="lib" path="/third-party/spring-jdbc.jar"/>
-	<classpathentry kind="lib" path="/third-party/spring-orm.jar"/>
-	<classpathentry kind="lib" path="/third-party/spring-web.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
