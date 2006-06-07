@@ -2,6 +2,8 @@ package com.cannontech.database.db.stars.event;
 
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.spring.YukonSpringHook;
+
 import java.lang.Integer;
 import java.lang.String;
 import java.sql.SQLException;
@@ -46,23 +48,7 @@ public void delete() throws java.sql.SQLException {
 }
 public Integer getNextEventID() throws SQLException 
 {
-    SqlStatement stmt = new SqlStatement("SELECT MAX(EVENTID) + 1 FROM " + TABLE_NAME, getDbConnection());
-    
-    try
-    {
-        stmt.execute();
-        
-        if( stmt.getRowCount() > 0 )
-        {
-            return (new Integer(stmt.getRow(0)[0].toString()));
-        }
-    }
-    catch( Exception e )
-    {
-        e.printStackTrace();
-    }
-    
-    return new Integer(CtiUtilities.NONE_ZERO_ID);
+    return new Integer(YukonSpringHook.getNextValueHelper().getNextValue("EventBase"));
 }
 
 public Integer getEventID() 
