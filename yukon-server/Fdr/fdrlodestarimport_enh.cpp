@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.12 $
-*    DATE         :  $Date: 2006/06/02 18:17:55 $
+*    REVISION     :  $Revision: 1.13 $
+*    DATE         :  $Date: 2006/06/07 22:34:04 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -19,6 +19,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrlodestarimport_enh.cpp,v $
+      Revision 1.13  2006/06/07 22:34:04  tspar
+      _snprintf  adding .c_str() to all strings. Not having this does not cause compiler errors, but does cause runtime errors. Also tweaks and fixes to FDR due to some differences in STL / RW
+
       Revision 1.12  2006/06/02 18:17:55  dsutton
       Added support to use the yukon point offset and multiplier on the values
       being imported
@@ -366,6 +369,8 @@ CtiTime CtiFDR_EnhancedLodeStar::ForeignToYukonTime (string aTime, CHAR aDstFlag
 * tokens in a row ,,,,
 ***********************
 */
+
+/*TS*** Replaced with a Boost Tokenizer
 bool getToken(char **InBuffer, string &outBuffer)
 {
     bool retVal = true;
@@ -398,7 +403,7 @@ bool getToken(char **InBuffer, string &outBuffer)
         // return current buffer
     return retVal;
 }
-
+************TS */
 bool CtiFDR_EnhancedLodeStar::decodeFirstHeaderRecord(string& aLine, int fileIndex)
 {
 	bool                retCode = false;
@@ -406,12 +411,11 @@ bool CtiFDR_EnhancedLodeStar::decodeFirstHeaderRecord(string& aLine, int fileInd
     bool                headerRecordValidFlag = true;
     string           tempString1;// Will receive each token
 
-    boost::char_separator<char> sep(",\r\n");
+    boost::char_separator<char> sep("\r\n");
     Boost_char_tokenizer cmdLine(aLine, sep);
     Boost_char_tokenizer::iterator tok_iter = cmdLine.begin();     
 
     string           tokedStr = *tok_iter;
-    char*               tempCharPtr = (char*)tokedStr.c_str();
     CtiFDRPoint         point;
     int                 fieldNumber = 1;
     string           tempStartTimeStr = "";
@@ -425,8 +429,13 @@ bool CtiFDR_EnhancedLodeStar::decodeFirstHeaderRecord(string& aLine, int fileInd
 
     try
     {
-        while (getToken(&tempCharPtr,tempString1) && isFirstHeaderFlag && headerRecordValidFlag)
+        boost::char_separator<char> sep1(",", 0, boost::keep_empty_tokens);
+        Boost_char_tokenizer header(tokedStr, sep1);
+        Boost_char_tokenizer::iterator iter = header.begin();
+
+        while ( (iter != header.end()) && isFirstHeaderFlag && headerRecordValidFlag)
         {
+            tempString1 = *iter;iter++;
             switch (fieldNumber)
             {
                 case 1:
@@ -447,8 +456,11 @@ bool CtiFDR_EnhancedLodeStar::decodeFirstHeaderRecord(string& aLine, int fileInd
                     {
                         _lsChannel = atol(tempString1.c_str());
                         CHAR keyString[80];
-                        //_snprintf(keyString,80,"%s %d %s %s",_lsCustomerIdentifier,_lsChannel,getDriveAndPath(),getFileName());
-                        _snprintf(keyString,80,"%s %d %s %s",_lsCustomerIdentifier,_lsChannel, getFileInfoList()[fileIndex].getLodeStarFolderName(), getFileInfoList()[fileIndex].getLodeStarFileName());
+                        //TS- Error's out
+                        //_snprintf(keyString,80,"%s %d %s %s",_lsCustomerIdentifier,_lsChannel, getFileInfoList()[fileIndex].getLodeStarFolderName().c_str(), getFileInfoList()[fileIndex].getLodeStarFileName().c_str());
+                        string t1 = getFileInfoList()[fileIndex].getLodeStarFolderName();
+                        string t2 = getFileInfoList()[fileIndex].getLodeStarFileName();
+                        _snprintf(keyString,80,"%s %d %s %s",_lsCustomerIdentifier.c_str(),_lsChannel, t1.c_str(), t2.c_str());
                         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -473,7 +485,7 @@ bool CtiFDR_EnhancedLodeStar::decodeFirstHeaderRecord(string& aLine, int fileInd
                             CHAR tempIdStr[80];
                             CHAR tempChanStr[80];
                             string desc = string ("Lodestar point is not listed in the translation table");
-                            _snprintf(tempIdStr,80,"%s", _lsCustomerIdentifier);
+                            _snprintf(tempIdStr,80,"%s", _lsCustomerIdentifier.c_str());
                             _snprintf(tempChanStr,80,"%d", _lsChannel);
                             CHAR tempBigStr[256];
                             _snprintf(tempBigStr,256,"%s%s%s%s", "Customer Id: ",tempIdStr, "; Channel: ", tempChanStr);
@@ -560,12 +572,11 @@ bool CtiFDR_EnhancedLodeStar::decodeSecondHeaderRecord(string& aLine)
     bool                headerRecordValidFlag = true;
     string           tempString1;// Will receive each token
 
-    boost::char_separator<char> sep(",\r\n");
+    boost::char_separator<char> sep("\r\n");
     Boost_char_tokenizer cmdLine(aLine, sep);
     Boost_char_tokenizer::iterator tok_iter = cmdLine.begin();     
 
     string           tokedStr = *tok_iter;
-    char*               tempCharPtr = (char*)tokedStr.c_str();
     int                 fieldNumber = 1;
 
 
@@ -578,8 +589,13 @@ bool CtiFDR_EnhancedLodeStar::decodeSecondHeaderRecord(string& aLine)
 
     try
     {
-        while (getToken(&tempCharPtr,tempString1) && isSecondHeaderFlag && headerRecordValidFlag)
+        boost::char_separator<char> sep1(",", 0, boost::keep_empty_tokens);
+        Boost_char_tokenizer header(tokedStr, sep1);
+        Boost_char_tokenizer::iterator iter = header.begin();
+
+        while ((iter != header.end()) && isSecondHeaderFlag && headerRecordValidFlag)
         {
+            tempString1 = *iter;iter++;
             switch (fieldNumber)
             {
                 case 1:
@@ -740,12 +756,11 @@ bool CtiFDR_EnhancedLodeStar::decodeThirdHeaderRecord(string& aLine)
     bool                isThirdHeaderFlag = true;
     bool                headerRecordValidFlag = true;
     string           tempString1;// Will receive each token
-    boost::char_separator<char> sep(",\r\n");
+    boost::char_separator<char> sep("\r\n");
     Boost_char_tokenizer cmdLine(aLine, sep);
     Boost_char_tokenizer::iterator tok_iter = cmdLine.begin();     
 
     string           tokedStr = *tok_iter;
-    char*               tempCharPtr = (char*)tokedStr.c_str();
     int                 fieldNumber = 1;
 
 
@@ -757,8 +772,13 @@ bool CtiFDR_EnhancedLodeStar::decodeThirdHeaderRecord(string& aLine)
 
     try
     {
-        while (getToken(&tempCharPtr,tempString1) && isThirdHeaderFlag && headerRecordValidFlag)
+        boost::char_separator<char> sep1(",", 0, boost::keep_empty_tokens);
+        Boost_char_tokenizer header(tokedStr, sep1);
+        Boost_char_tokenizer::iterator iter = header.begin();
+
+        while ((iter != header.end()) && isThirdHeaderFlag && headerRecordValidFlag)
         {
+            tempString1 = *iter;iter++;
             switch (fieldNumber)
             {
                 case 1:
@@ -806,12 +826,11 @@ bool CtiFDR_EnhancedLodeStar::decodeFourthHeaderRecord(string& aLine)
     bool                isFourthHeaderFlag = true;
     bool                headerRecordValidFlag = true;
     string           tempString1;// Will receive each token
-    boost::char_separator<char> sep(",\r\n");
+    boost::char_separator<char> sep("\r\n");
     Boost_char_tokenizer cmdLine(aLine, sep);
     Boost_char_tokenizer::iterator tok_iter = cmdLine.begin();     
 
     string           tokedStr = *tok_iter;
-    char*               tempCharPtr = (char*)tokedStr.c_str();
     int                 fieldNumber = 1;
 
 
@@ -823,8 +842,13 @@ bool CtiFDR_EnhancedLodeStar::decodeFourthHeaderRecord(string& aLine)
 
     try
     {
-        while (getToken(&tempCharPtr,tempString1) && isFourthHeaderFlag && headerRecordValidFlag)
+        boost::char_separator<char> sep1(",", 0, boost::keep_empty_tokens);
+        Boost_char_tokenizer header(tokedStr, sep1);
+        Boost_char_tokenizer::iterator iter = header.begin();
+
+        while ((iter != header.end()) && isFourthHeaderFlag && headerRecordValidFlag)
         {
+            tempString1 = *iter;iter++;
             switch (fieldNumber)
             {
                 case 1:
@@ -889,12 +913,11 @@ bool CtiFDR_EnhancedLodeStar::decodeDataRecord(string& aLine, CtiMultiMsg* multi
     bool                dataRecordValidFlag = true;
     string           tempString1;// Will receive each token
 
-    boost::char_separator<char> sep(",\r\n");
+    boost::char_separator<char> sep("\r\n");
     Boost_char_tokenizer cmdLine(aLine, sep);
     Boost_char_tokenizer::iterator tok_iter = cmdLine.begin();     
 
     string           tokedStr = *tok_iter;
-    char*               tempCharPtr = (char*)tokedStr.c_str();//TS_FLAG
     int                 fieldNumber = 1;
     double              intervalValue;
     unsigned            importedQuality;
@@ -907,6 +930,7 @@ bool CtiFDR_EnhancedLodeStar::decodeDataRecord(string& aLine, CtiMultiMsg* multi
 
     try
     {
+
         CtiFDRPoint fdrPoint;
         bool pointFound = findPointIdInList(_pointId, getReceiveFromList(), fdrPoint);
 
@@ -917,9 +941,13 @@ bool CtiFDR_EnhancedLodeStar::decodeDataRecord(string& aLine, CtiMultiMsg* multi
             pointMultiplier = fdrPoint.getMultiplier();
             pointOffset = fdrPoint.getOffset();
         }
+        boost::char_separator<char> sep1(",", 0, boost::keep_empty_tokens);
+        Boost_char_tokenizer header(tokedStr, sep1);
+        Boost_char_tokenizer::iterator iter = header.begin();
 
-        while( _pointId > 0 && getToken(&tempCharPtr,tempString1) && isDataRecordFlag && dataRecordValidFlag )
+        while( _pointId > 0 && (iter != header.end()) && isDataRecordFlag && dataRecordValidFlag )
         {
+            tempString1 = *iter;iter++;
             if( fieldNumber == 1 )
             {
                 long tempSortCode = atol(tempString1.c_str());

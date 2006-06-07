@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_tap.cpp-arc  $
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2006/04/20 17:10:51 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2006/06/07 22:35:23 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1668,7 +1668,7 @@ CtiMessage* CtiDeviceTapPagingTerminal::rsvpToDispatch(bool clearMessage)
         PValue = (FLOAT) pAccumPoint->getPointHistory().getPresentPulseCount() * pAccumPoint->getMultiplier();
         PValue += pAccumPoint->getDataOffset();
 
-        _snprintf(tStr, 126, "%s point %s = %f", getName(), pAccumPoint->getName(), PValue);
+        _snprintf(tStr, 126, "%s point %s = %f", getName().c_str(), pAccumPoint->getName()/*TSFLAG*/, PValue);
 
         pData = CTIDBG_new CtiPointDataMsg(pAccumPoint->getPointID(), PValue, NormalQuality, PulseAccumulatorPointType, tStr);
 
@@ -1688,7 +1688,7 @@ CtiMessage* CtiDeviceTapPagingTerminal::rsvpToDispatch(bool clearMessage)
         /* Apply offset */
         PValue += pAccumPoint->getDataOffset();
 
-        _snprintf(tStr, 126, "%s point %s = %f", getName(), pAccumPoint->getName(), PValue);
+        _snprintf(tStr, 126, "%s point %s = %f", getName().c_str(), pAccumPoint->getName()/*TSFLAG*/, PValue);
 
         pData = CTIDBG_new CtiPointDataMsg(pAccumPoint->getPointID(), PValue, NormalQuality, PulseAccumulatorPointType, tStr);
 

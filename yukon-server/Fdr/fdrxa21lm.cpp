@@ -374,34 +374,16 @@ bool CtiFDR_XA21LM::translateAndUpdatePoint(CtiFDRPoint *translationPoint, int a
     try
     {
 
-        boost::char_separator<char> sep1(";");
-        Boost_char_tokenizer nextTranslate(translationPoint->getDestinationList()[aDestinationIndex].getTranslation(), sep1);
-        Boost_char_tokenizer::iterator tok_iter = nextTranslate.begin(); 
+        string tempString1 = translationPoint->getDestinationList()[aDestinationIndex].getTranslationValue("Translation");
 
-        if ( tok_iter != nextTranslate.end() )
+        if ( !tempString1.empty() )
         {
-            tempString1 = *tok_iter;
-            boost::char_separator<char> sep2(":");
-            Boost_char_tokenizer nextTempToken(tempString1, sep2);
-            Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
-
-            tok_iter1++;
-            Boost_char_tokenizer nextTempToken_(tok_iter1.base(), tok_iter1.end(), sep1);
-
-
-            tempString2 = *nextTempToken_.begin();
-            tempString2.replace(0,tempString2.length(), tempString2.substr(1,(tempString2.length()-1)));
-
             // now we have a translation name
-            if ( !tempString2.empty() )
-            {
-                // put category in final name
-                translationName= tempString2;
+                translationName= tempString1;
 
                 // i'm updating my copied list
-                translationPoint->getDestinationList()[aDestinationIndex].setTranslation (tempString2);
+                translationPoint->getDestinationList()[aDestinationIndex].setTranslation (tempString1);
                 successful = true;
-            }   // no point name
         }   // first token invalid
     } // end try
 

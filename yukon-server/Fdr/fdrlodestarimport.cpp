@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.26 $
-*    DATE         :  $Date: 2006/06/06 22:12:29 $
+*    REVISION     :  $Revision: 1.27 $
+*    DATE         :  $Date: 2006/06/07 22:34:04 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -19,6 +19,9 @@
 *    ---------------------------------------------------
 *    History:
       $Log: fdrlodestarimport.cpp,v $
+      Revision 1.27  2006/06/07 22:34:04  tspar
+      _snprintf  adding .c_str() to all strings. Not having this does not cause compiler errors, but does cause runtime errors. Also tweaks and fixes to FDR due to some differences in STL / RW
+
       Revision 1.26  2006/06/06 22:12:29  tspar
       quick fix. _snprintf issues
 
@@ -872,11 +875,11 @@ void CtiFDR_LodeStarImportBase::threadFunctionReadFromFile( void )
                                  CtiTime timestamp= CtiTime();
                                  string tempTime = timestamp.asString().erase(16);
                                  tempTime = tempTime.replace(10,1,"_");
-                                 tempTime = tempTime.replace(2,1,"_");
-                                 tempTime = tempTime.replace(5,1,"_");
+                                 tempTime = tempTime.replace(7,1,"_");
+                                 tempTime = tempTime.replace(3,1,"_");
                                  tempTime = tempTime.erase(13,1);
 
-                                 _snprintf(newFileName, 250, "%s%s%s",fileNameAndPath, ".", tempTime);
+                                 _snprintf(newFileName, 250, "%s%s%s",fileNameAndPath, ".", tempTime.c_str());
                                  MoveFileEx(oldFileName,newFileName, MOVEFILE_REPLACE_EXISTING | MOVEFILE_COPY_ALLOWED);
 
                                  DWORD lastError = GetLastError();

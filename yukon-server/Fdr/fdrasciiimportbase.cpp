@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrasciiimportbase.cpp-arc  $
-*    REVISION     :  $Revision: 1.10 $
-*    DATE         :  $Date: 2006/05/23 17:17:43 $
+*    REVISION     :  $Revision: 1.11 $
+*    DATE         :  $Date: 2006/06/07 22:34:04 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrasciiimportbase.cpp,v $
+      Revision 1.11  2006/06/07 22:34:04  tspar
+      _snprintf  adding .c_str() to all strings. Not having this does not cause compiler errors, but does cause runtime errors. Also tweaks and fixes to FDR due to some differences in STL / RW
+
       Revision 1.10  2006/05/23 17:17:43  tspar
       bug fix: boost iterator used incorrectly in loop.
 
@@ -427,7 +430,7 @@ void CtiFDRAsciiImportBase::threadFunctionReadFromFile( void )
             // now is the time to get the file
             if (timeNow >= refreshTime)
             {
-                _snprintf (fileName, 200, "%s\\%s",getDriveAndPath(),getFileName());
+                _snprintf (fileName, 200, "%s\\%s",getDriveAndPath().c_str(),getFileName().c_str());
                 if( (fptr = fopen( fileName, "r")) == NULL )
                 {
                     {

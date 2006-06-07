@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.81 $
-* DATE         :  $Date: 2006/05/16 15:25:40 $
+* REVISION     :  $Revision: 1.82 $
+* DATE         :  $Date: 2006/06/07 22:34:34 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1476,7 +1476,7 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
             CtiDeviceSPtr GrpDev = DeviceManager->RemoteGetEqualbyName( lmgroup );
             if(GrpDev)
             {
-                _snprintf(newparse, 255, "putconfig serial %d %s %s", parse.getiValue("serial"), GrpDev->getPutConfigAssignment(modifier), service.c_str());
+                _snprintf(newparse, 255, "putconfig serial %d %s %s", parse.getiValue("serial"), GrpDev->getPutConfigAssignment(modifier).c_str(), service.c_str());
 
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1499,7 +1499,7 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
             // Dev = DeviceManager->getEqual(SYS_DID_SYSTEM);     // This is the guy who does ALL configs.
             if(GrpDev != NULL)
             {
-                _snprintf(newparse, 255, "%s %s", pReq->CommandString(), GrpDev->getPutConfigAssignment(modifier));
+                _snprintf(newparse, 255, "%s %s", pReq->CommandString().c_str(), GrpDev->getPutConfigAssignment(modifier).c_str());
 
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);

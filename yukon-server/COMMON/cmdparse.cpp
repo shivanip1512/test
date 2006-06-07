@@ -4171,13 +4171,13 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
 
                             if(!ptemp.empty())
                             {
-                                _snprintf(tbuf, sizeof(tbuf), "CONFIG LOAD %d to PROGRAM = %s", i+1, ptemp);
+                                _snprintf(tbuf, sizeof(tbuf), "CONFIG LOAD %d to PROGRAM = %s", i+1, ptemp.c_str());
                                 _actionItems.push_back(tbuf);
                             }
 
                             if(!rtemp.empty())
                             {
-                                _snprintf(tbuf, sizeof(tbuf), "CONFIG LOAD %d to SPLINTER = %s", i+1, rtemp);
+                                _snprintf(tbuf, sizeof(tbuf), "CONFIG LOAD %d to SPLINTER = %s", i+1, rtemp.c_str());
                                 _actionItems.push_back(tbuf);
                             }
                         }

@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrbepc.cpp-arc  $
-*    REVISION     :  $Revision: 1.5 $
-*    DATE         :  $Date: 2006/04/24 14:47:32 $
+*    REVISION     :  $Revision: 1.6 $
+*    DATE         :  $Date: 2006/06/07 22:34:04 $
 *
 *
 *    AUTHOR: David Sutton
@@ -20,6 +20,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrbepc.cpp,v $
+      Revision 1.6  2006/06/07 22:34:04  tspar
+      _snprintf  adding .c_str() to all strings. Not having this does not cause compiler errors, but does cause runtime errors. Also tweaks and fixes to FDR due to some differences in STL / RW
+
       Revision 1.5  2006/04/24 14:47:32  tspar
       RWreplace: replacing a few missed or new Rogue Wave elements
 
@@ -540,7 +543,7 @@ void CtiFDR_BEPC::threadFunctionWriteToFile( void )
 //                    dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << " **** Checkpoint **** dumping file" << endl;
 //                }
 
-                _snprintf (fileName, 200, "%s\\%s",getDriveAndPath(),getFileName());
+                _snprintf (fileName, 200, "%s\\%s",getDriveAndPath().c_str(),getFileName().c_str());
 
                 // check if we need to append
                 if (shouldAppendToFile())
@@ -581,8 +584,8 @@ void CtiFDR_BEPC::threadFunctionWriteToFile( void )
                         {   
                             // value is expected to be an integer so cast the float
                             _snprintf (workBuffer,500,"%s,%s,%d,0,0,0\n",
-                                       getCoopID(),
-                                       YukonToForeignTime(translationPoint.getLastTimeStamp()),
+                                       getCoopID().c_str(),
+                                       YukonToForeignTime(translationPoint.getLastTimeStamp()).c_str(),
                                        (int)translationPoint.getValue());
 
                             if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)

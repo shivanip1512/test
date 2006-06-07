@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive$
-*    REVISION     :  $Revision: 1.12 $
-*    DATE         :  $Date: 2006/05/23 17:17:43 $
+*    REVISION     :  $Revision: 1.13 $
+*    DATE         :  $Date: 2006/06/07 22:34:04 $
 *
 *
 *    AUTHOR: Ben Wallace
@@ -23,6 +23,9 @@
 *    ---------------------------------------------------
 *    History:
       $Log: fdrcygnet.cpp,v $
+      Revision 1.13  2006/06/07 22:34:04  tspar
+      _snprintf  adding .c_str() to all strings. Not having this does not cause compiler errors, but does cause runtime errors. Also tweaks and fixes to FDR due to some differences in STL / RW
+
       Revision 1.12  2006/05/23 17:17:43  tspar
       bug fix: boost iterator used incorrectly in loop.
 
@@ -1340,39 +1343,26 @@ bool CtiFDRCygnet::loadLists(CtiFDRPointList &aList)
                         dout << " translate: " << translationPoint->getDestinationList()[x].getTranslation() << endl;
                     }
 
-                    // there should only be one destination for cygnet points
-                    boost::char_separator<char> sep1(";");
-                    Boost_char_tokenizer nextTranslate(translationPoint->getDestinationList()[x].getTranslation(), sep1);
-                    Boost_char_tokenizer::iterator tok_iter = nextTranslate.begin(); 
+                  
+                    tempString2 = translationPoint->getDestinationList()[x].getTranslationValue("PointID");
 
-                    if ( tok_iter != nextTranslate.end())
+                    // now we have a id with a :
+                    if ( !tempString2.empty() )
                     {
-                        tempString1 = *tok_iter;
-                        boost::char_separator<char> sep2(":");
-                        Boost_char_tokenizer nextTempToken(tempString1, sep2);
-                        Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
+                        translationPoint->getDestinationList()[x].setTranslation (tempString2);
+                        successful = true;
 
-                        tok_iter1++;
-                        
-                        tempString2 = *tok_iter1;
-
-                        // now we have a id with a :
-                        if ( !tempString2.empty() )
+                        if (translationPoint->getPointType() == StatusPointType)
                         {
-                            translationPoint->getDestinationList()[x].setTranslation (tempString2);
-                            successful = true;
+                            statusCount++;
+                        }
+                        else
+                        {
+                            analogCount++;
+                        }
+                    } // end if null
 
-                            if (translationPoint->getPointType() == StatusPointType)
-                            {
-                                statusCount++;
-                            }
-                            else
-                            {
-                                analogCount++;
-                            }
-                        } // end if null
-
-                    } // end first token
+                    
                 }
             }   // end for interator
 

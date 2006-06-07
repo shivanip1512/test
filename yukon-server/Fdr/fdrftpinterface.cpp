@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrftpinterface.cpp-arc  $
-*    REVISION     :  $Revision: 1.13 $
-*    DATE         :  $Date: 2006/05/23 21:01:42 $
+*    REVISION     :  $Revision: 1.14 $
+*    DATE         :  $Date: 2006/06/07 22:34:04 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrftpinterface.cpp,v $
+      Revision 1.14  2006/06/07 22:34:04  tspar
+      _snprintf  adding .c_str() to all strings. Not having this does not cause compiler errors, but does cause runtime errors. Also tweaks and fixes to FDR due to some differences in STL / RW
+
       Revision 1.13  2006/05/23 21:01:42  tspar
       Bug fix: .c_str() is volatile in a threaded environment. Making a local copy before calling  .c_str()
 
@@ -633,7 +636,7 @@ void CtiFDRFtpInterface::threadFunctionRetrieveFrom( void )
                 else
                 {
                     string tempTS = getInterfaceName();
-                    _snprintf (fileName, 200, "%s\\%s%d.txt",getFTPDirectory(),tempTS.c_str(),fileNumber);
+                    _snprintf (fileName, 200, "%s\\%s%d.txt",getFTPDirectory().c_str(),tempTS.c_str(),fileNumber);
                     iLocalFileName = string (fileName);
                     iThreadInternetConnect.start();
 //                    workerThreadReturnStatus = iThreadInternetConnect.join( 5000);

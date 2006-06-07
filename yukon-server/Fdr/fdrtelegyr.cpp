@@ -1155,7 +1155,6 @@ void CtiFDRTelegyr::buildAndRegisterGroups( void )
 bool CtiFDRTelegyr::loadGroupLists( void )
 {
    CtiFDRPoint    *translationPoint = NULL;
-   string         myTranslateName;
    string         pointType;           //analog or status
    string         pointStr;            //pointid
    string         groupStr;            //now holds the rate to receive
@@ -1210,67 +1209,17 @@ bool CtiFDRTelegyr::loadGroupLists( void )
                //iterate through all our destinations per point (should have 1 for telegyr)
                for( int x = 0; x < translationPoint->getDestinationList().size(); x++ )
                {
-                  boost::char_separator<char> sep1(";");
-                  Boost_char_tokenizer nextTranslate(translationPoint->getDestinationList()[x].getTranslation(), sep1);
-                  Boost_char_tokenizer::iterator tok_iter = nextTranslate.begin(); 
-
-                  if( tok_iter != nextTranslate.end() )
-                  {
-                     myTranslateName = *tok_iter;tok_iter++;
-                     boost::char_separator<char> sep2(":");
-                     Boost_char_tokenizer nextTempToken(myTranslateName, sep2);
-                     Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
-
-                     tok_iter1++;
-                     Boost_char_tokenizer nextTempToken_(tok_iter1.base(), tok_iter1.end(), sep1);
-
-
-                     pointStr = *nextTempToken_.begin();
-                     pointStr.replace(0,pointStr.length(), pointStr.substr(1,(pointStr.length()-1)));
-                  }
-
-                  //note: we're making a brand new token (string) out of the data before the ';'
-                  if( tok_iter != nextTranslate.end() )
-                  {
-                     myTranslateName = *tok_iter; tok_iter++;
-                     // this in the form of GROUP:xxxx (really, this is interval now)
-                     boost::char_separator<char> sep2(":");
-                     Boost_char_tokenizer nextTempToken(myTranslateName, sep2);
-                     Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
-
-                     tok_iter1++;
-                     pointStr = *tok_iter1;
-                  }
-
-                  if( tok_iter != nextTranslate.end() )
-                  {
-                     myTranslateName = *tok_iter; tok_iter++;
-                     // this in the form of GROUP:xxxx (really, this is interval now)
-                     boost::char_separator<char> sep2(":");
-                     Boost_char_tokenizer nextTempToken(myTranslateName, sep2);
-                     Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
-
-                     tok_iter1++;
-                     groupStr = *tok_iter1;
-                  }
-
-                  if( tok_iter != nextTranslate.end() )
-                  {
-                     myTranslateName = *tok_iter; tok_iter++;
-                     // this in the form of POINTTYPE:xxxx
-                     boost::char_separator<char> sep2(":");
-                     Boost_char_tokenizer nextTempToken(myTranslateName, sep2);
-                     Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
-
-                     tok_iter1++;
-                     pointType = *tok_iter1;
-
-                     if( !pointType.empty() )
-                     {
-                        successful = true;
-                     }
-                  }
-
+                    successful = true;
+                    // pointStr  GroupStr  PointType
+                    pointStr = translationPoint->getDestinationList()[x].getTranslationValue( "Point" );
+                    if( pointStr.empty() )
+                        successful = false;
+                    groupStr = translationPoint->getDestinationList()[x].getTranslationValue( "Interval (sec)" );
+                    if( pointStr.empty() )
+                        successful = false;
+                    pointType = translationPoint->getDestinationList()[x].getTranslationValue( "POINTTYPE" );
+                    if( pointType.empty() )
+                        successful = false;
                   translationPoint->getDestinationList()[x].setTranslation( pointStr );
                }
 
@@ -1282,7 +1231,6 @@ bool CtiFDRTelegyr::loadGroupLists( void )
                   std::transform(type.begin(), type.end(), type.begin(), tolower);
                   std::transform(pointType.begin(), pointType.end(), pointType.begin(), tolower);
 
-//                  if(( type == pointType ) && ( interval == atoi( groupStr ) ) && ( size < 127 ))
                   if(( type == pointType ) && ( size < 127 ))
                   {
                      groupList[i].getPointList().push_back( *translationPoint );

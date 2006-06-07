@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrtextexport.cpp-arc  $
-*    REVISION     :  $Revision: 1.13 $
-*    DATE         :  $Date: 2006/05/23 17:17:43 $
+*    REVISION     :  $Revision: 1.14 $
+*    DATE         :  $Date: 2006/06/07 22:34:04 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,9 @@
 *    ---------------------------------------------------
 *    History:
       $Log: fdrtextexport.cpp,v $
+      Revision 1.14  2006/06/07 22:34:04  tspar
+      _snprintf  adding .c_str() to all strings. Not having this does not cause compiler errors, but does cause runtime errors. Also tweaks and fixes to FDR due to some differences in STL / RW
+
       Revision 1.13  2006/05/23 17:17:43  tspar
       bug fix: boost iterator used incorrectly in loop.
 
@@ -406,32 +409,14 @@ bool CtiFDR_TextExport::loadTranslationLists()
                             dout << " translate: " << translationPoint->getDestinationList()[x].getTranslation() << endl;
                         }
 
-                        boost::char_separator<char> sep1(";");
-                        Boost_char_tokenizer nextTranslate(translationPoint->getDestinationList()[x].getTranslation(), sep1);
-                        Boost_char_tokenizer::iterator tok_iter = nextTranslate.begin();
-
-                        if ( tok_iter != nextTranslate.end())
-                        {
-                            tempString1 = *tok_iter;
-                            boost::char_separator<char> sep2(":");
-                            Boost_char_tokenizer nextTempToken(tempString1, sep2);
-                            Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin();
-
-                            tok_iter1++;
-                            Boost_char_tokenizer nextTempToken_(tok_iter1.base(), tok_iter1.end(), sep1);
-
-
-                            tempString2 = *nextTempToken_.begin();
-                            tempString2.replace(0,tempString2.length(), tempString2.substr(1,(tempString2.length()-1)));
-
-
+                        tempString2 = translationPoint->getDestinationList()[x].getTranslationValue("Point ID");
                             // now we have a point id
                             if ( !tempString2.empty() )
                             {
                                 translationPoint->getDestinationList()[x].setTranslation (tempString2);
                                 successful = true;
                             }
-                        }   // first token invalid
+                        
                     }
                 }   // end for interator
 
@@ -551,7 +536,7 @@ void CtiFDR_TextExport::threadFunctionWriteToFile( void )
 //                    dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << " **** Checkpoint **** dumping file" << endl;
 //                }
 
-                _snprintf (fileName, 200, "%s\\%s",getDriveAndPath(),getFileName());
+                _snprintf (fileName, 200, "%s\\%s",getDriveAndPath().c_str(),getFileName().c_str());
 
                 // check if we need to append
                 if (shouldAppendToFile())
@@ -654,10 +639,10 @@ void CtiFDR_TextExport::threadFunctionWriteToFile( void )
                                     if (translationPoint->getPointType() == StatusPointType)
                                     {
                                         _snprintf (workBuffer,500,"1,%s,%d,%c,%s,%c\n",
-                                                   translationPoint->getDestinationList()[x].getTranslation(),
+                                                   translationPoint->getDestinationList()[x].getTranslation().c_str(),
                                                    (int)translationPoint->getValue(),
                                                    YukonToForeignQuality(translationPoint->getQuality()),
-                                                   YukonToForeignTime(translationPoint->getLastTimeStamp()),
+                                                   YukonToForeignTime(translationPoint->getLastTimeStamp()).c_str(),
                                                    YukonToForeignDST (translationPoint->getLastTimeStamp().isDST())
                                                    );
 
@@ -671,10 +656,10 @@ void CtiFDR_TextExport::threadFunctionWriteToFile( void )
                                     else
                                     {
                                         _snprintf (workBuffer,500,"1,%s,%f,%c,%s,%c\n",
-                                                   translationPoint->getDestinationList()[x].getTranslation(),
+                                                   translationPoint->getDestinationList()[x].getTranslation().c_str(),
                                                    translationPoint->getValue(),
                                                    YukonToForeignQuality(translationPoint->getQuality()),
-                                                   YukonToForeignTime(translationPoint->getLastTimeStamp()),
+                                                   YukonToForeignTime(translationPoint->getLastTimeStamp()).c_str(),
                                                    YukonToForeignDST (translationPoint->getLastTimeStamp().isDST())
                                                    );
                                         if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
@@ -759,7 +744,7 @@ void CtiFDR_TextExport::processPointToSurvalent (FILE* aFilePtr, CtiFDRPoint *aP
         if (aPoint->getPointType() == StatusPointType)
         {
             _snprintf (workBuffer,1024,"%s     %d    %d\n",
-                       aPoint->getDestinationList()[0].getTranslation(),
+                       aPoint->getDestinationList()[0].getTranslation().c_str(),
                        (int)aPoint->getValue(),
                        quality);
 
@@ -773,7 +758,7 @@ void CtiFDR_TextExport::processPointToSurvalent (FILE* aFilePtr, CtiFDRPoint *aP
         else
         {
             _snprintf (workBuffer,1024,"%s     %.1f    %d\n",
-                       aPoint->getDestinationList()[0].getTranslation(),
+                       aPoint->getDestinationList()[0].getTranslation().c_str(),
                        aPoint->getValue(),
                        quality);
             if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)

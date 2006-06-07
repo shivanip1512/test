@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrtextimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.13 $
-*    DATE         :  $Date: 2006/05/23 17:17:43 $
+*    REVISION     :  $Revision: 1.14 $
+*    DATE         :  $Date: 2006/06/07 22:34:04 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrtextimport.cpp,v $
+      Revision 1.14  2006/06/07 22:34:04  tspar
+      _snprintf  adding .c_str() to all strings. Not having this does not cause compiler errors, but does cause runtime errors. Also tweaks and fixes to FDR due to some differences in STL / RW
+
       Revision 1.13  2006/05/23 17:17:43  tspar
       bug fix: boost iterator used incorrectly in loop.
 
@@ -297,7 +300,7 @@ bool CtiFDR_TextImport::processFunctionOne (string &aLine, CtiMessage **aRetMsg)
                                 dout << " from " << getFileName() << " was not found" << endl;
                             }
                             desc = getFileName() + string (" point is not listed in the translation table");
-                            _snprintf(action,60,"%s", translationName);
+                            _snprintf(action,60,"%s", translationName.c_str());
                             logEvent (desc,string (action));
                         }
                     }
@@ -427,7 +430,7 @@ bool CtiFDR_TextImport::buildAndAddPoint (CtiFDRPoint &aPoint,
                     _snprintf (state,20,"%.0f",aValue);
                     desc = getFileName() + string (" control point received with an invalid state ") + string (state);
                     _snprintf(action,60,"%s for pointID %d", 
-                              aTranslationName,
+                              aTranslationName.c_str(),
                               aPoint.getPointID());
                     logEvent (desc,string (action));
                 }
@@ -471,7 +474,7 @@ bool CtiFDR_TextImport::buildAndAddPoint (CtiFDRPoint &aPoint,
                     _snprintf (state,20,"%.0f",aValue);
                     desc = getFileName() + string (" status point received with an invalid state ") + string (state);
                     _snprintf(action,60,"%s for pointID %d", 
-                              aTranslationName,
+                              aTranslationName.c_str(),
                               aPoint.getPointID());
                     logEvent (desc,string (action));
 
@@ -684,33 +687,15 @@ bool CtiFDR_TextImport::loadTranslationLists()
                             //dout << " translate: " << translationPoint->getDestinationList()[x].getTranslation() << endl;
                             dout << " translate: " << translationPoint->getDestinationList()[x].getTranslation() << endl;
                         }
-                        //RWCTokenizer nextTranslate(translationPoint->getDestinationList()[x].getTranslation());
+                        tempString2 = translationPoint->getDestinationList()[x].getTranslationValue("Point ID");
 
-                        boost::char_separator<char> sep1(";");
-                        Boost_char_tokenizer nextTranslate(translationPoint->getDestinationList()[x].getTranslation(), sep1);
-                        Boost_char_tokenizer::iterator tok_iter = nextTranslate.begin(); 
-
-                        if ( tok_iter != nextTranslate.end())
+                        // now we have a point id
+                        if ( !tempString2.empty() )
                         {
-                            tempString1 = *tok_iter;
-                            boost::char_separator<char> sep2(":");
-                            Boost_char_tokenizer nextTempToken(tempString1, sep2);
-                            Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
-
-                            tok_iter1++;
-                            Boost_char_tokenizer nextTempToken_(tok_iter1.base(), tok_iter1.end(), sep1);
-
-
-                            tempString2 = *nextTempToken_.begin();
-                            tempString2.replace(0,tempString2.length(), tempString2.substr(1,(tempString2.length()-1)));
-
-                            // now we have a point id
-                            if ( !tempString2.empty() )
-                            {
-                                translationPoint->getDestinationList()[x].setTranslation (tempString2);
-                                successful = true;
-                            }
-                        }   // first token invalid
+                            translationPoint->getDestinationList()[x].setTranslation (tempString2);
+                            successful = true;
+                        }
+                        
                     }
                 }   // end for interator
 
@@ -804,7 +789,7 @@ void CtiFDR_TextImport::threadFunctionReadFromFile( void )
             // now is the time to get the file
             if (timeNow >= refreshTime)
             {
-                _snprintf (fileName, 200, "%s\\%s",getDriveAndPath(),getFileName());
+                _snprintf (fileName, 200, "%s\\%s",getDriveAndPath().c_str(),getFileName().c_str());
 
                 fptr = fopen( fileName, "r");
                 while ((fptr == NULL) && (attemptCounter < 10))

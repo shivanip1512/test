@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.12 $
-*    DATE         :  $Date: 2006/06/02 18:17:55 $
+*    REVISION     :  $Revision: 1.13 $
+*    DATE         :  $Date: 2006/06/07 22:34:04 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -19,6 +19,9 @@
 *    ---------------------------------------------------
 *    History:
       $Log: fdrlodestarimport_std.cpp,v $
+      Revision 1.13  2006/06/07 22:34:04  tspar
+      _snprintf  adding .c_str() to all strings. Not having this does not cause compiler errors, but does cause runtime errors. Also tweaks and fixes to FDR due to some differences in STL / RW
+
       Revision 1.12  2006/06/02 18:17:55  dsutton
       Added support to use the yukon point offset and multiplier on the values
       being imported
@@ -423,7 +426,7 @@ bool CtiFDR_StandardLodeStar::decodeFirstHeaderRecord(string& aLine, int fileInd
                             }
                         }
                         CHAR keyString[80];
-                        _snprintf(keyString,80,"%s %d %s %s",tokenStr,_stdLsChannel, getFileInfoList()[fileIndex].getLodeStarFolderName(), getFileInfoList()[fileIndex].getLodeStarFileName());
+                        _snprintf(keyString,80,"%s %d %s %s",tokenStr.c_str(),_stdLsChannel, getFileInfoList()[fileIndex].getLodeStarFolderName().c_str(), getFileInfoList()[fileIndex].getLodeStarFileName().c_str());
                         //_snprintf(keyString,80,"%s %d %s %s",tokenStrPartCID,_stdLsChannel,getDriveAndPath(),getFileName());
                         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                         {
@@ -451,7 +454,7 @@ bool CtiFDR_StandardLodeStar::decodeFirstHeaderRecord(string& aLine, int fileInd
                             CHAR tempIdStr[80];
                             CHAR tempChanStr[80];
                             string desc = string ("Lodestar point is not listed in the translation table");
-                            _snprintf(tempIdStr,80,"%s", _stdLsCustomerIdentifier);
+                            _snprintf(tempIdStr,80,"%s", _stdLsCustomerIdentifier.c_str());
                             _snprintf(tempChanStr,80,"%d", _stdLsChannel);
                             CHAR tempBigStr[256];
                             _snprintf(tempBigStr,256,"%s%s%s%s", "Customer Id: ",tempIdStr, "; Channel: ", tempChanStr);

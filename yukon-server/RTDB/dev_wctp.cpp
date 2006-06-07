@@ -1712,7 +1712,7 @@ CtiMessage* CtiDeviceWctpTerminal::rsvpToDispatch(bool clearMessage)
         PValue = (FLOAT) pAccumPoint->getPointHistory().getPresentPulseCount() * pAccumPoint->getMultiplier();
         PValue += pAccumPoint->getDataOffset();
 
-        _snprintf(tStr, 126, "%s point %s = %f", getName(), pAccumPoint->getName(), PValue);
+        _snprintf(tStr, 126, "%s point %s = %f", getName().c_str(), pAccumPoint->getName()/*TSFLAG*/, PValue);
 
         pData = CTIDBG_new CtiPointDataMsg(pAccumPoint->getPointID(), PValue, NormalQuality, PulseAccumulatorPointType, tStr);
 
@@ -1732,7 +1732,7 @@ CtiMessage* CtiDeviceWctpTerminal::rsvpToDispatch(bool clearMessage)
         /* Apply offset */
         PValue += pAccumPoint->getDataOffset();
 
-        _snprintf(tStr, 126, "%s point %s = %f", getName(), pAccumPoint->getName(), PValue);
+        _snprintf(tStr, 126, "%s point %s = %f", getName().c_str(), pAccumPoint->getName()/*TSFLAG*/, PValue);
 
         pData = CTIDBG_new CtiPointDataMsg(pAccumPoint->getPointID(), PValue, NormalQuality, PulseAccumulatorPointType, tStr);
 

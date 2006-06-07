@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2006/02/21 15:27:00 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2006/06/07 22:32:57 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -742,9 +742,11 @@ void ReturnDataToClient(CtiDeviceGatewayStat::OpCol_t &reportableOperations)
 
                 if(!rv.empty())
                 {
+                    string tempTS;
                     for(citr = rv.begin(); citr != rv.end(); citr++)
                     {
-                        _snprintf( (char*)(InMessage.Buffer.GWRSt.MsgData), 1000, "%s", (*citr).c_str());
+                        tempTS = *citr;
+                        _snprintf( (char*)(InMessage.Buffer.GWRSt.MsgData), 1000, "%s", tempTS.c_str());
                         ReturnResultMessage( NORMAL, &InMessage, pOM );
                     }
                 }

@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrvalmet.cpp-arc  $
-*    REVISION     :  $Revision: 1.11 $
-*    DATE         :  $Date: 2006/05/23 17:17:43 $
+*    REVISION     :  $Revision: 1.12 $
+*    DATE         :  $Date: 2006/06/07 22:34:04 $
 *
 *
 *    AUTHOR: David Sutton
@@ -23,6 +23,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrvalmet.cpp,v $
+      Revision 1.12  2006/06/07 22:34:04  tspar
+      _snprintf  adding .c_str() to all strings. Not having this does not cause compiler errors, but does cause runtime errors. Also tweaks and fixes to FDR due to some differences in STL / RW
+
       Revision 1.11  2006/05/23 17:17:43  tspar
       bug fix: boost iterator used incorrectly in loop.
 
@@ -329,31 +332,17 @@ bool CtiFDR_Valmet::translateAndUpdatePoint(CtiFDRPoint *translationPoint, int a
 
     try
     {
-        boost::char_separator<char> sep1(";");
-        Boost_char_tokenizer nextTranslate(translationPoint->getDestinationList()[aDestinationIndex].getTranslation(), sep1);
-        Boost_char_tokenizer::iterator tok_iter = nextTranslate.begin(); 
-
-        if ( tok_iter != nextTranslate.end() )
+        tempString2 = translationPoint->getDestinationList()[aDestinationIndex].getTranslationValue("Point");
+        if ( !tempString2.empty() )
         {
-            tempString1 = *tok_iter;
-            boost::char_separator<char> sep2(":");
-            Boost_char_tokenizer nextTempToken(tempString1, sep2);
-            Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
-
-            tok_iter1++;
-            tempString2 = *tok_iter1;
-
-            // now we have a category with a :
-            if ( !tempString2.empty() )
-            {
                 // put category in final name
                 translationName= tempString2;
 
                 // i'm updating my copied list
                 translationPoint->getDestinationList()[aDestinationIndex].setTranslation (tempString2);
                 successful = true;
-            }   // no point name
-        }   // first token invalid
+
+        }   // invalid
     } // end try
 
     catch (RWExternalErr e )
@@ -711,7 +700,7 @@ int CtiFDR_Valmet::processValueMessage(CHAR *aData)
             desc = getInterfaceName() + " analog point received with an invalid timestamp ";
             desc += string (data->TimeStamp);
             _snprintf(action,60,"%s for pointID %d", 
-                      translationName,
+                      translationName.c_str(),
                       point.getPointID());
             logEvent (desc,string (action));
             retVal = !NORMAL;
@@ -749,7 +738,7 @@ int CtiFDR_Valmet::processValueMessage(CHAR *aData)
                     dout << " from " << getInterfaceName() << " was not found" << endl;
                 }
                 desc = getInterfaceName() + string (" analog point is not listed in the translation table");
-                _snprintf(action,60,"%s", translationName);
+                _snprintf(action,60,"%s", translationName.c_str());
                 logEvent (desc,string (action));
             }
         }
@@ -764,7 +753,7 @@ int CtiFDR_Valmet::processValueMessage(CHAR *aData)
                 }
                 CHAR pointID[20];
                 desc = getInterfaceName() + string (" analog point is incorrectly mapped to point ") + string (ltoa(point.getPointID(),pointID,10));
-                _snprintf(action,60,"%s", translationName);
+                _snprintf(action,60,"%s", translationName.c_str());
                 logEvent (desc,string (action));
             }
 
@@ -813,7 +802,7 @@ int CtiFDR_Valmet::processStatusMessage(CHAR *aData)
 
             desc = getInterfaceName() + string (" status point received with an invalid timestamp ") + string (data->TimeStamp);
             _snprintf(action,60,"%s for pointID %d", 
-                      translationName,
+                      translationName.c_str(),
                       point.getPointID());
             logEvent (desc,string (action));
             retVal = !NORMAL;
@@ -867,7 +856,7 @@ int CtiFDR_Valmet::processStatusMessage(CHAR *aData)
                     dout << " from " << getInterfaceName() << " was not found" << endl;
                 }
                 desc = getInterfaceName() + string (" status point is not listed in the translation table");
-                _snprintf(action,60,"%s", translationName);
+                _snprintf(action,60,"%s", translationName.c_str());
                 logEvent (desc,string (action));
             }
         }
@@ -882,7 +871,7 @@ int CtiFDR_Valmet::processStatusMessage(CHAR *aData)
                 }
                 CHAR pointID[20];
                 desc = getInterfaceName() + string (" status point is incorrectly mapped to point ") + string (ltoa(point.getPointID(),pointID,10));
-                _snprintf(action,60,"%s", translationName);
+                _snprintf(action,60,"%s", translationName.c_str());
                 logEvent (desc,string (action));
             }
         }
@@ -928,7 +917,7 @@ int CtiFDR_Valmet::processControlMessage(CHAR *aData)
             CHAR state[20];
             desc = getInterfaceName() + string (" control point received with an invalid state ") + string (itoa (ntohs(data->Control.Value),state,10));
             _snprintf(action,60,"%s for pointID %d", 
-                      translationName,
+                      translationName.c_str(),
                       point.getPointID());
             logEvent (desc,string (action));
             retVal = !NORMAL;
@@ -975,7 +964,7 @@ int CtiFDR_Valmet::processControlMessage(CHAR *aData)
                     dout << " from " << getInterfaceName() << " was not found" << endl;
                 }
                 desc = getInterfaceName() + string (" control point is not listed in the translation table");
-                _snprintf(action,60,"%s", translationName);
+                _snprintf(action,60,"%s", translationName.c_str());
                 logEvent (desc,string (action));
             }
         }
@@ -991,7 +980,7 @@ int CtiFDR_Valmet::processControlMessage(CHAR *aData)
                 }
                 desc = getInterfaceName() + string (" control point is not configured to receive controls");
                 _snprintf(action,60,"%s for pointID %d", 
-                          translationName,
+                          translationName.c_str(),
                           point.getPointID());
                 logEvent (desc,string (action));
             }
@@ -1008,7 +997,7 @@ int CtiFDR_Valmet::processControlMessage(CHAR *aData)
                 }
                 CHAR pointID[20];
                 desc = getInterfaceName() + string (" control point is incorrectly mapped to point ") + string (ltoa(point.getPointID(),pointID,10));
-                _snprintf(action,60,"%s", translationName);
+                _snprintf(action,60,"%s", translationName.c_str());
                 logEvent (desc,string (action));
             }
         }

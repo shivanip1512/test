@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrrccs.cpp-arc  $
-*    REVISION     :  $Revision: 1.13 $
-*    DATE         :  $Date: 2006/01/03 20:23:38 $
+*    REVISION     :  $Revision: 1.14 $
+*    DATE         :  $Date: 2006/06/07 22:34:04 $
 *
 *
 *    AUTHOR: David Sutton
@@ -22,6 +22,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrrccs.cpp,v $
+      Revision 1.14  2006/06/07 22:34:04  tspar
+      _snprintf  adding .c_str() to all strings. Not having this does not cause compiler errors, but does cause runtime errors. Also tweaks and fixes to FDR due to some differences in STL / RW
+
       Revision 1.13  2006/01/03 20:23:38  tspar
       Moved non RW string utilities from rwutil.h to utility.h
 
@@ -936,7 +939,7 @@ int CtiFDR_Rccs::processValueMessage(InetInterface_t *data)
                     _snprintf (state,20,"%.0f",data->msgUnion.value.Value);
                     desc = decodeClientName((CHAR*)data) + string (" control point received with an invalid state ") + string (state);
                     _snprintf(action,60,"%s for pointID %d", 
-                              translationName,
+                              translationName.c_str(),
                               point.getPointID());
                     logEvent (desc,string (action));
                     retVal = !NORMAL;
@@ -983,7 +986,7 @@ int CtiFDR_Rccs::processValueMessage(InetInterface_t *data)
                             dout << " from " << getInterfaceName() << " was not found" << endl;
                         }
                         desc = decodeClientName((CHAR*)data) + string (" control point is not listed in the translation table");
-                        _snprintf(action,60,"%s", translationName);
+                        _snprintf(action,60,"%s", translationName.c_str());
                         logEvent (desc,string (action));
                     }
                 }
@@ -999,7 +1002,7 @@ int CtiFDR_Rccs::processValueMessage(InetInterface_t *data)
                         }
                         desc = decodeClientName((CHAR*)data) + string (" control point is not configured to receive controls");
                         _snprintf(action,60,"%s for pointID %d", 
-                                  translationName,
+                                  translationName.c_str(),
                                   point.getPointID());
                         logEvent (desc,string (action));
                     }
@@ -1016,7 +1019,7 @@ int CtiFDR_Rccs::processValueMessage(InetInterface_t *data)
                         }
                         CHAR pointID[20];
                         desc = decodeClientName((CHAR*)data) + string (" control point is incorrectly mapped to point ") + string (ltoa(point.getPointID(),pointID,10));
-                        _snprintf(action,60,"%s", translationName);
+                        _snprintf(action,60,"%s", translationName.c_str());
                         logEvent (desc,string (action));
                     }
                 }

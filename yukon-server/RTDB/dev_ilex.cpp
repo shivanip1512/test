@@ -5,8 +5,8 @@
 * Date:   2/15/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2006/03/23 15:29:16 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2006/06/07 22:35:23 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -480,7 +480,7 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
 
                                 PValue = (FLOAT) Value;
 
-                                _snprintf(tStr, 127, "%s point %s = %s", getName(), PointRecord->getName(), ((PValue == OPENED) ? "OPENED" : "CLOSED") );
+                                _snprintf(tStr, 127, "%s point %s = %s", getName().c_str(), PointRecord->getName()/*TSFLAG*/, ((PValue == OPENED) ? "OPENED" : "CLOSED") );
 
                                 pData = CTIDBG_new CtiPointDataMsg(PointRecord->getPointID(), PValue, NormalQuality, StatusPointType, tStr);
 
@@ -618,7 +618,7 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
                                             dout << " CurrPulse = " << pAccumPoint->getPointHistory().getPresentPulseCount() << endl;
                                         }
 
-                                    _snprintf(tStr, 127, "%s point %s = %f", getName(), pAccumPoint->getName(), PValue);
+                                    _snprintf(tStr, 127, "%s point %s = %f", getName().c_str(), pAccumPoint->getName()/*TSFLAG*/, PValue);
 
                                     pData = CTIDBG_new CtiPointDataMsg(pAccumPoint->getPointID(), PValue, NormalQuality, DemandAccumulatorPointType, tStr);
                                     if(pData != NULL)
@@ -668,7 +668,7 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
                                     dout << CtiTime() << " Pulse Accum offset " << AIPointOffset << " = " << PValue << endl;
                                 }
 
-                                _snprintf(tStr, 127, "%s point %s = %f", getName(), pAccumPoint->getName(), PValue);
+                                _snprintf(tStr, 127, "%s point %s = %f", getName().c_str(), pAccumPoint->getName()/*TSFLAG*/, PValue);
 
                                 pData = CTIDBG_new CtiPointDataMsg(pAccumPoint->getPointID(), PValue, NormalQuality, PulseAccumulatorPointType, tStr);
 
@@ -737,7 +737,7 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
                         {
                             PValue = NumericPoint->computeValueForUOM( Value );
 
-                            _snprintf(tStr, 127, "%s point %s = %f", getName(), NumericPoint->getName(), PValue );
+                            _snprintf(tStr, 127, "%s point %s = %f", getName().c_str(), NumericPoint->getName()/*TSFLAG*/, PValue );
 
                             pData = CTIDBG_new CtiPointDataMsg(NumericPoint->getPointID(), PValue, NormalQuality, AnalogPointType, tStr);
 

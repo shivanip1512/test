@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrrdex.cpp-arc  $
-*    REVISION     :  $Revision: 1.11 $
-*    DATE         :  $Date: 2006/05/23 17:17:43 $
+*    REVISION     :  $Revision: 1.12 $
+*    DATE         :  $Date: 2006/06/07 22:34:04 $
 *
 *
 *    AUTHOR: David Sutton
@@ -23,6 +23,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrrdex.cpp,v $
+      Revision 1.12  2006/06/07 22:34:04  tspar
+      _snprintf  adding .c_str() to all strings. Not having this does not cause compiler errors, but does cause runtime errors. Also tweaks and fixes to FDR due to some differences in STL / RW
+
       Revision 1.11  2006/05/23 17:17:43  tspar
       bug fix: boost iterator used incorrectly in loop.
 
@@ -268,51 +271,25 @@ int CtiFDR_Rdex::readConfig()
 bool CtiFDR_Rdex::translateAndUpdatePoint(CtiFDRPoint *translationPoint, int aDestinationIndex)
 {
     bool                successful(false);
-    string           tempString1;
     string           tempString2;
     string           translationName;
     bool                foundPoint = false;
 
     try
     {
-       
-        boost::char_separator<char> sep1(";");
-        Boost_char_tokenizer nextTranslate(translationPoint->getDestinationList()[aDestinationIndex].getTranslation(), sep1);
-        Boost_char_tokenizer::iterator tok_iter = nextTranslate.begin(); 
-
-        if ( tok_iter != nextTranslate.end())
+        tempString2 = translationPoint->getDestinationList()[aDestinationIndex].getTranslationValue("Translation");
+    
+        // now we have a translation name
+        if ( !tempString2.empty() )
         {
-            tempString1 = *tok_iter;
-            boost::char_separator<char> sep2(":");
-            Boost_char_tokenizer nextTempToken(tempString1, sep2);
-            Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
-
-            tok_iter1++;
-            Boost_char_tokenizer nextTempToken_(tok_iter1.base(), tok_iter1.end(), sep1);
-
-
-            tempString2 = *nextTempToken_.begin();
-            tempString2.replace(0,tempString2.length(), tempString2.substr(1,(tempString2.length()-1)));
-
-            // skip the first part entirely for now
-            /**************************
-            * as luck would have it, I need to allow colons in the translation names
-            * because of this, I know the first character in tempString2 is the first : 
-            * found.  I need what is left in the string after removing the colon
-            ***************************
-            */
-
-            // now we have a translation name
-            if ( !tempString2.empty() )
-            {
-                // put category in final name
-                translationName= tempString2;
-
-                // i'm updating my copied list
-                translationPoint->getDestinationList()[aDestinationIndex].setTranslation (tempString2);
-                successful = true;
-            }   // no point name
-        }   // first token invalid
+            // put translation in final name
+            translationName= tempString2;
+    
+            // i'm updating my copied list
+            translationPoint->getDestinationList()[aDestinationIndex].setTranslation (tempString2);
+            successful = true;
+        }   // no point name
+        
     } // end try
 
     catch (RWExternalErr e )
@@ -674,7 +651,7 @@ int CtiFDR_Rdex::processValueMessage(CHAR *aData)
             {
                 desc = getInterfaceName() + string (" analog point received with an invalid timestamp ") + string (data->timestamp);
                 _snprintf(action,60,"%s for pointID %d", 
-                          translationName,
+                          translationName.c_str(),
                           point.getPointID());
                 logEvent (desc,string (action));
                 retVal = !NORMAL;
@@ -712,7 +689,7 @@ int CtiFDR_Rdex::processValueMessage(CHAR *aData)
                         dout << " from " << getLayer()->getName() << " was not found" << endl;
                     }
                     desc = getInterfaceName() + string (" analog point is not listed in the translation table");
-                    _snprintf(action,60,"%s", translationName);
+                    _snprintf(action,60,"%s", translationName.c_str());
                     logEvent (desc,string (action));
                 }
             }
@@ -727,7 +704,7 @@ int CtiFDR_Rdex::processValueMessage(CHAR *aData)
                     }
                     CHAR pointID[20];
                     desc = getInterfaceName() + string (" analog point is incorrectly mapped to point ") + string (ltoa(point.getPointID(),pointID,10));
-                    _snprintf(action,60,"%s", translationName);
+                    _snprintf(action,60,"%s", translationName.c_str());
                     logEvent (desc,string (action));
                 }
             }
@@ -772,7 +749,7 @@ int CtiFDR_Rdex::processStatusMessage(CHAR *aData)
                 {
                     desc = getInterfaceName() + string (" status point received with an invalid timestamp ") + string (data->timestamp);
                     _snprintf(action,60,"%s for pointID %d", 
-                              translationName,
+                              translationName.c_str(),
                               point.getPointID());
                     logEvent (desc,string (action));
                 }
@@ -786,7 +763,7 @@ int CtiFDR_Rdex::processStatusMessage(CHAR *aData)
                     CHAR state[20];
                     desc = getInterfaceName() + string (" status point received with an invalid state ") + string (itoa (ntohl(data->status.value),state,10));
                     _snprintf(action,60,"%s for pointID %d", 
-                              translationName,
+                              translationName.c_str(),
                               point.getPointID());
                     logEvent (desc,string (action));
                 }
@@ -833,7 +810,7 @@ int CtiFDR_Rdex::processStatusMessage(CHAR *aData)
                         dout << " from " << getLayer()->getName() << " was not found" << endl;
                     }
                     desc = getInterfaceName() + string (" status point is not listed in the translation table");
-                    _snprintf(action,60,"%s", translationName);
+                    _snprintf(action,60,"%s", translationName.c_str());
                     logEvent (desc,string (action));
                 }
             }
@@ -848,7 +825,7 @@ int CtiFDR_Rdex::processStatusMessage(CHAR *aData)
                     }
                     CHAR pointID[20];
                     desc = getInterfaceName() + string (" status point is incorrectly mapped to point ") + string (ltoa(point.getPointID(),pointID,10));
-                    _snprintf(action,60,"%s", translationName);
+                    _snprintf(action,60,"%s", translationName.c_str());
                     logEvent (desc,string (action));
                 }
             }
@@ -896,7 +873,7 @@ int CtiFDR_Rdex::processControlMessage(CHAR *aData)
                 CHAR state[20];
                 desc = getInterfaceName() + string (" control point received with an invalid state ") + string (itoa (ntohl(data->control.value),state,10));
                 _snprintf(action,60,"%s for pointID %d", 
-                          translationName,
+                          translationName.c_str(),
                           point.getPointID());
                 logEvent (desc,string (action));
                 retVal = !NORMAL;
@@ -943,7 +920,7 @@ int CtiFDR_Rdex::processControlMessage(CHAR *aData)
                         dout << " from " << getLayer()->getName() << " was not found" << endl;
                     }
                     desc = getInterfaceName() + string (" control point is not listed in the translation table");
-                    _snprintf(action,60,"%s", translationName);
+                    _snprintf(action,60,"%s", translationName.c_str());
                     logEvent (desc,string (action));
                 }
 
@@ -960,7 +937,7 @@ int CtiFDR_Rdex::processControlMessage(CHAR *aData)
                     }
                     desc = getInterfaceName() + string (" control point is not configured to receive controls");
                     _snprintf(action,60,"%s for pointID %d", 
-                              translationName,
+                              translationName.c_str(),
                               point.getPointID());
                     logEvent (desc,string (action));
                 }
@@ -977,7 +954,7 @@ int CtiFDR_Rdex::processControlMessage(CHAR *aData)
                     }
                     CHAR pointID[20];
                     desc = getInterfaceName() + string (" control point is incorrectly mapped to point ") + string (ltoa(point.getPointID(),pointID,10));
-                    _snprintf(action,60,"%s", translationName);
+                    _snprintf(action,60,"%s", translationName.c_str());
                     logEvent (desc,string (action));
                 }
             }

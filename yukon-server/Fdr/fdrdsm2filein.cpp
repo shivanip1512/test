@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrDSm2Filein.cpp-arc  $
-*    REVISION     :  $Revision: 1.11 $
-*    DATE         :  $Date: 2006/05/23 17:17:43 $
+*    REVISION     :  $Revision: 1.12 $
+*    DATE         :  $Date: 2006/06/07 22:34:04 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,9 @@
 *    ---------------------------------------------------
 *    History:
       $Log: fdrdsm2filein.cpp,v $
+      Revision 1.12  2006/06/07 22:34:04  tspar
+      _snprintf  adding .c_str() to all strings. Not having this does not cause compiler errors, but does cause runtime errors. Also tweaks and fixes to FDR due to some differences in STL / RW
+
       Revision 1.11  2006/05/23 17:17:43  tspar
       bug fix: boost iterator used incorrectly in loop.
 
@@ -306,7 +309,7 @@ bool CtiFDR_Dsm2Filein::processFunctionOne (string &aLine, CtiMessage **aRetMsg)
                                 dout << " from " << getFileName() << " was not found" << endl;
                             }
 			    desc = getFileName() + string ("'s point ") + translationName + string( " is not listed in the translation table");
-			    _snprintf(action,60,"%s", translationName);
+			    _snprintf(action,60,"%s", translationName.c_str());
 			    logEvent (desc,string (action));                        
                         }
                     }
@@ -418,7 +421,7 @@ bool CtiFDR_Dsm2Filein::processFunctionTwo (string &aLine, CtiMessage **aRetMsg)
                             }
 
                             desc = getFileName().c_str() + string ("'s point ") + translationName + string( " is not listed in the translation table");
-                            _snprintf(action,60,"%s", translationName);
+                            _snprintf(action,60,"%s", translationName.c_str());
                             logEvent ( string(desc.c_str()),
 				       string(action));
                         }
@@ -561,7 +564,7 @@ bool CtiFDR_Dsm2Filein::buildAndAddPoint (CtiFDRPoint &aPoint,
                         _snprintf (state,20,"%.0f",aValue);
                         desc = getFileName() + string (" control point received with an invalid state ") + string (state);
                         _snprintf(action,60,"%s for pointID %d",
-                                  aTranslationName,
+                                  aTranslationName.c_str(),
                                   aPoint.getPointID());
                         logEvent (desc,string (action));
                     }
@@ -608,7 +611,7 @@ bool CtiFDR_Dsm2Filein::buildAndAddPoint (CtiFDRPoint &aPoint,
                         _snprintf (state,20,"%.0f",aValue);
                         desc = getFileName() + string (" status point received with an invalid state ") + string (state);
                         _snprintf(action,60,"%s for pointID %d",
-                                aTranslationName,
+                                aTranslationName.c_str(),
                                 aPoint.getPointID());
                         logEvent (desc,string (action));
                    }
@@ -800,9 +803,7 @@ bool CtiFDR_Dsm2Filein::loadTranslationLists()
 {
     bool                successful(FALSE);
     CtiFDRPoint *       translationPoint = NULL;
-    string           tempString1;
-    string           tempString2;
-    string           translationName;
+    string              tempString2;
     bool                foundPoint = false;
     RWDBStatus          listStatus;
 
@@ -848,58 +849,20 @@ bool CtiFDR_Dsm2Filein::loadTranslationLists()
                             //dout << " translate: " << translationPoint->getDestinationList()[x].getTranslation() << endl;
                             dout << " translate: " << translationPoint->getDestinationList()[x].getTranslation() << endl;
                         }
-
-                        boost::char_separator<char> sep1(";");
-                        Boost_char_tokenizer nextTranslate(translationPoint->getDestinationList()[x].getTranslation(), sep1);
-                        Boost_char_tokenizer::iterator tok_iter = nextTranslate.begin(); 
-
-                        if ( tok_iter != nextTranslate.end())
+                        tempString2 = translationPoint->getDestinationList()[x].getTranslationValue("Option Number");
+                        if (!tempString2.empty())
                         {
-                            tempString1 = *tok_iter;
-                            boost::char_separator<char> sep2(":");
-                            Boost_char_tokenizer nextTempToken(tempString1, sep2);
-                            Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
-
-                            tok_iter1++;
-                            Boost_char_tokenizer nextTempToken_(tok_iter1.base(), tok_iter1.end(), sep1);
-
-
-                            tempString2 = *nextTempToken_.begin();
-                            tempString2.replace(0,tempString2.length(), tempString2.substr(1,(tempString2.length()-1)));
-
-                            // this is the function number
-                            if ( !tempString2.empty() )
-                            {
-                                translation_name = tempString2 + "-----";
-                                //translation_name += string ('-----');
-                                tok_iter++;
-
-                                if ( tok_iter != nextTranslate.end() )
-                                {
-                                    tempString1 = *tok_iter;
-                                    // now we have a point id
-                                    // this could be a unique id or a combination of device name and point name separated
-                                    // by a colon	    
-                                    boost::char_separator<char> sep2(":");
-                                    Boost_char_tokenizer nextTempToken(tempString1, sep2);
-                                    Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
-
-                                    tok_iter1++;
-                                    Boost_char_tokenizer nextTempToken_(tok_iter1.base(), tok_iter1.end(), sep1);
-
-                                    tempString2 = *nextTempToken_.begin();
-                                    tempString2.replace(0,tempString2.length(), tempString2.substr(1,(tempString2.length()-1)));
-                                    if (!tempString2.empty())
-                                    {
-                                        translation_name+=tempString2;
-                                        translationPoint->getDestinationList()[x].setTranslation (translation_name);
-                                        // we end up with a translation of function #-----id
-                                        successful = true;
-                                    }
-
-                                }
-                            }
-                        }   // first token invalid
+                            translation_name = tempString2 + "-----";
+                            successful = true;
+                        }
+                                                
+                        tempString2 = translationPoint->getDestinationList()[x].getTranslationValue("Point ID");
+                        if (!tempString2.empty() && successful == true)
+                        {
+                            translation_name+=tempString2;
+                            translationPoint->getDestinationList()[x].setTranslation (translation_name);
+                            // we end up with a translation of function #-----id
+                        }
                     }
                 }   // end for interator
 
@@ -993,7 +956,7 @@ void CtiFDR_Dsm2Filein::threadFunctionReadFromFile( void )
             // now is the time to get the file
             if (timeNow >= refreshTime)
             {
-                _snprintf (fileName, 200, "%s\\%s",getDriveAndPath(),getFileName());
+                _snprintf (fileName, 200, "%s\\%s",getDriveAndPath().c_str(),getFileName().c_str());
 
                 fptr = fopen( fileName, "r");
                 while ((fptr == NULL) && (attemptCounter < 10))

@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrdsm2import.cpp-arc  $
-*    REVISION     :  $Revision: 1.9 $
-*    DATE         :  $Date: 2006/05/23 17:17:43 $
+*    REVISION     :  $Revision: 1.10 $
+*    DATE         :  $Date: 2006/06/07 22:34:04 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrdsm2import.cpp,v $
+      Revision 1.10  2006/06/07 22:34:04  tspar
+      _snprintf  adding .c_str() to all strings. Not having this does not cause compiler errors, but does cause runtime errors. Also tweaks and fixes to FDR due to some differences in STL / RW
+
       Revision 1.9  2006/05/23 17:17:43  tspar
       bug fix: boost iterator used incorrectly in loop.
 
@@ -353,7 +356,7 @@ bool CtiFDR_Dsm2Import::validateAndDecodeLine (string &aLine, CtiMessage **retMs
                                             _snprintf (state,20,"%.0f",value);
                                             desc = getInterfaceName() + string (" control point received with an invalid state ") + string (state);
                                             _snprintf(action,60,"%s for pointID %d", 
-                                                      translationName,
+                                                      translationName.c_str(),
                                                       point.getPointID());
                                             logEvent (desc,string (action));
                                         }
@@ -435,7 +438,7 @@ bool CtiFDR_Dsm2Import::validateAndDecodeLine (string &aLine, CtiMessage **retMs
                                             _snprintf (state,20,"%.0f",value);
                                             desc = getInterfaceName() + string (" status point received with an invalid state ") + string (state);
                                             _snprintf(action,60,"%s for pointID %d", 
-                                                      translationName,
+                                                      translationName.c_str(),
                                                       point.getPointID());
                                             logEvent (desc,string (action));
 
