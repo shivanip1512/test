@@ -2,6 +2,7 @@ package com.cannontech.clientutils.tags;
 
 import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.cache.functions.StateFuncs;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.point.PointTypes;
 
@@ -25,7 +26,7 @@ public class AlarmUtils
 	/**
 	 * Returns the condition text for a given point and is condition ID
 	 */
-	public static synchronized final String getAlarmConditionText( int conditionID_, int ptType_, int ptID_ )
+	public static String getAlarmConditionText( int conditionID_, int ptType_, int ptID_ )
 	{
 		switch( ptType_ )
 		{
@@ -50,5 +51,9 @@ public class AlarmUtils
 				return IAlarmDefs.OTHER_ALARM_STATES[conditionID_];
 		}
 	}
+    
+    public static String getAlarmConditionText( int contidionId, LitePoint point) {
+        return getAlarmConditionText(contidionId, point.getPointType(), point.getPointID());
+    }
 
 }

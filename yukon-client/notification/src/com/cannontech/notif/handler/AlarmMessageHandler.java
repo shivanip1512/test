@@ -1,5 +1,11 @@
 package com.cannontech.notif.handler;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+
+import org.apache.commons.lang.BooleanUtils;
+
+import com.cannontech.clientutils.tags.AlarmUtils;
 import com.cannontech.database.cache.functions.*;
 import com.cannontech.database.data.lite.*;
 import com.cannontech.database.data.notification.NotifType;
@@ -21,9 +27,21 @@ public class AlarmMessageHandler extends NotifHandler {
         }
         NotifAlarmMsg msg = (NotifAlarmMsg) msg_;
         
-        // building the Notification object is the main work of 
-        // this function
+
+        for (int i = 0; i < msg.notifGroupIds.length; i++) {
+            int notifGroupId = msg.notifGroupIds[i];
+            LiteNotificationGroup liteNotifGroup = NotificationGroupFuncs.getLiteNotificationGroup(notifGroupId);
+            NotificationBuilder notifFormatter = createNotificationBuilder(msg, liteNotifGroup);
+            outputNotification(notifFormatter, liteNotifGroup);
+        }
+        return true;
+    }
+
+    private NotificationBuilder createNotificationBuilder(NotifAlarmMsg msg, 
+                                                          LiteNotificationGroup liteNotifGroup) {
         final Notification notif = new Notification("alarm");
+        
+        notif.addData("notificationgroup", liteNotifGroup.getNotificationGroupName());
         
         LitePoint point = (LitePoint)PointFuncs.getLitePoint(msg.pointId);
         notif.addData("pointid", Integer.toString(point.getPointID()));
@@ -32,6 +50,22 @@ public class AlarmMessageHandler extends NotifHandler {
         notif.addData("pointtype", PointTypes.getType(point.getPointType()));
         int pAObjectId = point.getPaobjectID();
         notif.addData("paoname", PAOFuncs.getYukonPAOName(pAObjectId));
+        
+        notif.addData("abnormal", BooleanUtils.toStringTrueFalse(msg.abnormal));
+        notif.addData("acknowledged", BooleanUtils.toStringTrueFalse(msg.acknowledged));
+        
+        
+        String conditionText = AlarmUtils.getAlarmConditionText(msg.condition, point);
+        notif.addData("condition", conditionText);
+        
+        String categoryText = AlarmCatFuncs.getAlarmCategoryName(msg.alarmCategoryId);
+        notif.addData("category", categoryText);
+        
+        DateFormat dateFormatter = new SimpleDateFormat("EEEE, MMMM d"); // e.g. "Tuesday, May 31"
+        DateFormat timeFormatter = new SimpleDateFormat("h:mm a"); // e.g. "3:45 PM"
+        
+        notif.addData("alarmtime", timeFormatter.format(msg.alarmTimestamp));
+        notif.addData("alarmdate", dateFormatter.format(msg.alarmTimestamp));
         
         String uofm = "";
         if (point.getPointType() == PointTypes.STATUS_POINT) {
@@ -52,18 +86,12 @@ public class AlarmMessageHandler extends NotifHandler {
             public Notification buildNotification(Contactable contact) {
                 return notif;
             }
+            
             public void notificationComplete(Contactable contact, NotifType notifType, boolean success) {
                 // do nothing
             }
         };
-        
-        for (int i = 0; i < msg.notifGroupIds.length; i++) {
-            int notifGroupId = msg.notifGroupIds[i];
-            LiteNotificationGroup liteNotifGroup = NotificationGroupFuncs.getLiteNotificationGroup(notifGroupId);
-            outputNotification(notifFormatter, liteNotifGroup);
-        }
-        
-        return true;
+        return notifFormatter;
     }
 
 }
