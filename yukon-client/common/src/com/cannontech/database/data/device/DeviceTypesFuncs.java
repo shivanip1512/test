@@ -7,10 +7,13 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
+import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.capcontrol.CapBankController;
 import com.cannontech.database.data.capcontrol.CapBankController702x;
 import com.cannontech.database.data.capcontrol.ICapBankController;
 import com.cannontech.database.data.device.lm.IGroupRoute;
+import com.cannontech.database.data.lite.LiteFactory;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointFactory;
@@ -917,12 +920,17 @@ public final static boolean isReceiver(int deviceType)
 
 
 public static  ICapBankController changeCBCType (String newType, ICapBankController val) {
-	return (ICapBankController) changeType (newType, val, null, null, false, false, false);
+	return (ICapBankController) changeType (newType, val, null, null, false, false, false,null);
 }
 
-public static Object changeType (String newType, Object val, DBPersistent extraObj, 
-										Vector extra410Objs, boolean loadProfileExists, 
-												boolean blinkCountExists, boolean totalKWhExists) {
+public static Object changeType (String newType, 
+        Object val, 
+        DBPersistent extraObj, 
+		Vector extra410Objs, 
+        boolean loadProfileExists, 
+		boolean blinkCountExists, 
+        boolean totalKWhExists,
+        DeviceBase currentDevice) {
 	
 
 	String type = newType;
@@ -1193,9 +1201,103 @@ public static Object changeType (String newType, Object val, DBPersistent extraO
 			}	
 			
 			return val;
-		}
-		
-		else
+		}else if( val instanceof MCT310 && oldDevice instanceof MCT410IL) 
+        {
+            //TODO delete old 410 points
+            LitePoint[] ltPoints = PAOFuncs.getLitePointsForPAObject( 
+                    currentDevice.getPAObjectID().intValue() );
+    
+            for( int i = 0; i < ltPoints.length; i++ ) {
+                LitePoint point = ltPoints[i];  
+        
+                if( (point.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT
+                     && point.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND ) || 
+                     
+                     (point.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT
+                             && point.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND ) ||
+                             
+                     (point.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT
+                             && point.getPointOffset() == PointTypes.PT_OFFSET_PEAK_KW_DEMAND ) ||
+                     
+                     (point.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT
+                             && point.getPointOffset() == PointTypes.PT_OFFSET_MAX_VOLT_DEMAND ) ||
+                             
+                     (point.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT
+                             && point.getPointOffset() == PointTypes.PT_OFFSET_MIN_VOLT_DEMAND ) ||
+                             
+                     (point.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT
+                             && point.getPointOffset() == PointTypes.PT_OFFSET_FROZEN_PEAK_DEMAND ) ||
+                             
+                     (point.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT
+                             && point.getPointOffset() == PointTypes.PT_OFFSET_FROZEN_MAX_VOLT ) ||
+                             
+                     (point.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT
+                             && point.getPointOffset() == PointTypes.PT_OFFSET_FROZEN_MIN_VOLT ) ||
+                             
+                     (point.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT
+                             && point.getPointOffset() == PointTypes.PT_OFFSET_KW_DEMAND ) ||
+                             
+                     (point.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT
+                             && point.getPointOffset() == PointTypes.PT_OFFSET_VOLTAGE_DEMAND ) ||
+                             
+                     (point.getPointType() == PointTypes.STATUS_POINT
+                             && point.getPointOffset() == PointTypes.PT_OFFSET_TOTAL_KWH ))
+                {
+                    Transaction deletePoint = Transaction.createTransaction(Transaction.DELETE, ((DBPersistent)LiteFactory.convertLiteToDBPers(point)));
+                    try 
+                    {
+                        deletePoint.execute();
+                    }
+                    catch (TransactionException e)
+                    {
+                        com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+            
+                    }
+                }
+                
+            }
+            
+            try
+            {
+                Transaction t2 =
+                    Transaction.createTransaction(
+                        Transaction.ADD_PARTIAL,
+                        ((DBPersistent) val));
+    
+                val = t2.execute();
+    
+            }
+            catch (TransactionException e)
+            {
+                com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+    
+            }
+        
+            //execute the actual command in the database to create extra objects 
+            try
+            {
+                if( extraObj != null )  {
+                    Transaction.createTransaction(
+                        Transaction.INSERT,
+                        ((DBPersistent) extraObj)).execute();
+                
+                    SmartMultiDBPersistent multi = new SmartMultiDBPersistent();
+                    multi.addDBPersistent( (DBPersistent)val );
+                    multi.addDBPersistent( extraObj );
+                    multi.setOwnerDBPersistent( (DBPersistent)val );
+                    
+                    return multi;
+                }
+    
+            }
+            catch (TransactionException e)
+            {
+                com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+    
+            }
+    
+            return val;
+        }else
 		{//execute the actual command in the database 
 			try
 			{

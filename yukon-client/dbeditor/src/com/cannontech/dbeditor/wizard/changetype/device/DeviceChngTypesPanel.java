@@ -361,7 +361,7 @@ public int getSelectedDeviceType()
 public Object getValue(Object val)
 {
 	String type = (String) getJListDevices().getSelectedValue();
-	return DeviceTypesFuncs.changeType(type, val, extraObj, extra410Objs, loadProfileExists, blinkCountExists, totalKWhExists);
+	return DeviceTypesFuncs.changeType(type, val, extraObj, extra410Objs, loadProfileExists, blinkCountExists, totalKWhExists, getCurrentDevice());
 	
 }
 
