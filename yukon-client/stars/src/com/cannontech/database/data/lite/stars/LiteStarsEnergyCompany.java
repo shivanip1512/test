@@ -2503,36 +2503,37 @@ public class LiteStarsEnergyCompany extends LiteBase {
      * If searchMembers is true, it returns a list of Pair(LiteStarsCustAccountInformation, LiteStarsEnergyCompany);
      * otherwise it returns a list of LiteStarsCustAccountInformation.
      */
-    public ArrayList searchAccountByAccountNo(String accountNo, boolean searchMembers) {
+    public ArrayList searchAccountByAccountNumber(String accountNumber, boolean searchMembers, boolean partialMatch) {
         ArrayList accountList = new ArrayList();
-        
-        if (accountNo.equals("*")) accountNo = "";
-        
         if (isAccountsLoaded()) {
-            ArrayList custAcctInfoList = getAllCustAccountInformation();
-            for (int i = 0; i < custAcctInfoList.size(); i++) {
-                LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) custAcctInfoList.get(i);
-                if (liteAcctInfo.getCustomerAccount().getAccountNumber().toUpperCase().startsWith( accountNo.toUpperCase() ))
-                {
-                    if (searchMembers)
-                        accountList.add( new Pair(liteAcctInfo, this) );
-                    else
-                        accountList.add( liteAcctInfo );
-                }
+            return searchLoadedAccountsByAccountNumber(accountNumber, searchMembers);
             }
-        }
         else {
-            if (accountNo.indexOf('%') < 0) accountNo += "%";
-            
-            int[] accountIDs = com.cannontech.database.db.stars.customer.CustomerAccount.searchByAccountNumber( accountNo, getLiteID() );
-            if (accountIDs != null) {
-                for (int i = 0; i < accountIDs.length; i++) {
-                    LiteStarsCustAccountInformation liteAcctInfo = getBriefCustAccountInfo( accountIDs[i], true );
-                    if (searchMembers)
-                        accountList.add( new Pair(liteAcctInfo, this) );
-                    else
-                        accountList.add( liteAcctInfo );
-                }
+            ArrayList<Integer> allEnergyCompanyIDs = new ArrayList<Integer>();
+            if( searchMembers)
+                allEnergyCompanyIDs = getAllEnergyCompaniesDownward();
+            else
+                allEnergyCompanyIDs.add(new Integer(getLiteID()) );
+
+            accountList = searchByAccountNumber( accountNumber, partialMatch, allEnergyCompanyIDs, searchMembers);
+        }
+        return accountList;
+    }
+    
+    private ArrayList searchLoadedAccountsByAccountNumber(String accountNo, boolean searchMembers) {
+        ArrayList accountList = new ArrayList();
+        //This is no longer a good idea due to growing number of customer accounts for stars database.
+//        if (accountNo.equals("*")) accountNo = "";
+        
+        ArrayList custAcctInfoList = getAllCustAccountInformation();
+        for (int i = 0; i < custAcctInfoList.size(); i++) {
+            LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) custAcctInfoList.get(i);
+            if (liteAcctInfo.getCustomerAccount().getAccountNumber().toUpperCase().startsWith( accountNo.toUpperCase() ))
+            {
+                if (searchMembers)
+                    accountList.add( new Pair(liteAcctInfo, this) );
+                else
+                    accountList.add( liteAcctInfo );
             }
         }
         
@@ -2541,7 +2542,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
             synchronized (children) {
                 for (int i = 0; i < children.size(); i++) {
                     LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) children.get(i);
-                    ArrayList memberList = company.searchAccountByAccountNo( accountNo, searchMembers );
+                    ArrayList memberList = company.searchLoadedAccountsByAccountNumber( accountNo, searchMembers );
                     accountList.addAll( memberList );
                 }
             }
@@ -2727,39 +2728,36 @@ public class LiteStarsEnergyCompany extends LiteBase {
      * If searchMembers is true, it returns a list of Pair(LiteStarsCustAccountInformation, LiteStarsEnergyCompany);
      * otherwise it returns a list of LiteStarsCustAccountInformation.
      */
-    public ArrayList searchAccountByAddress(String address, boolean searchMembers) {
+    public ArrayList searchAccountByAddress(String address, boolean searchMembers, boolean partialMatch) {
+        ArrayList accountList = new ArrayList();
+        if (isAccountsLoaded()) {
+            return searchLoadedAccountsByAddress(address, searchMembers);
+            }
+        else {
+            ArrayList<Integer> allEnergyCompanyIDs = new ArrayList<Integer>();
+            if( searchMembers)
+                allEnergyCompanyIDs = getAllEnergyCompaniesDownward();
+            else
+                allEnergyCompanyIDs.add(new Integer(getLiteID()) );
+
+            accountList = searchByStreetAddress( address, partialMatch, allEnergyCompanyIDs, searchMembers);
+        }
+        return accountList;
+    }
+    
+    private ArrayList searchLoadedAccountsByAddress(String address, boolean searchMembers) {
         ArrayList accountList = new ArrayList();
         
-        if (isAccountsLoaded()) {
-            ArrayList custAcctInfoList = getAllCustAccountInformation();
-            for (int i = 0; i < custAcctInfoList.size(); i++) {
-                LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) custAcctInfoList.get(i);
-                LiteAddress servAddr = getAddress( liteAcctInfo.getAccountSite().getStreetAddressID() );
-                if (servAddr != null && servAddr.getLocationAddress1().toUpperCase().startsWith( address.toUpperCase() ))
-                {
-                    if (searchMembers)
-                        accountList.add( new Pair(liteAcctInfo, this) );
-                    else
-                        accountList.add( liteAcctInfo );
-                }
-            }
-        }
-        else {
-            try {
-                int[] accountIDs = com.cannontech.database.db.stars.customer.CustomerAccount.searchByAddress( address + "%", getLiteID() );
-                if (accountIDs != null) {
-                    for (int i = 0; i < accountIDs.length; i++) {
-                        LiteStarsCustAccountInformation liteAcctInfo = getBriefCustAccountInfo( accountIDs[i], true );
-                        if (searchMembers)
-                            accountList.add( new Pair(liteAcctInfo, this) );
-                        else
-                            accountList.add( liteAcctInfo );
-                    }
-                }
-            }
-            catch (Exception e) {
-                CTILogger.error( e.getMessage(), e );
-                return null;
+        ArrayList custAcctInfoList = getAllCustAccountInformation();
+        for (int i = 0; i < custAcctInfoList.size(); i++) {
+            LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) custAcctInfoList.get(i);
+            LiteAddress servAddr = getAddress( liteAcctInfo.getAccountSite().getStreetAddressID() );
+            if (servAddr != null && servAddr.getLocationAddress1().toUpperCase().startsWith( address.toUpperCase() ))
+            {
+                if (searchMembers)
+                    accountList.add( new Pair(liteAcctInfo, this) );
+                else
+                    accountList.add( liteAcctInfo );
             }
         }
         
@@ -2768,7 +2766,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
             synchronized (children) {
                 for (int i = 0; i < children.size(); i++) {
                     LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) children.get(i);
-                    ArrayList memberList = company.searchAccountByAddress( address, searchMembers );
+                    ArrayList memberList = company.searchLoadedAccountsByAddress( address, searchMembers );
                     accountList.addAll( memberList );
                 }
             }
@@ -2871,44 +2869,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
      * If searchMembers is true, it returns a list of Pair(LiteStarsCustAccountInformation, LiteStarsEnergyCompany);
      * otherwise it returns a list of LiteStarsCustAccountInformation.
      */
-    /*public ArrayList searchAccountByLastName(String lastName, boolean searchMembers, boolean partialMatch) {
-        int[] contactIDs = ContactFuncs.retrieveContactIDsByLastName( lastName, partialMatch);
-        return searchAccountByContactIDs( contactIDs, searchMembers );
-    }*/
-    
-    /*public ArrayList searchAccountByLastName(String lastName, boolean searchMembers, boolean partialMatch) {
-        ArrayList accountList = new ArrayList();
-        if (isAccountsLoaded()) {
-            int[] contactIDs = ContactFuncs.retrieveContactIDsByLastName( lastName, partialMatch);
-            return searchAccountByContactIDs( contactIDs, searchMembers );
-            }
-        else {
-            int[] accountIDs = com.cannontech.database.db.stars.customer.CustomerAccount.searchByPrimaryContactLastName( lastName, getLiteID(), partialMatch );
-            if (accountIDs != null) {
-                for (int i = 0; i < accountIDs.length; i++) {
-                    LiteStarsCustAccountInformation liteAcctInfo = getBriefCustAccountInfo( accountIDs[i], true );
-                    if (searchMembers)
-                        accountList.add( new Pair(liteAcctInfo, this) );
-                    else
-                        accountList.add( liteAcctInfo );
-                }
-            }
-        }
-        
-        if (searchMembers) {
-            ArrayList children = getChildren();
-            synchronized (children) {
-                for (int i = 0; i < children.size(); i++) {
-                    LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) children.get(i);
-                    ArrayList memberList = company.searchAccountByLastName( lastName, searchMembers, partialMatch );
-                    accountList.addAll( memberList );
-                }
-            }
-        }
-        
-        return accountList;
-    }*/
-    
     public ArrayList searchAccountByLastName(String lastName, boolean searchMembers, boolean partialMatch) {
         ArrayList accountList = new ArrayList();
         if (isAccountsLoaded()) {
@@ -2923,27 +2883,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
                 allEnergyCompanyIDs.add(new Integer(getLiteID()) );
 
             accountList = searchByPrimaryContactLastName( lastName, partialMatch, allEnergyCompanyIDs, searchMembers);
-/*
-            HashMap ecIDToAccountIDsMap = CustomerAccount.searchByPrimaryContactLastName( lastName, partialMatch, allEnergyCompanyIDs);
-            for (int i = 0; i < allEnergyCompanyIDs.size(); i++)
-            {
-                Date timerStart = new Date();
-                Integer ecID = allEnergyCompanyIDs.get(i);
-                LiteStarsEnergyCompany liteStarsEC = StarsDatabaseCache.getInstance().getEnergyCompany(ecID.intValue());
-                ArrayList<Integer> accountIDs = (ArrayList<Integer>)ecIDToAccountIDsMap.get(ecID);
-                if( accountIDs != null)
-                {
-                    for (int j = 0; j < accountIDs.size(); j++)
-                    {
-                        LiteStarsCustAccountInformation liteAcctInfo = liteStarsEC.getBriefCustAccountInfo( accountIDs.get(j).intValue(), (j<250));
-                        if (searchMembers)
-                            accountList.add(new Pair(liteAcctInfo, liteStarsEC) );
-                        else
-                            accountList.add(liteAcctInfo);
-                    }
-                }
-                CTILogger.debug("** " + (new Date().getTime() - timerStart.getTime())*.001 + " Secs to load Accounts ("+accountIDs.size()+") for lastname: " + lastName + " EC: " + allEnergyCompanyIDs.get(i));
-            }*/
         }
         return accountList;
     }
@@ -3567,6 +3506,280 @@ public class LiteStarsEnergyCompany extends LiteBase {
         }
 
         CTILogger.debug((new Date().getTime() - timerStart.getTime())*.001 + " Secs for '" + lastName_ + "' Search (" + count + " AccountIDS loaded; EC=" + (energyCompanyIDList.size() == StarsDatabaseCache.getInstance().getAllEnergyCompanies().size()? "ALL" : energyCompanyIDList.toString()) + ")" );
+        return accountList;
+    }
+    private static ArrayList searchByStreetAddress(String address_, boolean partialMatch, ArrayList<Integer> energyCompanyIDList, boolean searchMembers) {
+        if (address_ == null || address_.length() == 0) return null;
+        if (energyCompanyIDList == null || energyCompanyIDList.size() == 0) return null;
+        
+        Date timerStart = new Date();
+        String address = address_.trim();
+        
+        String sql = "SELECT DISTINCT map.energycompanyID, acct.AccountID, " + //1-2" +
+                    " acct.AccountSiteID, acct.AccountNumber, acct.CustomerID, acct.BillingAddressID, acct.AccountNotes, " + //3-7 
+                    " acs.SiteInformationID, acs.SiteNumber, acs.StreetAddressID, acs.PropertyNotes, acs.CustAtHome, acs.CustomerStatus, " + //8-13
+                    " si.Feeder, si.Pole, si.TransformerSize, si.ServiceVoltage, si.SubstationID, " + //14-18
+                    " PrimaryContactID, CustomerTypeID, TimeZone, CustomerNumber, RateScheduleID, AltTrackNum, TemperatureUnit, " + //19-25
+                    " LocationAddress1, LocationAddress2, CityName, StateCode, ZipCode, County " + //26-31
+                    " FROM ECToAccountMapping map, " + CustomerAccount.TABLE_NAME + " acct, " + 
+                    Customer.TABLE_NAME + " cust, AccountSite acs, SiteInformation si, Address adr " +  
+                    " WHERE map.AccountID = acct.AccountID " +
+                    " AND acct.AccountSiteID = acs.AccountSiteID " +
+                    " AND acs.streetaddressID = adr.addressID " +
+                    " AND acs.SiteInformationID = si.SiteID " + 
+                    " AND acct.CustomerID = cust.CustomerID " + 
+                    " AND UPPER(adr.LocationAddress1) LIKE ? ";
+                    // Hey, if we have all the ECIDs available, don't bother adding this criteria!
+                    if( energyCompanyIDList.size() != StarsDatabaseCache.getInstance().getAllEnergyCompanies().size());
+                    {
+                        sql += " AND (map.EnergyCompanyID = " + energyCompanyIDList.get(0).toString(); 
+                        for (int i = 1; i < energyCompanyIDList.size(); i++)
+                             sql += " OR map.EnergyCompanyID = " + energyCompanyIDList.get(i).toString();
+                        sql += " ) ";
+                    }
+                    sql += " order by adr.LocationAddress1, adr.LocationAddress2, CityName, StateCode";                          
+        
+        ArrayList accountList = new ArrayList();
+        PreparedStatement pstmt = null;
+        Connection conn = null;
+        ResultSet rset = null;
+        int count = 0; 
+        try {
+            conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+            
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString( 1, address.toUpperCase()+(partialMatch? "%":""));
+            rset = pstmt.executeQuery();
+
+            CTILogger.debug((new Date().getTime() - timerStart.getTime())*.001 + " After execute" );
+  
+            LiteStarsEnergyCompany liteStarsEC = null;
+            LiteStarsCustAccountInformation liteAcctInfo = null;
+            while(rset.next())
+            {
+                Integer energyCompanyID = new Integer(rset.getInt(1));
+                liteStarsEC = StarsDatabaseCache.getInstance().getEnergyCompany(energyCompanyID.intValue());
+                
+                Integer accountID = new Integer(rset.getInt(2));
+                liteAcctInfo = (LiteStarsCustAccountInformation) liteStarsEC.getCustAccountInfoMap().get( new Integer(accountID) );
+                if (liteAcctInfo == null){
+            
+                    liteAcctInfo = new LiteStarsCustAccountInformation(accountID);                
+    
+                    LiteCustomerAccount customerAccount = new LiteCustomerAccount( accountID.intValue() );
+                    customerAccount.setAccountSiteID( rset.getInt(3));
+                    customerAccount.setAccountNumber( rset.getString(4));
+                    customerAccount.setCustomerID( rset.getInt(5) );
+                    customerAccount.setBillingAddressID( rset.getInt(6));
+                    customerAccount.setAccountNotes( rset.getString(7) );
+                    liteAcctInfo.setCustomerAccount(customerAccount);
+                    
+                    LiteAccountSite accountSite = new LiteAccountSite( customerAccount.getAccountSiteID());
+                    accountSite.setSiteInformationID( rset.getInt(8) );
+                    accountSite.setSiteNumber( rset.getString(9) );
+                    accountSite.setStreetAddressID( rset.getInt(10) );
+                    accountSite.setPropertyNotes( rset.getString(11));
+                    accountSite.setCustAtHome( rset.getString(12));
+                    accountSite.setCustStatus( rset.getString(13) );
+                    liteAcctInfo.setAccountSite(accountSite);
+    
+                    LiteSiteInformation siteInformation = new LiteSiteInformation(accountSite.getAccountSiteID() );
+                    siteInformation.setFeeder( rset.getString(14) );
+                    siteInformation.setPole( rset.getString(15));
+                    siteInformation.setTransformerSize( rset.getString(16) );
+                    siteInformation.setServiceVoltage( rset.getString(17) );
+                    siteInformation.setSubstationID( rset.getInt(18) );
+                    liteAcctInfo.setSiteInformation(siteInformation);
+                 
+                    LiteCustomer customer = new LiteCustomer(customerAccount.getCustomerID());
+                    customer.setPrimaryContactID(rset.getInt(19) );
+                    customer.setCustomerTypeID( rset.getInt(20) );
+                    customer.setTimeZone( rset.getString(21) );
+                    customer.setCustomerNumber( rset.getString(22) );
+                    customer.setRateScheduleID( rset.getInt(23) );
+                    customer.setAltTrackingNumber( rset.getString(24) );
+                    customer.setTemperatureUnit( rset.getString(25) );
+                    
+                    if(customer.getCustomerTypeID() == CustomerTypes.CUSTOMER_CI)
+                    {   //retrieve the CICustomerBase object instead.
+                        customer = new LiteCICustomer(customer.getCustomerID());
+                        customer.retrieve(CtiUtilities.getDatabaseAlias());
+                    }
+                    liteAcctInfo.setCustomer(customer);
+                                        
+                    LiteAddress liteAddress = new LiteAddress(accountSite.getStreetAddressID());
+                    liteAddress.setLocationAddress1( rset.getString(26) );
+                    liteAddress.setLocationAddress2( rset.getString(27) );
+                    liteAddress.setCityName( rset.getString(28) );
+                    liteAddress.setStateCode( rset.getString(29) );
+                    liteAddress.setZipCode( rset.getString(30) );
+                    liteAddress.setCounty( rset.getString(31) );
+                    liteStarsEC.addAddress(liteAddress);
+                    
+                    if( count < 250)//preload only the first SearchResults.jsp page contacts
+                        ContactFuncs.getContact(customer.getPrimaryContactID());
+                }                
+                if (searchMembers)
+                    accountList.add(new Pair(liteAcctInfo, liteStarsEC) );
+                else
+                    accountList.add(liteAcctInfo);
+
+                count++;
+                liteStarsEC.addBriefCustAccountInfo( liteAcctInfo);
+            }
+        }
+        catch( Exception e ){
+            CTILogger.error( "Error retrieving contacts with last name " + address_ + ": " + e.getMessage(), e );
+        }
+        finally {
+            try {
+                if (rset != null) rset.close();
+                if (pstmt != null) pstmt.close();
+                if (conn != null) conn.close();
+            }
+            catch (java.sql.SQLException e) {}
+        }
+
+        CTILogger.debug((new Date().getTime() - timerStart.getTime())*.001 + " Secs for '" + address_  + "' Search (" + count + " AccountIDS loaded; EC=" + (energyCompanyIDList.size() == StarsDatabaseCache.getInstance().getAllEnergyCompanies().size()? "ALL" : energyCompanyIDList.toString()) + ")" );
+        return accountList;
+    }
+    
+    private static ArrayList searchByAccountNumber(String accountNumber_, boolean partialMatch, ArrayList<Integer> energyCompanyIDList, boolean searchMembers) {
+        if (accountNumber_ == null || accountNumber_.length() == 0) return null;
+        if (energyCompanyIDList == null || energyCompanyIDList.size() == 0) return null;
+        
+        Date timerStart = new Date();
+        String accountNumber = accountNumber_.trim();
+        
+//        SELECT acct.AccountID FROM ECToAccountMapping map, " + TABLE_NAME + " acct "
+//        + "WHERE map.EnergyCompanyID = ? AND map.AccountID = acct.AccountID"
+//        + " AND UPPER(acct.AccountNumber) LIKE UPPER(?)" +
+        String sql = "SELECT DISTINCT map.energycompanyID, acct.AccountID, " + //1-2" +
+                    " acct.AccountSiteID, acct.AccountNumber, acct.CustomerID, acct.BillingAddressID, acct.AccountNotes, " + //3-7 
+                    " acs.SiteInformationID, acs.SiteNumber, acs.StreetAddressID, acs.PropertyNotes, acs.CustAtHome, acs.CustomerStatus, " + //8-13
+                    " si.Feeder, si.Pole, si.TransformerSize, si.ServiceVoltage, si.SubstationID, " + //14-18
+                    " PrimaryContactID, CustomerTypeID, TimeZone, CustomerNumber, RateScheduleID, AltTrackNum, TemperatureUnit, " + //19-25
+                    " LocationAddress1, LocationAddress2, CityName, StateCode, ZipCode, County " + //26-31
+                    " FROM ECToAccountMapping map, " + CustomerAccount.TABLE_NAME + " acct, " + 
+                    Customer.TABLE_NAME + " cust, AccountSite acs, SiteInformation si, Address adr " +  
+                    " WHERE map.AccountID = acct.AccountID " +
+                    " AND acct.AccountSiteID = acs.AccountSiteID " +
+                    " AND acs.streetaddressID = adr.addressID " +
+                    " AND acs.SiteInformationID = si.SiteID " + 
+                    " AND acct.CustomerID = cust.CustomerID " + 
+                    " AND UPPER(acct.AccountNumber) LIKE ? ";
+                    // Hey, if we have all the ECIDs available, don't bother adding this criteria!
+                    if( energyCompanyIDList.size() != StarsDatabaseCache.getInstance().getAllEnergyCompanies().size());
+                    {
+                        sql += " AND (map.EnergyCompanyID = " + energyCompanyIDList.get(0).toString(); 
+                        for (int i = 1; i < energyCompanyIDList.size(); i++)
+                             sql += " OR map.EnergyCompanyID = " + energyCompanyIDList.get(i).toString();
+                        sql += " ) ";
+                    }
+                    sql += " order by adr.LocationAddress1, adr.LocationAddress2, CityName, StateCode";                          
+        
+        ArrayList accountList = new ArrayList();
+        PreparedStatement pstmt = null;
+        Connection conn = null;
+        ResultSet rset = null;
+        int count = 0; 
+        try {
+            conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+            
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString( 1, accountNumber.toUpperCase()+(partialMatch? "%":""));
+            rset = pstmt.executeQuery();
+
+            CTILogger.debug((new Date().getTime() - timerStart.getTime())*.001 + " After execute" );
+  
+            LiteStarsEnergyCompany liteStarsEC = null;
+            LiteStarsCustAccountInformation liteAcctInfo = null;
+            while(rset.next())
+            {
+                Integer energyCompanyID = new Integer(rset.getInt(1));
+                liteStarsEC = StarsDatabaseCache.getInstance().getEnergyCompany(energyCompanyID.intValue());
+                
+                Integer accountID = new Integer(rset.getInt(2));
+                liteAcctInfo = (LiteStarsCustAccountInformation) liteStarsEC.getCustAccountInfoMap().get( new Integer(accountID) );
+                if (liteAcctInfo == null){
+            
+                    liteAcctInfo = new LiteStarsCustAccountInformation(accountID);                
+    
+                    LiteCustomerAccount customerAccount = new LiteCustomerAccount( accountID.intValue() );
+                    customerAccount.setAccountSiteID( rset.getInt(3));
+                    customerAccount.setAccountNumber( rset.getString(4));
+                    customerAccount.setCustomerID( rset.getInt(5) );
+                    customerAccount.setBillingAddressID( rset.getInt(6));
+                    customerAccount.setAccountNotes( rset.getString(7) );
+                    liteAcctInfo.setCustomerAccount(customerAccount);
+                    
+                    LiteAccountSite accountSite = new LiteAccountSite( customerAccount.getAccountSiteID());
+                    accountSite.setSiteInformationID( rset.getInt(8) );
+                    accountSite.setSiteNumber( rset.getString(9) );
+                    accountSite.setStreetAddressID( rset.getInt(10) );
+                    accountSite.setPropertyNotes( rset.getString(11));
+                    accountSite.setCustAtHome( rset.getString(12));
+                    accountSite.setCustStatus( rset.getString(13) );
+                    liteAcctInfo.setAccountSite(accountSite);
+    
+                    LiteSiteInformation siteInformation = new LiteSiteInformation(accountSite.getAccountSiteID() );
+                    siteInformation.setFeeder( rset.getString(14) );
+                    siteInformation.setPole( rset.getString(15));
+                    siteInformation.setTransformerSize( rset.getString(16) );
+                    siteInformation.setServiceVoltage( rset.getString(17) );
+                    siteInformation.setSubstationID( rset.getInt(18) );
+                    liteAcctInfo.setSiteInformation(siteInformation);
+                 
+                    LiteCustomer customer = new LiteCustomer(customerAccount.getCustomerID());
+                    customer.setPrimaryContactID(rset.getInt(19) );
+                    customer.setCustomerTypeID( rset.getInt(20) );
+                    customer.setTimeZone( rset.getString(21) );
+                    customer.setCustomerNumber( rset.getString(22) );
+                    customer.setRateScheduleID( rset.getInt(23) );
+                    customer.setAltTrackingNumber( rset.getString(24) );
+                    customer.setTemperatureUnit( rset.getString(25) );
+                    
+                    if(customer.getCustomerTypeID() == CustomerTypes.CUSTOMER_CI)
+                    {   //retrieve the CICustomerBase object instead.
+                        customer = new LiteCICustomer(customer.getCustomerID());
+                        customer.retrieve(CtiUtilities.getDatabaseAlias());
+                    }
+                    liteAcctInfo.setCustomer(customer);
+                                        
+                    LiteAddress address = new LiteAddress(accountSite.getStreetAddressID());
+                    address.setLocationAddress1( rset.getString(26) );
+                    address.setLocationAddress2( rset.getString(27) );
+                    address.setCityName( rset.getString(28) );
+                    address.setStateCode( rset.getString(29) );
+                    address.setZipCode( rset.getString(30) );
+                    address.setCounty( rset.getString(31) );
+                    liteStarsEC.addAddress(address);
+                    
+                    if( count < 250)//preload only the first SearchResults.jsp page contacts
+                        ContactFuncs.getContact(customer.getPrimaryContactID());
+                }                
+                if (searchMembers)
+                    accountList.add(new Pair(liteAcctInfo, liteStarsEC) );
+                else
+                    accountList.add(liteAcctInfo);
+
+                count++;
+                liteStarsEC.addBriefCustAccountInfo( liteAcctInfo);
+            }
+        }
+        catch( Exception e ){
+            CTILogger.error( "Error retrieving contacts with last name " + accountNumber_ + ": " + e.getMessage(), e );
+        }
+        finally {
+            try {
+                if (rset != null) rset.close();
+                if (pstmt != null) pstmt.close();
+                if (conn != null) conn.close();
+            }
+            catch (java.sql.SQLException e) {}
+        }
+
+        CTILogger.debug((new Date().getTime() - timerStart.getTime())*.001 + " Secs for '" + accountNumber_  + "' Search (" + count + " AccountIDS loaded; EC=" + (energyCompanyIDList.size() == StarsDatabaseCache.getInstance().getAllEnergyCompanies().size()? "ALL" : energyCompanyIDList.toString()) + ")" );
         return accountList;
     }
 }
