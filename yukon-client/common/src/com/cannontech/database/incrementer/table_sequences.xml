@@ -29,5 +29,8 @@
       <sequence name="inventoryid">
         <table name="InventoryBase" identitycolumn="INVENTORYID" initsequence="true"/>
       </sequence>
+      <sequence name="eventid">
+        <table name="EventBase" identitycolumn="EVENTID" initsequence="true"/>
+      </sequence>
   </sequencetable>
 </sequencetables>
