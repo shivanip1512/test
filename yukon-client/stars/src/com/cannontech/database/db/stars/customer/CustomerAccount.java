@@ -824,16 +824,26 @@ public class CustomerAccount extends DBPersistent {
     /*
      * For use in inventory filtering
      */
-    public static HashMap<Integer, Integer> getAccountIDsNonCommercial() 
+    public static HashMap<Integer, Integer> getAccountIDsNonCommercial(int ecID) 
     {
         HashMap<Integer, Integer> accounts = new HashMap<Integer, Integer>();
         
         Date timerStart = new Date();
         
-        String sql = "SELECT AccountID FROM " + TABLE_NAME + ", " + Customer.TABLE_NAME +
-        " WHERE " + CustomerAccount.TABLE_NAME + ".CustomerID = " + Customer.TABLE_NAME +
-        ".CustomerID AND " + Customer.TABLE_NAME + ".CustomerTypeID = " + CustomerTypes.CUSTOMER_RESIDENTIAL;
-
+        String sql;
+        if(ecID > -1)
+        {
+            sql = "SELECT ecAc.AccountID FROM " + TABLE_NAME + " ca, " + Customer.TABLE_NAME + "cust, ECToAccountMapping ecAc" +
+            " WHERE ecAc.AccountID = ca.AccountID AND ecAc.EnergyCompanyID = ? AND " + CustomerAccount.TABLE_NAME + ".CustomerID = " + Customer.TABLE_NAME +
+            ".CustomerID AND " + Customer.TABLE_NAME + ".CustomerTypeID = " + CustomerTypes.CUSTOMER_RESIDENTIAL;
+        }
+        else
+        {
+            sql = "SELECT AccountID FROM " + TABLE_NAME + ", " + Customer.TABLE_NAME +
+            " WHERE " + CustomerAccount.TABLE_NAME + ".CustomerID = " + Customer.TABLE_NAME +
+            ".CustomerID AND " + Customer.TABLE_NAME + ".CustomerTypeID = " + CustomerTypes.CUSTOMER_RESIDENTIAL;
+        }
+       
         PreparedStatement pstmt = null;
         Connection conn = null;
         ResultSet rset = null;
@@ -843,6 +853,7 @@ public class CustomerAccount extends DBPersistent {
             conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
             
             pstmt = conn.prepareStatement(sql);
+            pstmt.setInt( 1, ecID);
             rset = pstmt.executeQuery();
 
             CTILogger.debug((new Date().getTime() - timerStart.getTime())*.001 + " After accountIDFromCICustomerType execute" );

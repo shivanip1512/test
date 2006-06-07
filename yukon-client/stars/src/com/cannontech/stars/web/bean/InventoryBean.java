@@ -501,7 +501,7 @@ public class InventoryBean {
                     {
                         if( specificFilterID.intValue() == -1)  // RESIDENTIAL CUSTOMER
                         {
-                            accounts = CustomerAccount.getAccountIDsNonCommercial();
+                            accounts = CustomerAccount.getAccountIDsNonCommercial(member);
                         }
                         else
                         {   //Some type of CICustomer Type
