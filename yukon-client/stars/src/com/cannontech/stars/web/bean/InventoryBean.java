@@ -29,6 +29,7 @@ import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.util.InventoryManagerUtil;
 import com.cannontech.stars.xml.serialize.StreetAddress;
 import com.cannontech.stars.util.FilterWrapper;
+import com.cannontech.web.navigation.CtiNavObject;
 
 /**
  * @author yao
@@ -434,6 +435,8 @@ public class InventoryBean {
                 hardwares = filteredHardware;
             }
             
+            setPage(1);
+            
             /*
              * Do the meatier filters now, after the total number of hardware has become a little bit more reasonable
              */
@@ -565,9 +568,12 @@ public class InventoryBean {
 		inventoryList = null;
 	}
 	
-	public String getHTML(HttpServletRequest req) {
+	public String getHTML(HttpServletRequest req) 
+    {
 		StarsYukonUser user = (StarsYukonUser) req.getSession().getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-		
+        String previousPage = ((CtiNavObject) req.getSession().getAttribute(ServletUtils.NAVIGATE)).getPreviousPage();        
+        setDifferentOrigin(previousPage.lastIndexOf("Inventory.jsp") < 0);
+        
 		boolean showEnergyCompany = false;
         if((getHtmlStyle() == HTML_STYLE_FILTERED_INVENTORY_SUMMARY) && AuthFuncs.checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS )
                 && (getEnergyCompany().getChildren().size() > 0))
@@ -1230,6 +1236,8 @@ public class InventoryBean {
 
     public boolean getViewResults()
     {
+        if(isDifferentOrigin() && isOverHardwareDisplayLimit())
+            return false;
         return viewResults;
     }
     
@@ -1256,7 +1264,6 @@ public class InventoryBean {
         {
             return null;
         }
-        
     }
 
     public boolean isShipmentCheck() 
@@ -1277,12 +1284,11 @@ public class InventoryBean {
     
     public boolean isDifferentOrigin() 
     {
-        setViewResults(!isOverHardwareDisplayLimit());
         return differentOrigin;
     }
 
     public void setDifferentOrigin(boolean truth) 
     {
-        this.differentOrigin = differentOrigin;
+        this.differentOrigin = truth;
     }
 }
