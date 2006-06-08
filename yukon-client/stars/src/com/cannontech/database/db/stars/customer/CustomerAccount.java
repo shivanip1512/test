@@ -864,7 +864,6 @@ public class CustomerAccount extends DBPersistent {
                 Integer newID = new Integer(rset.getInt(1));
                 accounts.put(newID, newID);
                 count++;
-                System.out.println(count);
             }
         }
         catch( Exception e )
