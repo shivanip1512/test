@@ -1,5 +1,5 @@
 #include "yukon.h"
-                                         
+
 #include <time.h>
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/tss.hpp>
@@ -66,7 +66,7 @@ CtiTime::CtiTime(specialvalues sv) :
     else if(sv == CtiTime::pos_infin)
     {
         _seconds = std::numeric_limits<ctitime_t>::max();
-    }   
+    }
 }
 
 
@@ -92,13 +92,13 @@ CtiTime::CtiTime(CtiDate& d, unsigned hour, unsigned minute, unsigned second) :
 /*
 * CAUTION takes an unsigned long, but it casts it as an int.
 */
-CtiTime::CtiTime(unsigned long s)  
+CtiTime::CtiTime(unsigned long s)
 {
     //assert( s < YUKONEOT);
-	if ((int)s == -1)
-		_seconds = 0;
-	else
-		_seconds = s;
+    if ((int)s == -1)
+        _seconds = 0;
+    else
+        _seconds = s;
 }
 
 CtiTime::CtiTime(struct tm* ctm) :
@@ -116,23 +116,23 @@ CtiTime::CtiTime(const CtiTime& ct) :
 {}
 
 
-CtiTime& CtiTime::operator = (const CtiTime& ct) 
+CtiTime& CtiTime::operator = (const CtiTime& ct)
 {
     _seconds = ct._seconds;
     return *this;
 }
 
-CtiTime& CtiTime::addSeconds(const int secs) 
+CtiTime& CtiTime::addSeconds(const int secs)
 {
     if( !is_special() ){
         //boost::mutex::scoped_lock scoped_lock(_secs_mutex);
         _seconds += secs;
-    } 
-    return *this;                                 
+    }
+    return *this;
 }
 
 
-CtiTime& CtiTime::addMinutes(const int mins) 
+CtiTime& CtiTime::addMinutes(const int mins)
 {
     return addSeconds(mins*60);
 }
@@ -148,7 +148,7 @@ CtiTime CtiTime::addDays(const int days, bool DSTflag)
 
         CtiTime DSTtest = *this;
         DSTtest.addSeconds(days*24*60*60);
-    
+
         if ( DSTtest.isDST() == isDST() )
             return addSeconds(days*24*60*60);
         if ( isDST() ) {
@@ -159,16 +159,16 @@ CtiTime CtiTime::addDays(const int days, bool DSTflag)
     }else{
         return addSeconds(days*24*60*60);
     }
-       
+
 }
 
 
-CtiTime& CtiTime::operator += (const int secs) 
+CtiTime& CtiTime::operator += (const int secs)
 {
     return addSeconds(secs);
 }
 
-CtiTime& CtiTime::operator -= (const int secs) 
+CtiTime& CtiTime::operator -= (const int secs)
 {
     return addSeconds(-1*secs);
 }
@@ -307,9 +307,9 @@ bool CtiTime::isDST() const
 
 // tm is for local
 void CtiTime::extract(struct tm* ctm) const
-{   
+{
     boost::mutex::scoped_lock scoped_lock(ctime_mutex);
-    *ctm = *localtime(&_seconds);                     
+    *ctm = *localtime(&_seconds);
 }
 
 
@@ -322,13 +322,20 @@ string CtiTime::asString()  const
     } else if(is_pos_infinity()){
         return string("pos-infinity");
     }
-    boost::mutex::scoped_lock scoped_lock(ctime_mutex);
-    string s(ctime(&_seconds));
-    s = s.substr(0, s.length() - 1);
+    {
+        boost::mutex::scoped_lock scoped_lock(ctime_mutex);
+        string s(ctime(&_seconds));
+    }
+    s = s.substr(0, s.length() - 1);        // Remove \n
+
+#if 0
     std::stringstream ss;
-    ss.imbue(std::locale::classic()); 
+    ss.imbue(std::locale::classic());
     ss << s;
-    return ss.str(); 
+    return ss.str();
+#else
+    return s;
+#endif
 }
 
 struct tm* CtiTime::gmtime_r(const time_t *tod){
@@ -346,7 +353,7 @@ struct tm* CtiTime::localtime_r(const time_t *tod){
 
 
 CtiTime CtiTime::now()
-{  
+{
     return CtiTime();
 }
 
@@ -406,7 +413,7 @@ bool operator != (const CtiTime& d1, const CtiTime& d2)
 
 /*
 CtiTime operator + (const CtiTime& t, const int s)
-{   
+{
     CtiTime _t(t);
     _t.addSeconds(s);
     return _t;
@@ -419,7 +426,7 @@ CtiTime operator - (const CtiTime& t, const int s)
     return _t;
 } */
 CtiTime operator + (const CtiTime& t, const unsigned long s)
-{   
+{
     CtiTime _t(t);
     _t.addSeconds(s);
     return _t;
