@@ -155,6 +155,11 @@ public void setPointID(int pointID) {
 	public List getImageNames() {
 		List imageNames = new ArrayList(6);
 		LitePoint point = getPoint();
+        if(point == null) {
+            imageNames.add(Util.DEFAULT_IMAGE_NAME);
+            return imageNames;
+        }
+        
 		LiteStateGroup lsg = StateFuncs.getLiteStateGroup(point.getStateGroupID());
 		List states = lsg.getStatesList();
 		for(int i = 0; i < states.size(); i++) {
