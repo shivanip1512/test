@@ -13,6 +13,7 @@ public interface IvrRole {
 
 
 	public static final int NUMBER_OF_CHANNELS = NotificationsRoleDefs.NOTIFICATIONS_PROPERTYID_BASE - 1;
+	public static final int INTRO_TEXT = NotificationsRoleDefs.NOTIFICATIONS_PROPERTYID_BASE - 2;
 
 
 }
