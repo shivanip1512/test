@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.148 $
-* DATE         :  $Date: 2006/06/03 18:41:53 $
+* REVISION     :  $Revision: 1.149 $
+* DATE         :  $Date: 2006/06/09 15:01:55 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2648,11 +2648,13 @@ INT CtiVanGogh::postMOAUploadToConnection(CtiVanGoghConnectionManager &VGCM, int
 
             QueryPerformanceCounter(&completeTime);
 
+            #if 0
             if(PERF_TO_MS(completeTime, startTime, perfFrequency))
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " FULL BOAT MOA " << PERF_TO_MS(completeTime, startTime, perfFrequency) << endl;
             }
+            #endif
         }
         catch(...)
         {
@@ -2800,11 +2802,13 @@ INT CtiVanGogh::postMOAUploadToConnection(CtiVanGoghConnectionManager &VGCM, int
 
         QueryPerformanceCounter(&completeTime);
 
+        #if 0
         if(PERF_TO_MS(completeTime, startTime, perfFrequency))
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " NORMAL MOA " << PERF_TO_MS(completeTime, startTime, perfFrequency) << endl;
         }
+        #endif
     }
 
     return status;
@@ -4010,10 +4014,10 @@ INT CtiVanGogh::checkForNumericAlarms(CtiPointDataMsg *pData, CtiMultiWrapper &a
 INT CtiVanGogh::sendMail(const CtiSignalMsg &sig, const CtiTableNotificationGroup &grp)
 {
     INT status = NORMAL;
-    vector<int> group_ids;    
+    vector<int> group_ids;
 
     group_ids.push_back(grp.getGroupID());
-    
+
     CtiNotifAlarmMsg* alarm_msg = new CtiNotifAlarmMsg( group_ids,
                                                         sig.getSignalCategory(),
                                                         sig.getId(),
