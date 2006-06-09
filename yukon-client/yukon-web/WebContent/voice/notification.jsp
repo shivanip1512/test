@@ -1,6 +1,7 @@
 <%@page import="com.cannontech.util.ServletUtil" %>
 <%@page import="com.cannontech.yukon.conns.NotifRequestException" %>
 <%@page import="com.cannontech.servlet.ConnServlet" %>
+<%@ page import="com.cannontech.clientutils.CTILogger" %>
 <%
 //String username = ServletUtil.getYukonUser(session).getUsername();
 String token = (String)session.getAttribute("TOKEN");
@@ -18,6 +19,7 @@ try {
 catch( NotifRequestException nre )
 {
 	//we either timed-out here or no message was returned for the given token
+    CTILogger.error("Unable to output voice message for " + token, nre);
 }
 
 
