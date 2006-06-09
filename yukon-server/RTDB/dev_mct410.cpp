@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.67 $
-* DATE         :  $Date: 2006/06/09 18:17:48 $
+* REVISION     :  $Revision: 1.68 $
+* DATE         :  $Date: 2006/06/09 20:03:27 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1500,6 +1500,8 @@ INT CtiDeviceMCT410::executePutConfig( CtiRequestMsg              *pReq,
             int holiday_count = 0;
 
             int holiday_offset = parse.getiValue("holiday_offset");
+
+            OutMessage->Sequence = Cti::Protocol::Emetcon::PutConfig_Holiday;
 
             //  grab up to three potential dates
             for( int i = 0; i < 3 && parse.isKeyValid("holiday_date" + CtiNumStr(i)); i++ )
