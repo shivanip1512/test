@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.85 $
-* DATE         :  $Date: 2006/06/09 18:18:19 $
+* REVISION     :  $Revision: 1.86 $
+* DATE         :  $Date: 2006/06/09 20:04:52 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3355,6 +3355,7 @@ INT CtiDeviceMCT::decodeGetConfig(INMESS *InMessage, CtiTime &TimeNow, list< Cti
             case Emetcon::GetConfig_Holiday:
             {
                 unsigned long seconds;
+                CtiTime holiday;
                 string result;
 
                 result  = getName() + " / Holiday schedule:\n";
@@ -3364,23 +3365,26 @@ INT CtiDeviceMCT::decodeGetConfig(INMESS *InMessage, CtiTime &TimeNow, list< Cti
                           DSt->Message[2] << 8  |
                           DSt->Message[3];
 
-                result += "Holiday 1: " + CtiDate(CtiTime(seconds)).asString() + "\n";
+                holiday = CtiTime(seconds + rwEpoch);
+                result += "Holiday 1: " + (holiday.isValid()?holiday.asString():"(invalid)") + "\n";
 
                 seconds = DSt->Message[4] << 24 |
                           DSt->Message[5] << 16 |
                           DSt->Message[6] << 8  |
                           DSt->Message[7];
 
-                result += "Holiday 2: " + CtiDate(CtiTime(seconds)).asString() + "\n";
+                holiday = CtiTime(seconds + rwEpoch);
+                result += "Holiday 2: " + (holiday.isValid()?holiday.asString():"(invalid)") + "\n";
 
                 seconds = DSt->Message[8]  << 24 |
                           DSt->Message[9]  << 16 |
                           DSt->Message[10] << 8  |
                           DSt->Message[11];
 
-                result += "Holiday 3: " + CtiDate(CtiTime(seconds)).asString() + "\n";
+                holiday = CtiTime(seconds + rwEpoch);
+                result += "Holiday 3: " + (holiday.isValid()?holiday.asString():"(invalid)") + "\n";
 
-                ReturnMsg->setResultString( resultStr );
+                ReturnMsg->setResultString( result );
 
                 break;
             }
