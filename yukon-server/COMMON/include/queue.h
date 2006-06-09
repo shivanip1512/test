@@ -68,7 +68,11 @@ public:
                 }
                 catch(...)
                 {
-                    cerr << "Exception: " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** Exception **** " << __FILE__ << " (" << __LINE__ << ") q.size() " << _sortedCol.size() << endl;
+                    }
+                    _sortedCol.clear();     // Dump the queue?
                 }
 
                 // mutex automatically released in LockGuard destructor
@@ -76,7 +80,7 @@ public:
         }
         catch(...)
         {
-            cerr << "Exception: " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            {   CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << __FILE__ << " (" << __LINE__ << ")" << endl; }
         }
     }
 
@@ -98,7 +102,7 @@ public:
         }
         catch(...)
         {
-            cerr << "Exception: " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            {   CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << __FILE__ << " (" << __LINE__ << ")" << endl; }
         }
 
         return pval;
@@ -136,7 +140,7 @@ public:
         }
         catch(...)
         {
-            cerr << "Exception: " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            {   CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << __FILE__ << " (" << __LINE__ << ")" << endl; }
         }
         return pval;
     }
@@ -167,7 +171,7 @@ public:
         }
         catch(...)
         {
-            cerr << "Exception: " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            {   CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << __FILE__ << " (" << __LINE__ << ")" << endl; }
         }
 
         return putWasDone;
@@ -282,7 +286,7 @@ public:
         }
         catch(...)
         {
-            cerr << "Exception: " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            {   CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << __FILE__ << " (" << __LINE__ << ")" << endl; }
         }
     }
 
@@ -303,7 +307,7 @@ public:
         }
         catch(...)
         {
-            cerr << "Exception: " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            {   CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << __FILE__ << " (" << __LINE__ << ")" << endl; }
         }
 
         return pval;
@@ -343,7 +347,7 @@ public:
         }
         catch(...)
         {
-            cerr << "Exception: " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            {   CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << __FILE__ << " (" << __LINE__ << ")" << endl; }
         }
         return pval;
     }
@@ -366,7 +370,7 @@ public:
         }
         catch(...)
         {
-            cerr << "Exception: " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            {   CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << __FILE__ << " (" << __LINE__ << ")" << endl; }
         }
 
         return putWasDone;
