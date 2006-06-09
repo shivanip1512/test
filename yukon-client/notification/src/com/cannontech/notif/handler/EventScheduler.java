@@ -34,16 +34,14 @@ public abstract class EventScheduler {
         // startup and check every five minutes after that
         double extraPeriod = Math.random() * 2;
         int period = (int) ((4 + extraPeriod) * 60 * 1000);
-        int extraDealy = (int) (Math.random() * 30);
-        int delay = (30 + extraDealy) * 1000;
+        int extraDelay = (int) (Math.random() * 30);
+        int delay = (30 + extraDelay) * 1000;
         timer.schedule(new DoScheduledTask(), delay, period);
     }
 
     protected void doScheduledNotifs() {
         List<? extends EventNotif> notifsPending;
         synchronized (this) {
-            //TODO we might want to look for any notifs in the pending state 
-            // and set them to some error state
             notifsPending = getScheduledNotifs();
         
             for (EventNotif notif : notifsPending) {
@@ -54,7 +52,7 @@ public abstract class EventScheduler {
                     LiteCICustomer liteCICustomer = CustomerFuncs.getLiteCICustomer(customerId);
                     ContactableCustomer cc = new ContactableCustomer(liteCICustomer);
                     Contactable contactable = new SingleNotifContactable(cc, notif.getNotifType());
-    
+                    
                     NotificationBuilder builder = createBuilder(notif);
                     _helper.handleNotification(builder, contactable);
                 } catch (Exception e) {
