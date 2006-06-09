@@ -1227,7 +1227,7 @@ void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
     boost::regex    re_address("address (group|uniq)");
     boost::regex    re_lp_channel(" lp channel " + str_num);
     boost::regex    re_centron("centron (ratio|parameters)");
-    boost::regex    re_tou("tou schedule [0-9]");
+    boost::regex    re_tou_schedule("tou schedule [0-9]");
 
     char *p;
 
@@ -1250,10 +1250,14 @@ void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
         {
             _cmd["tou"] = CtiParseValue( "TRUE" );
 
-            if(!(token = CmdStr.match(re_tou)).empty())
+            if(!(token = CmdStr.match(re_tou_schedule)).empty())
             {
                 _cmd["tou_schedule"] = CtiParseValue(atoi(token.data() + 13));
             }
+        }
+        if(CmdStr.contains(" holiday"))
+        {
+            _cmd["holiday"] = CtiParseValue(true);
         }
         if(CmdStr.contains(" address"))
         {

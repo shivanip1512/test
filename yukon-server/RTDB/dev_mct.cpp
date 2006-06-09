@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.84 $
-* DATE         :  $Date: 2006/05/22 20:22:04 $
+* REVISION     :  $Revision: 1.85 $
+* DATE         :  $Date: 2006/06/09 18:18:19 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2229,6 +2229,12 @@ INT CtiDeviceMCT::executeGetConfig(CtiRequestMsg                  *pReq,
             found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
         }
     }
+    //  needs to be moved to the 4xx base class when the inheritance gets reworked
+    else if(parse.isKeyValid("holiday"))
+    {
+        function = Emetcon::GetConfig_Holiday;
+        found    = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+    }
     //  get raw memory locations
     else if(parse.isKeyValid("rawloc"))
     {
@@ -3345,6 +3351,39 @@ INT CtiDeviceMCT::decodeGetConfig(INMESS *InMessage, CtiTime &TimeNow, list< Cti
 
         switch( InMessage->Sequence )
         {
+            //  needs to be moved to the 4xx base class when the inheritance gets reworked
+            case Emetcon::GetConfig_Holiday:
+            {
+                unsigned long seconds;
+                string result;
+
+                result  = getName() + " / Holiday schedule:\n";
+
+                seconds = DSt->Message[0] << 24 |
+                          DSt->Message[1] << 16 |
+                          DSt->Message[2] << 8  |
+                          DSt->Message[3];
+
+                result += "Holiday 1: " + CtiDate(CtiTime(seconds)).asString() + "\n";
+
+                seconds = DSt->Message[4] << 24 |
+                          DSt->Message[5] << 16 |
+                          DSt->Message[6] << 8  |
+                          DSt->Message[7];
+
+                result += "Holiday 2: " + CtiDate(CtiTime(seconds)).asString() + "\n";
+
+                seconds = DSt->Message[8]  << 24 |
+                          DSt->Message[9]  << 16 |
+                          DSt->Message[10] << 8  |
+                          DSt->Message[11];
+
+                result += "Holiday 3: " + CtiDate(CtiTime(seconds)).asString() + "\n";
+
+                ReturnMsg->setResultString( resultStr );
+
+                break;
+            }
             case Emetcon::GetConfig_GroupAddress:
             {
                 long gold, silver, bronze, lead_load, lead_meter;
