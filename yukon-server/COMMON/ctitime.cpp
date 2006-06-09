@@ -322,10 +322,9 @@ string CtiTime::asString()  const
     } else if(is_pos_infinity()){
         return string("pos-infinity");
     }
-    {
-        boost::mutex::scoped_lock scoped_lock(ctime_mutex);
-        string s(ctime(&_seconds));
-    }
+
+    boost::mutex::scoped_lock scoped_lock(ctime_mutex);
+    string s(ctime(&_seconds));
     s = s.substr(0, s.length() - 1);        // Remove \n
 
 #if 0
