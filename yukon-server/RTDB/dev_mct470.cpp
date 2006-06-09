@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.46 $
-* DATE         :  $Date: 2006/06/06 20:36:50 $
+* REVISION     :  $Revision: 1.47 $
+* DATE         :  $Date: 2006/06/09 18:17:48 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -281,6 +281,11 @@ CtiDeviceMCT470::DLCCommandSet CtiDeviceMCT470::initCommandStore( )
 
     cs._cmd     = Emetcon::PutConfig_Holiday;  //  used for both "putconfig install" and "putconfig holiday" commands
     cs._io      = Emetcon::IO_Write;
+    cs._funcLen = make_pair((int)MCT470_Memory_Holiday1Pos, (int)(MCT470_Memory_Holiday1Len + MCT470_Memory_Holiday2Len + MCT470_Memory_Holiday3Len));
+    s.insert(cs);
+
+    cs._cmd     = Emetcon::GetConfig_Holiday;
+    cs._io      = Emetcon::IO_Read;
     cs._funcLen = make_pair((int)MCT470_Memory_Holiday1Pos, (int)(MCT470_Memory_Holiday1Len + MCT470_Memory_Holiday2Len + MCT470_Memory_Holiday3Len));
     s.insert(cs);
 

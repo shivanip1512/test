@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_emetcon.h-arc  $
-* REVISION     :  $Revision: 1.31 $
-* DATE         :  $Date: 2006/05/23 16:09:20 $
+* REVISION     :  $Revision: 1.32 $
+* DATE         :  $Date: 2006/06/09 18:17:19 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -186,6 +186,7 @@ public:
         GetConfig_GroupAddress,
         GetConfig_Disconnect,
         GetConfig_TOU,
+        GetConfig_Holiday,
         GetConfig_CentronParameters,  //  not ideal - hopefully we can manage the InMessage->Sequence better for very specialized
                                       //    commands like this one, i don't like this being a big mess of non-general commands
 
