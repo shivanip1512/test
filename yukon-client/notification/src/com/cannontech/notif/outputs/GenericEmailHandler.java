@@ -22,6 +22,7 @@ public abstract class GenericEmailHandler extends OutputHandler {
             Contactable contact) {
         boolean success = false;
         try {
+            CTILogger.debug("Using " + notifFormatter + " for " + contact);
             List emailList = contact.getNotifications(getTypeChecker());
             if (emailList.size() == 0) {
                 CTILogger.warn("Unable to " + getNotificationMethod() + " notification for " + contact 
@@ -30,6 +31,7 @@ public abstract class GenericEmailHandler extends OutputHandler {
             }
 
             Notification notif = notifFormatter.buildNotification(contact);
+            CTILogger.debug("Built " + notif + " with builder and contact");
 
             NotificationTransformer transformer = 
                 new NotificationTransformer(contact.getEnergyCompany(), getType());
@@ -37,6 +39,12 @@ public abstract class GenericEmailHandler extends OutputHandler {
 
             String emailSubject = outXml.getChildTextNormalize("subject");
             String emailBody = outXml.getChildText("body");
+            
+            if (emailBody == null || emailSubject == null) {
+                CTILogger.warn("Unable to " + getNotificationMethod() + " notification for " + contact 
+                               + ", XML output did not contain subject and body.");
+                return;
+            }
 
             SimpleEmailMessage emailMsg = new SimpleEmailMessage();
             emailMsg.setSubject(emailSubject);
@@ -45,14 +53,14 @@ public abstract class GenericEmailHandler extends OutputHandler {
             for (Iterator iter = emailList.iterator(); iter.hasNext();) {
                 LiteContactNotification emailNotif = (LiteContactNotification) iter.next();
                 String emailTo = emailNotif.getNotification();
-                // Send the recipient of the email message and attempt to send.
+                // Set the recipient of the email message and attempt to send.
                 // The try/catch here prevents a single bad address from
-                // preventing
-                // other addresses in the contact from being used.
+                // preventing other addresses in the contact from being tried.
                 try {
                     emailMsg.setRecipient(emailTo);
                     emailMsg.send();
                     success = true;
+                    CTILogger.debug("Sent \"" + emailSubject + "\" to " + emailTo);
                 } catch (MessagingException e) {
                     CTILogger.warn("Unable to " + getNotificationMethod() + " notification for " + contact 
                                    + " to address " + emailTo + ".",
