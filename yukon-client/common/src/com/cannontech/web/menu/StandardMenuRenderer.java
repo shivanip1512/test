@@ -66,6 +66,9 @@ public class StandardMenuRenderer implements MenuRenderer {
         Div menuDiv = new Div();
         menuDiv.setPrettyPrint(true);
         menuDiv.setID("Menu");
+        String menuBody = "var ctiMenu = new CtiMenu('subMenu');";
+        menuDiv.addElement(new Script().setType("text/javascript")
+                           .setLanguage("").addElement(menuBody));
         
         Div topDiv = new Div();
         topDiv.setPrettyPrint(true);
@@ -85,10 +88,6 @@ public class StandardMenuRenderer implements MenuRenderer {
             middleDiv.setID("subMenu");
             middleDiv.addElement(buildSubMenus());
             menuDiv.addElement(middleDiv);
-            String menuBody = "Event.observe(window, 'load', function()" +
-                    "{ctiMenu = new CtiMenu('subMenu');}, false);";
-            menuDiv.addElement(new Script().setType("text/javascript")
-                               .setLanguage("").addElement(menuBody));
         }
         
         Div bottomDiv = new Div();
