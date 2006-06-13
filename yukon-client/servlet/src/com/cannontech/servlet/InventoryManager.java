@@ -2374,11 +2374,13 @@ public class InventoryManager extends HttpServlet {
                 currentInvoice.setPurchasePlanID(pBean.getCurrentPlan().getPurchaseID());
                 Transaction.createTransaction(Transaction.INSERT, currentInvoice).execute();
                 session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "New invoice added to this purchase plan.");
+                redirect = req.getContextPath() + "/operator/Hardware/Invoice.jsp";
             }
             else
             {
                 Transaction.createTransaction(Transaction.UPDATE, currentInvoice).execute();
                 session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Invoice successfully updated in the database.");
+                redirect = req.getContextPath() + "/operator/Hardware/PurchaseTrack.jsp";
             }
             
             /**
@@ -2446,7 +2448,5 @@ public class InventoryManager extends HttpServlet {
             session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, null);
             session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Invoice could not be saved to the database.  Transaction failed.");
         }
-        
-        redirect = req.getContextPath() + "/operator/Hardware/Invoice.jsp";
     }
 }
