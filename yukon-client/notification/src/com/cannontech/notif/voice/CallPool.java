@@ -3,6 +3,8 @@ package com.cannontech.notif.voice;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.cache.functions.*;
@@ -14,8 +16,6 @@ import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.roles.yukon.VoiceServerRole;
 import com.cannontech.util.MBeanUtil;
 
-import edu.emory.mathcs.backport.java.util.concurrent.*;
-import edu.emory.mathcs.backport.java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * This pool manages the current calls. It is created
@@ -29,10 +29,10 @@ public class CallPool implements PropertyChangeListener, CallPoolMBean {
 
     private static final int MAX_SHUTDOWN_WAIT = 120; // in seconds
     final protected ThreadPoolExecutor _threadPool;
-    final protected Map _pendingCalls;
+    final protected Map<String, Call> _pendingCalls;
     final Timer _timer = new Timer();
     private Dialer _dialer;
-    final private Map _timerTasks;
+    final private Map<Call, TimerTask> _timerTasks;
     private static AtomicInteger _callThreadId = new AtomicInteger(1);
     private final int _callTimeoutSeconds;
     private boolean _shutdown = false;
@@ -51,8 +51,8 @@ public class CallPool implements PropertyChangeListener, CallPoolMBean {
         _callTimeoutSeconds = Integer.parseInt(RoleFuncs.getGlobalPropertyValue(VoiceServerRole.CALL_RESPONSE_TIMEOUT));
         int numberOfChannels = Integer.parseInt(AuthFuncs.getRolePropertyValueEx(user, IvrRole.NUMBER_OF_CHANNELS));
 
-        _timerTasks = new ConcurrentHashMap(30, .75f, numberOfChannels + 1);
-        _pendingCalls = new ConcurrentHashMap(30, .75f, numberOfChannels + 1);
+        _timerTasks = new ConcurrentHashMap<Call, TimerTask>(30, .75f, numberOfChannels + 1);
+        _pendingCalls = new ConcurrentHashMap<String, Call>(30, .75f, numberOfChannels + 1);
         
         final ThreadGroup threadGroup = new ThreadGroup("Threads for " + dialer);
         ThreadFactory threadFactory = new ThreadFactory() {
@@ -63,9 +63,9 @@ public class CallPool implements PropertyChangeListener, CallPoolMBean {
         };
         _threadPool = new ThreadPoolExecutor(numberOfChannels,
                                              numberOfChannels,
-                                             5,
-                                             TimeUnit.MINUTES,
-                                             new LinkedBlockingQueue(),
+                                             5 * 60,
+                                             TimeUnit.SECONDS,
+                                             new LinkedBlockingQueue<Runnable>(),
                                              threadFactory);
         
         // register self as MBean
@@ -117,7 +117,7 @@ public class CallPool implements PropertyChangeListener, CallPoolMBean {
                 _timerTasks.put(call, task);
                 _timer.schedule(task, _callTimeoutSeconds * 1000);
             } else if (oldState instanceof Connecting) {
-                TimerTask task = (TimerTask) _timerTasks.get(call);
+                TimerTask task = _timerTasks.get(call);
                 task.cancel();
                 _timerTasks.remove(call);
             }
@@ -158,8 +158,8 @@ public class CallPool implements PropertyChangeListener, CallPoolMBean {
         _timer.cancel();
         
         // transition all pending calls to the Unconfirmed state
-        for (Iterator iter = _pendingCalls.values().iterator(); iter.hasNext();) {
-            Call pendingCall = (Call) iter.next();
+        for (Iterator<Call> iter = _pendingCalls.values().iterator(); iter.hasNext();) {
+            Call pendingCall = iter.next();
             pendingCall.removePropertyChangeListener(this);
             pendingCall.changeState(new Unconfirmed("Server shutdown"));
         }

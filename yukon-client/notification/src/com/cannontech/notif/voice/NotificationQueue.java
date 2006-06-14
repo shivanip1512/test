@@ -15,7 +15,7 @@ import com.cannontech.notif.outputs.UnknownCustomerException;
  */
 public class NotificationQueue implements NotificationQueueMBean {
     private boolean _shutdown = false;
-    private Map _poolMap = new TreeMap();
+    private Map<LiteEnergyCompany, CallPool> _poolMap = new TreeMap<LiteEnergyCompany, CallPool>();
     private int _notificationsProcessed = 0;
     
     public NotificationQueue() {
@@ -63,15 +63,15 @@ public class NotificationQueue implements NotificationQueueMBean {
     
     public synchronized void shutdown() {
         _shutdown = true;
-        for (Iterator iter = _poolMap.values().iterator(); iter.hasNext();) {
-            CallPool pool = (CallPool) iter.next();
+        for (Iterator<CallPool> iter = _poolMap.values().iterator(); iter.hasNext();) {
+            CallPool pool = iter.next();
             pool.shutdown();
         }
     }
     
     private synchronized CallPool getCallPool(LiteEnergyCompany energyCompany) throws UnknownRolePropertyException {
         if (_poolMap.containsKey(energyCompany)) {
-            return (CallPool) _poolMap.get(energyCompany);
+            return _poolMap.get(energyCompany);
         } else {
             CallPool newPool = new CallPool(energyCompany);
             _poolMap.put(energyCompany, newPool);
@@ -80,8 +80,8 @@ public class NotificationQueue implements NotificationQueueMBean {
     }
     
     public synchronized Call getCall(String token) throws UnknownCallTokenException {
-        for (Iterator iter = _poolMap.values().iterator(); iter.hasNext();) {
-            CallPool pool = (CallPool) iter.next();
+        for (Iterator<CallPool> iter = _poolMap.values().iterator(); iter.hasNext();) {
+            CallPool pool = iter.next();
             Call call = pool.getCall(token);
             if (call != null) {
                 return call;
@@ -92,8 +92,8 @@ public class NotificationQueue implements NotificationQueueMBean {
     
     public int getActiveCalls() {
         int result = 0;
-        for (Iterator iter = _poolMap.values().iterator(); iter.hasNext();) {
-            CallPool pool = (CallPool) iter.next();
+        for (Iterator<CallPool> iter = _poolMap.values().iterator(); iter.hasNext();) {
+            CallPool pool = iter.next();
             result += pool.getNumberPendingCalls();
         }
         return result;

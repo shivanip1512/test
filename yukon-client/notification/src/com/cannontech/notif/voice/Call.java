@@ -3,12 +3,12 @@ package com.cannontech.notif.voice;
 import java.beans.PropertyChangeListener;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.concurrent.PropertyChangeMulticaster;
 import com.cannontech.notif.voice.callstates.*;
 
-import edu.emory.mathcs.backport.java.util.concurrent.atomic.AtomicInteger;
 
 /**
  *  
@@ -21,7 +21,7 @@ public class Call {
     static private AtomicInteger nextToken = new AtomicInteger(0);
     final String _token;
     public static final String CALL_STATE = "state";
-    private TreeMap _parameterMap;
+    private TreeMap<String, String> _parameterMap;
     private final ContactPhone _contactPhone;
 
     /**
@@ -37,9 +37,9 @@ public class Call {
         _message = message;
         _token = "CALL-" + nextToken.incrementAndGet();
 
-        _parameterMap = new TreeMap();
+        _parameterMap = new TreeMap<String, String>();
         _parameterMap.put("TOKEN", _token);
-        _parameterMap.put("CONTACTID", new Integer(getContactId()));
+        _parameterMap.put("CONTACTID", Integer.toString(getContactId()));
     }
 
     /**
@@ -114,7 +114,7 @@ public class Call {
         return _contactPhone.getContactId();
     }
     
-    public Map getCallParameters() {
+    public Map<String, String> getCallParameters() {
         return _parameterMap;
     }
     
