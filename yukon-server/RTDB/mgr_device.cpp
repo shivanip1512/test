@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.82 $
-* DATE         :  $Date: 2006/05/02 20:25:44 $
+* REVISION     :  $Revision: 1.83 $
+* DATE         :  $Date: 2006/06/14 15:16:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1140,7 +1140,9 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
                         }
                         CtiDeviceDLCBase().getSQL( db, keyTable, selector );
 
-                        selector.where( (rwdbUpper(keyTable["type"]) == RWDBExpr("REPEATER 800") ||
+                        selector.where( (rwdbUpper(keyTable["type"]) == RWDBExpr("REPEATER 921") ||
+                                         rwdbUpper(keyTable["type"]) == RWDBExpr("REPEATER 801") ||
+                                         rwdbUpper(keyTable["type"]) == RWDBExpr("REPEATER 800") ||
                                          rwdbUpper(keyTable["type"]) == RWDBExpr("REPEATER")) && selector.where() );   // Need to attach a few conditions!
                         if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
 
