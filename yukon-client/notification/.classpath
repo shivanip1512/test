@@ -13,11 +13,6 @@
 			<attribute value="http://jdom.org/docs/apidocs/" name="javadoc_location"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry sourcepath="/third-party/backport-util-concurrent/src" kind="lib" path="/third-party/backport-util-concurrent/backport-util-concurrent.jar">
-		<attributes>
-			<attribute value="http://www.mathcs.emory.edu/dcl/util/backport-util-concurrent/doc/api/" name="javadoc_location"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="lib" path="/third-party/mx4j.jar"/>
 	<classpathentry kind="lib" path="/third-party/log4j-1.2.4.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/commercialcurtailment"/>
