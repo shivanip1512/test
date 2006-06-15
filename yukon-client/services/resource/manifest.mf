@@ -10,6 +10,7 @@ Class-Path: ./
  cbc.jar 
  vvr_tools.jar 
  calchist.jar 
+ mx4j.jar 
  mx4j-jmx.jar 
  mx4j-tools.jar 
  mx4j-impl.jar 
