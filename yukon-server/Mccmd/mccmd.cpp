@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.54 $
-* DATE         :  $Date: 2006/04/24 20:47:29 $
+* REVISION     :  $Revision: 1.55 $
+* DATE         :  $Date: 2006/06/15 17:52:50 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -166,16 +166,17 @@ void DumpReturnMessage(CtiReturnMsg& msg)
     out += msg.ResultString();
 
     CtiMultiMsg_vec rw_set = msg.PointData();
-    //RWOrderedIterator iter(rw_set);
     CtiMultiMsg_vec::iterator iter = rw_set.begin();
     CtiPointDataMsg* p_data;
 
     while( iter != rw_set.end() )
     {
-        p_data = (CtiPointDataMsg*)*iter;
-        out += "\r\n  ";
-        out += p_data->getString();
-
+	if((*iter)->isA() == MSG_POINTDATA)
+	{
+	    p_data = (CtiPointDataMsg*)*iter;
+	    out += "\r\n  ";
+	    out += p_data->getString();
+	}
         iter++;
     }
 
