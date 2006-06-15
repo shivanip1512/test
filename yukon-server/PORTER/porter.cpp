@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.95 $
-* DATE         :  $Date: 2006/05/31 22:08:22 $
+* REVISION     :  $Revision: 1.96 $
+* DATE         :  $Date: 2006/06/15 15:11:59 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1526,6 +1526,13 @@ INT RefreshPorterRTDB(void *ptr)
                 lastAutoRole = lastAutoRole.now();      // Update our static variable.
 
                 DeviceManager.apply(applyRepeaterAutoRole,NULL);
+
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " Downloading routes to all CCU-711s on repeater route change" << endl;
+                }
+
+                PortManager.apply( applyLoadAllRoutes, NULL );
             }
             catch(...)
             {
