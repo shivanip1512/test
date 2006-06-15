@@ -28,7 +28,10 @@
     <f:facet name="header">
       <t:outputText value="Current Load"/>
     </f:facet>
-    <t:outputText value="#{sCustomerSelectionBean.load}"/>
+    <t:outputText value="#{sCustomerSelectionBean.load}">
+      <f:convertNumber 
+        groupingUsed="true" maxFractionDigits="0"/>
+    </t:outputText>
   </t:column>
   <t:column>
     <t:outputText value="#{thisCustomer.reasonForExclusion}" 
