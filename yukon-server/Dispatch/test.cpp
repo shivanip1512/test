@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/test.cpp-arc  $
-* REVISION     :  $Revision: 1.45 $
-* DATE         :  $Date: 2006/05/22 18:44:13 $
+* REVISION     :  $Revision: 1.46 $
+* DATE         :  $Date: 2006/06/15 20:42:20 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2034,80 +2034,93 @@ void pointReqExecute(int argc, char **argv)
             return;
         }
 
-        CtiConnection  Connect(VANGOGHNEXUS, argv[2]);
-        CtiMultiMsg   *pM  = CTIDBG_new CtiMultiMsg;
 
-        pM->setMessagePriority(15);
+        int lp = 1;
 
-        Connect.WriteConnQue(CTIDBG_new CtiRegistrationMsg("pointReqExecute", rwThreadId(), FALSE));
-        CtiPointRegistrationMsg    *PtRegMsg = CTIDBG_new CtiPointRegistrationMsg(REG_ALL_PTS_MASK);
-        PtRegMsg->setMessagePriority(15);
-        Connect.WriteConnQue( PtRegMsg );
-
+        if(argc >= 4)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Reading inbound messages from registration" << endl;
+            lp = atoi(argv[3]);
         }
 
-        while( NULL != (pMsg = Connect.ReadConnQue(10000)))
+
+        for(int i = 0; i < lp; i++)
         {
+            CtiConnection  Connect(VANGOGHNEXUS, argv[2]);
+            CtiMultiMsg   *pM  = CTIDBG_new CtiMultiMsg;
+
+            pM->setMessagePriority(15);
+
+            Connect.WriteConnQue(CTIDBG_new CtiRegistrationMsg("pointReqExecute_"+CtiNumStr(rwThreadId()), rwThreadId(), FALSE));
+            CtiPointRegistrationMsg    *PtRegMsg = CTIDBG_new CtiPointRegistrationMsg(REG_ALL_PTS_MASK);
+            PtRegMsg->setMessagePriority(15);
+            Connect.WriteConnQue( PtRegMsg );
+
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Inbound message Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                pMsg->dump();
+                dout << CtiTime() << " Reading inbound messages from registration" << endl;
             }
 
-            delete pMsg;
-        }
+            while( NULL != (pMsg = Connect.ReadConnQue(5000)))
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Inbound message Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    pMsg->dump();
+                }
 
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Done reading registration messages" << endl;
-        }
+                delete pMsg;
+                pMsg = 0;
+            }
 
-
-        //
-        // ACH
-        //
-
-        CtiCommandMsg *pCmd = CTIDBG_new CtiCommandMsg(CtiCommandMsg::PointDataRequest, 15);
-
-        // Ask for the first ten points.
-        pCmd->insert(1);
-        pCmd->insert(2);
-        pCmd->insert(3);
-        pCmd->insert(4);
-        pCmd->insert(5);
-        pCmd->insert(6);
-        pCmd->insert(7);
-        pCmd->insert(8);
-        pCmd->insert(9);
-        pCmd->insert(10);
-
-        Connect.WriteConnQue( pCmd );
-        pCmd = 0;
-
-
-        while( NULL != (pMsg = Connect.ReadConnQue(2500)))
-        {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Inbound message Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                pMsg->dump();
+                dout << CtiTime() << " Done reading registration messages" << endl;
             }
 
-            delete pMsg;
-        }
 
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Request application shutdown." << endl;
-        }
+            //
+            // ACH
+            //
 
-        Sleep(1000);
-        Connect.WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 15));
-        Connect.ShutdownConnection();
-        Sleep(2500);
+            CtiCommandMsg *pCmd = CTIDBG_new CtiCommandMsg(CtiCommandMsg::PointDataRequest, 15);
+
+            // Ask for the first ten points.
+            pCmd->insert(1);
+            pCmd->insert(2);
+            pCmd->insert(3);
+            pCmd->insert(4);
+            pCmd->insert(5);
+            pCmd->insert(6);
+            pCmd->insert(7);
+            pCmd->insert(8);
+            pCmd->insert(9);
+            pCmd->insert(10);
+
+            Connect.WriteConnQue( pCmd );
+            pCmd = 0;
+
+
+            while( NULL != (pMsg = Connect.ReadConnQue(1500)))
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Inbound message Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    pMsg->dump();
+                }
+
+                delete pMsg;
+                pMsg = 0;
+            }
+
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Request application shutdown." << endl;
+            }
+
+            Connect.WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 15));
+            Sleep(2500);
+            Connect.ShutdownConnection();
+        }
     }
     catch(...)
     {
