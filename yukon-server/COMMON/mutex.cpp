@@ -15,14 +15,10 @@
 
 using namespace std;
 
-CtiMutex::CtiMutex()
+CtiMutex::CtiMutex() :
+hMutex(INVALID_HANDLE_VALUE)
 {
-#ifdef _WINDOWS
-    hMutex = CreateMutex( NULL, FALSE, NULL );
-#ifdef _DEBUG
-    _threadID = 0;
-#endif
-#endif
+    reset();
 }
 
 CtiMutex::~CtiMutex()
@@ -42,7 +38,10 @@ bool CtiMutex::acquire()
 #ifdef _WINDOWS
     DWORD result = WaitForSingleObject( hMutex, INFINITE );
 #ifdef _DEBUG
-    _threadID = GetCurrentThreadId();
+    for(int i = 2; i > 0; i--)
+        _threadID[i] = _threadID[i-1];
+
+    _threadID[0] = GetCurrentThreadId();
 #endif
     return( result == WAIT_OBJECT_0 );
 #endif
@@ -58,12 +57,17 @@ bool CtiMutex::acquire()
 bool CtiMutex::acquire(unsigned long millis)
 {
 #ifdef _WINDOWS
-	DWORD result = WaitForSingleObject( hMutex, millis );
+    DWORD result = WaitForSingleObject( hMutex, millis );
     //assert(result != WAIT_FAILED);   // Why??? CGP 021502
 
 #ifdef _DEBUG
     if(result == WAIT_OBJECT_0)
-        _threadID = GetCurrentThreadId();
+    {
+        for(int i = 2; i > 0; i--)
+            _threadID[i] = _threadID[i-1];
+
+        _threadID[0] = GetCurrentThreadId();
+    }
 #endif
     return( result == WAIT_OBJECT_0 );
 #endif
@@ -77,10 +81,11 @@ bool CtiMutex::acquire(unsigned long millis)
 void CtiMutex::release()
 {
 #ifdef _WINDOWS
-    ReleaseMutex( hMutex );
-	 
+    BOOL retres = ReleaseMutex( hMutex );
+
 #ifdef _DEBUG
-    _threadID = 0;
+    if(!retres)
+        _threadID[0] = 0;
 #endif
 #endif
 }
@@ -88,6 +93,19 @@ void CtiMutex::release()
 #ifdef _DEBUG
 DWORD CtiMutex::lastAcquiredByTID() const
 {
-    return _threadID;
+    return _threadID[0];
 }
 #endif
+
+void CtiMutex::reset()
+{
+#ifdef _WINDOWS
+    if(hMutex != INVALID_HANDLE_VALUE) CloseHandle( hMutex );
+    hMutex = INVALID_HANDLE_VALUE;
+    hMutex = CreateMutex( NULL, FALSE, NULL );
+#ifdef _DEBUG
+    for(int i = 0; i < 3; i++) _threadID[i] = 0;
+#endif
+#endif
+}
+

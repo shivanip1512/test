@@ -30,6 +30,8 @@ public:
     bool acquire();
     bool acquire(unsigned long millis);
     void release();
+    void reset();
+
 
 #ifdef _DEBUG
     DWORD lastAcquiredByTID() const;
@@ -40,7 +42,7 @@ private:
 #ifdef _WINDOWS
     HANDLE hMutex;
 #ifdef _DEBUG
-    DWORD  _threadID;
+    DWORD  _threadID[3];
 #endif
 #endif
 };
