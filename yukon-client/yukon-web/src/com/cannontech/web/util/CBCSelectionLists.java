@@ -70,7 +70,7 @@ public class CBCSelectionLists {
         new SelectItem(new Integer(PAOGroups.CBC_7024), PAOGroups.getPAOTypeString(PAOGroups.CBC_7024) )
     };
     
-    private static final SelectItem[] wizardCBCTypes =  {
+	private static final SelectItem[] wizardCBCTypes =  {
 		//value, label
 		new SelectItem(new Integer(PAOGroups.CBC_EXPRESSCOM), PAOGroups.getPAOTypeString(PAOGroups.CBC_EXPRESSCOM) ),
 		new SelectItem(new Integer(PAOGroups.CAPBANKCONTROLLER), PAOGroups.getPAOTypeString(PAOGroups.CAPBANKCONTROLLER) ),
@@ -187,8 +187,9 @@ public class CBCSelectionLists {
 	private static final SelectItem[] ptArchiveType =  {
 		new SelectItem(PointTypes.ARCHIVE_NONE, PointTypes.ARCHIVE_NONE),
 		new SelectItem(PointTypes.ARCHIVE_ON_CHANGE, PointTypes.ARCHIVE_ON_CHANGE),
-		new SelectItem(PointTypes.ARCHIVE_ON_TIME, PointTypes.ARCHIVE_ON_TIME),
-		new SelectItem(PointTypes.ARCHIVE_ON_UPDATE, PointTypes.ARCHIVE_ON_UPDATE)
+		new SelectItem(PointTypes.ARCHIVE_ON_TIMER, PointTypes.ARCHIVE_ON_TIMER),
+		new SelectItem(PointTypes.ARCHIVE_ON_UPDATE, PointTypes.ARCHIVE_ON_UPDATE),
+		new SelectItem(PointTypes.ARCHIVE_ON_TIMER_OR_UPDATE, "On Timer Or Update")
 	};
 
 	private static final SelectItem[] ptUpdateType =  {
@@ -422,13 +423,5 @@ public class CBCSelectionLists {
     public SelectItem[] getPointSubtypes() {
         return pSubtypes;
     }
-
-	public  SelectItem[] getTypeList701X() {
-		return typeList701X;
-	}
-
-	public  SelectItem[] getTypeList702X() {
-		return typeList702X;
-	}
 
 }

@@ -120,8 +120,9 @@ public final class PointTypes implements IPointOffsets, TypeBase
 	//point archive types
 	public static final String ARCHIVE_NONE = "None";
 	public static final String ARCHIVE_ON_CHANGE = "On Change";
-	public static final String ARCHIVE_ON_TIME = "On Time";
+	public static final String ARCHIVE_ON_TIMER = "On Timer";  // added the 'r' to match db editor
 	public static final String ARCHIVE_ON_UPDATE = "On Update";
+	public static final String ARCHIVE_ON_TIMER_OR_UPDATE = "timer|update"; // UI calls this "On Timer Or Update"
 
 	//point update types
 	public static final String UPDATE_FIRST_CHANGE = "On First Change";

@@ -501,7 +501,7 @@ public class PointForm extends DBEditorForm
 		if( ev == null || ev.getNewValue() == null ) return;
 
 		String newVal = ev.getNewValue().toString();
-		isArchiveInterEnabled =  newVal.equalsIgnoreCase("On Timer");
+		isArchiveInterEnabled =  newVal.equalsIgnoreCase(PointTypes.ARCHIVE_ON_TIMER);
 	}	
 
 	/**
