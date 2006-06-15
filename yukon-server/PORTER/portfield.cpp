@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.186 $
-* DATE         :  $Date: 2006/05/12 15:35:38 $
+* REVISION     :  $Revision: 1.187 $
+* DATE         :  $Date: 2006/06/15 14:44:06 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1468,6 +1468,8 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                 }
                                 ansi.decode( trx, status );
 
+                                processCommResult(status, OutMessage->DeviceID, OutMessage->TargetID, OutMessage->Retry > 0, Device);
+
                                 // Prepare for tracing
                                 if( trx.doTrace( status ))
                                 {
@@ -1556,6 +1558,8 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                 }
                                 ansi.decode( trx, status );
 
+                                processCommResult(status, OutMessage->DeviceID, OutMessage->TargetID, OutMessage->Retry > 0, Device);
+
                                 // Prepare for tracing
                                 if( trx.doTrace( status ))
                                 {
@@ -1643,6 +1647,8 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                             error = transdata.decode( trx, status );
 
+                            processCommResult(status, OutMessage->DeviceID, OutMessage->TargetID, OutMessage->Retry > 0, Device);
+
                             if( trx.doTrace( status ))
                             {
                                 Port->traceXfer( trx, traceList, Device, status );
@@ -1728,7 +1734,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         {
                             Port->setTAP( TRUE );
 
-                            CtiDeviceIED        *IED = (CtiDeviceIED*)Device.get();
+                            CtiDeviceIED *IED = (CtiDeviceIED*)Device.get();
 
                             IED->setLogOnNeeded(FALSE);
                             IED->setInitialState(0);
@@ -1840,6 +1846,8 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                             IED->allocateDataBins(OutMessage);
                             status = InitializeHandshake (Port,Device, traceList);
+
+                            processCommResult(status,OutMessage->DeviceID,OutMessage->TargetID,OutMessage->Retry > 0, Device);
 
                             if(!status)
                             {
@@ -2958,7 +2966,7 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
     struct timeb   TimeB;
     REMOTEPERF     RemotePerf;
 
-    if( InMessage && OutMessage)
+    if( InMessage && OutMessage )
     {
         InMessage->EventCode = (USHORT)CommResult;
 
@@ -3511,6 +3519,8 @@ INT PerformRequestedCmd ( CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, INMESS *aI
             {
                 status = ReturnLoadProfileData ( aPortRecord, dev, aInMessage, aOutMessage, traceList);
             }
+
+            processCommResult(status, aOutMessage->DeviceID, aOutMessage->TargetID, aOutMessage->Retry > 0, dev);
 
             if(status != NORMAL)
             {
