@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVER/server_b.cpp-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2005/12/20 17:20:57 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2006/06/15 20:41:56 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,12 +18,12 @@
 #include "msg_cmd.h"
 #include "numstr.h"
 #include "logger.h"
-#include "utility.h" 
+#include "utility.h"
 
 using namespace std;
 
 
-DLLEXPORT bool isQuestionable(const CtiConnectionManager *ptr, void *narg)
+DLLEXPORT bool isQuestionable(CtiServer::ptr_type &ptr, void* narg)
 {
     bool bstatus = false;
 
@@ -43,19 +43,19 @@ void  CtiServer::shutdown()
     if(Listener) delete Listener;
     Listener = NULL;
 
-    mConnectionTable.clearAndDestroy(); // The destructor of the List entries will close the In/OutThreads
+    mConnectionTable.getMap().clear();
     MainQueue_.clearAndDestroy();
 }
 
-void  CtiServer::clientConnect(CtiConnectionManager *CM)
+void  CtiServer::clientConnect(CtiServer::ptr_type CM)
 {
     CtiServerExclusion server_guard(_server_exclusion);
-    mConnectionTable.insert(CM);
+    mConnectionTable.insert((long)CM.get(), CM);
 }
 
-void CtiServer::clientShutdown(CtiConnectionManager *&CM)
+void CtiServer::clientShutdown(CtiServer::ptr_type CM)
 {
-    if(CM != NULL)
+    if(CM)
     {
         CtiServerExclusion server_guard(_server_exclusion);      // Get a lock on it.
 
@@ -66,26 +66,24 @@ void CtiServer::clientShutdown(CtiConnectionManager *&CM)
             dout << CtiTime() << " Client Shutdown " << CM->getClientName() << " / " << CM->getClientAppId() << " / " << CM->getPeer() << endl;
         }
 
-        mConnectionTable.remove(CM);        // Get it out of the list, if it is in there.
+        mConnectionTable.remove((long)CM.get());  // Get it out of the list, if it is in there.
 
         // This connection manager is abandoned now...
-        delete CM;
-        CM = 0;
+        // delete CM;       // Smart Pointer is no longer held here.  It will destruct on last release.
     }
 }
 
 
-int  CtiServer::clientRegistration(CtiConnectionManager *CM)
+int  CtiServer::clientRegistration(CtiServer::ptr_type CM)
 {
     int         nRet = NoError;
     CtiTime      NowTime;
     RWBoolean   validEntry(TRUE);
     RWBoolean   removeMgr(FALSE);
     RWBoolean   questionedEntry(FALSE);
-    CtiConnectionManager *Mgr;
+    ptr_type Mgr;
 
     CtiServerExclusion server_guard(_server_exclusion);
-    RWTPtrHashMultiSetIterator< CtiConnectionManager, vg_hash, equal_to<CtiConnectionManager> >  iter(mConnectionTable);
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -97,8 +95,12 @@ int  CtiServer::clientRegistration(CtiConnectionManager *CM)
      *  if not, we will not allow this guy to have any operations though us.
      */
 
-    for(;(Mgr = (CtiConnectionManager *)iter());)
+    spiterator itr;
+
+    for(itr = mConnectionTable.getMap().begin(); itr != mConnectionTable.getMap().end(); itr++)
     {
+        Mgr = itr->second;
+
         if((Mgr != CM))      // Not me loser.
         {
             if(Mgr->getClientName() == CM->getClientName())
@@ -176,17 +178,17 @@ int  CtiServer::clientRegistration(CtiConnectionManager *CM)
         CM->WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::Shutdown, 15));  // Ask the CTIDBG_new guy to blow off..
 
         {
-            if(mConnectionTable.remove (CM))
+            if(mConnectionTable.remove((long)CM.get()))
             {
                 // This connection manager is abandoned now...
-                delete CM;
+                // delete CM;   // destructor occurs if no references remain.
             }
         }
     }
 
-    if(removeMgr && Mgr != NULL)
+    if(removeMgr && Mgr)
     {
-        if(mConnectionTable.remove(Mgr))
+        if(mConnectionTable.remove((long)Mgr.get()))
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -194,7 +196,7 @@ int  CtiServer::clientRegistration(CtiConnectionManager *CM)
             }
 
             // This connection manager is abandoned now...
-            delete Mgr;
+            // delete Mgr; // delete occurs if no references remain.
         }
     }
 
@@ -209,7 +211,8 @@ int  CtiServer::commandMsgHandler(CtiCommandMsg *Cmd)
 {
     int status = NORMAL;
 
-    CtiConnectionManager *pConn = (CtiConnectionManager *)Cmd->getConnectionHandle();
+    // CtiConnectionManager *pConn = (CtiConnectionManager *)Cmd->getConnectionHandle();
+    ptr_type pConn = mConnectionTable.find((long)Cmd->getConnectionHandle());
 
     if(pConn)
     {
@@ -327,19 +330,20 @@ int  CtiServer::commandMsgHandler(CtiCommandMsg *Cmd)
  * The client CM has just responded that he's the man and the other guy
  * which made him become questionable should be blown away,.. find him.
  *----------------------------------------------------------------------------*/
-int  CtiServer::clientArbitrationWinner(CtiConnectionManager *CM)
+int  CtiServer::clientArbitrationWinner(CtiServer::ptr_type CM)
 {
     int status = NORMAL;
-    CtiConnectionManager *Mgr;
+    ptr_type Mgr;
 
     CtiServerExclusion server_guard(_server_exclusion);      // Get a lock on it.
 
     // Now that it is locked, get an iterator
-    RWTPtrHashMultiSetIterator< CtiConnectionManager, vg_hash, equal_to<CtiConnectionManager> >  iter(mConnectionTable);
+    spiterator itr;
 
-
-    for(;(Mgr = (CtiConnectionManager *)iter());)
+    for(itr = mConnectionTable.getMap().begin(); itr != mConnectionTable.getMap().end(); itr++)
     {
+        Mgr = itr->second;
+
         if((Mgr != CM)                                     &&      // Don't match on yourself
            (Mgr->getClientName() == CM->getClientName())   &&
            (Mgr->getClientRegistered() == RWBoolean(FALSE)))
@@ -352,9 +356,10 @@ int  CtiServer::clientArbitrationWinner(CtiConnectionManager *CM)
 
             Mgr->WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::Shutdown, 15));  // Ask the CTIDBG_new guy to blow off..
 
-            if(mConnectionTable.remove(Mgr))
+            if(mConnectionTable.remove((long)Mgr.get()))
             {
-                delete Mgr; // This connection manager is abandoned now...
+                // delete Mgr; // This connection manager is abandoned now...
+                // deleted on last reference release.
             }
 
             break;
@@ -371,22 +376,20 @@ int  CtiServer::clientArbitrationWinner(CtiConnectionManager *CM)
 int  CtiServer::clientConfrontEveryone(PULONG pClientCount)
 {
     int status = NORMAL;
-    CtiConnectionManager *Mgr;
+    ptr_type Mgr;
 
     CtiTime      Now;
 
     CtiServerExclusion server_guard(_server_exclusion);      // Get a lock on it.
+    if(pClientCount != NULL) *pClientCount = 0;
 
     // Now that it is locked, get an iterator
-    RWTPtrHashMultiSetIterator< CtiConnectionManager, vg_hash, equal_to<CtiConnectionManager> >  iter(mConnectionTable);
+    spiterator itr;
 
-    if(pClientCount != NULL)
+    for(itr = mConnectionTable.getMap().begin(); itr != mConnectionTable.getMap().end(); itr++)
     {
-        *pClientCount = 0;
-    }
+        Mgr = itr->second;
 
-    for(;(Mgr = (CtiConnectionManager *)iter());)
-    {
         if( (Now.seconds() - Mgr->getLastReceiptTime().seconds()) > Mgr->getClientExpirationDelay() )
         {
             Mgr->setClientQuestionable(TRUE);
@@ -419,17 +422,17 @@ int  CtiServer::clientConfrontEveryone(PULONG pClientCount)
 int  CtiServer::clientPurgeQuestionables(PULONG pDeadClients)
 {
     int status = NORMAL;
-    CtiConnectionManager *Mgr;
+    ptr_type Mgr;
 
     CtiServerExclusion server_guard(_server_exclusion);      // Get a lock on it.
 
     if(pDeadClients != NULL) *pDeadClients = 0;
 
-    while( (Mgr = (CtiConnectionManager *)mConnectionTable.remove(isQuestionable, NULL)) != NULL)
+    while( (Mgr = mConnectionTable.remove(isQuestionable, NULL)) )
     {
         if(pDeadClients != NULL) (*pDeadClients)++;
 
-        delete Mgr; // This connection manager is abandoned now...
+        // delete Mgr; // This connection manager is abandoned now...
     }
 
     return status;
@@ -469,5 +472,10 @@ RWWaitStatus CtiServer::join(unsigned long milliseconds)
 string CtiServer::getMyServerName() const
 {
     return string("Server Base");
+}
+
+CtiServer::ptr_type CtiServer::findConnectionManager( long cid )
+{
+    return mConnectionTable.find(cid);
 }
 

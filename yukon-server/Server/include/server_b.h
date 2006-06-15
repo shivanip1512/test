@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVER/INCLUDE/server_b.h-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2006/01/05 19:30:11 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2006/06/15 20:41:56 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -30,32 +30,30 @@ using std::equal_to;
 #include <rw/toolpro/socket.h>
 #include <rw/toolpro/neterr.h>
 #include <rw\rwerr.h>
-#include <rw\tphasht.h>
 
 #include "con_mgr.h"
 #include "cmdopts.h"
 #include "critical_Section.h"
 #include "mutex.h"
 #include "queue.h"
+#include "smartmap.h"
 #include "dlldefs.h"
 
 class CtiCommandMsg;
 
 IM_EX_CTISVR bool isQuestionable(const CtiConnectionManager *ptr, void *narg);
 
-struct vg_hash
-{
-   unsigned long operator()(const CtiConnectionManager& x) const { return x.hash(x); }
-};
-
-
 #define USE_CTIMUTEX TRUE
 
 class IM_EX_CTISVR CtiServer
 {
 public:
-   typedef RWTPtrHashMultiSetIterator< CtiConnectionManager, vg_hash, equal_to<CtiConnectionManager> >      iterator;
-   typedef RWTPtrHashMultiSet< CtiConnectionManager, vg_hash, equal_to<CtiConnectionManager> >::value_type  val_pair;
+
+    typedef CtiSmartMap< CtiConnectionManager >                 coll_type;              // This is the collection type!
+    typedef CtiSmartMap< CtiConnectionManager >::ptr_type       ptr_type;
+    typedef CtiSmartMap< CtiConnectionManager >::spiterator     spiterator;
+    typedef CtiSmartMap< CtiConnectionManager >::insert_pair    insert_pair;
+
 
    #ifdef USE_CTIMUTEX
    typedef CtiLockGuard< CtiMutex > CtiServerExclusion;
@@ -82,7 +80,7 @@ protected:
    /*
     *  Data Stores.
     */
-   RWTPtrHashMultiSet< CtiConnectionManager, vg_hash, equal_to<CtiConnectionManager> > mConnectionTable;
+   CtiSmartMap< CtiConnectionManager > mConnectionTable;
 
    CtiConnection::Que_t          MainQueue_;    // Main queue (Message is the base class) Priority queue)
 
@@ -100,11 +98,11 @@ public:
    virtual void join();
 
    virtual RWWaitStatus join(unsigned long milliseconds);
-   virtual void  clientConnect(CtiConnectionManager *CM);
-   virtual void  clientShutdown(CtiConnectionManager *&CM);
-   virtual int   clientRegistration(CtiConnectionManager *CM);
+   virtual void  clientConnect(CtiServer::ptr_type CM);
+   virtual void  clientShutdown(CtiServer::ptr_type CM);
+   virtual int   clientRegistration(CtiServer::ptr_type CM);
    virtual int   commandMsgHandler(CtiCommandMsg *Cmd);
-   virtual int   clientArbitrationWinner(CtiConnectionManager *CM);
+   virtual int   clientArbitrationWinner(CtiServer::ptr_type CM);
    virtual int   clientConfrontEveryone(PULONG pClientCount = NULL);
    virtual int   clientPurgeQuestionables(PULONG pDeadClients = NULL);
 
@@ -112,6 +110,7 @@ public:
 
    virtual void  shutdown();
 
+   ptr_type findConnectionManager( long cid );
 };
 
 

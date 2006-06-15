@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.149 $
-* DATE         :  $Date: 2006/06/09 15:01:55 $
+* REVISION     :  $Revision: 1.150 $
+* DATE         :  $Date: 2006/06/15 20:41:55 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -227,7 +227,7 @@ void ApplyBlankDeletedConnection(CtiMessage*&Msg, void *Conn);
 /*
  *  This function can be used to pull out connectinos which have become bachy over time.
  */
-bool NonViableConnection(const CtiConnectionManager *CM, void* d)
+bool NonViableConnection(CtiServer::ptr_type &CM, void* d)
 {
     return !CM->isViable();
 }
@@ -591,7 +591,7 @@ void CtiVanGogh::VGMainThread()
             }
 
             QueryPerformanceCounter(&loopDoneTime);
-            if(PERF_TO_MS(loopDoneTime, getQTime, perfFrequency) > 1050)
+            if(PERF_TO_MS(loopDoneTime, getQTime, perfFrequency) > 5000)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " Main loop duration: " << PERF_TO_MS(loopDoneTime, getQTime, perfFrequency) << " ms.  MainQueue_ has " << MainQueue_.entries() << endl;
@@ -694,9 +694,10 @@ void CtiVanGogh::VGConnectionHandlerThread()
 
                 XChg                                = CTIDBG_new CtiExchange(sock);
                 CtiVanGoghConnectionManager *ConMan = CTIDBG_new CtiVanGoghConnectionManager(XChg, &MainQueue_);
+                CtiServer::ptr_type sptrConMan(ConMan);
 
-                clientConnect( ConMan );
-                ConMan->ThreadInitiate();     // Kick off the connection's communication threads.
+                clientConnect( sptrConMan );
+                sptrConMan->ThreadInitiate();     // Kick off the connection's communication threads.
 
                 if(gDispatchDebugLevel & DISPATCH_DEBUG_CONNECTIONS)
                 {
@@ -746,10 +747,12 @@ void CtiVanGogh::VGConnectionHandlerThread()
     return;
 }
 
-int CtiVanGogh::registration(CtiVanGoghConnectionManager *CM, const CtiPointRegistrationMsg &aReg)
+int CtiVanGogh::registration(CtiServer::ptr_type pCM, const CtiPointRegistrationMsg &aReg)
 {
     int nRet = NoError;
     CtiTime     NowTime;
+
+    CtiVanGoghConnectionManager *CM = (CtiVanGoghConnectionManager*)pCM.get();
 
     if(gDispatchDebugLevel & DISPATCH_DEBUG_CONNECTIONS)
     {
@@ -832,12 +835,12 @@ int CtiVanGogh::registration(CtiVanGoghConnectionManager *CM, const CtiPointRegi
         }
 
         validateConnections();        // Make sure nobody has disappeared on us since the last registration
-        PointMgr.InsertConnectionManager(CM, aReg, gDispatchDebugLevel & DISPATCH_DEBUG_REGISTRATION);
+        PointMgr.InsertConnectionManager(pCM, aReg, gDispatchDebugLevel & DISPATCH_DEBUG_REGISTRATION);
 
 
         if(!(aReg.getFlags() & (REG_NO_UPLOAD | REG_ADD_POINTS | REG_REMOVE_POINTS)))
         {
-            postMOAUploadToConnection(*CM, aReg.getFlags());
+            postMOAUploadToConnection(pCM, aReg.getFlags());
         }
     }
     catch(...)
@@ -1284,10 +1287,10 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                     }
                 }
 
-                CtiConnectionManager *CM = ((CtiConnectionManager*)Cmd->getConnectionHandle());
+                CtiServer::ptr_type sptrCM = mConnectionTable.find((long)Cmd->getConnectionHandle());
 
-                if(CM && pMulti && pMulti->getCount())
-                    CM->WriteConnQue(pMulti);
+                if(sptrCM && pMulti && pMulti->getCount())
+                    sptrCM->WriteConnQue(pMulti);
                 else delete
                     pMulti;
 
@@ -1312,7 +1315,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
     return status;
 }
 
-void CtiVanGogh::clientShutdown(CtiConnectionManager *&CM)
+void CtiVanGogh::clientShutdown(CtiServer::ptr_type CM)
 {
     CtiServerExclusion guard(_server_exclusion);
 
@@ -1324,7 +1327,7 @@ void CtiVanGogh::clientShutdown(CtiConnectionManager *&CM)
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** INFO **** " << __FILE__ << " (" << __LINE__ << ") Marking mainQueue entries to _not_ respond to this connection as a client." << endl;
         }
-        MainQueue_.apply(ApplyBlankDeletedConnection, (void*)CM);
+        MainQueue_.apply(ApplyBlankDeletedConnection, (void*)CM.get());
         if(gDispatchDebugLevel & DISPATCH_DEBUG_CONNECTIONS)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1356,7 +1359,7 @@ void CtiVanGogh::clientShutdown(CtiConnectionManager *&CM)
 int CtiVanGogh::postDBChange(const CtiDBChangeMsg &Msg)
 {
     int                     nRet = NORMAL;
-    CtiConnectionManager    *Mgr = NULL;
+    ptr_type                Mgr;
     CHAR                    temp[80];
 
 
@@ -1396,13 +1399,14 @@ int CtiVanGogh::postDBChange(const CtiDBChangeMsg &Msg)
             // Send the message out to every connected client.
             {
                 CtiServerExclusion guard(_server_exclusion);
-                CtiServer::iterator  iter(mConnectionTable);
+                CtiServer::spiterator itr;
 
-                for(;(Mgr = (CtiVanGoghConnectionManager *)iter());)
+                for(itr = mConnectionTable.getMap().begin(); itr != mConnectionTable.getMap().end(); itr++)
                 {
+                    Mgr = itr->second;
                     Mgr->WriteConnQue( Msg.replicateMessage(), 2500 );        // Send a copy of DBCHANGE on to each clients.
 
-                    if(((CtiVanGoghConnectionManager*)Mgr)->getEvent()) // If the client cares about events...
+                    if(((CtiVanGoghConnectionManager*)Mgr.get())->getEvent()) // If the client cares about events...
                     {
                         Mgr->WriteConnQue(pSig->replicateMessage(), 2500);    // Copy pSig out to any event registered client
                     }
@@ -1835,22 +1839,33 @@ INT CtiVanGogh::processMessageData( CtiMessage *pMsg )
             {
                 messageDump(pMsg);
                 const CtiPointRegistrationMsg &aReg = *((CtiPointRegistrationMsg*)(pMsg));
-                registration((CtiVanGoghConnectionManager*)(pMsg->getConnectionHandle()), aReg);
+                CtiServer::ptr_type sptrCM = mConnectionTable.find((long)pMsg->getConnectionHandle());
+                registration(sptrCM, aReg);
                 break;
             }
         case MSG_REGISTER:
             {
                 messageDump(pMsg);
                 const CtiRegistrationMsg &aReg = *((CtiRegistrationMsg*)(pMsg));
+                CtiServer::ptr_type pCM = mConnectionTable.find((long)pMsg->getConnectionHandle());
 
-                CtiVanGoghConnectionManager *CM = (CtiVanGoghConnectionManager*)(pMsg->getConnectionHandle());
+                if(pCM)
+                {
+                    CtiVanGoghConnectionManager *CM = (CtiVanGoghConnectionManager*)(pCM.get());
 
-                CM->setClientName(aReg.getAppName());
-                CM->setClientAppId(aReg.getAppId());
-                CM->setClientUnique(aReg.getAppIsUnique());
-                CM->setClientExpirationDelay(aReg.getAppExpirationDelay());
+                    CM->setClientName(aReg.getAppName());
+                    CM->setClientAppId(aReg.getAppId());
+                    CM->setClientUnique(aReg.getAppIsUnique());
+                    CM->setClientExpirationDelay(aReg.getAppExpirationDelay());
 
-                clientRegistration(CM);
+                    clientRegistration(pCM);
+                }
+                else
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
                 break;
             }
         case MSG_POINTDATA:
@@ -1935,20 +1950,21 @@ INT CtiVanGogh::postMessageToClients(CtiMessage *pMsg)
     CtiMultiMsg  *pMulti;
 
     CtiServerExclusion guard(_server_exclusion);
-    CtiServer::iterator  iter(mConnectionTable);
+    CtiServer::spiterator  itr;
 
-    CtiConnectionManager *Mgr = NULL;
-    CtiConnectionManager *MgrToRemove = NULL;
+    CtiServer::ptr_type Mgr;
+    CtiServer::ptr_type MgrToRemove;
 
     try
     {
-        for(;(Mgr = (CtiConnectionManager *)iter()) != NULL;)
+        for(itr = mConnectionTable.getMap().begin(); itr != mConnectionTable.getMap().end(); itr++)
         {
-            CtiVanGoghConnectionManager &VGCM = *((CtiVanGoghConnectionManager*)Mgr);
+            Mgr = itr->second;
+            CtiVanGoghConnectionManager &VGCM = *((CtiVanGoghConnectionManager*)Mgr.get());
 
             try
             {
-                pMulti = generateMultiMessageForConnection(VGCM, pMsg);
+                pMulti = generateMultiMessageForConnection(Mgr, pMsg);
 
                 if(pMulti->getData().size() > 0)
                 {
@@ -1957,21 +1973,21 @@ INT CtiVanGogh::postMessageToClients(CtiMessage *pMsg)
                         CtiTime Now;
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << "\n<<<< Message to Client Connection " << VGCM.getClientName() << " on " << VGCM.getPeer() << " START" << endl;
+                            dout << "\n<<<< Message to Client Connection " << Mgr->getClientName() << " on " << Mgr->getPeer() << " START" << endl;
                         }
                         pMulti->dump();
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << "<<<< Message to Client Connection " << VGCM.getClientName() << " on " << VGCM.getPeer() << " COMPLETE\n" << endl;
+                            dout << "<<<< Message to Client Connection " << Mgr->getClientName() << " on " << Mgr->getPeer() << " COMPLETE\n" << endl;
                         }
                     }
 
-                    if( VGCM.WriteConnQue(pMulti, 5000) )
+                    if( Mgr->WriteConnQue(pMulti, 5000) )
                     {
                         MgrToRemove = Mgr;
 
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Connection is not viable : " << VGCM.getClientName() << " / " << VGCM.getClientAppId() << endl;
+                        dout << CtiTime() << " Connection is not viable : " << Mgr->getClientName() << " / " << Mgr->getClientAppId() << endl;
                     }
                 }
                 else if(pMulti != NULL) // This means none of the messages were for this connection.
@@ -1993,7 +2009,7 @@ INT CtiVanGogh::postMessageToClients(CtiMessage *pMsg)
             }
         }
 
-        if(MgrToRemove != NULL)    // Someone failed.. Blitz them
+        if(MgrToRemove)    // Someone failed.. Blitz them
         {
             clientShutdown(MgrToRemove);
         }
@@ -2009,7 +2025,7 @@ INT CtiVanGogh::postMessageToClients(CtiMessage *pMsg)
 
 
 
-CtiMultiMsg* CtiVanGogh::generateMultiMessageForConnection(const CtiVanGoghConnectionManager &Conn, CtiMessage *pMsg)
+CtiMultiMsg* CtiVanGogh::generateMultiMessageForConnection(const CtiServer::ptr_type &Conn, CtiMessage *pMsg)
 {
     INT            status   = NORMAL;
 
@@ -2025,7 +2041,7 @@ CtiMultiMsg* CtiVanGogh::generateMultiMessageForConnection(const CtiVanGoghConne
     return pMulti;
 }
 
-INT CtiVanGogh::assembleMultiForConnection(const CtiVanGoghConnectionManager &Conn, CtiMessage *pMsg, CtiMultiMsg_vec &aOrdered)
+INT CtiVanGogh::assembleMultiForConnection(const CtiServer::ptr_type &Conn, CtiMessage *pMsg, CtiMultiMsg_vec &aOrdered)
 {
     INT status   = NORMAL;
 
@@ -2075,7 +2091,7 @@ INT CtiVanGogh::assembleMultiForConnection(const CtiVanGoghConnectionManager &Co
     return status;
 }
 
-INT CtiVanGogh::assembleMultiFromMultiForConnection(const CtiVanGoghConnectionManager &Conn,
+INT CtiVanGogh::assembleMultiFromMultiForConnection(const CtiServer::ptr_type &Conn,
                                                     CtiMessage                        *pMsg,
                                                     CtiMultiMsg_vec                         &Ord)
 {
@@ -2108,7 +2124,7 @@ INT CtiVanGogh::assembleMultiFromMultiForConnection(const CtiVanGoghConnectionMa
     return status;
 }
 
-INT CtiVanGogh::assembleMultiFromSignalForConnection(const CtiVanGoghConnectionManager &Conn,
+INT CtiVanGogh::assembleMultiFromSignalForConnection(const CtiServer::ptr_type &Conn,
                                                      CtiMessage                        *pMsg,
                                                      CtiMultiMsg_vec                         &Ord)
 {
@@ -2146,7 +2162,7 @@ INT CtiVanGogh::assembleMultiFromSignalForConnection(const CtiVanGoghConnectionM
     return status;
 }
 
-INT CtiVanGogh::assembleMultiFromTagForConnection(const CtiVanGoghConnectionManager &Conn,
+INT CtiVanGogh::assembleMultiFromTagForConnection(const CtiServer::ptr_type &Conn,
                                                   CtiMessage                        *pMsg,
                                                   CtiMultiMsg_vec                         &Ord)
 {
@@ -2176,7 +2192,7 @@ INT CtiVanGogh::assembleMultiFromTagForConnection(const CtiVanGoghConnectionMana
     return status;
 }
 
-INT CtiVanGogh::assembleMultiFromPointDataForConnection(const CtiVanGoghConnectionManager &Conn,
+INT CtiVanGogh::assembleMultiFromPointDataForConnection(const CtiServer::ptr_type &Conn,
                                                         CtiMessage                        *pMsg,
                                                         CtiMultiMsg_vec                         &Ord)
 {
@@ -2216,7 +2232,7 @@ INT CtiVanGogh::assembleMultiFromPointDataForConnection(const CtiVanGoghConnecti
                         else if(gDispatchDebugLevel & DISPATCH_DEBUG_VERBOSE)
                         {
                             // Point data on a disabled point.
-                            string gripe = string(" NO DATA REPORT to: ") + Conn.getClientName() + string(" ");
+                            string gripe = string(" NO DATA REPORT to: ") + Conn->getClientName() + string(" ");
                             INT mask = (pDyn->getDispatch().getTags() & MASK_ANY_DISABLE);
 
                             if(mask & (TAG_DISABLE_DEVICE_BY_DEVICE))
@@ -2256,17 +2272,17 @@ INT CtiVanGogh::assembleMultiFromPointDataForConnection(const CtiVanGoghConnecti
     return status;
 }
 
-BOOL CtiVanGogh::isSignalForConnection(const CtiVanGoghConnectionManager   &Conn,
-                                       const CtiSignalMsg                  &Msg)
+BOOL CtiVanGogh::isSignalForConnection(const CtiServer::ptr_type &Conn, const CtiSignalMsg &Msg)
 {
     BOOL bStatus = FALSE;
 
     /*
      *  Check if this connection cared about signals at all
      */
-    if( ((Msg.getTags() & TAG_REPORT_MSG_TO_ALARM_CLIENTS) && Conn.getAlarm()) ||
-        ( Msg.isAlarm() && Conn.getAlarm() ) ||
-        ( Msg.isEvent() && Conn.getEvent() ) )
+    const CtiVanGoghConnectionManager *vgConn = (const CtiVanGoghConnectionManager *)Conn.get();
+    if( ((Msg.getTags() & TAG_REPORT_MSG_TO_ALARM_CLIENTS) && vgConn->getAlarm()) ||
+        ( Msg.isAlarm() && vgConn->getAlarm() ) ||
+        ( Msg.isEvent() && vgConn->getEvent() ) )
     {
         bStatus = TRUE;
     }
@@ -2278,13 +2294,13 @@ BOOL CtiVanGogh::isSignalForConnection(const CtiVanGoghConnectionManager   &Conn
     return bStatus;
 }
 
-BOOL CtiVanGogh::isTagForConnection(const CtiVanGoghConnectionManager &Conn, const CtiTagMsg &Msg)
+BOOL CtiVanGogh::isTagForConnection(const CtiServer::ptr_type &Conn, const CtiTagMsg &Msg)
 {
     BOOL bStatus = FALSE;
 
     CtiPointSPtr pPoint = PointMgr.getEqual(Msg.getPointID());
 
-    if( pPoint && Conn.isRegForChangeType(pPoint->getType()) )
+    if( pPoint && ((const CtiVanGoghConnectionManager *)Conn.get())->isRegForChangeType(pPoint->getType()) )
     {
         bStatus = TRUE;
     }
@@ -2296,7 +2312,7 @@ BOOL CtiVanGogh::isTagForConnection(const CtiVanGoghConnectionManager &Conn, con
     return bStatus;
 }
 
-BOOL CtiVanGogh::isPointDataForConnection(const CtiVanGoghConnectionManager &Conn, const CtiPointDataMsg &Msg)
+BOOL CtiVanGogh::isPointDataForConnection(const CtiServer::ptr_type &Conn, const CtiPointDataMsg &Msg)
 {
     BOOL bStatus = FALSE;
 
@@ -2307,7 +2323,7 @@ BOOL CtiVanGogh::isPointDataForConnection(const CtiVanGoghConnectionManager &Con
     }
     else // if( !(Msg.getTags() & TAG_POINT_LOAD_PROFILE_DATA) )  // Load profile does not go through the system.
     {
-        if( Conn.isRegForChangeType(Msg.getType()))
+        if( ((const CtiVanGoghConnectionManager *)Conn.get())->isRegForChangeType(Msg.getType()))
         {
             bStatus = TRUE;
         }
@@ -2386,7 +2402,7 @@ BOOL CtiVanGogh::isPointDataNewInformation(const CtiPointDataMsg &Msg, CtiDynami
     return bStatus;
 }
 
-BOOL CtiVanGogh::isConnectionAttachedToMsgPoint(const CtiVanGoghConnectionManager   &Conn, const LONG pID)
+BOOL CtiVanGogh::isConnectionAttachedToMsgPoint(const CtiServer::ptr_type &Conn, const LONG pID)
 {
     BOOL bStatus = FALSE;
 
@@ -2401,7 +2417,7 @@ BOOL CtiVanGogh::isConnectionAttachedToMsgPoint(const CtiVanGoghConnectionManage
             CtiPointConnection *pPC = (CtiPointConnection*)(pDyn->getAttachment());
             if(pPC != NULL)
             {
-                if( list_contains(pPC->getManagerList(), (CtiConnectionManager*)&Conn ) )
+                if( list_contains(pPC->getManagerList(), Conn ) )
                 {
                     bStatus = TRUE;
                 }
@@ -2589,7 +2605,7 @@ int CtiVanGogh::processMessage(CtiMessage *pMsg)
     return status;
 }
 
-INT CtiVanGogh::postMOAUploadToConnection(CtiVanGoghConnectionManager &VGCM, int flags)
+INT CtiVanGogh::postMOAUploadToConnection(CtiServer::ptr_type &CM, int flags)
 {
     INT i;
     INT status = NORMAL;
@@ -2599,8 +2615,11 @@ INT CtiVanGogh::postMOAUploadToConnection(CtiVanGoghConnectionManager &VGCM, int
 
     CtiTime now;
 
+    CtiVanGoghConnectionManager *VGCM = (CtiVanGoghConnectionManager*)(CM.get());
+
+
     static CtiMultiMsg *pFullBoat = 0;                      // This is a multi of multis that is stored and used for clients requesting all points.  It is aged and recreated every 15 minutes.
-    bool isFullBoat = VGCM.isRegForAll();                   // Is this connection asking for everything?
+    bool isFullBoat = ((const CtiVanGoghConnectionManager *)CM.get())->isRegForAll();                   // Is this connection asking for everything?
     bool isFullBoatAged = isFullBoat && (!pFullBoat || (pFullBoat->getMessageTime() + gConfigParms.getValueAsULong("DISPATCH_MOA_MAX_AGE", 30) < now));
 
     if(isFullBoatAged)
@@ -2629,7 +2648,7 @@ INT CtiVanGogh::postMOAUploadToConnection(CtiVanGoghConnectionManager &VGCM, int
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << now << " **** MOA UPLOAD **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << now << " Client Connection " << VGCM.getClientName() << " on " << VGCM.getPeer() << endl;
+                        dout << now << " Client Connection " << CM->getClientName() << " on " << CM->getPeer() << endl;
                     }
                     pMsg->dump();
                     {
@@ -2638,11 +2657,10 @@ INT CtiVanGogh::postMOAUploadToConnection(CtiVanGoghConnectionManager &VGCM, int
                     }
                 }
 
-                if(VGCM.WriteConnQue(pMsg, 5000))
+                if(CM->WriteConnQue(pMsg, 5000))
                 {
-                    delete pMsg;
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << " Connection is having issues : " << VGCM.getClientName() << " / " << VGCM.getClientAppId() << endl;
+                    dout << CtiTime() << " **** WARNING: Unable to report MOA to client : " << ((const CtiVanGoghConnectionManager *)CM.get())->getClientName() << " / " << ((const CtiVanGoghConnectionManager *)CM.get())->getClientAppId() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
 
@@ -2683,7 +2701,7 @@ INT CtiVanGogh::postMOAUploadToConnection(CtiVanGoghConnectionManager &VGCM, int
                     CtiPointConnection *pPC = (CtiPointConnection*)(pDyn->getAttachment());
                     if(pPC != NULL)
                     {
-                        if( list_contains(pPC->getManagerList(), (CtiConnectionManager*)&VGCM ) || (VGCM.isRegForChangeType(TempPoint->getType())))
+                        if( list_contains(pPC->getManagerList(), CM ) || (((const CtiVanGoghConnectionManager *)CM.get())->isRegForChangeType(TempPoint->getType())))
                         {
                             CtiPointDataMsg *pDat = CTIDBG_new CtiPointDataMsg(TempPoint->getID(),
                                                                                pDyn->getValue(),
@@ -2707,7 +2725,7 @@ INT CtiVanGogh::postMOAUploadToConnection(CtiVanGoghConnectionManager &VGCM, int
 
                         // This could be replaced by an object/method which returns a multi message
                         // full of all alarms active/unacknowledged on this point.
-                        if( (pDyn->getDispatch().getTags() & MASK_ANY_ALARM) && VGCM.getAlarm() )
+                        if( (pDyn->getDispatch().getTags() & MASK_ANY_ALARM) && ((const CtiVanGoghConnectionManager *)CM.get())->getAlarm() )
                         {
                             CtiMultiMsg *pSigMulti = _signalManager.getPointSignals(TempPoint->getID());
 
@@ -2741,7 +2759,7 @@ INT CtiVanGogh::postMOAUploadToConnection(CtiVanGoghConnectionManager &VGCM, int
                         CtiTime Now;
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << Now << " **** MOA UPLOAD **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << Now << " Client Connection " << VGCM.getClientName() << " on " << VGCM.getPeer() << endl;
+                        dout << Now << " Client Connection " << CM->getClientName() << " on " << CM->getPeer() << endl;
                     }
                     pMulti->dump();
                     {
@@ -2756,10 +2774,10 @@ INT CtiVanGogh::postMOAUploadToConnection(CtiVanGoghConnectionManager &VGCM, int
                     pFullBoat->insert(pMulti->replicateMessage());
                 }
 
-                if(VGCM.WriteConnQue(pMulti, 5000))
+                if(CM->WriteConnQue(pMulti, 5000))
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << " Connection is having issues : " << VGCM.getClientName() << " / " << VGCM.getClientAppId() << endl;
+                    dout << CtiTime() << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << " Connection is having issues : " << CM->getClientName() << " / " << CM->getClientAppId() << endl;
                 }
 
                 pMulti  = CTIDBG_new CtiMultiMsg;
@@ -2774,7 +2792,7 @@ INT CtiVanGogh::postMOAUploadToConnection(CtiVanGoghConnectionManager &VGCM, int
                     CtiTime Now;
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << Now << " **** MOA UPLOAD **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << Now << " Client Connection " << VGCM.getClientName() << " on " << VGCM.getPeer() << endl;
+                    dout << Now << " Client Connection " << CM->getClientName() << " on " << CM->getPeer() << endl;
                 }
                 pMulti->dump();
                 {
@@ -2789,10 +2807,10 @@ INT CtiVanGogh::postMOAUploadToConnection(CtiVanGoghConnectionManager &VGCM, int
                 pFullBoat->insert(pMulti->replicateMessage());
             }
 
-            if(VGCM.WriteConnQue(pMulti, 5000))
+            if(CM->WriteConnQue(pMulti, 5000))
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << " Connection is having issues : " << VGCM.getClientName() << " / " << VGCM.getClientAppId() << endl;
+                dout << CtiTime() << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << " Connection is having issues : " << CM->getClientName() << " / " << CM->getClientAppId() << endl;
             }
         }
         else
@@ -3403,13 +3421,13 @@ INT CtiVanGogh::checkSignalStateQuality(CtiSignalMsg  *pSig, CtiMultiWrapper &aW
 
     if(pSig->getText().empty() && pSig->getAdditionalInfo().empty())
     {
-        CtiVanGoghConnectionManager *pVGCM = (CtiVanGoghConnectionManager*)(pSig->getConnectionHandle());
+        CtiServer::ptr_type pCM = mConnectionTable.find((long)pSig->getConnectionHandle());
 
         string cliname("Unknown");
 
-        if(pVGCM != NULL && mConnectionTable.contains(pVGCM))
+        if(pCM)
         {
-            cliname = pVGCM->getClientName();
+            cliname = pCM->getClientName();
         }
 
         {
@@ -3464,10 +3482,13 @@ INT CtiVanGogh::checkPointDataStateQuality(CtiPointDataMsg  *pData, CtiMultiWrap
 
                 if(pData->getConnectionHandle() != NULL)
                 {
-                    CtiConnectionManager *CM = ((CtiConnectionManager*)pData->getConnectionHandle());
+                    CtiServer::ptr_type pCM = mConnectionTable.find((long)pData->getConnectionHandle());
 
-                    dout << " Submitting client   " << CM->getClientName() << endl;
-                    dout << "  Client Information " << CM->getPeer() << endl;
+                    if(pCM)
+                    {
+                        dout << " Submitting client   " << pCM->getClientName() << endl;
+                        dout << "  Client Information " << pCM->getPeer() << endl;
+                    }
                 }
 
                 pData->setType(pPoint->getType());
@@ -3632,23 +3653,25 @@ INT CtiVanGogh::markPointNonUpdated(CtiPointSPtr point, CtiMultiWrapper &aWrap)
 }
 
 
-CtiVanGoghConnectionManager* CtiVanGogh::getPILConnection()
+CtiServer::ptr_type CtiVanGogh::getPILConnection()
 {
-    CtiVanGoghConnectionManager *Mgr = NULL;
+    CtiServer::ptr_type Mgr;
 
     {
         CtiServerExclusion guard(_server_exclusion);
-        CtiServer::iterator  iter(mConnectionTable);
+        CtiServer::spiterator  itr;
 
-        for(;(Mgr = (CtiVanGoghConnectionManager *)iter());)
+        for(itr = mConnectionTable.getMap().begin(); itr != mConnectionTable.getMap().end(); itr++)
         {
-            if(Mgr->getClientName() == PIL_REGISTRATION_NAME)
+            Mgr = itr->second;
+
+            if(!stringCompareIgnoreCase(Mgr->getClientName(), PIL_REGISTRATION_NAME))
             {
                 break;      // The for has completed, we found the PIL.
             }
             else
             {
-                Mgr = NULL;
+                Mgr.reset();
             }
         }
     }
@@ -3656,23 +3679,25 @@ CtiVanGoghConnectionManager* CtiVanGogh::getPILConnection()
     return Mgr;
 }
 
-CtiVanGoghConnectionManager* CtiVanGogh::getScannerConnection()
+CtiServer::ptr_type CtiVanGogh::getScannerConnection()
 {
-    CtiVanGoghConnectionManager *Mgr = NULL;
+    CtiServer::ptr_type Mgr;
 
     {
         CtiServerExclusion guard(_server_exclusion);
-        CtiServer::iterator  iter(mConnectionTable);
+        CtiServer::spiterator  itr;
 
-        for(;(Mgr = (CtiVanGoghConnectionManager *)iter());)
+        for(itr = mConnectionTable.getMap().begin(); itr != mConnectionTable.getMap().end(); itr++)
         {
+            Mgr = itr->second;
+
             if(!stringCompareIgnoreCase(Mgr->getClientName(), SCANNER_REGISTRATION_NAME))
             {
                 break;      // The for has completed, we found the SCANNER.
             }
             else
             {
-                Mgr = NULL;
+                Mgr.reset();
             }
         }
     }
@@ -3684,13 +3709,13 @@ CtiVanGoghConnectionManager* CtiVanGogh::getScannerConnection()
 void CtiVanGogh::validateConnections()
 {
 
-    CtiConnectionManager *CM = rwnil;
+    CtiServer::ptr_type CM;
 
     CtiServerExclusion guard(_server_exclusion);
 
     if(MainQueue_.entries() == 0)
     {
-        while( (CM = mConnectionTable.remove(NonViableConnection, NULL)) != NULL )
+        while( (CM = mConnectionTable.remove(NonViableConnection, NULL)) )
         {
             {
                 CtiTime Now;
@@ -4063,8 +4088,10 @@ string CtiVanGogh::getAlarmStateName( INT alarm )
  *----------------------------------------------------------------------------*/
 int CtiVanGogh::clientPurgeQuestionables(PULONG pDeadClients)
 {
+    extern bool isQuestionable(CtiServer::ptr_type &ptr, void* narg);
+
     int status = NORMAL;
-    CtiConnectionManager *Mgr;
+    CtiServer::ptr_type Mgr;
 
     CtiServerExclusion server_guard(_server_exclusion);      // Get a lock on it.
 
@@ -4073,7 +4100,7 @@ int CtiVanGogh::clientPurgeQuestionables(PULONG pDeadClients)
 
         if(pDeadClients != NULL) *pDeadClients = 0;
 
-        while( (Mgr = (CtiConnectionManager *)mConnectionTable.remove(isQuestionable, NULL)) != NULL)
+        while( (Mgr = mConnectionTable.remove(isQuestionable, NULL)) )
         {
             if(pDeadClients != NULL) (*pDeadClients)++;
 
@@ -4091,14 +4118,14 @@ int CtiVanGogh::clientPurgeQuestionables(PULONG pDeadClients)
 }
 
 
-int  CtiVanGogh::clientRegistration(CtiConnectionManager *CM)
+int  CtiVanGogh::clientRegistration(CtiServer::ptr_type CM)
 {
     int         nRet = NoError;
     CtiTime      NowTime;
     RWBoolean   validEntry(TRUE);
     RWBoolean   questionedEntry(FALSE);
     RWBoolean   removeMgr(FALSE);
-    CtiConnectionManager *Mgr;
+    CtiServer::ptr_type Mgr;
 
     CtiServerExclusion guard(_server_exclusion);
 
@@ -4106,8 +4133,6 @@ int  CtiVanGogh::clientRegistration(CtiConnectionManager *CM)
     {
         displayConnections();
     }
-
-    RWTPtrHashMultiSetIterator< CtiConnectionManager, vg_hash, equal_to<CtiConnectionManager> >  iter(mConnectionTable);
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -4119,8 +4144,12 @@ int  CtiVanGogh::clientRegistration(CtiConnectionManager *CM)
      *  if not, we will not allow this guy to have any operations though us.
      */
 
-    for(;(Mgr = (CtiConnectionManager *)iter());)
+    CtiServer::spiterator  itr;
+
+    for(itr = mConnectionTable.getMap().begin(); itr != mConnectionTable.getMap().end(); itr++)
     {
+        Mgr = itr->second;
+
         if((Mgr != CM))      // Not me loser.
         {
             if(Mgr->getClientName() == CM->getClientName())
@@ -4214,7 +4243,7 @@ int  CtiVanGogh::clientRegistration(CtiConnectionManager *CM)
         clientShutdown(CM);
     }
 
-    if(removeMgr && Mgr != NULL)
+    if(removeMgr && Mgr)
     {
         CtiServerExclusion guard(_server_exclusion);
 
@@ -4238,18 +4267,20 @@ int  CtiVanGogh::clientRegistration(CtiConnectionManager *CM)
  * the man and the other guy which made him become questionable should be
  * blown away,.. find him.
  *----------------------------------------------------------------------------*/
-int  CtiVanGogh::clientArbitrationWinner(CtiConnectionManager *CM)
+int  CtiVanGogh::clientArbitrationWinner(CtiServer::ptr_type CM)
 {
     int status = NORMAL;
-    CtiConnectionManager *Mgr;
+    CtiServer::ptr_type Mgr;
 
     CtiServerExclusion guard(_server_exclusion);
 
     // Now that it is locked, get an iterator
-    RWTPtrHashMultiSetIterator< CtiConnectionManager, vg_hash, equal_to<CtiConnectionManager> >  iter(mConnectionTable);
+    CtiServer::spiterator  itr;
 
-    for(;(Mgr = (CtiConnectionManager *)iter());)
+    for(itr = mConnectionTable.getMap().begin(); itr != mConnectionTable.getMap().end(); itr++)
     {
+        Mgr = itr->second;
+
         if((Mgr != CM)                                     &&       // Don't match on yourself
            (Mgr->getClientName() == CM->getClientName())   &&       // Names match
            (Mgr->getClientRegistered() == RWBoolean(FALSE)))        // Other Mgr is not registered completely yet
@@ -4961,12 +4992,14 @@ void CtiVanGogh::sendSignalToGroup(LONG ngid, const CtiSignalMsg& sig)
 
 void CtiVanGogh::displayConnections(void)
 {
-    CtiVanGoghConnectionManager *Mgr = NULL;
+    CtiServer::ptr_type Mgr;
     CtiServerExclusion guard(_server_exclusion);
-    CtiServer::iterator  iter(mConnectionTable);
+    CtiServer::spiterator  itr;
 
-    for(;(Mgr = (CtiVanGoghConnectionManager *)iter());)
+    for(itr = mConnectionTable.getMap().begin(); itr != mConnectionTable.getMap().end(); itr++)
     {
+        Mgr = itr->second;
+
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " ";
         dout << Mgr->getClientName() << " / " <<  Mgr->getClientAppId() << " / " << Mgr->getPeer();
@@ -5669,14 +5702,16 @@ bool CtiVanGogh::writeControlMessageToPIL(LONG deviceid, LONG rawstate, CtiPoint
 
 void CtiVanGogh::writeMessageToClient(CtiMessage *&pReq, string clientName)
 {
-    CtiVanGoghConnectionManager *CM;
+    CtiServer::ptr_type CM;
     bool bDone = false;
     {
         CtiServerExclusion guard(_server_exclusion);
-        CtiServer::iterator  iter(mConnectionTable);
+        CtiServer::spiterator  itr;
 
-        for(;(CM = (CtiVanGoghConnectionManager *)iter());)
+        for(itr = mConnectionTable.getMap().begin(); itr != mConnectionTable.getMap().end(); itr++)
         {
+            CM = itr->second;
+
             if(CM->getClientName() == clientName)
             {
                 if( CM->WriteConnQue( pReq->replicateMessage(), 5000 ) )
@@ -5756,9 +5791,9 @@ void CtiVanGogh::bumpDeviceFromAlternateRate(CtiPointSPtr pPoint)
 void CtiVanGogh::writeMessageToScanner(const CtiCommandMsg *Cmd)
 {
     // this guy goes to scanner only
-    CtiVanGoghConnectionManager *scannerCM = getScannerConnection();
+    CtiServer::ptr_type scannerCM = getScannerConnection();
 
-    if(scannerCM != NULL)
+    if(scannerCM)
     {
         // pass the message through
         if(scannerCM->WriteConnQue(Cmd->replicateMessage(), 5000))
@@ -7115,13 +7150,14 @@ bool CtiVanGogh::processInputFunction(CHAR Char)
             }
         case 0x74:              // alt-t
             {
-                CtiVanGoghConnectionManager *Mgr = NULL;
+                CtiServer::ptr_type Mgr;
 
                 {
-                    CtiServer::iterator  iter(mConnectionTable);
+                    CtiServer::spiterator  itr;
 
-                    for(;(Mgr = (CtiVanGoghConnectionManager *)iter());)
+                    for(itr = mConnectionTable.getMap().begin(); itr != mConnectionTable.getMap().end(); itr++)
                     {
+                        Mgr = itr->second;
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " " << Mgr->outQueueCount() << " outqueue entries on connection to " << Mgr->getName() << " / " << Mgr->who() << endl;

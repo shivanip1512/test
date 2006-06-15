@@ -62,7 +62,7 @@ public:
        _inList.clear();
    }
 
-   virtual void  clientShutdown(CtiConnectionManager *&CM);
+   virtual void  clientShutdown(CtiServer::ptr_type CM);
    virtual void  shutdown();
 
    int   executeRequest(CtiRequestMsg*);

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.82 $
-* DATE         :  $Date: 2006/06/07 22:34:34 $
+* REVISION     :  $Revision: 1.83 $
+* DATE         :  $Date: 2006/06/15 20:41:55 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -426,6 +426,9 @@ void CtiPILServer::connectionThread()
                          *  Need to inform MainThread of the "New Guy" so that he may control its destiny from
                          *  now on.
                          */
+
+                        CtiServer::ptr_type sptrConMan(ConMan);
+                        clientConnect( sptrConMan );             // Put it in the list...
 
                         CmdMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::NewClient, 15);
 
@@ -1065,10 +1068,11 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
                     dout << CtiTime() << " Device: " << pExecReq->DeviceId() << endl;
                 }
 
-                CtiPILConnectionManager *CM = (CtiPILConnectionManager *)pExecReq->getConnectionHandle();
+                CtiServer::ptr_type ptr = findConnectionManager((long)pExecReq->getConnectionHandle());
 
-                if(CM)
+                if(ptr)
                 {
+                    CtiPILConnectionManager *CM = (CtiPILConnectionManager *)ptr.get();
                     CtiReturnMsg *pcRet = CTIDBG_new CtiReturnMsg(pExecReq->DeviceId(),
                                                                   pExecReq->CommandString(),
                                                                   "Device unknown, unselected, or DB corrupt. ID = " + CtiNumStr(pExecReq->DeviceId()),
@@ -1114,10 +1118,11 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
             pcRet->setExpectMore(TRUE);    // Let the client know more messages are coming
         }
 
-        CtiPILConnectionManager *CM = (CtiPILConnectionManager *)pReq->getConnectionHandle();
+        CtiServer::ptr_type ptr = findConnectionManager((long)pReq->getConnectionHandle());
 
-        if(CM)
+        if(ptr)
         {
+            CtiPILConnectionManager *CM = (CtiPILConnectionManager *)ptr.get();
             if(DebugLevel & DEBUGLEVEL_PIL_INTERFACE)
             {
                 pcRet->dump();
@@ -1214,7 +1219,7 @@ int CtiPILServer::executeMulti(CtiMultiMsg *pMulti)
     return status;
 }
 
-void CtiPILServer::clientShutdown(CtiConnectionManager *&CM)
+void CtiPILServer::clientShutdown(CtiServer::ptr_type CM)
 {
 //#ifdef DEBUG_SHUTDOWN
     {

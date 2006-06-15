@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/mgr_ptclients.cpp-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2006/05/22 18:44:13 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2006/06/15 20:41:55 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -204,7 +204,7 @@ void CtiPointClientManager::DumpList(void)
     }
 }
 
-int CtiPointClientManager::InsertConnectionManager(CtiConnectionManager* CM, const CtiPointRegistrationMsg &aReg, bool debugprint)
+int CtiPointClientManager::InsertConnectionManager(CtiServer::ptr_type CM, const CtiPointRegistrationMsg &aReg, bool debugprint)
 {
     int nRet = 0;
     CtiTime   NowTime;
@@ -237,7 +237,7 @@ int CtiPointClientManager::InsertConnectionManager(CtiConnectionManager* CM, con
             CtiPointSPtr temp = getEqual(aReg[i]);
             if(temp)
             {
-                if(!((CtiVanGoghConnectionManager*)CM)->isRegForChangeType(temp->getType())) // Make sure we didn't already register for ALL points of this type.
+                if(!((const CtiVanGoghConnectionManager *)CM.get())->isRegForChangeType(temp->getType())) // Make sure we didn't already register for ALL points of this type.
                 {
                     if(debugprint)
                     {
@@ -267,7 +267,7 @@ int CtiPointClientManager::InsertConnectionManager(CtiConnectionManager* CM, con
     return nRet;
 }
 
-int CtiPointClientManager::RemoveConnectionManager(CtiConnectionManager* CM)
+int CtiPointClientManager::RemoveConnectionManager(CtiServer::ptr_type CM)
 {
     int nRet = 0;
 

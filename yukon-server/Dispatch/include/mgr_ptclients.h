@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/mgr_ptclients.h-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2006/03/23 15:29:19 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2006/06/15 20:41:55 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -50,7 +50,6 @@ private:
 public:
 
    typedef CtiPointManager Inherited;
-   typedef list<CtiConnectionManager*> ConnectionList;
 
    CtiPointClientManager();
 
@@ -59,8 +58,8 @@ public:
 
    void DumpList(void);
    void DeleteList(void);
-   int InsertConnectionManager(CtiConnectionManager* CM, const CtiPointRegistrationMsg &aReg, bool debugprint = false);
-   int RemoveConnectionManager(CtiConnectionManager* CM);
+   int InsertConnectionManager(CtiServer::ptr_type CM, const CtiPointRegistrationMsg &aReg, bool debugprint = false);
+   int RemoveConnectionManager(CtiServer::ptr_type CM);
 
    CtiTime findNextNearestArchivalTime();
    void scanForArchival(const CtiTime &Now, CtiFIFOQueue<CtiTableRawPointHistory> &Que);

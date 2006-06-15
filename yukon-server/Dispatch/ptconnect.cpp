@@ -43,10 +43,10 @@ CtiPointConnection& CtiPointConnection::operator=(const CtiPointConnection &aRef
 int CtiPointConnection::PostPointChangeToConnections(const CtiPointDataMsg &ChgMsg)
 {
    CtiReturnMsg* ConnMgrMsg = NULL;
-   std::list<CtiConnectionManager*>::iterator itr = ConnectionManagerCollection.begin();
+   std::list< CtiServer::ptr_type >::iterator itr = ConnectionManagerCollection.begin();
    while ( itr != ConnectionManagerCollection.end() )
    {
-      CtiConnectionManager* CtiM = *itr;
+      CtiServer::ptr_type CtiM = *itr;
       try
       {
          LockGuard guard(monitor());
@@ -123,20 +123,20 @@ CtiPointConnection::CtiPointConnection()
 CtiPointConnection::~CtiPointConnection()
 {
     // Blow away everything. // Connection Managers must be deleted by VanGogh
-    delete_list(ConnectionManagerCollection);
+    // delete_list( ConnectionManagerCollection );  // Release of the reference allows a delete to occur.
     ConnectionManagerCollection.clear();
 }
 
-void CtiPointConnection::AddConnectionManager(CtiConnectionManager *cm)
+void CtiPointConnection::AddConnectionManager(CtiServer::ptr_type cm)
 {
    LockGuard guard(monitor());
    ConnectionManagerCollection.push_back(cm);
 }
-void CtiPointConnection::RemoveConnectionManager(CtiConnectionManager *cm)
+void CtiPointConnection::RemoveConnectionManager(CtiServer::ptr_type cm)
 {
    LockGuard guard(monitor());
    bool present = false;
-   std::list< CtiConnectionManager* >::iterator itr = ConnectionManagerCollection.begin();
+   std::list< CtiServer::ptr_type >::iterator itr = ConnectionManagerCollection.begin();
    while(itr != ConnectionManagerCollection.end() ){
        if ( *itr == cm) {//Note  this is removing based off the pointer address
            itr = ConnectionManagerCollection.erase(itr);
@@ -149,11 +149,11 @@ int CtiPointConnection::PostPointChangeToConnections(const CtiPointDataMsg& Msg)
 
 CtiPointConnection& CtiPointConnection::operator=(const CtiPointConnection &aRef);
 
-list<CtiConnectionManager*>& CtiPointConnection::getManagerList()
+list< CtiServer::ptr_type >& CtiPointConnection::getManagerList()
 {
     return ConnectionManagerCollection;
 }
-list<CtiConnectionManager*>  CtiPointConnection::getManagerList() const
+list< CtiServer::ptr_type >  CtiPointConnection::getManagerList() const
 {
     return ConnectionManagerCollection;
 }

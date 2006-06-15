@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVER/exe_reg.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/02/10 23:24:03 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2006/06/15 20:41:56 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -30,18 +30,27 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 INT CtiRegistrationExecutor::ServerExecute(CtiServer *Svr)
 {
-   INT nRet = NoError;
+    INT nRet = NoError;
 
-   CtiRegistrationMsg   *Msg = (CtiRegistrationMsg*)getMessage();
-   CtiConnectionManager *CM  = getConnectionHandle();
+    CtiRegistrationMsg   *Msg = (CtiRegistrationMsg*)getMessage();
 
-   CM->setClientName(Msg->getAppName());
-   CM->setClientAppId(Msg->getAppId());
-   CM->setClientUnique(Msg->getAppIsUnique());
+    CtiServer::ptr_type sptr = Svr->findConnectionManager((long)getConnectionHandle());
 
-   nRet = Svr->clientRegistration(CM);
+    if(sptr)
+    {
+        sptr->setClientName(Msg->getAppName());
+        sptr->setClientAppId(Msg->getAppId());
+        sptr->setClientUnique(Msg->getAppIsUnique());
 
-   return nRet;
+        nRet = Svr->clientRegistration(sptr);
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    return nRet;
 }
 CtiRegistrationExecutor::CtiRegistrationExecutor(CtiMessage *p) :
    CtiExecutor(p)

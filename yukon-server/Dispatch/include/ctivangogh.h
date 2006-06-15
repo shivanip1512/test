@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/ctivangogh.h-arc  $
-* REVISION     :  $Revision: 1.47 $
-* DATE         :  $Date: 2006/05/09 20:07:44 $
+* REVISION     :  $Revision: 1.48 $
+* DATE         :  $Date: 2006/06/15 20:41:55 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -169,13 +169,13 @@ public:
     CtiVanGogh();
     virtual ~CtiVanGogh();
 
-    virtual void  clientShutdown(CtiConnectionManager *&CM);
+    virtual void  clientShutdown(CtiServer::ptr_type CM);
     virtual int   commandMsgHandler(CtiCommandMsg *Cmd);
 
     virtual void  shutdown();
     int   postDBChange(const CtiDBChangeMsg &Msg);
 
-    int   registration(CtiVanGoghConnectionManager *, const CtiPointRegistrationMsg &aReg);
+    int   registration(CtiServer::ptr_type, const CtiPointRegistrationMsg &aReg);
 
     int   execute();
     void  VGMainThread();
@@ -192,37 +192,36 @@ public:
     INT   archiveSignalMessage(const CtiSignalMsg& aSig);
     INT   archiveCommErrorHistoryMessage(const CtiCommErrorHistoryMsg& aCEHM);
 
-    CtiMessage* messageToConnectionViaGlobalList(const CtiVanGoghConnectionManager &Conn, CtiMessage *pMsg);
-    CtiMessage* messageToConnectionViaPointList(const CtiVanGoghConnectionManager &Conn, CtiMessage *pMsg);
+    CtiMessage* messageToConnectionViaGlobalList(const CtiServer::ptr_type &Conn, CtiMessage *pMsg);
+    CtiMessage* messageToConnectionViaPointList(const CtiServer::ptr_type &Conn, CtiMessage *pMsg);
 
     INT postMessageToClients(CtiMessage *pMsg);
     INT processMessageData(CtiMessage *pMsg);
     INT processMultiMessage(CtiMultiMsg *pMulti);
 
-    CtiMultiMsg* generateMultiMessageForConnection(const CtiVanGoghConnectionManager &Conn, CtiMessage *pMsg);
+    CtiMultiMsg* generateMultiMessageForConnection(const CtiServer::ptr_type &Conn, CtiMessage *pMsg);
 
-    INT   assembleMultiForConnection(const CtiVanGoghConnectionManager &Conn, CtiMessage *pMsg, CtiMultiMsg_vec &aOrdered);
-    INT   assembleMultiFromMultiForConnection(const CtiVanGoghConnectionManager &Conn,
+    INT   assembleMultiForConnection(const CtiServer::ptr_type &Conn, CtiMessage *pMsg, CtiMultiMsg_vec &aOrdered);
+    INT   assembleMultiFromMultiForConnection(const CtiServer::ptr_type &Conn,
                                               CtiMessage                        *pMsg,
                                               CtiMultiMsg_vec                         &Ord);
-    INT   assembleMultiFromPointDataForConnection(const CtiVanGoghConnectionManager &Conn,
+    INT   assembleMultiFromPointDataForConnection(const CtiServer::ptr_type &Conn,
                                                   CtiMessage                        *pMsg,
                                                   CtiMultiMsg_vec                         &Ord);
-    INT   assembleMultiFromSignalForConnection(const CtiVanGoghConnectionManager &Conn,
+    INT   assembleMultiFromSignalForConnection(const CtiServer::ptr_type &Conn,
                                                CtiMessage                        *pMsg,
                                                CtiMultiMsg_vec                         &Ord);
-    INT assembleMultiFromTagForConnection(const CtiVanGoghConnectionManager &Conn, CtiMessage *pMsg, CtiMultiMsg_vec &Ord);
+    INT assembleMultiFromTagForConnection(const CtiServer::ptr_type &Conn, CtiMessage *pMsg, CtiMultiMsg_vec &Ord);
 
-    BOOL  isConnectionAttachedToMsgPoint(const CtiVanGoghConnectionManager   &Conn,
+    BOOL  isConnectionAttachedToMsgPoint(const CtiServer::ptr_type &Conn,
                                          const LONG                          pID);
-    BOOL  isPointDataForConnection(const CtiVanGoghConnectionManager   &Conn,
-                                   const CtiPointDataMsg               &Msg);
+    BOOL  isPointDataForConnection(const CtiServer::ptr_type &Conn, const CtiPointDataMsg &Msg);
     BOOL  isPointDataNewInformation(const CtiPointDataMsg &Msg, CtiDynamicPointDispatch *&pDyn);
-    BOOL  isSignalForConnection(const CtiVanGoghConnectionManager   &Conn, const CtiSignalMsg &Msg);
-    BOOL  isTagForConnection(const CtiVanGoghConnectionManager   &Conn, const CtiTagMsg &Msg);
+    BOOL  isSignalForConnection(const CtiServer::ptr_type &Conn, const CtiSignalMsg &Msg);
+    BOOL  isTagForConnection(const CtiServer::ptr_type   &Conn, const CtiTagMsg &Msg);
 
     int   processMessage(CtiMessage *pMsg);
-    INT   postMOAUploadToConnection(CtiVanGoghConnectionManager &VGCM, int flags);
+    INT   postMOAUploadToConnection(CtiServer::ptr_type &VGCM, int flags);
 
     INT   loadPendingSignals();
     void  purifyClientConnectionList();
@@ -239,8 +238,8 @@ public:
     INT   checkForStatusAlarms(CtiPointDataMsg  *pData, CtiMultiWrapper &aWrap, CtiPointSPtr point);
     INT   checkForNumericAlarms(CtiPointDataMsg  *pData, CtiMultiWrapper &aWrap, CtiPointSPtr point);
     INT   markPointNonUpdated(CtiPointSPtr point, CtiMultiWrapper &aWrap);
-    CtiVanGoghConnectionManager* getPILConnection();
-    CtiVanGoghConnectionManager* getScannerConnection();
+    CtiServer::ptr_type getPILConnection();
+    CtiServer::ptr_type getScannerConnection();
     void  validateConnections();
     void  postSignalAsEmail( CtiSignalMsg &sig );
     void  loadAlarmToDestinationTranslation();
@@ -250,8 +249,8 @@ public:
 
     virtual int clientPurgeQuestionables(PULONG pDeadClients);
     virtual string getMyServerName() const;
-    virtual int   clientRegistration(CtiConnectionManager *CM);
-    virtual int   clientArbitrationWinner(CtiConnectionManager *CM);
+    virtual int   clientRegistration(CtiServer::ptr_type CM);
+    virtual int   clientArbitrationWinner(CtiServer::ptr_type CM);
     void messageDump(CtiMessage *pMsg);
     void loadRTDB(bool force = false, CtiMessage *pMsg = NULL);     // Loads all relevant RTDB elements
     void loadDeviceNames();

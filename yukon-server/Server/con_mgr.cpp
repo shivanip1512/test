@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVER/con_mgr.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2006/01/05 19:30:10 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2006/06/15 20:41:56 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -52,7 +52,7 @@ CtiConnectionManager::~CtiConnectionManager()
    // We better just do the normal stuff one at a time... Make sure this is virtual
    // so base destructor gets called in all cases.
 
-   // Inherited::ShutdownConnection(); // Handled in the base class...
+    // Inherited::ShutdownConnection(); // Handled in the base class...
 }
 
 int CtiConnectionManager::getClientAppId() const              { return ClientAppId; }

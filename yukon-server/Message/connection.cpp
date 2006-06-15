@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/connection.cpp-arc  $
-* REVISION     :  $Revision: 1.38 $
-* DATE         :  $Date: 2006/01/05 21:05:24 $
+* REVISION     :  $Revision: 1.39 $
+* DATE         :  $Date: 2006/06/15 20:41:55 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -574,12 +574,6 @@ void CtiConnection::OutThread()
     }
 
     forceTermination();
-
-    if( MyMsg )
-    {
-        delete MyMsg;
-        MyMsg = NULL;
-    }
 
     if(getDebugLevel() & DEBUGLEVEL_CONNECTION)
     {
