@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.187 $
-* DATE         :  $Date: 2006/06/15 14:44:06 $
+* REVISION     :  $Revision: 1.188 $
+* DATE         :  $Date: 2006/06/15 21:53:06 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3520,7 +3520,7 @@ INT PerformRequestedCmd ( CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, INMESS *aI
                 status = ReturnLoadProfileData ( aPortRecord, dev, aInMessage, aOutMessage, traceList);
             }
 
-            processCommResult(status, aOutMessage->DeviceID, aOutMessage->TargetID, aOutMessage->Retry > 0, dev);
+            if(aOutMessage) processCommResult(status, aOutMessage->DeviceID, aOutMessage->TargetID, aOutMessage->Retry > 0, dev);
 
             if(status != NORMAL)
             {
