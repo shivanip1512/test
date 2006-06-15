@@ -24,6 +24,7 @@ import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointFactory;
+import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.db.customer.CICustomerPointType;
 import com.cannontech.database.db.point.Point;
@@ -118,10 +119,13 @@ public class CustomerPointTypeHelper {
                                                              pointId, 
                                                              0, 
                                                              PointUnits.UOMID_UNDEF);
+            point.getPoint().setArchiveType(PointTypes.ARCHIVE_ON_TIMER_OR_UPDATE);
+            point.getPoint().setArchiveInterval(7*24*60*60); // 1 week as seconds
             DBPersistentFuncs.performDBChange(point, Transaction.INSERT);
         }
         CICustomerPointData customerPoint = new CICustomerPointData();
         customerPoint.setType(type);
+        customerPoint.setOptionalLabel(type.getLabel());
         customerPoint.setPointId(pointId);
         customer.addPoint(customerPoint);
         
