@@ -89,6 +89,8 @@ public class EconomicEventScheduler extends EventScheduler {
         List<EconomicEventParticipant> participants = economicService.getParticipants(event);
         EconomicEventPricing eventPricing = event.getRevisions().get(1);
         
+        attemptDeleteNotification(event, NotificationReason.STOPPING);
+        
         createNotification(participants,
                            eventPricing,
                            NotificationReason.CANCELING,
@@ -122,15 +124,15 @@ public class EconomicEventScheduler extends EventScheduler {
         final EconomicEventNotif eventNotif = (EconomicEventNotif) _eventNotif;
         final EconomicEvent event = eventNotif.getParticipant().getEvent();
         final EconomicEventPricing eventRevision = eventNotif.getRevision();
-        NotificationReason reason = eventNotif.getReason();
+        final NotificationReason reason = eventNotif.getReason();
         
-        final Notification notif = new Notification("economic");
-        fillInBaseAttribs(notif, event);
-        notif.addData("action", reason.toString());
         
         final NotificationBuilder notifBuilder = new NotificationBuilder() {
 
             public Notification buildNotification(Contactable contact) {
+                final Notification notif = new Notification("economic");
+                fillInBaseAttribs(notif, event);
+                notif.addData("action", reason.toString());
                 TimeZone timeZone = contact.getTimeZone();
                 fillInFormattedTimes(notif, event, timeZone);
                 return notif;
