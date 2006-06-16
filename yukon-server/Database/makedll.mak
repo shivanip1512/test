@@ -88,6 +88,7 @@ tbl_pt_analog.obj \
 tbl_pt_base.obj \
 tbl_pt_limit.obj \
 tbl_pt_status.obj \
+tbl_pt_trigger.obj \
 tbl_pt_unit.obj \
 tbl_route.obj \
 tbl_rtcarrier.obj \
@@ -536,6 +537,10 @@ tbl_pt_status.obj:	yukon.h precompiled.h ctidbgmem.h pointdefs.h \
 		dbmemobject.h dbaccess.h sema.h resolvers.h pointtypes.h \
 		db_entry_defines.h desolvers.h logger.h thread.h ctitime.h \
 		CtiPCPtrQueue.h rwutil.h boost_time.h
+tbl_pt_trigger.obj:	yukon.h precompiled.h ctidbgmem.h tbl_pt_trigger.h \
+		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
+		mutex.h guard.h cticonnect.h netports.h dbmemobject.h \
+		dbaccess.h sema.h logger.h thread.h ctitime.h CtiPCPtrQueue.h
 tbl_pt_unit.obj:	yukon.h precompiled.h ctidbgmem.h tbl_pt_unit.h \
 		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
 		mutex.h guard.h cticonnect.h netports.h dbmemobject.h \
