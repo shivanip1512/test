@@ -1139,6 +1139,7 @@ void  CtiCommandParser::doParsePutStatus(const string &_CmdStr)
     CtiString   temp2;
     CtiString   token;
     unsigned int flag = 0;
+    boost::regex   re_offsetvalue("offset " + str_num + " value -?" + str_num);
 
     CtiTokenizer   tok(CmdStr);
 
@@ -1192,6 +1193,18 @@ void  CtiCommandParser::doParsePutStatus(const string &_CmdStr)
             }
         }
 
+        if(CmdStr.contains("offset "))
+        {
+            if(!(token = CmdStr.match(re_offsetvalue)).empty())
+            {
+                CtiTokenizer cmdtok(token);
+                cmdtok();
+
+                _cmd["offset"] = CtiParseValue( atoi(cmdtok().c_str()) );
+                cmdtok();
+                _cmd["value"]  = CtiParseValue( atoi(cmdtok().c_str()) );
+            }
+        }
         if(CmdStr.contains(" reset"))
         {
             if( _cmd.find("flag") != _cmd.end() )
