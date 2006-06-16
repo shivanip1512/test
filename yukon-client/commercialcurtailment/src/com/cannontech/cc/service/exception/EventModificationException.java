@@ -1,6 +1,6 @@
 package com.cannontech.cc.service.exception;
 
-public class EventModificationException extends Exception {
+public class EventModificationException extends RuntimeException {
 
     public EventModificationException(String message) {
         super(message);
