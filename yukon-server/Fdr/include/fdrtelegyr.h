@@ -44,7 +44,7 @@ class IM_EX_FDRTELEGYRAPI CtiFDRTelegyr : public CtiFDRInterface
    private:
 
       bool        _connected;
-      bool        _regFlag;
+//      bool        _regFlag;
       bool        _quit;
       bool        _reloadPending;
       bool        _skipProcessing;
@@ -58,6 +58,8 @@ class IM_EX_FDRTELEGYRAPI CtiFDRTelegyr : public CtiFDRInterface
       string   _apiVersion;
 
       CtiTime      _reloadTimer;
+
+      vector< CtiTelegyrGroup >  _groupList;
 
       typedef CtiFDRInterface Inherited;
 
@@ -131,6 +133,9 @@ class IM_EX_FDRTELEGYRAPI CtiFDRTelegyr : public CtiFDRInterface
       void deleteGroups( void );
       void threadFunctionGetDataFromTelegyr( void );
       void buildAndRegisterGroups( void );
+      void receivedAnalog( int arraySize, int group_num, int group_type, int first, int last, int result[] );
+      void receivedDigital( int arraySize, int group_num, int group_type, int first, int last, int result[] );
+      void receivedCounter( int arraySize, int group_num, int group_type, int first, int last, int result[] );
 
       int readConfig( void );
 
