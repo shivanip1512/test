@@ -98,7 +98,7 @@ public class ReportTypes
 	public static final int HECO_LMEVENT_SUMMARY_DATA = 29;
 	public static final int HECO_MONTHLY_BILLING_DATA = 30;
 	public static final int HECO_CUSTOMER_MONTHLY_BILLING_DATA = 31;
-	public static final int HECO_DSMIS_DATA = 31;
+	public static final int HECO_DSMIS_DATA = 32;
 	
 	private static Class[] typeToClassMap =
 	{
