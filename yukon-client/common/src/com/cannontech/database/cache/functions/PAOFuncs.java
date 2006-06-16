@@ -28,6 +28,7 @@ private PAOFuncs() {
  */
 /* This method returns a HashTable that has a LiteYukonPAObject as the key and */
 /*   an ArrayList of LitePoints as its values */
+/*
 public static java.util.Hashtable getAllLitePAOWithPoints()
 {
 	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
@@ -65,6 +66,7 @@ public static java.util.Hashtable getAllLitePAOWithPoints()
 
 	return paoTable;
 }
+*/
 /**
  * This method was created in VisualAge.
  * @return int[][]
