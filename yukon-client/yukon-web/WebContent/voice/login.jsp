@@ -1,3 +1,5 @@
+<?xml version="1.0"?>
+<vxml version="2.0">
 <%@ page import="com.cannontech.database.cache.functions.ContactFuncs" %>
 <%@ page import="com.cannontech.database.data.lite.LiteContact" %>
 <%@ page import="com.cannontech.database.cache.functions.AuthFuncs" %>
@@ -5,17 +7,13 @@
 <%@ page import="com.cannontech.database.cache.functions.YukonUserFuncs" %>
 <%@ page import="com.cannontech.database.cache.functions.EnergyCompanyFuncs" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
-<?xml version="1.0"?>
-<vxml version="2.0">
 
 
 <%
 String contactid = request.getParameter("CONTACTID");
 LiteContact contact = ContactFuncs.getContact(Integer.parseInt(contactid));
-contact.getLoginID();
 LiteYukonUser user = YukonUserFuncs.getLiteYukonUser(contact.getLoginID());
 String introText = EnergyCompanyFuncs.getEnergyCompanyProperty(user, IvrRole.INTRO_TEXT);
-//String introText = AuthFuncs.getRolePropertyValue(contact.getLoginID(), IvrRole.INTRO_TEXT);
 
 String tries =request.getParameter("TRIES");
 if (tries == null) {
