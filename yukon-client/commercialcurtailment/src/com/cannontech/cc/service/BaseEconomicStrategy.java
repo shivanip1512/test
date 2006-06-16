@@ -51,7 +51,6 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.customer.CICustomerPointType;
 import com.cannontech.enums.EconomicEventAction;
 import com.cannontech.enums.NotificationState;
-import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.INotifConnection;
 
 public abstract class BaseEconomicStrategy extends StrategyBase {
@@ -63,6 +62,7 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
     private EconomicEventPricingWindowDao economicEventPricingWindowDao;
     private EconomicEventParticipantSelectionDao eventParticipantSelectionDao;
     private EconomicEventParticipantSelectionWindowDao eventParticipantSelectionWindowDao;
+    private TransactionTemplate transactionTemplate;
     private SimplePointAccess pointAccess;
     private EconomicService economicService;
     
@@ -255,53 +255,34 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
     }
 
     public EconomicEvent createEvent(final EconomicBuilder builder) throws EventCreationException {
+        EconomicEvent event;
         
-        try {
-            TransactionTemplate template = YukonSpringHook.getTransactionTemplate();
-            EconomicEvent event;
-            event = (EconomicEvent) template.execute(new TransactionCallback() {
-                public Object doInTransaction(TransactionStatus status) {
-                    EconomicEvent event;
-                    try {
-                        // verify times
-                        verifyTimes(builder);
-                        
-                        // verify prices
-                        verifyPrices(builder);
-                        
-                        if (!builder.getEvent().isEventExtension()) {
-                            // verify customers for non-extension events
-                            verifyCustomers(builder);
-                        }
-                        event = createDatabaseObjects(builder);
-                    } catch (EventCreationException e) {
-                        throw new EventCreationWrapperException(e);
-                    }
-                    return event;
+        event = (EconomicEvent) transactionTemplate.execute(new TransactionCallback() {
+            public Object doInTransaction(TransactionStatus status) {
+                EconomicEvent event;
+                // verify times
+                verifyTimes(builder);
+                
+                // verify prices
+                verifyPrices(builder);
+                
+                if (!builder.getEvent().isEventExtension()) {
+                    // verify customers for non-extension events
+                    verifyCustomers(builder);
                 }
-            });
-            
-            
-            if (event.isEventExtension()) {
-                getNotificationProxy().sendEconomicNotification(event.getId(), 1, EconomicEventAction.EXTENDING);
-            } else {
-                getNotificationProxy().sendEconomicNotification(event.getId(), 1, EconomicEventAction.STARTING);
+                event = createDatabaseObjects(builder);
+                return event;
             }
-            
-            return event;
-        } catch (EventCreationWrapperException e) {
-            throw e.getNestedException();
+        });
+        
+        
+        if (event.isEventExtension()) {
+            getNotificationProxy().sendEconomicNotification(event.getId(), 1, EconomicEventAction.EXTENDING);
+        } else {
+            getNotificationProxy().sendEconomicNotification(event.getId(), 1, EconomicEventAction.STARTING);
         }
-    }
-    
-    class EventCreationWrapperException extends RuntimeException {
-        private final EventCreationException ex;
-        public EventCreationWrapperException(EventCreationException ex) {
-            this.ex = ex;
-        }
-        public EventCreationException getNestedException() {
-            return ex;
-        }
+        
+        return event;
     }
     
     protected void verifyCustomers(EconomicBuilder builder) throws EventCreationException {
@@ -772,6 +753,10 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
     }
 
     protected abstract boolean canCustomerParticipateInExtension(EconomicBuilder builder, CICustomerStub customer);
+
+    public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
+        this.transactionTemplate = transactionTemplate;
+    }
 
 
 }
