@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_ptdispatch.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2005/12/20 17:16:07 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2006/06/16 20:07:47 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -367,15 +367,23 @@ UINT CtiTablePointDispatch::getTags() const
 
 UINT CtiTablePointDispatch::setTags(UINT tags)
 {
-    setDirty(TRUE);
+    UINT oldTags = _tags;
     _tags |= tags;
+    if( oldTags != _tags )
+    {
+        setDirty(TRUE);
+    }
     return _tags;
 }
 
 UINT CtiTablePointDispatch::resetTags(UINT mask)
 {
-    setDirty(TRUE);
+    UINT oldTags = _tags;
     _tags &= ~mask;
+    if( oldTags != _tags )
+    {
+        setDirty(TRUE);
+    }
     return _tags;
 }
 
