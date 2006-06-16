@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/pending_info.h-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2005/12/20 17:16:58 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2006/06/16 20:05:17 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -90,8 +90,10 @@ protected:
     INT         _controlState;       // What is this control doing?
     UINT        _controlTimeout;    // Number of seconds from _controlTime that we need to be handled.
     DOUBLE      _controlCompleteValue; // What output value indicates that this control completed successfully?
+    DOUBLE      _controlCompleteDeadband; // How close do I need to get to be considered successful?
 
     CtiTime      _lastHistoryPost;       // Time this was last posted.
+    bool        _excludeFromHistory;  //Do not create history logs for this point!
 
     CtiTableLMControlHistory _control;
 
@@ -127,6 +129,10 @@ private:
     INT getControlState() const;
     UINT getControlTimeout() const;
     DOUBLE getControlCompleteValue() const;
+    DOUBLE getControlCompleteDeadband() const;
+    bool getExcludeFromHistory() const;
+
+    bool isInControlCompleteState( DOUBLE &value );
 
     CtiSignalMsg* getSignal();
     const CtiSignalMsg* getSignal() const;
@@ -143,6 +149,8 @@ private:
     CtiPendingPointOperations& setControlTimeout( UINT ld );
     CtiPendingPointOperations& setSignal( CtiSignalMsg *pSig );
     CtiPendingPointOperations& setControlCompleteValue( const DOUBLE &aDbl );
+    CtiPendingPointOperations& setControlCompleteDeadband( const DOUBLE &aDbl );
+    CtiPendingPointOperations& setExcludeFromHistory(bool exclude);
     CtiPendingPointOperations& setPointData( CtiPointDataMsg *pDat );
 
     const CtiTableLMControlHistory& getControl() const;

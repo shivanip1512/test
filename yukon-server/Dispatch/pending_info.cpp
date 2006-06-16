@@ -13,8 +13,8 @@ using namespace std;
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/pending_info.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/12/20 17:16:57 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2006/06/16 20:05:17 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -30,7 +30,9 @@ _limitDuration(0),
 _time(YUKONEOT),
 _controlState( noControl ),
 _controlTimeout(300),
-_controlCompleteValue(-1.0)
+_controlCompleteValue(-1.0),
+_controlCompleteDeadband(0),
+_excludeFromHistory(false)
 {
 }
 
@@ -195,9 +197,27 @@ DOUBLE CtiPendingPointOperations::getControlCompleteValue() const
 {
     return _controlCompleteValue;
 }
+DOUBLE CtiPendingPointOperations::getControlCompleteDeadband() const
+{
+    return _controlCompleteDeadband;
+}
+bool CtiPendingPointOperations::getExcludeFromHistory() const
+{
+    return _excludeFromHistory;
+}
 CtiPendingPointOperations& CtiPendingPointOperations::setControlCompleteValue( const DOUBLE &aDbl )
 {
     _controlCompleteValue = aDbl;
+    return *this;
+}
+CtiPendingPointOperations& CtiPendingPointOperations::setControlCompleteDeadband( const DOUBLE &aDbl )
+{
+    _controlCompleteDeadband = aDbl;
+    return *this;
+}
+CtiPendingPointOperations& CtiPendingPointOperations::setExcludeFromHistory( const bool exclude )
+{
+    _excludeFromHistory = exclude;
     return *this;
 }
 
@@ -227,7 +247,9 @@ CtiPendingPointOperations& CtiPendingPointOperations::operator=(const CtiPending
         _controlState = aRef.getControlState();
         _controlTimeout = aRef.getControlTimeout();
         _controlCompleteValue = aRef.getControlCompleteValue();
+        _controlCompleteDeadband = aRef.getControlCompleteDeadband();
         _control = aRef.getControl();
+        _excludeFromHistory = aRef.getExcludeFromHistory();
 
         _opidMap = aRef.getOffsetMap();
 
@@ -378,4 +400,13 @@ CtiTime CtiPendingPointOperations::getLastHistoryPost() const
     return _lastHistoryPost;
 }
 
+bool CtiPendingPointOperations::isInControlCompleteState( DOUBLE &value )
+{
+    bool retVal = false;
 
+    if( (_controlCompleteDeadband + _controlCompleteValue) >= value && (_controlCompleteValue - _controlCompleteDeadband) <= value )
+    {
+        retVal = true;
+    }
+    return retVal;
+}
