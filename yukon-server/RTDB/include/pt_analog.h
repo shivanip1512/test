@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_analog.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2006/03/23 15:29:19 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2006/06/16 20:06:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -71,6 +71,12 @@ public:
       _pointAnalog.DecodeDatabaseReader(rdr);
    }
 
+   UINT adjustStaticTags(UINT &tag) const
+   {
+      if(getType() == AnalogOutputPointType) { tag |= TAG_ATTRIB_CONTROL_AVAILABLE; }
+      return Inherited::adjustStaticTags(tag);
+   }
+
    virtual void DumpData()
    {
       Inherited::DumpData();       // get the base class handled
@@ -86,6 +92,8 @@ public:
    virtual void         setDataOffset(DOUBLE d)       { _pointAnalog.setDataOffset(d); }
 
 };
+
+typedef CtiPointAnalog CtiPointAnalogOutput;//Someday CtiPointAnalogOutput may be its own class
 
 #if VSLICK_TAG_WORKAROUND
 typedef CtiPointAnalog * CtiPointAnalogSPtr;
