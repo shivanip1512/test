@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/pt_base.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2006/04/05 16:23:52 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2006/06/16 20:06:50 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -177,7 +177,9 @@ CtiPointBase::CtiPointBase(LONG pid) :
 _pointBase(pid),
 _fpDynFactory(DefDynamicFactory),
 _dynamic(NULL),
-_alarming(NULL)
+_alarming(NULL),
+_triggerPoint(false),
+_verificationPoint(false)
 {}
 
 // Copy constructor.....
@@ -185,7 +187,9 @@ CtiPointBase::CtiPointBase(const CtiPointBase& aRef) :
 _pointBase(-1),
 _fpDynFactory(DefDynamicFactory),
 _dynamic(NULL),
-_alarming(NULL)
+_alarming(NULL),
+_triggerPoint(false),
+_verificationPoint(false)
 {
     *this = aRef;
 }
@@ -339,4 +343,24 @@ bool CtiPointBase::isA(RWDBReader &rdr) const
     return I_is;
 }
 
+void CtiPointBase::setIsTriggerPoint(bool isTrigPoint)
+{
+    _triggerPoint = isTrigPoint;
+}
 
+//Valid only in dispatch!!!! 5/19/2006
+bool CtiPointBase::isATriggerPoint()
+{
+    return _triggerPoint;
+}
+
+void CtiPointBase::setIsVerificationPoint(bool isVerifyPoint)
+{
+    _verificationPoint = isVerifyPoint;
+}
+
+//Valid only in dispatch!!!! 5/19/2006
+bool CtiPointBase::isAVerificationPoint()
+{
+    return _verificationPoint;
+}

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_base.h-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2006/04/05 16:23:53 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2006/06/16 20:06:50 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,11 +19,11 @@
 #include <rw/db/reader.h>
 #include "boost/shared_ptr.hpp"
 using boost::shared_ptr;
-
 #include "dbmemobject.h"
 #include "dlldefs.h"
 #include "resolvers.h"
 // #include "rtdb.h"
+
 
 #include "pointdefs.h"
 #include "pointtypes.h"
@@ -32,7 +32,7 @@ using boost::shared_ptr;
 #include "tbl_pt_base.h"
 // #include "tbl_pt_alarm.h"
 #include "yukon.h"
-
+#include "tbl_pt_trigger.h"
 class CtiPointBase;     // Forward declaration...
 class CtiTablePointAlarming;
 
@@ -54,6 +54,9 @@ protected:
 
    CtiDynamicPointBase     *_dynamic;
    CtiTablePointAlarming   *_alarming;
+
+   bool                    _triggerPoint;
+   bool                    _verificationPoint;
 
 public:
 
@@ -103,6 +106,11 @@ public:
 
    BOOL              getArchivePending() const;
    BOOL              isArchivePending() const;
+
+   void              setIsTriggerPoint(bool isTrigPoint = true);
+   void              setIsVerificationPoint(bool isTrigPoint = true);
+   bool              isATriggerPoint(); //Only in Dispatch!!
+   bool              isAVerificationPoint(); //Only in Dispatch!!
 
    CtiPointType_t    getType() const;
    CtiPointType_t    isA() const;
