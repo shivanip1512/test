@@ -2,6 +2,8 @@ package com.cannontech.cc.service;
 
 import java.util.List;
 
+import org.apache.commons.lang.Validate;
+
 import com.cannontech.cc.dao.CustomerDao;
 import com.cannontech.cc.dao.EconomicEventDao;
 import com.cannontech.cc.dao.EconomicEventNotifDao;
@@ -34,6 +36,7 @@ public class EconomicService {
     }
     
     public BaseEconomicStrategy getEconomicStrategy(EconomicEvent event) {
+        Validate.notNull(event, "EconomicEvent must not be null.");
         StrategyBase strategy = strategyFactory.getStrategy(event.getProgram());
         return (BaseEconomicStrategy) strategy;
     }
@@ -106,6 +109,10 @@ public class EconomicService {
 
     public void setEconomicEventNotifDao(EconomicEventNotifDao economicEventNotifDao) {
         this.economicEventNotifDao = economicEventNotifDao;
+    }
+
+    public void setStrategyFactory(StrategyFactory strategyFactory) {
+        this.strategyFactory = strategyFactory;
     }
 
 
