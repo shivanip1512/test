@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.150 $
-* DATE         :  $Date: 2006/06/15 20:41:55 $
+* REVISION     :  $Revision: 1.151 $
+* DATE         :  $Date: 2006/06/16 20:07:22 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -56,6 +56,7 @@
 #include "pt_accum.h"
 #include "pt_analog.h"
 #include "pt_status.h"
+#include "pttrigger.h"
 
 #include "dev_base.h"
 
@@ -107,6 +108,7 @@ DLLEXPORT BOOL  bGCtrlC = FALSE;
 
 /* Global Variables */
 CtiPointClientManager      PointMgr;  // The RTDB for memory points....
+CtiPointTriggerManager     TriggerMgr; // The RTDB for point triggers....
 CtiVanGoghExecutorFactory  ExecFactory;
 
 static map< long, CtiPointDataMsg* > fullBoatMap;
@@ -962,63 +964,68 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
 
                                 bool is_a_control = writeControlMessageToPIL(did, rawstate, boost::static_pointer_cast<CtiPointStatus>(pPoint), Cmd);
 
-                                if(isDeviceGroupType(did))      // Only group class paos can accumulate control history.
+                                CtiPointDataMsg *pPseudoValPD = 0;
+                                PtVerifyTriggerSPtr verificationPtr;
+
+                                CtiPendingPointOperations *pendingControlRequest = CTIDBG_new CtiPendingPointOperations(pPoint->getID());
+                                pendingControlRequest->setType(CtiPendingPointOperations::pendingControl);
+                                pendingControlRequest->setControlState( CtiPendingPointOperations::controlSentToPorter );
+                                pendingControlRequest->setTime( Cmd->getMessageTime() );
+                                pendingControlRequest->setControlCompleteValue( (DOUBLE) rawstate );
+                                pendingControlRequest->setControlTimeout( pPoint->getControlExpirationTime() );
+                                pendingControlRequest->setExcludeFromHistory(!isDeviceGroupType(did));
+
+                                if( verificationPtr = TriggerMgr.getPointTriggerFromPoint(pPoint->getID()) )
                                 {
-                                    CtiPointDataMsg *pPseudoValPD = 0;
-
-                                    CtiPendingPointOperations *pendingControlRequest = CTIDBG_new CtiPendingPointOperations(pPoint->getID());
-                                    pendingControlRequest->setType(CtiPendingPointOperations::pendingControl);
-                                    pendingControlRequest->setControlState( CtiPendingPointOperations::controlSentToPorter );
-                                    pendingControlRequest->setTime( Cmd->getMessageTime() );
-                                    pendingControlRequest->setControlCompleteValue( (DOUBLE) rawstate );
-                                    pendingControlRequest->setControlTimeout( pPoint->getControlExpirationTime() );
-
-                                    pendingControlRequest->getControl().setPAOID( did );
-                                    pendingControlRequest->getControl().setStartTime(CtiTime(YUKONEOT));
-                                    pendingControlRequest->getControl().setControlDuration(0);
-
-                                    string devicename= resolveDeviceName(pPoint);
-
-                                    if( pPoint->isPseudoPoint() )
-                                    {
-                                        // We are going to fake a rawstate behavior here since no one else is likely to do it for us...
-                                        pPseudoValPD = CTIDBG_new CtiPointDataMsg(pPoint->getID(), (DOUBLE) rawstate, NormalQuality, pPoint->getType());
-                                    }
-                                    else if( is_a_control )
-                                    {
-                                        CtiSignalMsg *pFailSig = CTIDBG_new CtiSignalMsg(pPoint->getID(), Cmd->getSOE(), devicename + " / " + pPoint->getName() + ": Commanded Control " + ResolveStateName(pPoint->getStateGroupID(), rawstate) + " Failed", getAlarmStateName( pPoint->getAlarming().getAlarmCategory(CtiTablePointAlarming::commandFailure) ), GeneralLogType, pPoint->getAlarming().getAlarmCategory(CtiTablePointAlarming::commandFailure), Cmd->getUser());
-
-                                        if(pFailSig->getSignalCategory() > SignalEvent)
-                                        {
-                                            pFailSig->setTags((pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) | (pPoint->getAlarming().isAutoAcked(CtiTablePointAlarming::commandFailure) ? 0 : TAG_UNACKNOWLEDGED_ALARM));
-                                            pFailSig->setLogType(AlarmCategoryLogType);
-                                        }
-                                        pFailSig->setCondition(CtiTablePointAlarming::commandFailure);
-
-                                        pendingControlRequest->setSignal( pFailSig );
-                                    }
-
-                                    addToPendingSet(pendingControlRequest, Cmd->getMessageTime());
-
-                                    if(gDispatchDebugLevel & DISPATCH_DEBUG_CONTROLS)
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << CtiTime() << " " << devicename << " / " << pPoint->getName() << " has gone CONTROL SUBMITTED. Control expires at " << CtiTime( Cmd->getMessageTime() + pPoint->getControlExpirationTime()) << endl;
-                                    }
-
-                                    CtiSignalMsg *pCRP = CTIDBG_new CtiSignalMsg(pPoint->getID(), Cmd->getSOE(), "Control " + ResolveStateName(pPoint->getStateGroupID(), rawstate) + " Sent", string(), GeneralLogType, SignalEvent, Cmd->getUser());
-                                    MainQueue_.putQueue( pCRP );
-                                    pCRP = 0;
-                                    if(pPseudoValPD) MainQueue_.putQueue( pPseudoValPD );
-                                    pPseudoValPD = 0;
-
-                                    pDyn->getDispatch().setTags( TAG_CONTROL_PENDING );
+                                    pendingControlRequest->setControlTimeout( verificationPtr->dbTriggerData.getCommandTimeOut() );
+                                    pendingControlRequest->setControlCompleteDeadband(verificationPtr->dbTriggerData.getVerificationDeadband());
                                 }
-                                else
+
+                                pendingControlRequest->getControl().setPAOID( did );
+                                pendingControlRequest->getControl().setStartTime(CtiTime(YUKONEOT));
+                                pendingControlRequest->getControl().setControlDuration(0);
+
+                                string devicename= resolveDeviceName(pPoint);
+
+                                if( pPoint->isPseudoPoint() )
+                                {
+                                    // We are going to fake a rawstate behavior here since no one else is likely to do it for us...
+                                    pPseudoValPD = CTIDBG_new CtiPointDataMsg(pPoint->getID(), (DOUBLE) rawstate, NormalQuality, pPoint->getType());
+                                }
+                                else if( is_a_control )
+                                {
+                                    CtiSignalMsg *pFailSig = CTIDBG_new CtiSignalMsg(pPoint->getID(), Cmd->getSOE(), devicename + " / " + pPoint->getName() + ": Commanded Control " + ResolveStateName(pPoint->getStateGroupID(), rawstate) + " Failed", getAlarmStateName( pPoint->getAlarming().getAlarmCategory(CtiTablePointAlarming::commandFailure) ), GeneralLogType, pPoint->getAlarming().getAlarmCategory(CtiTablePointAlarming::commandFailure), Cmd->getUser());
+
+                                    if(pFailSig->getSignalCategory() > SignalEvent)
+                                    {
+                                        pFailSig->setTags((pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) | (pPoint->getAlarming().isAutoAcked(CtiTablePointAlarming::commandFailure) ? 0 : TAG_UNACKNOWLEDGED_ALARM));
+                                        pFailSig->setLogType(AlarmCategoryLogType);
+                                    }
+                                    pFailSig->setCondition(CtiTablePointAlarming::commandFailure);
+
+                                    pendingControlRequest->setSignal( pFailSig );
+                                }
+
+                                addToPendingSet(pendingControlRequest, Cmd->getMessageTime());
+
+                                if(gDispatchDebugLevel & DISPATCH_DEBUG_CONTROLS)
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " " << resolveDeviceName(pPoint) << " / " << pPoint->getName() << " CONTROL SENT to port control. Control expires at " << CtiTime( Cmd->getMessageTime() + pPoint->getControlExpirationTime()) << endl;
+                                    dout << CtiTime() << " " << devicename << " / " << pPoint->getName() << " has gone CONTROL SUBMITTED. Control expires at " << CtiTime( Cmd->getMessageTime() + pPoint->getControlExpirationTime()) << endl;
                                 }
+
+                                CtiSignalMsg *pCRP = CTIDBG_new CtiSignalMsg(pPoint->getID(), Cmd->getSOE(), "Control " + ResolveStateName(pPoint->getStateGroupID(), rawstate) + " Sent", string(), GeneralLogType, SignalEvent, Cmd->getUser());
+                                MainQueue_.putQueue( pCRP );
+                                pCRP = 0;
+                                if(pPseudoValPD) MainQueue_.putQueue( pPseudoValPD );
+                                pPseudoValPD = 0;
+
+                                pDyn->getDispatch().setTags( TAG_CONTROL_PENDING );
+                            }
+                            else
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << CtiTime() << " " << resolveDeviceName(pPoint) << " / " << pPoint->getName() << " CONTROL SENT to port control. Control expires at " << CtiTime( Cmd->getMessageTime() + pPoint->getControlExpirationTime()) << endl;
                             }
                         }
                     }
@@ -1209,6 +1216,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                             CtiPendingPointOperations *pendingSeasonReset = CTIDBG_new CtiPendingPointOperations(pControlPoint->getID());
                             pendingSeasonReset->setType(CtiPendingPointOperations::pendingControl);                  // Must be a pendingControl Type to help us if we are currently controlling this group!
                             pendingSeasonReset->setControlState(CtiPendingPointOperations::controlSeasonalReset);    // control state clues the guts on what we are trying to do for this command.
+                            pendingSeasonReset->setExcludeFromHistory(!isDeviceGroupType(pControlPoint->getDeviceID()));
                             pendingSeasonReset->setTime( Cmd->getMessageTime() );
 
                             pendingSeasonReset->getControl().setPAOID(TempPoint->getDeviceID());
@@ -1633,6 +1641,7 @@ INT CtiVanGogh::archivePointDataMessage(const CtiPointDataMsg &aPD)
 
                 if( aPD.getTime() >= pDyn->getTimeStamp() || (aPD.getTags() & TAG_POINT_FORCE_UPDATE) )
                 {
+                    /* This cannot ever happen due to the check above JMO 5/23/2006
                     if( pDyn->getDispatch().getTags() & MASK_ANY_SERVICE_DISABLE ) // (MASK_ANY_SERVICE_DISABLE | MASK_ANY_CONTROL_DISABLE) )
                     {
                         // This one cannot go unless manual tag is set.
@@ -1641,12 +1650,16 @@ INT CtiVanGogh::archivePointDataMessage(const CtiPointDataMsg &aPD)
                             pDyn->setPoint(aPD.getTime(), aPD.getMillis(), aPD.getValue(), aPD.getQuality(), (aPD.getTags() & ~MASK_ANY_ALARM) | _signalManager.getTagMask(aPD.getId()) );
                         }
                     }
-                    else
+                    else*/
                     {
                         // Set the point in memory to the current value.  Archive if an archive is pending.
                         // Do not update with an older time!
                         // Unless we are in the forced condition
                         pDyn->setPoint(aPD.getTime(), aPD.getMillis(), aPD.getValue(), aPD.getQuality(), (aPD.getTags() & ~MASK_ANY_ALARM) | _signalManager.getTagMask(aPD.getId()));
+                        if( TempPoint->isATriggerPoint() )
+                        {
+                            sendPointTriggers( aPD , TempPoint );
+                        }
                     }
                 }
 
@@ -2479,6 +2492,9 @@ int CtiVanGogh::processCommErrorMessage(CtiCommErrorHistoryMsg *pMsg)
 int CtiVanGogh::processControlMessage(CtiLMControlHistoryMsg *pMsg)
 {
     int status = NORMAL;
+    bool isPseudo = false;
+    CtiPointDataMsg *pPseudoValPD = 0;
+    PtVerifyTriggerSPtr verificationPtr;
 
     LARGE_INTEGER startTime, t1Time, t2Time, t3Time, t4Time, t5Time, t6Time, t7Time;
 
@@ -2511,6 +2527,19 @@ int CtiVanGogh::processControlMessage(CtiLMControlHistoryMsg *pMsg)
                 pendingControlLMMsg->setTime( pMsg->getStartDateTime() );
                 pendingControlLMMsg->setControlCompleteValue( (DOUBLE) pMsg->getRawState() );
                 pendingControlLMMsg->setControlTimeout( pPoint->getControlExpirationTime() );
+                pendingControlLMMsg->setExcludeFromHistory(!isDeviceGroupType(pPoint->getID()));
+
+                if( verificationPtr = TriggerMgr.getPointTriggerFromPoint(pPoint->getID()) )
+                {
+                    pendingControlLMMsg->setControlTimeout(verificationPtr->dbTriggerData.getCommandTimeOut());
+                    pendingControlLMMsg->setControlCompleteDeadband(verificationPtr->dbTriggerData.getVerificationDeadband());
+
+                    if( verificationPtr->dbTriggerData.getVerificationID() == 0 )
+                    {
+                        //So we dont verify, we are a pseudo. Handle the pseudo point here!
+                        isPseudo = true;
+                    }
+                }
 
                 // We prime the pending control object here, where we know all there is to know.
                 pendingControlLMMsg->getControl().setPAOID(pMsg->getPAOId());
@@ -2544,13 +2573,26 @@ int CtiVanGogh::processControlMessage(CtiLMControlHistoryMsg *pMsg)
 
                 QueryPerformanceCounter(&t5Time);
 
-                addToPendingSet( pendingControlLMMsg, pMsg->getMessageTime() );
+                if( isPseudo )
+                {
+                    CtiPendingPointOperations *controlCompleteControlMsg = CTIDBG_new CtiPendingPointOperations(*pendingControlLMMsg);
+                    addToPendingSet( pendingControlLMMsg, pMsg->getMessageTime() );
+
+                    controlCompleteControlMsg->setControlState(CtiPendingPointOperations::controlCompleteCommanded);
+                    addToPendingSet( controlCompleteControlMsg, pMsg->getMessageTime() );
+                }
+                else
+                {
+                    addToPendingSet( pendingControlLMMsg, pMsg->getMessageTime() );
+                }
                 QueryPerformanceCounter(&t6Time);
 
                 pDyn->getDispatch().setTags( TAG_CONTROL_PENDING );
                 bumpDeviceToAlternateRate( pPoint );
 
                 QueryPerformanceCounter(&t7Time);
+
+                pPseudoValPD = 0;
 
                 #if 0
                 if(PERF_TO_MS(t7Time, startTime, perfFrequency) > 500)
@@ -3548,6 +3590,40 @@ INT CtiVanGogh::checkPointDataStateQuality(CtiPointDataMsg  *pData, CtiMultiWrap
                         if(pPoint->isNumeric())
                         {
                             status = checkForNumericAlarms(pData, aWrap, pPoint);
+                            if( pPoint->isAVerificationPoint() )
+                            {
+                                PtVerifyTriggerSPtr verificationPtr;
+                                if( verificationPtr = TriggerMgr.getPointTriggerFromVerificationID(pPoint->getID()) )
+                                {
+                                    CtiPointSPtr pCtrlPt = PointMgr.getEqual(verificationPtr->dbTriggerData.getPointID());
+                            
+                                    if(pCtrlPt)      // We do know this point..
+                                    {
+                                        CtiDynamicPointDispatch *pCtrlDyn = (CtiDynamicPointDispatch*)pCtrlPt->getDynamic();
+                                        CtiPendable *pendable = CTIDBG_new CtiPendable(verificationPtr->dbTriggerData.getPointID(), CtiPendable::CtiPendableAction_ControlStatusComplete, NULL, pData->getTime() );
+                                        pendable->_value = pData->getValue();
+                                        pendable->_tags = pCtrlDyn->getDispatch().getTags();
+                                        _pendingOpThread.push( pendable );
+                                
+                                        if(pCtrlDyn->getDispatch().getTags() & TAG_CONTROL_PENDING)                                          // Are we still awaiting the start of control?
+                                        {
+                                            if(gDispatchDebugLevel & DISPATCH_DEBUG_CONTROLS)
+                                            {
+                                                if(pDyn->getValue() == pData->getValue())                       // Not changing, must be a control refresh
+                                                {
+                                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                    dout << CtiTime() << " " << resolveDeviceName(pPoint) << " / " << pPoint->getName() << " CONTROL CONTINUATION/COMPLETE." << endl;
+                                                }
+                                                else                                                            // Changing this time through.  Control begins now!
+                                                {
+                                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                    dout << CtiTime() << " " << resolveDeviceName(pPoint) << " / " << pPoint->getName() << " has gone CONTROL COMPLETE." << endl;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
                         else if(pPoint->isStatus())
                         {
@@ -4403,14 +4479,17 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
                     if(pChg != NULL && (pChg->getTypeOfChange() == ChangeTypeUpdate || pChg->getTypeOfChange() == ChangeTypeAdd))
                     {
                         PointMgr.refreshList(isPoint, NULL, pChg->getId());
+                        TriggerMgr.refreshList(pChg->getId(), PointMgr);
                     }
                     else if(pChg != NULL && pChg->getTypeOfChange() == ChangeTypeDelete)
                     {
                         PointMgr.orphan(pChg->getId());
+                        TriggerMgr.orphan(pChg->getId(), PointMgr);
                     }
                     else
                     {
                         PointMgr.refreshList(isPoint);
+                        TriggerMgr.refreshList(0, PointMgr);
                     }
                 }
                 else
@@ -7384,10 +7463,26 @@ void CtiVanGogh::checkStatusCommandFail(int alarm, CtiPointDataMsg *pData, CtiMu
 
     // We can only care about failure if we are a status/control point
     // and someone has sent out a command.  Otherwise this is irrelevant.
-    if(tags & TAG_ATTRIB_CONTROL_AVAILABLE)
+    if(tags & TAG_ATTRIB_CONTROL_AVAILABLE || point->isAVerificationPoint())
     {
         CtiPendable *pendable = CTIDBG_new CtiPendable(pData->getId(), CtiPendable::CtiPendableAction_ControlStatusComplete, NULL, pData->getTime() );
 
+        if( point->isAVerificationPoint() )
+        {
+            PtVerifyTriggerSPtr verificationPtr;
+            if( verificationPtr = TriggerMgr.getPointTriggerFromVerificationID(point->getID()) )
+            {
+                pendable->_pointID = verificationPtr->dbTriggerData.getPointID();
+
+                CtiPointSPtr pCtrlPt = PointMgr.getEqual(verificationPtr->dbTriggerData.getPointID());
+                            
+                if( pCtrlPt )      // We do know this point..
+                {
+                    CtiDynamicPointDispatch *pCtrlDyn = (CtiDynamicPointDispatch*)pCtrlPt->getDynamic();
+                    tags = pCtrlDyn->getDispatch().getTags();
+                }
+            }
+        }
         pendable->_value = pData->getValue();
         pendable->_tags = tags;
         _pendingOpThread.push( pendable );
@@ -7584,4 +7679,140 @@ void CtiVanGogh::sendbGCtrlC(void *who)
         dout << CtiTime() << " **** Checkpoint **** " << *strPtr << " has asked for shutdown."<< endl;
     }
     bGCtrlC = TRUE;
+}
+
+void CtiVanGogh::sendPointTriggers( const CtiPointDataMsg &aPD , CtiPointSPtr point )
+{
+    bool isValid = true;
+    if( point )
+    {
+        CtiLockGuard<CtiMutex> guard(TriggerMgr.getMux());
+        CtiPointTriggerManager::coll_type *pointMap = TriggerMgr.getPointIteratorFromTrigger(point->getPointID());
+        CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)point->getDynamic();
+    
+        double pointValue = aPD.getValue();
+    
+        if( !(pDyn->getDispatch().getTags() & (TAG_DISABLE_CONTROL_BY_POINT | TAG_DISABLE_CONTROL_BY_DEVICE)) )
+        {
+            if( pointMap )
+            {
+                CtiPointTriggerManager::spiterator iter;
+                for( iter = pointMap->begin(); iter != pointMap->end(); iter++ )
+                {
+                    if( iter->second->dbTriggerData.getTriggerDeadband() <= fabs(pointValue - iter->second->lastTriggerValue) )
+                    {
+                        if(gDispatchDebugLevel & DISPATCH_DEBUG_CONTROLS)
+                        {
+                            string devicename = resolveDeviceName(point);
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " Trigger recieved on trigger point: " << point->getPointID() << " for " << iter->second->dbTriggerData.getPointID() << endl;
+                        }
+                        CtiRequestMsg *pReq = 0;
+                        string cmdstr;
+        
+                        //Should we worry about a point that references itself (could be infinite loop if set to deadband == 0)
+                        CtiPointSPtr controlPoint = PointMgr.getEqual(iter->second->dbTriggerData.getPointID());
+                        if( controlPoint )
+                        {
+                            switch( controlPoint->getType() )
+                            {
+                                case AnalogOutputPointType:
+                                {
+                                    cmdstr = "putvalue analog " + CtiNumStr(controlPoint->getPointOffset()) + " " + CtiNumStr(pointValue);
+                                    isValid = true;
+                                    break;
+                                }
+                                case StatusPointType:
+                                {
+                                    cmdstr = "putstatus offset " + CtiNumStr(controlPoint->getPointOffset()) + " value " + CtiNumStr(pointValue);
+                                    isValid = true;
+                                    break;
+                                }
+                                default:
+                                {
+                                    isValid = false;
+                                    string devicename = resolveDeviceName(point);
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << CtiTime() << " Attempted trigger on  " << devicename << " / " << point->getName() << " failed, incorrect point type" << endl;
+                                }
+                            }
+
+                            if( isValid )
+                            {
+                                if(pReq = CTIDBG_new CtiRequestMsg( controlPoint->getDeviceID(), cmdstr ))
+                                {
+                                    pReq->setUser( aPD.getUser() );
+                                    pReq->setSource(DISPATCH_APPLICATION_NAME);
+                                    pReq->setMessagePriority( MAXPRIORITY - 1 );    // Make it sing!
+                                    writeMessageToClient((CtiMessage*&)pReq, string(PIL_REGISTRATION_NAME));
+                                }
+                                sendPendingControlRequest(aPD, controlPoint, iter->second);
+                                iter->second->lastTriggerValue = pointValue;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {
+            if(gDispatchDebugLevel & DISPATCH_DEBUG_CONTROLS)
+            {
+                string devicename = resolveDeviceName(point);
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Control disabled on " << devicename << " / " << point->getName() << endl;
+            }
+        }
+    }
+}
+
+void CtiVanGogh::sendPendingControlRequest(const CtiPointDataMsg &aPD, CtiPointSPtr point, PtVerifyTriggerSPtr verificationPtr)
+{
+    CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch *)point->getDynamic();
+    CtiPointDataMsg *pPseudoValPD = 0;
+
+    CtiPendingPointOperations *pendingControlRequest = CTIDBG_new CtiPendingPointOperations(point->getID());
+    pendingControlRequest->setType(CtiPendingPointOperations::pendingControl);
+    pendingControlRequest->setControlState( CtiPendingPointOperations::controlSentToPorter );
+    pendingControlRequest->setTime(CtiTime::now());
+    pendingControlRequest->setControlCompleteValue(aPD.getValue());
+    pendingControlRequest->setControlTimeout(verificationPtr->dbTriggerData.getCommandTimeOut());
+    pendingControlRequest->setControlCompleteDeadband(verificationPtr->dbTriggerData.getVerificationDeadband());
+    pendingControlRequest->setExcludeFromHistory(!isDeviceGroupType(point->getID()));
+
+    pendingControlRequest->getControl().setPAOID( point->getDeviceID() );
+    pendingControlRequest->getControl().setStartTime(CtiTime(YUKONEOT));
+    pendingControlRequest->getControl().setControlDuration(0);
+
+    string devicename = resolveDeviceName(point);
+
+    if( verificationPtr->dbTriggerData.getVerificationID() != 0 )
+    {
+        CtiSignalMsg *pFailSig = CTIDBG_new CtiSignalMsg(point->getID(), aPD.getSOE(), devicename + " / " + point->getName() + ": Triggered Control Failed", getAlarmStateName( point->getAlarming().getAlarmCategory(CtiTablePointAlarming::commandFailure) ), GeneralLogType, point->getAlarming().getAlarmCategory(CtiTablePointAlarming::commandFailure), aPD.getUser());
+
+        if(pFailSig->getSignalCategory() > SignalEvent)
+        {
+            pFailSig->setTags((pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) | (point->getAlarming().isAutoAcked(CtiTablePointAlarming::commandFailure) ? 0 : TAG_UNACKNOWLEDGED_ALARM));
+            pFailSig->setLogType(AlarmCategoryLogType);
+        }
+        pFailSig->setCondition(CtiTablePointAlarming::commandFailure);
+
+        pendingControlRequest->setSignal( pFailSig );
+    }
+
+    addToPendingSet(pendingControlRequest, CtiTime::now());
+
+    if(gDispatchDebugLevel & DISPATCH_DEBUG_CONTROLS)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " " << devicename << " / " << point->getName() << " has gone CONTROL SUBMITTED. Control expires at " << CtiTime( aPD.getMessageTime() + verificationPtr->dbTriggerData.getCommandTimeOut()) << endl;
+    }
+
+    CtiSignalMsg *pCRP = CTIDBG_new CtiSignalMsg(point->getID(), aPD.getSOE(), "Triggered Control Sent", string(), GeneralLogType, SignalEvent, aPD.getUser());
+    MainQueue_.putQueue( pCRP );
+    pCRP = 0;
+    if(pPseudoValPD) MainQueue_.putQueue( pPseudoValPD );
+    pPseudoValPD = 0;
+
+    pDyn->getDispatch().setTags( TAG_CONTROL_PENDING );
 }

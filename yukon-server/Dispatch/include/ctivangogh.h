@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/ctivangogh.h-arc  $
-* REVISION     :  $Revision: 1.48 $
-* DATE         :  $Date: 2006/06/15 20:41:55 $
+* REVISION     :  $Revision: 1.49 $
+* DATE         :  $Date: 2006/06/16 20:07:22 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -55,6 +55,7 @@ using std::iostream;
 #include "pendingopthread.h"
 #include "pending_info.h"
 #include "pt_status.h"
+#include "pttrigger.h"
 #include "signalmanager.h"
 #include "tagmanager.h"
 #include "tbl_state_grp.h"
@@ -156,6 +157,8 @@ private:
     void queueSignalToSystemLog( CtiSignalMsg *&pSig );
     void stopDispatch();
     static void sendbGCtrlC(void *who);
+    void sendPointTriggers( const CtiPointDataMsg &aPD , CtiPointSPtr point );
+    void sendPendingControlRequest(const CtiPointDataMsg &aPD, CtiPointSPtr point, PtVerifyTriggerSPtr verificationPtr);
 
     CtiPointDataMsg* createPointDataMsg(const CtiDynamicPointDispatch& pDyn);
 
