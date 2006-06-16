@@ -164,7 +164,8 @@ public class NewCustAccountAction implements ActionBase {
     						newUserName = firstName.toLowerCase() + lastName.toLowerCase();
     					login.getYukonUser().setUsername(newUserName);
     					login.getYukonUser().setPassword(new Long(java.util.Calendar.getInstance().getTimeInMillis()).toString()); 
-    					login.getYukonGroups().addElement(((com.cannontech.database.data.user.YukonGroup)LiteFactory.convertLiteToDBPers(custGroups[0])).getYukonGroup());
+                        if(custGroups.length > 0)
+                            login.getYukonGroups().addElement(((com.cannontech.database.data.user.YukonGroup)LiteFactory.convertLiteToDBPers(custGroups[0])).getYukonGroup());
     					login.getYukonUser().setStatus(UserUtils.STATUS_ENABLED);
     					//login.setEnergyCompany()
     					login = (YukonUser)
