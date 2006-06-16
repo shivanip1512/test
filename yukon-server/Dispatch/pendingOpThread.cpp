@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2006/05/16 19:55:40 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2006/06/16 20:04:56 $
 *
 * HISTORY      :
 * $Log: pendingOpThread.cpp,v $
+* Revision 1.31  2006/06/16 20:04:56  jotteson
+* Now modifies tags when removing a control. Can be told not to write control history if desired.
+*
 * Revision 1.30  2006/05/16 19:55:40  cplender
 * Problems were found in the processing of the control stop point at ER.
 *
@@ -443,7 +446,7 @@ void CtiPendingOpThread::doPendingControls(bool bShutdown)
                                 dout << CtiTime() << " **** REMOVAL Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             }
 #endif
-                            it = _pendingControls.erase(it);
+                            it = erasePendingControl(it);
                             continue;   // iterator has been repositioned!
                         }
                         else if(ppo.getControl().getControlDuration() < 0)
@@ -456,7 +459,7 @@ void CtiPendingOpThread::doPendingControls(bool bShutdown)
                                 dout << CtiTime() << " **** REMOVAL Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             }
 #endif
-                            it = _pendingControls.erase(it);
+                            it = erasePendingControl(it);
                             continue;   // iterator has been repositioned!
                         }
                         else
@@ -520,7 +523,7 @@ void CtiPendingOpThread::doPendingControls(bool bShutdown)
                                 dout << CtiTime() << " **** REMOVAL Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             }
 #endif
-                            it = _pendingControls.erase(it);
+                            it = erasePendingControl(it);
                             continue;   // iterator has been repositioned!
                         }
                     }
@@ -534,7 +537,7 @@ void CtiPendingOpThread::doPendingControls(bool bShutdown)
                                 dout << CtiTime() << " **** REMOVAL Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             }
 #endif
-                        it = _pendingControls.erase(it);
+                        it = erasePendingControl(it);
                         continue;   // iterator has been repositioned!
                     }
                     else if(ppo.getControlState() == CtiPendingPointOperations::controlSeasonalReset)
@@ -547,7 +550,7 @@ void CtiPendingOpThread::doPendingControls(bool bShutdown)
                                 dout << CtiTime() << " **** REMOVAL Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             }
 #endif
-                        it = _pendingControls.erase(it);
+                        it = erasePendingControl(it);
                         continue;   // iterator has been repositioned!
                     }
                     else
@@ -567,7 +570,7 @@ void CtiPendingOpThread::doPendingControls(bool bShutdown)
                                 dout << CtiTime() << " **** REMOVAL Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             }
 #endif
-                    it = _pendingControls.erase(it);
+                    it = erasePendingControl(it);
                     continue;   // iterator has been repositioned!
                 }
 
@@ -1066,7 +1069,7 @@ void CtiPendingOpThread::postControlHistoryPoints( CtiPendingPointOperations &pp
     CtiTime now;
     int poff;
 
-    if( (doit || ppc.getLastHistoryPost() <= now) )
+    if( (doit || ppc.getLastHistoryPost() <= now) && !ppc.getExcludeFromHistory() )
     {
         CtiPointNumericSPtr pPoint;
         double ctltime;
@@ -1143,7 +1146,7 @@ void CtiPendingOpThread::insertControlHistoryRow( CtiPendingPointOperations &ppc
 {
     createOrUpdateICControl(ppc.getControl().getPAOID(), ppc.getControl());     // This keeps it current in mem.
 
-    if(ppc.getControl().getStopTime() >= ppc.getControl().getStartTime())
+    if(ppc.getControl().getStopTime() >= ppc.getControl().getStartTime() && !ppc.getExcludeFromHistory())
     {
         CtiTableLMControlHistory *pTbl = CTIDBG_new CtiTableLMControlHistory(ppc.getControl());
         LONG chid = LMControlHistoryIdGen();
@@ -1479,7 +1482,7 @@ bool CtiPendingOpThread::loadICControlMap()
                         ppc.setTime( dynC.getStartTime() );
                         ppc.setControl(dynC);
 
-                        _pendingControls.insert( ppc ); // Writes to this set in this way can only occur prior to the thread starting up.  All others via processPendableQueue
+                        insertPendingControl( ppc ); // Writes to this set in this way can only occur prior to the thread starting up.  All others via processPendableQueue
                     }
                 }
             }
@@ -1577,7 +1580,7 @@ void CtiPendingOpThread::checkForControlBegin( CtiPendable *&pendable )
         // OK, we just got a change in value on a Status type point, and it is awaiting control!
         CtiPendingPointOperations &ppo = *it;
 
-        if( pendable->_value == ppo.getControlCompleteValue() )             // We are in the control state (value)?
+        if( ppo.isInControlCompleteState(pendable->_value) )                // We are in the control state (value)?
         {
             if(pendable->_tags & TAG_CONTROL_PENDING)                       // Are we still awaiting the start of control?
             {
@@ -1625,7 +1628,7 @@ void CtiPendingOpThread::checkControlStatusChange( CtiPendable *&pendable )
                                 dout << CtiTime() << " **** REMOVAL Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             }
 #endif
-            _pendingControls.erase(it);
+            erasePendingControl(it);
         }
         else
         {
@@ -1650,7 +1653,7 @@ void CtiPendingOpThread::removeControl(CtiPendable *&pendable)
                                 dout << CtiTime() << " **** REMOVAL Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             }
 #endif
-        it = _pendingControls.erase(it);
+        it = erasePendingControl(it);
     }
 }
 
@@ -1715,7 +1718,7 @@ void CtiPendingOpThread::processPendableAdd(CtiPendable *&pendable)
         case (CtiPendingPointOperations::pendingControl):
             {
                 pair< CtiPendingOpSet_t::iterator, bool > resultpair;
-                resultpair = _pendingControls.insert( *pendable->_ppo );            // Add a copy (ppo) to the pending operations.
+                resultpair = insertPendingControl( *pendable->_ppo );            // Add a copy (ppo) to the pending operations.
 
                 CtiPendingPointOperations &ppo = *resultpair.first;
 
@@ -1951,4 +1954,23 @@ CtiPointNumericSPtr CtiPendingOpThread::getPointOffset(CtiPendingPointOperations
     }
 
     return pPoint;
+}
+
+CtiPendingOpThread::CtiPendingOpSet_t::iterator CtiPendingOpThread::erasePendingControl(CtiPendingOpThread::CtiPendingOpSet_t::iterator iter)
+{
+    CtiPointSPtr point = PointMgr.getEqual(iter->getPointID());
+    if( point )
+    {
+        CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch *)point->getDynamic();
+        if( pDyn != NULL )
+        {
+            pDyn->getDispatch().resetTags( TAG_CONTROL_PENDING );
+        }
+    }
+    return _pendingControls.erase(iter);
+}
+
+pair< CtiPendingOpThread::CtiPendingOpSet_t::iterator, bool > CtiPendingOpThread::insertPendingControl(CtiPendingPointOperations &ppo)
+{
+    return _pendingControls.insert(ppo);
 }

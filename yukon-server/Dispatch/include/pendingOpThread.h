@@ -9,10 +9,13 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2006/03/23 15:29:19 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2006/06/16 20:04:56 $
 * HISTORY      :
 * $Log: pendingOpThread.h,v $
+* Revision 1.11  2006/06/16 20:04:56  jotteson
+* Now modifies tags when removing a control. Can be told not to write control history if desired.
+*
 * Revision 1.10  2006/03/23 15:29:19  jotteson
 * Mass update of point* to smart pointers. Point manager now uses smart pointers.
 *
@@ -60,6 +63,7 @@
 #include <map>
 using std::map;
 using std::set;
+using std::pair;
 
 #include "connection.h"
 #include "pendable.h"
@@ -96,7 +100,8 @@ private:
     static CtiICLMControlHistMap_t _initialConditionControlHistMap;
 
     void dbWriterThread();
-
+    static CtiPendingOpSet_t::iterator erasePendingControl(CtiPendingOpSet_t::iterator iter);
+    static pair< CtiPendingOpSet_t::iterator, bool > insertPendingControl(CtiPendingPointOperations &ppo);
 
     CtiPendingOpThread(const CtiPendingOpThread& aRef);
 
