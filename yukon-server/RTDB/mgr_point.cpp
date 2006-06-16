@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_point.cpp-arc  $
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2006/04/05 16:24:12 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2006/06/16 20:05:56 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -402,6 +402,7 @@ CtiPointBase* PointFactory(RWDBReader &rdr)
             Point = (CtiPointBase*) CTIDBG_new CtiPointStatus;
             break;
         }
+    case AnalogOutputPointType:
     case AnalogPointType:
         {
             if(PseudoPt)
@@ -518,9 +519,12 @@ CtiPointManager::ptr_type CtiPointManager::getOffsetTypeEqual(LONG pao, INT Offs
                     }
                     break;
                 }
+            case AnalogOutputPointType:
             case AnalogPointType:
                 {
-                    if(((CtiPointAnalog*)p.get())->getPointOffset() == Offset)
+                    //The cast (CtiPointAnalog*) that was here is un-necessary and if this is a pseudo
+                    //The cast was incorrect (as it would then be a numeric, not an analog) -Jess
+                    if((p.get())->getPointOffset() == Offset)
                     {
                         if(p->getUpdatedFlag())
                         {
