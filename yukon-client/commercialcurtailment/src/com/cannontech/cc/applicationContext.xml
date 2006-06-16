@@ -19,6 +19,7 @@
         <value>DEFAULT_EVENT_OFFSET_MINUTES</value>
         <value>DEFAULT_NOTIFICATION_OFFSET_MINUTES</value>
         <value>DEFAULT_EVENT_DURATION_MINUTES</value>
+        <value>MINIMUM_EVENT_DURATION_MINUTES</value>
       </set>
     </property>
   </bean>
