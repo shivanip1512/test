@@ -5,7 +5,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import com.cannontech.cc.dao.CurtailmentEventDao;
 import com.cannontech.cc.dao.CurtailmentEventNotifDao;
@@ -17,8 +21,13 @@ import com.cannontech.cc.model.GroupCustomerNotif;
 import com.cannontech.cc.model.Program;
 import com.cannontech.cc.model.ProgramParameterKey;
 import com.cannontech.cc.service.builder.CurtailmentBuilder;
+import com.cannontech.cc.service.builder.CurtailmentChangeBuilder;
+import com.cannontech.cc.service.builder.VerifiedCustomer;
+import com.cannontech.cc.service.builder.VerifiedNotifCustomer;
 import com.cannontech.cc.service.enums.CurtailmentEventState;
 import com.cannontech.cc.service.exception.EventCreationException;
+import com.cannontech.cc.service.exception.EventModificationException;
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.enums.CurtailmentEventAction;
@@ -29,7 +38,12 @@ public abstract class BaseNotificationStrategy extends StrategyBase {
     private CurtailmentEventDao curtailmentEventDao;
     private CurtailmentEventNotifDao curtailmentEventNotifDao;
     private CurtailmentEventParticipantDao curtailmentEventParticipantDao;
+    private TransactionTemplate transactionTemplate;
     
+    public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
+        this.transactionTemplate = transactionTemplate;
+    }
+
     @Override
     public String getMethodKey() {
         return "notification";
@@ -66,6 +80,15 @@ public abstract class BaseNotificationStrategy extends StrategyBase {
         return builder;
     }
 
+    public CurtailmentChangeBuilder createChangeBuilder(CurtailmentEvent event) {
+        CurtailmentChangeBuilder builder = new CurtailmentChangeBuilder(event);
+        builder.setNewLength(event.getDuration());
+        builder.setNewMessage("");
+        builder.setNewStartTime(event.getStartTime());
+        
+        return builder;
+    }
+
     protected int getDefaultNotifTimeBacksetMinutes(Program program) {
         return getParameterValueInt(program, ProgramParameterKey.DEFAULT_NOTIFICATION_OFFSET_MINUTES);
     }
@@ -78,24 +101,59 @@ public abstract class BaseNotificationStrategy extends StrategyBase {
         return getParameterValueInt(program, ProgramParameterKey.DEFAULT_EVENT_DURATION_MINUTES);
     }
     
+    protected int getMinimumDurationMinutes(Program program) {
+        return getParameterValueInt(program, ProgramParameterKey.MINIMUM_EVENT_DURATION_MINUTES);
+    }
+    
+    protected int getMinimumNotificationMinutes(Program program) {
+        return getParameterValueInt(program, ProgramParameterKey.MINIMUM_NOTIFICATION_MINUTES);
+    }
+    
     public void verifyTimes(CurtailmentBuilder builder) throws EventCreationException {
         if (builder.getStartTime().before(builder.getNotificationTime())) {
             // start time is equal to or less than notification time
             throw new EventCreationException("Start time must be after notification time.");
         }
+        int minDuration = getMinimumDurationMinutes(builder.getProgram());
+        if (builder.getEventDuration() < minDuration) {
+            throw new EventCreationException("Duration must be greater than " + minDuration + " minutes.");
+        }
+        int notifMinutes = TimeUtil.differenceMinutes(builder.getNotificationTime(), builder.getStartTime());
+        int minNotification = getMinimumNotificationMinutes(builder.getProgram());
+        if (notifMinutes < minNotification) {
+            throw new EventCreationException("Notification time must be greater than " + minNotification + " minutes.");
+        }
     }
-
-    public CurtailmentEvent createEvent(CurtailmentBuilder builder) throws EventCreationException {
-        // verify event
-
-        CurtailmentEvent event = createDatabaseObjects(builder);
+    
+    protected void verifyCustomers(CurtailmentBuilder builder) throws EventCreationException {
+        List<GroupCustomerNotif> customerList = builder.getCustomerList();
+        for (GroupCustomerNotif customer : customerList) {
+            VerifiedCustomer vCustoemr = new VerifiedNotifCustomer(customer);
+            verifyCustomer(builder, vCustoemr);
+            if (!vCustoemr.isIncludable()) {
+                throw new EventCreationException("Customer " + customer +
+                                                 " can no longer be included: " + vCustoemr.getReasonForExclusion());
+            }
+        }
+    }
+    
+    public CurtailmentEvent createEvent(final CurtailmentBuilder builder) throws EventCreationException {
+        CurtailmentEvent event;
+        event = (CurtailmentEvent) transactionTemplate.execute(new TransactionCallback() {
+            public Object doInTransaction(TransactionStatus status) {
+                verifyTimes(builder);
+                verifyCustomers(builder);
+                
+                CurtailmentEvent event = createDatabaseObjects(builder);
+                return event;
+            }
+        });
         
         getNotificationProxy().sendCurtailmentNotification(event.getId(), CurtailmentEventAction.STARTING);
         
         return event;
     }
 
-    @Transactional
     protected CurtailmentEvent createDatabaseObjects(CurtailmentBuilder builder) {
         // create curtail event
         CurtailmentEvent event = builder.getEvent();
@@ -131,13 +189,13 @@ public abstract class BaseNotificationStrategy extends StrategyBase {
         }
         final int UNSTOPPABLE_WINDOW_MINUTES = 2;
         Date now = new Date();
-        Date paddedStart = TimeUtil.addMinutes(event.getStartTime(), UNSTOPPABLE_WINDOW_MINUTES);
+        Date paddedStart = TimeUtil.addMinutes(event.getNotificationTime(), 0);
         Date paddedStop = TimeUtil.addMinutes(event.getStopTime(), -UNSTOPPABLE_WINDOW_MINUTES);
         return now.after(paddedStart) && now.before(paddedStop);
     }
     
     public Boolean canEventBeChanged(CurtailmentEvent event, LiteYukonUser user) {
-        return canEventBeDeleted(event, user);
+        return false;
     }
     
     public Boolean canEventBeDeleted(CurtailmentEvent event, LiteYukonUser user) {
@@ -147,8 +205,38 @@ public abstract class BaseNotificationStrategy extends StrategyBase {
         return now.before(paddedNotif);
     }
     
+    /**
+     * Future use for now < notif time
+     * @param event
+     * @param user
+     */
     @Transactional
-    public void deleteEvent(CurtailmentEvent event, LiteYukonUser user) {
+    public void changeEvent(CurtailmentChangeBuilder builder, LiteYukonUser user) {
+    }
+    
+    public void adjustEvent(final CurtailmentChangeBuilder builder, final LiteYukonUser user) 
+    throws EventModificationException {
+        final CurtailmentEvent event = builder.getOriginalEvent();
+        transactionTemplate.execute(new TransactionCallback(){
+            public Object doInTransaction(TransactionStatus status) {
+                if (!canEventBeAdjusted(event, user)) {
+                    throw new EventModificationException("Event cannot be modified at this time by this user.");
+                }
+                event.setDuration(builder.getNewLength());
+                event.setMessage(builder.getNewMessage());
+                event.setState(CurtailmentEventState.MODIFIED);
+                curtailmentEventDao.save(event);
+                
+                return null;
+            } 
+        });
+        CTILogger.info(event + " modified by " + user + " new durration " + builder.getNewLength());
+        
+        getNotificationProxy().sendCurtailmentNotification(event.getId(), CurtailmentEventAction.ADJUSTING);
+    }
+    
+    @Transactional
+    public void deleteEvent(final CurtailmentEvent event, LiteYukonUser user) {
         if (!canEventBeDeleted(event, user)) {
             throw new RuntimeException("Event can't be deleted right now by this user");
         }
@@ -156,9 +244,13 @@ public abstract class BaseNotificationStrategy extends StrategyBase {
             .attemptDeleteCurtailmentNotification(event.getId());
 
         if (success) {
-            // no notifications have been sent, simply delete the event
-            curtailmentEventParticipantDao.deleteForEvent(event);
-            curtailmentEventDao.delete(event);
+            transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+                public void doInTransactionWithoutResult(TransactionStatus status) {
+                    // no notifications have been sent, simply delete the event
+                    curtailmentEventParticipantDao.deleteForEvent(event);
+                    curtailmentEventDao.delete(event);
+                }
+            });
         } else {
             // this is crude, but it will work for the time being
             throw new RuntimeException("DB State might have been lost while deleting event.");
