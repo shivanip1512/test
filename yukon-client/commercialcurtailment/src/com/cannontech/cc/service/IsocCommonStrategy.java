@@ -70,8 +70,17 @@ public class IsocCommonStrategy extends StrategyGroupBase {
     }
 
     public void checkEventCustomer(VerifiedCustomer vCustomer, BaseEvent event) {
-        CICustomerStub customer = vCustomer.getCustomer();
-        List<BaseEvent> forCustomer = baseEventDao.getAllForCustomer(customer);
+        try {
+            checkEventOverlap(vCustomer, event);
+            checkAllowedHours(vCustomer, event); 
+            checkNoticeTime(vCustomer, event);
+        } catch (PointException e) {
+            handlePointException(vCustomer, e);
+        }
+    }
+
+    public void checkEventOverlap(VerifiedCustomer vCustomer, BaseEvent event) {
+        List<BaseEvent> forCustomer = baseEventDao.getAllForCustomer(vCustomer.getCustomer());
         // technically this list should be sorted by stop time, but because
         // events can't overlap, sorting by start time produces the same order
         Iterator iterator = new ReverseListIterator(forCustomer);
@@ -91,22 +100,27 @@ public class IsocCommonStrategy extends StrategyGroupBase {
             }
             
         }
-        try {
-            int durationHours = event.getDuration() / 60;
-            if (hasCustomerExceededAllowedHours(customer, durationHours)) {
-                vCustomer.addExclusion(VerifiedCustomer.Status.EXCLUDE, 
-                                       "has exceeded allowed hours");
-            } 
-            
-            int notifMinutes = TimeUtil.differenceMinutes(event.getNotificationTime(), event.getStartTime());
-            if (isEventNoticeTooShort(customer, notifMinutes)) {
-                vCustomer.addExclusion(VerifiedCustomer.Status.EXCLUDE_OVERRIDABLE, 
-                                       "requires longer notification time");
-            }
-        } catch (PointException e) {
-            vCustomer.addExclusion(VerifiedCustomer.Status.EXCLUDE, 
-                                   "couldn't get point value (" + e.getMessage() + ")");
+    }
+
+    public void checkNoticeTime(VerifiedCustomer vCustomer, BaseEvent event) throws PointException {
+        int notifMinutes = TimeUtil.differenceMinutes(event.getNotificationTime(), event.getStartTime());
+        if (isEventNoticeTooShort(vCustomer.getCustomer(), notifMinutes)) {
+            vCustomer.addExclusion(VerifiedCustomer.Status.EXCLUDE_OVERRIDABLE, 
+                                   "requires longer notification time");
         }
+    }
+
+    public void checkAllowedHours(VerifiedCustomer vCustomer, BaseEvent event) throws PointException {
+        int durationHours = event.getDuration() / 60;
+        if (hasCustomerExceededAllowedHours(vCustomer.getCustomer(), durationHours)) {
+            vCustomer.addExclusion(VerifiedCustomer.Status.EXCLUDE, 
+                                   "has exceeded allowed hours");
+        }
+    }
+
+    public void handlePointException(VerifiedCustomer vCustomer, PointException e) {
+        vCustomer.addExclusion(VerifiedCustomer.Status.EXCLUDE, 
+                               "couldn't get point value (" + e.getMessage() + ")");
     }
     
     private boolean isEventNoticeTooShort(CICustomerStub customer, int notifMinutes) throws PointException {
