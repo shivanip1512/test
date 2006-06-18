@@ -62,17 +62,24 @@ public class CurtailmentEventScheduler extends EventScheduler {
         final CurtailmentEvent event = curtailmentEventDao.getForId(msg.curtailmentEventId);
         List<CurtailmentEventParticipant> participants = curtailmentEventParticipantDao.getForEvent(event);
         
-        if (msg.action == CurtailmentEventMsg.STARTING) {
+        Date now = new Date();
+        switch(msg.action) {
+        case STARTING:
             createNotification(participants,
                                NotificationReason.STARTING,
                                event.getNotificationTime());
-    
+            
             createNotification(participants,
                                NotificationReason.STOPPING,
                                event.getStopTime()); 
-        } else if (msg.action == CurtailmentEventMsg.CANCELLING) {
-            Date now = new Date();
+            break;
+        case CANCELING:
             createNotification(participants, NotificationReason.CANCELING, now);
+            break;
+            
+        case ADJUSTING:
+            createNotification(participants, NotificationReason.ADJUSTING, now);
+            break;
         }
 
     }
@@ -113,16 +120,16 @@ public class CurtailmentEventScheduler extends EventScheduler {
         final CurtailmentEventNotif eventNotif = (CurtailmentEventNotif) _eventNotif;
         final CurtailmentEvent event = eventNotif.getParticipant().getEvent();
         
-        final Notification notif = new Notification("curtailment");
-        
-        fillInBaseAttribs(notif, event);
-        NotificationReason reason = eventNotif.getReason();
-        notif.addData("action", reason.toString());
-        notif.addData("message", event.getMessage());
         
         final NotificationBuilder notifBuilder = new NotificationBuilder() {
 
             public Notification buildNotification(Contactable contact) {
+                final Notification notif = new Notification("curtailment");
+                
+                fillInBaseAttribs(notif, event);
+                NotificationReason reason = eventNotif.getReason();
+                notif.addData("action", reason.toString());
+                notif.addData("message", event.getMessage());
                 TimeZone timeZone = contact.getTimeZone();
                 fillInFormattedTimes(notif, event, timeZone);
                 return notif;
