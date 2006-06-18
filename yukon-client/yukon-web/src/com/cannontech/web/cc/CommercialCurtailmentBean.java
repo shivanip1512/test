@@ -27,6 +27,18 @@ public class CommercialCurtailmentBean {
         return timeZone;
     }
     
+    public String getTimeFormat() {
+        return "H:m";
+    }
+    
+    public String getDateFormat() {
+        return "M/d/yy";
+    }
+    
+    public String getDateTimeFormat() {
+        return "M/d/yy H:m";
+    }
+    
     public LiteEnergyCompany getEnergyCompany() {
         return EnergyCompanyFuncs.getEnergyCompany(getYukonUser());
     }
