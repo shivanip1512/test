@@ -26,10 +26,8 @@
     <td><t:outputText 
        value="#{sNotificationDetail.event.notificationTime}">
        <f:convertDateTime 
-          timeStyle="short" 
-          dateStyle="short"
-          timeZone="#{sCommercialCurtailment.timeZone}"
-          type="both" />
+          pattern="#{sCommercialCurtailment.dateTimeFormat}"
+          timeZone="#{sCommercialCurtailment.timeZone}"/>
     </t:outputText>
     (<t:outputText value="#{sCommercialCurtailment.timeZone.ID}"/>)
     </td>
@@ -39,10 +37,8 @@
     <td><t:outputText 
        value="#{sNotificationDetail.event.startTime}">
        <f:convertDateTime 
-          timeStyle="short" 
-          dateStyle="short"
-          timeZone="#{sCommercialCurtailment.timeZone}"
-          type="both" />
+          pattern="#{sCommercialCurtailment.dateTimeFormat}"
+          timeZone="#{sCommercialCurtailment.timeZone}"/>
     </t:outputText>
     (<t:outputText value="#{sCommercialCurtailment.timeZone.ID}"/>)
     </td>
@@ -64,7 +60,7 @@
     <td>
       <t:commandButton action="#{sNotificationDetail.deleteEvent}" value="Delete" rendered="#{sNotificationDetail.showDeleteButton}"/>
       <t:commandButton action="#{sNotificationDetail.cancelEvent}" value="Cancel" rendered="#{sNotificationDetail.showCancelButton}"/>
-      <t:commandButton action="#{sNotificationDetail.adjustEvent}" value="Adjust" rendered="#{sNotificationDetail.showAdjustButton}"/>
+      <t:commandButton action="#{sNotificationDetail.prepareAdjustEvent}" value="Adjust" rendered="#{sNotificationDetail.showAdjustButton}"/>
       <t:commandButton action="#{sNotificationDetail.refresh}" value="Refresh"/>
     </td>
   </tr>

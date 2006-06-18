@@ -9,6 +9,7 @@ import com.cannontech.cc.service.BaseNotificationStrategy;
 import com.cannontech.cc.service.NotificationService;
 import com.cannontech.cc.service.ProgramService;
 import com.cannontech.cc.service.StrategyFactory;
+import com.cannontech.cc.service.builder.CurtailmentChangeBuilder;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 
@@ -20,6 +21,7 @@ public class DetailNotificationBean implements BaseDetailBean {
     private StrategyFactory strategyFactory;
     private CurtailmentEvent event;
     private LiteYukonUser yukonUser;
+    private CurtailmentChangeBuilder changeBuilder;
     
     public String showDetail(BaseEvent event) {
         setEvent((CurtailmentEvent) event);
@@ -58,6 +60,22 @@ public class DetailNotificationBean implements BaseDetailBean {
         return null;
     }
 
+    public String prepareAdjustEvent() {
+        changeBuilder = getStrategy().createChangeBuilder(getEvent());
+        
+        return "prepareAdjustEvent";
+    }
+    
+    public String adjustEvent() {
+        getStrategy().adjustEvent(changeBuilder, getYukonUser());
+        
+        return "notifDetail";
+    }
+    
+    public String cancelAdjust() {
+        return "notifDetail";
+    }
+    
     public String deleteEvent() {
         getStrategy().deleteEvent(event,getYukonUser());
         return "programSelect";
@@ -116,6 +134,10 @@ public class DetailNotificationBean implements BaseDetailBean {
 
     public void setHelper(DetailNotificationHelperBean helper) {
         this.helper = helper;
+    }
+
+    public CurtailmentChangeBuilder getChangeBuilder() {
+        return changeBuilder;
     }
 
 }
