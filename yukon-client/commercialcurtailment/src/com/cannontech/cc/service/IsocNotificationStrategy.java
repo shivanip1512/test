@@ -3,12 +3,10 @@ package com.cannontech.cc.service;
 import java.math.BigDecimal;
 
 import com.cannontech.cc.model.CICustomerStub;
-import com.cannontech.cc.model.CurtailmentEvent;
 import com.cannontech.cc.service.builder.CurtailmentBuilder;
 import com.cannontech.cc.service.builder.EventBuilderBase;
 import com.cannontech.cc.service.builder.VerifiedCustomer;
 import com.cannontech.common.exception.PointException;
-import com.cannontech.database.data.lite.LiteYukonUser;
 
 public class IsocNotificationStrategy extends BaseNotificationStrategy {
     IsocCommonStrategy isocCommonStrategy;
@@ -39,9 +37,4 @@ public class IsocNotificationStrategy extends BaseNotificationStrategy {
         this.isocCommonStrategy = isocCommonStrategy;
     }
     
-    @Override
-    public Boolean canEventBeAdjusted(CurtailmentEvent event, LiteYukonUser user) {
-        return false; //TODO remove when implemented
-    }
-
 }
