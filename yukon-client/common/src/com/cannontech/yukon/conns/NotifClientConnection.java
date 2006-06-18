@@ -156,19 +156,7 @@ public class NotifClientConnection extends ClientConnection implements INotifCon
     public void sendCurtailmentNotification(Integer curtailmentEventId, CurtailmentEventAction action) {
         CurtailmentEventMsg msg = new CurtailmentEventMsg();
         msg.curtailmentEventId = curtailmentEventId;
-        switch (action) {
-        case ADJUSTING:
-            msg.action = CurtailmentEventMsg.ADJUSTING;
-            break;
-        case CANCELING:
-            msg.action = CurtailmentEventMsg.CANCELLING;
-            break;
-        case STARTING: 
-            msg.action = CurtailmentEventMsg.STARTING;
-            break;
-        default:
-            throw new IllegalArgumentException("Invalid action: " + action);
-        }
+        msg.action = action;
         write(msg);
     }
     

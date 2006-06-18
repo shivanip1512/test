@@ -1,6 +1,7 @@
 package com.cannontech.message.notif;
 import java.io.IOException;
 
+import com.cannontech.enums.CurtailmentEventAction;
 import com.cannontech.message.util.DefineCollectableMessage;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.CollectableStreamer;
@@ -46,7 +47,8 @@ public class DefColl_CurtailmentEventMsg extends DefineCollectableMessage {
         CurtailmentEventMsg msg = (CurtailmentEventMsg) obj;
 
         msg.curtailmentEventId = vstr.extractInt();
-        msg.action = vstr.extractInt();
+        int actionOrdinal = vstr.extractInt();
+        msg.action = CurtailmentEventAction.values()[actionOrdinal];
     }
 
     public void saveGuts(Object obj, VirtualOutputStream vstr,
@@ -55,7 +57,7 @@ public class DefColl_CurtailmentEventMsg extends DefineCollectableMessage {
         CurtailmentEventMsg msg = (CurtailmentEventMsg) obj;
 
         vstr.insertInt(msg.curtailmentEventId);
-        vstr.insertInt(msg.action);
+        vstr.insertInt(msg.action.ordinal());
     }
 
 }
