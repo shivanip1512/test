@@ -20,11 +20,18 @@
         <value>DEFAULT_NOTIFICATION_OFFSET_MINUTES</value>
         <value>DEFAULT_EVENT_DURATION_MINUTES</value>
         <value>MINIMUM_EVENT_DURATION_MINUTES</value>
+        <value>MINIMUM_NOTIFICATION_MINUTES</value>
       </set>
     </property>
   </bean>
   
   <bean id="isocNotification" class="com.cannontech.cc.service.IsocNotificationStrategy" 
+        parent="genericNotification"
+        autowire="byType">
+    <property name="isocCommonStrategy" ref="isocCommonStrategy"/>
+  </bean>
+  
+  <bean id="isocSupersedeNotification" class="com.cannontech.cc.service.IsocSupersedeNotificationStrategy" 
         parent="genericNotification"
         autowire="byType">
     <property name="isocCommonStrategy" ref="isocCommonStrategy"/>
