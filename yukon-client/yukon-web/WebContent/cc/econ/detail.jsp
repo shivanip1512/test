@@ -33,9 +33,8 @@
       <t:outputText 
          value="#{sEconomicDetail.event.notificationTime}">
          <f:convertDateTime 
-            dateStyle="long"
-            timeZone="#{sCommercialCurtailment.timeZone}"
-            type="date" />
+            pattern="#{sCommercialCurtailment.dateFormat}"
+            timeZone="#{sCommercialCurtailment.timeZone}"/>
       </t:outputText>
       (all times <t:outputText value="#{sCommercialCurtailment.timeZone.ID}"/>)
     </td>
@@ -46,9 +45,8 @@
       <t:outputText 
          value="#{sEconomicDetail.event.notificationTime}">
          <f:convertDateTime 
-            timeStyle="short" 
-            timeZone="#{sCommercialCurtailment.timeZone}"
-            type="time" />
+            pattern="#{sCommercialCurtailment.timeFormat}" 
+            timeZone="#{sCommercialCurtailment.timeZone}" />
       </t:outputText>
     </td>
   </tr>
@@ -58,9 +56,8 @@
       <t:outputText 
          value="#{sEconomicDetail.event.startTime}">
          <f:convertDateTime 
-            timeStyle="short" 
-            timeZone="#{sCommercialCurtailment.timeZone}"
-            type="time" />
+            pattern="#{sCommercialCurtailment.timeFormat}"
+            timeZone="#{sCommercialCurtailment.timeZone}" />
       </t:outputText>
     </td>
   </tr>
@@ -70,9 +67,8 @@
       <t:outputText 
          value="#{sEconomicDetail.event.stopTime}">
          <f:convertDateTime 
-            timeStyle="short" 
-            timeZone="#{sCommercialCurtailment.timeZone}"
-            type="time" />
+            pattern="#{sCommercialCurtailment.timeFormat}" 
+            timeZone="#{sCommercialCurtailment.timeZone}" />
       </t:outputText>
     </td>
   </tr>
@@ -138,9 +134,8 @@
       <h:panelGroup>
         <h:outputText value="#{window.startTime}">
            <f:convertDateTime 
-              timeStyle="short" 
-              timeZone="#{sCommercialCurtailment.timeZone}"
-              type="time" />
+              pattern="#{sCommercialCurtailment.timeFormat}" 
+              timeZone="#{sCommercialCurtailment.timeZone}" />
         </h:outputText>
         <f:verbatim><br></f:verbatim>
         <h:outputText value="$#{sEconomicDetail.columnPrice} / kWH"/>

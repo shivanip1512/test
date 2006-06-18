@@ -28,9 +28,8 @@
   <t:column>
     <t:outputText value="#{thisPrice.startTime}">
      <f:convertDateTime 
-      timeStyle="short" 
-      timeZone="#{sCommercialCurtailment.timeZone}"
-      type="time" />
+      pattern="#{sCommercialCurtailment.timeFormat}" 
+      timeZone="#{sCommercialCurtailment.timeZone}" />
     </t:outputText>
   </t:column>
   <t:column>

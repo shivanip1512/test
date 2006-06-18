@@ -32,10 +32,8 @@
 <t:outputText 
    value="#{sNotificationCreate.builder.notificationTime}">
    <f:convertDateTime 
-      timeStyle="short" 
-      dateStyle="short"
-      timeZone="#{sCommercialCurtailment.timeZone}"
-      type="both" />
+      pattern="#{sCommercialCurtailment.dateTimeFormat}"
+      timeZone="#{sCommercialCurtailment.timeZone}" />
 </t:outputText>
 (<t:outputText value="#{sCommercialCurtailment.timeZone.ID}"/>)
 </td>
@@ -47,10 +45,8 @@
 <t:outputText 
    value="#{sNotificationCreate.builder.startTime}">
    <f:convertDateTime 
-      timeStyle="short" 
-      dateStyle="short"
-      timeZone="#{sCommercialCurtailment.timeZone}"
-      type="both" />
+      pattern="#{sCommercialCurtailment.dateTimeFormat}"
+      timeZone="#{sCommercialCurtailment.timeZone}" />
 </t:outputText>
 (<t:outputText value="#{sCommercialCurtailment.timeZone.ID}"/>)
     </td>
