@@ -296,9 +296,7 @@ private synchronized void handleMessage(Message msg) {
 		if((signal.getTags() & Signal.MASK_ANY_ALARM) != 0) {
 			pointSignals.add(signal);
 			categorySignals.add(signal);
-		}
-		
-		pointTagMap.put(id, tags);		
+		}			
 	}   
 	else
 	if(msg instanceof DBChangeMsg) {
