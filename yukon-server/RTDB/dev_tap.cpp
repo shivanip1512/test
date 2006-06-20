@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_tap.cpp-arc  $
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2006/06/07 22:35:23 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2006/06/20 18:52:36 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1111,6 +1111,10 @@ INT CtiDeviceTapPagingTerminal::decodeResponse(CtiXfer  &xfer, INT commReturnVal
                             else if(_inStr.find("<NAK>")!=string::npos)
                             {
                                 status = ErrorPageNAK;
+                            }
+                            else if(_inStr.find("<EOT>")!=string::npos)
+                            {
+                                setLogOnNeeded(TRUE);
                             }
                         }
 

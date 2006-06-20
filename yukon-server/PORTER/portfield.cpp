@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.188 $
-* DATE         :  $Date: 2006/06/15 21:53:06 $
+* REVISION     :  $Revision: 1.189 $
+* DATE         :  $Date: 2006/06/20 18:52:36 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3718,7 +3718,8 @@ INT TerminateHandshake (CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, list< CtiMes
                 aPortRecord->setShouldDisconnect( TRUE );
             }
         }
-        else if(aIEDDevice->getCurrentState() == CtiDeviceIED::StateComplete)   // The device did the disconnect.
+        else if( aIEDDevice->getCurrentState() == CtiDeviceIED::StateComplete   // The device did the disconnect.
+              || aIEDDevice->getCurrentState() == CtiDeviceIED::StateAbort)
         {
             switch(aIEDDevice->getType())
             {
@@ -3732,7 +3733,7 @@ INT TerminateHandshake (CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, list< CtiMes
             }
         }
     }
-
+    //This will never ever be called. Is that desired behavior? JMO 6/20/2006
     else if(status == NORMAL && aIEDDevice->getCurrentState() == CtiDeviceIED::StateAbort)
     {
         status = !NORMAL;
