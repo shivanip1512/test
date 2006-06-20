@@ -31,136 +31,19 @@
 
 
 <h3>Current Events</h3>
-<t:dataTable value="#{sEventOverview.currentEventListModel}" 
-             var="thisEvent"
-             forceIdIndexFormula="#{thisEvent.id}">
-  <t:column>
-    <h:outputText value="#{thisEvent.program.programType.name}"/>
-  </t:column>
-  <t:column>
-    <h:outputText value="#{thisEvent.program.name}"/>
-  </t:column>
-  <t:column>
-    <h:commandLink action="#{sEventOverview.showDetailCurrent}">
-      <h:outputText value="#{thisEvent.displayName}"/>
-    </h:commandLink>
-  </t:column>
-  <t:column>
-    <h:outputText value="#{thisEvent.startTime}">
-      <f:convertDateTime 
-            timeStyle="short" 
-            dateStyle="short"
-            timeZone="#{sCommercialCurtailment.timeZone}"
-            type="date" />
-    </h:outputText>
-  </t:column>
-  <t:column>
-    <h:outputText value="#{thisEvent.startTime}">
-      <f:convertDateTime 
-            timeStyle="short" 
-            dateStyle="short"
-            timeZone="#{sCommercialCurtailment.timeZone}"
-            type="time" />
-    </h:outputText>
-  </t:column>
-  <t:column>
-    <h:outputText value="#{thisEvent.stopTime}">
-      <f:convertDateTime 
-            timeStyle="short" 
-            dateStyle="short"
-            timeZone="#{sCommercialCurtailment.timeZone}"
-            type="time" />
-    </h:outputText>
-  </t:column>
-</t:dataTable>
+<t:aliasBean alias="#{eventListModel}" value="#{sEventOverview.currentEventListModel}">
+  <jsp:include page="include/operatorEventList.jsp"/>
+</t:aliasBean>
 
 <h3>Pending Events</h3>
-<t:dataTable value="#{sEventOverview.pendingEventListModel}" 
-             var="thisEvent"
-             forceIdIndexFormula="#{thisEvent.id}">
-  <t:column>
-    <h:outputText value="#{thisEvent.program.programType.name}"/>
-  </t:column>
-  <t:column>
-    <h:outputText value="#{thisEvent.program.name}"/>
-  </t:column>
-  <t:column>
-    <h:commandLink action="#{sEventOverview.showDetailPending}">
-      <h:outputText value="#{thisEvent.displayName}"/>
-    </h:commandLink>
-  </t:column>
-  <t:column>
-    <h:outputText value="#{thisEvent.startTime}">
-      <f:convertDateTime 
-            timeStyle="short" 
-            dateStyle="short"
-            timeZone="#{sCommercialCurtailment.timeZone}"
-            type="date" />
-    </h:outputText>
-  </t:column>
-  <t:column>
-    <h:outputText value="#{thisEvent.startTime}">
-      <f:convertDateTime 
-            timeStyle="short" 
-            dateStyle="short"
-            timeZone="#{sCommercialCurtailment.timeZone}"
-            type="time" />
-    </h:outputText>
-  </t:column>
-  <t:column>
-    <h:outputText value="#{thisEvent.stopTime}">
-      <f:convertDateTime 
-            timeStyle="short" 
-            dateStyle="short"
-            timeZone="#{sCommercialCurtailment.timeZone}"
-            type="time" />
-    </h:outputText>
-  </t:column>
-</t:dataTable>
+<t:aliasBean alias="#{eventListModel}" value="#{sEventOverview.pendingEventListModel}">
+  <jsp:include page="include/operatorEventList.jsp"/>
+</t:aliasBean>
 
 <h3>Recent Events</h3>
-<t:dataTable value="#{sEventOverview.recentEventListModel}" 
-             var="thisEvent"
-             forceIdIndexFormula="#{thisEvent.id}">
-  <t:column>
-    <h:outputText value="#{thisEvent.program.programType.name}"/>
-  </t:column>
-  <t:column>
-    <h:outputText value="#{thisEvent.program.name}"/>
-  </t:column>
-  <t:column>
-    <h:commandLink action="#{sEventOverview.showDetailRecent}">
-      <h:outputText value="#{thisEvent.displayName}"/>
-    </h:commandLink>
-  </t:column>
-  <t:column>
-    <h:outputText value="#{thisEvent.startTime}">
-      <f:convertDateTime 
-            timeStyle="short" 
-            dateStyle="short"
-            timeZone="#{sCommercialCurtailment.timeZone}"
-            type="date" />
-    </h:outputText>
-  </t:column>
-  <t:column>
-    <h:outputText value="#{thisEvent.startTime}">
-      <f:convertDateTime 
-            timeStyle="short" 
-            dateStyle="short"
-            timeZone="#{sCommercialCurtailment.timeZone}"
-            type="time" />
-    </h:outputText>
-  </t:column>
-  <t:column>
-    <h:outputText value="#{thisEvent.stopTime}">
-      <f:convertDateTime 
-            timeStyle="short" 
-            dateStyle="short"
-            timeZone="#{sCommercialCurtailment.timeZone}"
-            type="time" />
-    </h:outputText>
-  </t:column>
-</t:dataTable>
+<t:aliasBean alias="#{eventListModel}" value="#{sEventOverview.recentEventListModel}">
+  <jsp:include page="include/operatorEventList.jsp"/>
+</t:aliasBean>
 
 </h:form>
 
