@@ -28,7 +28,7 @@ public class CommercialCurtailmentBean {
     }
     
     public String getTimeFormat() {
-        return "H:m";
+        return "H:mm";
     }
     
     public String getDateFormat() {
@@ -36,7 +36,7 @@ public class CommercialCurtailmentBean {
     }
     
     public String getDateTimeFormat() {
-        return "M/d/yy H:m";
+        return "M/d/yy H:mm";
     }
     
     public LiteEnergyCompany getEnergyCompany() {
