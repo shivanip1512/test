@@ -175,9 +175,11 @@ public class NotifClientConnection extends ClientConnection implements INotifCon
         write(msg);
     }
 
-    public boolean attemptDeleteEconomic(Integer eventId) {
+    public boolean attemptDeleteEconomic(Integer eventId, boolean includeStart) {
         EconomicEventDeleteMsg msg = new EconomicEventDeleteMsg();
         msg.economicEventId = eventId;
+        msg.deleteStart = includeStart;
+        msg.deleteStop = true;
         CollectableBoolean wasCancelled = (CollectableBoolean) ServerRequestHelper.makeServerRequest(this, msg);
         return wasCancelled.getValue();
     }

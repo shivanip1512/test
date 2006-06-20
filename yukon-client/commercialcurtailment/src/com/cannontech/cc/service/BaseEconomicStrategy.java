@@ -171,6 +171,13 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
 
     public abstract BigDecimal getCustomerElectionBuyThrough(EconomicEventParticipant customer) throws PointException;
     
+    /**
+     * This probably isn't the best place for this method. Maybe move to the CustomerPointTypeHelper
+     * @param customer
+     * @param type
+     * @return
+     * @throws PointException
+     */
     protected BigDecimal getPointValue(EconomicEventParticipant customer, CICustomerPointType type) throws PointException {
         CICustomerPointData data = customer.getCustomer().getPointData().get(type);
         Validate.notNull(data, "Customer " + customer.getCustomer() + " does not have a point for " + type);
@@ -358,9 +365,12 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
     }
     
     public Boolean canEventBeCancelled(EconomicEvent event, LiteYukonUser user) {
+        if (event.getState() != EconomicEventState.INITIAL) {
+            return false;
+        }
         final int UNSTOPPABLE_WINDOW_MINUTES = 2;
         Date now = new Date();
-        Date paddedNotif = TimeUtil.addMinutes(event.getNotificationTime(), UNSTOPPABLE_WINDOW_MINUTES);
+        Date paddedNotif = TimeUtil.addMinutes(event.getNotificationTime(), 0);
         Date paddedStart = TimeUtil.addMinutes(event.getStartTime(), -UNSTOPPABLE_WINDOW_MINUTES);
         return now.before(paddedStart) && now.after(paddedNotif);
     }
@@ -372,7 +382,21 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
         return now.before(paddedNotif);
     }
     
+    public Boolean canEventBeSuppressed(EconomicEvent event, LiteYukonUser user) {
+        if (event.getState() != EconomicEventState.INITIAL) {
+            return false;
+        }
+        final int UNSTOPPABLE_WINDOW_MINUTES = 2;
+        Date now = new Date();
+        Date start = TimeUtil.addMinutes(event.getStartTime(), 0);
+        Date paddedStop = TimeUtil.addMinutes(event.getStopTime(), -UNSTOPPABLE_WINDOW_MINUTES);
+        return now.after(start) && now.before(paddedStop);
+    }
+    
     public Boolean canEventBeExtended(EconomicEvent event, LiteYukonUser user) {
+        if (event.getState() != EconomicEventState.INITIAL) {
+            return false;
+        }
         final int UNSTOPPABLE_WINDOW_MINUTES = 2;
         Date now = new Date();
         Date paddedStop = TimeUtil.addMinutes(event.getStopTime(), -UNSTOPPABLE_WINDOW_MINUTES);
@@ -390,6 +414,9 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
     }
 
     public Boolean canEventBeRevised(EconomicEvent event, LiteYukonUser user) {
+        if (event.getState() != EconomicEventState.INITIAL) {
+            return false;
+        }
         final int PADDING_MINUTES = 2;
         
         // get latest revision
@@ -547,7 +574,7 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
         if (!canEventBeDeleted(event, user)) {
             throw new EventModificationException("This action is not allowed.");
         }
-        boolean success = getNotificationProxy().attemptDeleteEconomic(event.getId());
+        boolean success = getNotificationProxy().attemptDeleteEconomic(event.getId(), true);
         if (!success) {
             throw new EventModificationException("Notifications were not successfully prevented. Check notif status for each customer.");
         }
@@ -555,9 +582,18 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
         economicEventDao.delete(event);
     }
     
+    @Transactional
     public void cancelEvent(EconomicEvent event, LiteYukonUser user) {
         event.setState(EconomicEventState.CANCELLED);
         economicEventDao.save(event);
+        notificationProxy.sendEconomicNotification(event.getId(), event.getLatestRevision().getRevision(), EconomicEventAction.CANCELING);
+    }
+    
+    @Transactional
+    public void suppressEvent(EconomicEvent event, LiteYukonUser user) {
+        event.setState(EconomicEventState.SUPPRESSED);
+        economicEventDao.save(event);
+        notificationProxy.attemptDeleteEconomic(event.getId(), false);
         notificationProxy.sendEconomicNotification(event.getId(), event.getLatestRevision().getRevision(), EconomicEventAction.CANCELING);
     }
     

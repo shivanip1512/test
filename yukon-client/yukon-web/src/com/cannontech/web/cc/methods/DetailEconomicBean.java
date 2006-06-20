@@ -188,6 +188,10 @@ public class DetailEconomicBean implements BaseDetailBean {
         return getStrategy().canEventBeRevised(getEvent(), commercialCurtailment.getYukonUser());
     }
     
+    public Boolean getShowSuppressButton() {
+        return getStrategy().canEventBeSuppressed(getEvent(), commercialCurtailment.getYukonUser());
+    }
+    
     public String cancelEvent() {
         //getStrategy().cancelEvent(event,commercialCurtailment.getYukonUser());
         
@@ -225,6 +229,11 @@ public class DetailEconomicBean implements BaseDetailBean {
         getCreateEconomicBean().setStrategy(getStrategy());
         return getCreateEconomicBean().initExtension(getEvent());
         
+    }
+    
+    public String suppressEvent() {
+        strategy.suppressEvent(getEvent(), commercialCurtailment.getYukonUser());
+        return null;
     }
     
     public String refresh() {

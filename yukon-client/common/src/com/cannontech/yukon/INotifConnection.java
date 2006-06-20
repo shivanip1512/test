@@ -20,5 +20,5 @@ public interface INotifConnection
 
     public void sendEconomicNotification(Integer economicEventId, Integer revision, EconomicEventAction action);
 
-    public boolean attemptDeleteEconomic(Integer eventId);
+    public boolean attemptDeleteEconomic(Integer eventId, boolean includeStart);
 }

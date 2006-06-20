@@ -67,10 +67,13 @@ public class EconomicEventScheduler extends EventScheduler {
                            now);
     }
     
-    public boolean deleteEventNotification(EconomicEvent event) {
-        boolean startCancelled = attemptDeleteNotification(event, NotificationReason.STARTING);
-        boolean stopCancelled = false;
-        if (startCancelled) {
+    public boolean deleteEventNotification(EconomicEvent event, boolean deleteStart, boolean deleteStop) {
+        boolean startCancelled = true;
+        if (deleteStart) {
+            startCancelled = attemptDeleteNotification(event, NotificationReason.STARTING);
+        }
+        boolean stopCancelled = true;
+        if (deleteStop && startCancelled) {
             stopCancelled = attemptDeleteNotification(event, NotificationReason.STOPPING);
         }
         boolean success = startCancelled && stopCancelled;

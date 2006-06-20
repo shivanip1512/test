@@ -39,7 +39,9 @@ public class EconomicEventMessageHandler extends MessageHandler {
         Integer curtailmentEventId = reqPayload.economicEventId;
         final EconomicEvent economicEvent = 
             economicService.getEvent(curtailmentEventId);
-        Boolean success = _scheduler.deleteEventNotification(economicEvent);
+        Boolean success = _scheduler.deleteEventNotification(economicEvent, 
+                                                             reqPayload.deleteStart, 
+                                                             reqPayload.deleteStop);
         CollectableBoolean respPayload = new CollectableBoolean(success);
         ServerResponseMsg responseMsg = reqMsg.createResponseMsg();
         responseMsg.setPayload(respPayload);

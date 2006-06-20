@@ -73,6 +73,13 @@
     </td>
   </tr>
   <tr>
+    <td>State</td>
+    <td>
+      <t:outputText 
+         value="#{sEconomicDetail.event.state}"/>
+    </td>
+  </tr>
+  <tr>
     <td>Initial Event</td>
     <td><t:commandLink 
          value="#{sEconomicDetail.event.initialEvent.displayName}" 
@@ -96,6 +103,7 @@
     <div class="eventControlButtons">
     <t:commandButton action="#{sEconomicDetail.deleteEvent}" value="Delete" rendered="#{sEconomicDetail.showDeleteButton}"/>
     <t:commandButton action="#{sEconomicDetail.cancelEvent}" value="Cancel" rendered="#{sEconomicDetail.showCancelButton}"/>
+    <t:commandButton action="#{sEconomicDetail.suppressEvent}" value="Suppress" rendered="#{sEconomicDetail.showSuppressButton}" onclick="return confirm('Are you sure you wish to suppress this event?')"/>
     <t:commandButton action="#{sEconomicDetail.reviseEvent}" value="Revise" rendered="#{sEconomicDetail.showReviseButton}"/>
     <t:commandButton action="#{sEconomicDetail.extendEvent}" value="Extend" rendered="#{sEconomicDetail.showExtendButton}"/>
     <t:commandButton action="#{sEconomicDetail.refresh}" value="Refresh"/>
