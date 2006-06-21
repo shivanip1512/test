@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.151 $
-* DATE         :  $Date: 2006/06/16 20:07:22 $
+* REVISION     :  $Revision: 1.152 $
+* DATE         :  $Date: 2006/06/21 17:08:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2527,7 +2527,7 @@ int CtiVanGogh::processControlMessage(CtiLMControlHistoryMsg *pMsg)
                 pendingControlLMMsg->setTime( pMsg->getStartDateTime() );
                 pendingControlLMMsg->setControlCompleteValue( (DOUBLE) pMsg->getRawState() );
                 pendingControlLMMsg->setControlTimeout( pPoint->getControlExpirationTime() );
-                pendingControlLMMsg->setExcludeFromHistory(!isDeviceGroupType(pPoint->getID()));
+                pendingControlLMMsg->setExcludeFromHistory(!isDeviceGroupType(pPoint->getDeviceID()));
 
                 if( verificationPtr = TriggerMgr.getPointTriggerFromPoint(pPoint->getID()) )
                 {
@@ -7778,7 +7778,7 @@ void CtiVanGogh::sendPendingControlRequest(const CtiPointDataMsg &aPD, CtiPointS
     pendingControlRequest->setControlCompleteValue(aPD.getValue());
     pendingControlRequest->setControlTimeout(verificationPtr->dbTriggerData.getCommandTimeOut());
     pendingControlRequest->setControlCompleteDeadband(verificationPtr->dbTriggerData.getVerificationDeadband());
-    pendingControlRequest->setExcludeFromHistory(!isDeviceGroupType(point->getID()));
+    pendingControlRequest->setExcludeFromHistory(!isDeviceGroupType(point->getDeviceID()));
 
     pendingControlRequest->getControl().setPAOID( point->getDeviceID() );
     pendingControlRequest->getControl().setStartTime(CtiTime(YUKONEOT));
