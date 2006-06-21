@@ -130,6 +130,10 @@ go
 
 insert into YukonListEntry values (1034,1003,0,'Non Yukon Meter',1204);
 go
+
+insert into YukonRoleProperty values(-80002,-800,'Intro Text','An important message from your energy provider','The text that is read after the phone is answered, but before the pin has been entered');
+go
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
