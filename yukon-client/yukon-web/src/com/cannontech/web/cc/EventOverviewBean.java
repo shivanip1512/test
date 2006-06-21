@@ -17,7 +17,16 @@ public class EventOverviewBean {
     private BaseEventDao baseEventDao;
     private EventDetailHelper eventDetailHelper;
     private CommercialCurtailmentBean commercialCurtailmentBean;
+    private BaseEvent selectedEvent;
     
+    public BaseEvent getSelectedEvent() {
+        return selectedEvent;
+    }
+
+    public void setSelectedEvent(BaseEvent selectedEvent) {
+        this.selectedEvent = selectedEvent;
+    }
+
     public CommercialCurtailmentBean getCommercialCurtailmentBean() {
         return commercialCurtailmentBean;
     }
@@ -72,22 +81,8 @@ public class EventOverviewBean {
         this.recentEventListModel = recentEventListModel;
     }
 
-    public String showDetailPending() {
-        BaseEvent rowData = (BaseEvent) pendingEventListModel.getRowData();
-        
-        return showDetail(rowData);
-    }
-    
-    public String showDetailCurrent() {
-        BaseEvent rowData = (BaseEvent) currentEventListModel.getRowData();
-        
-        return showDetail(rowData);
-    }
-    
-    public String showDetailRecent() {
-        BaseEvent rowData = (BaseEvent) recentEventListModel.getRowData();
-        
-        return showDetail(rowData);
+    public String showDetail() {
+        return showDetail(getSelectedEvent());
     }
     
     private String showDetail(BaseEvent rowData) {

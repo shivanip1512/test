@@ -14,7 +14,8 @@
     <h:outputText value="#{thisEvent.program.name}"/>
   </t:column>
   <t:column>
-    <h:commandLink action="#{sEventOverview.showDetailCurrent}">
+    <h:commandLink action="#{sEventOverview.showDetail}">
+      <t:updateActionListener property="#{sEventOverview.selectedEvent}" value="#{thisEvent}"/>
       <h:outputText value="#{thisEvent.displayName}"/>
     </h:commandLink>
   </t:column>
