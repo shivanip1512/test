@@ -1,11 +1,11 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     5/15/2006 8:36:43 AM                         */
+/* Created on:     6/21/2006 1:46:22 PM                         */
 /*==============================================================*/
 
 
-set scan off
+set define off
 
 
 drop view SubstationAddress_View;
@@ -489,6 +489,8 @@ drop table POINTANALOG cascade constraints;
 drop table POINTLIMITS cascade constraints;
 
 drop table POINTSTATUS cascade constraints;
+
+drop table POINTTRIGGER cascade constraints;
 
 drop table POINTUNIT cascade constraints;
 
@@ -4561,6 +4563,22 @@ alter table POINTSTATUS
    add constraint PK_PtStatus primary key (POINTID);
 
 /*==============================================================*/
+/* Table: POINTTRIGGER                                          */
+/*==============================================================*/
+create table POINTTRIGGER  (
+   PointID              NUMBER                          not null,
+   TriggerID            number                          not null,
+   TriggerDeadband      float                           not null,
+   VerificationID       number                          not null,
+   VerificationDeadband float                           not null,
+   CommandTimeout       number                          not null,
+   Parameters           varchar2(40)                    not null
+);
+
+alter table POINTTRIGGER
+   add constraint PK_POINTTRIGGER primary key (PointID);
+
+/*==============================================================*/
 /* Table: POINTUNIT                                             */
 /*==============================================================*/
 create table POINTUNIT  (
@@ -6820,6 +6838,7 @@ insert into YukonRoleProperty values(-20158,-201,'Disable Switch Sending','false
 insert into YukonRoleProperty values(-20159,-201,'Switches to Meter','(none)','Allow switches to be assigned under meters for an account.');
 insert into YukonRoleProperty values(-20160,-201,'Create Login With Account','false','Require that a login is created with every new customer account.');
 insert into YukonRoleProperty values(-20161,-201,'Account Number Length','(none)','Specifies the number of account number characters to consider for comparison purposes during the customer account import process.');
+insert into YukonRoleProperty values(-20162,-201,'Rotation Digit Length','(none)','Specifies the number of rotation digit characters to ignore during the customer account import process.');
 
 /* Operator Administrator Role Properties */
 insert into YukonRoleProperty values(-20000,-200,'Config Energy Company','false','Controls whether to allow configuring the energy company');
@@ -7037,6 +7056,7 @@ insert into YukonRoleProperty values(-70010,-700,'Database Editing','false','All
 /* Notification / IVR Role properties */
 insert into YukonRoleProperty values(-1400,-800,'voice_app','login','The voice server application that Yukon should use');
 insert into YukonRoleProperty values(-80001,-800,'Number of Channels','1','The number of outgoing channels assigned to the specified voice application.');
+insert into YukonRoleProperty values(-80002,-800,'Intro Text','An important message from your energy provider','The text that is read after the phone is answered, but before the pin has been entered');
 
 /* Notification / Configuration role properties */
 insert into YukonRoleProperty values(-80100,-801,'Template Root','http://localhost:8080/WebConfig/custom/notif_templates/','A URL base where the notification templates will be stored (file: or http: are okay).');
@@ -8566,6 +8586,18 @@ alter table POINTLIMITS
 
 alter table POINTSTATUS
    add constraint Ref_ptstatus_pt foreign key (POINTID)
+      references POINT (POINTID);
+
+alter table POINTTRIGGER
+   add constraint FK_PTTRIGGERTRIGGERPT_PT foreign key (TriggerID)
+      references POINT (POINTID);
+
+alter table POINTTRIGGER
+   add constraint FK_PTTRIGGERVERIF_PT foreign key (VerificationID)
+      references POINT (POINTID);
+
+alter table POINTTRIGGER
+   add constraint FK_PTTRIGGER_PT foreign key (PointID)
       references POINT (POINTID);
 
 alter table POINTUNIT

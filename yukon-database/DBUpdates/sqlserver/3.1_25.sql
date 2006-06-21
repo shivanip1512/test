@@ -2,8 +2,7 @@
 /**** SQLServer 2000 DBupdates         ****/
 /******************************************/
 
-insert into YukonRoleProperty values(-20161,-201,'Account Number Length','(none)','Specifies the number of account number characters to consider for comparison purposes during the customer account import process.');
-insert into YukonRoleProperty values(-20162,-201,'Rotation Digit Length','(none)','Specifies the number of rotation digit characters to ignore during the customer account import process.');
+Update graphdataseries set type = 65 where type = 64;
 go
 
 /******************************************************************************/
@@ -17,4 +16,4 @@ go
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
 /**************************************************************/
-insert into CTIDatabase values('3.1', 'DBAdmin', '21-JUNE-2006', 'Manual version insert done', 24);
+/* __YUKON_VERSION__ */

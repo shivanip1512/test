@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     5/15/2006 8:35:58 AM                         */
+/* Created on:     6/21/2006 1:47:16 PM                         */
 /*==============================================================*/
 
 
@@ -2034,6 +2034,14 @@ if exists (select 1
            where  id = object_id('POINTSTATUS')
             and   type = 'U')
    drop table POINTSTATUS
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('POINTTRIGGER')
+            and   type = 'U')
+   drop table POINTTRIGGER
 go
 
 
@@ -7138,6 +7146,26 @@ go
 
 
 /*==============================================================*/
+/* Table: POINTTRIGGER                                          */
+/*==============================================================*/
+create table POINTTRIGGER (
+   PointID              numeric              not null,
+   TriggerID            numeric              not null,
+   TriggerDeadband      float                not null,
+   VerificationID       numeric              not null,
+   VerificationDeadband float                not null,
+   CommandTimeout       numeric              not null,
+   Parameters           varchar(40)          not null
+)
+go
+
+
+alter table POINTTRIGGER
+   add constraint PK_POINTTRIGGER primary key  (PointID)
+go
+
+
+/*==============================================================*/
 /* Table: POINTUNIT                                             */
 /*==============================================================*/
 create table POINTUNIT (
@@ -9561,6 +9589,7 @@ insert into YukonRoleProperty values(-20158,-201,'Disable Switch Sending','false
 insert into YukonRoleProperty values(-20159,-201,'Switches to Meter','(none)','Allow switches to be assigned under meters for an account.');
 insert into YukonRoleProperty values(-20160,-201,'Create Login With Account','false','Require that a login is created with every new customer account.');
 insert into YukonRoleProperty values(-20161,-201,'Account Number Length','(none)','Specifies the number of account number characters to consider for comparison purposes during the customer account import process.');
+insert into YukonRoleProperty values(-20162,-201,'Rotation Digit Length','(none)','Specifies the number of rotation digit characters to ignore during the customer account import process.');
 
 /* Operator Administrator Role Properties */
 insert into YukonRoleProperty values(-20000,-200,'Config Energy Company','false','Controls whether to allow configuring the energy company');
@@ -9778,6 +9807,7 @@ insert into YukonRoleProperty values(-70010,-700,'Database Editing','false','All
 /* Notification / IVR Role properties */
 insert into YukonRoleProperty values(-1400,-800,'voice_app','login','The voice server application that Yukon should use');
 insert into YukonRoleProperty values(-80001,-800,'Number of Channels','1','The number of outgoing channels assigned to the specified voice application.');
+insert into YukonRoleProperty values(-80002,-800,'Intro Text','An important message from your energy provider','The text that is read after the phone is answered, but before the pin has been entered');
 
 /* Notification / Configuration role properties */
 insert into YukonRoleProperty values(-80100,-801,'Template Root','http://localhost:8080/WebConfig/custom/notif_templates/','A URL base where the notification templates will be stored (file: or http: are okay).');
@@ -11843,6 +11873,24 @@ go
 
 alter table POINTSTATUS
    add constraint Ref_ptstatus_pt foreign key (POINTID)
+      references POINT (POINTID)
+go
+
+
+alter table POINTTRIGGER
+   add constraint FK_PTTRIGGERTRIGGERPT_PT foreign key (TriggerID)
+      references POINT (POINTID)
+go
+
+
+alter table POINTTRIGGER
+   add constraint FK_PTTRIGGERVERIF_PT foreign key (VerificationID)
+      references POINT (POINTID)
+go
+
+
+alter table POINTTRIGGER
+   add constraint FK_PTTRIGGER_PT foreign key (PointID)
       references POINT (POINTID)
 go
 
