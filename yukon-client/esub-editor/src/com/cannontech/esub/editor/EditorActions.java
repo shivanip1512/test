@@ -17,7 +17,10 @@ import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.esub.element.*;
+import com.cannontech.esub.element.AlarmTextElement;
+import com.cannontech.esub.element.CurrentAlarmsTable;
+import com.cannontech.esub.element.DynamicGraphElement;
+import com.cannontech.esub.element.FunctionElement;
 import com.cannontech.esub.util.Util;
 import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.util.Command;

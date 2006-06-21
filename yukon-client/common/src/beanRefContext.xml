@@ -7,9 +7,19 @@
         lazy-init="true">
      <constructor-arg>
        <list>
-         <value>com/cannontech/spring/applicationContext.xml</value>
+         <value>com/cannontech/core/dao/applicationContext.xml</value>
          <value>com/cannontech/hibernate/hibernateContext.xml</value>
          <value>com/cannontech/cc/applicationContext.xml</value>
+       </list>
+     </constructor-arg>
+   </bean>
+    
+    <bean id="com.cannontech.context.client" 
+        class="org.springframework.context.support.ClassPathXmlApplicationContext"
+        lazy-init="true">
+     <constructor-arg>
+       <list>
+         <value>com/cannontech/core/dao/applicationContext.xml</value>
        </list>
      </constructor-arg>
    </bean>
@@ -19,7 +29,7 @@
         lazy-init="true">
      <constructor-arg>
        <list>
-         <value>com/cannontech/spring/applicationContext.xml</value>
+         <value>com/cannontech/core/applicationContext.xml</value>
          <value>com/cannontech/hibernate/hibernateContext.xml</value>
          <value>com/cannontech/cc/applicationContext.xml</value>
          <value>com/cannontech/notif/applicationContext.xml</value>

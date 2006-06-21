@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsCustAccountDescriptor.java,v 1.98 2006/04/10 22:23:29 jdayton Exp $
+ * $Id: StarsCustAccountDescriptor.java,v 1.99 2006/06/21 17:12:11 alauinger Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -11,21 +11,18 @@ package com.cannontech.stars.xml.serialize;
  //- Imported classes and packages -/
 //---------------------------------/
 
-import org.exolab.castor.mapping.AccessMode;
-import org.exolab.castor.mapping.ClassDescriptor;
-import org.exolab.castor.mapping.FieldDescriptor;
-import org.exolab.castor.xml.*;
 import org.exolab.castor.xml.FieldValidator;
-import org.exolab.castor.xml.TypeValidator;
-import org.exolab.castor.xml.XMLFieldDescriptor;
-import org.exolab.castor.xml.handlers.*;
+import org.exolab.castor.xml.NodeType;
+import org.exolab.castor.xml.XMLFieldHandler;
 import org.exolab.castor.xml.util.XMLFieldDescriptorImpl;
-import org.exolab.castor.xml.validators.*;
+import org.exolab.castor.xml.validators.BooleanValidator;
+import org.exolab.castor.xml.validators.IntegerValidator;
+import org.exolab.castor.xml.validators.StringValidator;
 
 /**
  * 
  * 
- * @version $Revision: 1.98 $ $Date: 2006/04/10 22:23:29 $
+ * @version $Revision: 1.99 $ $Date: 2006/06/21 17:12:11 $
 **/
 public class StarsCustAccountDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 

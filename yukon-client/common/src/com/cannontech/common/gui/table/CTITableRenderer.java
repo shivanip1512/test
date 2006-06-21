@@ -1,6 +1,5 @@
 package com.cannontech.common.gui.table;
 
-import com.cannontech.common.gui.table.ICTITableRenderer;
 
 /**
  * @author rneuharth

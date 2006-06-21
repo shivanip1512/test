@@ -6,7 +6,7 @@ import java.text.SimpleDateFormat;
 import org.apache.commons.lang.BooleanUtils;
 
 import com.cannontech.clientutils.tags.AlarmUtils;
-import com.cannontech.database.cache.functions.*;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.*;
 import com.cannontech.database.data.notification.NotifType;
 import com.cannontech.database.data.point.PointTypes;
@@ -30,7 +30,7 @@ public class AlarmMessageHandler extends NotifHandler {
 
         for (int i = 0; i < msg.notifGroupIds.length; i++) {
             int notifGroupId = msg.notifGroupIds[i];
-            LiteNotificationGroup liteNotifGroup = NotificationGroupFuncs.getLiteNotificationGroup(notifGroupId);
+            LiteNotificationGroup liteNotifGroup = DaoFactory.getNotificationGroupDao().getLiteNotificationGroup(notifGroupId);
             NotificationBuilder notifFormatter = createNotificationBuilder(msg, liteNotifGroup);
             outputNotification(notifFormatter, liteNotifGroup);
         }
@@ -43,13 +43,13 @@ public class AlarmMessageHandler extends NotifHandler {
         
         notif.addData("notificationgroup", liteNotifGroup.getNotificationGroupName());
         
-        LitePoint point = (LitePoint)PointFuncs.getLitePoint(msg.pointId);
+        LitePoint point = (LitePoint)DaoFactory.getPointDao().getLitePoint(msg.pointId);
         notif.addData("pointid", Integer.toString(point.getPointID()));
         notif.addData("pointname", point.getPointName());
         notif.addData("rawvalue", Double.toString(msg.value));
         notif.addData("pointtype", PointTypes.getType(point.getPointType()));
         int pAObjectId = point.getPaobjectID();
-        notif.addData("paoname", PAOFuncs.getYukonPAOName(pAObjectId));
+        notif.addData("paoname", DaoFactory.getPaoDao().getYukonPAOName(pAObjectId));
         
         notif.addData("abnormal", BooleanUtils.toStringTrueFalse(msg.abnormal));
         notif.addData("acknowledged", BooleanUtils.toStringTrueFalse(msg.acknowledged));
@@ -58,7 +58,7 @@ public class AlarmMessageHandler extends NotifHandler {
         String conditionText = AlarmUtils.getAlarmConditionText(msg.condition, point);
         notif.addData("condition", conditionText);
         
-        String categoryText = AlarmCatFuncs.getAlarmCategoryName(msg.alarmCategoryId);
+        String categoryText = DaoFactory.getAlarmCatDao().getAlarmCategoryName(msg.alarmCategoryId);
         notif.addData("category", categoryText);
         
         DateFormat dateFormatter = new SimpleDateFormat("EEEE, MMMM d"); // e.g. "Tuesday, May 31"
@@ -70,12 +70,12 @@ public class AlarmMessageHandler extends NotifHandler {
         String uofm = "";
         if (point.getPointType() == PointTypes.STATUS_POINT) {
             // handle as status
-            LiteState liteState = StateFuncs.getLiteState(point.getStateGroupID(), (int)msg.value);
+            LiteState liteState = DaoFactory.getStateDao().getLiteState(point.getStateGroupID(), (int)msg.value);
             notif.addData("value", liteState.getStateText());
         } else {
             // handle as analog
             notif.addData("value", Double.toString(msg.value));
-            LiteUnitMeasure liteUnitMeasureByPointID = UnitMeasureFuncs.getLiteUnitMeasureByPointID(msg.pointId);
+            LiteUnitMeasure liteUnitMeasureByPointID = DaoFactory.getUnitMeasureDao().getLiteUnitMeasureByPointID(msg.pointId);
             if (liteUnitMeasureByPointID != null) {
                 uofm = liteUnitMeasureByPointID.getUnitMeasureName();
             }

@@ -39,8 +39,7 @@ import com.cannontech.analysis.gui.ReportBean;
 import com.cannontech.analysis.tablemodel.MeterReadModel;
 import com.cannontech.analysis.tablemodel.WorkOrderModel;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.database.cache.functions.AuthFuncs;
-import com.cannontech.database.cache.functions.EnergyCompanyFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.util.ServletUtil;
@@ -86,12 +85,12 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
 			//Default energycompany properties in case we can't find one?
 			Integer energyCompanyID = null;	//default?
 			TimeZone tz = TimeZone.getDefault();	//init to the timezone of the running program
-			if( EnergyCompanyFuncs.getEnergyCompany(liteYukonUser) != null)
+			if( DaoFactory.getEnergyCompanyDao().getEnergyCompany(liteYukonUser) != null)
 			{
-				energyCompanyID = new Integer(EnergyCompanyFuncs.getEnergyCompany(liteYukonUser).getEnergyCompanyID());
+				energyCompanyID = new Integer(DaoFactory.getEnergyCompanyDao().getEnergyCompany(liteYukonUser).getEnergyCompanyID());
 				//Get the EnergyCompany user to find the TimzeZone
-				LiteYukonUser ecUser = EnergyCompanyFuncs.getEnergyCompanyUser(energyCompanyID.intValue());
-				tz = TimeZone.getTimeZone(AuthFuncs.getRolePropertyValue(ecUser, EnergyCompanyRole.DEFAULT_TIME_ZONE));
+				LiteYukonUser ecUser = DaoFactory.getEnergyCompanyDao().getEnergyCompanyUser(energyCompanyID.intValue());
+				tz = TimeZone.getTimeZone(DaoFactory.getAuthDao().getRolePropertyValue(ecUser, EnergyCompanyRole.DEFAULT_TIME_ZONE));
 			}
 			
 			ReportBean reportBean = (ReportBean)session.getAttribute(ServletUtil.ATT_REPORT_BEAN);

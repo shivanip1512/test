@@ -1,5 +1,7 @@
 package com.cannontech.dbeditor.wizard.device;
 
+import com.cannontech.yukon.IDatabaseCache;
+
 /**
  * This type was created in VisualAge.
  */
@@ -282,7 +284,7 @@ private void initialize() {
 
 	// user code begin {2}
 /*
-	com.cannontech.database.cache.DefaultDatabaseCache cache =
+	IDatabaseCache cache =
 					com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 
 	
@@ -532,7 +534,7 @@ public void setValue(Object val)
 		broadcaster = new com.cannontech.database.data.device.MCT_Broadcast();
 	java.util.Vector availableMCTs = null;
 	java.util.Vector usedMCTs = null;
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized( cache )
 	{
 		java.util.List devices = cache.getAllDevices();

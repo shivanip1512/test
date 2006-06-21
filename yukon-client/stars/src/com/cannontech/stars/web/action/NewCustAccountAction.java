@@ -9,23 +9,41 @@ import javax.xml.soap.SOAPMessage;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CommandExecutionException;
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.StarsDatabaseCache;
-import com.cannontech.database.cache.functions.AuthFuncs;
-import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.data.customer.CustomerTypes;
-import com.cannontech.database.data.lite.*;
+import com.cannontech.database.data.lite.LiteCICustomer;
+import com.cannontech.database.data.lite.LiteContact;
+import com.cannontech.database.data.lite.LiteCustomer;
+import com.cannontech.database.data.lite.LiteFactory;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
-import com.cannontech.stars.util.*;
+import com.cannontech.stars.util.EventUtils;
+import com.cannontech.stars.util.ServerUtils;
+import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.StarsFactory;
-import com.cannontech.stars.xml.serialize.*;
+import com.cannontech.stars.xml.serialize.AdditionalContact;
+import com.cannontech.stars.xml.serialize.BillingAddress;
+import com.cannontech.stars.xml.serialize.ContactNotification;
+import com.cannontech.stars.xml.serialize.PrimaryContact;
+import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
+import com.cannontech.stars.xml.serialize.StarsCustomerAccount;
+import com.cannontech.stars.xml.serialize.StarsFailure;
+import com.cannontech.stars.xml.serialize.StarsNewCustomerAccount;
+import com.cannontech.stars.xml.serialize.StarsOperation;
+import com.cannontech.stars.xml.serialize.StarsSiteInformation;
+import com.cannontech.stars.xml.serialize.StarsSuccess;
+import com.cannontech.stars.xml.serialize.StarsUpdateLogin;
+import com.cannontech.stars.xml.serialize.StreetAddress;
+import com.cannontech.stars.xml.serialize.Substation;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
 import com.cannontech.user.UserUtils;
@@ -153,14 +171,14 @@ public class NewCustAccountAction implements ActionBase {
 					 * this is part of the whole HECO development rush...some day we will pay
 					 */
                     //ConsumerInfoRole.CREATE_LOGIN_FOR_ACCOUNT needs to be true for this to happen
-					if(AuthFuncs.checkRoleProperty(user.getUserID(), ConsumerInfoRole.CREATE_LOGIN_FOR_ACCOUNT))
+					if(DaoFactory.getAuthDao().checkRoleProperty(user.getUserID(), ConsumerInfoRole.CREATE_LOGIN_FOR_ACCOUNT))
                     {
                         com.cannontech.database.data.user.YukonUser login = new com.cannontech.database.data.user.YukonUser();
     					String firstInitial= "";
     					if(firstName != null)
     						firstInitial = firstName.toLowerCase().substring(0,1);
     					String newUserName = firstInitial + lastName.toLowerCase();
-    					if (YukonUserFuncs.getLiteYukonUser( newUserName ) != null)
+    					if (DaoFactory.getYukonUserDao().getLiteYukonUser( newUserName ) != null)
     						newUserName = firstName.toLowerCase() + lastName.toLowerCase();
     					login.getYukonUser().setUsername(newUserName);
     					login.getYukonUser().setPassword(new Long(java.util.Calendar.getInstance().getTimeInMillis()).toString()); 
@@ -184,7 +202,7 @@ public class NewCustAccountAction implements ActionBase {
 			
 			newAccount.setStarsCustomerAccount( account );
 			//ConsumerInfoRole.CREATE_LOGIN_FOR_ACCOUNT needs to be true for this to happen
-            if(AuthFuncs.checkRoleProperty(user.getUserID(), ConsumerInfoRole.CREATE_LOGIN_FOR_ACCOUNT))
+            if(DaoFactory.getAuthDao().checkRoleProperty(user.getUserID(), ConsumerInfoRole.CREATE_LOGIN_FOR_ACCOUNT))
             {
                 String username = req.getParameter( "Username" );
     			String password = req.getParameter( "Password" );
@@ -208,12 +226,12 @@ public class NewCustAccountAction implements ActionBase {
     					lastName = account.getAccountNumber();
     					firstInitial = "#";
     				}
-    				if(YukonUserFuncs.getLiteYukonUser( firstInitial + lastName ) != null)
+    				if(DaoFactory.getYukonUserDao().getLiteYukonUser( firstInitial + lastName ) != null)
     					login.setUsername(firstName.toLowerCase() + lastName.toLowerCase());	
     				else
     					login.setUsername(firstInitial + lastName.toLowerCase());
     				login.setPassword(new Long(java.util.Calendar.getInstance().getTimeInMillis()).toString());
-    				/*String groupIDs = EnergyCompanyFuncs.getEnergyCompanyProperty(user.getYukonUser(), EnergyCompanyRole.CUSTOMER_GROUP_IDS);
+    				/*String groupIDs = DaoFactory.getEnergyCompanyDao().getEnergyCompanyProperty(user.getYukonUser(), EnergyCompanyRole.CUSTOMER_GROUP_IDS);
     				Integer defaultGroupID = new Integer(0);
     				if(groupIDs != null)
     					groupIDs.*/
@@ -366,7 +384,7 @@ public class NewCustAccountAction implements ActionBase {
 					throw new WebClientException( "Username cannot be empty" );
 				if (updateLogin.getPassword().trim().length() == 0)
 					throw new WebClientException( "Password cannot be empty" );
-				if (YukonUserFuncs.getLiteYukonUser( updateLogin.getUsername() ) != null)
+				if (DaoFactory.getYukonUserDao().getLiteYukonUser( updateLogin.getUsername() ) != null)
 					throw new WebClientException( "Username already exists" );
 			}
     		
@@ -473,7 +491,7 @@ public class NewCustAccountAction implements ActionBase {
             customer.getCustomer().setCustomerNumber(starsAccount.getCustomerNumber());
 			customer.getCustomer().setRateScheduleID(new Integer(starsAccount.getRateScheduleID()));
 			customer.getCustomer().setAltTrackingNumber(starsAccount.getAltTrackingNumber());
-            customer.getCustomer().setTemperatureUnit(AuthFuncs.getRolePropertyValue(energyCompany.getUserID(),
+            customer.getCustomer().setTemperatureUnit(DaoFactory.getAuthDao().getRolePropertyValue(energyCompany.getUserID(),
                                                       EnergyCompanyRole.DEFAULT_TEMPERATURE_UNIT));
 			account.setCustomer( customer );
 			account.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );

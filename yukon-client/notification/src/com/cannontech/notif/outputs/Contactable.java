@@ -3,7 +3,7 @@ package com.cannontech.notif.outputs;
 import java.util.List;
 import java.util.TimeZone;
 
-import com.cannontech.database.cache.functions.EnergyCompanyFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.notification.NotifType;
 
@@ -43,14 +43,14 @@ public class Contactable {
                     .getTimeZone();
             return TimeZone.getTimeZone(tzString);
         } catch (UnknownCustomerException e) {
-            return EnergyCompanyFuncs.getEnergyCompanyTimeZone(getEnergyCompany());
+            return DaoFactory.getEnergyCompanyDao().getEnergyCompanyTimeZone(getEnergyCompany());
         }
     }
 
     /**
      * Determines the appropriate LiteEnergyCompany by first finding the parent
      * customer. When the parent customer cannot be found, the default energy
-     * company will be returned (EnergyCompanyFuncs.DEFAULT_ENERGY_COMPANY_ID).
+     * company will be returned (DaoFactory.getEnergyCompanyDao().DEFAULT_ENERGY_COMPANY_ID).
      * 
      * @return a valid LiteEnergyCompany for this Contactable
      */
@@ -60,9 +60,9 @@ public class Contactable {
             energyCompanyID = _contactableBase.getContactableCustomer()
                     .getEnergyCompanyID();
         } catch (UnknownCustomerException e) {
-            energyCompanyID = EnergyCompanyFuncs.DEFAULT_ENERGY_COMPANY_ID;
+            energyCompanyID = DaoFactory.getEnergyCompanyDao().DEFAULT_ENERGY_COMPANY_ID;
         }
-        return EnergyCompanyFuncs.getEnergyCompany(energyCompanyID);
+        return DaoFactory.getEnergyCompanyDao().getEnergyCompany(energyCompanyID);
     }
 
     public String toString() {

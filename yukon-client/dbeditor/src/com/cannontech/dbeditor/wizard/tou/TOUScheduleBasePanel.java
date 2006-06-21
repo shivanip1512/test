@@ -6,27 +6,21 @@
  */
 package com.cannontech.dbeditor.wizard.tou;
 
-import com.cannontech.common.gui.util.DataInputPanel;
-import com.cannontech.database.data.tou.TOUDay;
-import com.cannontech.database.db.tou.TOUDayRateSwitches;
-import com.cannontech.database.db.tou.TOUDayMapping;
-import com.cannontech.database.data.tou.TOUSchedule;
-import com.cannontech.database.Transaction;
-
 import java.awt.event.FocusEvent;
 import java.util.Calendar;
-import java.util.Vector;
 import java.util.HashMap;
+import java.util.Vector;
 
-import java.awt.event.KeyEvent;
-import javax.swing.KeyStroke;
-import java.awt.event.InputEvent;
 import javax.swing.JComboBox;
-import javax.swing.DefaultComboBoxModel;
-import com.cannontech.common.gui.table.MultiJComboCellRenderer;
-import com.cannontech.common.gui.table.MultiJComboCellEditor;
-import com.cannontech.common.gui.util.JTextFieldTimeEntry;
+
 import com.cannontech.common.gui.util.ComboBoxTableRenderer;
+import com.cannontech.common.gui.util.DataInputPanel;
+import com.cannontech.common.gui.util.JTextFieldTimeEntry;
+import com.cannontech.database.Transaction;
+import com.cannontech.database.data.tou.TOUDay;
+import com.cannontech.database.data.tou.TOUSchedule;
+import com.cannontech.database.db.tou.TOUDayMapping;
+import com.cannontech.database.db.tou.TOUDayRateSwitches;
 
 /**
  * @author jdayton

@@ -19,7 +19,7 @@ import com.cannontech.cbc.popupmenu.CapBankDevicePopUp;
 import com.cannontech.cbc.popupmenu.FeederPopUp;
 import com.cannontech.cbc.popupmenu.SubBusPopUp;
 import com.cannontech.cbc.tablemodelevents.CBCGenericTableModelEvent;
-import com.cannontech.common.gui.panel.*;
+import com.cannontech.common.gui.panel.CompositeJSplitPane;
 import com.cannontech.common.gui.util.MessagePanel;
 import com.cannontech.common.gui.util.SortTableModelWrapper;
 import com.cannontech.message.dispatch.message.Multi;

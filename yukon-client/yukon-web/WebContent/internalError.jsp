@@ -1,4 +1,4 @@
-<%@page import="com.cannontech.database.cache.functions.RoleFuncs"%>
+<%@ page import="com.cannontech.core.dao.DaoFactory" %>
 <%@page import="com.cannontech.util.ServletUtil"%>
 <%@page import="com.cannontech.roles.yukon.SystemRole"%>
 <%@page import="java.io.PrintWriter"%>
@@ -9,7 +9,7 @@
 
 <%
 String logo = "/" +
-	RoleFuncs.getGlobalPropertyValue( SystemRole.WEB_LOGO_URL );
+	DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.WEB_LOGO_URL );
 
 Throwable throwable = (Throwable)request.getAttribute("javax.servlet.error.exception");
 // if the above returned null, this page was probably called via the JSP exception handler

@@ -2,8 +2,9 @@ package com.cannontech.stars.web.bean;
 
 import java.util.List;
 
-import com.cannontech.common.constants.*;
-import com.cannontech.database.cache.functions.YukonListFuncs;
+import com.cannontech.common.constants.YukonSelectionList;
+import com.cannontech.common.constants.YukonSelectionListDefs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.stars.event.EventAccount;
 
 
@@ -19,7 +20,7 @@ public class AccountBean
         if(customerTypes == null)
         {
             customerTypes = new YukonSelectionList();
-            customerTypes = YukonListFuncs.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_ID_CUSTOMER_TYPE);
+            customerTypes = DaoFactory.getYukonListDao().getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_ID_CUSTOMER_TYPE);
         }
         
         return customerTypes;

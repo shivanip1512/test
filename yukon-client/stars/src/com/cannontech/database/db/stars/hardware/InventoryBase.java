@@ -7,7 +7,6 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.db.DBPersistent;
-import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.spring.YukonSpringHook;
 
 

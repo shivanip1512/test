@@ -1,8 +1,8 @@
 package com.cannontech.systray;
 
-import com.cannontech.common.util.CtiUtilities;
-
 import snoozesoft.systray4j.SysTrayMenuIcon;
+
+import com.cannontech.common.util.CtiUtilities;
 
 /**
  * @author rneuharth

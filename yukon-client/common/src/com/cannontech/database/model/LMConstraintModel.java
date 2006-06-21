@@ -6,6 +6,8 @@
  */
 package com.cannontech.database.model;
 
+import com.cannontech.yukon.IDatabaseCache;
+
 /**
  * @author jdayton
  *
@@ -37,7 +39,7 @@ public class LMConstraintModel extends DBTreeModel
 	public void update()
 	{
 
-		com.cannontech.database.cache.DefaultDatabaseCache cache =
+		IDatabaseCache cache =
 			com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 
 		synchronized (cache)

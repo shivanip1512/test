@@ -12,9 +12,7 @@ import java.util.Set;
 import javax.swing.table.AbstractTableModel;
 
 import com.cannontech.clientutils.tags.TagUtils;
-import com.cannontech.database.cache.functions.AlarmFuncs;
-import com.cannontech.database.cache.functions.PAOFuncs;
-import com.cannontech.database.cache.functions.PointFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.message.dispatch.message.Signal;
@@ -83,19 +81,19 @@ public class PointAlarmTableModel extends AbstractTableModel {
 		
 		for (int i = 0; i < _deviceIds.length; i++) {
 			int deviceId = _deviceIds[i];
-			List deviceSignals = AlarmFuncs.getSignalsForPao(deviceId);
+			List deviceSignals = DaoFactory.getAlarmDao().getSignalsForPao(deviceId);
             allSignals.addAll(deviceSignals);
 		}
 		
 		for (int i = 0; i < _pointIds.length; i++) {
 			int pointId = _pointIds[i];
-			List pointSignals = AlarmFuncs.getSignalsForPoint(pointId);
+			List pointSignals = DaoFactory.getAlarmDao().getSignalsForPoint(pointId);
 			allSignals.addAll(pointSignals);
 		}
 		
 		for (int i = 0; i < _alarmCategoryIds.length; i++) {
 			int alarmCategoryId = _alarmCategoryIds[i];
-			List alarmCategorySignals = AlarmFuncs.getSignalsForAlarmCategory(alarmCategoryId);
+			List alarmCategorySignals = DaoFactory.getAlarmDao().getSignalsForAlarmCategory(alarmCategoryId);
 			allSignals.addAll(alarmCategorySignals);
 		}
 		
@@ -116,10 +114,10 @@ public class PointAlarmTableModel extends AbstractTableModel {
 	        return;
         }
 		int pointID = s.getPointID();
-		LitePoint point = PointFuncs.getLitePoint(pointID);
+		LitePoint point = DaoFactory.getPointDao().getLitePoint(pointID);
 		
 		int devID = point.getPaobjectID();
-		LiteYukonPAObject device = PAOFuncs.getLiteYukonPAO(devID);
+		LiteYukonPAObject device = DaoFactory.getPaoDao().getLiteYukonPAO(devID);
 		
 		ArrayList row = new ArrayList(NUM_COLUMNS);
 		row.add(s.getTimeStamp());

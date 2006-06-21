@@ -10,7 +10,7 @@ import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
-import com.cannontech.database.cache.functions.CustomerFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteRawPointHistory;
 import com.cannontech.database.data.lite.LiteSettlementConfig;
@@ -74,7 +74,7 @@ public class LMEventCustomer
 	{
 		if( deviationPeriods == null)
 		{
-			int ecID = CustomerFuncs.getLiteCustomer(getCustomerID().intValue()).getEnergyCompanyID();
+			int ecID = DaoFactory.getCustomerDao().getLiteCustomer(getCustomerID().intValue()).getEnergyCompanyID();
 			LiteSettlementConfig lsc = SettlementConfigFuncs.getLiteSettlementConfig(ecID, YukonListEntryTypes.YUK_DEF_ID_SETTLEMENT_HECO, SettlementConfig.HECO_ALLOWED_VIOLATIONS_STRING);
 			if( lsc != null)
 				deviationPeriods = Integer.valueOf(lsc.getFieldValue());
@@ -92,7 +92,7 @@ public class LMEventCustomer
 	{
 		if( eriRate == null)
 		{
-			int ecID = CustomerFuncs.getLiteCustomer(getCustomerID().intValue()).getEnergyCompanyID();
+			int ecID = DaoFactory.getCustomerDao().getLiteCustomer(getCustomerID().intValue()).getEnergyCompanyID();
 			LiteSettlementConfig lsc = SettlementConfigFuncs.getLiteSettlementConfig(ecID, YukonListEntryTypes.YUK_DEF_ID_SETTLEMENT_HECO, SettlementConfig.HECO_ERI_RATE_STRING);
 			if( lsc != null)
 				eriRate = Double.valueOf(lsc.getFieldValue());
@@ -190,10 +190,10 @@ public class LMEventCustomer
 		{
 			if( getMaxKW().doubleValue() > 0)
 			{
-				int ecID = CustomerFuncs.getLiteCustomer(getCustomerID().intValue()).getEnergyCompanyID();
+				int ecID = DaoFactory.getCustomerDao().getLiteCustomer(getCustomerID().intValue()).getEnergyCompanyID();
 				Vector configs = SettlementConfigFuncs.getLiteSettlementConfigs(ecID, YukonListEntryTypes.YUK_DEF_ID_SETTLEMENT_HECO, SettlementConfig.HECO_RATE_DEMAND_CHARGE_STRING);
 				double demandCharge = 0;
-				LiteCustomer liteCust = CustomerFuncs.getLiteCustomer(getCustomerID().intValue());
+				LiteCustomer liteCust = DaoFactory.getCustomerDao().getLiteCustomer(getCustomerID().intValue());
 				for (int i = 0; i < configs.size(); i++)
 				{
 					LiteSettlementConfig lsc = (LiteSettlementConfig)configs.get(i);

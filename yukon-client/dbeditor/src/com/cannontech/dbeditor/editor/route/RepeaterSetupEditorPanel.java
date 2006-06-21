@@ -5,6 +5,7 @@ import javax.swing.JOptionPane;
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.database.data.route.CCURoute;
 import com.cannontech.dbeditor.editor.regenerate.RegenerateRoute;
+import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * This type was created in VisualAge.
@@ -670,7 +671,7 @@ public void setValue(Object val) {
    java.util.Vector repeaterRoutes = route.getRepeaterVector();
    java.util.Vector assignedRepeaters = new java.util.Vector();
    java.util.Vector availableRepeaters = new java.util.Vector();
-   com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+   IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
    synchronized(cache)
    {
       java.util.List devices = cache.getAllDevices();

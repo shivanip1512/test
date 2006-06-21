@@ -20,6 +20,7 @@ import com.cannontech.database.data.customer.Customer;
 import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.dbeditor.wizard.contact.QuickContactPanel;
+import com.cannontech.yukon.IDatabaseCache;
 
 public class CustomerBasePanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, DataInputPanelListener, CaretListener 
 {
@@ -654,7 +655,7 @@ private void refillContactComboBox()
 	//gotta have a NONE
 	getJComboBoxPrimaryContact().addItem( CtiUtilities.STRING_NONE );
 
-	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 	synchronized( cache )
 	{
 		List contacts = cache.getAllContacts();

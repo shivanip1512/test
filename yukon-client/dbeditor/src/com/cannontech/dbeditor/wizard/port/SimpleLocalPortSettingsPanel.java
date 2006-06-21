@@ -5,6 +5,7 @@ package com.cannontech.dbeditor.wizard.port;
  */
 
 import java.awt.Dimension;
+
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.database.data.port.DirectPort;
 import com.cannontech.database.data.port.LocalDirectPort;

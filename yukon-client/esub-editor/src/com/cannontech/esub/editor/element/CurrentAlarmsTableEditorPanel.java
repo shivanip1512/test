@@ -1,26 +1,30 @@
 package com.cannontech.esub.editor.element;
 
 import java.awt.Dimension;
-import java.awt.List;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Enumeration;
 
-import javax.swing.*;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTree;
 import javax.swing.event.TreeSelectionEvent;
-import javax.swing.text.Position;
-import javax.swing.tree.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 
-import com.cannontech.common.gui.tree.*;
-import com.cannontech.common.login.ClientSession;
-import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.cache.functions.*;
-import com.cannontech.database.data.lite.*;
-import com.cannontech.database.data.user.YukonGroup;
-import com.cannontech.database.model.*;
-import com.cannontech.dbeditor.editor.user.LiteBaseNode;
-import com.cannontech.roles.YukonGroupRoleDefs;
-import com.cannontech.user.UserUtils;
+import com.cannontech.common.gui.tree.CheckNode;
+import com.cannontech.common.gui.tree.CheckNodeSelectionListener;
+import com.cannontech.common.gui.tree.CheckRenderer;
+import com.cannontech.database.data.lite.LiteAlarmCategory;
+import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.model.AlarmCategoryCheckBoxTreeModel;
+import com.cannontech.database.model.DeviceCheckBoxTreeModel;
 
 
 /**

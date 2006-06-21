@@ -17,6 +17,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.Pair;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * @author stacey
@@ -177,7 +178,7 @@ public class MeterNumberUpdate
 	
 	public void loadAccountNumberMap()
 	{
-		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+		IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 		List paos = cache.getAllYukonPAObjects();
 		
 		for (int i = 0; i < paos.size(); i++)

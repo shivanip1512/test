@@ -6,12 +6,12 @@
  */
 package com.cannontech.database.data.device.lm;
 
-import com.cannontech.database.data.pao.YukonPAObject;
 import java.util.Vector;
-import com.cannontech.database.db.device.lm.LMControlScenarioProgram;
-import com.cannontech.common.util.CtiUtilities;
+
+import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.db.NestedDBPersistent;
 import com.cannontech.database.db.NestedDBPersistentComparators;
+import com.cannontech.database.db.device.lm.LMControlScenarioProgram;
 
 /**
  * @author jdayton

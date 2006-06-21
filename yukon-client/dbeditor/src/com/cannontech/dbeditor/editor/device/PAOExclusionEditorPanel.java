@@ -3,24 +3,18 @@ package com.cannontech.dbeditor.editor.device;
 import java.util.Collections;
 import java.util.Vector;
 
-import javax.swing.SwingUtilities;
-
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.util.MessageEvent;
-import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.cache.functions.DBPersistentFuncs;
-import com.cannontech.database.data.lite.*;
+import com.cannontech.database.data.lite.LiteComparators;
+import com.cannontech.database.data.lite.LiteFactory;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
+import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.pao.YukonPAObject;
-import com.cannontech.database.db.CTIDbChange;
-import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.pao.PAODefines;
 import com.cannontech.database.db.pao.PAOExclusion;
-import com.cannontech.database.data.pao.DeviceClasses;
-import com.cannontech.message.dispatch.ClientConnection;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * This type was created in VisualAge.
@@ -746,7 +740,7 @@ public class PAOExclusionEditorPanel extends
 		Vector assignedPAOs = new Vector();
 		Vector availablePAOs = new Vector();
 
-		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+		IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 		synchronized ( cache )
 		{
 			java.util.List paos = cache.getAllYukonPAObjects();

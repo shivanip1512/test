@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: ThermostatTypeDescriptor.java,v 1.21 2005/01/20 00:37:07 yao Exp $
+ * $Id: ThermostatTypeDescriptor.java,v 1.22 2006/06/21 17:12:18 alauinger Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -11,21 +11,14 @@ package com.cannontech.stars.xml.serialize;
  //- Imported classes and packages -/
 //---------------------------------/
 
-import org.exolab.castor.mapping.AccessMode;
-import org.exolab.castor.mapping.ClassDescriptor;
-import org.exolab.castor.mapping.FieldDescriptor;
-import org.exolab.castor.xml.*;
 import org.exolab.castor.xml.FieldValidator;
-import org.exolab.castor.xml.TypeValidator;
-import org.exolab.castor.xml.XMLFieldDescriptor;
-import org.exolab.castor.xml.handlers.*;
+import org.exolab.castor.xml.XMLFieldHandler;
 import org.exolab.castor.xml.util.XMLFieldDescriptorImpl;
-import org.exolab.castor.xml.validators.*;
 
 /**
  * 
  * 
- * @version $Revision: 1.21 $ $Date: 2005/01/20 00:37:07 $
+ * @version $Revision: 1.22 $ $Date: 2006/06/21 17:12:18 $
 **/
 public class ThermostatTypeDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 

@@ -6,7 +6,6 @@ package com.cannontech.dbeditor.wizard.capsubbus;
 
 import java.awt.Dimension;
 
-import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.database.db.capcontrol.CapControlSubstationBus;
  
 public class CCSubstationBusPointSettingsPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener

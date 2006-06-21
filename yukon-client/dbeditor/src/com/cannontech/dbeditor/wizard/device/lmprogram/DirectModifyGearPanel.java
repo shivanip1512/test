@@ -4,9 +4,9 @@ package com.cannontech.dbeditor.wizard.device.lmprogram;
  */
 
 import com.cannontech.common.editor.PropertyPanelEvent;
+import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.database.db.device.lm.LMProgramDirectGear;
-import com.cannontech.common.gui.util.TextFieldDocument;
 
 public class DirectModifyGearPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.klg.jclass.util.value.JCValueListener, java.awt.event.ActionListener, javax.swing.event.CaretListener, com.cannontech.common.gui.util.DataInputPanelListener {
 	private String gearType = null;

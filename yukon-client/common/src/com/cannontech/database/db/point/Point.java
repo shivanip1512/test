@@ -6,8 +6,9 @@ package com.cannontech.database.db.point;
 import java.sql.Connection;
 
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.data.point.PointLogicalGroups;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.point.PointLogicalGroups;
+import com.cannontech.yukon.IDatabaseCache;
 
 public class Point extends com.cannontech.database.db.DBPersistent 
 {
@@ -109,7 +110,7 @@ public String getLogicalGroup() {
  */
 public final static Integer getNextCachedPointID() 
 {
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized(cache)
 	{
 		java.util.List points = cache.getAllPoints();
@@ -224,7 +225,7 @@ public final static int[] getNextPointIDs( int idCount )
 	// *************** BEGIN SUPER HACK *************************/
 	com.cannontech.clientutils.CTILogger.info("----- getNextPointIDs(yukonPAObjectsCnt) called with " + idCount + " ids!");
 
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	int[] returnIDs = new int[idCount];
 	
 	synchronized(cache)

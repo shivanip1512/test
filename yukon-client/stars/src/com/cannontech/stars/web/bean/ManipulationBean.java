@@ -6,11 +6,10 @@ import java.util.List;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
-import com.cannontech.database.cache.functions.AuthFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteServiceCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
-import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
 import com.cannontech.database.db.stars.hardware.Warehouse;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.stars.util.ECUtils;
@@ -59,7 +58,7 @@ public class ManipulationBean
     
     public boolean getManageMembers()
     {
-        return AuthFuncs.checkRoleProperty(currentUser, AdministratorRole.ADMIN_MANAGE_MEMBERS) && (energyCompany.getChildren().size() > 0);
+        return DaoFactory.getAuthDao().checkRoleProperty(currentUser, AdministratorRole.ADMIN_MANAGE_MEMBERS) && (energyCompany.getChildren().size() > 0);
     }
     
     public ArrayList getAvailableMembers()

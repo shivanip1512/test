@@ -6,6 +6,7 @@ package com.cannontech.dbeditor.wizard.copy.device;
  import java.awt.Dimension;
 
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.yukon.IDatabaseCache;
  
 public class RoutePanel extends com.cannontech.common.gui.util.DataInputPanel {
 	private javax.swing.JLabel ivjRouteLabel = null;
@@ -218,7 +219,7 @@ public void routeList_ValueChanged(javax.swing.event.ListSelectionEvent listSele
  */
 public void setRoute(Integer routeId)
 {
-	com.cannontech.database.cache.DefaultDatabaseCache cache =
+	IDatabaseCache cache =
 		com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized (cache)
 {
@@ -239,7 +240,7 @@ public void setValue(Object val) {
 	if( getRouteComboBox().getModel().getSize() > 0 )
 		getRouteComboBox().removeAllItems();
 
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized(cache)
 	{
 		java.util.List allRoutes = cache.getAllRoutes();

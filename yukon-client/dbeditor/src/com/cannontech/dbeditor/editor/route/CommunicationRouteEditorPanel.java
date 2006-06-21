@@ -5,6 +5,7 @@ package com.cannontech.dbeditor.editor.route;
  */
 
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.yukon.IDatabaseCache;
 
 public class CommunicationRouteEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ItemListener, javax.swing.event.CaretListener, com.klg.jclass.util.value.JCValueListener
 {
@@ -512,7 +513,7 @@ public void itemStateChanged(java.awt.event.ItemEvent e) {
  */
 private void loadSignalTransmitterComboBox(String routeType) {
 
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized(cache)
 	{
 		java.util.List devices = cache.getAllDevices();

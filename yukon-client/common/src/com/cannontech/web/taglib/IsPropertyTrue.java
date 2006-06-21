@@ -5,7 +5,7 @@ import java.io.IOException;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
-import com.cannontech.database.cache.functions.AuthFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
@@ -32,11 +32,11 @@ public class IsPropertyTrue extends BodyTagSupport
 			(LiteYukonUser) pageContext.getSession().getAttribute("YUKON_USER");
 	
 		LiteYukonRoleProperty liteProp =
-			AuthFuncs.getRoleProperty(propertyid);
+			DaoFactory.getAuthDao().getRoleProperty(propertyid);
 
 		if( user != null && liteProp != null )
 		{
-			String val = AuthFuncs.getRolePropertyValue(
+			String val = DaoFactory.getAuthDao().getRolePropertyValue(
 				user,
 				liteProp.getRolePropertyID() );
 			

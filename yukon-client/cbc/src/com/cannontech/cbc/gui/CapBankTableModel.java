@@ -6,6 +6,9 @@ package com.cannontech.cbc.gui;
 import java.awt.Color;
 
 import com.cannontech.cbc.tablemodelevents.CBCGenericTableModelEvent;
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.tags.IAlarmDefs;
+import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.message.dispatch.message.Signal;
@@ -17,9 +20,6 @@ import com.cannontech.yukon.cbc.CBCUtils;
 import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.Feeder;
 import com.cannontech.yukon.cbc.SubBus;
-import com.cannontech.clientutils.CTILogger;
-import com.cannontech.clientutils.tags.IAlarmDefs;
-import com.cannontech.clientutils.tags.TagUtils;
 
 
 public class CapBankTableModel extends javax.swing.table.AbstractTableModel implements javax.swing.event.TableModelListener, com.cannontech.tdc.alarms.gui.AlarmTableModel, CapControlTableModel, com.cannontech.common.gui.util.SortableTableModel

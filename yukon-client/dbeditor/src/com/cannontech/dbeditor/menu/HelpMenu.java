@@ -9,7 +9,6 @@ import java.awt.event.KeyEvent;
 import javax.swing.JMenuItem;
 
 import com.cannontech.common.gui.util.CTIKeyEventDispatcher;
-
 import com.cannontech.common.gui.util.CommandableMenuItem;
 
 public class HelpMenu extends javax.swing.JMenu 

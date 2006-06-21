@@ -43,7 +43,7 @@
 			    <input type="hidden" name="REFERRER" value="<%= request.getParameter(ServletUtils.ATT_REFERRER) %>">
                 <table width="80%" border="0" cellspacing="0" cellpadding="0" class="MainText">
                   <tr> 
-                    <td align="center">The device &quot;<%= PAOFuncs.getYukonPAOName(liteInv.getDeviceID()) %>&quot; 
+                    <td align="center">The device &quot;<%= DaoFactory.getPaoDao().getYukonPAOName(liteInv.getDeviceID()) %>&quot; 
                       will be removed from inventory. What would you like to do 
                       with it?</td>
                   </tr>

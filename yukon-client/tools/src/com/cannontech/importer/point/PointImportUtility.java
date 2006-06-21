@@ -15,9 +15,9 @@ package com.cannontech.importer.point;
 import java.util.HashMap;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.database.data.point.PointUnits;
-import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.database.db.point.Point;
+import com.cannontech.database.db.point.PointAlarming;
+import com.cannontech.yukon.IDatabaseCache;
 
 
 //THIS ENTIRE CLASS SHOULD BE REDONE AT SOME POINT.  DO NOT HANDLE CSV FILES LIKE THIS!
@@ -390,7 +390,7 @@ public class PointImportUtility
 			String alarmStates = new String();
 			int inputCounter = 0;
 				
-			com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+			IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 			synchronized( cache )	
 			{
 				java.util.List liteAlarms = cache.getAllAlarmCategories();
@@ -608,7 +608,7 @@ public class PointImportUtility
 			String alarmStates = new String();
 			int inputCounter = 0;
 				
-			com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+			IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 			synchronized( cache )	
 			{
 				java.util.List liteAlarms = cache.getAllAlarmCategories();

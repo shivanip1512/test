@@ -2,10 +2,10 @@ package com.cannontech.dbeditor.editor.user;
 
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.util.DataInputPanel;
-import com.cannontech.database.data.user.YukonUser;
-import com.cannontech.user.UserUtils;
-import com.cannontech.roles.application.DBEditorRole;
 import com.cannontech.common.login.ClientSession;
+import com.cannontech.database.data.user.YukonUser;
+import com.cannontech.roles.application.DBEditorRole;
+import com.cannontech.user.UserUtils;
 
 /**
  * This type was created in VisualAge.

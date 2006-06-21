@@ -10,29 +10,22 @@ package com.cannontech.graph.model;
  */
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.Vector;
 
 import org.jfree.data.category.DefaultCategoryDataset;
-import org.jfree.data.general.AbstractDataset;
-import org.jfree.data.general.Series;
 import org.jfree.data.general.SeriesException;
 import org.jfree.data.time.Millisecond;
 import org.jfree.data.time.Minute;
 import org.jfree.data.time.RegularTimePeriod;
 import org.jfree.data.time.Second;
 import org.jfree.data.time.TimeSeries;
-import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.TimeSeriesDataItem;
 import org.jfree.data.xy.XYSeries;
-import org.jfree.data.xy.XYSeriesCollection;
 
 import com.cannontech.common.util.Pair;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.graph.GDSTypesFuncs;
 import com.cannontech.database.db.graph.GraphRenderers;
-import com.cannontech.graph.ResetPeaksPanel;
 /**
  * A quick and dirty implementation.
  */

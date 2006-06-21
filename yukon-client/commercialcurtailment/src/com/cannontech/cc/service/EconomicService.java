@@ -16,7 +16,7 @@ import com.cannontech.cc.model.EconomicEventParticipantSelection;
 import com.cannontech.cc.model.EconomicEventParticipantSelectionWindow;
 import com.cannontech.cc.model.EconomicEventPricing;
 import com.cannontech.cc.model.EconomicEventPricingWindow;
-import com.cannontech.database.cache.functions.CustomerFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
@@ -46,7 +46,7 @@ public class EconomicService {
     }
     
     public EconomicEventParticipant getParticipant(EconomicEvent event, LiteYukonUser yukonUser) {
-        LiteCICustomer liteCICustomer = CustomerFuncs.getCustomerForUser(yukonUser);
+        LiteCICustomer liteCICustomer = DaoFactory.getCustomerDao().getCustomerForUser(yukonUser);
         CICustomerStub customerStub = customerDao.getForLite(liteCICustomer);
         CICustomerStub customer = customerStub;
         return economicEventParticipantDao.getForCustomerAndEvent(customer, event);

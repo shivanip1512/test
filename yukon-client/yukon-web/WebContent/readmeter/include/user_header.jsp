@@ -1,6 +1,5 @@
 <%@ page language="java" session="true" %>
-<%@ page import="com.cannontech.database.cache.functions.ContactFuncs" %>
-<%@ page import="com.cannontech.database.cache.functions.YukonUserFuncs" %>
+<%@ page import="com.cannontech.core.dao.DaoFactory" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
 <%@ page import="com.cannontech.database.data.lite.LiteCICustomer" %>
 <%@ page import="com.cannontech.database.data.lite.LiteContact" %>
@@ -22,8 +21,8 @@
     java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM:dd:yyyy:HH:mm:ss");
     String dbAlias = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
 
-	LiteContact liteContact = YukonUserFuncs.getLiteContact(liteYukonUser.getLiteID());
-	LiteCICustomer liteCICustomer = ContactFuncs.getCICustomer(liteContact.getContactID());
+	LiteContact liteContact = DaoFactory.getYukonUserDao().getLiteContact(liteYukonUser.getLiteID());
+	LiteCICustomer liteCICustomer = DaoFactory.getContactDao().getCICustomer(liteContact.getContactID());
 
 	int customerID = liteCICustomer.getCustomerID();
 

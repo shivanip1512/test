@@ -5,12 +5,11 @@
 
 <%@ include file="../include/user_header.jsp" %>
 <%@ page import="com.cannontech.common.constants.YukonSelectionList"%>
-<%@ page import="com.cannontech.database.cache.functions.YukonListFuncs"%>
 <%@ page import="com.cannontech.common.constants.YukonSelectionListDefs"%>
 <%@ page import="com.cannontech.common.constants.YukonListEntry"%>
 
 <%
-	YukonSelectionList yukonSelectionList = YukonListFuncs.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_ID_CONTACT_TYPE);
+	YukonSelectionList yukonSelectionList = DaoFactory.getYukonListDao().getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_ID_CONTACT_TYPE);
 	java.util.ArrayList yukonListEntries = yukonSelectionList.getYukonListEntries();
 	String [] entryIDs = new String[yukonListEntries.size() + 1];
 	String [] entryTexts = new String[yukonListEntries.size() + 1];

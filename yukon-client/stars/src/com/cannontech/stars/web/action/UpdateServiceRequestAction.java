@@ -10,9 +10,9 @@ import javax.xml.soap.SOAPMessage;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.version.VersionTools;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.StarsDatabaseCache;
-import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
@@ -138,7 +138,7 @@ public class UpdateServiceRequestAction implements ActionBase {
 //TODO if serviceCompany changes, change state?
 	           	if (VersionTools.crsPtjIntegrationExists())
 	           	{
-	           		YukonListEntry listEntry = YukonListFuncs.getYukonListEntry(updateOrder.getCurrentState().getEntryID());
+	           		YukonListEntry listEntry = DaoFactory.getYukonListDao().getYukonListEntry(updateOrder.getCurrentState().getEntryID());
                     SAMToCRS_PTJ.handleCRSIntegration(listEntry.getYukonDefID(), order, liteAcctInfo, liteStarsEC, user.getUserID(), null);
 	           	}
 			}

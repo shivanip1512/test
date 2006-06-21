@@ -3,8 +3,8 @@ package com.cannontech.web.db;
 import org.springframework.jdbc.core.JdbcOperations;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.JdbcTemplateHelper;
-import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.capcontrol.CapBank;
@@ -17,7 +17,7 @@ public class PointNullHelper {
 	private String tableName = null;
 
 	public LitePoint getLitePoint(int paoId, DBPersistent obj) {
-		LitePoint litePoint = PointFuncs.getLitePoint(paoId);
+		LitePoint litePoint = DaoFactory.getPointDao().getLitePoint(paoId);
 		if (litePoint == null) {
 			handlePointForPAO(obj, paoId);
 		}

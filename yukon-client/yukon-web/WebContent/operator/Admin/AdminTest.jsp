@@ -1,11 +1,11 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
 <%@ page import="com.cannontech.common.util.CtiUtilities" %>
-<%@ page import="com.cannontech.database.cache.functions.YukonUserFuncs" %>
+<%@ page import="com.cannontech.core.dao.DaoFactory" %>
 <%@ page import="com.cannontech.roles.consumer.ResidentialCustomerRole" %>
 <%@ page import="com.cannontech.web.navigation.CtiNavObject" %>
 <jsp:useBean id="wareAdmin" scope="page" class="com.cannontech.stars.web.bean.WarehouseAdminBean" />
-<%	if (!AuthFuncs.checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY)
+<%	if (!DaoFactory.getAuthDao().checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY)
 		|| ecSettings == null) {
 		response.sendRedirect("../Operations.jsp"); return;
 	}
@@ -19,7 +19,7 @@
     
 	ArrayList members = liteEC.getChildren();
 	ArrayList memberCandidates = new ArrayList();
-	if (AuthFuncs.checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_MANAGE_MEMBERS)) {
+	if (DaoFactory.getAuthDao().checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_MANAGE_MEMBERS)) {
 		ArrayList energyCompanies = StarsDatabaseCache.getInstance().getAllEnergyCompanies();
 		for (int i = 0; i < energyCompanies.size(); i++) {
 			LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) energyCompanies.get(i);
@@ -45,8 +45,8 @@
 		//if it isn't an admin, then check to see if this member has access specifically
 		else
 		{
-			canMembersChangeRoutes = AuthFuncs.checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_MEMBER_ROUTE_SELECT);
-			canMembersChangeLogins = AuthFuncs.checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_MEMBER_LOGIN_CNTRL);	
+			canMembersChangeRoutes = DaoFactory.getAuthDao().checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_MEMBER_ROUTE_SELECT);
+			canMembersChangeLogins = DaoFactory.getAuthDao().checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_MEMBER_LOGIN_CNTRL);	
 		}
 	}
 %>
@@ -111,7 +111,7 @@ memberLoginList[<%= i %>] = new Array(<%= loginIDs.size() %>);
 <%
 		for (int j = 0; j < loginIDs.size(); j++) {
 			int loginID = ((Integer) loginIDs.get(j)).intValue();
-			LiteYukonUser login = YukonUserFuncs.getLiteYukonUser(loginID);
+			LiteYukonUser login = DaoFactory.getYukonUserDao().getLiteYukonUser(loginID);
 %>
 memberLoginList[<%= i %>][<%= j %>] = new Array(2);
 memberLoginList[<%= i %>][<%= j %>][0] = <%= loginID %>;
@@ -424,8 +424,8 @@ function confirmDeleteAllWarehouses() {
                       </td>
                     </tr>
                     <%
-	if (AuthFuncs.checkRoleProperty(lYukonUser, ConsumerInfoRole.CONSUMER_INFO_HARDWARES) ||
-		AuthFuncs.checkRoleProperty(lYukonUser, ConsumerInfoRole.CONSUMER_INFO_WORK_ORDERS))
+	if (DaoFactory.getAuthDao().checkRoleProperty(lYukonUser, ConsumerInfoRole.CONSUMER_INFO_HARDWARES) ||
+		DaoFactory.getAuthDao().checkRoleProperty(lYukonUser, ConsumerInfoRole.CONSUMER_INFO_WORK_ORDERS))
 	{
 %>
                     <tr> 
@@ -580,8 +580,8 @@ function confirmDeleteAllWarehouses() {
                     </tr>
 					</cti:checkProperty>
                     <%
-	if (AuthFuncs.checkRoleProperty(lYukonUser, ConsumerInfoRole.CONSUMER_INFO_ADMIN_FAQ) ||
-		custGroups.length > 0 && !CtiUtilities.isFalse(AuthFuncs.getRolePropValueGroup(custGroups[0], ResidentialCustomerRole.CONSUMER_INFO_QUESTIONS_FAQ, "false")))
+	if (DaoFactory.getAuthDao().checkRoleProperty(lYukonUser, ConsumerInfoRole.CONSUMER_INFO_ADMIN_FAQ) ||
+		custGroups.length > 0 && !CtiUtilities.isFalse(DaoFactory.getAuthDao().getRolePropValueGroup(custGroups[0], ResidentialCustomerRole.CONSUMER_INFO_QUESTIONS_FAQ, "false")))
 	{
 %>
                     <tr> 
@@ -623,8 +623,8 @@ function confirmDeleteAllWarehouses() {
                     <%
 	}
 	
-	if (AuthFuncs.checkRoleProperty(lYukonUser, ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_OPT_OUT) ||
-		custGroups.length > 0 && !CtiUtilities.isFalse(AuthFuncs.getRolePropValueGroup(custGroups[0], ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_OPT_OUT, "false")))
+	if (DaoFactory.getAuthDao().checkRoleProperty(lYukonUser, ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_OPT_OUT) ||
+		custGroups.length > 0 && !CtiUtilities.isFalse(DaoFactory.getAuthDao().getRolePropValueGroup(custGroups[0], ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_OPT_OUT, "false")))
 	{
 %>
                     <tr> 
@@ -661,8 +661,8 @@ function confirmDeleteAllWarehouses() {
                     <%
 	}
 	
-	if (AuthFuncs.checkRoleProperty(lYukonUser, ConsumerInfoRole.CONSUMER_INFO_HARDWARES_THERMOSTAT) ||
-		custGroups.length > 0 && !CtiUtilities.isFalse(AuthFuncs.getRolePropValueGroup(custGroups[0], ResidentialCustomerRole.CONSUMER_INFO_HARDWARES_THERMOSTAT, "false")))
+	if (DaoFactory.getAuthDao().checkRoleProperty(lYukonUser, ConsumerInfoRole.CONSUMER_INFO_HARDWARES_THERMOSTAT) ||
+		custGroups.length > 0 && !CtiUtilities.isFalse(DaoFactory.getAuthDao().getRolePropValueGroup(custGroups[0], ResidentialCustomerRole.CONSUMER_INFO_HARDWARES_THERMOSTAT, "false")))
 	{
 %>
                     <tr> 
@@ -703,7 +703,7 @@ function confirmDeleteAllWarehouses() {
                     <%
 	}
 	
-	if (AuthFuncs.checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_MULTI_WAREHOUSE))
+	if (DaoFactory.getAuthDao().checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_MULTI_WAREHOUSE))
 	{
 %>
                     <tr> 
@@ -771,7 +771,7 @@ function confirmDeleteAllWarehouses() {
                                     <td width="15%" class="HeaderCell">&nbsp;</td>
                                   </tr>
                                   <%
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	Map userGroupMap = cache.getYukonUserGroupMap();
 	
 	List userGroups = (List) userGroupMap.get(lYukonUser);
@@ -803,7 +803,7 @@ function confirmDeleteAllWarehouses() {
 		int userID = ((Integer) operLoginIDs.get(i)).intValue();
 		if (userID == lYukonUser.getUserID()) continue;
 		
-		LiteYukonUser liteUser = YukonUserFuncs.getLiteYukonUser(userID);
+		LiteYukonUser liteUser = DaoFactory.getYukonUserDao().getLiteYukonUser(userID);
 		if (liteUser == null) continue;
 		
 		userGroups = (List) userGroupMap.get(liteUser);
@@ -883,7 +883,7 @@ function confirmDeleteAllWarehouses() {
                                         <%
 		for (int j = 0; j < member.getOperatorLoginIDs().size(); j++) {
 			Integer loginID = (Integer) member.getOperatorLoginIDs().get(j);
-			LiteYukonUser login = YukonUserFuncs.getLiteYukonUser(loginID.intValue());
+			LiteYukonUser login = DaoFactory.getYukonUserDao().getLiteYukonUser(loginID.intValue());
 			if (login == null) continue;
 			String selected = memberLoginIDs.contains(loginID)? "selected" : "";
 %>

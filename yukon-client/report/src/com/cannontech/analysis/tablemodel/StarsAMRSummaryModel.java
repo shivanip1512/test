@@ -12,9 +12,8 @@ import com.cannontech.analysis.data.device.MeterAndPointData;
 import com.cannontech.analysis.data.stars.StarsAMRDetail;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.cache.functions.DeviceFuncs;
-import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointTypes;
@@ -81,8 +80,8 @@ public class StarsAMRSummaryModel extends ReportModelBase
 	{
 		public int compare(Object o1, Object o2){
 		    int tempOrderBy = getOrderBy();
-	        LiteDeviceMeterNumber ldmn1 = DeviceFuncs.getLiteDeviceMeterNumber( ((StarsAMRDetail)o1).getMeterPointData().getPaobjectID().intValue());
-		    LiteDeviceMeterNumber ldmn2 = DeviceFuncs.getLiteDeviceMeterNumber( ((StarsAMRDetail)o2).getMeterPointData().getPaobjectID().intValue());
+	        LiteDeviceMeterNumber ldmn1 = DaoFactory.getDeviceDao().getLiteDeviceMeterNumber( ((StarsAMRDetail)o1).getMeterPointData().getPaobjectID().intValue());
+		    LiteDeviceMeterNumber ldmn2 = DaoFactory.getDeviceDao().getLiteDeviceMeterNumber( ((StarsAMRDetail)o2).getMeterPointData().getPaobjectID().intValue());
 			
 //			if (getOrderBy() == ORDER_BY_DEVICE_NAME)
 //				sql.append(", PAO.PAONAME, P.POINTNAME " );
@@ -362,7 +361,7 @@ public class StarsAMRSummaryModel extends ReportModelBase
 				case PHYSICAL_ADDRESS_COLUMN:
 				    return String.valueOf(detail.getLitePaobject().getAddress());
 				case ROUTE_NAME_OR_COLL_GROUP_COLUMN:	//TODO collectionGroup
-					return PAOFuncs.getYukonPAOName(detail.getLitePaobject().getRouteID());
+					return DaoFactory.getPaoDao().getYukonPAOName(detail.getLitePaobject().getRouteID());
 				case LAST_KWH_READING_COLUMN:
 				    return detail.getMeterPointData().getValue();
 				case DATE_TIME_COLUMN:

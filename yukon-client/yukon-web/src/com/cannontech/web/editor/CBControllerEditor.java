@@ -16,12 +16,10 @@ import org.apache.myfaces.custom.tree2.TreeNodeBase;
 
 import com.cannontech.cbc.web.CBCSessionInfo;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
-import com.cannontech.database.cache.functions.DeviceFuncs;
-import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.capcontrol.CapBankController;
-import com.cannontech.database.data.capcontrol.CapBankController701x;
 import com.cannontech.database.data.capcontrol.CapBankController702x;
 import com.cannontech.database.data.capcontrol.ICapBankController;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
@@ -73,7 +71,7 @@ public class CBControllerEditor {
     public CBControllerEditor(int paoId) {
         super();
 
-        LiteYukonPAObject litePAO = PAOFuncs.getLiteYukonPAO(paoId);
+        LiteYukonPAObject litePAO = DaoFactory.getPaoDao().getLiteYukonPAO(paoId);
         deviceCBC = PAOFactory.createPAObject(litePAO);
         setPaoCBC(deviceCBC);
         //create points for device if need be
@@ -192,7 +190,7 @@ public class CBControllerEditor {
 	        TreeNode status = new TreeNodeBase("pointtype", "status", false);
 	        TreeNode accum = new TreeNodeBase("pointtype","accumulator", false);
 	        
-	        LitePoint[] tempArray = PAOFuncs.getLitePointsForPAObject(deviceCBC.getPAObjectID().intValue());
+	        LitePoint[] tempArray = DaoFactory.getPaoDao().getLitePointsForPAObject(deviceCBC.getPAObjectID().intValue());
 	
 	        TreeSet statusSet = new TreeSet();
 	        TreeSet analogSet = new TreeSet();
@@ -275,9 +273,9 @@ public class CBControllerEditor {
                                                                       .getPortID();
 
 
-            List devicesWithSameAddress = DeviceFuncs.getDevicesByDeviceAddress(currentDeviceAddress.getMasterAddress(),
+            List devicesWithSameAddress = DaoFactory.getDeviceDao().getDevicesByDeviceAddress(currentDeviceAddress.getMasterAddress(),
                                                                                 currentDeviceAddress.getSlaveAddress());
-            List devicesByPort = DeviceFuncs.getDevicesByPort(commPortId.intValue());         
+            List devicesByPort = DaoFactory.getDeviceDao().getDevicesByPort(commPortId.intValue());         
             //remove the current device from the list 
             devicesByPort.remove(getPaoCBC().getPAObjectID());
             devicesWithSameAddress.remove(getPaoCBC().getPAObjectID());
@@ -293,14 +291,14 @@ public class CBControllerEditor {
 
                         Integer paoId = (Integer)devicesWithSameAddress.get(i);
                         if (devicesByPort.contains(paoId)) {
-                            LiteYukonPAObject litePAO = PAOFuncs.getLiteYukonPAO(paoId.intValue());
+                            LiteYukonPAObject litePAO = DaoFactory.getPaoDao().getLiteYukonPAO(paoId.intValue());
                             throw new MultipleDevicesOnPortException(litePAO.getPaoName());
                             
                         }
 
 
                 }
-                LiteYukonPAObject litePAO = PAOFuncs.getLiteYukonPAO(((Integer)devicesWithSameAddress.get(0)).intValue());
+                LiteYukonPAObject litePAO = DaoFactory.getPaoDao().getLiteYukonPAO(((Integer)devicesWithSameAddress.get(0)).intValue());
                 throw new SameMasterSlaveCombinationException(litePAO.getPaoName());
             }
         }

@@ -17,9 +17,8 @@ import com.cannontech.analysis.data.device.LPMeterData;
 import com.cannontech.analysis.data.device.MeterAndPointData;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.cache.functions.PAOFuncs;
-import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointTypes;
@@ -421,7 +420,7 @@ public class PointDataSummaryModel extends ReportModelBase
 							long totalTime  = (endTime - getStartDate().getTime())/1000; //convert to seconds
 							int intervals = 0;
 							
-							LitePoint lp = PointFuncs.getLitePoint(currentPointid);
+							LitePoint lp = DaoFactory.getPointDao().getLitePoint(currentPointid);
 							if( lp.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND && voltageDemandRate != null)
 							    intervals = (int) (totalTime / Integer.valueOf(voltageDemandRate).intValue());
 							else if( lp.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND && lpDemandRate != null)
@@ -468,7 +467,7 @@ public class PointDataSummaryModel extends ReportModelBase
 				long totalTime  = (endTime - getStartDate().getTime())/1000; //convert to seconds
 				int intervals = 0;
 				
-				LitePoint lp = PointFuncs.getLitePoint(currentPointid);							
+				LitePoint lp = DaoFactory.getPointDao().getLitePoint(currentPointid);							
 				if( lp.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND && voltageDemandRate != null)
 				    intervals = (int) (totalTime / Integer.valueOf(voltageDemandRate).intValue());
 				else if( lp.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND && lpDemandRate != null)
@@ -541,11 +540,11 @@ public class PointDataSummaryModel extends ReportModelBase
 		{
 		    LPMeterData lpMeterData = ((LPMeterData)o);
 //			LiteRawPointHistory rphData = ((LiteRawPointHistory)o);
-//			LitePoint lp = PointFuncs.getLitePoint(rphData.getPointID());
+//			LitePoint lp = DaoFactory.getPointDao().getLitePoint(rphData.getPointID());
 			switch( columnIndex)
 			{			
 				case PAO_NAME_COLUMN:
-					return PAOFuncs.getYukonPAOName(lpMeterData.getMeterAndPointData().getPaobjectID().intValue());
+					return DaoFactory.getPaoDao().getYukonPAOName(lpMeterData.getMeterAndPointData().getPaobjectID().intValue());
 				case PAO_TYPE_COLUMN:
 				    return PAOGroups.getPAOTypeString(lpMeterData.getMeterAndPointData().getLitePaobject().getType());
 				case METER_NUMBER_COLUMN:
@@ -557,10 +556,10 @@ public class PointDataSummaryModel extends ReportModelBase
 				        return String.valueOf(lpMeterData.getMeterAndPointData().getLitePaobject().getAddress());
 				    return null;
 				case POINT_NAME_COLUMN:
-				    return PointFuncs.getPointName(lpMeterData.getMeterAndPointData().getPointID().intValue());				    
+				    return DaoFactory.getPointDao().getPointName(lpMeterData.getMeterAndPointData().getPointID().intValue());				    
 				case CHANNEL_NUMBER_COLUMN:
 				{
-				    LitePoint lp = PointFuncs.getLitePoint(lpMeterData.getMeterAndPointData().getPointID().intValue());
+				    LitePoint lp = DaoFactory.getPointDao().getLitePoint(lpMeterData.getMeterAndPointData().getPointID().intValue());
 				    if( lp != null && 
 				            (lp.getPointOffset() >= PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND && lp.getPointOffset() <= PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND))
 				    {
@@ -570,7 +569,7 @@ public class PointDataSummaryModel extends ReportModelBase
 				}
 				case CHANNEL_INTERVAL_COLUMN:
 				{
-				    LitePoint lp = PointFuncs.getLitePoint(lpMeterData.getMeterAndPointData().getPointID().intValue());
+				    LitePoint lp = DaoFactory.getPointDao().getLitePoint(lpMeterData.getMeterAndPointData().getPointID().intValue());
 				    if( lp != null)
 				    {
 				        if (lp.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND)
@@ -653,7 +652,7 @@ public class PointDataSummaryModel extends ReportModelBase
 				case INTERVALS_PER_HOUR:	//NOT A REAL COLUMN!!!
 				{
 				    int divisor = -1;
-				    LitePoint lp = PointFuncs.getLitePoint(lpMeterData.getMeterAndPointData().getPointID().intValue());
+				    LitePoint lp = DaoFactory.getPointDao().getLitePoint(lpMeterData.getMeterAndPointData().getPointID().intValue());
 				    if( lp != null)
 				    {
 				        if (lp.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND ||
@@ -675,7 +674,7 @@ public class PointDataSummaryModel extends ReportModelBase
 				case INTERVALS_PER_DAY://NOT A REAL COLUMN!!!
 				{
 				    int divisor = -1;
-				    LitePoint lp = PointFuncs.getLitePoint(lpMeterData.getMeterAndPointData().getPointID().intValue());
+				    LitePoint lp = DaoFactory.getPointDao().getLitePoint(lpMeterData.getMeterAndPointData().getPointID().intValue());
 				    if( lp != null)
 				    {
 				        if (lp.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND)

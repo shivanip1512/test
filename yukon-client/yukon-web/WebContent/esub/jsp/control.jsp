@@ -1,9 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<%@ page import="com.cannontech.core.dao.DaoFactory" %>
 <%@ page import="com.cannontech.common.cache.PointChangeCache" %>
-<%@ page import="com.cannontech.database.cache.functions.PointFuncs" %>
-<%@ page import="com.cannontech.database.cache.functions.StateFuncs" %>
-<%@ page import="com.cannontech.database.cache.functions.PAOFuncs" %>
-<%@ page import="com.cannontech.database.cache.functions.TagFuncs" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject" %>
 <%@ page import="com.cannontech.database.data.lite.LitePoint" %>
 <%@ page import="com.cannontech.database.data.lite.LiteState" %>
@@ -45,9 +42,9 @@
 		state = Integer.parseInt(stateStr);
 	}
 
-	LitePoint lPoint = PointFuncs.getLitePoint(pointID);
-	LiteYukonPAObject lDevice = PAOFuncs.getLiteYukonPAO(lPoint.getPaobjectID());	
-	LiteState[] ls = StateFuncs.getLiteStates(lPoint.getStateGroupID());
+	LitePoint lPoint = DaoFactory.getPointDao().getLitePoint(pointID);
+	LiteYukonPAObject lDevice = DaoFactory.getPaoDao().getLiteYukonPAO(lPoint.getPaobjectID());	
+	LiteState[] ls = DaoFactory.getStateDao().getLiteStates(lPoint.getStateGroupID());
 	LiteState lState = PointChangeCache.getPointChangeCache().getCurrentState(pointID);	
 	String controlDenyMsg = null;
 	
@@ -59,7 +56,7 @@
 	Iterator tagIter = tagSet.iterator();
 	while(tagIter.hasNext()) {
 		Tag t = (Tag) tagIter.next();
-		LiteTag lt = TagFuncs.getLiteTag(t.getTagID());
+		LiteTag lt = DaoFactory.getTagDao().getLiteTag(t.getTagID());
 		if(lt.isInhibit()) {
 			controlDenyMsg = "Control is inhibited by due to tags";
 		}
@@ -278,7 +275,7 @@ TAGS</div>
 	tagIter = tagSet.iterator();
 	while(tagIter.hasNext()) {
 		Tag tag = (Tag) tagIter.next();
-		LiteTag lt = TagFuncs.getLiteTag(tag.getTagID());
+		LiteTag lt = DaoFactory.getTagDao().getLiteTag(tag.getTagID());
 %>	      
       
           <tr>

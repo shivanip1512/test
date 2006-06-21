@@ -1,7 +1,6 @@
 package com.cannontech.database.db.device.lm;
 
-import com.cannontech.database.cache.functions.DeviceFuncs;
-import com.cannontech.database.cache.functions.PointFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointTypes;
@@ -549,7 +548,7 @@ private LitePoint getLtPoint()
 		litePt = null;
 	}
 	else if( litePt == null )	
-		litePt = PointFuncs.getLitePoint( getPointID().intValue() );
+		litePt = DaoFactory.getPointDao().getLitePoint( getPointID().intValue() );
 		
 	return litePt;
 }
@@ -568,7 +567,7 @@ private LiteYukonPAObject getLtPao()
 	}
 	else if( liteDev == null )
 	{		
-		liteDev = DeviceFuncs.getLiteDevice( getLtPoint().getPaobjectID() );
+		liteDev = DaoFactory.getDeviceDao().getLiteDevice( getLtPoint().getPaobjectID() );
 	}
 		
 	return liteDev;

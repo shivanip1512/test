@@ -11,8 +11,8 @@ import javax.servlet.http.HttpServletRequest;
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.device.DynamicVerification;
 import com.cannontech.database.model.ModelFactory;
@@ -255,9 +255,9 @@ public class LoadControlVerificationModel extends ReportModelBase
 				case TIME_COLUMN:
 					return dv.getTimeArrival();
 				case RECEIVER_NAME_COLUMN:
-					return dv.getReceiverID().intValue() == 0 ? NULL_STRING : PAOFuncs.getYukonPAOName(dv.getReceiverID().intValue());
+					return dv.getReceiverID().intValue() == 0 ? NULL_STRING : DaoFactory.getPaoDao().getYukonPAOName(dv.getReceiverID().intValue());
 				case TRANSMITTER_NAME_COLUMN:
-					return PAOFuncs.getYukonPAOName(dv.getTransmitterID().intValue());
+					return DaoFactory.getPaoDao().getYukonPAOName(dv.getTransmitterID().intValue());
 				case COMMAND_COLUMN:
 					return dv.getCommand();
 				case CODE_COLUMN:

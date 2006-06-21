@@ -15,13 +15,13 @@ import javax.swing.UIManager;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.cache.functions.TagFuncs;
-import com.cannontech.database.cache.functions.YukonImageFuncs;
 import com.cannontech.database.data.lite.LiteTag;
 import com.cannontech.tags.Tag;
 import com.cannontech.tdc.TDCMainFrame;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
+import com.cannontech.yukon.IDatabaseCache;
 
 public class TagWizardPanel extends ManualEntryJPanel implements RowEditorDialogListener, java.awt.event.ActionListener {
 
@@ -57,7 +57,7 @@ public class TagWizardPanel extends ManualEntryJPanel implements RowEditorDialog
 				{
 					setIcon( 
 						new ImageIcon(java.awt.Toolkit.getDefaultToolkit().createImage(
-							YukonImageFuncs.getLiteYukonImage(tag.getImageID()).getImageValue()) ) );
+							DaoFactory.getYukonImageDao().getLiteYukonImage(tag.getImageID()).getImageValue()) ) );
 				}
 				else
 					setIcon( null );
@@ -548,7 +548,7 @@ private void initialize() {
 	getJComboBoxTag().setRenderer( new LiteTagRenderer() );
 
 	
-	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 	synchronized( cache )
 	{
 		List l = cache.getAllTags();
@@ -692,7 +692,7 @@ public void setTag( Tag theTag )
 	if( theTag != null )
 	{
 		getJComboBoxTag().setSelectedItem( 
-				TagFuncs.getLiteTag(theTag.getTagID()) );
+				DaoFactory.getTagDao().getLiteTag(theTag.getTagID()) );
 	
 		getJEditorPaneDesc().setText( theTag.getDescriptionStr() );		
 	}

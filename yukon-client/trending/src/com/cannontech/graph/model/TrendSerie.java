@@ -6,21 +6,11 @@ import java.awt.Paint;
 import java.awt.Rectangle;
 import java.awt.TexturePaint;
 import java.awt.image.BufferedImage;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.TreeMap;
 import java.util.Vector;
 
-//import org.jfree.data.time.RegularTimePeriod;
-//import org.jfree.data.time.TimeSeriesDataItem;
-
 import com.cannontech.common.gui.util.Colors;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
-import com.cannontech.database.db.graph.GDSTypes;
 import com.cannontech.database.db.graph.GraphDataSeries;
-import com.cannontech.database.db.graph.GraphRenderers;
-import com.cannontech.graph.GraphColors;
 
 /**
  * @author snebben

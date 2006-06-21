@@ -26,10 +26,8 @@ import java.util.TimeZone;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.cache.StarsDatabaseCache;
-import com.cannontech.database.cache.functions.AuthFuncs;
-import com.cannontech.database.cache.functions.EnergyCompanyFuncs;
-import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.stars.LiteLMProgramWebPublishing;
@@ -267,7 +265,7 @@ public class StarsUtils {
 		String progName = CtiUtilities.STRING_NONE;
 		
 		if (liteProg.getDeviceID() > 0)
-			progName = PAOFuncs.getYukonPAOName( liteProg.getDeviceID() );
+			progName = DaoFactory.getPaoDao().getYukonPAOName( liteProg.getDeviceID() );
 		
 		LiteWebConfiguration liteConfig = StarsDatabaseCache.getInstance().getWebConfiguration( liteProg.getWebSettingsID() );
 		if (liteConfig != null) {
@@ -281,10 +279,10 @@ public class StarsUtils {
 
 	public static boolean isOperator(StarsYukonUser user) {
 		return !isResidentialCustomer(user) &&
-				EnergyCompanyFuncs.getEnergyCompany( user.getYukonUser() ) != null;
+				DaoFactory.getEnergyCompanyDao().getEnergyCompany( user.getYukonUser() ) != null;
 	}
 
 	public static boolean isResidentialCustomer(StarsYukonUser user) {
-		return AuthFuncs.checkRole(user.getYukonUser(), ResidentialCustomerRole.ROLEID) != null;
+		return DaoFactory.getAuthDao().checkRole(user.getYukonUser(), ResidentialCustomerRole.ROLEID) != null;
 	}
 }

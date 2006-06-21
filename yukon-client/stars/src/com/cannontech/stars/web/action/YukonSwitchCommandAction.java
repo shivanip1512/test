@@ -12,6 +12,8 @@ import javax.xml.soap.SOAPMessage;
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.StarsDatabaseCache;
@@ -26,10 +28,10 @@ import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.StarsFactory;
-import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.xml.serialize.StarsConfig;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsDisableService;
@@ -42,8 +44,6 @@ import com.cannontech.stars.xml.serialize.StarsYukonSwitchCommand;
 import com.cannontech.stars.xml.serialize.StarsYukonSwitchCommandResponse;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
-import java.util.Vector;
-import com.cannontech.common.util.CtiUtilities;
 
 /**
  * <p>Title: </p>
@@ -658,7 +658,7 @@ public class YukonSwitchCommandAction implements ActionBase {
 			}
 		}
 		else if (groupID != null) {
-			String groupName = com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName( groupID.intValue() );
+			String groupName = DaoFactory.getPaoDao().getYukonPAOName( groupID.intValue() );
 			String cmd = "putconfig serial " + liteHw.getManufacturerSerialNumber() + " template '" + groupName + "'";
 			commands.add( cmd );
 		}
@@ -668,7 +668,7 @@ public class YukonSwitchCommandAction implements ActionBase {
 				for (int i = 0; i < liteAcctInfo.getAppliances().size(); i++) {
 					LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(i);
 					if (liteApp.getInventoryID() == liteHw.getInventoryID() && liteApp.getAddressingGroupID() > 0) {
-						String groupName = com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName( liteApp.getAddressingGroupID() );
+						String groupName = DaoFactory.getPaoDao().getYukonPAOName( liteApp.getAddressingGroupID() );
 						String cmd = "putconfig serial " + liteHw.getManufacturerSerialNumber() + " template '" + groupName + "'";
 						commands.add( cmd );
 					}

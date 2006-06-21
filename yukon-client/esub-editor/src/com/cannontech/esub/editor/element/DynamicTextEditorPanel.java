@@ -4,11 +4,13 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
 
-import javax.swing.*;
+import javax.swing.JCheckBox;
+import javax.swing.JColorChooser;
+import javax.swing.JDialog;
 import javax.swing.event.TreeSelectionEvent;
 
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.esub.*;
+import com.cannontech.esub.PointAttributes;
 import com.cannontech.esub.editor.Util;
 import com.cannontech.esub.element.DynamicText;
 

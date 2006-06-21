@@ -10,11 +10,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.LoginController;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.cache.functions.AuthFuncs;
-import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -24,6 +23,7 @@ import com.cannontech.esub.PointAttributes;
 import com.cannontech.esub.util.Util;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.operator.EsubDrawingsRole;
+import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * Update a point attribute in the database.
@@ -50,7 +50,7 @@ public class UpdateAttribute extends HttpServlet {
 		
 		LiteYukonUser user = (LiteYukonUser) req.getSession(false).getAttribute(LoginController.YUKON_USER);
 		
-		if(!AuthFuncs.checkRoleProperty(user, EsubDrawingsRole.EDIT)) {
+		if(!DaoFactory.getAuthDao().checkRoleProperty(user, EsubDrawingsRole.EDIT)) {
 			CTILogger.info("Update request received by user without EDIT role, ip: " + req.getRemoteAddr());
 			resp.sendError(HttpServletResponse.SC_FORBIDDEN);
 			return;
@@ -79,7 +79,7 @@ public class UpdateAttribute extends HttpServlet {
 			return;
 		}
 		
-		LitePoint lp = PointFuncs.getLitePoint(id);
+		LitePoint lp = DaoFactory.getPointDao().getLitePoint(id);
 		
 		if( lp == null ) {
 			out.write("error");		
@@ -118,7 +118,7 @@ public class UpdateAttribute extends HttpServlet {
 		}	
 		
 		// update the cache and send out a db change	
-		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+		IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 		DBChangeMsg[] msg = cache.createDBChangeMessages((CTIDbChange) dbObj, DBChangeMsg.CHANGE_TYPE_UPDATE);
 		for(int i = 0; i < msg.length; i++ ) {
 			cache.handleDBChangeMessage(msg[i]);			

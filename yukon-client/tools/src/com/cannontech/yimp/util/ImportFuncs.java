@@ -6,18 +6,17 @@
  */
 package com.cannontech.yimp.util;
 
-import java.util.Vector;
 import java.sql.Connection;
 import java.util.Date;
-import java.text.DateFormat;
 import java.util.GregorianCalendar;
-import com.cannontech.common.util.CtiUtilities;
+import java.util.Vector;
+
+import com.cannontech.common.util.LogWriter;
+import com.cannontech.database.SqlStatement;
+import com.cannontech.database.Transaction;
+import com.cannontech.database.db.NestedDBPersistent;
 import com.cannontech.database.db.importer.ImportData;
 import com.cannontech.database.db.importer.ImportFail;
-import com.cannontech.database.db.NestedDBPersistent;
-import com.cannontech.common.util.LogWriter;
-import com.cannontech.database.Transaction;
-import com.cannontech.database.SqlStatement;
 
 /**
  * @author jdayton

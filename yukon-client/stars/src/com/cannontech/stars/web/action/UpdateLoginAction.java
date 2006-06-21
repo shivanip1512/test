@@ -5,13 +5,10 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.StarsDatabaseCache;
-import com.cannontech.database.cache.functions.AuthFuncs;
-import com.cannontech.database.cache.functions.ContactFuncs;
-import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -26,7 +23,6 @@ import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.util.StarsAdminUtil;
 import com.cannontech.stars.xml.StarsFactory;
-import com.cannontech.stars.xml.serialize.ContactNotification;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsOperation;
@@ -209,7 +205,7 @@ public class UpdateLoginAction implements ActionBase {
 	}
 	
 	public static void deleteLogin(int userID) throws TransactionException {
-		LiteContact liteContact = YukonUserFuncs.getLiteContact( userID );
+		LiteContact liteContact = DaoFactory.getYukonUserDao().getLiteContact( userID );
 		if (liteContact != null) {
 			liteContact.setLoginID( com.cannontech.user.UserUtils.USER_DEFAULT_ID );
 			com.cannontech.database.data.customer.Contact contact =
@@ -223,13 +219,13 @@ public class UpdateLoginAction implements ActionBase {
 		Transaction.createTransaction(Transaction.DELETE, yukonUser).execute();
 		
 		StarsDatabaseCache.getInstance().deleteStarsYukonUser( userID );
-		ServerUtils.handleDBChange( YukonUserFuncs.getLiteYukonUser(userID), DBChangeMsg.CHANGE_TYPE_DELETE );
+		ServerUtils.handleDBChange( DaoFactory.getYukonUserDao().getLiteYukonUser(userID), DBChangeMsg.CHANGE_TYPE_DELETE );
 	}
 	
 	public static void updateLogin(StarsUpdateLogin updateLogin, LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany)
 		throws Exception
 	{
-		LiteContact liteContact = ContactFuncs.getContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
+		LiteContact liteContact = DaoFactory.getContactDao().getContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
 		int userID = liteContact.getLoginID();
 	    
 		String username = updateLogin.getUsername();
@@ -245,7 +241,7 @@ public class UpdateLoginAction implements ActionBase {
 			if (username.length() == 0 || password.length() == 0)
 				throw new WebClientException( "Username and password cannot be empty" );
 		    
-			if (YukonUserFuncs.getLiteYukonUser(username) != null)
+			if (DaoFactory.getYukonUserDao().getLiteYukonUser(username) != null)
 				throw new WebClientException( "Username '" + username + "' already exists" );
 			
 			LiteYukonUser liteUser = createLogin( updateLogin, liteContact, energyCompany );
@@ -265,9 +261,9 @@ public class UpdateLoginAction implements ActionBase {
 			
 			LiteYukonGroup loginGroup = null;
 			if (updateLogin.hasGroupID())
-				loginGroup = AuthFuncs.getGroup( updateLogin.getGroupID() );
+				loginGroup = DaoFactory.getAuthDao().getGroup( updateLogin.getGroupID() );
 			
-			LiteYukonUser liteUser = YukonUserFuncs.getLiteYukonUser( userID );
+			LiteYukonUser liteUser = DaoFactory.getYukonUserDao().getLiteYukonUser( userID );
 			StarsAdminUtil.updateLogin( liteUser, username, password, status, loginGroup, energyCompany );
 		}
 	}

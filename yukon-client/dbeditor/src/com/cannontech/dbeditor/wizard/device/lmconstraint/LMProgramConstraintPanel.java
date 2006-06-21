@@ -1,9 +1,10 @@
 package com.cannontech.dbeditor.wizard.device.lmconstraint;
 
 import com.cannontech.common.gui.util.TextFieldDocument;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.LiteSeasonSchedule;
 import com.cannontech.database.db.device.lm.LMProgramConstraint;
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.yukon.IDatabaseCache;
 /**
  * Insert the type's description here. 
  * Creation date: (3/2/2004 10:09:59 AM)
@@ -289,7 +290,7 @@ private javax.swing.JComboBox getJComboBoxHoliday() {
 			ivjJComboBoxHoliday.setToolTipText("Holiday schedule used to exclude control");
 			ivjJComboBoxHoliday.setPreferredSize(new java.awt.Dimension(155, 23));
 			// user code begin {1}
-			com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+			IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 			synchronized( cache )
 			{
 				java.util.List holidaySch = cache.getAllHolidaySchedules();
@@ -327,7 +328,7 @@ private javax.swing.JComboBox getJComboBoxSeasonSchedule() {
 			ivjJComboBoxSeasonSchedule.setToolTipText("Season schedule used to exclude control");
 			ivjJComboBoxSeasonSchedule.setPreferredSize(new java.awt.Dimension(155, 23));
 			// user code begin {1}
-			com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+			IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 			synchronized( cache )
 			{
 				java.util.List seasonSch = cache.getAllSeasonSchedules();

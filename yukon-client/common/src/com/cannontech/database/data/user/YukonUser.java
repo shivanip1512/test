@@ -4,15 +4,15 @@ import java.sql.SQLException;
 import java.util.Vector;
 
 import com.cannontech.common.editor.EditorPanel;
+import com.cannontech.common.util.NativeIntVector;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.contact.Contact;
 import com.cannontech.database.db.user.UserPaoOwner;
 import com.cannontech.database.db.user.YukonGroup;
 import com.cannontech.database.db.user.YukonUserRole;
+import com.cannontech.database.db.web.EnergyCompanyOperatorLoginList;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.YukonGroupRoleDefs;
-import com.cannontech.common.util.NativeIntVector;
-import com.cannontech.database.db.web.EnergyCompanyOperatorLoginList;
 
 /*** 
  * @author alauinger

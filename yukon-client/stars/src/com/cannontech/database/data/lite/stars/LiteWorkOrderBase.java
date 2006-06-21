@@ -1,22 +1,14 @@
 package com.cannontech.database.data.lite.stars;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlStatement;
-import com.cannontech.database.Transaction;
-import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteTypes;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.stars.event.EventWorkOrder;
-import com.cannontech.database.data.stars.report.WorkOrderBase;
 import com.cannontech.database.db.company.EnergyCompany;
-import com.cannontech.database.db.device.DeviceCarrierSettings;
-import com.cannontech.database.db.device.DeviceDirectCommSettings;
-import com.cannontech.database.db.device.DeviceRoutes;
 
 /**
  * @author yao

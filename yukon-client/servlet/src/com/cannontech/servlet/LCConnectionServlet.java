@@ -16,7 +16,7 @@ import javax.servlet.http.HttpSession;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.cache.functions.RoleFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.loadcontrol.LCUtils;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.LMControlArea;
@@ -94,10 +94,10 @@ public void init(javax.servlet.ServletConfig config) throws javax.servlet.Servle
 	int lcPort = 1920;
 
 	try {
-		lcHost = RoleFuncs.getGlobalPropertyValue( SystemRole.LOADCONTROL_MACHINE );
+		lcHost = DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.LOADCONTROL_MACHINE );
 
 		lcPort = Integer.parseInt(
-			RoleFuncs.getGlobalPropertyValue( SystemRole.LOADCONTROL_PORT ) );
+			DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.LOADCONTROL_PORT ) );
 
 
 	} catch (Exception e) {

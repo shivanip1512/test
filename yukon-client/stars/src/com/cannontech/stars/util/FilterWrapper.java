@@ -1,7 +1,5 @@
 package com.cannontech.stars.util;
 
-import java.util.ArrayList;
-import com.cannontech.common.constants.YukonListEntry;
 
 public class FilterWrapper 
 {

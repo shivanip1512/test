@@ -3,7 +3,7 @@ package com.cannontech.notif.outputs;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.cannontech.database.cache.functions.*;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.*;
 import com.cannontech.database.data.notification.*;
 
@@ -13,21 +13,21 @@ public class NotifMapContactable extends Contactable {
 
     public NotifMapContactable(CustomerNotifGroupMap customerMap) {
         _notifMap = customerMap;
-        LiteCICustomer liteCustomer = CustomerFuncs
+        LiteCICustomer liteCustomer = DaoFactory.getCustomerDao()
                 .getLiteCICustomer(customerMap.getCustomerID());
         _contactableBase = new ContactableCustomer(liteCustomer);
     }
 
     public NotifMapContactable(ContactNotifGroupMap contactMap) {
         _notifMap = contactMap;
-        LiteContact liteContact = ContactFuncs.getContact(contactMap
+        LiteContact liteContact = DaoFactory.getContactDao().getContact(contactMap
                 .getContactID());
         _contactableBase = new ContactableContact(liteContact);
     }
 
     public NotifMapContactable(NotifDestinationMap notifMap) {
         _notifMap = notifMap;
-        LiteContactNotification liteNotif = ContactNotificationFuncs
+        LiteContactNotification liteNotif = DaoFactory.getContactNotificationDao()
                 .getContactNotification(notifMap.getRecipientID());
         _contactableBase = new ContactableNotification(liteNotif);
     }

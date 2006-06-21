@@ -2,7 +2,7 @@ package com.cannontech.notif.outputs;
 
 import java.util.*;
 
-import com.cannontech.database.cache.functions.ContactFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContactNotification;
 
@@ -19,7 +19,7 @@ public class ContactableNotification extends ContactableBase {
         if (_customer != null) {
             return _customer;
         }
-        _customer = ContactFuncs.getCICustomer(_liteNotif.getContactID());
+        _customer = DaoFactory.getContactDao().getCICustomer(_liteNotif.getContactID());
         if (_customer == null) {
             throw new UnknownCustomerException("Can't return LiteCustomer for contact id " + _liteNotif.getContactID());
         }

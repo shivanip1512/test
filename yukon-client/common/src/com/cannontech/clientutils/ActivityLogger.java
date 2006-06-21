@@ -3,16 +3,14 @@
  */
 package com.cannontech.clientutils;
 
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
-import com.cannontech.database.db.activity.ActivityLog;
-import com.cannontech.database.cache.functions.ContactFuncs;
-import com.cannontech.database.cache.functions.EnergyCompanyFuncs;
-import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.db.activity.ActivityLog;
 
 /**
  * ActivityLogger provides a mechanism for applications to log interesting things that
@@ -73,9 +71,9 @@ public class ActivityLogger {
 		if (userID != -1) {
 			if(energyCompanyID == -1)
 			{	
-				LiteYukonUser liteUser = YukonUserFuncs.getLiteYukonUser( userID );
+				LiteYukonUser liteUser = DaoFactory.getYukonUserDao().getLiteYukonUser( userID );
 				
-				LiteEnergyCompany liteComp = EnergyCompanyFuncs.getEnergyCompany( liteUser );
+				LiteEnergyCompany liteComp = DaoFactory.getEnergyCompanyDao().getEnergyCompany( liteUser );
 				if (liteComp != null)
 				{ 			
 					energyCompanyID = liteComp.getEnergyCompanyID();
@@ -84,9 +82,9 @@ public class ActivityLogger {
 			
 			if(customerID == -1 || energyCompanyID == -1 || accountID == -1)
 			{		
-				LiteContact liteContact = YukonUserFuncs.getLiteContact( userID );
+				LiteContact liteContact = DaoFactory.getYukonUserDao().getLiteContact( userID );
 				if (liteContact != null) {
-					LiteCustomer liteCust = ContactFuncs.getCustomer( liteContact.getContactID() );
+					LiteCustomer liteCust = DaoFactory.getContactDao().getCustomer( liteContact.getContactID() );
 					
 					if (liteCust != null) {
 						if(customerID == -1)

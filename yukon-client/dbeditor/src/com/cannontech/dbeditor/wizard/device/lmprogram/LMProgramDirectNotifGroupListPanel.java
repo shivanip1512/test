@@ -1,6 +1,7 @@
 package com.cannontech.dbeditor.wizard.device.lmprogram;
 
 import com.cannontech.database.data.lite.LiteNotificationGroup;
+import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * This type was created in VisualAge.
@@ -276,7 +277,7 @@ private void initializeAddPanel()
 {
 	getAddRemovePanel().setMode( com.cannontech.common.gui.util.AddRemovePanel.TRANSFER_MODE );
 
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized( cache )
 	{
 		java.util.List groups = cache.getAllContactNotificationGroups();

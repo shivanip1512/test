@@ -1,25 +1,28 @@
 package com.cannontech.dbeditor.wizard.device.lmscenario;
 
-import com.cannontech.database.data.device.lm.LMScenario;
-import com.cannontech.database.data.lite.LiteBase;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.db.device.lm.LMControlScenarioProgram;
-import com.cannontech.database.data.lite.LiteGear;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.util.Vector;
-import com.cannontech.database.cache.functions.PAOFuncs;
-import com.cannontech.common.gui.util.TextFieldDocument;
-import com.cannontech.database.db.device.lm.LMControlAreaProgram;
+
+import javax.swing.AbstractAction;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.KeyStroke;
+
+import com.cannontech.common.gui.table.MultiJComboCellEditor;
+import com.cannontech.common.gui.table.MultiJComboCellRenderer;
 import com.cannontech.common.gui.util.JTextFieldTimeEntry;
 import com.cannontech.common.gui.util.OkCancelDialog;
-import com.cannontech.common.util.CtiUtilities;
-import javax.swing.AbstractAction;
+import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.gui.util.TreeFindPanel;
-import java.awt.event.KeyEvent;
-import javax.swing.KeyStroke;
-import java.awt.event.InputEvent;
-import javax.swing.DefaultComboBoxModel;
-import com.cannontech.common.gui.table.MultiJComboCellRenderer;
-import com.cannontech.common.gui.table.MultiJComboCellEditor;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.data.device.lm.LMScenario;
+import com.cannontech.database.data.lite.LiteBase;
+import com.cannontech.database.data.lite.LiteGear;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.db.device.lm.LMControlAreaProgram;
+import com.cannontech.database.db.device.lm.LMControlScenarioProgram;
+import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * Insert the type's description here.
@@ -769,7 +772,7 @@ public void jButtonAdd_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
 	for(int h = 0; h < availablePrograms.length; h++)
 	{
 		Integer programID = new Integer(((LiteYukonPAObject)availablePrograms[h]).getLiteID());
-		LiteYukonPAObject thePAO = PAOFuncs.getLiteYukonPAO(programID.intValue());
+		LiteYukonPAObject thePAO = DaoFactory.getPaoDao().getLiteYukonPAO(programID.intValue());
 		
 		DefaultComboBoxModel comboModel = new DefaultComboBoxModel();
 		//do the gears, man
@@ -870,7 +873,7 @@ public void populateAvailableList()
 	if(allGears == null)
 		allGears = new Vector();
 	
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized( cache )
 	{
 		java.util.List progs = cache.getAllLoadManagement();
@@ -941,7 +944,7 @@ public void setValue(Object o)
 	{
 		LMControlScenarioProgram lightProgram = (LMControlScenarioProgram)assignedPrograms.elementAt(j);
 		Integer progID = lightProgram.getProgramID();
-		LiteYukonPAObject thePAO = PAOFuncs.getLiteYukonPAO(progID.intValue());
+		LiteYukonPAObject thePAO = DaoFactory.getPaoDao().getLiteYukonPAO(progID.intValue());
 		LiteGear startingGear = null;
 				
 		//do the gears, man

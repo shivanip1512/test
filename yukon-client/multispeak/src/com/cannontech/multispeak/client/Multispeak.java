@@ -27,13 +27,10 @@ import org.apache.xml.utils.IntVector;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.cache.PointChangeCache;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.cache.functions.AuthFuncs;
-import com.cannontech.database.cache.functions.DeviceFuncs;
-import com.cannontech.database.cache.functions.PAOFuncs;
-import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -65,6 +62,7 @@ import com.cannontech.multispeak.event.MultispeakEvent;
 import com.cannontech.multispeak.event.ODEvent;
 import com.cannontech.roles.YukonGroupRoleDefs;
 import com.cannontech.roles.yukon.MultispeakRole;
+import com.cannontech.yukon.IDatabaseCache;
 import com.cannontech.yukon.IServerConnection;
 import com.cannontech.yukon.conns.ConnPool;
 
@@ -190,14 +188,14 @@ public class Multispeak implements MessageListener, DBChangeListener {
 		{
 	    	LiteYukonPAObject lPao = null;
 	    	if( key.equalsIgnoreCase("meternumber"))
-	    		lPao = DeviceFuncs.getLiteYukonPaobjectByMeterNumber(keyValue);
+	    		lPao = DaoFactory.getDeviceDao().getLiteYukonPaobjectByMeterNumber(keyValue);
 	    	else
-	    		lPao = DeviceFuncs.getLiteYukonPaobjectByDeviceName(keyValue);
+	    		lPao = DaoFactory.getDeviceDao().getLiteYukonPaobjectByDeviceName(keyValue);
 	    			
 	        String result = "MeterReadEvent: Reading Failed (" + keyValue + ") " + returnMsg.getResultString();
 	        CTILogger.info(result);
 	        
-	        LitePoint[] litePoints = PAOFuncs.getLitePointsForPAObject(lPao.getYukonID());
+	        LitePoint[] litePoints = DaoFactory.getPaoDao().getLitePointsForPAObject(lPao.getYukonID());
 			for (int i = 0; i < litePoints.length; i ++)
 			{
 				LitePoint lp = litePoints[i];
@@ -352,9 +350,9 @@ public class Multispeak implements MessageListener, DBChangeListener {
 			{
 				LiteYukonPAObject lPao = null;
 				if( key.toLowerCase().startsWith("device") || key.toLowerCase().startsWith("pao"))
-					lPao = DeviceFuncs.getLiteYukonPaobjectByDeviceName(meterNumbers[i]);
+					lPao = DaoFactory.getDeviceDao().getLiteYukonPaobjectByDeviceName(meterNumbers[i]);
 				else if(key.toLowerCase().startsWith("meternum"))
-					lPao = DeviceFuncs.getLiteYukonPaobjectByMeterNumber(meterNumbers[i]);
+					lPao = DaoFactory.getDeviceDao().getLiteYukonPaobjectByMeterNumber(meterNumbers[i]);
 				
 				
 				if (lPao == null)
@@ -422,9 +420,9 @@ public class Multispeak implements MessageListener, DBChangeListener {
 
 		LiteYukonPAObject lPao = null;
 		if( key.toLowerCase().startsWith("device") || key.toLowerCase().startsWith("pao"))
-			lPao = DeviceFuncs.getLiteYukonPaobjectByDeviceName(meterNumber);
+			lPao = DaoFactory.getDeviceDao().getLiteYukonPaobjectByDeviceName(meterNumber);
 		else if(key.toLowerCase().startsWith("meternum"))
-			lPao = DeviceFuncs.getLiteYukonPaobjectByMeterNumber(meterNumber);
+			lPao = DaoFactory.getDeviceDao().getLiteYukonPaobjectByMeterNumber(meterNumber);
 		
 		if (lPao != null)
 		{
@@ -523,12 +521,12 @@ public class Multispeak implements MessageListener, DBChangeListener {
 		if( mspRolesMap == null)
 		{
 			mspRolesMap = new HashMap(9);
-			DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+			IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 			Map groupRolePropMap = cache.getYukonGroupRolePropertyMap();
 			
 			//Map<LiteYukonGroup, Map<LiteYukonRole, Map<LiteYukonRoleProperty, String(value)>>>			
-			Map groupMapToRoleMap = (Map)groupRolePropMap.get(AuthFuncs.getGroup(YukonGroupRoleDefs.GRP_YUKON));
-			Map roleMapToPropMap = (Map)groupMapToRoleMap.get(AuthFuncs.getRole(MultispeakRole.ROLEID));
+			Map groupMapToRoleMap = (Map)groupRolePropMap.get(DaoFactory.getAuthDao().getGroup(YukonGroupRoleDefs.GRP_YUKON));
+			Map roleMapToPropMap = (Map)groupMapToRoleMap.get(DaoFactory.getAuthDao().getRole(MultispeakRole.ROLEID));
 
 			Collection keySet = roleMapToPropMap.keySet();
 			LiteYukonRoleProperty[] keys = new LiteYukonRoleProperty[keySet.size()];
@@ -580,11 +578,11 @@ public class Multispeak implements MessageListener, DBChangeListener {
 	 */
 	public MeterRead[] retrieveMeterReads(String meterNo, Date startDate, Date endDate)
 	{
-		LiteYukonPAObject lPao = DeviceFuncs.getLiteYukonPaobjectByMeterNumber(meterNo);
+		LiteYukonPAObject lPao = DaoFactory.getDeviceDao().getLiteYukonPaobjectByMeterNumber(meterNo);
 		MeterRead[] meterReadArray = new MeterRead[0];
 		if (lPao != null)
 		{
-			LitePoint[] litePoints = PAOFuncs.getLitePointsForPAObject(lPao.getYukonID());
+			LitePoint[] litePoints = DaoFactory.getPaoDao().getLitePointsForPAObject(lPao.getYukonID());
 			IntVector pointIDs = new IntVector(2);	//we only want the point IDs for kW and kWh
 			for (int i = 0; i < litePoints.length; i ++)
 			{
@@ -655,7 +653,7 @@ public class Multispeak implements MessageListener, DBChangeListener {
 
 							//load the meter readings
 							meterRead.setReadingDate(dateTime);
-							LitePoint lp = PointFuncs.getLitePoint(pointID);
+							LitePoint lp = DaoFactory.getPointDao().getLitePoint(pointID);
 							if(lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT && lp.getPointOffset() == 1)
 							{
 								meterRead.setKW(new Float(value));

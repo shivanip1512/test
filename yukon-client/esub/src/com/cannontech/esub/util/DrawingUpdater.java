@@ -6,9 +6,8 @@ import java.util.TimerTask;
 
 import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.common.cache.PointChangeCache;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.cache.functions.AlarmFuncs;
-import com.cannontech.database.cache.functions.StateFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.esub.Drawing;
@@ -89,7 +88,7 @@ public class DrawingUpdater extends TimerTask {
 							if( lp != null ) {
 								PointData pData = pcc.getValue(lp.getPointID());
 								if( pData != null ) {
-									LiteState ls = StateFuncs.getLiteState(lp.getStateGroupID(), (int) pData.getValue());
+									LiteState ls = DaoFactory.getStateDao().getLiteState(lp.getStateGroupID(), (int) pData.getValue());
 									if( ls != null ) {
 										si.setCurrentState(ls);
 										si.updateImage();
@@ -122,7 +121,7 @@ public class DrawingUpdater extends TimerTask {
 
 							int[] deviceIds = te.getDeviceIds();
 							for(int j = 0; j < deviceIds.length; j++) {
-								List deviceSignals = AlarmFuncs.getSignalsForPao(deviceIds[j]);
+								List deviceSignals = DaoFactory.getAlarmDao().getSignalsForPao(deviceIds[j]);
 								for (Iterator iter = deviceSignals.iterator(); iter.hasNext();) {
 									Signal signal  = (Signal) iter.next();
 									if(TagUtils.isAlarmUnacked(signal.getTags())) {
@@ -133,7 +132,7 @@ public class DrawingUpdater extends TimerTask {
 							
 							int[] pointIds = te.getPointIds();
 							for(int j = 0; !inAlarm && j < pointIds.length; j++) {
-								List pointSignals = AlarmFuncs.getSignalsForPoint(pointIds[j]);
+								List pointSignals = DaoFactory.getAlarmDao().getSignalsForPoint(pointIds[j]);
 								for (Iterator iter = pointSignals.iterator(); iter.hasNext();) {
 									Signal signal = (Signal) iter.next();
 									if(TagUtils.isAlarmUnacked(signal.getTags())) {
@@ -143,7 +142,7 @@ public class DrawingUpdater extends TimerTask {
 							}
 							int[] alarmCategoryIds = te.getAlarmCategoryIds();
 							for(int j = 0; !inAlarm && j < alarmCategoryIds.length; j++) {
-								List alarmCategorySignals = AlarmFuncs.getSignalsForAlarmCategory(alarmCategoryIds[j]);
+								List alarmCategorySignals = DaoFactory.getAlarmDao().getSignalsForAlarmCategory(alarmCategoryIds[j]);
 								for (Iterator iter = alarmCategorySignals.iterator(); iter.hasNext();) {
 									Signal signal = (Signal) iter.next();
 									if(TagUtils.isAlarmUnacked(signal.getTags())) {

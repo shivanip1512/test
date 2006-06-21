@@ -7,7 +7,9 @@
 package com.cannontech.dbeditor.wizard.device.lmscenario;
 
 import java.util.Vector;
+
 import javax.swing.table.AbstractTableModel;
+
 import com.cannontech.database.data.lite.LiteGear;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 

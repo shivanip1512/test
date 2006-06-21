@@ -3,10 +3,7 @@ package com.cannontech.dbeditor.wizard.copy.device;
 /**
  * This type was created in VisualAge.
  */
- import java.awt.Dimension;
-
-import com.cannontech.database.data.device.IDeviceMeterGroup;
-import com.cannontech.database.data.device.MCTBase;
+ import com.cannontech.database.data.device.MCTBase;
 import com.cannontech.database.data.multi.MultiDBPersistent;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.device.DeviceMeterGroup;

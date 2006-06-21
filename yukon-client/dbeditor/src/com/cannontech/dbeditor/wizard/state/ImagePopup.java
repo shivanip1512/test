@@ -2,6 +2,7 @@ package com.cannontech.dbeditor.wizard.state;
 
 import javax.swing.JPopupMenu;
 
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonImage;
 /**
  * @author rneuharth
@@ -61,7 +62,7 @@ class ImagePopup extends JPopupMenu implements java.awt.event.ActionListener
    private void jButtonActionPerformed_Delete( java.awt.event.ActionEvent ev )
    {
       String stateGroup = 
-            com.cannontech.database.cache.functions.YukonImageFuncs.yukonImageUsage( getSelectedLiteImage().getImageID() );
+            DaoFactory.getYukonImageDao().yukonImageUsage( getSelectedLiteImage().getImageID() );
 
       if( stateGroup != null )
       {

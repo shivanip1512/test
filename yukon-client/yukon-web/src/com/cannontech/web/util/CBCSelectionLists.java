@@ -8,7 +8,6 @@ import javax.faces.model.SelectItem;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -17,7 +16,7 @@ import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
-import com.cannontech.multispeak.PointType;
+import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * A set of selection list used for many GUI's
@@ -234,7 +233,7 @@ public class CBCSelectionLists {
 
 		SelectItem[] selItems = new SelectItem[0];
 
-		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+		IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 		synchronized(cache) {
 			List ports = cache.getAllPorts();
 			Collections.sort( ports, LiteComparators.liteStringComparator );
@@ -266,7 +265,7 @@ public class CBCSelectionLists {
 
 		SelectItem[] selItems = new SelectItem[0];
 
-		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+		IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 		synchronized(cache) {
 			List routes = cache.getAllRoutes();
 			Collections.sort( routes, LiteComparators.liteStringComparator );

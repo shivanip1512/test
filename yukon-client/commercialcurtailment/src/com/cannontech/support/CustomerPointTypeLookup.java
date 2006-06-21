@@ -10,7 +10,7 @@ import java.util.TreeSet;
 
 import org.apache.commons.lang.Validate;
 
-import com.cannontech.database.cache.functions.EnergyCompanyFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.db.customer.CICustomerPointType;
@@ -65,7 +65,7 @@ public class CustomerPointTypeLookup {
 
     public Set<String> getPointTypeGroups(LiteEnergyCompany energyCompany) {
         String property = 
-            EnergyCompanyFuncs.getEnergyCompanyProperty(energyCompany, 
+            DaoFactory.getEnergyCompanyDao().getEnergyCompanyProperty(energyCompany, 
                                                         EnergyCompanyRole.APPLICABLE_POINT_TYPE_KEY);
         
         if (property == null) {
@@ -85,7 +85,7 @@ public class CustomerPointTypeLookup {
      */
     public Set<String> getPointTypeGroups(LiteCICustomer liteCICustomer) {
         int energyCompanyID = liteCICustomer.getEnergyCompanyID();
-        LiteEnergyCompany energyCompany = EnergyCompanyFuncs.getEnergyCompany(energyCompanyID);
+        LiteEnergyCompany energyCompany = DaoFactory.getEnergyCompanyDao().getEnergyCompany(energyCompanyID);
         return getPointTypeGroups(energyCompany);
     }
 
@@ -97,7 +97,7 @@ public class CustomerPointTypeLookup {
      */
     public Set<CICustomerPointType> getApplicablePoints(LiteCICustomer liteCICustomer) {
         int energyCompanyID = liteCICustomer.getEnergyCompanyID();
-        LiteEnergyCompany energyCompany = EnergyCompanyFuncs.getEnergyCompany(energyCompanyID);
+        LiteEnergyCompany energyCompany = DaoFactory.getEnergyCompanyDao().getEnergyCompany(energyCompanyID);
         return getApplicablePoints(energyCompany);
     }
 

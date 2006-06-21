@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsThermostatProgramDescriptor.java,v 1.21 2005/01/20 00:37:04 yao Exp $
+ * $Id: StarsThermostatProgramDescriptor.java,v 1.22 2006/06/21 17:12:07 alauinger Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -11,21 +11,18 @@ package com.cannontech.stars.xml.serialize;
  //- Imported classes and packages -/
 //---------------------------------/
 
-import org.exolab.castor.mapping.AccessMode;
-import org.exolab.castor.mapping.ClassDescriptor;
-import org.exolab.castor.mapping.FieldDescriptor;
-import org.exolab.castor.xml.*;
 import org.exolab.castor.xml.FieldValidator;
-import org.exolab.castor.xml.TypeValidator;
-import org.exolab.castor.xml.XMLFieldDescriptor;
-import org.exolab.castor.xml.handlers.*;
+import org.exolab.castor.xml.NodeType;
+import org.exolab.castor.xml.XMLFieldHandler;
+import org.exolab.castor.xml.handlers.EnumFieldHandler;
 import org.exolab.castor.xml.util.XMLFieldDescriptorImpl;
-import org.exolab.castor.xml.validators.*;
+import org.exolab.castor.xml.validators.IntegerValidator;
+import org.exolab.castor.xml.validators.StringValidator;
 
 /**
  * 
  * 
- * @version $Revision: 1.21 $ $Date: 2005/01/20 00:37:04 $
+ * @version $Revision: 1.22 $ $Date: 2006/06/21 17:12:07 $
 **/
 public class StarsThermostatProgramDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 

@@ -4,9 +4,7 @@ import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.login.ClientSession;
-import com.cannontech.database.cache.functions.ContactFuncs;
-import com.cannontech.database.cache.functions.EnergyCompanyFuncs;
-import com.cannontech.database.cache.functions.YukonUserFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
@@ -87,13 +85,13 @@ public class RequestPword
             //we may continue after this, remove all the stored data
             foundData.clear();
             
-            LiteContact lc = ContactFuncs.getContactByEmailNotif( email );
+            LiteContact lc = DaoFactory.getContactDao().getContactByEmailNotif( email );
             if( lc == null )
                 setState( RET_FAILED, "Contact for Email not found, try again" );
             else
             {
                 foundData.add( " Contact Name: " + lc.getContFirstName() + " " + lc.getContLastName() );
-                foundData.add( " User Name: " + YukonUserFuncs.getLiteYukonUser(lc.getLoginID()).getUsername() );
+                foundData.add( " User Name: " + DaoFactory.getYukonUserDao().getLiteYukonUser(lc.getLoginID()).getUsername() );
 
                 LiteEnergyCompany[] cmps = processContact( lc );
                 processEnergyCompanies( cmps );
@@ -110,14 +108,14 @@ public class RequestPword
             //we may continue after this, remove all the stored data
             foundData.clear();
             
-            LiteYukonUser user = YukonUserFuncs.getLiteYukonUser( userName );
+            LiteYukonUser user = DaoFactory.getYukonUserDao().getLiteYukonUser( userName );
             if( user == null )
                 setState( RET_FAILED, "User Name not found, try again" );
             else
             {
                 foundData.add( " User Name: " + user.getUsername() );                   
 
-                LiteContact lc = YukonUserFuncs.getLiteContact( user.getUserID() );
+                LiteContact lc = DaoFactory.getYukonUserDao().getLiteContact( user.getUserID() );
                 if( lc == null )
                 {
                     setState( RET_FAILED, "Contact for User Name not found, try again" );
@@ -141,7 +139,7 @@ public class RequestPword
             //we may continue after this, remove all the stored data
             foundData.clear();
             
-            LiteContact[] lConts = ContactFuncs.getContactsByFName( fName );
+            LiteContact[] lConts = DaoFactory.getContactDao().getContactsByFName( fName );
             if( lConts.length == 1 )
             {
                 //if we also have a last name, try to match BOTH names
@@ -150,7 +148,7 @@ public class RequestPword
                     if( lName.equalsIgnoreCase(lConts[0].getContLastName()) )
                     {
                         foundData.add( " Contact Name: " + lConts[0].getContFirstName() + " " + lConts[0].getContLastName() );                  
-                        foundData.add( " User Name: " + YukonUserFuncs.getLiteYukonUser(lConts[0].getLoginID()).getUsername() );
+                        foundData.add( " User Name: " + DaoFactory.getYukonUserDao().getLiteYukonUser(lConts[0].getLoginID()).getUsername() );
                         
                         LiteEnergyCompany[] cmps = processContact( lConts[0] );
                         processEnergyCompanies( cmps );                                 
@@ -164,7 +162,7 @@ public class RequestPword
                 else
                 {
                     foundData.add( " Contact Name: " + lConts[0].getContFirstName() + " " + lConts[0].getContLastName() );                  
-                    foundData.add( " User Name: " + YukonUserFuncs.getLiteYukonUser(lConts[0].getLoginID()).getUsername() );
+                    foundData.add( " User Name: " + DaoFactory.getYukonUserDao().getLiteYukonUser(lConts[0].getLoginID()).getUsername() );
 
                     LiteEnergyCompany[] cmps = processContact( lConts[0] );                 
                     processEnergyCompanies( cmps );
@@ -184,7 +182,7 @@ public class RequestPword
                         if( lName.equalsIgnoreCase(lConts[i].getContLastName()) )
                         {
                             foundData.add( " Contact Name: " + lConts[i].getContFirstName() + " " + lConts[i].getContLastName() );                  
-                            foundData.add( " User Name: " + YukonUserFuncs.getLiteYukonUser(lConts[i].getLoginID()).getUsername() );
+                            foundData.add( " User Name: " + DaoFactory.getYukonUserDao().getLiteYukonUser(lConts[i].getLoginID()).getUsername() );
                             
                             LiteEnergyCompany[] cmps = processContact( lConts[i] );
                             processEnergyCompanies( cmps );                                 
@@ -217,7 +215,7 @@ public class RequestPword
             //we may continue after this, remove all the stored data
             foundData.clear();
             
-            LiteContact[] lConts = ContactFuncs.getContactsByLName( lName );
+            LiteContact[] lConts = DaoFactory.getContactDao().getContactsByLName( lName );
             if( lConts.length == 1 )
             {
                 //if we also have a first name, try to match BOTH names
@@ -226,7 +224,7 @@ public class RequestPword
                     if( fName.equalsIgnoreCase(lConts[0].getContFirstName()) )
                     {
                         foundData.add( " Contact Name: " + lConts[0].getContFirstName() + " " + lConts[0].getContLastName() );                  
-                        foundData.add( " User Name: " + YukonUserFuncs.getLiteYukonUser(lConts[0].getLoginID()).getUsername() );
+                        foundData.add( " User Name: " + DaoFactory.getYukonUserDao().getLiteYukonUser(lConts[0].getLoginID()).getUsername() );
                         LiteEnergyCompany[] cmps = processContact( lConts[0] );
                         processEnergyCompanies( cmps );                                 
                     }
@@ -238,7 +236,7 @@ public class RequestPword
                 else
                 {
                     foundData.add( " Contact Name: " + lConts[0].getContFirstName() + " " + lConts[0].getContLastName() );                  
-                    foundData.add( " User Name: " + YukonUserFuncs.getLiteYukonUser(lConts[0].getLoginID()).getUsername() );
+                    foundData.add( " User Name: " + DaoFactory.getYukonUserDao().getLiteYukonUser(lConts[0].getLoginID()).getUsername() );
                     
                     LiteEnergyCompany[] cmps = processContact( lConts[0] );                 
                     processEnergyCompanies( cmps );
@@ -258,7 +256,7 @@ public class RequestPword
                         if( fName.equalsIgnoreCase(lConts[i].getContFirstName()) )
                         {
                             foundData.add( " Contact Name: " + lConts[i].getContFirstName() + " " + lConts[i].getContLastName() );                  
-                            foundData.add( " User Name: " + YukonUserFuncs.getLiteYukonUser(lConts[i].getLoginID()).getUsername() );
+                            foundData.add( " User Name: " + DaoFactory.getYukonUserDao().getLiteYukonUser(lConts[i].getLoginID()).getUsername() );
 
                             LiteEnergyCompany[] cmps = processContact( lConts[i] );                 
                             processEnergyCompanies( cmps );                                 
@@ -322,7 +320,7 @@ public class RequestPword
 	
 	protected LiteEnergyCompany[] processContact( LiteContact lCont_ )
 	{
-		LiteCICustomer lCust = ContactFuncs.getCICustomer( lCont_.getContactID() );
+		LiteCICustomer lCust = DaoFactory.getContactDao().getCICustomer( lCont_.getContactID() );
 
 		//no customer found, we have some issues
 		if( lCust == null )
@@ -338,7 +336,7 @@ public class RequestPword
 		foundData.add( " Customer Name: " + lCust.getCompanyName() );					
 
 		LiteEnergyCompany[] cmp = 
-			EnergyCompanyFuncs.getEnergyCompaniesByCustomer( lCust.getCustomerID() );
+			DaoFactory.getEnergyCompanyDao().getEnergyCompaniesByCustomer( lCust.getCustomerID() );
 	
 		return cmp;		
 	}
@@ -364,7 +362,7 @@ public class RequestPword
 			foundData.add( " Energy Company Name: " + comps_[0].getName() );					
 			
 			String[] emails =
-					ContactFuncs.getAllEmailAddresses( comps_[0].getPrimaryContactID() );
+					DaoFactory.getContactDao().getAllEmailAddresses( comps_[0].getPrimaryContactID() );
 
 			for( int i = 0; i < emails.length; i++ )
 			{

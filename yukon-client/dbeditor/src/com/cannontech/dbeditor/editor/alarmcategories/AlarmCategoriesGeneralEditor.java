@@ -1,7 +1,7 @@
 package com.cannontech.dbeditor.editor.alarmcategories;
 
-import com.cannontech.common.gui.unchanging.StringRangeDocument;
 import com.cannontech.common.gui.util.TextFieldDocument;
+import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * Insert the type's description here.
@@ -120,7 +120,7 @@ private javax.swing.JComboBox getJComboBoxNotificationGroup() {
 			// user code begin {1}
 
 
-			com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+			IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 			synchronized( cache )
 			{
 				java.util.List notifGroups = cache.getAllContactNotificationGroups();

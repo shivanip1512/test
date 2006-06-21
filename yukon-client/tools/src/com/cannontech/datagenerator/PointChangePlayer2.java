@@ -14,8 +14,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.database.cache.functions.PAOFuncs;
-import com.cannontech.database.cache.functions.PointFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.DeviceClasses;
@@ -122,7 +121,7 @@ public class PointChangePlayer2 {
 			int quality = dis.readInt();
 			double value = dis.readDouble();
 						
-			LitePoint lp = PointFuncs.getLitePoint(id);
+			LitePoint lp = DaoFactory.getPointDao().getLitePoint(id);
 			if(lp == null) {
 				CTILogger.info("Point id: " + id + " not found, skipping");
 				continue;
@@ -156,12 +155,12 @@ public class PointChangePlayer2 {
 	}
 	
 	private static boolean setLPFlag(int pointID) {
-		LitePoint lp = PointFuncs.getLitePoint(pointID);
+		LitePoint lp = DaoFactory.getPointDao().getLitePoint(pointID);
 		if(lp == null) {
 			CTILogger.warn("couldn't find point id: " + lp.getLiteID());
 			return false;
 		}
-		LiteYukonPAObject paObj = PAOFuncs.getLiteYukonPAO(lp.getPaobjectID());
+		LiteYukonPAObject paObj = DaoFactory.getPaoDao().getLiteYukonPAO(lp.getPaobjectID());
 		if(paObj == null) {
 			CTILogger.warn("couldn't find paoobject id: " + lp.getPaobjectID());
 			return false;

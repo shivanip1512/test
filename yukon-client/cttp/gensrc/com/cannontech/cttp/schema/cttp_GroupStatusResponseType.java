@@ -13,7 +13,6 @@
 
 package com.cannontech.cttp.schema;
 
-import com.altova.xml.types.*;
 
 public class cttp_GroupStatusResponseType extends com.altova.xml.Node {
 	public cttp_GroupStatusResponseType() {

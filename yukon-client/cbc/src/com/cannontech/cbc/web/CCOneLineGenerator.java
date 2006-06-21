@@ -20,7 +20,6 @@ import com.cannontech.esub.util.DrawingUpdater;
 import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.Feeder;
 import com.cannontech.yukon.cbc.SubBus;
-
 import com.loox.jloox.LxGraph;
 import com.loox.jloox.LxLine;
 

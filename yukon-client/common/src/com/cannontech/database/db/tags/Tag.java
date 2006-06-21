@@ -6,7 +6,6 @@
  */
 package com.cannontech.database.db.tags;
 
-import com.cannontech.message.dispatch.message.DBChangeMsg;
 
 /**
  * @author jdayton

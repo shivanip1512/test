@@ -23,11 +23,9 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.cache.StarsDatabaseCache;
-import com.cannontech.database.cache.functions.AuthFuncs;
-import com.cannontech.database.cache.functions.ContactFuncs;
-import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteCustomer;
@@ -610,7 +608,7 @@ public class WorkOrderModel extends ReportModelBase {
 			LiteAddress liteAddress = null;
 			if (lOrder.getAccountID() > 0) {
 				lAcctInfo = ec.getBriefCustAccountInfo( lOrder.getAccountID(), true );
-				liteContact = ContactFuncs.getContact( lAcctInfo.getCustomer().getPrimaryContactID() );
+				liteContact = DaoFactory.getContactDao().getContact( lAcctInfo.getCustomer().getPrimaryContactID() );
 				liteAddress = ec.getAddress( lAcctInfo.getAccountSite().getStreetAddressID() );
 			}
 			
@@ -621,7 +619,7 @@ public class WorkOrderModel extends ReportModelBase {
 					return ec.getName();
 				case EC_INFO_COLUMN:
 					String returnStr = "WORK ORDER";
-					LiteContact lc_ec = ContactFuncs.getContact( ec.getPrimaryContactID() );
+					LiteContact lc_ec = DaoFactory.getContactDao().getContact( ec.getPrimaryContactID() );
 					if( lc_ec != null)
 					{
 						LiteAddress lAddr = ec.getAddress( lc_ec.getAddressID() );
@@ -642,8 +640,8 @@ public class WorkOrderModel extends ReportModelBase {
                             if (StarsUtils.forceNotNone(lAddr.getZipCode()).length() > 0)
                                 returnStr += " " + StarsUtils.forceNotNone(lAddr.getZipCode());
 						}
-						if(  ContactFuncs.getContactNotification(lc_ec, YukonListEntryTypes.YUK_ENTRY_ID_PHONE) != null)
-							returnStr += "\r\n" + ContactFuncs.getContactNotification(lc_ec, YukonListEntryTypes.YUK_ENTRY_ID_PHONE);
+						if(  DaoFactory.getContactDao().getContactNotification(lc_ec, YukonListEntryTypes.YUK_ENTRY_ID_PHONE) != null)
+							returnStr += "\r\n" + DaoFactory.getContactDao().getContactNotification(lc_ec, YukonListEntryTypes.YUK_ENTRY_ID_PHONE);
 					}
 					return returnStr;
 				case ORDER_NO_COLUMN:
@@ -651,12 +649,12 @@ public class WorkOrderModel extends ReportModelBase {
 				case DATE_TIME_TODAY_COLUMN:
 					return ServletUtils.formatDate( new Date(), dateFormatter );
 				case RECENT_EVENT_COLUMN:
-					YukonListEntry entry = YukonListFuncs.getYukonListEntry(lOrder.getCurrentStateID());
+					YukonListEntry entry = DaoFactory.getYukonListDao().getYukonListEntry(lOrder.getCurrentStateID());
 					return (entry != null ? entry.getEntryText() : "");
 				case DATE_TIME_RECENT_EVENT_COLUMN:
 					return ServletUtils.formatDate( new Date(lOrder.getDateReported()), dateFormatter );
 				case SERVICE_TYPE_COLUMN:
-					return YukonListFuncs.getYukonListEntry(lOrder.getWorkTypeID()).getEntryText();
+					return DaoFactory.getYukonListDao().getYukonListEntry(lOrder.getWorkTypeID()).getEntryText();
 				case SERVICE_COMPANY_COLUMN:
 					LiteServiceCompany sc = ec.getServiceCompany( lOrder.getServiceCompanyID() );
 					if (sc != null)
@@ -676,7 +674,7 @@ public class WorkOrderModel extends ReportModelBase {
                     if (lAcctInfo != null){
                         if( lAcctInfo.getCustomer() instanceof LiteCICustomer)
     					{
-    						YukonListEntry coTypeEntry = YukonListFuncs.getYukonListEntry(((LiteCICustomer)lAcctInfo.getCustomer()).getCICustType());
+    						YukonListEntry coTypeEntry = DaoFactory.getYukonListDao().getYukonListEntry(((LiteCICustomer)lAcctInfo.getCustomer()).getCICustType());
     						return (coTypeEntry != null ? coTypeEntry.getEntryText() : "");
     					}
     					else if( lAcctInfo.getCustomer() instanceof LiteCustomer)
@@ -690,17 +688,17 @@ public class WorkOrderModel extends ReportModelBase {
 						return null;
 				case PHONE_HOME_COLUMN:
 					if (liteContact != null)
-						return ContactFuncs.getContactNotification(liteContact, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE);
+						return DaoFactory.getContactDao().getContactNotification(liteContact, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE);
 					else
 						return null;
 				case PHONE_WORK_COLUMN:
 					if (liteContact != null)
-						return ContactFuncs.getContactNotification(liteContact, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE);
+						return DaoFactory.getContactDao().getContactNotification(liteContact, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE);
 					else
 						return null;
 				case PHONE_CONTACT_COLUMN:
 					if (liteContact != null)
-						return ContactFuncs.getContactNotification(liteContact, YukonListEntryTypes.YUK_ENTRY_ID_CALL_BACK_PHONE);
+						return DaoFactory.getContactDao().getContactNotification(liteContact, YukonListEntryTypes.YUK_ENTRY_ID_CALL_BACK_PHONE);
 					else
 						return null;
                 case PRESENCE_REQUIRED_COLUMN:
@@ -790,9 +788,9 @@ public class WorkOrderModel extends ReportModelBase {
 					if (liteInvBase != null)
 					{
 						if( liteInvBase instanceof LiteStarsLMHardware)
-							return YukonListFuncs.getYukonListEntry(((LiteStarsLMHardware)liteInvBase).getLmHardwareTypeID()).getEntryText();
+							return DaoFactory.getYukonListDao().getYukonListEntry(((LiteStarsLMHardware)liteInvBase).getLmHardwareTypeID()).getEntryText();
 						else if( liteInvBase instanceof LiteMeterHardwareBase)
-							return YukonListFuncs.getYukonListEntry(liteInvBase.getCategoryID()).getEntryText();
+							return DaoFactory.getYukonListDao().getYukonListEntry(liteInvBase.getCategoryID()).getEntryText();
 					}
 					return null;
 				case INSTALL_DATE_COLUMN:
@@ -823,7 +821,7 @@ public class WorkOrderModel extends ReportModelBase {
 		if (columnNames == null) {
             String addtlOrderNumberStr = ADDTL_ORDER_NO_STRING; 
             if( getUserID() != null)
-                addtlOrderNumberStr = AuthFuncs.getRolePropertyValue(getUserID().intValue(), WorkOrderRole.ADDTL_ORDER_NUMBER_LABEL);
+                addtlOrderNumberStr = DaoFactory.getAuthDao().getRolePropertyValue(getUserID().intValue(), WorkOrderRole.ADDTL_ORDER_NUMBER_LABEL);
 			columnNames = new String[] {
 				//HEADER
 				EC_NAME_STRING,

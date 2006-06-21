@@ -10,10 +10,10 @@ import javax.xml.soap.SOAPMessage;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.StarsDatabaseCache;
-import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteLMCustomerEvent;
 import com.cannontech.database.data.lite.stars.LiteLMThermostatSchedule;
@@ -209,7 +209,7 @@ public class CreateLMHardwareAction implements ActionBase {
 		};
 		
 		// If we are creating the default commercial thermostat schedule
-		int hwTypeDefID = YukonListFuncs.getYukonListEntry( hwTypeID ).getYukonDefID();
+		int hwTypeDefID = DaoFactory.getYukonListDao().getYukonListEntry( hwTypeID ).getYukonDefID();
 		boolean isDftCommTstat = (hwTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_COMM_EXPRESSSTAT)
 				&& ECUtils.isDefaultEnergyCompany( energyCompany );
 		
@@ -463,7 +463,7 @@ public class CreateLMHardwareAction implements ActionBase {
 				liteInv.updateDeviceStatus();
 				
 				if (createHw.getDeviceStatus() != null) {
-					int statusDefID = YukonListFuncs.getYukonListEntry( createHw.getDeviceStatus().getEntryID() ).getYukonDefID();
+					int statusDefID = DaoFactory.getYukonListDao().getYukonListEntry( createHw.getDeviceStatus().getEntryID() ).getYukonDefID();
 					if (statusDefID != liteInv.getDeviceStatus()) {
 						// Add customer event to match the device status
 						event = null;

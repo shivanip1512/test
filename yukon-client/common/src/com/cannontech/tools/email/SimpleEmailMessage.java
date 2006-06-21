@@ -2,11 +2,14 @@ package com.cannontech.tools.email;
 
 import java.util.Date;
 
-import javax.mail.*;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-import com.cannontech.database.cache.functions.RoleFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.roles.yukon.SystemRole;
 
 /**
@@ -23,7 +26,7 @@ public class SimpleEmailMessage {
         java.util.Properties systemProps = System.getProperties();
         
         //a property used internally by the JavaMail API
-        String smtpServer = RoleFuncs.getGlobalPropertyValue( SystemRole.SMTP_HOST );
+        String smtpServer = DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.SMTP_HOST );
         if( smtpServer == null ) {
             throw new MessagingException("No SMTP_HOST server defined in SystemRole.");
         }
@@ -34,7 +37,7 @@ public class SimpleEmailMessage {
         _message = new MimeMessage(session);
         _message.setHeader("X-Mailer", "CannontechEmail");
         
-        String from = RoleFuncs.getGlobalPropertyValue( SystemRole.MAIL_FROM_ADDRESS );
+        String from = DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.MAIL_FROM_ADDRESS );
         if (from == null) {
             throw new MessagingException("No MAIL_FROM_ADDRESS defined in SystemRole.");
         }

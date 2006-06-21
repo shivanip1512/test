@@ -7,8 +7,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.concurrent.PropertyChangeMulticaster;
-import com.cannontech.database.cache.functions.ContactFuncs;
-import com.cannontech.database.cache.functions.YukonListFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.notif.outputs.Contactable;
@@ -30,7 +29,7 @@ public class SingleNotification implements PropertyChangeListener {
     
     static public final NotificationTypeChecker checker = new NotificationTypeChecker() {
         public boolean validNotifcationType(int notificationCategoryId) {
-            return YukonListFuncs.isPhoneNumber(notificationCategoryId);
+            return DaoFactory.getYukonListDao().isPhoneNumber(notificationCategoryId);
         };
     };
         
@@ -60,11 +59,11 @@ public class SingleNotification implements PropertyChangeListener {
             }
             contactNotif = (LiteContactNotification)_phoneIterator.next();
         }
-        LiteContact contact = ContactFuncs.getContact(contactNotif.getContactID());
+        LiteContact contact = DaoFactory.getContactDao().getContact(contactNotif.getContactID());
         if (contact.getLoginID() == UserUtils.USER_DEFAULT_ID) {
             CTILogger.warn("Unable to contact " + contactNotif + " of " + _contactable + " because there is no associated YukonUser.");
             return createNewCall();
-        } else if (!ContactFuncs.hasPin(contact.getContactID())){
+        } else if (!DaoFactory.getContactDao().hasPin(contact.getContactID())){
             CTILogger.warn("Unable to contact " + contactNotif + " of " + _contactable + " because there is no associated PIN.");
             return createNewCall();
         } else {

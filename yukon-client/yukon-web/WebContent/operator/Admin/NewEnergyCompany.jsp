@@ -1,12 +1,12 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonGroup" %>
 <%
-	if (!AuthFuncs.checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_CREATE_ENERGY_COMPANY)) {
+	if (!DaoFactory.getAuthDao().checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_CREATE_ENERGY_COMPANY)) {
 		response.sendRedirect("../Operations.jsp");
 		return;
 	}
 	
-	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 	ArrayList yukonGroups = null;
 	synchronized (cache) {
 		List groups = cache.getAllYukonGroups();
@@ -271,7 +271,7 @@ function addCustomerGroup(form) {
                                 <select name="Route" onchange="setContentChanged(true)">
                                   <option value="<%= LiteStarsEnergyCompany.INVALID_ROUTE_ID %>">(none)</option>
 <%
-	LiteYukonPAObject[] routes = PAOFuncs.getAllLiteRoutes();
+	LiteYukonPAObject[] routes = DaoFactory.getPaoDao().getAllLiteRoutes();
 	for (int i = 0; i < routes.length; i++) {
 		String selected = (routes[i].getYukonID() == dftRouteID)? "selected" : "";
 %>

@@ -1,6 +1,5 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
-<%@ page import="com.cannontech.database.cache.functions.EnergyCompanyFuncs" %>
-<%@ page import="com.cannontech.database.cache.functions.YukonUserFuncs" %>
+<%@ page import="com.cannontech.core.dao.DaoFactory" %>
 <%
 	if (request.getParameter("failed") != null)
 		errorMsg = "Failed to log into member energy company";
@@ -60,8 +59,8 @@ function memberLogin(userID) {
 		LiteStarsEnergyCompany member = (LiteStarsEnergyCompany) liteEC.getChildren().get(i);
 		LiteYukonUser memberLogin = null;
 		for (int j = 0; j < liteEC.getMemberLoginIDs().size(); j++) {
-			LiteYukonUser login = YukonUserFuncs.getLiteYukonUser(((Integer)liteEC.getMemberLoginIDs().get(j)).intValue());
-			if (EnergyCompanyFuncs.getEnergyCompany(login).getEnergyCompanyID() == member.getLiteID()) {
+			LiteYukonUser login = DaoFactory.getYukonUserDao().getLiteYukonUser(((Integer)liteEC.getMemberLoginIDs().get(j)).intValue());
+			if (DaoFactory.getEnergyCompanyDao().getEnergyCompany(login).getEnergyCompanyID() == member.getLiteID()) {
 				memberLogin = login;
 				break;
 			}

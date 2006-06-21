@@ -7,8 +7,8 @@ package com.cannontech.loadcontrol.popup;
  */
 
 
-import com.cannontech.loadcontrol.data.LMCurtailCustomer;
 import com.cannontech.loadcontrol.data.LMCICustomerBase;
+import com.cannontech.loadcontrol.data.LMCurtailCustomer;
 import com.cannontech.loadcontrol.gui.manualentry.AckUserPanel;
 import com.cannontech.loadcontrol.gui.manualentry.LMCurtailCustomerInfoPanel;
 import com.cannontech.loadcontrol.messages.LMCurtailmentAcknowledgeMsg;

@@ -9,11 +9,11 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpServletResponse;
-import com.cannontech.web.navigation.CtiNavObject;
-import com.cannontech.clientutils.CTILogger;
+import javax.servlet.http.HttpSession;
+
 import com.cannontech.util.ServletUtil;
+import com.cannontech.web.navigation.CtiNavObject;
 
 /**
  * Filter that keeps track of referrer pages and sets 

@@ -4,7 +4,7 @@ package com.cannontech.datagenerator.point;
  * Creation date: (1/10/2001 11:18:45 PM)
  * @author: 
  */
-import com.cannontech.database.cache.functions.DBPersistentFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.MCT400SeriesBase;
 import com.cannontech.database.data.lite.LitePoint;
@@ -31,7 +31,7 @@ public class DisconnectPointCreate extends PointCreate
 		int type = litePaobject_.getType();
 	    if( DeviceTypesFuncs.isMCT4XX(type))
 	    {
-	        MCT400SeriesBase mct = (MCT400SeriesBase)DBPersistentFuncs.retrieveDBPersistent(litePaobject_);
+	        MCT400SeriesBase mct = (MCT400SeriesBase)DaoFactory.getDbPersistentDao().retrieveDBPersistent(litePaobject_);
 	        if( mct.getDeviceMCT400Series().getDisconnectAddress().intValue() > -1)
 	            return true;
 	    }

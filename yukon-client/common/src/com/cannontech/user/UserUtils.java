@@ -1,6 +1,6 @@
 package com.cannontech.user;
 
-import com.cannontech.database.cache.functions.YukonUserFuncs;
+
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 /**

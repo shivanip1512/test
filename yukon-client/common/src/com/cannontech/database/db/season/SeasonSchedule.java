@@ -1,5 +1,7 @@
 package com.cannontech.database.db.season;
 
+import com.cannontech.yukon.IDatabaseCache;
+
 /**
  * Insert the type's description here.
  * Creation date: (6/22/2004 10:35:21 AM)
@@ -63,7 +65,7 @@ public String getScheduleName() {
  */
 public final static Integer getNextSeasonScheduleID()
 {
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 
 	synchronized(cache)
 	{

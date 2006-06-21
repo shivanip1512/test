@@ -1,18 +1,12 @@
 package com.cannontech.common.gui.util;
 
-import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Frame;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JProgressBar;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-import javax.swing.Timer;
 
 /**
  * @author rneuharth

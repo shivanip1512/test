@@ -13,9 +13,9 @@ import javax.servlet.http.HttpSession;
 
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
-import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -134,13 +134,13 @@ public class DeleteSNRangeTask extends TimeConsumingTask {
 			}
 		}
 		else {
-			int devTypeDefID = YukonListFuncs.getYukonListEntry(devTypeID.intValue()).getYukonDefID();
+			int devTypeDefID = DaoFactory.getYukonListDao().getYukonListEntry(devTypeID.intValue()).getYukonDefID();
 			ArrayList hwList = InventoryUtils.getLMHardwareInRange( energyCompany, devTypeDefID, snFrom, snTo );
 			
 			numToBeDeleted = hwList.size();
 			if (numToBeDeleted == 0) {
 				status = STATUS_ERROR;
-				errorMsg = "There was no " + YukonListFuncs.getYukonListEntry(devTypeID.intValue()).getEntryText() + " found in the given range of serial numbers.";
+				errorMsg = "There was no " + DaoFactory.getYukonListDao().getYukonListEntry(devTypeID.intValue()).getEntryText() + " found in the given range of serial numbers.";
 				return;
 			}
 			
@@ -178,7 +178,7 @@ public class DeleteSNRangeTask extends TimeConsumingTask {
 		String snRange = InventoryManagerUtil.getSNRange( snFrom, snTo );
 		if (snRange == null) snRange = "all serial numbers";
 		String logMsg = "Serial Range:" + snRange
-				+ ",Device Type:" + YukonListFuncs.getYukonListEntry(devTypeID.intValue()).getEntryText();
+				+ ",Device Type:" + DaoFactory.getYukonListDao().getYukonListEntry(devTypeID.intValue()).getEntryText();
 		ActivityLogger.logEvent( user.getUserID(), ActivityLogActions.INVENTORY_DELETE_RANGE, logMsg );
 		
 		status = STATUS_FINISHED;

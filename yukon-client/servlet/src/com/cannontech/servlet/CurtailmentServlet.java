@@ -16,7 +16,7 @@ package com.cannontech.servlet;
  */
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.database.cache.functions.ContactFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.util.ServletUtil;
@@ -112,19 +112,19 @@ public void doPost(javax.servlet.http.HttpServletRequest req, javax.servlet.http
 		String initials      = req.getParameter("initials");
 		String redirectURI   = req.getParameter("redirect");
 		 
-		LiteContact contact = com.cannontech.database.cache.functions.YukonUserFuncs.getLiteContact(user.getUserID());
+		LiteContact contact = DaoFactory.getYukonUserDao().getLiteContact(user.getUserID());
 				
 		// Confirm that the customer id passed here and the id stored
 		// in the session are the same
 		if( contact == null || 
-			ContactFuncs.getCICustomer(contact.getContactID()).getCustomerID() != Integer.parseInt(customerIDStr) ) {
+			DaoFactory.getContactDao().getCICustomer(contact.getContactID()).getCustomerID() != Integer.parseInt(customerIDStr) ) {
 				CTILogger.error("Customer id of the current user doesn't match that of the request");
 				return;				
 			}
 
 		if( 
 		!doAck( 	user.getUsername(), 
-			ContactFuncs.getCICustomer(contact.getContactID()).getCustomerID(),
+			DaoFactory.getContactDao().getCICustomer(contact.getContactID()).getCustomerID(),
 			Integer.parseInt(curtailIDStr), 	
 			new java.util.Date( Long.parseLong(ackTimeStr)), 
 			req.getRemoteAddr(),

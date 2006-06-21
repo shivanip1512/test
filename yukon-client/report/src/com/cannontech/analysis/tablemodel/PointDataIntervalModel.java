@@ -12,9 +12,8 @@ import javax.servlet.http.HttpServletRequest;
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.cache.functions.PAOFuncs;
-import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteRawPointHistory;
 import com.cannontech.database.data.point.CTIPointQuailtyException;
@@ -302,11 +301,11 @@ public class PointDataIntervalModel extends ReportModelBase
 		if ( o instanceof LiteRawPointHistory)
 		{
 			LiteRawPointHistory rph = ((LiteRawPointHistory)o);
-			LitePoint lp = PointFuncs.getLitePoint(rph.getPointID()); 
+			LitePoint lp = DaoFactory.getPointDao().getLitePoint(rph.getPointID()); 
 			switch( columnIndex)
 			{
 				case PAO_NAME_COLUMN:
-					return PAOFuncs.getYukonPAOName(lp.getPaobjectID());
+					return DaoFactory.getPaoDao().getYukonPAOName(lp.getPaobjectID());
 		
 				case POINT_NAME_COLUMN:
 					return lp.getPointName();

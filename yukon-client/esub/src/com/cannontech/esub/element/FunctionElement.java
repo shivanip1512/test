@@ -1,24 +1,18 @@
 package com.cannontech.esub.element;
 
 import java.awt.Image;
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Properties;
 
 import javax.swing.ImageIcon;
-import javax.swing.plaf.IconUIResource;
 
-import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.cache.functions.PointFuncs;
-import com.cannontech.database.cache.functions.YukonImageFuncs;
-import com.cannontech.database.data.lite.LiteYukonImage;
-import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.esub.Drawing;
 import com.cannontech.esub.element.persist.PersistFunctionElement;
-import com.cannontech.esub.element.persist.PersistStaticImage;
-import com.cannontech.esub.util.Util;
 import com.loox.jloox.LxAbstractImage;
 
 /**

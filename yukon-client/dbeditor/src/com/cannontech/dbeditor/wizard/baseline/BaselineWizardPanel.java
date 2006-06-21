@@ -1,6 +1,5 @@
 package com.cannontech.dbeditor.wizard.baseline;
 
-import com.cannontech.dbeditor.wizard.baseline.BaselineMainPanel;
 
 /**
  * This type was created in VisualAge.

@@ -17,7 +17,7 @@
 	String nd = "\"return nd(5000);\"";
 	int subid = cbcSession.getLastSubID();
 	LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);			
-	String popupEvent = AuthFuncs.getRolePropertyValue(user, WebClientRole.POPUP_APPEAR_STYLE);
+	String popupEvent = DaoFactory.getAuthDao().getRolePropertyValue(user, WebClientRole.POPUP_APPEAR_STYLE);
 	if (popupEvent == null) popupEvent = "onmouseover";
 	SubBus subBus = capControlCache.getSubBus( new Integer(subid) );
 	Feeder[] feeders = capControlCache.getFeedersBySub( new Integer(subid) );

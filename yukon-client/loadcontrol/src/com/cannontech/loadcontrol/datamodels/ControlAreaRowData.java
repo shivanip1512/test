@@ -5,6 +5,7 @@ package com.cannontech.loadcontrol.datamodels;
  * Creation date: (7/25/2001 11:52:00 AM)
  * @author: 
  */
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.db.device.lm.IlmDefines;
 import com.cannontech.loadcontrol.data.LMControlAreaTrigger;
 
@@ -32,7 +33,7 @@ public java.lang.String getCurrentValue()
 		//Returns the current value of the point
 		if( getLitePoint().getPointType() == com.cannontech.database.data.point.PointTypes.STATUS_POINT )
 		{
-			currentValue = com.cannontech.database.cache.functions.StateFuncs.getLiteState(
+			currentValue = DaoFactory.getStateDao().getLiteState(
 					 			getLitePoint().getStateGroupID(), getTrigger().getPointValue().intValue() ).getStateText();
 		}
 		else
@@ -72,7 +73,7 @@ public java.lang.String getTriggerValue()
 		//Returns the value of the trigger
 		if( getTrigger().getTriggerType().equalsIgnoreCase(IlmDefines.TYPE_STATUS) )
 		{
-			triggerValue = com.cannontech.database.cache.functions.StateFuncs.getLiteState( getLitePoint().getStateGroupID(), 
+			triggerValue = DaoFactory.getStateDao().getLiteState( getLitePoint().getStateGroupID(), 
 					getTrigger().getNormalState().intValue()).getStateText();
 		}
 		else if( getTrigger().getTriggerType().equalsIgnoreCase(IlmDefines.TYPE_THRESHOLD) )

@@ -1,7 +1,9 @@
 package com.cannontech.dbeditor.wizard.device.lmgroup;
 
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteStateGroup;
+import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * This type was created in VisualAge.
@@ -310,7 +312,7 @@ private void initComboBoxes()
 	getJComboBoxControlPoint().removeAllItems();
 	getJComboBoxControlStartState().removeAllItems();
 
-	com.cannontech.database.cache.DefaultDatabaseCache cache =
+	IDatabaseCache cache =
 					com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 
 	synchronized(cache)
@@ -330,7 +332,7 @@ private void initComboBoxes()
 				 || com.cannontech.database.data.device.DeviceTypesFuncs.isCapBankController(liteDevice)
 				 || com.cannontech.database.data.device.DeviceTypesFuncs.isMCT(liteDevice.getType()) )
 			{
-				com.cannontech.database.data.lite.LitePoint[] points = com.cannontech.database.cache.functions.PAOFuncs.getLitePointsForPAObject(
+				com.cannontech.database.data.lite.LitePoint[] points = DaoFactory.getPaoDao().getLitePointsForPAObject(
 																		liteDevice.getYukonID() );
 				
 				//pointList gets inserted into the hashtable
@@ -495,7 +497,7 @@ public void jComboBoxControlDevice_ActionPerformed(java.awt.event.ActionEvent ac
 	{
 		getJComboBoxControlPoint().removeAllItems();
 
-		com.cannontech.database.data.lite.LitePoint[] points = com.cannontech.database.cache.functions.PAOFuncs.getLitePointsForPAObject(
+		com.cannontech.database.data.lite.LitePoint[] points = DaoFactory.getPaoDao().getLitePointsForPAObject(
 				((com.cannontech.database.data.lite.LiteYukonPAObject)getJComboBoxControlDevice().getSelectedItem()).getYukonID() );
 
 		java.util.ArrayList litePointList = (java.util.ArrayList)
@@ -515,7 +517,7 @@ public void jComboBoxControlPoint_ActionPerformed(java.awt.event.ActionEvent act
 
 	if( getJComboBoxControlPoint().getSelectedItem() != null )
 	{
-		com.cannontech.database.cache.DefaultDatabaseCache cache =
+		IDatabaseCache cache =
 						com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 
 		synchronized(cache)

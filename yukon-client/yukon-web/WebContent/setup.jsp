@@ -1,13 +1,11 @@
+<%@ page import="com.cannontech.core.dao.DaoFactory" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonRoleProperty" %>
 <%@ page import="com.cannontech.roles.YukonRoleDefs" %>
-<%@ page import="com.cannontech.database.cache.functions.RoleFuncs" %>
-<%@ page import="com.cannontech.database.cache.functions.AuthFuncs" %>
 <%@ page import="com.cannontech.roles.YukonGroupRoleDefs" %>
 <%@ page import="com.cannontech.database.PoolManager" %>
 <%@ page import="com.cannontech.common.util.CtiUtilities" %>
 <%@ page import="com.cannontech.database.data.lite.LiteComparators" %>
 <%@ page import="java.util.Arrays" %>
-<%@ page import="com.cannontech.database.cache.functions.YukonUserFuncs" %>
 <%@ page import="com.cannontech.user.UserUtils" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
 <%@ page import="com.cannontech.clientutils.CTILogger" %>
@@ -188,7 +186,7 @@ LiteYukonUser admin = null;
 if( isValidConn )
 {
 	LiteYukonRoleProperty[] props = 
-			RoleFuncs.getRoleProperties( YukonRoleDefs.SYSTEM_ROLEID );
+			DaoFactory.getRoleDao().getRoleProperties( YukonRoleDefs.SYSTEM_ROLEID );
 
 	Arrays.sort( props, LiteComparators.liteStringComparator );
 
@@ -203,8 +201,8 @@ if( isValidConn )
 				  <%= p.getKeyName() %></td>
                   <td width="435" valign="bottom" class="MainText"> 
                     <input type="text" name="<%= p.getKeyName() %>" 
-					value="<%= AuthFuncs.getRolePropValueGroup(
-					AuthFuncs.getGroup( YukonGroupRoleDefs.GRP_YUKON ),p.getRolePropertyID(), p.getDefaultValue()) %>">
+					value="<%= DaoFactory.getAuthDao().getRolePropValueGroup(
+					DaoFactory.getAuthDao().getGroup( YukonGroupRoleDefs.GRP_YUKON ),p.getRolePropertyID(), p.getDefaultValue()) %>">
 
 					<span class="defaultText"> <%= p.getDefaultValue()%></span> 
               </td>
@@ -212,7 +210,7 @@ if( isValidConn )
 <%
 	}
 	
-	admin = YukonUserFuncs.getLiteYukonUser( UserUtils.USER_YUKON_ID );
+	admin = DaoFactory.getYukonUserDao().getLiteYukonUser( UserUtils.USER_YUKON_ID );
 	if( admin != null )
 	{
 %>

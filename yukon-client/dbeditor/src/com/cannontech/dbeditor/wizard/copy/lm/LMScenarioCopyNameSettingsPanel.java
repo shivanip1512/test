@@ -6,10 +6,6 @@ package com.cannontech.dbeditor.wizard.copy.lm;
 
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.database.data.device.lm.LMScenario;
-import com.cannontech.database.db.device.lm.LMControlScenarioProgram;
-import com.cannontech.common.editor.PropertyPanelEvent;
-import com.cannontech.database.data.lite.LiteComparators;
-import java.util.Collections;
 
 public class LMScenarioCopyNameSettingsPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
 	private javax.swing.JLabel ivjJLabelName = null;

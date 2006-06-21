@@ -34,9 +34,8 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.cache.StarsDatabaseCache;
-import com.cannontech.database.cache.functions.AuthFuncs;
-import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -407,7 +406,7 @@ public class WorkOrderManager extends HttpServlet {
 		session.setAttribute( ServletUtils.ATT_LAST_SERVICE_SEARCH_OPTION, new Integer(searchBy) );
         session.setAttribute( ServletUtils.ATT_LAST_SERVICE_SEARCH_VALUE, new String(searchValue) );
         StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-		boolean searchMembers = AuthFuncs.checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS ) && 
+		boolean searchMembers = DaoFactory.getAuthDao().checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS ) && 
 								(energyCompany.getChildren().size() > 0);
 
 		if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_ORDER_NO) {
@@ -526,8 +525,8 @@ public class WorkOrderManager extends HttpServlet {
 		LiteServiceCompany sc = energyCompany.getServiceCompany( liteOrder.getServiceCompanyID() );
 		String email = null;
 		if (sc.getPrimaryContactID() > 0) {
-			LiteContact contact = ContactFuncs.getContact( sc.getPrimaryContactID() );
-			LiteContactNotification emailNotif = ContactFuncs.getContactNotification( contact, YukonListEntryTypes.YUK_ENTRY_ID_EMAIL );
+			LiteContact contact = DaoFactory.getContactDao().getContact( sc.getPrimaryContactID() );
+			LiteContactNotification emailNotif = DaoFactory.getContactDao().getContactNotification( contact, YukonListEntryTypes.YUK_ENTRY_ID_EMAIL );
 			if (emailNotif != null) email = emailNotif.getNotification();
 		}
 		

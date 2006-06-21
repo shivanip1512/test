@@ -82,7 +82,7 @@
 					StarsEnrLMProgram enrProg = category.getStarsEnrLMProgram(k);
 					if (enrProg.getProgramID() == program.getProgramID()) {
 						if (enrProg.getChanceOfControl() != null)
-							ctrlOdds = YukonListFuncs.getYukonListEntry(enrProg.getChanceOfControl().getEntryID()).getEntryText();
+							ctrlOdds = DaoFactory.getYukonListDao().getYukonListEntry(enrProg.getChanceOfControl().getEntryID()).getEntryText();
 						break;
 					}
 				}
@@ -254,7 +254,7 @@
                     <%= homePhoneNo %></span><br>
                     <br>
 <%
-	String genlImgName = StarsUtils.forceNotNone(AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_IMG_GENERAL));
+	String genlImgName = StarsUtils.forceNotNone(DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_IMG_GENERAL));
 	if (genlImgName.length() > 0) {
 %>
                     <img src="../../../WebConfig/<%= genlImgName %>"> 

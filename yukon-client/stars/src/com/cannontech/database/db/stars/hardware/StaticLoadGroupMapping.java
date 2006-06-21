@@ -1,14 +1,11 @@
 package com.cannontech.database.db.stars.hardware;
 
-import com.cannontech.database.SqlStatement;
-import com.cannontech.database.TransactionException;
-import com.cannontech.database.db.DBPersistent;
-import java.lang.Integer;
-import java.lang.String;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.SqlStatement;
+import com.cannontech.database.db.DBPersistent;
 
 public class StaticLoadGroupMapping extends DBPersistent {
 

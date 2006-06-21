@@ -1,10 +1,8 @@
 package com.cannontech.web.util;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.TransactionException;
-import com.cannontech.database.cache.functions.DBPersistentFuncs;
-import com.cannontech.database.cache.functions.PAOFuncs;
-import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.data.capcontrol.CapBankController;
 import com.cannontech.database.data.capcontrol.CapBankController702x;
 import com.cannontech.database.data.capcontrol.ICapBankController;
@@ -28,11 +26,11 @@ public class CBCCopyUtils {
 	}
 
 	public static void copyAllPointsForPAO(Integer fromID, Integer toID) {
-		LitePoint[] points = PAOFuncs.getLitePointsForPAObject(fromID
+		LitePoint[] points = DaoFactory.getPaoDao().getLitePointsForPAObject(fromID
 				.intValue());
 		MultiDBPersistent dbPersistentVector = new MultiDBPersistent();
 		for (int i = 0; i < points.length; i++) {
-			DBPersistent pointCopy = copy(DBPersistentFuncs
+			DBPersistent pointCopy = copy(DaoFactory.getDbPersistentDao()
 					.retrieveDBPersistent(points[i]));
 			((PointBase) pointCopy).getPoint().setPaoID(toID);
 			dbPersistentVector.getDBPersistentVector().add(pointCopy);
@@ -123,14 +121,14 @@ public class CBCCopyUtils {
 	}
 
 	public static DBPersistent getDBPersistentByID(int copyObjectID) {
-		LiteYukonPAObject litePAO = PAOFuncs.getLiteYukonPAO(copyObjectID);
+		LiteYukonPAObject litePAO = DaoFactory.getPaoDao().getLiteYukonPAO(copyObjectID);
 		DBPersistent originalDbPers = null;
 		if (litePAO != null) {
-			originalDbPers = DBPersistentFuncs.retrieveDBPersistent(litePAO);
+			originalDbPers = DaoFactory.getDbPersistentDao().retrieveDBPersistent(litePAO);
 		} else {
-			LitePoint litePoint = PointFuncs.getLitePoint(copyObjectID);
+			LitePoint litePoint = DaoFactory.getPointDao().getLitePoint(copyObjectID);
 			if (litePoint != null) {
-				originalDbPers = DBPersistentFuncs
+				originalDbPers = DaoFactory.getDbPersistentDao()
 						.retrieveDBPersistent(litePoint);
 			}
 		}

@@ -4,8 +4,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 
-import com.cannontech.database.cache.functions.NotificationGroupFuncs;
-import com.cannontech.database.cache.functions.PAOFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.notification.NotifType;
@@ -67,7 +66,7 @@ public class LoadManagementMessageHandler extends NotifHandler {
             public Notification buildNotification(Contactable contact) {
                 Notification notif = new Notification("loadmanagement");
                 
-                LiteYukonPAObject liteYukonPAO = PAOFuncs.getLiteYukonPAO(msg.programId);
+                LiteYukonPAObject liteYukonPAO = DaoFactory.getPaoDao().getLiteYukonPAO(msg.programId);
                 notif.addData("programname", liteYukonPAO.getPaoName());
                 notif.addData("customername", contact.getCustomerName());
 
@@ -103,7 +102,7 @@ public class LoadManagementMessageHandler extends NotifHandler {
 
         for(int i = 0; i < msg.notifGroupIds.length; i++) {
             LiteNotificationGroup notificationGroup = 
-                NotificationGroupFuncs.getLiteNotificationGroup(msg.notifGroupIds[i]);
+                DaoFactory.getNotificationGroupDao().getLiteNotificationGroup(msg.notifGroupIds[i]);
             
             outputNotification(notifFormatter, notificationGroup);
         }

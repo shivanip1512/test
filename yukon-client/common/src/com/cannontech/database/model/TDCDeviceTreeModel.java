@@ -1,11 +1,12 @@
 package com.cannontech.database.model;
 
 import java.util.Vector;
+
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * Insert the type's description here.
@@ -51,7 +52,7 @@ protected synchronized void runUpdate()
 	DBTreeNode rootNode = (DBTreeNode)getRoot();
 	Vector typeList = new Vector(32);
 
-	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 	synchronized (cache)
 	{
 		java.util.List paos = getCacheList(cache);

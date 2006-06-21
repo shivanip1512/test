@@ -1,7 +1,7 @@
 package com.cannontech.dbeditor.wizard.customer;
 
 import com.cannontech.common.gui.dnd.IDroppableTableModel;
-import com.cannontech.database.cache.functions.YukonUserFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteContact;
 
 /**
@@ -204,7 +204,7 @@ public class CustomerContactTableModel extends javax.swing.table.AbstractTableMo
 	
 			//may be a performance hit doing this every time after each refresh!!??
 			case COLUMN_LOGIN:
-				return YukonUserFuncs.getLiteYukonUser(
+				return DaoFactory.getYukonUserDao().getLiteYukonUser(
 								con.getLoginID()).getUsername();
 	
 			case COLUMN_NOTIFICATION:

@@ -3,12 +3,14 @@ package com.cannontech.common.gui.util;
 /**
  * This type was created in VisualAge.
  */
-import javax.swing.JList;
-import com.cannontech.common.util.CtiUtilities;
-import javax.swing.AbstractAction;
-import java.awt.event.KeyEvent;
-import javax.swing.KeyStroke;
 import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
+
+import javax.swing.AbstractAction;
+import javax.swing.JList;
+import javax.swing.KeyStroke;
+
+import com.cannontech.common.util.CtiUtilities;
 
 public class AddRemovePanel extends javax.swing.JPanel implements com.cannontech.common.gui.dnd.DragAndDropListener, java.awt.event.ActionListener, java.awt.event.MouseListener, java.awt.event.MouseMotionListener, javax.swing.event.ListSelectionListener {
 	private javax.swing.JButton ivjAddButton = null;

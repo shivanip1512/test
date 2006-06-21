@@ -1,6 +1,5 @@
 package com.cannontech.common.gui.panel;
 
-import java.awt.Dimension;
 
 /**
  * Insert the type's description here.

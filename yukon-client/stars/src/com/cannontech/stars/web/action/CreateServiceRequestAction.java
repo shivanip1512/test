@@ -12,9 +12,9 @@ import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.common.version.VersionTools;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.StarsDatabaseCache;
-import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
@@ -241,7 +241,7 @@ public class CreateServiceRequestAction implements ActionBase {
 
        	if (VersionTools.crsPtjIntegrationExists())
        	{
-           	YukonListEntry listEntry = YukonListFuncs.getYukonListEntry(workOrder.getWorkOrderBase().getCurrentStateID().intValue());
+           	YukonListEntry listEntry = DaoFactory.getYukonListDao().getYukonListEntry(workOrder.getWorkOrderBase().getCurrentStateID().intValue());
             SAMToCRS_PTJ.handleCRSIntegration(listEntry.getYukonDefID(), workOrder, liteAcctInfo, energyCompany, userID, null);
        	}
        	

@@ -8,8 +8,8 @@ import javax.management.MBeanOperationInfo;
 import javax.management.MBeanParameterInfo;
 
 import com.cannontech.clientutils.commonutils.ModifiedDate;
-import com.cannontech.jmx.CTIBaseDynMBean;
 import com.cannontech.graph.WebGraph;
+import com.cannontech.jmx.CTIBaseDynMBean;
 
 /**
  * @author rneuharth

@@ -5,7 +5,10 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 
-import javax.swing.*;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTree;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.tree.TreeCellRenderer;
 

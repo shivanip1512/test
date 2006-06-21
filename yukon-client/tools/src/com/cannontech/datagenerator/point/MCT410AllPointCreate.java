@@ -11,6 +11,7 @@ import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.db.point.Point;
+import com.cannontech.yukon.IDatabaseCache;
 /**
  * @author snebben
  *
@@ -319,7 +320,7 @@ public class MCT410AllPointCreate extends PointCreate
 	 */
 	protected void getMCT410DeviceVector(java.util.Vector deviceVector)
 	{
-		DefaultDatabaseCache  cache = DefaultDatabaseCache.getInstance();
+		IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 	
 		synchronized (cache)
 		{

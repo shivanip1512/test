@@ -12,7 +12,7 @@ import java.util.Properties;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.cache.functions.GraphFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.graph.GraphDefinition;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteGraphDefinition;
@@ -95,7 +95,7 @@ public class DynamicGraphElement extends LxAbstractRectangle implements DrawingE
 	 * @return LiteGraphDefinition
 	 */
 	public LiteGraphDefinition getGraphDefinition() {
-		return GraphFuncs.getLiteGraphDefinition(getGraphDefinitionID());
+		return DaoFactory.getGraphDao().getLiteGraphDefinition(getGraphDefinitionID());
 	}
 
 	public int getGraphDefinitionID() {
@@ -212,7 +212,7 @@ public class DynamicGraphElement extends LxAbstractRectangle implements DrawingE
 	}
 	
 	public void updateGraph() {
-		LiteGraphDefinition lGDef = GraphFuncs.getLiteGraphDefinition(getGraphDefinitionID());		
+		LiteGraphDefinition lGDef = DaoFactory.getGraphDao().getLiteGraphDefinition(getGraphDefinitionID());		
 		if(lGDef == null) {
 			CTILogger.info(getClass().getName() + "::updateGraph() - Couldn't find a graph in the cache with graphdefinitionid: " + getGraphDefinitionID() + ", perhaps it has been deleted?");
 			return;

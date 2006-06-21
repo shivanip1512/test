@@ -1,9 +1,9 @@
 package com.cannontech.common.gui.util;
 
-import javax.swing.JDialog;
-
 import java.awt.BorderLayout;
 import java.awt.Frame;
+
+import javax.swing.JDialog;
 
 /**
  * A dialog that has a an optional image, a title, a message, and an indeterminate progress bar.

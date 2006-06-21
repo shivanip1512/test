@@ -1,16 +1,10 @@
 package com.cannontech.database.data.device.lm;
 
-import com.cannontech.database.db.device.lm.LMControlAreaProgram;
-import com.cannontech.database.db.device.lm.LMDirectNotificationGroupList;
-/**
- * Insert the type's description here.
- * Creation date: (12/6/00 3:54:11 PM)
- * @author: 
- */
-import com.cannontech.database.db.device.lm.LMProgramDirectGear;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.NestedDBPersistent;
 import com.cannontech.database.db.NestedDBPersistentComparators;
+import com.cannontech.database.db.device.lm.LMControlAreaProgram;
+import com.cannontech.database.db.device.lm.LMDirectNotificationGroupList;
+import com.cannontech.database.db.device.lm.LMProgramDirectGear;
 
 public class LMProgramDirect extends LMProgramBase
 {

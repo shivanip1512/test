@@ -13,7 +13,6 @@
 
 package com.cannontech.cttp.schema;
 
-import com.altova.xml.types.*;
 
 public class cttp_CommandStatusResponseType extends com.altova.xml.Node {
 	public cttp_CommandStatusResponseType() {

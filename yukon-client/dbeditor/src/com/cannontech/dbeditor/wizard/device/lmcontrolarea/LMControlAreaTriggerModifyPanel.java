@@ -8,9 +8,11 @@ import java.awt.Dimension;
 import com.cannontech.common.gui.unchanging.LongRangeDocument;
 import com.cannontech.common.gui.util.OkCancelDialog;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.db.device.lm.IlmDefines;
 import com.cannontech.database.db.device.lm.LMControlAreaTrigger;
+import com.cannontech.yukon.IDatabaseCache;
 
 public class LMControlAreaTriggerModifyPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, java.beans.PropertyChangeListener, javax.swing.event.CaretListener {
 	private javax.swing.JComboBox ivjJComboBoxNormalState = null;
@@ -1195,16 +1197,16 @@ private javax.swing.JTextField getJTextFieldATKU() {
 		com.cannontech.database.data.lite.LiteState liteState = null;
 		
 		// look for the litePoint here 
-		litePoint = com.cannontech.database.cache.functions.PointFuncs.getLitePoint(trigger.getPointID().intValue());
+		litePoint = DaoFactory.getPointDao().getLitePoint(trigger.getPointID().intValue());
 		
 		if( litePoint == null )
 			throw new RuntimeException("Unable to find the point (ID= " + trigger.getPointID() + ") associated with the LMTrigger of type '" + trigger.getTriggerType() + "'" );
 	
 		// look for the litePAO here 
-		litePAO = com.cannontech.database.cache.functions.PAOFuncs.getLiteYukonPAO( litePoint.getPaobjectID() );
+		litePAO = DaoFactory.getPaoDao().getLiteYukonPAO( litePoint.getPaobjectID() );
 	
 		//set the states for the row
-		liteState = com.cannontech.database.cache.functions.StateFuncs.getLiteState( ((com.cannontech.database.data.lite.LitePoint)litePoint).getStateGroupID(), trigger.getNormalState().intValue() );
+		liteState = DaoFactory.getStateDao().getLiteState( ((com.cannontech.database.data.lite.LitePoint)litePoint).getStateGroupID(), trigger.getNormalState().intValue() );
 	
 		if( trigger.getTriggerType().equalsIgnoreCase(IlmDefines.TYPE_STATUS) )
 		{
@@ -1238,7 +1240,7 @@ private javax.swing.JTextField getJTextFieldATKU() {
 		if( trigger.getPeakPointID().intValue() > 0 )
 		{
 			com.cannontech.database.data.lite.LitePoint lp =
-					com.cannontech.database.cache.functions.PointFuncs.getLitePoint( trigger.getPeakPointID().intValue() );
+					DaoFactory.getPointDao().getLitePoint( trigger.getPeakPointID().intValue() );
 					
 			getJPanelDevicePointPeak().setSelectedLitePAO( lp.getPaobjectID() );
 			getJPanelDevicePointPeak().setSelectedLitePoint( lp.getPointID() );
@@ -1273,7 +1275,7 @@ private javax.swing.JTextField getJTextFieldATKU() {
 		if( getJComboBoxNormalState().isVisible() && getJPanelTriggerID().getSelectedPoint() != null )
 		{
 			//set the states for the JCombobox
-			com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+			IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 			synchronized( cache )
 			{
 				int stateGroupID = ((com.cannontech.database.data.lite.LitePoint)getJPanelTriggerID().getSelectedPoint()).getStateGroupID();

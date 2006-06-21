@@ -29,7 +29,7 @@ import com.cannontech.database.db.user.YukonUserRole;
 public class YukonUserRolePropertyLookup 
 {
 	/**
-	 * Constructor for YukonUserFuncs.
+	 * Constructor for DaoFactory.getYukonUserDao().
 	 */
 	public YukonUserRolePropertyLookup()
 	{

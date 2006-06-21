@@ -1,5 +1,5 @@
 <%@ include file="include/StarsHeader.jsp" %>
-<%@ page import="com.cannontech.database.cache.functions.ContactFuncs" %>
+<%@ page import="com.cannontech.core.dao.DaoFactory" %>
 <%@ page import="com.cannontech.database.data.lite.LiteContact" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteAddress" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteInventoryBase" %>
@@ -8,7 +8,6 @@
 <%@ page import="com.cannontech.database.data.lite.stars.StarsLiteFactory" %>
 <%@ page import="com.cannontech.stars.util.ObjectInOtherEnergyCompanyException" %>
 <%@ page import="com.cannontech.web.navigation.CtiNavObject" %>
-<%@ page import="com.cannontech.database.cache.functions.AuthFuncs" %>
 <%@ page import="com.cannontech.roles.operator.ConsumerInfoRole" %>
 <%
 	Object obj = session.getAttribute(InventoryManagerUtil.INVENTORY_TO_CHECK);
@@ -22,7 +21,7 @@
 		response.sendRedirect("../Operations.jsp");
 		return;
 	}
-	boolean createNew = AuthFuncs.checkRoleProperty(user.getUserID(), ConsumerInfoRole.INVENTORY_CHECKING_CREATE);
+	boolean createNew = DaoFactory.getAuthDao().checkRoleProperty(user.getUserID(), ConsumerInfoRole.INVENTORY_CHECKING_CREATE);
 	String referer = ((CtiNavObject)session.getAttribute(ServletUtils.NAVIGATE)).getPreviousPage();
     
     String buttonHTML = "";
@@ -166,7 +165,7 @@
 	}
 	else {
 		LiteStarsCustAccountInformation liteAcctInfo = liteEC.getBriefCustAccountInfo(liteInv.getAccountID(), true);
-		LiteContact liteContact = com.cannontech.database.cache.functions.ContactFuncs.getContact(liteAcctInfo.getCustomer().getPrimaryContactID());
+		LiteContact liteContact = DaoFactory.getContactDao().getContact(liteAcctInfo.getCustomer().getPrimaryContactID());
 		LiteAddress liteAddr = liteEC.getAddress(liteAcctInfo.getAccountSite().getStreetAddressID());
 		
 		String name = StarsUtils.formatName(liteContact);

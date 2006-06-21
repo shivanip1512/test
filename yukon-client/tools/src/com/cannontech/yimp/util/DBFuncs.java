@@ -6,30 +6,23 @@
  */
 package com.cannontech.yimp.util;
 
-import java.util.Vector;
-import java.sql.Connection; 
-import com.cannontech.database.data.route.RouteBase;
-import com.cannontech.database.data.device.MCT400SeriesBase;
-import com.cannontech.database.data.device.MCT410CL;
-import com.cannontech.database.data.device.MCT410IL;
-import com.cannontech.database.db.device.DeviceCarrierSettings;
-import com.cannontech.database.db.pao.YukonPAObject;
-import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.cache.functions.PAOFuncs;
-import com.cannontech.database.db.point.Point;
-import com.cannontech.database.data.pao.DeviceTypes;
-import com.cannontech.database.data.point.PointBase;
-import com.cannontech.database.data.lite.LiteFactory;
-import com.cannontech.database.PoolManager;
+import java.sql.Connection;
 import java.util.Date;
+import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.dispatch.ClientConnection;
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.Transaction;
-import com.cannontech.database.TransactionException;
+import com.cannontech.database.data.device.MCT400SeriesBase;
+import com.cannontech.database.data.lite.LiteFactory;
+import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.point.PointBase;
+import com.cannontech.database.db.device.DeviceCarrierSettings;
+import com.cannontech.database.db.point.Point;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.yukon.IServerConnection;
 
 /**
@@ -219,7 +212,7 @@ public class DBFuncs
 	
 	public static Vector getPointsForPAO( Integer paoID )
 	{
-		LitePoint[] points = PAOFuncs.getLitePointsForPAObject( paoID.intValue() );
+		LitePoint[] points = DaoFactory.getPaoDao().getLitePointsForPAObject( paoID.intValue() );
 		
 		Vector daPoints = new Vector(points.length);
 		

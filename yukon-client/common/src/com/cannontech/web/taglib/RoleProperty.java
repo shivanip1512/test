@@ -3,7 +3,7 @@ package com.cannontech.web.taglib;
 
 import javax.servlet.jsp.JspException;
 
-import com.cannontech.database.cache.functions.AuthFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.util.ReflectivePropertySearcher;
 import com.cannontech.util.ServletUtil;
@@ -55,7 +55,7 @@ public int doStartTag() throws JspException {
                 propId = ReflectivePropertySearcher.getRoleProperty().getIntForName(property);
             }
 			String missingValue = "Missing rolePropertyID:  " + Integer.toString(propId);
-			String text = AuthFuncs.getRolePropertyValue(user, propId);
+			String text = DaoFactory.getAuthDao().getRolePropertyValue(user, propId);
             if (text == null) {
                 text = missingValue;
             }

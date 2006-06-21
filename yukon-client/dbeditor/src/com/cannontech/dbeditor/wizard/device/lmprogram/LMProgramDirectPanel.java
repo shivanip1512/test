@@ -6,8 +6,8 @@ package com.cannontech.dbeditor.wizard.device.lmprogram;
 
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.database.data.device.lm.LMProgramDirect;
-import com.cannontech.database.db.device.lm.LMProgramDirectGear;
 import com.cannontech.database.db.device.lm.IlmDefines;
+import com.cannontech.database.db.device.lm.LMProgramDirectGear;
 
 public class LMProgramDirectPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.cannontech.common.gui.util.DataInputPanelListener, java.awt.event.ActionListener, java.awt.event.ItemListener {
 	private javax.swing.JButton ivjJButtonCreate = null;

@@ -17,8 +17,8 @@ import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.cache.StarsDatabaseCache;
-import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.stars.LiteAddress;
@@ -129,8 +129,8 @@ public class WorkOrderBean {
 				System.out.println("HERE");			
 			int servStat1 = so1.getCurrentStateID();
 		    int servStat2 = so2.getCurrentStateID();
-		    YukonListEntry yle1 = YukonListFuncs.getYukonListEntry(servStat1);
-		    YukonListEntry yle2 = YukonListFuncs.getYukonListEntry(servStat2);
+		    YukonListEntry yle1 = DaoFactory.getYukonListDao().getYukonListEntry(servStat1);
+		    YukonListEntry yle2 = DaoFactory.getYukonListDao().getYukonListEntry(servStat2);
 		    
 		    String thisVal = (yle1 == null ? CtiUtilities.STRING_DASH_LINE : yle1.getEntryText());
 		    String anotherVal = (yle2 == null ? CtiUtilities.STRING_DASH_LINE : yle2.getEntryText());
@@ -148,8 +148,8 @@ public class WorkOrderBean {
 				System.out.println("HERE");
 			int servType1 = so1.getWorkTypeID();
 		    int servType2 = so2.getWorkTypeID();
-		    YukonListEntry yle1 = YukonListFuncs.getYukonListEntry(servType1);
-		    YukonListEntry yle2 = YukonListFuncs.getYukonListEntry(servType2);
+		    YukonListEntry yle1 = DaoFactory.getYukonListDao().getYukonListEntry(servType1);
+		    YukonListEntry yle2 = DaoFactory.getYukonListDao().getYukonListEntry(servType2);
 		    
 		    String thisVal = (yle1 == null ? CtiUtilities.STRING_DASH_LINE : yle1.getEntryText());
 		    String anotherVal = (yle2 == null ? CtiUtilities.STRING_DASH_LINE : yle2.getEntryText());
@@ -451,7 +451,7 @@ public class WorkOrderBean {
 		StarsYukonUser user = (StarsYukonUser) req.getSession().getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 		
 		/*setManageMembers(false);
-        if(AuthFuncs.checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS ) && 
+        if(DaoFactory.getAuthDao().checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS ) && 
         		(getEnergyCompany().getChildren().size() > 0)){
                 setManageMembers(true);
 		}*/		

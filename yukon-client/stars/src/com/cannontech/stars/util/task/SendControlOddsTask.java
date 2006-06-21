@@ -5,9 +5,8 @@ import java.util.StringTokenizer;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.cache.StarsDatabaseCache;
-import com.cannontech.database.cache.functions.ContactFuncs;
-import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.stars.LiteLMProgramWebPublishing;
@@ -86,8 +85,8 @@ public class SendControlOddsTask implements Runnable {
 					int accountID = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
 					LiteStarsCustAccountInformation accountInfo = energyCompany.getCustAccountInformation( accountID, true );
 					
-					LiteContact primContact = ContactFuncs.getContact( accountInfo.getCustomer().getPrimaryContactID() );
-					LiteContactNotification email = com.cannontech.database.cache.functions.ContactFuncs.getContactNotification(
+					LiteContact primContact = DaoFactory.getContactDao().getContact( accountInfo.getCustomer().getPrimaryContactID() );
+					LiteContactNotification email = DaoFactory.getContactDao().getContactNotification(
 							primContact, com.cannontech.common.constants.YukonListEntryTypes.YUK_ENTRY_ID_EMAIL );
 					if (email == null || email.getDisableFlag().equalsIgnoreCase("Y"))
 						continue;
@@ -111,7 +110,7 @@ public class SendControlOddsTask implements Runnable {
 					for (int j = 0; j < activeProgs.size(); j++) {
 						LiteStarsLMProgram program = (LiteStarsLMProgram) activeProgs.get(j);
 						String progName = StarsUtils.getPublishedProgramName( program.getPublishedProgram() );
-						String ctrlOdds = YukonListFuncs.getYukonListEntry( program.getPublishedProgram().getChanceOfControlID() ).getEntryText();
+						String ctrlOdds = DaoFactory.getYukonListDao().getYukonListEntry( program.getPublishedProgram().getChanceOfControlID() ).getEntryText();
 						
 						text.append( progName );
 						text.append( blanks.substring(progName.length()) );

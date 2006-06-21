@@ -1,12 +1,12 @@
 package com.cannontech.common.gui.table;
 
 import java.awt.Component;
+import java.util.Vector;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JTable;
-import java.util.Vector;
 
 /**
  * @author rneuharth

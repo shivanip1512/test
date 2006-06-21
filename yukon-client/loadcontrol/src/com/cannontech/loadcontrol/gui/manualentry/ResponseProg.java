@@ -3,7 +3,6 @@ package com.cannontech.loadcontrol.gui.manualentry;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 import com.cannontech.message.server.ServerResponseMsg;

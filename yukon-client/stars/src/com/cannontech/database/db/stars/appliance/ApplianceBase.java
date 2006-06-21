@@ -1,14 +1,12 @@
 package com.cannontech.database.db.stars.appliance;
 
-import java.util.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Date;
+import java.util.HashMap;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.db.DBPersistent;
-import com.cannontech.database.db.stars.hardware.Warehouse;
 
 
 /**

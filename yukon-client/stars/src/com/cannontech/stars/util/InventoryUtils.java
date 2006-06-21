@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.cache.functions.YukonListFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.stars.LiteLMThermostatSchedule;
 import com.cannontech.database.data.lite.stars.LiteLMThermostatSeason;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -34,7 +34,7 @@ public class InventoryUtils {
 	public static final int HW_CONFIG_TYPE_SA_SIMPLE = 5;
 	
 	public static int getInventoryCategoryID(int deviceTypeID, LiteStarsEnergyCompany energyCompany) {
-		YukonListEntry entry = YukonListFuncs.getYukonListEntry( deviceTypeID );
+		YukonListEntry entry = DaoFactory.getYukonListDao().getYukonListEntry( deviceTypeID );
 		
 		if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_5000_XCOM ||
 			entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_5000_VCOM ||
@@ -62,23 +62,23 @@ public class InventoryUtils {
 	}
 	
 	public static boolean isLMHardware(int categoryID) {
-		YukonListEntry entry = YukonListFuncs.getYukonListEntry( categoryID );
+		YukonListEntry entry = DaoFactory.getYukonListDao().getYukonListEntry( categoryID );
 		return (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_INV_CAT_ONEWAYREC ||
 				entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_INV_CAT_TWOWAYREC);
 	}
 
 	public static boolean isNonYukonMeter(int categoryID) {
-		YukonListEntry entry = YukonListFuncs.getYukonListEntry( categoryID );
+		YukonListEntry entry = DaoFactory.getYukonListDao().getYukonListEntry( categoryID );
 		return (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_INV_CAT_NON_YUKON_METER);
 	}
 	
 	public static boolean isMCT(int categoryID) {
-		YukonListEntry entry = YukonListFuncs.getYukonListEntry( categoryID );
+		YukonListEntry entry = DaoFactory.getYukonListDao().getYukonListEntry( categoryID );
 		return (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_INV_CAT_MCT);
 	}
 	
 	public static int getHardwareConfigType(int devTypeID) {
-		int devTypeDefID = YukonListFuncs.getYukonListEntry( devTypeID ).getYukonDefID();
+		int devTypeDefID = DaoFactory.getYukonListDao().getYukonListEntry( devTypeID ).getYukonDefID();
 		if (devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_5000_XCOM
 			|| devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT
 			|| devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_COMM_EXPRESSSTAT
@@ -106,7 +106,7 @@ public class InventoryUtils {
 	}
 	
 	public static boolean supportConfiguration(int devTypeID) {
-		int devTypeDefID = YukonListFuncs.getYukonListEntry( devTypeID ).getYukonDefID();
+		int devTypeDefID = DaoFactory.getYukonListDao().getYukonListEntry( devTypeID ).getYukonDefID();
 		return (devTypeDefID != YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_SA_SIMPLE);
 	}
 	
@@ -123,7 +123,7 @@ public class InventoryUtils {
 		if (liteSched == null || liteSched.getThermostatSeasons().size() != 2)
 			return false;
 		
-		int thermTypeDefID = YukonListFuncs.getYukonListEntry( liteSched.getThermostatTypeID() ).getYukonDefID();
+		int thermTypeDefID = DaoFactory.getYukonListDao().getYukonListEntry( liteSched.getThermostatTypeID() ).getYukonDefID();
 		for (int i = 0; i < liteSched.getThermostatSeasons().size(); i++) {
 			int numSeasonEntries = ((LiteLMThermostatSeason) liteSched.getThermostatSeasons().get(i)).getSeasonEntries().size();
 			if ((thermTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT
@@ -148,7 +148,7 @@ public class InventoryUtils {
 				if (!(inventory.get(i) instanceof LiteStarsLMHardware)) continue;
 				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) inventory.get(i);
 				
-				if (YukonListFuncs.getYukonListEntry(liteHw.getLmHardwareTypeID()).getYukonDefID() != devTypeDefID)
+				if (DaoFactory.getYukonListDao().getYukonListEntry(liteHw.getLmHardwareTypeID()).getYukonDefID() != devTypeDefID)
 					continue;
 				
 				try {

@@ -86,7 +86,7 @@ function removeRoutes(form) {
 		insertIdx = 1;
 	
 	if (defaultRouteSelected && !removeWarned) {
-		if (confirm('You are going to remove the default route "<%= PAOFuncs.getYukonPAOName(liteEC.getDefaultRouteID()) %>" from the energy company. ' +
+		if (confirm('You are going to remove the default route "<%= DaoFactory.getPaoDao().getYukonPAOName(liteEC.getDefaultRouteID()) %>" from the energy company. ' +
 			'Doing so could cause severe problem to your system. Are you sure you want to continue?'))
 			removeWarned = true;
 		else
@@ -174,7 +174,7 @@ function prepareSubmit(form) {
                                     <td width="45%" valign="top"> Available Routes<br>
                                       <select id="RoutesAvailable" name="RoutesAvailable" size="20" style="width:235" multiple>
 <%
-	LiteYukonPAObject[] allRoutes = PAOFuncs.getAllLiteRoutes();
+	LiteYukonPAObject[] allRoutes = DaoFactory.getPaoDao().getAllLiteRoutes();
 	for (int i = 0; i < allRoutes.length; i++) {
 		if (assignedRoutes.contains(allRoutes[i])) continue;
 %>

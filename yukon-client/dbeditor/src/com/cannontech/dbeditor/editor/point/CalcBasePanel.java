@@ -6,6 +6,7 @@ package com.cannontech.dbeditor.editor.point;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.yukon.IDatabaseCache;
 
 public class CalcBasePanel extends com.cannontech.common.gui.util.DataInputPanel implements com.klg.jclass.util.value.JCValueListener, java.awt.event.ActionListener {
 	private javax.swing.JComboBox ivjArchiveIntervalComboBox = null;
@@ -744,7 +745,7 @@ private void initialize() {
 
 	//load unit of measure combo box with all possible values
 	
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized(cache)
 	{
 		java.util.List allUnitMeasures = cache.getAllUnitMeasures();

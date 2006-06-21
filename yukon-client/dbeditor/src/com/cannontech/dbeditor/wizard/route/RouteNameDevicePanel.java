@@ -4,6 +4,7 @@ import java.awt.Dimension;
 
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * This type was created in VisualAge.
@@ -153,7 +154,7 @@ private javax.swing.JComboBox getSignalTransmitterComboBox() {
 			ivjSignalTransmitterComboBox.setName("SignalTransmitterComboBox");
 			// user code begin {1}
          
-         com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+         IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
          synchronized(cache)
          {
             java.util.List allDevices = cache.getAllDevices();
@@ -383,7 +384,7 @@ public static void main(java.lang.String[] args) {
 public boolean noRepeaters() {
 	boolean noRepeaters = true;
 
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized(cache)
 	{
 		java.util.List devices = cache.getAllDevices();

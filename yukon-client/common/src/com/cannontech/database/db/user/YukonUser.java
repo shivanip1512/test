@@ -2,9 +2,7 @@ package com.cannontech.database.db.user;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Date;
 
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.user.UserUtils;
 

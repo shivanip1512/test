@@ -1,6 +1,11 @@
 package com.cannontech.stars.web.bean;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -8,19 +13,23 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.cache.StarsDatabaseCache;
-import com.cannontech.database.cache.functions.AuthFuncs;
-import com.cannontech.database.cache.functions.ContactFuncs;
-import com.cannontech.database.cache.functions.YukonListFuncs;
-import com.cannontech.database.cache.functions.PAOFuncs;
-import com.cannontech.database.data.lite.*;
-import com.cannontech.database.data.lite.stars.*;
+import com.cannontech.database.data.lite.LiteContact;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.lite.stars.LiteAddress;
+import com.cannontech.database.data.lite.stars.LiteInventoryBase;
+import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
+import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.stars.appliance.ApplianceBase;
 import com.cannontech.database.db.stars.customer.CustomerAccount;
 import com.cannontech.database.db.stars.hardware.Warehouse;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.stars.util.ECUtils;
+import com.cannontech.stars.util.FilterWrapper;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
@@ -28,7 +37,6 @@ import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.util.InventoryManagerUtil;
 import com.cannontech.stars.xml.serialize.StreetAddress;
-import com.cannontech.stars.util.FilterWrapper;
 import com.cannontech.web.navigation.CtiNavObject;
 
 /**
@@ -127,13 +135,13 @@ public class InventoryBean {
 			else {
 				String devName1 = null;
 				if (inv1.getDeviceID() > 0)
-					devName1 = PAOFuncs.getYukonPAOName( inv1.getDeviceID() );
+					devName1 = DaoFactory.getPaoDao().getYukonPAOName( inv1.getDeviceID() );
 				else if (inv1.getDeviceLabel() != null && inv1.getDeviceLabel().length() > 0)
 					devName1 = inv1.getDeviceLabel();
 				
 				String devName2 = null;
 				if (inv2.getDeviceID() > 0)
-					devName2 = PAOFuncs.getYukonPAOName( inv2.getDeviceID() );
+					devName2 = DaoFactory.getPaoDao().getYukonPAOName( inv2.getDeviceID() );
 				else if (inv2.getDeviceLabel() != null && inv2.getDeviceLabel().length() > 0)
 					devName2 = inv2.getDeviceLabel();
 				
@@ -277,7 +285,7 @@ public class InventoryBean {
                          * Was comparing the yukon def ids.  we don't want that.  we want it to instead compare entry IDs 
                          * (ie. the customized type that the customer has given)
                          *
-                           YukonListFuncs.areSameInYukon( ((LiteStarsLMHardware)liteInv).getLmHardwareTypeID(), specificFilterID.intValue() )
+                           DaoFactory.getYukonListDao().areSameInYukon( ((LiteStarsLMHardware)liteInv).getLmHardwareTypeID(), specificFilterID.intValue() )
                          */
                         if (liteInv instanceof LiteStarsLMHardware && ((LiteStarsLMHardware)liteInv).getLmHardwareTypeID() == specificFilterID.intValue() 
                                 || specificFilterID.intValue() == devTypeMCT && InventoryUtils.isMCT(liteInv.getCategoryID()))
@@ -575,7 +583,7 @@ public class InventoryBean {
         setDifferentOrigin(previousPage.lastIndexOf("Inventory.jsp") < 0);
         
 		boolean showEnergyCompany = false;
-        if((getHtmlStyle() == HTML_STYLE_FILTERED_INVENTORY_SUMMARY) && AuthFuncs.checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS )
+        if((getHtmlStyle() == HTML_STYLE_FILTERED_INVENTORY_SUMMARY) && DaoFactory.getAuthDao().checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS )
                 && (getEnergyCompany().getChildren().size() > 0))
                 showEnergyCompany = true;
         else if ((getHtmlStyle() & HTML_STYLE_INVENTORY_SET) != 0) 
@@ -587,7 +595,7 @@ public class InventoryBean {
                 (getHtmlStyle() & HTML_STYLE_SELECT_LM_HARDWARE) != 0 ||
                 (getHtmlStyle() & HTML_STYLE_FILTERED_INVENTORY_SUMMARY) != 0 ) 
         {
-			if (AuthFuncs.checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS )
+			if (DaoFactory.getAuthDao().checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS )
 				&& (getEnergyCompany().getChildren().size() > 0))
 				showEnergyCompany = true;
 		}
@@ -725,7 +733,7 @@ public class InventoryBean {
 			if (showEnergyCompany) {
 				liteInv = (LiteInventoryBase) ((Pair)hwList.get(i-1)).getFirst();
 				member = (LiteStarsEnergyCompany) ((Pair)hwList.get(i-1)).getSecond();
-				isManagable = AuthFuncs.checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS )
+				isManagable = DaoFactory.getAuthDao().checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS )
 						&& ECUtils.isDescendantOf( member, getEnergyCompany() );
 			}
 			else {
@@ -736,11 +744,11 @@ public class InventoryBean {
 			String deviceType = "(none)";
 			String deviceName = "(none)";
 			if (liteInv instanceof LiteStarsLMHardware) {
-				deviceType = YukonListFuncs.getYukonListEntry( ((LiteStarsLMHardware)liteInv).getLmHardwareTypeID() ).getEntryText();
+				deviceType = DaoFactory.getYukonListDao().getYukonListEntry( ((LiteStarsLMHardware)liteInv).getLmHardwareTypeID() ).getEntryText();
 				deviceName = ((LiteStarsLMHardware)liteInv).getManufacturerSerialNumber();
 			}
 			else if (liteInv.getDeviceID() > 0) {
-				LiteYukonPAObject litePao = PAOFuncs.getLiteYukonPAO( liteInv.getDeviceID() );
+				LiteYukonPAObject litePao = DaoFactory.getPaoDao().getLiteYukonPAO( liteInv.getDeviceID() );
 				deviceType = PAOGroups.getPAOTypeString( litePao.getType() );
 				deviceName = litePao.getPaoName();
 			}
@@ -750,7 +758,7 @@ public class InventoryBean {
 					deviceName = liteInv.getDeviceLabel();
 			}
         	
-			String currentDeviceState = YukonListFuncs.getYukonListEntry(liteInv.getCurrentStateID()).getEntryText();
+			String currentDeviceState = DaoFactory.getYukonListDao().getYukonListEntry(liteInv.getCurrentStateID()).getEntryText();
             
             /*Date installDate = StarsUtils.translateDate( liteInv.getInstallDate() );
 			dateFormat.setTimeZone( getEnergyCompany().getDefaultTimeZone() );
@@ -795,7 +803,7 @@ public class InventoryBean {
 			}
 			else {
 				LiteStarsCustAccountInformation liteAcctInfo = member.getBriefCustAccountInfo( liteInv.getAccountID(), true );
-				LiteContact liteCont = ContactFuncs.getContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
+				LiteContact liteCont = DaoFactory.getContactDao().getContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
 				LiteAddress liteAddr = member.getAddress( liteAcctInfo.getAccountSite().getStreetAddressID() );
             	
 				String name = StarsUtils.formatName( liteCont );

@@ -1,13 +1,12 @@
 package com.cannontech.database.data.device;
 
-import java.sql.SQLException;
 import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
-import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.capcontrol.CapBankController;
 import com.cannontech.database.data.capcontrol.CapBankController702x;
 import com.cannontech.database.data.capcontrol.ICapBankController;
@@ -1204,7 +1203,7 @@ public static Object changeType (String newType,
 		}else if( val instanceof MCT310 && oldDevice instanceof MCT410IL) 
         {
             //TODO delete old 410 points
-            LitePoint[] ltPoints = PAOFuncs.getLitePointsForPAObject( 
+            LitePoint[] ltPoints = DaoFactory.getPaoDao().getLitePointsForPAObject( 
                     currentDevice.getPAObjectID().intValue() );
     
             for( int i = 0; i < ltPoints.length; i++ ) {

@@ -1,7 +1,6 @@
 package com.cannontech.database.db.company;
 
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.data.company.EnergyCompanyBase;
 
 /**
  * Creation date: (10/18/2001 1:20:37 PM)

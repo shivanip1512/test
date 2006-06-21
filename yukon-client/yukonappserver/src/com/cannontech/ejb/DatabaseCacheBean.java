@@ -4,11 +4,15 @@ import java.util.List;
 import java.util.Map;
 
 import com.cannontech.database.cache.DBChangeListener;
-import com.cannontech.database.data.lite.*;
+import com.cannontech.database.data.lite.LiteBase;
+import com.cannontech.database.data.lite.LiteContact;
+import com.cannontech.database.data.lite.LiteContactNotification;
+import com.cannontech.database.data.lite.LiteCustomer;
+import com.cannontech.database.data.lite.LiteYukonRole;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.yukon.IDatabaseCache;
-import com.cannontech.yukon.server.cache.bypass.YukonUserContactLookup;
 
 /**
  * @ejb:bean name="DatabaseCache"

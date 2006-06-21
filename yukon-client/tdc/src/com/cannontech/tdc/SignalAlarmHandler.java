@@ -1,17 +1,15 @@
 package com.cannontech.tdc;
 
-import com.cannontech.message.dispatch.message.Signal;
-import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.clientutils.commonutils.ModifiedDate;
+import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.common.login.ClientSession;
-import com.cannontech.database.cache.functions.AlarmCatFuncs;
-import com.cannontech.database.cache.functions.PAOFuncs;
-import com.cannontech.database.cache.functions.PointFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.message.dispatch.message.Signal;
 import com.cannontech.roles.application.TDCRole;
-import com.cannontech.tdc.data.Display;
 import com.cannontech.tdc.bookmark.BookMarkBase;
 import com.cannontech.tdc.bookmark.BookMarkSelectionListener;
+import com.cannontech.tdc.data.Display;
 import com.cannontech.tdc.utils.TDCDefines;
 /**
  * @author rneuharth
@@ -108,10 +106,10 @@ class SignalAlarmHandler
                         SignalAlarmHandler.class.getName(), sig );
                   
                   LitePoint lp =      
-                     PointFuncs.getLitePoint( (int)sig.getPointID() );
+                     DaoFactory.getPointDao().getLitePoint( (int)sig.getPointID() );
                   
                   menuItem.setText(
-								"(" + PAOFuncs.getYukonPAOName(lp.getPaobjectID()) +
+								"(" + DaoFactory.getPaoDao().getYukonPAOName(lp.getPaobjectID()) +
                         " / " + lp.getPointName() + ") " + 
 								sig.getDescription() +
 								(TagUtils.isAlarmUnacked(sig.getTags())
@@ -216,10 +214,10 @@ class SignalAlarmHandler
    		return;
 
 		LitePoint lp =      
-			PointFuncs.getLitePoint( (int)sig.getPointID() );
+			DaoFactory.getPointDao().getLitePoint( (int)sig.getPointID() );
 
 		javax.swing.JMenuItem newItem = new javax.swing.JMenuItem(
-			"(" + PAOFuncs.getYukonPAOName(lp.getPaobjectID()) +
+			"(" + DaoFactory.getPaoDao().getYukonPAOName(lp.getPaobjectID()) +
 			" / " + lp.getPointName() + ") " + 
 			sig.getDescription() +
 			(TagUtils.isAlarmUnacked(sig.getTags())
@@ -236,7 +234,7 @@ class SignalAlarmHandler
       newItem.putClientProperty( TDCMainPanel.PROP_BOOKMARK, 
             Display.DISPLAY_TYPES[Display.ALARMS_AND_EVENTS_TYPE_INDEX] +
             BookMarkBase.BOOKMARK_TOKEN +
-            AlarmCatFuncs.getAlarmCategoryName(
+            DaoFactory.getAlarmCatDao().getAlarmCategoryName(
                   (int)sig.getCategoryID()) );
 
 

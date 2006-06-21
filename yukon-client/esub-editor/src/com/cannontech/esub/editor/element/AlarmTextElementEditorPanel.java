@@ -1,7 +1,7 @@
 package com.cannontech.esub.editor.element;
 
-import java.awt.*;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
 import java.awt.event.MouseAdapter;
@@ -9,19 +9,21 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Enumeration;
 
-import javax.swing.*;
 import javax.swing.JColorChooser;
 import javax.swing.JScrollPane;
+import javax.swing.JTree;
 import javax.swing.event.TreeSelectionEvent;
-import javax.swing.tree.*;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
-import com.cannontech.common.gui.tree.*;
+import com.cannontech.common.gui.tree.CheckNode;
 import com.cannontech.common.gui.tree.CheckNodeSelectionListener;
 import com.cannontech.common.gui.tree.CheckRenderer;
-import com.cannontech.database.data.lite.*;
+import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.model.AlarmCategoryCheckBoxTreeModel;
 import com.cannontech.database.model.DeviceCheckBoxTreeModel;
 import com.cannontech.esub.editor.Util;

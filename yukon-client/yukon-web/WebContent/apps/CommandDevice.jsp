@@ -1,10 +1,10 @@
 <%-- A wrapper file for access to commander with a deviceID.
 --%>
 <%@ include file="../operator/Consumer/include/StarsHeader.jsp" %>
+<%@ page import="com.cannontech.core.dao.DaoFactory"%> 
 <%@ page import="com.cannontech.database.data.pao.YukonPAObject"%>
 <%@ page import="com.cannontech.message.dispatch.message.PointData"%> 
 <%@ page import="com.cannontech.database.data.lite.LiteRawPointHistory"%>
-<%@ page import="com.cannontech.database.cache.functions.*"%>
 <%@ page import="com.cannontech.database.data.pao.PAOGroups"%>
 <%@ page import="com.cannontech.database.data.point.PointTypes"%>
 <%@ page import="com.cannontech.database.db.point.RawPointHistory"%>
@@ -32,7 +32,7 @@
 	}
 
 	//get the liteYukonPao using the deviceID
-	LiteYukonPAObject liteYukonPao = PAOFuncs.getLiteYukonPAO(deviceID);
+	LiteYukonPAObject liteYukonPao = DaoFactory.getPaoDao().getLiteYukonPAO(deviceID);
 	
 	boolean manual = false;
 	if( request.getParameter("manual") != null)
@@ -146,7 +146,7 @@
 		              	  link = request.getContextPath()+"/apps/CommandDevice.jsp?deviceID="+deviceID+"&manual&command=null";
 		                }
    					  	if (manual ){%>
-			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
+			            <td width="10"><img src='../WebConfig/<%=DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
 			            <td style="padding:1"><span class='Nav'>Manual</span></td>
 						<%} else {%>
 			            <td width="10"></td>
@@ -161,7 +161,7 @@
 		              	    link = request.getContextPath()+"/apps/CommandDevice.jsp?deviceID="+deviceID+"&command=null";
 		                  }
    					  	  if (! (lp || manual) ){%>
-			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
+			            <td width="10"><img src='../WebConfig/<%=DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
 			            <td style="padding:1"><span class='Nav'>MCT410 Custom</span></td>
 						  <%} else if (isMCT410){%>
 			            <td width="10"></td>
@@ -179,7 +179,7 @@
 						    link = request.getContextPath()+"/apps/CommandDevice.jsp?deviceID="+deviceID+"&lp";
                           }
 					  	  if (lp) {%>
-			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
+			            <td width="10"><img src='../WebConfig/<%=DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
 			            <td style="padding:1"><span class='Nav'>MCT410 Profile</span></td>
 						  <%} else if (isMCT410){%>
 			            <td width="10"></td>
@@ -207,16 +207,16 @@
 			          <% for (int i = 0; i < YC_BEAN.getDeviceIDs().size(); i++)
 			          {
 			          	int id = ((Integer)YC_BEAN.getDeviceIDs().get(i)).intValue();
-			          	LiteYukonPAObject lPao = PAOFuncs.getLiteYukonPAO(id);
+			          	LiteYukonPAObject lPao = DaoFactory.getPaoDao().getLiteYukonPAO(id);
 			          	if( CommandDeviceBean.isDeviceSortByGroup(lPao) )
 			          	{%>
 			          <tr>
 					  	<% if (id == deviceID) {%>
-			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
-			            <td style="padding:1"><span class='Nav'><%=com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName(id)%></span></td>
+			            <td width="10"><img src='../WebConfig/<%=DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
+			            <td style="padding:1"><span class='Nav'><%=DaoFactory.getPaoDao().getYukonPAOName(id)%></span></td>
 						<%} else {%>
 			            <td width="10"></td>
-			            <td style="padding:1"><a href='CommandDevice.jsp?deviceID=<%=id%><%=(manual?"&manual":"")%>' class='Link2'><span class='NavText'><%=com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName(id)%></span></a></td>
+			            <td style="padding:1"><a href='CommandDevice.jsp?deviceID=<%=id%><%=(manual?"&manual":"")%>' class='Link2'><span class='NavText'><%=DaoFactory.getPaoDao().getYukonPAOName(id)%></span></a></td>
 						<%}%>						
 			          </tr>
 					  <tr><td height="3"></td></tr>
@@ -228,16 +228,16 @@
 			          <% for (int i = 0; i < YC_BEAN.getDeviceIDs().size(); i++)
 			          {
 			          	int id = ((Integer)YC_BEAN.getDeviceIDs().get(i)).intValue();
-			          	LiteYukonPAObject lPao = PAOFuncs.getLiteYukonPAO(id);
+			          	LiteYukonPAObject lPao = DaoFactory.getPaoDao().getLiteYukonPAO(id);
 			          	if( CommandDeviceBean.isLoadManagementSortByGroup(lPao) )
 			          	{%>
 			          <tr>
 					  	<% if (id == deviceID) {%>
-			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
-			            <td style="padding:1"><span class='Nav'><%=com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName(id)%></span></td>
+			            <td width="10"><img src='../WebConfig/<%=DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
+			            <td style="padding:1"><span class='Nav'><%=DaoFactory.getPaoDao().getYukonPAOName(id)%></span></td>
 						<%} else {%>
 			            <td width="10"></td>
-			            <td style="padding:1"><a href='CommandDevice.jsp?deviceID=<%=id%><%=(manual?"&manual":"")%>' class='Link2'><span class='NavText'><%=com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName(id)%></span></a></td>
+			            <td style="padding:1"><a href='CommandDevice.jsp?deviceID=<%=id%><%=(manual?"&manual":"")%>' class='Link2'><span class='NavText'><%=DaoFactory.getPaoDao().getYukonPAOName(id)%></span></a></td>
 						<%}%>						
 			          </tr>
 					  <tr><td height="3"></td></tr>
@@ -245,7 +245,7 @@
 					  <cti:checkProperty propertyid="<%= CommanderRole.DCU_SA205_SERIAL_MODEL %>">
  					  <tr>
 					  	<% if (serialType.equals("sa205") ) {%>
-			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
+			            <td width="10"><img src='../WebConfig/<%=DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
 			            <td style="padding:1"><span class='Nav'>DCU-205 Serial</span></td>
 						<%} else {%>
 			            <td width="10"></td>
@@ -260,7 +260,7 @@
 			          	  String sn = (String)serialNumbers.get(i);%>
 			          <tr>
 					  	<% if (serialType.equals("sa205") && sn.equals(serialNum)) {%>
-			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
+			            <td width="10"><img src='../WebConfig/<%=DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
 			            <td style="padding:1"><span class='Nav'><%=sn%></span></td>
 						<%} else {%>
 			            <td width="10"></td>
@@ -274,7 +274,7 @@
 					  <cti:checkProperty propertyid="<%= CommanderRole.DCU_SA305_SERIAL_MODEL %>">
 					  <tr>
 					  	<% if (serialType.equals("sa305") ) {%>
-			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
+			            <td width="10"><img src='../WebConfig/<%=DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
 			            <td style="padding:1"><span class='Nav'>DCU-305 Serial</span></td>
 						<%} else {%>
 			            <td width="10"></td>
@@ -289,7 +289,7 @@
 			          	  String sn = (String)serialNumbers.get(i);%>
 			          <tr>
 					  	<% if (serialType.equals("sa305") && sn.equals(serialNum)) {%>
-			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
+			            <td width="10"><img src='../WebConfig/<%=DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
 			            <td style="padding:1"><span class='Nav'><%=sn%></span></td>
 						<%} else {%>
 			            <td width="10"></td>
@@ -303,7 +303,7 @@
 					  <cti:checkProperty propertyid="<%= CommanderRole.EXPRESSCOM_SERIAL_MODEL %>">
 			          <tr> 
 					  	<% if (serialType.equals("xcom") ) {%>
-			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
+			            <td width="10"><img src='../WebConfig/<%=DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
 			            <td style="padding:1"><span class='Nav'>Expresscom Serial</span></td>
 						<%} else {%>
 			            <td width="10"></td>
@@ -318,7 +318,7 @@
 			          	  String sn = (String)serialNumbers.get(i);%>
 			          <tr>
 					  	<% if (serialType.equals("xcom") && sn.equals(serialNum)) {%>
-			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
+			            <td width="10"><img src='../WebConfig/<%=DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
 			            <td style="padding:1"><span class='Nav'><%=sn%></span></td>
 						<%} else {%>
 			            <td width="10"></td>
@@ -332,7 +332,7 @@
   					  <cti:checkProperty propertyid="<%= CommanderRole.VERSACOM_SERIAL_MODEL %>">
 			          <tr> 
 					  	<% if (serialType.equals("vcom") ) {%>
-			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
+			            <td width="10"><img src='../WebConfig/<%=DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
 			            <td style="padding:1"><span class='Nav'>Versacom Serial</span></td>
 						<%} else {%>
 			            <td width="10"></td>
@@ -347,7 +347,7 @@
 			          	  String sn = (String)serialNumbers.get(i);%>
 			          <tr>
 					  	<% if (serialType.equals("vcom") && sn.equals( serialNum)) {%>
-			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
+			            <td width="10"><img src='../WebConfig/<%=DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
 			            <td style="padding:1"><span class='Nav'><%=sn%></span></td>
 						<%} else {%>
 			            <td width="10"></td>
@@ -364,16 +364,16 @@
 			          <% for (int i = 0; i < YC_BEAN.getDeviceIDs().size(); i++)
 			          {
 			          	int id = ((Integer)YC_BEAN.getDeviceIDs().get(i)).intValue();
-			          	LiteYukonPAObject lPao = PAOFuncs.getLiteYukonPAO(id);
+			          	LiteYukonPAObject lPao = DaoFactory.getPaoDao().getLiteYukonPAO(id);
 			          	if( CommandDeviceBean.isCapControlSortByGroup(lPao) )
 			          	{%>
 			          <tr>
 					  	<% if (id == deviceID) {%>
-			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
-			            <td style="padding:1"><span class='Nav'><%=com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName(id)%></span></td>
+			            <td width="10"><img src='../WebConfig/<%=DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
+			            <td style="padding:1"><span class='Nav'><%=DaoFactory.getPaoDao().getYukonPAOName(id)%></span></td>
 						<%} else {%>
 			            <td width="10"></td>
-			            <td style="padding:1"><a href='CommandDevice.jsp?deviceID=<%=id%><%=(manual?"&manual":"")%>' class='Link2'><span class='NavText'><%=com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName(id)%></span></a></td>
+			            <td style="padding:1"><a href='CommandDevice.jsp?deviceID=<%=id%><%=(manual?"&manual":"")%>' class='Link2'><span class='NavText'><%=DaoFactory.getPaoDao().getYukonPAOName(id)%></span></a></td>
 						<%}%>						
 			          </tr>
 					  <tr><td height="3"></td></tr>

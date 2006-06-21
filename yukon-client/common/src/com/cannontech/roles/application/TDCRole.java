@@ -1,6 +1,6 @@
 package com.cannontech.roles.application;
 
-import com.cannontech.roles.*;
+import com.cannontech.roles.ApplicationRoleDefs;
 
 /**
  * TDC Role Definition

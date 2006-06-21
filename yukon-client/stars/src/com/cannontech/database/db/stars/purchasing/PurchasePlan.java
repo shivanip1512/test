@@ -1,6 +1,8 @@
 package com.cannontech.database.db.stars.purchasing;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlStatement;

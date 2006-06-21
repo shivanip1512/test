@@ -6,7 +6,9 @@
  */
 package com.cannontech.stars.util.task;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -15,14 +17,17 @@ import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.Pair;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
-import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.activity.ActivityLogActions;
-import com.cannontech.database.data.lite.stars.*;
+import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
-import com.cannontech.stars.util.*;
+import com.cannontech.stars.util.EventUtils;
+import com.cannontech.stars.util.FilterWrapper;
+import com.cannontech.stars.util.InventoryUtils;
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.bean.InventoryBean;
 import com.cannontech.stars.web.util.InventoryManagerUtil;
@@ -180,7 +185,7 @@ public class AddSNRangeTask extends TimeConsumingTask {
 		}
 		
 		String logMsg = "Serial Range:" + String.valueOf(snFrom) + " - " + String.valueOf(snTo)
-				+ ",Device Type:" + YukonListFuncs.getYukonListEntry(devTypeID.intValue()).getEntryText();
+				+ ",Device Type:" + DaoFactory.getYukonListDao().getYukonListEntry(devTypeID.intValue()).getEntryText();
 		ActivityLogger.logEvent( user.getUserID(), ActivityLogActions.INVENTORY_ADD_RANGE, logMsg );
         
 		session.removeAttribute( InventoryManagerUtil.INVENTORY_SET );

@@ -6,15 +6,13 @@ package com.cannontech.tdc.addpoints;
  * @author: 
  */
 import java.awt.Cursor;
-import java.awt.event.ActionListener;
 
 import javax.swing.ListSelectionModel;
-import javax.swing.plaf.basic.BasicTreeUI;
 
 import com.cannontech.common.gui.dnd.DAndDDevicePointTable;
 import com.cannontech.common.gui.tree.TreeFindDialog;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.cache.functions.PAOFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.model.DBTreeNode;
@@ -523,7 +521,7 @@ public void jButtonAdd_ActionPerformed(java.awt.event.ActionEvent actionEvent)
 					if( userObject instanceof LiteYukonPAObject )
 					{
 						getRightTable().addDevice(
-							PAOFuncs.getLitePointsForPAObject( 
+							DaoFactory.getPaoDao().getLitePointsForPAObject( 
 									((LiteYukonPAObject)userObject).getYukonID()) );
 					} 
 					else if( userObject instanceof LitePoint )

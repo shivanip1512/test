@@ -6,10 +6,11 @@
  */
 package com.cannontech.common.gui.util;
 
-import javax.swing.text.DefaultStyledDocument;
-import javax.swing.*; 
-import javax.swing.text.*; 
 import java.awt.Toolkit;
+
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultStyledDocument;
 
 /**
  * @author ASolberg

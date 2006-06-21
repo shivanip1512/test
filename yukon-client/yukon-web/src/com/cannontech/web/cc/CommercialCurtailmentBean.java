@@ -2,7 +2,7 @@ package com.cannontech.web.cc;
 
 import java.util.TimeZone;
 
-import com.cannontech.database.cache.functions.EnergyCompanyFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
@@ -22,8 +22,8 @@ public class CommercialCurtailmentBean {
     }
     
     public TimeZone getTimeZone() {
-        LiteEnergyCompany energyCompany = EnergyCompanyFuncs.getEnergyCompany(getYukonUser());
-        TimeZone timeZone = EnergyCompanyFuncs.getEnergyCompanyTimeZone(energyCompany);
+        LiteEnergyCompany energyCompany = DaoFactory.getEnergyCompanyDao().getEnergyCompany(getYukonUser());
+        TimeZone timeZone = DaoFactory.getEnergyCompanyDao().getEnergyCompanyTimeZone(energyCompany);
         return timeZone;
     }
     
@@ -40,7 +40,7 @@ public class CommercialCurtailmentBean {
     }
     
     public LiteEnergyCompany getEnergyCompany() {
-        return EnergyCompanyFuncs.getEnergyCompany(getYukonUser());
+        return DaoFactory.getEnergyCompanyDao().getEnergyCompany(getYukonUser());
     }
     
 

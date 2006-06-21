@@ -10,8 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.db.company.EnergyCompany;
 import com.cannontech.database.db.device.lm.LMProgramDirectGroup;
 import com.cannontech.database.db.macro.GenericMacro;
@@ -24,7 +24,7 @@ import com.cannontech.database.model.ModelFactory;
  * Created on Dec 15, 2003
  * LoadGroupReportData TableModel object
  * Innerclass object for row data is LGAccounting:
- * 	String paoName				- PaoFuncs.getYukonPaoName(LMControlHistory.paobjectID)
+ * 	String paoName				- DaoFactory.getPaoDao().getYukonPaoName(LMControlHistory.paobjectID)
  * 	java.util.Date startDate	- LMControlHistory.startDateTime
  *  java.util.Date stopDate		- LMControlHistory.stopDateTime
  *  String duration				- LMControlHistory.controlDuration (in seconds)
@@ -87,8 +87,8 @@ public class LoadGroupModel extends ReportModelBase
 	{
 		public int compare(Object o1, Object o2)
 		{
-			String thisVal = PAOFuncs.getYukonPAOName(((LMControlHistory)o1).getPaObjectID().intValue());
-			String anotherVal = PAOFuncs.getYukonPAOName(((LMControlHistory)o2).getPaObjectID().intValue());
+			String thisVal = DaoFactory.getPaoDao().getYukonPAOName(((LMControlHistory)o1).getPaObjectID().intValue());
+			String anotherVal = DaoFactory.getPaoDao().getYukonPAOName(((LMControlHistory)o2).getPaObjectID().intValue());
 		    return ( thisVal.compareToIgnoreCase(anotherVal));
 		}
 		public boolean equals(Object obj)
@@ -312,7 +312,7 @@ public class LoadGroupModel extends ReportModelBase
 			switch( columnIndex)
 			{
 				case PAO_NAME_COLUMN:
-					return PAOFuncs.getYukonPAOName(lmch.getPaObjectID().intValue());
+					return DaoFactory.getPaoDao().getYukonPAOName(lmch.getPaObjectID().intValue());
 				case CONTROL_DATE_COLUMN:
 					return lmch.getStartDateTime();
 				case CONTROL_START_TIME_COLUMN:

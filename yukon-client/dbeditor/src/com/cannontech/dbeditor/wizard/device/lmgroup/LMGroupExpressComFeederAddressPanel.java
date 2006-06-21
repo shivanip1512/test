@@ -1,11 +1,9 @@
 package com.cannontech.dbeditor.wizard.device.lmgroup;
 
-import com.cannontech.common.gui.util.SingleLine16BitTogglePanel;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
-import javax.swing.JComboBox;
-import com.cannontech.common.util.CtiUtilities;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.device.lm.LMGroupExpressComAddress;
 /**
  * Insert the type's description here.

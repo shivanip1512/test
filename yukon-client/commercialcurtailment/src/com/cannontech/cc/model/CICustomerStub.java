@@ -20,8 +20,8 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.GenericGenerator;
 
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.TransactionException;
-import com.cannontech.database.cache.functions.CustomerFuncs;
 import com.cannontech.database.data.customer.CICustomerBase;
 import com.cannontech.database.data.customer.CustomerFactory;
 import com.cannontech.database.data.lite.LiteCICustomer;
@@ -59,7 +59,7 @@ public class CICustomerStub implements Comparable<CICustomerStub> {
     
     @Transient
     public LiteCICustomer getLite() {
-        LiteCICustomer liteCICustomer = CustomerFuncs.getLiteCICustomer(id);
+        LiteCICustomer liteCICustomer = DaoFactory.getCustomerDao().getLiteCICustomer(id);
         if (liteCICustomer == null) {
             throw new RuntimeException("Unable to get LiteCICustomer for stub (id=" + id + ")");
         }

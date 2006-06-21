@@ -13,7 +13,6 @@ package com.cannontech.database.data.lite;
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
 
-import com.cannontech.database.db.config.MCTConfig;
 
 /**
  * Insert the type's description here.

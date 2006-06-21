@@ -10,10 +10,8 @@ import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.activity.ActivityLog;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.cache.functions.CustomerFuncs;
-import com.cannontech.database.cache.functions.EnergyCompanyFuncs;
-import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -307,14 +305,14 @@ public class ActivityModel extends ReportModelBase
 				while( rset.next())
 				{
 					Integer ecID = new Integer(rset.getInt(1));
-					LiteEnergyCompany lec = EnergyCompanyFuncs.getEnergyCompany(ecID.intValue());
+					LiteEnergyCompany lec = DaoFactory.getEnergyCompanyDao().getEnergyCompany(ecID.intValue());
 					String ecName = "(delete)";
 					if( lec != null)
 						ecName = lec.getName();
 					
 					Integer userID = new Integer(rset.getInt(2));
 					String userName = "";
-					LiteYukonUser user = YukonUserFuncs.getLiteYukonUser(userID.intValue());
+					LiteYukonUser user = DaoFactory.getYukonUserDao().getLiteYukonUser(userID.intValue());
 					if (user == null)
 					{
 						if( userID.intValue() == -1)
@@ -376,14 +374,14 @@ public class ActivityModel extends ReportModelBase
 		try
 		{
 			Integer ecID = new Integer(rset.getInt(1));
-			LiteEnergyCompany lec = EnergyCompanyFuncs.getEnergyCompany(ecID.intValue());
+			LiteEnergyCompany lec = DaoFactory.getEnergyCompanyDao().getEnergyCompany(ecID.intValue());
 			String ecName = "(delete)";
 			if( lec != null)
 				ecName = lec.getName();
 
 			Integer userID = new Integer(rset.getInt(2));
 			String userName = "";
-			LiteYukonUser user = YukonUserFuncs.getLiteYukonUser(userID.intValue());
+			LiteYukonUser user = DaoFactory.getYukonUserDao().getLiteYukonUser(userID.intValue());
 			if (user == null)
 			{
 				if( userID.intValue() == -1)
@@ -443,7 +441,7 @@ public class ActivityModel extends ReportModelBase
 					return al.getUserName();
 				case CONTACT_COLUMN:
 				{
-					LiteContact contact = CustomerFuncs.getPrimaryContact(al.getCustID().intValue());
+					LiteContact contact = DaoFactory.getCustomerDao().getPrimaryContact(al.getCustID().intValue());
 					if (contact == null)
 						return "(n/a)";
 

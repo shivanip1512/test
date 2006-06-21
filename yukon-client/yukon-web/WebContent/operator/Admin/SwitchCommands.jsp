@@ -4,7 +4,7 @@
 <%@ page import="com.cannontech.stars.util.SwitchCommandQueue" %>
 <jsp:useBean id="configBean" class="com.cannontech.stars.web.bean.ConfigBean" scope="page"/>
 <%
-	boolean showEnergyCompany = liteEC.getChildren().size() > 0 && AuthFuncs.checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_MANAGE_MEMBERS);
+	boolean showEnergyCompany = liteEC.getChildren().size() > 0 && DaoFactory.getAuthDao().checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_MANAGE_MEMBERS);
 	ArrayList descendants = ECUtils.getAllDescendants(liteEC);
 	
 	int memberID = -1;

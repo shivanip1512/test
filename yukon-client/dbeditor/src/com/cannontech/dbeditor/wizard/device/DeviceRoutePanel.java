@@ -20,6 +20,7 @@ import com.cannontech.database.data.route.MacroRoute;
 import com.cannontech.database.data.route.RouteBase;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.dbeditor.editor.regenerate.RegenerateRoute;
+import com.cannontech.yukon.IDatabaseCache;
 
 public class DeviceRoutePanel
 	extends com.cannontech.common.gui.util.DataInputPanel {
@@ -184,7 +185,7 @@ public class DeviceRoutePanel
 				if (((MacroRoute) chosenRoute).getMacroRouteVector().size()> 0) {
 					com.cannontech.database.db.route.MacroRoute firstRoute = (com.cannontech.database.db.route.MacroRoute) ((MacroRoute) chosenRoute).getMacroRouteVector().firstElement();
 
-					com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+					IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 					synchronized (cache) {
 						List routes = cache.getAllRoutes();
 						DBPersistent rt = null;
@@ -325,7 +326,7 @@ public class DeviceRoutePanel
 	 * @param val java.lang.Object
 	 */
 	public void setValue(Object val) {
-		com.cannontech.database.cache.DefaultDatabaseCache cache =
+		IDatabaseCache cache =
 			com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 		synchronized (cache) {
 			java.util.List allRoutes = cache.getAllRoutes();

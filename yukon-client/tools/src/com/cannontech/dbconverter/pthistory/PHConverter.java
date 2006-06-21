@@ -1,6 +1,6 @@
 package com.cannontech.dbconverter.pthistory;
 
-import java.io.*;
+import java.io.File;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.point.PointQualities;

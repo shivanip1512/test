@@ -2,6 +2,8 @@ package com.cannontech.dbeditor.editor.route;
 
 import java.awt.Dimension;
 
+import com.cannontech.yukon.IDatabaseCache;
+
 /**
  * This type was created in VisualAge.
  */
@@ -506,7 +508,7 @@ public void routesAddRemovePanel_RightListMouse_mouseReleased(java.util.EventObj
  */
 public void setValue(Object val ) {
 
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	java.util.Vector availableRoutes = null;
 	java.util.Vector assignedRoutes = null;
 	synchronized(cache)

@@ -7,9 +7,9 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.StarsDatabaseCache;
-import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
 import com.cannontech.database.data.lite.stars.LiteLMProgramWebPublishing;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -19,10 +19,10 @@ import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.ChanceOfControl;
 import com.cannontech.stars.xml.serialize.StarsApplianceCategory;
+import com.cannontech.stars.xml.serialize.StarsEnergyCompanySettings;
 import com.cannontech.stars.xml.serialize.StarsEnrLMProgram;
 import com.cannontech.stars.xml.serialize.StarsEnrollmentPrograms;
 import com.cannontech.stars.xml.serialize.StarsFailure;
-import com.cannontech.stars.xml.serialize.StarsEnergyCompanySettings;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsSendOddsForControl;
 import com.cannontech.stars.xml.serialize.StarsSuccess;
@@ -67,7 +67,7 @@ public class SendOddsForControlAction implements ActionBase {
 								StarsEnrLMProgram enrProg = new StarsEnrLMProgram();
 								enrProg.setProgramID( program.getProgramID() );
 								ChanceOfControl ctrlOdds = (ChanceOfControl) StarsFactory.newStarsCustListEntry(
-										YukonListFuncs.getYukonListEntry( Integer.parseInt(controlOdds[i]) ),
+										DaoFactory.getYukonListDao().getYukonListEntry( Integer.parseInt(controlOdds[i]) ),
 										ChanceOfControl.class );
 								enrProg.setChanceOfControl( ctrlOdds );
 			        			

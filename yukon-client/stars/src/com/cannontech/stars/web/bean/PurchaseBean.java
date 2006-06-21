@@ -1,15 +1,22 @@
 package com.cannontech.stars.web.bean;
 
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-import com.cannontech.common.constants.*;
-import com.cannontech.database.cache.functions.AuthFuncs;
+import com.cannontech.common.constants.YukonListEntry;
+import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.constants.YukonSelectionList;
+import com.cannontech.common.constants.YukonSelectionListDefs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
-import com.cannontech.database.data.stars.report.ServiceCompany;
 import com.cannontech.database.db.stars.hardware.Warehouse;
-import com.cannontech.database.db.stars.purchasing.*;
+import com.cannontech.database.db.stars.purchasing.DeliverySchedule;
+import com.cannontech.database.db.stars.purchasing.Invoice;
+import com.cannontech.database.db.stars.purchasing.PurchasePlan;
+import com.cannontech.database.db.stars.purchasing.ScheduleTimePeriod;
+import com.cannontech.database.db.stars.purchasing.Shipment;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.stars.util.ECUtils;
 
@@ -82,7 +89,7 @@ public class PurchaseBean
     
     public boolean getManageMembers()
     {
-        return AuthFuncs.checkRoleProperty(currentUser, AdministratorRole.ADMIN_MANAGE_MEMBERS) && (energyCompany.getChildren().size() > 0);
+        return DaoFactory.getAuthDao().checkRoleProperty(currentUser, AdministratorRole.ADMIN_MANAGE_MEMBERS) && (energyCompany.getChildren().size() > 0);
     }
     
     public List<LiteStarsEnergyCompany> getAvailableMembers()

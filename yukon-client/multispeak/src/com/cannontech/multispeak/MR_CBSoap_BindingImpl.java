@@ -14,15 +14,15 @@ import java.util.List;
 import org.apache.axis.MessageContext;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.cache.functions.DeviceFuncs;
-import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.multispeak.client.Multispeak;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.YukonMultispeakMsgHeader;
+import com.cannontech.yukon.IDatabaseCache;
 
 public class MR_CBSoap_BindingImpl implements com.cannontech.multispeak.MR_CBSoap_PortType{
 
@@ -66,7 +66,7 @@ public class MR_CBSoap_BindingImpl implements com.cannontech.multispeak.MR_CBSoa
 		Meter[] meters;
 		int indexCount = 0;
 		
-		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+		IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 		List allMeters = cache.getAllDeviceMeterGroups();
 				
 		if( lastReceived != null && lastReceived.length() > 0)
@@ -76,7 +76,7 @@ public class MR_CBSoap_BindingImpl implements com.cannontech.multispeak.MR_CBSoa
 				LiteDeviceMeterNumber ldmn = (LiteDeviceMeterNumber)allMeters.get(i);
 				String lastValue = "";
 				if( key.toLowerCase().startsWith("device") || key.toLowerCase().startsWith("pao"))
-					lastValue = PAOFuncs.getYukonPAOName(ldmn.getDeviceID());
+					lastValue = DaoFactory.getPaoDao().getYukonPAOName(ldmn.getDeviceID());
 				else //if(key.toLowerCase().startsWith("meternum"))
 					lastValue = ldmn.getMeterNumber();
 							
@@ -129,9 +129,9 @@ public class MR_CBSoap_BindingImpl implements com.cannontech.multispeak.MR_CBSoa
 		{
 			LiteYukonPAObject lPao = null;
 			if( key.toLowerCase().startsWith("device") || key.toLowerCase().startsWith("pao"))
-				lPao = DeviceFuncs.getLiteYukonPaobjectByDeviceName(meterNo);
+				lPao = DaoFactory.getDeviceDao().getLiteYukonPaobjectByDeviceName(meterNo);
 			else //if(key.toLowerCase().startsWith("meternum"))
-				lPao = DeviceFuncs.getLiteYukonPaobjectByMeterNumber(meterNo);
+				lPao = DaoFactory.getDeviceDao().getLiteYukonPaobjectByMeterNumber(meterNo);
 
 			if( lPao != null)
 			{

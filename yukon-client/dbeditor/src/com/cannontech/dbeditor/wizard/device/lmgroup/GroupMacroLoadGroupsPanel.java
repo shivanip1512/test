@@ -1,7 +1,9 @@
 package com.cannontech.dbeditor.wizard.device.lmgroup;
 
 import java.awt.Dimension;
+
 import com.cannontech.database.data.pao.YukonPAObject;
+import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * This type was created in VisualAge.
@@ -138,7 +140,7 @@ private com.cannontech.common.gui.util.AddRemovePanel getLoadGroupsAddRemovePane
 			ivjLoadGroupsAddRemovePanel.rightListRemoveAll();
 
 
-			com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+			IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 			java.util.Vector availableDevices = null;
 			synchronized(cache)
 			{
@@ -468,7 +470,7 @@ public void routesAddRemovePanel_RightListMouse_mouseReleased(java.util.EventObj
  */
 public void setValue(Object val ) 
 {
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	java.util.Vector availableGroups = null;
 	java.util.Vector assignedGroups = null;
 

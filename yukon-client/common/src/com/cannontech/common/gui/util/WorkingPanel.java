@@ -1,13 +1,13 @@
 package com.cannontech.common.gui.util;
 
-import javax.swing.Box;
-import javax.swing.JLabel;
-import javax.swing.ImageIcon;
+import java.awt.BorderLayout;
+
 import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
-
-import java.awt.BorderLayout;
 
 /**
  * A panel that has a an optional image, a title, a message, and an indeterminate progress bar.

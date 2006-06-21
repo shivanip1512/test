@@ -3,10 +3,8 @@ package com.cannontech.datagenerator;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.capcontrol.CCYukonPAOFactory;

@@ -6,10 +6,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.PoolManager;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.roles.OperatorRoleDefs;
@@ -142,7 +140,7 @@ public class DumpRoles {
 		System.out.println("\nRoles defined but not in the database");
 		for(Iterator i = roleIDList.iterator(); i.hasNext();) {
 			Integer id = (Integer) i.next();
-			if(AuthFuncs.getRole(id.intValue()) == null) {
+			if(DaoFactory.getAuthDao().getRole(id.intValue()) == null) {
 				System.out.println(roleIDMap.get(id));		
 			}
 		}
@@ -150,7 +148,7 @@ public class DumpRoles {
 		System.out.println("\nProperties defined but not in the database");
 		for(Iterator i = propIDList.iterator(); i.hasNext();) {
 			Integer id = (Integer) i.next();
-			if(AuthFuncs.getRoleProperty(id.intValue()) == null) {
+			if(DaoFactory.getAuthDao().getRoleProperty(id.intValue()) == null) {
 				System.out.println(propIDMap.get(id));
 			}
 		}

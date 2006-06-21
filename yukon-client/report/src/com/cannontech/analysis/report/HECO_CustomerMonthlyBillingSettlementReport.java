@@ -17,8 +17,6 @@ import org.jfree.report.PageHeader;
 import org.jfree.report.elementfactory.LabelElementFactory;
 import org.jfree.report.elementfactory.StaticShapeElementFactory;
 import org.jfree.report.elementfactory.TextFieldElementFactory;
-import org.jfree.report.function.ExpressionCollection;
-import org.jfree.report.function.FunctionInitializeException;
 import org.jfree.report.modules.gui.base.PreviewDialog;
 import org.jfree.report.style.ElementStyleSheet;
 import org.jfree.ui.FloatDimension;

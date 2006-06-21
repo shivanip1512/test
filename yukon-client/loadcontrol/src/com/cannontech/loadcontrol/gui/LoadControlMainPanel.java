@@ -16,7 +16,7 @@ import com.cannontech.common.gui.panel.ManualChangeJPanel;
 import com.cannontech.common.gui.util.OkCancelDialog;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.cache.functions.RoleFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.loadcontrol.LCUtils;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.LMControlArea;
@@ -29,7 +29,9 @@ import com.cannontech.loadcontrol.datamodels.GroupTableModel;
 import com.cannontech.loadcontrol.datamodels.IControlAreaTableModel;
 import com.cannontech.loadcontrol.datamodels.IProgramTableModel;
 import com.cannontech.loadcontrol.datamodels.ProgramTableModel;
-import com.cannontech.loadcontrol.displays.*;
+import com.cannontech.loadcontrol.displays.ControlAreaActionListener;
+import com.cannontech.loadcontrol.displays.IControlAreaListener;
+import com.cannontech.loadcontrol.displays.LCDisplayItem;
 import com.cannontech.loadcontrol.events.LCChangeEvent;
 import com.cannontech.loadcontrol.gui.manualentry.ConstraintResponsePanel;
 import com.cannontech.loadcontrol.gui.manualentry.DirectControlJPanel;
@@ -1148,12 +1150,12 @@ private void initClientConnection()
 	int port = 1920;
 
 	//figure out where the LoadControl server is
-	String host = RoleFuncs.getGlobalPropertyValue( SystemRole.LOADCONTROL_MACHINE );
+	String host = DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.LOADCONTROL_MACHINE );
 
 	try
 	{
 		port = Integer.parseInt(
-			RoleFuncs.getGlobalPropertyValue( SystemRole.LOADCONTROL_PORT ) );
+			DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.LOADCONTROL_PORT ) );
 	}
 	catch (Exception e)
 	{

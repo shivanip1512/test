@@ -97,7 +97,7 @@ MM_reloadPage(true);
                           <td width="35"> 
                             <input type="checkbox" name="custDevices" value="<%=dcl.getDeviceID().intValue()%>">
                           </td>
-  						  <td width="300"><%=com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName(dcl.getDeviceID().intValue())%></td>
+  						  <td width="300"><%=DaoFactory.getPaoDao().getYukonPAOName(dcl.getDeviceID().intValue())%></td>
 						</tr>
 					<%} %>
                       </table>

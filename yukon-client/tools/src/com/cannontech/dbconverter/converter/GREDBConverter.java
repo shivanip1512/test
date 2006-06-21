@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.StringTokenizer;
-import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
@@ -51,7 +50,7 @@ import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.database.db.point.PointLimit;
 import com.cannontech.database.db.state.YukonImage;
 import com.cannontech.dbtools.updater.MessageFrameAdaptor;
-import com.cannontech.tools.gui.*;
+import com.cannontech.tools.gui.IRunnableDBTool;
 
 /**
  * Steps to a successful conversion:

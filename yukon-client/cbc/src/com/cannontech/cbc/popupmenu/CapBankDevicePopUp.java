@@ -2,19 +2,17 @@ package com.cannontech.cbc.popupmenu;
 
 import javax.swing.JSeparator;
 
-import com.cannontech.cbc.capbankeditor.CapControlEntryPanel;
 import com.cannontech.cbc.capbankeditor.CapBankTempMovePanel;
+import com.cannontech.cbc.capbankeditor.CapControlEntryPanel;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
-import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.capcontrol.CapBankController;
-import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.db.DBPersistent;
-import com.cannontech.database.db.capcontrol.DeviceCBC;
 import com.cannontech.debug.gui.ObjectInfoDialog;
 import com.cannontech.message.util.Command;
 import com.cannontech.yukon.cbc.CBCClientConnection;
@@ -541,7 +539,7 @@ public void jMenuItemCapBankData_ActionPerformed(java.awt.event.ActionEvent acti
 		//do not try to get the controller if we are fixed
 		if( !CapBank.FIXED_OPSTATE.equalsIgnoreCase(getCapBankDevice().getOperationalState()) )
 			cbcObject = LiteFactory.convertLiteToDBPers(
-				PAOFuncs.getLiteYukonPAO(getCapBankDevice().getControlDeviceID().intValue()) );
+				DaoFactory.getPaoDao().getLiteYukonPAO(getCapBankDevice().getControlDeviceID().intValue()) );
 		
 		try
 		{

@@ -17,9 +17,9 @@ import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteSettlementConfig;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
-import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.company.SettlementConfig;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * SettlementConfigFuncs - deals with lite settlementConfig objects
@@ -35,7 +35,7 @@ public final class SettlementConfigFuncs {
 	 * @return
 	 */
 	public static LiteSettlementConfig getLiteSettlementConfig(int configID) {
-		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+		IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 		synchronized(cache) {
 			Iterator iter = cache.getAllSettlementConfigs().iterator();
 			while(iter.hasNext()) {
@@ -58,7 +58,7 @@ public final class SettlementConfigFuncs {
 	public static Vector getAllLiteConfigsBySettlementType(int yukonDefID)
 	{
 		Vector liteConfigs = new Vector();
-		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+		IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 			synchronized(cache) {
 				Iterator iter = cache.getAllSettlementConfigs().iterator();
 				while(iter.hasNext()) {
@@ -92,7 +92,7 @@ public final class SettlementConfigFuncs {
 		Vector liteConfigs = new Vector();
 		if( entryID_ > 0)
 		{
-			DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+			IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 				synchronized(cache) {
 					Iterator iter = cache.getAllSettlementConfigs().iterator();
 					while(iter.hasNext()) {
@@ -116,7 +116,7 @@ public final class SettlementConfigFuncs {
 	public static Vector getAllRateScheduleIDsSettlementType(int yukonDefID)
 	{
 		Vector liteConfigs = new Vector();
-		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+		IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 			synchronized(cache) {
 				Iterator iter = cache.getAllSettlementConfigs().iterator();
 				while(iter.hasNext()) {
@@ -179,7 +179,7 @@ public final class SettlementConfigFuncs {
 	{
 		Vector rateConfigs = new Vector();
 		
-		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+		IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 		List configs = cache.getAllSettlementConfigs();
 		for (int i = 0; i < configs.size(); i++)
 		{

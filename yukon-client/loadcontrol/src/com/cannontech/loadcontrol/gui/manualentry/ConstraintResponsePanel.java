@@ -17,7 +17,7 @@ import com.cannontech.common.gui.util.CheckBoxTableHeader;
 import com.cannontech.common.gui.util.CheckBoxTableRenderer;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.login.ClientSession;
-import com.cannontech.database.cache.functions.AuthFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 import com.cannontech.message.server.ServerResponseMsg;
 import com.cannontech.roles.loadcontrol.DirectLoadcontrolRole;
@@ -222,7 +222,7 @@ private void initJTableCellComponents()
 
 	//allow the override check box if the user has the roleproperty defined
 	boolean canOverride = 
-		AuthFuncs.checkRoleProperty(
+		DaoFactory.getAuthDao().checkRoleProperty(
 			ClientSession.getInstance().getUser(),
 			DirectLoadcontrolRole.ALLOW_OVERRIDE_CONSTRAINT);
 
@@ -321,7 +321,7 @@ public void setValue(Object obj)
 	
 	//allow the override check box if the user has the roleproperty defined
 //	boolean canOverride = 
-//		AuthFuncs.checkRoleProperty(
+//		DaoFactory.getAuthDao().checkRoleProperty(
 //			ClientSession.getInstance().getUser(),
 //			DirectLoadcontrolRole.ALLOW_OVERRIDE_CONSTRAINT);
 

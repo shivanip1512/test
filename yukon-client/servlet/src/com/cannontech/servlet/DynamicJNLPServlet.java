@@ -6,13 +6,21 @@ package com.cannontech.servlet;
  * Replaces properties in a JNLP page 
  * 
  */
-import javax.servlet.*;
-import javax.servlet.http.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.StringTokenizer;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
-
-import java.io.*;
-import java.util.*;
 
 public class DynamicJNLPServlet extends HttpServlet
 {

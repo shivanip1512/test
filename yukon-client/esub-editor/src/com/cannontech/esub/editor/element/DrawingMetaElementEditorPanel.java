@@ -8,7 +8,7 @@ import javax.swing.SpinnerNumberModel;
 
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.cache.functions.AuthFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.esub.element.DrawingMetaElement;
 import com.cannontech.roles.yukon.SystemRole;
@@ -404,10 +404,10 @@ private javax.swing.JComboBox getYukonRoleComboBox() {
 			ivjYukonRoleComboBox.setName("YukonRoleComboBox");
 			// user code begin {1}
 			//allow them to pick the 'everybody' role
-			LiteYukonRole sysRole = AuthFuncs.getRole(SystemRole.ROLEID);
+			LiteYukonRole sysRole = DaoFactory.getAuthDao().getRole(SystemRole.ROLEID);
 			ivjYukonRoleComboBox.addItem(sysRole);
 			
-			Iterator i = AuthFuncs.getRoles("Esubstation").iterator();
+			Iterator i = DaoFactory.getAuthDao().getRoles("Esubstation").iterator();
 			while(i.hasNext()) {
 				LiteYukonRole r = (LiteYukonRole) i.next();
 				ivjYukonRoleComboBox.addItem(r);
@@ -520,7 +520,7 @@ public static void main(java.lang.String[] args) {
 		setMetaElement(e);
 		getWidthSpinner().setValue(new Integer((int)e.getDrawingWidth()));
 		getHeightSpinner().setValue(new Integer((int)e.getDrawingHeight()));
-		getYukonRoleComboBox().setSelectedItem(AuthFuncs.getRole(e.getRoleID()));		
+		getYukonRoleComboBox().setSelectedItem(DaoFactory.getAuthDao().getRole(e.getRoleID()));		
 	}
 
 	/**

@@ -1,6 +1,6 @@
 package com.cannontech.ejb;
 
-import com.cannontech.yukon.ITimedDatabaseCache;;
+;
 
 /**
  * @ejb:bean name="TimedDatabaseCache"

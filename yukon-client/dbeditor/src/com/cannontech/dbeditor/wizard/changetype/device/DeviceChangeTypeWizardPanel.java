@@ -5,7 +5,6 @@ package com.cannontech.dbeditor.wizard.changetype.device;
  */
 import com.cannontech.common.wizard.WizardPanel;
 import com.cannontech.database.data.device.DeviceBase;
-import com.cannontech.database.data.pao.DeviceClasses;
 
 public class DeviceChangeTypeWizardPanel extends WizardPanel
 {

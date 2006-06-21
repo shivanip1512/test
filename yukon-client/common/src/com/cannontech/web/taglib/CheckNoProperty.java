@@ -1,10 +1,11 @@
 package com.cannontech.web.taglib;
 
 import java.io.IOException;
+
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
-import com.cannontech.database.cache.functions.AuthFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 /**
@@ -24,7 +25,7 @@ public class CheckNoProperty extends BodyTagSupport {
 		LiteYukonUser user = 
 			(LiteYukonUser) pageContext.getSession().getAttribute("YUKON_USER");
 			
-		return (user == null || !AuthFuncs.checkRoleProperty(user,propertyid)) ?
+		return (user == null || !DaoFactory.getAuthDao().checkRoleProperty(user,propertyid)) ?
 					EVAL_BODY_INCLUDE :
 					SKIP_BODY;
 	}

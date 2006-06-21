@@ -16,13 +16,13 @@ import com.cannontech.cc.model.CICustomerStub;
 import com.cannontech.cc.service.builder.VerifiedCustomer;
 import com.cannontech.common.exception.PointException;
 import com.cannontech.common.util.TimeUtil;
-import com.cannontech.database.cache.functions.SimplePointAccess;
+import com.cannontech.core.dao.SimplePointAccessDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.db.customer.CICustomerPointType;
 import com.cannontech.support.CustomerPointTypeHelper;
 
 public class IsocCommonStrategy extends StrategyGroupBase {
-    private SimplePointAccess pointAccess;
+    private SimplePointAccessDao pointAccess;
     private CustomerPointTypeHelper pointTypeHelper;
     private BaseEventDao baseEventDao;
 
@@ -129,7 +129,7 @@ public class IsocCommonStrategy extends StrategyGroupBase {
         return notifMinutes < minimumNoticeMinutes;
     }
 
-    public void setPointAccess(SimplePointAccess pointAccess) {
+    public void setPointAccess(SimplePointAccessDao pointAccess) {
         this.pointAccess = pointAccess;
     }
 

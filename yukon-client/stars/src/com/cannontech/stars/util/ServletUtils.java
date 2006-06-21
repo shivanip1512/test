@@ -1,12 +1,17 @@
 package com.cannontech.stars.util;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.Properties;
+import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
-import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.customer.Customer;
 import com.cannontech.database.data.customer.CustomerFactory;
 import com.cannontech.database.data.lite.LiteCustomer;
@@ -18,7 +23,18 @@ import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.stars.xml.serialize.*;
+import com.cannontech.stars.xml.serialize.ContactNotification;
+import com.cannontech.stars.xml.serialize.ControlSummary;
+import com.cannontech.stars.xml.serialize.StarsAppliance;
+import com.cannontech.stars.xml.serialize.StarsApplianceCategory;
+import com.cannontech.stars.xml.serialize.StarsAppliances;
+import com.cannontech.stars.xml.serialize.StarsCustomerAddress;
+import com.cannontech.stars.xml.serialize.StarsCustomerContact;
+import com.cannontech.stars.xml.serialize.StarsEnrLMProgram;
+import com.cannontech.stars.xml.serialize.StarsEnrollmentPrograms;
+import com.cannontech.stars.xml.serialize.StarsInventory;
+import com.cannontech.stars.xml.serialize.StarsLMControlHistory;
+import com.cannontech.stars.xml.serialize.StarsLMProgram;
 import com.cannontech.stars.xml.serialize.types.StarsCtrlHistPeriod;
 import com.cannontech.stars.xml.serialize.types.StarsThermoDaySettings;
 import com.cannontech.util.ServletUtil;
@@ -619,12 +635,12 @@ public class ServletUtils {
 		
 		LiteYukonGroup[] operGroups = energyCompany.getWebClientOperatorGroups();
 		if (operGroups.length > 0)
-			faqLink = AuthFuncs.getRolePropValueGroup( operGroups[0], ConsumerInfoRole.WEB_LINK_FAQ, null );
+			faqLink = DaoFactory.getAuthDao().getRolePropValueGroup( operGroups[0], ConsumerInfoRole.WEB_LINK_FAQ, null );
 		
 		if (StarsUtils.forceNotNone(faqLink).length() == 0) {
 			LiteYukonGroup[] custGroups = energyCompany.getResidentialCustomerGroups();
 			if (custGroups.length > 0)
-				faqLink = AuthFuncs.getRolePropValueGroup(custGroups[0], ResidentialCustomerRole.WEB_LINK_FAQ, null);
+				faqLink = DaoFactory.getAuthDao().getRolePropValueGroup(custGroups[0], ResidentialCustomerRole.WEB_LINK_FAQ, null);
 		}
 		
 		if (StarsUtils.forceNotNone(faqLink).length() == 0)
@@ -644,20 +660,20 @@ public class ServletUtils {
 		
 		if (user.getEnergyCompanyID() == energyCompany.getLiteID()) {
 			if (StarsUtils.isOperator(user))
-				faqLink = AuthFuncs.getRolePropertyValue( user.getYukonUser(), ConsumerInfoRole.WEB_LINK_FAQ );
+				faqLink = DaoFactory.getAuthDao().getRolePropertyValue( user.getYukonUser(), ConsumerInfoRole.WEB_LINK_FAQ );
 			else
-				faqLink = AuthFuncs.getRolePropertyValue( user.getYukonUser(), ResidentialCustomerRole.WEB_LINK_FAQ );
+				faqLink = DaoFactory.getAuthDao().getRolePropertyValue( user.getYukonUser(), ResidentialCustomerRole.WEB_LINK_FAQ );
 		}
 		else {
 			if (StarsUtils.isOperator(user)) {
 				LiteYukonGroup[] operGroups = energyCompany.getWebClientOperatorGroups();
 				if (operGroups.length > 0)
-					faqLink = AuthFuncs.getRolePropValueGroup( operGroups[0], ConsumerInfoRole.WEB_LINK_FAQ, null );
+					faqLink = DaoFactory.getAuthDao().getRolePropValueGroup( operGroups[0], ConsumerInfoRole.WEB_LINK_FAQ, null );
 			}
 			else {
 				LiteYukonGroup[] custGroups = energyCompany.getResidentialCustomerGroups();
 				if (custGroups.length > 0)
-					faqLink = AuthFuncs.getRolePropValueGroup(custGroups[0], ResidentialCustomerRole.WEB_LINK_FAQ, null);
+					faqLink = DaoFactory.getAuthDao().getRolePropValueGroup(custGroups[0], ResidentialCustomerRole.WEB_LINK_FAQ, null);
 			}
 		}
 		

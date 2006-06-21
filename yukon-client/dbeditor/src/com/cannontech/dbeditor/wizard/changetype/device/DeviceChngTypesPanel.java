@@ -1,39 +1,21 @@
 package com.cannontech.dbeditor.wizard.changetype.device;
 import java.awt.Dimension;
+import java.util.Vector;
 
-import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
-import com.cannontech.database.TransactionException;
-import com.cannontech.database.cache.functions.PAOFuncs;
-import com.cannontech.database.cache.functions.PointFuncs;
-import com.cannontech.database.data.device.CarrierBase;
 import com.cannontech.database.data.device.DeviceBase;
-import com.cannontech.database.data.device.DeviceFactory;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
-import com.cannontech.database.data.device.IDLCBase;
-import com.cannontech.database.data.device.IDeviceMeterGroup;
-import com.cannontech.database.data.device.RemoteBase;
-import com.cannontech.database.data.device.TwoWayDevice;
-import com.cannontech.database.data.device.lm.IGroupRoute;
+import com.cannontech.database.data.device.MCT310ID;
+import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.data.point.AccumulatorPoint;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.db.DBPersistent;
-import com.cannontech.database.data.capcontrol.CapBankController;
-import com.cannontech.database.data.capcontrol.ICapBankController;
-import com.cannontech.database.data.lite.LiteFactory;
-import com.cannontech.database.data.point.AccumulatorPoint;
-import com.cannontech.database.Transaction;
-import com.cannontech.database.TransactionException;
-import java.util.Vector;
-import com.cannontech.database.data.device.MCT310ID;
-import com.cannontech.database.data.device.MCT410IL;
-import com.cannontech.database.data.device.MCTBase;
 
 
 public class DeviceChngTypesPanel extends com.cannontech.common.gui.util.DataInputPanel implements javax.swing.event.ListSelectionListener {
@@ -519,7 +501,7 @@ private void listDeviceType_Selection( javax.swing.event.ListSelectionEvent ev )
 private void handleMCT_310IL()
 {
 	
-	LitePoint[] ltPoints = PAOFuncs.getLitePointsForPAObject( 
+	LitePoint[] ltPoints = DaoFactory.getPaoDao().getLitePointsForPAObject( 
 					getCurrentDevice().getPAObjectID().intValue() );
 	
 	for( int i = 0; i < ltPoints.length; i++ ) {
@@ -547,7 +529,7 @@ private void handleMCT_310IL()
          PointFactory.createDmdAccumPoint(
             "kW-LP",
             getCurrentDevice().getPAObjectID(),
-            new Integer( PointFuncs.getMaxPointID() + 1 ),
+            new Integer( DaoFactory.getPointDao().getMaxPointID() + 1 ),
             PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND,
             PointUnits.UOMID_KW,
             .01 );
@@ -563,7 +545,7 @@ private void handleMCT_410IL()
 	 * Multipliers need to be changed, handle the disconnects, existing lp points, etc.
 	 */
 
-	LitePoint[] ltPoints = PAOFuncs.getLitePointsForPAObject( 
+	LitePoint[] ltPoints = DaoFactory.getPaoDao().getLitePointsForPAObject( 
 					getCurrentDevice().getPAObjectID().intValue() );
 	
 	extra410Objs = new Vector(ltPoints.length);
@@ -655,7 +637,7 @@ private void handleMCT_410IL()
 
 private void handleMCT_470()
 {
-	LitePoint[] ltPoints = PAOFuncs.getLitePointsForPAObject( 
+	LitePoint[] ltPoints = DaoFactory.getPaoDao().getLitePointsForPAObject( 
 					getCurrentDevice().getPAObjectID().intValue() );
 	/*
 	for( int i = 0; i < ltPoints.length; i++ ) {
@@ -681,7 +663,7 @@ private void handleMCT_470()
 		 PointFactory.createDmdAccumPoint(
 			"kW-LP",
 			getCurrentDevice().getPAObjectID(),
-			new Integer( PointFuncs.getMaxPointID() + 1 ),
+			new Integer( DaoFactory.getPointDao().getMaxPointID() + 1 ),
 			PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND,
 			PointUnits.UOMID_KW,
 			.1 );*/

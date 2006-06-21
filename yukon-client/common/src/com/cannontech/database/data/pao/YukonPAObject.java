@@ -3,13 +3,16 @@ package com.cannontech.database.data.pao;
 import java.util.ArrayList;
 import java.util.Vector;
 
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.db.NestedDBPersistent;
+import com.cannontech.database.db.NestedDBPersistentComparators;
 import com.cannontech.database.db.pao.PAOExclusion;
 import com.cannontech.database.db.pao.PAOScheduleAssign;
 import com.cannontech.database.db.user.UserPaoOwner;
-import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.db.NestedDBPersistent;
-import com.cannontech.database.db.NestedDBPersistentComparators;
+import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * This type was created in VisualAge.
@@ -95,7 +98,7 @@ public void deletePartial() throws java.sql.SQLException
 private void deletePoints() throws java.sql.SQLException
 {
 
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 	synchronized( cache )
 	{
 		java.util.List points = cache.getAllPoints();
@@ -139,7 +142,7 @@ public com.cannontech.message.dispatch.message.DBChangeMsg[] getDBChangeMsgs( in
 	if( typeOfChange == com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_DELETE )
 	{
 		//get all the point ids and their types that are owned by this PAObject
-		int[][] idsAndTypes = com.cannontech.database.cache.functions.PAOFuncs.getAllPointIDsAndTypesForPAObject(
+		int[][] idsAndTypes = DaoFactory.getPaoDao().getAllPointIDsAndTypesForPAObject(
 					getPAObjectID().intValue() );
 
 		//add a new message for each point

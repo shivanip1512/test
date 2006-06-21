@@ -5,10 +5,8 @@ package com.cannontech.loadcontrol.datamodels;
  */
 import java.awt.Color;
 import java.sql.PreparedStatement;
-import java.util.Date;
 import java.util.Vector;
 
-import javax.swing.SwingUtilities;
 import javax.swing.event.TableModelListener;
 
 import com.cannontech.clientutils.CTILogger;
@@ -18,12 +16,9 @@ import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.device.lm.IlmDefines;
 import com.cannontech.database.db.point.RawPointHistory;
-import com.cannontech.loadcontrol.data.IGearProgram;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMControlAreaTrigger;
 import com.cannontech.loadcontrol.data.LMProgramBase;
-import com.cannontech.loadcontrol.data.LMProgramDirect;
-import com.cannontech.loadcontrol.data.LMProgramDirectGear;
 
 public class ControlHistoryTableModel extends javax.swing.table.AbstractTableModel implements TableModelListener, IProgramTableModel
 {

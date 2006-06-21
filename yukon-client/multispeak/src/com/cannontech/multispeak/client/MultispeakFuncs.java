@@ -6,7 +6,7 @@
  */
 package com.cannontech.multispeak.client;
 
-import java.rmi.RemoteException;
+import java.net.URL;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
 
@@ -15,15 +15,12 @@ import javax.xml.soap.SOAPException;
 import org.apache.axis.AxisFault;
 import org.apache.axis.MessageContext;
 import org.apache.axis.client.Service;
-import org.apache.axis.client.Stub;
 import org.apache.axis.message.SOAPEnvelope;
 import org.apache.axis.message.SOAPHeader;
 import org.apache.axis.message.SOAPHeaderElement;
-import java.net.URL;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.database.cache.functions.DeviceFuncs;
-import com.cannontech.database.cache.functions.PAOFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.multispeak.ArrayOfErrorObject;
@@ -92,12 +89,12 @@ public class MultispeakFuncs
 	{
 	    if( key.toLowerCase().startsWith("device") || key.toLowerCase().startsWith("pao"))
 		{
-			LiteYukonPAObject lPao = PAOFuncs.getLiteYukonPAO(deviceID);
+			LiteYukonPAObject lPao = DaoFactory.getPaoDao().getLiteYukonPAO(deviceID);
 			return (lPao == null ? null : lPao.getPaoName());
 		}
 		else //if(key.toLowerCase().startsWith("meternum"))	// default value
 		{
-			LiteDeviceMeterNumber ldmn = DeviceFuncs.getLiteDeviceMeterNumber(deviceID);
+			LiteDeviceMeterNumber ldmn = DaoFactory.getDeviceDao().getLiteDeviceMeterNumber(deviceID);
 			return (ldmn == null ? null : ldmn.getMeterNumber());
 		}
 		

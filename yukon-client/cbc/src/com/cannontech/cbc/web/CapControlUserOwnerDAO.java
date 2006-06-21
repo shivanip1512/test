@@ -3,7 +3,7 @@ package com.cannontech.cbc.web;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.cannontech.database.cache.functions.AuthFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.lite.LiteWrapper;
@@ -105,7 +105,7 @@ public class CapControlUserOwnerDAO implements CapControlDAO {
 		List subsAllowedToView = new ArrayList(10);
 		for (int i=0; i < area.length(); i++) {
 			SubBus sub = subs[i];
-			if (AuthFuncs.userHasAccessPAO(_user, sub.getCcId().intValue()))
+			if (DaoFactory.getAuthDao().userHasAccessPAO(_user, sub.getCcId().intValue()))
 				subsAllowedToView.add(sub);
 		}
 		return ((SubBus[])subsAllowedToView.toArray(retArray));

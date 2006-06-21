@@ -10,6 +10,7 @@ import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteTypes;
+import com.cannontech.yukon.IDatabaseCache;
 
 
 /* *******
@@ -95,7 +96,7 @@ public class EnergyCompanyTreeModel extends DBTreeModel
 	 */
 	public void update() 
 	{
-		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+		IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 	
 		synchronized(cache)
 		{

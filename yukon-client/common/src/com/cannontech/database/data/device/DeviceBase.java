@@ -1,9 +1,9 @@
 package com.cannontech.database.data.device;
 
+import com.cannontech.database.db.customer.DeviceCustomerList;
 import com.cannontech.database.db.device.Device;
 import com.cannontech.database.db.device.DynamicDeviceScanData;
 import com.cannontech.database.db.device.DynamicVerification;
-import com.cannontech.database.db.customer.DeviceCustomerList;
 
 
 /**

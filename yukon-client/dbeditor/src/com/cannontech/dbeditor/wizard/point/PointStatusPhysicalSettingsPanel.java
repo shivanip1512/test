@@ -1,6 +1,7 @@
 package com.cannontech.dbeditor.wizard.point;
 
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * This type was created in VisualAge.
@@ -575,7 +576,7 @@ public void reinitialize(Integer pointDeviceID, int pointType)
 	getUsedPointOffsetLabel().setText("");
 	usedPointOffsetsVector = new java.util.Vector();
 	
-	com.cannontech.database.cache.DefaultDatabaseCache cache =
+	IDatabaseCache cache =
 		com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized (cache)
 {

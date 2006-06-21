@@ -13,6 +13,7 @@ import com.cannontech.database.data.route.RouteBase;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.route.CarrierRoute;
 import com.cannontech.database.db.route.RepeaterRoute;
+import com.cannontech.yukon.IDatabaseCache;
 public class RegenerateRoute
 {
 	public static final int LARGE_VALID_FIXED = 31;
@@ -35,7 +36,7 @@ public class RegenerateRoute
 	{
 		Vector realRoutes = new Vector();
 		List routes;
-		com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+		IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 		synchronized (cache)
 		{
 			routes = cache.getAllRoutes();

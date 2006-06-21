@@ -599,9 +599,9 @@ function setStopAble( radioChk )
 	if( ILCCmds.SC_START.equals(cmd) || ILCCmds.SC_STOP.equals(cmd) )
 	{
 		LiteLMProgScenario[] programs = 
-				LMFuncs.getLMScenarioProgs( new Integer(itemid).intValue() );
+				DaoFactory.getLmDao().getLMScenarioProgs( new Integer(itemid).intValue() );
 				
-		LiteYukonPAObject[] scenarios = LMFuncs.getAllLMScenarios();
+		LiteYukonPAObject[] scenarios = DaoFactory.getLmDao().getAllLMScenarios();
 %>
 	<div class="TableCell"> 
 	  <div align="center">Select the programs you want to operate:</div>

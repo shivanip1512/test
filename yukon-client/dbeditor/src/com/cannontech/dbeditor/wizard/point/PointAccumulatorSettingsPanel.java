@@ -1,5 +1,7 @@
 package com.cannontech.dbeditor.wizard.point;
 
+import com.cannontech.yukon.IDatabaseCache;
+
 /**
  * This type was created in VisualAge.
  */
@@ -290,7 +292,7 @@ private javax.swing.JComboBox getUnitOfMeasureComboBox() {
 			// user code begin {1}
 
 			//Add units of measure to the Unit of Measure combo box
-			com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+			IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 			synchronized(cache)
 			{
 				java.util.List allUnitMeasures = cache.getAllUnitMeasures();

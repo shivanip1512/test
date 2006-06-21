@@ -10,9 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import com.cannontech.database.cache.functions.PointFuncs;
-import com.cannontech.database.cache.functions.StateFuncs;
-import com.cannontech.database.cache.functions.YukonImageFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
@@ -61,7 +59,7 @@ public StateImage() {
  * @return com.cannontech.database.data.lite.LitePoint
  */
 public com.cannontech.database.data.lite.LitePoint getPoint() {
-	return PointFuncs.getLitePoint(pointID);
+	return DaoFactory.getPointDao().getLitePoint(pointID);
 }
 
 public int getPointID() {
@@ -143,7 +141,7 @@ public void setPointID(int pointID) {
 			if(customImageId != null) {
 				imageId = customImageId.intValue();
 			}
-			return YukonImageFuncs.getLiteYukonImage(imageId);
+			return DaoFactory.getYukonImageDao().getLiteYukonImage(imageId);
 		}
 		return null;
 	}
@@ -160,7 +158,7 @@ public void setPointID(int pointID) {
             return imageNames;
         }
         
-		LiteStateGroup lsg = StateFuncs.getLiteStateGroup(point.getStateGroupID());
+		LiteStateGroup lsg = DaoFactory.getStateDao().getLiteStateGroup(point.getStateGroupID());
 		List states = lsg.getStatesList();
 		for(int i = 0; i < states.size(); i++) {
 			Integer imgIdObj = (Integer) customImageMap.get(new Integer(i));
@@ -171,7 +169,7 @@ public void setPointID(int pointID) {
 			else {
 				imgId = ((LiteState) states.get(i)).getImageID();
 			}
-			LiteYukonImage lyi = YukonImageFuncs.getLiteYukonImage(imgId); 
+			LiteYukonImage lyi = DaoFactory.getYukonImageDao().getLiteYukonImage(imgId); 
 			if(lyi != null) {
 				imageNames.add(lyi.getImageName());
 			}

@@ -7,7 +7,7 @@ package com.cannontech.tdc.addpoints;
 import java.io.Serializable;
 import java.util.Vector;
 
-import com.cannontech.database.cache.functions.PAOFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.tdc.TDCMainFrame;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
@@ -262,7 +262,7 @@ public void insertNewRow ( Object litePoint_ )
 		return;
 
 	getRows().addElement( new Line( ((LitePoint)litePoint_).getPointID(), 
-					PAOFuncs.getYukonPAOName(((LitePoint)litePoint_).getPaobjectID()), 
+					DaoFactory.getPaoDao().getYukonPAOName(((LitePoint)litePoint_).getPaobjectID()), 
 					((LitePoint)litePoint_).getPointName() ) );
 
 

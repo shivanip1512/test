@@ -6,7 +6,8 @@ package com.cannontech.dbeditor.wizard.device.capcontrol;
 import java.awt.Dimension;
 import java.util.ArrayList;
 
-import com.cannontech.database.cache.functions.PAOFuncs;
+import com.cannontech.common.gui.util.TextFieldDocument;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.capcontrol.CapBankController;
 import com.cannontech.database.data.capcontrol.ICapBankController;
@@ -14,9 +15,10 @@ import com.cannontech.database.data.device.DeviceFactory;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.multi.*;
+import com.cannontech.database.data.multi.MultiDBPersistent;
+import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.common.gui.util.TextFieldDocument;
+import com.cannontech.yukon.IDatabaseCache;
  
 public class CapBankCntrlCreationPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener 
 {
@@ -223,7 +225,7 @@ public void controlDeviceComboBox_ActionPerformed(java.awt.event.ActionEvent act
 	if( getControlDeviceComboBox().getSelectedItem() != null )
 	{
 		int deviceID = ((LiteYukonPAObject)getControlDeviceComboBox().getSelectedItem()).getYukonID();
-		LitePoint[] litPts = PAOFuncs.getLitePointsForPAObject( deviceID );
+		LitePoint[] litPts = DaoFactory.getPaoDao().getLitePointsForPAObject( deviceID );
 		for(int i = 0; i < litPts.length; i++)
 		{
 			if( litPts[i].getPointType() == PointTypes.STATUS_POINT)
@@ -466,7 +468,7 @@ private javax.swing.JComboBox getJComboBoxCBCRoute() {
 			ivjJComboBoxCBCRoute.setMaximumSize(new java.awt.Dimension(202,23));
 			ivjJComboBoxCBCRoute.setMinimumSize(new java.awt.Dimension(202,23));
 			ivjJComboBoxCBCRoute.setPreferredSize(new java.awt.Dimension(202,23));
-			com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+			IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 			synchronized( cache )
 			{
 				java.util.List routes = cache.getAllRoutes();
@@ -857,7 +859,7 @@ private void initComboBoxes()
 	if( getControlPointComboBox().getModel().getSize() > 0 )
 		getControlPointComboBox().removeAllItems();
 
-	com.cannontech.database.cache.DefaultDatabaseCache cache =
+	IDatabaseCache cache =
 					com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 
 	boolean showAll = getJCheckBoxShowAllDevices().isSelected();
@@ -878,7 +880,7 @@ private void initComboBoxes()
 			litePoint = 
 					(LitePoint)points.get(i);
 			
-			liteDevice = PAOFuncs.getLiteYukonPAO( litePoint.getPaobjectID() );
+			liteDevice = DaoFactory.getPaoDao().getLiteYukonPAO( litePoint.getPaobjectID() );
 			
 			//System device, ignore it
 			if(litePoint.getPaobjectID() == 0)
@@ -933,7 +935,7 @@ private void jComboBoxCBCType_ActionPerformed( java.awt.event.ActionEvent e)
 
    getJComboBoxCBCRoute().removeAllItems();
    
-   com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+   IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
    synchronized( cache )
    {
       java.util.List list = 

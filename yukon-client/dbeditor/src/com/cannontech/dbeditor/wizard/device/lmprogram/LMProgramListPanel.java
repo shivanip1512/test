@@ -1,5 +1,7 @@
 package com.cannontech.dbeditor.wizard.device.lmprogram;
 
+import com.cannontech.yukon.IDatabaseCache;
+
 /**
  * This type was created in VisualAge.
  */
@@ -184,7 +186,7 @@ private void initialize() {
  */
 public void initLeftList( boolean hideLMGroupPoints)
 {
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized( cache )
 	{
 		java.util.List groups = cache.getAllLoadManagement();

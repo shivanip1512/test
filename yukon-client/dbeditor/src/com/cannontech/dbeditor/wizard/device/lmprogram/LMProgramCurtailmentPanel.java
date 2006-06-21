@@ -4,8 +4,6 @@ package com.cannontech.dbeditor.wizard.device.lmprogram;
  * This type was created in VisualAge.
  */
 
-import javax.swing.text.StyledDocument;
-
 import com.cannontech.common.gui.util.LimitedStyledDocument;
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.database.data.device.lm.LMProgramCurtailment;

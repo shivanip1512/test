@@ -52,7 +52,7 @@
 		  <td width="657" valign="top" bgcolor="#FFFFFF"> 
               
             <div align="center"> 
-              <% String header = AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_TITLE_THERM_SAVED_SCHED); %>
+              <% String header = DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_TITLE_THERM_SAVED_SCHED); %>
               <%@ include file="include/InfoSearchBar.jspf" %>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>

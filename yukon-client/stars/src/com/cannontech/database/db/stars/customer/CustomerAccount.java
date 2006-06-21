@@ -3,16 +3,21 @@ package com.cannontech.database.db.stars.customer;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.*;
+import com.cannontech.database.PoolManager;
+import com.cannontech.database.SqlStatement;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.contact.Contact;
-import com.cannontech.database.db.customer.*;
+import com.cannontech.database.db.customer.Address;
+import com.cannontech.database.db.customer.CICustomerBase;
+import com.cannontech.database.db.customer.Customer;
 import com.cannontech.database.db.stars.hardware.InventoryBase;
 import com.cannontech.database.db.stars.hardware.LMHardwareBase;
 

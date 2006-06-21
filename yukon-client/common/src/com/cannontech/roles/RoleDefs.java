@@ -1,6 +1,6 @@
 package com.cannontech.roles;
 
-import com.cannontech.database.cache.functions.AuthFuncs;
+
 
 /**
  * Base role and property ids for each category of roles, keep this in sync with the database scripts or there will be trouble, shurley.

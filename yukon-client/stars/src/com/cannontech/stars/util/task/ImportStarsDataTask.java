@@ -29,8 +29,8 @@ import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.SqlStatement;
-import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
@@ -377,7 +377,7 @@ public class ImportStarsDataTask extends TimeConsumingTask {
 							
 							Integer deviceID = (Integer) devCarrSettings.get( fields[ImportManagerUtil.IDX_SERIAL_NO] );
 							if (deviceID != null) {
-								LiteYukonPAObject litePao = PAOFuncs.getLiteYukonPAO( deviceID.intValue() );
+								LiteYukonPAObject litePao = DaoFactory.getPaoDao().getLiteYukonPAO( deviceID.intValue() );
 								importLog.println("Meter (import_inv_id=" + fields[ImportManagerUtil.IDX_INV_ID] + ",import_acct_id=" + fields[ImportManagerUtil.IDX_ACCOUNT_ID]
 										+ ",dev_name=" + fields[ImportManagerUtil.IDX_DEVICE_NAME] + ",serial_no=" + fields[ImportManagerUtil.IDX_SERIAL_NO]
 										+ ") matches Yukon device (dev_id=" + deviceID + ",dev_name=" + litePao.getPaoName() + ") by serial number");
@@ -1836,7 +1836,7 @@ public class ImportStarsDataTask extends TimeConsumingTask {
 							}
 						}
 						else if (ImportManagerUtil.LIST_NAMES[i][0].equals("LoadGroup")) {
-							line += "\"" + PAOFuncs.getYukonPAOName( id.intValue() ) + "\"";
+							line += "\"" + DaoFactory.getPaoDao().getYukonPAOName( id.intValue() ) + "\"";
 						}
 						else {
 							YukonSelectionList list = energyCompany.getYukonSelectionList( ImportManagerUtil.LIST_NAMES[i][0] );
@@ -1921,7 +1921,7 @@ public class ImportStarsDataTask extends TimeConsumingTask {
 							subName = entry.substring(0, pos);
 							String routeName = entry.substring(pos + 1);
 							if (routeName.length() > 0) {
-								LiteYukonPAObject[] routes = PAOFuncs.getAllLiteRoutes();
+								LiteYukonPAObject[] routes = DaoFactory.getPaoDao().getAllLiteRoutes();
 								for (int k = 0; k < routes.length; k++) {
 									if (routes[k].getPaoName().equalsIgnoreCase( routeName )) {
 										routeID = routes[k].getYukonID();

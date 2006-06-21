@@ -6,8 +6,8 @@ package com.cannontech.dbeditor.wizard.device.lmcontrolarea;
 import java.awt.Dimension;
 
 import com.cannontech.common.gui.util.TextFieldDocument;
-import com.cannontech.database.data.device.lm.LMControlArea;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.data.device.lm.LMControlArea;
 
 public class LMControlAreaBasePanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener 
 {

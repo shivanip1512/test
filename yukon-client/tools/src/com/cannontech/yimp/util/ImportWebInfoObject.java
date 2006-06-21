@@ -6,13 +6,8 @@
  */
 package com.cannontech.yimp.util;
 import java.util.Vector;
-import java.sql.Connection;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import com.cannontech.database.PoolManager;
-import com.cannontech.common.util.CtiUtilities;
+
 import com.cannontech.database.db.importer.ImportFail;
-import com.cannontech.database.SqlStatement;
 
 /**
  * @author jdayton

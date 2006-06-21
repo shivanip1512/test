@@ -1,6 +1,5 @@
 package com.cannontech.database.model;
 
-import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.pao.PAOGroups;
 
 /**

@@ -15,19 +15,17 @@ public class Transaction
 	public static final int ADD_PARTIAL = 6;
 
 	private int operation;
-	private java.util.Date executeTimeStamp;
-   private com.cannontech.yukon.IDBPersistent db = null;
+	private com.cannontech.yukon.IDBPersistent db = null;
 	
 	private com.cannontech.database.db.DBPersistent object;
-	private String databaseAlias;
-/**
+
+ /**
  * Transaction constructor comment.
  */
 protected Transaction(int operation, com.cannontech.database.db.DBPersistent obj) {
 	super();
 	this.operation = operation;
 	this.object = obj;
-	this.databaseAlias = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
 }
 /**
  * Transaction constructor comment.
@@ -36,7 +34,6 @@ protected Transaction(int operation, com.cannontech.database.db.DBPersistent obj
 	super();
 	this.operation = operation;
 	this.object = obj;
-	this.databaseAlias = databaseAlias;
 }
 /**
  * This method was created in VisualAge.

@@ -1,6 +1,6 @@
 package com.cannontech.stars.util.task;
 
-import java.util.*;
+import java.util.ArrayList;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -9,21 +9,16 @@ import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.Pair;
 import com.cannontech.database.Transaction;
-import com.cannontech.database.TransactionException;
-import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.stars.hardware.LMHardwareBase;
-import com.cannontech.database.data.stars.report.WorkOrderBase;
 import com.cannontech.database.db.stars.hardware.InventoryBase;
 import com.cannontech.database.db.stars.hardware.Warehouse;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.stars.util.*;
 import com.cannontech.stars.util.ECUtils;
+import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.InventoryUtils;
-import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.bean.ManipulationBean;
@@ -119,7 +114,7 @@ public class ManipulateInventoryTask extends TimeConsumingTask {
         ArrayList descendants = ECUtils.getAllDescendants( currentCompany );
         ArrayList hwList = selectedInventory;
         /*boolean devTypeChanged = newDevTypeID != null && newDevTypeID.intValue() != devTypeID.intValue();
-		int devTypeDefID = YukonListFuncs.getYukonListEntry(devTypeID.intValue()).getYukonDefID();*/
+		int devTypeDefID = DaoFactory.getYukonListDao().getYukonListEntry(devTypeID.intValue()).getYukonDefID();*/
 		
 		numToBeUpdated = hwList.size();
 		if (numToBeUpdated == 0) 

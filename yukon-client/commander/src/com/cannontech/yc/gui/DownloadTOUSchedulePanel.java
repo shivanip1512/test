@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteTOUSchedule;
+import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * Insert the type's description here.
@@ -350,7 +351,7 @@ public class DownloadTOUSchedulePanel extends com.cannontech.common.gui.util.Dat
 	}
 	public void addItems()
 	{
-        DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+        IDatabaseCache cache = DefaultDatabaseCache.getInstance();
         List scheds = cache.getAllTOUSchedules();
         if( scheds != null)
         {

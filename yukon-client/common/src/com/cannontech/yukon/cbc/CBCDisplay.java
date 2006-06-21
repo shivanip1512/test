@@ -10,9 +10,8 @@ import com.cannontech.clientutils.commonutils.ModifiedDate;
 import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.cache.functions.PAOFuncs;
-import com.cannontech.database.cache.functions.StateFuncs;
 import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.capcontrol.CapControlSubBus;
 import com.cannontech.database.data.lite.LiteState;
@@ -20,7 +19,6 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOFactory;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.DBPersistent;
-import com.cannontech.database.db.capcontrol.CapControlSubstationBus;
 import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.roles.capcontrol.CBCSettingsRole;
 import com.cannontech.util.ColorUtil;
@@ -97,7 +95,7 @@ public class CBCDisplay
 	 */
 	public static LiteState[] getCBCStateNames()
 	{
-		return StateFuncs.getLiteStates( StateGroupUtils.STATEGROUPID_CAPBANK );		
+		return DaoFactory.getStateDao().getLiteStates( StateGroupUtils.STATEGROUPID_CAPBANK );		
 	}
 	
     /**
@@ -164,7 +162,7 @@ public class CBCDisplay
 
 			case CB_PARENT_COLUMN:
 			{
-				LiteYukonPAObject paoParent = PAOFuncs.getLiteYukonPAO( capBank.getParentID() );				
+				LiteYukonPAObject paoParent = DaoFactory.getPaoDao().getLiteYukonPAO( capBank.getParentID() );				
 				if( paoParent != null )
 					return paoParent;
 				else

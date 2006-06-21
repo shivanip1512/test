@@ -7,17 +7,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.cttp.data.CttpCmd;
 import com.cannontech.cttp.schema.cttp_GroupStatusGroupDetailType;
 import com.cannontech.cttp.schema.cttp_GroupStatusResponseType;
 import com.cannontech.cttp.schema.cttp_GroupStatusType;
 import com.cannontech.cttp.schema.cttp_OperationType;
-import com.cannontech.database.Transaction;
 import com.cannontech.database.data.device.lm.LMGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.pao.PAOFactory;
 
 
 /**

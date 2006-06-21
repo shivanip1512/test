@@ -15,8 +15,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.version.VersionTools;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.cache.StarsDatabaseCache;
-import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.integration.crs.YukonCRSIntegrator;
 import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.stars.web.util.TimerTaskUtil;
@@ -37,7 +37,7 @@ public class TimerTaskServlet extends HttpServlet {
 		
 		TimerTaskUtil.restartAllTimerTasks();
 		
-		String preloadData = RoleFuncs.getGlobalPropertyValue( SystemRole.STARS_PRELOAD_DATA );
+		String preloadData = DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.STARS_PRELOAD_DATA );
 		if (CtiUtilities.isTrue( preloadData ))
 			StarsDatabaseCache.getInstance().loadData();
 		

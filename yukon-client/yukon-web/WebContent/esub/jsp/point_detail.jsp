@@ -1,10 +1,6 @@
 <%@ page import="java.text.DecimalFormat" %>
 
-<%@ page import="com.cannontech.database.cache.functions.PointFuncs" %>
-<%@ page import="com.cannontech.database.cache.functions.StateFuncs" %>
-<%@ page import="com.cannontech.database.cache.functions.PAOFuncs" %>
-<%@ page import="com.cannontech.database.cache.functions.AuthFuncs" %>
-<%@ page import="com.cannontech.database.cache.functions.UnitMeasureFuncs" %>
+<%@ page import="com.cannontech.core.dao.DaoFactory" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject" %>
 <%@ page import="com.cannontech.database.data.lite.LitePoint" %>
 <%@ page import="com.cannontech.database.data.lite.LitePointUnit" %>
@@ -30,7 +26,7 @@
 	   
 	int pointID = Integer.parseInt(request.getParameter("pointid"));
 	boolean allowControl = Boolean.parseBoolean(request.getParameter("allowControl"));
-	LitePoint lPoint = PointFuncs.getLitePoint(pointID);	
+	LitePoint lPoint = DaoFactory.getPointDao().getLitePoint(pointID);	
 	String pointName = lPoint.getPointName();
 	int pointOffset = lPoint.getPointOffset();
 	double currentValue = PointChangeCache.getPointChangeCache().getValue(pointID).getValue();	
@@ -44,18 +40,18 @@
 		currentState = PointChangeCache.getPointChangeCache().getCurrentState(pointID).getStateText();
 	} 
 	else { // analog
-		LiteUnitMeasure lUOfM = UnitMeasureFuncs.getLiteUnitMeasureByPointID(pointID);
+		LiteUnitMeasure lUOfM = DaoFactory.getUnitMeasureDao().getLiteUnitMeasureByPointID(pointID);
 		if(lUOfM != null) {
 			uOfM = lUOfM.getUnitMeasureName();		
 		}
-	    LitePointUnit lpu = PointFuncs.getPointUnit(pointID);	
+	    LitePointUnit lpu = DaoFactory.getPointDao().getPointUnit(pointID);	
 		valueFormatter.setMaximumFractionDigits(lpu.getDecimalPlaces());
 		valueFormatter.setMinimumFractionDigits(lpu.getDecimalPlaces());	    		
 	}
 	
 	LiteYukonUser user = (LiteYukonUser) session.getAttribute(ServletUtil.ATT_YUKON_USER);
     boolean offerControl = (PointTypes.STATUS_POINT == lPoint.getPointType() &&
-    						AuthFuncs.checkRoleProperty(user, com.cannontech.roles.operator.EsubDrawingsRole.CONTROL) &&
+    						DaoFactory.getAuthDao().checkRoleProperty(user, com.cannontech.roles.operator.EsubDrawingsRole.CONTROL) &&
     						allowControl);
 %>
 <html>

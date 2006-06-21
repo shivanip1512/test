@@ -5,6 +5,7 @@ package com.cannontech.loadcontrol.gui;
  * Creation date: (9/19/00 10:16:41 AM)
  * @author: 
  */
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.datamodels.ControlAreaRowData;
 import com.cannontech.loadcontrol.datamodels.ControlAreaTriggerTableModel;
@@ -871,7 +872,7 @@ public void setGUIValues(final com.cannontech.loadcontrol.data.LMControlArea con
 				for( int i = 0; i < controlArea.getTriggerVector().size(); i++ )
 				{
 					com.cannontech.loadcontrol.data.LMControlAreaTrigger trigger = (com.cannontech.loadcontrol.data.LMControlAreaTrigger)controlArea.getTriggerVector().get(i);					
-					com.cannontech.database.data.lite.LitePoint pt = com.cannontech.database.cache.functions.PointFuncs.getLitePoint( trigger.getPointId().intValue() );
+					com.cannontech.database.data.lite.LitePoint pt = DaoFactory.getPointDao().getLitePoint( trigger.getPointId().intValue() );
 				  	ControlAreaRowData data = new ControlAreaRowData();
 				  	data.setLitePoint(pt);
 				  	data.setTrigger(trigger);

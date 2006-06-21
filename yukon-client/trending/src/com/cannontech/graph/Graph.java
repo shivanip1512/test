@@ -17,13 +17,11 @@ import org.w3c.dom.Element;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.cache.functions.GraphFuncs;
-import com.cannontech.database.cache.functions.PointFuncs;
-import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.graph.GraphDefinition;
 import com.cannontech.database.data.lite.LiteFactory;
@@ -39,13 +37,11 @@ import com.cannontech.graph.exportdata.ExportDataFile;
 import com.cannontech.graph.model.TrendModel;
 import com.cannontech.graph.model.TrendProperties;
 import com.cannontech.jfreechart.chart.YukonChartPanel;
-import com.cannontech.message.dispatch.ClientConnection;
-import com.cannontech.message.util.Command;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.Multi;
-import com.cannontech.message.dispatch.message.Registration;
-import com.cannontech.roles.yukon.SystemRole;
+import com.cannontech.message.util.Command;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.yukon.IDatabaseCache;
 import com.cannontech.yukon.IServerConnection;
 import com.cannontech.yukon.conns.ConnPool;
 
@@ -374,7 +370,7 @@ public void setGraphDefinition(int liteGraphDefinitionID)
 {
 	if( liteGraphDefinitionID > 0)
 	{
-		LiteGraphDefinition liteGraphDef = GraphFuncs.getLiteGraphDefinition(liteGraphDefinitionID);
+		LiteGraphDefinition liteGraphDef = DaoFactory.getGraphDao().getLiteGraphDefinition(liteGraphDefinitionID);
 		setGraphDefinition(liteGraphDef);
 	}
 }
@@ -695,7 +691,7 @@ public void update()
 			LitePoint [] lps = new LitePoint[pointIDs.length];
 			for(int i = 0; i < pointIDs.length; i++)
 			{
-				LitePoint lp = PointFuncs.getLitePoint(pointIDs[i]);
+				LitePoint lp = DaoFactory.getPointDao().getLitePoint(pointIDs[i]);
 				lps[i] = lp;
 				if( i > 0)
 					chartTitle += ", ";
@@ -727,7 +723,7 @@ public void getDataNow(java.util.List paobjects)
 
 	if( paobjects == null)
 	{	
-		DefaultDatabaseCache cache = new DefaultDatabaseCache();
+		IDatabaseCache cache = new DefaultDatabaseCache();
 		paobjects = cache.getAllDevices();	//populate our list of paobjects with all devices then!
 	}
 	

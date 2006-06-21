@@ -4,10 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.constants.*;
+import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.constants.YukonSelectionList;
+import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.Pair;
-import com.cannontech.database.*;
-import com.cannontech.database.cache.functions.AuthFuncs;
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteServiceCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -60,7 +63,7 @@ public class NonYukonMeterBean
     
     public boolean getManageMembers()
     {
-        return AuthFuncs.checkRoleProperty(currentUser, AdministratorRole.ADMIN_MANAGE_MEMBERS) && (energyCompany.getChildren().size() > 0);
+        return DaoFactory.getAuthDao().checkRoleProperty(currentUser, AdministratorRole.ADMIN_MANAGE_MEMBERS) && (energyCompany.getChildren().size() > 0);
     }
     
     public ArrayList getAvailableMembers()

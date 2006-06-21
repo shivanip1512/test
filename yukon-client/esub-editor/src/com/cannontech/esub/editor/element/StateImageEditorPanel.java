@@ -1,25 +1,41 @@
 package com.cannontech.esub.editor.element;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
-import java.util.*;
+import java.awt.Dimension;
+import java.awt.Frame;
+import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
-import javax.swing.*;
-import javax.swing.border.EtchedBorder;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.TreePath;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.editor.PropertyPanelEvent;
-import com.cannontech.common.gui.util.*;
+import com.cannontech.common.gui.util.DataInputPanel;
+import com.cannontech.common.gui.util.DataInputPanelListener;
+import com.cannontech.common.gui.util.TitleBorder;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.cache.functions.*;
-import com.cannontech.database.data.lite.*;
+import com.cannontech.database.data.lite.LiteBase;
+import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteState;
+import com.cannontech.database.data.lite.LiteStateGroup;
+import com.cannontech.database.data.lite.LiteYukonImage;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
@@ -533,7 +549,7 @@ public void resetPreviewPanelImages(LitePoint p)
     List images = new ArrayList(12);
     if(p != null)
     {
-        LiteStateGroup lsg = StateFuncs.getLiteStateGroup(p.getStateGroupID());
+        LiteStateGroup lsg = DaoFactory.getStateDao().getLiteStateGroup(p.getStateGroupID());
         List states = lsg.getStatesList();
         
         for(int i = 0; i < states.size(); i++) 
@@ -542,7 +558,7 @@ public void resetPreviewPanelImages(LitePoint p)
             LiteState state = (LiteState)states.get(i);
             int rawStateNumber = state.getStateRawState();
             
-            LiteYukonImage lyi = YukonImageFuncs.getLiteYukonImage(imgId); 
+            LiteYukonImage lyi = DaoFactory.getYukonImageDao().getLiteYukonImage(imgId); 
             ImageIcon icon; 
             if(lyi == null)
             {
@@ -591,7 +607,7 @@ public void resetPreviewPanelImages(LitePoint p)
 public void setPreviewPanelImages(LitePoint p) 
 {
     List images = new ArrayList(12);
-    LiteStateGroup lsg = StateFuncs.getLiteStateGroup(p.getStateGroupID());
+    LiteStateGroup lsg = DaoFactory.getStateDao().getLiteStateGroup(p.getStateGroupID());
     List states = lsg.getStatesList();
     
     for(int i = 0; i < states.size(); i++) 
@@ -606,7 +622,7 @@ public void setPreviewPanelImages(LitePoint p)
             imgId = new Integer((Integer)map.get(rawStateNumber)).intValue();
         }
         
-        LiteYukonImage lyi = YukonImageFuncs.getLiteYukonImage(imgId); 
+        LiteYukonImage lyi = DaoFactory.getYukonImageDao().getLiteYukonImage(imgId); 
         ImageIcon icon; 
         if(lyi == null)
         {

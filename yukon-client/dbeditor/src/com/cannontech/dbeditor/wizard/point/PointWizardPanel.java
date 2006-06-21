@@ -3,8 +3,8 @@ package com.cannontech.dbeditor.wizard.point;
 /**
  * This type was created in VisualAge.
  */
-import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.common.login.ClientSession;
+import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.roles.application.DBEditorRole;
 
 public class PointWizardPanel extends com.cannontech.common.wizard.WizardPanel

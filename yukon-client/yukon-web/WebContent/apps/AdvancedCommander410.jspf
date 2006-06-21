@@ -16,7 +16,7 @@ String channel_4Str = "Channel 4 (Volt Profile)";
 int channel_1ID = PointTypes.SYS_PID_SYSTEM;
 int channel_4ID = PointTypes.SYS_PID_SYSTEM;
 
-LitePoint [] litePoints = com.cannontech.database.cache.functions.PAOFuncs.getLitePointsForPAObject(deviceID);
+LitePoint [] litePoints = DaoFactory.getPaoDao().getLitePointsForPAObject(deviceID);
 if( litePoints != null)
 {
 	for (int i = 0; i < litePoints.length; i++)
@@ -453,7 +453,7 @@ function disableAllButtons()
 							  		  <td colspan="4"> 
 										<table width="100%" border="1" cellspacing="0" cellpadding="0" bordercolor="#FFFFFF" align="center">
 										  <tr>
-										    <td colspan="4" class="columnHeader" align="center"><%=liteYukonPao.getPaoName()%> - <%=(YC_BEAN.getPointID() == PointTypes.SYS_PID_SYSTEM?"Undefined Point":com.cannontech.database.cache.functions.PointFuncs.getPointName(YC_BEAN.getPointID()))%>
+										    <td colspan="4" class="columnHeader" align="center"><%=liteYukonPao.getPaoName()%> - <%=(YC_BEAN.getPointID() == PointTypes.SYS_PID_SYSTEM?"Undefined Point":DaoFactory.getPointDao().getPointName(YC_BEAN.getPointID()))%>
 						        			</td>										
 										  </tr>
 								  		  <tr> 
@@ -471,7 +471,7 @@ function disableAllButtons()
 												LiteRawPointHistory lrph;
 												lrph = (LiteRawPointHistory)lrphVector.get(0);	//use the first entry to load the decimal format
 												java.text.DecimalFormat df = new java.text.DecimalFormat("#0.000");
-												LitePointUnit lpu = PointFuncs.getPointUnit(lrph.getPointID());
+												LitePointUnit lpu = DaoFactory.getPointDao().getPointUnit(lrph.getPointID());
 												if( lpu != null){
 												  df.setMaximumFractionDigits(lpu.getDecimalPlaces());
 												  df.setMinimumFractionDigits(lpu.getDecimalPlaces());

@@ -6,7 +6,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Properties;
 
-import com.cannontech.database.cache.functions.YukonImageFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonImage;
 import com.cannontech.esub.Drawing;
 import com.cannontech.esub.element.persist.PersistStaticImage;
@@ -87,7 +87,7 @@ private void initialize() {
 	 * @param imageName
 	 */
 	public void setYukonImage(String imageName) {
-		setYukonImage(YukonImageFuncs.getLiteYukonImage(imageName));
+		setYukonImage(DaoFactory.getYukonImageDao().getLiteYukonImage(imageName));
 	}
 	
 	public void setImage(Image img) {

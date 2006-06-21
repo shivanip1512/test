@@ -9,9 +9,9 @@ package com.cannontech.tdc.alarms.gui;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import com.cannontech.message.dispatch.message.Signal;
 import com.cannontech.clientutils.tags.IAlarmDefs;
 import com.cannontech.clientutils.tags.TagUtils;
+import com.cannontech.message.dispatch.message.Signal;
 
 public class AlarmingRow 
 {

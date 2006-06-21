@@ -5,11 +5,11 @@ package com.cannontech.cttp.test;
 
 import java.io.ByteArrayInputStream;
 
+import junit.framework.TestCase;
+
 import com.cannontech.cttp.schema.cttp_OperationType;
 import com.cannontech.cttp.schema.cttp_UserLoginType;
 import com.cannontech.cttp.schema.cttp_dtd_v0r1Doc;
-
-import junit.framework.TestCase;
 
 /**
  * @author aaron

@@ -11,9 +11,8 @@ import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.MeterAndPointData;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.cache.functions.DeviceFuncs;
-import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOGroups;
@@ -207,7 +206,7 @@ public class MeterOutageModel extends ReportModelBase
 		if ( o instanceof MeterAndPointData)
 		{
 			MeterAndPointData meterPD = ((MeterAndPointData)o);
-			LiteYukonPAObject lPao = PAOFuncs.getLiteYukonPAO(meterPD.getPaobjectID().intValue());
+			LiteYukonPAObject lPao = DaoFactory.getPaoDao().getLiteYukonPAO(meterPD.getPaobjectID().intValue());
 			switch( columnIndex)
 			{
 				case DEVICE_NAME_COLUMN:
@@ -217,14 +216,14 @@ public class MeterOutageModel extends ReportModelBase
 				    return PAOGroups.getPAOTypeString(lPao.getType());
 				    
 				case METER_NUMBER_COLUMN:
-				    LiteDeviceMeterNumber ldmn = DeviceFuncs.getLiteDeviceMeterNumber(meterPD.getPaobjectID().intValue());
+				    LiteDeviceMeterNumber ldmn = DaoFactory.getDeviceDao().getLiteDeviceMeterNumber(meterPD.getPaobjectID().intValue());
 				    return ( ldmn == null ? null : ldmn.getMeterNumber());
 				    
 				case PHYSICAL_ADDRESS_COLUMN:
 				    return String.valueOf(lPao.getAddress());
 				    
 				case ROUTE_NAME_COLUMN:
-					return PAOFuncs.getYukonPAOName(lPao.getRouteID());
+					return DaoFactory.getPaoDao().getYukonPAOName(lPao.getRouteID());
 					
 				case DATE_TIME_COLUMN:
 				    return meterPD.getTimeStamp();

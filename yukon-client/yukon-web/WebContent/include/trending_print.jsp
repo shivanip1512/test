@@ -1,11 +1,12 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
+<%@ page import="com.cannontech.core.dao.DaoFactory" %>
 <%@ page import="com.cannontech.database.db.graph.GraphRenderers" %>
 <%@ page import="com.cannontech.roles.application.WebClientRole"%>
 <%@ page import="com.cannontech.util.ServletUtil" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
 <%	
 	LiteYukonUser lYukonUser = (LiteYukonUser) session.getAttribute(ServletUtil.ATT_YUKON_USER);
-	if (com.cannontech.database.cache.functions.YukonUserFuncs.getLiteYukonUser(lYukonUser.getUserID()) != lYukonUser)
+	if (DaoFactory.getYukonUserDao().getLiteYukonUser(lYukonUser.getUserID()) != lYukonUser)
 	{
 		// User login no longer valid
 		response.sendRedirect(request.getContextPath() + "/servlet/LoginController?ACTION=LOGOUT");

@@ -5,6 +5,7 @@ package com.cannontech.dbeditor.editor.point;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.yukon.IDatabaseCache;
 
 public class AccumulatorBasePanel extends com.cannontech.common.gui.util.DataInputPanel implements com.klg.jclass.util.value.JCValueListener, java.awt.event.ActionListener 
 {
@@ -611,7 +612,7 @@ private void initialize() {
 	
 	
 	//Load the unit of measure combo box with default possible values
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized(cache)
 	{
 		java.util.List allUnitMeasures = cache.getAllUnitMeasures();

@@ -4,14 +4,15 @@ package com.cannontech.dbeditor.wizard.device.lmprogram;
  * This type was created in VisualAge.
  */
 
+import java.util.Collections;
+
 import com.cannontech.common.gui.unchanging.DoubleRangeDocument;
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.database.data.device.lm.LMProgramBase;
-import com.cannontech.common.editor.PropertyPanelEvent;
-import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.device.lm.LMProgramDirect;
-import java.util.Collections;
+import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.pao.DeviceTypes;
+import com.cannontech.yukon.IDatabaseCache;
 
 public class LMProgramBasePanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
 	private javax.swing.JLabel ivjJLabelName = null;
@@ -363,7 +364,7 @@ private javax.swing.JComboBox getJComboBoxConstraint() {
 			ivjJComboBoxConstraint.setPreferredSize(new java.awt.Dimension(204, 23));
 			ivjJComboBoxConstraint.setMinimumSize(new java.awt.Dimension(204, 23));
 			// user code begin {1}
-			com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+			IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 			java.util.List constraints = cache.getAllLMProgramConstraints();
 			Collections.sort( constraints, LiteComparators.liteStringComparator );
 			for( int i = 0; i < constraints.size(); i++ )

@@ -5,8 +5,8 @@ package com.cannontech.database.data.point;
  */
 import com.cannontech.database.db.point.DynamicCalcHistorical;
 import com.cannontech.database.db.point.calculation.CalcBase;
-import com.cannontech.database.db.point.calculation.CalcPointBaseline;
 import com.cannontech.database.db.point.calculation.CalcComponent;
+import com.cannontech.database.db.point.calculation.CalcPointBaseline;
 
 public class CalcStatusPoint extends StatusPoint {
 	private CalcBase calcBase = null;

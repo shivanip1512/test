@@ -9,7 +9,7 @@ import java.util.Set;
 import org.apache.myfaces.custom.tree2.TreeNode;
 import org.apache.myfaces.custom.tree2.TreeNodeBase;
 
-import com.cannontech.database.cache.functions.PAOFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 
@@ -22,7 +22,7 @@ public class JSFTreeUtils {
 
         for (Iterator iter = points.iterator(); iter.hasNext();) {
             LitePoint litePoint = (LitePoint) iter.next();
-			LiteYukonPAObject device = PAOFuncs.getLiteYukonPAO(litePoint.getPaobjectID());            
+			LiteYukonPAObject device = DaoFactory.getPaoDao().getLiteYukonPAO(litePoint.getPaobjectID());            
 
             TreeNodeBase newParent = null;
             TreeNodeBase leaf = new TreeNodeBase("points",

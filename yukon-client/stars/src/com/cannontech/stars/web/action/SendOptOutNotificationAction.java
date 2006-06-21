@@ -11,9 +11,8 @@ import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.cache.StarsDatabaseCache;
-import com.cannontech.database.cache.functions.ContactFuncs;
-import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.stars.LiteAddress;
 import com.cannontech.database.data.lite.stars.LiteInterviewQuestion;
@@ -31,10 +30,10 @@ import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.StarsFactory;
+import com.cannontech.stars.xml.serialize.StarsEnergyCompanySettings;
 import com.cannontech.stars.xml.serialize.StarsExitInterviewQuestion;
 import com.cannontech.stars.xml.serialize.StarsExitInterviewQuestions;
 import com.cannontech.stars.xml.serialize.StarsFailure;
-import com.cannontech.stars.xml.serialize.StarsEnergyCompanySettings;
 import com.cannontech.stars.xml.serialize.StarsLMProgramEvent;
 import com.cannontech.stars.xml.serialize.StarsLMProgramHistory;
 import com.cannontech.stars.xml.serialize.StarsOperation;
@@ -181,7 +180,7 @@ public class SendOptOutNotificationAction implements ActionBase {
 		StringBuffer text = new StringBuffer();
 		text.append("Account #").append(liteAcctInfo.getCustomerAccount().getAccountNumber()).append(LINE_SEPARATOR);
         
-		LiteContact cont = ContactFuncs.getContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
+		LiteContact cont = DaoFactory.getContactDao().getContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
 		String name = StarsUtils.formatName( cont );
 		if (name.length() > 0)
 			text.append( name ).append(LINE_SEPARATOR);
@@ -202,11 +201,11 @@ public class SendOptOutNotificationAction implements ActionBase {
 		}
 		
 		String homePhone = StarsUtils.getNotification(
-				ContactFuncs.getContactNotification(cont, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE) );
+				DaoFactory.getContactDao().getContactNotification(cont, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE) );
 		String workPhone = StarsUtils.getNotification(
-				ContactFuncs.getContactNotification(cont, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE) );
+				DaoFactory.getContactDao().getContactNotification(cont, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE) );
 		String email = StarsUtils.getNotification(
-				ContactFuncs.getContactNotification(cont, YukonListEntryTypes.YUK_ENTRY_ID_EMAIL) );
+				DaoFactory.getContactDao().getContactNotification(cont, YukonListEntryTypes.YUK_ENTRY_ID_EMAIL) );
         
 		if (homePhone.length() > 0)
 			text.append(homePhone).append(LINE_SEPARATOR);
@@ -236,7 +235,7 @@ public class SendOptOutNotificationAction implements ActionBase {
 					
 					String groupName = "(none)";
 					if (liteApp.getAddressingGroupID() > 0)
-						groupName = PAOFuncs.getYukonPAOName( liteApp.getAddressingGroupID() );
+						groupName = DaoFactory.getPaoDao().getYukonPAOName( liteApp.getAddressingGroupID() );
 					text.append(", Group: ").append(groupName).append(LINE_SEPARATOR);
 					
 					hasAssignedProg = true;

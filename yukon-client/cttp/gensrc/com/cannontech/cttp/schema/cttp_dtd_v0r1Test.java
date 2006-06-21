@@ -13,7 +13,6 @@
 
 package com.cannontech.cttp.schema;
 
-import com.altova.xml.types.*;
 
 public class cttp_dtd_v0r1Test {
 	protected static void example() throws Exception {

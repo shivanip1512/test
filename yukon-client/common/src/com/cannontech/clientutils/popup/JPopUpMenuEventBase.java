@@ -1,5 +1,7 @@
 package com.cannontech.clientutils.popup;
 
+import javax.swing.event.EventListenerList;
+
 /**
  * Insert the type's description here.
  * Creation date: (2/22/2001 2:05:17 PM)

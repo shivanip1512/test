@@ -80,7 +80,7 @@ function disableButton(x)
           <td width="1" bgcolor="#000000"><img src=""../WebConfig/yukon/Icons/VerticalRule.gif"" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div class = "MainText" align="center">
-			  <% String header = AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_TITLE_CREATE_TREND); %>
+			  <% String header = DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_TITLE_CREATE_TREND); %>
 			  <%@ include file="include/InfoSearchBar.jspf" %>
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               
@@ -98,7 +98,7 @@ function disableButton(x)
                         </tr>
                         <%
                         //Get all trends available TODO (for this energy company only!!!)
-						DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+						IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 						synchronized( cache )
 						{
 						  int i = 0;

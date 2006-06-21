@@ -2,6 +2,8 @@ package com.cannontech.dbtools.tools;
 
 import java.sql.Connection;
 
+import com.cannontech.dbtools.diff.DBDiff;
+
 /**
  * @author rneuharth
  *

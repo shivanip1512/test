@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import com.cannontech.database.cache.functions.YukonImageFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonImage;
 import com.cannontech.esub.element.DrawingElement;
 import com.cannontech.esub.element.StaticImage;
@@ -37,7 +37,7 @@ public class PersistStaticImage extends BasePersistElement {
 				
 				case 1: {
 					int imgID = LxSaveUtils.readInt(in);
-					LiteYukonImage img = YukonImageFuncs.getLiteYukonImage(imgID);
+					LiteYukonImage img = DaoFactory.getYukonImageDao().getLiteYukonImage(imgID);
 					elem.setYukonImage(img);
 					elem.setLinkTo(LxSaveUtils.readString(in));
 				}

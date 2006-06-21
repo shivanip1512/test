@@ -5,7 +5,11 @@ package com.cannontech.tdc;
  */
 
 //import com.cannontech.message.dispatch.ClientConnection;
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.PointRegistration;
 import com.cannontech.message.dispatch.message.Registration;
@@ -13,10 +17,6 @@ import com.cannontech.message.dispatch.message.Signal;
 import com.cannontech.message.util.Message;
 import com.cannontech.tdc.data.Display;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
-import com.cannontech.message.dispatch.message.Multi;
-import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.cache.DefaultDatabaseCache;
 
 
 public class TDCClient extends com.cannontech.clientutils.ClientBase

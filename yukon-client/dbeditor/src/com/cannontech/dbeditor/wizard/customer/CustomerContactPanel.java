@@ -4,7 +4,7 @@ package com.cannontech.dbeditor.wizard.customer;
  */
 import javax.swing.ListSelectionModel;
 
-import com.cannontech.database.cache.functions.ContactFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.customer.Customer;
 import com.cannontech.database.data.lite.LiteContact;
 
@@ -186,7 +186,7 @@ private javax.swing.JComboBox getJComboBoxContacts() {
 			ivjJComboBoxContacts.setToolTipText("Contacts that are not already assigned to an existing customer");
 
 			//only make the unassigned contacts available
-			LiteContact[] contacts = ContactFuncs.getUnassignedContacts();
+			LiteContact[] contacts = DaoFactory.getContactDao().getUnassignedContacts();
 			for( int i = 0; i < contacts.length; i++ ) {
 				getJComboBoxContacts().addItem( contacts[i] );
 			}
@@ -591,7 +591,7 @@ public void setValue(Object o)
 
 	for( int i = 0; i < customer.getCustomerContactIDs().length; i++ )
 	{
-		LiteContact liteContact = ContactFuncs.getContact( customer.getCustomerContactIDs()[i] );
+		LiteContact liteContact = DaoFactory.getContactDao().getContact( customer.getCustomerContactIDs()[i] );
 		
 		getJTableModel().addRow( liteContact );
 	}

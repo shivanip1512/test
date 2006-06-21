@@ -12,9 +12,9 @@ import javax.xml.soap.SOAPMessage;
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.StarsDatabaseCache;
-import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.stars.LiteLMCustomerEvent;
 import com.cannontech.database.data.lite.stars.LiteLMThermostatSchedule;
@@ -163,7 +163,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 					return SOAPUtil.buildSOAPMessage( respOper );
 				}
 				
-				int hwTypeDefID = YukonListFuncs.getYukonListEntry(liteHw.getLmHardwareTypeID()).getYukonDefID();
+				int hwTypeDefID = DaoFactory.getYukonListDao().getYukonListEntry(liteHw.getLmHardwareTypeID()).getYukonDefID();
 				LiteLMThermostatSchedule dftSchedule = energyCompany.getDefaultThermostatSchedule(hwTypeDefID);
 				LiteLMThermostatSchedule liteSchedule = liteHw.getThermostatSettings().getThermostatSchedule();
 				
@@ -596,7 +596,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 	{
 		StarsUpdateThermostatScheduleResponse resp = new StarsUpdateThermostatScheduleResponse();
 		
-		int hwTypeDefID = YukonListFuncs.getYukonListEntry(liteSchedule.getThermostatTypeID()).getYukonDefID();
+		int hwTypeDefID = DaoFactory.getYukonListDao().getYukonListEntry(liteSchedule.getThermostatTypeID()).getYukonDefID();
 		LiteLMThermostatSchedule liteDftSchedule = energyCompany.getDefaultThermostatSchedule(hwTypeDefID);
 		
 		java.sql.Connection conn = null;

@@ -5,7 +5,7 @@ import java.io.IOException;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
-import com.cannontech.database.cache.functions.AuthFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 /**
@@ -33,7 +33,7 @@ public class CheckMultiRole extends BodyTagSupport {
 		while (st.hasMoreTokens()) {
 			try {
 				int rid = Integer.parseInt( st.nextToken() );
-				if (AuthFuncs.checkRole(user, rid) != null) return EVAL_BODY_INCLUDE;
+				if (DaoFactory.getAuthDao().checkRole(user, rid) != null) return EVAL_BODY_INCLUDE;
 			}
 			catch (NumberFormatException e) {
 				throw new JspException( e.getMessage() );

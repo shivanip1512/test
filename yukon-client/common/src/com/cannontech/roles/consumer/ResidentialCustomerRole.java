@@ -1,6 +1,6 @@
 package com.cannontech.roles.consumer;
 
-import com.cannontech.roles.*;
+import com.cannontech.roles.ConsumerRoleDefs;
 
 /**
  * @author yao

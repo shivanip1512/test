@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.net.*;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.database.cache.functions.RoleFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.message.util.Message;
 import com.cannontech.notif.outputs.OutputHandlerHelper;
 import com.cannontech.roles.yukon.SystemRole;
@@ -44,10 +44,10 @@ public class NotificationServer implements Runnable, NotificationServerMBean
 
 	public NotificationServer() {
 		setBindAddress(
-                RoleFuncs.getGlobalPropertyValue(SystemRole.NOTIFICATION_HOST) );
+                DaoFactory.getRoleDao().getGlobalPropertyValue(SystemRole.NOTIFICATION_HOST) );
         
         setPort( Integer.parseInt(
-                RoleFuncs.getGlobalPropertyValue(SystemRole.NOTIFICATION_PORT) ) );        
+                DaoFactory.getRoleDao().getGlobalPropertyValue(SystemRole.NOTIFICATION_PORT) ) );        
 	}
 
 	public int getBacklog() {

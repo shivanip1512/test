@@ -1,6 +1,5 @@
 package com.cannontech.cbc.web;
 
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.data.point.PointQualities;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.message.dispatch.message.Multi;

@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.cache.functions.YukonListFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.stars.util.InventoryUtils;
@@ -255,7 +255,7 @@ public class LiteInventoryBase extends LiteBase {
 		
 		for (int i = invHist.size() - 1; i >= 0; i--) {
 			LiteLMHardwareEvent liteEvent = (LiteLMHardwareEvent) invHist.get(i);
-			YukonListEntry entry = YukonListFuncs.getYukonListEntry( liteEvent.getActionID() );
+			YukonListEntry entry = DaoFactory.getYukonListDao().getYukonListEntry( liteEvent.getActionID() );
 			
 			if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED
 				|| isSA && entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_CONFIG)

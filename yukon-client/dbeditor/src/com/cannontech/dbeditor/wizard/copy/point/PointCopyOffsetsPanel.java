@@ -1,10 +1,11 @@
 package com.cannontech.dbeditor.wizard.copy.point;
 
-import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.database.data.point.PointBase;
-import com.cannontech.database.data.point.AnalogPoint;
 import com.cannontech.database.data.point.AccumulatorPoint;
+import com.cannontech.database.data.point.AnalogPoint;
+import com.cannontech.database.data.point.PointBase;
+import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.StatusPoint;
+import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * This type was created in VisualAge.
@@ -644,7 +645,7 @@ public void setCopyValue(Object val, int newDeviceID)
 	getUsedPointOffsetLabel().setText("");
 	usedPointOffsetsVector = new java.util.Vector();
 	
-	com.cannontech.database.cache.DefaultDatabaseCache cache =
+	IDatabaseCache cache =
 		com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized (cache)
 {

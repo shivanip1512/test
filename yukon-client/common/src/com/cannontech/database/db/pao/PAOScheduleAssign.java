@@ -1,9 +1,10 @@
 package com.cannontech.database.db.pao;
 
+import java.util.Vector;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.DBPersistent;
-import java.util.Vector;
 
 /**
  * DB object for the table PAOSchedule

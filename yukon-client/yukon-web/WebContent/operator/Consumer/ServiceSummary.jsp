@@ -1,5 +1,5 @@
+<%@ page import="com.cannontech.core.dao.DaoFactory" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteWorkOrderBase" %>
-<%@ page import="com.cannontech.database.cache.functions.YukonListFuncs" %>
 <%@ include file="include/StarsHeader.jsp" %>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <html>
@@ -60,7 +60,7 @@ function checkOrderNo(form) {
           <td width="657" valign="top" bgcolor="#FFFFFF">
               
             <div align="center"> 
-              <% String header = AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_TITLE_SERVICE_HISTORY); %>
+              <% String header = DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_TITLE_SERVICE_HISTORY); %>
               <%@ include file="include/InfoSearchBar.jspf" %>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               <span class="MainText">Click on an Order # to view the complete 
@@ -92,8 +92,8 @@ function checkOrderNo(form) {
               <tr valign="middle"> 
                 <td width="12%" class="TableCell"><a href="SOHistory.jsp?OrderNo=<%= i %>" class="Link1"><%= liteOrder.getOrderNumber() %></a></td>
                 <td width="12%" class="TableCell"><%= ServletUtils.formatDate(liteOrder.getEventWorkOrders().get(0).getEventBase().getEventTimestamp(), dateTimeFormat) %></td>
-                <td width="12%" class="TableCell"><%= ServletUtils.forceNotEmpty(YukonListFuncs.getYukonListEntry(liteOrder.getWorkTypeID()).getEntryText()) %></td>
-                <td width="12%" class="TableCell"><%= ServletUtils.forceNotEmpty(YukonListFuncs.getYukonListEntry(liteOrder.getCurrentStateID()).getEntryText()) %></td>
+                <td width="12%" class="TableCell"><%= ServletUtils.forceNotEmpty(DaoFactory.getYukonListDao().getYukonListEntry(liteOrder.getWorkTypeID()).getEntryText()) %></td>
+                <td width="12%" class="TableCell"><%= ServletUtils.forceNotEmpty(DaoFactory.getYukonListDao().getYukonListEntry(liteOrder.getCurrentStateID()).getEntryText()) %></td>
                 <td width="12%" class="TableCell"><%= ServletUtils.forceNotEmpty(liteOrder.getOrderedBy()) %></td>
                 <td width="12%" class="TableCell"><%= ServletUtils.forceNotEmpty(companyName) %></td>
                 <td width="28%"> 

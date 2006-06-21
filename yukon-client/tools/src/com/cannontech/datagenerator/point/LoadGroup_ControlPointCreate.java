@@ -1,16 +1,17 @@
 package com.cannontech.datagenerator.point;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointFactory;
-import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.data.point.StatusPoint;
 import com.cannontech.database.db.point.Point;
 import com.cannontech.database.db.point.PointStatus;
+import com.cannontech.yukon.IDatabaseCache;
 /**
  * @author snebben
  *
@@ -204,7 +205,7 @@ public class LoadGroup_ControlPointCreate extends PointCreate
 	 */
 	protected void getLoadGroupVector(java.util.Vector deviceVector)
 	{
-		com.cannontech.database.cache.DefaultDatabaseCache cache =
+		IDatabaseCache cache =
 			com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	
 		synchronized (cache)

@@ -2,12 +2,8 @@ package com.cannontech.dbeditor.wizard.customer;
 /**
  * This type was created in VisualAge.
  */
-import java.awt.Dimension;
-
 import com.cannontech.common.gui.util.TextFieldDocument;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.customer.IAddress;
-import com.cannontech.database.db.customer.Address;
 
 public class AddressPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
 	private javax.swing.JComboBox ivjJComboBoxState = null;

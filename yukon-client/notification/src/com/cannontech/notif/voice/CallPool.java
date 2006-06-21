@@ -7,7 +7,8 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.database.cache.functions.*;
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.UnknownRolePropertyException;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.notif.voice.callstates.*;
@@ -38,18 +39,18 @@ public class CallPool implements PropertyChangeListener, CallPoolMBean {
     private boolean _shutdown = false;
 
     public CallPool(LiteEnergyCompany energyCompany) throws UnknownRolePropertyException {
-        LiteYukonUser user = YukonUserFuncs.getLiteYukonUser(energyCompany.getUserID());
+        LiteYukonUser user = DaoFactory.getYukonUserDao().getLiteYukonUser(energyCompany.getUserID());
 
-        String voiceHost = RoleFuncs.getGlobalPropertyValue(SystemRole.VOICE_HOST);
-        String voiceApp = AuthFuncs.getRolePropertyValueEx(user, IvrRole.VOICE_APP);
+        String voiceHost = DaoFactory.getRoleDao().getGlobalPropertyValue(SystemRole.VOICE_HOST);
+        String voiceApp = DaoFactory.getAuthDao().getRolePropertyValueEx(user, IvrRole.VOICE_APP);
 
         VocomoDialer dialer = new VocomoDialer(voiceHost, voiceApp);
-        dialer.setPhonePrefix(RoleFuncs.getGlobalPropertyValue(VoiceServerRole.CALL_PREFIX));
-        dialer.setCallTimeout(Integer.parseInt(RoleFuncs.getGlobalPropertyValue(VoiceServerRole.CALL_TIMEOUT)));
+        dialer.setPhonePrefix(DaoFactory.getRoleDao().getGlobalPropertyValue(VoiceServerRole.CALL_PREFIX));
+        dialer.setCallTimeout(Integer.parseInt(DaoFactory.getRoleDao().getGlobalPropertyValue(VoiceServerRole.CALL_TIMEOUT)));
         _dialer = dialer;
         
-        _callTimeoutSeconds = Integer.parseInt(RoleFuncs.getGlobalPropertyValue(VoiceServerRole.CALL_RESPONSE_TIMEOUT));
-        int numberOfChannels = Integer.parseInt(AuthFuncs.getRolePropertyValueEx(user, IvrRole.NUMBER_OF_CHANNELS));
+        _callTimeoutSeconds = Integer.parseInt(DaoFactory.getRoleDao().getGlobalPropertyValue(VoiceServerRole.CALL_RESPONSE_TIMEOUT));
+        int numberOfChannels = Integer.parseInt(DaoFactory.getAuthDao().getRolePropertyValueEx(user, IvrRole.NUMBER_OF_CHANNELS));
 
         _timerTasks = new ConcurrentHashMap<Call, TimerTask>(30, .75f, numberOfChannels + 1);
         _pendingCalls = new ConcurrentHashMap<String, Call>(30, .75f, numberOfChannels + 1);

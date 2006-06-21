@@ -5,7 +5,7 @@ import java.util.GregorianCalendar;
 
 import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.cache.functions.PointFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.graph.GDSTypes;
@@ -166,7 +166,7 @@ public Object getGDSAttribute(int index, GraphDataSeries gds) {
 			if( id.intValue() == PointTypes.SYS_PID_THRESHOLD)
 				return "Marker";
 			
-			LitePoint pt = PointFuncs.getLitePoint( id.intValue() );
+			LitePoint pt = DaoFactory.getPointDao().getLitePoint( id.intValue() );
 			if( pt != null )
 				return pt.getPointName();	
 		break;

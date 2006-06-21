@@ -1,18 +1,18 @@
 <%
 	// Table of (link, page name) pairs
-	String linkPairs[][] = {{"General.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_GENERAL)},
-						  {"Contacts.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_CONTACTS)},
+	String linkPairs[][] = {{"General.jsp", DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_GENERAL)},
+						  {"Contacts.jsp", DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_CONTACTS)},
 						  {"TOU.jsp", "Usage"},
-						  {"ProgramHist.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_CONTROL_HISTORY)},
-						  {"Enrollment.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_ENROLLMENT)},
-						  {"OptOut.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_OPT_OUT)},
-						  {"Util.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_CONTACT_US)},
-						  {"FAQ.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_FAQ)},
-						  {"Password.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_CHANGE_LOGIN)},
+						  {"ProgramHist.jsp", DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_CONTROL_HISTORY)},
+						  {"Enrollment.jsp", DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_ENROLLMENT)},
+						  {"OptOut.jsp", DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_OPT_OUT)},
+						  {"Util.jsp", DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_CONTACT_US)},
+						  {"FAQ.jsp", DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_FAQ)},
+						  {"Password.jsp", DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_CHANGE_LOGIN)},
 						 };
 
-	String bulletImg = "<img src='../../../WebConfig/" + AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED) + "' width='9' height='9'>";
-	String bulletImgExp = "<img src='../../../WebConfig/" + AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_EXPAND) + "' width='9' height='9'>";
+	String bulletImg = "<img src='../../../WebConfig/" + DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED) + "' width='9' height='9'>";
+	String bulletImgExp = "<img src='../../../WebConfig/" + DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_EXPAND) + "' width='9' height='9'>";
 	
 	// List of String[] (link image, link html)
 	Hashtable links = new Hashtable();
@@ -291,22 +291,22 @@ pageLinks = new Array(<%= thermostats.getStarsInventoryCount() %>);
   &nbsp;&#149;&nbsp;Change Label
   </div>
   <div id="thermostatMenuItem" name="thermostatMenuItem" style="width:100px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "showPage(1)">
-  &nbsp;&nbsp;&nbsp;<%= AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_SCHED) %>
+  &nbsp;&nbsp;&nbsp;<%= DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_SCHED) %>
   </div>
   <div id="thermostatMenuItemSelected" name="thermostatMenuItemSelected" style="width:100px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "showPage(1)">
-  &nbsp;&#149;&nbsp;<%= AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_SCHED) %>
+  &nbsp;&#149;&nbsp;<%= DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_SCHED) %>
   </div>
   <div id="thermostatMenuItem" name="thermostatMenuItem" style="width:100px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "showPage(2)">
-  &nbsp;&nbsp;&nbsp;<%= AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_MANUAL) %>
+  &nbsp;&nbsp;&nbsp;<%= DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_MANUAL) %>
   </div>
   <div id="thermostatMenuItemSelected" name="thermostatMenuItemSelected" style="width:100px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "showPage(2)">
-  &nbsp;&#149;&nbsp;<%= AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_MANUAL) %>
+  &nbsp;&#149;&nbsp;<%= DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_MANUAL) %>
   </div>
   <div id="thermostatMenuItem" name="thermostatMenuItem" style="width:100px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "showPage(3)">
-  &nbsp;&nbsp;&nbsp;<%= AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_SAVED_SCHED) %>
+  &nbsp;&nbsp;&nbsp;<%= DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_SAVED_SCHED) %>
   </div>
   <div id="thermostatMenuItemSelected" name="thermostatMenuItemSelected" style="width:100px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "showPage(3)">
-  &nbsp;&#149;&nbsp;<%= AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_SAVED_SCHED) %>
+  &nbsp;&#149;&nbsp;<%= DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_SAVED_SCHED) %>
   </div>
 </div>
 
@@ -318,15 +318,15 @@ pageLinks = new Array(<%= thermostats.getStarsInventoryCount() %>);
   &nbsp;&#149;&nbsp;Select Thermostats
   </div>
   <div id="thermostatAllMenuItem" name="thermostatAllMenuItem" style="width:100px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "showPage(1)">
-  &nbsp;&nbsp;&nbsp;<%= AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_SCHED) %>
+  &nbsp;&nbsp;&nbsp;<%= DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_SCHED) %>
   </div>
   <div id="thermostatAllMenuItemSelected" name="thermostatAllMenuItemSelected" style="width:100px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "showPage(1)">
-  &nbsp;&#149;&nbsp;<%= AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_SCHED) %>
+  &nbsp;&#149;&nbsp;<%= DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_SCHED) %>
   </div>
   <div id="thermostatAllMenuItem" name="thermostatAllMenuItem" style="width:100px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "showPage(2)">
-  &nbsp;&nbsp;&nbsp;<%= AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_MANUAL) %>
+  &nbsp;&nbsp;&nbsp;<%= DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_MANUAL) %>
   </div>
   <div id="thermostatAllMenuItemSelected" name="thermostatAllMenuItemSelected" style="width:100px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "showPage(2)">
-  &nbsp;&#149;&nbsp;<%= AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_MANUAL) %>
+  &nbsp;&#149;&nbsp;<%= DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_MANUAL) %>
   </div>
 </div>

@@ -6,10 +6,10 @@ package com.cannontech.loadcontrol.gui;
  * @author: 
  */
 import java.awt.BorderLayout;
+
 import javax.swing.JTable;
 
-import com.cannontech.database.cache.functions.PointFuncs;
-import com.cannontech.database.cache.functions.StateFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.db.device.lm.IlmDefines;
@@ -207,12 +207,12 @@ public class MultiLineControlAreaRenderer extends javax.swing.JPanel implements 
 		{
 			case ControlAreaTableModel.VALUE_THRESHOLD:
 			{
-				LitePoint point = PointFuncs.getLitePoint( trigger.getPointId().intValue() );
+				LitePoint point = DaoFactory.getPointDao().getLitePoint( trigger.getPointId().intValue() );
 			
 				if( IlmDefines.TYPE_STATUS.equalsIgnoreCase(trigger.getTriggerType()) )
 				{
-					LiteState lsVal = StateFuncs.getLiteState( point.getStateGroupID(), trigger.getPointValue().intValue() );
-					LiteState lsThresh = StateFuncs.getLiteState( point.getStateGroupID(), trigger.getThreshold().intValue() );
+					LiteState lsVal = DaoFactory.getStateDao().getLiteState( point.getStateGroupID(), trigger.getPointValue().intValue() );
+					LiteState lsThresh = DaoFactory.getStateDao().getLiteState( point.getStateGroupID(), trigger.getThreshold().intValue() );
 					
 					strBuf.append(
 						(lsVal == null ? "(Unknown State)" : lsVal.getStateText()) +

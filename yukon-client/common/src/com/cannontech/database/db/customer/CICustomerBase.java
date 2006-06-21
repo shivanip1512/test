@@ -2,8 +2,8 @@ package com.cannontech.database.db.customer;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.db.device.lm.LMProgramCurtailCustomerList;
 import com.cannontech.database.SqlStatement;
+import com.cannontech.database.db.device.lm.LMProgramCurtailCustomerList;
 
 /**
  * This type was created in VisualAge.

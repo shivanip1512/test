@@ -1,7 +1,11 @@
 package com.cannontech.servlet;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -11,32 +15,58 @@ import javax.servlet.http.HttpSession;
 
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.constants.*;
+import com.cannontech.common.constants.YukonListEntry;
+import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
-import com.cannontech.database.*;
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.StarsDatabaseCache;
-import com.cannontech.database.cache.functions.PAOFuncs;
-import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.lite.stars.*;
+import com.cannontech.database.data.lite.stars.LiteInventoryBase;
+import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
+import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.stars.hardware.MeterHardwareBase;
 import com.cannontech.database.data.stars.purchasing.PurchasingMultiDelete;
-import com.cannontech.database.db.stars.hardware.Warehouse;
-import com.cannontech.database.db.stars.purchasing.*;
-import com.cannontech.database.cache.functions.AuthFuncs;
+import com.cannontech.database.db.stars.purchasing.DeliverySchedule;
+import com.cannontech.database.db.stars.purchasing.Invoice;
+import com.cannontech.database.db.stars.purchasing.PurchasePlan;
+import com.cannontech.database.db.stars.purchasing.ScheduleTimePeriod;
+import com.cannontech.database.db.stars.purchasing.Shipment;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.roles.operator.ConsumerInfoRole;
-import com.cannontech.stars.util.*;
-import com.cannontech.stars.util.task.*;
+import com.cannontech.stars.util.ECUtils;
+import com.cannontech.stars.util.FilterWrapper;
+import com.cannontech.stars.util.InventoryUtils;
+import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
+import com.cannontech.stars.util.ProgressChecker;
+import com.cannontech.stars.util.ServerUtils;
+import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.util.SwitchCommandQueue;
+import com.cannontech.stars.util.WebClientException;
+import com.cannontech.stars.util.task.AddSNRangeTask;
+import com.cannontech.stars.util.task.AddShipmentSNRangeTask;
+import com.cannontech.stars.util.task.ConfigSNRangeTask;
+import com.cannontech.stars.util.task.DeleteSNRangeTask;
+import com.cannontech.stars.util.task.ManipulateInventoryTask;
+import com.cannontech.stars.util.task.TimeConsumingTask;
+import com.cannontech.stars.util.task.UpdateSNRangeTask;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.action.CreateLMHardwareAction;
 import com.cannontech.stars.web.action.DeleteLMHardwareAction;
+import com.cannontech.stars.web.action.MultiAction;
 import com.cannontech.stars.web.action.UpdateLMHardwareAction;
 import com.cannontech.stars.web.action.UpdateLMHardwareConfigAction;
 import com.cannontech.stars.web.action.YukonSwitchCommandAction;
+import com.cannontech.stars.web.bean.InventoryBean;
+import com.cannontech.stars.web.bean.ManipulationBean;
+import com.cannontech.stars.web.bean.NonYukonMeterBean;
+import com.cannontech.stars.web.bean.PurchaseBean;
 import com.cannontech.stars.web.util.InventoryManagerUtil;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.DeviceType;
@@ -49,11 +79,8 @@ import com.cannontech.stars.xml.serialize.StarsInventory;
 import com.cannontech.stars.xml.serialize.StarsLMConfiguration;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsUpdateLMHardware;
-import com.cannontech.web.navigation.CtiNavObject;
-import com.cannontech.stars.web.action.MultiAction;
-import com.cannontech.stars.web.bean.*;
-import com.cannontech.stars.util.FilterWrapper;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.web.navigation.CtiNavObject;
 
 
 /**
@@ -346,7 +373,7 @@ public class InventoryManager extends HttpServlet {
 			return;
 		}
 		
-		LiteYukonPAObject litePao = PAOFuncs.getLiteYukonPAO( deviceID );
+		LiteYukonPAObject litePao = DaoFactory.getPaoDao().getLiteYukonPAO( deviceID );
 		Integer invNo = (Integer) session.getAttribute( InventoryManagerUtil.STARS_INVENTORY_NO );
 		
 		if (liteInv == null || liteInv.getAccountID() == CtiUtilities.NONE_ZERO_ID) {
@@ -445,7 +472,7 @@ public class InventoryManager extends HttpServlet {
 								energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT), DeviceType.class) );
 						
 						MCT mct = new MCT();
-						mct.setDeviceName( PAOFuncs.getYukonPAOName(deviceID) );
+						mct.setDeviceName( DaoFactory.getPaoDao().getYukonPAOName(deviceID) );
 						starsInv.setMCT( mct );
 					}
 					
@@ -479,7 +506,7 @@ public class InventoryManager extends HttpServlet {
 	private void checkInventory(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 		
-		boolean invChecking = AuthFuncs.checkRoleProperty(user.getYukonUser(), ConsumerInfoRole.INVENTORY_CHECKING);
+		boolean invChecking = DaoFactory.getAuthDao().checkRoleProperty(user.getYukonUser(), ConsumerInfoRole.INVENTORY_CHECKING);
 		
 		int devTypeID = Integer.parseInt( req.getParameter("DeviceType") );
 		String serialNo = req.getParameter("SerialNo");
@@ -491,7 +518,7 @@ public class InventoryManager extends HttpServlet {
 			// Save the request parameters
 			StarsInventory starsInv = (StarsInventory) StarsFactory.newStarsInv(StarsInventory.class);
 			starsInv.setDeviceType( (DeviceType)StarsFactory.newStarsCustListEntry(
-					YukonListFuncs.getYukonListEntry(devTypeID), DeviceType.class) );
+					DaoFactory.getYukonListDao().getYukonListEntry(devTypeID), DeviceType.class) );
 			
 			if (InventoryUtils.isLMHardware(categoryID)) {
 				LMHardware hw = new LMHardware();
@@ -1263,7 +1290,7 @@ public class InventoryManager extends HttpServlet {
 		session.setAttribute( ServletUtils.ATT_LAST_INVENTORY_SEARCH_OPTION, new Integer(searchBy) );
         session.setAttribute( ServletUtils.ATT_LAST_INVENTORY_SEARCH_VALUE, new String(searchValue) );
 		
-		boolean searchMembers = AuthFuncs.checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS )
+		boolean searchMembers = DaoFactory.getAuthDao().checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS )
 				&& (energyCompany.getChildren().size() > 0);
 		
 		ArrayList invList = null;
@@ -1407,7 +1434,7 @@ public class InventoryManager extends HttpServlet {
 	 */
 	private void selectDevice(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		int deviceID = Integer.parseInt( req.getParameter("DeviceID") );
-		LiteYukonPAObject litePao = PAOFuncs.getLiteYukonPAO( deviceID );
+		LiteYukonPAObject litePao = DaoFactory.getPaoDao().getLiteYukonPAO( deviceID );
 		session.setAttribute(InventoryManagerUtil.DEVICE_SELECTED, litePao);
 		
 		redirect = (String) session.getAttribute( ServletUtils.ATT_REDIRECT );

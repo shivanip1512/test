@@ -5,12 +5,11 @@ import java.sql.ResultSet;
 import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.version.VersionTools;
-import com.cannontech.database.PoolManager;
-import com.cannontech.database.cache.functions.ContactFuncs;
-import com.cannontech.database.db.contact.Contact;
-import com.cannontech.database.db.customer.Customer;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.version.VersionTools;
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.PoolManager;
+import com.cannontech.database.db.customer.Customer;
 
 /**
  * @author yao
@@ -132,7 +131,7 @@ public class LiteCustomer extends LiteBase {
                 getAdditionalContacts().removeAllElements();
                 
                 while(rset.next()) //add the LiteContact to this Customer
-                    getAdditionalContacts().add( ContactFuncs.getContact( rset.getInt(1)) );
+                    getAdditionalContacts().add( DaoFactory.getContactDao().getContact( rset.getInt(1)) );
     
                 pstmt.close();
                 

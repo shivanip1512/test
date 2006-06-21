@@ -9,9 +9,8 @@ import javax.servlet.http.HttpServletRequest;
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.cache.functions.DeviceFuncs;
-import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOGroups;
@@ -69,17 +68,17 @@ public class RouteDBModel extends ReportModelBase
 	{
 		public int compare(Object o1, Object o2){
 
-		    LiteYukonPAObject pao1 = PAOFuncs.getLiteYukonPAO( ((Integer)o1).intValue());
-		    LiteYukonPAObject pao2 = PAOFuncs.getLiteYukonPAO( ((Integer)o2).intValue());
+		    LiteYukonPAObject pao1 = DaoFactory.getPaoDao().getLiteYukonPAO( ((Integer)o1).intValue());
+		    LiteYukonPAObject pao2 = DaoFactory.getPaoDao().getLiteYukonPAO( ((Integer)o2).intValue());
 	        
 		    //Always sort by routeName first
-		    String thisVal = PAOFuncs.getYukonPAOName(pao1.getRouteID());
-		    String anotherVal = PAOFuncs.getYukonPAOName(pao2.getRouteID());
+		    String thisVal = DaoFactory.getPaoDao().getYukonPAOName(pao1.getRouteID());
+		    String anotherVal = DaoFactory.getPaoDao().getYukonPAOName(pao2.getRouteID());
 			
 			if( thisVal.equalsIgnoreCase(anotherVal))
 			{
-			    LiteDeviceMeterNumber ldmn1 = DeviceFuncs.getLiteDeviceMeterNumber( ((Integer)o1).intValue());
-			    LiteDeviceMeterNumber ldmn2 = DeviceFuncs.getLiteDeviceMeterNumber( ((Integer)o2).intValue());
+			    LiteDeviceMeterNumber ldmn1 = DaoFactory.getDeviceDao().getLiteDeviceMeterNumber( ((Integer)o1).intValue());
+			    LiteDeviceMeterNumber ldmn2 = DaoFactory.getDeviceDao().getLiteDeviceMeterNumber( ((Integer)o2).intValue());
 				    
 			    if( getOrderBy() == ORDER_BY_COLL_GRP)
 			    {
@@ -94,8 +93,8 @@ public class RouteDBModel extends ReportModelBase
 	
 			    if (getOrderBy() == ORDER_BY_METER_NAME || thisVal.equalsIgnoreCase(anotherVal))
 			    {
-			        thisVal = PAOFuncs.getYukonPAOName(pao1.getYukonID());
-			        anotherVal = PAOFuncs.getYukonPAOName(pao2.getYukonID());
+			        thisVal = DaoFactory.getPaoDao().getYukonPAOName(pao1.getYukonID());
+			        anotherVal = DaoFactory.getPaoDao().getYukonPAOName(pao2.getYukonID());
 				}
 			}
 			return (thisVal.compareToIgnoreCase(anotherVal));
@@ -236,8 +235,8 @@ public class RouteDBModel extends ReportModelBase
 	{
 		if ( o instanceof Integer)	//Integer is the PaobjectID
 		{
-		    LiteYukonPAObject lPao = PAOFuncs.getLiteYukonPAO(((Integer)o).intValue());
-		    LiteDeviceMeterNumber ldmn = DeviceFuncs.getLiteDeviceMeterNumber( ((Integer)o).intValue());		    
+		    LiteYukonPAObject lPao = DaoFactory.getPaoDao().getLiteYukonPAO(((Integer)o).intValue());
+		    LiteDeviceMeterNumber ldmn = DaoFactory.getDeviceDao().getLiteDeviceMeterNumber( ((Integer)o).intValue());		    
 			switch( columnIndex)
 			{
 				case METER_NAME_COLUMN:
@@ -253,7 +252,7 @@ public class RouteDBModel extends ReportModelBase
 					return String.valueOf(lPao.getAddress());
 	
 				case ROUTE_NAME_COLUMN:
-					return PAOFuncs.getYukonPAOName(lPao.getRouteID());
+					return DaoFactory.getPaoDao().getYukonPAOName(lPao.getRouteID());
 				
 				case COLL_GROUP_NAME_COLUMN:
 					return (ldmn == null ? NULL_STRING : ldmn.getCollGroup());

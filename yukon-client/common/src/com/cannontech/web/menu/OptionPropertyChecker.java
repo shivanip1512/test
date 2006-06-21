@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import org.apache.commons.lang.BooleanUtils;
 
-import com.cannontech.database.cache.functions.AuthFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.util.ReflectivePropertySearcher;
 
@@ -38,7 +38,7 @@ public abstract class OptionPropertyChecker {
                 if (user == null) {
                     return false;
                 }
-                return AuthFuncs.checkRole(user,roleId) != null;
+                return DaoFactory.getAuthDao().checkRole(user,roleId) != null;
             };
         };
         return checker;
@@ -112,7 +112,7 @@ public abstract class OptionPropertyChecker {
             return false;
         }
         
-        String val = AuthFuncs.getRolePropertyValue(user,
+        String val = DaoFactory.getAuthDao().getRolePropertyValue(user,
                                                     propertyId );
         return BooleanUtils.toBoolean(val);
     }

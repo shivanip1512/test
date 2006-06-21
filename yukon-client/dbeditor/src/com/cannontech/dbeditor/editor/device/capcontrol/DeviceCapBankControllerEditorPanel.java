@@ -2,11 +2,12 @@ package com.cannontech.dbeditor.editor.device.capcontrol;
 
 import java.awt.event.FocusEvent;
 
+import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.database.data.capcontrol.CapBankController;
 import com.cannontech.database.data.capcontrol.ICapBankController;
 import com.cannontech.database.data.device.DeviceFactory;
 import com.cannontech.database.data.pao.DeviceTypes;
-import com.cannontech.common.gui.util.TextFieldDocument;
+import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * This type was created in VisualAge.
@@ -106,7 +107,7 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
 
 
       getCommunicationRouteComboBox().removeAllItems();
-      com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+      IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
       synchronized(cache)
       {         
          java.util.List list = 

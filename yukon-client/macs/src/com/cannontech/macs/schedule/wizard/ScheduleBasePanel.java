@@ -7,9 +7,9 @@ import java.util.Calendar;
 import java.util.List;
 
 import com.cannontech.common.util.StringUtils;
-import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.schedule.script.ScriptTemplateTypes;
 import com.cannontech.message.macs.message.Schedule;
+import com.cannontech.yukon.IDatabaseCache;
 
 public class ScheduleBasePanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, java.awt.event.KeyListener, javax.swing.event.CaretListener {
 	private java.text.SimpleDateFormat dateFormatter = new java.text.SimpleDateFormat("MMMMMMMM dd, yyyy");
@@ -532,7 +532,7 @@ private javax.swing.JComboBox getJComboBoxHoliday() {
 			ivjJComboBoxHoliday.setToolTipText("Holiday schedule used to exclude control");
 			// user code begin {1}
 
-			DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+			IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 			synchronized( cache )
 			{
 				List holidaySch = cache.getAllHolidaySchedules();
@@ -1727,7 +1727,7 @@ public boolean isInputValid()
 	}
 	
 /*	
-	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 	synchronized( cache )
 	{
 		List paos = cache.getAllYukonPAObjects();

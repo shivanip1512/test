@@ -7,19 +7,13 @@ package com.cannontech.loadcontrol.popup;
  */
 import javax.swing.JOptionPane;
 
-import com.cannontech.common.gui.panel.ManualChangeJPanel;
-import com.cannontech.common.gui.util.OkCancelDialog;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.loadcontrol.LCUtils;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.data.LMProgramCurtailment;
 import com.cannontech.loadcontrol.data.LMProgramDirect;
-import com.cannontech.loadcontrol.gui.manualentry.ConstraintResponsePanel;
 import com.cannontech.loadcontrol.gui.manualentry.CurtailmentEntryPanel;
 import com.cannontech.loadcontrol.gui.manualentry.DirectControlJPanel;
-import com.cannontech.loadcontrol.gui.manualentry.MultiSelectProg;
-import com.cannontech.loadcontrol.gui.manualentry.ResponseProg;
 import com.cannontech.loadcontrol.messages.LMCommand;
 import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 

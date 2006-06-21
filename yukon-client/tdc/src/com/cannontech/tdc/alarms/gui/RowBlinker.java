@@ -14,9 +14,9 @@ import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 
-import com.cannontech.tdc.utils.TDCDefines;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.tdc.utils.TDCDefines;
 
 
 public class RowBlinker implements Runnable 

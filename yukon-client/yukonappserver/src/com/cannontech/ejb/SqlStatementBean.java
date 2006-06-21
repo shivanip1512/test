@@ -1,10 +1,7 @@
 package com.cannontech.ejb;
-import java.rmi.RemoteException;
 import java.sql.Connection;
 
-import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.PoolManager;
 import com.cannontech.database.Transaction;
 import com.cannontech.yukon.ISQLStatement;
 

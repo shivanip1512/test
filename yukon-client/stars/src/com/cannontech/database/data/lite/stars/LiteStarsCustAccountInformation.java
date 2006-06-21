@@ -15,6 +15,7 @@ import com.cannontech.database.db.customer.CICustomerBase;
 import com.cannontech.database.db.stars.appliance.ApplianceBase;
 import com.cannontech.database.db.stars.hardware.InventoryBase;
 import com.cannontech.stars.xml.serialize.StarsCallReport;
+import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * @author yao
@@ -400,7 +401,7 @@ public class LiteStarsCustAccountInformation extends LiteBase {
                 siteInformation.setServiceVoltage( rset.getString(16) );
                 siteInformation.setSubstationID( rset.getInt(17) );
              
-                DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+                IDatabaseCache cache = DefaultDatabaseCache.getInstance();
                 synchronized (cache) {
                     customer =  ( (LiteCustomer)cache.getACustomerByCustomerID(customerAccount.getCustomerID()) );
                 }

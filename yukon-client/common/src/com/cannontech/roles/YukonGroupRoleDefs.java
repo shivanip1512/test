@@ -5,7 +5,7 @@ package com.cannontech.roles;
  *
  * Used to define the default not removable RoleGroups
  * 
- *  AuthFuncs.getGroup( operGroupName );
+ *  DaoFactory.getAuthDao().getGroup( operGroupName );
  */
 public interface YukonGroupRoleDefs
 {

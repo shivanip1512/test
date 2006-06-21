@@ -4,7 +4,7 @@ import javax.swing.ImageIcon;
 
 import com.cannontech.common.gui.table.ICTITableRenderer;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.cache.functions.YukonImageFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteTag;
 
 /**
@@ -77,7 +77,7 @@ public class TagTableCellRenderer extends javax.swing.JLabel implements javax.sw
 			{
 				setIcon( 
 					new ImageIcon(java.awt.Toolkit.getDefaultToolkit().createImage(
-						YukonImageFuncs.getLiteYukonImage(
+						DaoFactory.getYukonImageDao().getLiteYukonImage(
 							((LiteTag)value).getImageID()).getImageValue()) ) );
 			}
 			else

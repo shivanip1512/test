@@ -2,8 +2,8 @@ package com.cannontech.database.db.stars.hardware;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.db.DBPersistent;
 
 
 /**

@@ -279,14 +279,14 @@ public class ControlAreaTableModel extends com.cannontech.tdc.observe.Observable
 		if( trigger == null )
 			return null;
 	
-		LitePoint point = PointFuncs.getLitePoint( trigger.getPointId().intValue() );
+		LitePoint point = DaoFactory.getPointDao().getLitePoint( trigger.getPointId().intValue() );
 	
 		if( trigger.getTriggerType().equalsIgnoreCase(
 			   com.cannontech.database.db.device.lm.LMControlAreaTrigger.TYPE_STATUS) )
 		{
-			return com.cannontech.database.cache.functions.StateFuncs.getLiteState( point.getStateGroupID(), trigger.getPointValue().intValue() ).getStateText() +
+			return DaoFactory.getStateDao().getLiteState( point.getStateGroupID(), trigger.getPointValue().intValue() ).getStateText() +
 				" / " +
-				com.cannontech.database.cache.functions.StateFuncs.getLiteState( point.getStateGroupID(), trigger.getThreshold().intValue() ).getStateText();
+				DaoFactory.getStateDao().getLiteState( point.getStateGroupID(), trigger.getThreshold().intValue() ).getStateText();
 		}	
 		else
 		{

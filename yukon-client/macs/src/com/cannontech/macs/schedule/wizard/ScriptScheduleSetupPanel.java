@@ -20,6 +20,7 @@ import com.cannontech.database.data.schedule.script.ScriptTemplateTypes;
 import com.cannontech.database.db.device.DeviceMeterGroup;
 import com.cannontech.message.macs.message.Schedule;
 import com.cannontech.message.macs.message.ScriptFile;
+import com.cannontech.yukon.IDatabaseCache;
 import com.klg.jclass.util.value.JCValueEvent;
 
 /**
@@ -1461,7 +1462,7 @@ private javax.swing.JComboBox getNotifyGroupComboBox() {
 			ivjNotifyGroupComboBox = new javax.swing.JComboBox();
 			ivjNotifyGroupComboBox.setName("NotifyGroupComboBox");
 			// user code begin {1}
-			DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+			IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 			List notGroups = cache.getAllContactNotificationGroups();
 			for (int i = 0; i < notGroups.size(); i++)
 			{

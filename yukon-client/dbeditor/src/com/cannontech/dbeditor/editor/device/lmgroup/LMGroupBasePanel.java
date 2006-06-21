@@ -4,9 +4,9 @@ import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.device.lm.IGroupRoute;
 import com.cannontech.database.data.device.lm.LMGroup;
-import com.cannontech.database.data.device.lm.MacroGroup;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.yukon.IDatabaseCache;
 
 public class LMGroupBasePanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
 	private javax.swing.JPanel ivjIdentificationPanel = null;
@@ -916,7 +916,7 @@ private javax.swing.JComboBox getRouteComboBox() {
 			// user code begin {1}
 
 
-			com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+			IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 			synchronized(cache)
 			{
 				java.util.List routes = cache.getAllRoutes();
@@ -1192,7 +1192,7 @@ public void setValue(Object val)
 	
 	if( lmGroup instanceof IGroupRoute )
 	{
-		com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+		IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 		synchronized(cache)
 		{
 			java.util.List routes = cache.getAllRoutes();

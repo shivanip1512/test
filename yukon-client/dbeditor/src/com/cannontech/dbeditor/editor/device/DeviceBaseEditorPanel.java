@@ -3,14 +3,37 @@ package com.cannontech.dbeditor.editor.device;
 import com.cannontech.common.gui.util.AdvancedPropertiesDialog;
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.data.device.*;
 import com.cannontech.database.data.config.ConfigTwoWay;
+import com.cannontech.database.data.device.CarrierBase;
+import com.cannontech.database.data.device.DNPBase;
+import com.cannontech.database.data.device.DeviceBase;
+import com.cannontech.database.data.device.IDLCBase;
+import com.cannontech.database.data.device.IEDBase;
+import com.cannontech.database.data.device.KV;
+import com.cannontech.database.data.device.MCT210;
+import com.cannontech.database.data.device.MCT213;
+import com.cannontech.database.data.device.MCT240;
+import com.cannontech.database.data.device.MCT248;
+import com.cannontech.database.data.device.MCT250;
+import com.cannontech.database.data.device.MCT400SeriesBase;
+import com.cannontech.database.data.device.MCTBase;
+import com.cannontech.database.data.device.PagingTapTerminal;
+import com.cannontech.database.data.device.RTCBase;
+import com.cannontech.database.data.device.RTM;
+import com.cannontech.database.data.device.RemoteBase;
+import com.cannontech.database.data.device.Repeater900;
+import com.cannontech.database.data.device.SNPPTerminal;
+import com.cannontech.database.data.device.Schlumberger;
+import com.cannontech.database.data.device.Series5Base;
+import com.cannontech.database.data.device.Sixnet;
+import com.cannontech.database.data.device.WCTPTerminal;
 import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.device.DeviceCarrierSettings;
 import com.cannontech.database.db.device.DeviceDialupSettings;
 import com.cannontech.database.db.device.DeviceDirectCommSettings;
 import com.cannontech.database.db.device.DeviceIDLCRemote;
+import com.cannontech.yukon.IDatabaseCache;
 
 
 public class DeviceBaseEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.klg.jclass.util.value.JCValueListener, java.awt.event.ActionListener, javax.swing.event.CaretListener {
@@ -2315,7 +2338,7 @@ private void setNonRemBaseValue( Object base )
 	getConfigComboBox().addItem( CtiUtilities.STRING_NONE );
 	getTOUComboBox().addItem(CtiUtilities.STRING_NONE );
 	
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized(cache)
 	{
 		java.util.List routes = cache.getAllRoutes();
@@ -2422,7 +2445,7 @@ private void setRemoteBaseValue( RemoteBase rBase, int intType )
 
 	int portID = rBase.getDeviceDirectCommSettings().getPortID().intValue();
 	//Load the combo box
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized(cache)
 	{
 		java.util.List ports = cache.getAllPorts();

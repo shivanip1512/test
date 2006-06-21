@@ -1,6 +1,7 @@
 package com.cannontech.cbc.capbankeditor;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.yukon.IDatabaseCache;
 import com.cannontech.yukon.cbc.CBCClientConnection;
 import com.cannontech.yukon.cbc.CBCTempMoveCapBank;
 import com.cannontech.yukon.cbc.CapBankDevice;
@@ -147,7 +148,7 @@ public class CapBankTempMovePanel extends javax.swing.JPanel implements com.cann
 			ivjJComboBoxFeeder.setName("JComboBoxFeeder");
 			// user code begin {1}
 				
-				DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance().getInstance();
+				IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 				synchronized( cache )
 				{
 					java.util.List feeders = cache.getAllCapControlFeeders();

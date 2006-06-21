@@ -1,6 +1,6 @@
 package com.cannontech.roles.notifications;
 
-import com.cannontech.roles.*;
+import com.cannontech.roles.NotificationsRoleDefs;
 
 /**
  * @author aaron

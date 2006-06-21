@@ -10,7 +10,7 @@ import java.util.TreeMap;
 import com.cannontech.cc.dao.CustomerDao;
 import com.cannontech.cc.model.CICustomerStub;
 import com.cannontech.common.exception.PointDataException;
-import com.cannontech.database.cache.functions.SimplePointAccess;
+import com.cannontech.core.dao.SimplePointAccessDao;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.db.customer.CICustomerPointType;
@@ -22,7 +22,7 @@ public class CustomerPointService {
     private CustomerDao customerDao;
     private CustomerPointTypeLookup pointTypeLookup;
     private CustomerPointTypeHelper pointTypeHelper;
-    private SimplePointAccess pointAccess;
+    private SimplePointAccessDao pointAccess;
 
     public CustomerPointService() {
         super();
@@ -92,7 +92,7 @@ public class CustomerPointService {
         return customerDao.getForId(customerId);
     }
 
-    public void setPointAccess(SimplePointAccess pointAccess) {
+    public void setPointAccess(SimplePointAccessDao pointAccess) {
         this.pointAccess = pointAccess;
     }
 

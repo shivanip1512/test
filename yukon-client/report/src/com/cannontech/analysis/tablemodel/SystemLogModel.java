@@ -10,8 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.db.point.SystemLog;
 
@@ -330,7 +330,7 @@ public class SystemLogModel extends ReportModelBase
 //				case POINT_ID_COLUMN:
 //					return sl.getPointID();
 				case POINT_NAME_COLUMN:
-					return PointFuncs.getPointName(sl.getPointID().intValue());
+					return DaoFactory.getPointDao().getPointName(sl.getPointID().intValue());
 				case PRIORITY_COLUMN:
 					return sl.getPriority();
 				case USERNAME_COLUMN:

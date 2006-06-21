@@ -1,5 +1,7 @@
 package com.cannontech.dbeditor.wizard.copy.device;
 
+import com.cannontech.yukon.IDatabaseCache;
+
 /**
  * This type was created in VisualAge.
  */
@@ -418,7 +420,7 @@ public void pointNumberSpinner_ValueChanged(com.klg.jclass.util.value.JCValueEve
  */
 public void setValue(Object val) {
 
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized(cache)
 	{
 		java.util.List allPoints = cache.getAllPoints();

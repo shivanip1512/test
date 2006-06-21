@@ -13,13 +13,14 @@
 <%@ page import="com.cannontech.loadcontrol.data.LMProgramDirect" %>
 <%@ page import="com.cannontech.yukon.IMACSConnection" %>
 
+<%@ page import="com.cannontech.core.dao.DaoFactory" %>
 <%@ page import="java.util.TreeMap" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="java.util.ArrayList" %> 
 <%@ page import="java.util.Vector" %> 
 <%@ page import="java.util.Iterator" %>
 <%@ page import="java.util.Collections" %>
-<%@ page import="com.cannontech.database.cache.functions.AuthFuncs" %>
+
  
 <cti:isPropertyTrue propertyid="<%= DirectLoadcontrolRole.DIRECT_CONTROL %>">
 <%
@@ -51,7 +52,7 @@
     for( int i = 0; i < allPrograms.length; i++ )
     {
         int id = allPrograms[i].getYukonID().intValue();
-        if( AuthFuncs.hasExlusiveAccess(user, id) )
+        if( DaoFactory.getAuthDao().hasExlusiveAccess(user, id) )
         {
             // found one
             ourPrograms.add(allPrograms[i]);

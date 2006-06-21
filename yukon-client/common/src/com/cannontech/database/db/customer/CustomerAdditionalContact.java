@@ -6,10 +6,9 @@
  */
 package com.cannontech.database.db.customer;
 
-import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.PoolManager;
-import com.cannontech.database.db.DBPersistent;
 import java.sql.SQLException;
+
+import com.cannontech.database.db.DBPersistent;
 
 /**
  * @author jdayton

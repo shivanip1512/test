@@ -8,8 +8,6 @@ import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.cache.functions.PAOFuncs;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.model.CBCOrderByTreeModel;
 
 /**

@@ -26,8 +26,8 @@
 
 package snoozesoft.systray4j;
 
-import java.util.Vector;
 import java.awt.EventQueue;
+import java.util.Vector;
 
 /**
  * This class represents a submenu. It consists of a special labeled (parent)

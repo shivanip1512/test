@@ -1,10 +1,11 @@
 package com.cannontech.database.db.stars.purchasing;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlStatement;
-import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.db.DBPersistent;
 
 public class ScheduleTimePeriod extends DBPersistent {

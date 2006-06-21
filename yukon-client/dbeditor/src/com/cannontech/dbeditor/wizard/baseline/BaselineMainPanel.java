@@ -3,16 +3,9 @@ package com.cannontech.dbeditor.wizard.baseline;
 /**
  * This type was created in VisualAge.
  */
-import java.util.Collections;
-import java.util.List;
-
-import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.data.customer.CICustomerBase;
-import com.cannontech.database.data.lite.LiteComparators;
-import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.database.data.baseline.Baseline;
 import com.cannontech.common.gui.util.TextFieldDocument;
+import com.cannontech.database.data.baseline.Baseline;
+import com.cannontech.yukon.IDatabaseCache;
 
 public class BaselineMainPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
 	private javax.swing.JLabel ivjJLabelCalcDays = null;
@@ -259,7 +252,7 @@ private javax.swing.JComboBox getJComboBoxHoliday() {
 			ivjJComboBoxHoliday.setEnabled(true);
 			// user code begin {1}
 
-			com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+			IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 			synchronized( cache )
 			{
 				java.util.List holidaySch = cache.getAllHolidaySchedules();

@@ -20,6 +20,7 @@ import com.cannontech.graph.buffer.html.UsageHtml;
 import com.cannontech.graph.model.TrendModel;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.application.WebGraphRole;
+import com.cannontech.yukon.IDatabaseCache;
 
 
 public class WebGraph implements Runnable
@@ -227,7 +228,7 @@ public class WebGraph implements Runnable
 	 */
 	private void getPredefinedGraphs()
 	{
-		com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+		IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 		synchronized(cache)
 		{
 			allPredefinedGraphsList = cache.getAllGraphDefinitions();

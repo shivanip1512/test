@@ -7,7 +7,6 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.NativeIntVector;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.data.capcontrol.CapControlSubBus;
 import com.cannontech.database.db.point.Point;
 
 /**

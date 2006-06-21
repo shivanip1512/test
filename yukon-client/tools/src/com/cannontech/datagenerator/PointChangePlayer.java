@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.dispatch.message.Multi;
@@ -44,9 +44,9 @@ public class PointChangePlayer {
 		System.out.println("loaded " + pChanges.length + " point changes");
 		
 		ClientConnection conn = new ClientConnection();
-		conn.setHost( RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_MACHINE ) );
+		conn.setHost( DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.DISPATCH_MACHINE ) );
 		conn.setPort(Integer.parseInt
-				(RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_PORT).toString()));
+				(DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.DISPATCH_PORT).toString()));
 				
 		try {
 			conn.connect();

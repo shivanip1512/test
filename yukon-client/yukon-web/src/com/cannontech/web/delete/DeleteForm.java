@@ -1,14 +1,12 @@
 package com.cannontech.web.delete;
 
-import java.io.Serializable;
-
 import javax.faces.application.FacesMessage;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.core.dao.DBDeleteResult;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
-import com.cannontech.database.cache.functions.DBDeleteResult;
-import com.cannontech.database.cache.functions.DBDeletionFuncs;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.web.editor.DBEditorForm;
 import com.cannontech.web.util.JSFParamUtil;
@@ -97,12 +95,12 @@ public abstract class DeleteForm extends DBEditorForm
 
 		try {
 			//get the info about this possible deletion candidate
-			delRes = DBDeletionFuncs.getDeleteInfo( 
+			delRes = DaoFactory.getDbDeletionDao().getDeleteInfo( 
 					delItem.getDbPersistent(), delItem.getDbPersistent().toString());
 				
-			int res = DBDeletionFuncs.deletionAttempted( delRes );
+			int res = DaoFactory.getDbDeletionDao().deletionAttempted( delRes );
 			delItem.setDeleteAllowed(
-				DBDeletionFuncs.STATUS_DISALLOW != res );
+				DaoFactory.getDbDeletionDao().STATUS_DISALLOW != res );
 
 			delItem.setWarningMsg(
 				delItem.isDeleteAllowed()

@@ -17,8 +17,7 @@ import com.cannontech.common.gui.table.MultiJComboCellRenderer;
 import com.cannontech.common.gui.util.ComboBoxTableRenderer;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.cache.functions.AuthFuncs;
-import com.cannontech.database.cache.functions.LMFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteLMProgScenario;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.device.lm.IlmDefines;
@@ -111,7 +110,7 @@ public class DirectControlJPanel extends javax.swing.JPanel implements java.awt.
 		if( litePAO != null )
 		{
 			LiteLMProgScenario[] programs = 
-					LMFuncs.getLMScenarioProgs( litePAO.getYukonID() );
+					DaoFactory.getLmDao().getLMScenarioProgs( litePAO.getYukonID() );
 
 			ArrayList selPrgs = new ArrayList( programs.length );
 
@@ -565,12 +564,12 @@ public javax.swing.JComboBox getJComboBoxConstraints() {
 			ivjJComboBoxConstraints.setRenderer(new javax.swing.plaf.basic.BasicComboBoxRenderer.UIResource());
 			// user code begin {1}
 
-			if( AuthFuncs.checkRoleProperty( ClientSession.getInstance().getUser(),
+			if( DaoFactory.getAuthDao().checkRoleProperty( ClientSession.getInstance().getUser(),
 						DirectLoadcontrolRole.ALLOW_OBSERVE_CONSTRAINTS) )
 				ivjJComboBoxConstraints.addItem( 
 					LMManualControlRequest.CONSTRAINT_FLAG_STRS[LMManualControlRequest.CONSTRAINTS_FLAG_USE] );
 
-			if( AuthFuncs.checkRoleProperty( ClientSession.getInstance().getUser(),
+			if( DaoFactory.getAuthDao().checkRoleProperty( ClientSession.getInstance().getUser(),
 					DirectLoadcontrolRole.ALLOW_CHECK_CONSTRAINTS) )
 				ivjJComboBoxConstraints.addItem(
 					LMManualControlRequest.CONSTRAINT_FLAG_STRS[LMManualControlRequest.CONSTRAINTS_FLAG_CHECK] );
@@ -579,7 +578,7 @@ public javax.swing.JComboBox getJComboBoxConstraints() {
 				//set our initial selection to be the value specified in our
 				// role property
 				String defSel = 
-					AuthFuncs.getRolePropertyValue(
+					DaoFactory.getAuthDao().getRolePropertyValue(
 						ClientSession.getInstance().getUser(),
 						DirectLoadcontrolRole.DEFAULT_CONSTRAINT_SELECTION);
 	
@@ -646,7 +645,7 @@ private javax.swing.JComboBox getJComboBoxScenario() {
 			
 			if( _isScenario )
 			{
-				LiteYukonPAObject[] scenarios = LMFuncs.getAllLMScenarios();
+				LiteYukonPAObject[] scenarios = DaoFactory.getLmDao().getAllLMScenarios();
 				for( int i = 0; i < scenarios.length; i++ )
 				{
 					ivjJComboBoxScenario.addItem( scenarios[i] );

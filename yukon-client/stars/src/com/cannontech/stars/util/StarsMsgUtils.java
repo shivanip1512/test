@@ -8,7 +8,7 @@ package com.cannontech.stars.util;
 
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
-import com.cannontech.database.cache.functions.YukonListFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.xml.serialize.types.StarsLoginStatus;
 import com.cannontech.stars.xml.serialize.types.StarsThermoDaySettings;
@@ -45,7 +45,7 @@ public class StarsMsgUtils {
 	}
 	
 	public static StarsThermoDaySettings getThermDaySetting(int towID) {
-		YukonListEntry entry = YukonListFuncs.getYukonListEntry( towID );
+		YukonListEntry entry = DaoFactory.getYukonListDao().getYukonListEntry( towID );
 		
 		if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_TOW_WEEKDAY)
 			return StarsThermoDaySettings.WEEKDAY;
@@ -93,7 +93,7 @@ public class StarsMsgUtils {
 	}
 	
 	public static StarsThermoModeSettings getThermModeSetting(int opStateID) {
-		YukonListEntry entry = YukonListFuncs.getYukonListEntry( opStateID );
+		YukonListEntry entry = DaoFactory.getYukonListDao().getYukonListEntry( opStateID );
 		
 		if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_DEFAULT)
 			return null;
@@ -125,7 +125,7 @@ public class StarsMsgUtils {
 	}
 	
 	public static StarsThermoFanSettings getThermFanSetting(int fanOpID) {
-		YukonListEntry entry = YukonListFuncs.getYukonListEntry( fanOpID );
+		YukonListEntry entry = DaoFactory.getYukonListDao().getYukonListEntry( fanOpID );
 		
 		if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_FAN_STAT_DEFAULT)
 			return null;
@@ -149,7 +149,7 @@ public class StarsMsgUtils {
 	}
 	
 	public static StarsThermostatTypes getThermostatType(int hwTypeID) {
-		YukonListEntry entry = YukonListFuncs.getYukonListEntry( hwTypeID );
+		YukonListEntry entry = DaoFactory.getYukonListDao().getYukonListEntry( hwTypeID );
 		
 		if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT)
 			return StarsThermostatTypes.EXPRESSSTAT;

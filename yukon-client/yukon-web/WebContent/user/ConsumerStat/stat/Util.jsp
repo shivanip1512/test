@@ -34,7 +34,7 @@
               <br>
               
             <div align="center">
-              <% String header = AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_TITLE_UTILITY); %>
+              <% String header = DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_TITLE_UTILITY); %>
               <%@ include file="include/InfoBar.jspf" %>
               <table width="600" border="0" cellpadding="0" cellspacing="0">
                 <tr> 
@@ -48,7 +48,7 @@
                 <tr> 
                   <td align="center" class="MainText"> 
                     <%
-	String desc = AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_DESC_UTILITY);
+	String desc = DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_DESC_UTILITY);
 	String address = ServletUtils.formatAddress(energyCompany.getCompanyAddress()) + "<br>";
 	String phoneNo = (energyCompany.getMainPhoneNumber().trim().length() > 0)?
 			"Ph: " + energyCompany.getMainPhoneNumber() + "<br>" : "";

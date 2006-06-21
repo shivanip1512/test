@@ -16,12 +16,10 @@ import javax.servlet.http.HttpServletResponse;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.cache.functions.AuthFuncs;
-import com.cannontech.database.cache.functions.RoleFuncs;
-import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
@@ -109,7 +107,7 @@ public class SetupServlet extends HttpServlet
 		if( adminPword != null )
 		{
 			//validate the password since we have a good DB connection
-			LiteYukonUser admin = YukonUserFuncs.getLiteYukonUser( UserUtils.USER_YUKON_ID );
+			LiteYukonUser admin = DaoFactory.getYukonUserDao().getLiteYukonUser( UserUtils.USER_YUKON_ID );
 			
 			if( !admin.getPassword().equals(adminPword) )
 			{
@@ -238,7 +236,7 @@ public class SetupServlet extends HttpServlet
 		{
 			try
 			{
-				LiteYukonGroup yukGrp = AuthFuncs.getGroup( YukonGroupRoleDefs.GRP_YUKON );
+				LiteYukonGroup yukGrp = DaoFactory.getAuthDao().getGroup( YukonGroupRoleDefs.GRP_YUKON );
 				YukonGroup yukGrpPersist = (YukonGroup)LiteFactory.createDBPersistent( yukGrp );
 				//fill out the DB Persistent with data
 				yukGrpPersist = (YukonGroup)Transaction.createTransaction( Transaction.RETRIEVE, yukGrpPersist ).execute();
@@ -340,7 +338,7 @@ public class SetupServlet extends HttpServlet
 	private DBChangeMsg[] writeYukonProperties( final HttpServletRequest req ) throws Exception
 	{
 		LiteYukonGroup yukGrp =
-			AuthFuncs.getGroup( YukonGroupRoleDefs.GRP_YUKON );
+			DaoFactory.getAuthDao().getGroup( YukonGroupRoleDefs.GRP_YUKON );
 			
 		YukonGroup yukGrpPersist = 
 				(YukonGroup)LiteFactory.createDBPersistent( yukGrp );
@@ -352,7 +350,7 @@ public class SetupServlet extends HttpServlet
 		
 		
 		LiteYukonRoleProperty[] props = 
-				RoleFuncs.getRoleProperties( YukonRoleDefs.SYSTEM_ROLEID );
+				DaoFactory.getRoleDao().getRoleProperties( YukonRoleDefs.SYSTEM_ROLEID );
 				
 		for( int i = 0; i < props.length; i++ )
 		{
@@ -502,10 +500,10 @@ public class SetupServlet extends HttpServlet
 	{
 		//We Should at some point create a DispatchServlet that we could use
 		String host =
-			RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_MACHINE );
+			DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.DISPATCH_MACHINE );
 
 		String port =
-			RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_PORT );
+			DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.DISPATCH_PORT );
 		
 		ClientConnection connToDispatch = new ClientConnection();
 		Registration reg = new Registration();

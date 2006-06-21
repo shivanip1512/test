@@ -13,11 +13,10 @@ import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.LogWriter;
 import com.cannontech.common.version.VersionTools;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.StarsDatabaseCache;
-import com.cannontech.database.cache.functions.RoleFuncs;
-import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.stars.customer.CustomerAccount;
@@ -386,7 +385,7 @@ public final class YukonCRSIntegrator
 	        	if( workTypeEntry == null)
 	        		errorMsg.append("Invalid PTJType found: " + ptjType + "; ");
 	        	
-	        	liteYukonUser = YukonUserFuncs.getLiteYukonUser(crsLoggedUser);
+	        	liteYukonUser = DaoFactory.getYukonUserDao().getLiteYukonUser(crsLoggedUser);
 	        	if( liteYukonUser == null)
 	        		errorMsg.append("Invalid CRSLoggedUser found: " + crsLoggedUser + "; ");
         	}
@@ -722,7 +721,7 @@ public final class YukonCRSIntegrator
 	        	if( workTypeEntry == null)
 	        		errorMsg.append("Invalid Work Order Type found (No match for EnergyCompany): " + woType + "; ");
 	        	
-	        	liteYukonUser = YukonUserFuncs.getLiteYukonUser(username);
+	        	liteYukonUser = DaoFactory.getYukonUserDao().getLiteYukonUser(username);
 	        	if( liteYukonUser == null)
 	        		errorMsg.append("Invalid UserName found: " + username + "; ");
         	}
@@ -841,8 +840,8 @@ public final class YukonCRSIntegrator
     {
     	if( dispatchConn == null || !dispatchConn.isValid() )
     	{
-    		String host = RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_MACHINE );
-    		String portStr = RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_PORT );
+    		String host = DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.DISPATCH_MACHINE );
+    		String portStr = DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.DISPATCH_PORT );
     		int port = 1510;
     		
     		try 

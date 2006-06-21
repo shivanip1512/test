@@ -1,9 +1,5 @@
 package com.cannontech.yukon;
 
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.database.data.lite.LiteBase;
-
-import com.cannontech.database.cache.DBChangeListener;
 
 /**
  * Interface to Yukon data.

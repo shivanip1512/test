@@ -1,7 +1,5 @@
 package com.cannontech.database.data.port;
 
-import java.sql.SQLException;
-
 import com.cannontech.database.db.pao.PAOowner;
 
 /**

@@ -12,7 +12,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
-import com.cannontech.database.cache.functions.PAOFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.db.company.SettlementConfig;
 import com.cannontech.stars.util.SettlementConfigFuncs;
 
@@ -336,7 +336,7 @@ public class LMEvent
 	{
 		if( eventType < 0)
 		{
-			String groupName = PAOFuncs.getYukonPAOName(getGroupID().intValue());
+			String groupName = DaoFactory.getPaoDao().getYukonPAOName(getGroupID().intValue());
 			if( groupName.toLowerCase().indexOf("emer") > -1)
 				eventType = EMERGENCY_EVENT;
 			else if( groupName.toLowerCase().indexOf("under") > -1) 

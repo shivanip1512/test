@@ -16,8 +16,9 @@ import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
 import com.cannontech.database.data.lite.LiteStateGroup;
-import com.cannontech.dbeditor.wizard.contact.QuickContactPanel;
 import com.cannontech.database.db.point.PointAlarming;
+import com.cannontech.dbeditor.wizard.contact.QuickContactPanel;
+import com.cannontech.yukon.IDatabaseCache;
 
 public class PointAlarmOptionsEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener {
 	private PointAlarmOptionsEditorTableModel tableModel = null;
@@ -463,7 +464,7 @@ private javax.swing.JComboBox getJComboBoxGroup() {
 			ivjJComboBoxGroup.setEnabled(true);
 			// user code begin {1}
 
-			com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+			IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 			synchronized( cache )
 			{
 				java.util.List notifGroups = cache.getAllContactNotificationGroups();
@@ -644,7 +645,7 @@ public Object getValue(Object val)
 	String excludeNotifyState = new String();
 
 	int i = 0;
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized( cache )	
 	{
 		java.util.List liteAlarmStates = cache.getAllAlarmCategories();
@@ -824,7 +825,7 @@ private void initJTableCellComponents()
 	
 
 	// Get the alarm data from the cache	
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized( cache )	
 	{
 		java.util.List allAlarmStates = cache.getAllAlarmCategories();
@@ -952,7 +953,7 @@ private void refillContactComboBox()
 	getJComboBoxContact().addItem( NONE_LITE_CONTACT );
 	
 	
-	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 	synchronized( cache )
 	{
 		List contacts = cache.getAllContacts();
@@ -993,7 +994,7 @@ public void setValue(Object val)
         
 	String excludeNotifyStates = point.getPointAlarming().getExcludeNotifyStates();
 
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized( cache )	
 	{
 		java.util.List allAlarmStates = cache.getAllAlarmCategories();

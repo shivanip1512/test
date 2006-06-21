@@ -4,7 +4,6 @@
 <%@ page import="com.cannontech.database.data.pao.YukonPAObject"%>
 <%@ page import="com.cannontech.message.dispatch.message.PointData"%> 
 <%@ page import="com.cannontech.database.data.lite.LiteRawPointHistory"%>
-<%@ page import="com.cannontech.database.cache.functions.*"%>
 <%@ page import="com.cannontech.database.data.pao.PAOGroups"%>
 <%@ page import="com.cannontech.database.data.point.PointTypes"%>
 <%@ page import="com.cannontech.database.db.point.RawPointHistory"%>
@@ -34,7 +33,7 @@
 	//}
 
 	//get the liteYukonPao using the deviceID
-	LiteYukonPAObject liteYukonPao = PAOFuncs.getLiteYukonPAO(deviceID);
+	LiteYukonPAObject liteYukonPao = DaoFactory.getPaoDao().getLiteYukonPAO(deviceID);
 
 	boolean manual = false;
 	if( request.getParameter("manual") != null)

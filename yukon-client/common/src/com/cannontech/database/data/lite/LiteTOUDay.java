@@ -6,8 +6,6 @@
  */
 package com.cannontech.database.data.lite;
 
-import com.cannontech.database.db.tou.TOUDay;
-import com.cannontech.database.db.tou.TOUDayMapping;
 
 /**
  * @author jdayton

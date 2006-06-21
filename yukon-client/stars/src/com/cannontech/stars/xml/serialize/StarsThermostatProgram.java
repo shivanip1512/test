@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsThermostatProgram.java,v 1.21 2005/01/20 00:37:07 yao Exp $
+ * $Id: StarsThermostatProgram.java,v 1.22 2006/06/21 17:12:21 alauinger Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -11,22 +11,15 @@ package com.cannontech.stars.xml.serialize;
  //- Imported classes and packages -/
 //---------------------------------/
 
-import com.cannontech.stars.xml.serialize.types.StarsThermostatTypes;
-import java.io.IOException;
-import java.io.Reader;
-import java.io.Serializable;
-import java.io.Writer;
-import java.util.Enumeration;
 import java.util.Vector;
-import org.exolab.castor.xml.*;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
-import org.xml.sax.ContentHandler;
+
+import org.exolab.castor.xml.Marshaller;
+import org.exolab.castor.xml.Unmarshaller;
 
 /**
  * 
  * 
- * @version $Revision: 1.21 $ $Date: 2005/01/20 00:37:07 $
+ * @version $Revision: 1.22 $ $Date: 2006/06/21 17:12:21 $
 **/
 public class StarsThermostatProgram implements java.io.Serializable {
 

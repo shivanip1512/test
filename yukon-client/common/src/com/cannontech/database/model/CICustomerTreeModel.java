@@ -5,10 +5,11 @@ package com.cannontech.database.model;
  */
 import javax.swing.tree.TreePath;
 
-import com.cannontech.database.cache.functions.ContactFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
+import com.cannontech.yukon.IDatabaseCache;
 
 
 /* *******
@@ -41,7 +42,7 @@ public boolean insertTreeObject( LiteBase lb )
 	{
 		int contactID = ((LiteContact)lb).getContactID();
 
-		LiteCICustomer ownerCst = ContactFuncs.getOwnerCICustomer( contactID );
+		LiteCICustomer ownerCst = DaoFactory.getContactDao().getOwnerCICustomer( contactID );
 
 		rootNode = findLiteObject( null, ownerCst );
 
@@ -173,7 +174,7 @@ public boolean updateTreeObject(LiteBase lb)
  */
 public void update() 
 {
-	com.cannontech.database.cache.DefaultDatabaseCache cache =
+	IDatabaseCache cache =
 					com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 
 	synchronized(cache)

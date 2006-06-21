@@ -10,9 +10,6 @@ import java.util.Vector;
 
 import javax.swing.table.AbstractTableModel;
 
-import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.point.PointQualities;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.CommonUtils;
 import com.cannontech.clientutils.commonutils.ModifiedDate;
@@ -20,10 +17,11 @@ import com.cannontech.clientutils.tags.IAlarmDefs;
 import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.cache.functions.PAOFuncs;
-import com.cannontech.database.cache.functions.PointFuncs;
-import com.cannontech.database.cache.functions.YukonImageFuncs;
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.CTIPointQuailtyException;
+import com.cannontech.database.data.point.PointQualities;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.state.YukonImage;
 import com.cannontech.message.dispatch.message.PointData;
@@ -1873,7 +1871,7 @@ private void setCorrectRowValue( PointValues point, int location )
 
 				if( imgID > YukonImage.NONE_IMAGE_ID )
 					img = java.awt.Toolkit.getDefaultToolkit().createImage(
-						YukonImageFuncs.getLiteYukonImage( imgID ).getImageValue() );
+						DaoFactory.getYukonImageDao().getLiteYukonImage( imgID ).getImageValue() );
 			}
 			catch( Exception e ) {}
 			
@@ -2083,7 +2081,7 @@ private Vector setRowForEventViewer( Signal signal )
 	for( int i = 0; i < COLUMN_COUNT; i++ )
 		aRow.addElement( "" );  // put these into the vector just as dummy values
 
-	LitePoint lPoint = PointFuncs.getLitePoint( signal.getPointID() );
+	LitePoint lPoint = DaoFactory.getPointDao().getLitePoint( signal.getPointID() );
 	LiteYukonPAObject lDevice = null;
 
 	//we may not have a valid point
@@ -2092,7 +2090,7 @@ private Vector setRowForEventViewer( Signal signal )
 		lPoint = LitePoint.NONE_LITE_PT;		
 	}
 
-	lDevice = PAOFuncs.getLiteYukonPAO( lPoint.getPaobjectID() );
+	lDevice = DaoFactory.getPaoDao().getLiteYukonPAO( lPoint.getPaobjectID() );
 	if( lDevice == null )
 	{
 		lDevice = LiteYukonPAObject.LITEPAOBJECT_SYSTEM;

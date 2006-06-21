@@ -6,14 +6,29 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.access.ContextSingletonBeanFactoryLocator;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.incrementer.NextValueHelper;
 
 public class YukonSpringHook {
+
+    private static String WEB_BEAN_FACTORY_KEY = "com.cannontech.context.main";
+    private static String CLIENT_BEAN_FACTORY_KEY = "com.cannontech.context.client";
+    private static String beanFactoryKey;
+    
+    static {
+        if(CtiUtilities.isRunningAsWebApplication()) {
+            beanFactoryKey = WEB_BEAN_FACTORY_KEY;
+        }
+        else {
+            beanFactoryKey = CLIENT_BEAN_FACTORY_KEY;
+        }
+    }
+    
     static ApplicationContext applicationContext;
     
     public static ApplicationContext getContext() {
         BeanFactoryLocator bfl = ContextSingletonBeanFactoryLocator.getInstance();
-        BeanFactoryReference bfr = bfl.useBeanFactory("com.cannontech.context.main");
+        BeanFactoryReference bfr = bfl.useBeanFactory(beanFactoryKey);
         ApplicationContext context = (ApplicationContext) bfr.getFactory();
         return context;
     }
@@ -36,6 +51,6 @@ public class YukonSpringHook {
     
     public static TransactionTemplate getTransactionTemplate() {
         return (TransactionTemplate) getBean("transactionTemplate");
-    }
+    }    
     
 }

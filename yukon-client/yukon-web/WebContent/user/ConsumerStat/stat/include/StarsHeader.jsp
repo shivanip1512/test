@@ -3,12 +3,11 @@
 <%@ page import="java.util.*" %>
 <%@ page import="javax.xml.soap.SOAPMessage" %>
 
+<%@ page import="com.cannontech.core.dao.DaoFactory" %>
 <%@ page import="com.cannontech.common.constants.YukonListEntry" %>
 <%@ page import="com.cannontech.common.constants.YukonListEntryTypes" %>
 <%@ page import="com.cannontech.common.constants.YukonSelectionListDefs" %>
 <%@ page import="com.cannontech.database.cache.StarsDatabaseCache" %>
-<%@ page import="com.cannontech.database.cache.functions.AuthFuncs" %>
-<%@ page import="com.cannontech.database.cache.functions.YukonListFuncs" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany" %>
 <%@ page import="com.cannontech.database.db.graph.GraphRenderers" %>

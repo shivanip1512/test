@@ -20,8 +20,8 @@ import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.lm.DailyPeak;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.point.CTIPointQuailtyException;
 import com.cannontech.database.data.point.PointQualities;
 import com.cannontech.database.db.device.lm.LMControlArea;
@@ -81,8 +81,8 @@ public class DailyPeaksModel extends ReportModelBase
 		{
 			LMControlArea object1 = ((TempControlAreaObject)o1).getLMControlArea();
 			LMControlArea object2 = ((TempControlAreaObject)o2).getLMControlArea();
-			String thisVal = PAOFuncs.getYukonPAOName(object1.getDeviceID().intValue());
-			String anotherVal = PAOFuncs.getYukonPAOName(object2.getDeviceID().intValue());
+			String thisVal = DaoFactory.getPaoDao().getYukonPAOName(object1.getDeviceID().intValue());
+			String anotherVal = DaoFactory.getPaoDao().getYukonPAOName(object2.getDeviceID().intValue());
 			return ( thisVal.compareToIgnoreCase(anotherVal));
 		}
 		public boolean equals(Object obj)
@@ -367,7 +367,7 @@ public class DailyPeaksModel extends ReportModelBase
 			switch( columnIndex)
 			{
 				case CONTROL_ARAEA_COLUMN:
-					return PAOFuncs.getYukonPAOName(dp.getControlAreaID().intValue());
+					return DaoFactory.getPaoDao().getYukonPAOName(dp.getControlAreaID().intValue());
 				case PEAK_TITLE_COLUMN:
 					return PEAK_TIME_TITLE_STRING;
 				case OFF_PEAK_TITLE_COLUMN:

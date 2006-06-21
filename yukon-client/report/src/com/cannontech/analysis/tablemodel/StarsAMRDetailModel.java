@@ -13,9 +13,8 @@ import com.cannontech.analysis.data.device.MeterAndPointData;
 import com.cannontech.analysis.data.stars.StarsAMRDetail;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.cache.functions.DeviceFuncs;
-import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointTypes;
@@ -84,8 +83,8 @@ public class StarsAMRDetailModel extends ReportModelBase
 	{
 		public int compare(Object o1, Object o2){
 		    int tempOrderBy = getOrderBy();
-	        LiteDeviceMeterNumber ldmn1 = DeviceFuncs.getLiteDeviceMeterNumber( ((StarsAMRDetail)o1).getMeterPointData().getPaobjectID().intValue());
-		    LiteDeviceMeterNumber ldmn2 = DeviceFuncs.getLiteDeviceMeterNumber( ((StarsAMRDetail)o2).getMeterPointData().getPaobjectID().intValue());
+	        LiteDeviceMeterNumber ldmn1 = DaoFactory.getDeviceDao().getLiteDeviceMeterNumber( ((StarsAMRDetail)o1).getMeterPointData().getPaobjectID().intValue());
+		    LiteDeviceMeterNumber ldmn2 = DaoFactory.getDeviceDao().getLiteDeviceMeterNumber( ((StarsAMRDetail)o2).getMeterPointData().getPaobjectID().intValue());
 			
 		    String thisVal = NULL_STRING;
 		    String anotherVal = NULL_STRING;
@@ -97,8 +96,8 @@ public class StarsAMRDetailModel extends ReportModelBase
 			}
 			else if( getFilterModelType() == ModelFactory.ROUTE)
 			{
-		        thisVal = PAOFuncs.getYukonPAOName( ((StarsAMRDetail)o1).getLitePaobject().getRouteID());
-		        anotherVal = PAOFuncs.getYukonPAOName( ((StarsAMRDetail)o2).getLitePaobject().getRouteID());
+		        thisVal = DaoFactory.getPaoDao().getYukonPAOName( ((StarsAMRDetail)o1).getLitePaobject().getRouteID());
+		        anotherVal = DaoFactory.getPaoDao().getYukonPAOName( ((StarsAMRDetail)o2).getLitePaobject().getRouteID());
 			}
 
 			if ( thisVal.equalsIgnoreCase(anotherVal) )
@@ -375,7 +374,7 @@ public class StarsAMRDetailModel extends ReportModelBase
 				    if( getFilterModelType() == ModelFactory.COLLECTIONGROUP)
 				        return (detail.getLiteDeviceMeterNumber() == null ? null : detail.getLiteDeviceMeterNumber().getCollGroup());
 				    else if( getFilterModelType() == ModelFactory.ROUTE)
-				        return PAOFuncs.getYukonPAOName(detail.getLitePaobject().getRouteID());
+				        return DaoFactory.getPaoDao().getYukonPAOName(detail.getLitePaobject().getRouteID());
 				    return null;	//UNKNOWN????
 				}
 				case ACCOUNT_NUMBER_COLUMN:
@@ -394,7 +393,7 @@ public class StarsAMRDetailModel extends ReportModelBase
 				    return String.valueOf(detail.getLitePaobject().getAddress());
 				case ROUTE_NAME_OR_COLL_GROUP_COLUMN:	//return the opposite of the SORT_BY_COLUMN attribute
 				    if( getFilterModelType() == ModelFactory.COLLECTIONGROUP)
-				        return PAOFuncs.getYukonPAOName(detail.getLitePaobject().getRouteID());
+				        return DaoFactory.getPaoDao().getYukonPAOName(detail.getLitePaobject().getRouteID());
 				    else if( getFilterModelType() == ModelFactory.ROUTE)
 				    	return (detail.getLiteDeviceMeterNumber() == null ? null : detail.getLiteDeviceMeterNumber().getCollGroup());
 				    return NULL_STRING;	//UNKNOWN????

@@ -3,15 +3,23 @@ package com.cannontech.database.model;
 /**
  * This type was created in VisualAge.
  */
-import java.util.*;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Vector;
 
 import javax.swing.tree.TreePath;
 
 import com.cannontech.common.gui.tree.CheckNode;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.data.lite.*;
+import com.cannontech.database.data.lite.LiteComparators;
+import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.yukon.IDatabaseCache;
 
 public class DeviceCheckBoxTreeModel extends DeviceTreeModel implements Checkable
 {
@@ -145,7 +153,7 @@ public class DeviceCheckBoxTreeModel extends DeviceTreeModel implements Checkabl
     //   Override me if you want a sub class to do something different.
     protected synchronized void runUpdate() 
     {
-        DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+        IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 
         synchronized (cache)
         {
@@ -268,7 +276,7 @@ public class DeviceCheckBoxTreeModel extends DeviceTreeModel implements Checkabl
 
         if( node.willHaveChildren() && node.getUserObject() instanceof LiteYukonPAObject )
         {
-            DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+            IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 
             synchronized (cache)
             {

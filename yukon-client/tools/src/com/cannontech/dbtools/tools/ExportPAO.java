@@ -12,9 +12,8 @@ import java.util.Map;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.cache.functions.PAOFuncs;
-import com.cannontech.database.cache.functions.StateFuncs;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteStateGroup;
@@ -45,8 +44,8 @@ public class ExportPAO {
 		int id = Integer.parseInt(args[0]);
 		String fileName = args[1];
 
-		LiteYukonPAObject litePao = PAOFuncs.getLiteYukonPAO(id);		
-		LitePoint[] litePoints = PAOFuncs.getLitePointsForPAObject(id);
+		LiteYukonPAObject litePao = DaoFactory.getPaoDao().getLiteYukonPAO(id);		
+		LitePoint[] litePoints = DaoFactory.getPaoDao().getLitePointsForPAObject(id);
 		
 		DBPersistent dbPao = LiteFactory.createDBPersistent(litePao);
 		CTILogger.info("paoid: " + id);
@@ -63,7 +62,7 @@ public class ExportPAO {
 			dbPoints[i].setDbConnection(conn);
 			dbPoints[i].retrieve();
 			
-			LiteStateGroup lsg = StateFuncs.getLiteStateGroup(((PointBase)dbPoints[i]).getPoint().getStateGroupID().intValue());
+			LiteStateGroup lsg = DaoFactory.getStateDao().getLiteStateGroup(((PointBase)dbPoints[i]).getPoint().getStateGroupID().intValue());
 			if(lsg != null) {				
 				stateGroupMap.put(new Integer(lsg.getStateGroupID()), LiteFactory.createDBPersistent(lsg));
 			}

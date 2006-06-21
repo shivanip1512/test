@@ -6,11 +6,12 @@ package com.cannontech.database.model;
 import javax.swing.tree.TreePath;
 
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.cache.functions.PAOFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.yukon.IDatabaseCache;
 //This models has the following:
 //		1st Level = Ports YukonPAOBjects
 //		2nd Level = Devices YukonPAOBjects
@@ -49,7 +50,7 @@ public boolean isLiteTypeSupported( int liteType )
 public void update() 
 {
 	
-    com.cannontech.database.cache.DefaultDatabaseCache cache =
+    IDatabaseCache cache =
 					com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 
 	synchronized(cache)
@@ -120,7 +121,7 @@ public boolean insertTreeObject( LiteBase lb )
 		int devID = ((LiteYukonPAObject)lb).getPortID();
 
 		rootNode = findLiteObject( null, 
-				PAOFuncs.getLiteYukonPAO(devID) );
+				DaoFactory.getPaoDao().getLiteYukonPAO(devID) );
 
 		if( rootNode != null )
 		{
@@ -215,7 +216,7 @@ public synchronized void treePathWillExpand(javax.swing.tree.TreePath path)
 	if( node.willHaveChildren() &&
 		 node.getUserObject() instanceof LiteYukonPAObject )
 	{
-		com.cannontech.database.cache.DefaultDatabaseCache cache =
+		IDatabaseCache cache =
 			com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 
 		synchronized (cache)

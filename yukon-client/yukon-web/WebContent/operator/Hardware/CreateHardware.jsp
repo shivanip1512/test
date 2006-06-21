@@ -104,7 +104,7 @@ function validate(form) {
 				<input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Hardware/InventoryDetail.jsp?InvId=">
 				<input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>">
                 <table width="610" border="0" cellspacing="0" cellpadding="10" align="center">
-<% if (liteEC.getChildren().size() > 0 && AuthFuncs.checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_MANAGE_MEMBERS)) { %>
+<% if (liteEC.getChildren().size() > 0 && DaoFactory.getAuthDao().checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_MANAGE_MEMBERS)) { %>
                   <tr align="center"> 
                     <td colspan="2" valign="top" bgcolor="#FFFFFF" class="TableCell"> 
                       Member: 
@@ -258,7 +258,7 @@ function validate(form) {
                                 <td width="210"> 
                                   <select name="Route" onchange="setContentChanged(true)">
                                     <%
-	String dftRoute = PAOFuncs.getYukonPAOName(member.getDefaultRouteID());
+	String dftRoute = DaoFactory.getPaoDao().getYukonPAOName(member.getDefaultRouteID());
 	if (dftRoute != null)
 		dftRoute = "Default - " + dftRoute;
 	else

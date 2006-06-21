@@ -5,10 +5,7 @@ import java.sql.ResultSet;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
-import com.cannontech.common.version.VersionTools;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.cache.functions.ContactFuncs;
-import com.cannontech.database.db.contact.Contact;
 import com.cannontech.database.db.customer.CICustomerBase;
 import com.cannontech.database.db.customer.Customer;
 

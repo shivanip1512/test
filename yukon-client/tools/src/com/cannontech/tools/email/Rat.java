@@ -5,16 +5,18 @@ package com.cannontech.tools.email;
  * @author: 
  */
 
-import javax.mail.*;
-import javax.mail.internet.MimeMessage;
+import javax.mail.Address;
+import javax.mail.Message;
+import javax.mail.Session;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.commandlineparameters.CommandLineParser;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.message.util.Command;
 import com.cannontech.message.porter.ClientConnection;
 import com.cannontech.message.porter.message.Request;
+import com.cannontech.message.util.Command;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
 import com.cannontech.yukon.conns.ConnPool;

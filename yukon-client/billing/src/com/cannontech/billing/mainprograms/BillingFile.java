@@ -5,6 +5,8 @@ package com.cannontech.billing.mainprograms;
  * Creation date: (5/7/2002 2:16:34 PM)
  * @author: 
  */
+import java.io.IOException;
+
 import com.cannontech.billing.FileFormatBase;
 import com.cannontech.billing.FileFormatTypes;
 import com.cannontech.database.db.device.DeviceMeterGroup;

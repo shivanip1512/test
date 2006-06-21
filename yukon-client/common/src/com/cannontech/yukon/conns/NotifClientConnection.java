@@ -1,7 +1,6 @@
 package com.cannontech.yukon.conns;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.enums.CurtailmentEventAction;
 import com.cannontech.enums.EconomicEventAction;
 import com.cannontech.message.notif.CurtailmentEventDeleteMsg;
@@ -26,7 +25,6 @@ import com.cannontech.message.util.ClientConnection;
 import com.cannontech.message.util.CollectableBoolean;
 import com.cannontech.message.util.ServerRequest;
 import com.cannontech.message.util.ServerRequestHelper;
-import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.yukon.INotifConnection;
 import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.DefineCollectable;
@@ -50,24 +48,11 @@ public class NotifClientConnection extends ClientConnection implements INotifCon
         new DefColl_EconomicEventMsg(),
         new DefColl_EconomicEventDeleteMsg()
 	};
-	
+	    
 	public NotifClientConnection() 
 	{
 		super();
 		initialize();
-		getResources();
-	}
-
-	/**
-	 * Get our properties for this connection from the cache
-	 *
-	 */
-	private void getResources() 
-	{
-		setHost( RoleFuncs.getGlobalPropertyValue( SystemRole.NOTIFICATION_HOST ) );
-
-		setPort( Integer.parseInt(
-			RoleFuncs.getGlobalPropertyValue( SystemRole.NOTIFICATION_PORT ) ) );	
 	}
 
 	/**

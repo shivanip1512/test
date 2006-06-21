@@ -13,7 +13,6 @@ import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.cache.PILCommandCache;
-import com.cannontech.cttp.data.CttpCmd;
 import com.cannontech.cttp.schema.cttp_CommandResponseType;
 import com.cannontech.cttp.schema.cttp_CommandType;
 import com.cannontech.cttp.schema.cttp_FailureType;

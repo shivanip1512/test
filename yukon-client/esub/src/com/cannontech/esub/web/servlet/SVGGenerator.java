@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.LoginController;
-import com.cannontech.database.cache.functions.AuthFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.esub.Drawing;
 import com.cannontech.esub.element.DrawingMetaElement;
@@ -69,12 +69,12 @@ public class SVGGenerator extends HttpServlet {
 			
 			// User requires the role specific to access this drawing
 			// and also the Esub VIEW role to see it, which should we be using?
-			if( AuthFuncs.checkRole(user, metaElem.getRoleID()) != null &&	
-				(AuthFuncs.checkRoleProperty(user, com.cannontech.roles.operator.EsubDrawingsRole.VIEW) ||
-				 AuthFuncs.checkRoleProperty(user, EsubDrawingsRole.VIEW))) {				
+			if( DaoFactory.getAuthDao().checkRole(user, metaElem.getRoleID()) != null &&	
+				(DaoFactory.getAuthDao().checkRoleProperty(user, com.cannontech.roles.operator.EsubDrawingsRole.VIEW) ||
+				 DaoFactory.getAuthDao().checkRoleProperty(user, EsubDrawingsRole.VIEW))) {				
 							
-				boolean canEdit = AuthFuncs.checkRoleProperty(user, com.cannontech.roles.operator.EsubDrawingsRole.EDIT);
-				boolean canControl = AuthFuncs.checkRoleProperty(user, com.cannontech.roles.operator.EsubDrawingsRole.CONTROL);
+				boolean canEdit = DaoFactory.getAuthDao().checkRoleProperty(user, com.cannontech.roles.operator.EsubDrawingsRole.EDIT);
+				boolean canControl = DaoFactory.getAuthDao().checkRoleProperty(user, com.cannontech.roles.operator.EsubDrawingsRole.CONTROL);
 
 				SVGOptions svgOptions = new SVGOptions();
 				svgOptions.setStaticSVG(false);

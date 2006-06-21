@@ -13,9 +13,8 @@ import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.stars.StarsLMDetail;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.cache.functions.PAOFuncs;
-import com.cannontech.database.cache.functions.YukonListFuncs;
 
 /**
  * Created on May 20, 2005
@@ -79,14 +78,14 @@ public class StarsLMDetailModel extends ReportModelBase
 
 		    int tempOrderBy = getOrderBy();
 		    //First by GroupName
-	        String thisStrVal = PAOFuncs.getYukonPAOName(((StarsLMDetail)o1).getGroupID().intValue());
-	        String anotherStrVal = PAOFuncs.getYukonPAOName(((StarsLMDetail)o2).getGroupID().intValue());
+	        String thisStrVal = DaoFactory.getPaoDao().getYukonPAOName(((StarsLMDetail)o1).getGroupID().intValue());
+	        String anotherStrVal = DaoFactory.getPaoDao().getYukonPAOName(((StarsLMDetail)o2).getGroupID().intValue());
 	        if ( thisStrVal.equalsIgnoreCase(anotherStrVal) )
 	        {
 			    if( getOrderBy() == ORDER_BY_STATE)
 			    {
-			        thisStrVal = YukonListFuncs.getYukonListName(((StarsLMDetail)o1).getEnrollStatus().intValue());
-					anotherStrVal = YukonListFuncs.getYukonListName(((StarsLMDetail)o2).getEnrollStatus().intValue());
+			        thisStrVal = DaoFactory.getYukonListDao().getYukonListName(((StarsLMDetail)o1).getEnrollStatus().intValue());
+					anotherStrVal = DaoFactory.getYukonListDao().getYukonListName(((StarsLMDetail)o2).getEnrollStatus().intValue());
 					if (thisStrVal.equalsIgnoreCase(anotherStrVal))
 					    tempOrderBy = ORDER_BY_ACCOUNT_NUMBER;	//Need to order by accountNumber
 			    }
@@ -272,7 +271,7 @@ public class StarsLMDetailModel extends ReportModelBase
 			{
 				case GROUP_NAME_COLUMN:
 				    if( details.getGroupID() != null)
-				        return PAOFuncs.getYukonPAOName(details.getGroupID().intValue());
+				        return DaoFactory.getPaoDao().getYukonPAOName(details.getGroupID().intValue());
 				    break;
 				case GROUP_CAPACITY_COLUMN:
 					return details.getGroupCapacity();
@@ -288,17 +287,17 @@ public class StarsLMDetailModel extends ReportModelBase
 				    return details.getSerialNumber();
 				case DEVICE_TYPE_COLUMN:
 				    if( details.getDeviceType() != null)
-				        return YukonListFuncs.getYukonListEntry(details.getDeviceType().intValue());
+				        return DaoFactory.getYukonListDao().getYukonListEntry(details.getDeviceType().intValue());
 				    break;
 				case APPLIANCE_TYPE_COLUMN:
 				    if (details.getApplianceType() != null)
-					    return YukonListFuncs.getYukonListEntry(details.getApplianceType().intValue());
+					    return DaoFactory.getYukonListDao().getYukonListEntry(details.getApplianceType().intValue());
 				    break;
 				case APPLIANCE_KW_CAPACITY_COLUMN:
 				    return details.getApplianceCapacity();
 				case CURRENT_STATE_COLUMN:
 				    if( details.getEnrollStatus() != null )
-				        return YukonListFuncs.getYukonListEntry(details.getEnrollStatus().intValue());
+				        return DaoFactory.getYukonListDao().getYukonListEntry(details.getEnrollStatus().intValue());
 				    break;
 			}
 		}

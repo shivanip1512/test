@@ -35,11 +35,10 @@ import com.cannontech.common.gui.util.CTIKeyEventDispatcher;
 import com.cannontech.common.gui.util.SplashWindow;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.cache.functions.AuthFuncs;
-import com.cannontech.database.cache.functions.GraphFuncs;
 import com.cannontech.database.data.graph.GraphDefinition;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteFactory;
@@ -473,7 +472,7 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 	}
 	else if( event.getSource() == getTrendMenu().getGetDataNowSelectedTrendMenuItem())
 	{
-		java.util.List trendPaobjects = GraphFuncs.getLiteYukonPaobjects(getGraph().getGraphDefinition().getGraphDefinition().getGraphDefinitionID().intValue());
+		java.util.List trendPaobjects = DaoFactory.getGraphDao().getLiteYukonPaobjects(getGraph().getGraphDefinition().getGraphDefinition().getGraphDefinitionID().intValue());
 		getGraph().getDataNow(trendPaobjects);
 	}
 	/*else if( event.getSource() == getOptionsMenu().getStatCarrierCommReportMenuItem())
@@ -1860,7 +1859,7 @@ private void initialize()
 	{
 		// Setup Role Property to create/edit trends.
 		ClientSession session = ClientSession.getInstance();
-		boolean graphEdit = Boolean.valueOf(AuthFuncs.getRolePropertyValue(session.getUser(), TrendingRole.GRAPH_EDIT_GRAPHDEFINITION)).booleanValue();
+		boolean graphEdit = Boolean.valueOf(DaoFactory.getAuthDao().getRolePropertyValue(session.getUser(), TrendingRole.GRAPH_EDIT_GRAPHDEFINITION)).booleanValue();
 		if( !graphEdit )
 		{
 			getTrendMenu().getCreateMenuItem().setEnabled(false);

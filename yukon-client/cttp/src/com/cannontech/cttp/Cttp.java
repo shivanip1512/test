@@ -5,7 +5,6 @@ package com.cannontech.cttp;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -21,13 +20,12 @@ import java.util.TimeZone;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.cttp.schema.cttp_FailureType;
 import com.cannontech.cttp.schema.cttp_OperationType;
 import com.cannontech.cttp.schema.cttp_UserLoginType;
 import com.cannontech.cttp.schema.cttp_dtd_v0r1Doc;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.cache.functions.AuthFuncs;
-import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.device.lm.LMGroup;
 import com.cannontech.database.data.device.lm.MacroGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -121,7 +119,7 @@ public class Cttp {
 		//TODO: redundant code here?
 		String username = userLogin.getuserID().toString().trim();
 		String password = userLogin.getuserPassword().toString().trim();
-		LiteYukonUser user = AuthFuncs.login(username,password);
+		LiteYukonUser user = DaoFactory.getAuthDao().login(username,password);
 		
 //		if(user == null) {
 			//CTILogger.info("cttp-UserLogin failure, userid: " + username + " password: " + password + " utilityid: " + userLogin.getutilityID().toString());
@@ -184,7 +182,7 @@ public class Cttp {
 		  if(pao != null) {
 			  for(int i = 0; i < pao.length; i++) {
 				  Integer childID = pao[i].getChildID();
-				  LiteYukonPAObject litePao = PAOFuncs.getLiteYukonPAO(childID.intValue());
+				  LiteYukonPAObject litePao = DaoFactory.getPaoDao().getLiteYukonPAO(childID.intValue());
 				  if(litePao != null) {
 				  	 
 					if(litePao.getType() == DeviceTypes.LM_GROUP_VERSACOM ||
@@ -208,7 +206,7 @@ public class Cttp {
 		Iterator mIter = mg.getMacroGroupVector().iterator();
 		while(mIter.hasNext()) {
 			GenericMacro genMac = (GenericMacro) mIter.next();
-			LiteYukonPAObject lg = PAOFuncs.getLiteYukonPAO(genMac.getChildID().intValue());
+			LiteYukonPAObject lg = DaoFactory.getPaoDao().getLiteYukonPAO(genMac.getChildID().intValue());
 			retList.add(lg);
 		}
 		return retList;

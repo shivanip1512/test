@@ -15,7 +15,7 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.cache.functions.ContactFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
@@ -599,7 +599,7 @@ public class ImportManagerUtil {
 	    
 	    UpdateCustAccountAction.updateCustomerAccount( updateAccount, liteAcctInfo, energyCompany );
 	    
-		int loginID = ContactFuncs.getContact( liteAcctInfo.getCustomer().getPrimaryContactID() ).getLoginID();
+		int loginID = DaoFactory.getContactDao().getContact( liteAcctInfo.getCustomer().getPrimaryContactID() ).getLoginID();
 		if (loginID == UserUtils.USER_DEFAULT_ID && fields[IDX_USERNAME].trim().length() > 0) {
 			StarsUpdateLogin login = createStarsUpdateLogin( fields, energyCompany );
 			UpdateLoginAction.updateLogin( login, liteAcctInfo, energyCompany );

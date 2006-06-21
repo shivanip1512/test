@@ -19,9 +19,8 @@ import javax.servlet.http.HttpSession;
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.Pair;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.TransactionException;
-import com.cannontech.database.cache.functions.AuthFuncs;
-import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.application.WebClientRole;
@@ -88,11 +87,11 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 	if(LOGIN.equalsIgnoreCase(action)) {
 		String username = req.getParameter(USERNAME);
 		String password = req.getParameter(PASSWORD);
-		LiteYukonUser user = AuthFuncs.login(username,password);
+		LiteYukonUser user = DaoFactory.getAuthDao().login(username,password);
 		String home_url = null;
 		
 		if(user != null && 
-			(home_url = AuthFuncs.getRolePropertyValue(user,WebClientRole.HOME_URL)) != null) {
+			(home_url = DaoFactory.getAuthDao().getRolePropertyValue(user,WebClientRole.HOME_URL)) != null) {
 			HttpSession session = req.getSession();
 			
 			try {
@@ -109,7 +108,7 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 						session = req.getSession(true);
 						
 						if(referer == null)
-							referer = AuthFuncs.getRolePropertyValue(user,WebClientRole.HOME_URL);
+							referer = DaoFactory.getAuthDao().getRolePropertyValue(user,WebClientRole.HOME_URL);
 						
 						// Save the old session context and where to direct the browser when the new user logs off
 						session.setAttribute( SAVED_YUKON_USERS, new Pair(oldContext, referer) );
@@ -122,7 +121,7 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 					}
 					
 					//stash a cookie that might tell us later where they log in at								
-					String loginUrl = AuthFuncs.getRolePropertyValue(user, WebClientRole.LOG_IN_URL);
+					String loginUrl = DaoFactory.getAuthDao().getRolePropertyValue(user, WebClientRole.LOG_IN_URL);
 					if (loginUrl.startsWith("/")) loginUrl = req.getContextPath() + loginUrl;
 					
 					Cookie c = new Cookie(LOGIN_URL_COOKIE, loginUrl);
@@ -167,7 +166,7 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 			session.invalidate();
 			
 			if(user != null) {
-				redirectURI = AuthFuncs.getRolePropertyValue(user, WebClientRole.LOG_IN_URL);
+				redirectURI = DaoFactory.getAuthDao().getRolePropertyValue(user, WebClientRole.LOG_IN_URL);
 				ActivityLogger.logEvent(user.getUserID(),LOGOUT_ACTIVITY_LOG, "User " + user.getUsername() + " (userid=" + user.getUserID() + ") has logged out from " + req.getRemoteAddr());
 			}
 			
@@ -208,7 +207,7 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 	if(CLIENT_LOGIN.equalsIgnoreCase(action)){
 		String username = req.getParameter(USERNAME);
 		String password = req.getParameter(PASSWORD);	
-		LiteYukonUser user = AuthFuncs.login(username,password);
+		LiteYukonUser user = DaoFactory.getAuthDao().login(username,password);
 		
 		if(user != null) {
 			HttpSession session = req.getSession(true);
@@ -251,8 +250,8 @@ private static void initSession(LiteYukonUser user, HttpSession session) throws 
  * get a new session object after invoking this method.
  */
 public static LiteYukonUser internalLogin(HttpServletRequest req, HttpSession session, String username, String password, boolean saveCurrentUser) {
-	LiteYukonUser user = AuthFuncs.yukonLogin(username,password);
-	if (user == null || AuthFuncs.getRolePropertyValue(user,WebClientRole.HOME_URL) == null)
+	LiteYukonUser user = DaoFactory.getAuthDao().yukonLogin(username,password);
+	if (user == null || DaoFactory.getAuthDao().getRolePropertyValue(user,WebClientRole.HOME_URL) == null)
 		return null;
 	
 	Properties oldContext = null;
@@ -271,7 +270,7 @@ public static LiteYukonUser internalLogin(HttpServletRequest req, HttpSession se
 	
 	String referer = req.getHeader("referer");
 	if(referer == null)
-		referer = AuthFuncs.getRolePropertyValue(user,WebClientRole.HOME_URL);
+		referer = DaoFactory.getAuthDao().getRolePropertyValue(user,WebClientRole.HOME_URL);
 	
 	// Save the old session context and where to direct the browser when the new user logs off
 	if (oldContext != null)
@@ -304,13 +303,13 @@ private void doOutboundVoiceLogin( HttpServletRequest req, HttpServletResponse r
 	} catch(NumberFormatException nfe) { CTILogger.debug("Unable to parse given ContactID value into an Integer, value = " + contactid);}
 
 
-	LiteContact lContact = ContactFuncs.getContact( contactid ); //store this for logging purposes only
-	LiteYukonUser user = AuthFuncs.voiceLogin( contactid, password );
+	LiteContact lContact = DaoFactory.getContactDao().getContact( contactid ); //store this for logging purposes only
+	LiteYukonUser user = DaoFactory.getAuthDao().voiceLogin( contactid, password );
 
 	String voice_home_url = "/voice/notification.jsp";
 		
 	if( user != null 
-		/*&& (voice_home_url = AuthFuncs.getRolePropertyValue(user,WebClientRole.HOME_URL)) != null*/ )
+		/*&& (voice_home_url = DaoFactory.getAuthDao().getRolePropertyValue(user,WebClientRole.HOME_URL)) != null*/ )
 	{
 		HttpSession session = req.getSession();
 			
@@ -361,7 +360,7 @@ private void doOutboundVoiceLogin( HttpServletRequest req, HttpServletResponse r
 		String pin = req.getParameter(PIN); // pin
 		String tries = req.getParameter("TRIES"); // pin
 			
-		LiteYukonUser user = AuthFuncs.inboundVoiceLogin(phone, pin);
+		LiteYukonUser user = DaoFactory.getAuthDao().inboundVoiceLogin(phone, pin);
 		
 		if( user != null) {
 			HttpSession session = req.getSession();
@@ -388,7 +387,7 @@ private void doOutboundVoiceLogin( HttpServletRequest req, HttpServletResponse r
 			
 			resp.sendRedirect(
 			                  req.getContextPath() + 
-                              AuthFuncs.getRolePropertyValue(user.getUserID(), 
+                              DaoFactory.getAuthDao().getRolePropertyValue(user.getUserID(), 
                                                              WebClientRole.INBOUND_VOICE_HOME_URL));
 	
 		} else {

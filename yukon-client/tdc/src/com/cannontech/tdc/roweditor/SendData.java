@@ -7,12 +7,12 @@ package com.cannontech.tdc.roweditor;
  */
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.message.dispatch.ClientConnection;
-import com.cannontech.message.util.Command;
 import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.PointRegistration;
 import com.cannontech.message.dispatch.message.Registration;
 import com.cannontech.message.dispatch.message.Signal;
+import com.cannontech.message.util.Command;
 import com.cannontech.tags.TagManager;
 import com.cannontech.tdc.TDCClient;
 import com.cannontech.tdc.TDCMainFrame;

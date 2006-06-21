@@ -1,6 +1,7 @@
 package com.cannontech.dbeditor.wizard.config;
 
 import java.awt.Dimension;
+
 import com.cannontech.database.data.config.ConfigTwoWay;
 
 /**

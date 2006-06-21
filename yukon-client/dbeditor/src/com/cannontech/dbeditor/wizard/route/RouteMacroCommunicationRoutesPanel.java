@@ -2,6 +2,8 @@ package com.cannontech.dbeditor.wizard.route;
 
 import java.awt.Dimension;
 
+import com.cannontech.yukon.IDatabaseCache;
+
 /**
  * This type was created in VisualAge.
  */
@@ -227,7 +229,7 @@ constraintsRoutesAddRemovePanel.gridheight = 2;
 		handleException(ivjExc);
 	}
 	// user code begin {2}
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	java.util.Vector availableRoutes = null;
 	synchronized(cache)
 	{

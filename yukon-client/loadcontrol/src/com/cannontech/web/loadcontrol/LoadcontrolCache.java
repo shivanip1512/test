@@ -23,8 +23,7 @@ import javax.swing.Timer;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.cache.functions.AuthFuncs;
-import com.cannontech.database.cache.functions.LMFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.LMComparators;
@@ -380,7 +379,7 @@ public Iterator getAllControlAreas( LiteYukonUser yukUser )
     while( iter.hasNext() )
     {
         LMControlArea area = (LMControlArea)iter.next();
-        if( AuthFuncs.userHasAccessPAO(yukUser, area.getYukonID().intValue()) )
+        if( DaoFactory.getAuthDao().userHasAccessPAO(yukUser, area.getYukonID().intValue()) )
             paoList.add( area );
     }
 
@@ -422,7 +421,7 @@ public LMGroupBase getGroup( Integer grpID )
  */
 public LMScenarioWrapper getScenario( Integer scenarioID )
 {
-	LiteYukonPAObject[] scenarios = LMFuncs.getAllLMScenarios();
+	LiteYukonPAObject[] scenarios = DaoFactory.getLmDao().getAllLMScenarios();
 	for( int i = 0; i < scenarios.length; i++ )
 	{
 		if( scenarios[i].getYukonID() == scenarioID.intValue() )

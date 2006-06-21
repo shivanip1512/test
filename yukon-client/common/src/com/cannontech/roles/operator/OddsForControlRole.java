@@ -1,6 +1,6 @@
 package com.cannontech.roles.operator;
 
-import com.cannontech.roles.*;
+import com.cannontech.roles.OperatorRoleDefs;
 
 /**
  * @author yao

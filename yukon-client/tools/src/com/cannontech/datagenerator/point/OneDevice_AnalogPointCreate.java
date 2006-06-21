@@ -4,8 +4,7 @@ package com.cannontech.datagenerator.point;
  * Creation date: (1/10/2001 11:18:45 PM)
  * @author: 
  */
-import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.point.AccumulatorPoint;
+import com.cannontech.core.dao.DaoFactory;
 public class OneDevice_AnalogPointCreate extends PointCreate
 {
 	int deviceID = -1;
@@ -35,7 +34,7 @@ public class OneDevice_AnalogPointCreate extends PointCreate
 	{
 		com.cannontech.clientutils.CTILogger.info("Starting One Device Analog Point creation process...");
 
-		com.cannontech.database.data.lite.LiteYukonPAObject litePaobject = com.cannontech.database.cache.functions.PAOFuncs.getLiteYukonPAO(deviceID);
+		com.cannontech.database.data.lite.LiteYukonPAObject litePaobject = DaoFactory.getPaoDao().getLiteYukonPAO(deviceID);
 	
 		//create an object to hold all of our DBPersistant objects
 		com.cannontech.database.data.multi.SmartMultiDBPersistent multi = new com.cannontech.database.data.multi.SmartMultiDBPersistent();

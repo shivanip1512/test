@@ -1,5 +1,7 @@
 package com.cannontech.dbeditor.wizard.customer;
 
+import com.cannontech.yukon.IDatabaseCache;
+
 /**
  * This type was created in VisualAge.
  */
@@ -428,7 +430,7 @@ public void setValue(Object val)
 	
 	java.util.Vector availableMeters = null;
 	java.util.Vector usedMeters = null;
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	
 	synchronized( cache )
 	{

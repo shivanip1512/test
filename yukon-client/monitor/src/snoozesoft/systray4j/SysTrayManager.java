@@ -26,7 +26,8 @@
 
 package snoozesoft.systray4j;
 
-import java.util.*;
+import java.util.Properties;
+import java.util.Vector;
 
 final class SysTrayManager
 {

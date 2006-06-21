@@ -7,7 +7,7 @@ import java.util.Vector;
 
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.lm.SettlementCustomer;
-import com.cannontech.database.cache.functions.CustomerFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.util.ServletUtil;
@@ -117,7 +117,7 @@ public class HECO_DSMISModel extends HECO_SettlementModelBase
 				case ACCOUNT_NUMBER_DATA:
 				{
 					String value = "";
-					LiteCustomer liteCust = CustomerFuncs.getLiteCustomer(settleCust.getCustomerID().intValue());
+					LiteCustomer liteCust = DaoFactory.getCustomerDao().getLiteCustomer(settleCust.getCustomerID().intValue());
 					Vector acctIDs = liteCust.getAccountIDs();
 					if( acctIDs != null && !acctIDs.isEmpty())
 					{

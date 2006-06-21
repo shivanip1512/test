@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsInv.java,v 1.34 2006/03/10 23:33:14 jdayton Exp $
+ * $Id: StarsInv.java,v 1.35 2006/06/21 17:12:13 alauinger Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -11,20 +11,11 @@ package com.cannontech.stars.xml.serialize;
  //- Imported classes and packages -/
 //---------------------------------/
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.Serializable;
-import java.io.Writer;
-import java.util.Date;
-import org.exolab.castor.xml.*;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
-import org.xml.sax.ContentHandler;
 
 /**
  * 
  * 
- * @version $Revision: 1.34 $ $Date: 2006/03/10 23:33:14 $
+ * @version $Revision: 1.35 $ $Date: 2006/06/21 17:12:13 $
 **/
 public abstract class StarsInv implements java.io.Serializable {
 

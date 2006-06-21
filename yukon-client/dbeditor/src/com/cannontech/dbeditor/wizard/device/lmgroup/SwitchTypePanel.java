@@ -3,10 +3,11 @@ package com.cannontech.dbeditor.wizard.device.lmgroup;
  * This type was created in VisualAge.
  */
 import java.awt.Dimension;
-import com.cannontech.roles.application.DBEditorRole;
+
 import com.cannontech.common.login.ClientSession;
-import com.cannontech.database.data.device.lm.LMFactory;
 import com.cannontech.common.util.ClientRights;
+import com.cannontech.database.data.device.lm.LMFactory;
+import com.cannontech.roles.application.DBEditorRole;
 
 public class SwitchTypePanel extends com.cannontech.common.gui.util.DataInputPanel 
 {

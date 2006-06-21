@@ -1,6 +1,7 @@
 package com.cannontech.dbeditor.wizard.point;
 
 import com.cannontech.database.data.point.CalcStatusPoint;
+import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * This type was created in VisualAge.
@@ -224,7 +225,7 @@ public Object getValue(Object val) {
 		//point.getPoint().setPseudoFlag(new Character('P'));
 		point.getPoint().setPointOffset(new Integer(0));
 
-		com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+		IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 		synchronized(cache)
 		{
 			java.util.List unitMeasures = cache.getAllUnitMeasures();

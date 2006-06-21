@@ -14,9 +14,7 @@ package com.cannontech.dbeditor.editor.config;
  */
 
 import com.cannontech.common.gui.util.DataInputPanel;
-
 import com.cannontech.database.data.config.ConfigTwoWay;
-import com.cannontech.dbeditor.wizard.config.Series200ConfigPanel;
 
 
 public class ConfigEditorPanel extends com.cannontech.common.editor.PropertyPanel implements com.cannontech.common.editor.IMultiPanelEditor

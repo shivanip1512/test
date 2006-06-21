@@ -14,12 +14,8 @@ import javax.xml.soap.SOAPMessage;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.Pair;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.cache.StarsDatabaseCache;
-import com.cannontech.database.cache.functions.AuthFuncs;
-import com.cannontech.database.cache.functions.ContactFuncs;
-import com.cannontech.database.cache.functions.YukonListFuncs;
-import com.cannontech.database.data.lite.LiteContact;
-import com.cannontech.database.data.lite.stars.LiteAddress;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.roles.operator.AdministratorRole;
@@ -60,8 +56,8 @@ public class SearchCustAccountAction implements ActionBase {
     	public int compare(Object o1, Object o2) {
 			LiteStarsCustAccountInformation acct1 = (LiteStarsCustAccountInformation) o1;
 			LiteStarsCustAccountInformation acct2 = (LiteStarsCustAccountInformation) o2;
-			LiteContact cont1 = ContactFuncs.getContact( acct1.getCustomer().getPrimaryContactID() );
-			LiteContact cont2 = ContactFuncs.getContact( acct2.getCustomer().getPrimaryContactID() );
+			LiteContact cont1 = DaoFactory.getContactDao().getContact( acct1.getCustomer().getPrimaryContactID() );
+			LiteContact cont2 = DaoFactory.getContactDao().getContact( acct2.getCustomer().getPrimaryContactID() );
 			
 			int result = cont1.getContLastName().toUpperCase().compareTo( cont2.getContLastName().toUpperCase() );
 			if (result == 0)
@@ -147,7 +143,7 @@ public class SearchCustAccountAction implements ActionBase {
         	LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
         	
             StarsSearchCustomerAccount searchAccount = reqOper.getStarsSearchCustomerAccount();
-            int searchByDefID = YukonListFuncs.getYukonListEntry( searchAccount.getSearchBy().getEntryID() ).getYukonDefID();
+            int searchByDefID = DaoFactory.getYukonListDao().getYukonListEntry( searchAccount.getSearchBy().getEntryID() ).getYukonDefID();
 
             //Require at least 2 characters for all searches except accountnumber.
             if (!(searchByDefID == YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_ACCT_NO) && searchAccount.getSearchValue().trim().length() < 2) {
@@ -160,7 +156,7 @@ public class SearchCustAccountAction implements ActionBase {
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
            
-			boolean searchMembers = AuthFuncs.checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS )
+			boolean searchMembers = DaoFactory.getAuthDao().checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS )
 					&& (energyCompany.getChildren().size() > 0);
 			ArrayList accountList = null;
             

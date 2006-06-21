@@ -5,7 +5,6 @@ package com.cannontech.dbeditor.wizard.capfeeder;
 import java.awt.Dimension;
 
 import com.cannontech.database.data.capcontrol.CapControlFeeder;
-import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.database.db.capcontrol.CapControlSubstationBus;
  
 public class CCFeederPointSettingsPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener {

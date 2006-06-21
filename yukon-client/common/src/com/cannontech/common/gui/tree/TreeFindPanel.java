@@ -11,7 +11,6 @@ import java.awt.event.KeyListener;
 
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.util.DataInputPanel;
-import com.cannontech.common.gui.util.TextFieldDocument;
 
 public class TreeFindPanel extends DataInputPanel implements KeyListener
 {

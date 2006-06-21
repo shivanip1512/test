@@ -1,18 +1,15 @@
 package com.cannontech.common.gui.util;
 
-import com.cannontech.common.gui.util.TreeViewPanel;
-import javax.swing.JTree;
-import javax.swing.tree.DefaultMutableTreeNode;
-import com.cannontech.database.model.ModelFactory;
+import java.util.Vector;
+
+import javax.swing.JComboBox;
+
+import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.model.DBTreeModel;
 import com.cannontech.database.model.DBTreeNode;
-import com.cannontech.database.data.lite.LiteBase;
-import java.util.Vector;
-import com.cannontech.database.db.DBPersistent;
-import com.cannontech.database.data.lite.LiteFactory;
-import com.cannontech.database.model.LiteBaseTreeModel;
 import com.cannontech.database.model.DeviceTreeModel;
-import javax.swing.JComboBox;
+import com.cannontech.database.model.LiteBaseTreeModel;
+import com.cannontech.database.model.ModelFactory;
 
 /**
  * Insert the type's description here.

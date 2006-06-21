@@ -14,22 +14,21 @@ import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.StarsDatabaseCache;
-import com.cannontech.database.cache.functions.ContactFuncs;
-import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteCustomer;
+import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.db.customer.CustomerAdditionalContact;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
-import com.cannontech.user.UserUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.StarsFactory;
@@ -42,11 +41,10 @@ import com.cannontech.stars.xml.serialize.StarsCustomerContact;
 import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsUpdateContacts;
-import com.cannontech.stars.xml.serialize.StarsUpdateLogin;
 import com.cannontech.stars.xml.serialize.StarsUpdateContactsResponse;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
-import com.cannontech.database.data.lite.LiteFactory;
+import com.cannontech.user.UserUtils;
 
 
 /**
@@ -111,7 +109,7 @@ public class UpdateContactsAction implements ActionBase {
 					if(firstName != null)
 						firstInitial = firstName.toLowerCase().substring(0,1);
 					String newUserName = firstInitial + lastName.toLowerCase();
-					if (YukonUserFuncs.getLiteYukonUser( newUserName ) != null)
+					if (DaoFactory.getYukonUserDao().getLiteYukonUser( newUserName ) != null)
 						newUserName = firstName.toLowerCase() + lastName.toLowerCase();
 					login.getYukonUser().setUsername(newUserName);
 					login.getYukonUser().setPassword(new Long(java.util.Calendar.getInstance().getTimeInMillis()).toString()); 
@@ -211,7 +209,7 @@ public class UpdateContactsAction implements ActionBase {
 			StarsUpdateContactsResponse resp = new StarsUpdateContactsResponse(); 
 			
 			LiteCustomer liteCustomer = liteAcctInfo.getCustomer();
-			LiteContact litePrimContact = ContactFuncs.getContact( liteCustomer.getPrimaryContactID() );
+			LiteContact litePrimContact = DaoFactory.getContactDao().getContact( liteCustomer.getPrimaryContactID() );
 			PrimaryContact starsPrimContact = updateContacts.getPrimaryContact();
             
 			if (!StarsLiteFactory.isIdenticalCustomerContact( litePrimContact, starsPrimContact )) {

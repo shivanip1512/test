@@ -13,7 +13,6 @@ import com.cannontech.esub.util.HTMLGenerator;
 import com.cannontech.esub.util.ImageExporter;
 import com.cannontech.esub.util.SVGGenerator;
 import com.cannontech.esub.util.SVGOptions;
-
 import com.loox.jloox.LxComponent;
 import com.loox.jloox.LxGraph;
 import com.loox.jloox.LxView;

@@ -7,11 +7,9 @@
 package com.cannontech.yukon.server.cache.bypass;
 
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.db.contact.Contact;
-import com.cannontech.database.db.contact.ContactNotification; 
-import com.cannontech.database.db.user.YukonRole;
+import com.cannontech.database.db.contact.ContactNotification;
 
 /**
  * @author jdayton
@@ -22,7 +20,7 @@ import com.cannontech.database.db.user.YukonRole;
 public class YukonUserContactLookup 
 {
 	/**
-	 * Constructor for YukonUserFuncs.
+	 * Constructor for DaoFactory.getYukonUserDao().
 	 */
 	public YukonUserContactLookup()
 	{

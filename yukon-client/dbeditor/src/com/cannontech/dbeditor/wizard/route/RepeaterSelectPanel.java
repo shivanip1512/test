@@ -4,6 +4,7 @@ import java.awt.Dimension;
 
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.dbeditor.editor.regenerate.RegenerateRoute;
+import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * This type was created in VisualAge.
@@ -491,7 +492,7 @@ public void rightListMouseMotion_mouseDragged(java.util.EventObject newEvent) {
  * @param val java.lang.Object
  */
 public void setValue(Object val) {
-   com.cannontech.database.cache.DefaultDatabaseCache cache =
+   IDatabaseCache cache =
                com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
    java.util.Vector allRepeaters = null;
    synchronized(cache)

@@ -7,12 +7,12 @@ package com.cannontech.dbeditor.editor.point;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.util.DataInputPanel;
-import com.cannontech.database.cache.functions.PAOFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.AccumulatorPoint;
 import com.cannontech.database.data.point.AnalogPoint;
-import com.cannontech.database.data.point.CalculatedPoint;
 import com.cannontech.database.data.point.CalcStatusPoint;
+import com.cannontech.database.data.point.CalculatedPoint;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointLogicalGroups;
 import com.cannontech.database.data.point.StatusPoint;
@@ -742,7 +742,7 @@ public void setValue(Object val)
 
 
 	//Load the device
-	LiteYukonPAObject litePAO = PAOFuncs.getLiteYukonPAO( pointDeviceID );
+	LiteYukonPAObject litePAO = DaoFactory.getPaoDao().getLiteYukonPAO( pointDeviceID );
 	getDeviceNameActualLabel().setText( litePAO.getPaoName() );
 
 

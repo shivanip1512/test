@@ -11,6 +11,7 @@ import javax.swing.JOptionPane;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.db.capcontrol.DeviceCBC;
+import com.cannontech.yukon.IDatabaseCache;
 
 
 /**
@@ -141,7 +142,7 @@ public class InputValidater
 			
 		}
 		
-		com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+		IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 		synchronized(cache)
 		{         
 

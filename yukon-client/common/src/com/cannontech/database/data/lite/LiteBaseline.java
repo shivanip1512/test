@@ -1,6 +1,5 @@
 package com.cannontech.database.data.lite;
 
-import com.cannontech.database.db.baseline.Baseline;
 
 /**
  * Insert the type's description here.

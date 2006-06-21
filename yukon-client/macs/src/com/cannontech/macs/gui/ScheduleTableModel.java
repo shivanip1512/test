@@ -10,10 +10,10 @@ import java.util.List;
 import java.util.Vector;
 
 import com.cannontech.macs.events.MACSGenericTableModelEvent;
-import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.macs.message.DeleteSchedule;
 import com.cannontech.message.macs.message.Schedule;
 import com.cannontech.message.util.Message;
+import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
 
 public class ScheduleTableModel extends javax.swing.table.AbstractTableModel implements MessageListener, com.cannontech.common.gui.util.SortableTableModel 

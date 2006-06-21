@@ -19,7 +19,7 @@ import com.cannontech.cc.service.builder.VerifiedCustomer;
 import com.cannontech.cc.service.exception.EventModificationException;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.exception.PointException;
-import com.cannontech.database.cache.functions.EnergyCompanyFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.customer.CICustomerPointType;
@@ -76,8 +76,8 @@ public class IsocEconomicStrategy extends BaseEconomicStrategy {
 
     protected void checkPropossedSelections(EconomicEventParticipantSelection selection, 
                                             LiteYukonUser user, Date time) throws EventModificationException {
-        LiteEnergyCompany energyCompany = EnergyCompanyFuncs.getEnergyCompany(user);
-        TimeZone timeZone = EnergyCompanyFuncs.getEnergyCompanyTimeZone(energyCompany);
+        LiteEnergyCompany energyCompany = DaoFactory.getEnergyCompanyDao().getEnergyCompany(user);
+        TimeZone timeZone = DaoFactory.getEnergyCompanyDao().getEnergyCompanyTimeZone(energyCompany);
         DateFormat dateFormat = SimpleDateFormat.getTimeInstance(SimpleDateFormat.SHORT);
         dateFormat.setTimeZone(timeZone);
         List<EconomicEventParticipantSelectionWindow> selectionWindows = selection.getSelectionWindows();

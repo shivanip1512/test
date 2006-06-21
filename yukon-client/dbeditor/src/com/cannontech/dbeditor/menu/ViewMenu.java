@@ -7,9 +7,9 @@ import java.awt.KeyboardFocusManager;
 import java.awt.event.KeyEvent;
 
 import javax.swing.ButtonGroup;
+import javax.swing.JMenuItem;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JSeparator;
-import javax.swing.JMenuItem;
 
 import com.cannontech.common.gui.util.CTIKeyEventDispatcher;
 ;

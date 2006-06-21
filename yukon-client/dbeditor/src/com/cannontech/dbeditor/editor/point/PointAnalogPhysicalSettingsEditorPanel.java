@@ -5,6 +5,7 @@ package com.cannontech.dbeditor.editor.point;
  */
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.yukon.IDatabaseCache;
 
 public class PointAnalogPhysicalSettingsEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, java.awt.event.ItemListener, javax.swing.event.CaretListener, com.klg.jclass.util.value.JCValueListener
 {
@@ -891,7 +892,7 @@ public void setValue(Object val)
 	if( transducerType != null )
 		CtiUtilities.setSelectedInComboBox( getTransducerTypeComboBox(), transducerType );
 
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized(cache)
 	{
 		java.util.List points = cache.getAllPoints();

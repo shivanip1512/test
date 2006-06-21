@@ -3,7 +3,6 @@ package com.cannontech.servlet.nav;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.servlet.nav.DBEditorTypes;
 
 /**
  * @author ryan

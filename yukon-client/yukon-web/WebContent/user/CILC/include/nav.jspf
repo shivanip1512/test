@@ -5,7 +5,7 @@ function dispStatusMsg(msgStr)
   document.statVal = true;
 }
 </script>
-<%@ page import="com.cannontech.database.cache.functions.AuthFuncs" %>
+<%@ page import="com.cannontech.core.dao.DaoFactory" %>
 <%
 	//index vars for LinkPairs
 	int FILE = 0;
@@ -16,9 +16,9 @@ function dispStatusMsg(msgStr)
 	int IMG = 0;
 	int HTML = 1;
 	// Table of (link, page name, dir location) pairs
-	String linkPairs[][] = {{"user_ee.jsp", AuthFuncs.getRolePropertyValue(liteYukonUser, EnergyBuybackRole.ENERGY_BUYBACK_LABEL), "/user/CILC/"},
-						  {"user_curtail.jsp", AuthFuncs.getRolePropertyValue(liteYukonUser, DirectCurtailmentRole.CURTAILMENT_LABEL), "/user/CILC/"},
-  						  {"user_direct.jsp", AuthFuncs.getRolePropertyValue(liteYukonUser, DirectLoadcontrolRole.LOADCONTROL_LABEL), "/user/CILC/"},
+	String linkPairs[][] = {{"user_ee.jsp", DaoFactory.getAuthDao().getRolePropertyValue(liteYukonUser, EnergyBuybackRole.ENERGY_BUYBACK_LABEL), "/user/CILC/"},
+						  {"user_curtail.jsp", DaoFactory.getAuthDao().getRolePropertyValue(liteYukonUser, DirectCurtailmentRole.CURTAILMENT_LABEL), "/user/CILC/"},
+  						  {"user_direct.jsp", DaoFactory.getAuthDao().getRolePropertyValue(liteYukonUser, DirectLoadcontrolRole.LOADCONTROL_LABEL), "/user/CILC/"},
 						  {"user_lm_control.jsp", "Auto Control", "/user/CILC/"},
 						  {"user_lm_time.jsp", "Time Based", "/user/CILC/"},
 						  {"switch_commands.jsp", "Switch Command", "/user/CILC/"},
@@ -27,7 +27,7 @@ function dispStatusMsg(msgStr)
   						  {"user_get_data_now.jsp", "Get Data Now", "/user/CILC/"},
 						  {"user_ee_profile.jsp", "Profile", "/user/CILC/"}
 						 };
-	String bulletImg = "<img src='../../WebConfig/" + AuthFuncs.getRolePropertyValue(liteYukonUser, WebClientRole.NAV_BULLET_SELECTED) + "' width='9' height='9'>";
+	String bulletImg = "<img src='../../WebConfig/" + DaoFactory.getAuthDao().getRolePropertyValue(liteYukonUser, WebClientRole.NAV_BULLET_SELECTED) + "' width='9' height='9'>";
 	
 	// List of String[] (link image, link html)
 	Hashtable links = new Hashtable();

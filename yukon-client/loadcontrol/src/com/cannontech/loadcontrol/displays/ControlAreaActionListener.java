@@ -1,6 +1,5 @@
 package com.cannontech.loadcontrol.displays;
 
-import java.util.EventListener;
 import javax.swing.event.EventListenerList;
 
 

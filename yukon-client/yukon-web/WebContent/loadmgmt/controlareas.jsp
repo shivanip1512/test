@@ -85,7 +85,7 @@
                       <select name="area_state" onchange="this.form.submit()" >
 
 <%
-if( AuthFuncs.hasPAOAccess((LiteYukonUser) session.getAttribute(ServletUtil.ATT_YUKON_USER)) ) {
+if( DaoFactory.getAuthDao().hasPAOAccess((LiteYukonUser) session.getAttribute(ServletUtil.ATT_YUKON_USER)) ) {
 %>
 					  <option value="<%= ControlAreaActionListener.SEL_ALL_CONTROL_AREAS %>" 
 					  <%= (lmSession.getAreaView().equalsIgnoreCase(ControlAreaActionListener.SEL_ALL_CONTROL_AREAS) ? " selected" : "" ) %>>

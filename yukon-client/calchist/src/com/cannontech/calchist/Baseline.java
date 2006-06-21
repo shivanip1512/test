@@ -15,9 +15,9 @@ import java.util.Vector;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.LogWriter;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.Transaction;
-import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.database.data.holiday.HolidaySchedule;
 import com.cannontech.database.data.point.PointQualities;
 import com.cannontech.database.data.point.PointTypes;
@@ -97,7 +97,7 @@ public class Baseline implements Serializable
 	{
 		if( baselineCalcTime == null )
 		{
-			String propValue = RoleFuncs.getGlobalPropertyValue(CalcHistoricalRole.BASELINE_CALCTIME);
+			String propValue = DaoFactory.getRoleDao().getGlobalPropertyValue(CalcHistoricalRole.BASELINE_CALCTIME);
 			baselineCalcTime = Integer.valueOf(propValue);
 			
 			CalcHistorical.logEvent("Baseline calculation time = " + baselineCalcTime + ":00", LogWriter.INFO);
@@ -178,7 +178,7 @@ public class Baseline implements Serializable
 	{
 		if( daysPreviousToCollect == null )
 		{
-			String propValue = RoleFuncs.getGlobalPropertyValue(CalcHistoricalRole.DAYS_PREVIOUS_TO_COLLECT);
+			String propValue = DaoFactory.getRoleDao().getGlobalPropertyValue(CalcHistoricalRole.DAYS_PREVIOUS_TO_COLLECT);
 			daysPreviousToCollect = Integer.valueOf(propValue);
 			CalcHistorical.logEvent("Baseline days previous to collect is " + daysPreviousToCollect, LogWriter.INFO);
 			CTILogger.info("Baseline days previous to collect is " + daysPreviousToCollect);

@@ -11,8 +11,8 @@ import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.version.VersionTools;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteCustomer;
@@ -136,7 +136,7 @@ public class CustomerLoader implements Runnable
                     int[] map = (int[])vectVals.get(j);
                     if( map[0] == lc.getCustomerID() )
                     {
-                        lc.getAdditionalContacts().add( ContactFuncs.getContact(map[1]) );
+                        lc.getAdditionalContacts().add( DaoFactory.getContactDao().getContact(map[1]) );
                         
                         found = true;
                     }

@@ -6,10 +6,9 @@
  */
 package com.cannontech.database.db.importer;
 
-import java.sql.SQLException;
+import java.util.Date;
 
 import com.cannontech.database.db.NestedDBPersistent;
-import java.util.Date;
 
 /**
  * @author jdayton

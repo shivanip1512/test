@@ -4,13 +4,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.application.DBEditorRole;
+import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * @author alauinger
@@ -38,7 +39,7 @@ public class AuthDump {
 	}
 	
 	private static void dump() {
-		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+		IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 		
 		List allUsers = cache.getAllYukonUsers();
 		System.out.println("Users:");
@@ -97,7 +98,7 @@ public class AuthDump {
 	    	while(i2.hasNext()) {
 	    		LiteYukonRole role = (LiteYukonRole) i2.next();
     		
-    			LiteYukonRole r2 = AuthFuncs.checkRole(user,role.getRoleID());
+    			LiteYukonRole r2 = DaoFactory.getAuthDao().checkRole(user,role.getRoleID());
     			if(r2 != null) {
     				System.out.println("userid: " + user.getUserID() + "  username: " + user.getUsername() + " has roleid: " + r2.getRoleID() + " name: " + r2.getRoleName() + " category: " + r2.getCategory() );	    			
     				
@@ -105,7 +106,7 @@ public class AuthDump {
 					while(propIter.hasNext()) {
 						LiteYukonRoleProperty p = (LiteYukonRoleProperty) propIter.next();
 						if(p.getRoleID() == r2.getRoleID()) {
-							String pVal = AuthFuncs.getRolePropertyValue(user, p.getRolePropertyID());	
+							String pVal = DaoFactory.getAuthDao().getRolePropertyValue(user, p.getRolePropertyID());	
 							System.out.println("  rolepropertyid: " + p.getRolePropertyID() + " keyname: " + p.getKeyName() + " value: " + pVal);
 						}
 					}	
@@ -113,7 +114,7 @@ public class AuthDump {
     		}
 	    }
 	    	   	   
-	    LiteYukonUser yukonUser = AuthFuncs.login("yukon", "yukon");
+	    LiteYukonUser yukonUser = DaoFactory.getAuthDao().login("yukon", "yukon");
 	    if(yukonUser != null) {
 	    	System.out.println("yukon/yukon is a valid login");
 	    }
@@ -121,20 +122,20 @@ public class AuthDump {
 	    	System.out.println("yukon/yukon failed to login");
 	    }
 	    
-	    if(AuthFuncs.checkRole(yukonUser, DBEditorRole.ROLEID) != null) {
+	    if(DaoFactory.getAuthDao().checkRole(yukonUser, DBEditorRole.ROLEID) != null) {
 	    	System.out.println("yukon/yukon has database editor role");
-	    	if(AuthFuncs.checkRoleProperty(yukonUser, DBEditorRole.POINT_ID_EDIT)) {
-	    		System.out.println("yukon/yukon has property database editor point id edit is true, value is:"  + AuthFuncs.getRolePropertyValue(yukonUser, DBEditorRole.POINT_ID_EDIT));
+	    	if(DaoFactory.getAuthDao().checkRoleProperty(yukonUser, DBEditorRole.POINT_ID_EDIT)) {
+	    		System.out.println("yukon/yukon has property database editor point id edit is true, value is:"  + DaoFactory.getAuthDao().getRolePropertyValue(yukonUser, DBEditorRole.POINT_ID_EDIT));
 	    	}
 	    	else {
-	    		System.out.println("yukon/yukon, database editor point id edit is not true, value is: " + AuthFuncs.getRolePropertyValue(yukonUser, DBEditorRole.POINT_ID_EDIT));
+	    		System.out.println("yukon/yukon, database editor point id edit is not true, value is: " + DaoFactory.getAuthDao().getRolePropertyValue(yukonUser, DBEditorRole.POINT_ID_EDIT));
 	    	}
 	    }
 	    else {
 	    	System.out.println("yukon/yukon does _not_ have database editor role POINT_ID_EDIT");
 	    }
 	    
-	    yukonUser = AuthFuncs.login("yukon", "yuKon");
+	    yukonUser = DaoFactory.getAuthDao().login("yukon", "yuKon");
 	    if(yukonUser != null) {
 	    	System.out.println("yukon/yuKon is a valid login");
 	    }

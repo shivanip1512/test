@@ -1,7 +1,6 @@
 <html>
 <%@ page import="com.cannontech.analysis.*" %>
-<%@ page import="com.cannontech.database.cache.functions.AuthFuncs" %>
-<%@ page import="com.cannontech.database.cache.functions.EnergyCompanyFuncs" %>
+<%@ page import="com.cannontech.core.dao.DaoFactory" %>
 <%@ page import="com.cannontech.database.db.device.DeviceMeterGroup"%>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject"%>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
@@ -22,7 +21,7 @@
 	StarsYukonUser starsYukonUser = (StarsYukonUser) session.getAttribute(ServletUtils.ATT_STARS_YUKON_USER);
 %>
 <jsp:useBean id="REPORT_BEAN" class="com.cannontech.analysis.gui.ReportBean" scope="session"/>
-	<jsp:setProperty name="REPORT_BEAN" property="energyCompanyID" value="<%=(EnergyCompanyFuncs.getEnergyCompany(lYukonUser)== null?EnergyCompany.DEFAULT_ENERGY_COMPANY_ID:EnergyCompanyFuncs.getEnergyCompany(lYukonUser).getEnergyCompanyID())%>"/>
+	<jsp:setProperty name="REPORT_BEAN" property="energyCompanyID" value="<%=(DaoFactory.getEnergyCompanyDao().getEnergyCompany(lYukonUser)== null?EnergyCompany.DEFAULT_ENERGY_COMPANY_ID:DaoFactory.getEnergyCompanyDao().getEnergyCompany(lYukonUser).getEnergyCompanyID())%>"/>
 
 <%-- Grab the search criteria --%>
 <jsp:setProperty name="REPORT_BEAN" property="type" param="type"/>
@@ -98,10 +97,10 @@ function enableDates(value)
 <%
 	java.text.SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");
 		
-	String bulletImg = "<img src='../WebConfig/" + AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED) + "' width='9' height='9'>";
-	String bulletImgExp = "<img src='../WebConfig/" + AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_EXPAND) + "' width='9' height='9'>";
-	String connImgMid = "<img src='../WebConfig/" + AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_CONNECTOR_MIDDLE) + "' width='10' height='12'>";
-	String connImgBtm = "<img src='../WebConfig/" + AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_CONNECTOR_BOTTOM) + "' width='10' height='12'>";
+	String bulletImg = "<img src='../WebConfig/" + DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED) + "' width='9' height='9'>";
+	String bulletImgExp = "<img src='../WebConfig/" + DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_EXPAND) + "' width='9' height='9'>";
+	String connImgMid = "<img src='../WebConfig/" + DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, WebClientRole.NAV_CONNECTOR_MIDDLE) + "' width='10' height='12'>";
+	String connImgBtm = "<img src='../WebConfig/" + DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, WebClientRole.NAV_CONNECTOR_BOTTOM) + "' width='10' height='12'>";
 	
 	String linkHtml = null;
 	String linkImgExp = null;

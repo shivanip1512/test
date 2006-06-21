@@ -1,5 +1,7 @@
 package com.cannontech.common.gui.util;
 
+import javax.swing.event.EventListenerList;
+
 /**
  * Insert the type's description here.
  * Creation date: (2/7/2002 12:49:31 PM)

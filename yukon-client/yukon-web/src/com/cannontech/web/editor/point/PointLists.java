@@ -5,15 +5,15 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.cache.functions.PAOFuncs;
-import com.cannontech.database.cache.functions.StateFuncs;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * @author ryan
@@ -46,7 +46,7 @@ public class PointLists {
      *
      */
     public LiteYukonPAObject[] getPAOsByUofMPoints(int[] uofmIDs) {
-        DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+        IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 
         //ensures uniqueness and ordering by name
         TreeSet paoSet = new TreeSet(LiteComparators.liteStringComparator);
@@ -63,7 +63,7 @@ public class PointLists {
                 if (isPointUofM(litePoint, uofmIDs)
                         && litePoint.getPointType() == PointTypes.ANALOG_POINT
                         || litePoint.getPointType() == PointTypes.CALCULATED_POINT) {
-                    LiteYukonPAObject liteDevice = PAOFuncs
+                    LiteYukonPAObject liteDevice = DaoFactory.getPaoDao()
                             .getLiteYukonPAO(litePoint.getPaobjectID());
 
                     if (DeviceClasses.isCoreDeviceClass(liteDevice
@@ -92,7 +92,7 @@ public class PointLists {
         //ensures uniqueness and ordering by name
         TreeSet pointSet = new TreeSet(LiteComparators.liteStringComparator);
 
-        LitePoint[] litePts = PAOFuncs.getLitePointsForPAObject(paoID);
+        LitePoint[] litePts = DaoFactory.getPaoDao().getLitePointsForPAObject(paoID);
         Arrays.sort(litePts, LiteComparators.liteStringComparator); //sort the small list by PointName
 
         for (int i = 0; i < litePts.length; i++) {
@@ -109,7 +109,7 @@ public class PointLists {
 
 
     public static Set getAllTwoStateStatusPoints() {
-        DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+        IDatabaseCache cache = DefaultDatabaseCache.getInstance();
         TreeSet pointSet = new TreeSet();
         synchronized (cache) {
             java.util.List allPoints = cache.getAllPoints();
@@ -125,7 +125,7 @@ public class PointLists {
                     if (!litePoint.getPointName().equals("BANK STATUS"))
 	                	{
 	                    int stateGrpId = litePoint.getStateGroupID();
-	                    LiteStateGroup liteStateGroup = StateFuncs.getLiteStateGroup(stateGrpId);
+	                    LiteStateGroup liteStateGroup = DaoFactory.getStateDao().getLiteStateGroup(stateGrpId);
 	                    if (liteStateGroup.getStatesList().size() == 2) {
 	                        pointSet.add(litePoint);
 	                    }

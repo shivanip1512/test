@@ -1,10 +1,10 @@
 package com.cannontech.dbeditor.wizard.point;
 
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.DeviceClasses;
-import com.cannontech.database.data.point.PointBase;
+import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * This type was created in VisualAge.
@@ -312,7 +312,7 @@ public void setValueCapControl(Object val, Integer initialPAOId )
 		getDeviceComboBox().removeAllItems();
 		
 	//Load the device list
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized(cache)
 	{
 		java.util.List capObjects = cache.getAllYukonPAObjects();
@@ -346,7 +346,7 @@ public void setValueCore(Object val, Integer initialPAOId)
 		getDeviceComboBox().removeAllItems();
     if(initialPAOId == null || initialPAOId.intValue() !=  0)
     {
-    	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+    	IDatabaseCache cache = DefaultDatabaseCache.getInstance();
     	synchronized(cache)
     	{
     		java.util.List devices = cache.getAllDevices();
@@ -365,7 +365,7 @@ public void setValueCore(Object val, Integer initialPAOId)
         }
     }else
     {
-        getDeviceComboBox().addItem(PAOFuncs.getLiteYukonPAO(0));
+        getDeviceComboBox().addItem(DaoFactory.getPaoDao().getLiteYukonPAO(0));
         getDeviceComboBox().setEnabled(false);
     }
     
@@ -381,7 +381,7 @@ public void setValueLM( Object val, Integer initialPAOId )
 	if( getDeviceComboBox().getModel().getSize() > 0 )
 		getDeviceComboBox().removeAllItems();
 
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized(cache)
 	{
 		java.util.List devices = cache.getAllLoadManagement();

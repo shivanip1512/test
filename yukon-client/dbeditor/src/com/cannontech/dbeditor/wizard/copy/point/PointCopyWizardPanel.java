@@ -4,11 +4,11 @@ package com.cannontech.dbeditor.wizard.copy.point;
  * This type was created in VisualAge.
  */
 
-import com.cannontech.database.cache.functions.PointFuncs;
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.database.data.lite.LiteBase;
 
 public class PointCopyWizardPanel extends com.cannontech.common.wizard.WizardPanel {
 	private PointCopyNameDevicePanel pointCopyNameDevicePanel;
@@ -182,7 +182,7 @@ public void setPointDeviceID(Object val)
 {
 	PointBase point = (PointBase)val;
 
-	LitePoint lPoint = PointFuncs.getLitePoint( point.getPoint().getPointID().intValue() );
+	LitePoint lPoint = DaoFactory.getPointDao().getLitePoint( point.getPoint().getPointID().intValue() );
 	
 	pointDeviceID = lPoint.getPaobjectID();
 }

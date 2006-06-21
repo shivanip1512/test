@@ -1,19 +1,19 @@
 package com.cannontech.yukon.conns;
 
-import com.cannontech.yukon.IMACSConnection;
-import com.cannontech.database.cache.functions.RoleFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.message.macs.message.DeleteSchedule;
 import com.cannontech.message.macs.message.Info;
+import com.cannontech.message.macs.message.MACSCategoryChange;
 import com.cannontech.message.macs.message.OverrideRequest;
 import com.cannontech.message.macs.message.Schedule;
 import com.cannontech.message.macs.message.ScriptFile;
 import com.cannontech.message.util.ClientConnection;
 import com.cannontech.message.util.ConnStateChange;
 import com.cannontech.message.util.Message;
+import com.cannontech.roles.yukon.SystemRole;
+import com.cannontech.yukon.IMACSConnection;
 import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.DefineCollectable;
-import com.cannontech.message.macs.message.MACSCategoryChange;
-import com.cannontech.roles.yukon.SystemRole;
 
 public class ServerMACSConnection extends ClientConnection implements IMACSConnection//, MessageListener
 {
@@ -58,12 +58,12 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
 	
 	   try
 	   {
-			host = RoleFuncs.getGlobalPropertyValue( SystemRole.MACS_MACHINE );
+			host = DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.MACS_MACHINE );
 	
 			try
 			{
 				port = Integer.parseInt(
-						RoleFuncs.getGlobalPropertyValue( SystemRole.MACS_PORT ) );
+						DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.MACS_PORT ) );
 			}
 			catch (Exception e)
 			{

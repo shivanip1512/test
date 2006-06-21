@@ -11,10 +11,9 @@ import java.util.Map;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.RoleDao;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.cache.functions.PointFuncs;
-import com.cannontech.database.cache.functions.RoleFuncs;
-import com.cannontech.database.cache.functions.StateFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -26,6 +25,7 @@ import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
 import com.cannontech.roles.yukon.SystemRole;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * PointChangeCache provides the current dynamic info for all Yukon points.
@@ -70,17 +70,13 @@ public class PointChangeCache  implements MessageListener  {
 
 	//Date of the last point change received from dispatch
 	private Date lastChange = null;
+    
+    private RoleDao roleDao;
 	
-	// Singleton instance
-	private static PointChangeCache instance;
-	
+    boolean isConnInited = false;
+    
 public static synchronized PointChangeCache getPointChangeCache() {
- 	if( instance == null ) {
-		instance = new PointChangeCache();
-		instance.connect();
-	}
-	
-	return instance;
+    return (PointChangeCache) YukonSpringHook.getBean("pointChangeCache");
 }
 
 /**
@@ -96,8 +92,13 @@ protected PointChangeCache()
  */
 public synchronized void connect() 
 {
-	String host = RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_MACHINE );
-	String portStr = RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_PORT );
+    ensureConnected();
+}
+
+private void initConnection() {
+    
+	String host = roleDao.getGlobalPropertyValue( SystemRole.DISPATCH_MACHINE );
+	String portStr = roleDao.getGlobalPropertyValue( SystemRole.DISPATCH_PORT );
 	int port = 1510;
 	
 	try {
@@ -131,6 +132,7 @@ public synchronized void connect()
 	
 	conn.connectWithoutWait();
 }
+
 /**
  * Disconnect from dispatch.
  * TODO:  Is this even necessary?
@@ -147,11 +149,20 @@ public synchronized void disconnect()
 		CTILogger.error( "An error occured connecting with dispatch", io );
 	}	
 }
+
+private synchronized void ensureConnected() {
+    if(!isConnInited) {
+        initConnection();
+        isConnInited = true;
+    }
+}
+
 /**
  * Returns the timestamp of the last point data received from Dispatch.
  * @return java.util.Date
  */
 public Date getLastChange() {
+    ensureConnected();
 	return lastChange;
 }
 
@@ -161,6 +172,7 @@ public Date getLastChange() {
  * @return
  */
 public synchronized List getSignals(long pointId) {
+    ensureConnected();
 	List sigs = pointSignalsMap.get(new Long(pointId));
 	if(sigs == null) {
 		sigs = Collections.emptyList();
@@ -174,6 +186,7 @@ public synchronized List getSignals(long pointId) {
  * @return
  */
 public synchronized List getSignalsForCategory(long alarmCategoryID) {
+    ensureConnected();
 	List sigs = categorySignalsMap.get(new Long(alarmCategoryID));
 	if(sigs == null) {
 		sigs = Collections.emptyList();
@@ -189,12 +202,13 @@ public synchronized List getSignalsForCategory(long alarmCategoryID) {
  */
 public synchronized String getState(long pointId, double value) 	
 {
+    ensureConnected();
 	PointData pData = pointDataMap.get( new Long(pointId) );
 
 	if( pData != null )
 	{
-		LitePoint lp = PointFuncs.getLitePoint((int)pointId);
-		LiteState ls = StateFuncs.getLiteState(lp.getStateGroupID(), (int)value);
+		LitePoint lp = DaoFactory.getPointDao().getLitePoint((int)pointId);
+		LiteState ls = DaoFactory.getStateDao().getLiteState(lp.getStateGroupID(), (int)value);
 		return ls.getStateText();
 	}
 	else
@@ -210,11 +224,12 @@ public synchronized String getState(long pointId, double value)
  * @return
  */
 public synchronized LiteState getCurrentState(long pointID) {
+    ensureConnected();
 	PointData pData = pointDataMap.get( new Long(pointID) );
-	LitePoint lp = PointFuncs.getLitePoint((int)pointID);
+	LitePoint lp = DaoFactory.getPointDao().getLitePoint((int)pointID);
 	
 	return (pData == null || lp == null ? null :
-			StateFuncs.getLiteState( lp.getStateGroupID(), (int) pData.getValue()));
+			DaoFactory.getStateDao().getLiteState( lp.getStateGroupID(), (int) pData.getValue()));
 }
 /**
  * Return the most recent PointData for a given point
@@ -222,6 +237,7 @@ public synchronized LiteState getCurrentState(long pointID) {
  * @param pointId long
  */
 public synchronized PointData getValue(long pointId) {
+    ensureConnected();
 	return pointDataMap.get( new Long(pointId) );
 }
 
@@ -230,6 +246,7 @@ public synchronized PointData getValue(long pointId) {
  * @param pointDataMsg
  */
 public synchronized void putValue(PointData pointDataMsg) {
+    ensureConnected();
     handleMessage(pointDataMsg);
     getDispatchConnection().write(pointDataMsg);
 }
@@ -240,6 +257,7 @@ public synchronized void putValue(PointData pointDataMsg) {
  * @return
  */
 public synchronized int getTags(long pointId) {
+    ensureConnected();
 	Integer t = pointTagMap.get(new Long(pointId));
 	return t == null ? 0 : t.intValue();
 }
@@ -323,5 +341,9 @@ public void messageReceived(MessageEvent e) {
  */
 public com.cannontech.message.dispatch.ClientConnection getDispatchConnection() {
 	return conn;
+}
+
+public void setRoleDao(RoleDao roleDao) {
+    this.roleDao = roleDao;
 }
 }

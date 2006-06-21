@@ -12,9 +12,9 @@ import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.StarsDatabaseCache;
-import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.lite.stars.LiteLMThermostatSchedule;
 import com.cannontech.database.data.lite.stars.LiteLMThermostatSeason;
 import com.cannontech.database.data.lite.stars.LiteLMThermostatSeasonEntry;
@@ -135,7 +135,7 @@ public class SaveThermostatScheduleAction implements ActionBase {
 				schedule.getLmThermostatSchedule().setScheduleName( saveSchedule.getScheduleName() );
 				// Use the entry ID in the default list as the thermostat type ID, so that
 				// we can delete a thermostat type without deleting all the saved schedules
-				int hwTypeDefID = YukonListFuncs.getYukonListEntry( liteNewSched.getThermostatTypeID() ).getYukonDefID();
+				int hwTypeDefID = DaoFactory.getYukonListDao().getYukonListEntry( liteNewSched.getThermostatTypeID() ).getYukonDefID();
 				schedule.getLmThermostatSchedule().setThermostatTypeID(
 						new Integer(StarsDatabaseCache.getInstance().getDefaultEnergyCompany().getYukonListEntry(hwTypeDefID).getEntryID()) );
 				

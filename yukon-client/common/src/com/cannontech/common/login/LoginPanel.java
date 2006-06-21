@@ -237,7 +237,7 @@ class LoginPanel extends JPanel implements CaretListener, ActionListener {
 					public Object construct() {
 						try {	
 							sessionID = LoginSupport.getSessionID(lp.getYukonHost(), lp.getYukonPort(), lp.getUsername(), lp.getPassword());				
-//							user = AuthFuncs.login(lp.getUsername(), lp.getPassword());
+//							user = DaoFactory.getAuthDao().login(lp.getUsername(), lp.getPassword());
 						}
 						catch(RuntimeException re) {
 							errMsg = re.getMessage();

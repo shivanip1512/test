@@ -1,8 +1,7 @@
 package com.cannontech.database.db.user;
 
-import com.cannontech.database.db.device.Device;
-import java.util.ArrayList;
 import com.cannontech.common.util.NativeIntVector;
+import com.cannontech.database.db.device.Device;
 
 /**
  * This table maps users to PAObjects. The mapping shows that a user has access

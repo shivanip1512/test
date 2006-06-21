@@ -12,10 +12,10 @@ import javax.xml.soap.SOAPMessage;
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.StarsDatabaseCache;
-import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteLMProgramEvent;
@@ -172,8 +172,8 @@ public class ProgramSignUpAction implements ActionBase {
 						// Send the reenable command if hardware status is unavailable,
 						// whether to send the config command is controlled by the AUTOMATIC_CONFIGURATION role property
 						if (!useHardwareAddressing
-							&& (StarsUtils.isOperator(user) && AuthFuncs.checkRoleProperty( user.getYukonUser(), ConsumerInfoRole.AUTOMATIC_CONFIGURATION )
-								|| StarsUtils.isResidentialCustomer(user) && AuthFuncs.checkRoleProperty(user.getYukonUser(), ResidentialCustomerRole.AUTOMATIC_CONFIGURATION)))
+							&& (StarsUtils.isOperator(user) && DaoFactory.getAuthDao().checkRoleProperty( user.getYukonUser(), ConsumerInfoRole.AUTOMATIC_CONFIGURATION )
+								|| StarsUtils.isResidentialCustomer(user) && DaoFactory.getAuthDao().checkRoleProperty(user.getYukonUser(), ResidentialCustomerRole.AUTOMATIC_CONFIGURATION)))
 							YukonSwitchCommandAction.sendConfigCommand( energyCompany, liteHw, false, null );
 						else if (liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL)
 							YukonSwitchCommandAction.sendEnableCommand( energyCompany, liteHw, null );

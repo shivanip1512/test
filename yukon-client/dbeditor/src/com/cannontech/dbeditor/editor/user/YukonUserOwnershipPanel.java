@@ -1,16 +1,13 @@
 package com.cannontech.dbeditor.editor.user;
 
-import com.cannontech.database.model.ModelFactory;
-import java.util.Vector;
-import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.common.util.NativeIntVector;
-import com.cannontech.database.cache.functions.PAOFuncs;
-import com.cannontech.database.data.lite.LiteTypes;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.model.LiteBaseTreeModel;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.model.DBTreeNode;
 import com.cannontech.database.model.LiteBaseTreeModel;
+import com.cannontech.database.model.ModelFactory;
 
 /**
  * Insert the type's description here.
@@ -232,7 +229,7 @@ public void runForTheTrees(NativeIntVector ownedIDs)
 
 	for(int y = 0; y < ownedIDs.size(); y++)
 	{
-		LiteYukonPAObject temp = PAOFuncs.getLiteYukonPAO(ownedIDs.elementAt(y));
+		LiteYukonPAObject temp = DaoFactory.getPaoDao().getLiteYukonPAO(ownedIDs.elementAt(y));
 		switch(temp.getType())
 		{
 			case PAOGroups.LM_CONTROL_AREA:

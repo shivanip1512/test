@@ -10,7 +10,7 @@
 						  {"ConfigSN.jsp", "Configure Range"},
 						 };
 
-	String bulletImg = "<img src='../../WebConfig/" + AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED) + "' width='9' height='9'>";
+	String bulletImg = "<img src='../../WebConfig/" + DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED) + "' width='9' height='9'>";
 	
 	// List of String[] (link image, link html)
 	Hashtable links = new Hashtable();
@@ -43,7 +43,7 @@
           </tr>
          <%
           	if (liteEC.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT) != null &&
-          		(AuthFuncs.getRolePropertyValue(lYukonUser, EnergyCompanyRole.METER_MCT_BASE_DESIGNATION)).compareTo(com.cannontech.stars.util.StarsUtils.METER_BASE_DESIGNATION) != 0) { %>
+          		(DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, EnergyCompanyRole.METER_MCT_BASE_DESIGNATION)).compareTo(com.cannontech.stars.util.StarsUtils.METER_BASE_DESIGNATION) != 0) { %>
 	          <tr> 
 	            <td width="10"><%= ((String[]) links.get("CreateMCT.jsp"))[0] %></td>
 	            <td style="padding:1"><%= ((String[]) links.get("CreateMCT.jsp"))[1] %></td>

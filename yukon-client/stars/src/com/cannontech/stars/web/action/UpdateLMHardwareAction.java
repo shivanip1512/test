@@ -9,10 +9,10 @@ import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.StarsDatabaseCache;
-import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteLMHardwareEvent;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
@@ -30,10 +30,10 @@ import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.util.InventoryManagerUtil;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.StarsAppliances;
+import com.cannontech.stars.xml.serialize.StarsCreateLMHardware;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsDeleteLMHardware;
 import com.cannontech.stars.xml.serialize.StarsFailure;
-import com.cannontech.stars.xml.serialize.StarsCreateLMHardware;
 import com.cannontech.stars.xml.serialize.StarsInventories;
 import com.cannontech.stars.xml.serialize.StarsInventory;
 import com.cannontech.stars.xml.serialize.StarsLMHardwareConfig;
@@ -344,7 +344,7 @@ public class UpdateLMHardwareAction implements ActionBase {
 		if (!useHardwareAddressing &&
 			createHw.getLMHardware() != null &&
 			createHw.getLMHardware().getStarsLMHardwareConfigCount() > 0 &&
-			AuthFuncs.checkRoleProperty(user.getYukonUser(), ConsumerInfoRole.AUTOMATIC_CONFIGURATION))
+			DaoFactory.getAuthDao().checkRoleProperty(user.getYukonUser(), ConsumerInfoRole.AUTOMATIC_CONFIGURATION))
 		{
 			YukonSwitchCommandAction.sendConfigCommand( energyCompany, (LiteStarsLMHardware)liteInv, false, null );
 		}

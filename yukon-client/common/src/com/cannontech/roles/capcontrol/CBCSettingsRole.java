@@ -1,6 +1,6 @@
 package com.cannontech.roles.capcontrol;
 
-import com.cannontech.roles.*;
+import com.cannontech.roles.CapControlRoleDefs;
 
 /**
  * @author ryan

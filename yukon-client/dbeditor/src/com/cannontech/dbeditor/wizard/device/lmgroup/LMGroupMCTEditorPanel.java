@@ -16,6 +16,7 @@ import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.device.lm.IlmDefines;
+import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * This type was created in VisualAge.
@@ -332,7 +333,7 @@ public class LMGroupMCTEditorPanel extends com.cannontech.common.gui.util.DataIn
 				ivjJComboBoxMCTAddress.addItem( NONE_PAO );
 
 
-				DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+				IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 				synchronized( cache )
 				{
 					List mcts = cache.getAllDevices();

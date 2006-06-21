@@ -3,8 +3,7 @@
  */
 package com.cannontech.analysis.data.device;
 
-import com.cannontech.database.cache.functions.DeviceFuncs;
-import com.cannontech.database.cache.functions.PAOFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 
@@ -93,7 +92,7 @@ public class MeterAndPointData
 	{
 	    if( litePaobject == null )
 	    {
-	        litePaobject = PAOFuncs.getLiteYukonPAO(getPaobjectID().intValue());
+	        litePaobject = DaoFactory.getPaoDao().getLiteYukonPAO(getPaobjectID().intValue());
 	    }
 	    return litePaobject;
 	}
@@ -101,7 +100,7 @@ public class MeterAndPointData
 	{
 	    if( liteDeviceMeterNumber == null )
 	    {
-	        liteDeviceMeterNumber = DeviceFuncs.getLiteDeviceMeterNumber(getPaobjectID().intValue());
+	        liteDeviceMeterNumber = DaoFactory.getDeviceDao().getLiteDeviceMeterNumber(getPaobjectID().intValue());
 	    }
 	    return liteDeviceMeterNumber;
 	}

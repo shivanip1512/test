@@ -7,7 +7,7 @@ import java.util.*;
 import com.cannontech.cc.model.BaseEvent;
 import com.cannontech.cc.model.EventNotif;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.database.cache.functions.CustomerFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.enums.NotificationState;
 import com.cannontech.notif.outputs.*;
@@ -49,7 +49,7 @@ public abstract class EventScheduler {
                     notif.setState(NotificationState.PENDING);
                     updateNotif(notif);
                     Integer customerId = notif.getCustomer().getId();
-                    LiteCICustomer liteCICustomer = CustomerFuncs.getLiteCICustomer(customerId);
+                    LiteCICustomer liteCICustomer = DaoFactory.getCustomerDao().getLiteCICustomer(customerId);
                     ContactableCustomer cc = new ContactableCustomer(liteCICustomer);
                     Contactable contactable = new SingleNotifContactable(cc, notif.getNotifType());
                     

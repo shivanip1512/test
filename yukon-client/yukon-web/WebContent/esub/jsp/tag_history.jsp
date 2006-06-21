@@ -2,9 +2,7 @@
 <%@ page import="java.util.Iterator" %>
 <%@ page import="java.text.SimpleDateFormat" %>
 
-<%@ page import="com.cannontech.database.cache.functions.TagFuncs" %>
-<%@ page import="com.cannontech.database.cache.functions.PointFuncs" %>
-<%@ page import="com.cannontech.database.cache.functions.PAOFuncs" %>
+<%@ page import="com.cannontech.core.dao.DaoFactory" %>
 <%@ page import="com.cannontech.database.data.lite.LiteTag" %>
 <%@ page import="com.cannontech.database.data.lite.LitePoint" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject" %>
@@ -20,8 +18,8 @@
 	
 	int pointID = Integer.parseInt(pointIDStr);
 	
-	LitePoint lPoint = PointFuncs.getLitePoint(pointID);
-	LiteYukonPAObject lDevice = PAOFuncs.getLiteYukonPAO(lPoint.getPaobjectID());	
+	LitePoint lPoint = DaoFactory.getPointDao().getLitePoint(pointID);
+	LiteYukonPAObject lDevice = DaoFactory.getPaoDao().getLiteYukonPAO(lPoint.getPaobjectID());	
 	
 	List tagLogList = TagManager.getInstance().getTagLog(pointID);
 	java.util.Collections.reverse(tagLogList);
@@ -104,7 +102,7 @@ location="control.jsp?pointid=" + id + "&action=display";
 	Iterator tagLogIter = tagLogList.iterator();
 	while(tagLogIter.hasNext()) {
 		TAGLog tag = (TAGLog) tagLogIter.next();
-		LiteTag lt = TagFuncs.getLiteTag(tag.getTagID().intValue());
+		LiteTag lt = DaoFactory.getTagDao().getLiteTag(tag.getTagID().intValue());
 %>	      
       
           <tr>

@@ -1,15 +1,14 @@
 package com.cannontech.dbconverter.pthistory;
 
-import java.io.*;
+import java.io.File;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Date;
 
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.point.PointQualities;
-import com.cannontech.database.db.DBPersistent;
+import com.cannontech.yukon.IDatabaseCache;
 
 /**
 * * Import DSM/2 point history into the yukon database by inserting data directly into the rawpointhistory table.
@@ -440,7 +439,7 @@ private java.util.Vector getPointVector()
 {
 	if( pointVector == null)
 	{
-		com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+		IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 		synchronized (cache)
 		{
 			java.util.List points = cache.getAllPoints();

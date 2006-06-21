@@ -18,8 +18,8 @@ import org.apache.axis.MessageContext;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.cache.PointChangeCache;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -29,6 +29,7 @@ import com.cannontech.multispeak.client.Multispeak;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.YukonMultispeakMsgHeader;
+import com.cannontech.yukon.IDatabaseCache;
 
 public class MR_EASoap_BindingImpl implements com.cannontech.multispeak.MR_EASoap_PortType{
 	public static final String INTERFACE_NAME = "MR_EA";
@@ -99,7 +100,7 @@ public class MR_EASoap_BindingImpl implements com.cannontech.multispeak.MR_EASoa
 		MeterRead[] meterReads;
 		int indexCount = 0;
 		
-		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+		IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 		List allMeters = cache.getAllDeviceMeterGroups();
 				
 		if( lastReceived != null && lastReceived.length() > 0)
@@ -109,7 +110,7 @@ public class MR_EASoap_BindingImpl implements com.cannontech.multispeak.MR_EASoa
 				LiteDeviceMeterNumber ldmn = (LiteDeviceMeterNumber)allMeters.get(i);
 				String lastValue = "";
 				if( key.toLowerCase().startsWith("device") || key.toLowerCase().startsWith("pao"))
-					lastValue = PAOFuncs.getYukonPAOName(ldmn.getDeviceID());
+					lastValue = DaoFactory.getPaoDao().getYukonPAOName(ldmn.getDeviceID());
 				else //if(key.toLowerCase().startsWith("meternum"))
 					lastValue = ldmn.getMeterNumber();
 							
@@ -145,7 +146,7 @@ public class MR_EASoap_BindingImpl implements com.cannontech.multispeak.MR_EASoa
 			mr.setMeterNo(meterID);
 			mr.setObjectID(meterID);
 
-			LitePoint[] litePoints = PAOFuncs.getLitePointsForPAObject(lPao.getYukonID());
+			LitePoint[] litePoints = DaoFactory.getPaoDao().getLitePointsForPAObject(lPao.getYukonID());
 			for (int j = 0; j < litePoints.length; j++)
 			{
 				LitePoint lp = litePoints[j];

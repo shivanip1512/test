@@ -46,10 +46,10 @@ import com.cannontech.common.util.MessageEvent;
 import com.cannontech.common.util.MessageEventListener;
 import com.cannontech.common.wizard.WizardPanel;
 import com.cannontech.common.wizard.WizardPanelEvent;
+import com.cannontech.core.dao.DBDeleteResult;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.DatabaseTypes;
 import com.cannontech.database.Transaction;
-import com.cannontech.database.cache.functions.DBDeleteResult;
-import com.cannontech.database.cache.functions.DBDeletionFuncs;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.lm.LMScenario;
 import com.cannontech.database.data.lite.LiteBase;
@@ -977,12 +977,12 @@ public void executeChangeTypeButton_ActionPerformed(ActionEvent event)
 
 
 		DBDeleteResult delRes = new DBDeleteResult(
-				((com.cannontech.database.data.point.PointBase) userObject).getPoint().getPointID().intValue(), DBDeletionFuncs.POINT_TYPE);
+				((com.cannontech.database.data.point.PointBase) userObject).getPoint().getPointID().intValue(), DaoFactory.getDbDeletionDao().POINT_TYPE);
 			
-         byte deleteVal = DBDeletionFuncs.deletionAttempted( delRes );
+         byte deleteVal = DaoFactory.getDbDeletionDao().deletionAttempted( delRes );
          
-         if( deleteVal == DBDeletionFuncs.STATUS_ALLOW
-             || deleteVal == DBDeletionFuncs.STATUS_CONFIRM )
+         if( deleteVal == DaoFactory.getDbDeletionDao().STATUS_ALLOW
+             || deleteVal == DaoFactory.getDbDeletionDao().STATUS_CONFIRM )
          {
 			   showChangeTypeWizardPanel(
 				  new com.cannontech.dbeditor.wizard.changetype.point.PointChangeTypeWizardPanel(
@@ -2159,7 +2159,7 @@ public static void main(String[] args) {
 	try
 	{
 		javax.swing.UIManager.setLookAndFeel(javax.swing.UIManager.getSystemLookAndFeelClassName());
-      System.setProperty("cti.app.name", "DBEditor");
+        System.setProperty("cti.app.name", "DBEditor");
 
 		javax.swing.JFrame f = new javax.swing.JFrame("Yukon Database Editor [Not Connected to Dispatch]");
 		f.setDefaultCloseOperation( f.DO_NOTHING_ON_CLOSE );

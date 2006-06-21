@@ -9,7 +9,6 @@ package com.cannontech.multispeak;
 
 import java.rmi.RemoteException;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.multispeak.client.Multispeak;

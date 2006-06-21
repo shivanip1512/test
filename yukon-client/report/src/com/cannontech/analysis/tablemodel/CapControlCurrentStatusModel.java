@@ -11,9 +11,8 @@ import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.capcontrol.CapControlStatusData;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.cache.functions.PAOFuncs;
-import com.cannontech.database.cache.functions.StateFuncs;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.database.model.ModelFactory;
@@ -59,14 +58,14 @@ public class CapControlCurrentStatusModel extends ReportModelBase
 		    CapControlStatusData data2 = (CapControlStatusData)o2;
 	        
 		    //Order by Sub Bus first
-		    String thisValStr = PAOFuncs.getYukonPAOName(data1.getSubBusPaoID().intValue());
-		    String anotherValStr = PAOFuncs.getYukonPAOName(data2.getSubBusPaoID().intValue());
+		    String thisValStr = DaoFactory.getPaoDao().getYukonPAOName(data1.getSubBusPaoID().intValue());
+		    String anotherValStr = DaoFactory.getPaoDao().getYukonPAOName(data2.getSubBusPaoID().intValue());
 			
 			if( thisValStr.equalsIgnoreCase(anotherValStr))
 			{
 //				Order by Feeder
-				thisValStr = PAOFuncs.getYukonPAOName(data1.getFeederPaoID().intValue());
-				anotherValStr = PAOFuncs.getYukonPAOName(data2.getFeederPaoID().intValue());
+				thisValStr = DaoFactory.getPaoDao().getYukonPAOName(data1.getFeederPaoID().intValue());
+				anotherValStr = DaoFactory.getPaoDao().getYukonPAOName(data2.getFeederPaoID().intValue());
 
 				if( thisValStr.equalsIgnoreCase(anotherValStr))
 				{
@@ -235,16 +234,16 @@ public class CapControlCurrentStatusModel extends ReportModelBase
 		    switch( columnIndex)
 			{
 				case SUB_BUS_NAME_COLUMN:
-				    return PAOFuncs.getYukonPAOName(ccStatData.getSubBusPaoID().intValue());
+				    return DaoFactory.getPaoDao().getYukonPAOName(ccStatData.getSubBusPaoID().intValue());
 
 				case FEEDER_NAME_COLUMN:
-				    return PAOFuncs.getYukonPAOName(ccStatData.getFeederPaoID().intValue());
+				    return DaoFactory.getPaoDao().getYukonPAOName(ccStatData.getFeederPaoID().intValue());
 				
 				case CAP_BANK_NAME_COLUMN:
-					return PAOFuncs.getYukonPAOName(ccStatData.getCapBankPaoID().intValue());
+					return DaoFactory.getPaoDao().getYukonPAOName(ccStatData.getCapBankPaoID().intValue());
 					
 				case CONTROL_STATUS_COLUMN:
-					return StateFuncs.getLiteState(StateGroupUtils.STATEGROUPID_CAPBANK, ccStatData.getControlStatus().intValue());
+					return DaoFactory.getStateDao().getLiteState(StateGroupUtils.STATEGROUPID_CAPBANK, ccStatData.getControlStatus().intValue());
 
 				case LAST_STATUS_CHANGE_TIME_COLUMN:
 					return ccStatData.getChangeDateTime();
@@ -379,7 +378,7 @@ public class CapControlCurrentStatusModel extends ReportModelBase
 		html += "        <tr>" + LINE_SEPARATOR;
 		html += "          <td class='TitleHeader'>&nbsp;Control Status</td>" +LINE_SEPARATOR;
 		html += "        </tr>" + LINE_SEPARATOR;
-		LiteState [] liteStates = StateFuncs.getLiteStates( StateGroupUtils.STATEGROUPID_CAPBANK );
+		LiteState [] liteStates = DaoFactory.getStateDao().getLiteStates( StateGroupUtils.STATEGROUPID_CAPBANK );
 		for (int i = 0; i < liteStates.length; i++)
 		{
 			html += "        <tr>" + LINE_SEPARATOR;

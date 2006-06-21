@@ -1,14 +1,13 @@
 package com.cannontech.common.gui.util;
 
-import java.awt.event.ItemListener;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseEvent;
 import java.awt.Component;
+import java.awt.event.ItemListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import javax.swing.JCheckBox;
 import javax.swing.JTable;
 import javax.swing.UIManager;
-import javax.swing.ImageIcon;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;

@@ -2,12 +2,9 @@ package com.cannontech.dbeditor.wizard.device;
 
 import java.awt.Dimension;
 
-import com.cannontech.database.data.device.IDeviceMeterGroup;
-import com.cannontech.database.data.device.IEDMeter;
-import com.cannontech.database.data.device.Ion7700;
-import com.cannontech.database.data.device.MCTBase;
-import com.cannontech.database.db.device.DeviceMeterGroup;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
+import com.cannontech.database.data.device.IDeviceMeterGroup;
+import com.cannontech.database.db.device.DeviceMeterGroup;
  
 /**
  * This type was created in VisualAge.

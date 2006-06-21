@@ -14,7 +14,6 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
-import java.util.List;
 
 import org.apache.commons.fileupload.FileItem;
 
@@ -22,13 +21,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
-import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.cache.functions.AuthFuncs;
-import com.cannontech.database.cache.functions.ContactFuncs;
-import com.cannontech.database.cache.functions.PAOFuncs;
-import com.cannontech.database.cache.functions.RoleFuncs;
-import com.cannontech.database.cache.functions.YukonListFuncs;
-import com.cannontech.database.cache.functions.YukonUserFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteLMProgramWebPublishing;
@@ -36,7 +29,6 @@ import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
-import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.stars.util.ImportProblem;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.StarsUtils;
@@ -335,7 +327,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 									custFieldsMap.put( custFields[ImportManagerUtil.IDX_ACCOUNT_NO], custFields );
 									
 									if (liteAcctInfo != null) {
-										LiteYukonUser login = ContactFuncs.getYukonUser( liteAcctInfo.getCustomer().getPrimaryContactID() );
+										LiteYukonUser login = DaoFactory.getContactDao().getYukonUser( liteAcctInfo.getCustomer().getPrimaryContactID() );
 										if (login != null && login.getUserID() != UserUtils.USER_DEFAULT_ID && !removedUsernames.contains( login.getUsername() ))
 											removedUsernames.add( login.getUsername() );
 									}
@@ -350,7 +342,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 									custFieldsList.add( custFields );
 									custFieldsMap.put( custFields[ImportManagerUtil.IDX_ACCOUNT_NO], custFields );
 									
-									LiteYukonUser login = ContactFuncs.getYukonUser( liteAcctInfo.getCustomer().getPrimaryContactID() );
+									LiteYukonUser login = DaoFactory.getContactDao().getYukonUser( liteAcctInfo.getCustomer().getPrimaryContactID() );
 									if (login != null && login.getUserID() != UserUtils.USER_DEFAULT_ID && !removedUsernames.contains( login.getUsername() ))
 										removedUsernames.add( login.getUsername() );
 								}
@@ -402,7 +394,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 								if (liteAcctInfo != null) {
 									custFields[ImportManagerUtil.IDX_ACCOUNT_ACTION] = "UPDATE";
 									
-									LiteYukonUser login = ContactFuncs.getYukonUser( liteAcctInfo.getCustomer().getPrimaryContactID() );
+									LiteYukonUser login = DaoFactory.getContactDao().getYukonUser( liteAcctInfo.getCustomer().getPrimaryContactID() );
 									if (login != null && login.getUserID() != UserUtils.USER_DEFAULT_ID)
 										custFields[ImportManagerUtil.IDX_USERNAME] = login.getUsername();
 									else
@@ -428,7 +420,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 								
 								if (removedUsernames.contains( username ))
 									removedUsernames.remove( username );
-								else if (YukonUserFuncs.getLiteYukonUser( username ) != null)
+								else if (DaoFactory.getYukonUserDao().getLiteYukonUser( username ) != null)
 									throw new WebClientException( "Username already exists" );
 								
 								addedUsernames.add( username );
@@ -462,7 +454,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 							throw new WebClientException("Device type cannot be empty");
 						
 						YukonSelectionList devTypeList = energyCompany.getYukonSelectionList( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE );
-						YukonListEntry deviceType = YukonListFuncs.getYukonListEntry( devTypeList, hwFields[ImportManagerUtil.IDX_DEVICE_TYPE] );
+						YukonListEntry deviceType = DaoFactory.getYukonListDao().getYukonListEntry( devTypeList, hwFields[ImportManagerUtil.IDX_DEVICE_TYPE] );
 						if (deviceType == null)
 							throw new WebClientException("Invalid device type \"" + hwFields[ImportManagerUtil.IDX_DEVICE_TYPE] + "\"");
 						
@@ -595,7 +587,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 						throw new WebClientException( "Device type cannot be empty" );
 					
 					YukonSelectionList devTypeList = energyCompany.getYukonSelectionList( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE );
-					YukonListEntry deviceType = YukonListFuncs.getYukonListEntry( devTypeList, hwFields[ImportManagerUtil.IDX_DEVICE_TYPE] );
+					YukonListEntry deviceType = DaoFactory.getYukonListDao().getYukonListEntry( devTypeList, hwFields[ImportManagerUtil.IDX_DEVICE_TYPE] );
 					if (deviceType == null)
 						throw new WebClientException("Invalid device type \"" + hwFields[ImportManagerUtil.IDX_DEVICE_TYPE] + "\"");
 					
@@ -945,7 +937,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 					
 					if (fields[ImportManagerUtil.IDX_ADDR_GROUP].trim().length() > 0) {
 						for (int j = 0; j < liteProg.getGroupIDs().length; j++) {
-							if (PAOFuncs.getYukonPAOName( liteProg.getGroupIDs()[j] ).equalsIgnoreCase( fields[ImportManagerUtil.IDX_ADDR_GROUP] )) {
+							if (DaoFactory.getPaoDao().getYukonPAOName( liteProg.getGroupIDs()[j] ).equalsIgnoreCase( fields[ImportManagerUtil.IDX_ADDR_GROUP] )) {
 								suProg[2] = liteProg.getGroupIDs()[j];
 								break;
 							}

@@ -2,6 +2,7 @@ package com.cannontech.database.model;
 
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
+import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * This type was created in VisualAge.
@@ -65,7 +66,7 @@ private LiteBase findLiteDMG( com.cannontech.database.data.lite.LiteYukonPAObjec
 {
 	LiteBase lBase = null;
 
-	com.cannontech.database.cache.DefaultDatabaseCache cache =
+	IDatabaseCache cache =
 					com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized(cache)
 	{
@@ -112,7 +113,7 @@ public boolean isDeviceValid( int category_, int class_, int type_ )
  */
 public void update()
 {
-	com.cannontech.database.cache.DefaultDatabaseCache cache =
+	IDatabaseCache cache =
 					com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 
 	synchronized(cache)

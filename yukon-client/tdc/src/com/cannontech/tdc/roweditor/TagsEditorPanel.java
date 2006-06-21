@@ -21,7 +21,7 @@ import javax.swing.event.ListSelectionListener;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.cache.functions.YukonImageFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteTag;
 import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.dispatch.message.TagMsg;
@@ -61,7 +61,7 @@ public class TagsEditorPanel extends ManualEntryJPanel implements RowEditorDialo
 				{
 					setIcon( 
 						new ImageIcon(java.awt.Toolkit.getDefaultToolkit().createImage(
-							YukonImageFuncs.getLiteYukonImage(tag.getImageID()).getImageValue()) ) );
+							DaoFactory.getYukonImageDao().getLiteYukonImage(tag.getImageID()).getImageValue()) ) );
 				}
 				else
 					setIcon( null );

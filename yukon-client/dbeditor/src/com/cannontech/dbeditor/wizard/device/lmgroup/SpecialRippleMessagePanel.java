@@ -1,7 +1,8 @@
 package com.cannontech.dbeditor.wizard.device.lmgroup;
 
-import com.cannontech.common.util.CtiUtilities;
 import java.util.HashMap;
+
+import com.cannontech.common.util.CtiUtilities;
 /**
  * Insert the type's description here.
  * Creation date: (10/12/2004 4:55:17 PM)

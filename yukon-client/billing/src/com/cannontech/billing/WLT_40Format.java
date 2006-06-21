@@ -1,5 +1,7 @@
 package com.cannontech.billing;
 
+import com.cannontech.core.dao.DaoFactory;
+
 /**
  * Insert the type's description here.
  * Creation date: (5/18/00 3:46:39 PM)
@@ -501,7 +503,7 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups, String dbA
 				java.util.Vector unitOfMeasureCodeVector = new java.util.Vector();
 				for(int k=0;k<unitOfMeasureIdVector.size();k++)
 				{
-					String unitMeasureName = com.cannontech.database.cache.functions.UnitMeasureFuncs.getLiteUnitMeasure(((Integer)unitOfMeasureIdVector.get(k)).intValue()).getUnitMeasureName();
+					String unitMeasureName = DaoFactory.getUnitMeasureDao().getLiteUnitMeasure(((Integer)unitOfMeasureIdVector.get(k)).intValue()).getUnitMeasureName();
 					if( unitMeasureName.equalsIgnoreCase("kWh") )
 					{
 						unitOfMeasureCodeVector.addElement(new Integer(1));
@@ -1027,7 +1029,7 @@ public boolean retrieveBillingData(String dbAlias)
 				java.util.Vector unitOfMeasureCodeVector = new java.util.Vector();
 				for(int k=0;k<unitOfMeasureIdVector.size();k++)
 				{
-					String unitMeasureName = com.cannontech.database.cache.functions.UnitMeasureFuncs.getLiteUnitMeasure(((Integer)unitOfMeasureIdVector.get(k)).intValue()).getUnitMeasureName();
+					String unitMeasureName = DaoFactory.getUnitMeasureDao().getLiteUnitMeasure(((Integer)unitOfMeasureIdVector.get(k)).intValue()).getUnitMeasureName();
 					if( unitMeasureName.equalsIgnoreCase("kWh") )
 					{
 						unitOfMeasureCodeVector.addElement(new Integer(1));

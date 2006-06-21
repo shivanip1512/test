@@ -21,11 +21,10 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.KeysAndValues;
 import com.cannontech.common.util.KeysAndValuesFile;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.cache.functions.CommandFuncs;
-import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.command.DeviceTypeCommand;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
@@ -51,6 +50,7 @@ import com.cannontech.message.porter.message.Return;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
+import com.cannontech.yukon.IDatabaseCache;
 import com.cannontech.yukon.IServerConnection;
 import com.cannontech.yukon.conns.ConnPool;
 
@@ -308,7 +308,7 @@ public class YC extends Observable implements MessageListener
 	public Object[] getAllRoutes()
 	{
 		if( allRoutes == null)
-			allRoutes = com.cannontech.database.cache.functions.PAOFuncs.getAllLiteRoutes();
+			allRoutes = DaoFactory.getPaoDao().getAllLiteRoutes();
 		return allRoutes;
 	}
 	/**
@@ -418,7 +418,7 @@ public class YC extends Observable implements MessageListener
 	 */
 	public void handleDevice()
 	{
-		LiteYukonPAObject liteYukonPao = PAOFuncs.getLiteYukonPAO(getDeviceID());
+		LiteYukonPAObject liteYukonPao = DaoFactory.getPaoDao().getLiteYukonPAO(getDeviceID());
 
 		if( getDeviceID() < 0 )	//no device selected
 		{
@@ -687,7 +687,7 @@ public class YC extends Observable implements MessageListener
 		else if(item_ instanceof DeviceMeterGroupBase)	//ModelFactory.DEVICE_METERNUMBER,		
 		{
 			int devID = ((DeviceMeterGroupBase)item_).getDeviceMeterGroup().getDeviceID().intValue();
-			LiteYukonPAObject litePao = PAOFuncs.getLiteYukonPAO(devID);
+			LiteYukonPAObject litePao = DaoFactory.getPaoDao().getLiteYukonPAO(devID);
 			deviceType = PAOGroups.getPAOTypeString(litePao.getType());
 		}
 		else if (item_ instanceof String)				//ModelFactory.COLLECTION_GROUP, TESTCOLLECTIONGROUP, LCRSERIAL
@@ -701,7 +701,7 @@ public class YC extends Observable implements MessageListener
 			CTILogger.error("Device Type undefined. Item instance of " + (item_ == null ? null :item_.getClass()));
 		}
 		CTILogger.debug(" DEVICE TYPE for command lookup: " + deviceType);
-		setLiteDeviceTypeCommandsVector(CommandFuncs.getAllDevTypeCommands(deviceType));
+		setLiteDeviceTypeCommandsVector(DaoFactory.getCommandDao().getAllDevTypeCommands(deviceType));
 	}
 	
 	/**
@@ -803,7 +803,7 @@ public class YC extends Observable implements MessageListener
 				for (int i = 0; i < getLiteDeviceTypeCommandsVector().size(); i++)
 				{
 					LiteDeviceTypeCommand ldtc = (LiteDeviceTypeCommand)getLiteDeviceTypeCommandsVector().get(i);
-					LiteCommand lc = CommandFuncs.getCommand(ldtc.getCommandID());
+					LiteCommand lc = DaoFactory.getCommandDao().getCommand(ldtc.getCommandID());
 					if (lc.getLabel().trim().equalsIgnoreCase(friendlyCommand) ||
 						lc.getCommand().trim().equalsIgnoreCase(friendlyCommand))
 						return lc.getCommand();
@@ -823,7 +823,7 @@ public class YC extends Observable implements MessageListener
 
 		String log = "";
 		if( request_.getDeviceID() > 0)
-			log = " Device \'" + PAOFuncs.getYukonPAOName(request_.getDeviceID()) + "\'";
+			log = " Device \'" + DaoFactory.getPaoDao().getYukonPAOName(request_.getDeviceID()) + "\'";
 		else
 			log = " Serial # \'" + serialNumber + "\'";
 
@@ -909,7 +909,7 @@ public class YC extends Observable implements MessageListener
 				if( prevUserID != returnMsg.getUserMessageID())
 				{
 					//textColor = java.awt.Color.black;
-					debugOutput = "\n["+ displayFormat.format(returnMsg.getTimeStamp()) + "]-{" + returnMsg.getUserMessageID() +"} {Device: " +  PAOFuncs.getYukonPAOName(returnMsg.getDeviceID()) + "} Return from \'" + returnMsg.getCommandString() + "\'\n";					
+					debugOutput = "\n["+ displayFormat.format(returnMsg.getTimeStamp()) + "]-{" + returnMsg.getUserMessageID() +"} {Device: " +  DaoFactory.getPaoDao().getYukonPAOName(returnMsg.getDeviceID()) + "} Return from \'" + returnMsg.getCommandString() + "\'\n";					
 					message = new OutputMessage(OutputMessage.DEBUG_MESSAGE, debugOutput);
 					setChanged();
 					this.notifyObservers(message);
@@ -952,10 +952,10 @@ public class YC extends Observable implements MessageListener
 				{
 					String routeName = null;
 					if (returnMsg.getRouteOffset() > 0)
-						routeName = com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName(returnMsg.getRouteOffset());																				
+						routeName = DaoFactory.getPaoDao().getYukonPAOName(returnMsg.getRouteOffset());																				
 					
 					if( routeName == null)
-						routeName = com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName(returnMsg.getDeviceID());
+						routeName = DaoFactory.getPaoDao().getYukonPAOName(returnMsg.getDeviceID());
 
 					displayOutput = "Route:   " + routeName;
 					int tabCount = (60 - displayOutput.length())/ 24;
@@ -1289,7 +1289,7 @@ public class YC extends Observable implements MessageListener
 				}
 			}
 			//Force a reload of all commands and deviceTypeCommands!
-			DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+			IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 			cache.releaseAllCommands();
 			cache.releaseAllDeviceTypeCommands();
 		}
@@ -1310,7 +1310,7 @@ public class YC extends Observable implements MessageListener
 			String labels[] = keysAndValues.getKeys();
 			String commands[] = keysAndValues.getValues();
 
-			DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+			IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 			List allCmds = cache.getAllCommands();
 
 			for (int i = 0; i < labels.length; i++)
@@ -1452,7 +1452,7 @@ public class YC extends Observable implements MessageListener
     public String buildTOUScheduleCommand(int schedID)
     {
 		String command = "putconfig tou ";
-	    DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+	    IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 	    List schedules = cache.getAllTOUSchedules();
 	    LiteTOUSchedule lSchedule = null;
 	    for (int i = 0; i < schedules.size(); i++)
@@ -1563,7 +1563,7 @@ public class YC extends Observable implements MessageListener
             commandStr.startsWith("putstatus") || commandStr.startsWith("putvalue") )
         {
             int pointID = PointTypes.SYS_PID_SYSTEM;
-            LiteYukonPAObject liteYukonPAObject = PAOFuncs.getLiteYukonPAO(deviceID);            
+            LiteYukonPAObject liteYukonPAObject = DaoFactory.getPaoDao().getLiteYukonPAO(deviceID);            
             logDescr = PAOGroups.getPAOClass(liteYukonPAObject.getCategory(), liteYukonPAObject.getPaoClass()) + ": " +
                         liteYukonPAObject.getPaoName() + 
                         " (ID:" + liteYukonPAObject.getLiteID() + ")";
@@ -1589,7 +1589,7 @@ public class YC extends Observable implements MessageListener
     
     private int getLogPointID( int pointType, int pointOffset)
     {
-        LitePoint[] litePoints = PAOFuncs.getLitePointsForPAObject(deviceID);
+        LitePoint[] litePoints = DaoFactory.getPaoDao().getLitePointsForPAObject(deviceID);
         for (int i = 0; i < litePoints.length; i++)
         {
             LitePoint litePoint = litePoints[i];

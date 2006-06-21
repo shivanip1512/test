@@ -7,8 +7,8 @@ import javax.xml.soap.SOAPMessage;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.cache.StarsDatabaseCache;
-import com.cannontech.database.cache.functions.*;
 import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
@@ -23,6 +23,7 @@ import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.db.customer.Address;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.operator.ConsumerInfoRole;
+import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
@@ -42,7 +43,6 @@ import com.cannontech.stars.xml.serialize.StreetAddress;
 import com.cannontech.stars.xml.serialize.Substation;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
-import com.cannontech.stars.util.EventUtils;
 
 /**
  * <p>Title: </p>
@@ -292,8 +292,8 @@ public class UpdateCustAccountAction implements ActionBase {
              * More new rotation digit stuff.  It always thinks the account exists if rotation digits
              * enter the picture; we need to make sure this doesn't happen.
              */
-            String comparableDigitProperty = AuthFuncs.getRolePropertyValue(YukonUserFuncs.getLiteYukonUser(energyCompany.getUserID()), ConsumerInfoRole.ACCOUNT_NUMBER_LENGTH);
-            String rotationDigitProperty = AuthFuncs.getRolePropertyValue(YukonUserFuncs.getLiteYukonUser(energyCompany.getUserID()), ConsumerInfoRole.ROTATION_DIGIT_LENGTH);
+            String comparableDigitProperty = DaoFactory.getAuthDao().getRolePropertyValue(DaoFactory.getYukonUserDao().getLiteYukonUser(energyCompany.getUserID()), ConsumerInfoRole.ACCOUNT_NUMBER_LENGTH);
+            String rotationDigitProperty = DaoFactory.getAuthDao().getRolePropertyValue(DaoFactory.getYukonUserDao().getLiteYukonUser(energyCompany.getUserID()), ConsumerInfoRole.ROTATION_DIGIT_LENGTH);
             if(rotationDigitProperty != null && rotationDigitProperty.compareTo(CtiUtilities.STRING_NONE) != 0 && Integer.parseInt(rotationDigitProperty) > 0)
             {
                 if(comparableAcctNum.length() >= Integer.parseInt(rotationDigitProperty))
@@ -344,7 +344,7 @@ public class UpdateCustAccountAction implements ActionBase {
 			com.cannontech.database.db.customer.Customer customerDB = new com.cannontech.database.db.customer.Customer();
 			StarsLiteFactory.setCustomer( customerDB, liteCustomer );
         	
-			LiteContact litePrimContact = ContactFuncs.getContact( liteCustomer.getPrimaryContactID() );
+			LiteContact litePrimContact = DaoFactory.getContactDao().getContact( liteCustomer.getPrimaryContactID() );
 			PrimaryContact starsPrimContact = updateAccount.getPrimaryContact();
 			
 			boolean primContChanged = false;

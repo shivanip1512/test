@@ -1,7 +1,7 @@
 package com.cannontech.dbeditor.wizard.device;
 
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
+import com.cannontech.database.data.pao.PAOGroups;
 
 /**
  * This type was created in VisualAge.

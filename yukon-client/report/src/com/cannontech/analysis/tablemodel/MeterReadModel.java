@@ -13,10 +13,8 @@ import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.MeterAndPointData;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.cache.functions.DeviceFuncs;
-import com.cannontech.database.cache.functions.PAOFuncs;
-import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.DeviceClasses;
@@ -83,8 +81,8 @@ public class MeterReadModel extends ReportModelBase
 	public class MeterReadComparator implements Comparator, Serializable
 	{
 		public int compare(Object o1, Object o2){
-	        LiteDeviceMeterNumber ldmn1 = DeviceFuncs.getLiteDeviceMeterNumber( ((MeterAndPointData)o1).getPaobjectID().intValue());
-		    LiteDeviceMeterNumber ldmn2 = DeviceFuncs.getLiteDeviceMeterNumber( ((MeterAndPointData)o2).getPaobjectID().intValue());
+	        LiteDeviceMeterNumber ldmn1 = DaoFactory.getDeviceDao().getLiteDeviceMeterNumber( ((MeterAndPointData)o1).getPaobjectID().intValue());
+		    LiteDeviceMeterNumber ldmn2 = DaoFactory.getDeviceDao().getLiteDeviceMeterNumber( ((MeterAndPointData)o2).getPaobjectID().intValue());
 
 		    String thisVal = NULL_STRING;
 		    String anotherVal = NULL_STRING;
@@ -106,13 +104,13 @@ public class MeterReadModel extends ReportModelBase
 			}
 			if( thisVal.equalsIgnoreCase(anotherVal))
 			{
-			    LiteYukonPAObject pao1 = PAOFuncs.getLiteYukonPAO( ((MeterAndPointData)o1).getPaobjectID().intValue());
-			    LiteYukonPAObject pao2 = PAOFuncs.getLiteYukonPAO( ((MeterAndPointData)o2).getPaobjectID().intValue());
+			    LiteYukonPAObject pao1 = DaoFactory.getPaoDao().getLiteYukonPAO( ((MeterAndPointData)o1).getPaobjectID().intValue());
+			    LiteYukonPAObject pao2 = DaoFactory.getPaoDao().getLiteYukonPAO( ((MeterAndPointData)o2).getPaobjectID().intValue());
 			    
 			    if( getOrderBy() == ORDER_BY_ROUTE_NAME)
 			    {
-			        thisVal = PAOFuncs.getYukonPAOName(pao1.getRouteID());
-					anotherVal = PAOFuncs.getYukonPAOName(pao2.getRouteID());
+			        thisVal = DaoFactory.getPaoDao().getYukonPAOName(pao1.getRouteID());
+					anotherVal = DaoFactory.getPaoDao().getYukonPAOName(pao2.getRouteID());
 			    }
 			    else if( getOrderBy() == ORDER_BY_METER_NUMBER)
 			    {
@@ -121,13 +119,13 @@ public class MeterReadModel extends ReportModelBase
 			    }
 			    if (getOrderBy() == ORDER_BY_DEVICE_NAME || thisVal.equalsIgnoreCase(anotherVal))
 			    {
-			        thisVal = PAOFuncs.getYukonPAOName(pao1.getYukonID());
-			        anotherVal = PAOFuncs.getYukonPAOName(pao2.getYukonID());
+			        thisVal = DaoFactory.getPaoDao().getYukonPAOName(pao1.getYukonID());
+			        anotherVal = DaoFactory.getPaoDao().getYukonPAOName(pao2.getYukonID());
 			        if( thisVal.equalsIgnoreCase(anotherVal))
 			        {
 					    		            
-				        thisVal = PointFuncs.getPointName( ((MeterAndPointData)o1).getPointID().intValue());
-				        anotherVal = PointFuncs.getPointName( ((MeterAndPointData)o2).getPointID().intValue());
+				        thisVal = DaoFactory.getPointDao().getPointName( ((MeterAndPointData)o1).getPointID().intValue());
+				        anotherVal = DaoFactory.getPointDao().getPointName( ((MeterAndPointData)o2).getPointID().intValue());
 			        }
 			    }
 			}
@@ -368,8 +366,8 @@ public class MeterReadModel extends ReportModelBase
 		if ( o instanceof MeterAndPointData)
 		{
 			MeterAndPointData mpData = ((MeterAndPointData)o);
-			LiteYukonPAObject lPao = PAOFuncs.getLiteYukonPAO(mpData.getPaobjectID().intValue());
-			LiteDeviceMeterNumber ldmn = DeviceFuncs.getLiteDeviceMeterNumber(mpData.getPaobjectID().intValue());
+			LiteYukonPAObject lPao = DaoFactory.getPaoDao().getLiteYukonPAO(mpData.getPaobjectID().intValue());
+			LiteDeviceMeterNumber ldmn = DaoFactory.getDeviceDao().getLiteDeviceMeterNumber(mpData.getPaobjectID().intValue());
 			switch( columnIndex)
 			{
 				case SORT_BY_GROUP_NAME_COLUMN:
@@ -393,10 +391,10 @@ public class MeterReadModel extends ReportModelBase
 				    return String.valueOf(lPao.getAddress());
 				    
 				case POINT_NAME_COLUMN:
-					return PointFuncs.getPointName(mpData.getPointID().intValue());
+					return DaoFactory.getPointDao().getPointName(mpData.getPointID().intValue());
 	
 				case ROUTE_NAME_COLUMN:
-					return PAOFuncs.getYukonPAOName(lPao.getRouteID());
+					return DaoFactory.getPaoDao().getYukonPAOName(lPao.getRouteID());
 					
 				case GROUP_NAME_1_OR_TIMESTAMP_COLUMN:
 				{

@@ -11,10 +11,10 @@ import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.LogWriter;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
-import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.customer.CICustomerBase;
 import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
@@ -44,7 +44,6 @@ import com.cannontech.database.db.stars.integration.SwitchReplacement;
 import com.cannontech.database.db.stars.report.ServiceCompanyDesignationCode;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.stars.util.ServerUtils;
-import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.StarsAppliance;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsInventory;
@@ -872,13 +871,13 @@ public class YukonToCRSFuncs
 //      MNC = Municipal
 		YukonListEntry returnEntry = null;
 		if( custType.equalsIgnoreCase("CO"))
-			returnEntry = YukonListFuncs.getYukonListEntry(ciCustTypeList, "commercial");
+			returnEntry = DaoFactory.getYukonListDao().getYukonListEntry(ciCustTypeList, "commercial");
 		else if( custType.equalsIgnoreCase("IN"))
-			returnEntry = YukonListFuncs.getYukonListEntry(ciCustTypeList, "industrial");
+			returnEntry = DaoFactory.getYukonListDao().getYukonListEntry(ciCustTypeList, "industrial");
 		else if( custType.equalsIgnoreCase("MFG"))
-			returnEntry = YukonListFuncs.getYukonListEntry(ciCustTypeList, "manufacturing");
+			returnEntry = DaoFactory.getYukonListDao().getYukonListEntry(ciCustTypeList, "manufacturing");
 		else if( custType.equalsIgnoreCase("MNC"))
-			returnEntry = YukonListFuncs.getYukonListEntry(ciCustTypeList, "municipal");
+			returnEntry = DaoFactory.getYukonListDao().getYukonListEntry(ciCustTypeList, "municipal");
 		return returnEntry;
 	}    
 }

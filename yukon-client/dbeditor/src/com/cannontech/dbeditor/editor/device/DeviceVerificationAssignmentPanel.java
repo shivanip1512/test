@@ -1,19 +1,19 @@
 package com.cannontech.dbeditor.editor.device;
 
-import com.cannontech.database.cache.functions.DBPersistentFuncs;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
-import java.util.Vector;
-import javax.swing.event.CaretEvent;
-import java.awt.Component;
-import com.cannontech.database.cache.functions.PAOFuncs;
-import com.cannontech.common.gui.util.CheckBoxTableRenderer;
-import com.cannontech.database.data.device.RTM;
-import com.cannontech.database.db.device.DeviceVerification;
-import javax.swing.JCheckBox;
-import java.awt.ComponentOrientation;
 import java.awt.Font;
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Vector;
+
+import javax.swing.JCheckBox;
+import javax.swing.event.CaretEvent;
+
+import com.cannontech.common.gui.util.CheckBoxTableRenderer;
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.data.device.RTM;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.db.device.DeviceVerification;
+import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * Insert the type's description here.
@@ -582,7 +582,7 @@ public Vector populateAvailableList()
 {
 	Vector availableDevices = new java.util.Vector();
 	
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized( cache )
 	{
 		java.util.List devices = cache.getAllDevices();
@@ -638,7 +638,7 @@ public void setValue(Object o)
 	{
 		DeviceVerification veryDevice = (DeviceVerification)deviceVerifications.elementAt(j);
 		Integer devID = veryDevice.getTransmitterID();
-		LiteYukonPAObject thePAO = PAOFuncs.getLiteYukonPAO(devID.intValue());
+		LiteYukonPAObject thePAO = DaoFactory.getPaoDao().getLiteYukonPAO(devID.intValue());
 		
 		disabled = veryDevice.getDisable().equalsIgnoreCase("Y");
 		

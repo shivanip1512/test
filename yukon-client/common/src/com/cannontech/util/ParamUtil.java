@@ -3,6 +3,7 @@ package com.cannontech.util;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.Enumeration;
+
 import javax.servlet.ServletRequest;
 
 /**

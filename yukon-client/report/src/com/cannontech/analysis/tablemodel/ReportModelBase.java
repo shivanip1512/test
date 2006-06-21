@@ -1,7 +1,5 @@
 package com.cannontech.analysis.tablemodel;
 
-import java.io.IOException;
-import java.io.OutputStream;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -14,8 +12,6 @@ import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.jfree.report.util.CSVQuoter;
-
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.Reportable;
 import com.cannontech.database.cache.DefaultDatabaseCache;
@@ -27,6 +23,7 @@ import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.device.DeviceMeterGroup;
 import com.cannontech.database.model.ModelFactory;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.yukon.IDatabaseCache;
 
 
 /**
@@ -602,7 +599,7 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 	 */
 	public List getObjectsByModelType(int model)
 	{
-		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+		IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 		switch (model)
         {
 	        case ModelFactory.LMCONTROLAREA:

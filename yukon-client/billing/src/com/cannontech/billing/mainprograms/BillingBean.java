@@ -13,7 +13,6 @@ import com.cannontech.billing.FileFormatTypes;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.database.db.device.DeviceMeterGroup;
-import com.cannontech.util.ServletUtil;
 
 public class BillingBean implements java.util.Observer
 {

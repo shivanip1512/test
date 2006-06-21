@@ -26,9 +26,10 @@ import com.cannontech.common.gui.tree.CTITreeModel;
 import com.cannontech.common.gui.tree.CheckNode;
 import com.cannontech.common.gui.tree.CheckNodeSelectionListener;
 import com.cannontech.common.gui.tree.CheckRenderer;
+import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
@@ -41,7 +42,7 @@ import com.cannontech.database.db.user.YukonUserRole;
 import com.cannontech.database.model.DBTreeNode;
 import com.cannontech.roles.YukonGroupRoleDefs;
 import com.cannontech.user.UserUtils;
-import com.cannontech.common.login.ClientSession;
+import com.cannontech.yukon.IDatabaseCache;
 
 
 public class UserRolePanel extends com.cannontech.common.gui.util.DataInputPanel implements TreeSelectionListener
@@ -396,7 +397,7 @@ private javax.swing.JTree getJTreeRoles() {
 			//ivjJTreeRoles.setRootVisible( false );
 			ivjJTreeRoles.getSelectionModel().setSelectionMode( TreeSelectionModel.SINGLE_TREE_SELECTION );
 
-			DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+			IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 			
 			synchronized( cache )
 			{
@@ -563,7 +564,7 @@ public Object getValue(Object obj)
 			LiteYukonRole role = 
 				(LiteYukonRole)rNode.getUserObject();
 
-			LiteYukonRoleProperty[] props = RoleFuncs.getRoleProperties( role.getRoleID() );
+			LiteYukonRoleProperty[] props = DaoFactory.getRoleDao().getRoleProperties( role.getRoleID() );
 			for( int j = 0; j < props.length; j++ )
 			{
 				//modifies o role vector
@@ -652,14 +653,14 @@ private String getRoleValue( int rolePropID_, String defValue_ )
 {
 	if( getRoleContainer() instanceof YukonUser )
 	{
-		return RoleFuncs.getRolePropertyValue(
+		return DaoFactory.getRoleDao().getRolePropertyValue(
 				getRoleContainer().getID().intValue(),
 				rolePropID_,
 				defValue_ );
 	}
 	else if( getRoleContainer() instanceof YukonGroup )
 	{
-		return RoleFuncs.getRolePropValueGroup(
+		return DaoFactory.getRoleDao().getRolePropValueGroup(
 				getRoleContainer().getID().intValue(),
 				rolePropID_,
 				defValue_ );
@@ -735,7 +736,7 @@ public void valueChanged(TreeSelectionEvent e)
                 ly.getDescription() );
 
             getJTablePropertyModel().clear();
-            LiteYukonRoleProperty[] props = RoleFuncs.getRoleProperties( ly.getRoleID() );
+            LiteYukonRoleProperty[] props = DaoFactory.getRoleDao().getRoleProperties( ly.getRoleID() );
 
             //sort by keys
             Arrays.sort( props, LiteComparators.liteStringComparator );
@@ -901,7 +902,7 @@ public static void main(java.lang.String[] args) {
 				((CheckNode)tnode).setSelected( true );
 
 
-			LiteYukonRoleProperty[] props = RoleFuncs.getRoleProperties( 
+			LiteYukonRoleProperty[] props = DaoFactory.getRoleDao().getRoleProperties( 
 							dbDefRole.getRoleID().intValue() );
 
 			// (none) means we use the default, dont do anything in that case

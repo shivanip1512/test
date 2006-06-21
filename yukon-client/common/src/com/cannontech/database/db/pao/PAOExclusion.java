@@ -1,9 +1,10 @@
 package com.cannontech.database.db.pao;
 
+import java.util.Vector;
+
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.data.point.PointTypes;
-import java.util.Vector;
 import com.cannontech.database.db.NestedDBPersistent;
 
 /**

@@ -83,7 +83,7 @@ function confirmDelete() {
           </td>
           <td class="MainText" width="25%">
 <%
-	String importID = AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.IMPORT_CUSTOMER_ACCOUNT);
+	String importID = DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ConsumerInfoRole.IMPORT_CUSTOMER_ACCOUNT);
 	if (importID.equals("(none)")) importID = null;
 	if (importID != null) {
 		String importURI = "ImportAccount.jsp";

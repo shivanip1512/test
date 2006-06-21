@@ -7,10 +7,10 @@
 package com.cannontech.database.data.device;
 
 import java.util.Vector;
-import com.cannontech.database.db.device.DeviceVerification;
-import com.cannontech.common.util.CtiUtilities;
+
 import com.cannontech.database.db.NestedDBPersistent;
 import com.cannontech.database.db.NestedDBPersistentComparators;
+import com.cannontech.database.db.device.DeviceVerification;
 
 /**
  * @author jdayton

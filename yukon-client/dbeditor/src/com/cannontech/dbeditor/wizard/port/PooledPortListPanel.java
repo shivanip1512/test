@@ -6,9 +6,9 @@ import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PortTypes;
-import com.cannontech.database.data.port.DirectPort;
 import com.cannontech.database.data.port.PooledPort;
 import com.cannontech.database.db.pao.PAOowner;
+import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * This type was created in VisualAge.
@@ -290,7 +290,7 @@ private void initialize() {
 	}
 	// user code begin {2}
 
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	java.util.Vector availablePorts = null;
 	synchronized(cache)
 	{
@@ -544,7 +544,7 @@ public void portsAddRemovePanel_RightListMouse_mouseReleased(java.util.EventObje
  */
 public void setValue(Object val) 
 {
-	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 	java.util.Vector availablePorts = null;
 	java.util.Vector assignedPorts = null;
 	synchronized(cache)

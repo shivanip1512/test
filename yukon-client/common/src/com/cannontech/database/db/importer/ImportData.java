@@ -6,8 +6,6 @@
  */
 package com.cannontech.database.db.importer;
 
-import java.sql.SQLException;
-
 import com.cannontech.database.db.NestedDBPersistent;
 
 /**

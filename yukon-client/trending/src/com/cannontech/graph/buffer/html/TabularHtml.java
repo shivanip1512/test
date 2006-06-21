@@ -9,7 +9,6 @@ import java.util.Arrays;
 import java.util.TreeMap;
 
 import org.jfree.data.time.TimePeriod;
-import org.jfree.data.time.TimeSeriesDataItem;
 
 import com.cannontech.common.util.Pair;
 import com.cannontech.common.util.TimeUtil;

@@ -6,6 +6,7 @@ package com.cannontech.database.db;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.GregorianCalendar;
+
 import com.cannontech.yukon.concrete.ResourceFactory;
  
 public abstract class DBPersistent implements java.io.Serializable 

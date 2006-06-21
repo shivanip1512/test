@@ -8,8 +8,6 @@ import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.database.JdbcTemplateHelper;
-import com.cannontech.database.cache.functions.PointFuncs;
-import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.CapBankMonitorPointParams;
 import com.cannontech.database.db.DBPersistent;
 

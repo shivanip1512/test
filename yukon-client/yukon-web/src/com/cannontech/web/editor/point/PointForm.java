@@ -15,11 +15,9 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.tags.IAlarmDefs;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.cache.functions.AlarmCatFuncs;
-import com.cannontech.database.cache.functions.PointFuncs;
-import com.cannontech.database.cache.functions.StateFuncs;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
@@ -45,6 +43,7 @@ import com.cannontech.web.editor.DBEditorForm;
 import com.cannontech.web.exceptions.InvalidPointOffsetException;
 import com.cannontech.web.util.CBCSelectionLists;
 import com.cannontech.web.wizard.PointWizardModel;
+import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * @author ryan
@@ -136,7 +135,7 @@ public class PointForm extends DBEditorForm
 
 		if( uofms == null ) {
 
-			DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+			IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 			synchronized(cache) {
 				List allUnitMeasures = cache.getAllUnitMeasures();
 				
@@ -162,7 +161,7 @@ public class PointForm extends DBEditorForm
 
 		if( alarmCategories == null ) {
 
-			DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+			IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 			synchronized(cache) {
 				List allAlarmStates = cache.getAllAlarmCategories();				
 				alarmCategories = new SelectItem[ allAlarmStates.size() ];
@@ -187,7 +186,7 @@ public class PointForm extends DBEditorForm
 		
 		if( emailNotifcations == null ) {			
 			
-			DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+			IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 			
 			synchronized( cache ) {
 				
@@ -228,7 +227,7 @@ public class PointForm extends DBEditorForm
 		
 		if( notifGroups == null ) {			
 			
-			DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+			IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 			
 			synchronized( cache ) {
 				
@@ -256,7 +255,7 @@ public class PointForm extends DBEditorForm
 		
 		if( stateGroups == null ) {			
 			
-			LiteStateGroup[] allStateGroups = StateFuncs.getAllStateGroups();
+			LiteStateGroup[] allStateGroups = DaoFactory.getStateDao().getAllStateGroups();
 			
 			stateGroups = new SelectItem[ allStateGroups.length ];
 			for( int i = 0; i < allStateGroups.length; i++) {
@@ -314,12 +313,12 @@ public class PointForm extends DBEditorForm
 	public void initItem( int id ) {
 
 		PointBase pointDB =
-			(PointBase)LiteFactory.createDBPersistent( PointFuncs.getLitePoint(id) );
+			(PointBase)LiteFactory.createDBPersistent( DaoFactory.getPointDao().getLitePoint(id) );
 		setDbPersistent( pointDB );
 		
 //		try {
 //			PointBase pointDB = PointFactory.retrievePoint(
-//					new Integer(PointFuncs.getLitePoint(id).getPointID()) );
+//					new Integer(DaoFactory.getPointDao().getLitePoint(id).getPointID()) );
 //
 //			setDbPersistent( pointDB );
 //		}
@@ -481,7 +480,7 @@ public class PointForm extends DBEditorForm
 		
 		if(ev == null || ev.getNewValue() == null) return;
 
-		LiteState[] lStates = StateFuncs.getLiteStates( ((Integer)ev.getNewValue()).intValue() );
+		LiteState[] lStates = DaoFactory.getStateDao().getLiteStates( ((Integer)ev.getNewValue()).intValue() );
 		initialStates = new SelectItem[ lStates.length ];
 		for( int i = 0; i < lStates.length; i++ )
 			initialStates[i] =
@@ -543,7 +542,7 @@ public class PointForm extends DBEditorForm
 			alarm_cats = IAlarmDefs.STATUS_ALARM_STATES;
 				
 		LiteStateGroup stateGroup = (LiteStateGroup)
-			StateFuncs.getLiteStateGroup( getPointBase().getPoint().getStateGroupID().intValue() );
+			DaoFactory.getStateDao().getLiteStateGroup( getPointBase().getPoint().getStateGroupID().intValue() );
 
 		String[] stateNames = new String[stateGroup.getStatesList().size()];
 		for( int j = 0; j < stateGroup.getStatesList().size(); j++ )
@@ -627,7 +626,7 @@ public class PointForm extends DBEditorForm
 			AlarmTableEntry entry =
 				(AlarmTableEntry)getAlarmTableEntries().get(i);
 			
-			alarmStates += (char)AlarmCatFuncs.getAlarmCategoryId( entry.getGenerate() );			
+			alarmStates += (char)DaoFactory.getAlarmCatDao().getAlarmCategoryId( entry.getGenerate() );			
 			exclNotify += PointAlarming.getExcludeNotifyChar( entry.getExcludeNotify() );
 		}
 
@@ -749,7 +748,7 @@ public class PointForm extends DBEditorForm
         int type = PointTypes.getType (getPointBase().getPoint().getPointType());
         Integer paoId = getWizData().getParentId();
         //make sure we are not erroring out because of the same offset
-        LitePoint litePoint = PointFuncs.getLitePoint(getPointBase().getPoint().getPointID().intValue());
+        LitePoint litePoint = DaoFactory.getPointDao().getLitePoint(getPointBase().getPoint().getPointID().intValue());
         if (litePoint.getPointOffset() == offset)
         	return;
         if (!PointOffsetUtils.isValidPointOffset(offset,paoId ,type)) {

@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.common.util.StringUtils;
-import com.cannontech.database.cache.functions.AlarmFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.message.dispatch.message.Signal;
 
 /**
@@ -64,7 +64,7 @@ public class AlarmTextStyleServlet extends HttpServlet {
 		
 		breakDevice:
 		for(int j = 0; j < deviceIds.length; j++) {
-			List deviceSignals = AlarmFuncs.getSignalsForPao(deviceIds[j]);
+			List deviceSignals = DaoFactory.getAlarmDao().getSignalsForPao(deviceIds[j]);
 			for (Iterator iter = deviceSignals.iterator(); iter.hasNext();) {
 				Signal signal  = (Signal) iter.next();
 				if(TagUtils.isAlarmUnacked(signal.getTags())) {
@@ -75,7 +75,7 @@ public class AlarmTextStyleServlet extends HttpServlet {
 		}
 		breakPoint:
 		for(int j = 0; !inAlarm && j < pointIds.length; j++) {
-			List pointSignals = AlarmFuncs.getSignalsForPoint(pointIds[j]);
+			List pointSignals = DaoFactory.getAlarmDao().getSignalsForPoint(pointIds[j]);
 			for (Iterator iter = pointSignals.iterator(); iter.hasNext();) {
 				Signal signal = (Signal) iter.next();
 				if(TagUtils.isAlarmUnacked(signal.getTags())) {
@@ -86,7 +86,7 @@ public class AlarmTextStyleServlet extends HttpServlet {
 		}
 		breakAlarmCategory:
 		for(int j = 0; !inAlarm && j < alarmCategoryIds.length; j++) {
-			List alarmCategorySignals = AlarmFuncs.getSignalsForAlarmCategory(alarmCategoryIds[j]);
+			List alarmCategorySignals = DaoFactory.getAlarmDao().getSignalsForAlarmCategory(alarmCategoryIds[j]);
 			for (Iterator iter = alarmCategorySignals.iterator(); iter.hasNext();) {
 				Signal signal = (Signal) iter.next();
 				if(TagUtils.isAlarmUnacked(signal.getTags())) {

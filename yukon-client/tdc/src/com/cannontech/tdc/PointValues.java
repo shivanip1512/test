@@ -10,7 +10,7 @@ import java.util.HashMap;
 
 import com.cannontech.clientutils.tags.IAlarmDefs;
 import com.cannontech.common.gui.util.Colors;
-import com.cannontech.database.cache.functions.PointFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
@@ -299,17 +299,17 @@ private LitePoint getLitePoint()
 	if( getPointID() == TDCDefines.ROW_BREAK_ID )
 		return LitePoint.NONE_LITE_PT;
 	else
-		return PointFuncs.getLitePoint( getPointID() );
+		return DaoFactory.getPointDao().getLitePoint( getPointID() );
 }
 
 private LiteStateGroup getLiteStateGroup()
 {
 	//if the LitePoint is null OR we have an Invalid type 
-	LitePoint lPoint = PointFuncs.getLitePoint( getPointID() );
+	LitePoint lPoint = DaoFactory.getPointDao().getLitePoint( getPointID() );
 	if( lPoint == null || getPointType() == PointTypes.INVALID_POINT )
 		return null;
 	else
-		return PointFuncs.getStateGroup( lPoint.getStateGroupID() );
+		return DaoFactory.getPointDao().getStateGroup( lPoint.getStateGroupID() );
 }
 
 /**

@@ -1,5 +1,7 @@
 package com.cannontech.dbeditor.editor.point;
 
+import com.cannontech.yukon.IDatabaseCache;
+
 /**
  * This type was created in VisualAge.
  */
@@ -615,7 +617,7 @@ public void setValue(Object val) {
 		getPointOffsetSpinner().setValue( new Integer(0) );
 	}
 
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized(cache)
 	{
 		java.util.List points = cache.getAllPoints();

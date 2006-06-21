@@ -2,21 +2,21 @@ package com.cannontech.database.data.lite;
 
 import java.util.GregorianCalendar;
 
-import com.cannontech.common.util.MessageEvent;
-import com.cannontech.database.DatabaseTypes;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
-import com.cannontech.database.cache.functions.PAOFuncs;
-import com.cannontech.database.db.command.Command;
-import com.cannontech.database.db.company.SettlementConfig;
 import com.cannontech.database.data.command.DeviceTypeCommand;
-import com.cannontech.database.data.customer.*;
-import com.cannontech.database.data.device.*;
+import com.cannontech.database.data.customer.CICustomerBase;
+import com.cannontech.database.data.customer.Customer;
+import com.cannontech.database.data.customer.CustomerTypes;
+import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.notification.NotificationGroup;
 import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.db.command.Command;
+import com.cannontech.database.db.company.SettlementConfig;
+import com.cannontech.database.db.device.lm.LMProgramDirectGear;
 import com.cannontech.database.db.point.RawPointHistory;
 import com.cannontech.database.db.user.YukonGroup;
-import com.cannontech.database.db.device.lm.LMProgramDirectGear;
 
 /**
  * This type was created in VisualAge.
@@ -497,7 +497,7 @@ public static DBPersistent convertLiteToDBPers( LiteBase lBase )
 	if( lBase instanceof LiteDeviceMeterNumber )
 	{					
 		userObject = com.cannontech.database.data.lite.LiteFactory.createDBPersistent(
-			PAOFuncs.getLiteYukonPAO( lBase.getLiteID() ) );
+			DaoFactory.getPaoDao().getLiteYukonPAO( lBase.getLiteID() ) );
 	}
 	else
  		userObject = com.cannontech.database.data.lite.LiteFactory.createDBPersistent( lBase );
@@ -512,7 +512,7 @@ public static DBPersistent convertLiteToDBPersAndRetrieve( LiteBase lBase ) {
 	if( lBase instanceof LiteDeviceMeterNumber )
 	{					
 		userObject = com.cannontech.database.data.lite.LiteFactory.createDBPersistent(
-			PAOFuncs.getLiteYukonPAO( lBase.getLiteID() ) );
+			DaoFactory.getPaoDao().getLiteYukonPAO( lBase.getLiteID() ) );
 	}
 	else
  		userObject = com.cannontech.database.data.lite.LiteFactory.createDBPersistent( lBase );

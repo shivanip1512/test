@@ -6,13 +6,14 @@
  */
 package com.cannontech.common.gui.util;
 
-import javax.swing.AbstractCellEditor;
-import javax.swing.table.TableCellEditor;
-import javax.swing.JComboBox;
 import java.awt.Component;
+import java.util.Vector;
+
+import javax.swing.AbstractCellEditor;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JTable;
-import java.util.Vector;
+import javax.swing.table.TableCellEditor;
 
 /**
  * @author jdayton

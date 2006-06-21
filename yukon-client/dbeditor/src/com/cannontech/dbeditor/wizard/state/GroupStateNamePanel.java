@@ -1,7 +1,5 @@
 package com.cannontech.dbeditor.wizard.state;
 
-import javax.swing.event.CaretEvent;
-
 import com.cannontech.dbeditor.editor.state.GroupStateEditorPanel;
 
 /**

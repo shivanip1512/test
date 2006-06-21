@@ -3,13 +3,11 @@ package com.cannontech.message.dispatch;
 /**
  * This type was created in VisualAge.
  */
-import java.io.IOException;
-
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.cache.functions.RoleFuncs;
-import com.cannontech.message.util.Command;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.message.dispatch.message.Registration;
+import com.cannontech.message.util.Command;
 import com.cannontech.message.util.Message;
 import com.cannontech.roles.yukon.SystemRole;
 import com.roguewave.vsj.CollectableStreamer;
@@ -64,9 +62,9 @@ public class ClientConnection extends com.cannontech.message.util.ClientConnecti
         int defaultPort = 1510;
 
         try {
-            defaultHost = RoleFuncs.getGlobalPropertyValue(SystemRole.DISPATCH_MACHINE);
+            defaultHost = DaoFactory.getRoleDao().getGlobalPropertyValue(SystemRole.DISPATCH_MACHINE);
 
-            defaultPort = Integer.parseInt(RoleFuncs.getGlobalPropertyValue(SystemRole.DISPATCH_PORT));
+            defaultPort = Integer.parseInt(DaoFactory.getRoleDao().getGlobalPropertyValue(SystemRole.DISPATCH_PORT));
         } catch (Exception e) {
             CTILogger.warn("Could not get host and port for dispatch connection from Role Properties, using defaults",
                            e);

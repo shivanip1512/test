@@ -1,0 +1,14 @@
+;; Object semantic.cache
+;; SEMANTICDB Tags save file
+(semanticdb-project-database "semantic.cache"
+  :file "semantic.cache"
+  :tables (list 
+   (semanticdb-table "DaoFactory.java"
+    :file "DaoFactory.java"
+    :pointmax 1042
+    :major-mode 'jde-mode
+    :tokens '((";" nil [63 64]) (";" nil [96 97]) (";" nil [135 136]) (";" nil [174 175]) (";" nil [237 238]) (";" nil [278 279]) (";" nil [331 332]) (";" nil [376 377]) (";" nil [425 426]) (";" nil [462 463]) (";" nil [513 514]) (";" nil [548 549]) (";" nil [577 578]) (";" nil [636 637]) (";" nil [667 668]) (";" nil [702 703]) (";" nil [735 736]) (";" nil [794 795]) (";" nil [829 830]) (";" nil [860 861]) (";" nil [907 908]) (";" nil [952 953]) (";" nil [995 996]) (";" nil [1038 1039]))
+    :unmatched-syntax '((close-paren 1040 . 1041) (semantic-list 1036 . 1038) (symbol 1021 . 1036) (PUBLIC 1001 . 1007) (semantic-list 993 . 995) (symbol 978 . 993) (PUBLIC 958 . 964) (semantic-list 950 . 952) (symbol 934 . 950) (PUBLIC 913 . 919) (semantic-list 905 . 907) (symbol 888 . 905) (PUBLIC 866 . 872) (semantic-list 858 . 860) (symbol 849 . 858) (PUBLIC 835 . 841) (semantic-list 827 . 829) (symbol 816 . 827) (PUBLIC 800 . 806) (semantic-list 792 . 794) (symbol 769 . 792) (PUBLIC 741 . 747) (semantic-list 733 . 735) (symbol 723 . 733) (PUBLIC 708 . 714) (semantic-list 700 . 702) (symbol 689 . 700) (PUBLIC 673 . 679) (semantic-list 665 . 667) (symbol 656 . 665) (PUBLIC 642 . 648) (semantic-list 634 . 636) (symbol 611 . 634) (PUBLIC 583 . 589) (semantic-list 575 . 577) (symbol 567 . 575) (PUBLIC 554 . 560) (semantic-list 546 . 548) (symbol 535 . 546) (PUBLIC 519 . 525) (semantic-list 511 . 513) (symbol 492 . 511) (PUBLIC 468 . 474) (semantic-list 460 . 462) (symbol 448 . 460) (PUBLIC 431 . 437) (semantic-list 423 . 425) (symbol 405 . 423) (PUBLIC 382 . 388) (semantic-list 374 . 376) (symbol 358 . 374) (PUBLIC 337 . 343) (semantic-list 329 . 331) (symbol 309 . 329) (PUBLIC 284 . 290) (semantic-list 276 . 278) (symbol 262 . 276) (PUBLIC 243 . 249) (semantic-list 235 . 237) (symbol 210 . 235) (PUBLIC 180 . 186) (semantic-list 172 . 174) (symbol 159 . 172) (PUBLIC 141 . 147) (semantic-list 133 . 135) (symbol 120 . 133) (PUBLIC 102 . 108) (semantic-list 94 . 96) (symbol 84 . 94) (PUBLIC 69 . 75) (semantic-list 61 . 63) (symbol 50 . 61) (PUBLIC 34 . 40) (PUBLIC 1 . 7))
+    )
+   )
+  )

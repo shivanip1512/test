@@ -3,15 +3,6 @@
  */
 package com.cannontech.cttp.test;
 
-import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringReader;
-
-import org.exolab.castor.xml.Unmarshaller;
-
-
 import com.cannontech.cttp.schema.cttp_OperationType;
 import com.cannontech.cttp.schema.cttp_dtd_v0r1Doc;
 

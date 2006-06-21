@@ -6,6 +6,7 @@ package com.cannontech.dbeditor.editor.point;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.yukon.IDatabaseCache;
 
 public class AnalogBasePanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, com.klg.jclass.util.value.JCValueListener
 {
@@ -508,7 +509,7 @@ private void initialize() {
 	setBorder(border);
 
 	//Load the unit of measure combo box with default possible values
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized(cache)
 	{
 		java.util.List allUnitMeasures = cache.getAllUnitMeasures();

@@ -6,8 +6,10 @@ package com.cannontech.database.model;
 import javax.swing.tree.TreePath;
 
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.yukon.IDatabaseCache;
 
 public class DeviceTreeModel extends DBTreeModel 
 {
@@ -199,7 +201,7 @@ private boolean createDevicePointList(java.util.List points, java.util.List dest
 	*/
    
 protected synchronized java.util.List getCacheList(
-		com.cannontech.database.cache.DefaultDatabaseCache cache ) 
+		IDatabaseCache cache ) 
 {
 	return cache.getAllDevices();
 }
@@ -226,7 +228,7 @@ public boolean insertTreeObject( LiteBase lb )
 		int devID = ((LitePoint)lb).getPaobjectID();
 
 		com.cannontech.database.data.lite.LiteYukonPAObject pao =
-				com.cannontech.database.cache.functions.PAOFuncs.getLiteYukonPAO( devID );
+				DaoFactory.getPaoDao().getLiteYukonPAO( devID );
 
 		rootNode = findLiteObject( null, pao );
 
@@ -311,7 +313,7 @@ public boolean isLiteTypeSupported( int liteType )
 // Override me if you want a sub class to do something different.
 protected synchronized void runUpdate() 
 {
-	com.cannontech.database.cache.DefaultDatabaseCache cache =
+	IDatabaseCache cache =
 		com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 
 	synchronized (cache)
@@ -418,7 +420,7 @@ public synchronized void treePathWillExpand(javax.swing.tree.TreePath path)
 	if( node.willHaveChildren() &&
 		 node.getUserObject() instanceof com.cannontech.database.data.lite.LiteYukonPAObject )
 	{
-		com.cannontech.database.cache.DefaultDatabaseCache cache =
+		IDatabaseCache cache =
 			com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 
 		synchronized (cache)

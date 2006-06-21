@@ -5,7 +5,7 @@ import java.beans.PropertyChangeListener;
 import java.util.*;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.database.cache.functions.UnknownRolePropertyException;
+import com.cannontech.core.dao.UnknownRolePropertyException;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.notif.outputs.UnknownCustomerException;
 

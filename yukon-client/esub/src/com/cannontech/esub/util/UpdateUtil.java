@@ -5,12 +5,8 @@ import java.util.Iterator;
 import java.util.Map;
 
 import com.cannontech.common.cache.PointChangeCache;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.cache.functions.PAOFuncs;
-import com.cannontech.database.cache.functions.PointFuncs;
-import com.cannontech.database.cache.functions.StateFuncs;
-import com.cannontech.database.cache.functions.UnitMeasureFuncs;
-import com.cannontech.database.cache.functions.YukonImageFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LitePointLimit;
 import com.cannontech.database.data.lite.LitePointUnit;
@@ -36,7 +32,7 @@ public class UpdateUtil {
 		boolean prev = false;	
 		if( (displayAttrib & PointAttributes.VALUE) != 0 ) {			
 			PointData pData = pcc.getValue(pointID);
-			LitePointUnit lpu = PointFuncs.getPointUnit(pointID);
+			LitePointUnit lpu = DaoFactory.getPointDao().getPointUnit(pointID);
 
 			if (pData != null) {
 				DecimalFormat f = new DecimalFormat();
@@ -58,7 +54,7 @@ public class UpdateUtil {
 			if( prev ) 
 				text += " ";
 				
-			LiteUnitMeasure lum = UnitMeasureFuncs.getLiteUnitMeasureByPointID(pointID);
+			LiteUnitMeasure lum = DaoFactory.getUnitMeasureDao().getLiteUnitMeasureByPointID(pointID);
 			if( lum != null ) {
 				text += lum.getUnitMeasureName();
 				prev = true;
@@ -69,7 +65,7 @@ public class UpdateUtil {
 			if( prev ) 
 				text += " ";
 					
-			String name = PointFuncs.getPointName(pointID);
+			String name = DaoFactory.getPointDao().getPointName(pointID);
 			if(name != null) 
 				text += name;
 			else 
@@ -81,9 +77,9 @@ public class UpdateUtil {
 			if( prev ) 
 				text += " ";
 			//find the pao for this point
-			LitePoint lp = PointFuncs.getLitePoint(pointID);
+			LitePoint lp = DaoFactory.getPointDao().getLitePoint(pointID);
 			if(lp != null) {
-				text += PAOFuncs.getYukonPAOName(lp.getPaobjectID());
+				text += DaoFactory.getPaoDao().getYukonPAOName(lp.getPaobjectID());
 				prev = true;
 			}
 		}
@@ -100,8 +96,8 @@ public class UpdateUtil {
 		}	
 		
 		if( (displayAttrib & PointAttributes.LOW_LIMIT) != 0 ) {
-			LitePointLimit lpl = PointFuncs.getPointLimit(pointID);
-			LitePointUnit lpu = PointFuncs.getPointUnit(pointID);
+			LitePointLimit lpl = DaoFactory.getPointDao().getPointLimit(pointID);
+			LitePointUnit lpu = DaoFactory.getPointDao().getPointUnit(pointID);
 			
 			if( lpl != null && lpu != null) {			
 				DecimalFormat f = new DecimalFormat();
@@ -113,8 +109,8 @@ public class UpdateUtil {
 		}
 		
 		if( (displayAttrib & PointAttributes.HIGH_LIMIT) != 0 ) {
-			LitePointLimit lpl = PointFuncs.getPointLimit(pointID);
-			LitePointUnit lpu = PointFuncs.getPointUnit(pointID);
+			LitePointLimit lpl = DaoFactory.getPointDao().getPointLimit(pointID);
+			LitePointUnit lpu = DaoFactory.getPointDao().getPointUnit(pointID);
 			
 			if( lpl != null && lpu != null) {
 				DecimalFormat f = new DecimalFormat();
@@ -127,7 +123,7 @@ public class UpdateUtil {
 		
 		if( (displayAttrib & PointAttributes.LIMIT_DURATION) != 0 ) {	
 			// always convert seconds -> minutes!	
-			LitePointLimit lpl = PointFuncs.getPointLimit(pointID);
+			LitePointLimit lpl = DaoFactory.getPointDao().getPointLimit(pointID);
 			if( lpl != null ) {
 				int min = lpl.getLimitDuration() / 60;
 				text += Integer.toString(min);		
@@ -178,11 +174,11 @@ public class UpdateUtil {
 		}
 		
 		if( (displayAttrib & PointAttributes.STATE_TEXT) != 0 ) {
-			LitePoint lp = PointFuncs.getLitePoint(pointID);			
+			LitePoint lp = DaoFactory.getPointDao().getLitePoint(pointID);			
 			PointData pData = pcc.getValue(pointID);
 	
 			if (pData != null) {
-				LiteState ls = StateFuncs.getLiteState(lp.getStateGroupID(), (int) pData.getValue());	
+				LiteState ls = DaoFactory.getStateDao().getLiteState(lp.getStateGroupID(), (int) pData.getValue());	
 				if( ls != null ) {			
 					text += ls.getStateText();
 					prev = true;
@@ -201,12 +197,12 @@ public class UpdateUtil {
 }
 
 	public static String getStateImageName(int pointID) {
-		LitePoint lp = PointFuncs.getLitePoint(pointID);
+		LitePoint lp = DaoFactory.getPointDao().getLitePoint(pointID);
 		PointChangeCache pcc = PointChangeCache.getPointChangeCache();
 		PointData pData = pcc.getValue(pointID);
 		
-		LiteState ls = StateFuncs.getLiteState(lp.getStateGroupID(), (int) pData.getValue());
-		LiteYukonImage img = YukonImageFuncs.getLiteYukonImage(ls.getImageID());
+		LiteState ls = DaoFactory.getStateDao().getLiteState(lp.getStateGroupID(), (int) pData.getValue());
+		LiteYukonImage img = DaoFactory.getYukonImageDao().getLiteYukonImage(ls.getImageID());
 		return img.getImageName();
 	}	
 	

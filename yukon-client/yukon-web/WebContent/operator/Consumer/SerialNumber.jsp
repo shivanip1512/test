@@ -37,7 +37,7 @@
 				if (inventory.getLMHardware() != null)
 					serialNo = inventory.getLMHardware().getManufacturerSerialNumber();
 				else if (inventory.getDeviceID() > 0)
-					deviceName = PAOFuncs.getYukonPAOName(inventory.getDeviceID());
+					deviceName = DaoFactory.getPaoDao().getYukonPAOName(inventory.getDeviceID());
 				else if (inventory.getMCT() != null)
 					deviceName = inventory.getMCT().getDeviceName();
 			}
@@ -59,7 +59,7 @@
 			if (inventory.getLMHardware() != null)
 				serialNo = inventory.getLMHardware().getManufacturerSerialNumber();
 			else if (inventory.getDeviceID() > 0)
-				deviceName = PAOFuncs.getYukonPAOName(inventory.getDeviceID());
+				deviceName = DaoFactory.getPaoDao().getYukonPAOName(inventory.getDeviceID());
 			else if (inventory.getMCT() != null)
 				deviceName = inventory.getMCT().getDeviceName();
 		}
@@ -178,7 +178,7 @@ function confirmCancel() {
 			    <input type="hidden" name="action" value="CheckInventory">
 				<input type="hidden" name="REDIRECT" value="<%= referer %>">
                 Please select a device from the current inventory (Select Inventory),<br>
-<%String meterBase = AuthFuncs.getRolePropertyValue( lYukonUser, EnergyCompanyRole.METER_MCT_BASE_DESIGNATION);
+<%String meterBase = DaoFactory.getAuthDao().getRolePropertyValue( lYukonUser, EnergyCompanyRole.METER_MCT_BASE_DESIGNATION);
 if (account != null && meterBase != null && meterBase.compareTo(com.cannontech.stars.util.StarsUtils.METER_BASE_DESIGNATION) == 0)
 {%>
 				create a new Meter (Create New Meter),<br>

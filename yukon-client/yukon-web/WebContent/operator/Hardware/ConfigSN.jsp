@@ -267,7 +267,7 @@ function removeAllConfig(form) {
 			devTypeID = ((LiteStarsLMHardware)invObj).getLmHardwareTypeID();
 			serialNo = ((LiteStarsLMHardware)invObj).getManufacturerSerialNumber();
 		}
-		String deviceType = YukonListFuncs.getYukonListEntry(devTypeID).getEntryText();
+		String deviceType = DaoFactory.getYukonListDao().getYukonListEntry(devTypeID).getEntryText();
 %>
                         <tr> 
                           <td class="TableCell" width="128"><%= deviceType %></td>
@@ -313,7 +313,7 @@ function removeAllConfig(form) {
                             Specify a route: 
                             <select name="Route" disabled>
 <%
-	String dftRoute = PAOFuncs.getYukonPAOName(liteEC.getDefaultRouteID());
+	String dftRoute = DaoFactory.getPaoDao().getYukonPAOName(liteEC.getDefaultRouteID());
 	if (dftRoute != null)
 		dftRoute = "Default - " + dftRoute;
 	else

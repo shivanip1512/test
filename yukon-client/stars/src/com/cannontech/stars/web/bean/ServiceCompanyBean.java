@@ -1,6 +1,7 @@
 package com.cannontech.stars.web.bean;
 
 import java.util.ArrayList;
+
 import com.cannontech.database.db.stars.report.ServiceCompanyDesignationCode;
 
 public class ServiceCompanyBean 

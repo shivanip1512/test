@@ -1,10 +1,11 @@
 package com.cannontech.dbeditor.wizard.tags;
 
-import com.cannontech.database.data.lite.LiteYukonImage;
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.util.DataInputPanelListener;
 import com.cannontech.common.gui.util.TextFieldDocument;
+import com.cannontech.database.data.lite.LiteYukonImage;
 import com.cannontech.database.db.tags.Tag;
+import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * Insert the type's description here.
@@ -448,7 +449,7 @@ public void imageButton_ActionPerformed(java.awt.event.ActionEvent actionEvent)
 	
 	java.awt.Image[] images = null;  
    	LiteYukonImage[] yukonImages = null;
-   	com.cannontech.database.cache.DefaultDatabaseCache cache = 
+   	IDatabaseCache cache = 
 	com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
     
    	synchronized( cache )
@@ -719,7 +720,7 @@ public void setValue(Object o)
 		int yukImgID = youAreIt.getImageID().intValue();
 		if( yukImgID > com.cannontech.database.db.state.YukonImage.NONE_IMAGE_ID )
 		{
-			com.cannontech.database.cache.DefaultDatabaseCache cache = 
+			IDatabaseCache cache = 
 			com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
           
 			LiteYukonImage liteYukImg = null;

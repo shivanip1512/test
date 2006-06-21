@@ -1,6 +1,6 @@
 package com.cannontech.notif.handler;
 
-import com.cannontech.cc.dao.*;
+import com.cannontech.cc.dao.CurtailmentEventDao;
 import com.cannontech.cc.model.CurtailmentEvent;
 import com.cannontech.message.notif.CurtailmentEventDeleteMsg;
 import com.cannontech.message.notif.CurtailmentEventMsg;

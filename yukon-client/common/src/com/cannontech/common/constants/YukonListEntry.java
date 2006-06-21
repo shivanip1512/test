@@ -1,6 +1,5 @@
 package com.cannontech.common.constants;
 
-import java.util.Vector;
 
 /**
  * @author rneuharth

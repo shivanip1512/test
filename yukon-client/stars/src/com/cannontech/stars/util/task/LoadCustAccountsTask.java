@@ -14,8 +14,15 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteCustomer;
-import com.cannontech.database.data.lite.stars.*;
+import com.cannontech.database.data.lite.stars.LiteAccountSite;
+import com.cannontech.database.data.lite.stars.LiteAddress;
+import com.cannontech.database.data.lite.stars.LiteCustomerAccount;
+import com.cannontech.database.data.lite.stars.LiteSiteInformation;
+import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
+import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.util.WebClientException;
+import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * @author yao
@@ -191,7 +198,7 @@ public class LoadCustAccountsTask extends TimeConsumingTask {
 		liteSiteInfo.setSubstationID( rset.getInt("SubstationID") );
 		liteAcctInfo.setSiteInformation( liteSiteInfo );
 		
-		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+		IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 		synchronized (cache) {
 			liteAcctInfo.setCustomer( (LiteCustomer)cache.getACustomerByCustomerID(liteAccount.getCustomerID()) );
 		}

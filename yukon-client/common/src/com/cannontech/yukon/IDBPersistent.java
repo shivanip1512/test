@@ -1,6 +1,7 @@
 package com.cannontech.yukon;
 
 import java.sql.SQLException;
+
 import com.cannontech.database.Transaction;
 /**
  * Interface for adding,updating,deleting, and retrieving

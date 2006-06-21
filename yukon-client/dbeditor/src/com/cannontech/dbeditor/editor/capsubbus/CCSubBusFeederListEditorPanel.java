@@ -2,6 +2,8 @@ package com.cannontech.dbeditor.editor.capsubbus;
 
 import java.util.ArrayList;
 
+import com.cannontech.yukon.IDatabaseCache;
+
 /**
  * This type was created in VisualAge.
  */
@@ -281,7 +283,7 @@ public void initLeftListFeeders()
 {
 	java.util.Vector availableFeeders = new java.util.Vector();
 
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	
 	synchronized( cache )
 	{
@@ -444,7 +446,7 @@ public void setValue(Object val)
 	initLeftListFeeders();
 
 	java.util.Vector assignedFeeders = new java.util.Vector();
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized(cache)
 	{
 		java.util.List allPAOs = cache.getAllYukonPAObjects();

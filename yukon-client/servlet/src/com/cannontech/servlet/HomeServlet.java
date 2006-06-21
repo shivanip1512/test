@@ -11,7 +11,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.common.constants.LoginController;
-import com.cannontech.database.cache.functions.AuthFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.application.WebClientRole;
 
@@ -35,7 +35,7 @@ public class HomeServlet extends HttpServlet {
             return;
         }
         
-        String home_url = AuthFuncs.getRolePropertyValue(user, WebClientRole.HOME_URL);
+        String home_url = DaoFactory.getAuthDao().getRolePropertyValue(user, WebClientRole.HOME_URL);
         if (StringUtils.isBlank(home_url)) {
             home_url = "/";
         }

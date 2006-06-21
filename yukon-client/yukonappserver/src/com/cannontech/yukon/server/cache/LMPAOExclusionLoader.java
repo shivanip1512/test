@@ -8,9 +8,9 @@ package com.cannontech.yukon.server.cache;
 
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.database.db.pao.PAOExclusion;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.LiteLMPAOExclusion;
+import com.cannontech.database.db.pao.PAOExclusion;
 
 /**
  * @author jdayton

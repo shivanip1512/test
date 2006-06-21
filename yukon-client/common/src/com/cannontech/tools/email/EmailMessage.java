@@ -22,7 +22,7 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.database.cache.functions.RoleFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.roles.yukon.SystemRole;
 
 /**
@@ -223,7 +223,7 @@ public class EmailMessage
 	{
 		if( from == null)
 		{
-			from = RoleFuncs.getGlobalPropertyValue( SystemRole.MAIL_FROM_ADDRESS );
+			from = DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.MAIL_FROM_ADDRESS );
 
 			//still dont have a value, nothing will work then!
 			if( from == null )
@@ -242,7 +242,7 @@ public class EmailMessage
 	{
 		if( smtpServer == null)
 		{
-			smtpServer = RoleFuncs.getGlobalPropertyValue( SystemRole.SMTP_HOST );
+			smtpServer = DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.SMTP_HOST );
 
 
 			//still dont have a value, nothing will work then!

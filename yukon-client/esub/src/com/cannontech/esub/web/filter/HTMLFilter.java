@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.LoginController;
-import com.cannontech.database.cache.functions.AuthFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.esub.Drawing;
 import com.cannontech.esub.util.HTMLGenerator;
@@ -77,7 +77,7 @@ public class HTMLFilter implements Filter {
 		 
 			//Check if this user has access to this drawing!	
 			LiteYukonUser user = (LiteYukonUser) hreq.getSession(false).getAttribute(LoginController.YUKON_USER);
-			if( AuthFuncs.checkRole(user, d.getMetaElement().getRoleID()) != null) {
+			if( DaoFactory.getAuthDao().checkRole(user, d.getMetaElement().getRoleID()) != null) {
 				htmlGenerator.generate(hres.getWriter(), d);
 			}
 		}

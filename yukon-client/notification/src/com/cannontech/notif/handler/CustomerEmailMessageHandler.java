@@ -6,11 +6,12 @@ import javax.mail.MessagingException;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
-import com.cannontech.database.cache.functions.CustomerFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.message.notif.NotifCustomerEmailMsg;
 import com.cannontech.message.util.Message;
-import com.cannontech.notif.outputs.*;
+import com.cannontech.notif.outputs.ContactableCustomer;
+import com.cannontech.notif.outputs.StandardEmailHandler;
 import com.cannontech.notif.server.NotifServerConnection;
 import com.cannontech.tools.email.SimpleEmailMessage;
 
@@ -27,7 +28,7 @@ public class CustomerEmailMessageHandler extends MessageHandler {
         }
         final NotifCustomerEmailMsg msg = (NotifCustomerEmailMsg) msg_;
         
-        ContactableCustomer customer = new ContactableCustomer(CustomerFuncs.getLiteCICustomer(msg.getCustomerID()));
+        ContactableCustomer customer = new ContactableCustomer(DaoFactory.getCustomerDao().getLiteCICustomer(msg.getCustomerID()));
         
         try {
             SimpleEmailMessage emailMsg = new SimpleEmailMessage();

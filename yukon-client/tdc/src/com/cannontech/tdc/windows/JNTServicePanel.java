@@ -1,10 +1,14 @@
 package com.cannontech.tdc.windows;
 
+import java.util.StringTokenizer;
+
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.table.*;
-import java.util.*;
 
 /**
  * @author Owner

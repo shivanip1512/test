@@ -246,7 +246,7 @@ else
 					  Control Scenario:
 					  <select name="scen_box" >
 <%
-						LiteYukonPAObject[] scenarios = LMFuncs.getAllLMScenarios();
+						LiteYukonPAObject[] scenarios = DaoFactory.getLmDao().getAllLMScenarios();
 						for( int j = 0; j < scenarios.length; j++ )
 						{
 %>

@@ -999,7 +999,7 @@ function deleteAppliance(form) {
                 </tr>
                 <tr bgcolor="#FFFFFF"> 
                   <td width="75" class="TableCell"><%= hardware.getCategory() %></td>
-                  <td width="75" class="TableCell"><%= YukonListFuncs.getYukonListEntry(hardware.getDeviceType().getEntryID()).getEntryText() %></td>
+                  <td width="75" class="TableCell"><%= DaoFactory.getYukonListDao().getYukonListEntry(hardware.getDeviceType().getEntryID()).getEntryText() %></td>
                   <td width="75" class="TableCell"><%= hardware.getLMHardware().getManufacturerSerialNumber() %></td>
                 </tr>
               </table>

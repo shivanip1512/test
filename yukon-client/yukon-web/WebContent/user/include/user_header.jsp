@@ -1,11 +1,9 @@
 <%@ page language="java" %>
 <%@ page import="java.util.*" %>
+
+<%@ page import="com.cannontech.core.dao.DaoFactory" %>
 <%@ page import="com.cannontech.roles.application.*"%>
 <%@ page import="com.cannontech.roles.cicustomer.*"%>
-<%@ page import="com.cannontech.database.cache.functions.ContactFuncs" %>
-<%@ page import="com.cannontech.database.cache.functions.YukonUserFuncs" %>
-<%@ page import="com.cannontech.database.cache.functions.EnergyCompanyFuncs" %>
-<%@ page import="com.cannontech.database.cache.functions.AuthFuncs" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
 <%@ page import="com.cannontech.database.data.lite.LiteCICustomer" %>
 <%@ page import="com.cannontech.database.data.lite.LiteContact" %>
@@ -23,13 +21,13 @@
 	LiteYukonUser liteYukonUser = (LiteYukonUser) session.getAttribute(ServletUtil.ATT_YUKON_USER);
 	int liteYukonUserID = liteYukonUser.getLiteID();
 
-	LiteContact liteContact = YukonUserFuncs.getLiteContact(liteYukonUserID);
+	LiteContact liteContact = DaoFactory.getYukonUserDao().getLiteContact(liteYukonUserID);
 	LiteCICustomer liteCICustomer = null;
 	int customerID = -1;	//default?
 
 	//Attempt to populate this information.  If setup correctly we should never get null values.
 	if( liteContact != null)
-		liteCICustomer = ContactFuncs.getCICustomer(liteContact.getContactID());
+		liteCICustomer = DaoFactory.getContactDao().getCICustomer(liteContact.getContactID());
 
 	if (liteCICustomer != null)
 		customerID = liteCICustomer.getCustomerID();
@@ -38,11 +36,11 @@
 	int energyCompanyID = -1;	//default?
 	LiteYukonUser ecUser = null;
 	TimeZone tz = TimeZone.getDefault();	//init to the timezone of the running program
-	if( EnergyCompanyFuncs.getEnergyCompany(liteYukonUser) != null)
+	if( DaoFactory.getEnergyCompanyDao().getEnergyCompany(liteYukonUser) != null)
 	{
-		energyCompanyID = EnergyCompanyFuncs.getEnergyCompany(liteYukonUser).getEnergyCompanyID();
-		ecUser = EnergyCompanyFuncs.getEnergyCompanyUser(energyCompanyID);
-		tz = TimeZone.getTimeZone(AuthFuncs.getRolePropertyValue(ecUser, EnergyCompanyRole.DEFAULT_TIME_ZONE));
+		energyCompanyID = DaoFactory.getEnergyCompanyDao().getEnergyCompany(liteYukonUser).getEnergyCompanyID();
+		ecUser = DaoFactory.getEnergyCompanyDao().getEnergyCompanyUser(energyCompanyID);
+		tz = TimeZone.getTimeZone(DaoFactory.getAuthDao().getRolePropertyValue(ecUser, EnergyCompanyRole.DEFAULT_TIME_ZONE));
 	}
 	java.text.SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");	  
     java.text.SimpleDateFormat timePart = new java.text.SimpleDateFormat("HH:mm");

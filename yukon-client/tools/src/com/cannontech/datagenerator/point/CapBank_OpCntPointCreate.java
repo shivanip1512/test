@@ -13,11 +13,11 @@ package com.cannontech.datagenerator.point;
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.AnalogPoint;
-import com.cannontech.database.db.point.PointUnit;
 import com.cannontech.database.db.capcontrol.CapBank;
+import com.cannontech.database.db.point.PointUnit;
 
 public class CapBank_OpCntPointCreate extends PointCreate
 {

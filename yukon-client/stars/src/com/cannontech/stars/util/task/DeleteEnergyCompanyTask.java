@@ -9,12 +9,10 @@ package com.cannontech.stars.util.task;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.StarsDatabaseCache;
-import com.cannontech.database.cache.functions.ContactFuncs;
-import com.cannontech.database.cache.functions.YukonListFuncs;
-import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
@@ -123,7 +121,7 @@ public class DeleteEnergyCompanyTask extends TimeConsumingTask {
 				if (userIDs[i] == energyCompany.getUserID()) continue;
 				
 				com.cannontech.database.data.user.YukonUser.deleteOperatorLogin( new Integer(userIDs[i]) );
-				ServerUtils.handleDBChange( YukonUserFuncs.getLiteYukonUser(userIDs[i]), DBChangeMsg.CHANGE_TYPE_DELETE );
+				ServerUtils.handleDBChange( DaoFactory.getYukonUserDao().getLiteYukonUser(userIDs[i]), DBChangeMsg.CHANGE_TYPE_DELETE );
 			}
 			
 			// Delete all customer accounts
@@ -312,10 +310,10 @@ public class DeleteEnergyCompanyTask extends TimeConsumingTask {
 				
 				Transaction.createTransaction( Transaction.DELETE, list ).execute();
 				
-				YukonListFuncs.getYukonSelectionLists().remove( listID );
+				DaoFactory.getYukonListDao().getYukonSelectionLists().remove( listID );
 				for (int j = 0; j < cList.getYukonListEntries().size(); j++) {
 					YukonListEntry cEntry = (YukonListEntry) cList.getYukonListEntries().get(j);
-					YukonListFuncs.getYukonListEntries().remove( new Integer(cEntry.getEntryID()) );
+					DaoFactory.getYukonListDao().getYukonListEntries().remove( new Integer(cEntry.getEntryID()) );
 				}
 			}
 			
@@ -351,7 +349,7 @@ public class DeleteEnergyCompanyTask extends TimeConsumingTask {
 			StarsDatabaseCache.getInstance().deleteEnergyCompany( energyCompany.getLiteID() );
 			ServerUtils.handleDBChange( energyCompany, DBChangeMsg.CHANGE_TYPE_DELETE );
 			if (energyCompany.getPrimaryContactID() != CtiUtilities.NONE_ZERO_ID) {
-				LiteContact liteContact = ContactFuncs.getContact( energyCompany.getPrimaryContactID() );
+				LiteContact liteContact = DaoFactory.getContactDao().getContact( energyCompany.getPrimaryContactID() );
 				ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_DELETE );
 			}
 			
@@ -363,7 +361,7 @@ public class DeleteEnergyCompanyTask extends TimeConsumingTask {
 				energyCompany.getUserID() != com.cannontech.user.UserUtils.USER_DEFAULT_ID)
 			{
 				com.cannontech.database.data.user.YukonUser.deleteOperatorLogin( new Integer(energyCompany.getUserID()) );
-				ServerUtils.handleDBChange( YukonUserFuncs.getLiteYukonUser(energyCompany.getUserID()), DBChangeMsg.CHANGE_TYPE_DELETE );
+				ServerUtils.handleDBChange( DaoFactory.getYukonUserDao().getLiteYukonUser(energyCompany.getUserID()), DBChangeMsg.CHANGE_TYPE_DELETE );
 			}
 			
 			// Delete the privilege group of the default operator login

@@ -6,7 +6,7 @@ package com.cannontech.tdc.roweditor;
  */
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.cache.functions.PAOFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.message.util.Command;
@@ -304,7 +304,7 @@ public void JButtonCancelAction_actionPerformed(java.util.EventObject newEvent)
  */
 public void JButtonSendAction_actionPerformed(java.util.EventObject newEvent) 
 {
-	LiteYukonPAObject paobject = PAOFuncs.getLiteYukonPAO( getEditorData().getDeviceID() );
+	LiteYukonPAObject paobject = DaoFactory.getPaoDao().getLiteYukonPAO( getEditorData().getDeviceID() );
 	
 	if( paobject != null
 		 && DeviceTypesFuncs.hasDeviceScanRate(paobject.getType()) )

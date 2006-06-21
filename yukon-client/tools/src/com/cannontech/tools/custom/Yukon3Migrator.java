@@ -8,10 +8,9 @@ import java.util.Properties;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.version.VersionTools;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.cache.functions.AuthFuncs;
-import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
@@ -20,12 +19,11 @@ import com.cannontech.database.data.user.YukonGroup;
 import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.db.user.YukonGroupRole;
 import com.cannontech.database.db.user.YukonUserRole;
-import com.cannontech.database.db.version.CTIDatabase;
 import com.cannontech.dbtools.updater.MessageFrameAdaptor;
 import com.cannontech.roles.YukonGroupRoleDefs;
-import com.cannontech.roles.yukon.BillingRole;
 import com.cannontech.roles.application.CalcHistoricalRole;
 import com.cannontech.roles.application.WebGraphRole;
+import com.cannontech.roles.yukon.BillingRole;
 import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.tools.gui.IRunnableDBTool;
 import com.cannontech.user.UserUtils;
@@ -161,7 +159,7 @@ public class Yukon3Migrator extends MessageFrameAdaptor
 			throw new IllegalArgumentException("Found no (null) old properties to exist");
 
 		LiteYukonUser yukUser =
-			YukonUserFuncs.getLiteYukonUser( UserUtils.USER_YUKON_ID );
+			DaoFactory.getYukonUserDao().getLiteYukonUser( UserUtils.USER_YUKON_ID );
 
 		YukonUser yukUserPersist = 
 				(YukonUser)LiteFactory.createDBPersistent( yukUser );
@@ -219,7 +217,7 @@ public class Yukon3Migrator extends MessageFrameAdaptor
 			throw new IllegalArgumentException("Found no (null) old properties to exist");
 
 		LiteYukonGroup yukGrp =
-			AuthFuncs.getGroup( YukonGroupRoleDefs.GRP_YUKON );
+			DaoFactory.getAuthDao().getGroup( YukonGroupRoleDefs.GRP_YUKON );
 			
 		YukonGroup yukGrpPersist = 
 				(YukonGroup)LiteFactory.createDBPersistent( yukGrp );
@@ -231,7 +229,7 @@ public class Yukon3Migrator extends MessageFrameAdaptor
 		
 //		
 //		LiteYukonRoleProperty[] roleProps =
-//				RoleFuncs.getRoleProperties( YukonRoleDefs.SYSTEM_ROLEID );
+//				DaoFactory.getRoleDao().getRoleProperties( YukonRoleDefs.SYSTEM_ROLEID );
 
 		List roleProps =
 			DefaultDatabaseCache.getInstance().getAllYukonRoleProperties();

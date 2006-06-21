@@ -17,9 +17,6 @@ import org.jfree.report.SimplePageDefinition;
 import org.jfree.report.elementfactory.LabelElementFactory;
 import org.jfree.report.elementfactory.StaticShapeElementFactory;
 import org.jfree.report.elementfactory.TextFieldElementFactory;
-import org.jfree.report.function.ExpressionCollection;
-import org.jfree.report.function.FunctionInitializeException;
-import org.jfree.report.function.ItemSumFunction;
 import org.jfree.report.modules.gui.base.PreviewDialog;
 
 import com.cannontech.analysis.ReportFactory;

@@ -9,8 +9,8 @@ import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.stars.ProgramDetail;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.cache.functions.CustomerFuncs;
 import com.cannontech.database.data.lite.LiteContact;
 
 /**
@@ -230,7 +230,7 @@ public class ProgramDetailModel extends ReportModelBase
 					return pd.getProgramName();
 				case CONTACT_COLUMN:
 				{
-					LiteContact contact = CustomerFuncs.getPrimaryContact(pd.getCustID().intValue());
+					LiteContact contact = DaoFactory.getCustomerDao().getPrimaryContact(pd.getCustID().intValue());
 					if (contact == null)
 						return "(n/a)";
 

@@ -6,7 +6,7 @@ import java.util.List;
 import javax.mail.MessagingException;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.database.cache.functions.NotificationGroupFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
 import com.cannontech.message.notif.NotifEmailMsg;
@@ -33,7 +33,7 @@ public class NotifEmailMessageHandler extends MessageHandler {
 			emailMsg.setBody(msg.getBody());
 
 			int notifGroupId = msg.getNotifGroupID();
-			LiteNotificationGroup liteNotifGroup = NotificationGroupFuncs
+			LiteNotificationGroup liteNotifGroup = DaoFactory.getNotificationGroupDao()
 					.getLiteNotificationGroup(notifGroupId);
 			List contactables = NotifMapContactable
 					.getContactablesForGroup(liteNotifGroup);

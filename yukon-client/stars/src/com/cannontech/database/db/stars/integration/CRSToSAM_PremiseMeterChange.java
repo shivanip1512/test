@@ -1,11 +1,10 @@
 package com.cannontech.database.db.stars.integration;
 
+import java.util.ArrayList;
+
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.db.DBPersistent;
-import java.lang.Integer;
-import java.lang.String;
-import java.util.ArrayList;
-import com.cannontech.common.util.CtiUtilities;
 
 public class CRSToSAM_PremiseMeterChange extends DBPersistent {
 

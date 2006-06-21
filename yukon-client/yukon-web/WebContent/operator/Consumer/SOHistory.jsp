@@ -337,7 +337,7 @@ function sendWorkOrder() {
 						      <table width="95%" border="1" cellspacing="0" cellpadding="1" align="left" valign="top">
 	                            <% for (int i = 0; i < liteOrder.getEventWorkOrders().size(); i++) { %>
 	                            <tr> 
-	                              <td width="40%" class="TableCell">&nbsp;<%=YukonListFuncs.getYukonListEntry(liteOrder.getEventWorkOrders().get(i).getEventBase().getActionID()).getEntryText()%>&nbsp;</td>
+	                              <td width="40%" class="TableCell">&nbsp;<%=DaoFactory.getYukonListDao().getYukonListEntry(liteOrder.getEventWorkOrders().get(i).getEventBase().getActionID()).getEntryText()%>&nbsp;</td>
 	                              <td width="60%" class="TableCell">&nbsp;<%= ServletUtils.formatDate(liteOrder.getEventWorkOrders().get(i).getEventBase().getEventTimestamp(), dateTimeExtFormat ) %></td>
 	                            </tr>
 	                            <%}%>

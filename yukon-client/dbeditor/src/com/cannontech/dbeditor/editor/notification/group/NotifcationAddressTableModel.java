@@ -8,7 +8,7 @@ import javax.swing.table.AbstractTableModel;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.gui.table.ICTITableRenderer;
-import com.cannontech.database.cache.functions.YukonListFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteContactNotification;
 
 /**
@@ -134,7 +134,7 @@ public class NotifcationAddressTableModel extends AbstractTableModel implements 
 	
 		 	case COL_TYPE:
 		 		return 
-		 			YukonListFuncs.getYukonListEntry(
+		 			DaoFactory.getYukonListDao().getYukonListEntry(
 		 				lcn.getNotificationCategoryID() );
 
 			default:
@@ -152,7 +152,7 @@ public class NotifcationAddressTableModel extends AbstractTableModel implements 
 	{
 		LiteContactNotification lcn = getRowAt(row);
 		YukonListEntry entry =
-			YukonListFuncs.getYukonListEntry( lcn.getNotificationCategoryID() );
+			DaoFactory.getYukonListDao().getYukonListEntry( lcn.getNotificationCategoryID() );
 		
 		switch( entry.getYukonDefID() )
 		{

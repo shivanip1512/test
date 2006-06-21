@@ -70,7 +70,7 @@
 	if (optOutNotif == null)
 		optOutNotif = liteEC.getEnergyCompanySetting(EnergyCompanyRole.OPTOUT_NOTIFICATION_RECIPIENTS).trim();
 	
-	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 	ArrayList yukonGroups = null;
 	synchronized (cache) {
 		List groups = cache.getAllYukonGroups();

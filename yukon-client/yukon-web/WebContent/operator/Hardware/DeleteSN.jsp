@@ -80,7 +80,7 @@ function confirmSubmit(form) {
                   <tr> 
                     <td> 
                       <table width="100%" border="0" class="TableCell">
-<% if (liteEC.getChildren().size() > 0 && AuthFuncs.checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_MANAGE_MEMBERS)) { %>
+<% if (liteEC.getChildren().size() > 0 && DaoFactory.getAuthDao().checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_MANAGE_MEMBERS)) { %>
                         <tr>
                           <td width="25%" align="right">Member:</td>
                           <td width="75%">

@@ -1,8 +1,7 @@
 package com.cannontech.billing.mainprograms;
 
-import java.util.Calendar;
-
-import com.cannontech.database.db.device.DeviceMeterGroup;import com.cannontech.util.ServletUtil;
+import com.cannontech.database.db.device.DeviceMeterGroup;
+import com.cannontech.util.ServletUtil;
 ;
 
 /**

@@ -12,9 +12,8 @@ import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.capcontrol.CapControlStatusData;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.cache.functions.PAOFuncs;
-import com.cannontech.database.cache.functions.StateFuncs;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.db.device.Device;
 import com.cannontech.database.db.state.StateGroupUtils;
@@ -66,20 +65,20 @@ public class CapControlEventLogModel extends ReportModelBase
 		    CapControlStatusData data2 = (CapControlStatusData)o2;
 	        
 		    //Order by Sub Bus first
-		    String thisValStr = PAOFuncs.getYukonPAOName(data1.getSubBusPaoID().intValue());
-		    String anotherValStr = PAOFuncs.getYukonPAOName(data2.getSubBusPaoID().intValue());
+		    String thisValStr = DaoFactory.getPaoDao().getYukonPAOName(data1.getSubBusPaoID().intValue());
+		    String anotherValStr = DaoFactory.getPaoDao().getYukonPAOName(data2.getSubBusPaoID().intValue());
 			
 			if( thisValStr.equalsIgnoreCase(anotherValStr))
 			{
 //				Order by Feeder
-				thisValStr = PAOFuncs.getYukonPAOName(data1.getFeederPaoID().intValue());
-				anotherValStr = PAOFuncs.getYukonPAOName(data2.getFeederPaoID().intValue());
+				thisValStr = DaoFactory.getPaoDao().getYukonPAOName(data1.getFeederPaoID().intValue());
+				anotherValStr = DaoFactory.getPaoDao().getYukonPAOName(data2.getFeederPaoID().intValue());
 
 				if( thisValStr.equalsIgnoreCase(anotherValStr))
 				{
 //					Order by CapBank
-					thisValStr = PAOFuncs.getYukonPAOName(data1.getCapBankPaoID().intValue());
-					anotherValStr = PAOFuncs.getYukonPAOName(data2.getCapBankPaoID().intValue());
+					thisValStr = DaoFactory.getPaoDao().getYukonPAOName(data1.getCapBankPaoID().intValue());
+					anotherValStr = DaoFactory.getPaoDao().getYukonPAOName(data2.getCapBankPaoID().intValue());
 				}
 			}
 			return (thisValStr.compareToIgnoreCase(anotherValStr));
@@ -295,22 +294,22 @@ public class CapControlEventLogModel extends ReportModelBase
 				case SUB_BUS_NAME_COLUMN:
 					if( ccStatData.getSubBusPaoID().intValue() == Device.SYSTEM_DEVICE_ID)
 						return null;
-				    return PAOFuncs.getYukonPAOName(ccStatData.getSubBusPaoID().intValue());
+				    return DaoFactory.getPaoDao().getYukonPAOName(ccStatData.getSubBusPaoID().intValue());
 
 				case FEEDER_NAME_COLUMN:
 					if( ccStatData.getFeederPaoID().intValue() == Device.SYSTEM_DEVICE_ID)
 						return null;
-				    return PAOFuncs.getYukonPAOName(ccStatData.getFeederPaoID().intValue());
+				    return DaoFactory.getPaoDao().getYukonPAOName(ccStatData.getFeederPaoID().intValue());
 				
 				case CAP_BANK_NAME_COLUMN:
 					if( ccStatData.getCapBankPaoID().intValue() == Device.SYSTEM_DEVICE_ID)
 						return null;
-					return PAOFuncs.getYukonPAOName(ccStatData.getCapBankPaoID().intValue());
+					return DaoFactory.getPaoDao().getYukonPAOName(ccStatData.getCapBankPaoID().intValue());
 					
 				case STATUS_VALUE_COLUMN:
 					if( ccStatData.getEventType().intValue() == 4)//4 is for OpCount
 						return new String("OpCount: " + ccStatData.getControlStatus().toString());
-					return StateFuncs.getLiteState(StateGroupUtils.STATEGROUPID_CAPBANK, ccStatData.getControlStatus().intValue());
+					return DaoFactory.getStateDao().getLiteState(StateGroupUtils.STATEGROUPID_CAPBANK, ccStatData.getControlStatus().intValue());
 					
 				case EVENT_TEXT_COLUMN:
 					return ccStatData.getEventText();
@@ -469,7 +468,7 @@ public class CapControlEventLogModel extends ReportModelBase
 		html += "        <tr>" + LINE_SEPARATOR;
 		html += "          <td class='TitleHeader'>&nbsp;Ending Bank Status</td>" +LINE_SEPARATOR;
 		html += "        </tr>" + LINE_SEPARATOR;
-		LiteState [] liteStates = StateFuncs.getLiteStates( StateGroupUtils.STATEGROUPID_CAPBANK );
+		LiteState [] liteStates = DaoFactory.getStateDao().getLiteStates( StateGroupUtils.STATEGROUPID_CAPBANK );
 		for (int i = 0; i < liteStates.length; i++)
 		{
 			html += "        <tr>" + LINE_SEPARATOR;

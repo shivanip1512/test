@@ -1,14 +1,13 @@
 package com.cannontech.dbeditor.editor.notification.group;
 
-import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.cache.functions.ContactFuncs;
-import com.cannontech.database.data.lite.LiteContactNotification;
-import com.cannontech.database.db.notification.NotificationDestination;
-import com.cannontech.database.db.point.PointAlarming;
-import com.cannontech.database.data.lite.LiteComparators;
-import com.cannontech.database.data.notification.NotifDestinationMap;
-
 import java.util.Collections;
+
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.data.lite.LiteComparators;
+import com.cannontech.database.data.lite.LiteContactNotification;
+import com.cannontech.database.data.notification.NotifDestinationMap;
+import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * Insert the type's description here.
@@ -306,11 +305,11 @@ public void setValue(Object val)
 	java.util.Vector assignedLocations = new java.util.Vector();
 	java.util.Vector availableLocations = new java.util.Vector();
 	
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized(cache)
 	{
 		//locations
-		java.util.List cntctNotifs = ContactFuncs.getAllContactNotifications();
+		java.util.List cntctNotifs = DaoFactory.getContactDao().getAllContactNotifications();
 		Collections.sort( cntctNotifs, LiteComparators.liteStringComparator );
 
 		for(int i = 0; i < notifDestMap.length; i++)

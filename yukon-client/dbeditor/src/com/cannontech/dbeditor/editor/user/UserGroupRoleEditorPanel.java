@@ -3,9 +3,7 @@ package com.cannontech.dbeditor.editor.user;
  * This type was created in VisualAge.
  */
 
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -14,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 
-import javax.swing.JCheckBox;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
@@ -36,6 +33,7 @@ import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.user.YukonGroup;
 import com.cannontech.user.UserUtils;
+import com.cannontech.yukon.IDatabaseCache;
 
 public class UserGroupRoleEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements ActionListener, PopupMenuListener
 {
@@ -605,7 +603,7 @@ public class UserGroupRoleEditorPanel extends com.cannontech.common.gui.util.Dat
 
 	
 		// Get the group role data from the cache	
-		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+		IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 		synchronized( cache )	
 		{
 			java.util.List yukonGroups = cache.getAllYukonGroups();
@@ -647,7 +645,7 @@ public class UserGroupRoleEditorPanel extends com.cannontech.common.gui.util.Dat
 		//stores all groups we already looked at
 		ArrayList allOldGroups = new ArrayList(128);
 		
-		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+		IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 		synchronized( cache )
 		{
 		

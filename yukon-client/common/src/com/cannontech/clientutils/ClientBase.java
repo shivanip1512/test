@@ -7,7 +7,7 @@ package com.cannontech.clientutils;
  * @Version: <version>
  */
 
-import com.cannontech.database.cache.functions.RoleFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.PointData;
@@ -101,10 +101,10 @@ private void getExternalResources()
 {
 	try
 	{
-      HOST = RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_MACHINE );
+      HOST = DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.DISPATCH_MACHINE );
 
       PORT = Integer.parseInt(
-					RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_PORT ) ); 
+					DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.DISPATCH_PORT ) ); 
    }
    catch( Exception e)
    {

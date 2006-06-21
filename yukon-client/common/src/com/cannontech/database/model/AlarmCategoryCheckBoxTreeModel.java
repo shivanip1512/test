@@ -3,12 +3,18 @@ package com.cannontech.database.model;
 /**
  * This type was created in VisualAge.
  */
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Vector;
 
 import com.cannontech.common.gui.tree.CheckNode;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.data.lite.*;
+import com.cannontech.database.data.lite.LiteAlarmCategory;
+import com.cannontech.database.data.lite.LiteComparators;
+import com.cannontech.yukon.IDatabaseCache;
 
 public class AlarmCategoryCheckBoxTreeModel extends DBTreeModel implements Checkable
 {
@@ -76,7 +82,7 @@ public class AlarmCategoryCheckBoxTreeModel extends DBTreeModel implements Check
         Override this method when using a differnt List
     */
        
-    protected synchronized List getCacheList(DefaultDatabaseCache cache ) 
+    protected synchronized List getCacheList(IDatabaseCache cache ) 
     {
         return cache.getAllAlarmCategories();
     }
@@ -88,7 +94,7 @@ public class AlarmCategoryCheckBoxTreeModel extends DBTreeModel implements Check
     // Override me if you want a sub class to do something different.
     protected synchronized void runUpdate() 
     {
-        DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+        IDatabaseCache cache = DefaultDatabaseCache.getInstance();
         
         synchronized (cache)
         {

@@ -40,8 +40,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
-import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointTypes;
@@ -125,7 +125,7 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 //		  	CSVQuoter quoter = new CSVQuoter(",");
 
 
-			LitePoint [] litePoints = PAOFuncs.getLitePointsForPAObject(localBean.getDeviceID());
+			LitePoint [] litePoints = DaoFactory.getPaoDao().getLitePointsForPAObject(localBean.getDeviceID());
 			if( litePoints != null)
 			{
 				for (int i = 0; i < litePoints.length; i++)

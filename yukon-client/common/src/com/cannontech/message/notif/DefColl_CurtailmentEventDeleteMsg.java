@@ -7,7 +7,6 @@ import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.VirtualInputStream;
 import com.roguewave.vsj.VirtualOutputStream;
-import com.roguewave.vsj.streamer.SimpleMappings;
 
 public class DefColl_CurtailmentEventDeleteMsg extends DefineCollectableMessage {
     // RogueWave classId

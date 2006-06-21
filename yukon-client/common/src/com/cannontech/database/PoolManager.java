@@ -10,14 +10,12 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.MissingResourceException;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
 import com.cannontech.clientutils.CTILogManager;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.util.MBeanUtil;
 
 public class PoolManager
 {

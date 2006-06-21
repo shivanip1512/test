@@ -6,8 +6,8 @@ import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CommandExecutionException;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
-import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.lite.stars.LiteCustomerResidence;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
@@ -56,67 +56,67 @@ public class UpdateResidenceInfoAction implements ActionBase {
         	
         	updateResInfo.setResidenceType(
         		(ResidenceType) StarsFactory.newStarsCustListEntry(
-					YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("ResidenceType")) ),
+					DaoFactory.getYukonListDao().getYukonListEntry( Integer.parseInt(req.getParameter("ResidenceType")) ),
         			ResidenceType.class
         		)
         	);
         	updateResInfo.setConstructionMaterial(
         		(ConstructionMaterial) StarsFactory.newStarsCustListEntry(
-					YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("ConstMaterial")) ),
+					DaoFactory.getYukonListDao().getYukonListEntry( Integer.parseInt(req.getParameter("ConstMaterial")) ),
         			ConstructionMaterial.class
         		)
         	);
         	updateResInfo.setDecadeBuilt(
         		(DecadeBuilt) StarsFactory.newStarsCustListEntry(
-					YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("DecadeBuilt")) ),
+					DaoFactory.getYukonListDao().getYukonListEntry( Integer.parseInt(req.getParameter("DecadeBuilt")) ),
         			DecadeBuilt.class
         		)
         	);
         	updateResInfo.setSquareFeet(
         		(SquareFeet) StarsFactory.newStarsCustListEntry(
-					YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("SquareFeet")) ),
+					DaoFactory.getYukonListDao().getYukonListEntry( Integer.parseInt(req.getParameter("SquareFeet")) ),
         			SquareFeet.class
         		)
         	);
         	updateResInfo.setInsulationDepth(
         		(InsulationDepth) StarsFactory.newStarsCustListEntry(
-					YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("InsulationDepth")) ),
+					DaoFactory.getYukonListDao().getYukonListEntry( Integer.parseInt(req.getParameter("InsulationDepth")) ),
         			InsulationDepth.class
         		)
         	);
         	updateResInfo.setGeneralCondition(
         		(GeneralCondition) StarsFactory.newStarsCustListEntry(
-					YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("GeneralCondition")) ),
+					DaoFactory.getYukonListDao().getYukonListEntry( Integer.parseInt(req.getParameter("GeneralCondition")) ),
         			GeneralCondition.class
         		)
         	);
         	updateResInfo.setMainCoolingSystem(
         		(MainCoolingSystem) StarsFactory.newStarsCustListEntry(
-					YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("CoolingSystem")) ),
+					DaoFactory.getYukonListDao().getYukonListEntry( Integer.parseInt(req.getParameter("CoolingSystem")) ),
         			MainCoolingSystem.class
         		)
         	);
         	updateResInfo.setMainHeatingSystem(
         		(MainHeatingSystem) StarsFactory.newStarsCustListEntry(
-					YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("HeatingSystem")) ),
+					DaoFactory.getYukonListDao().getYukonListEntry( Integer.parseInt(req.getParameter("HeatingSystem")) ),
         			MainHeatingSystem.class
         		)
         	);
         	updateResInfo.setNumberOfOccupants(
         		(NumberOfOccupants) StarsFactory.newStarsCustListEntry(
-					YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("OccupantNum")) ),
+					DaoFactory.getYukonListDao().getYukonListEntry( Integer.parseInt(req.getParameter("OccupantNum")) ),
         			NumberOfOccupants.class
         		)
         	);
         	updateResInfo.setOwnershipType(
         		(OwnershipType) StarsFactory.newStarsCustListEntry(
-					YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("OwnershipType")) ),
+					DaoFactory.getYukonListDao().getYukonListEntry( Integer.parseInt(req.getParameter("OwnershipType")) ),
         			OwnershipType.class
         		)
         	);
         	updateResInfo.setMainFuelType(
         		(MainFuelType) StarsFactory.newStarsCustListEntry(
-					YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("FuelType")) ),
+					DaoFactory.getYukonListDao().getYukonListEntry( Integer.parseInt(req.getParameter("FuelType")) ),
         			MainFuelType.class
         		)
         	);

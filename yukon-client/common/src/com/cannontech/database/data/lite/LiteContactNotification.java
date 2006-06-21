@@ -1,10 +1,6 @@
 package com.cannontech.database.data.lite;
 
-import java.util.Vector;
-
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.contact.ContactNotification;
-import com.cannontech.user.UserUtils;
 
 /*
  */

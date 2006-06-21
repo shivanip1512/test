@@ -3,6 +3,7 @@ import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.image.ImageChooser;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonImage;
+import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * This type was created in VisualAge.
@@ -801,7 +802,7 @@ public void jListCategories_ValueChanged(javax.swing.event.ListSelectionEvent li
       //just in case, remove all the JLabels
       getJPanelImages().removeAll();
 
-      com.cannontech.database.cache.DefaultDatabaseCache cache = 
+      IDatabaseCache cache = 
          com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
        
       synchronized( cache )
@@ -933,7 +934,7 @@ protected void setUpImages( LiteYukonImage[] images )
 
    if( images == null )
    {
-      com.cannontech.database.cache.DefaultDatabaseCache cache = 
+      IDatabaseCache cache = 
          com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
        
       synchronized( cache )

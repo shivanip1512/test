@@ -1,4 +1,7 @@
 package com.cannontech.dbtools.diff;
+
+import com.cannontech.dbtools.tools.ModifyConstraints;
+
 /**
  * Given two databases, CopyEntireSchema will log in to them and copy
  * everything from one to the other.  Note that database constraints will

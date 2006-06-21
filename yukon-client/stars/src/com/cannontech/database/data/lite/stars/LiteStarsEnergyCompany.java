@@ -21,17 +21,13 @@ import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.StarsDatabaseCache;
-import com.cannontech.database.cache.functions.AuthFuncs;
-import com.cannontech.database.cache.functions.ContactFuncs;
-import com.cannontech.database.cache.functions.PAOFuncs;
-import com.cannontech.database.cache.functions.YukonListFuncs;
-import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteCICustomer;
@@ -87,6 +83,7 @@ import com.cannontech.stars.xml.serialize.StarsSubstation;
 import com.cannontech.stars.xml.serialize.StarsSubstations;
 import com.cannontech.stars.xml.serialize.StarsThermostatProgram;
 import com.cannontech.stars.xml.serialize.StarsThermostatSettings;
+import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * @author yao
@@ -660,7 +657,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
     }
     
     public String getEnergyCompanySetting(int rolePropertyID) {
-        String value = AuthFuncs.getRolePropertyValue( YukonUserFuncs.getLiteYukonUser(getUserID()), rolePropertyID );
+        String value = DaoFactory.getAuthDao().getRolePropertyValue( DaoFactory.getYukonUserDao().getLiteYukonUser(getUserID()), rolePropertyID );
         if (value != null && value.equalsIgnoreCase(CtiUtilities.STRING_NONE))
             value = "";
         return value;
@@ -673,7 +670,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
         for (int i = 0; i < custGroupIDs.length; i++) {
             String groupID = custGroupIDs[i].trim();
             if (groupID.equals("")) continue;
-            LiteYukonGroup liteGroup = AuthFuncs.getGroup( Integer.parseInt(groupID) );
+            LiteYukonGroup liteGroup = DaoFactory.getAuthDao().getGroup( Integer.parseInt(groupID) );
             if (liteGroup != null) custGroupList.add( liteGroup );
         }
         
@@ -689,7 +686,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
         for (int i = 0; i < operGroupIDs.length; i++) {
             String groupID = operGroupIDs[i].trim();
             if (groupID.equals("")) continue;
-            LiteYukonGroup liteGroup = AuthFuncs.getGroup( Integer.parseInt(groupID) );
+            LiteYukonGroup liteGroup = DaoFactory.getAuthDao().getGroup( Integer.parseInt(groupID) );
             if (liteGroup != null) operGroupList.add( liteGroup );
         }
         
@@ -700,14 +697,14 @@ public class LiteStarsEnergyCompany extends LiteBase {
     
     public LiteYukonGroup getOperatorAdminGroup() {
         if (operDftGroupID < com.cannontech.database.db.user.YukonGroup.EDITABLE_MIN_GROUP_ID) {
-            LiteYukonUser dftUser = YukonUserFuncs.getLiteYukonUser( getUserID() );
-            DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+            LiteYukonUser dftUser = DaoFactory.getYukonUserDao().getLiteYukonUser( getUserID() );
+            IDatabaseCache cache = DefaultDatabaseCache.getInstance();
             
             synchronized (cache) {
                 java.util.List groups = (java.util.List) cache.getYukonUserGroupMap().get( dftUser );
                 for (int i = 0; i < groups.size(); i++) {
                     LiteYukonGroup group = (LiteYukonGroup) groups.get(i);
-                    if (AuthFuncs.getRolePropValueGroup(group, AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY, null) != null) {
+                    if (DaoFactory.getAuthDao().getRolePropValueGroup(group, AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY, null) != null) {
                         operDftGroupID = group.getGroupID();
                         return group;
                     }
@@ -715,7 +712,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
             }
         }
         
-        return AuthFuncs.getGroup( operDftGroupID );
+        return DaoFactory.getAuthDao().getGroup( operDftGroupID );
     }
     
     /**
@@ -789,7 +786,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
             ECToGenericMapping[] items = ECToGenericMapping.getAllMappingItems( getEnergyCompanyID(), YukonSelectionList.TABLE_NAME );
             if (items != null) {
                 for (int i = 0; i < items.length; i++)
-                    selectionLists.add( YukonListFuncs.getYukonSelectionList(items[i].getItemID().intValue()) );
+                    selectionLists.add( DaoFactory.getYukonListDao().getYukonSelectionList(items[i].getItemID().intValue()) );
             }
         }
         
@@ -847,7 +844,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
             YukonSelectionList cList = new YukonSelectionList();
             StarsLiteFactory.setConstantYukonSelectionList(cList, listDB);
             
-            YukonListFuncs.getYukonSelectionLists().put( listDB.getListID(), cList );
+            DaoFactory.getYukonListDao().getYukonSelectionLists().put( listDB.getListID(), cList );
             getAllSelectionLists().add( cList );
             
             if (populateDefault) {
@@ -867,7 +864,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
                     YukonListEntry cEntry = new YukonListEntry();
                     StarsLiteFactory.setConstantYukonListEntry( cEntry, entry );
                     
-                    YukonListFuncs.getYukonListEntries().put( entry.getEntryID(), cEntry );
+                    DaoFactory.getYukonListDao().getYukonListEntries().put( entry.getEntryID(), cEntry );
                     cList.getYukonListEntries().add( cEntry );
                 }
             }
@@ -884,7 +881,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
     public void deleteYukonSelectionList(YukonSelectionList list) {
         getAllSelectionLists().remove( list );
         
-        java.util.Properties entries = YukonListFuncs.getYukonListEntries();
+        java.util.Properties entries = DaoFactory.getYukonListDao().getYukonListEntries();
         synchronized (entries) {
             for (int i = 0; i < list.getYukonListEntries().size(); i++) {
                 YukonListEntry entry = (YukonListEntry) list.getYukonListEntries().get(i);
@@ -892,7 +889,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
             }
         }
         
-        YukonListFuncs.getYukonSelectionLists().remove( new Integer(list.getListID()) );
+        DaoFactory.getYukonListDao().getYukonSelectionLists().remove( new Integer(list.getListID()) );
     }
     
     public YukonListEntry getYukonListEntry(String listName, int yukonDefID) {
@@ -907,7 +904,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
     }
     
     public YukonListEntry getYukonListEntry(int yukonDefID) {
-        String listName = YukonListFuncs.getYukonListName( yukonDefID );
+        String listName = DaoFactory.getYukonListDao().getYukonListName( yukonDefID );
         if (listName == null) return null;
         
         return getYukonListEntry(listName, yukonDefID);
@@ -1040,7 +1037,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
             Iterator it = routeIDs.iterator();
             while (it.hasNext()) {
                 Integer routeID = (Integer) it.next();
-                LiteYukonPAObject liteRoute = PAOFuncs.getLiteYukonPAO( routeID.intValue() );
+                LiteYukonPAObject liteRoute = DaoFactory.getPaoDao().getLiteYukonPAO( routeID.intValue() );
                 
                 // Check to see if the route is already assigned to the parent company, if so, remove it from the member
                 boolean foundInParent = false;
@@ -1086,7 +1083,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
      */
     public LiteYukonPAObject[] getAllRoutes() {
         if (ECUtils.isSingleEnergyCompany(this)) {
-            return PAOFuncs.getAllLiteRoutes();
+            return DaoFactory.getPaoDao().getAllLiteRoutes();
         }
         else {
             ArrayList routeList = new ArrayList();
@@ -1166,7 +1163,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
                     
                     LiteLMThermostatSchedule liteSchedule = StarsLiteFactory.createLiteLMThermostatSchedule( schedule );
                     
-                    int defID = YukonListFuncs.getYukonListEntry( liteSchedule.getThermostatTypeID() ).getYukonDefID();
+                    int defID = DaoFactory.getYukonListDao().getYukonListEntry( liteSchedule.getThermostatTypeID() ).getYukonDefID();
                     dftThermSchedules.put( new Integer(defID), liteSchedule );
                 }
             }
@@ -1691,7 +1688,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
             if (!(liteInv instanceof LiteStarsLMHardware)) continue;
             
             LiteStarsLMHardware liteHw = (LiteStarsLMHardware) liteInv;
-            if (YukonListFuncs.getYukonListEntry( liteHw.getLmHardwareTypeID() ).getEntryID() == devTypeEntryID
+            if (DaoFactory.getYukonListDao().getYukonListEntry( liteHw.getLmHardwareTypeID() ).getEntryID() == devTypeEntryID
                 && liteHw.getManufacturerSerialNumber().equalsIgnoreCase( serialNo ))
             {
                 return new Pair(liteHw, this);
@@ -1705,7 +1702,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
                 if (hardwares == null) return null;
                 
                 for (int i = 0; i < hardwares.length; i++) {
-                    if (YukonListFuncs.getYukonListEntry( hardwares[i].getLMHardwareTypeID().intValue() ).getEntryID() == devTypeEntryID) {
+                    if (DaoFactory.getYukonListDao().getYukonListEntry( hardwares[i].getLMHardwareTypeID().intValue() ).getEntryID() == devTypeEntryID) {
                         com.cannontech.database.data.stars.hardware.LMHardwareBase hw =
                                 new com.cannontech.database.data.stars.hardware.LMHardwareBase();
                         hw.setInventoryID( hardwares[i].getInventoryID() );
@@ -1759,7 +1756,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
     public LiteStarsLMHardware searchForLMHardware(int deviceType, String serialNo)
         throws ObjectInOtherEnergyCompanyException
     {
-        int devTypeEntryID = YukonListFuncs.getYukonListEntry( deviceType ).getEntryID();
+        int devTypeEntryID = DaoFactory.getYukonListDao().getYukonListEntry( deviceType ).getEntryID();
         Pair p = searchForLMHardware( devTypeEntryID, serialNo, this );
         if (p != null) return (LiteStarsLMHardware)p.getFirst();
         return null;
@@ -1775,7 +1772,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
         for (int i = 0; i < inventory.size(); i++) {
             LiteInventoryBase liteInv = (LiteInventoryBase) inventory.get(i);
             if (liteInv.getDeviceID() > 0 && liteInv.getCategoryID() == categoryID
-                && PAOFuncs.getYukonPAOName(liteInv.getDeviceID()).toUpperCase().startsWith( deviceName.toUpperCase() ))
+                && DaoFactory.getPaoDao().getYukonPAOName(liteInv.getDeviceID()).toUpperCase().startsWith( deviceName.toUpperCase() ))
             {
                 return new Pair(liteInv, this);
             }
@@ -1832,7 +1829,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
         Pair p = searchForDevice( categoryID, deviceName, this );
         if (p != null) return (LiteInventoryBase)p.getFirst();
         
-        DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+        IDatabaseCache cache = DefaultDatabaseCache.getInstance();
         
         if (InventoryUtils.isMCT( categoryID )) {
             synchronized (cache) {
@@ -2001,7 +1998,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
             for (int i = 0; i < inventory.size(); i++) {
                 LiteInventoryBase liteInv = (LiteInventoryBase) inventory.get(i);
                 if (liteInv.getDeviceID() > 0
-                    && PAOFuncs.getYukonPAOName(liteInv.getDeviceID()).toUpperCase().startsWith( deviceName.toUpperCase() ))
+                    && DaoFactory.getPaoDao().getYukonPAOName(liteInv.getDeviceID()).toUpperCase().startsWith( deviceName.toUpperCase() ))
                 {
                     if (searchMembers)
                         devList.add( new Pair(liteInv, this) );
@@ -2181,7 +2178,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
         liteAcctInfo.setAccountSite( (LiteAccountSite) StarsLiteFactory.createLite(site.getAccountSite()) );
         liteAcctInfo.setSiteInformation( (LiteSiteInformation) StarsLiteFactory.createLite(site.getSiteInformation().getSiteInformation()) );
         
-        DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+        IDatabaseCache cache = DefaultDatabaseCache.getInstance();
         synchronized (cache) {
             liteAcctInfo.setCustomer( (LiteCustomer)cache.getACustomerByCustomerID(account.getCustomerAccount().getCustomerID().intValue()) );
         }
@@ -2445,9 +2442,9 @@ public class LiteStarsEnergyCompany extends LiteBase {
     public LiteStarsCustAccountInformation searchAccountByAccountNo(String accountNo) 
     {
         ArrayList custAcctInfoList = getAllCustAccountInformation();
-        String comparableDigitProperty = AuthFuncs.getRolePropertyValue(YukonUserFuncs.getLiteYukonUser(getUserID()), ConsumerInfoRole.ACCOUNT_NUMBER_LENGTH);
+        String comparableDigitProperty = DaoFactory.getAuthDao().getRolePropertyValue(DaoFactory.getYukonUserDao().getLiteYukonUser(getUserID()), ConsumerInfoRole.ACCOUNT_NUMBER_LENGTH);
         int comparableDigitEndIndex = 0;
-        String rotationDigitProperty = AuthFuncs.getRolePropertyValue(YukonUserFuncs.getLiteYukonUser(getUserID()), ConsumerInfoRole.ROTATION_DIGIT_LENGTH);
+        String rotationDigitProperty = DaoFactory.getAuthDao().getRolePropertyValue(DaoFactory.getYukonUserDao().getLiteYukonUser(getUserID()), ConsumerInfoRole.ROTATION_DIGIT_LENGTH);
         int accountNumSansRotationDigitsIndex = accountNo.length();
         if(rotationDigitProperty != null && rotationDigitProperty.compareTo(CtiUtilities.STRING_NONE) != 0 && Integer.parseInt(rotationDigitProperty) > 0
                 && Integer.parseInt(rotationDigitProperty) < accountNo.length())
@@ -2854,7 +2851,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
      * otherwise it returns a list of LiteStarsCustAccountInformation.
      */
     public ArrayList searchAccountByPhoneNo(String phoneNo, boolean searchMembers) {
-        LiteContact[] contacts = ContactFuncs.getContactsByPhoneNo(
+        LiteContact[] contacts = DaoFactory.getContactDao().getContactsByPhoneNo(
                 phoneNo, new int[] {YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE}, true );
         
 		int[] contactIDs = new int[ contacts.length ];
@@ -2872,7 +2869,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
     public ArrayList searchAccountByLastName(String lastName, boolean searchMembers, boolean partialMatch) {
         ArrayList accountList = new ArrayList();
         if (isAccountsLoaded()) {
-            int[] contactIDs = ContactFuncs.retrieveContactIDsByLastName( lastName, partialMatch);
+            int[] contactIDs = DaoFactory.getContactDao().retrieveContactIDsByLastName( lastName, partialMatch);
             return searchAccountByContactIDs( contactIDs, searchMembers );
             }
         else {
@@ -3482,7 +3479,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
                     liteStarsEC.addAddress(address);
                     
                     if( count < 250)//preload only the first SearchResults.jsp page contacts
-                        ContactFuncs.getContact(customer.getPrimaryContactID());
+                        DaoFactory.getContactDao().getContact(customer.getPrimaryContactID());
                 }                
                 if (searchMembers)
                     accountList.add(new Pair(liteAcctInfo, liteStarsEC) );
@@ -3617,7 +3614,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
                     liteStarsEC.addAddress(liteAddress);
                     
                     if( count < 250)//preload only the first SearchResults.jsp page contacts
-                        ContactFuncs.getContact(customer.getPrimaryContactID());
+                        DaoFactory.getContactDao().getContact(customer.getPrimaryContactID());
                 }                
                 if (searchMembers)
                     accountList.add(new Pair(liteAcctInfo, liteStarsEC) );
@@ -3756,7 +3753,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
                     liteStarsEC.addAddress(address);
                     
                     if( count < 250)//preload only the first SearchResults.jsp page contacts
-                        ContactFuncs.getContact(customer.getPrimaryContactID());
+                        DaoFactory.getContactDao().getContact(customer.getPrimaryContactID());
                 }                
                 if (searchMembers)
                     accountList.add(new Pair(liteAcctInfo, liteStarsEC) );

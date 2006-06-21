@@ -4,22 +4,22 @@ package com.cannontech.dbeditor.wizard.device.lmcontrolarea;
  * This type was created in VisualAge.
  */
 import java.awt.Dimension;
-import java.util.List;
-import java.util.Vector;
-import com.cannontech.common.gui.util.OkCancelDialog;
-import com.cannontech.common.util.CtiUtilities;
-import javax.swing.AbstractAction;
-import com.cannontech.common.gui.util.TreeFindPanel;
-import java.awt.event.KeyEvent;
-import javax.swing.KeyStroke;
 import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
+import java.util.Vector;
 
-import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.cache.functions.PAOFuncs;
+import javax.swing.AbstractAction;
+import javax.swing.KeyStroke;
+
+import com.cannontech.common.gui.util.OkCancelDialog;
+import com.cannontech.common.gui.util.TreeFindPanel;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.device.lm.LMControlAreaProgram;
 import com.cannontech.database.db.device.lm.LMProgram;
+import com.cannontech.yukon.IDatabaseCache;
 
 public class LMControlAreaProgramPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener {
 	private javax.swing.JButton ivjJButtonAdd = null;
@@ -208,7 +208,7 @@ private javax.swing.JComboBox getJComboBoxLMProgram() {
 			ivjJComboBoxLMProgram.setToolTipText("The program you want to add to this control area");
 			// user code begin {1}
 
-			com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+			IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 			synchronized( cache )
 			{
 				java.util.List l = cache.getAllLMPrograms();
@@ -1034,7 +1034,7 @@ public void setValue(Object o)
 		com.cannontech.database.data.lite.LiteYukonPAObject liteDevice = null;
 
 		//find the LMProgram that this list item points at
-		liteDevice = PAOFuncs.getLiteYukonPAO( programList.getLmProgramDeviceID().intValue() );
+		liteDevice = DaoFactory.getPaoDao().getLiteYukonPAO( programList.getLmProgramDeviceID().intValue() );
 		
 		if( liteDevice == null )
 			throw new RuntimeException("Unable to find the LMProgram with deviceID " 

@@ -14,8 +14,7 @@ import javax.servlet.http.HttpSession;
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.Pair;
-import com.cannontech.database.cache.functions.AuthFuncs;
-import com.cannontech.database.cache.functions.YukonListFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
@@ -105,14 +104,14 @@ public class ConfigSNRangeTask extends TimeConsumingTask {
 		
 		status = STATUS_RUNNING;
 		
-		boolean searchMembers = AuthFuncs.checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS )
+		boolean searchMembers = DaoFactory.getAuthDao().checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS )
 				&& energyCompany.getChildren().size() > 0;
 		hwsToConfig = new ArrayList();
 		
 		for (int i = 0; i < invToConfig.size(); i++) {
 			if (invToConfig.get(i) instanceof Integer[]) {
 				Integer[] snRange = (Integer[]) invToConfig.get(i);
-				int devTypeDefID = YukonListFuncs.getYukonListEntry(snRange[0].intValue()).getYukonDefID();
+				int devTypeDefID = DaoFactory.getYukonListDao().getYukonListEntry(snRange[0].intValue()).getYukonDefID();
 				
 				if (!searchMembers) {
 					ArrayList hwsInRange = InventoryUtils.getLMHardwareInRange( energyCompany, devTypeDefID, snRange[1], snRange[2] );

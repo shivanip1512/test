@@ -44,8 +44,8 @@ import com.cannontech.cc.service.exception.EventCreationException;
 import com.cannontech.cc.service.exception.EventModificationException;
 import com.cannontech.common.exception.PointException;
 import com.cannontech.common.util.TimeUtil;
-import com.cannontech.database.cache.functions.PointFuncs;
-import com.cannontech.database.cache.functions.SimplePointAccess;
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.SimplePointAccessDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.customer.CICustomerPointType;
@@ -63,7 +63,7 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
     private EconomicEventParticipantSelectionDao eventParticipantSelectionDao;
     private EconomicEventParticipantSelectionWindowDao eventParticipantSelectionWindowDao;
     private TransactionTemplate transactionTemplate;
-    private SimplePointAccess pointAccess;
+    private SimplePointAccessDao pointAccess;
     private EconomicService economicService;
     
     @Override
@@ -181,7 +181,7 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
     protected BigDecimal getPointValue(EconomicEventParticipant customer, CICustomerPointType type) throws PointException {
         CICustomerPointData data = customer.getCustomer().getPointData().get(type);
         Validate.notNull(data, "Customer " + customer.getCustomer() + " does not have a point for " + type);
-        LitePoint litePoint = PointFuncs.getLitePoint(data.getPointId());
+        LitePoint litePoint = DaoFactory.getPointDao().getLitePoint(data.getPointId());
         double pointValue = pointAccess.getPointValue(litePoint);
         // It is now somewhat important to round our double. I'm guessing that
         // ten digits of precision is a good number. This will ensure that
@@ -776,7 +776,7 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
         this.eventParticipantSelectionWindowDao = eventParticipantSelectionWindowDao;
     }
 
-    public void setPointAccess(SimplePointAccess pointAccess) {
+    public void setPointAccess(SimplePointAccessDao pointAccess) {
         this.pointAccess = pointAccess;
     }
 

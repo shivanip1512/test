@@ -22,7 +22,7 @@ import com.cannontech.database.db.customer.Customer;
 public class YukonCustomerLookup 
 {
 	/**
-	 * Constructor for YukonUserFuncs.
+	 * Constructor for DaoFactory.getYukonUserDao().
 	 */
 	public YukonCustomerLookup()
 	{

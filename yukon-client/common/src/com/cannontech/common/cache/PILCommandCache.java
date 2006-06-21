@@ -15,7 +15,6 @@ import java.util.Timer;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.Pair;
 import com.cannontech.message.dispatch.message.Multi;
-import com.cannontech.message.porter.ClientConnection;
 import com.cannontech.message.porter.message.Request;
 import com.cannontech.message.porter.message.Return;
 import com.cannontech.message.util.MessageEvent;

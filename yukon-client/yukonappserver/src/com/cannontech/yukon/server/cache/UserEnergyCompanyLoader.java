@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -13,7 +12,6 @@ import java.util.Map;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.lite.LiteYukonGroup;
 
 /**
  * Builds up maps

@@ -86,7 +86,7 @@ function init() {
                   <tr> 
                     <td> 
                       <table width="100%" border="0" class="TableCell">
-<% if (liteEC.getChildren().size() > 0 && AuthFuncs.checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_MANAGE_MEMBERS)) { %>
+<% if (liteEC.getChildren().size() > 0 && DaoFactory.getAuthDao().checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_MANAGE_MEMBERS)) { %>
                         <tr>
                           <td width="5%">&nbsp;</td>
                           <td width="25%">Member:</td>
@@ -244,7 +244,7 @@ function init() {
                           <td width="70%"> 
                             <select name="Route">
 <%
-	String dftRoute = PAOFuncs.getYukonPAOName(member.getDefaultRouteID());
+	String dftRoute = DaoFactory.getPaoDao().getYukonPAOName(member.getDefaultRouteID());
 	if (dftRoute != null)
 		dftRoute = "Default - " + dftRoute;
 	else

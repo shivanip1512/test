@@ -1,6 +1,7 @@
 package com.cannontech.database.model;
 
 import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * This type was created in VisualAge.
@@ -29,7 +30,7 @@ public boolean isLiteTypeSupported( int liteType )
  */
 public void update()
 {
-    DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+    IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 
 	synchronized(cache)
 	{

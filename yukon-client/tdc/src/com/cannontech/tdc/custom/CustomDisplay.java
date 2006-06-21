@@ -2,9 +2,7 @@ package com.cannontech.tdc.custom;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.cache.functions.PAOFuncs;
-import com.cannontech.database.cache.functions.PointFuncs;
-import com.cannontech.database.cache.functions.UnitMeasureFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -55,7 +53,7 @@ public class CustomDisplay
 	{	
 		String[] retValues = new String[ types.length ];
 		//find the point and pao
-		LitePoint litePoint = PointFuncs.getLitePoint(pointid);
+		LitePoint litePoint = DaoFactory.getPointDao().getLitePoint(pointid);
 		
 		if( litePoint == null )
 		{
@@ -63,7 +61,7 @@ public class CustomDisplay
 			return retValues;
 		}
 		
-		LiteYukonPAObject litePAO = PAOFuncs.getLiteYukonPAO( litePoint.getPaobjectID() );
+		LiteYukonPAObject litePAO = DaoFactory.getPaoDao().getLiteYukonPAO( litePoint.getPaobjectID() );
 		 
 		for( int i = 0; i < types.length; i++ )
 		{
@@ -93,7 +91,7 @@ public class CustomDisplay
 			}
 			else if( types[i].equalsIgnoreCase(COLUMN_TYPE_UOFM) )
 			{
-				LiteUnitMeasure lum = UnitMeasureFuncs.getLiteUnitMeasureByPointID(
+				LiteUnitMeasure lum = DaoFactory.getUnitMeasureDao().getLiteUnitMeasureByPointID(
 											litePoint.getPointID());
 
 				if( lum != null )	

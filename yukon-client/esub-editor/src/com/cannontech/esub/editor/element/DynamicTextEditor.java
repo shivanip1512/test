@@ -1,5 +1,6 @@
 package com.cannontech.esub.editor.element;
 
+import com.cannontech.common.editor.PropertyPanel;
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.util.DataInputPanel;
 

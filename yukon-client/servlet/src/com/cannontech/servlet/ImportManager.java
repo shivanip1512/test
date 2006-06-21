@@ -18,6 +18,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.fileupload.DiskFileUpload;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileUploadException;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -25,19 +29,13 @@ import com.cannontech.stars.util.ProgressChecker;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.util.task.ImportCustAccountsTask;
-import com.cannontech.stars.util.task.UploadGenericFileTask;
 import com.cannontech.stars.util.task.ImportDSMDataTask;
 import com.cannontech.stars.util.task.ImportStarsDataTask;
 import com.cannontech.stars.util.task.TimeConsumingTask;
+import com.cannontech.stars.util.task.UploadGenericFileTask;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.util.ImportManagerUtil;
-
-import org.apache.commons.fileupload.DiskFileUpload;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileUploadException;
-
 import com.cannontech.web.navigation.CtiNavObject;
-import com.cannontech.stars.util.ServerUtils;
 
 /**
  * @author yao

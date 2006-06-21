@@ -2,6 +2,8 @@ package com.cannontech.dbeditor.editor.route;
 
 import java.awt.Dimension;
 
+import com.cannontech.yukon.IDatabaseCache;
+
 /**
  * This type was created in VisualAge.
  */
@@ -773,7 +775,7 @@ public Object getValue(Object val)
 	//Grab all the repeater route(s) from the route
 	java.util.Vector repeaterRoutes = ccuRoute.getRepeaterVector();
 	//Get Devices which contain all repeaters
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized(cache)
 	{
 		java.util.List devices = cache.getAllDevices();
@@ -1033,7 +1035,7 @@ public void setValue(Object val) {
 		getRepeaterVariableBits7()
 	};
 
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized(cache)
 	{	
 		java.util.List devices = cache.getAllDevices();

@@ -1,19 +1,16 @@
 <?xml version="1.0"?>
 <vxml version="2.0">
-<%@ page import="com.cannontech.database.cache.functions.ContactFuncs" %>
+<%@ page import="com.cannontech.core.dao.DaoFactory" %>
 <%@ page import="com.cannontech.database.data.lite.LiteContact" %>
-<%@ page import="com.cannontech.database.cache.functions.AuthFuncs" %>
 <%@ page import="com.cannontech.roles.notifications.IvrRole" %>
-<%@ page import="com.cannontech.database.cache.functions.YukonUserFuncs" %>
-<%@ page import="com.cannontech.database.cache.functions.EnergyCompanyFuncs" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
 
 
 <%
 String contactid = request.getParameter("CONTACTID");
-LiteContact contact = ContactFuncs.getContact(Integer.parseInt(contactid));
-LiteYukonUser user = YukonUserFuncs.getLiteYukonUser(contact.getLoginID());
-String introText = EnergyCompanyFuncs.getEnergyCompanyProperty(user, IvrRole.INTRO_TEXT);
+LiteContact contact = DaoFactory.getContactDao().getContact(Integer.parseInt(contactid));
+LiteYukonUser user = DaoFactory.getYukonUserDao().getLiteYukonUser(contact.getLoginID());
+String introText = DaoFactory.getEnergyCompanyDao().getEnergyCompanyProperty(user, IvrRole.INTRO_TEXT);
 
 String tries =request.getParameter("TRIES");
 if (tries == null) {

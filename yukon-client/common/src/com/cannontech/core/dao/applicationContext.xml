@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+<description></description>
+  <bean id="alarmCatDao" class="com.cannontech.core.dao.impl.AlarmCatDaoImpl" >
+  	<property name="databaseCache" ref="databaseCache"/>
+  </bean>
+  <bean id="alarmDao" class="com.cannontech.core.dao.impl.AlarmDaoImpl" >
+  	<property name="paoDao" ref="paoDao"/>
+  	<property name="pointChangeCache" ref="pointChangeCache"/>
+  </bean>  
+  <bean id="authDao" class="com.cannontech.core.dao.impl.AuthDaoImpl" >
+  	<property name="roleDao" ref="roleDao" />
+  	<property name="yukonUserDao" ref="yukonUserDao" />
+  	<property name="contactDao" ref="contactDao" />
+  	<property name="databaseCache" ref="databaseCache" />
+  </bean>
+  <bean id="commandDao" class="com.cannontech.core.dao.impl.CommandDaoImpl" >
+  	<property name="databaseCache" ref="databaseCache" />
+  </bean>
+  <bean id="contactDao" class="com.cannontech.core.dao.impl.ContactDaoImpl" >
+  	<property name="yukonListDao" ref="yukonListDao"/>
+  	<property name="contactNotifcationDao" ref="contactNotificationDao"/>
+  	<property name="yukonUserDao" ref="yukonUserDao"/>
+  	<property name="databaseCache" ref="databaseCache"/>
+  </bean>
+  <bean id="contactNotificationDao" class="com.cannontech.core.dao.impl.ContactNotificationDaoImpl" >
+    <property name="databaseCache" ref="databaseCache"/>
+  </bean>
+  <bean id="customerDao" class="com.cannontech.core.dao.impl.CustomerDaoImpl" >
+  	<property name="contactDao" ref="contactDao"/>
+  	<property name="yukonUserDao" ref="yukonUserDao"/>
+    <property name="databaseCache" ref="databaseCache"/>
+  </bean>
+  <bean id="dbDeletionDao" class="com.cannontech.core.dao.impl.DBDeletionDaoImpl" />
+  <bean id="dbPersistentDao" class="com.cannontech.core.dao.impl.DBPersistentDaoImpl" >
+    <property name="databaseCache" ref="databaseCache"/>
+  </bean>	
+  <bean id="deviceDao" class="com.cannontech.core.dao.impl.DeviceDaoImpl" >
+    <property name="paoDao" ref="paoDao"/>
+    <property name="databaseCache" ref="databaseCache"/>
+  </bean>
+  <bean id="energyCompanyDao" class="com.cannontech.core.dao.impl.EnergyCompanyDaoImpl" >
+  	<property name="authDao" ref="authDao"/>
+  	<property name="yukonUserDao" ref="yukonUserDao"/>
+    <property name="databaseCache" ref="databaseCache"/>
+  </bean>	
+  <bean id="graphDao" class="com.cannontech.core.dao.impl.GraphDaoImpl" >
+    <property name="paoDao" ref="paoDao"/>  
+    <property name="databaseCache" ref="databaseCache"/>    
+  </bean>
+  <bean id="lmDao" class="com.cannontech.core.dao.impl.LMDaoImpl" >
+    <property name="databaseCache" ref="databaseCache"/>    
+  </bean>
+  <bean id="notificationGroupDao" class="com.cannontech.core.dao.impl.NotificationGroupDaoImpl" >
+    <property name="databaseCache" ref="databaseCache"/>    
+  </bean>  
+  <bean id="paoDao" class="com.cannontech.core.dao.impl.PaoDaoImpl" >
+    <property name="databaseCache" ref="databaseCache"/>    
+  </bean>
+  <bean id="pointDao" class="com.cannontech.core.dao.impl.PointDaoImpl" >
+    <property name="paoDao" ref="paoDao"/>  
+    <property name="databaseCache" ref="databaseCache"/>      
+  </bean>
+  <bean id="roleDao" class="com.cannontech.core.dao.impl.RoleDaoImpl" >
+  	<property name="authDao" ref="authDao"/>
+    <property name="databaseCache" ref="databaseCache"/>        	
+  </bean>
+   <bean id="simplePointAccessDao" class="com.cannontech.core.dao.impl.SimplePointAccessDaoImpl" >
+  	<property name="pointChangeCache" ref="pointChangeCache"/>   
+  </bean>
+  <bean id="stateDao" class="com.cannontech.core.dao.impl.StateDaoImpl" >
+    <property name="databaseCache" ref="databaseCache"/>      
+  </bean>  
+  <bean id="tagDao" class="com.cannontech.core.dao.impl.TagDaoImpl" >
+    <property name="databaseCache" ref="databaseCache"/>      
+  </bean>
+  <bean id="unitMeasureDao" class="com.cannontech.core.dao.impl.UnitMeasureDaoImpl" >
+      <property name="databaseCache" ref="databaseCache"/>      
+  </bean>
+  <bean id="yukonImageDao" class="com.cannontech.core.dao.impl.YukonImageDaoImpl" >
+     <property name="databaseCache" ref="databaseCache"/>      
+  </bean>
+  <bean id="yukonListDao" class="com.cannontech.core.dao.impl.YukonListDaoImpl" >
+     <property name="yukonDataSource" ref="yukonDataSource"/>
+  </bean>
+  <bean id="yukonUserDao" class="com.cannontech.core.dao.impl.YukonUserDaoImpl" >
+     <property name="databaseCache" ref="databaseCache"/>      
+   </bean>
+  
+   <bean id="yukonDataSource" class="com.cannontech.database.YukonDataSource">
+    <constructor-arg value="yukon"/>
+   </bean>
+  
+  <bean id="databaseCache" class="com.cannontech.mbean.ServerDatabaseCache" >
+  	 <property name="dbChangeListener" ref="cacheDbChangeListener"/>
+  </bean>
+  <bean id="cacheDbChangeListener" class="com.cannontech.database.cache.CacheDBChangeListener">
+     <constructor-arg>
+  		<ref bean="connectionPool"/>
+     </constructor-arg>
+  </bean>
+   <bean id="pointChangeCache" 
+   		 class="com.cannontech.common.cache.PointChangeCache">
+		<property name="roleDao" ref="roleDao"/>
+   </bean>
+   
+   <bean id="connectionPool" class="com.cannontech.yukon.conns.ConnPool">
+		<property name="roleDao" ref="roleDao"/>
+   </bean>
+   
+   <bean id="ctiSqlStatement" class="com.cannontech.ejb.SqlStatementBean" singleton="false"/>
+   <bean id="dbPersistent" class="com.cannontech.ejb.DBPersistentBean" singleton="false"/>
+
+   <bean id="notificationProxy" factory-bean="connectionPool" factory-method="getDefNotificationConn" singleton="false"/>
+  <bean id="dispatchConnection" factory-bean="connectionPool" factory-method="getDefDispatchConn" singleton="false"/>
+  
+  <bean id="nextValueHelper" class="com.cannontech.database.incrementer.NextValueHelper">
+    <property name="sequenceNameLookup" ref="sequenceNameLookup"/>
+  </bean>
+  
+  <bean id="sequenceNameLookup" class="com.cannontech.database.incrementer.XmlIncrementer"
+        init-method="parse">
+    <property name="dataSource" ref="yukonDataSource"/>
+    <property name="configFile" value="classpath:com/cannontech/database/incrementer/table_sequences.xml"/>
+  </bean>
+  
+</beans>

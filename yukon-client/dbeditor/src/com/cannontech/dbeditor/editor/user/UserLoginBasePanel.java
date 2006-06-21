@@ -2,15 +2,17 @@ package com.cannontech.dbeditor.editor.user;
 /**
  * This type was created in VisualAge.
  */
-import com.cannontech.database.data.user.YukonUser;
-import com.cannontech.user.UserUtils;
+import java.util.List;
+
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import java.util.List;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
+import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.db.web.EnergyCompanyOperatorLoginList;
+import com.cannontech.user.UserUtils;
+import com.cannontech.yukon.IDatabaseCache;
 
 //import com.cannontech.database.db.user.YukonUser;
 
@@ -803,7 +805,7 @@ public void jCheckBoxEnableEC_ActionPerformed(java.awt.event.ActionEvent actionE
 	
 	if(getJCheckBoxEnableEC().isSelected())
 	{
-		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+		IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 		
 		List companies = cache.getAllEnergyCompanies();
 		java.util.Collections.sort( companies, LiteComparators.liteStringComparator );

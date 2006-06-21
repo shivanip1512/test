@@ -17,7 +17,6 @@ import javax.servlet.http.HttpSession;
 import com.cannontech.cbc.web.CBCCommandExec;
 import com.cannontech.cbc.web.CBCWebUtils;
 import com.cannontech.cbc.web.CapControlCache;
-import com.cannontech.cbc.web.CapControlDAO;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.WebUpdatedDAO;
 import com.cannontech.common.constants.LoginController;
@@ -33,8 +32,6 @@ import com.cannontech.yukon.cbc.CBCUtils;
 import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.Feeder;
 import com.cannontech.yukon.cbc.SubBus;
-
-import javax.servlet.http.HttpServlet;
 
 public class CBCServlet extends HttpServlet 
 {		

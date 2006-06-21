@@ -30,6 +30,7 @@ import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.port.DirectPort;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.device.DeviceVerification;
+import com.cannontech.yukon.IDatabaseCache;
  
 public class DeviceCommChannelPanel extends com.cannontech.common.gui.util.DataInputPanel implements ActionListener, MouseListener, ListSelectionListener {
 	private javax.swing.JComboBox ivjPortComboBox = null;
@@ -106,7 +107,7 @@ private javax.swing.JComboBox getPortComboBox() {
 			ivjPortComboBox.setMinimumSize(new java.awt.Dimension(170, 27));
 			// user code begin {1}
          
-         com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+         IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
          synchronized(cache)
          {
             java.util.List ports = cache.getAllPorts();

@@ -5,11 +5,10 @@ import java.util.List;
 import com.cannontech.common.gui.unchanging.LongRangeDocument;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.data.device.TwoWayDevice;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.db.device.DeviceTwoWayFlags;
 import com.cannontech.loadcontrol.messages.LMCommand;
+import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * This type was created in VisualAge.
@@ -131,7 +130,7 @@ private javax.swing.JComboBox getJComboBoxAltRoute() {
 			ivjJComboBoxAltRoute.setRenderer(new javax.swing.plaf.basic.BasicComboBoxRenderer.UIResource());
 			// user code begin {1}
 			
-			DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+			IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 			synchronized( cache )
 			{
 				List routes = cache.getAllRoutes();

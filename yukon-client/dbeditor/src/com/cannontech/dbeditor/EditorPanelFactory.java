@@ -10,11 +10,11 @@ package com.cannontech.dbeditor;
 import com.cannontech.common.editor.EditorPanel;
 import com.cannontech.common.editor.PropertyPanel;
 import com.cannontech.database.data.device.lm.LMScenario;
-import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.data.season.SeasonSchedule;
+import com.cannontech.database.data.tou.TOUSchedule;
+import com.cannontech.database.db.DBPersistent;
 import com.cannontech.dbeditor.editor.season.SeasonEditorPanel;
 import com.cannontech.dbeditor.editor.tou.TOUEditorPanel;
-import com.cannontech.database.data.tou.TOUSchedule;
 
 public final class EditorPanelFactory
 {

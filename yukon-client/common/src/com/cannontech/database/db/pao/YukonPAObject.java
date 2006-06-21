@@ -1,4 +1,7 @@
 package com.cannontech.database.db.pao;
+
+import com.cannontech.yukon.IDatabaseCache;
+
 /**
  * This type was created in VisualAge.
  */
@@ -96,7 +99,7 @@ public java.lang.Character getDisableFlag() {
 public final static Integer getNextYukonPAObjectID()
 {
 
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized(cache)
 	{
 		java.util.List paObjects = cache.getAllYukonPAObjects();
@@ -130,7 +133,7 @@ public final static int[] getNextYukonPAObjectIDs( int idCount )
 	// *************** BEGIN SUPER HACK *************************/
 	com.cannontech.clientutils.CTILogger.info("----- getNextYukonPAObjectIDs(yukonPAObjectsCnt) called with " + idCount + " ids!");
 
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	int[] returnIDs = new int[idCount];
 	
 	synchronized(cache)

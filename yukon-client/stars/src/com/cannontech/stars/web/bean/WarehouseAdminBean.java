@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.database.db.customer.Address;
-import com.cannontech.database.db.stars.hardware.Warehouse;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
+import com.cannontech.database.db.customer.Address;
+import com.cannontech.database.db.stars.hardware.Warehouse;
 
 public class WarehouseAdminBean 
 {

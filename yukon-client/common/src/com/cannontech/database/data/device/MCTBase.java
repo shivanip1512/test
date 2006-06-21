@@ -1,8 +1,8 @@
 package com.cannontech.database.data.device;
 
+import com.cannontech.database.db.config.MCTConfigMapping;
 import com.cannontech.database.db.device.DeviceLoadProfile;
 import com.cannontech.database.db.device.DeviceMeterGroup;
-import com.cannontech.database.db.config.MCTConfigMapping;
 /**
  * This type was created in VisualAge.
  */

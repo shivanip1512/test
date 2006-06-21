@@ -3,7 +3,6 @@ package com.cannontech.web.cc;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Properties;
 import java.util.Set;
 
 import javax.faces.context.ExternalContext;

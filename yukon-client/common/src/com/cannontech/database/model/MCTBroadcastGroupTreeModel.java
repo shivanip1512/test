@@ -3,6 +3,7 @@ package com.cannontech.database.model;
  * This type was created in VisualAge.
  */
 import com.cannontech.database.data.lite.LiteBase;
+import com.cannontech.yukon.IDatabaseCache;
 //This models has the following:
 //		1st Level = MCT Broadcast Groupings YukonPAOBjects
 //		2nd Level = MCTs YukonPAOBjects
@@ -49,7 +50,7 @@ public boolean isLiteTypeSupported( int liteType )
  */
 public void update() {
 
-	com.cannontech.database.cache.DefaultDatabaseCache cache =
+	IDatabaseCache cache =
 					com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 
 	synchronized(cache)

@@ -9,16 +9,13 @@ import java.sql.Connection;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.cache.functions.StateFuncs;
 import com.cannontech.database.data.capcontrol.CapControlYukonPAOBase;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.RemoteBase;
 import com.cannontech.database.data.device.lm.LMControlArea;
 import com.cannontech.database.data.device.lm.LMProgramBase;
-import com.cannontech.database.data.lite.LiteFactory;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.pao.PAOFactory;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.port.DirectPort;
@@ -76,7 +73,7 @@ public class ImportPAO {
 		
 		for(int i = 0; i < stateGroups.length; i++) {
 			id = ((GroupState) stateGroups[i]).getStateGroup().getStateGroupID().intValue();
-			if(StateFuncs.getLiteStateGroup(id + idOffset) == null) {
+			if(DaoFactory.getStateDao().getLiteStateGroup(id + idOffset) == null) {
 				CTILogger.info("stategroupid: " + id + " -> " + (id+idOffset));
 				((GroupState) stateGroups[i]).setStateGroupID(new Integer(id+idOffset));
 				String newName = ((GroupState) stateGroups[i]).getStateGroup().getName() + idOffset;

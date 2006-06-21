@@ -1,5 +1,7 @@
 package com.cannontech.dbeditor.wizard.changetype.point;
 
+import com.cannontech.yukon.IDatabaseCache;
+
 /**
  * This type was created in VisualAge.
  */
@@ -691,7 +693,7 @@ public Object getValue(Object val)
 		java.util.Vector usedPointOffsetsVector = new java.util.Vector();
 
 		//fill vector with points of same deviceID
-		com.cannontech.database.cache.DefaultDatabaseCache cache =
+		IDatabaseCache cache =
 			com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 		synchronized (cache)
 	{
@@ -900,7 +902,7 @@ public void setButtons(Object val)
 	//sets buttons visible or not depending if point is off LMGroup 
 	int deviceID = ((com.cannontech.database.data.point.PointBase) val).getPoint().getPaoID().intValue();
 
-	com.cannontech.database.cache.DefaultDatabaseCache cache =
+	IDatabaseCache cache =
 		com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized (cache)
 {

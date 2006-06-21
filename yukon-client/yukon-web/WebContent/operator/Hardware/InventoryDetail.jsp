@@ -1,6 +1,5 @@
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
-<%@ page import="com.cannontech.database.cache.functions.ContactFuncs" %>
 <%@ page import="com.cannontech.database.data.lite.LiteContact" %>
 <%@ page import="com.cannontech.database.data.lite.stars.*" %>
 <%@ page import="com.cannontech.database.data.pao.PAOGroups" %>
@@ -20,11 +19,11 @@
             StarsInventory inventory = StarsLiteFactory.createStarsInventory(liteInv,
                                                                              liteEC);
 
-            String devTypeStr = YukonListFuncs.getYukonListEntry(inventory.getDeviceType()
+            String devTypeStr = DaoFactory.getYukonListDao().getYukonListEntry(inventory.getDeviceType()
                                                                           .getEntryID())
                                               .getEntryText();
             if (inventory.getDeviceID() > 0)
-                devTypeStr = PAOGroups.getPAOTypeString(PAOFuncs.getLiteYukonPAO(inventory.getDeviceID())
+                devTypeStr = PAOGroups.getPAOTypeString(DaoFactory.getPaoDao().getLiteYukonPAO(inventory.getDeviceID())
                                                                 .getType());
 
             boolean isMCT = inventory.getDeviceID() > 0;
@@ -218,7 +217,7 @@ function revealLog() {
 <%} else {
                 String deviceName = "(none)";
                 if (inventory.getDeviceID() > 0)
-                    deviceName = PAOFuncs.getYukonPAOName(inventory.getDeviceID());
+                    deviceName = DaoFactory.getPaoDao().getYukonPAOName(inventory.getDeviceID());
                 else if (inventory.getMCT() != null)
                     deviceName = inventory.getMCT().getDeviceName();
 %>
@@ -417,7 +416,7 @@ function revealLog() {
                                 </td>
                                 <td width="210"> 
                                   <select name="Route" onchange="setContentChanged(true)">
-<%String dftRoute = PAOFuncs.getYukonPAOName(liteEC.getDefaultRouteID());
+<%String dftRoute = DaoFactory.getPaoDao().getYukonPAOName(liteEC.getDefaultRouteID());
                 if (dftRoute != null)
                     dftRoute = "Default - " + dftRoute;
                 else
@@ -471,15 +470,15 @@ function revealLog() {
                 LiteStarsCustAccountInformation liteAcctInfo = liteEC.getBriefCustAccountInfo(liteInv.getAccountID(),
                                                                                               true);
                 LiteCustomerAccount liteAccount = liteAcctInfo.getCustomerAccount();
-                LiteContact liteContact = ContactFuncs.getContact(liteAcctInfo.getCustomer()
+                LiteContact liteContact = DaoFactory.getContactDao().getContact(liteAcctInfo.getCustomer()
                                                                               .getPrimaryContactID());
                 LiteAccountSite liteAcctSite = liteAcctInfo.getAccountSite();
                 LiteAddress liteAddr = liteEC.getAddress(liteAcctSite.getStreetAddressID());
 
                 String name = StarsUtils.formatName(liteContact);
-                String homePhone = StarsUtils.getNotification(ContactFuncs.getContactNotification(liteContact,
+                String homePhone = StarsUtils.getNotification(DaoFactory.getContactDao().getContactNotification(liteContact,
                                                                                                   YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE));
-                String workPhone = StarsUtils.getNotification(ContactFuncs.getContactNotification(liteContact,
+                String workPhone = StarsUtils.getNotification(DaoFactory.getContactDao().getContactNotification(liteContact,
                                                                                                   YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE));
                 String mapNo = StarsUtils.forceNotNone(liteAcctSite.getSiteNumber());
 

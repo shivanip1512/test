@@ -2,6 +2,7 @@ package com.cannontech.database.model;
 
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.db.user.YukonGroup;
+import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * This type was created in VisualAge.
@@ -29,7 +30,7 @@ public boolean isLiteTypeSupported( int liteType )
  */
 public void update() {
 
-	com.cannontech.database.cache.DefaultDatabaseCache cache =
+	IDatabaseCache cache =
 					com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 
 	synchronized(cache)

@@ -1,6 +1,6 @@
 <%@ include file="include/StarsHeader.jsp" %>
 
-<%@ page import="com.cannontech.database.cache.functions.DBPersistentFuncs"%>
+<%@ page import="com.cannontech.core.dao.DaoFactory" %>
 <%@ page import="com.cannontech.database.db.device.DeviceMeterGroup"%>
 <%@ page import="com.cannontech.database.data.device.IDeviceMeterGroup"%>
 <%@ page import="com.cannontech.database.data.device.CarrierBase"%>
@@ -19,8 +19,8 @@
 	int deviceID = starsMCT.getDeviceID();
 
 	//get the liteYukonPao using the deviceID
-	LiteYukonPAObject liteYukonPao = PAOFuncs.getLiteYukonPAO(deviceID);
-	YukonPAObject yukonPao = (YukonPAObject)DBPersistentFuncs.retrieveDBPersistent(liteYukonPao);
+	LiteYukonPAObject liteYukonPao = DaoFactory.getPaoDao().getLiteYukonPAO(deviceID);
+	YukonPAObject yukonPao = (YukonPAObject)DaoFactory.getDbPersistentDao().retrieveDBPersistent(liteYukonPao);
 
   	//DeviceMeterGroup - meterNumber, collectionGroup
 	DeviceMeterGroup devMeterGroup = ((IDeviceMeterGroup)yukonPao).getDeviceMeterGroup();
@@ -32,7 +32,7 @@
 		RouteTypes.ROUTE_CCU,
 		RouteTypes.ROUTE_MACRO
 		};
-	LiteYukonPAObject[] validRoutes = PAOFuncs.getRoutesByType(validRouteTypes);
+	LiteYukonPAObject[] validRoutes = DaoFactory.getPaoDao().getRoutesByType(validRouteTypes);
 %>
 
 <script language="JavaScript">
@@ -133,7 +133,7 @@ if (request.getParameter("Submit") != null)
 
 	//Update the database when change is true.
 	if( updateYukonPAO )
-		DBPersistentFuncs.performDBChange(yukonPao, ConnPool.getInstance().getDefDispatchConn(), DBChangeMsg.CHANGE_TYPE_UPDATE);
+		DaoFactory.getDbPersistentDao().performDBChange(yukonPao, DBChangeMsg.CHANGE_TYPE_UPDATE);
 }%>	
 
 

@@ -11,7 +11,8 @@ import org.jdom.transform.XSLTransformException;
 import org.jdom.transform.XSLTransformer;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.database.cache.functions.*;
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.UnknownRolePropertyException;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.notifications.NotificationConfigurationRole;
@@ -39,8 +40,8 @@ public class NotificationTransformer {
     
     public NotificationTransformer(LiteEnergyCompany energyCompany, String outputType) throws TransformException {
         try {
-            LiteYukonUser user = YukonUserFuncs.getLiteYukonUser(energyCompany.getUserID());
-            _rootDirectory = AuthFuncs.getRolePropertyValueEx(user, NotificationConfigurationRole.TEMPLATE_ROOT);
+            LiteYukonUser user = DaoFactory.getYukonUserDao().getLiteYukonUser(energyCompany.getUserID());
+            _rootDirectory = DaoFactory.getAuthDao().getRolePropertyValueEx(user, NotificationConfigurationRole.TEMPLATE_ROOT);
             _outputType = outputType;
         } catch (UnknownRolePropertyException e) {
             throw new TransformException("Could not get Template Root Role Property for " + energyCompany, e);

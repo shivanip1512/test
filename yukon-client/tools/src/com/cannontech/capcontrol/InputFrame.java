@@ -42,6 +42,7 @@ import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.tools.gui.CTIProgressBar;
+import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * @author ASolberg
@@ -81,7 +82,7 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 	private static DecimalFormat DBL_FORM = new DecimalFormat("#.00");
 	private BufferedReader input;
 	private boolean command = false;
-	private com.cannontech.database.cache.DefaultDatabaseCache cache;
+	private IDatabaseCache cache;
 	private java.util.List list;
 
 	public InputFrame()

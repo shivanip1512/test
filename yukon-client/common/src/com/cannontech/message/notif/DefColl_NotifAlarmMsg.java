@@ -3,7 +3,10 @@ import java.io.IOException;
 
 import com.cannontech.message.util.DefineCollectableMessage;
 import com.roguewave.tools.v2_0.Comparator;
-import com.roguewave.vsj.*;
+import com.roguewave.vsj.CollectableStreamer;
+import com.roguewave.vsj.DefineCollectable;
+import com.roguewave.vsj.VirtualInputStream;
+import com.roguewave.vsj.VirtualOutputStream;
 import com.roguewave.vsj.streamer.SimpleMappings;
 
 public class DefColl_NotifAlarmMsg extends DefineCollectableMessage {

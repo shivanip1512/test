@@ -2,14 +2,13 @@ package com.cannontech.database.data.customer;
 
 import java.util.Vector;
 
-import com.cannontech.database.Transaction;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.db.NestedDBPersistent;
+import com.cannontech.database.db.NestedDBPersistentComparators;
 import com.cannontech.database.db.contact.ContactNotification;
 import com.cannontech.database.db.customer.Address;
 import com.cannontech.database.db.customer.Customer;
 import com.cannontech.database.db.point.PointAlarming;
-import com.cannontech.database.db.NestedDBPersistent;
-import com.cannontech.database.db.NestedDBPersistentComparators;
 
 /**
  * This type was created in VisualAge.

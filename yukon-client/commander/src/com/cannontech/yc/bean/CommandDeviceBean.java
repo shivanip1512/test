@@ -9,9 +9,8 @@ import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.cache.functions.DeviceFuncs;
-import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
@@ -26,6 +25,7 @@ import com.cannontech.database.db.macro.GenericMacro;
 import com.cannontech.database.db.macro.MacroTypes;
 import com.cannontech.database.db.pao.YukonPAObject;
 import com.cannontech.database.db.user.UserPaoOwner;
+import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * @author yao
@@ -235,12 +235,12 @@ public class CommandDeviceBean
 				if (PAOGroups.INVALID == ((LiteYukonPAObject) o1).getRouteID())
 					thisVal = NULL_OBJECT_STRING;
 				else
-					thisVal = PAOFuncs.getYukonPAOName(((LiteYukonPAObject) o1).getRouteID());
+					thisVal = DaoFactory.getPaoDao().getYukonPAOName(((LiteYukonPAObject) o1).getRouteID());
 
 				if (PAOGroups.INVALID == ((LiteYukonPAObject) o2).getRouteID())
 					anotherVal = NULL_OBJECT_STRING;
 				else
-					anotherVal = PAOFuncs.getYukonPAOName(((LiteYukonPAObject) o2).getRouteID());
+					anotherVal = DaoFactory.getPaoDao().getYukonPAOName(((LiteYukonPAObject) o2).getRouteID());
 			}
 
 			if (thisVal.equalsIgnoreCase(anotherVal))
@@ -270,8 +270,8 @@ public class CommandDeviceBean
 
 			if (o1 instanceof LiteYukonPAObject && o2 instanceof LiteYukonPAObject)
 			{
-				LiteDeviceMeterNumber ldmn1 = DeviceFuncs.getLiteDeviceMeterNumber(((LiteYukonPAObject) o1).getYukonID());
-				LiteDeviceMeterNumber ldmn2 = DeviceFuncs.getLiteDeviceMeterNumber(((LiteYukonPAObject) o2).getYukonID());
+				LiteDeviceMeterNumber ldmn1 = DaoFactory.getDeviceDao().getLiteDeviceMeterNumber(((LiteYukonPAObject) o1).getYukonID());
+				LiteDeviceMeterNumber ldmn2 = DaoFactory.getDeviceDao().getLiteDeviceMeterNumber(((LiteYukonPAObject) o2).getYukonID());
 
 				thisVal = (ldmn1 != null ? ldmn1.getMeterNumber() : NULL_OBJECT_STRING);
 				anotherVal = (ldmn2 != null ? ldmn2.getMeterNumber() : NULL_OBJECT_STRING);
@@ -300,8 +300,8 @@ public class CommandDeviceBean
 
 			if (o1 instanceof LiteYukonPAObject && o2 instanceof LiteYukonPAObject)
 			{
-				thisVal = PAOFuncs.getYukonPAOName(((LiteYukonPAObject) o1).getYukonID());
-				anotherVal = PAOFuncs.getYukonPAOName(((LiteYukonPAObject) o2).getYukonID());
+				thisVal = DaoFactory.getPaoDao().getYukonPAOName(((LiteYukonPAObject) o1).getYukonID());
+				anotherVal = DaoFactory.getPaoDao().getYukonPAOName(((LiteYukonPAObject) o2).getYukonID());
 			}
 			if (thisVal.equalsIgnoreCase(anotherVal))
 			{
@@ -335,13 +335,13 @@ public class CommandDeviceBean
 				YCLiteLoadGroup llg2 = (YCLiteLoadGroup)getLoadGroupIDToLiteLoadGroupsMap().get(new Integer( ((LiteYukonPAObject) o2).getYukonID()));
 				if (llg1 != null && llg2 != null)
 				{
-					thisVal = PAOFuncs.getYukonPAOName(llg1.getRouteID());
-					anotherVal = PAOFuncs.getYukonPAOName(llg2.getRouteID());
+					thisVal = DaoFactory.getPaoDao().getYukonPAOName(llg1.getRouteID());
+					anotherVal = DaoFactory.getPaoDao().getYukonPAOName(llg2.getRouteID());
 			
 					if (thisVal.equalsIgnoreCase(anotherVal))
 					{
-						thisVal = PAOFuncs.getYukonPAOName(llg1.getGroupID());
-						anotherVal = PAOFuncs.getYukonPAOName(llg2.getGroupID());
+						thisVal = DaoFactory.getPaoDao().getYukonPAOName(llg1.getGroupID());
+						anotherVal = DaoFactory.getPaoDao().getYukonPAOName(llg2.getGroupID());
 					}
 				}
 			}
@@ -371,8 +371,8 @@ public class CommandDeviceBean
 			
 					if (thisVal.equalsIgnoreCase(anotherVal))
 					{
-						thisVal = PAOFuncs.getYukonPAOName(llg1.getGroupID());
-						anotherVal = PAOFuncs.getYukonPAOName(llg2.getGroupID());
+						thisVal = DaoFactory.getPaoDao().getYukonPAOName(llg1.getGroupID());
+						anotherVal = DaoFactory.getPaoDao().getYukonPAOName(llg2.getGroupID());
 					}
 				}
 			}
@@ -402,8 +402,8 @@ public class CommandDeviceBean
 					
 					if (thisVal == anotherVal)
 					{
-						String thisValStr = PAOFuncs.getYukonPAOName(llg1.getGroupID());
-						String anotherValStr = PAOFuncs.getYukonPAOName(llg2.getGroupID());
+						String thisValStr = DaoFactory.getPaoDao().getYukonPAOName(llg1.getGroupID());
+						String anotherValStr = DaoFactory.getPaoDao().getYukonPAOName(llg2.getGroupID());
 						return (thisValStr.compareToIgnoreCase(anotherValStr));
 					}
 				}
@@ -428,7 +428,7 @@ public class CommandDeviceBean
 		if (deviceList == null || isChanged())
 		{
 
-			DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+			IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 			synchronized (cache)
 			{
 				List allPaos = cache.getAllDevices();
@@ -446,7 +446,7 @@ public class CommandDeviceBean
 							isValid = String.valueOf(lPao.getAddress()).toLowerCase().startsWith(getSearchValue().toLowerCase());
 						else if( getSearchBy() == METER_NUM_SEARCH_BY)
 						{
-							LiteDeviceMeterNumber ldmn = DeviceFuncs.getLiteDeviceMeterNumber(lPao.getYukonID());
+							LiteDeviceMeterNumber ldmn = DaoFactory.getDeviceDao().getLiteDeviceMeterNumber(lPao.getYukonID());
 							if (ldmn != null) 
 								isValid = ldmn.getMeterNumber().toLowerCase().startsWith(getSearchValue().toLowerCase());
 						}
@@ -490,7 +490,7 @@ public class CommandDeviceBean
 						}
 						else if (getFilterBy() == COLLECTION_GROUP_FILTER)
 						{
-							LiteDeviceMeterNumber ldmn = DeviceFuncs.getLiteDeviceMeterNumber(lPao.getYukonID());
+							LiteDeviceMeterNumber ldmn = DaoFactory.getDeviceDao().getLiteDeviceMeterNumber(lPao.getYukonID());
 							if (!(ldmn != null && ldmn.getCollGroup().equalsIgnoreCase(getFilterValue()))) isValid = false;
 						}
 						else if( getFilterBy() == COMM_CHANNEL_FILTER)
@@ -775,7 +775,7 @@ public class CommandDeviceBean
 	{
 		if (validRoutes == null)
 		{
-			DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+			IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 			List routes = cache.getAllRoutes();
 			validRoutes= new ArrayList();
 			for (int i = 0; i < routes.size(); i++)
@@ -791,7 +791,7 @@ public class CommandDeviceBean
 	{
 		if (validCommChannels == null)
 		{
-			DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+			IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 			List ports = cache.getAllPorts();
 			validCommChannels = new ArrayList();
 			for (int i = 0; i < ports.size(); i++)
@@ -901,25 +901,25 @@ public class CommandDeviceBean
 		}
 		else if( valueString.equalsIgnoreCase(METER_NUMBER_STRING))
 		{
-			LiteDeviceMeterNumber ldmn = DeviceFuncs.getLiteDeviceMeterNumber(lPao.getYukonID());
+			LiteDeviceMeterNumber ldmn = DaoFactory.getDeviceDao().getLiteDeviceMeterNumber(lPao.getYukonID());
 			if (ldmn != null)
 				return ldmn.getMeterNumber().trim();
 		}
 		else if( valueString.equalsIgnoreCase(COLL_GROUP_STRING))
 		{
-			LiteDeviceMeterNumber ldmn = DeviceFuncs.getLiteDeviceMeterNumber(lPao.getYukonID());
+			LiteDeviceMeterNumber ldmn = DaoFactory.getDeviceDao().getLiteDeviceMeterNumber(lPao.getYukonID());
 			if (ldmn != null)
 				return ldmn.getCollGroup().trim();
 		}
 		else if( valueString.equalsIgnoreCase(ROUTE_STRING))
 		{
 			if (lPao.getRouteID() != PAOGroups.INVALID)
-				return PAOFuncs.getYukonPAOName(lPao.getRouteID());
+				return DaoFactory.getPaoDao().getYukonPAOName(lPao.getRouteID());
 		}
 		else if( valueString.equalsIgnoreCase(COMM_CHANNEL_STRING))
 		{
 			if (lPao.getPortID() != PAOGroups.INVALID)
-				return PAOFuncs.getYukonPAOName(lPao.getPortID());
+				return DaoFactory.getPaoDao().getYukonPAOName(lPao.getPortID());
 		}
 		else
 		{
@@ -936,7 +936,7 @@ public class CommandDeviceBean
 				}
 				else if( valueString.equalsIgnoreCase(LMGROUP_ROUTE_STRING))
 				{
-					return PAOFuncs.getYukonPAOName(llg.getRouteID());
+					return DaoFactory.getPaoDao().getYukonPAOName(llg.getRouteID());
 				}
 			}
             

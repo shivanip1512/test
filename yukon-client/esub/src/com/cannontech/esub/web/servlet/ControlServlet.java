@@ -12,8 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.LoginController;
-import com.cannontech.database.cache.functions.AuthFuncs;
-import com.cannontech.database.cache.functions.PointFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.esub.util.UpdateUtil;
@@ -46,7 +45,7 @@ public class ControlServlet extends HttpServlet {
 		LiteYukonUser user = (LiteYukonUser) req.getSession(false).getAttribute(LoginController.YUKON_USER);
 		Writer out = resp.getWriter();
 		
-		if(!AuthFuncs.checkRoleProperty(user, EsubDrawingsRole.CONTROL)) {
+		if(!DaoFactory.getAuthDao().checkRoleProperty(user, EsubDrawingsRole.CONTROL)) {
 			CTILogger.info("Control request received by user without CONTROL role, ip: " + req.getRemoteAddr());
 			out.write("error");
 			return;
@@ -77,7 +76,7 @@ public class ControlServlet extends HttpServlet {
 			return;
 		}
 		
-		LitePoint lp = PointFuncs.getLitePoint(id);
+		LitePoint lp = DaoFactory.getPointDao().getLitePoint(id);
 		
 		if( lp == null ) {
 			out.write("error");		

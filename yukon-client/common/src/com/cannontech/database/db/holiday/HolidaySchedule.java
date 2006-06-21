@@ -1,5 +1,8 @@
 package com.cannontech.database.db.holiday;
 
+import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.yukon.IDatabaseCache;
+
 /**
  * Insert the type's description here.
  * Creation date: (8/23/2001 11:54:45 AM)
@@ -63,7 +66,7 @@ public String getHolidayScheduleName() {
  */
 public final static Integer getNextHolidayScheduleID()
 {
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 
 	synchronized(cache)
 	{

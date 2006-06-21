@@ -1,14 +1,15 @@
 package com.cannontech.common.gui.util;
 
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Graphics;
+import java.awt.Shape;
+import java.awt.geom.Ellipse2D;
+
 import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.JButton;
-import java.awt.Graphics;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.geom.Ellipse2D;
-import java.awt.Shape;
-import java.awt.FlowLayout;
 /**
  * @author snebben
  *

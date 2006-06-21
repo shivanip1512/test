@@ -5,6 +5,7 @@ package com.cannontech.dbeditor.editor.capfeeder;
  */
 import com.cannontech.database.data.capcontrol.CapControlFeeder;
 import com.cannontech.database.db.capcontrol.CapBank;
+import com.cannontech.yukon.IDatabaseCache;
 
 public class CCFeederCapBankListEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.cannontech.common.gui.util.AddRemovePanelListener {
 	private int rightListItemIndex = getCCCapBankListAddRemovePanel().rightListGetSelectedIndex();
@@ -293,7 +294,7 @@ public void initLeftListBanks()
 {
 	java.util.Vector availableBanks = new java.util.Vector();
 
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	
 	synchronized( cache )
 	{
@@ -481,7 +482,7 @@ public void setValue(Object val)
 	initLeftListBanks();
 	java.util.Vector assignedBanks = new java.util.Vector();
 
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized(cache)
 	{
 		java.util.List allPAOs = cache.getAllYukonPAObjects();

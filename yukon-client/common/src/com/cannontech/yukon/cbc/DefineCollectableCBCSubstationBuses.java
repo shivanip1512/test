@@ -3,9 +3,10 @@ package com.cannontech.yukon.cbc;
 /**
  * This type was created in VisualAge.
  */
-import com.roguewave.tools.v2_0.Comparator;
 import java.util.Vector;
+
 import com.cannontech.message.util.VectorExtract;
+import com.roguewave.tools.v2_0.Comparator;
 
 public class DefineCollectableCBCSubstationBuses extends DefineCollectableCBCMessage 
 {

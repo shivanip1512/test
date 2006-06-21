@@ -3,8 +3,6 @@ package com.cannontech.message.notif;
 /**
  * This type was created in VisualAge.
  */
-import java.util.Vector;
-
 import com.cannontech.message.util.VectorExtract;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;

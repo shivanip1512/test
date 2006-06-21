@@ -1,6 +1,17 @@
 package com.cannontech.systray;
 
-import javax.swing.*;
+import java.awt.event.ActionListener;
+import java.util.Vector;
+
+import javax.swing.JOptionPane;
+import javax.swing.UIManager;
+
+import snoozesoft.systray4j.CheckableMenuItem;
+import snoozesoft.systray4j.SubMenu;
+import snoozesoft.systray4j.SysTrayMenu;
+import snoozesoft.systray4j.SysTrayMenuEvent;
+import snoozesoft.systray4j.SysTrayMenuItem;
+import snoozesoft.systray4j.SysTrayMenuListener;
 
 import com.cannontech.alarms.gui.AlarmHandler;
 import com.cannontech.clientutils.AlarmFileWatchDog;
@@ -14,11 +25,6 @@ import com.cannontech.roles.application.CommanderRole;
 import com.cannontech.roles.application.DBEditorRole;
 import com.cannontech.roles.application.TDCRole;
 import com.cannontech.roles.application.TrendingRole;
-
-import java.awt.event.ActionListener;
-import java.util.Vector;
-
-import snoozesoft.systray4j.*;
 
 /**
  * The main application that brings up the sys tray icon for Yukon. All components and icons

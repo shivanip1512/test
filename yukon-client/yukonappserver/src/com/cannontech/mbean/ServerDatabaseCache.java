@@ -10,10 +10,9 @@ import java.util.Map;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.cache.CacheDBChangeListener;
 import com.cannontech.database.cache.DBChangeListener;
-import com.cannontech.database.cache.functions.PAOFuncs;
-import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteCICustomer;
@@ -524,7 +523,7 @@ public synchronized java.util.List getAllGraphTaggedPoints()
 			   {
 					int pointID = rset.getInt(1);
 					String formula = rset.getString(2);
-					LitePoint point = PointFuncs.getLitePoint( pointID );
+					LitePoint point = DaoFactory.getPointDao().getLitePoint( pointID );
 
 					// tags may need to be changed here if there
 					//  are more tags added to this bit field
@@ -1289,7 +1288,7 @@ public synchronized java.util.List getAllUnusedCCDevices()
 			while (rset.next()) {
 				
 				int paoID = rset.getInt(1);				
-				LiteYukonPAObject pao = PAOFuncs.getLiteYukonPAO( paoID );
+				LiteYukonPAObject pao = DaoFactory.getPaoDao().getLiteYukonPAO( paoID );
 				
 				if( pao != null ) {
 					allUnusedCCDevices.add( pao );
@@ -1575,7 +1574,7 @@ public static synchronized com.cannontech.yukon.IDatabaseCache getInstance()
 	if( cache == null )
 	{
 		cache = new ServerDatabaseCache();
-		cache.setDbChangeListener( new CacheDBChangeListener() );
+		//cache.setDbChangeListener( new CacheDBChangeListener() );
 	}
 
 	return cache;
@@ -3572,7 +3571,7 @@ public synchronized void setDatabaseAlias(String newAlias){
  * Creation date: (12/20/2001 2:01:01 PM)
  * @param newDbChangeListener com.cannontech.database.cache.CacheDBChangeListener
  */
-protected void setDbChangeListener(CacheDBChangeListener newDbChangeListener) {
+public void setDbChangeListener(CacheDBChangeListener newDbChangeListener) {
 	dbChangeListener = newDbChangeListener;
 }
 	

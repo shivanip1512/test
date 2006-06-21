@@ -6,7 +6,7 @@ package com.cannontech.dbeditor.wizard.capsubbus;
  * CLASS NOT USED AS OF 7-5-2002  --RWN
  */
 import java.awt.Dimension;
-import com.cannontech.database.data.capcontrol.CapControlSubBus;
+
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
  
 public class CCSubstationBusPeakSettingsPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener {

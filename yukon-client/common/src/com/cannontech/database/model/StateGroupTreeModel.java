@@ -1,8 +1,9 @@
 package com.cannontech.database.model;
 
-import com.cannontech.database.cache.functions.StateFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.db.state.StateGroupUtils;
+import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * This type was created in VisualAge.
@@ -30,12 +31,12 @@ public boolean isLiteTypeSupported( int liteType )
  */
 public void update() {
 
-	com.cannontech.database.cache.DefaultDatabaseCache cache =
+	IDatabaseCache cache =
 					com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 
 	synchronized(cache)
 	{
-		LiteStateGroup[] stateGroups = StateFuncs.getAllStateGroups();
+		LiteStateGroup[] stateGroups = DaoFactory.getStateDao().getAllStateGroups();
 
 		DBTreeNode rootNode = (DBTreeNode) getRoot();
 		rootNode.removeAllChildren();

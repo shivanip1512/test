@@ -52,7 +52,7 @@
                       removed from the account. 
                       <%
 	} else {
-		String deviceName = PAOFuncs.getYukonPAOName(liteInv.getDeviceID());
+		String deviceName = DaoFactory.getPaoDao().getYukonPAOName(liteInv.getDeviceID());
 %>
                       The device &quot;<%= deviceName %>&quot; will be removed 
                       from the account. 

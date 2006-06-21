@@ -6,8 +6,9 @@
  */
 package com.cannontech.database.db.device;
 
-import com.cannontech.database.db.NestedDBPersistent;
 import java.util.Vector;
+
+import com.cannontech.database.db.NestedDBPersistent;
 /**
  * @author jdayton
  *

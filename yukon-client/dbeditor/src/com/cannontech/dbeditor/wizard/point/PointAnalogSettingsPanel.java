@@ -1,5 +1,7 @@
 package com.cannontech.dbeditor.wizard.point;
 
+import com.cannontech.yukon.IDatabaseCache;
+
 /**
  * This type was created in VisualAge.
  */
@@ -334,7 +336,7 @@ private void initialize() {
 	// user code begin {2}
 
 	//Add units of measure to the Unit of Measure combo box
-	com.cannontech.database.cache.DefaultDatabaseCache cache =
+	IDatabaseCache cache =
 		com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized (cache)
    {

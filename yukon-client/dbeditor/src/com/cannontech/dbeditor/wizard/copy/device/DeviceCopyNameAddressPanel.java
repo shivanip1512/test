@@ -1,24 +1,30 @@
 package com.cannontech.dbeditor.wizard.copy.device;
 
-import com.cannontech.database.db.device.*;
-import com.cannontech.database.data.*;
-import com.cannontech.database.data.device.*;
-
-/**
- * This type was created in VisualAge.
- */
 import java.awt.Dimension;
 
 import javax.swing.JLabel;
 
-import com.cannontech.database.db.*;
-import com.cannontech.database.data.device.*;
 import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.capcontrol.CapBankController;
 import com.cannontech.database.data.capcontrol.CapBankController6510;
 import com.cannontech.database.data.capcontrol.CapBankController702x;
 import com.cannontech.database.data.capcontrol.ICapBankController;
-import com.cannontech.common.gui.util.DataInputPanel;
+import com.cannontech.database.data.device.CarrierBase;
+import com.cannontech.database.data.device.DNPBase;
+import com.cannontech.database.data.device.DeviceBase;
+import com.cannontech.database.data.device.DeviceTypesFuncs;
+import com.cannontech.database.data.device.IDLCBase;
+import com.cannontech.database.data.device.IEDBase;
+import com.cannontech.database.data.device.IEDMeter;
+import com.cannontech.database.data.device.Ion7700;
+import com.cannontech.database.data.device.MCTBase;
+import com.cannontech.database.data.device.RTCBase;
+import com.cannontech.database.data.device.RemoteBase;
+import com.cannontech.database.data.device.Repeater900;
+import com.cannontech.database.data.device.Series5Base;
+import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.db.device.DeviceCarrierSettings;
+import com.cannontech.yukon.IDatabaseCache;
  
 public class DeviceCopyNameAddressPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ItemListener, javax.swing.event.CaretListener {
 	private javax.swing.JTextField ivjAddressTextField = null;
@@ -618,7 +624,7 @@ private javax.swing.JTextField getJTextFieldPhoneNumber() {
 		
 		if (com.cannontech.database.data.pao.DeviceClasses.getClass(device.getPAOClass()) == com.cannontech.database.data.pao.DeviceClasses.TRANSMITTER)
 		{
-			com.cannontech.database.cache.DefaultDatabaseCache cache =
+			IDatabaseCache cache =
 				com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 			synchronized (cache)
 		{
@@ -684,7 +690,7 @@ private javax.swing.JTextField getJTextFieldPhoneNumber() {
 		if (getPointCopyCheckBox().isSelected())
 		{
 			java.util.Vector devicePoints = null;
-			com.cannontech.database.cache.DefaultDatabaseCache cache =
+			IDatabaseCache cache =
 				com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 			synchronized (cache)
 		{
@@ -928,7 +934,7 @@ private javax.swing.JTextField getJTextFieldPhoneNumber() {
 		int deviceDeviceID = ((com.cannontech.database.data.device.DeviceBase)val).getDevice().getDeviceID().intValue();
 	
 		
-		com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+		IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 		synchronized(cache)
 		{
 			java.util.List allPoints = cache.getAllPoints();

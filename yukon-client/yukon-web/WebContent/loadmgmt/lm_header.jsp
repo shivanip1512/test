@@ -4,7 +4,7 @@
 
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 
-
+<%@ page import="com.cannontech.core.dao.DaoFactory" %>
 <%@ page import="com.cannontech.roles.application.WebClientRole"%>
 <%@ page import="com.cannontech.clientutils.CTILogger" %>
 <%@ page import="com.cannontech.servlet.LCConnectionServlet" %>
@@ -31,13 +31,11 @@
 <%@ page import="com.cannontech.common.util.CtiUtilities" %>
 <%@ page import="com.cannontech.database.data.lite.LiteLMProgScenario" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject" %>
-<%@ page import="com.cannontech.database.cache.functions.LMFuncs" %>
 <%@ page import="com.cannontech.loadcontrol.gui.manualentry.ConstraintTableModel" %>
 <%@ page import="com.cannontech.loadcontrol.gui.manualentry.ResponseProg" %>
 <%@ page import="com.cannontech.message.server.ServerResponseMsg" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
 <%@ page import="com.cannontech.util.ServletUtil" %>
-<%@ page import="com.cannontech.database.cache.functions.AuthFuncs" %>
 
 <jsp:useBean 
 	id="lmSession" scope="session"
@@ -59,7 +57,7 @@
 	
 	if( lmSession.getAreaView() == null )
 		lmSession.setAreaView(
-			AuthFuncs.hasPAOAccess((LiteYukonUser) session.getAttribute(ServletUtil.ATT_YUKON_USER))
+			DaoFactory.getAuthDao().hasPAOAccess((LiteYukonUser) session.getAttribute(ServletUtil.ATT_YUKON_USER))
 				? ControlAreaActionListener.SEL_ALL_CONTROL_AREAS
 				: ControlAreaActionListener.SEL_ACTIVE_AREAS );
 	

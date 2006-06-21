@@ -5,12 +5,8 @@ package com.cannontech.graph;
  * Creation date: (6/7/2002 2:40:14 PM)
  * @author: 
  */
-import java.util.Date;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-
-import org.jfree.data.time.TimePeriodValue;
-import org.jfree.data.time.TimeSeriesDataItem;
 
 import com.cannontech.common.util.Pair;
 

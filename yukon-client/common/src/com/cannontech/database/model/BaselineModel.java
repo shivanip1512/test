@@ -1,5 +1,7 @@
 package com.cannontech.database.model;
 
+import com.cannontech.yukon.IDatabaseCache;
+
 /**
  * Insert the type's description here.
  * Creation date: (8/24/2001 10:45:17 AM)
@@ -30,7 +32,7 @@ public boolean isLiteTypeSupported( int liteType )
 public void update()
 {
 
-	com.cannontech.database.cache.DefaultDatabaseCache cache =
+	IDatabaseCache cache =
 		com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 
 	synchronized (cache)

@@ -2,8 +2,9 @@ package com.cannontech.message.util;
 
 import java.io.IOException;
 import java.util.Vector;
-import com.roguewave.vsj.VirtualOutputStream;
+
 import com.roguewave.vsj.CollectableStreamer;
+import com.roguewave.vsj.VirtualOutputStream;
 
 public class VectorInsert 
 {

@@ -1,25 +1,16 @@
 package com.cannontech.esub.editor.element;
 
-import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.io.IOException;
-import java.util.*;
+import java.awt.Dimension;
+import java.util.ArrayList;
 
-import javax.swing.*;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.*;
 
-import com.cannontech.common.gui.tree.*;
-import com.cannontech.database.cache.functions.PointFuncs;
-import com.cannontech.database.cache.functions.YukonImageFuncs;
-import com.cannontech.database.data.lite.*;
-import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.database.model.DeviceCheckBoxTreeModel;
-import com.cannontech.esub.editor.Util;
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.esub.element.FunctionElement;
-import com.cannontech.esub.element.StateImage;
 //import com.cannontech.esub.element.FunctionElement;
 
 public class FunctionElementEditorPanel  extends com.cannontech.common.gui.util.DataInputPanel implements TreeSelectionListener{
@@ -234,7 +225,7 @@ public class FunctionElementEditorPanel  extends com.cannontech.common.gui.util.
                 {
                     getFunctionComboBox().setSelectedItem(functionName);
                     getRawStateComboBox().setSelectedIndex(new Integer(rawState).intValue());
-                    getPointSelectionPanel().selectPoint(PointFuncs.getLitePoint(pointID));
+                    getPointSelectionPanel().selectPoint(DaoFactory.getPointDao().getLitePoint(pointID));
                 }
             } catch (Exception e) {
                 

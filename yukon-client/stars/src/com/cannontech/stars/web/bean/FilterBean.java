@@ -10,8 +10,7 @@ import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.Pair;
-import com.cannontech.database.cache.functions.AuthFuncs;
-import com.cannontech.database.cache.functions.YukonListFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
 import com.cannontech.database.data.lite.stars.LiteServiceCompany;
@@ -83,7 +82,7 @@ public class FilterBean
     
     public boolean getManageMembers()
     {
-        return AuthFuncs.checkRoleProperty(currentUser, AdministratorRole.ADMIN_MANAGE_MEMBERS) && (energyCompany.getChildren().size() > 0);
+        return DaoFactory.getAuthDao().checkRoleProperty(currentUser, AdministratorRole.ADMIN_MANAGE_MEMBERS) && (energyCompany.getChildren().size() > 0);
     }
     
     public YukonSelectionList getAvailableFilters()
@@ -202,7 +201,7 @@ public class FilterBean
         if(availableCustomerTypes == null)
         {
             availableCustomerTypes = new ArrayList<Pair>();
-            YukonSelectionList ciCustTypes = YukonListFuncs.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_ID_CUSTOMER_TYPE);
+            YukonSelectionList ciCustTypes = DaoFactory.getYukonListDao().getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_ID_CUSTOMER_TYPE);
                
         	availableCustomerTypes.add(new Pair(new Integer(-1), new String("Residential")));	//we'll use -1 as Residential
         	

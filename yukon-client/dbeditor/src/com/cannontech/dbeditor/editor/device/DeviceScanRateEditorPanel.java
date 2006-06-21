@@ -13,24 +13,23 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.capcontrol.CapBankController6510;
 import com.cannontech.database.data.capcontrol.CapBankController702x;
 import com.cannontech.database.data.device.CCUBase;
+import com.cannontech.database.data.device.DNPBase;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.IEDMeter;
 import com.cannontech.database.data.device.LCUBase;
 import com.cannontech.database.data.device.MCTBase;
-import com.cannontech.database.data.device.MCT410IL;
 import com.cannontech.database.data.device.PagingTapTerminal;
+import com.cannontech.database.data.device.RTCBase;
+import com.cannontech.database.data.device.RTM;
 import com.cannontech.database.data.device.RTUBase;
-import com.cannontech.database.data.device.DNPBase;
 import com.cannontech.database.data.device.RepeaterBase;
-import com.cannontech.database.data.device.TCUBase;
 import com.cannontech.database.data.device.Series5Base;
+import com.cannontech.database.data.device.TCUBase;
 import com.cannontech.database.data.device.TwoWayDevice;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.device.DeviceScanRate;
 import com.cannontech.database.db.device.DeviceWindow;
-import com.cannontech.database.data.device.RTM;
-import com.cannontech.database.data.device.RTCBase;
 
 /**
  * This type was created in VisualAge.

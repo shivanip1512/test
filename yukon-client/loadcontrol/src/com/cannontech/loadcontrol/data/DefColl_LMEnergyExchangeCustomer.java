@@ -4,8 +4,6 @@ package com.cannontech.loadcontrol.data;
  * Creation date: (5/28/2001 2:08:29 PM)
  * @author: Aaron Lauinger
  */
-import java.util.Vector;
-
 import com.cannontech.message.util.VectorExtract;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;

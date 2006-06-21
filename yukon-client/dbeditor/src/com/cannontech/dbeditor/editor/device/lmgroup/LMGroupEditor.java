@@ -1,10 +1,10 @@
 package com.cannontech.dbeditor.editor.device.lmgroup;
 
 import com.cannontech.common.gui.util.DataInputPanel;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.common.login.ClientSession;
-import com.cannontech.roles.application.DBEditorRole;
 import com.cannontech.common.util.ClientRights;
+import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.roles.application.DBEditorRole;
 
 /**
  * This type was created in VisualAge.

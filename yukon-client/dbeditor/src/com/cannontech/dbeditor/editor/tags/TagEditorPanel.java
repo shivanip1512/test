@@ -14,8 +14,6 @@ package com.cannontech.dbeditor.editor.tags;
  */
 
 import com.cannontech.common.gui.util.DataInputPanel;
-
-import com.cannontech.database.db.tags.Tag;
 import com.cannontech.dbeditor.wizard.tags.TagsBasePanel;
 
 

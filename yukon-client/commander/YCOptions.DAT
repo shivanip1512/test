@@ -1,0 +1,6 @@
+PRIORITY=14
+QUEUE=false
+SHOWLOG=true
+CONFIRM=false
+FILEDIR=C:\larry\head\yukon-client\commands\
+DIVIDER=190

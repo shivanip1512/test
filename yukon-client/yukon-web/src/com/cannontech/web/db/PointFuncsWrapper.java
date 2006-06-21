@@ -2,7 +2,6 @@ package com.cannontech.web.db;
 
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.db.DBPersistent;
-import com.cannontech.database.db.capcontrol.CapBank;
 
 public class PointFuncsWrapper {
 

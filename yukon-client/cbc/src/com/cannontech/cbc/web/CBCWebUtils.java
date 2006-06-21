@@ -8,30 +8,23 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
 import org.springframework.jdbc.core.JdbcOperations;
-import org.springframework.jdbc.core.PreparedStatementCreator;
-import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.cache.functions.AuthFuncs;
-import com.cannontech.database.cache.functions.PAOFuncs;
-import com.cannontech.database.data.device.DeviceBase;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.SystemLogData;
 import com.cannontech.database.db.capcontrol.CCEventLog;
-import com.cannontech.database.db.capcontrol.CapBank;
 import com.cannontech.database.db.point.SystemLog;
 import com.cannontech.roles.capcontrol.CBCSettingsRole;
 import com.cannontech.util.ServletUtil;
@@ -170,11 +163,11 @@ public class CBCWebUtils implements CBCParamValues
 		LiteYukonUser yukUser = (LiteYukonUser)ServletUtil.getYukonUser(session);
 		
 		LiteYukonRoleProperty liteProp =
-			AuthFuncs.getRoleProperty(CBCSettingsRole.ALLOW_CONTROLS);
+			DaoFactory.getAuthDao().getRoleProperty(CBCSettingsRole.ALLOW_CONTROLS);
 
 		if( yukUser != null && liteProp != null )
 		{
-			String val = AuthFuncs.getRolePropertyValue(
+			String val = DaoFactory.getAuthDao().getRolePropertyValue(
 				yukUser,
 				liteProp.getRolePropertyID() );
 			

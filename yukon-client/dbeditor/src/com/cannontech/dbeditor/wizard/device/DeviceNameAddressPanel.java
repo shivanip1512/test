@@ -1,21 +1,19 @@
 package com.cannontech.dbeditor.wizard.device;
 import java.awt.Dimension;
 
+import com.cannontech.common.gui.unchanging.LongRangeDocument;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.device.CarrierBase;
+import com.cannontech.database.data.device.DNPBase;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.IDLCBase;
-import com.cannontech.database.data.device.MCT_Broadcast;
-import com.cannontech.database.data.device.DNPBase;
+import com.cannontech.database.data.device.Ion7700;
 import com.cannontech.database.data.device.RTCBase;
 import com.cannontech.database.data.device.RTM;
-import com.cannontech.database.data.device.Series5Base;
 import com.cannontech.database.data.device.Repeater900;
-import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.data.device.Series5Base;
 import com.cannontech.database.db.device.DeviceCarrierSettings;
-import com.cannontech.database.data.device.Ion7700;
-import com.cannontech.common.gui.unchanging.LongRangeDocument;
-import com.cannontech.common.util.CtiUtilities;
 
 /**
  * This type was created in VisualAge.

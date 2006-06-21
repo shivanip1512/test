@@ -1,4 +1,7 @@
 package com.cannontech.dbeditor.wizard.state;
+
+import com.cannontech.core.dao.DaoFactory;
+
 /**
  * This type was created in VisualAge.
  */
@@ -149,7 +152,7 @@ private javax.swing.JComboBox getJComboBoxCategory() {
 
          getJComboBoxCategory().addItem( com.cannontech.common.util.CtiUtilities.STRING_NONE );
 
-			String[] cats = com.cannontech.database.cache.functions.YukonImageFuncs.getAllCategoris();
+			String[] cats = DaoFactory.getYukonImageDao().getAllCategoris();
 			for( int i = 0; i < cats.length; i++ )
 				getJComboBoxCategory().addItem( cats[i] );
 

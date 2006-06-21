@@ -6,8 +6,6 @@
  */
 package com.cannontech.analysis.data.stars;
 
-import java.util.ArrayList;
-
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
 

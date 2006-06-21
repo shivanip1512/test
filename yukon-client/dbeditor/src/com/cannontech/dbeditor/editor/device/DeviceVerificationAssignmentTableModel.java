@@ -7,11 +7,10 @@
 package com.cannontech.dbeditor.editor.device;
 
 import java.util.Vector;
-import javax.swing.table.AbstractTableModel;
-import com.cannontech.database.data.lite.LiteGear;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 
-import com.cannontech.dbeditor.editor.device.DeviceVerificationAssignmentPanel;
+import javax.swing.table.AbstractTableModel;
+
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 
 /**
  * @author jdayton

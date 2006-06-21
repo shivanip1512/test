@@ -1,12 +1,14 @@
 package com.cannontech.dbeditor.wizard.device.lmgroup;
 
-import javax.swing.JCheckBox;
-import com.cannontech.database.db.device.lm.IlmDefines;
-import javax.swing.JOptionPane;
 import java.awt.Color;
+
+import javax.swing.JCheckBox;
 import javax.swing.JDialog;
-import com.cannontech.database.db.device.lm.LMGroupExpressComAddress;
+import javax.swing.JOptionPane;
+
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.db.device.lm.IlmDefines;
+import com.cannontech.database.db.device.lm.LMGroupExpressComAddress;
 
 /**
  * This type was created in VisualAge.

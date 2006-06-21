@@ -1,6 +1,6 @@
 package com.cannontech.notif.outputs;
 
-import com.cannontech.database.cache.functions.YukonListFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.notification.NotifType;
 
 /**
@@ -10,7 +10,7 @@ public class StandardEmailHandler extends GenericEmailHandler {
 
     static public final NotificationTypeChecker checker = new NotificationTypeChecker() {
         public boolean validNotifcationType(int notificationCategoryId) {
-            return YukonListFuncs.isEmail(notificationCategoryId);
+            return DaoFactory.getYukonListDao().isEmail(notificationCategoryId);
         };
     };
 

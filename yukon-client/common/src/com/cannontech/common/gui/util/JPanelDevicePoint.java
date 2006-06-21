@@ -3,6 +3,7 @@ package com.cannontech.common.gui.util;
 import java.util.Collections;
 
 import com.cannontech.database.data.lite.LiteComparators;
+import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * Insert the type's description here.
@@ -240,7 +241,7 @@ private void initDeviceComboBox()
 	getJComboBoxDevice().removeAllItems();
 
 	//add all of our devices to the ComboBox
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized( cache )
 	{
 		java.util.List deviceList = cache.getAllDevices();
@@ -376,7 +377,7 @@ public void jComboBoxDevice_ActionPerformed(java.awt.event.ActionEvent actionEve
 		com.cannontech.database.data.lite.LiteYukonPAObject selectedDevice = 
 				(com.cannontech.database.data.lite.LiteYukonPAObject)getJComboBoxDevice().getSelectedItem();
 		
-		com.cannontech.database.cache.DefaultDatabaseCache cache = 
+		IDatabaseCache cache = 
 				com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 
 		synchronized( cache )

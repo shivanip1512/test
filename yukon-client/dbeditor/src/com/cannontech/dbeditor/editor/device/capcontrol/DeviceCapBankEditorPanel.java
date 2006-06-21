@@ -4,12 +4,11 @@ import java.util.ArrayList;
 
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.cache.functions.DeviceFuncs;
-import com.cannontech.database.cache.functions.PAOFuncs;
-import com.cannontech.database.cache.functions.PointFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * This type was created in VisualAge.
@@ -234,7 +233,7 @@ private void connEtoC8(java.awt.event.ActionEvent arg1) {
 		if(getControlDeviceComboBox().getModel().getSize() > 0)
 		{
 			int deviceID = ((LiteYukonPAObject)getControlDeviceComboBox().getSelectedItem()).getYukonID();
-			LitePoint[] litPts = PAOFuncs.getLitePointsForPAObject( deviceID );
+			LitePoint[] litPts = DaoFactory.getPaoDao().getLitePointsForPAObject( deviceID );
 			for(int i = 0; i < litPts.length; i++)
 			{
 				if( litPts[i].getPointType() == PointTypes.STATUS_POINT)
@@ -1169,7 +1168,7 @@ public void operationalStateComboBox_ActionPerformed(java.awt.event.ActionEvent 
 		if( getControlDeviceComboBox().getModel().getSize() > 0 )
 			getControlDeviceComboBox().removeAllItems();	
 	
-		com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+		IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 		synchronized(cache)
 		{
 			java.util.List devices = cache.getAllUnusedCCDevices();
@@ -1185,7 +1184,7 @@ public void operationalStateComboBox_ActionPerformed(java.awt.event.ActionEvent 
 			{
 				litePoint = (LitePoint)points.get(i);
 			
-				liteDevice = PAOFuncs.getLiteYukonPAO( litePoint.getPaobjectID() );
+				liteDevice = DaoFactory.getPaoDao().getLiteYukonPAO( litePoint.getPaobjectID() );
 				
 				//System device, leave it alone
 				if(litePoint.getPaobjectID() == 0)
@@ -1207,7 +1206,7 @@ public void operationalStateComboBox_ActionPerformed(java.awt.event.ActionEvent 
 					getControlDeviceComboBox().addItem( lstToAdd.get(i) );
 					
 				ArrayList pts = (ArrayList)
-					DeviceFuncs.getAllLiteDevicesWithPoints().get(getControlDeviceComboBox().getSelectedItem());
+					DaoFactory.getDeviceDao().getAllLiteDevicesWithPoints().get(getControlDeviceComboBox().getSelectedItem());
 			}
 		}
 	}
@@ -1273,7 +1272,7 @@ public void setValue(Object val)
 	if( getControlDeviceComboBox().getModel().getSize() > 0 )
 		getControlDeviceComboBox().removeAllItems();	
 
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized(cache)
 	{
 		java.util.List devices = cache.getAllUnusedCCDevices();
@@ -1290,7 +1289,7 @@ public void setValue(Object val)
 			litePoint = 
 					(LitePoint)points.get(i);
 			
-			liteDevice = PAOFuncs.getLiteYukonPAO( litePoint.getPaobjectID() );
+			liteDevice = DaoFactory.getPaoDao().getLiteYukonPAO( litePoint.getPaobjectID() );
 
 			if( litePoint.getPointType() == PointTypes.STATUS_POINT )
 			{
@@ -1304,7 +1303,7 @@ public void setValue(Object val)
 		if( lstToAdd.size() > 0 )
 		{
 			LiteYukonPAObject usedDevice = 
-					PAOFuncs.getLiteYukonPAO(controlDeviceID.intValue());
+					DaoFactory.getPaoDao().getLiteYukonPAO(controlDeviceID.intValue());
 
 			//usedDevice is null for all Fixed CapBanks
 			if( usedDevice != null )
@@ -1320,10 +1319,10 @@ public void setValue(Object val)
 				getControlDeviceComboBox().setSelectedItem( usedDevice );
 
 				ArrayList pts = (ArrayList)
-					DeviceFuncs.getAllLiteDevicesWithPoints().get(usedDevice);
+					DaoFactory.getDeviceDao().getAllLiteDevicesWithPoints().get(usedDevice);
 					
 				getControlPointComboBox().setSelectedItem(
-					PointFuncs.getLitePoint(controlPointID.intValue()) );
+					DaoFactory.getPointDao().getLitePoint(controlPointID.intValue()) );
 			}
 		}
 		

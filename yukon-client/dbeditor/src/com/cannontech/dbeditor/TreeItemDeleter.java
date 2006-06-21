@@ -4,9 +4,9 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import Acme.RefInt;
 import com.cannontech.common.gui.util.TreeViewPanel;
-import com.cannontech.database.cache.functions.*;
+import com.cannontech.core.dao.DBDeleteResult;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.db.DBPersistent;
@@ -49,7 +49,7 @@ public class TreeItemDeleter
 	{
 		int confirm = JOptionPane.NO_OPTION;
 		boolean canDelete = false, isMultiDelete = nodes.length > 1;
-		byte deleteVal = DBDeletionFuncs.STATUS_DISALLOW;
+		byte deleteVal = DaoFactory.getDbDeletionDao().STATUS_DISALLOW;
 		DBDeleteResult delRes = null;
 		
 		if( nodes.length <= 0 )
@@ -100,7 +100,7 @@ public class TreeItemDeleter
 				LiteFactory.convertLiteToDBPers( (LiteBase)nodes[i].getUserObject() );
 				
 			//get the info about this possible deletion candidate
-			delRes = DBDeletionFuncs.getDeleteInfo( 
+			delRes = DaoFactory.getDbDeletionDao().getDeleteInfo( 
 							deletables[i], nodes[i].getUserObject().toString() );
 	 		
 	   
@@ -108,11 +108,11 @@ public class TreeItemDeleter
 			{
 				try
 				{	
-		         deleteVal = DBDeletionFuncs.deletionAttempted( delRes );
-		         //dbDeletionWarning = DBDeletionFuncs.getTheWarning().toString();
+		         deleteVal = DaoFactory.getDbDeletionDao().deletionAttempted( delRes );
+		         //dbDeletionWarning = DaoFactory.getDbDeletionDao().getTheWarning().toString();
 		         
 		         //as soon as we can NOT delete, preserve that false value
-		         canDelete = (deleteVal == DBDeletionFuncs.STATUS_ALLOW || deleteVal == DBDeletionFuncs.STATUS_CONFIRM);
+		         canDelete = (deleteVal == DaoFactory.getDbDeletionDao().STATUS_ALLOW || deleteVal == DaoFactory.getDbDeletionDao().STATUS_CONFIRM);
 		         
 		         if( !canDelete )
 		         	break;

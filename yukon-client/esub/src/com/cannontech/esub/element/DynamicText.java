@@ -8,7 +8,7 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.Properties;
 
-import com.cannontech.database.cache.functions.PointFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.esub.Drawing;
 import com.cannontech.esub.PointAttributes;
@@ -146,7 +146,7 @@ public void setPoint(com.cannontech.database.data.lite.LitePoint newPoint) {
  * @param newPointID int
  */
 public void setPointID(int newPointID)  {
-	LitePoint lp = PointFuncs.getLitePoint( newPointID ); 
+	LitePoint lp = DaoFactory.getPointDao().getLitePoint( newPointID ); 
 	if(lp != null) {
 		point = lp;
 	}

@@ -1,6 +1,7 @@
 <html>
 <%@ include file="include/billing_header.jsp" %>
 <%@ page import="com.cannontech.database.cache.DefaultDatabaseCache"%>
+<%@ page import="com.cannontech.yukon.IDatabaseCache"%>
 <%@ page import="com.cannontech.database.db.device.DeviceMeterGroup"%>
 <cti:checklogin/> 
 <head>
@@ -199,7 +200,7 @@ function deselectGroup(form)
 																	<td width="40%" align="right">Billing Group:</td>
 																	<td width="60%"> 
 																	<%
-																	  DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+																	  IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 																	  java.util.List collGroups = cache.getAllDMG_CollectionGroups();
 																	  java.util.List altGroups = cache.getAllDMG_AlternateGroups();
 																	  java.util.List billGroups = cache.getAllDMG_BillingGroups();

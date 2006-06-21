@@ -1,5 +1,4 @@
 package com.cannontech.dbeditor.editor.notification.group;
-import javax.swing.BorderFactory;
 import javax.swing.JScrollPane;
 
 import com.cannontech.common.util.CtiUtilities;

@@ -6,7 +6,7 @@ import com.cannontech.cc.dao.BaseEventDao;
 import com.cannontech.cc.dao.CustomerDao;
 import com.cannontech.cc.model.BaseEvent;
 import com.cannontech.cc.model.CICustomerStub;
-import com.cannontech.database.cache.functions.CustomerFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
@@ -19,7 +19,7 @@ public class CustomerEventService {
     }
     
     public CICustomerStub getCustomer(LiteYukonUser user) {
-        LiteCICustomer liteCICustomer = CustomerFuncs.getCustomerForUser(user);
+        LiteCICustomer liteCICustomer = DaoFactory.getCustomerDao().getCustomerForUser(user);
         CICustomerStub customerStub = customerDao.getForLite(liteCICustomer);
         return customerStub;
     }

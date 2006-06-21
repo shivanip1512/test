@@ -3,7 +3,6 @@
  */
 package com.cannontech.cttp.test;
 
-import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 
 import junit.framework.Test;

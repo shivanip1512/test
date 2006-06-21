@@ -1,12 +1,12 @@
 package com.cannontech.database.model;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
 
-import javax.swing.tree.TreePath;
-
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.cache.functions.PAOFuncs;
-import com.cannontech.database.data.lite.*;
+import com.cannontech.database.data.lite.LiteBase;
+import com.cannontech.database.data.lite.LiteComparators;
+import com.cannontech.database.data.lite.LiteTypes;
+import com.cannontech.yukon.IDatabaseCache;
 
 public class SystemDeviceModel extends DBTreeModel 
 {
@@ -123,7 +123,7 @@ public class SystemDeviceModel extends DBTreeModel
      * Creation date: (4/24/2002 9:24:01 AM)
      * @return java.util.List
      */
-    protected synchronized List getCacheList(DefaultDatabaseCache cache ) 
+    protected synchronized List getCacheList(IDatabaseCache cache ) 
     {
         return cache.getAllSystemPoints();
     }
@@ -155,7 +155,7 @@ public class SystemDeviceModel extends DBTreeModel
      */
     protected synchronized void runUpdate() 
     {
-        DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+        IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 
         synchronized (cache)
         {

@@ -2,7 +2,7 @@ package com.cannontech.notif.outputs;
 
 import java.util.*;
 
-import com.cannontech.database.cache.functions.CustomerFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.*;
 
 public class ContactableCustomer extends ContactableBase {
@@ -15,7 +15,7 @@ public class ContactableCustomer extends ContactableBase {
      */
     public ContactableCustomer(LiteCICustomer customer) {
         _liteCustomer = customer;
-        List contacts = CustomerFuncs.getAllContacts(customer.getCustomerID());
+        List contacts = DaoFactory.getCustomerDao().getAllContacts(customer.getCustomerID());
         for (Iterator iter = contacts.iterator(); iter.hasNext();) {
             LiteContact contact = (LiteContact) iter.next();
             _contactList.add(new ContactableContact(contact));

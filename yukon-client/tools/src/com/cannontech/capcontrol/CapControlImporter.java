@@ -7,8 +7,9 @@
 package com.cannontech.capcontrol;
 import java.awt.Dimension;
 import java.awt.Toolkit;
+
 import javax.swing.UIManager;
-import com.cannontech.clientutils.CTILogger;
+
 import com.cannontech.database.data.capcontrol.CapBank;
 /**
  * @author ASolberg

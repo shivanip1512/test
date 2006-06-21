@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.cannontech.common.cache.PointChangeCache;
 import com.cannontech.common.constants.LoginController;
 import com.cannontech.common.util.StringUtils;
-import com.cannontech.database.cache.functions.PAOFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.esub.util.Util;
@@ -71,7 +71,7 @@ public class ClearAlarm extends HttpServlet {
 	 * @param user
 	 */
 	private void ackDevice(int deviceId, Command cmd) {
-		LitePoint[] points = PAOFuncs.getLitePointsForPAObject(deviceId);
+		LitePoint[] points = DaoFactory.getPaoDao().getLitePointsForPAObject(deviceId);
 		for (int i = 0; i < points.length; i++) {
 			LitePoint point = points[i];
 			ackPoint(point.getPointID(), cmd);	

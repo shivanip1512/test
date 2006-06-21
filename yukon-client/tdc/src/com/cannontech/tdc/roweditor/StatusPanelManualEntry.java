@@ -8,7 +8,6 @@ package com.cannontech.tdc.roweditor;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.tdc.TDCMainFrame;
-import com.cannontech.tdc.alarms.gui.AlarmingRow;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
 
 public class StatusPanelManualEntry extends ManualEntryJPanel implements RowEditorDialogListener 

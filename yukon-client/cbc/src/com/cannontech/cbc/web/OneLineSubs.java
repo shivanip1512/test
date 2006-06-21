@@ -1,6 +1,5 @@
 package com.cannontech.cbc.web;
 
-import com.cannontech.cbc.web.CCOneLineGenerator;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.esub.Drawing;

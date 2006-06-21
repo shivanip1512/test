@@ -2,7 +2,7 @@ package com.cannontech.yukon.server.cache;
 
 import java.util.Map;
 
-import com.cannontech.database.cache.functions.PointFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointUnits;
 
@@ -227,7 +227,7 @@ private synchronized void loadPointTags()
 				uofmID = PointUnits.UOMID_INVALID;
 
 
-			LitePoint point = PointFuncs.getLitePoint( pointID );
+			LitePoint point = DaoFactory.getPointDao().getLitePoint( pointID );
 			if( point != null )
 			{
 				point.setUofmID( uofmID );

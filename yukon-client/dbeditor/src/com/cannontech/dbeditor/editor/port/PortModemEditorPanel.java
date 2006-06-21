@@ -6,9 +6,8 @@ package com.cannontech.dbeditor.editor.port;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.pao.PAOGroups;
-import com.cannontech.database.data.port.LocalDialupPort;
 import com.cannontech.database.data.port.DirectPort;
-import com.cannontech.database.data.port.LocalSharedPort;
+import com.cannontech.database.data.port.LocalDialupPort;
 import com.cannontech.database.data.port.TerminalServerDialupPort;
 import com.cannontech.database.db.port.PortDialupModem;
  

@@ -6,14 +6,14 @@ import java.util.Hashtable;
 import java.util.List;
 
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.cache.functions.LMFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteLMProgScenario;
 import com.cannontech.loadcontrol.LCUtils;
+import com.cannontech.loadcontrol.data.ILMData;
+import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMControlAreaTrigger;
 import com.cannontech.loadcontrol.data.LMGroupBase;
 import com.cannontech.loadcontrol.data.LMProgramBase;
-import com.cannontech.loadcontrol.data.ILMData;
-import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMScenarioWrapper;
 import com.cannontech.loadcontrol.messages.LMCommand;
 import com.cannontech.loadcontrol.messages.LMManualControlRequest;
@@ -660,7 +660,7 @@ public final class LMCmdMsgFactory
 
 
 				LiteLMProgScenario[] programs = 
-						LMFuncs.getLMScenarioProgs( lmScenario.getYukonID().intValue() );
+						DaoFactory.getLmDao().getLMScenarioProgs( lmScenario.getYukonID().intValue() );
 
 				for( int i = 0; i < programs.length; i++ )
 				{
@@ -705,7 +705,7 @@ public final class LMCmdMsgFactory
 
 
 				LiteLMProgScenario[] programs = 
-						LMFuncs.getLMScenarioProgs( lmScenario.getYukonID().intValue() );
+						DaoFactory.getLmDao().getLMScenarioProgs( lmScenario.getYukonID().intValue() );
 
 				for( int i = 0; i < programs.length; i++ )
 				{

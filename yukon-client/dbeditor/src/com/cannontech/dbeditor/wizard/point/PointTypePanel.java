@@ -1,7 +1,6 @@
 package com.cannontech.dbeditor.wizard.point;
 
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointFactory;
 

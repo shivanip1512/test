@@ -17,7 +17,6 @@ import javax.xml.rpc.ServiceException;
 import javax.xml.rpc.Stub;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.version.VersionTools;
 
 
 /**

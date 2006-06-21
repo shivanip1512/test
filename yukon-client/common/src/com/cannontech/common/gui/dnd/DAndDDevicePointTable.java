@@ -8,6 +8,7 @@ package com.cannontech.common.gui.dnd;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.yukon.IDatabaseCache;
 
 public class DAndDDevicePointTable extends DragAndDropTable implements java.awt.dnd.DropTargetListener, java.awt.dnd.DragGestureListener
 {
@@ -34,7 +35,7 @@ public class DAndDDevicePointTable extends DragAndDropTable implements java.awt.
 	 */
 	private void addDevice(LiteYukonPAObject device)
 	{
-		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+		IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 		java.util.List devicePoints = cache.getAllPoints();
 		
 		for (int i=0; i<devicePoints.size(); i++)

@@ -1,6 +1,6 @@
 package com.cannontech.roles.yukon;
 
-import com.cannontech.roles.*;
+import com.cannontech.roles.YukonRoleDefs;
 
 /**
  * @author yao

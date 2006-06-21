@@ -7,9 +7,7 @@
 package com.cannontech.yukon.server.cache.bypass;
 
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.LiteContactNotification;
-import com.cannontech.database.db.contact.ContactNotification; 
 
 /**
  * @author jdayton
@@ -20,7 +18,7 @@ import com.cannontech.database.db.contact.ContactNotification;
 public class YukonUserContactNotificationLookup 
 {
 	/**
-	 * Constructor for YukonUserFuncs.
+	 * Constructor for DaoFactory.getYukonUserDao().
 	 */
 	public YukonUserContactNotificationLookup()
 	{

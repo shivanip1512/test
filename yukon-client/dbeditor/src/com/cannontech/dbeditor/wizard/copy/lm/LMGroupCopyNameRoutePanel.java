@@ -5,13 +5,11 @@ package com.cannontech.dbeditor.wizard.copy.lm;
  */
 
 import com.cannontech.common.gui.util.TextFieldDocument;
-import com.cannontech.database.data.device.lm.LMGroup;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.device.lm.IGroupRoute;
-import com.cannontech.common.editor.PropertyPanelEvent;
-import com.cannontech.database.data.lite.LiteComparators;
-import java.util.Collections;
-import com.cannontech.database.cache.functions.PAOFuncs;
+import com.cannontech.database.data.device.lm.LMGroup;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.yukon.IDatabaseCache;
 
 /*
  * @author jdayton
@@ -352,7 +350,7 @@ public Object getValue(Object o)
 	com.cannontech.database.data.multi.MultiDBPersistent objectsToAdd = new com.cannontech.database.data.multi.MultiDBPersistent();
 	objectsToAdd.getDBPersistentVector().add(group);
 	
-	LitePoint[] litPts = PAOFuncs.getLitePointsForPAObject( previousGroupID );
+	LitePoint[] litPts = DaoFactory.getPaoDao().getLitePointsForPAObject( previousGroupID );
 	int startingPointID = com.cannontech.database.db.point.Point.getNextPointID();
 	
 	for(int c = 0; c < litPts.length; c++)
@@ -501,7 +499,7 @@ public void setValue(Object o)
 		getJComboBoxRoutes().setVisible(true);
 		getJLabelRoute().setVisible(true);
 		
-		com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+		IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 		synchronized(cache)
 		{
 			java.util.List routes = cache.getAllRoutes();

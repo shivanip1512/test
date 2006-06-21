@@ -1,12 +1,11 @@
 package com.cannontech.database.data.device.lm;
 
-import com.cannontech.database.db.device.lm.LMControlAreaTrigger;
-import com.cannontech.database.db.device.lm.LMControlAreaProgram;
 import java.util.Vector;
-import com.cannontech.database.db.DBPersistent;
+
 import com.cannontech.database.db.NestedDBPersistent;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.NestedDBPersistentComparators;
+import com.cannontech.database.db.device.lm.LMControlAreaProgram;
+import com.cannontech.database.db.device.lm.LMControlAreaTrigger;
 /**
  * Insert the type's description here.
  * Creation date: (12/6/00 3:54:11 PM)

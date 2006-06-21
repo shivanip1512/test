@@ -22,9 +22,9 @@ import com.cannontech.analysis.data.lm.SettlementCustomer;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteRawPointHistory;
 import com.cannontech.database.data.lite.LiteSettlementConfig;
@@ -366,7 +366,7 @@ public class HECO_SettlementModelBase extends ReportModelBase
 		try
 		{
 			Integer groupID = new Integer(rset.getInt(1));
-            String groupName = PAOFuncs.getYukonPAOName(groupID.intValue());
+            String groupName = DaoFactory.getPaoDao().getYukonPAOName(groupID.intValue());
             if( groupName.toLowerCase().indexOf("cidlc") > -1)
             {
     			Timestamp startTS = rset.getTimestamp(2);

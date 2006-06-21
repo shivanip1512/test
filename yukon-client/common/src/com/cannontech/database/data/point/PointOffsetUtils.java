@@ -1,6 +1,6 @@
 package com.cannontech.database.data.point;
 
-import com.cannontech.database.cache.functions.PAOFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LitePoint;
 
 public class PointOffsetUtils {
@@ -11,7 +11,7 @@ public class PointOffsetUtils {
     }
 
     public static boolean isValidPointOffset(int offset, Integer paoId, int type){
-    	LitePoint[] points = PAOFuncs.getLitePointsForPAObject(paoId.intValue());
+    	LitePoint[] points = DaoFactory.getPaoDao().getLitePointsForPAObject(paoId.intValue());
 		for (int i = 0; i < points.length; i++) {
 		    LitePoint point = points[i];
 		    if (point.getPointType() == type ) {
@@ -29,7 +29,7 @@ public class PointOffsetUtils {
     }
     
     public static int getMaxPointOffsetForDevice(Integer paoId, int pointType) {
-        LitePoint[] points = PAOFuncs.getLitePointsForPAObject(paoId.intValue());
+        LitePoint[] points = DaoFactory.getPaoDao().getLitePointsForPAObject(paoId.intValue());
         int maxOffset = 0;
         for (int i = 0; i < points.length; i++) {
             LitePoint point = points[i];

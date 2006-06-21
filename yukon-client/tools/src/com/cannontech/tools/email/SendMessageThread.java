@@ -3,9 +3,9 @@ package com.cannontech.tools.email;/**
  * Creation date: (11/14/2001 11:32:29 PM)
  * @author: 
  */
-import javax.mail.Transport;
-import javax.mail.Session;
 import javax.mail.Message;
+import javax.mail.Session;
+import javax.mail.Transport;
 
 class SendMessageThread extends Thread 
 {

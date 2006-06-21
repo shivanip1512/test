@@ -1,7 +1,9 @@
 package com.cannontech.common.gui.table;
 
-import javax.swing.DefaultComboBoxModel;
 import java.util.Vector;
+
+import javax.swing.DefaultComboBoxModel;
+
 import com.cannontech.common.gui.util.ComboBoxTableRenderer;
 
 /**

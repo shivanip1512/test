@@ -1,12 +1,12 @@
 package com.cannontech.dbeditor.editor.device.lmprogram;
 
 import com.cannontech.common.gui.util.DataInputPanel;
+import com.cannontech.common.login.ClientSession;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.dbeditor.wizard.device.lmprogram.LMProgramBasePanel;
 import com.cannontech.dbeditor.wizard.device.lmprogram.LMProgramControlWindowPanel;
-import com.cannontech.common.login.ClientSession;
 import com.cannontech.roles.application.DBEditorRole;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.user.UserUtils;
 /**
  * This type was created in VisualAge.

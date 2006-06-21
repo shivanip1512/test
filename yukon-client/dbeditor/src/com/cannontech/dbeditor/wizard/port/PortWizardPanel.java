@@ -3,8 +3,6 @@ package com.cannontech.dbeditor.wizard.port;
 /**
  * This type was created in VisualAge.
  */
-import javax.swing.UIManager;
-
 import com.cannontech.common.gui.util.DataInputPanel;
 
 public class PortWizardPanel extends com.cannontech.common.wizard.WizardPanel {

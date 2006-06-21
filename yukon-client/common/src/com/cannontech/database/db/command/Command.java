@@ -5,15 +5,16 @@ import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.cache.functions.CommandFuncs;
 import com.cannontech.database.data.command.DeviceTypeCommand;
 import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * Creation date: (10/18/2001 1:20:37 PM)
@@ -78,7 +79,7 @@ public void delete() throws java.sql.SQLException
  */
 private void deleteDeviceTypeCommands() throws java.sql.SQLException
 {
-	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 	synchronized( cache )
 	{
 		java.util.List devTypeCmds = cache.getAllDeviceTypeCommands();
@@ -406,7 +407,7 @@ public void update() throws java.sql.SQLException
 		if( typeOfChange == DBChangeMsg.CHANGE_TYPE_DELETE )
 		{
 			//get all the deviceCommandIds that have this Command
-		    Vector liteDevTypeCmds = CommandFuncs.getAllDevTypeCommands(getCommandID().intValue());
+		    Vector liteDevTypeCmds = DaoFactory.getCommandDao().getAllDevTypeCommands(getCommandID().intValue());
 			
 			//add a new message for each point
 			for( int i = 0; i < liteDevTypeCmds.size(); i++ )

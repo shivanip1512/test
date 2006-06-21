@@ -2,6 +2,7 @@ package com.cannontech.web.editor.point;
 
 import java.util.HashMap;
 import java.util.List;
+
 import javax.faces.model.SelectItem;
 
 import com.cannontech.database.data.fdr.FDRInterface;

@@ -12,12 +12,8 @@ import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.cache.functions.ContactFuncs;
-import com.cannontech.database.cache.functions.PAOFuncs;
-import com.cannontech.database.cache.functions.RoleFuncs;
-import com.cannontech.database.cache.functions.YukonListFuncs;
-import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteContact;
@@ -157,20 +153,20 @@ public class StarsDatabaseCache implements DBChangeListener {
 		
 		releaseAllCache();
 		DefaultDatabaseCache.getInstance().releaseAllCache();
-		YukonListFuncs.releaseAllConstants();
+		DaoFactory.getYukonListDao().releaseAllConstants();
 		
 		SwitchCommandQueue.getInstance().syncFromFile();
 		OptOutEventQueue.getInstance().syncFromFile();
 		
 		// Reload data into the cache if necessary
-		String preloadData = RoleFuncs.getGlobalPropertyValue( SystemRole.STARS_PRELOAD_DATA );
+		String preloadData = DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.STARS_PRELOAD_DATA );
 		if (CtiUtilities.isTrue( preloadData ))
 			StarsDatabaseCache.getInstance().loadData();
 	}
 
 	public void refreshCache(LiteStarsEnergyCompany energyCompany) {
 		webConfigList = null;
-		YukonListFuncs.releaseAllConstants();
+		DaoFactory.getYukonListDao().releaseAllConstants();
 		
 		// release cache for all descendants of the current company as well
 		final ArrayList descendants = ECUtils.getAllDescendants( energyCompany );
@@ -190,7 +186,7 @@ public class StarsDatabaseCache implements DBChangeListener {
 		OptOutEventQueue.getInstance().syncFromFile();
 		
 		// Reload data into the cache if necessary
-		String preloadData = RoleFuncs.getGlobalPropertyValue( SystemRole.STARS_PRELOAD_DATA );
+		String preloadData = DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.STARS_PRELOAD_DATA );
 		if (CtiUtilities.isTrue( preloadData )) {
 			getAllWebConfigurations();
 			
@@ -276,7 +272,7 @@ public class StarsDatabaseCache implements DBChangeListener {
 			for (int i = 0; i < companies.size(); i++) {
 	    		LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) companies.get(i);
 				if (company.getEnergyCompanyID().intValue() == energyCompanyID) {
-					String preloadData = RoleFuncs.getGlobalPropertyValue( SystemRole.STARS_PRELOAD_DATA );
+					String preloadData = DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.STARS_PRELOAD_DATA );
 					if (CtiUtilities.isFalse(preloadData)) company.init();
 					return company;
 				}
@@ -395,7 +391,7 @@ public class StarsDatabaseCache implements DBChangeListener {
 			}
 		}
 		else if (msg.getDatabase() == DBChangeMsg.CHANGE_CONTACT_DB) {
-			LiteContact liteContact = ContactFuncs.getContact( msg.getId() );
+			LiteContact liteContact = DaoFactory.getContactDao().getContact( msg.getId() );
 			
 			for (int i = 0; i < companies.size(); i++) {
 				LiteStarsEnergyCompany energyCompany = (LiteStarsEnergyCompany) companies.get(i);
@@ -428,7 +424,7 @@ public class StarsDatabaseCache implements DBChangeListener {
 			}
 		}
 		else if (msg.getDatabase() == DBChangeMsg.CHANGE_PAO_DB) {
-			LiteYukonPAObject litePao = PAOFuncs.getLiteYukonPAO( msg.getId() );
+			LiteYukonPAObject litePao = DaoFactory.getPaoDao().getLiteYukonPAO( msg.getId() );
 			
 			for (int i = 0; i < companies.size(); i++) {
 				LiteStarsEnergyCompany energyCompany = (LiteStarsEnergyCompany) companies.get(i);
@@ -489,7 +485,7 @@ public class StarsDatabaseCache implements DBChangeListener {
 		}
 		else if (msg.getDatabase() == DBChangeMsg.CHANGE_YUKON_USER_DB) {
 			if (msg.getCategory().equals( DBChangeMsg.CAT_YUKON_USER )) {
-				LiteContact liteContact = YukonUserFuncs.getLiteContact( msg.getId() );
+				LiteContact liteContact = DaoFactory.getYukonUserDao().getLiteContact( msg.getId() );
 				if (liteContact != null) {
 					for (int i = 0; i < companies.size(); i++) {
 						LiteStarsEnergyCompany energyCompany = (LiteStarsEnergyCompany) companies.get(i);
@@ -551,7 +547,7 @@ public class StarsDatabaseCache implements DBChangeListener {
 				break;
 				
 			case DBChangeMsg.CHANGE_TYPE_UPDATE :
-				LiteContact liteContact = ContactFuncs.getContact( msg.getId() );
+				LiteContact liteContact = DaoFactory.getContactDao().getContact( msg.getId() );
 				
 				if (contOwner instanceof LiteStarsEnergyCompany) {
 					StarsEnergyCompany starsEC = energyCompany.getStarsEnergyCompany();
@@ -636,7 +632,7 @@ public class StarsDatabaseCache implements DBChangeListener {
 					
 					StarsEnrLMProgram program = ServletUtils.getEnrollmentProgram( energyCompany.getStarsEnrollmentPrograms(), liteProg.getProgramID() );
 					if (program != null) {
-						program.setYukonName( PAOFuncs.getYukonPAOName(liteProg.getDeviceID()) );
+						program.setYukonName( DaoFactory.getPaoDao().getYukonPAOName(liteProg.getDeviceID()) );
 						StarsLiteFactory.setAddressingGroups( program, liteProg );
 					}
 				}
@@ -710,7 +706,7 @@ public class StarsDatabaseCache implements DBChangeListener {
 					for (int i = 0; i < starsAcctInfo.getStarsInventories().getStarsInventoryCount(); i++) {
 						StarsInventory starsInv = starsAcctInfo.getStarsInventories().getStarsInventory(i);
 						if (starsInv.getDeviceID() == msg.getId()) {
-							starsInv.getMCT().setDeviceName( PAOFuncs.getYukonPAOName(msg.getId()) );
+							starsInv.getMCT().setDeviceName( DaoFactory.getPaoDao().getYukonPAOName(msg.getId()) );
 							break;
 						}
 					}
@@ -732,7 +728,7 @@ public class StarsDatabaseCache implements DBChangeListener {
 				
 			case DBChangeMsg.CHANGE_TYPE_UPDATE:
 				if (starsAcctInfo.getStarsUser().getUserID() == msg.getId()) {
-					LiteYukonUser liteUser = YukonUserFuncs.getLiteYukonUser( msg.getId() );
+					LiteYukonUser liteUser = DaoFactory.getYukonUserDao().getLiteYukonUser( msg.getId() );
 					starsAcctInfo.setStarsUser( StarsLiteFactory.createStarsUser(liteUser, energyCompany) );
 				}
 				

@@ -3,7 +3,6 @@
  */
 package com.cannontech.database.data.lite;
 
-import com.cannontech.database.db.tags.Tag;
 
 /**
  * @author aaron

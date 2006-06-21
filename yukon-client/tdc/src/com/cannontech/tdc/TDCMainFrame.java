@@ -4,63 +4,67 @@ package com.cannontech.tdc;
  * Creation date: (1/20/00 11:51:54 AM)
  * @author: 
  */
-import com.cannontech.common.gui.util.CTIKeyEventDispatcher;
-import com.cannontech.common.gui.util.SplashWindow;
-import com.cannontech.common.login.ClientSession;
-import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.clientutils.AlarmFileWatchDog;
-import com.cannontech.clientutils.CTILogger;
-import com.cannontech.clientutils.commandlineparameters.CommandLineParser;
-import com.cannontech.message.util.Command;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.util.Message;
-import com.cannontech.message.util.MessageEvent;
-import com.cannontech.message.util.MessageListener;
-import com.cannontech.message.util.MessageUtils;
-import com.cannontech.roles.application.TDCRole;
-import com.cannontech.tdc.removedisplay.RemoveDisplayDialog;
-import com.cannontech.tdc.removedisplay.RemoveDisplayPanel;
-import com.cannontech.tdc.roweditor.SendData;
-import com.cannontech.tdc.spawn.SpawnTDCMainFrameEvent;
-import com.cannontech.tdc.bookmark.BookMarkBase;
-
-import javax.swing.JOptionPane;
-import javax.swing.UIManager;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableModel;
-
-import com.cannontech.tdc.filter.ITDCFilter;
-import com.cannontech.tdc.fonteditor.*;
-
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.KeyEvent;
-import com.klg.jclass.page.awt.*;
-import com.klg.jclass.page.*;
-import com.cannontech.tdc.logbox.MessageBoxFrame;
-import com.cannontech.tdc.createdisplay.ColumnEditorDialog;
-import com.cannontech.tdc.createdisplay.RemoveTemplateDialog;
-import com.cannontech.tdc.utils.DateTimeUserQuery;
-import com.cannontech.tdc.utils.TDCDefines;
-import com.cannontech.clientutils.commonutils.ModifiedDate;
-import com.cannontech.clientutils.parametersfile.ParameterNotFoundException;
-import com.cannontech.clientutils.parametersfile.ParametersFile;
-import com.cannontech.debug.gui.AboutDialog;
-
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Vector;
 
+import javax.swing.JOptionPane;
+import javax.swing.UIManager;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableModel;
+
+import com.cannontech.clientutils.AlarmFileWatchDog;
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.commandlineparameters.CommandLineParser;
+import com.cannontech.clientutils.commonutils.ModifiedDate;
+import com.cannontech.clientutils.parametersfile.ParameterNotFoundException;
+import com.cannontech.clientutils.parametersfile.ParametersFile;
+import com.cannontech.common.gui.util.CTIKeyEventDispatcher;
+import com.cannontech.common.gui.util.SplashWindow;
+import com.cannontech.common.login.ClientSession;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.debug.gui.AboutDialog;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.util.Command;
+import com.cannontech.message.util.Message;
+import com.cannontech.message.util.MessageEvent;
+import com.cannontech.message.util.MessageListener;
+import com.cannontech.message.util.MessageUtils;
+import com.cannontech.roles.application.TDCRole;
+import com.cannontech.tdc.bookmark.BookMarkBase;
+import com.cannontech.tdc.commandevents.AckAlarm;
+import com.cannontech.tdc.createdisplay.ColumnEditorDialog;
+import com.cannontech.tdc.createdisplay.RemoveTemplateDialog;
+import com.cannontech.tdc.data.Display;
 import com.cannontech.tdc.editdisplay.EditDisplayDialog;
 import com.cannontech.tdc.exportdata.ExportCreatedDisplay;
-import com.cannontech.tdc.commandevents.AckAlarm;
+import com.cannontech.tdc.filter.ITDCFilter;
+import com.cannontech.tdc.fonteditor.FontEditorFrame;
+import com.cannontech.tdc.logbox.MessageBoxFrame;
+import com.cannontech.tdc.removedisplay.RemoveDisplayDialog;
+import com.cannontech.tdc.removedisplay.RemoveDisplayPanel;
+import com.cannontech.tdc.roweditor.SendData;
+import com.cannontech.tdc.spawn.SpawnTDCMainFrameEvent;
 import com.cannontech.tdc.spawn.TDCMainFrameSpawnListener;
-import com.cannontech.tdc.data.Display;
+import com.cannontech.tdc.utils.DateTimeUserQuery;
+import com.cannontech.tdc.utils.TDCDefines;
+import com.klg.jclass.page.JCDocument;
+import com.klg.jclass.page.JCFlow;
+import com.klg.jclass.page.JCPageTable;
+import com.klg.jclass.page.JCPageTableFromJTable;
+import com.klg.jclass.page.JCPrinter;
+import com.klg.jclass.page.JCTextStyle;
+import com.klg.jclass.page.awt.JCAWTPreviewer;
+import com.klg.jclass.page.awt.JCAWTPrinter;
+import com.klg.jclass.page.awt.JCAWTScreenPrinter;
 
 public class TDCMainFrame extends javax.swing.JFrame implements com.cannontech.tdc.spawn.TDCMainFrameSpawnListener, TDCMainPanelListener, com.cannontech.tdc.toolbar.AlarmToolBarListener, java.awt.event.ActionListener, java.awt.event.ItemListener, java.util.Observer, MessageListener {
 	private Clock ticker = null;

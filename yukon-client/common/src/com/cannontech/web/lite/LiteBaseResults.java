@@ -8,12 +8,13 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * Executes a linear search by name on LitePAOs and
@@ -55,7 +56,7 @@ public class LiteBaseResults
 				return;
 			}
 
-			DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();	
+			IDatabaseCache cache = DefaultDatabaseCache.getInstance();	
 			synchronized(cache)
 			{
 				List allPaos = cache.getAllYukonPAObjects();				
@@ -73,7 +74,7 @@ public class LiteBaseResults
 						}
 							
 						LitePoint[] devPoints =
-							PAOFuncs.getLitePointsForPAObject( pao.getLiteID() );
+							DaoFactory.getPaoDao().getLitePointsForPAObject( pao.getLiteID() );
 						for( int j = 0; j < devPoints.length; j++ )
 						{
 							Matcher ptM = p.matcher( devPoints[j].getPointName() );

@@ -11,8 +11,8 @@ import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.capcontrol.CapControlActivityData;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.pao.PAOGroups;
 
 /**
@@ -208,15 +208,15 @@ public class CapControlNewActivityModel extends ReportModelBase
 				case DATE_TIME_COLUMN:
 				    return ccActivity.getDateTime();
 				case SUB_NAME_COLUMN:
-					return PAOFuncs.getYukonPAOName(ccActivity.getSubID().intValue());
+					return DaoFactory.getPaoDao().getYukonPAOName(ccActivity.getSubID().intValue());
 				case FEEDER_NAME_COLUMN:
-				    return PAOFuncs.getYukonPAOName(ccActivity.getFeederID().intValue());
+				    return DaoFactory.getPaoDao().getYukonPAOName(ccActivity.getFeederID().intValue());
 				case CAP_BANK_NAME_COLUMN:
-				    return PAOFuncs.getYukonPAOName(ccActivity.getCapBankID().intValue());
+				    return DaoFactory.getPaoDao().getYukonPAOName(ccActivity.getCapBankID().intValue());
 				case BANK_SIZE_COLUMN:
 					return ccActivity.getBankSize();
 				case CBC_NAME_COLUMN:
-					return PAOFuncs.getYukonPAOName(ccActivity.getCbcID().intValue());
+					return DaoFactory.getPaoDao().getYukonPAOName(ccActivity.getCbcID().intValue());
 				case ACTION_COLUMN:
 				    return ccActivity.getAction();
 				case DESCRIPTION_COLUMN:

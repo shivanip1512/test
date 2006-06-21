@@ -9,11 +9,10 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
-import com.cannontech.database.cache.functions.YukonListFuncs;
-import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.stars.hardware.MeterHardwareBase;
@@ -255,7 +254,7 @@ public void setExtract(Character extract) {
  */
 public static void handleCRSIntegration(int stateYukDefID, WorkOrderBase workOrderBase, LiteStarsCustAccountInformation liteStarsCustAcctInfo, LiteStarsEnergyCompany liteStarsEC, int userID, String meterNumber) throws TransactionException
 {
-    YukonListEntry workTypeEntry = YukonListFuncs.getYukonListEntry(workOrderBase.getWorkOrderBase().getWorkTypeID().intValue());
+    YukonListEntry workTypeEntry = DaoFactory.getYukonListDao().getYukonListEntry(workOrderBase.getWorkOrderBase().getWorkTypeID().intValue());
     
 //  Only run through the SAMToCRS process if workOrder came from CRS Integration.  The CRS PJT number is stored in the AdditionalOrderNumber field
     if(workOrderBase.getWorkOrderBase().getAdditionalOrderNumber() != null && 
@@ -277,7 +276,7 @@ public static void handleCRSIntegration(int stateYukDefID, WorkOrderBase workOrd
             try{
                 samToCrs_ptj.setPTJID(Integer.valueOf(workOrderBase.getWorkOrderBase().getAdditionalOrderNumber()));
             }catch(NumberFormatException nfe){}
-            samToCrs_ptj.setStarsUserName(YukonUserFuncs.getLiteYukonUser(userID).getUsername());
+            samToCrs_ptj.setStarsUserName(DaoFactory.getYukonUserDao().getLiteYukonUser(userID).getUsername());
             samToCrs_ptj.setStatusCode(samToCrsStatus);
             samToCrs_ptj.setDateTime_Completed(new Date());
             samToCrs_ptj.setWorkOrderNumber(workOrderBase.getWorkOrderBase().getOrderNumber());

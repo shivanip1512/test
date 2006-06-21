@@ -5,7 +5,6 @@ package com.cannontech.dbeditor.wizard.device.lmprogram;
  * Creation date: (4/12/2004 2:39:47 PM)
  * @author: jdayton
  */
-import com.cannontech.common.util.StringUtils;
 import com.cannontech.database.db.device.lm.LMProgramDirectGear;
  
 public class NoControlGearPanel extends GenericGearPanel 

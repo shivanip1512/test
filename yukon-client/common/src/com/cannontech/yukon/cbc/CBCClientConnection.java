@@ -7,7 +7,7 @@ package com.cannontech.yukon.cbc;
  */
 import com.cannontech.common.util.MessageEvent;
 import com.cannontech.common.util.MessageEventListener;
-import com.cannontech.database.cache.functions.RoleFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.message.util.ClientConnection;
 import com.cannontech.roles.yukon.SystemRole;
 import com.roguewave.vsj.CollectableStreamer;
@@ -129,10 +129,10 @@ public class CBCClientConnection extends ClientConnection
 	 */
 	private void getExternalResources() 
 	{
-		setHost( RoleFuncs.getGlobalPropertyValue( SystemRole.CAP_CONTROL_MACHINE ) );
+		setHost( DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.CAP_CONTROL_MACHINE ) );
 	
 		setPort( Integer.parseInt(
-			RoleFuncs.getGlobalPropertyValue( SystemRole.CAP_CONTROL_PORT ) ) );
+			DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.CAP_CONTROL_PORT ) ) );
 	
 	}
 	

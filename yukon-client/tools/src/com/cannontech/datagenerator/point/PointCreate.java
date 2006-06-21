@@ -13,6 +13,7 @@ import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
+import com.cannontech.yukon.IDatabaseCache;
 abstract class PointCreate 
 {
 	//a mutable lite point used for comparisons
@@ -191,7 +192,7 @@ abstract class PointCreate
 	 */
 	protected void getDeviceVector(java.util.Vector deviceVector)
 	{
-		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+		IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 	
 		synchronized (cache)
 		{

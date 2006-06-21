@@ -6,43 +6,15 @@
  */
 package com.cannontech.stars.util.task;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Hashtable;
 
+import org.apache.commons.fileupload.DiskFileUpload;
 import org.apache.commons.fileupload.FileItem;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.constants.YukonListEntry;
-import com.cannontech.common.constants.YukonSelectionList;
-import com.cannontech.common.constants.YukonSelectionListDefs;
-import com.cannontech.database.cache.functions.ContactFuncs;
-import com.cannontech.database.cache.functions.PAOFuncs;
-import com.cannontech.database.cache.functions.YukonListFuncs;
-import com.cannontech.database.cache.functions.YukonUserFuncs;
-import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.lite.stars.LiteInventoryBase;
-import com.cannontech.database.data.lite.stars.LiteLMProgramWebPublishing;
-import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
-import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
-import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
-import com.cannontech.stars.util.ImportProblem;
 import com.cannontech.stars.util.ServerUtils;
-import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.util.WebClientException;
-import com.cannontech.stars.web.action.DeleteCustAccountAction;
-import com.cannontech.stars.web.util.ImportManagerUtil;
-import com.cannontech.tools.email.EmailMessage;
-import com.cannontech.user.UserUtils;
-import org.apache.commons.fileupload.DiskFileUpload;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileUploadException;
 
 /**
  * @author jdayton

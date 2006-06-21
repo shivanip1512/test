@@ -5,9 +5,8 @@ import javax.servlet.http.HttpServletRequest;
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.cache.functions.DeviceFuncs;
-import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.DeviceClasses;
@@ -174,10 +173,10 @@ public class CarrierDBModel extends ReportModelBase
 	{
 		if ( o instanceof Integer)
 		{
-		    LiteYukonPAObject lPao = PAOFuncs.getLiteYukonPAO(((Integer)o).intValue());
+		    LiteYukonPAObject lPao = DaoFactory.getPaoDao().getLiteYukonPAO(((Integer)o).intValue());
 		    if (lPao == null)
 		    	return null;
-		    LiteDeviceMeterNumber ldmn = DeviceFuncs.getLiteDeviceMeterNumber(lPao.getYukonID());
+		    LiteDeviceMeterNumber ldmn = DaoFactory.getDeviceDao().getLiteDeviceMeterNumber(lPao.getYukonID());
 			switch( columnIndex)
 			{
 				case PAO_NAME_COLUMN:
@@ -193,7 +192,7 @@ public class CarrierDBModel extends ReportModelBase
 					return String.valueOf(lPao.getAddress());
 	
 				case ROUTE_NAME_COLUMN:
-					return PAOFuncs.getYukonPAOName(lPao.getRouteID());
+					return DaoFactory.getPaoDao().getYukonPAOName(lPao.getRouteID());
 				
 				case COLL_GROUP_NAME_COLUMN:
 					return (ldmn != null ? ldmn.getCollGroup() : null);

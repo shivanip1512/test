@@ -2,14 +2,10 @@ package com.cannontech.database.data.lite;
 
 import java.sql.Connection;
 
-import com.cannontech.common.version.VersionTools;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlStatement;
-import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.db.company.SettlementConfig;
-import com.cannontech.database.db.customer.Customer;
-import com.cannontech.common.constants.YukonListEntryTypes;
-import com.cannontech.common.util.CtiUtilities;
 
 /**
  * @author yao

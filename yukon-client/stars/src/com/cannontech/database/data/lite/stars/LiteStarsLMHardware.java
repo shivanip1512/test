@@ -3,7 +3,7 @@ package com.cannontech.database.data.lite.stars;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.cache.functions.YukonListFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.stars.hardware.LMConfigurationBase;
 
 /**
@@ -135,8 +135,8 @@ public class LiteStarsLMHardware extends LiteInventoryBase {
 	}
 	
 	public void updateThermostatType() {
-		YukonListEntry invCatEntry = YukonListFuncs.getYukonListEntry( getCategoryID() );
-		YukonListEntry devTypeEntry = YukonListFuncs.getYukonListEntry( getLmHardwareTypeID() );
+		YukonListEntry invCatEntry = DaoFactory.getYukonListDao().getYukonListEntry( getCategoryID() );
+		YukonListEntry devTypeEntry = DaoFactory.getYukonListDao().getYukonListEntry( getLmHardwareTypeID() );
 		
 		if (invCatEntry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_INV_CAT_ONEWAYREC &&
 			(devTypeEntry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT ||

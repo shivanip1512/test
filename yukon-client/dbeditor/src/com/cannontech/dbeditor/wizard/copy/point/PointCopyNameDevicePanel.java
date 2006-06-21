@@ -8,6 +8,7 @@ package com.cannontech.dbeditor.wizard.copy.point;
 
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.db.point.Point;
+import com.cannontech.yukon.IDatabaseCache;
 
   public class PointCopyNameDevicePanel extends com.cannontech.common.gui.util.DataInputPanel implements javax.swing.event.CaretListener {
 	private javax.swing.JLabel ivjNameLabel = null;
@@ -365,7 +366,7 @@ public void setValueCore(Object val)
 {
 	//Load the device list
 	getDeviceComboBox().removeAllItems();
-	com.cannontech.database.cache.DefaultDatabaseCache cache =
+	IDatabaseCache cache =
 		com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 
 	synchronized (cache)

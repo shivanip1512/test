@@ -3,10 +3,9 @@ package com.cannontech.dbeditor.wizard.device.lmcontrolarea;
  * This type was created in VisualAge.
  */
 
-import com.cannontech.database.db.device.lm.IlmDefines;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.device.lm.IlmDefines;
 import com.cannontech.database.db.device.lm.LMControlAreaTrigger;
-import com.cannontech.common.util.CtiUtilities;
 
 public class LMTriggerProjectionPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener {
 	private javax.swing.JComboBox ivjJComboBoxType = null;

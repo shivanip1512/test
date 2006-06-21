@@ -7,6 +7,7 @@
 package com.cannontech.database.model;
 
 import com.cannontech.database.data.lite.LiteSeasonSchedule;
+import com.cannontech.yukon.IDatabaseCache;
 /**
  * @author jdayton
  */
@@ -35,7 +36,7 @@ public boolean isLiteTypeSupported( int liteType )
 public void update()
 {
 
-	com.cannontech.database.cache.DefaultDatabaseCache cache =
+	IDatabaseCache cache =
 		com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 
 	synchronized (cache)

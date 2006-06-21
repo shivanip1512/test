@@ -4,6 +4,7 @@
  */
 package com.cannontech.database.data.point;
 
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
@@ -51,7 +52,7 @@ public class PointUtil {
             // accumulator point is automatically added
             com.cannontech.database.data.point.PointBase newPoint = com.cannontech.database.data.point.PointFactory.createPoint(com.cannontech.database.data.point.PointTypes.PULSE_ACCUMULATOR_POINT);
 
-            int pointID = com.cannontech.database.cache.functions.PointFuncs.getMaxPointID();
+            int pointID = DaoFactory.getPointDao().getMaxPointID();
 
             double multiplier = 0.01;
             double blinkCountMult = 1.0;

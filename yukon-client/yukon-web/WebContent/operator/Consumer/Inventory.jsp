@@ -15,7 +15,7 @@
 	StarsInventory inventory = inventories.getStarsInventory(invNo);
     pageContext.setAttribute("currentInvID", inventory.getInventoryID());    
 	
-	boolean invChecking = AuthFuncs.checkRoleProperty(lYukonUser, ConsumerInfoRole.INVENTORY_CHECKING);
+	boolean invChecking = DaoFactory.getAuthDao().checkRoleProperty(lYukonUser, ConsumerInfoRole.INVENTORY_CHECKING);
 	
 	String deviceType = "(none)";
 	String serialName = "";
@@ -23,17 +23,17 @@
 	String serialNameVar = "SerialNo";
 	
 	if (inventory.getLMHardware() != null) {
-		deviceType = YukonListFuncs.getYukonListEntry(inventory.getDeviceType().getEntryID()).getEntryText();
+		deviceType = DaoFactory.getYukonListDao().getYukonListEntry(inventory.getDeviceType().getEntryID()).getEntryText();
 		serialName = inventory.getLMHardware().getManufacturerSerialNumber();
 	}
 	else {
 		if (inventory.getDeviceID() > 0) {
-			LiteYukonPAObject litePao = PAOFuncs.getLiteYukonPAO(inventory.getDeviceID());
+			LiteYukonPAObject litePao = DaoFactory.getPaoDao().getLiteYukonPAO(inventory.getDeviceID());
 			deviceType = PAOGroups.getPAOTypeString(litePao.getType());
 			serialName = litePao.getPaoName();
 		}
 		else if (inventory.getMCT() != null) {
-			deviceType = YukonListFuncs.getYukonListEntry(inventory.getDeviceType().getEntryID()).getEntryText();
+			deviceType = DaoFactory.getYukonListDao().getYukonListEntry(inventory.getDeviceType().getEntryID()).getEntryText();
 			serialName = inventory.getMCT().getDeviceName();
 		}
 		
@@ -392,7 +392,7 @@ function revealLog() {
                                   <td width="200"> 
                                     <select name="Route" onchange="setContentChanged(true)">
 <%
-	String dftRoute = PAOFuncs.getYukonPAOName(liteEC.getDefaultRouteID());
+	String dftRoute = DaoFactory.getPaoDao().getYukonPAOName(liteEC.getDefaultRouteID());
 	if (dftRoute != null)
 		dftRoute = "Default - " + dftRoute;
 	else

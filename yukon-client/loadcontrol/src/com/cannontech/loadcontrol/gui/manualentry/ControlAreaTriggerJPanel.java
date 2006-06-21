@@ -5,13 +5,14 @@ package com.cannontech.loadcontrol.gui.manualentry;
  * Creation date: (4/19/2001 3:54:21 PM)
  * @author: 
  */
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.db.device.lm.IlmDefines;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMControlAreaTrigger;
-import com.cannontech.loadcontrol.datamodels.IProgramTableModel;
 import com.cannontech.loadcontrol.messages.LMCommand;
+import com.cannontech.yukon.IDatabaseCache;
 
 public class ControlAreaTriggerJPanel extends com.cannontech.common.gui.util.ConfirmationJPanel implements java.awt.event.ActionListener, java.util.Observer {
 	private LMControlArea lmControlArea = null;
@@ -724,7 +725,7 @@ public static void main(java.lang.String[] args) {
  */
 private void setComboBoxText(int groupID, javax.swing.JComboBox jCombo ) 
 {
-	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 	LiteStateGroup stateGroup = null;
 	
 	synchronized( cache )
@@ -752,7 +753,7 @@ public void setLmControlArea(com.cannontech.loadcontrol.data.LMControlArea newLm
 		LMControlAreaTrigger trigger = (LMControlAreaTrigger)getLmControlArea().getTriggerVector().get(i);
 
 		//get the point used for this trigger
-		com.cannontech.database.data.lite.LitePoint point = com.cannontech.database.cache.functions.PointFuncs.getLitePoint(
+		com.cannontech.database.data.lite.LitePoint point = DaoFactory.getPointDao().getLitePoint(
 				trigger.getPointId().intValue() );
 
 		

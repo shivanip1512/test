@@ -3,10 +3,15 @@ package com.cannontech.database.cache;
 import java.util.List;
 import java.util.Map;
 
-import com.cannontech.database.data.lite.*;
+import com.cannontech.database.data.lite.LiteBase;
+import com.cannontech.database.data.lite.LiteContact;
+import com.cannontech.database.data.lite.LiteContactNotification;
+import com.cannontech.database.data.lite.LiteCustomer;
+import com.cannontech.database.data.lite.LiteYukonRole;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
-import com.cannontech.yukon.concrete.ResourceFactory;
 
 /**
  * @author rneuharth
@@ -15,9 +20,9 @@ import com.cannontech.yukon.concrete.ResourceFactory;
  * A undefined generated comment
  */
 public class DefaultDatabaseCache implements IDatabaseCache
-{
-   private static DefaultDatabaseCache cache = null;
-   
+{      
+    private IDatabaseCache databaseCache;
+    
 	/**
 	 * Constructor for DefaultDatabaseCache.
 	 */
@@ -26,19 +31,9 @@ public class DefaultDatabaseCache implements IDatabaseCache
 		super();
 	} 
 
-   public synchronized static final DefaultDatabaseCache getInstance()
+   public synchronized static final IDatabaseCache getInstance()
    {
-      if( cache == null )
-      {
-         cache = new DefaultDatabaseCache();
-      }
-      
-      return cache;
-   }
-
-   private synchronized IDatabaseCache getDBCache()
-   {
-      return ResourceFactory.getIYukon().getDBCache();
+       return (IDatabaseCache) YukonSpringHook.getBean("databaseCache");
    }
 
    /**
@@ -47,7 +42,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
    **/
    public synchronized  void addDBChangeListener(DBChangeListener listener) 
    {
-      getDBCache().addDBChangeListener( listener );
+      databaseCache.addDBChangeListener( listener );
    }
 
    /**
@@ -56,7 +51,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
    **/
    public synchronized DBChangeMsg[] createDBChangeMessages( com.cannontech.database.db.CTIDbChange newItem, int changeType )
    {
-      return getDBCache().createDBChangeMessages( newItem, changeType );
+      return databaseCache.createDBChangeMessages( newItem, changeType );
    }
 
    /**
@@ -65,7 +60,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
    **/
    public synchronized java.util.List getAllAlarmCategories()
    {
-      return getDBCache().getAllAlarmCategories();
+      return databaseCache.getAllAlarmCategories();
    }
    
    /**
@@ -74,7 +69,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
    **/
    public synchronized java.util.List getAllYukonImages()
    {
-      return getDBCache().getAllYukonImages();   
+      return databaseCache.getAllYukonImages();   
    }
 
    /**
@@ -83,7 +78,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
    **/
    public void releaseAllCache()
    {
-      getDBCache().releaseAllCache();   
+      databaseCache.releaseAllCache();   
    }
 
    /**
@@ -92,7 +87,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
    **/
    public synchronized java.util.List getAllCapControlFeeders() 
    {
-      return getDBCache().getAllCapControlFeeders();
+      return databaseCache.getAllCapControlFeeders();
    }
 
    /**
@@ -101,7 +96,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
    **/
    public synchronized java.util.List getAllContactNotificationGroups() 
    {
-      return getDBCache().getAllContactNotificationGroups();
+      return databaseCache.getAllContactNotificationGroups();
    }
 
    /**
@@ -110,7 +105,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
    **/
    public synchronized java.util.List getAllCapControlSubBuses() 
    {
-      return getDBCache().getAllCapControlSubBuses();
+      return databaseCache.getAllCapControlSubBuses();
    }
 
    /**
@@ -119,7 +114,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
    **/
    public synchronized java.util.List getAllContacts()
    {
-      return getDBCache().getAllContacts();
+      return databaseCache.getAllContacts();
    }
 
    /**
@@ -128,12 +123,12 @@ public class DefaultDatabaseCache implements IDatabaseCache
    **/
    	public synchronized java.util.List getAllBaselines()
 	{
-		return getDBCache().getAllBaselines();
+		return databaseCache.getAllBaselines();
 	}
 
 	public synchronized java.util.List getAllSeasonSchedules()
 	{
-		return getDBCache().getAllSeasonSchedules();
+		return databaseCache.getAllSeasonSchedules();
 	}
 	/**
 	 * @ejb:interface-method
@@ -141,7 +136,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
 	**/
 	public synchronized java.util.List getAllCommands()
 	{
-		return getDBCache().getAllCommands();
+		return databaseCache.getAllCommands();
 	}
 	/**
 	 * @ejb:interface-method
@@ -149,7 +144,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
 	**/
 	public synchronized java.util.Map getAllCommandsMap()
 	{
-		return getDBCache().getAllCommandsMap();
+		return databaseCache.getAllCommandsMap();
 	}
 	
 	/**
@@ -158,17 +153,17 @@ public class DefaultDatabaseCache implements IDatabaseCache
 	**/
 	public synchronized java.util.List getAllConfigs()
 	{
-		return getDBCache().getAllConfigs();
+		return databaseCache.getAllConfigs();
 	}
 	
 	public synchronized java.util.List getAllTOUSchedules()
 	{
-		return getDBCache().getAllTOUSchedules();
+		return databaseCache.getAllTOUSchedules();
 	}
 	
 	public synchronized java.util.List getAllTOUDays()
 	{
-		return getDBCache().getAllTOUDays();
+		return databaseCache.getAllTOUDays();
 	}
 	
 	/**
@@ -177,7 +172,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
 	**/
 	public synchronized java.util.List getAllLMProgramConstraints()
 	{
-		return getDBCache().getAllLMProgramConstraints();
+		return databaseCache.getAllLMProgramConstraints();
 	}
 	
 	/**
@@ -186,7 +181,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
 	**/
 	public synchronized java.util.List getAllLMScenarios()
 	{
-		return getDBCache().getAllLMScenarios();
+		return databaseCache.getAllLMScenarios();
 	}
 	
 	/**
@@ -195,12 +190,12 @@ public class DefaultDatabaseCache implements IDatabaseCache
 	**/
 	public synchronized java.util.List getAllLMScenarioProgs()
 	{
-		return getDBCache().getAllLMScenarioProgs();
+		return databaseCache.getAllLMScenarioProgs();
 	}
 	
 	public synchronized java.util.List getAllLMPAOExclusions()
 	{
-		return getDBCache().getAllLMPAOExclusions();
+		return databaseCache.getAllLMPAOExclusions();
 	}
 	
    /**
@@ -209,7 +204,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
    **/
    public synchronized java.util.List getAllCICustomers() 
    {
-      return getDBCache().getAllCICustomers();
+      return databaseCache.getAllCICustomers();
    }
 
    /**
@@ -218,7 +213,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
    **/
    public synchronized java.util.List getAllCustomers() 
    {
-	  return getDBCache().getAllCustomers();
+	  return databaseCache.getAllCustomers();
    }
    /**
 	* @ejb:interface-method
@@ -226,7 +221,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
    **/
    public synchronized java.util.Map getAllCustomersMap()
    {
-	   return getDBCache().getAllCustomersMap();
+	   return databaseCache.getAllCustomersMap();
    }
 
 
@@ -236,7 +231,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
    **/
    public synchronized java.util.List getAllDeviceMeterGroups()
    {
-      return getDBCache().getAllDeviceMeterGroups();
+      return databaseCache.getAllDeviceMeterGroups();
    }
    /**
 	* @ejb:interface-method
@@ -244,7 +239,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
    **/
    public synchronized java.util.List getAllDMG_CollectionGroups()
    {
-	  return getDBCache().getAllDMG_CollectionGroups();
+	  return databaseCache.getAllDMG_CollectionGroups();
    }
    /**
 	* @ejb:interface-method
@@ -252,7 +247,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
    **/
    public synchronized java.util.List getAllDMG_AlternateGroups()
    {
-	  return getDBCache().getAllDMG_AlternateGroups();
+	  return databaseCache.getAllDMG_AlternateGroups();
    }
    /**
 	* @ejb:interface-method
@@ -260,7 +255,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
    **/
    public synchronized java.util.List getAllDMG_BillingGroups()
    {
-	  return getDBCache().getAllDMG_BillingGroups();
+	  return databaseCache.getAllDMG_BillingGroups();
    }
 
    /**
@@ -269,7 +264,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
    **/
    public synchronized java.util.List getAllDevices() 
    {
-      return getDBCache().getAllDevices();
+      return databaseCache.getAllDevices();
    }
    
    /**
@@ -277,7 +272,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
 	* tview-type="remote"
 	*/
    public synchronized java.util.List getAllMCTs() {
-	  return getDBCache().getAllMCTs();
+	  return databaseCache.getAllMCTs();
    }
 
    /**
@@ -286,7 +281,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
    **/
    public synchronized java.util.List getAllGraphDefinitions()
    {
-      return getDBCache().getAllGraphDefinitions();
+      return databaseCache.getAllGraphDefinitions();
    }
    
    // This cache is derive from the point cache
@@ -306,7 +301,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
    **/
    public synchronized java.util.List getAllHolidaySchedules()
    {
-      return getDBCache().getAllHolidaySchedules();
+      return databaseCache.getAllHolidaySchedules();
    }
 
    /**
@@ -315,17 +310,17 @@ public class DefaultDatabaseCache implements IDatabaseCache
    **/
    public synchronized java.util.List getAllLMPrograms()
    {
-      return getDBCache().getAllLMPrograms();
+      return databaseCache.getAllLMPrograms();
    }
 
    public synchronized List getAllLMControlAreas()
    {
-	   return getDBCache().getAllLMControlAreas();
+	   return databaseCache.getAllLMControlAreas();
    }
    
    public synchronized java.util.List getAllGears()
    {
-	  return getDBCache().getAllGears();
+	  return databaseCache.getAllGears();
    }
    /**
     * @ejb:interface-method
@@ -333,7 +328,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
    **/
    public synchronized java.util.List getAllLoadManagement() 
    {
-      return getDBCache().getAllLoadManagement();
+      return databaseCache.getAllLoadManagement();
    }
 
    /**
@@ -342,7 +337,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
    **/
    public synchronized java.util.List getAllPoints()
    {
-      return getDBCache().getAllPoints();
+      return databaseCache.getAllPoints();
    }
    
    /**
@@ -351,7 +346,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
    **/
    public synchronized java.util.List getAllSystemPoints()
    {
-      return getDBCache().getAllSystemPoints();
+      return databaseCache.getAllSystemPoints();
    }
 
 	/**
@@ -360,7 +355,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
 	**/
 	public synchronized java.util.Map getAllPointsMap()
 	{
-		return getDBCache().getAllPointsMap();
+		return databaseCache.getAllPointsMap();
 	}
 
    /**
@@ -369,7 +364,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
    **/
    public synchronized java.util.List getAllPointsUnits()
    {
-      return getDBCache().getAllPointsUnits();
+      return databaseCache.getAllPointsUnits();
    }
    
     /**
@@ -377,7 +372,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
 	 * tview-type="remote"
 	 **/
 	public synchronized List getAllPointLimits() {
-		return getDBCache().getAllPointLimits();
+		return databaseCache.getAllPointLimits();
     }
 
 	/**
@@ -386,7 +381,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
 	 */
 	public synchronized Map getAllContactNotifsMap()
 	{
-		return getDBCache().getAllContactNotifsMap();
+		return databaseCache.getAllContactNotifsMap();
 	}
 
    /**
@@ -395,7 +390,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
    **/
    public synchronized java.util.HashMap getAllPointidMultiplierHashMap()
    {
-      return getDBCache().getAllPointidMultiplierHashMap();
+      return databaseCache.getAllPointidMultiplierHashMap();
    }
    
    /**
@@ -404,7 +399,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
 	**/
    public synchronized java.util.Map getAllPointIDOffsetMap() 
    {
-   		return getDBCache().getAllPointIDOffsetMap();
+   		return databaseCache.getAllPointIDOffsetMap();
    }
    
    /**
@@ -413,7 +408,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
    **/
    public synchronized java.util.List getAllPorts() 
    {
-      return getDBCache().getAllPorts();
+      return databaseCache.getAllPorts();
    }
 
    /**
@@ -422,7 +417,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
    **/
    public synchronized java.util.List getAllRoutes() 
    {
-      return getDBCache().getAllRoutes();
+      return databaseCache.getAllRoutes();
    }
 
    /**
@@ -431,12 +426,12 @@ public class DefaultDatabaseCache implements IDatabaseCache
    **/
    public synchronized java.util.Map getAllStateGroupMap()
    {
-      return getDBCache().getAllStateGroupMap();
+      return databaseCache.getAllStateGroupMap();
    }
 
 	public synchronized List getAllTags() 
 	{
-		return getDBCache().getAllTags();
+		return databaseCache.getAllTags();
 	}
 	
    /**
@@ -445,7 +440,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
    **/
    public synchronized java.util.List getAllUnitMeasures()
    {
-      return getDBCache().getAllUnitMeasures();
+      return databaseCache.getAllUnitMeasures();
    }
    
    /**
@@ -454,7 +449,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
    **/
    public synchronized java.util.List getAllUnusedCCDevices()
    {
-      return getDBCache().getAllUnusedCCDevices();
+      return databaseCache.getAllUnusedCCDevices();
    }
    
    
@@ -465,7 +460,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
    **/
    public synchronized java.util.List getAllYukonPAObjects()
    {
-      return getDBCache().getAllYukonPAObjects();
+      return databaseCache.getAllYukonPAObjects();
    }
 
 	/**
@@ -474,7 +469,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
 	**/
 	public synchronized java.util.Map getAllPAOsMap()
 	{
-		return getDBCache().getAllPAOsMap();
+		return databaseCache.getAllPAOsMap();
 	}
 	
     /**
@@ -483,7 +478,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
     **/
     public synchronized java.util.Map getAllContactsMap()
     {
-        return getDBCache().getAllContactsMap();
+        return databaseCache.getAllContactsMap();
     }
     
    /**
@@ -492,7 +487,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
    **/
    public synchronized java.util.Map getAllUsersMap()
    {
-      return getDBCache().getAllUsersMap();
+      return databaseCache.getAllUsersMap();
    }
 
    /**
@@ -501,7 +496,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
    **/
    public synchronized LiteBase handleDBChangeMessage(com.cannontech.message.dispatch.message.DBChangeMsg dbChangeMsg)
    {
-      return getDBCache().handleDBChangeMessage( dbChangeMsg );
+      return databaseCache.handleDBChangeMessage( dbChangeMsg );
    }
 
    /**
@@ -510,7 +505,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
    **/
    public synchronized void releaseAllAlarmCategories()
    {
-      getDBCache().releaseAllAlarmCategories();
+      databaseCache.releaseAllAlarmCategories();
    }
 
 	/**
@@ -519,7 +514,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
 	**/
 	public synchronized void releaseAllYukonUsers()
 	{
-		getDBCache().releaseAllYukonUsers();
+		databaseCache.releaseAllYukonUsers();
 	}
 
    /**
@@ -528,7 +523,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
    **/
    public synchronized void releaseAllContacts()
    {
-      getDBCache().releaseAllContacts();
+      databaseCache.releaseAllContacts();
    }
 
 	/**
@@ -537,7 +532,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
 	**/
 	public synchronized void releaseAllCustomers()
 	{
-	   getDBCache().releaseAllCustomers();
+	   databaseCache.releaseAllCustomers();
 	}
 
    /**
@@ -546,7 +541,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
    **/
    public synchronized void releaseAllDeviceMeterGroups()
    {
-      getDBCache().releaseAllDeviceMeterGroups();
+      databaseCache.releaseAllDeviceMeterGroups();
    }
 
    /**
@@ -555,7 +550,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
    **/
    public synchronized void releaseAllYukonImages()
    {
-      getDBCache().releaseAllYukonImages();
+      databaseCache.releaseAllYukonImages();
    }
 
    /**
@@ -564,7 +559,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
    **/
    public synchronized void releaseAllGraphDefinitions()
    {
-      getDBCache().releaseAllGraphDefinitions();
+      databaseCache.releaseAllGraphDefinitions();
    }
 
    /**
@@ -573,51 +568,51 @@ public class DefaultDatabaseCache implements IDatabaseCache
    **/
    public synchronized void releaseAllHolidaySchedules()
    {
-      getDBCache().releaseAllHolidaySchedules();
+      databaseCache.releaseAllHolidaySchedules();
    }
    public synchronized void releaseAllBaselines()
    {
-	  getDBCache().releaseAllBaselines();
+	  databaseCache.releaseAllBaselines();
    }
    
    public synchronized void releaseAllSeasonSchedules()
    {
-	  getDBCache().releaseAllSeasonSchedules();
+	  databaseCache.releaseAllSeasonSchedules();
    }
    public synchronized void releaseAllCommands()
    {
-	  getDBCache().releaseAllCommands();
+	  databaseCache.releaseAllCommands();
    }
 
    
    public synchronized void releaseAllTOUSchedules()
    {
-	  getDBCache().releaseAllTOUSchedules();
+	  databaseCache.releaseAllTOUSchedules();
    }
    
    public synchronized void releaseAllTOUDays()
    {
-	  getDBCache().releaseAllTOUDays();
+	  databaseCache.releaseAllTOUDays();
    }
    
    public synchronized void releaseAllConfigs()
    {
-	  getDBCache().releaseAllConfigs();
+	  databaseCache.releaseAllConfigs();
    }
    
    public synchronized void releaseAllLMProgramConstraints()
    {
-	  getDBCache().releaseAllLMProgramConstraints();
+	  databaseCache.releaseAllLMProgramConstraints();
    }
    
    public synchronized void releaseAllLMScenarios()
    {
-	  getDBCache().releaseAllLMScenarios();
+	  databaseCache.releaseAllLMScenarios();
    }
    
    public synchronized void releaseAllLMPAOExclusions()
    {
-   	  getDBCache().releaseAllLMPAOExclusions();
+   	  databaseCache.releaseAllLMPAOExclusions();
    }
    /**
     * @ejb:interface-method
@@ -625,7 +620,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
    **/
    public synchronized void releaseAllNotificationGroups()
    {
-      getDBCache().releaseAllNotificationGroups();
+      databaseCache.releaseAllNotificationGroups();
    }
 
    /**
@@ -634,7 +629,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
    **/
    public synchronized void releaseAllPoints()
    {   
-      getDBCache().releaseAllPoints();
+      databaseCache.releaseAllPoints();
    }
 
    /**
@@ -643,7 +638,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
    **/
    public synchronized void releaseAllStateGroups()
    {   
-      getDBCache().releaseAllStateGroups();
+      databaseCache.releaseAllStateGroups();
    }
 
    /**
@@ -652,7 +647,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
    **/
    public synchronized void releaseAllUnitMeasures()
    {   
-      getDBCache().releaseAllUnitMeasures();
+      databaseCache.releaseAllUnitMeasures();
    }
 
    /**
@@ -661,7 +656,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
    **/
    public synchronized void releaseAllYukonPAObjects()
    {
-      getDBCache().releaseAllYukonPAObjects();
+      databaseCache.releaseAllYukonPAObjects();
    }
 
    /**
@@ -670,7 +665,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
    **/
    public synchronized void removeDBChangeListener(DBChangeListener listener) 
    {
-      getDBCache().removeDBChangeListener( listener );
+      databaseCache.removeDBChangeListener( listener );
    }
    
    /**
@@ -679,7 +674,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
    **/
    public synchronized void setDatabaseAlias(String newAlias)
    {
-      getDBCache().setDatabaseAlias( newAlias );
+      databaseCache.setDatabaseAlias( newAlias );
    }
 
 	/**
@@ -687,7 +682,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
  	* tview-type="remote"
  	*/
 	public synchronized Map getYukonUserRolePropertyMap() {
-		return getDBCache().getYukonUserRolePropertyMap();
+		return databaseCache.getYukonUserRolePropertyMap();
 	}	
 
 	/**
@@ -695,7 +690,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
 	 * tview-type="remote"
 	 */
 	public synchronized  List getAllYukonGroups() {
-		return getDBCache().getAllYukonGroups();
+		return databaseCache.getAllYukonGroups();
 	}
 
 	/**
@@ -703,7 +698,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
 	 * tview-type="remote"
 	 */
 	public synchronized  List getAllYukonRoles() {
-		return getDBCache().getAllYukonRoles();
+		return databaseCache.getAllYukonRoles();
 	}
 
 	/**
@@ -711,7 +706,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
 	 * tview-type="remote"
 	 */
 	public synchronized  List getAllYukonRoleProperties() {
-		return getDBCache().getAllYukonRoleProperties();
+		return databaseCache.getAllYukonRoleProperties();
 	}
 	
 	/**
@@ -719,162 +714,162 @@ public class DefaultDatabaseCache implements IDatabaseCache
 	 * tview-type="remote"
 	 */
 	public synchronized  List getAllYukonUsers() {
-		return getDBCache().getAllYukonUsers();
+		return databaseCache.getAllYukonUsers();
 	}
 	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonGroupRolePropertyMap()
 	 */
 	public synchronized  Map getYukonGroupRolePropertyMap() {
-		return getDBCache().getYukonGroupRolePropertyMap();
+		return databaseCache.getYukonGroupRolePropertyMap();
 	}
 
     /**
      * @see com.cannontech.yukon.IDatabaseCache#getYukonUserPaoOwners()
      */
     public synchronized Map getYukonUserPaoOwners() {
-        return getDBCache().getYukonUserPaoOwners();
+        return databaseCache.getYukonUserPaoOwners();
     }
 
 	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getYukonUserGroupMap()
 	 */
 	public synchronized  Map getYukonUserGroupMap() {
-		return getDBCache().getYukonUserGroupMap();
+		return databaseCache.getYukonUserGroupMap();
 	}
 
 	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getYukonGroupUserMap()
 	 */
 	public synchronized  Map getYukonGroupUserMap() {
-		return getDBCache().getYukonGroupUserMap();
+		return databaseCache.getYukonGroupUserMap();
 	}
 
 	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getAllEnergyCompanies()
 	 */
 	public synchronized  List getAllEnergyCompanies() {
-		return getDBCache().getAllEnergyCompanies();
+		return databaseCache.getAllEnergyCompanies();
 	}
 
 	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getAllUserEnergyCompanies()
 	 */
 	public synchronized  Map getAllUserEnergyCompanies() {
-		return getDBCache().getAllUserEnergyCompanies();
+		return databaseCache.getAllUserEnergyCompanies();
 	}
 
 	public synchronized void releaseAllTags()
 	{
-	   getDBCache().releaseAllTags();
+	   databaseCache.releaseAllTags();
 	}
 
 	public synchronized List getAllDeviceTypeCommands()
 	{
-		return getDBCache().getAllDeviceTypeCommands();
+		return databaseCache.getAllDeviceTypeCommands();
 	}
 
 	public synchronized void releaseAllDeviceTypeCommands()
 	{
-		getDBCache().releaseAllDeviceTypeCommands();
+		databaseCache.releaseAllDeviceTypeCommands();
 		
 	}
 
     public synchronized List getAllLMGroups()
     {
-        return getDBCache().getAllLMGroups();
+        return databaseCache.getAllLMGroups();
     }
 
 	/**
 	 * @return
 	 */
 	public LiteYukonRole getARole(LiteYukonUser user, int roleID) {
-		return getDBCache().getARole(user, roleID);
+		return databaseCache.getARole(user, roleID);
 	}
 
 	/**
 	 * @return
 	 */
 	public String getARolePropertyValue(LiteYukonUser user, int rolePropertyID) {
-		return getDBCache().getARolePropertyValue(user, rolePropertyID);
+		return databaseCache.getARolePropertyValue(user, rolePropertyID);
 	}
 
 	/**
 	 * 
 	 */
 	public void releaseUserRoleMap() {
-		getDBCache().releaseUserRoleMap();
+		databaseCache.releaseUserRoleMap();
 	}
 
 	/**
 	 * 
 	 */
 	public void releaseUserRolePropertyValueMap() {
-		getDBCache().releaseUserRolePropertyValueMap();
+		databaseCache.releaseUserRolePropertyValueMap();
 	}
 
     public LiteContact getAContactByUserID(int userID) {
-        return getDBCache().getAContactByUserID(userID);
+        return databaseCache.getAContactByUserID(userID);
     }
     
     public LiteContact getAContactByContactID(int contactID) {
-        return getDBCache().getAContactByContactID(contactID);
+        return databaseCache.getAContactByContactID(contactID);
     }
     
     public LiteContact[] getContactsByLastName(String lastName, boolean partialMatch) {
-        return getDBCache().getContactsByLastName(lastName, partialMatch);
+        return databaseCache.getContactsByLastName(lastName, partialMatch);
     }
     
     public LiteContact[] getContactsByFirstName(String firstName, boolean partialMatch) {
-        return getDBCache().getContactsByFirstName(firstName, partialMatch);
+        return databaseCache.getContactsByFirstName(firstName, partialMatch);
     }
 
     public LiteContact[] getContactsByPhoneNumber(String phone, boolean partialMatch) {
-        return getDBCache().getContactsByPhoneNumber(phone, partialMatch);
+        return databaseCache.getContactsByPhoneNumber(phone, partialMatch);
     }
     
     public LiteContact getContactsByEmail(String email) {
-        return getDBCache().getContactsByEmail(email);
+        return databaseCache.getContactsByEmail(email);
     }
     
 
     public LiteContactNotification getAContactNotifByNotifID(int contNotifyID) {
-        return getDBCache().getAContactNotifByNotifID(contNotifyID);
+        return databaseCache.getAContactNotifByNotifID(contNotifyID);
     }
     
     public LiteCustomer getACustomerByContactID(int contactID) {
-        return getDBCache().getACustomerByContactID(contactID);
+        return databaseCache.getACustomerByContactID(contactID);
     }
     
     public LiteCustomer getACustomerByCustomerID(int customerID) {
-        return getDBCache().getACustomerByCustomerID(customerID);
+        return databaseCache.getACustomerByCustomerID(customerID);
     }
     
     public void releaseUserContactMap() {
-        getDBCache().releaseUserContactMap();
+        databaseCache.releaseUserContactMap();
     }
 
 	public synchronized List getAllSettlementConfigs()
 	{
-		return getDBCache().getAllSettlementConfigs();
+		return databaseCache.getAllSettlementConfigs();
 	}
 
 	public synchronized void releaseAllSettlementConfigs()
 	{
-		getDBCache().releaseAllSettlementConfigs();		
+		databaseCache.releaseAllSettlementConfigs();		
 	}
 
 	public synchronized Map getAllSettlementConfigsMap()
 	{
-		return getDBCache().getAllSettlementConfigsMap();
+		return databaseCache.getAllSettlementConfigsMap();
 	}
     
     public List getDevicesByCommPort(int portId) {
-        return getDBCache().getDevicesByCommPort(portId);
+        return databaseCache.getDevicesByCommPort(portId);
 
     }
 
     public List getDevicesByDeviceAddress(Integer masterAddress, Integer slaveAddress) {
-        return getDBCache().getDevicesByDeviceAddress(masterAddress, slaveAddress);
+        return databaseCache.getDevicesByDeviceAddress(masterAddress, slaveAddress);
 
     }
 

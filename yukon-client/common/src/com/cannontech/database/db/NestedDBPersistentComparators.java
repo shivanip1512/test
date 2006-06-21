@@ -7,16 +7,16 @@
 package com.cannontech.database.db;
 
 import java.util.Vector;
-import com.cannontech.database.Transaction;
-import com.cannontech.clientutils.CTILogger;
 
-import com.cannontech.database.db.device.lm.LMControlAreaTrigger;
-import com.cannontech.database.db.device.lm.LMControlAreaProgram;
-import com.cannontech.database.db.pao.PAOExclusion;
-import com.cannontech.database.db.device.DeviceVerification;
-import com.cannontech.database.db.device.lm.LMProgramDirectGear;
-import com.cannontech.database.db.device.lm.LMControlScenarioProgram;
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.Transaction;
 import com.cannontech.database.db.contact.ContactNotification;
+import com.cannontech.database.db.device.DeviceVerification;
+import com.cannontech.database.db.device.lm.LMControlAreaProgram;
+import com.cannontech.database.db.device.lm.LMControlAreaTrigger;
+import com.cannontech.database.db.device.lm.LMControlScenarioProgram;
+import com.cannontech.database.db.device.lm.LMProgramDirectGear;
+import com.cannontech.database.db.pao.PAOExclusion;
 
 /**
  * @author jdayton

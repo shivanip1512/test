@@ -1,9 +1,9 @@
 package com.cannontech.dbeditor.editor.point;
 
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.cache.functions.StateFuncs;
 import com.cannontech.database.data.lite.LiteStateGroup;
-import com.cannontech.database.db.state.StateGroupUtils;
+import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * This type was created in VisualAge.
@@ -373,7 +373,7 @@ private void loadStateComboBoxes(int stateGroupID)
 	if( getInitialStateComboBox().getItemCount() > 0 )
 		getInitialStateComboBox().removeAllItems();
 
-	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 	synchronized(cache)
 	{	
 		LiteStateGroup stateGroup = (LiteStateGroup)
@@ -424,10 +424,10 @@ public void setValue(Object val)
 	int stateGroupID = point.getPoint().getStateGroupID().intValue();
 	
 	//Load all the state groups
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized(cache)
 	{
-		LiteStateGroup[] allStateGroups = StateFuncs.getAllStateGroups();
+		LiteStateGroup[] allStateGroups = DaoFactory.getStateDao().getAllStateGroups();
 
 		//Load the state table combo box
 		for(int i=0;i<allStateGroups.length;i++)

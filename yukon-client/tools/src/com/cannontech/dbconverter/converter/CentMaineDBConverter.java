@@ -1,34 +1,34 @@
 package com.cannontech.dbconverter.converter;
 
-import java.util.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.StringTokenizer;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.NativeIntVector;
-import com.cannontech.database.data.device.DeviceFactory;
 import com.cannontech.database.data.device.CCU711;
-import com.cannontech.database.db.device.DeviceIDLCRemote;
+import com.cannontech.database.data.device.DeviceFactory;
 import com.cannontech.database.data.device.Repeater900;
-import com.cannontech.database.data.route.CCURoute;
 import com.cannontech.database.data.multi.MultiDBPersistent;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.pao.PortTypes;
 import com.cannontech.database.data.pao.RouteTypes;
 import com.cannontech.database.data.point.AccumulatorPoint;
-import com.cannontech.database.data.point.StatusPoint;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.StatusPoint;
 import com.cannontech.database.data.port.LocalDialupPort;
 import com.cannontech.database.data.port.LocalDirectPort;
 import com.cannontech.database.data.port.LocalSharedPort;
 import com.cannontech.database.data.port.PortFactory;
+import com.cannontech.database.data.route.CCURoute;
+import com.cannontech.database.db.device.DeviceIDLCRemote;
+import com.cannontech.database.db.device.DeviceScanRate;
 import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.dbtools.updater.MessageFrameAdaptor;
-import com.cannontech.tools.gui.*;
-import com.cannontech.database.db.device.DeviceScanRate;
+import com.cannontech.tools.gui.IRunnableDBTool;
 
 /**
  * A skeleton app that is created from the following files:

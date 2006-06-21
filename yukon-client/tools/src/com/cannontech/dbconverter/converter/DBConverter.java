@@ -10,7 +10,7 @@ import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.dbtools.updater.MessageFrameAdaptor;
-import com.cannontech.tools.gui.*;
+import com.cannontech.tools.gui.IRunnableDBTool;
 
 /**
  * Insert the type's description here.

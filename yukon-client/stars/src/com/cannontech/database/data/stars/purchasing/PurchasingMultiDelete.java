@@ -1,9 +1,12 @@
 package com.cannontech.database.data.stars.purchasing;
 
-import java.util.*;
+import java.util.List;
 
 import com.cannontech.database.db.DBPersistent;
-import com.cannontech.database.db.stars.purchasing.*;
+import com.cannontech.database.db.stars.purchasing.DeliverySchedule;
+import com.cannontech.database.db.stars.purchasing.Invoice;
+import com.cannontech.database.db.stars.purchasing.PurchasePlan;
+import com.cannontech.database.db.stars.purchasing.Shipment;
 
 public class PurchasingMultiDelete extends DBPersistent 
 {

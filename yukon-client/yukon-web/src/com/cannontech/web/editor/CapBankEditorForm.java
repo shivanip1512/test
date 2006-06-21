@@ -13,11 +13,11 @@ import javax.faces.context.FacesContext;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.TransactionException;
-import com.cannontech.database.cache.functions.PAOFuncs;
-import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.data.capcontrol.CapBank;
+import com.cannontech.database.data.capcontrol.CapControlFeeder;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -26,7 +26,6 @@ import com.cannontech.database.data.point.CapBankMonitorPointParams;
 import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.capcontrol.CCMonitorBankList;
-import com.cannontech.database.data.capcontrol.CapControlFeeder;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.web.util.JSFComparators;
 
@@ -87,7 +86,7 @@ public class CapBankEditorForm extends DBEditorForm {
 			CapBank capBank = ((CapBank) getDbPersistent());			
 			int controlDeviceId = capBank.getCapBank().getControlDeviceID().intValue();
 			if (controlDeviceId > 0) {
-				LitePoint[] allPoints = PAOFuncs
+				LitePoint[] allPoints = DaoFactory.getPaoDao()
 						.getLitePointsForPAObject(controlDeviceId);
 			for (int i = 0; i < allPoints.length; i++) {
 				LitePoint point = allPoints[i];			
@@ -114,7 +113,7 @@ public class CapBankEditorForm extends DBEditorForm {
 	private void setDefaultFeederLimits(CapBank capBank, CapBankMonitorPointParams monitorPoint) {
 		int fdrId = com.cannontech.database.db.capcontrol.CapBank.getParentFeederID( capBank.getPAObjectID().intValue());
 		if (fdrId != 0 ){	
-			LiteYukonPAObject liteFeeder = PAOFuncs.getLiteYukonPAO(fdrId);		
+			LiteYukonPAObject liteFeeder = DaoFactory.getPaoDao().getLiteYukonPAO(fdrId);		
 			CapControlFeeder feeder = (CapControlFeeder) LiteFactory.convertLiteToDBPers( liteFeeder);
 			Connection conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
 			try {
@@ -208,7 +207,7 @@ public class CapBankEditorForm extends DBEditorForm {
 			setDbPersistent(dbPersistent);
 			//set the assigned points
 			CapBank capBank = ((CapBank)getDbPersistent());
-			assignedPoints = PointFuncs.getCapBankMonitorPoints(capBank);
+			assignedPoints = DaoFactory.getPointDao().getCapBankMonitorPoints(capBank);
 			Collections.sort(assignedPoints, JSFComparators.monitorPointDisplayOrderComparator);
 			}
 		}

@@ -1,8 +1,6 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
-<%@ page import="com.cannontech.database.cache.functions.ContactFuncs" %>
 <%@ page import="com.cannontech.database.data.lite.LiteContact" %>
 <%@ page import="com.cannontech.database.data.lite.stars.*" %>
-<%@ page import="com.cannontech.database.cache.functions.YukonListFuncs" %>
 <%@ page import="com.cannontech.database.cache.StarsDatabaseCache" %>
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="com.cannontech.stars.web.util.WorkOrderManagerUtil" %>
@@ -357,7 +355,7 @@ function sendWorkOrder() {
 						      <table width="95%" border="1" cellspacing="0" cellpadding="1" align="left" valign="top">
 	                            <% for (int i = 0; i < liteOrder.getEventWorkOrders().size(); i++) { %>
 	                            <tr> 
-	                              <td width="40%" class="TableCell">&nbsp;<%=YukonListFuncs.getYukonListEntry(liteOrder.getEventWorkOrders().get(i).getEventBase().getActionID()).getEntryText()%>&nbsp;</td>
+	                              <td width="40%" class="TableCell">&nbsp;<%=DaoFactory.getYukonListDao().getYukonListEntry(liteOrder.getEventWorkOrders().get(i).getEventBase().getActionID()).getEntryText()%>&nbsp;</td>
 	                              <td width="60%" class="TableCell">&nbsp;<%= ServletUtils.formatDate(liteOrder.getEventWorkOrders().get(i).getEventBase().getEventTimestamp(), datePart) %>&nbsp;-&nbsp;<%= ServletUtils.formatDate(liteOrder.getEventWorkOrders().get(i).getEventBase().getEventTimestamp(), timeFormat) %></td>
 	                            </tr>
 	                            <%}%>
@@ -380,13 +378,13 @@ function sendWorkOrder() {
 	if (liteOrder.getAccountID() > 0) {
 		LiteStarsCustAccountInformation liteAcctInfo = liteEC.getBriefCustAccountInfo(liteOrder.getAccountID(), true);
 		LiteCustomerAccount liteAccount = liteAcctInfo.getCustomerAccount();
-		LiteContact liteContact = ContactFuncs.getContact(liteAcctInfo.getCustomer().getPrimaryContactID());
+		LiteContact liteContact = DaoFactory.getContactDao().getContact(liteAcctInfo.getCustomer().getPrimaryContactID());
 		LiteAccountSite liteAcctSite = liteAcctInfo.getAccountSite();
 		LiteAddress liteAddr = liteEC.getAddress(liteAcctSite.getStreetAddressID());
 		
 		String name = StarsUtils.formatName(liteContact);
-		String homePhone = StarsUtils.getNotification(ContactFuncs.getContactNotification(liteContact, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE));
-		String workPhone = StarsUtils.getNotification(ContactFuncs.getContactNotification(liteContact, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE));
+		String homePhone = StarsUtils.getNotification(DaoFactory.getContactDao().getContactNotification(liteContact, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE));
+		String workPhone = StarsUtils.getNotification(DaoFactory.getContactDao().getContactNotification(liteContact, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE));
 		String mapNo = StarsUtils.forceNotNone(liteAcctSite.getSiteNumber());
 		
 		StreetAddress starsAddr = new StreetAddress();

@@ -1,19 +1,13 @@
 package com.cannontech.stars.web.bean;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.Pair;
 import com.cannontech.common.version.VersionTools;
-import com.cannontech.database.cache.functions.AuthFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.lite.stars.LiteServiceCompany;
-import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.db.stars.hardware.StaticLoadGroupMapping;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.roles.operator.InventoryRole;
-import com.cannontech.stars.util.ECUtils;
 
 
 
@@ -77,8 +71,8 @@ public class ConfigBean
         /*Let's take some precautions that this person should be able to reset static load group mappings
          * 
          */
-        hasResetPermission = AuthFuncs.checkRoleProperty(getCurrentUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS)
-                            && AuthFuncs.checkRoleProperty(getCurrentUser(), InventoryRole.SN_CONFIG_RANGE);
+        hasResetPermission = DaoFactory.getAuthDao().checkRoleProperty(getCurrentUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS)
+                            && DaoFactory.getAuthDao().checkRoleProperty(getCurrentUser(), InventoryRole.SN_CONFIG_RANGE);
         return hasResetPermission;
     }
 

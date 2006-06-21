@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsCtrlHistPeriod.java,v 1.94 2005/01/20 00:37:08 yao Exp $
+ * $Id: StarsCtrlHistPeriod.java,v 1.95 2006/06/21 17:12:24 alauinger Exp $
  */
 
 package com.cannontech.stars.xml.serialize.types;
@@ -11,15 +11,12 @@ package com.cannontech.stars.xml.serialize.types;
  //- Imported classes and packages -/
 //---------------------------------/
 
-import java.io.Serializable;
-import java.util.Enumeration;
 import java.util.Hashtable;
-import org.exolab.castor.xml.*;
 
 /**
  * 
  * 
- * @version $Revision: 1.94 $ $Date: 2005/01/20 00:37:08 $
+ * @version $Revision: 1.95 $ $Date: 2006/06/21 17:12:24 $
 **/
 public class StarsCtrlHistPeriod implements java.io.Serializable {
 

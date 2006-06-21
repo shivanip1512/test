@@ -5,8 +5,6 @@ package com.cannontech.loadcontrol.data;
  * @author: Aaron Lauinger
  */
 
-import java.util.Vector;
-
 import com.cannontech.message.util.VectorExtract;
 import com.cannontech.message.util.VectorInsert;
 import com.roguewave.tools.v2_0.Comparator;

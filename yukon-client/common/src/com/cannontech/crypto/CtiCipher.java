@@ -10,10 +10,10 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
 
-import com.cannontech.clientutils.CTILogger;
-
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
+
+import com.cannontech.clientutils.CTILogger;
 
 /**
  * @author rneuharth

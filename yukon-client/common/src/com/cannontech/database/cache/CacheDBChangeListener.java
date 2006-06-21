@@ -7,7 +7,6 @@ import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
-import com.cannontech.yukon.IServerConnection;
 import com.cannontech.yukon.conns.ConnPool;
 
 /**
@@ -25,17 +24,14 @@ import com.cannontech.yukon.conns.ConnPool;
  * This class is subject to change and you should probably not depend on it for new uses.
  */
 public class CacheDBChangeListener implements MessageListener {
-	private IServerConnection connection = ConnPool.getInstance()
-			.getDefDispatchConn();
-
 	private List<DBChangeListener> dbChangeListeners = new ArrayList<DBChangeListener>();
 
 	/**
 	 * CacheDBChangeListener constructor comment.
 	 */
-	public CacheDBChangeListener() {
+	public CacheDBChangeListener(ConnPool connectionPool) {
 		super();
-		connection.addMessageListener(this);
+		connectionPool.getDefDispatchConn().addMessageListener(this);
 	}
 
 	/**
@@ -81,5 +77,4 @@ public class CacheDBChangeListener implements MessageListener {
 			}
 		}
 	}
-
 }

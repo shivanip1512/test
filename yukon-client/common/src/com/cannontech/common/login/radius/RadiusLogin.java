@@ -11,10 +11,11 @@ import net.sourceforge.jradiusclient.exception.RadiusException;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.yukon.AuthenticationRole;
+import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * @author snebben
@@ -37,11 +38,11 @@ public class RadiusLogin
 		RadiusClient rc;
 		try
 		{
-			String radiusAddr = RoleFuncs.getGlobalPropertyValue(AuthenticationRole.SERVER_ADDRESS);
-			int authPort = Integer.valueOf(RoleFuncs.getGlobalPropertyValue(AuthenticationRole.AUTH_PORT)).intValue();
-			int acctPort = Integer.valueOf(RoleFuncs.getGlobalPropertyValue(AuthenticationRole.ACCT_PORT)).intValue();
-			int authTimeout = Integer.parseInt(RoleFuncs.getGlobalPropertyValue(AuthenticationRole.AUTH_TIMEOUT)) * 1000;
-			String secret = RoleFuncs.getGlobalPropertyValue(AuthenticationRole.SECRET_KEY);
+			String radiusAddr = DaoFactory.getRoleDao().getGlobalPropertyValue(AuthenticationRole.SERVER_ADDRESS);
+			int authPort = Integer.valueOf(DaoFactory.getRoleDao().getGlobalPropertyValue(AuthenticationRole.AUTH_PORT)).intValue();
+			int acctPort = Integer.valueOf(DaoFactory.getRoleDao().getGlobalPropertyValue(AuthenticationRole.ACCT_PORT)).intValue();
+			int authTimeout = Integer.parseInt(DaoFactory.getRoleDao().getGlobalPropertyValue(AuthenticationRole.AUTH_TIMEOUT)) * 1000;
+			String secret = DaoFactory.getRoleDao().getGlobalPropertyValue(AuthenticationRole.SECRET_KEY);
 
 		
 			rc = new RadiusClient(
@@ -49,7 +50,7 @@ public class RadiusLogin
 			
 			if( basicAuthenticate(rc, username, password))
 			{
-				DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+				IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 				synchronized(cache) {
 				Iterator i = cache.getAllYukonUsers().iterator();
 				while(i.hasNext()) {

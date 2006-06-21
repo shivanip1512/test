@@ -18,17 +18,11 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
-import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.StarsDatabaseCache;
-import com.cannontech.database.cache.functions.AuthFuncs;
-import com.cannontech.database.cache.functions.ContactFuncs;
-import com.cannontech.database.cache.functions.EnergyCompanyFuncs;
-import com.cannontech.database.cache.functions.PAOFuncs;
-import com.cannontech.database.cache.functions.YukonListFuncs;
-import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteSettlementConfig;
@@ -38,8 +32,8 @@ import com.cannontech.database.data.lite.stars.LiteAddress;
 import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
 import com.cannontech.database.data.lite.stars.LiteCustomerFAQ;
 import com.cannontech.database.data.lite.stars.LiteInterviewQuestion;
-import com.cannontech.database.data.lite.stars.LiteLMProgramWebPublishing;
 import com.cannontech.database.data.lite.stars.LiteLMProgramEvent;
+import com.cannontech.database.data.lite.stars.LiteLMProgramWebPublishing;
 import com.cannontech.database.data.lite.stars.LiteLMThermostatSchedule;
 import com.cannontech.database.data.lite.stars.LiteServiceCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
@@ -49,14 +43,13 @@ import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.database.data.lite.stars.LiteSubstation;
 import com.cannontech.database.data.lite.stars.LiteWebConfiguration;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
-import com.cannontech.database.data.stars.report.ServiceCompany;
-import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.company.SettlementConfig;
 import com.cannontech.database.db.contact.ContactNotification;
 import com.cannontech.database.db.customer.Address;
 import com.cannontech.database.db.stars.ECToGenericMapping;
 import com.cannontech.database.db.stars.customer.CustomerAccount;
 import com.cannontech.database.db.stars.hardware.Warehouse;
+import com.cannontech.database.db.stars.report.ServiceCompanyDesignationCode;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.application.WebClientRole;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
@@ -86,9 +79,9 @@ import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsCustomerAddress;
 import com.cannontech.stars.xml.serialize.StarsDefaultThermostatSchedules;
 import com.cannontech.stars.xml.serialize.StarsEnergyCompany;
+import com.cannontech.stars.xml.serialize.StarsEnergyCompanySettings;
 import com.cannontech.stars.xml.serialize.StarsExitInterviewQuestion;
 import com.cannontech.stars.xml.serialize.StarsExitInterviewQuestions;
-import com.cannontech.stars.xml.serialize.StarsEnergyCompanySettings;
 import com.cannontech.stars.xml.serialize.StarsLMProgram;
 import com.cannontech.stars.xml.serialize.StarsServiceCompany;
 import com.cannontech.stars.xml.serialize.StarsThermostatProgram;
@@ -97,7 +90,6 @@ import com.cannontech.stars.xml.serialize.StarsUpdateThermostatScheduleResponse;
 import com.cannontech.stars.xml.serialize.types.StarsThermostatTypes;
 import com.cannontech.user.UserUtils;
 import com.cannontech.web.navigation.CtiNavObject;
-import com.cannontech.database.db.stars.report.ServiceCompanyDesignationCode;
 
 /**
  * @author yao
@@ -557,7 +549,7 @@ public class StarsAdmin extends HttpServlet {
 				contact.getContact().setContFirstName( CtiUtilities.STRING_NONE );
 			}
 			else {
-				liteContact = ContactFuncs.getContact( energyCompany.getPrimaryContactID() );
+				liteContact = DaoFactory.getContactDao().getContact( energyCompany.getPrimaryContactID() );
 				StarsLiteFactory.setContact( contact, liteContact, energyCompany );
 			}
 			
@@ -675,7 +667,7 @@ public class StarsAdmin extends HttpServlet {
 				String groupName = operGroupNames[i].trim();
 				if (groupName.equals("")) continue;
 				
-				LiteYukonGroup group = AuthFuncs.getGroup( groupName );
+				LiteYukonGroup group = DaoFactory.getAuthDao().getGroup( groupName );
 				if (group == null)
 					throw new WebClientException( "Operator group '" + groupName + "' doesn't exist");
 				
@@ -697,7 +689,7 @@ public class StarsAdmin extends HttpServlet {
 				String groupName = custGroupNames[i].trim();
 				if (groupName.equals("")) continue;
 				
-				LiteYukonGroup group = AuthFuncs.getGroup( groupName );
+				LiteYukonGroup group = DaoFactory.getAuthDao().getGroup( groupName );
 				if (group == null)
 					throw new WebClientException( "Customer group '" + groupName + "' doesn't exist");
 				
@@ -819,7 +811,7 @@ public class StarsAdmin extends HttpServlet {
 					
 					String newDispName = progDispNames[i];
 					if (newDispName.length() == 0 && deviceID > 0)
-						newDispName = PAOFuncs.getYukonPAOName( deviceID );
+						newDispName = DaoFactory.getPaoDao().getYukonPAOName( deviceID );
 					if (newDispName.length() == 0) {
 						session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "The display name of a virtual program cannot be empty" );
 						redirect = referer;
@@ -1007,7 +999,7 @@ public class StarsAdmin extends HttpServlet {
 			if (!newCompany) {
 				liteCompany = energyCompany.getServiceCompany( companyID );
 				StarsLiteFactory.setServiceCompany( company, liteCompany );
-				liteContact = ContactFuncs.getContact( liteCompany.getPrimaryContactID() );
+				liteContact = DaoFactory.getContactDao().getContact( liteCompany.getPrimaryContactID() );
 				StarsLiteFactory.setContact( contact, liteContact );
 				liteAddr = energyCompany.getAddress( liteCompany.getAddressID() );
 			}
@@ -1070,7 +1062,7 @@ public class StarsAdmin extends HttpServlet {
 				
 				PrimaryContact starsContact = new PrimaryContact();
 				StarsLiteFactory.setStarsCustomerContact(
-						starsContact, ContactFuncs.getContact(company.getServiceCompany().getPrimaryContactID().intValue()) );
+						starsContact, DaoFactory.getContactDao().getContact(company.getServiceCompany().getPrimaryContactID().intValue()) );
 				
 				CompanyAddress starsAddr = new CompanyAddress();
 				StarsLiteFactory.setStarsCustomerAddress(
@@ -1239,13 +1231,13 @@ public class StarsAdmin extends HttpServlet {
 			LiteYukonGroup[] operGroups = energyCompany.getWebClientOperatorGroups();
 			
 			for (int i = 0; i < operGroups.length; i++) {
-				if (AuthFuncs.getRolePropValueGroup(operGroups[i], ConsumerInfoRole.WEB_LINK_FAQ, null) != null &&
+				if (DaoFactory.getAuthDao().getRolePropValueGroup(operGroups[i], ConsumerInfoRole.WEB_LINK_FAQ, null) != null &&
 					StarsAdminUtil.updateGroupRoleProperty(operGroups[i], ConsumerInfoRole.ROLEID, ConsumerInfoRole.WEB_LINK_FAQ, faqLink))
 					ServerUtils.handleDBChange( operGroups[i], DBChangeMsg.CHANGE_TYPE_UPDATE );
 			}
 			
 			for (int i = 0; i < custGroups.length; i++) {
-				if (AuthFuncs.getRolePropValueGroup(custGroups[i], ResidentialCustomerRole.WEB_LINK_FAQ, null) != null &&
+				if (DaoFactory.getAuthDao().getRolePropValueGroup(custGroups[i], ResidentialCustomerRole.WEB_LINK_FAQ, null) != null &&
 					StarsAdminUtil.updateGroupRoleProperty(custGroups[i], ResidentialCustomerRole.ROLEID, ResidentialCustomerRole.WEB_LINK_FAQ, faqLink))
 					ServerUtils.handleDBChange( custGroups[i], DBChangeMsg.CHANGE_TYPE_UPDATE );
 			}
@@ -1314,7 +1306,7 @@ public class StarsAdmin extends HttpServlet {
 			
 			for (int i = 0; i < subjectIDs.length; i++) {
 				int subjectID = Integer.parseInt( subjectIDs[i] );
-				YukonListEntry subject = YukonListFuncs.getYukonListEntry( subjectID );
+				YukonListEntry subject = DaoFactory.getYukonListDao().getYukonListEntry( subjectID );
 				subject.setEntryOrder( i+1 );
 				
 				com.cannontech.database.db.constants.YukonListEntry entry =
@@ -1376,7 +1368,7 @@ public class StarsAdmin extends HttpServlet {
 				
 				liteSubject = new YukonListEntry();
 				StarsLiteFactory.setConstantYukonListEntry( liteSubject, entry );
-				YukonListFuncs.getYukonListEntries().put( entry.getEntryID(), liteSubject );
+				DaoFactory.getYukonListDao().getYukonListEntries().put( entry.getEntryID(), liteSubject );
 				cList.getYukonListEntries().add( liteSubject );
 			}
 			else {
@@ -1395,7 +1387,7 @@ public class StarsAdmin extends HttpServlet {
 					}
 				}
 				
-				liteSubject = YukonListFuncs.getYukonListEntry( subjectID );
+				liteSubject = DaoFactory.getYukonListDao().getYukonListEntry( subjectID );
 				if (!liteSubject.getEntryText().equals( subject )) {
 					liteSubject.setEntryText( subject );
 					com.cannontech.database.db.constants.YukonListEntry entry =
@@ -1516,9 +1508,9 @@ public class StarsAdmin extends HttpServlet {
 						starsQuestion.setQuestionID( liteQuestion.getQuestionID() );
 						starsQuestion.setQuestion( liteQuestion.getQuestion() );
 						starsQuestion.setQuestionType( (QuestionType)StarsFactory.newStarsCustListEntry(
-								YukonListFuncs.getYukonListEntry(liteQuestion.getQuestionType()), QuestionType.class) );
+								DaoFactory.getYukonListDao().getYukonListEntry(liteQuestion.getQuestionType()), QuestionType.class) );
 						starsQuestion.setAnswerType( (AnswerType)StarsFactory.newStarsCustListEntry(
-								YukonListFuncs.getYukonListEntry(liteQuestion.getAnswerType()), AnswerType.class) );
+								DaoFactory.getYukonListDao().getYukonListEntry(liteQuestion.getAnswerType()), AnswerType.class) );
 						starsExitQuestions.addStarsExitInterviewQuestion( starsQuestion );
 					}
 				}
@@ -1606,7 +1598,7 @@ public class StarsAdmin extends HttpServlet {
 					
 					cList = new YukonSelectionList();
 					StarsLiteFactory.setConstantYukonSelectionList( cList, listDB );
-					YukonListFuncs.getYukonSelectionLists().put( listDB.getListID(), cList );
+					DaoFactory.getYukonListDao().getYukonSelectionLists().put( listDB.getListID(), cList );
 					energyCompany.getAllSelectionLists().add( cList );
 					
 					// Mark all entry data as new entries
@@ -1695,7 +1687,7 @@ public class StarsAdmin extends HttpServlet {
 			
 			if (userID == -1) {
 				// Create new operator login
-				LiteYukonGroup liteGroup = AuthFuncs.getGroup( operGroupID );
+				LiteYukonGroup liteGroup = DaoFactory.getAuthDao().getGroup( operGroupID );
 				LiteYukonUser liteUser = StarsAdminUtil.createOperatorLogin(
 						username, password, status, new LiteYukonGroup[] {liteGroup}, energyCompany );
 				
@@ -1703,8 +1695,8 @@ public class StarsAdmin extends HttpServlet {
 				redirect += "?UserID=" + liteUser.getUserID();
 			}
 			else {
-				LiteYukonUser liteUser = YukonUserFuncs.getLiteYukonUser( userID );
-				LiteYukonGroup loginGroup = AuthFuncs.getGroup( operGroupID );
+				LiteYukonUser liteUser = DaoFactory.getYukonUserDao().getLiteYukonUser( userID );
+				LiteYukonGroup loginGroup = DaoFactory.getAuthDao().getGroup( operGroupID );
 				StarsAdminUtil.updateLogin( liteUser, username, password, status, loginGroup, energyCompany );
 				
 				session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Operator login updated successfully" );
@@ -1736,7 +1728,7 @@ public class StarsAdmin extends HttpServlet {
 					
 					com.cannontech.database.data.user.YukonUser.deleteOperatorLogin( new Integer(loginID) );
 					
-					LiteYukonUser liteUser = YukonUserFuncs.getLiteYukonUser( loginID );
+					LiteYukonUser liteUser = DaoFactory.getYukonUserDao().getLiteYukonUser( loginID );
 					ServerUtils.handleDBChange(liteUser, DBChangeMsg.CHANGE_TYPE_DELETE);
 					it.remove();
 				}
@@ -1760,7 +1752,7 @@ public class StarsAdmin extends HttpServlet {
 				String groupName = operGroupNames[i].trim();
 				if (groupName.equals("")) continue;
 				
-				LiteYukonGroup group = AuthFuncs.getGroup( groupName );
+				LiteYukonGroup group = DaoFactory.getAuthDao().getGroup( groupName );
 				if (group == null)
 					throw new WebClientException( "Operator group '" + groupName + "' does not exist");
 				
@@ -1780,7 +1772,7 @@ public class StarsAdmin extends HttpServlet {
 				String groupName = custGroupNames[i].trim();
 				if (groupName.equals("")) continue;
 				
-				LiteYukonGroup group = AuthFuncs.getGroup( groupName );
+				LiteYukonGroup group = DaoFactory.getAuthDao().getGroup( groupName );
 				if (group == null)
 					throw new WebClientException( "Customer group '" + groupName + "' does not exist");
 				
@@ -1790,11 +1782,11 @@ public class StarsAdmin extends HttpServlet {
 					custGroupIDs += "," + String.valueOf( group.getGroupID() );
 			}
 			
-			if (YukonUserFuncs.getLiteYukonUser( req.getParameter("Username") ) != null)
+			if (DaoFactory.getYukonUserDao().getLiteYukonUser( req.getParameter("Username") ) != null)
 				throw new WebClientException( "Username of default operator login already exists" );
 			
 			if (req.getParameter("Username2").length() > 0 &&
-				YukonUserFuncs.getLiteYukonUser( req.getParameter("Username2") ) != null)
+				DaoFactory.getYukonUserDao().getLiteYukonUser( req.getParameter("Username2") ) != null)
 				throw new WebClientException( "Username of second operator login already exists" );
 			
 			// Create a privilege group with EnergyCompany and Administrator role
@@ -1977,7 +1969,7 @@ public class StarsAdmin extends HttpServlet {
 	
 	private void memberLogin(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		int userID = Integer.parseInt( req.getParameter("UserID") );
-		LiteYukonUser memberLogin = YukonUserFuncs.getLiteYukonUser( userID );
+		LiteYukonUser memberLogin = DaoFactory.getYukonUserDao().getLiteYukonUser( userID );
 		boolean isMemberManager = false;
 		
 		/*
@@ -2011,13 +2003,13 @@ public class StarsAdmin extends HttpServlet {
 				sess.setAttribute(ServletUtils.NAVIGATE, nav);	
 		}
 		
-		redirect = AuthFuncs.getRolePropertyValue( liteUser, WebClientRole.HOME_URL );
+		redirect = DaoFactory.getAuthDao().getRolePropertyValue( liteUser, WebClientRole.HOME_URL );
 	}
 	
 	public static void switchContext(StarsYukonUser user, HttpServletRequest req, HttpSession session, int memberID) throws WebClientException {
 		if (memberID == user.getEnergyCompanyID()) return;
 		
-//		if (!AuthFuncs.checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS ))
+//		if (!DaoFactory.getAuthDao().checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS ))
 //			throw new WebClientException( "The current user doesn't have the privilege to manage members" );
 		
 		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
@@ -2025,10 +2017,10 @@ public class StarsAdmin extends HttpServlet {
 		
 		ArrayList loginIDs = energyCompany.getMemberLoginIDs();
 		for (int i = 0; i < loginIDs.size(); i++) {
-			LiteYukonUser liteUser = YukonUserFuncs.getLiteYukonUser( ((Integer) loginIDs.get(i)).intValue() );
+			LiteYukonUser liteUser = DaoFactory.getYukonUserDao().getLiteYukonUser( ((Integer) loginIDs.get(i)).intValue() );
 			if (liteUser == null) continue;
 			
-			if (EnergyCompanyFuncs.getEnergyCompany( liteUser ).getEnergyCompanyID() == memberID) {
+			if (DaoFactory.getEnergyCompanyDao().getEnergyCompany( liteUser ).getEnergyCompanyID() == memberID) {
 				if (LoginController.internalLogin(
 						req,
 						session,
@@ -2072,8 +2064,8 @@ public class StarsAdmin extends HttpServlet {
 		
 		for (int i = 0; i < loginIDs.size(); i++) {
 			Integer id = (Integer) loginIDs.get(i);
-			LiteYukonUser liteUser = YukonUserFuncs.getLiteYukonUser( id.intValue() );
-			if (EnergyCompanyFuncs.getEnergyCompany( liteUser ).getEnergyCompanyID() == memberID) {
+			LiteYukonUser liteUser = DaoFactory.getYukonUserDao().getLiteYukonUser( id.intValue() );
+			if (DaoFactory.getEnergyCompanyDao().getEnergyCompany( liteUser ).getEnergyCompanyID() == memberID) {
 				prevLoginID = id;
 				break;
 			}

@@ -1,8 +1,8 @@
 package com.cannontech.dbeditor.wizard.device.lmgroup;
 
 import com.cannontech.common.login.ClientSession;
-import com.cannontech.roles.application.DBEditorRole;
 import com.cannontech.common.util.ClientRights;
+import com.cannontech.roles.application.DBEditorRole;
 /**
  * This type was created in VisualAge.
  */

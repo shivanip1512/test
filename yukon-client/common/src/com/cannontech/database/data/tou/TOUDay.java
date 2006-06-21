@@ -6,10 +6,10 @@
  */
 package com.cannontech.database.data.tou;
 
-import com.cannontech.database.db.tou.TOUDayRateSwitches;
-import com.cannontech.database.PoolManager;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.PoolManager;
+import com.cannontech.database.db.tou.TOUDayRateSwitches;
 
 /**
  * @author jdayton

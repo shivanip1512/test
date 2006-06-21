@@ -1,6 +1,7 @@
 package com.cannontech.roles.notifications;
 
-import com.cannontech.roles.*;
+import com.cannontech.roles.NotificationsRoleDefs;
+import com.cannontech.roles.YukonRoleDefs;
 
 /**
  * @author aaron

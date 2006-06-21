@@ -1,15 +1,15 @@
 package com.cannontech.database.db.pao;
 
+import java.sql.Timestamp;
+import java.util.Date;
+import java.util.Vector;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
-
-import java.sql.Timestamp;
-import java.util.Date;
-import java.util.Vector;
 
 /**
  * DB object for the table PAOSchedule

@@ -1,5 +1,7 @@
 package com.cannontech.database.model;
 
+import com.cannontech.yukon.IDatabaseCache;
+
 /**
  * A tree model that contains GraphDefinitions
  * Creation date: (6/21/00 4:53:19 PM)
@@ -35,7 +37,7 @@ public String toString() {
  */
 public void update() 
 {
-	com.cannontech.database.cache.DefaultDatabaseCache cache =
+	IDatabaseCache cache =
 					com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 
 	synchronized(cache)

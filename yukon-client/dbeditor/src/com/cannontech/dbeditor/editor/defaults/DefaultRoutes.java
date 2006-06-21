@@ -17,6 +17,7 @@ import com.cannontech.database.data.route.MacroRoute;
 import com.cannontech.database.data.route.RouteBase;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.route.RepeaterRoute;
+import com.cannontech.yukon.IDatabaseCache;
 
 public class DefaultRoutes
 {
@@ -56,7 +57,7 @@ public class DefaultRoutes
 		String CCUName ="";
 		
 		
-		com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+		IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 		synchronized (cache)
 		{
 			devices = cache.getAllDevices();
@@ -247,7 +248,7 @@ public class DefaultRoutes
 	{
 		java.util.Vector defaultedRoutes = new java.util.Vector();
 		java.util.List routes;
-		com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+		IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 		synchronized (cache)
 		{
 			routes = cache.getAllRoutes();
@@ -284,7 +285,7 @@ public class DefaultRoutes
 	public static final Vector getDisplayReady(Vector routes, Vector originalDefaults)
 	{
 		Vector displayVector = new Vector();
-		com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+		IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 		synchronized (cache)
 		{
 			java.util.List devices = cache.getAllDevices();

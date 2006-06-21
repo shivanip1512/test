@@ -1,5 +1,7 @@
 package com.cannontech.dbeditor.wizard.point;
 
+import com.cannontech.yukon.IDatabaseCache;
+
 /**
  * This type was created in VisualAge.
  */
@@ -92,7 +94,7 @@ public void deviceComboBox_ItemStateChanged(java.awt.event.ItemEvent itemEvent) 
 	getUsedPointIDLabel().setText("");
 	usedPointIDs.removeAllElements();
 
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 
 	synchronized(cache)
 	{
@@ -523,7 +525,7 @@ public void setValue(Object val) {
 public void setValueCore(Object val, Integer initialPAOId )
 {
 	//Load the device list
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized(cache)
 	{
 		java.util.List devices = cache.getAllDevices();
@@ -566,7 +568,7 @@ public void setValueCore(Object val, Integer initialPAOId )
 public void setValueLM(Object val, Integer initialPAOId) 
 {
 	//Load the device list
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized(cache)
 	{
 		java.util.List devices = cache.getAllLoadManagement();

@@ -1,6 +1,6 @@
+<%@ page import="com.cannontech.core.dao.DaoFactory"%>
 <%@ page import="com.cannontech.database.data.lite.LiteDeviceTypeCommand"%> 
 <%@ page import="com.cannontech.database.data.lite.LiteCommand"%> 
-<%@ page import="com.cannontech.database.cache.functions.CommandFuncs"%>
 <%@ page import="com.cannontech.database.db.command.CommandCategory"%>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject" %>
 <%
@@ -115,7 +115,7 @@ else
 					for (int i = 0; i < YC_BEAN.getLiteDeviceTypeCommandsVector().size(); i++)
                   	{
 						LiteDeviceTypeCommand ldtc = (LiteDeviceTypeCommand)YC_BEAN.getLiteDeviceTypeCommandsVector().get(i);
-						LiteCommand lc = CommandFuncs.getCommand(ldtc.getCommandID());
+						LiteCommand lc = DaoFactory.getCommandDao().getCommand(ldtc.getCommandID());
 						if( ldtc.isVisible() ) {
 						%>
                   		<option value='<%=lc.getCommand()%>' <%=(lc.getCommand().equalsIgnoreCase(tempCommand))? "selected":""%> ><%=lc.getLabel()%></option>

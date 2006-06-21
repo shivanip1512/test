@@ -5,7 +5,7 @@ import java.util.StringTokenizer;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.cache.functions.YukonListFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.stars.util.StarsMsgUtils;
 
@@ -45,7 +45,7 @@ public class LiteStarsThermostatSettings extends LiteBase {
 	}
 	
 	public void updateThermostatSettings(LiteStarsLMHardware liteHw, LiteStarsEnergyCompany energyCompany) {
-		int hwTypeDefID = YukonListFuncs.getYukonListEntry(liteHw.getLmHardwareTypeID()).getYukonDefID();
+		int hwTypeDefID = DaoFactory.getYukonListDao().getYukonListEntry(liteHw.getLmHardwareTypeID()).getYukonDefID();
 		
 		Object[][] data = com.cannontech.database.db.stars.hardware.GatewayEndDevice.getHardwareData(
 				liteHw.getManufacturerSerialNumber(), new Integer(hwTypeDefID) );

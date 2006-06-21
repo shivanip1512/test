@@ -1,6 +1,5 @@
+<%@ page import="com.cannontech.core.dao.DaoFactory" %>
 <%@ page import="com.cannontech.database.cache.DefaultDatabaseCache" %>
-<%@ page import="com.cannontech.database.cache.functions.DeviceFuncs" %>
-<%@ page import="com.cannontech.database.cache.functions.PointFuncs" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject" %>
 <%@ page import="com.cannontech.database.data.lite.LitePoint" %>
 <%@ page import="com.cannontech.database.data.lite.LiteTag" %>
@@ -17,8 +16,8 @@
 	String descriptionStr = request.getParameter("description");
 	String actionStr = request.getParameter("action");
 	
-	LitePoint litePoint = PointFuncs.getLitePoint(pointID);
-	LiteYukonPAObject liteDevice = DeviceFuncs.getLiteDevice(litePoint.getPaobjectID());
+	LitePoint litePoint = DaoFactory.getPointDao().getLitePoint(pointID);
+	LiteYukonPAObject liteDevice = DaoFactory.getDeviceDao().getLiteDevice(litePoint.getPaobjectID());
 	
 	if(actionStr != null && actionStr.equalsIgnoreCase("SUBMITTAG")) {
 		TagManager.getInstance().createTag(pointID, Integer.parseInt(tagIDStr), YUKON_USER.getUsername(), descriptionStr, "-", "-");

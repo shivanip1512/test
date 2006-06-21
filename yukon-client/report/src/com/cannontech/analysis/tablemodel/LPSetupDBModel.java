@@ -11,9 +11,8 @@ import com.cannontech.analysis.data.device.LPMeterData;
 import com.cannontech.analysis.data.device.MeterAndPointData;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.cache.functions.DeviceFuncs;
-import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOGroups;
@@ -75,26 +74,26 @@ public class LPSetupDBModel extends ReportModelBase
 
 		    String thisVal = NULL_STRING;
 		    String anotherVal = NULL_STRING;
-		    LiteYukonPAObject pao1 = PAOFuncs.getLiteYukonPAO( ((LPMeterData)o1).getMeterAndPointData().getPaobjectID().intValue());
-		    LiteYukonPAObject pao2 = PAOFuncs.getLiteYukonPAO( ((LPMeterData)o2).getMeterAndPointData().getPaobjectID().intValue());
+		    LiteYukonPAObject pao1 = DaoFactory.getPaoDao().getLiteYukonPAO( ((LPMeterData)o1).getMeterAndPointData().getPaobjectID().intValue());
+		    LiteYukonPAObject pao2 = DaoFactory.getPaoDao().getLiteYukonPAO( ((LPMeterData)o2).getMeterAndPointData().getPaobjectID().intValue());
 		    
 		    if( getOrderBy() == ORDER_BY_ROUTE_NAME)
 		    {
-		        thisVal = PAOFuncs.getYukonPAOName(pao1.getRouteID());
-				anotherVal = PAOFuncs.getYukonPAOName(pao2.getRouteID());
+		        thisVal = DaoFactory.getPaoDao().getYukonPAOName(pao1.getRouteID());
+				anotherVal = DaoFactory.getPaoDao().getYukonPAOName(pao2.getRouteID());
 		    }
 		    else if( getOrderBy() == ORDER_BY_METER_NUMBER)
 		    {
-		        LiteDeviceMeterNumber ldmn1 = DeviceFuncs.getLiteDeviceMeterNumber( ((LPMeterData)o1).getMeterAndPointData().getPaobjectID().intValue());
-			    LiteDeviceMeterNumber ldmn2 = DeviceFuncs.getLiteDeviceMeterNumber( ((LPMeterData)o2).getMeterAndPointData().getPaobjectID().intValue());
+		        LiteDeviceMeterNumber ldmn1 = DaoFactory.getDeviceDao().getLiteDeviceMeterNumber( ((LPMeterData)o1).getMeterAndPointData().getPaobjectID().intValue());
+			    LiteDeviceMeterNumber ldmn2 = DaoFactory.getDeviceDao().getLiteDeviceMeterNumber( ((LPMeterData)o2).getMeterAndPointData().getPaobjectID().intValue());
 		        
 		        thisVal = (ldmn1 == null ? NULL_STRING : ldmn1.getMeterNumber());
 				anotherVal = (ldmn2 == null ? NULL_STRING : ldmn2.getMeterNumber());
 		    }
 		    if (getOrderBy() == ORDER_BY_DEVICE_NAME || thisVal.equalsIgnoreCase(anotherVal))
 		    {
-		        thisVal = PAOFuncs.getYukonPAOName(pao1.getYukonID());
-		        anotherVal = PAOFuncs.getYukonPAOName(pao2.getYukonID());
+		        thisVal = DaoFactory.getPaoDao().getYukonPAOName(pao1.getYukonID());
+		        anotherVal = DaoFactory.getPaoDao().getYukonPAOName(pao2.getYukonID());
 		    }
 			return (thisVal.compareToIgnoreCase(anotherVal));
 		}
@@ -244,7 +243,7 @@ public class LPSetupDBModel extends ReportModelBase
 					return String.valueOf(lpMeter.getMeterAndPointData().getLitePaobject().getAddress());
 	
 				case ROUTE_NAME_COLUMN:
-					return PAOFuncs.getYukonPAOName(lpMeter.getMeterAndPointData().getLitePaobject().getRouteID());
+					return DaoFactory.getPaoDao().getYukonPAOName(lpMeter.getMeterAndPointData().getLitePaobject().getRouteID());
 				
 				case LAST_INTERVAL_DEMAND_COLUMN:
 				    return lpMeter.getLastIntervalDemand();

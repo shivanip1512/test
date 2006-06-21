@@ -5,11 +5,33 @@ package com.cannontech.tdc;
  * Creation date: (1/20/00 11:43:56 AM)
  * @author: 
  */
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.Vector;
 
-import javax.swing.*;
+import javax.swing.ImageIcon;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JRadioButtonMenuItem;
 import javax.swing.plaf.basic.BasicComboPopup;
 import javax.swing.table.TableColumn;
 
@@ -23,24 +45,39 @@ import com.cannontech.common.gui.panel.CompositeJSplitPane;
 import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.gui.util.SortTableModelWrapper;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.cache.functions.*;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
-import com.cannontech.database.data.lite.*;
+import com.cannontech.database.data.lite.LiteAlarmCategory;
+import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteTag;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointQualities;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.graph.model.TrendModel;
-import com.cannontech.message.dispatch.message.*;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.Signal;
 import com.cannontech.message.util.Command;
 import com.cannontech.tags.Tag;
 import com.cannontech.tdc.commandevents.AckAlarm;
-import com.cannontech.tdc.data.*;
+import com.cannontech.tdc.data.ColumnData;
+import com.cannontech.tdc.data.Display;
+import com.cannontech.tdc.data.DisplayData;
 import com.cannontech.tdc.filter.ITDCFilter;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
-import com.cannontech.tdc.roweditor.*;
+import com.cannontech.tdc.roweditor.AltScanRatePanel;
+import com.cannontech.tdc.roweditor.AnalogPanel;
+import com.cannontech.tdc.roweditor.EditorDialogData;
+import com.cannontech.tdc.roweditor.ManualEntryJPanel;
+import com.cannontech.tdc.roweditor.RowEditorDialog;
+import com.cannontech.tdc.roweditor.SendData;
+import com.cannontech.tdc.roweditor.StatusPanelControlEntry;
+import com.cannontech.tdc.roweditor.StatusPanelManualEntry;
+import com.cannontech.tdc.roweditor.TagWizardPanel;
+import com.cannontech.tdc.roweditor.TagsEditorPanel;
 import com.cannontech.tdc.toolbar.AlarmToolBar;
 import com.cannontech.tdc.utils.DataBaseInteraction;
 import com.cannontech.tdc.utils.TDCDefines;
+import com.cannontech.yukon.IDatabaseCache;
 
 public class TDCMainPanel extends javax.swing.JPanel implements com.cannontech.tdc.bookmark.BookMarkSelectionListener, java.awt.event.ActionListener, java.awt.event.ItemListener, java.awt.event.MouseListener, javax.swing.event.PopupMenuListener 
 {
@@ -836,7 +873,7 @@ private void fireJComboCurrentDisplayAction_actionPerformed(java.util.EventObjec
  */
 private Object[][] getAlarmStatesCache()
 {
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	java.util.List alarmStates = cache.getAllAlarmCategories();
 	Object[][] data = null;
 	
@@ -2669,7 +2706,7 @@ public void jPopupMenu_PopupMenuWillBecomeVisible(javax.swing.event.PopupMenuEve
 		{
 			if( TagUtils.isAlarmUnacked(sigs[i].getTags()) )
 			{
-				LitePoint lPoint = PointFuncs.getLitePoint( pv.getPointID() );
+				LitePoint lPoint = DaoFactory.getPointDao().getLitePoint( pv.getPointID() );
 				
 				//if there is more than one alarm, add the all alarms ack to the top
 				if( i == 1 )
@@ -2801,7 +2838,7 @@ private void addTagMenuItems( int selRow )
 	while( it.hasNext() )
 	{
 		Tag aTag = (Tag)it.next();
-		LiteTag liteTag = TagFuncs.getLiteTag( aTag.getTagID() );
+		LiteTag liteTag = DaoFactory.getTagDao().getLiteTag( aTag.getTagID() );
 
 		JMenuItem mi = new JMenuItem(
 				liteTag.getTagName() + " (Level: " + liteTag.getTagLevel() + ")" );
@@ -2813,7 +2850,7 @@ private void addTagMenuItems( int selRow )
 		if( liteTag.getImageID() > CtiUtilities.NONE_ZERO_ID )
 			mi.setIcon( 
 				new ImageIcon(java.awt.Toolkit.getDefaultToolkit().createImage(
-					YukonImageFuncs.getLiteYukonImage(liteTag.getImageID()).getImageValue()) ) );
+					DaoFactory.getYukonImageDao().getLiteYukonImage(liteTag.getImageID()).getImageValue()) ) );
 
 		//be sure any click on a specific tag takes the user to the
 		// tag editor

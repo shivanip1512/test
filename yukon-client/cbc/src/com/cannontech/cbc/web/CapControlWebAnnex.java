@@ -8,6 +8,7 @@ package com.cannontech.cbc.web;
  * @author: Ryan
  */
 import java.awt.Color;
+
 import com.cannontech.cbc.gui.CapBankTableModel;
 import com.cannontech.cbc.gui.FeederTableModel;
 import com.cannontech.cbc.gui.SubBusTableModel;

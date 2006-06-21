@@ -7,19 +7,71 @@ import javax.xml.soap.SOAPMessage;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CommandExecutionException;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.StarsDatabaseCache;
-import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
-import com.cannontech.database.db.stars.appliance.*;
+import com.cannontech.database.db.stars.appliance.ApplianceAirConditioner;
+import com.cannontech.database.db.stars.appliance.ApplianceBase;
+import com.cannontech.database.db.stars.appliance.ApplianceChiller;
+import com.cannontech.database.db.stars.appliance.ApplianceDualFuel;
+import com.cannontech.database.db.stars.appliance.ApplianceDualStageAirCond;
+import com.cannontech.database.db.stars.appliance.ApplianceGenerator;
+import com.cannontech.database.db.stars.appliance.ApplianceGrainDryer;
+import com.cannontech.database.db.stars.appliance.ApplianceHeatPump;
+import com.cannontech.database.db.stars.appliance.ApplianceIrrigation;
+import com.cannontech.database.db.stars.appliance.ApplianceStorageHeat;
+import com.cannontech.database.db.stars.appliance.ApplianceWaterHeater;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.StarsFactory;
-import com.cannontech.stars.xml.serialize.*;
+import com.cannontech.stars.xml.serialize.ACType;
+import com.cannontech.stars.xml.serialize.AirConditioner;
+import com.cannontech.stars.xml.serialize.BinSize;
+import com.cannontech.stars.xml.serialize.BlowerEnergySource;
+import com.cannontech.stars.xml.serialize.BlowerHeatSource;
+import com.cannontech.stars.xml.serialize.BlowerHorsePower;
+import com.cannontech.stars.xml.serialize.Chiller;
+import com.cannontech.stars.xml.serialize.DryerType;
+import com.cannontech.stars.xml.serialize.DualFuel;
+import com.cannontech.stars.xml.serialize.DualStageAC;
+import com.cannontech.stars.xml.serialize.EnergySource;
+import com.cannontech.stars.xml.serialize.Generator;
+import com.cannontech.stars.xml.serialize.GrainDryer;
+import com.cannontech.stars.xml.serialize.HeatPump;
+import com.cannontech.stars.xml.serialize.HorsePower;
+import com.cannontech.stars.xml.serialize.Irrigation;
+import com.cannontech.stars.xml.serialize.IrrigationType;
+import com.cannontech.stars.xml.serialize.Location;
+import com.cannontech.stars.xml.serialize.Manufacturer;
+import com.cannontech.stars.xml.serialize.MeterLocation;
+import com.cannontech.stars.xml.serialize.MeterVoltage;
+import com.cannontech.stars.xml.serialize.NumberOfGallons;
+import com.cannontech.stars.xml.serialize.PumpSize;
+import com.cannontech.stars.xml.serialize.PumpType;
+import com.cannontech.stars.xml.serialize.SecondaryEnergySource;
+import com.cannontech.stars.xml.serialize.SoilType;
+import com.cannontech.stars.xml.serialize.StandbySource;
+import com.cannontech.stars.xml.serialize.StarsAppliance;
+import com.cannontech.stars.xml.serialize.StarsAppliances;
+import com.cannontech.stars.xml.serialize.StarsCreateAppliance;
+import com.cannontech.stars.xml.serialize.StarsCreateApplianceResponse;
+import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
+import com.cannontech.stars.xml.serialize.StarsEnergyCompanySettings;
+import com.cannontech.stars.xml.serialize.StarsEnrollmentPrograms;
+import com.cannontech.stars.xml.serialize.StarsFailure;
+import com.cannontech.stars.xml.serialize.StarsOperation;
+import com.cannontech.stars.xml.serialize.StorageHeat;
+import com.cannontech.stars.xml.serialize.StorageType;
+import com.cannontech.stars.xml.serialize.SwitchOverType;
+import com.cannontech.stars.xml.serialize.Tonnage;
+import com.cannontech.stars.xml.serialize.TransferSwitchManufacturer;
+import com.cannontech.stars.xml.serialize.TransferSwitchType;
+import com.cannontech.stars.xml.serialize.WaterHeater;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
 
@@ -69,24 +121,24 @@ public class CreateApplianceAction implements ActionBase {
 			}
 			
 			newApp.setManufacturer( (Manufacturer)StarsFactory.newStarsCustListEntry(
-					YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("Manufacturer")) ),
+					DaoFactory.getYukonListDao().getYukonListEntry( Integer.parseInt(req.getParameter("Manufacturer")) ),
 					Manufacturer.class) );
 			
 			newApp.setLocation( (Location)StarsFactory.newStarsCustListEntry(
-					YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("Location")) ),
+					DaoFactory.getYukonListDao().getYukonListEntry( Integer.parseInt(req.getParameter("Location")) ),
 					Location.class) );
 			
 			int categoryID = Integer.parseInt( req.getParameter("CatID") );
-			int catDefID = YukonListFuncs.getYukonListEntry(categoryID).getYukonDefID();
+			int catDefID = DaoFactory.getYukonListDao().getYukonListEntry(categoryID).getYukonDefID();
 			
 			if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_AIR_CONDITIONER)
 			{
 				AirConditioner ac = new AirConditioner();
 				ac.setTonnage( (Tonnage)StarsFactory.newStarsCustListEntry(
-						YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("AC_Tonnage")) ),
+						DaoFactory.getYukonListDao().getYukonListEntry( Integer.parseInt(req.getParameter("AC_Tonnage")) ),
 						Tonnage.class) );
 				ac.setACType( (ACType)StarsFactory.newStarsCustListEntry(
-						YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("AC_Type")) ),
+						DaoFactory.getYukonListDao().getYukonListEntry( Integer.parseInt(req.getParameter("AC_Type")) ),
 						ACType.class) );
 				newApp.setAirConditioner( ac );
 			}
@@ -94,13 +146,13 @@ public class CreateApplianceAction implements ActionBase {
             {
                 DualStageAC ac = new DualStageAC();
                 ac.setTonnage( (Tonnage)StarsFactory.newStarsCustListEntry(
-                        YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("AC_Tonnage")) ),
+                        DaoFactory.getYukonListDao().getYukonListEntry( Integer.parseInt(req.getParameter("AC_Tonnage")) ),
                         Tonnage.class) );
                 ac.setStageTwoTonnage( (Tonnage)StarsFactory.newStarsCustListEntry(
-                       YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("AC_Tonnage")) ),
+                       DaoFactory.getYukonListDao().getYukonListEntry( Integer.parseInt(req.getParameter("AC_Tonnage")) ),
                        Tonnage.class) );
                 ac.setACType( (ACType)StarsFactory.newStarsCustListEntry(
-                        YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("AC_Type")) ),
+                        DaoFactory.getYukonListDao().getYukonListEntry( Integer.parseInt(req.getParameter("AC_Type")) ),
                         ACType.class) );
                 newApp.setDualStageAC( ac );
             }
@@ -108,10 +160,10 @@ public class CreateApplianceAction implements ActionBase {
             {
                 Chiller chill = new Chiller();
                 chill.setTonnage( (Tonnage)StarsFactory.newStarsCustListEntry(
-                        YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("AC_Tonnage")) ),
+                        DaoFactory.getYukonListDao().getYukonListEntry( Integer.parseInt(req.getParameter("AC_Tonnage")) ),
                         Tonnage.class) );
                 chill.setACType( (ACType)StarsFactory.newStarsCustListEntry(
-                        YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("AC_Type")) ),
+                        DaoFactory.getYukonListDao().getYukonListEntry( Integer.parseInt(req.getParameter("AC_Type")) ),
                         ACType.class) );
                 newApp.setChiller( chill );
             }
@@ -119,10 +171,10 @@ public class CreateApplianceAction implements ActionBase {
 			{
 				WaterHeater wh = new WaterHeater();
 				wh.setNumberOfGallons( (NumberOfGallons)StarsFactory.newStarsCustListEntry(
-						YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("WH_GallonNum")) ),
+						DaoFactory.getYukonListDao().getYukonListEntry( Integer.parseInt(req.getParameter("WH_GallonNum")) ),
 						NumberOfGallons.class) );
 				wh.setEnergySource( (EnergySource)StarsFactory.newStarsCustListEntry(
-						YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("WH_EnergySrc")) ),
+						DaoFactory.getYukonListDao().getYukonListEntry( Integer.parseInt(req.getParameter("WH_EnergySrc")) ),
 						EnergySource.class) );
 				
 				try {
@@ -138,10 +190,10 @@ public class CreateApplianceAction implements ActionBase {
 			{
 				DualFuel df = new DualFuel();
 				df.setSwitchOverType( (SwitchOverType)StarsFactory.newStarsCustListEntry(
-						YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("DF_SwitchOverType")) ),
+						DaoFactory.getYukonListDao().getYukonListEntry( Integer.parseInt(req.getParameter("DF_SwitchOverType")) ),
 						SwitchOverType.class) );
 				df.setSecondaryEnergySource( (SecondaryEnergySource)StarsFactory.newStarsCustListEntry(
-						YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("DF_SecondarySrc")) ),
+						DaoFactory.getYukonListDao().getYukonListEntry( Integer.parseInt(req.getParameter("DF_SecondarySrc")) ),
 						SecondaryEnergySource.class) );
 				
 				try {
@@ -157,10 +209,10 @@ public class CreateApplianceAction implements ActionBase {
 			{
 				Generator gen = new Generator();
 				gen.setTransferSwitchType( (TransferSwitchType)StarsFactory.newStarsCustListEntry(
-						YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("GEN_TranSwitchType")) ),
+						DaoFactory.getYukonListDao().getYukonListEntry( Integer.parseInt(req.getParameter("GEN_TranSwitchType")) ),
 						TransferSwitchType.class) );
 				gen.setTransferSwitchManufacturer( (TransferSwitchManufacturer)StarsFactory.newStarsCustListEntry(
-						YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("GEN_TranSwitchMfg")) ),
+						DaoFactory.getYukonListDao().getYukonListEntry( Integer.parseInt(req.getParameter("GEN_TranSwitchMfg")) ),
 						TransferSwitchManufacturer.class) );
 				
 				try {
@@ -190,19 +242,19 @@ public class CreateApplianceAction implements ActionBase {
 			{
 				GrainDryer gd = new GrainDryer();
 				gd.setDryerType( (DryerType)StarsFactory.newStarsCustListEntry(
-						YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("GD_DryerType")) ),
+						DaoFactory.getYukonListDao().getYukonListEntry( Integer.parseInt(req.getParameter("GD_DryerType")) ),
 						DryerType.class) );
 				gd.setBinSize( (BinSize)StarsFactory.newStarsCustListEntry(
-						YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("GD_BinSize")) ),
+						DaoFactory.getYukonListDao().getYukonListEntry( Integer.parseInt(req.getParameter("GD_BinSize")) ),
 						BinSize.class) );
 				gd.setBlowerEnergySource( (BlowerEnergySource)StarsFactory.newStarsCustListEntry(
-						YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("GD_BlowerEnergySrc")) ),
+						DaoFactory.getYukonListDao().getYukonListEntry( Integer.parseInt(req.getParameter("GD_BlowerEnergySrc")) ),
 						BlowerEnergySource.class) );
 				gd.setBlowerHorsePower( (BlowerHorsePower)StarsFactory.newStarsCustListEntry(
-						YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("GD_BlowerHorsePower")) ),
+						DaoFactory.getYukonListDao().getYukonListEntry( Integer.parseInt(req.getParameter("GD_BlowerHorsePower")) ),
 						BlowerHorsePower.class) );
 				gd.setBlowerHeatSource( (BlowerHeatSource)StarsFactory.newStarsCustListEntry(
-						YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("GD_BlowerHeatSrc")) ),
+						DaoFactory.getYukonListDao().getYukonListEntry( Integer.parseInt(req.getParameter("GD_BlowerHeatSrc")) ),
 						BlowerHeatSource.class) );
 				newApp.setGrainDryer( gd );
 			}
@@ -210,7 +262,7 @@ public class CreateApplianceAction implements ActionBase {
 			{
 				StorageHeat sh = new StorageHeat();
 				sh.setStorageType( (StorageType)StarsFactory.newStarsCustListEntry(
-						YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("SH_StorageType")) ),
+						DaoFactory.getYukonListDao().getYukonListEntry( Integer.parseInt(req.getParameter("SH_StorageType")) ),
 						StorageType.class) );
 				
 				try {
@@ -233,13 +285,13 @@ public class CreateApplianceAction implements ActionBase {
 			{
 				HeatPump hp = new HeatPump();
 				hp.setPumpType( (PumpType)StarsFactory.newStarsCustListEntry(
-						YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("HP_PumpType")) ),
+						DaoFactory.getYukonListDao().getYukonListEntry( Integer.parseInt(req.getParameter("HP_PumpType")) ),
 						PumpType.class) );
 				hp.setPumpSize( (PumpSize)StarsFactory.newStarsCustListEntry(
-						YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("HP_PumpSize")) ),
+						DaoFactory.getYukonListDao().getYukonListEntry( Integer.parseInt(req.getParameter("HP_PumpSize")) ),
 						PumpSize.class) );
 				hp.setStandbySource( (StandbySource)StarsFactory.newStarsCustListEntry(
-						YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("HP_StandbySrc")) ),
+						DaoFactory.getYukonListDao().getYukonListEntry( Integer.parseInt(req.getParameter("HP_StandbySrc")) ),
 						StandbySource.class) );
 				
 				try {
@@ -255,22 +307,22 @@ public class CreateApplianceAction implements ActionBase {
 			{
 				Irrigation irr = new Irrigation();
 				irr.setIrrigationType( (IrrigationType)StarsFactory.newStarsCustListEntry(
-						YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("IRR_IrrigationType")) ),
+						DaoFactory.getYukonListDao().getYukonListEntry( Integer.parseInt(req.getParameter("IRR_IrrigationType")) ),
 						IrrigationType.class) );
 				irr.setHorsePower( (HorsePower)StarsFactory.newStarsCustListEntry(
-						YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("IRR_HorsePower")) ),
+						DaoFactory.getYukonListDao().getYukonListEntry( Integer.parseInt(req.getParameter("IRR_HorsePower")) ),
 						HorsePower.class) );
 				irr.setEnergySource( (EnergySource)StarsFactory.newStarsCustListEntry(
-						YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("IRR_EnergySrc")) ),
+						DaoFactory.getYukonListDao().getYukonListEntry( Integer.parseInt(req.getParameter("IRR_EnergySrc")) ),
 						EnergySource.class) );
 				irr.setSoilType( (SoilType)StarsFactory.newStarsCustListEntry(
-						YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("IRR_SoilType")) ),
+						DaoFactory.getYukonListDao().getYukonListEntry( Integer.parseInt(req.getParameter("IRR_SoilType")) ),
 						SoilType.class) );
 				irr.setMeterLocation( (MeterLocation)StarsFactory.newStarsCustListEntry(
-						YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("IRR_MeterLoc")) ),
+						DaoFactory.getYukonListDao().getYukonListEntry( Integer.parseInt(req.getParameter("IRR_MeterLoc")) ),
 						MeterLocation.class) );
 				irr.setMeterVoltage( (MeterVoltage)StarsFactory.newStarsCustListEntry(
-						YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("IRR_MeterVolt")) ),
+						DaoFactory.getYukonListDao().getYukonListEntry( Integer.parseInt(req.getParameter("IRR_MeterVolt")) ),
 						MeterVoltage.class) );
 				newApp.setIrrigation( irr );
 			}

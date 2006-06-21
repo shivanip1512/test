@@ -8,7 +8,6 @@ import java.awt.Dimension;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
-import com.cannontech.database.db.capcontrol.CapControlSubstationBus;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
  
 public class CCSubstationBusMiscSettingsPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.klg.jclass.util.value.JCValueListener, java.awt.event.ActionListener, javax.swing.event.CaretListener {

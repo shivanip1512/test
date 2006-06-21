@@ -16,6 +16,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.StringTokenizer;
@@ -27,11 +28,10 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.StarsDatabaseCache;
-import com.cannontech.database.cache.functions.PAOFuncs;
-import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -87,7 +87,6 @@ import com.cannontech.stars.xml.serialize.SwitchOverType;
 import com.cannontech.stars.xml.serialize.Tonnage;
 import com.cannontech.stars.xml.serialize.WaterHeater;
 import com.cannontech.user.UserUtils;
-import java.util.HashMap;
 
 class CustomerPK {
 	public String mappage = null;
@@ -605,7 +604,7 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 	private Hashtable getRouteMap() throws Exception {
 		if (routeMap == null) {
 			routeMap = new Hashtable();
-			LiteYukonPAObject[] liteRoutes = PAOFuncs.getAllLiteRoutes();
+			LiteYukonPAObject[] liteRoutes = DaoFactory.getPaoDao().getAllLiteRoutes();
 			
 			File file = new File(importDir, "$route.map");
 			String[] lines = StarsUtils.readFile( file, false );
@@ -642,7 +641,7 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 				
 				if (fields[3].length() > 0) {
 					YukonSelectionList list = energyCompany.getYukonSelectionList( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE );
-					YukonListEntry deviceType = YukonListFuncs.getYukonListEntry( list, fields[3] );
+					YukonListEntry deviceType = DaoFactory.getYukonListDao().getYukonListEntry( list, fields[3] );
 					if (deviceType == null)
 						throw new WebClientException( "Device type \"" + fields[3] + "\" was not defined in STARS" );
 					
@@ -1554,7 +1553,7 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 		
 		for (int i = 0; i < energyCompany.getApplianceCategories().size(); i++) {
 			LiteApplianceCategory appCat = (LiteApplianceCategory) energyCompany.getApplianceCategories().get(i);
-			int appCatDefID = YukonListFuncs.getYukonListEntry( appCat.getCategoryID() ).getYukonDefID();
+			int appCatDefID = DaoFactory.getYukonListDao().getYukonListEntry( appCat.getCategoryID() ).getYukonDefID();
 			if (appCatDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_DEFAULT)
 				appCatDft = appCat;
 			else if (appCatDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_AIR_CONDITIONER)
@@ -1653,7 +1652,7 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 					ac.setTonnage( new Tonnage() );
 					
 					ACType type = new ACType();
-					YukonListEntry acType = YukonListFuncs.getYukonListEntry(coolTypeList, coolType);
+					YukonListEntry acType = DaoFactory.getYukonListDao().getYukonListEntry(coolTypeList, coolType);
 					if (acType != null) type.setEntryID( acType.getEntryID() );
 					ac.setACType( type );
 					
@@ -1697,7 +1696,7 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 						
 						SecondaryEnergySource energySrc = new SecondaryEnergySource();
 						if (fields[14].trim().length() > 0) {
-							YukonListEntry es = YukonListFuncs.getYukonListEntry(backupTypeList, fields[14].trim());
+							YukonListEntry es = DaoFactory.getYukonListDao().getYukonListEntry(backupTypeList, fields[14].trim());
 							if (es != null) energySrc.setEntryID( es.getEntryID() );
 						}
 						df.setSecondaryEnergySource( energySrc );

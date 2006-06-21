@@ -16,13 +16,12 @@ import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.gui.util.ComboBoxTableRenderer;
 import com.cannontech.common.gui.util.TextFieldDocument;
-import com.cannontech.database.cache.functions.YukonListFuncs;
-import com.cannontech.database.cache.functions.YukonUserFuncs;
-import com.cannontech.database.db.contact.ContactNotification;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.customer.Contact;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.db.contact.ContactNotification;
 import com.cannontech.user.UserUtils;
-import com.cannontech.common.util.CtiUtilities;
 
 
 public class ContactPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener, javax.swing.event.ListSelectionListener {
@@ -424,7 +423,7 @@ private javax.swing.JComboBox getJComboBoxNotifyType() {
 			//since the HashTable holding the ListEntries returns in
 			// reverse order, we must walk backwards through it in
 			// a for loop
-			Object[] entrs = YukonListFuncs.getYukonListEntries().values().toArray();
+			Object[] entrs = DaoFactory.getYukonListDao().getYukonListEntries().values().toArray();
 			for( int i = (entrs.length-1); i >= 0; i-- )
 			{
 				YukonListEntry entry = (YukonListEntry)entrs[i];
@@ -944,7 +943,7 @@ private void initUserCombo( int currID )
 	for( int i = 0; i < availUserids.length; i++ )
 	{
 		getJComboBoxLoginUser().addItem(
-			YukonUserFuncs.getLiteYukonUser(availUserids[i]) );
+			DaoFactory.getYukonUserDao().getLiteYukonUser(availUserids[i]) );
 	}
 
 }
@@ -1173,7 +1172,7 @@ private void checkEntry()
 		
 		//is there a good input into the text field?		
 		getJButtonAdd().setEnabled(
-				YukonListFuncs.isListEntryValid( 
+				DaoFactory.getYukonListDao().isListEntryValid( 
 						entry.getYukonDefID(),
 						getJTextFieldAddress().getText()) );
 	}	
@@ -1195,7 +1194,7 @@ private String isAllEntryFieldsValid()
 			getTableModel().getValueAt( i, ContactNotificationTableModel.COLUMN_TYPE );
 
 		//is there a good input into the text field?
-		if( !YukonListFuncs.isListEntryValid(
+		if( !DaoFactory.getYukonListDao().isListEntryValid(
 						listEntry.getYukonDefID(),
 						notif.getNotification()) )
 		{

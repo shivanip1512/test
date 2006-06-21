@@ -159,7 +159,7 @@ function confirmCancel() {
 		
 		String checkBoxDisabled = "";
 		String radioBtnDisabled = "";
-		if (AuthFuncs.checkRoleProperty( lYukonUser, ResidentialCustomerRole.DISABLE_PROGRAM_SIGNUP )) {
+		if (DaoFactory.getAuthDao().checkRoleProperty( lYukonUser, ResidentialCustomerRole.DISABLE_PROGRAM_SIGNUP )) {
 			checkBoxDisabled = "disabled";
 			if (program == null) radioBtnDisabled = "disabled";
 		}

@@ -26,7 +26,7 @@
 
 package snoozesoft.systray4j;
 
-import java.util.*;
+import java.util.Vector;
 
 /**
  * This class represents a labeled menu item. Interested listeners are called whenever

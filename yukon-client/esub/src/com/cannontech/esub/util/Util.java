@@ -15,10 +15,9 @@ import java.util.logging.Logger;
 import javax.swing.JComponent;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
-import com.cannontech.database.cache.functions.PointFuncs;
-import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.activity.ActivityLog;
@@ -26,7 +25,6 @@ import com.cannontech.esub.Drawing;
 import com.cannontech.esub.element.DynamicGraphElement;
 import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.roles.yukon.SystemRole;
-
 import com.loox.jloox.LxGraph;
 import com.loox.jloox.LxRotatable;
 
@@ -313,10 +311,10 @@ public class Util {
 			int port;
 
 			try {
-				host = RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_MACHINE );
+				host = DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.DISPATCH_MACHINE );
 
 				port = Integer.parseInt(
-							RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_PORT ) );
+							DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.DISPATCH_PORT ) );
 
 			} catch (Exception e) {
 				com.cannontech.clientutils.CTILogger.error(e.getMessage(), e);
@@ -437,7 +435,7 @@ public class Util {
 	}
 	
 	public static boolean isStatusPoint(int pointID) {
-		LitePoint lp = PointFuncs.getLitePoint(pointID);		
+		LitePoint lp = DaoFactory.getPointDao().getLitePoint(pointID);		
 		return (lp != null && lp.getPointType() == PointTypes.STATUS_POINT);	
 	}
 	

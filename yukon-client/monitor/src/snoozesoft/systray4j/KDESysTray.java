@@ -26,8 +26,12 @@
 
 package snoozesoft.systray4j;
 
-import java.io.*;
-import java.net.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.Socket;
 import java.util.HashMap;
 
 class KDESysTray implements SysTrayAccess, Runnable

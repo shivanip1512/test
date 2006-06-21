@@ -9,9 +9,9 @@ import java.util.List;
 import javax.swing.ButtonGroup;
 import javax.swing.JFrame;
 
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
-import com.cannontech.database.cache.functions.GraphFuncs;
 import com.cannontech.database.db.graph.GDSTypesFuncs;
 import com.cannontech.database.db.graph.GraphDataSeries;
 import com.cannontech.util.ServletUtil;
@@ -100,7 +100,7 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 			if( getGDSArray() == null)
 			{
 				//Load all Peak type GDS
-				List allGDS = GraphFuncs.getAllGraphDataSeries(GDSTypesFuncs.PEAK_TYPE);
+				List allGDS = DaoFactory.getGraphDao().getAllGraphDataSeries(GDSTypesFuncs.PEAK_TYPE);
 				GraphDataSeries [] gdsArray = new GraphDataSeries[allGDS.size()];
 				allGDS.toArray(gdsArray);
 				setGDSArray(gdsArray);

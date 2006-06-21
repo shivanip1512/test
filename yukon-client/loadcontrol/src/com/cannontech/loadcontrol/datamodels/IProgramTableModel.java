@@ -2,6 +2,7 @@ package com.cannontech.loadcontrol.datamodels;
 
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
+
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 

@@ -2,8 +2,6 @@ package com.cannontech.dbeditor.wizard.customer;
 /**
  * This type was created in VisualAge.
  */
-import java.awt.Dimension;
-
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.database.data.customer.CICustomerBase;
 

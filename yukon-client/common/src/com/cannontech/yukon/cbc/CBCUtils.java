@@ -2,22 +2,9 @@ package com.cannontech.yukon.cbc;
 
 import java.text.NumberFormat;
 import java.util.Comparator;
-import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.database.data.capcontrol.CapBankController6510;
-import com.cannontech.database.data.capcontrol.CapBankController702x;
-import com.cannontech.database.data.capcontrol.ICapBankController;
-import com.cannontech.database.data.device.DNPBase;
-import com.cannontech.database.data.device.RemoteBase;
-import com.cannontech.database.data.device.Series5Base;
-import com.cannontech.database.data.device.TwoWayDevice;
-import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.data.pao.PAOGroups;
-import com.cannontech.database.data.pao.YukonPAObject;
-import com.cannontech.database.db.DBPersistent;
-import com.cannontech.database.db.device.DeviceAddress;
-import com.cannontech.database.db.device.DeviceDirectCommSettings;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 
 /**

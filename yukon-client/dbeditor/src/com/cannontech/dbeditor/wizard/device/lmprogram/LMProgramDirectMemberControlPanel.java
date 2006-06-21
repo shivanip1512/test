@@ -1,11 +1,13 @@
 package com.cannontech.dbeditor.wizard.device.lmprogram;
 
-import com.cannontech.database.db.pao.PAOExclusion;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import java.util.Vector;
-import com.cannontech.database.data.device.DeviceTypesFuncs;
+
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteLMPAOExclusion;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.db.pao.PAOExclusion;
+import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * This type was created in VisualAge.
@@ -294,7 +296,7 @@ private void initialize() {
 private void initializeAddPanel()
 {
 	getAddRemovePanel().setMode( com.cannontech.common.gui.util.AddRemovePanel.TRANSFER_MODE );
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized( cache )
 	{
 		

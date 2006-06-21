@@ -15,7 +15,7 @@
 	else if (request.getParameter("InvID") != null) {
 		// Request from InventoryDetail.jsp to copy a hardware device
 		LiteInventoryBase liteInv = liteEC.getInventoryBrief(Integer.parseInt(request.getParameter("InvID")), true);
-		LiteYukonPAObject litePao = PAOFuncs.getLiteYukonPAO(liteInv.getDeviceID());
+		LiteYukonPAObject litePao = DaoFactory.getPaoDao().getLiteYukonPAO(liteInv.getDeviceID());
 		Properties savedReq = new Properties();
 		savedReq.setProperty("MCTType", String.valueOf(litePao.getType()));
 		savedReq.setProperty("DeviceName", litePao.getPaoName() + "(New)");
@@ -138,7 +138,7 @@ function validate(form) {
 				<input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Hardware/InventoryDetail.jsp?InvId=">
                 <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>">
                 <table width="610" border="0" cellspacing="0" cellpadding="10" align="center">
-<% if (liteEC.getChildren().size() > 0 && AuthFuncs.checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_MANAGE_MEMBERS)) { %>
+<% if (liteEC.getChildren().size() > 0 && DaoFactory.getAuthDao().checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_MANAGE_MEMBERS)) { %>
                   <tr align="center"> 
                     <td colspan="2" valign="top" bgcolor="#FFFFFF" class="TableCell"> 
                       Member: 

@@ -1,9 +1,9 @@
+<%@ page import="com.cannontech.core.dao.DaoFactory" %>
 <%@ page import="com.cannontech.yukon.cbc.StreamableCapObject" %>
 <%@ page import="com.cannontech.yukon.cbc.Feeder" %>
 <%@ page import="com.cannontech.yukon.cbc.SubBus" %>
 <%@ page import="com.cannontech.database.db.capcontrol.CCEventLog" %>
 <%@ page import="com.cannontech.cbc.web.CBCWebUtils" %>
-<%@ page import="com.cannontech.database.cache.functions.PAOFuncs" %>
 <%@ page import="com.cannontech.database.data.pao.DeviceTypes" %>
 <%@ page import="com.cannontech.database.data.pao.CapControlTypes" %>
 <%@ page import="com.cannontech.database.db.point.SystemLog" %>
@@ -86,7 +86,7 @@ if ((List)logData[i] != null) {
 int id = Integer.parseInt( strPaoids[i] );
 %>          
 
-      <cti:titledContainer title="<%="Events for " + PAOFuncs.getLiteYukonPAO(id).getPaoName()%>" >
+      <cti:titledContainer title="<%="Events for " + DaoFactory.getPaoDao().getLiteYukonPAO(id).getPaoName()%>" >
 
           
 			<form id="resForm" action="feeders.jsp" method="post">
@@ -115,7 +115,7 @@ int id = Integer.parseInt( strPaoids[i] );
 	else for( int j = 0; j < ((List)logData[i]).size(); j++ )
 	{
 		String css = (j % 2 == 0 ? "tableCell" : "altTableCell");
-		int paoType = PAOFuncs.getLiteYukonPAO(id).getType();
+		int paoType = DaoFactory.getPaoDao().getLiteYukonPAO(id).getType();
 		if ( (paoType == CapControlTypes.CAP_CONTROL_FEEDER) || (paoType == CapControlTypes.CAP_CONTROL_SUBBUS)) {
 			CCEventLog systLog = (CCEventLog)((List)logData[i]).get(j);	
 %>
@@ -124,7 +124,7 @@ int id = Integer.parseInt( strPaoids[i] );
 				<% if (systLog.getDateTime() == null) {%>
 				<td> ---- </td>
 				<%}else {%>		
-				<td><%=PAOFuncs.getLiteYukonPAO(systLog.getSubId().intValue()).getPaoName()%></td>
+				<td><%=DaoFactory.getPaoDao().getLiteYukonPAO(systLog.getSubId().intValue()).getPaoName()%></td>
 				<%}%>
 				<% if (systLog.getText() == null) {%>
 				<td>----</td>

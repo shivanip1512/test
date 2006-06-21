@@ -26,8 +26,8 @@
 
 package snoozesoft.systray4j;
 
-import java.util.*;
-import java.awt.*;
+import java.awt.EventQueue;
+import java.util.Vector;
 
 /**
  * <p>This class is the main interface of this package. Access to the system tray begins

@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.LiteYukonGroup;
+import com.cannontech.database.data.lite.LiteYukonUser;
 
 /**
  * Builds up a maps

@@ -5,14 +5,15 @@ package com.cannontech.dbeditor.wizard.copy.device;
  */
 
 import com.cannontech.common.gui.util.DataInputPanel;
-import com.cannontech.database.data.device.*;
-import com.cannontech.database.data.device.lm.*;
+import com.cannontech.database.data.device.DeviceBase;
+import com.cannontech.database.data.device.MCTBase;
+import com.cannontech.database.data.device.lm.LMGroupEmetcon;
+import com.cannontech.database.data.device.lm.LMGroupVersacom;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.DBPersistent;
-import com.cannontech.dbeditor.editor.device.DeviceMeterGroupEditorPanel;
-import com.cannontech.dbeditor.wizard.device.lmgroup.LMGroupVersacomEditorPanel;
 import com.cannontech.dbeditor.wizard.device.capcontrol.CapBankCntrlCreationPanel;
+import com.cannontech.dbeditor.wizard.device.lmgroup.LMGroupVersacomEditorPanel;
 
 /* All Panels used in this WizardPanel MUST be able to handle MultiDBPersistent  */
 /*   Objects in their getValue(Object o) method!!! */

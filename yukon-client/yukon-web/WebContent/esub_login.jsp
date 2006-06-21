@@ -1,9 +1,9 @@
 <%@ page import="com.cannontech.roles.yukon.SystemRole" %>
-<%@ page import="com.cannontech.database.cache.functions.RoleFuncs" %>
+<%@ page import="com.cannontech.core.dao.DaoFactory" %>
 
 <%
 String logo = 
-	RoleFuncs.getGlobalPropertyValue( SystemRole.WEB_LOGO_URL );
+	DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.WEB_LOGO_URL );
 %>
 <html>
 <head>

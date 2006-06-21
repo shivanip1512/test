@@ -5,9 +5,17 @@ package com.cannontech.common.gui.util;
  * http://forum.java.sun.com/thread.jsp?forum=57&thread=294121&message=1159947
  * 
  */
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.KeyEventDispatcher;
+import java.awt.Toolkit;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
+import javax.swing.FocusManager;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 /* A Panel that can be blocked. <br> 
  * Just set an instance of this class as the glassPane 

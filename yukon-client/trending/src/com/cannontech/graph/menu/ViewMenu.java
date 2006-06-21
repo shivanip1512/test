@@ -1,7 +1,5 @@
 package com.cannontech.graph.menu;
 
-import java.awt.Font;
-
 import com.cannontech.database.db.graph.GraphRenderers;
 
 /**

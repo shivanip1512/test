@@ -1,8 +1,6 @@
 package com.cannontech.loadcontrol.gui;
 
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.loadcontrol.data.LMControlArea;
-import com.cannontech.loadcontrol.datamodels.ControlAreaTableModel;
 import com.cannontech.loadcontrol.datamodels.IControlAreaTableModel;
 import com.cannontech.loadcontrol.events.LCChangeEvent;
 

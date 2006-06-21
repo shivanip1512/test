@@ -15,7 +15,7 @@ import javax.servlet.http.HttpSession;
 
 import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.common.util.StringUtils;
-import com.cannontech.database.cache.functions.AlarmFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.message.dispatch.message.Signal;
 
 /**
@@ -68,9 +68,9 @@ public class AlarmAudioServlet extends HttpServlet {
         int[] pointIds = StringUtils.parseIntString(pointIdStr);
         int[] alarmCategoryIds = StringUtils.parseIntString(alarmCategoryIdStr);
 
-        List deviceSigs = AlarmFuncs.getSignalsForPao(deviceIds);
-        List pointSigs = AlarmFuncs.getSignalsForPoints(pointIds);
-        List alarmCategorySigs = AlarmFuncs
+        List deviceSigs = DaoFactory.getAlarmDao().getSignalsForPao(deviceIds);
+        List pointSigs = DaoFactory.getAlarmDao().getSignalsForPoints(pointIds);
+        List alarmCategorySigs = DaoFactory.getAlarmDao()
                 .getSignalsForAlarmCategories(alarmCategoryIds);
 
         List allSigs = new LinkedList();

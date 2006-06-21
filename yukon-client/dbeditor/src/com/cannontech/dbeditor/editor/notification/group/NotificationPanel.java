@@ -22,11 +22,8 @@ import com.cannontech.common.gui.tree.CTITreeModel;
 import com.cannontech.common.gui.tree.CheckNode;
 import com.cannontech.common.gui.tree.CheckNodeSelectionListener;
 import com.cannontech.common.gui.tree.CheckRenderer;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.cache.functions.ContactFuncs;
-import com.cannontech.database.cache.functions.ContactNotificationFuncs;
-import com.cannontech.database.cache.functions.CustomerFuncs;
-import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteComparators;
@@ -41,6 +38,7 @@ import com.cannontech.database.data.notification.NotificationGroup;
 import com.cannontech.database.db.contact.Contact;
 import com.cannontech.database.model.DummyTreeNode;
 import com.cannontech.dbeditor.editor.user.LiteBaseNode;
+import com.cannontech.yukon.IDatabaseCache;
 
 
 public class NotificationPanel extends com.cannontech.common.gui.util.DataInputPanel implements ActionListener {
@@ -121,12 +119,12 @@ private void doCheckBoxAction( JCheckBox checkBox )
 //		for( int j = 0; j < lc.getLiteContactNotifications().size(); j++ )
 //		{
 //			LiteContactNotification lcn = (LiteContactNotification)lc.getLiteContactNotifications().get(j);			
-//			if( YukonListFuncs.isPhoneNumber(lcn.getNotificationCategoryID())
-//				|| YukonListFuncs.isEmail(lcn.getNotificationCategoryID()) )
+//			if( DaoFactory.getYukonListDao().isPhoneNumber(lcn.getNotificationCategoryID())
+//				|| DaoFactory.getYukonListDao().isEmail(lcn.getNotificationCategoryID()) )
 //			{
 //				getJTableNotifTableModel().addRow( lcn );
 //	
-//				hasPhone |= YukonListFuncs.isPhoneNumber( lcn.getNotificationCategoryID() );
+//				hasPhone |= DaoFactory.getYukonListDao().isPhoneNumber( lcn.getNotificationCategoryID() );
 //			}
 //		}
 //		
@@ -339,7 +337,7 @@ private javax.swing.JTree getJTreeNotifs() {
 			ivjJTreeNotifis.setToggleClickCount(-1);
 
 
-			DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+			IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 			synchronized( cache )
 			{
 				List customers = cache.getAllCICustomers();
@@ -352,7 +350,7 @@ private javax.swing.JTree getJTreeNotifs() {
 					root.add( custNode );
 
 
-					List tempConts = CustomerFuncs.getAllContacts(lCust.getCustomerID());
+					List tempConts = DaoFactory.getCustomerDao().getAllContacts(lCust.getCustomerID());
 					if( tempConts != null )
 					{
 						Collections.sort( tempConts, LiteComparators.liteStringComparator );
@@ -373,7 +371,7 @@ private javax.swing.JTree getJTreeNotifs() {
 				int[] contIDs = Contact.getOrphanedContacts();
 				for( int i = 0; i < contIDs.length; i++ )
 				{
-					LiteContact lcont = ContactFuncs.getContact( contIDs[i] );
+					LiteContact lcont = DaoFactory.getContactDao().getContact( contIDs[i] );
 					LiteBaseNode lbNode = new LiteBaseNode( lcont );
 					lbNode.setUserValue( NotifMap.DEF_ATTRIBS );	
 					
@@ -411,8 +409,8 @@ private void addContactNotifsToTree( LiteContact contact, LiteBaseNode parent )
 	for( int j = 0; j < contact.getLiteContactNotifications().size(); j++ )
 	{
 		LiteContactNotification lcn = (LiteContactNotification)contact.getLiteContactNotifications().get(j);			
-		if( YukonListFuncs.isPhoneNumber(lcn.getNotificationCategoryID())
-			|| YukonListFuncs.isEmail(lcn.getNotificationCategoryID()) )
+		if( DaoFactory.getYukonListDao().isPhoneNumber(lcn.getNotificationCategoryID())
+			|| DaoFactory.getYukonListDao().isEmail(lcn.getNotificationCategoryID()) )
 		{
 			LiteBaseNode notifNode = new LiteBaseNode( lcn );
 			notifNode.setUserValue( NotifMap.DEF_ATTRIBS );
@@ -577,7 +575,7 @@ public void setValue(Object o)
 	for( int i = 0; i < notifGrp.getNotifDestinationMap().length; i++ )
 	{
 		LiteContactNotification lContNotif =
-			(LiteContactNotification)ContactNotificationFuncs.getContactNotification(
+			(LiteContactNotification)DaoFactory.getContactNotificationDao().getContactNotification(
 				notifGrp.getNotifDestinationMap()[i].getRecipientID());
 
 		//set the selected node
@@ -601,7 +599,7 @@ public void setValue(Object o)
 
 		//set the selected node
 		DefaultMutableTreeNode tnode = getJTreeModel().findNode( 
-			new TreePath(getJTreeModel().getRoot()), CustomerFuncs.getLiteCICustomer(custID) );
+			new TreePath(getJTreeModel().getRoot()), DaoFactory.getCustomerDao().getLiteCICustomer(custID) );
 			
 		if( tnode != null )
 		{
@@ -621,7 +619,7 @@ public void setValue(Object o)
 
 		//set the selected node
 		DefaultMutableTreeNode tnode = getJTreeModel().findNode(
-			new TreePath(getJTreeModel().getRoot()), ContactFuncs.getContact(contID) );
+			new TreePath(getJTreeModel().getRoot()), DaoFactory.getContactDao().getContact(contID) );
 
 		if( tnode != null )
 		{
@@ -743,7 +741,7 @@ public void nodeSelectionChanged( boolean checkBoxCliked )
 				{
 					//only allow phone number definitions to be changed
 					YukonListEntry entry =
-						YukonListFuncs.getYukonListEntry( ((LiteContactNotification)lb).getNotificationCategoryID() );
+						DaoFactory.getYukonListDao().getYukonListEntry( ((LiteContactNotification)lb).getNotificationCategoryID() );
 			
 					getJCheckBoxPhoneCall().setEnabled(
 						entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_PHONE );
@@ -816,7 +814,7 @@ private void setChildNodesEnabled( TreeNode node, boolean enabled )
 //			else if( lbNode.isSelected()
 //					 && lb instanceof LiteCustomer )
 //			{
-//				List cstContacts = CustomerFuncs.getAllContacts( ((LiteCustomer)lb).getCustomerID() );
+//				List cstContacts = DaoFactory.getCustomerDao().getAllContacts( ((LiteCustomer)lb).getCustomerID() );
 //				allContacts.addAll( cstContacts );
 //			}
 //		}

@@ -6,8 +6,8 @@
  */
 package com.cannontech.dbeditor.editor.device.lmscenario;
 
-import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.editor.PropertyPanel;
+import com.cannontech.common.gui.util.DataInputPanel;
 
 /**
  * @author jdayton

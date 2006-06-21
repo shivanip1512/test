@@ -10,12 +10,11 @@ import javax.swing.event.ListSelectionEvent;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.cache.functions.CommandFuncs;
-import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.database.data.command.DeviceTypeCommand;
 import com.cannontech.database.data.lite.LiteCommand;
 import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
@@ -208,8 +207,8 @@ public DeviceTypeCommandSetupPanel() {
 		int port = 1510;
 		try
 		{
-			host = RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_MACHINE );
-			port = Integer.parseInt( RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_PORT ) ); 
+			host = DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.DISPATCH_MACHINE );
+			port = Integer.parseInt( DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.DISPATCH_PORT ) ); 
 		}
 		catch( Exception e)
 		{
@@ -811,7 +810,7 @@ constraintsDeviceTypeCommandSetupPanel.gridheight = 6;
 				DeviceTypeCommand tempValue = model.getRow(i);
 				
 				//Get the deviceTypeCommand from cache to see if it has changed at all.
-				LiteDeviceTypeCommand cacheLdtc = CommandFuncs.getDeviceTypeCommand(tempValue.getDeviceCommandID().intValue());
+				LiteDeviceTypeCommand cacheLdtc = DaoFactory.getCommandDao().getDeviceTypeCommand(tempValue.getDeviceCommandID().intValue());
 				//store the original value for comparison, this way we only save to db those that have actually changed
 				int origOrder = tempValue.getDeviceTypeCommand().getDisplayOrder().intValue();
 				if(origOrder != newIndex  || tempValue.getVisibleFlag().charValue() != cacheLdtc.getVisibleFlag())
@@ -962,9 +961,9 @@ public void setDeviceType(String string)
 			setDeviceType((String)getCategoryList().getSelectedValue());
 			Vector objects = null;
 			if( CommandCategory.isCommandCategory(getDeviceType()))
-				objects = CommandFuncs.getAllCommandsByCategory(getDeviceType());
+				objects = DaoFactory.getCommandDao().getAllCommandsByCategory(getDeviceType());
 			else
-				objects = CommandFuncs.getAllDevTypeCommands(deviceType);
+				objects = DaoFactory.getCommandDao().getAllDevTypeCommands(deviceType);
 			setValue(objects);
 		}
 		else if( e.getSource() == getDandDCommandTable().getSelectionModel())

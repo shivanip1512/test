@@ -7,6 +7,7 @@ import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.util.DataInputPanelListener;
 import com.cannontech.database.data.lite.LiteYukonImage;
 import com.cannontech.database.db.state.StateGroupUtils;
+import com.cannontech.yukon.IDatabaseCache;
 import com.klg.jclass.util.value.JCValueEvent;
 
 public class GroupStateEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.klg.jclass.util.value.JCValueListener, java.awt.event.ActionListener, java.awt.event.ItemListener, javax.swing.event.CaretListener, DataInputPanelListener 
@@ -2762,7 +2763,7 @@ public void setValue(Object val)
       int yukImgID = ((com.cannontech.database.data.state.State)statesVector.get(i)).getState().getImageID().intValue();
       if( yukImgID >  com.cannontech.database.db.state.YukonImage.NONE_IMAGE_ID )
       {
-         com.cannontech.database.cache.DefaultDatabaseCache cache = 
+         IDatabaseCache cache = 
             com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
           
          LiteYukonImage liteYukImg = null;
@@ -3057,7 +3058,7 @@ public void jButtonImage_ActionPerformed(java.awt.event.ActionEvent actionEvent)
 	
 	java.awt.Image[] images = null;  
    LiteYukonImage[] yukonImages = null;
-   com.cannontech.database.cache.DefaultDatabaseCache cache = 
+   IDatabaseCache cache = 
       com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
     
    synchronized( cache )

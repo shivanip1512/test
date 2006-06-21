@@ -2,6 +2,7 @@ package com.cannontech.dbeditor;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.editor.PropertyPanel;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.db.DBPersistent;
@@ -77,7 +78,7 @@ public class DBChangeGUIHandler
 			
 			if( msg.getDatabase() == msg.CHANGE_POINT_DB )
 				txtMsg.append(". Editing of '"+
-					com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName(userLite.getLiteID()) + "/" +
+					DaoFactory.getPaoDao().getYukonPAOName(userLite.getLiteID()) + "/" +
 					userLite.toString() + "' was canceled." );
 			else
 				txtMsg.append(". Editing of '" + userLite.toString() + "' was canceled.");
@@ -116,7 +117,7 @@ public class DBChangeGUIHandler
 			{
 				
 				txtMsg.append( ". Editing of '"+
-					com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName(obj.getPoint().getPaoID().intValue()) + "/" +
+					DaoFactory.getPaoDao().getYukonPAOName(obj.getPoint().getPaoID().intValue()) + "/" +
 					obj.getPoint().getPointName() + "' was canceled." );
 
 				thePanel.fireCancelButtonPressed();

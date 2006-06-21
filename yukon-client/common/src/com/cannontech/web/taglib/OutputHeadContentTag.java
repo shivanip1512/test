@@ -13,7 +13,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
-import com.cannontech.database.cache.functions.EnergyCompanyFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.util.ServletUtil;
@@ -106,7 +106,7 @@ public class OutputHeadContentTag extends BodyTagSupport {
         pageContext.getOut().write("\n<!-- Energy Company specific style sheets (EnergyCompanyRole)-->\n");
         LiteYukonUser user = 
             (LiteYukonUser) pageContext.getSession().getAttribute(ServletUtil.ATT_YUKON_USER);
-        String cssLocations = EnergyCompanyFuncs.getEnergyCompanyProperty(user, EnergyCompanyRole.STD_PAGE_STYLE_SHEET);
+        String cssLocations = DaoFactory.getEnergyCompanyDao().getEnergyCompanyProperty(user, EnergyCompanyRole.STD_PAGE_STYLE_SHEET);
         if (cssLocations != null) {
             String[] cssLocationArray = cssLocations.split("\\s*,\\s*");
             outputCssFiles(Arrays.asList(cssLocationArray));

@@ -9,11 +9,12 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.border.BevelBorder;
 
+import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.user.YukonGroup;
-import com.cannontech.common.gui.util.TextFieldDocument;
+import com.cannontech.yukon.IDatabaseCache;
 
 public class GroupRoleBasePanel extends com.cannontech.common.gui.util.DataInputPanel implements javax.swing.event.CaretListener {
 	private javax.swing.JEditorPane ivjJEditorPaneDesc = null;
@@ -591,7 +592,7 @@ public void setValue(Object o)
 
 	getGroupIDValueField().setText(group.getGroupID().toString());
 
-	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+	IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 	synchronized( cache )
 	{
 		List grpMembers = (List)cache.getYukonGroupUserMap().get( LiteFactory.createLite(group.getYukonGroup()) ) ;

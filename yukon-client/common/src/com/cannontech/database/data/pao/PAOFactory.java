@@ -1,6 +1,6 @@
 package com.cannontech.database.data.pao;
 
-import com.cannontech.database.cache.functions.PAOFuncs;
+import com.cannontech.core.dao.DaoFactory;
 
 /**
  * Insert the type's description here.
@@ -83,7 +83,7 @@ public static YukonPAObject createPAObject( com.cannontech.database.data.lite.Li
  */
 public static YukonPAObject createPAObject( int paoID )
 {
-	return createPAObject( PAOFuncs.getLiteYukonPAO(paoID) );
+	return createPAObject( DaoFactory.getPaoDao().getLiteYukonPAO(paoID) );
 }
 
 }

@@ -1,6 +1,5 @@
 <%@ include file="include/StarsHeader.jsp" %>
-<%@ page import="com.cannontech.database.cache.functions.ContactFuncs" %>
-<%@ page import="com.cannontech.database.cache.functions.YukonListFuncs" %>
+<%@ page import="com.cannontech.core.dao.DaoFactory" %>
 <%@ page import="com.cannontech.database.data.lite.LiteContact" %>
 <%@ page import="com.cannontech.database.data.lite.LiteCustomer" %>
 <%@ page import="com.cannontech.database.data.lite.LiteCICustomer" %>
@@ -16,9 +15,9 @@
 	Integer lastSearchOption = (Integer) session.getAttribute(ServletUtils.ATT_LAST_ACCOUNT_SEARCH_OPTION);
 	int searchByDefID = YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_ACCT_NO;
 	if (lastSearchOption != null)
-		searchByDefID = YukonListFuncs.getYukonListEntry(lastSearchOption.intValue()).getYukonDefID();
+		searchByDefID = DaoFactory.getYukonListDao().getYukonListEntry(lastSearchOption.intValue()).getYukonDefID();
 	
-	boolean showEnergyCompany = AuthFuncs.checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_MANAGE_MEMBERS)
+	boolean showEnergyCompany = DaoFactory.getAuthDao().checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_MANAGE_MEMBERS)
 			&& (liteEC.getChildren().size() > 0);
 	ArrayList descendants = null;
 	if (showEnergyCompany) descendants = com.cannontech.stars.util.ECUtils.getAllDescendants(liteEC);
@@ -172,7 +171,7 @@ function navPage()
 				if (liteAcctInfo == null) continue;
 				
 				LiteCustomer customer = liteAcctInfo.getCustomer();
-				LiteContact contact = ContactFuncs.getContact(customer.getPrimaryContactID());
+				LiteContact contact = DaoFactory.getContactDao().getContact(customer.getPrimaryContactID());
 				LiteAddress addr = member.getAddress(liteAcctInfo.getAccountSite().getStreetAddressID());
 				StreetAddress starsAddr = new StreetAddress();
 				StarsLiteFactory.setStarsCustomerAddress(starsAddr, addr);
@@ -208,9 +207,9 @@ function navPage()
 				}
 				else {
 					String homePhone = StarsUtils.getNotification(
-							ContactFuncs.getContactNotification(contact, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE) );
+							DaoFactory.getContactDao().getContactNotification(contact, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE) );
 					String workPhone = StarsUtils.getNotification(
-							ContactFuncs.getContactNotification(contact, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE) );
+							DaoFactory.getContactDao().getContactNotification(contact, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE) );
 					
 					StringBuffer phoneNo = new StringBuffer();
 					if (homePhone.length() > 0)

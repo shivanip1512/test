@@ -15,8 +15,8 @@ import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.LogWriter;
 import com.cannontech.common.version.VersionTools;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.database.data.lite.LitePointUnit;
 import com.cannontech.database.data.lite.LiteRawPointHistory;
 import com.cannontech.database.data.point.PointQualities;
@@ -325,7 +325,7 @@ public java.lang.Integer getAggregationInterval()
 {
 	if( aggregationInterval == null )
 	{
-		String propValue = RoleFuncs.getGlobalPropertyValue(CalcHistoricalRole.INTERVAL);
+		String propValue = DaoFactory.getRoleDao().getGlobalPropertyValue(CalcHistoricalRole.INTERVAL);
 		aggregationInterval = Integer.valueOf(propValue);
 			
 		logEvent(" Aggregation interval = " + aggregationInterval + " seconds.", LogWriter.INFO);
@@ -507,8 +507,8 @@ public ClientConnection getDispatchConnection()
 		int port = 1510;
 		try
 		{
-			host = RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_MACHINE );
-			port = Integer.parseInt( RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_PORT ) ); 
+			host = DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.DISPATCH_MACHINE );
+			port = Integer.parseInt( DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.DISPATCH_PORT ) ); 
 		}
 		catch( Exception e)
 		{

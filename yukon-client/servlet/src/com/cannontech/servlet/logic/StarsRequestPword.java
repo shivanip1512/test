@@ -4,10 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.cache.StarsDatabaseCache;
-import com.cannontech.database.cache.functions.ContactFuncs;
-import com.cannontech.database.cache.functions.EnergyCompanyFuncs;
-import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
@@ -87,17 +85,17 @@ public class StarsRequestPword extends RequestPword
 						(LiteStarsCustAccountInformation)allCustAccts.get(0);
 
 					LiteContact lc = (LiteContact)
-						ContactFuncs.getContact( lCustInf.getCustomer().getPrimaryContactID() );
+						DaoFactory.getContactDao().getContact( lCustInf.getCustomer().getPrimaryContactID() );
 
 					LiteYukonUser user =
-						YukonUserFuncs.getLiteYukonUser( lc.getLoginID() );
+						DaoFactory.getYukonUserDao().getLiteYukonUser( lc.getLoginID() );
 					
 					foundData.add( " User Name: " + user.getUsername() );					
 					foundData.add( " Contact Name: " + lc.getContFirstName() + " " + lc.getContLastName() );					
 					
 					//we must get the Yukon lite energy company for the stars lite energy company
 					LiteEnergyCompany lEnrgy =
-						EnergyCompanyFuncs.getEnergyCompany( eComp.getEnergyCompanyID().intValue() );
+						DaoFactory.getEnergyCompanyDao().getEnergyCompany( eComp.getEnergyCompanyID().intValue() );
 
 					processEnergyCompanies( new LiteEnergyCompany[] { lEnrgy } );
 				}
@@ -146,10 +144,10 @@ public class StarsRequestPword extends RequestPword
 	}
 
 	protected LiteEnergyCompany[] processContact( LiteContact lCont_ ) {
-		LiteCustomer liteCust = ContactFuncs.getCustomer( lCont_.getContactID() );
+		LiteCustomer liteCust = DaoFactory.getContactDao().getCustomer( lCont_.getContactID() );
 		
 		if (liteCust.getEnergyCompanyID() != -1) {
-			LiteEnergyCompany liteComp = EnergyCompanyFuncs.getEnergyCompany( liteCust.getEnergyCompanyID() );
+			LiteEnergyCompany liteComp = DaoFactory.getEnergyCompanyDao().getEnergyCompany( liteCust.getEnergyCompanyID() );
 			return new LiteEnergyCompany[] { liteComp };
 		}
 		

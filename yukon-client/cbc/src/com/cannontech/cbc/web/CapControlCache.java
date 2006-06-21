@@ -21,12 +21,10 @@ import javax.swing.Timer;
 import org.apache.commons.lang.Validate;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.clientutils.WebUpdatedDAO;
 import com.cannontech.clientutils.commonutils.ModifiedDate;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.NativeIntVector;
-import com.cannontech.database.cache.functions.PAOFuncs;
-import com.cannontech.database.cache.functions.StateFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.capcontrol.CapBankController;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteState;
@@ -286,7 +284,7 @@ public synchronized LiteWrapper[] getOrphanedCBCs()
 	
 	for( int i = 0 ; i < unassignedCBCsIds.length; i++ ) {
 		retVal[i] = new LiteWrapper(
-				PAOFuncs.getLiteYukonPAO(unassignedCBCsIds[i]) );
+				DaoFactory.getPaoDao().getLiteYukonPAO(unassignedCBCsIds[i]) );
 	}
 
 	return retVal;
@@ -307,7 +305,7 @@ public synchronized LiteWrapper[] getOrphanedCapBanks()
 	{
 		CapBank capBank = unassignedBanks[i];		
 		retVal[i] = new LiteWrapper(
-				PAOFuncs.getLiteYukonPAO(capBank.getDeviceID().intValue()) );
+				DaoFactory.getPaoDao().getLiteYukonPAO(capBank.getDeviceID().intValue()) );
 	}
     Arrays.sort(retVal, LiteComparators.liteNameComparator);
 	return retVal;
@@ -328,7 +326,7 @@ public synchronized LiteWrapper[] getOrphanedFeeders()
 	{
 		CapControlFeeder feeder = (CapControlFeeder)unassignedFeeders[i];		
 		retVal[i] = new LiteWrapper(
-				PAOFuncs.getLiteYukonPAO(feeder.getFeederID().intValue()) );
+				DaoFactory.getPaoDao().getLiteYukonPAO(feeder.getFeederID().intValue()) );
 	}
 
 	return retVal;
@@ -368,7 +366,7 @@ public List getAreaNames()
  */
 public LiteState getCapBankState( int rawState )
 {
-	return StateFuncs.getLiteState( StateGroupUtils.STATEGROUPID_CAPBANK, rawState );
+	return DaoFactory.getStateDao().getLiteState( StateGroupUtils.STATEGROUPID_CAPBANK, rawState );
 }
 
 /**
@@ -453,7 +451,7 @@ private void handleSubBuses( CBCSubstationBuses busesMsg )
 				+ "/" + busesMsg.getSubBusAt(i).getCcArea() );
 
 		//if the user can not see this sub, let us remove it
-		//if( !AuthFuncs.userHasAccessPAO( ownerUser, busesMsg.getSubBusAt(i).getCcId().intValue() ) )
+		//if( !DaoFactory.getAuthDao().userHasAccessPAO( ownerUser, busesMsg.getSubBusAt(i).getCcId().intValue() ) )
 			//busesMsg.removeSubBusAt( i );
 	}
 

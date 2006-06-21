@@ -1,15 +1,10 @@
 package com.cannontech.database.db.stars.event;
 
-import com.cannontech.database.SqlStatement;
-import com.cannontech.database.db.DBPersistent;
-import com.cannontech.spring.YukonSpringHook;
-
-import java.lang.Integer;
-import java.lang.String;
 import java.sql.SQLException;
 import java.util.Date;
-import java.util.ArrayList;
-import com.cannontech.common.util.CtiUtilities;
+
+import com.cannontech.database.db.DBPersistent;
+import com.cannontech.spring.YukonSpringHook;
 
 public class EventBase extends DBPersistent {
 

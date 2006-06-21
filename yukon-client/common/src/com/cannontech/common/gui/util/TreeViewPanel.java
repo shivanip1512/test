@@ -3,21 +3,19 @@ package com.cannontech.common.gui.util;
 /**
  * This type was created in VisualAge.
  */
-import java.awt.KeyEventDispatcher;
-import java.awt.KeyboardFocusManager;
+import java.awt.event.InputEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.Vector;
-import javax.swing.KeyStroke;
-import java.awt.event.InputEvent;
-import javax.swing.AbstractAction;
 
+import javax.swing.AbstractAction;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTree;
+import javax.swing.KeyStroke;
 import javax.swing.ToolTipManager;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
@@ -28,7 +26,6 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
-import com.cannontech.common.gui.tree.*;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.model.LiteBaseTreeModel;

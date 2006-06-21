@@ -7,7 +7,7 @@
 	
 	LiteYukonUser liteUser = null;
 	if (userID != -1)
-		liteUser = com.cannontech.database.cache.functions.YukonUserFuncs.getLiteYukonUser(userID);
+		liteUser = DaoFactory.getYukonUserDao().getLiteYukonUser(userID);
 	else
 		liteUser = new LiteYukonUser(-1, "", "", UserUtils.STATUS_ENABLED);
 	

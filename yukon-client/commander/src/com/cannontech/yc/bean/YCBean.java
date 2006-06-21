@@ -22,11 +22,8 @@ import javax.servlet.http.HttpSessionBindingListener;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.cache.PointChangeCache;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.cache.functions.CommandFuncs;
-import com.cannontech.database.cache.functions.PAOFuncs;
-import com.cannontech.database.cache.functions.PointFuncs;
-import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteRawPointHistory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -452,7 +449,7 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 	 */
 	public PointData getPointDataReg(int deviceID, int pointOffset, int pointType)
 	{
-		int pointID_ = PointFuncs.getPointIDByDeviceID_Offset_PointType(deviceID, pointOffset, pointType);
+		int pointID_ = DaoFactory.getPointDao().getPointIDByDeviceID_Offset_PointType(deviceID, pointOffset, pointType);
         PointData pointData = PointChangeCache.getPointChangeCache().getValue(pointID_);
         return pointData;		
 	}
@@ -480,7 +477,7 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 		 * call for pointID_ will actually return an invalid value and then allow us into the if/else to find data by name.
 		 * SN 20050505
 		 */
-		int pointID_ = PointFuncs.getPointIDByDeviceID_Offset_PointType(deviceID, pointOffset, pointType); 
+		int pointID_ = DaoFactory.getPointDao().getPointIDByDeviceID_Offset_PointType(deviceID, pointOffset, pointType); 
 		PointData pd = (PointData)getPointIDToRecentPDMap().get(new Integer( pointID_));
 		if(pd == null)
 		{
@@ -680,10 +677,10 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 	
 	public void setDeviceType(int devID)
 	{
-		LiteYukonPAObject lPao = PAOFuncs.getLiteYukonPAO(devID);
+		LiteYukonPAObject lPao = DaoFactory.getPaoDao().getLiteYukonPAO(devID);
 		deviceType = PAOGroups.getPAOTypeString(lPao.getType());
 		CTILogger.debug(" DEVICE TYPE for command lookup: " + deviceType);
-		setLiteDeviceTypeCommandsVector(CommandFuncs.getAllDevTypeCommands(deviceType));
+		setLiteDeviceTypeCommandsVector(DaoFactory.getCommandDao().getAllDevTypeCommands(deviceType));
 	}
 	
 	/** Previous month's RPH timestamp to value map for some pointID, determined
@@ -769,7 +766,7 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 	
 	public static int getPointID(int deviceID, int pointOffset, int pointType)
 	{
-		return PointFuncs.getPointIDByDeviceID_Offset_PointType(deviceID, pointOffset, pointType);
+		return DaoFactory.getPointDao().getPointIDByDeviceID_Offset_PointType(deviceID, pointOffset, pointType);
 	}
 	
 	public Date[] getPrevDateArray(int pointID_) 
@@ -787,7 +784,7 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 	
 	public boolean isEnergyPoint(int pointID_)
 	{
-		LitePoint lp = PointFuncs.getLitePoint(pointID_);
+		LitePoint lp = DaoFactory.getPointDao().getLitePoint(pointID_);
 		if( lp.getPointOffset() == PointTypes.PT_OFFSET_TOTAL_KWH &&
 				lp.getPointType() == PointTypes.PULSE_ACCUMULATOR_POINT)
 			return true;
@@ -1043,7 +1040,7 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 
 	public final LiteYukonPAObject[] getValidRoutes()
 	{
-		return PAOFuncs.getRoutesByType(validRouteTypes);
+		return DaoFactory.getPaoDao().getRoutesByType(validRouteTypes);
 	}
 
     public int getUserID()
@@ -1053,6 +1050,6 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
     public void setUserID(int userID)
     {
         this.userID = userID;
-        setLogUserName(YukonUserFuncs.getLiteYukonUser(userID).getUsername());
+        setLogUserName(DaoFactory.getYukonUserDao().getLiteYukonUser(userID).getUsername());
     }
 }

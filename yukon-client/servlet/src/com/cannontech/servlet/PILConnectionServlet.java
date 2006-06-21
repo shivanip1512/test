@@ -9,8 +9,6 @@ package com.cannontech.servlet;
  * @author: Aaron Lauinger
  */
 
-import com.cannontech.clientutils.CTILogger;
-import com.cannontech.message.util.ConnStateChange;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
 import com.cannontech.yukon.IServerConnection;

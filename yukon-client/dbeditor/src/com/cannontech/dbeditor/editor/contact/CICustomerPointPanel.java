@@ -3,20 +3,17 @@ package com.cannontech.dbeditor.editor.contact;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.util.*;
+import java.util.ListIterator;
+import java.util.Vector;
 
-import javax.swing.*;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JTextField;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.gui.util.TitleBorder;
-import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.cache.functions.PAOFuncs;
-import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.data.customer.CICustomerBase;
-import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.customer.CICustomerPointData;
 

@@ -4,16 +4,17 @@ package com.cannontech.yukon.conns;
 import java.util.Hashtable;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.database.cache.functions.RoleFuncs;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.RoleDao;
 import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.dispatch.message.Registration;
 import com.cannontech.roles.yukon.SystemRole;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IMACSConnection;
 import com.cannontech.yukon.INotifConnection;
 import com.cannontech.yukon.IServerConnection;
 import com.cannontech.yukon.cbc.CBCClientConnection;
 import com.cannontech.yukon.cbc.CBCCommand;
-import com.cannontech.common.util.CtiUtilities;
 
 /**
  * @author rneuharth
@@ -23,8 +24,6 @@ import com.cannontech.common.util.CtiUtilities;
  */
 public class ConnPool
 {	
-	private static ConnPool _poolInstance = null;
-	
 
     //default keys that are used in the pool. New connections
     // will be made based on the type found in the given string.
@@ -43,6 +42,7 @@ public class ConnPool
 	// Map<String, IServerConnection>
 	private Hashtable _allConns = null;
 
+    private RoleDao roleDao;
 
 	/**
 	 * Returns the singleton instance of this class
@@ -50,14 +50,9 @@ public class ConnPool
 	 */
 	public static synchronized ConnPool getInstance()
 	{
-		if( _poolInstance == null ) 
-		{
-			_poolInstance = new ConnPool();
-		}
-
-		return _poolInstance;
+		return (ConnPool) YukonSpringHook.getBean("connectionPool");
 	}
-
+  
 	private Hashtable getAllConns()
 	{
 		if( _allConns == null )
@@ -164,9 +159,9 @@ public class ConnPool
 			int defaultPort = 1510;
 	
 			try {
-				defaultHost = RoleFuncs.getGlobalPropertyValue(SystemRole.DISPATCH_MACHINE);
+				defaultHost = roleDao.getGlobalPropertyValue(SystemRole.DISPATCH_MACHINE);
 	
-				defaultPort = Integer.parseInt(RoleFuncs.getGlobalPropertyValue(SystemRole.DISPATCH_PORT));
+				defaultPort = Integer.parseInt(roleDao.getGlobalPropertyValue(SystemRole.DISPATCH_PORT));
 			} catch (Exception e) {
 				CTILogger.warn("Could not get host and port for dispatch connection from Role Properties, using defaults", e);
 			}
@@ -221,10 +216,10 @@ public class ConnPool
             
             try
             {
-                host = RoleFuncs.getGlobalPropertyValue( SystemRole.PORTER_MACHINE );
+                host = roleDao.getGlobalPropertyValue( SystemRole.PORTER_MACHINE );
     
                 port = Integer.parseInt( 
-                    RoleFuncs.getGlobalPropertyValue( SystemRole.PORTER_PORT ) ); 
+                    roleDao.getGlobalPropertyValue( SystemRole.PORTER_PORT ) ); 
             }
             catch( Exception e)
             {
@@ -356,8 +351,13 @@ public class ConnPool
 	private IServerConnection createNotificationConn()
 	{       
 		NotifClientConnection notifConn = new NotifClientConnection();
-
+        notifConn.setHost(roleDao.getGlobalPropertyValue( SystemRole.NOTIFICATION_HOST ));
+        notifConn.setPort(Integer.parseInt(roleDao.getGlobalPropertyValue( SystemRole.NOTIFICATION_PORT )));
 		return notifConn;
 	}
+
+    public void setRoleDao(RoleDao roleDao) {
+        this.roleDao = roleDao;
+    }
 
 }

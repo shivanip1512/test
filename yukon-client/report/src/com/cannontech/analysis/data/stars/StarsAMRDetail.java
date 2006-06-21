@@ -7,7 +7,7 @@
 package com.cannontech.analysis.data.stars;
 
 import com.cannontech.analysis.data.device.MeterAndPointData;
-import com.cannontech.database.cache.functions.CustomerFuncs;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -70,7 +70,7 @@ public class StarsAMRDetail
     {
         if (litePrimaryContact == null)
         {
-            litePrimaryContact = CustomerFuncs.getPrimaryContact(getCustomerID().intValue());
+            litePrimaryContact = DaoFactory.getCustomerDao().getPrimaryContact(getCustomerID().intValue());
         }
         return litePrimaryContact;
     }

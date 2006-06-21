@@ -4,10 +4,9 @@ package com.cannontech.dbeditor.wizard.contact;
  * Creation date: (11/21/00 4:08:38 PM)
  * @author: 
  */
-import com.cannontech.database.data.customer.Contact;
-import com.cannontech.database.data.customer.Contact;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.gui.util.DataInputPanel;
+import com.cannontech.database.data.customer.Contact;
 
 public class QuickContactPanel extends DataInputPanel
 {

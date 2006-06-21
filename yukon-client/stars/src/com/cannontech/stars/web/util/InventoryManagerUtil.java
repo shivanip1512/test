@@ -17,14 +17,13 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
+import com.cannontech.core.dao.DBDeleteResult;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.StarsDatabaseCache;
-import com.cannontech.database.cache.functions.DBDeleteResult;
-import com.cannontech.database.cache.functions.DBDeletionFuncs;
-import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.device.CarrierBase;
 import com.cannontech.database.data.device.DeviceBase;
@@ -45,7 +44,7 @@ import com.cannontech.database.db.pao.YukonPAObject;
 import com.cannontech.database.db.stars.hardware.Warehouse;
 import com.cannontech.device.range.DeviceAddressRange;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.stars.util.*;
+import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
@@ -53,8 +52,8 @@ import com.cannontech.stars.util.SwitchCommandQueue;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.action.YukonSwitchCommandAction;
-import com.cannontech.stars.xml.serialize.DeviceType;
 import com.cannontech.stars.xml.serialize.DeviceStatus;
+import com.cannontech.stars.xml.serialize.DeviceType;
 import com.cannontech.stars.xml.serialize.ExpressCom;
 import com.cannontech.stars.xml.serialize.InstallationCompany;
 import com.cannontech.stars.xml.serialize.LMHardware;
@@ -69,6 +68,7 @@ import com.cannontech.stars.xml.serialize.StarsLMConfiguration;
 import com.cannontech.stars.xml.serialize.VersaCom;
 import com.cannontech.stars.xml.serialize.Voltage;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * @author yao
@@ -241,7 +241,7 @@ public class InventoryManagerUtil {
 		ArrayList devList = new ArrayList();
 		java.util.List allDevices = null;
 		
-		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+		IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 		
 		synchronized (cache) {
 			if (InventoryUtils.isMCT( categoryID ))
@@ -453,13 +453,13 @@ public class InventoryManagerUtil {
 		
 		if (liteInv.getDeviceID() > 0 && deleteFromYukon) {
 			
-			DBDeleteResult delRes = new DBDeleteResult( liteInv.getDeviceID(), DBDeletionFuncs.DEVICE_TYPE );
-			byte status = DBDeletionFuncs.deletionAttempted( delRes );
+			DBDeleteResult delRes = new DBDeleteResult( liteInv.getDeviceID(), DaoFactory.getDbDeletionDao().DEVICE_TYPE );
+			byte status = DaoFactory.getDbDeletionDao().deletionAttempted( delRes );
 
-			if (status == DBDeletionFuncs.STATUS_DISALLOW)
+			if (status == DaoFactory.getDbDeletionDao().STATUS_DISALLOW)
 				throw new WebClientException( delRes.getDescriptionMsg().toString() );
 			
-			LiteYukonPAObject litePao = PAOFuncs.getLiteYukonPAO( liteInv.getDeviceID() );
+			LiteYukonPAObject litePao = DaoFactory.getPaoDao().getLiteYukonPAO( liteInv.getDeviceID() );
 			DBPersistent dbPer = LiteFactory.convertLiteToDBPers( litePao );
 			Transaction.createTransaction( Transaction.DELETE, dbPer ).execute();
 			

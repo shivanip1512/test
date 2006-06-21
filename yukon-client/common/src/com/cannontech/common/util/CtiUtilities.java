@@ -2,21 +2,22 @@ package com.cannontech.common.util;
 /**
  * This type was created in VisualAge.
  */
-import java.awt.*;
-import java.io.*;
+import java.awt.AWTEvent;
+import java.awt.Component;
+import java.awt.EventQueue;
+import java.awt.MenuComponent;
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.text.DecimalFormat;
-import java.util.*;
-import java.util.List;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.TimeZone;
+import java.util.Vector;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.swing.JComboBox;
 import javax.swing.JEditorPane;
 import javax.swing.text.BadLocationException;
-
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.login.ClientSession;
@@ -794,6 +795,10 @@ public final static String getYukonBase()
 	
 	//total failure, doh!
 	return fs + "yukon";
+}
+
+public static boolean isRunningAsWebApplication() {
+    return (System.getProperty("catalina.base") != null);
 }
 
 /**

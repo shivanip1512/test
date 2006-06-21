@@ -5,6 +5,7 @@ package com.cannontech.cttp;
 
 import java.util.Iterator;
 
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.cttp.data.CttpCmd;
 import com.cannontech.cttp.db.CttpCmdGroup;
 import com.cannontech.cttp.schema.cttp_CommandStatusGroupDetailType;
@@ -16,8 +17,6 @@ import com.cannontech.cttp.schema.cttp_FailureType;
 import com.cannontech.cttp.schema.cttp_OffsetCommandType;
 import com.cannontech.cttp.schema.cttp_OperationType;
 import com.cannontech.cttp.schema.cttp_OriginatorType;
-import com.cannontech.database.cache.functions.PAOFuncs;
-import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
@@ -52,7 +51,7 @@ public class CommandStatusRequestHandler implements CttpMessageHandler {
 		}
 		else {
 		
-		LiteYukonUser user = YukonUserFuncs.getLiteYukonUser(cmd.getUserID().intValue());
+		LiteYukonUser user = DaoFactory.getYukonUserDao().getLiteYukonUser(cmd.getUserID().intValue());
 		cttp_OriginatorType cttpOrig = new cttp_OriginatorType();
 		cttpOrig.adduserName(user.getUsername());
 		cttpOrig.adduserID(Integer.toString(user.getUserID()));
@@ -83,7 +82,7 @@ public class CommandStatusRequestHandler implements CttpMessageHandler {
 		while(cmdGroupIter.hasNext()) {
 			CttpCmdGroup cmdGrp = (CttpCmdGroup) cmdGroupIter.next();
 			Integer groupID = cmdGrp.getLmGroupID();
-			LiteYukonPAObject lmGroup = PAOFuncs.getLiteYukonPAO(groupID.intValue());
+			LiteYukonPAObject lmGroup = DaoFactory.getPaoDao().getLiteYukonPAO(groupID.intValue());
 			if(lmGroup != null) {
 				cttp_CommandStatusGroupDetailType cmdStatusGroupDetail = new cttp_CommandStatusGroupDetailType();
 				cmdStatusGroupDetail.addgroupID(Integer.toString(lmGroup.getLiteID()));

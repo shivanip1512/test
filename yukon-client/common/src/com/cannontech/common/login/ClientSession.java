@@ -12,9 +12,8 @@ import javax.swing.JOptionPane;
 
 import com.cannontech.clientutils.CTILogManager;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.cache.functions.AuthFuncs;
-import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.user.UserUtils;
 
@@ -79,7 +78,7 @@ public class ClientSession {
 	 * @return
 	 */
 	public boolean checkRole(int roleid) {
-		return AuthFuncs.checkRole(getUser(), roleid) != null;
+		return DaoFactory.getAuthDao().checkRole(getUser(), roleid) != null;
 	}
 	
 	/**
@@ -88,7 +87,7 @@ public class ClientSession {
 	 * @return
 	 */
 	public boolean checkRoleProperty(int rolePropertyID) {
-		return AuthFuncs.checkRoleProperty(getUser(), rolePropertyID);
+		return DaoFactory.getAuthDao().checkRoleProperty(getUser(), rolePropertyID);
 	}
 	
 	/**
@@ -99,7 +98,7 @@ public class ClientSession {
 	 * @return
 	 */
 	public String getRolePropertyValue(int rolePropertyID, String defaultValue) {
-		return AuthFuncs.getRolePropertyValue(getUser(), rolePropertyID);
+		return DaoFactory.getAuthDao().getRolePropertyValue(getUser(), rolePropertyID);
 	}
 		
 	/**
@@ -108,7 +107,7 @@ public class ClientSession {
 	 * @return
 	 */
 	public String getRolePropertyValue(int rolePropertyID) {
-		return AuthFuncs.getRolePropertyValue(getUser(), rolePropertyID);
+		return DaoFactory.getAuthDao().getRolePropertyValue(getUser(), rolePropertyID);
 	}
 	
 	public static synchronized ClientSession getInstance() {
@@ -191,7 +190,7 @@ public class ClientSession {
             CTILogger.info("Attempting local load of database properties for SERVER login...");
 
             int userID = UserUtils.USER_ADMIN_ID;
-            LiteYukonUser u = YukonUserFuncs.getLiteYukonUser(userID);
+            LiteYukonUser u = DaoFactory.getYukonUserDao().getLiteYukonUser(userID);
             if(u != null)
             {
                 CTILogger.debug("  Assuming SERVER loginID to be " + userID );
@@ -224,7 +223,7 @@ public class ClientSession {
 			// with the existing credentials
 			String oldUserName = prefs.getDefaultUsername();
 			String oldPassword = prefs.getDefaultPassword();
-			LiteYukonUser u = AuthFuncs.login(oldUserName, oldPassword);			
+			LiteYukonUser u = DaoFactory.getAuthDao().login(oldUserName, oldPassword);			
 			if(u != null) {
 				setSessionInfo(u, Integer.toString(u.getUserID()), "", DEF_PORT);		
 				return true;
@@ -234,7 +233,7 @@ public class ClientSession {
 
 		LoginPanel lp = makeLocalLoginPanel();
 		while(collectInfo(lp)) {
-			LiteYukonUser u = AuthFuncs.login(lp.getUsername(), lp.getPassword());
+			LiteYukonUser u = DaoFactory.getAuthDao().login(lp.getUsername(), lp.getPassword());
 			if(u != null) {
 				//score! we found them
 				setSessionInfo(u, Integer.toString(u.getUserID()), "", DEF_PORT);
@@ -280,12 +279,12 @@ public class ClientSession {
 					PoolManager.setDBProperties(props);
                     CTILogManager.setLogProperties(props);
                     
-					//LiteYukonUser u = YukonUserFuncs.getLiteYukonUser(userID);
+					//LiteYukonUser u = DaoFactory.getYukonUserDao().getLiteYukonUser(userID);
 					//already 'logged in' so we try to re-establish the login
 					// with the existing credentials
 					String oldUserName = prefs.getDefaultUsername();
 					String oldPassword = prefs.getDefaultPassword();
-					LiteYukonUser u = AuthFuncs.login(oldUserName, oldPassword);					
+					LiteYukonUser u = DaoFactory.getAuthDao().login(oldUserName, oldPassword);					
 					if(u != null) {
 						//score! we found them
 						setSessionInfo(u, sessionID, host, port);
@@ -315,7 +314,7 @@ public class ClientSession {
 			if(!dbProps.isEmpty()) {
 				PoolManager.setDBProperties(dbProps);
 				//Do not log in the user again
-				LiteYukonUser u = YukonUserFuncs.getLiteYukonUser(lp.getUsername());
+				LiteYukonUser u = DaoFactory.getYukonUserDao().getLiteYukonUser(lp.getUsername());
 				if(u != null) {
 					//score! we found them
 				  	setSessionInfo(u, sessionID, lp.getYukonHost(), lp.getYukonPort());

@@ -1,8 +1,5 @@
 package com.cannontech.yukon.server.cache;
 
-import java.util.Map;
-
-import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointUnits;
 

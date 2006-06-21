@@ -5,8 +5,8 @@
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Iterator" %>
 
+<%@ page import="com.cannontech.core.dao.DaoFactory" %>
 <%@ page import="com.cannontech.database.cache.DefaultDatabaseCache" %>
-<%@ page import="com.cannontech.database.cache.functions.AuthFuncs" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonRole" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonRoleProperty" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
@@ -22,15 +22,15 @@
 	for(Iterator i = allRoles.iterator(); i.hasNext();) {
 		LiteYukonRole r = (LiteYukonRole) i.next();
 		System.out.println("h1");
-		r = AuthFuncs.checkRole(user, r.getRoleID());
+		r = DaoFactory.getAuthDao().checkRole(user, r.getRoleID());
 		if(r != null) {
 			out.println("roleid: " + r.getRoleID() + "&nbsp&nbsp&nbspname: " + r.getRoleName() + "<br>");
-			List roleProps = AuthFuncs.getRoleProperties(r);
+			List roleProps = DaoFactory.getAuthDao().getRoleProperties(r);
 			for(Iterator j = roleProps.iterator(); j.hasNext();) {
 						System.out.println("h2");
 				LiteYukonRoleProperty p = (LiteYukonRoleProperty) j.next();
-				if(AuthFuncs.checkRoleProperty(user, p.getRolePropertyID())) {
-					out.println("propertyid: " + p.getRolePropertyID() + "&nbsp&nbsp&nbspkey: " + p.getKeyName() + "&nbsp&nbsp&nbspdefault: " + p.getDefaultValue() + "&nbsp&nbsp&nbspvalue: " + AuthFuncs.getRolePropertyValue(user, p.getRolePropertyID()) + "<br>");
+				if(DaoFactory.getAuthDao().checkRoleProperty(user, p.getRolePropertyID())) {
+					out.println("propertyid: " + p.getRolePropertyID() + "&nbsp&nbsp&nbspkey: " + p.getKeyName() + "&nbsp&nbsp&nbspdefault: " + p.getDefaultValue() + "&nbsp&nbsp&nbspvalue: " + DaoFactory.getAuthDao().getRolePropertyValue(user, p.getRolePropertyID()) + "<br>");
 				}
 				else {
 					out.println("propertyid: " + p.getRolePropertyID() + "&nbsp&nbsp&nbspkey: " + p.getKeyName() + "&nbsp&nbsp&nbspdefault: " + p.getDefaultValue() + "&nbsp&nbsp&nbspThis property is not attached to this user, it probably should be.  Check YukonGroupRole or YukonUserRole<br>");

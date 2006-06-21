@@ -10,7 +10,10 @@ import java.util.HashMap;
 import java.util.Vector;
 
 import com.cannontech.cbc.tablemodelevents.CBCGenericTableModelEvent;
-import com.cannontech.database.cache.functions.AuthFuncs;
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.commonutils.ModifiedDate;
+import com.cannontech.common.login.ClientSession;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageListener;
@@ -19,9 +22,6 @@ import com.cannontech.yukon.cbc.CBCSubAreaNames;
 import com.cannontech.yukon.cbc.CBCSubstationBuses;
 import com.cannontech.yukon.cbc.CBCUtils;
 import com.cannontech.yukon.cbc.SubBus;
-import com.cannontech.clientutils.CTILogger;
-import com.cannontech.clientutils.commonutils.ModifiedDate;
-import com.cannontech.common.login.ClientSession;
 
 public class SubBusTableModel extends javax.swing.table.AbstractTableModel implements MessageListener, com.cannontech.tdc.alarms.gui.AlarmTableModel, com.cannontech.common.gui.util.SortableTableModel
 {
@@ -455,7 +455,7 @@ public void messageReceived( com.cannontech.message.util.MessageEvent e )
                     + "/" + busesMsg.getSubBusAt(i).getCcArea() );
 
             //if the user can not see this sub, let us remove it
-            if( !AuthFuncs.userHasAccessPAO( ownerUser, busesMsg.getSubBusAt(i).getCcId().intValue() ) )
+            if( !DaoFactory.getAuthDao().userHasAccessPAO( ownerUser, busesMsg.getSubBusAt(i).getCcId().intValue() ) )
                 busesMsg.removeSubBusAt( i );
 
         }

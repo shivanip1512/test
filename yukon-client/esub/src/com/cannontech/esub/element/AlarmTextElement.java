@@ -9,7 +9,6 @@ import java.io.Serializable;
 
 import com.cannontech.esub.Drawing;
 import com.cannontech.esub.element.persist.PersistAlarmText;
-
 import com.loox.jloox.LxAbstractText;
 
 /**

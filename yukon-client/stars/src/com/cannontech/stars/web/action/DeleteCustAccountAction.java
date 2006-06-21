@@ -7,10 +7,10 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.StarsDatabaseCache;
-import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
@@ -180,7 +180,7 @@ public class DeleteCustAccountAction implements ActionBase {
 		Transaction.createTransaction( Transaction.DELETE, account ).execute();
 		
 		// Delete contacts from database
-		LiteContact primContact = ContactFuncs.getContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
+		LiteContact primContact = DaoFactory.getContactDao().getContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
 		com.cannontech.database.data.customer.Contact contact =
 				(com.cannontech.database.data.customer.Contact) StarsLiteFactory.createDBPersistent( primContact );
 		Transaction.createTransaction( Transaction.DELETE, contact ).execute();

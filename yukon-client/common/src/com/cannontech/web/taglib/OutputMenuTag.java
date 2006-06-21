@@ -7,7 +7,6 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.TagSupport;
 
-import com.cannontech.web.menu.MenuFeatureSet;
 import com.cannontech.web.menu.MenuRenderer;
 import com.cannontech.web.menu.ModuleBase;
 import com.cannontech.web.menu.StandardMenuRenderer;
