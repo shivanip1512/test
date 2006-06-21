@@ -22,6 +22,8 @@ import org.apache.commons.fileupload.DiskFileUpload;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 
+import com.cannontech.clientutils.ActivityLogger;
+import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -144,6 +146,8 @@ public class ImportManager extends HttpServlet {
 			if (custFile == null && hwFile == null)
 				throw new WebClientException( "No import file is provided" );
 			
+            String logMsg = "Customer account import process started.";
+            ActivityLogger.logEvent( user.getUserID(), ActivityLogActions.IMPORT_CUSTOMER_ACCOUNT_ACTION, logMsg );
 			TimeConsumingTask task = new ImportCustAccountsTask( energyCompany, custFile, hwFile, email, preScan != null );
 			long id = ProgressChecker.addTask( task );
 			
@@ -158,13 +162,15 @@ public class ImportManager extends HttpServlet {
 				
 				if (task.getStatus() == ImportCustAccountsTask.STATUS_FINISHED) {
 					session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, task.getProgressMsg());
+                    ActivityLogger.logEvent( user.getUserID(), ActivityLogActions.IMPORT_CUSTOMER_ACCOUNT_ACTION, task.getProgressMsg() );
 					ProgressChecker.removeTask( id );
 					return;
 				}
 				
 				if (task.getStatus() == ImportCustAccountsTask.STATUS_ERROR) {
 					session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, task.getErrorMsg());
-					ProgressChecker.removeTask( id );
+                    ActivityLogger.logEvent( user.getUserID(), ActivityLogActions.IMPORT_CUSTOMER_ACCOUNT_ACTION, task.getErrorMsg() );
+                    ProgressChecker.removeTask( id );
 					return;
 				}
 			}

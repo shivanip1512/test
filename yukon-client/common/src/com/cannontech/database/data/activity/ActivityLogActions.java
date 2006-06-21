@@ -52,6 +52,8 @@ public interface ActivityLogActions
 	
 	public static final String SCAN_DATA_NOW_ACTION = "Scan Meter Data Now";
 	
+    public static final String IMPORT_CUSTOMER_ACCOUNT_ACTION = "Import: Customer Accounts";
+    
 	/* Action groups*/
 	public static final String[] LOGIN_ACTION_GROUP = new String[]{
 		LOGIN_CLIENT_ACTIVITY_ACTION, LOGIN_FAILED_ACTIVITY_LOG, LOGIN_WEB_ACTIVITY_ACTION
@@ -77,6 +79,9 @@ public interface ActivityLogActions
 	public static final String[] OTHER_ACTION_GROUP = new String[]{
 		SCAN_DATA_NOW_ACTION
 	};
+    public static final String[] IMPORT_ACTION_GROUP = new String[]{
+        IMPORT_CUSTOMER_ACCOUNT_ACTION
+    };
 	
 	/* Enums for the action group string arrays*/
 	public static final int ALL_ACTIONS = 0;
@@ -87,16 +92,18 @@ public interface ActivityLogActions
 	public static final int PROGRAM_ACTIONS = 5;
 	public static final int THERMOSTAT_ACTIONS = 6;
 	public static final int OTHER_ACTIONS = 7;
+    public static final int IMPORT_ACTIONS = 8;
 	/* Array of String values for the Action Groups, indexed by the above enums */
 	public static final String[] ACTION_GROUPS_STRING = new String[]{
 		"All Actions",  "Hardware Actions", "Inventory Actions", "Login Actions", 
-		"Manual Program Actions", "Program Actions", "Thermostat Actions", "Other"
+		"Manual Program Actions", "Program Actions", "Thermostat Actions", "Other", "Import Actions"
 	};
 
 	/* Array of String Arrays (Action groups), indexed by the above enums*/	
 	public static final String[][] ACTION_GROUPS = new String[][]{
 		null, HARDWARE_ACTION_GROUP, INVENTORY_ACTION_GROUP, LOGIN_ACTION_GROUP, 
-		MANUAL_LMPROGRAM_ACTION_GROUP, PROGRAM_ACTION_GROUP, THERMOSTAT_ACTION_GROUP, OTHER_ACTION_GROUP
+		MANUAL_LMPROGRAM_ACTION_GROUP, PROGRAM_ACTION_GROUP, THERMOSTAT_ACTION_GROUP, 
+        OTHER_ACTION_GROUP, IMPORT_ACTION_GROUP
 	};
 }
 
