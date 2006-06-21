@@ -97,6 +97,7 @@ public Logger()
 
 	initialize();
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (5/17/00 1:59:27 PM)
@@ -109,8 +110,8 @@ public void actionPerformed(java.awt.event.ActionEvent e)
 	{
 		printPageNow();
 	}
-	
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (5/15/00 2:05:55 PM)
@@ -131,7 +132,7 @@ private void createNewPrinterTools()
 	flow.setCurrentTextStyle( getTextStyle() );
 
 	getTextStyle().setFontStyle( Font.BOLD );
-
+	
 //	if( pageNumber == 0 )
 	printTitle();
 	
@@ -147,6 +148,7 @@ private void createNewPrinterTools()
 	
 	getTextStyle().setFontStyle( Font.PLAIN );
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (5/17/00 1:41:11 PM)
@@ -160,7 +162,7 @@ private JCPrinter createPrintJob()
 //com.cannontech.clientutils.CTILogger.info( System.getProperty("java.awt.printerjob", null) );
 //sun.awt.windows.WPrinterJob j = new sun.awt.windows.WPrinterJob();
 		PrinterJob pj = PrinterJob.getPrinterJob();
-		pj.printDialog();
+		//pj.printDialog();
 
 		pj.setJobName("CTI Logger Page " + (++pageNumber) );
 		printer = new JCAWTPrinter( pj, pj.defaultPage(), false );
@@ -172,6 +174,7 @@ private JCPrinter createPrintJob()
 		
 	return printer;
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (7/6/00 10:59:47 AM)
@@ -180,6 +183,7 @@ private void doPreStop()
 {
 	printPageNow();
 }
+
 /**
  * Code to perform when this object is garbage collected.
  * 
@@ -192,14 +196,14 @@ protected void finalize() throws Throwable
 	// This implementation simply forwards the message to super.  You may replace or supplement this.
 	super.finalize();
 	
-com.cannontech.clientutils.CTILogger.info("	FINALIZING LOGGER");
+	com.cannontech.clientutils.CTILogger.info("	FINALIZING LOGGER");
 
 	if( printMode.equalsIgnoreCase(MODE_PRINTER) )
 	{
 		printPageNow();
 	}
-
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (7/19/00 3:47:14 PM)
@@ -231,6 +235,7 @@ private Color[] getDBColors()
 	
 	return priorityColors;	
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (7/21/00 1:22:31 PM)
@@ -244,8 +249,8 @@ private String getHeaderText()
 		CommonUtils.formatString( parametersFile.getParameterValue("COLUMN2_NAME", ""), Logger.POINTNAME_LENGTH ) + " " +
 		CommonUtils.formatString( parametersFile.getParameterValue("COLUMN3_NAME", ""), Logger.DESCRIPTION_LENGTH ) + " " +
 		CommonUtils.formatString( parametersFile.getParameterValue("COLUMN4_NAME", ""), Logger.ACTION_LENGTH ));
-	
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (7/6/00 1:36:46 PM)
@@ -255,6 +260,7 @@ public int getPointReg()
 {
 	return pointRegistration;
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (5/15/00 4:19:53 PM)
@@ -275,6 +281,7 @@ private JCTextStyle getTextStyle()
 	
 	return normal;
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (7/24/00 10:43:34 AM)
@@ -284,30 +291,31 @@ private String getTitleText()
 {
 	return titleText;
 }
+
 /**
  * Called whenever the part throws an exception.
  * @param exception java.lang.Throwable
  */
-private void handleException(java.lang.Throwable exception) {
-
+private void handleException(java.lang.Throwable exception) 
+{
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
 	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
 	com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;	
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (5/17/00 4:45:52 PM)
  *	This method is called from the JNI invocation.
  */
-
 public void handleSCMEvent(SCMEvent event)
 {
 	if(event.getID() == SCMEvent.SERVICE_STOPPED)
 	{
 		doPreStop();
 	}
-	
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (5/10/00 2:34:55 PM)
@@ -330,8 +338,8 @@ private void initialize()
 						+ headerText + "\r\n" 
 						+ HEADER_LINE;
 	}
-	
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (5/19/00 2:46:42 PM)
@@ -370,6 +378,7 @@ public static void main(String[] args)
 		System.exit(-1);
 	}
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (5/10/00 2:32:27 PM)
@@ -383,11 +392,11 @@ private synchronized void printPageNow()
 	if( lineCount > 0 )
 	{
 		document.print( printer );
-		flow.newPage();
+		flow.newPage(); 
 		createNewPrinterTools();
 	}
-	
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (5/10/00 11:51:35 AM)
@@ -419,9 +428,8 @@ public synchronized void printTextLine(String line, long classification )
 	}
 	else
 		throw new IllegalArgumentException("Unrecognized PRINT_MODE, " + printMode);
-		
-		
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (7/21/00 2:34:05 PM)
@@ -445,6 +453,7 @@ private void printTitle()
 	
 	lineCount++;
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (7/18/00 1:27:06 PM)
@@ -478,6 +487,7 @@ private void printToPageLayout(String line, long classification)
 		createNewPrinterTools();
 	}	
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (5/16/00 2:27:43 PM)
@@ -499,6 +509,7 @@ private void setLineColor(long classification)
 	}
 	
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (5/17/00 4:45:52 PM)
@@ -525,10 +536,12 @@ private void setLoggerParameters()
 
 			if( seconds > 0 )
 			{				
-				timer = new Timer( (seconds > 60 ? seconds : 60) * 1000, this );
+				//timer = new Timer( (seconds > 60 ? seconds : 60) * 1000, this );
+                timer = new Timer( seconds * 1000, this);
+                
 				// kick it off
 				timer.start();
-				com.cannontech.clientutils.CTILogger.info("	AutoOutput : " + (seconds > 60 ? seconds : 60) + " seconds");
+				com.cannontech.clientutils.CTILogger.info("	AutoOutput : " +seconds  + " seconds");
 			}
 			else
 				com.cannontech.clientutils.CTILogger.info("	AutoOutput : Disabled");
@@ -546,6 +559,7 @@ private void setLoggerParameters()
 	else
 		com.cannontech.clientutils.CTILogger.info("	Parameters file is NULL or does not exist");
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (7/6/00 1:36:46 PM)
@@ -566,8 +580,8 @@ private void setPointReg(String regMsg)
 		pointRegistration = PointRegistration.REG_ALL_ANALOG;
 	else if( regMsg.equalsIgnoreCase("STATUS") )
 		pointRegistration = PointRegistration.REG_ALL_STATUS;
-
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (5/22/00 12:17:48 PM)
