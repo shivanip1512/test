@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.152 $
-* DATE         :  $Date: 2006/06/21 17:08:24 $
+* REVISION     :  $Revision: 1.153 $
+* DATE         :  $Date: 2006/06/22 15:44:16 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -996,6 +996,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                                 {
                                     CtiSignalMsg *pFailSig = CTIDBG_new CtiSignalMsg(pPoint->getID(), Cmd->getSOE(), devicename + " / " + pPoint->getName() + ": Commanded Control " + ResolveStateName(pPoint->getStateGroupID(), rawstate) + " Failed", getAlarmStateName( pPoint->getAlarming().getAlarmCategory(CtiTablePointAlarming::commandFailure) ), GeneralLogType, pPoint->getAlarming().getAlarmCategory(CtiTablePointAlarming::commandFailure), Cmd->getUser());
 
+                                    pFailSig->setTags((pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM));
                                     if(pFailSig->getSignalCategory() > SignalEvent)
                                     {
                                         pFailSig->setTags((pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) | (pPoint->getAlarming().isAutoAcked(CtiTablePointAlarming::commandFailure) ? 0 : TAG_UNACKNOWLEDGED_ALARM));
@@ -1015,12 +1016,12 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                                 }
 
                                 CtiSignalMsg *pCRP = CTIDBG_new CtiSignalMsg(pPoint->getID(), Cmd->getSOE(), "Control " + ResolveStateName(pPoint->getStateGroupID(), rawstate) + " Sent", string(), GeneralLogType, SignalEvent, Cmd->getUser());
+                                pDyn->getDispatch().setTags( TAG_CONTROL_PENDING );
+                                pCRP->setTags(pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM);
                                 MainQueue_.putQueue( pCRP );
                                 pCRP = 0;
                                 if(pPseudoValPD) MainQueue_.putQueue( pPseudoValPD );
                                 pPseudoValPD = 0;
-
-                                pDyn->getDispatch().setTags( TAG_CONTROL_PENDING );
                             }
                             else
                             {
@@ -2150,8 +2151,6 @@ INT CtiVanGogh::assembleMultiFromSignalForConnection(const CtiServer::ptr_type &
         {
             if(isSignalForConnection(Conn, *pSig))
             {
-                CtiSignalMsg *pNewSig = (CtiSignalMsg *)pSig->replicateMessage();
-
                 // FIX FIX FIX ... Do I need this point code here???
                 CtiPointSPtr pPoint = PointMgr.getEqual(pSig->getId());
 
@@ -2159,9 +2158,11 @@ INT CtiVanGogh::assembleMultiFromSignalForConnection(const CtiServer::ptr_type &
                 {
                     CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)pPoint->getDynamic();
                     // Only set non-alarm tags.  This signal must indicate if it is an alarm on entry (via checkSignalStateQuality)
-                    pNewSig->setTags( (pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) );
+                    pSig->setTags( (pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) );
                 }
 
+                //The tags are now set in pSig so that the effect goes beyond just this message.
+                CtiSignalMsg *pNewSig = (CtiSignalMsg *)pSig->replicateMessage();
                 Ord.push_back(pNewSig);
             }
         }
@@ -2562,6 +2563,7 @@ int CtiVanGogh::processControlMessage(CtiLMControlHistoryMsg *pMsg)
 
                 CtiSignalMsg *pFailSig = CTIDBG_new CtiSignalMsg(pPoint->getID(), 0, "Control " + ResolveStateName(pPoint->getStateGroupID(), pMsg->getRawState()) + " Failed", getAlarmStateName( pPoint->getAlarming().getAlarmCategory(CtiTablePointAlarming::commandFailure) ), GeneralLogType, pPoint->getAlarming().getAlarmCategory(CtiTablePointAlarming::commandFailure), pMsg->getUser());
 
+                pFailSig->setTags((pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM));
                 if(pFailSig->getSignalCategory() > SignalEvent)
                 {
                     pFailSig->setTags((pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) | (pPoint->getAlarming().isAutoAcked(CtiTablePointAlarming::commandFailure) ? 0 : TAG_UNACKNOWLEDGED_ALARM));
@@ -3710,7 +3712,7 @@ INT CtiVanGogh::markPointNonUpdated(CtiPointSPtr point, CtiMultiWrapper &aWrap)
                 {
                     CtiSignalMsg *pSig = CTIDBG_new CtiSignalMsg(point->getID(), 0, "Non Updated", getAlarmStateName( point->getAlarming().getAlarmCategory(alarm) ), GeneralLogType, point->getAlarming().getAlarmCategory(alarm));
                     pSig->setPointValue(pDyn->getDispatch().getValue());
-
+                    
                     tagSignalAsAlarm(point, pSig, alarm);
                     updateDynTagsForSignalMsg(point,pSig,alarm,true);
                     aWrap.getMulti()->insert( pSig );
@@ -4013,6 +4015,7 @@ INT CtiVanGogh::checkForStatusAlarms(CtiPointDataMsg *pData, CtiMultiWrapper &aW
                 if(pSig != NULL)
                 {
                     pSig->setUser(pData->getUser());
+                    pSig->setTags(pDyn->getDispatch().getTags()  & ~MASK_ANY_ALARM);
                     aWrap.getMulti()->insert( pSig );
                 }
             }
@@ -4052,6 +4055,7 @@ INT CtiVanGogh::checkForNumericAlarms(CtiPointDataMsg *pData, CtiMultiWrapper &a
                     pSig->setPointValue(pData->getValue());
                     if(pSig != NULL)
                     {
+                        pSig->setTags(pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM);
                         pSig->setUser(pData->getUser());
                         aWrap.getMulti()->insert( pSig );
                         pSig = NULL;
@@ -7790,6 +7794,7 @@ void CtiVanGogh::sendPendingControlRequest(const CtiPointDataMsg &aPD, CtiPointS
     {
         CtiSignalMsg *pFailSig = CTIDBG_new CtiSignalMsg(point->getID(), aPD.getSOE(), devicename + " / " + point->getName() + ": Triggered Control Failed", getAlarmStateName( point->getAlarming().getAlarmCategory(CtiTablePointAlarming::commandFailure) ), GeneralLogType, point->getAlarming().getAlarmCategory(CtiTablePointAlarming::commandFailure), aPD.getUser());
 
+        pFailSig->setTags((pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM));
         if(pFailSig->getSignalCategory() > SignalEvent)
         {
             pFailSig->setTags((pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) | (point->getAlarming().isAutoAcked(CtiTablePointAlarming::commandFailure) ? 0 : TAG_UNACKNOWLEDGED_ALARM));
@@ -7809,10 +7814,10 @@ void CtiVanGogh::sendPendingControlRequest(const CtiPointDataMsg &aPD, CtiPointS
     }
 
     CtiSignalMsg *pCRP = CTIDBG_new CtiSignalMsg(point->getID(), aPD.getSOE(), "Triggered Control Sent", string(), GeneralLogType, SignalEvent, aPD.getUser());
+    pDyn->getDispatch().setTags( TAG_CONTROL_PENDING );
+    pCRP->setTags(pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM);
     MainQueue_.putQueue( pCRP );
     pCRP = 0;
     if(pPseudoValPD) MainQueue_.putQueue( pPseudoValPD );
     pPseudoValPD = 0;
-
-    pDyn->getDispatch().setTags( TAG_CONTROL_PENDING );
 }
