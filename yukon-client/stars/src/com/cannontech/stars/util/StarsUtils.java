@@ -51,6 +51,9 @@ public class StarsUtils {
     public static final String MCT_BASE_DESIGNATION = "yukon";
     public static final String METER_BASE_DESIGNATION = "stars";
     
+    public static final String BATCH_SWITCH_COMMAND_AUTO = "auto";
+    public static final String BATCH_SWITCH_COMMAND_MANUAL = "manual";
+    
 	public static final java.text.SimpleDateFormat starsDateFormat =
 			new java.text.SimpleDateFormat( "yyyyMMdd" );
 	public static final java.text.SimpleDateFormat starsTimeFormat =
