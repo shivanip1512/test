@@ -1,90 +1,75 @@
 package com.cannontech.yukon.server.cache;
 
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.Vector;
+
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.RowCallbackHandler;
+import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.database.PoolManager;
+import com.cannontech.database.AbstractRowCallbackHandler;
+import com.cannontech.database.JdbcTemplateHelper;
+import com.cannontech.database.MaxRowCalbackHandlerRse;
 import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteCICustomer;
+import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.db.customer.CICustomerBase;
 import com.cannontech.database.db.customer.Customer;
 
-/**
- * Insert the type's description here.
- * Creation date: (3/15/00 3:57:58 PM)
- * @author: 
- */
 public class CustomerLoader implements Runnable 
 {
     //if total contact number is over this, better not load this way
     private final int MAX_CUSTOMER_LOAD = 50000;
-    private boolean willNeedDynamicLoad = false;
     
     //	Map<Integer(custID), LiteCustomer>
-    private Map allCustsMap = null;
-    private ArrayList allCustomers = null;
-    private String databaseAlias = null;
+    private Map<Integer, LiteCustomer> allCustsMap = null;
+    private List<LiteCustomer> allCustomers = null;
     
-    /**
-     * CustomerLoader constructor comment.
-     */
-    public CustomerLoader(ArrayList custArray, Map custMap, String alias) 
-    {
+    @SuppressWarnings("unchecked")
+    public CustomerLoader(List<LiteCustomer> custArray, Map<Integer, LiteCustomer> custMap, String alias) {
         super();
         this.allCustomers = custArray;
-        this.databaseAlias = alias;
         this.allCustsMap = custMap;
     }
     
-    /**
-     * run method comment.
-     */
-    public void run() 
-    {
+    public void run() {
         Date timerStart = null;
         Date timerStop = null;
         
-        //temp code
         timerStart = new Date();
-        //get all the customer contacts that are assigned to a customer
+        
+        JdbcOperations template = JdbcTemplateHelper.getYukonTemplate();
+        
+        // First load up all of the customers. If we had a way to only load MAX_CUSTOMER_LOAD, we
+        // would. As a work around, we'll sort by CustomerID, determine the last customer loaded,
+        // then use its ID in subsequent where clauses to limit what data is returned.
         String sqlString = 
             "select CustomerID, PrimaryContactID, TimeZone, CustomerTypeID, CustomerNumber, RateScheduleID, " +
             "AltTrackNum, TemperatureUnit " +
-            "from " + Customer.TABLE_NAME;
+            "from " + Customer.TABLE_NAME + " " +
+            "order by CustomerID";
         
-        Connection conn = null;
-        Statement stmt = null;
-        ResultSet rset = null;
-        
-        int maxCustomerID = 0;
-        int loadIterator = MAX_CUSTOMER_LOAD;
-        
-        try
-        {
-            conn = PoolManager.getInstance().getConnection( this.databaseAlias );
-            stmt = conn.createStatement();
-            rset = stmt.executeQuery(sqlString);
+        // The following is reusable if slightly refactored.
+        final RowMapper customerMapper = new RowMapper() {
             
-            while (rset.next() && loadIterator > 0)
-            {
-                int cstID = rset.getInt(1);
-                int contactID = rset.getInt(2);
-                String timeZone = rset.getString(3).trim();
-                int custTypeID = rset.getInt(4);
-                String custNumber = rset.getString(5).trim();
-                int custRateScheduleID = rset.getInt(6);
-                String custAltTrackNum = rset.getString(7).trim();
-                String temperatureUnit = rset.getString(8).trim();
+            public Object mapRow(ResultSet rset, int rowNum) throws SQLException {
+                int cstID = rset.getInt("CustomerID");
+                int contactID = rset.getInt("PrimaryContactID");
+                String timeZone = rset.getString("TimeZone").trim();
+                int custTypeID = rset.getInt("CustomerTypeID");
+                String custNumber = rset.getString("CustomerNumber").trim();
+                int custRateScheduleID = rset.getInt("RateScheduleID");
+                String custAltTrackNum = rset.getString("AltTrackNum").trim();
+                String temperatureUnit = rset.getString("TemperatureUnit").trim();
                 
                 LiteCustomer lc;
                 if( custTypeID == CustomerTypes.CUSTOMER_CI) {
@@ -99,129 +84,129 @@ public class CustomerLoader implements Runnable
                 lc.setRateScheduleID(custRateScheduleID);
                 lc.setAltTrackingNumber(custAltTrackNum);
                 lc.setTemperatureUnit(temperatureUnit);
-                
-                allCustomers.add(lc);
-                if(maxCustomerID < lc.getCustomerID())
-                    maxCustomerID = lc.getCustomerID();
-                loadIterator--;
+                return lc;
             }
             
-            
-            sqlString = 
-                "SELECT ca.CustomerID, ca.ContactID, ca.Ordering " + 
-                "FROM CustomerAdditionalContact ca, " + 
-                Customer.TABLE_NAME + " c " + 
-                "WHERE ca.CustomerID=c.CustomerID " +
-                "and ca.CustomerID <= " + maxCustomerID + " " +
-                "ORDER BY ca.Ordering";
-            
-            Vector vectVals = new Vector(32);
-            rset = stmt.executeQuery(sqlString);
-            
-            while( rset.next() )
-            {
-                //maps CustomerID,ContactID
-                int[] vals = { rset.getInt(1), rset.getInt(2) };
-                vectVals.add( vals );
+        };
+        
+        template.query(sqlString, new MaxRowCalbackHandlerRse(new AbstractRowCallbackHandler() {
+            @Override
+            public void processRow(ResultSet rs, int rowNum) throws SQLException {
+                LiteCustomer customer = (LiteCustomer) customerMapper.mapRow(rs, rowNum);
+                allCustomers.add(customer);
+                allCustsMap.put(customer.getCustomerID(), customer);
             }
-            
-            //assign our Contacts to their owner Customer
-            for( int i = 0; i < allCustomers.size(); i++ )
-            {
-                LiteCustomer lc = (LiteCustomer)allCustomers.get(i);
-                boolean found = false; //tries to make this fast
-                
-                for( int j = 0; j < vectVals.size(); j++ )
-                {
-                    int[] map = (int[])vectVals.get(j);
-                    if( map[0] == lc.getCustomerID() )
-                    {
-                        lc.getAdditionalContacts().add( DaoFactory.getContactDao().getContact(map[1]) );
-                        
-                        found = true;
-                    }
-                    else if( found )  //speed it up!
-                        break;
+        }, MAX_CUSTOMER_LOAD));
+        
+        // Because the customers were ordered by their id, we can look at the last
+        // one to determine the max customerId that was loaded. This will then be used
+        // to limit how much is loaded in the following queries.
+        LiteCustomer lastCustomer = allCustomers.get(allCustomers.size() - 1);
+        int maxCustomerID = lastCustomer.getCustomerID();
+        
+        // Select the additional contact for each of the customers that we have loaded so far.
+        sqlString = 
+            "SELECT ca.CustomerID, ca.ContactID " + 
+            "FROM CustomerAdditionalContact ca, " + 
+            Customer.TABLE_NAME + " c " + 
+            "WHERE ca.CustomerID=c.CustomerID " +
+            "and ca.CustomerID <= " + maxCustomerID + " " +
+            "ORDER BY ca.CustomerID, ca.Ordering";
+        
+        final Map<LiteCustomer, Vector<LiteContact>> temporaryAdditionalContacts = new TreeMap<LiteCustomer, Vector<LiteContact>>();
+        
+        template.query(sqlString, new RowCallbackHandler() {
+            public void processRow(ResultSet rs) throws SQLException {
+                int custumerId = rs.getInt("CustomerID");
+                LiteCustomer liteCustomer = allCustsMap.get(custumerId);
+                // for the following to be efficient, the contacts should have been cached already
+                LiteContact contact = DaoFactory.getContactDao().getContact(rs.getInt("ContactID"));
+                Vector<LiteContact> contactList = temporaryAdditionalContacts.get(liteCustomer);
+                if (contactList == null) {
+                    contactList = new Vector<LiteContact>();
+                    temporaryAdditionalContacts.put(liteCustomer, contactList);
                 }
-                //Put all customers in the map
-                allCustsMap.put( new Integer(lc.getCustomerID()), lc);
+                contactList.add(contact);
             }
-            
-            if (VersionTools.starsExists()) {
-                sqlString =	"SELECT acct.AccountID, map.EnergyCompanyID, acct.CustomerID " +
+        });
+        
+        // It is important that we never call getAdditionalContacts on the lite customer. This
+        // would cause the lite object to load all of the additional contact (lazy style) first--
+        // which would defeat the purpose of what we're trying to do here.
+        for (Map.Entry<LiteCustomer, Vector<LiteContact>> entry : temporaryAdditionalContacts.entrySet()) {
+            entry.getKey().setAdditionalContacts(entry.getValue());
+        }
+        
+        
+        if (VersionTools.starsExists()) {
+            // Now we do the same for accountIds as we just did with additional contacts.
+            sqlString =	"SELECT acct.AccountID, map.EnergyCompanyID, acct.CustomerID " +
                 "FROM CustomerAccount acct, ECToAccountMapping map " +
                 "WHERE acct.AccountID = map.AccountID " +
                 "and acct.CustomerID <= " + maxCustomerID + " " +
                 "order by acct.customerID";
+            
+            final Map<LiteCustomer, Vector<Integer>> temporaryAccountIds = new TreeMap<LiteCustomer, Vector<Integer>>();
+            
+            template.query(sqlString, new RowCallbackHandler() {
+                public void processRow(ResultSet rset) throws SQLException {
+                    Integer accountId = rset.getInt("AccountID");
+                    int energyCompanyId = rset.getInt("EnergyCompanyID");
+                    Integer customerId = rset.getInt("CustomerID");
+                    
+                    LiteCustomer customer = allCustsMap.get(customerId);
+                    customer.setEnergyCompanyID(energyCompanyId);
+                    
+                    Vector<Integer> accountList = temporaryAccountIds.get(customer);
+                    if (accountList == null) {
+                        accountList = new Vector<Integer>();
+                        temporaryAccountIds.put(customer, accountList);
+                    }
+                    accountList.add(accountId);
+                }
+            });
+            
+            for (Map.Entry<LiteCustomer, Vector<Integer>> entry : temporaryAccountIds.entrySet()) {
+                entry.getKey().setAccountIDs(entry.getValue());
+            }
+            
+        }
+        
+        // Finally, fill in the extra CICustomer data for those customers that are C&I.
+        sqlString = 
+            "select CustomerID, MainAddressID, CompanyName, " +
+            "CustomerDemandLevel, CurtailAmount, CICustType " +
+            "from " + CICustomerBase.TABLE_NAME + " " +
+            "where CustomerID <= " + maxCustomerID;
+        
+        template.query(sqlString, new RowCallbackHandler() {
+            public void processRow(ResultSet rset) throws SQLException {
+                int customerId = rset.getInt("CustomerID");
+                int addressID = rset.getInt("MainAddressID");
+                String name = rset.getString("CompanyName").trim();
+                double demandLevel = rset.getDouble("CustomerDemandLevel");
+                double curtAmount = rset.getDouble("CurtailAmount");
+                int customerTypeId = rset.getInt("CICustType");
                 
-                rset = stmt.executeQuery(sqlString);
-                while( rset.next())
-                {	//TODO we are updating this everytime, and it should really only be updated after the acctIDs are all collected.
-                    int acctID = rset.getInt(1);
-                    int ecID = rset.getInt(2);
-                    int cstID = rset.getInt(3);
-                    ((LiteCustomer)allCustsMap.get(new Integer(cstID))).setEnergyCompanyID(ecID);
-                    ((LiteCustomer)allCustsMap.get(new Integer(cstID))).getAccountIDs().add(new Integer(acctID));
+                LiteCustomer liteCustomer = allCustsMap.get(customerId);
+                if (liteCustomer instanceof LiteCICustomer) {
+                    LiteCICustomer liteCiCustomer = (LiteCICustomer) liteCustomer;
+                    
+                    liteCiCustomer.setMainAddressID(addressID);
+                    liteCiCustomer.setCompanyName(name);
+                    liteCiCustomer.setDemandLevel(demandLevel);
+                    liteCiCustomer.setCurtailAmount(curtAmount);
+                    liteCiCustomer.setCICustType(customerTypeId);
+                } else {
+                    CTILogger.warn("Customer " + liteCustomer.getCustomerID() + " isn't a CICustomer as expected.");
                 }
             }
-            
-            //TODO incorporate EnergyCompanyCustomerList to get the energycompany value.
-            sqlString = 
-                "select CustomerID, MainAddressID, CompanyName, " +
-                "CustomerDemandLevel, CurtailAmount, CICustType " +
-                "from " + CICustomerBase.TABLE_NAME + " " +
-                "where CustomerID <= " + maxCustomerID;
-            
-            rset = stmt.executeQuery(sqlString);
-            
-            while( rset.next() )
-            {
-                int cstID = rset.getInt(1);
-                int addressID = rset.getInt(2);
-                String name = rset.getString(3).trim();
-                double dmdLevel = rset.getDouble(4);
-                double curtAmount = rset.getDouble(5);
-                int cstTypeID = rset.getInt(6);
-                ((LiteCICustomer)allCustsMap.get(new Integer(cstID))).setMainAddressID(addressID);
-                ((LiteCICustomer)allCustsMap.get(new Integer(cstID))).setCompanyName(name);
-                ((LiteCICustomer)allCustsMap.get(new Integer(cstID))).setDemandLevel(dmdLevel);
-                ((LiteCICustomer)allCustsMap.get(new Integer(cstID))).setCurtailAmount(curtAmount);
-                ((LiteCICustomer)allCustsMap.get(new Integer(cstID))).setCICustType(cstTypeID);
-            }
-        }
-        catch( java.sql.SQLException e )
-        {
-            CTILogger.error( e.getMessage(), e );
-        }
-        finally
-        {
-            try
-            {
-                if( stmt != null )
-                    stmt.close();
-                if( conn != null )
-                    conn.close();
-            }
-            catch( SQLException e )
-            {
-                CTILogger.error( e.getMessage(), e );
-            }
-
-            timerStop = new java.util.Date();
-            CTILogger.info( 
-                           (timerStop.getTime() - timerStart.getTime())*.001 + 
-                           " Secs for CICustomerLoader with Contacts (" + allCustomers.size() + " loaded)" );
-            if(loadIterator <= 0)
-            {
-                CTILogger.warn("Customer loader limit exceeded!  System will need to use " +
-                "dynamic loading for some customers.");
-                willNeedDynamicLoad = true;
-            }
-        }
+        });
+        
+        timerStop = new Date();
+        CTILogger.info((timerStop.getTime() - timerStart.getTime())*.001 + 
+                       " Secs for CICustomerLoader with Contacts (" + allCustomers.size() + 
+                       " loaded, MAX_CUSTOMER_LOAD="+ MAX_CUSTOMER_LOAD + ")" );
     }
     
-    public boolean limitExceeded()
-    {
-        return willNeedDynamicLoad;
-    }
 }
