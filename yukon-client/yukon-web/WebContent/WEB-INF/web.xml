@@ -19,10 +19,6 @@
       <param-value>/WEB-INF/faces-config.xml,/WEB-INF/faces-custom-config.xml,/WEB-INF/faces-commercialcurtailment-config.xml,faces-capcontrol-config.xml</param-value>
     </context-param>
 
-<!-- Does not seem to work for specifying many faces-config.xml files -->
-<!--    name:  javax.faces.application.CONFIG_FILES -->
-<!--    value:   /WEB-INF/cbc_faces-config.xml,/WEB-INF/lm_faces-config.xml -->
-
     <filter>
         <filter-name>timerFilter</filter-name>
         <filter-class>com.cannontech.esub.web.filter.TimerFilter</filter-class>
@@ -143,6 +139,9 @@
         <url-pattern>/faces/*</url-pattern>
     </filter-mapping>
 
+    <listener>
+        <listener-class>com.cannontech.servlet.KickStartLoggingListener</listener-class>
+    </listener>
 
     <!-- Faces Listener, that does all the startup work (configuration, init). -->
     <listener>
