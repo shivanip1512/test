@@ -1,5 +1,7 @@
 package com.cannontech.stars.web.action;
 
+import java.io.*;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Timer;
@@ -25,6 +27,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
+import com.cannontech.stars.util.*;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
@@ -692,4 +695,307 @@ public class YukonSwitchCommandAction implements ActionBase {
 			}
 		}
 	}
+    
+    public static void fileWriteDisableCommand(LiteStarsEnergyCompany energyCompany, LiteStarsLMHardware liteHw, Integer routeID) throws WebClientException 
+    {
+        if (liteHw.getManufacturerSerialNumber().trim().length() == 0)
+            throw new WebClientException( "The manufacturer serial # of the hardware cannot be empty" );
+        
+        final String fs = System.getProperty( "file.separator" );
+        File ecDir = new File( ServerUtils.getFileWriteSwitchConfigDir() + fs + energyCompany.getName() );
+        if (!ecDir.exists())
+            ecDir.mkdirs();
+        
+        File commFile;
+        
+        String cmd = null;
+        
+        int hwConfigType = InventoryUtils.getHardwareConfigType( liteHw.getLmHardwareTypeID() );
+        /*
+         * This could all be consolidated, but I want to keep it separate because it is
+         * likely that there will be more functionality added to this per device type.
+         */
+        if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_VERSACOM) 
+        {
+            commFile = new File(ecDir, ServerUtils.VERSACOM_FILE);
+            cmd = "2," + liteHw.getManufacturerSerialNumber() + ",OUT";
+        }
+        else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_EXPRESSCOM) 
+        {
+            commFile = new File(ecDir, ServerUtils.EXPRESSCOM_FILE);
+            cmd = "2," + liteHw.getManufacturerSerialNumber() + ",OUT";
+        }
+        else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA205) 
+        {
+            commFile = new File(ecDir, ServerUtils.SA205_FILE);
+            cmd = liteHw.getManufacturerSerialNumber() + ", Deactivate";
+        }
+        else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA305) 
+        {
+            commFile = new File(ecDir, ServerUtils.SA305_FILE);
+            cmd = liteHw.getManufacturerSerialNumber() + ", Deactivate";
+        }
+        else
+        {
+            commFile = new File(ecDir, ServerUtils.PROBLEM_FILE);
+            cmd = liteHw.getManufacturerSerialNumber();
+        }
+        
+        fileWriteReceiverConfigLine(commFile, cmd);
+        
+        /*TODO Not sure if we want to leave this in since we don't know for sure that Gill has
+         * run the written out commands to the switch.  could be false advertising
+        // Add "Termination" to hardware events
+        try {
+            com.cannontech.database.data.stars.event.LMHardwareEvent event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
+            com.cannontech.database.db.stars.event.LMHardwareEvent eventDB = event.getLMHardwareEvent();
+            com.cannontech.database.db.stars.event.LMCustomerEventBase eventBase = event.getLMCustomerEventBase();
+            
+            eventDB.setInventoryID( new Integer(liteHw.getInventoryID()) );
+            eventBase.setEventTypeID( hwEventEntryID );
+            eventBase.setActionID( termEntryID );
+            eventBase.setEventDateTime( new Date() );
+            event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+            
+            event = (com.cannontech.database.data.stars.event.LMHardwareEvent)
+                    Transaction.createTransaction( Transaction.INSERT, event ).execute();
+            
+            LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( event );
+            liteHw.getInventoryHistory().add( liteEvent );
+            liteHw.updateDeviceStatus();
+        }
+        catch (TransactionException e) {
+            CTILogger.error( e.getMessage(), e );
+        }*/
+    }
+    
+    public static void fileWriteEnableCommand(LiteStarsEnergyCompany energyCompany, LiteStarsLMHardware liteHw, Integer routeID)
+        throws WebClientException
+    {
+        if (liteHw.getManufacturerSerialNumber().trim().length() == 0)
+            throw new WebClientException( "The manufacturer serial # of the hardware cannot be empty" );
+        
+        final String fs = System.getProperty( "file.separator" );
+        File ecDir = new File( ServerUtils.getFileWriteSwitchConfigDir() + fs + energyCompany.getName() );
+        if (!ecDir.exists())
+            ecDir.mkdirs();
+        
+        File commFile;
+        
+        String cmd = null;
+        
+        int hwConfigType = InventoryUtils.getHardwareConfigType( liteHw.getLmHardwareTypeID() );
+        /*
+         * This could all be consolidated, but I want to keep it separate because it is
+         * likely that there will be more functionality added to this per device type.
+         */
+        if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_VERSACOM) 
+        {
+            commFile = new File(ecDir, ServerUtils.VERSACOM_FILE);
+            cmd = "2," + liteHw.getManufacturerSerialNumber() + ",IN";
+        }
+        else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_EXPRESSCOM) 
+        {
+            commFile = new File(ecDir, ServerUtils.EXPRESSCOM_FILE);
+            cmd = "2," + liteHw.getManufacturerSerialNumber() + ",IN";
+        }
+        else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA205) 
+        {
+            commFile = new File(ecDir, ServerUtils.SA205_FILE);
+            cmd = liteHw.getManufacturerSerialNumber() + ", Activate";
+        }
+        else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA305) 
+        {
+            commFile = new File(ecDir, ServerUtils.SA305_FILE);
+            cmd = liteHw.getManufacturerSerialNumber() + ", Activate";
+        }
+        else
+        {
+            commFile = new File(ecDir, ServerUtils.PROBLEM_FILE);
+            cmd = liteHw.getManufacturerSerialNumber();
+        }
+        
+        fileWriteReceiverConfigLine(commFile, cmd);
+        
+        /*TODO Not sure if we want to leave this in since we don't know for sure that Gill has
+         * run the written out commands to the switch.  could be false advertising
+        // Add "Activation Completed" to hardware events
+        Integer hwEventEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID() );
+        Integer actCompEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED).getEntryID() );
+        java.util.Date now = new java.util.Date();
+        
+        try {
+            com.cannontech.database.data.stars.event.LMHardwareEvent event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
+            com.cannontech.database.db.stars.event.LMHardwareEvent eventDB = event.getLMHardwareEvent();
+            com.cannontech.database.db.stars.event.LMCustomerEventBase eventBase = event.getLMCustomerEventBase();
+            
+            eventDB.setInventoryID( new Integer(liteHw.getInventoryID()) );
+            eventBase.setEventTypeID( hwEventEntryID );
+            eventBase.setActionID( actCompEntryID );
+            eventBase.setEventDateTime( new Date() );
+            event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+            
+            event = (com.cannontech.database.data.stars.event.LMHardwareEvent)
+                    Transaction.createTransaction( Transaction.INSERT, event ).execute();
+            
+            LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( event );
+            liteHw.getInventoryHistory().add( liteEvent );
+            liteHw.updateDeviceStatus();
+        }
+        catch (TransactionException e) {
+            CTILogger.error( e.getMessage(), e );
+        }*/
+    }
+    
+    public static void fileWriteConfigCommand(LiteStarsEnergyCompany energyCompany, LiteStarsLMHardware liteHw, boolean forceInService, String options)
+        throws WebClientException
+    {
+        if (liteHw.getManufacturerSerialNumber().length() == 0)
+            throw new WebClientException( "The manufacturer serial # of the hardware cannot be empty" );
+        
+        Integer invID = new Integer( liteHw.getInventoryID() );
+        Integer hwEventEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID() );
+        Integer actCompEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED).getEntryID() );
+        Integer configEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_CONFIG).getEntryID() );
+        java.util.Date now = new java.util.Date();
+        
+        // Parameter options corresponds to the infoString field of the switch command queue.
+        // It takes the format of "GroupID:XX;RouteID:XX"
+        Integer optGroupID = null;
+        /**
+         * These changes originated with the PMSI Replacement Project at Xcel
+         * Some assumptions are made here since we are writing out MACS format configs
+         * -Don't need RouteID
+         * -Don't need to worry about hardware addressing (although MACS format does support it)
+         * -Also don't need to use the getConfigCommands() method like sendConfigCommand() does
+         */
+        
+        if (options != null) {
+            String[] fields = options.split( ";" );
+            for (int i = 0; i < fields.length; i++) {
+                try {
+                    if (fields[i].startsWith("GroupID:"))
+                        optGroupID = Integer.valueOf( fields[i].substring("GroupID:".length()) );
+                }
+                catch (NumberFormatException e) {
+                    CTILogger.error( e.getMessage(), e );
+                }
+            }
+        }
+        
+        String loadGroupName = null;
+        if(optGroupID != null)
+            loadGroupName = DaoFactory.getPaoDao().getYukonPAOName(optGroupID);        
+            
+        final String fs = System.getProperty( "file.separator" );
+        File ecDir = new File( ServerUtils.getFileWriteSwitchConfigDir() + fs + energyCompany.getName() );
+        if (!ecDir.exists())
+            ecDir.mkdirs();
+        
+        File commFile;
+        
+        String cmd = null;
+        
+        int hwConfigType = InventoryUtils.getHardwareConfigType( liteHw.getLmHardwareTypeID() );
+        /*
+         * This could all be consolidated, but I want to keep it separate because it is
+         * likely that there will be more functionality added to this per device type.
+         */
+        if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_VERSACOM) 
+        {
+            commFile = new File(ecDir, ServerUtils.VERSACOM_FILE);
+            cmd = "1," + liteHw.getManufacturerSerialNumber() + ",OUT";
+        }
+        else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_EXPRESSCOM) 
+        {
+            commFile = new File(ecDir, ServerUtils.EXPRESSCOM_FILE);
+            cmd = "1," + liteHw.getManufacturerSerialNumber() + ",OUT";
+        }
+        else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA205) 
+        {
+            commFile = new File(ecDir, ServerUtils.SA205_FILE);
+            cmd = liteHw.getManufacturerSerialNumber() + ", Config";
+        }
+        else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA305) 
+        {
+            commFile = new File(ecDir, ServerUtils.SA305_FILE);
+            cmd = liteHw.getManufacturerSerialNumber() + ", Config";
+        }
+        else
+        {
+            commFile = new File(ecDir, ServerUtils.PROBLEM_FILE);
+            cmd = liteHw.getManufacturerSerialNumber();
+        }
+        
+        if(loadGroupName != null)
+        {
+            if ((liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL || forceInService)
+                    && InventoryUtils.supportServiceInOut( liteHw.getLmHardwareTypeID() ))
+            {
+                // Send an in service command first
+                fileWriteEnableCommand( energyCompany, liteHw, null );
+            }
+        }
+        else
+        {
+            commFile = new File(ecDir, ServerUtils.PROBLEM_FILE);
+            if(optGroupID == null)
+                optGroupID = -1;
+            cmd = liteHw.getManufacturerSerialNumber() + 
+                ": Unable to find a load group in Yukon with the specified groupID of " + optGroupID;
+        }
+        
+        fileWriteReceiverConfigLine(commFile, cmd);
+        /*TODO Not sure if we want to leave this in since we don't know for sure that Gill has
+         * run the written out commands to the switch.  Could be false advertising...
+        // Add "Config" to hardware events
+        try {
+            com.cannontech.database.data.stars.event.LMHardwareEvent event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
+            com.cannontech.database.db.stars.event.LMHardwareEvent eventDB = event.getLMHardwareEvent();
+            com.cannontech.database.db.stars.event.LMCustomerEventBase eventBase = event.getLMCustomerEventBase();
+            
+            eventDB.setInventoryID( invID );
+            eventBase.setEventTypeID( hwEventEntryID );
+            eventBase.setActionID( configEntryID );
+            eventBase.setEventDateTime( now );
+            event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+            
+            event = (com.cannontech.database.data.stars.event.LMHardwareEvent)
+                    Transaction.createTransaction( Transaction.INSERT, event ).execute();
+            
+            LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( event );
+            liteHw.getInventoryHistory().add( liteEvent );
+        }
+        catch (TransactionException e) {
+            CTILogger.error( e.getMessage(), e );
+        }*/
+    }
+    
+    public static void fileWriteReceiverConfigLine(File commFile, String cmd)
+    {
+        try 
+        {
+            if (!commFile.exists()) commFile.createNewFile();
+        }
+        catch (IOException e) {
+            CTILogger.error( "Failed to create the switch command file..." );
+            CTILogger.error( e.getMessage(), e );
+            return;
+        }
+        
+        PrintWriter fw = null;
+        try
+        {
+            fw = new PrintWriter( new FileWriter(commFile, true) );
+            fw.println( cmd );
+        }
+        catch (Exception e) 
+        {
+            CTILogger.error( e.getMessage(), e );
+        }
+        finally 
+        {
+            if (fw != null) fw.close();
+        }
+    }
 }

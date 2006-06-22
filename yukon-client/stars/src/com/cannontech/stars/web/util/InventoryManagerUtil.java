@@ -17,6 +17,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
+import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dao.DBDeleteResult;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
@@ -44,6 +45,8 @@ import com.cannontech.database.db.pao.YukonPAObject;
 import com.cannontech.database.db.stars.hardware.Warehouse;
 import com.cannontech.device.range.DeviceAddressRange;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.roles.yukon.SystemRole;
+import com.cannontech.stars.util.*;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ServerUtils;
@@ -263,20 +266,44 @@ public class InventoryManagerUtil {
 		return devList;
 	}
 	
-	public static void sendSwitchCommand(SwitchCommandQueue.SwitchCommand cmd) throws WebClientException {
+	public static void sendSwitchCommand(SwitchCommandQueue.SwitchCommand cmd) throws WebClientException 
+    {
 		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( cmd.getEnergyCompanyID() );
 		LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory(cmd.getInventoryID(), true);
-		
+        boolean writeToFile = false;
+        String batchProcessType = DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.BATCHED_SWITCH_COMMAND_TOGGLE );
+        if(batchProcessType != null)
+        {
+            writeToFile = batchProcessType.compareTo(StarsUtils.BATCH_SWITCH_COMMAND_MANUAL) == 0 
+                && VersionTools.staticLoadGroupMappingExists();
+        }
+        
 		if (cmd.getCommandType().equalsIgnoreCase( SwitchCommandQueue.SWITCH_COMMAND_CONFIGURE ))
-			YukonSwitchCommandAction.sendConfigCommand( energyCompany, liteHw, true, cmd.getInfoString() );
-		else if (cmd.getCommandType().equalsIgnoreCase( SwitchCommandQueue.SWITCH_COMMAND_DISABLE ))
-			YukonSwitchCommandAction.sendDisableCommand( energyCompany, liteHw, null );
+        {
+			if(writeToFile)
+                YukonSwitchCommandAction.fileWriteConfigCommand( energyCompany, liteHw, true, cmd.getInfoString() );
+            else    
+                YukonSwitchCommandAction.sendConfigCommand( energyCompany, liteHw, true, cmd.getInfoString() );
+        }
+        else if (cmd.getCommandType().equalsIgnoreCase( SwitchCommandQueue.SWITCH_COMMAND_DISABLE ))
+        {
+            if(writeToFile)
+                YukonSwitchCommandAction.fileWriteDisableCommand( energyCompany, liteHw, null );
+            else
+                YukonSwitchCommandAction.sendDisableCommand( energyCompany, liteHw, null );
+        }
 		else if (cmd.getCommandType().equalsIgnoreCase( SwitchCommandQueue.SWITCH_COMMAND_ENABLE ))
-			YukonSwitchCommandAction.sendEnableCommand( energyCompany, liteHw, null );
+        {
+            if(writeToFile)
+                YukonSwitchCommandAction.fileWriteEnableCommand( energyCompany, liteHw, null );
+            else
+                YukonSwitchCommandAction.sendEnableCommand( energyCompany, liteHw, null );
+        }
 		
 		SwitchCommandQueue.getInstance().removeCommand( cmd.getInventoryID() );
 		
-		if (liteHw.getAccountID() > 0) {
+		if (liteHw.getAccountID() > 0) 
+        {
 			StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteHw.getAccountID() );
 			if (starsAcctInfo != null) {
 				StarsInventory starsInv = StarsLiteFactory.createStarsInventory( liteHw, energyCompany );
@@ -284,7 +311,7 @@ public class InventoryManagerUtil {
 			}
 		}
 	}
-	
+    
 	public static void setStarsLMConfiguration(StarsLMConfiguration starsCfg, HttpServletRequest req) throws WebClientException {
 		String[] clps = req.getParameterValues( "ColdLoadPickup" );
 		String[] tds = req.getParameterValues( "TamperDetect" );

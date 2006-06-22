@@ -183,6 +183,8 @@ public class InventoryManager extends HttpServlet {
 			sendSwitchCommands( user, req, session );
 		else if (action.equalsIgnoreCase("RemoveSwitchCommands"))
 			removeSwitchCommands( user, req, session );
+        else if (action.equalsIgnoreCase("FileWriteSwitchCommands"))
+            fileWriteSwitchCommands( user, req, session );
 		else if (action.equalsIgnoreCase("SearchInventory"))
 			searchInventory( user, req, session );
 		else if (action.equalsIgnoreCase("CreateHardware"))
@@ -1273,6 +1275,75 @@ public class InventoryManager extends HttpServlet {
 		
 		session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Switch commands removed successfully");
 	}
+    
+    /**
+     * 
+     * Write batched switch commands out to appropriate split files instead of allowing the 
+     * timer task to handle it at midnight.  Overall use determined by SystemRole.BATCHED_SWITCH_COMMAND_TOGGLE
+     */
+    private void fileWriteSwitchCommands(StarsYukonUser user, HttpServletRequest req, HttpSession session) 
+    {
+        LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
+        
+        try {
+            Hashtable batchConfig = InventoryManagerUtil.getBatchConfigSubmission();
+            
+            if (req.getParameter("All") != null) 
+            {
+                int memberID = Integer.parseInt(req.getParameter("All"));
+                
+                ArrayList descendants = ECUtils.getAllDescendants( energyCompany );
+                for (int i = 0; i < descendants.size(); i++) 
+                {
+                    LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
+                    if (memberID >= 0 && company.getLiteID() != memberID) continue;
+                    
+                    SwitchCommandQueue.SwitchCommand[] commands = SwitchCommandQueue.getInstance().getCommands( company.getLiteID(), false );
+                    if (commands != null && commands.length > 0) {
+                        for (int j = 0; j < commands.length; j++)
+                            InventoryManagerUtil.sendSwitchCommand( commands[j] );
+                        
+                        String msg = commands.length + " switch commands sent successfully";
+                        ActivityLogger.logEvent(user.getUserID(), -1, company.getLiteID(), -1, ActivityLogActions.HARDWARE_SEND_BATCH_CONFIG_ACTION, msg);
+                        batchConfig.put( company.getEnergyCompanyID(), new Object[]{new Date(), msg} );
+                    }
+                }
+            }
+            else {
+                String[] values = req.getParameterValues( "InvID" );
+                Hashtable numCmdSentMap = new Hashtable();
+                
+                for (int i = 0; i < values.length; i++) {
+                    int invID = Integer.parseInt( values[i] );
+                    SwitchCommandQueue.SwitchCommand cmd = SwitchCommandQueue.getInstance().getCommand( invID, false );
+                    InventoryManagerUtil.sendSwitchCommand( cmd );
+                    
+                    Integer energyCompanyID = new Integer(cmd.getEnergyCompanyID());
+                    Integer numCmdSent = (Integer) numCmdSentMap.get( energyCompanyID );
+                    if (numCmdSent == null)
+                        numCmdSent = new Integer(1);
+                    else
+                        numCmdSent = new Integer(numCmdSent.intValue() + 1);
+                    numCmdSentMap.put( energyCompanyID, numCmdSent );
+                }
+                
+                Iterator it = numCmdSentMap.keySet().iterator();
+                while (it.hasNext()) {
+                    Integer energyCompanyID = (Integer) it.next();
+                    Integer numCmdSent = (Integer) numCmdSentMap.get( energyCompanyID );
+                    String msg = numCmdSent + " switch commands sent successfully";
+                    ActivityLogger.logEvent(user.getUserID(), -1, energyCompanyID.intValue(), -1, ActivityLogActions.HARDWARE_SEND_BATCH_CONFIG_ACTION, msg);
+                    batchConfig.put( energyCompanyID, new Object[]{new Date(), msg} );
+                }
+            }
+            
+            session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Switch commands sent out successfully");
+        }
+        catch (WebClientException e) {
+            CTILogger.error( e.getMessage(), e );
+            session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, e.getMessage());
+        }
+    }
 	
 	private void searchInventory(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
