@@ -102,7 +102,9 @@ function validate(form) {
               <table width="600" border="0" cellspacing="0" cellpadding="0">
                 <tr>
                   <c:choose>
-						<c:when test="${configBean.hasStaticLoadGroupMapping}"> 
+						<c:when test="${configBean.writeToFileAllowed}">
+                            <td align="center" class="MainText">All switch commands marked<div class="ErrorMsg">manual</div>must 
+                                be moved to output files from this screen.</td> 
 						</c:when>
 	                    <c:otherwise>
 	             			<td align="center" class="MainText">All switch commands marked<div class="ErrorMsg">auto</div>will 
@@ -199,7 +201,7 @@ function validate(form) {
               <table width="600" border="0" cellspacing="0" cellpadding="5" align="center">
                 <tr> 
                 	<c:choose>
-						<c:when test="${configBean.hasStaticLoadGroupMapping}"> 
+						<c:when test="${configBean.writeToFileAllowed}"> 
 							<td align="right" width="50%"> 
                     			<input type="button" name="fileWrite" value="Write to File" onclick="fileWriteCommands(this.form)">
                     		</td>

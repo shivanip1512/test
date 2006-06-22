@@ -41,7 +41,7 @@
 	    	<table width="80%" border="2" cellspacing="0" cellpadding="0" align="center" class="TableCell">
 			  	<tr>
 					<c:choose>
-						<c:when test="${configBean.hasStaticLoadGroupMapping}"> 
+						<c:when test="${configBean.writeToFileAllowed}"> 
 						 	<td> 
 			                	<div align="center"> 
 			                    	<input type="button" name="ScheduleConfig" value="Save To Batch" onclick="scheduleBatch(this.form)">

@@ -8,23 +8,30 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.stars.hardware.StaticLoadGroupMapping;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.roles.operator.InventoryRole;
-
-
+import com.cannontech.roles.yukon.SystemRole;
+import com.cannontech.stars.util.StarsUtils;
 
 public class ConfigBean 
 {
     private List<StaticLoadGroupMapping> currentStaticGroups;
     private List<StaticLoadGroupMapping> allStaticGroups;
-    private boolean hasStaticLoadGroupMapping;
     private int currentApplianceCategoryID;
     private LiteYukonUser currentUser = null;
     private boolean hasResetPermission;
+    private boolean writeToFileAllowed;
     
     public ConfigBean()
     {
         super();
         
-        hasStaticLoadGroupMapping = VersionTools.staticLoadGroupMappingExists();
+        String batchProcessType = DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.BATCHED_SWITCH_COMMAND_TOGGLE );
+        if(batchProcessType != null)
+        {
+            writeToFileAllowed = batchProcessType.compareTo(StarsUtils.BATCH_SWITCH_COMMAND_MANUAL) == 0 
+                && VersionTools.staticLoadGroupMappingExists();
+        }
+        else
+            writeToFileAllowed = false;
     }
 
     public List<StaticLoadGroupMapping> getCurrentStaticGroups() 
@@ -39,17 +46,8 @@ public class ConfigBean
         this.currentStaticGroups = staticGroups;
     }
     
-    public boolean getHasStaticLoadGroupMapping() 
+    public int getCurrentApplianceCategoryID() 
     {
-       return hasStaticLoadGroupMapping;
-    }
-    
-    public void setHasStaticLoadGroupMapping(boolean hasStaticLoadGroupMapping) 
-    {
-        this.hasStaticLoadGroupMapping = hasStaticLoadGroupMapping;
-    }
-
-    public int getCurrentApplianceCategoryID() {
         return currentApplianceCategoryID;
     }
 
@@ -76,16 +74,28 @@ public class ConfigBean
         return hasResetPermission;
     }
 
-    public void setHasResetPermission(boolean hasResetPermission) {
+    public void setHasResetPermission(boolean hasResetPermission) 
+    {
         this.hasResetPermission = hasResetPermission;
     }
 
-    public LiteYukonUser getCurrentUser() {
+    public LiteYukonUser getCurrentUser() 
+    {
         return currentUser;
     }
 
-    public void setCurrentUser(LiteYukonUser currentUser) {
+    public void setCurrentUser(LiteYukonUser currentUser) 
+    {
         this.currentUser = currentUser;
     }
     
+    public boolean isWriteToFileAllowed()
+    {
+        return writeToFileAllowed;
+    }
+
+    public void setWriteToFileAllowed(boolean writeToFileAllowed) 
+    {
+        this.writeToFileAllowed = writeToFileAllowed;
+    }
 }
