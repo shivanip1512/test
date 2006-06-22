@@ -17,6 +17,8 @@ import java.util.Hashtable;
 
 import org.apache.commons.fileupload.FileItem;
 
+import com.cannontech.clientutils.ActivityLogger;
+import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionList;
@@ -138,6 +140,8 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 	FileItem hwFile = null;
 	String email = null;
 	boolean preScan = false;
+    int userID = UserUtils.USER_DEFAULT_ID;
+    boolean firstFinishedPass = true;
     ArrayList existingSULMPrograms;
     
 	PrintWriter importLog = null;
@@ -157,12 +161,15 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
     
     int comparableDigitEndIndex = 0;
 	
-	public ImportCustAccountsTask (LiteStarsEnergyCompany energyCompany, FileItem custFile, FileItem hwFile, String email, boolean preScan) {
+	public ImportCustAccountsTask (LiteStarsEnergyCompany energyCompany, FileItem custFile, FileItem hwFile, String email, boolean preScan, Integer userID) 
+    {
 		this.energyCompany = energyCompany;
 		this.custFile = custFile;
 		this.hwFile = hwFile;
 		this.email = email;
 		this.preScan = preScan;
+        if(userID != null)
+            this.userID = userID.intValue();
 	}
 
 	/* (non-Javadoc)
@@ -764,9 +771,10 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 			
 			status = STATUS_FINISHED;
 		}
-		catch (Exception e) {
+		catch (Exception e) 
+        {
 			if (status == STATUS_CANCELED) {
-				errorMsg = "Operation is canceled by user";
+				errorMsg = "Operation was canceled by user";
 				if (position != null)
 					errorMsg += " after " + position + " is processed";
 			}
@@ -781,6 +789,8 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 				if (e instanceof WebClientException)
 					errorMsg += ": " + e.getMessage();
 			}
+
+            ActivityLogger.logEvent( userID, ActivityLogActions.IMPORT_CUSTOMER_ACCOUNT_ACTION, errorMsg );
 		}
 		finally {
 			if (importLog != null) {
@@ -807,17 +817,23 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 		
 	}
 	
-	private String getImportProgress() {
+	private String getImportProgress() 
+    {
 		String msg = "";
-		if (status == STATUS_FINISHED) {
+		if (status == STATUS_FINISHED) 
+        {
 			if (custFile != null)
 				msg += numAcctImported + " customer accounts imported successfully" +
 					" (" + numAcctAdded + " added, " + numAcctUpdated + " updated, " + numAcctRemoved + " removed)";
-			if (hwFile != null) {
+			if (hwFile != null) 
+            {
 				if (msg.length() > 0) msg += LINE_SEPARATOR;
 				msg += numHwImported + " hardware imported successfully" +
 					" (" + numHwAdded + " added, " + numHwUpdated + " updated, " + numHwRemoved + " removed)";
 			}
+            if(firstFinishedPass)
+                ActivityLogger.logEvent( userID, ActivityLogActions.IMPORT_CUSTOMER_ACCOUNT_ACTION, msg );
+            firstFinishedPass = false;
 		}
 		else {
 			if (custFile != null) {
@@ -836,6 +852,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 				msg += " (" + numHwAdded + " added, " + numHwUpdated + " updated, " + numHwRemoved + " removed)";
 			}
 		}
+        
 		return msg;
 	}
 	

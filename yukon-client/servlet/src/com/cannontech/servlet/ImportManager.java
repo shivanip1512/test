@@ -145,32 +145,34 @@ public class ImportManager extends HttpServlet {
 			
 			if (custFile == null && hwFile == null)
 				throw new WebClientException( "No import file is provided" );
-			
+                 
             String logMsg = "Customer account import process started.";
             ActivityLogger.logEvent( user.getUserID(), ActivityLogActions.IMPORT_CUSTOMER_ACCOUNT_ACTION, logMsg );
-			TimeConsumingTask task = new ImportCustAccountsTask( energyCompany, custFile, hwFile, email, preScan != null );
+			TimeConsumingTask task = new ImportCustAccountsTask( energyCompany, custFile, hwFile, email, preScan != null, new Integer(user.getUserID()) );
 			long id = ProgressChecker.addTask( task );
 			
 			// Wait 5 seconds for the task to finish (or error out), if not, then go to the progress page
-			for (int i = 0; i < 5; i++) {
-				try {
+			for (int i = 0; i < 5; i++) 
+            {
+				try 
+                {
 					Thread.sleep(1000);
 				}
 				catch (InterruptedException e) {}
 				
 				task = ProgressChecker.getTask(id);
 				
-				if (task.getStatus() == ImportCustAccountsTask.STATUS_FINISHED) {
+				if (task.getStatus() == ImportCustAccountsTask.STATUS_FINISHED) 
+                {
 					session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, task.getProgressMsg());
-                    ActivityLogger.logEvent( user.getUserID(), ActivityLogActions.IMPORT_CUSTOMER_ACCOUNT_ACTION, task.getProgressMsg() );
 					ProgressChecker.removeTask( id );
 					return;
 				}
 				
-				if (task.getStatus() == ImportCustAccountsTask.STATUS_ERROR) {
+				if (task.getStatus() == ImportCustAccountsTask.STATUS_ERROR) 
+                {
 					session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, task.getErrorMsg());
-                    ActivityLogger.logEvent( user.getUserID(), ActivityLogActions.IMPORT_CUSTOMER_ACCOUNT_ACTION, task.getErrorMsg() );
-                    ProgressChecker.removeTask( id );
+					ProgressChecker.removeTask( id );
 					return;
 				}
 			}
