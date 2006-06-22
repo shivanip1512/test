@@ -32,6 +32,15 @@ public class ServerUtils {
 	
 	// Directory for all the temporary files
     private static final String STARS_TEMP_DIR = "stars_temp";
+    
+    //Environment variable for directory location
+    private static final String SWITCH_BATCH_PATH = "switch.batch.path";
+    //data files for writing out switch commands
+    public static final String SA205_FILE = "sa_205.txt";
+    public static final String SA305_FILE = "sa_305.txt";
+    public static final String EXPRESSCOM_FILE = "expresscom.txt";
+    public static final String VERSACOM_FILE = "versacom.txt";
+    public static final String PROBLEM_FILE = "problem.txt";
 	
 	// YC object used for sending command to porter
 	private static com.cannontech.yc.gui.YC yc = null;
@@ -188,4 +197,21 @@ public class ServerUtils {
 		
 		return serverBase + fs + STARS_TEMP_DIR;
 	}
+    
+    public static String getFileWriteSwitchConfigDir()
+    {
+        final String fs = System.getProperty( "file.separator" );
+        String dirBase = null;
+        
+        String temp = System.getProperty( SWITCH_BATCH_PATH );
+        if (temp != null) {
+            dirBase = temp;
+        } 
+        else 
+        {
+            dirBase = getStarsTempDir();
+        }
+        
+        return dirBase;
+    }
 }
