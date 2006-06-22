@@ -189,7 +189,15 @@ function validate(form) {
                   <td width="19%" class="TableCell"><%= cmd.getCommandType() %></td>
 <% if (showEnergyCompany) { %>
                   <td width="19%" class="TableCell"><%= company.getName() %></td>
-                  <td width="19%" class="TableCell"><div class="ErrorMsg">Manual<div></td>
+                  <c:choose>
+                        <c:when test="${configBean.writeToFileAllowed}"> 
+                            <td width="19%" class="TableCell"><div class="ErrorMsg">Manual<div></td>
+                        </c:when>
+                        <c:otherwise>
+                            <td width="19%" class="TableCell"><div class="ErrorMsg">Auto<div></td>
+                        </c:otherwise>
+                  </c:choose> 
+                  
 <% } %>
                 </tr>
                 <%
