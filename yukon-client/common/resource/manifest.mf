@@ -5,13 +5,7 @@ Class-Path: ./
  commons-logging.jar 
  ecs-1.4.2.jar 
  jdom.jar 
- spring-beans.jar 
- spring-context.jar 
- spring-core.jar 
- spring-dao.jar 
- spring-jdbc.jar 
- spring-web.jar 
- spring-orm.jar 
+ spring.jar 
  dom4j.jar 
  hibernate3.jar 
  hibernate-annotations.jar 
