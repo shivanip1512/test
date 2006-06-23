@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.153 $
-* DATE         :  $Date: 2006/06/22 15:44:16 $
+* REVISION     :  $Revision: 1.154 $
+* DATE         :  $Date: 2006/06/23 03:32:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3930,7 +3930,7 @@ INT CtiVanGogh::checkForStatusAlarms(CtiPointDataMsg *pData, CtiMultiWrapper &aW
 
         if(pDyn != NULL)     // We must know about the point!
         {
-            CtiSignalMsg *pSig;
+            CtiSignalMsg *pSig = 0;
 
             for( alarm = 0; alarm < CtiTablePointAlarming::invalidstatusstate; alarm++ )
             {
@@ -4008,6 +4008,12 @@ INT CtiVanGogh::checkForStatusAlarms(CtiPointDataMsg *pData, CtiMultiWrapper &aW
                 if(pData->getQuality() == ManualQuality)
                 {
                     addn = "Manual Update";
+                }
+
+                if(pSig)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** MEMORY Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
                 pSig = CTIDBG_new CtiSignalMsg(point->getID(), pData->getSOE(), txt, addn);
@@ -6462,7 +6468,7 @@ void CtiVanGogh::checkStatusState(int alarm, CtiPointDataMsg *pData, CtiMultiWra
     INT statelimit = (alarm - CtiTablePointAlarming::state0);
 
     // Value or quality must have been changed to look at this stuff again!
-    if( (pDyn->getValue() != pData->getValue() || pDyn->getQuality() != pData->getQuality()))
+    // if( (pDyn->getValue() != pData->getValue() || pDyn->getQuality() != pData->getQuality()))
     {
         INT exceeds = LIMIT_IN_RANGE;
 
@@ -7529,6 +7535,7 @@ void CtiVanGogh::queueSignalToSystemLog( CtiSignalMsg *&pSig )
     // Set the logID so that the dynamicData can know it now!
     pSig->setLogID(SystemLogIdGen());
 
+    #if 0
     /*
      *  Last thing we do is add this signal to the pending signal list iff it is an alarm
      *  AND it is not an cleared alarm....  This second condition prevents ack/clear reports
@@ -7539,6 +7546,7 @@ void CtiVanGogh::queueSignalToSystemLog( CtiSignalMsg *&pSig )
     {
         _signalManager.addSignal(*pSig);
     }
+    #endif
 
     _signalMsgQueue.putQueue(pSig); // Queue it for a write to the DB!
     pSig = 0;

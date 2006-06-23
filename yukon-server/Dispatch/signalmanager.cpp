@@ -10,8 +10,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/12/20 17:16:58 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2006/06/23 03:32:31 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -29,6 +29,7 @@
 using std::pair;
 using std::make_pair;
 extern string AlarmTagsToString(UINT tags);
+extern string& TrimAlarmTagText(string &text);
 
 CtiSignalManager::CtiSignalManager() :
 _dirty(false)
@@ -512,7 +513,7 @@ CtiMultiMsg* CtiSignalManager::getPointSignals(long pointid) const
             if(key.first == pointid && pOriginalSig)
             {
                 pSig = (CtiSignalMsg*)(pOriginalSig->replicateMessage());
-                pSig->setText( pSig->getText()+ AlarmTagsToString(pSig->getTags()) );
+                pSig->setText( TrimAlarmTagText((RWCString&)pSig->getText())+ AlarmTagsToString(pSig->getTags()) );
 
                 if(!pMulti)
                 {
