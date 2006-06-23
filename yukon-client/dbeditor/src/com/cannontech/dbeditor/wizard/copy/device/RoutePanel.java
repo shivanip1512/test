@@ -5,6 +5,7 @@ package com.cannontech.dbeditor.wizard.copy.device;
  */
  import java.awt.Dimension;
 
+import com.cannontech.database.data.device.MCTBase;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.yukon.IDatabaseCache;
  
@@ -124,8 +125,6 @@ public Object getValue(Object val)
 			((com.cannontech.database.data.device.lm.LMGroupVersacom) ((DBPersistent) 
 				((com.cannontech.database.data.multi.MultiDBPersistent) val).getDBPersistentVector().get(0))).getLmGroupVersacom().setRouteID(id);
 		}
-	
-	
 		else if ((DBPersistent) ((com.cannontech.database.data.multi.MultiDBPersistent) val).getDBPersistentVector().get(0)
 			instanceof com.cannontech.database.data.device.lm.LMGroupEmetcon)
 		{
@@ -138,13 +137,15 @@ public Object getValue(Object val)
 			((com.cannontech.database.data.device.lm.LMGroupRipple) ((DBPersistent) 
 				((com.cannontech.database.data.multi.MultiDBPersistent) val).getDBPersistentVector().get(0))).getLmGroupRipple().setRouteID(id);
 		}
-		
-
+        else if ((DBPersistent) ((com.cannontech.database.data.multi.MultiDBPersistent) val).getDBPersistentVector().get(0)
+            instanceof MCTBase)
+        {
+            ((MCTBase) ((DBPersistent) 
+                ((com.cannontech.database.data.multi.MultiDBPersistent) val).getDBPersistentVector().get(0))).getDeviceRoutes().setRouteID(id);
+        }
 	}
-
 	else
 	{
-
 		if (val instanceof com.cannontech.database.data.device.lm.LMGroupVersacom)
 		{
 			((com.cannontech.database.data.device.lm.LMGroupVersacom) val).getLmGroupVersacom().setRouteID(id);
@@ -157,6 +158,10 @@ public Object getValue(Object val)
 		{
 			((com.cannontech.database.data.device.lm.LMGroupRipple) val).getLmGroupRipple().setRouteID(id);
 		}
+        else if (val instanceof MCTBase)
+        {
+            ((MCTBase) val).getDeviceRoutes().setRouteID(id);
+        }
 		else
 		{
 			System.err.println(getClass() + "::getValue() - Unrecognized object");

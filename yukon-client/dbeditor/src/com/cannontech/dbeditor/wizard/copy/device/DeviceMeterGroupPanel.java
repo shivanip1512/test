@@ -291,7 +291,7 @@ public class DeviceMeterGroupPanel extends com.cannontech.common.gui.util.DataIn
         // com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
     }
     
-    @Override
+    
     public Object getValue(Object val) {
         
         DeviceMeterGroup dmg = null;
@@ -302,6 +302,10 @@ public class DeviceMeterGroupPanel extends com.cannontech.common.gui.util.DataIn
             {
                 dmg = ((MCTBase) ((DBPersistent) ((MultiDBPersistent) val).getDBPersistentVector().get(0))).getDeviceMeterGroup();
             }
+        }
+        else
+        {
+            dmg = ((MCTBase) val).getDeviceMeterGroup();
         }
 
         String cycleGroup = getCycleGroupComboBox().getSelectedItem().toString();
@@ -325,8 +329,26 @@ public class DeviceMeterGroupPanel extends com.cannontech.common.gui.util.DataIn
         
     }
 
-    @Override
-    public void setValue(Object o) {
+    
+    public void setValue(Object o) 
+    {
+        DeviceMeterGroup dmg = null;
+        
+        if (o instanceof MultiDBPersistent)
+        {
+            if ((DBPersistent) ((MultiDBPersistent) o).getDBPersistentVector().get(0) instanceof MCTBase)
+            {
+                dmg = ((MCTBase) ((DBPersistent) ((MultiDBPersistent) o).getDBPersistentVector().get(0))).getDeviceMeterGroup();
+            }
+        }
+        else
+        {
+            dmg = ((MCTBase) o).getDeviceMeterGroup();
+        }
+        
+        getCycleGroupComboBox().setSelectedItem(dmg.getCollectionGroup());
+        getAreaCodeGroupComboBox().setSelectedItem(dmg.getTestCollectionGroup());
+        getJComboBoxBillingGroup().setSelectedItem(dmg.getBillingGroup());
     }
 
 }
