@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/12/20 17:25:50 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2006/06/23 15:51:52 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -78,13 +78,14 @@ public:
     {
         Protocol_Golay,
         Protocol_SA205,
-        Protocol_SNPP
+        Protocol_SADigital,
+        Protocol_SNPP,
     };
 
     enum Type
     {
         Type_Work,
-        Type_Report
+        Type_Report,
     };
 
     enum CodeStatus
@@ -95,7 +96,7 @@ public:
         CodeStatus_Timeout,
         CodeStatus_Retry,
         CodeStatus_Fail,
-        CodeStatus_Unexpected
+        CodeStatus_Unexpected,
     };
 
     Type          getType()     const   {  return _type;      };
