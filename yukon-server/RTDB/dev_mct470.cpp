@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.47 $
-* DATE         :  $Date: 2006/06/09 18:17:48 $
+* REVISION     :  $Revision: 1.48 $
+* DATE         :  $Date: 2006/06/23 19:03:23 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3741,10 +3741,8 @@ INT CtiDeviceMCT470::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, l
         if( rev && rev <= 26 )
         {
             rev += 'A' - 1;
-            char* ptr = new char [1];
-            *ptr = rev;ptr[1]='\0';
-            sspec = string("\nSoftware Specification " + CtiNumStr(ssp).toString() + "  Rom Revision " + ptr + "\n");
-            delete ptr;
+
+            sspec = string("\nSoftware Specification " + CtiNumStr(ssp).toString() + "  Rom Revision " + string(1, rev) + "\n");
         }
         else
         {
