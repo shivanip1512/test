@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.50 $
-* DATE         :  $Date: 2006/04/25 19:08:32 $
+* REVISION     :  $Revision: 1.51 $
+* DATE         :  $Date: 2006/06/23 15:41:13 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -286,13 +286,20 @@ INT DNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&
                             hist->setRawState(STATEONE);
                         }
 
-                        if( parse.getFlags() & CMD_FLAG_CTL_OPEN )
+                        if( findStringIgnoreCase(parse.getCommandStr().c_str(), " direct") )
                         {
-                            trip_close  = Protocol::DNP::BinaryOutputControl::Trip;
+                            trip_close = Protocol::DNP::BinaryOutputControl::NUL;
                         }
-                        else if( parse.getFlags() & CMD_FLAG_CTL_CLOSE )
+                        else
                         {
-                            trip_close  = Protocol::DNP::BinaryOutputControl::Close;
+                            if( parse.getFlags() & CMD_FLAG_CTL_OPEN )
+                            {
+                                trip_close = Protocol::DNP::BinaryOutputControl::Trip;
+                            }
+                            else if( parse.getFlags() & CMD_FLAG_CTL_CLOSE )
+                            {
+                                trip_close = Protocol::DNP::BinaryOutputControl::Close;
+                            }
                         }
 
                         controltype = Protocol::DNP::BinaryOutputControl::PulseOn;
