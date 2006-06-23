@@ -37,7 +37,7 @@ public final class CtiUtilities
     public static final String CELSIUS_CHARACTER = "C";
     public static final String FAHRENHEIT_CHARACTER = "F";
 	
-	public static final String COPYRIGHT = "Copyright (C)1999-2005 Cannon Technologies";
+	public static final String COPYRIGHT = "Copyright (C)1999-2006 Cannon Technologies";
 	
 	public static final String USER_DIR = System.getProperty("user.dir") + System.getProperty("file.separator");
 	
