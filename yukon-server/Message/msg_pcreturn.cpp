@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/msg_pcreturn.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2006/02/17 17:04:33 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2006/06/23 03:32:44 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -199,12 +199,6 @@ void CtiReturnMsg::dump() const
    dout << " Expect More                   " << _expectMore << endl;           // Another message shall be coming listen for more!    long       _transmission_id << endl;
    dout << " Transmission ID               " << _transmission_id << endl;
    dout << " User Message ID               " << _user_message_id << endl;
-
-   for(int x = 0; x < getData().size(); x++)
-   {
-       ((CtiMessage*)(getData()[x]))->dump();
-   }
-
 
 }
 
