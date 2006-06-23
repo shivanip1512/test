@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.86 $
-* DATE         :  $Date: 2006/06/09 20:04:52 $
+* REVISION     :  $Revision: 1.87 $
+* DATE         :  $Date: 2006/06/23 18:05:59 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3116,11 +3116,39 @@ INT CtiDeviceMCT::executeControl(CtiRequestMsg                  *pReq,
     {
         function = Emetcon::Control_Open;
         found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+
+        if( getType() == TYPEMCT410 )
+        {
+            //  the 410 requires some dead time to transmit to its disconnect base
+            dead_air = true;
+
+            //  do not allow the disconnect command to be sent to a meter that has no disconnect address
+            if( !_disconnectAddress )
+            {
+                CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
+
+                if( ReturnMsg )
+                {
+                    ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
+                    ReturnMsg->setResultString(getName() + " / Disconnect command cannot be sent to an empty (zero) address");
+
+                    retMsgHandler( OutMessage->Request.CommandStr, NoMethod, ReturnMsg, vgList, retList, true );
+                }
+
+                found = false;
+            }
+        }
     }
     else if(parse.getFlags() & CMD_FLAG_CTL_CLOSE)
     {
         function = Emetcon::Control_Close;
         found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+
+        if( getType() == TYPEMCT410 )
+        {
+            //  the 410 requires some dead time to transmit to its disconnect base
+            dead_air = true;
+        }
     }
     else if(parse.getFlags() & CMD_FLAG_CTL_CONNECT)
     {
@@ -3188,27 +3216,15 @@ INT CtiDeviceMCT::executeControl(CtiRequestMsg                  *pReq,
         OutMessage->Sequence  = function;         // Helps us figure it out later!
         OutMessage->Retry     = 2;
 
+        if( dead_air )
+        {
+            OutMessage->MessageFlags |= MessageFlag_AddSilence;
+        }
+
         OutMessage->Request.RouteID   = getRouteID();
         strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
 
         outList.push_back( OutMessage );
-
-        if( dead_air )
-        {
-            CtiOutMessage *om = new CtiOutMessage(*OutMessage);
-
-            //  we don't want this showing up in Commander
-            om->ReturnNexus = NULL;
-            om->SaveNexus   = NULL;
-
-            //  make sure we leave a good chunk of time for the MCT to transmit
-            om->Buffer.BSt.Length = 13;
-            om->Buffer.BSt.IO     = Cti::Protocol::Emetcon::IO_Write;
-
-            om->MessageFlags |= MessageFlag_NoTransmit;
-
-            outList.push_back(om);
-        }
 
         OutMessage = NULL;
     }
