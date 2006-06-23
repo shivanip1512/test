@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/yukon.h-arc  $
-* REVISION     :  $Revision: 1.53 $
-* DATE         :  $Date: 2006/05/16 15:25:40 $
+* REVISION     :  $Revision: 1.54 $
+* DATE         :  $Date: 2006/06/23 16:26:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -22,7 +22,7 @@
 #include <rw\thr\mutex.h>
 
 // YUKONEOT is needed to make ALL timezones operate correctly wrt the "end-of-time"
-//Changed YUKONEOT to LONG_MAX from ULONG to account for CtiYime not being unsigned   -TS
+//Changed YUKONEOT to LONG_MAX from ULONG to account for CtiTime not being unsigned   -TS
 #define YUKONEOT (LONG_MAX - 86400 * 2)
 #define PASTDATE 402296400
 
@@ -452,7 +452,7 @@ enum CtiOutMessageFlags_t
     MessageFlag_QueuedToDevice             = 0x00000001 << 5,
     MessageFlag_MessageRequeued            = 0x00000001 << 6,   // This message was reque'd and retries were decremented.
     MessageFlag_PortSharing                = 0x00000001 << 7,
-    MessageFlag_NoTransmit                 = 0x00000001 << 8,
+    MessageFlag_AddSilence                 = 0x00000001 << 8,
     MessageFlag_StatisticsRequested        = 0x00000001 << 9,
 };
 
