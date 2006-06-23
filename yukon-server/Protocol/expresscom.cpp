@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2006/05/17 22:02:30 $
+* REVISION     :  $Revision: 1.34 $
+* DATE         :  $Date: 2006/06/23 19:30:06 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -393,6 +393,87 @@ INT CtiProtocolExpresscom::cycleLoadControl(UINT loadMask, BYTE cyclepercent, BY
     return status;
 }
 
+//Very similar to cycleLoadControl, however different enough that I didnt want to mangle the cycleLoadControl function
+INT CtiProtocolExpresscom::targetReductionCycleControl(UINT loadMask, BYTE cyclepercent, BYTE period_minutes, BYTE cyclecount, USHORT delay, bool preventrampin, bool allowTrueCycle, CtiCommandParser &parse)
+{
+    INT status = NoError;
+    int kwhValue = 0;
+    BYTE flag;
+    BYTE load;
+
+    for(load = 0; load < 15; load++)
+    {
+        if((!loadMask && load == 0) || loadMask & (0x01 << (load - 1)))         // We have a message to be build up here!
+        {
+            flag = ((load & 0x0f) | 0x20);                  // Pick up the load designator, 0x20 = targetReduction
+            _message.push_back( mtCycleLoadControl );
+            size_t flagpos = _message.size();
+            _message.push_back( flag );
+            _message.push_back( cyclepercent );
+            _message.push_back( period_minutes );
+            _message.push_back( cyclecount );
+
+            if(preventrampin)
+            {
+                flag |= 0x80;
+            }
+            if(allowTrueCycle)
+            {
+                flag |= 0x40;
+            }
+            if(delay != 0)
+            {
+                flag |= 0x10;
+                _message.push_back( HIBYTE(delay) );
+                _message.push_back( LOBYTE(delay) );
+            }
+
+            //Check for proper value range
+            double targetKWH = parse.getdValue("target_kwh", 0);
+            if( targetKWH > 10 && targetKWH <= 165 )
+            {
+                kwhValue = targetKWH+90;
+            }
+            else if( targetKWH <= 10 && targetKWH >= (double)0.1 )
+            {
+                kwhValue = targetKWH*10;
+            }
+            else
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Invalid KWH value " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            //Check fot kwhvalue!=0
+            _message.push_back( kwhValue );
+
+            //Check if this is too high
+            int bytes = parse.getiValue("bytes_to_follow", 0);
+            if( bytes > ((period_minutes*cyclecount+59)/60)) //1h1m = 2 allowed, 1h = 1allowed
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Invalid number of bytes: " << bytes << " bytes, " << cyclecount << " cycles, " << period_minutes << " minutes "  << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            _message.push_back(bytes);
+
+            for( int i=1; i<=bytes; i++ )
+            {
+                string param = "param_" + CtiNumStr(i);
+                _message.push_back(parse.getiValue(param, 100));
+            }
+
+            // Set the flags to their final answer.
+            _message[ flagpos ] = flag;
+
+            incrementMessageCount();
+        }
+
+        if(!loadMask && load == 0) break;
+    }
+
+    return status;
+}
 
 INT CtiProtocolExpresscom::thermostatLoadControl(UINT loadMask, BYTE cyclepercent, BYTE periodminutes, BYTE cyclecount, USHORT delay, INT controltemperature, BYTE limittemperature, BYTE limitfallbackpercent, CHAR maxdeltaperhour, BYTE deltafallbackpercent, bool noramp)
 {
@@ -977,12 +1058,20 @@ INT CtiProtocolExpresscom::assembleControl(CtiCommandParser &parse, CtiOutMessag
         INT delay      = parse.getiValue("delaytime_sec", 0) / 60;
         bool noramp    = (parse.getiValue("xcnoramp", 0) ? true : false);
         bool tc        = (parse.getiValue("xctruecycle", 0) ? true : false);
-
+        
         // Add these two items to the list for control accounting!
         parse.setValue("control_reduction", parse.getiValue("cycle", 0) );
         parse.setValue("control_interval", 60 * period * repeat);
 
-        cycleLoadControl(relaymask, parse.getiValue("cycle", 0), period, repeat, delay, noramp, tc);
+        if(!parse.isKeyValid("xctargetcycle"))
+        {
+            cycleLoadControl(relaymask, parse.getiValue("cycle", 0), period, repeat, delay, noramp, tc);
+        }
+        else
+        {
+            targetReductionCycleControl(relaymask, parse.getiValue("cycle", 0), period, repeat, delay, noramp, tc, parse);
+        }
+        
     }
     else if(CtlReq == CMD_FLAG_CTL_RESTORE)
     {

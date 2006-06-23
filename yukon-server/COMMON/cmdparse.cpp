@@ -3934,6 +3934,50 @@ void  CtiCommandParser::doParseControlExpresscom(const string &_CmdStr)
 
         _actionItems.push_back("SETPOINT");
     }
+
+    if(!(token = CmdStr.match(" targetcycle " + str_floatnum)).empty())
+    {
+        _cmd["xctargetcycle"] = CtiParseValue( TRUE );
+
+        if(!(temp = token.match(str_floatnum)).empty())
+        {
+            dValue = atof(temp.c_str());
+        }
+        else
+        {
+            // Something went really wrong....
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << "Command Parameter Assumed.  Cycle Control 0kw load. " << endl;
+            }
+            dValue = 0;
+        }
+
+        _cmd["target_kwh"] = CtiParseValue( (dValue) );
+        string tempStr = " adjustments";
+        tempStr += "( ";
+        tempStr += str_anynum;
+        tempStr += ")+";
+
+        if(!(token = CmdStr.match(tempStr)).empty())
+        {
+            CtiTokenizer cmdtok(token);
+            cmdtok(); //go past adjustment
+
+            int count = 0;
+            while( !(temp = cmdtok()).empty() )
+            {
+                count++;
+                iValue = atoi(temp.c_str());
+                _cmd["param_" + CtiNumStr(count)] = CtiParseValue( iValue );
+            }
+            _cmd["bytes_to_follow"] = CtiParseValue(count);
+        }
+        else
+        {
+            _cmd["bytes_to_follow"] = CtiParseValue(0);
+        }
+    }
 }
 
 

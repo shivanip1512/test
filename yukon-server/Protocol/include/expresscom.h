@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2005/12/20 17:19:58 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2006/06/23 19:30:06 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -131,7 +131,7 @@ private:
     INT timedLoadControl(UINT loadMask, UINT shedtime_seconds, BYTE randin = 0, BYTE randout = 0, USHORT delay = 0 );                 // This is a shed!
     INT restoreLoadControl(UINT loadMask, BYTE rand = 0, USHORT delay = 0 );
     INT cycleLoadControl(UINT loadMask, BYTE cyclepercent, BYTE period_minutes, BYTE cyclecount, USHORT delay = 0, bool preventrampin = false, bool allowTrueCycle = false);
-
+    INT targetReductionCycleControl(UINT loadMask, BYTE cyclepercent, BYTE period_minutes, BYTE cyclecount, USHORT delay, bool preventrampin, bool allowTrueCycle, CtiCommandParser &parse);
     /*
      *
      *
