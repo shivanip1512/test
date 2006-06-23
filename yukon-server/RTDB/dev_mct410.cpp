@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.68 $
-* DATE         :  $Date: 2006/06/09 20:03:27 $
+* REVISION     :  $Revision: 1.69 $
+* DATE         :  $Date: 2006/06/23 17:34:31 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1224,6 +1224,8 @@ INT CtiDeviceMCT410::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
             break;
         }
 
+        case (Emetcon::Control_Open):
+        case (Emetcon::Control_Close):
         case (Emetcon::Control_Conn):
         case (Emetcon::Control_Disc):
         {
