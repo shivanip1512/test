@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2006/06/23 15:18:41 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2006/06/23 19:59:00 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -115,8 +115,8 @@ int Time::restoreVariation(const unsigned char *buf, int len, int variation)
                 switch( GetTimeZoneInformation(&tzinfo) )
                 {
                     //  Bias is in minutes - subtract the difference to convert the local time to UTC
-                    case TIME_ZONE_ID_STANDARD:     _seconds -= (tzinfo.Bias + tzinfo.StandardBias) * 60; break;
-                    case TIME_ZONE_ID_DAYLIGHT:     _seconds -= (tzinfo.Bias + tzinfo.DaylightBias) * 60; break;
+                    case TIME_ZONE_ID_STANDARD:     _seconds += (tzinfo.Bias + tzinfo.StandardBias) * 60; break;
+                    case TIME_ZONE_ID_DAYLIGHT:     _seconds += (tzinfo.Bias + tzinfo.DaylightBias) * 60; break;
 
                     case TIME_ZONE_ID_INVALID:
                     case TIME_ZONE_ID_UNKNOWN:
@@ -179,8 +179,8 @@ int Time::serializeVariation(unsigned char *buf, int variation) const
                 switch( GetTimeZoneInformation(&tzinfo) )
                 {
                     //  Bias is in minutes - add the difference to convert UTC to local time
-                    case TIME_ZONE_ID_STANDARD:     tmp += (tzinfo.Bias + tzinfo.StandardBias) * 60; break;
-                    case TIME_ZONE_ID_DAYLIGHT:     tmp += (tzinfo.Bias + tzinfo.DaylightBias) * 60; break;
+                    case TIME_ZONE_ID_STANDARD:     tmp -= (tzinfo.Bias + tzinfo.StandardBias) * 60; break;
+                    case TIME_ZONE_ID_DAYLIGHT:     tmp -= (tzinfo.Bias + tzinfo.DaylightBias) * 60; break;
 
                     case TIME_ZONE_ID_INVALID:
                     case TIME_ZONE_ID_UNKNOWN:
