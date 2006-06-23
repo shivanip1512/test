@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2006/02/09 20:42:47 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2006/06/23 15:18:41 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -16,6 +16,7 @@
 
 #include "dnp_object_time.h"
 #include "logger.h"
+#include "cparms.h"
 
 namespace Cti       {
 namespace Protocol  {
@@ -105,6 +106,25 @@ int Time::restoreVariation(const unsigned char *buf, int len, int variation)
             _seconds      = floor(tmp / 1000.0);
             _milliseconds = tmp - (_seconds * 1000.0);
 
+            if( gConfigParms.getValueAsInt("YUKON_DNP_LOCALTIME") )
+            {
+                //  this is CRAZY WIN32 SPECIFIC
+                _TIME_ZONE_INFORMATION tzinfo;
+                int timezone_offset = 0;
+
+                switch( GetTimeZoneInformation(&tzinfo) )
+                {
+                    //  Bias is in minutes - subtract the difference to convert the local time to UTC
+                    case TIME_ZONE_ID_STANDARD:     _seconds -= (tzinfo.Bias + tzinfo.StandardBias) * 60; break;
+                    case TIME_ZONE_ID_DAYLIGHT:     _seconds -= (tzinfo.Bias + tzinfo.DaylightBias) * 60; break;
+
+                    case TIME_ZONE_ID_INVALID:
+                    case TIME_ZONE_ID_UNKNOWN:
+                    default:
+                        break;
+                }
+            }
+
             break;
         }
 
@@ -148,7 +168,28 @@ int Time::serializeVariation(unsigned char *buf, int variation) const
             double tmp;
             long tmpHi, tmpLo;
 
-            tmp  = _seconds * 1000.0;
+            tmp = _seconds;
+
+            if( gConfigParms.getValueAsInt("YUKON_DNP_LOCALTIME") )
+            {
+                //  this is CRAZY WIN32 SPECIFIC
+                _TIME_ZONE_INFORMATION tzinfo;
+                int timezone_offset = 0;
+
+                switch( GetTimeZoneInformation(&tzinfo) )
+                {
+                    //  Bias is in minutes - add the difference to convert UTC to local time
+                    case TIME_ZONE_ID_STANDARD:     tmp += (tzinfo.Bias + tzinfo.StandardBias) * 60; break;
+                    case TIME_ZONE_ID_DAYLIGHT:     tmp += (tzinfo.Bias + tzinfo.DaylightBias) * 60; break;
+
+                    case TIME_ZONE_ID_INVALID:
+                    case TIME_ZONE_ID_UNKNOWN:
+                    default:
+                        break;
+                }
+            }
+
+            tmp *= 1000.0;
             tmp += _milliseconds;
 
             //  tmp is a 48-bit value...  i must crop it into two 24-bit values for ease
