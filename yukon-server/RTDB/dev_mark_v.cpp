@@ -10,13 +10,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.34 $
-* DATE         :  $Date: 2006/06/26 20:19:49 $
+* REVISION     :  $Revision: 1.35 $
+* DATE         :  $Date: 2006/06/26 21:11:32 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
 #include "yukon.h"
+#include "cparms.h"
 #include "porter.h"
 #include "logger.h"
 #include "dev_mark_v.h"
