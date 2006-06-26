@@ -5,8 +5,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.54 $
-* DATE         :  $Date: 2006/03/23 15:29:18 $
+* REVISION     :  $Revision: 1.55 $
+* DATE         :  $Date: 2006/06/26 15:48:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -740,7 +740,7 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
         {
             CmdStr = string(InMessage->Return.CommandStr);
             std::transform(CmdStr.begin(), CmdStr.end(), CmdStr.begin(), ::tolower);
-            
+
         }
 
         if( processAdditionalRoutes( InMessage ) )                      // InMessage->Return.MacroOffset != 0)
@@ -1752,15 +1752,22 @@ bool CtiDeviceSingle::validatePendingStatus(bool status, int scantype, CtiTime &
 {
     if(!status)     // In this case we need to make sure we have not gone tardy on this scan type
     {
-        if(getScanData().getLastCommunicationTime(scantype) + getTardyTime(scantype) < now )
+        if( gScanForceDevices.find(getID()) != gScanForceDevices.end() )
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << getName() << "'s pending flags (" << scantype << ") reset due to timeout on prior scan" << endl;
-            }
-            resetForScan(scantype);
-            getScanData().setLastCommunicationTime(scantype, now);
             status = true;
+        }
+        else
+        {
+            if(getScanData().getLastCommunicationTime(scantype) + getTardyTime(scantype) < now )
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " " << getName() << "'s pending flags (" << scantype << ") reset due to timeout on prior scan" << endl;
+                }
+                resetForScan(scantype);
+                getScanData().setLastCommunicationTime(scantype, now);
+                status = true;
+            }
         }
     }
     else            // We are about to submit a scan of some form for the device.  Mark out the time!
@@ -1776,9 +1783,9 @@ ULONG CtiDeviceSingle::getTardyTime(int scantype) const
 {
     ULONG maxtardytime = getScanRate(scantype);
 
-    if(maxtardytime < 60)
+    if(maxtardytime < gConfigParms.getValueAsInt("SCANNER_MAX_TARDY_TIME", 60))
     {
-        maxtardytime = 60;
+        maxtardytime = gConfigParms.getValueAsInt("SCANNER_MAX_TARDY_TIME", 60);
     }
     else
     {
