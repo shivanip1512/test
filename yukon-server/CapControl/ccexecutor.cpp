@@ -1404,6 +1404,7 @@ void CtiCCCommandExecutor::ConfirmArea()
     CtiMultiMsg_vec& pointChanges = multi->getData();
     CtiMultiMsg_vec& ccEvents = eventMulti->getData();
 
+
     CtiCCSubstationBusPtr currentSubstationBus = store->findSubBusByPAObjectID(subId);
     if (currentSubstationBus != NULL)
     {

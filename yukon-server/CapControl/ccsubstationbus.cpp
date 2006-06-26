@@ -1795,6 +1795,8 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
         for(LONG i=0;i<_ccfeeders.size();i++)
         {
             CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders[i];
+            BOOL peakFlag = isPeakTime(currentDateTime);
+
             if (!stringCompareIgnoreCase(getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod) &&
                  stringCompareIgnoreCase(currentFeeder->getStrategyName(),"(none)") &&
                 (currentFeeder->getPeakStartTime() > 0 && currentFeeder->getPeakStopTime() > 0))
@@ -1805,7 +1807,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
             {
                 currentFeeder->setPeakTimeFlag(isPeakTime(currentDateTime));
             }
-        }
+        } 
         if( currentDateTime.seconds() >= getLastOperationTime().seconds() + getControlDelayTime() )
         {
             if( !stringCompareIgnoreCase(_controlmethod,CtiCCSubstationBus::IndividualFeederControlMethod) )
@@ -1819,8 +1821,9 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
                          currentFeeder->getNewPointDataReceivedFlag() ||
                          currentFeeder->getControlInterval() != 0) )
                     {
-                        figureCurrentSetPoint(currentDateTime);//this is just to set the Peak Time Flag
-                        if( currentFeeder->checkForAndProvideNeededIndividualControl(currentDateTime, pointChanges, ccEvents, pilMessages, getPeakTimeFlag(), getDecimalPlaces(), getControlUnits()) )
+                        //figureCurrentSetPoint(currentDateTime);//this is just to set the Peak Time Flag
+                        //if( currentFeeder->checkForAndProvideNeededIndividualControl(currentDateTime, pointChanges, ccEvents, pilMessages, getPeakTimeFlag(), getDecimalPlaces(), getControlUnits()) )
+                        if( currentFeeder->checkForAndProvideNeededIndividualControl(currentDateTime, pointChanges, ccEvents, pilMessages, currentFeeder->getPeakTimeFlag(), getDecimalPlaces(), getControlUnits()) )
                         {
                             setLastOperationTime(currentDateTime);
                             setRecentlyControlledFlag(TRUE);
@@ -1975,7 +1978,6 @@ DOUBLE CtiCCSubstationBus::calculateKVARSolution(const string& controlUnits, DOU
 
 
 ---------------------------------------------------------------------------*/
-
 void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE leadLevel, const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages)
 {
     CtiRequestMsg* request = NULL;
@@ -2471,7 +2473,6 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
                                 request = ((CtiCCFeeder*)varSortedFeeders[j])->createDecreaseVarRequest(capBank, pointChanges, ccEvents, text);
                                 lastFeederControlled = (CtiCCFeeder*)varSortedFeeders[j];
                                 positionLastFeederControlled = j;
-
                             }
                         }
                         break;
@@ -2820,7 +2821,7 @@ DOUBLE CtiCCSubstationBus::figureCurrentSetPoint(const CtiTime& currentDateTime)
 BOOL CtiCCSubstationBus::isPeakTime(const CtiTime& currentDateTime)
 {
     unsigned secondsFromBeginningOfDay = (currentDateTime.hour() * 3600) + (currentDateTime.minute() * 60) + currentDateTime.second();
-    if( isPeakDay() && getPeakStartTime() <= secondsFromBeginningOfDay && secondsFromBeginningOfDay <= getPeakStopTime() )
+    if( isPeakDay(currentDateTime) && getPeakStartTime() <= secondsFromBeginningOfDay && secondsFromBeginningOfDay <= getPeakStopTime() )
     {
         setPeakTimeFlag(TRUE);
     }
@@ -3042,27 +3043,33 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                                if( ratio < getFailurePercent()*.01 && getFailurePercent() != 0 && getMinConfirmPercent() != 0 )
                                {
                                    currentCapBank->setControlStatus(CtiCCCapBank::OpenFail);
-                                   text = string("Var Change = ");
+                                   text = string("Var: ");
+                                   text += doubleToString(getCurrentVarLoadPointValue());
+                                   text += " ( ";
                                    text += doubleToString(ratio*100.0);
-                                   text += "%, OpenFail";
+                                   text += "% change), OpenFail";
                                    additional = string("Feeder: ");
                                    additional += currentFeeder->getPAOName();
                                }
                                else if( getMinConfirmPercent() != 0 )
                                {
                                    currentCapBank->setControlStatus(CtiCCCapBank::OpenQuestionable);
-                                   text = string("Var Change = ");
+                                   text = string("Var: ");
+                                   text += doubleToString(getCurrentVarLoadPointValue());
+                                   text += " ( ";
                                    text += doubleToString(ratio*100.0);
-                                   text += "%, OpenQuestionable";
+                                   text += "% change), OpenQuestionable";
                                    additional = string("Feeder: ");
                                    additional += currentFeeder->getPAOName();
                                }
                                else
                                {
                                    currentCapBank->setControlStatus(CtiCCCapBank::Open);
-                                   text = string("Var Change = ");
+                                   text = string("Var: ");
+                                   text += doubleToString(getCurrentVarLoadPointValue());
+                                   text += " ( ";
                                    text += doubleToString(ratio*100.0);
-                                   text += "%, Open";
+                                   text += "% change), Open";
                                    additional = string("Feeder: ");
                                    additional += currentFeeder->getPAOName();
                                    vResult = TRUE;
@@ -3071,9 +3078,11 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                            else
                            {
                                currentCapBank->setControlStatus(CtiCCCapBank::Open);
-                               text = string("Var Change = ");
+                               text = string("Var: ");
+                               text += doubleToString(getCurrentVarLoadPointValue());
+                               text += " ( ";
                                text += doubleToString(ratio*100.0);
-                               text += "%, Open";
+                               text += "% change), Open";
                                additional = string("Feeder: ");
                                additional += currentFeeder->getPAOName();
                                vResult = TRUE;
@@ -3086,7 +3095,9 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                            text = string("Non Normal Var Quality = ");
                            _ltoa(getCurrentVarPointQuality(),tempchar,10);
                            text += tempchar;
-                           text += "%, OpenQuestionable";
+                           text += " Var: ";
+                           text += doubleToString(getCurrentVarLoadPointValue());
+                           text += ", OpenQuestionable";
                            additional = string("Feeder: ");
                            additional += currentFeeder->getPAOName();
                        }
@@ -3128,27 +3139,33 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                                if( ratio < getFailurePercent()*.01 && getFailurePercent() != 0 && getMinConfirmPercent() != 0 )
                                {
                                    currentCapBank->setControlStatus(CtiCCCapBank::CloseFail);
-                                   text = string("Var Change = ");
+                                   text = string("Var: ");
+                                   text += doubleToString(getCurrentVarLoadPointValue());
+                                   text += " ( ";
                                    text += doubleToString(ratio*100.0);
-                                   text += "%, CloseFail";
+                                   text += "% change), CloseFail";
                                    additional = string("Feeder: ");
                                    additional += currentFeeder->getPAOName();
                                }
                                else if( getMinConfirmPercent() != 0 )
                                {
                                    currentCapBank->setControlStatus(CtiCCCapBank::CloseQuestionable);
-                                   text = string("Var Change = ");
+                                   text = string("Var: ");
+                                   text += doubleToString(getCurrentVarLoadPointValue());
+                                   text += " ( ";
                                    text += doubleToString(ratio*100.0);
-                                   text += "%, CloseQuestionable";
+                                   text += "% change), CloseQuestionable";
                                    additional = string("Feeder: ");
                                    additional += currentFeeder->getPAOName();
                                }
                                else
                                {
                                    currentCapBank->setControlStatus(CtiCCCapBank::Close);
-                                   text = string("Var Change = ");
+                                   text = string("Var: ");
+                                   text += doubleToString(getCurrentVarLoadPointValue());
+                                   text += " ( ";
                                    text += doubleToString(ratio*100.0);
-                                   text += "%, Closed";
+                                   text += "% change), Closed";
                                    additional = string("Feeder: ");
                                    additional += currentFeeder->getPAOName();
                                    vResult = TRUE;
@@ -3157,9 +3174,11 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                            else
                            {
                                currentCapBank->setControlStatus(CtiCCCapBank::Close);
-                               text = string("Var Change = ");
+                               text = string("Var: ");
+                               text += doubleToString(getCurrentVarLoadPointValue());
+                               text += " ( ";
                                text += doubleToString(ratio*100.0);
-                               text += "%, Closed";
+                               text += "% change), Closed";
                                additional = string("Feeder: ");
                                additional += currentFeeder->getPAOName();
                                vResult = TRUE;
@@ -3172,7 +3191,9 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                            text = string("Non Normal Var Quality = ");
                            _ltoa(getCurrentVarPointQuality(),tempchar,10);
                            text += tempchar;
-                           text += "%, CloseQuestionable";
+                           text += " Var: ";
+                           text += doubleToString(getCurrentVarLoadPointValue());
+                           text += ", CloseQuestionable";
                            additional = string("Feeder: ");
                            additional += currentFeeder->getPAOName();
                        }
@@ -3584,7 +3605,7 @@ BOOL CtiCCSubstationBus::isConfirmCheckNeeded()
 
     Returns a boolean if the current day of the week can be a peak day
 ---------------------------------------------------------------------------*/
-BOOL CtiCCSubstationBus::isPeakDay()
+BOOL CtiCCSubstationBus::isPeakDay(const CtiTime& currentDateTime)
 {
     //-------------------------------------
     //Need to check if it is a holiday today
@@ -3593,19 +3614,19 @@ BOOL CtiCCSubstationBus::isPeakDay()
     //-------------------------------------
     CtiTime now;
     struct tm start_tm;
-
-    now.extract(&start_tm);
+    
+    currentDateTime.extract(&start_tm);
 
     if( _daysofweek[start_tm.tm_wday] == 'Y' &&
         ( _daysofweek[7] == 'Y' ||
-          !CtiHolidayManager::getInstance().isHoliday() ) )
+          !CtiHolidayManager::getInstance().isHoliday(CtiDate()) ) )
         return TRUE;
     else
         return FALSE;
 }
 
 /*---------------------------------------------------------------------------
-    isPeakDay
+    clearOutNewPointReceivedFlags
 
     Returns a boolean if the current day of the week can be a peak day
 ---------------------------------------------------------------------------*/
@@ -3787,7 +3808,7 @@ BOOL CtiCCSubstationBus::isAlreadyControlled()
 }
 
 
-CtiCCSubstationBus& CtiCCSubstationBus::getNextCapBankToVerify()
+CtiCCSubstationBus& CtiCCSubstationBus::getNextCapBankToVerify(CtiMultiMsg_vec& ccEvents)
 {
     _currentVerificationFeederId = -1;
     _currentVerificationCapBankId = -1;
@@ -3797,7 +3818,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::getNextCapBankToVerify()
 
     if (getOverlappingVerificationFlag())
     {
-        setCapBanksToVerifyFlags(getVerificationStrategy());
+        setCapBanksToVerifyFlags(getVerificationStrategy(), ccEvents);
     }
     
     for(LONG i=0;i<_ccfeeders.size();i++)
@@ -4173,17 +4194,18 @@ CtiCCSubstationBus& CtiCCSubstationBus::startVerificationOnCapBank(const CtiTime
     for (LONG i = 0; i < _ccfeeders.size(); i++)
     {
         CtiCCFeeder* currentFeeder = (CtiCCFeeder*) _ccfeeders.at(i);
-        if (!stringCompareIgnoreCase(getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod)  &&
-            stringCompareIgnoreCase(currentFeeder->getStrategyName(),"(none)")  &&
-            (currentFeeder->getPeakStartTime() > 0 && currentFeeder->getPeakStopTime() > 0 ))
-        {
-            currentFeeder->isPeakTime(currentDateTime);
-        }
-        else
-        {
-            currentFeeder->setPeakTimeFlag(isPeakTime(currentDateTime));
-        }       
-
+      /*  BOOL peakFlag = isPeakTime(currentDateTime);
+        if (!getControlMethod().compareTo(CtiCCSubstationBus::IndividualFeederControlMethod,CtiString::ignoreCase) &&
+                currentFeeder->getStrategyName().compareTo("(none)", CtiString::ignoreCase) &&
+                (currentFeeder->getPeakStartTime() > 0 && currentFeeder->getPeakStopTime() > 0))
+            {
+                currentFeeder->isPeakTime(currentDateTime);
+            }
+            else
+            {
+                currentFeeder->setPeakTimeFlag(peakFlag);
+            }       
+        */
        /* if( !_controlmethod.compareTo(CtiCCSubstationBus::IndividualFeederControlMethod,CtiString::ignoreCase) ||
             !_controlmethod.compareTo(CtiCCSubstationBus::BusOptimizedFeederControlMethod,CtiString::ignoreCase) )
         { 
@@ -4390,7 +4412,7 @@ BOOL CtiCCSubstationBus::isVerificationAlreadyControlled()
     return returnBoolean;
 }
 
-CtiCCSubstationBus& CtiCCSubstationBus::analyzeVerificationByFeeder(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages)
+CtiCCSubstationBus& CtiCCSubstationBus::analyzeVerificationByFeeder(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages, CtiMultiMsg_vec& capMessages)
 {
     BOOL verifyCapFound = FALSE;
 
@@ -4400,7 +4422,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::analyzeVerificationByFeeder(const CtiTim
 
         if (currentCCFeeder->getPerformingVerificationFlag())
         {
-            if (currentCCFeeder->isVerificationAlreadyControlled(getMinConfirmPercent()) || isVerificationPastMaxConfirmTime(currentDateTime))
+            if (currentCCFeeder->isVerificationAlreadyControlled(getMinConfirmPercent()) || currentCCFeeder->isPastMaxConfirmTime(currentDateTime,getMaxConfirmTime(),getControlSendRetries()))
             {
 
                 if ( getControlSendRetries() > 0 &&
@@ -4479,35 +4501,15 @@ CtiCCSubstationBus& CtiCCSubstationBus::analyzeVerificationByFeeder(const CtiTim
         setPerformingVerificationFlag(FALSE);
         setBusUpdatedFlag(TRUE);
 
-        /*if( ccEvents.entries() > 0)
-        {
-            _ccEventMsgQueue.write(multiCCEventMsg);
-            processCCEventMsgs();
-            multiCCEventMsg = new CtiMultiMsg();
-        } */
-
-        //reset VerificationFlag
         setVerificationFlag(FALSE);
-        CtiCCExecutorFactory f;
-        CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationVerificationMsg(CtiCCSubstationVerificationMsg::DISABLE_SUBSTATION_BUS_VERIFICATION, getPAOId(),0, -1));
-        executor->Execute();
-        delete executor;
-        executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::ENABLE_SUBSTATION_BUS, getPAOId()));
-        executor->Execute();
-        delete executor;
-
+        capMessages.push_back(new CtiCCSubstationVerificationMsg(CtiCCSubstationVerificationMsg::DISABLE_SUBSTATION_BUS_VERIFICATION, getPAOId(),0, -1));
+        capMessages.push_back(new CtiCCCommand(CtiCCCommand::ENABLE_SUBSTATION_BUS, getPAOId()));
+        
         if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
         {                 
            CtiLockGuard<CtiLogger> logger_guard(dout);
            dout << CtiTime() << " - DISABLED VERIFICATION ON: subBusID: "<<getPAOName() << "( "<<getPAOId()<<" ) "<< endl;
         } 
-
-
-        /*for(LONG i=0;i<_ccfeeders.size();i++)
-        {
-            CtiCCFeeder* currentCCFeeder = (CtiCCFeeder*)_ccfeeders.at(i);
-            currentCCFeeder->
-        }*/
     }
     
     return *this;
@@ -4599,6 +4601,7 @@ BOOL CtiCCSubstationBus::checkForAndPerformSendRetry(const CtiTime& currentDateT
             currentCCFeeder->setEventSequence(getEventSequence());
             if( currentCCFeeder->getPAOId() == getLastFeederControlledPAOId() &&
                 currentCCFeeder->getRecentlyControlledFlag() &&
+                currentCCFeeder->isPastMaxConfirmTime(currentDateTime,getMaxConfirmTime(),getControlSendRetries()) &&
                 currentCCFeeder->attemptToResendControl(currentDateTime, pointChanges, ccEvents, pilMessages, getMaxConfirmTime()) )
             {
                 setLastOperationTime(currentDateTime);
@@ -4607,6 +4610,7 @@ BOOL CtiCCSubstationBus::checkForAndPerformSendRetry(const CtiTime& currentDateT
             }
             else if (getVerificationFlag() && getPerformingVerificationFlag() &&
                      currentCCFeeder->getPAOId() == getCurrentVerificationFeederId() &&
+                     currentCCFeeder->isPastMaxConfirmTime(currentDateTime,getMaxConfirmTime(),getControlSendRetries()) &&
                      currentCCFeeder->attemptToResendControl(currentDateTime, pointChanges, ccEvents, pilMessages, getMaxConfirmTime()) )
                      
             {
@@ -4694,12 +4698,10 @@ void CtiCCSubstationBus::dumpDynamicData(RWDBConnection& conn, CtiTime& currentD
             << dynamicCCSubstationBusTable["newpointdatareceivedflag"].assign( ((_newpointdatareceivedflag?"Y":"N")) )
             << dynamicCCSubstationBusTable["busupdatedflag"].assign( ((_busupdatedflag?"Y":"N")) );
 
-            if ( _CC_DEBUG & CC_DEBUG_DATABASE )
-            {
+            /*{
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << updater.asString() << endl;
-            }
-
+                dout << CtiTime() << " - " << updater.asString().data() << endl;
+            }*/
             updater.execute( conn );
 
             if(updater.status().errorCode() == RWDBStatus::ok)    // No error occured!
@@ -5038,11 +5040,11 @@ BOOL CtiCCSubstationBus::capBankVerificationDone(CtiMultiMsg_vec& pointChanges, 
     return returnBool;
 
 }
-BOOL CtiCCSubstationBus::areThereMoreCapBanksToVerify()
+BOOL CtiCCSubstationBus::areThereMoreCapBanksToVerify(CtiMultiMsg_vec& ccEvents)
 {
 
 
-    getNextCapBankToVerify();
+    getNextCapBankToVerify(ccEvents);
     if (getCurrentVerificationCapBankId() != -1 )//&& !getDisableFlag())
     {
         setPerformingVerificationFlag(TRUE);
@@ -5117,7 +5119,7 @@ LONG CtiCCSubstationBus::getCapBankInactivityTime(void) const
 }
 
 
-CtiCCSubstationBus& CtiCCSubstationBus::setCapBanksToVerifyFlags(int verificationStrategy)
+CtiCCSubstationBus& CtiCCSubstationBus::setCapBanksToVerifyFlags(int verificationStrategy, CtiMultiMsg_vec& ccEvents)
 {
     LONG x, j;
     //_verificationCapBankIds.clear();
@@ -5131,7 +5133,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCapBanksToVerifyFlags(int verificatio
             {
                 CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders.at(x);
                 if (!currentFeeder->getDisableFlag())
-                {    
+                { 
                     if (!getOverlappingVerificationFlag())
                     {    
                         currentFeeder->setVerificationFlag(TRUE);
@@ -5142,29 +5144,46 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCapBanksToVerifyFlags(int verificatio
                     for(j=0;j<ccCapBanks.size();j++)
                     {
                         CtiCCCapBank* currentCapBank = (CtiCCCapBank*)(ccCapBanks[j]);
-                        if (!stringCompareIgnoreCase(currentCapBank->getOperationalState(), CtiCCCapBank::SwitchedOperationalState) &&
-                            !currentCapBank->getDisableFlag())
+                        if (!stringCompareIgnoreCase(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState)) 
                         {
-                            if (!getOverlappingVerificationFlag())
+                            if (!currentCapBank->getDisableFlag())
                             {
-                                currentCapBank->setVerificationFlag(TRUE);
-                                currentCapBank->setVerificationDoneFlag(FALSE);
-                                currentCapBank->setVCtrlIndex(0);
-                            }
-                            else
-                            {
-                                if (!currentCapBank->getVerificationDoneFlag())
+                                if (!getOverlappingVerificationFlag())
                                 {
                                     currentCapBank->setVerificationFlag(TRUE);
                                     currentCapBank->setVerificationDoneFlag(FALSE);
                                     currentCapBank->setVCtrlIndex(0);
-                                    currentFeeder->setVerificationFlag(TRUE);
-                                    currentFeeder->setVerificationDoneFlag(FALSE);
                                 }
                                 else
                                 {
-                                    currentFeeder->setVerificationDoneFlag(TRUE);
+                                    if (!currentCapBank->getVerificationDoneFlag())
+                                    {
+                                        currentCapBank->setVerificationFlag(TRUE);
+                                        currentCapBank->setVerificationDoneFlag(FALSE);
+                                        currentCapBank->setVCtrlIndex(0);
+                                        currentFeeder->setVerificationFlag(TRUE);
+                                        currentFeeder->setVerificationDoneFlag(FALSE);
+                                    }
+                                    else
+                                    {
+                                        currentFeeder->setVerificationDoneFlag(TRUE);
+                                    }
                                 }
+                                string textInfo;
+                                textInfo += string("CapBank: ");
+                                textInfo += currentCapBank->getPAOName();
+                                textInfo += " scheduled for verification.";
+
+                                ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), getPAOId(), currentFeeder->getPAOId(), capControlEnableVerification, getEventSequence(), currentCapBank->getControlStatus(), textInfo, "cap control verification"));
+                            }
+                            else
+                            {
+                                string textInfo;
+                                textInfo += string("CapBank: ");
+                                textInfo += currentCapBank->getPAOName();
+                                textInfo += " Disabled! Will not verify.";
+
+                                ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), getPAOId(), currentFeeder->getPAOId(), capControlDisableVerification, getEventSequence(), currentCapBank->getControlStatus(), textInfo, "cap control verification"));
                             }
                         }
                     }
@@ -5193,29 +5212,46 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCapBanksToVerifyFlags(int verificatio
                             (currentCapBank->getControlStatus() == CtiCCCapBank::CloseFail || 
                              currentCapBank->getControlStatus() == CtiCCCapBank::OpenFail ||
                              currentCapBank->getControlStatus() == CtiCCCapBank::OpenQuestionable || 
-                             currentCapBank->getControlStatus() == CtiCCCapBank::CloseQuestionable ) &&
-                            !currentCapBank->getDisableFlag())
+                             currentCapBank->getControlStatus() == CtiCCCapBank::CloseQuestionable ) )
                         {
-                            if (!getOverlappingVerificationFlag())
+                            if (!currentCapBank->getDisableFlag())
                             {
-                                currentCapBank->setVerificationFlag(TRUE);
-                                currentCapBank->setVerificationDoneFlag(FALSE);
-                                currentCapBank->setVCtrlIndex(0);
-                            }
-                            else
-                            {
-                                if (!currentCapBank->getVerificationDoneFlag())
+                                if (!getOverlappingVerificationFlag())
                                 {
                                     currentCapBank->setVerificationFlag(TRUE);
                                     currentCapBank->setVerificationDoneFlag(FALSE);
                                     currentCapBank->setVCtrlIndex(0);
-                                    currentFeeder->setVerificationFlag(TRUE);
-                                    currentFeeder->setVerificationDoneFlag(FALSE);
                                 }
                                 else
                                 {
-                                    currentFeeder->setVerificationDoneFlag(TRUE);
+                                    if (!currentCapBank->getVerificationDoneFlag())
+                                    {
+                                        currentCapBank->setVerificationFlag(TRUE);
+                                        currentCapBank->setVerificationDoneFlag(FALSE);
+                                        currentCapBank->setVCtrlIndex(0);
+                                        currentFeeder->setVerificationFlag(TRUE);
+                                        currentFeeder->setVerificationDoneFlag(FALSE);
+                                    }
+                                    else
+                                    {
+                                        currentFeeder->setVerificationDoneFlag(TRUE);
+                                    }
                                 }
+                                string textInfo;
+                                textInfo += string("CapBank: ");
+                                textInfo += currentCapBank->getPAOName();
+                                textInfo += " scheduled for verification.";
+
+                                ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), getPAOId(), currentFeeder->getPAOId(), capControlEnableVerification, getEventSequence(), currentCapBank->getControlStatus(), textInfo, "cap control verification"));
+                            }
+                            else
+                            {
+                                string textInfo;
+                                textInfo += string("CapBank: ");
+                                textInfo += currentCapBank->getPAOName();
+                                textInfo += " Disabled! Will not verify.";
+
+                                ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), getPAOId(), currentFeeder->getPAOId(), capControlDisableVerification, getEventSequence(), currentCapBank->getControlStatus(), textInfo, "cap control verification"));
                             }
                         }
                     }
@@ -5229,6 +5265,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCapBanksToVerifyFlags(int verificatio
             for (x = 0; x < _ccfeeders.size(); x++)
             {
                 CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders.at(x);
+
                 if (!currentFeeder->getDisableFlag())
                 {
                     if (!getOverlappingVerificationFlag())
@@ -5243,29 +5280,47 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCapBanksToVerifyFlags(int verificatio
                         CtiCCCapBank* currentCapBank = (CtiCCCapBank*)(ccCapBanks[j]);
                         if (!stringCompareIgnoreCase(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState) &&
                             ( currentCapBank->getControlStatus() == CtiCCCapBank::CloseFail || 
-                              currentCapBank->getControlStatus() == CtiCCCapBank::OpenFail ) &&
-                            !currentCapBank->getDisableFlag())
+                              currentCapBank->getControlStatus() == CtiCCCapBank::OpenFail ) )
                         {
-                            if (!getOverlappingVerificationFlag())
+                            if (!currentCapBank->getDisableFlag())
                             {
-                                currentCapBank->setVerificationFlag(TRUE);
-                                currentCapBank->setVerificationDoneFlag(FALSE);
-                                currentCapBank->setVCtrlIndex(0);
-                            }
-                            else
-                            {
-                                if (!currentCapBank->getVerificationDoneFlag())
+                                if (!getOverlappingVerificationFlag())
                                 {
                                     currentCapBank->setVerificationFlag(TRUE);
                                     currentCapBank->setVerificationDoneFlag(FALSE);
                                     currentCapBank->setVCtrlIndex(0);
-                                    currentFeeder->setVerificationFlag(TRUE);
-                                    currentFeeder->setVerificationDoneFlag(FALSE);
                                 }
                                 else
                                 {
-                                    currentFeeder->setVerificationDoneFlag(TRUE);
+                                    if (!currentCapBank->getVerificationDoneFlag())
+                                    {
+                                        currentCapBank->setVerificationFlag(TRUE);
+                                        currentCapBank->setVerificationDoneFlag(FALSE);
+                                        currentCapBank->setVCtrlIndex(0);
+                                        currentFeeder->setVerificationFlag(TRUE);
+                                        currentFeeder->setVerificationDoneFlag(FALSE);
+                                    }
+                                    else
+                                    {
+                                        currentFeeder->setVerificationDoneFlag(TRUE);
+                                    }
                                 }
+
+                                string textInfo;
+                                textInfo += string("CapBank: ");
+                                textInfo += currentCapBank->getPAOName();
+                                textInfo += " scheduled for verification.";
+
+                                ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), getPAOId(), currentFeeder->getPAOId(), capControlEnableVerification, getEventSequence(), currentCapBank->getControlStatus(), textInfo, "cap control verification"));
+                            }
+                            else
+                            {
+                                string textInfo;
+                                textInfo += string("CapBank: ");
+                                textInfo += currentCapBank->getPAOName();
+                                textInfo += " Disabled! Will not verify.";
+
+                                ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), getPAOId(), currentFeeder->getPAOId(), capControlDisableVerification, getEventSequence(), currentCapBank->getControlStatus(), textInfo, "cap control verification"));
                             }
                         }
                     }
@@ -5292,29 +5347,47 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCapBanksToVerifyFlags(int verificatio
                         CtiCCCapBank* currentCapBank = (CtiCCCapBank*)(ccCapBanks[j]);
                         if (!stringCompareIgnoreCase(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState) &&
                             (currentCapBank->getControlStatus() == CtiCCCapBank::OpenQuestionable || 
-                             currentCapBank->getControlStatus() == CtiCCCapBank::CloseQuestionable ) &&
-                            !currentCapBank->getDisableFlag() )
+                             currentCapBank->getControlStatus() == CtiCCCapBank::CloseQuestionable ) )
                         {
-                            if (!getOverlappingVerificationFlag())
+                            if (!currentCapBank->getDisableFlag())
                             {
-                                currentCapBank->setVerificationFlag(TRUE);
-                                currentCapBank->setVerificationDoneFlag(FALSE);
-                                currentCapBank->setVCtrlIndex(0);
-                            }
-                            else
-                            {
-                                if (!currentCapBank->getVerificationDoneFlag())
+                                if (!getOverlappingVerificationFlag())
                                 {
                                     currentCapBank->setVerificationFlag(TRUE);
                                     currentCapBank->setVerificationDoneFlag(FALSE);
                                     currentCapBank->setVCtrlIndex(0);
-                                    currentFeeder->setVerificationFlag(TRUE);
-                                    currentFeeder->setVerificationDoneFlag(FALSE);
                                 }
                                 else
                                 {
-                                    currentFeeder->setVerificationDoneFlag(TRUE);
+                                    if (!currentCapBank->getVerificationDoneFlag())
+                                    {
+                                        currentCapBank->setVerificationFlag(TRUE);
+                                        currentCapBank->setVerificationDoneFlag(FALSE);
+                                        currentCapBank->setVCtrlIndex(0);
+                                        currentFeeder->setVerificationFlag(TRUE);
+                                        currentFeeder->setVerificationDoneFlag(FALSE);
+                                    }
+                                    else
+                                    {
+                                        currentFeeder->setVerificationDoneFlag(TRUE);
+                                    }
                                 }
+
+                                string textInfo;
+                                textInfo += string("CapBank: ");
+                                textInfo += currentCapBank->getPAOName();
+                                textInfo += " scheduled for verification.";
+
+                                ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), getPAOId(), currentFeeder->getPAOId(), capControlEnableVerification, getEventSequence(), currentCapBank->getControlStatus(), textInfo, "cap control verification"));
+                            }
+                            else
+                            {
+                                string textInfo;
+                                textInfo += string("CapBank: ");
+                                textInfo += currentCapBank->getPAOName();
+                                textInfo += " Disabled! Will not verify.";
+
+                                ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), getPAOId(), currentFeeder->getPAOId(), capControlDisableVerification, getEventSequence(), currentCapBank->getControlStatus(), textInfo, "cap control verification"));
                             }
                         }
                     }
@@ -5329,6 +5402,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCapBanksToVerifyFlags(int verificatio
         case CtiPAOScheduleManager::BanksInactiveForXTime:
         {
             CtiTime currentTime = CtiTime();
+            currentTime.now();
             for (x = 0; x < _ccfeeders.size(); x++)
             {
                 CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders.at(x);
@@ -5345,29 +5419,47 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCapBanksToVerifyFlags(int verificatio
                     {
                         CtiCCCapBank* currentCapBank = (CtiCCCapBank*)(ccCapBanks[j]);
                         if (!stringCompareIgnoreCase(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState) &&
-                            ( currentCapBank->getLastStatusChangeTime().seconds() <= ( currentTime.seconds() - getCapBankInactivityTime())) &&
-                            !currentCapBank->getDisableFlag())
+                            ( currentCapBank->getLastStatusChangeTime().seconds() <= ( currentTime.seconds() - getCapBankInactivityTime())) )
                         {
-                            if (!getOverlappingVerificationFlag())
+                            if (!currentCapBank->getDisableFlag())
                             {
-                                currentCapBank->setVerificationFlag(TRUE);
-                                currentCapBank->setVerificationDoneFlag(FALSE);
-                                currentCapBank->setVCtrlIndex(0);
-                            }
-                            else
-                            {
-                                if (!currentCapBank->getVerificationDoneFlag())
+                                if (!getOverlappingVerificationFlag())
                                 {
                                     currentCapBank->setVerificationFlag(TRUE);
                                     currentCapBank->setVerificationDoneFlag(FALSE);
                                     currentCapBank->setVCtrlIndex(0);
-                                    currentFeeder->setVerificationFlag(TRUE);
-                                    currentFeeder->setVerificationDoneFlag(FALSE);
                                 }
                                 else
                                 {
-                                    currentFeeder->setVerificationDoneFlag(TRUE);
+                                    if (!currentCapBank->getVerificationDoneFlag())
+                                    {
+                                        currentCapBank->setVerificationFlag(TRUE);
+                                        currentCapBank->setVerificationDoneFlag(FALSE);
+                                        currentCapBank->setVCtrlIndex(0);
+                                        currentFeeder->setVerificationFlag(TRUE);
+                                        currentFeeder->setVerificationDoneFlag(FALSE);
+                                    }
+                                    else
+                                    {
+                                        currentFeeder->setVerificationDoneFlag(TRUE);
+                                    }
                                 }
+
+                                string textInfo;
+                                textInfo += string("CapBank: ");
+                                textInfo += currentCapBank->getPAOName();
+                                textInfo += " scheduled for verification.";
+
+                                ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), getPAOId(), currentFeeder->getPAOId(), capControlEnableVerification, getEventSequence(), currentCapBank->getControlStatus(), textInfo, "cap control verification"));
+                            }
+                            else
+                            {
+                                string textInfo;
+                                textInfo += string("CapBank: ");
+                                textInfo += currentCapBank->getPAOName();
+                                textInfo += " Disabled! Will not verify.";
+
+                                ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), getPAOId(), currentFeeder->getPAOId(), capControlDisableVerification, getEventSequence(), currentCapBank->getControlStatus(), textInfo, "cap control verification"));
                             }
                         }
                     }
@@ -5380,8 +5472,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCapBanksToVerifyFlags(int verificatio
         {
             for (x = 0; x < _ccfeeders.size(); x++)
             {
-                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders.at(x);
-
+                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders[x];
                 if (!currentFeeder->getDisableFlag())
                 {
                     if (!getOverlappingVerificationFlag())
@@ -5394,30 +5485,47 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCapBanksToVerifyFlags(int verificatio
                     for(j=0;j<ccCapBanks.size();j++)
                     {
                         CtiCCCapBank* currentCapBank = (CtiCCCapBank*)(ccCapBanks[j]);
-                        if (!stringCompareIgnoreCase(currentCapBank->getOperationalState(),CtiCCCapBank::StandAloneState) &&
-                            !currentCapBank->getDisableFlag())
+                        if (!stringCompareIgnoreCase(currentCapBank->getOperationalState(),CtiCCCapBank::StandAloneState) )
                         {
-
-                            if (!getOverlappingVerificationFlag())
+                            if (!currentCapBank->getDisableFlag() )
                             {
-                                currentCapBank->setVerificationFlag(TRUE);
-                                currentCapBank->setVerificationDoneFlag(FALSE);
-                                currentCapBank->setVCtrlIndex(0);
-                            }
-                            else
-                            {
-                                if (!currentCapBank->getVerificationDoneFlag())
+                                if (!getOverlappingVerificationFlag())
                                 {
                                     currentCapBank->setVerificationFlag(TRUE);
                                     currentCapBank->setVerificationDoneFlag(FALSE);
                                     currentCapBank->setVCtrlIndex(0);
-                                    currentFeeder->setVerificationFlag(TRUE);
-                                    currentFeeder->setVerificationDoneFlag(FALSE);
                                 }
                                 else
                                 {
-                                    currentFeeder->setVerificationDoneFlag(TRUE);
+                                    if (!currentCapBank->getVerificationDoneFlag())
+                                    {
+                                        currentCapBank->setVerificationFlag(TRUE);
+                                        currentCapBank->setVerificationDoneFlag(FALSE);
+                                        currentCapBank->setVCtrlIndex(0);
+                                        currentFeeder->setVerificationFlag(TRUE);
+                                        currentFeeder->setVerificationDoneFlag(FALSE);
+                                    }
+                                    else
+                                    {
+                                        currentFeeder->setVerificationDoneFlag(TRUE);
+                                    }
                                 }
+
+                                string textInfo;
+                                textInfo += string("CapBank: ");
+                                textInfo += currentCapBank->getPAOName();
+                                textInfo += " scheduled for verification.";
+
+                                ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), getPAOId(), currentFeeder->getPAOId(), capControlEnableVerification, getEventSequence(), currentCapBank->getControlStatus(), textInfo, "cap control verification"));
+                            }
+                            else
+                            {
+                                string textInfo;
+                                textInfo += string("CapBank: ");
+                                textInfo += currentCapBank->getPAOName();
+                                textInfo += " Disabled! Will not verify.";
+
+                                ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), getPAOId(), currentFeeder->getPAOId(), capControlDisableVerification, getEventSequence(), currentCapBank->getControlStatus(), textInfo, "cap control verification"));
                             }
                         }
                     }
@@ -5558,6 +5666,8 @@ void CtiCCSubstationBus::updatePointResponseDeltas()
     }
 }
 
+
+
 BOOL CtiCCSubstationBus::areAllMonitorPointsNewEnough(const CtiTime& currentDateTime)
 {
     BOOL retVal = FALSE;
@@ -5584,7 +5694,6 @@ BOOL CtiCCSubstationBus::areAllMonitorPointsNewEnough(const CtiTime& currentDate
     }
     return retVal;
 }
-
 
 ULONG CtiCCSubstationBus::getMonitorPointScanTime()
 {
@@ -5995,6 +6104,45 @@ BOOL CtiCCSubstationBus::isBusAnalysisNeeded(const CtiTime& currentDateTime)
     return retVal;
 }
 
+CtiCCSubstationBus& CtiCCSubstationBus::addAllSubPointsToMsg(CtiCommandMsg *pointAddMsg)
+{
+
+    if( getCurrentVarLoadPointId() > 0 )
+    {
+        pointAddMsg->insert(getCurrentVarLoadPointId());
+    }
+    if( getCurrentWattLoadPointId() > 0 )
+    {
+        pointAddMsg->insert(getCurrentWattLoadPointId());
+    }
+    if (getCurrentVoltLoadPointId() > 0)
+    {
+        pointAddMsg->insert(getCurrentVoltLoadPointId());
+    }
+    if (getEstimatedVarLoadPointId() > 0)
+    {
+        pointAddMsg->insert(getEstimatedVarLoadPointId());
+    }
+    if (getDailyOperationsAnalogPointId() > 0)
+    {
+        pointAddMsg->insert(getDailyOperationsAnalogPointId());
+    }
+    if (getPowerFactorPointId() > 0)
+    {
+        pointAddMsg->insert(getPowerFactorPointId());
+    }
+    if (getEstimatedPowerFactorPointId() > 0)
+    {
+        pointAddMsg->insert(getEstimatedPowerFactorPointId());
+    }
+    if (getSwitchOverPointId() > 0)
+    {
+        pointAddMsg->insert(getSwitchOverPointId());
+    }
+
+    return *this;
+}
+
 
 /*-------------------------------------------------------------------------
     restoreGuts
@@ -6402,6 +6550,10 @@ void CtiCCSubstationBus::restore(RWDBReader& rdr)
     _altSubVoltVal = 0;
     _altSubVarVal = 0; 
     _altSubWattVal = 0;
+
+
+
+    setMultiBusCurrentState(NEW_MULTI_POINT_DATA_RECEIVED);
 
 }
 

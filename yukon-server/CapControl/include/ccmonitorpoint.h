@@ -34,7 +34,7 @@ class CtiCCMonitorPoint : public RWCollectable
 public:
 
   RWDECLARE_COLLECTABLE( CtiCCMonitorPoint )
-
+    CtiCCMonitorPoint();
     CtiCCMonitorPoint(RWDBReader& rdr);
     CtiCCMonitorPoint(const CtiCCMonitorPoint& point);
 
@@ -69,7 +69,7 @@ public:
 
     BOOL isDirty() const;
     void dumpDynamicData();
-    void dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime);
+    void dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime);
 
     void setDynamicData(RWDBReader& rdr);
 
@@ -102,7 +102,7 @@ private:
     BOOL _dirty;
 
     void restore(RWDBReader& rdr);
-    CtiCCMonitorPoint();
+    
 
 };
 

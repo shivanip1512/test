@@ -22,6 +22,7 @@
 #include <rw/thr/recursiv.h> 
 #include <list>
 
+#include "msg_cmd.h"
 #include "ccpointresponse.h"
 #include "ccmonitorpoint.h"
 #include "dbaccess.h"
@@ -133,6 +134,7 @@ public:
 
     //int getAssumedOrigVerificationState();
     CtiCCCapBank& initVerificationControlStatus();
+    CtiCCCapBank& addAllCapBankPointsToMsg(CtiCommandMsg *pointAddMsg);
 
     CtiCCCapBank* replicate() const;
     virtual int compareTo(const RWCollectable* right) const;

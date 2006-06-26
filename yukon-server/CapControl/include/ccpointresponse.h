@@ -39,10 +39,12 @@ public:
 
     virtual ~CtiCCPointResponse();
 
+    LONG getBankId() const;
     LONG getPointId() const;
     DOUBLE getPreOpValue() const;
     DOUBLE getDelta() const;
 
+    CtiCCPointResponse& setBankId(LONG pointId);
     CtiCCPointResponse& setPointId(LONG pointId);
     CtiCCPointResponse& setPreOpValue(DOUBLE value);
     CtiCCPointResponse& setDelta(DOUBLE delta);
@@ -51,11 +53,12 @@ public:
 
     BOOL isDirty() const;
     void dumpDynamicData();
-    void dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime);
+    void dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime);
 
     //Members inherited from RWCollectable
     void restoreGuts(RWvistream& );
     void saveGuts(RWvostream& ) const;
+    void setDynamicData(RWDBReader& rdr);
 
     CtiCCPointResponse& operator=(const CtiCCPointResponse& right);
 
@@ -66,6 +69,7 @@ public:
 private:
 
     LONG _pointId;
+    LONG _bankId;
     DOUBLE _preOpValue;
     DOUBLE _delta;
     
@@ -79,4 +83,6 @@ private:
 };
 
 typedef CtiCCPointResponse* CtiCCPointResponsePtr;
+typedef std::map<long, CtiCCPointResponsePtr> CtiCCPointResponseMap;
+
 #endif

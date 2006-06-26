@@ -130,7 +130,7 @@ void CtiPAOScheduleManager::doResetThr()
             }
         }
         {
-            rwRunnable().sleep(500);
+            rwRunnable().sleep(5000);
         }
         /*rwnow = rwnow.now();
         if(rwnow.seconds() > tickleTime.seconds())

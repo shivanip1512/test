@@ -33,6 +33,7 @@ using std::list;
 #include "ccfeeder.h"
 #include "cccapbank.h"
 #include "msg_pcrequest.h"
+#include "msg_cmd.h"
 #include "ccstrategy.h"
 #include "ccmonitorpoint.h"
 
@@ -227,10 +228,9 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     BOOL isConfirmCheckNeeded();
     BOOL capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents);
     DOUBLE figureCurrentSetPoint(const CtiTime& currentDateTime);
-    BOOL isPeakDay();
+    BOOL isPeakDay(const CtiTime& currentDateTime);
     BOOL isPeakTime(const CtiTime& currentDateTime);
     void clearOutNewPointReceivedFlags();
-
     CtiCCSubstationBus& checkForAndProvideNeededControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
     void regularSubstationBusControl(DOUBLE lagLevel, DOUBLE leadLevel, const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
     void optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE leadLevel, const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
@@ -260,14 +260,14 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     BOOL isBusVerificationAlreadyStarted();
     BOOL isVerificationPastMaxConfirmTime(const CtiTime& currentDateTime);
     BOOL capBankVerificationDone(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents);
-    BOOL areThereMoreCapBanksToVerify();
+    BOOL areThereMoreCapBanksToVerify(CtiMultiMsg_vec& ccEvents);
     //CtiCCSubstationBus& checkForAndProvideNeededVerificationControl();
     CtiCCSubstationBus& startVerificationOnCapBank(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
     BOOL isVerificationAlreadyControlled();
-    CtiCCSubstationBus& analyzeVerificationByFeeder(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
-    CtiCCSubstationBus& setCapBanksToVerifyFlags(int verificationStrategy);
+    CtiCCSubstationBus& analyzeVerificationByFeeder(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages, CtiMultiMsg_vec& capMessages);
+    CtiCCSubstationBus& setCapBanksToVerifyFlags(int verificationStrategy, CtiMultiMsg_vec& ccEvents);
     CtiCCSubstationBus& recompileCapBanksToVerifyList();
-    CtiCCSubstationBus& getNextCapBankToVerify();
+    CtiCCSubstationBus& getNextCapBankToVerify(CtiMultiMsg_vec& ccEvents);
     BOOL sendNextCapBankVerificationControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
     CtiCCSubstationBus& setVerificationFlag(BOOL verificationFlag);
     CtiCCSubstationBus& setPerformingVerificationFlag(BOOL performingVerificationFlag);
@@ -275,6 +275,9 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setCurrentVerificationFeederId(LONG feederId);
     CtiCCSubstationBus& setCurrentVerificationCapBankId(LONG capBankId);
     CtiCCSubstationBus& setCurrentVerificationCapBankState(LONG status);
+
+    CtiCCSubstationBus& addAllSubPointsToMsg(CtiCommandMsg *pointAddMsg);
+
 
     list <LONG>* getPointIds() {return &_pointIds;};
 

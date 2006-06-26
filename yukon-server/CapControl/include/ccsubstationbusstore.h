@@ -101,9 +101,9 @@ public:
 
     bool InsertCCEventLogInDB(CtiCCEventLogMsg* msg);
 
-    CtiCCSubstationBusPtr findSubBusByPointID(long point_id, int index);
-    CtiCCFeederPtr findFeederByPointID(long point_id, int index);
-    CtiCCCapBankPtr findCapBankByPointID(long point_id, int index);
+    std::multimap< long, CtiCCSubstationBusPtr >::iterator findSubBusByPointID(long point_id, int &subCount);
+    std::multimap< long, CtiCCFeederPtr >::iterator findFeederByPointID(long point_id, int &feedCount);
+    std::multimap< long, CtiCCCapBankPtr >::iterator findCapBankByPointID(long point_id, int &capCount);
     int getNbrOfSubBusesWithPointID(long point_id);
     int getNbrOfSubsWithAltSubID(long altSubId);
     int getNbrOfFeedersWithPointID(long point_id);
@@ -116,6 +116,7 @@ public:
     long findSubBusIDbyFeederID(long feederId);
     long findSubBusIDbyCapBankID(long capBankId);
     long findFeederIDbyCapBankID(long capBankId);
+    long findCapBankIDbyCbcID(long cbcId);
 
     long findSubIDbyAltSubID(long altSubId, int index);
 
@@ -133,7 +134,8 @@ public:
                                    multimap< long, CtiCCCapBankPtr > *pointid_capbank_map,
                                    map< long, long> *capbank_subbus_map,
                                    map< long, long> *capbank_feeder_map,
-                                   map< long, long> *feeder_subbus_map);
+                                   map< long, long> *feeder_subbus_map,
+                                   map< long, long> *cbc_capbank_map);
     void reloadFeederFromDatabase(long feederId, map< long, CtiCCStrategyPtr > *strategy_map, 
                                   map< long, CtiCCFeederPtr > *paobject_feeder_map,
                                   map< long, CtiCCSubstationBusPtr > *paobject_subbus_map,
@@ -157,6 +159,8 @@ public:
     void insertDBReloadList(CC_DBRELOAD_INFO x);
     void checkDBReloadList();
     void clearDBReloadList();
+    void setRegMask(LONG mask);
+    LONG getRegMask(void);
 
     map <long, CtiCCSubstationBusPtr>* getPAOSubMap();
 
@@ -206,6 +210,7 @@ private:
 
     BOOL _isvalid;
     BOOL _reregisterforpoints;
+    LONG _regMask;
     BOOL _reloadfromamfmsystemflag;
     BOOL _wassubbusdeletedflag;
     CtiTime _lastdbreloadtime;
@@ -246,6 +251,7 @@ private:
     map< long, long > _feeder_subbus_map; 
     map< long, long > _capbank_subbus_map;
     map< long, long > _capbank_feeder_map;
+    map< long, long > _cbc_capbank_map;
 
     multimap< long, long > _altsub_sub_idmap;
 

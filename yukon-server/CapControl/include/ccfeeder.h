@@ -29,6 +29,7 @@
 #include "observe.h"
 #include "cccapbank.h"
 #include "msg_pcrequest.h"
+#include "msg_cmd.h"
 #include "ccstrategy.h"
 #include "sorted_vector.h"
 
@@ -65,9 +66,6 @@ struct FeederVARComparison
         return returnBoolean;
 	}
 };
-
-
-
 
 class CtiCCFeeder : public RWCollectable
 {
@@ -138,13 +136,10 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     BOOL getWaiveControlFlag() const;
     const string& getParentControlUnits() const;
     const string& getParentName() const;
-
     LONG getDecimalPlaces() const;
     BOOL getPeakTimeFlag() const;
-    
     BOOL getPorterRetFailFlag() const;
     LONG getEventSequence() const;
-    
     BOOL getMultiMonitorFlag() const;
     BOOL getVerificationFlag() const;
     BOOL getPerformingVerificationFlag() const;
@@ -156,6 +151,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     LONG getCurrentVerificationCapBankId() const;
     LONG getCurrentVerificationCapBankOrigState() const;
     int getMultiBusCurrentState() const;
+    
     CtiCCCapBank_SVector& getCCCapBanks();
     void deleteCCCapBank(long capBankId);
 
@@ -221,7 +217,6 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiCCFeeder& setPeakTimeFlag(BOOL peakTimeFlag);
     CtiCCFeeder& setPorterRetFailFlag(BOOL flag);
     CtiCCFeeder& setEventSequence(LONG eventSeq);
-
     CtiCCFeeder& setMultiMonitorFlag(BOOL flag);
     CtiCCFeeder& setVerificationFlag(BOOL verificationFlag);
     CtiCCFeeder& setPerformingVerificationFlag(BOOL performingVerificationFlag);
@@ -235,7 +230,6 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiCCFeeder& setMultiBusCurrentState(int state);
 
     CtiCCCapBank* findCapBankToChangeVars(DOUBLE kvarSolution);
-
     CtiRequestMsg* createIncreaseVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, string textInfo);
     CtiRequestMsg* createDecreaseVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, string textInfo);
     BOOL capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, LONG minConfirmPercent, LONG failurePercent, DOUBLE varValueBeforeControl, DOUBLE currentVarLoadPointValue, LONG currentVarPointQuality);
@@ -250,7 +244,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     BOOL attemptToResendControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages, LONG maxConfirmTime);
     BOOL checkForAndPerformVerificationSendRetry(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages, LONG maxConfirmTime, LONG sendRetries);
     BOOL checkMaxDailyOpCountExceeded();
-    void voltControlBankSelectProcess(CtiCCMonitorPoint* point, CtiMultiMsg_vec &pointChanges, CtiMultiMsg_vec &ccEvents, CtiMultiMsg_vec& pilMessages);
+    BOOL voltControlBankSelectProcess(CtiCCMonitorPoint* point, CtiMultiMsg_vec &pointChanges, CtiMultiMsg_vec &ccEvents, CtiMultiMsg_vec& pilMessages);
     void updatePointResponsePreOpValues();
     void updatePointResponseDeltas();
     BOOL areAllMonitorPointsNewEnough(const CtiTime& currentDateTime);
@@ -275,6 +269,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiCCFeeder& getNextCapBankToVerify();
 
     BOOL capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, LONG minConfirmPercent, LONG failurePercent, DOUBLE varValueBeforeControl, DOUBLE currentVarLoadPointValue, LONG currentVarPointQuality);
+    CtiCCFeeder& addAllFeederPointsToMsg(CtiCommandMsg *pointAddMsg);
     
     BOOL isDirty() const;
     void dumpDynamicData();
@@ -294,6 +289,9 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
 
     void setDynamicData(RWDBReader& rdr);
     void setStrategyValues(CtiCCStrategyPtr strategy);
+
+    vector <CtiCCMonitorPointPtr>& getMultipleMonitorPoints() {return _multipleMonitorPoints;};
+
 
     //Possible states
     /*static const string Enabled;
@@ -364,7 +362,6 @@ private:
 
     string _parentControlUnits;
     string _parentName;
-
     LONG _decimalPlaces;
     BOOL _peakTimeFlag;
 
@@ -397,7 +394,6 @@ private:
 
     std::list <long> _pointIds;
     vector <CtiCCMonitorPointPtr> _multipleMonitorPoints;
-
 };
 
 

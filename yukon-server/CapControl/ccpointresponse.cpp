@@ -198,17 +198,35 @@ int CtiCCPointResponse::operator!=(const CtiCCPointResponse& right) const
 ---------------------------------------------------------------------------*/
 void CtiCCPointResponse::restore(RWDBReader& rdr)
 {
+    rdr["bankid"] >> _bankId;
     rdr["pointid"] >> _pointId;
-    rdr["preopvalue"] >> _preOpValue;
-    rdr["delta"] >> _delta;
-    _insertDynamicDataFlag = FALSE;
+    _preOpValue = 0;
+    _delta = 0;
+    //rdr["preopvalue"] >> _preOpValue;
+    //rdr["delta"] >> _delta;
+    _insertDynamicDataFlag = TRUE;
     /*{
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }*/
-    _dirty = FALSE;
+    _dirty = TRUE;
 
 }
+/*---------------------------------------------------------------------------
+    restore
+
+    Restores self's state given a RWDBReader
+---------------------------------------------------------------------------*/
+void CtiCCPointResponse::setDynamicData(RWDBReader& rdr)
+{
+    rdr["preopvalue"] >> _preOpValue;
+    rdr["delta"] >> _delta;
+    _insertDynamicDataFlag = FALSE;
+    
+    _dirty = FALSE;
+
+} 
+
 
 
 /*---------------------------------------------------------------------------
@@ -242,7 +260,7 @@ void CtiCCPointResponse::dumpDynamicData()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    dumpDynamicData(conn,RWDBDateTime());
+    dumpDynamicData(conn,CtiTime());
 }
 
 /*---------------------------------------------------------------------------
@@ -250,20 +268,21 @@ void CtiCCPointResponse::dumpDynamicData()
 
     Writes out the dynamic information for this cc cap bank.
 ---------------------------------------------------------------------------*/
-void CtiCCPointResponse::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime)
+void CtiCCPointResponse::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime)
 {
     {
-        RWDBTable dynamicCCMonitorBankHistoryTable = getDatabase().table( "dynamicmonitorbankhistory" );
+        RWDBTable dynamicCCMonitorPointResponseTable = getDatabase().table( "dynamicccmonitorpointresponse" );
         if( !_insertDynamicDataFlag )
         {
 
 
-            RWDBUpdater updater = dynamicCCMonitorBankHistoryTable.updater();
+            RWDBUpdater updater = dynamicCCMonitorPointResponseTable.updater();
 
-            updater.where(dynamicCCMonitorBankHistoryTable["pointid"]==_pointId);
+            updater.where(dynamicCCMonitorPointResponseTable["bankid"]==_bankId && 
+                          dynamicCCMonitorPointResponseTable["pointid"]==_pointId );
 
-            updater << dynamicCCMonitorBankHistoryTable["preopvalue"].assign( _preOpValue )
-                    << dynamicCCMonitorBankHistoryTable["delta"].assign( _delta );
+            updater << dynamicCCMonitorPointResponseTable["preopvalue"].assign( _preOpValue )
+                    << dynamicCCMonitorPointResponseTable["delta"].assign( _delta );
             
             /*{
                 CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -293,11 +312,12 @@ void CtiCCPointResponse::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& cur
         {
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Inserted Point into dynamicCCMonitorBankHistoryTable: " << endl;
+                dout << CtiTime() << " - Inserted Point into dynamicCCMonitorPointResponseTable: " << endl;
             }
-            RWDBInserter inserter = dynamicCCMonitorBankHistoryTable.inserter();
+            RWDBInserter inserter = dynamicCCMonitorPointResponseTable.inserter();
 
-            inserter << _pointId
+            inserter <<  _bankId
+                << _pointId
                 << _preOpValue
                 << _delta;
 

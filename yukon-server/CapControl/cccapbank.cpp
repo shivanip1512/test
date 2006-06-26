@@ -1151,6 +1151,22 @@ CtiCCCapBank& CtiCCCapBank::setOriginalSwitchingOrder(LONG origorder)
     return *this;
 }
 
+
+CtiCCCapBank& CtiCCCapBank::addAllCapBankPointsToMsg(CtiCommandMsg *pointAddMsg)
+{
+
+    if( getStatusPointId() > 0 )
+    {
+        pointAddMsg->insert(getStatusPointId());
+    }
+    if( getOperationAnalogPointId() > 0 )
+    {
+        pointAddMsg->insert(getOperationAnalogPointId());
+    }
+ 
+    return *this;
+}
+
 /*-------------------------------------------------------------------------
     restoreGuts
 
@@ -1445,24 +1461,24 @@ void CtiCCCapBank::dumpDynamicData()
 void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime)
 {
     {
-        for (int i = 0; i < _monitorPoint.size(); i++)
-        {
-            if (((CtiCCMonitorPointPtr)_monitorPoint[i])->isDirty())
-            {   
-                ((CtiCCMonitorPointPtr)_monitorPoint[i])->dumpDynamicData();
-            }
-        }
-        for (i = 0; i < _pointResponses.size(); i++)
-        {
-            if (((CtiCCPointResponsePtr)_pointResponses[i])->isDirty())
-            {   
-                ((CtiCCPointResponsePtr)_pointResponses[i])->dumpDynamicData();
-            }
-        }
 
         RWDBTable dynamicCCCapBankTable = getDatabase().table( "dynamiccccapbank" );
         if( !_insertDynamicDataFlag )
         {
+            /*for (int i = 0; i < _monitorPoint.size(); i++)
+            {
+                if (((CtiCCMonitorPointPtr)_monitorPoint[i])->isDirty())
+                {   
+                    ((CtiCCMonitorPointPtr)_monitorPoint[i])->dumpDynamicData(conn, currentDateTime);
+                }
+            }
+            for (i = 0; i < _pointResponses.size(); i++)
+            {
+                if (((CtiCCPointResponsePtr)_pointResponses[i])->isDirty())
+                {   
+                    ((CtiCCPointResponsePtr)_pointResponses[i])->dumpDynamicData(conn, currentDateTime);
+                }
+            }*/ 
 
             unsigned char addFlags[] = {'N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N'};
             addFlags[0] = (_verificationFlag?'Y':'N');
@@ -1486,10 +1502,6 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTim
             << dynamicCCCapBankTable["verificationcontrolindex"].assign(_vCtrlIndex)
             << dynamicCCCapBankTable["additionalflags"].assign(_additionalFlags[0])
             << dynamicCCCapBankTable["currentdailyoperations"].assign( _currentdailyoperations );
-
-
-
-
             /*{
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - " << updater.asString().c_str() << endl;
@@ -1520,6 +1532,21 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTim
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - Inserted Cap Bank into DynamicCCCapBank: " << getPAOName() << endl;
             }
+
+           /* for (int i = 0; i < _monitorPoint.size(); i++)
+            {
+                //if (((CtiCCMonitorPointPtr)_monitorPoint[i])->isDirty())
+                {   
+                    ((CtiCCMonitorPointPtr)_monitorPoint[i])->dumpDynamicData(conn, currentDateTime);
+                }
+            }
+            for (i = 0; i < _pointResponses.size(); i++)
+            {
+                //if (((CtiCCPointResponsePtr)_pointResponses[i])->isDirty())
+                {   
+                    ((CtiCCPointResponsePtr)_pointResponses[i])->dumpDynamicData(conn, currentDateTime);
+                }
+            }  */
             unsigned char addFlags[] = {'N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N'};
 
             RWDBInserter inserter = dynamicCCCapBankTable.inserter();

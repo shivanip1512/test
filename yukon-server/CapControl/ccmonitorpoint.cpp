@@ -21,7 +21,9 @@
 #include "device.h"
 #include "logger.h"
 #include "resolvers.h"
-
+#include "utility.h"
+#include "rwutil.h"
+using namespace std;
 extern ULONG _CC_DEBUG;
 
 RWDEFINE_COLLECTABLE( CtiCCMonitorPoint, CTICCMONITORPOINT_ID )
@@ -396,11 +398,23 @@ void CtiCCMonitorPoint::restore(RWDBReader& rdr)
     RWDBNullIndicator isNull;
     CtiTime currentDateTime = CtiTime();
     
-    rdr["pointid"] >> _pointId;
+    CtiTime dynamicTimeStamp;
+    string tempBoolString;
+
     rdr["bankid"] >> _bankId;
+    rdr["pointid"] >> _pointId;
+    rdr["displayorder"] >> _displayOrder;
+    rdr["scannable"] >> tempBoolString;
+    std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
+    setScannable(tempBoolString=="y"?TRUE:FALSE);
+    rdr["ninavg"] >> _nInAvg;
+    rdr["upperbandwidth"] >> _upperBW;
+    rdr["lowerbandwidth"] >> _lowerBW;
+        
 
     _value = 0;
-    _timeStamp = currentDateTime;
+    _timeStamp = CtiTime();
+    _scanInProgress = FALSE;
     _insertDynamicDataFlag = TRUE;
     /*{
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -412,11 +426,14 @@ void CtiCCMonitorPoint::restore(RWDBReader& rdr)
 
 void CtiCCMonitorPoint::setDynamicData(RWDBReader& rdr)
 {
-    LONG tempTime;
+    string tempBoolString;
+
     rdr["value"] >> _value;
-    rdr["timestamp"] >> tempTime;
-    rdr["scaninprogress"] >> _scanInProgress;
-    
+    rdr["datetime"] >> _timeStamp;
+    rdr["scaninprogress"] >> tempBoolString;
+    std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
+    setScanInProgress(tempBoolString=="y"?TRUE:FALSE);
+
     _insertDynamicDataFlag = FALSE;
     _dirty = FALSE;
 
@@ -463,7 +480,7 @@ void CtiCCMonitorPoint::dumpDynamicData()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    dumpDynamicData(conn,RWDBDateTime());
+    dumpDynamicData(conn,CtiTime());
 }
 
 /*---------------------------------------------------------------------------
@@ -471,23 +488,22 @@ void CtiCCMonitorPoint::dumpDynamicData()
 
     Writes out the dynamic information for this cc cap bank.
 ---------------------------------------------------------------------------*/
-void CtiCCMonitorPoint::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime)
+void CtiCCMonitorPoint::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime)
 {
     {
-        RWDBTable dynamicCCMonitorBankHistoryTable = getDatabase().table( "dynamicmonitorbankhistory" );
+        RWDBTable dynamicCCMonitorBankHistoryTable = getDatabase().table( "dynamicccmonitorbankhistory" );
         if( !_insertDynamicDataFlag )
         {
 
 
             RWDBUpdater updater = dynamicCCMonitorBankHistoryTable.updater();
 
-            updater.where(dynamicCCMonitorBankHistoryTable["pointid"]==_pointId && 
-                          dynamicCCMonitorBankHistoryTable["bankid"]==_bankId );
+            updater.where(dynamicCCMonitorBankHistoryTable["bankid"]==_bankId && 
+                          dynamicCCMonitorBankHistoryTable["pointid"]==_pointId );
 
-            LONG tempTime = _timeStamp.seconds();
             updater << dynamicCCMonitorBankHistoryTable["value"].assign( _value )
-            << dynamicCCMonitorBankHistoryTable["timestamp"].assign( tempTime )
-            << dynamicCCMonitorBankHistoryTable["scaninprogress"].assign( _scanInProgress );
+            << dynamicCCMonitorBankHistoryTable["datetime"].assign( toRWDBDT((CtiTime)_timeStamp) )
+            << dynamicCCMonitorBankHistoryTable["scaninprogress"].assign( (_scanInProgress?'Y':'N') );
 
             /*{
                 CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -526,7 +542,7 @@ void CtiCCMonitorPoint::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& curr
             << _bankId
             << _value
             << tempTime
-            << _scanInProgress;
+            << (_scanInProgress?'Y':'N');
 
             if( _CC_DEBUG & CC_DEBUG_DATABASE )
             {

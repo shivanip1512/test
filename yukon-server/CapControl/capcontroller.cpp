@@ -51,6 +51,7 @@
 
 #include <vector>
 using std::vector;
+using std::multimap;
 
 extern ULONG _CC_DEBUG;
 extern ULONG _SEND_TRIES;
@@ -229,6 +230,7 @@ void CtiCapController::controlLoop()
         CtiCCSubstationBus_vec substationBusChanges;
         CtiMultiMsg* multiDispatchMsg = new CtiMultiMsg();
         CtiMultiMsg* multiPilMsg = new CtiMultiMsg();
+        CtiMultiMsg* multiCapMsg = new CtiMultiMsg();
         CtiMultiMsg* multiCCEventMsg = new CtiMultiMsg();
         LONG lastThreadPulse = 0;
         LONG lastDailyReset = 0;
@@ -270,6 +272,33 @@ void CtiCapController::controlLoop()
 
                 CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(secondsFrom1901);
 
+                {
+                    if( (secondsFrom1901%60) == 0 && secondsFrom1901 != lastThreadPulse )
+                    {
+                        for(LONG i=0;i<ccSubstationBuses.size();i++)
+                        {
+                            CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
+                            CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
+
+                            BOOL peakFlag = currentSubstationBus->isPeakTime(currentDateTime);
+                            for(LONG j=0;j<ccFeeders.size();j++)
+                            {
+                                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j];
+                                if (!stringCompareIgnoreCase(currentSubstationBus->getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod)  &&
+                                    stringCompareIgnoreCase(currentFeeder->getStrategyName(), "(none)") &&
+                                    (currentFeeder->getPeakStartTime() > 0 && currentFeeder->getPeakStopTime() > 0 ))
+                                {
+                                    currentFeeder->isPeakTime(currentDateTime);
+                                }
+                                else
+                                {
+                                    currentFeeder->setPeakTimeFlag(peakFlag);
+                                }
+                            }
+                        }
+
+                    }
+                }
                 try
                 {
                     if( store->getReregisterForPoints() )
@@ -300,6 +329,7 @@ void CtiCapController::controlLoop()
 
                 CtiMultiMsg_vec& pointChanges = multiDispatchMsg->getData();
                 CtiMultiMsg_vec& pilMessages = multiPilMsg->getData();
+                CtiMultiMsg_vec& capMessages = multiCapMsg->getData();
                 CtiMultiMsg_vec& ccEvents = multiCCEventMsg->getData();
 
                 for(LONG i=0; i < ccSubstationBuses.size();i++)
@@ -370,7 +400,7 @@ void CtiCapController::controlLoop()
                                             {
                                                 try
                                                 {
-                                                    currentSubstationBus->analyzeVerificationByFeeder(currentDateTime, pointChanges, ccEvents, pilMessages);
+                                                    currentSubstationBus->analyzeVerificationByFeeder(currentDateTime, pointChanges, ccEvents, pilMessages, capMessages);
                                                 }
                                                 catch(...)
                                                 {
@@ -419,7 +449,7 @@ void CtiCapController::controlLoop()
                                             {
                                                 try
                                                 {
-                                                    if(currentSubstationBus->areThereMoreCapBanksToVerify())
+                                                    if(currentSubstationBus->areThereMoreCapBanksToVerify(ccEvents))
                                                     {
                                                         if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
                                                         {
@@ -441,19 +471,13 @@ void CtiCapController::controlLoop()
                                                         //reset VerificationFlag
                                                         currentSubstationBus->setVerificationFlag(FALSE);
                                                         currentSubstationBus->setBusUpdatedFlag(TRUE);
-                                                        CtiCCExecutorFactory f;
-                                                        CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationVerificationMsg(CtiCCSubstationVerificationMsg::DISABLE_SUBSTATION_BUS_VERIFICATION, currentSubstationBus->getPAOId(),0, -1));
-                                                        executor->Execute();
-                                                        delete executor;
-                                                        executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::ENABLE_SUBSTATION_BUS, currentSubstationBus->getPAOId()));
-                                                        executor->Execute();
-                                                        delete executor;
+                                                        capMessages.push_back(new CtiCCSubstationVerificationMsg(CtiCCSubstationVerificationMsg::DISABLE_SUBSTATION_BUS_VERIFICATION, currentSubstationBus->getPAOId(),0, -1));
+                                                        capMessages.push_back(new CtiCCCommand(CtiCCCommand::ENABLE_SUBSTATION_BUS, currentSubstationBus->getPAOId()));
                                                         if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
                                                         {
                                                            CtiLockGuard<CtiLogger> logger_guard(dout);
                                                            dout << CtiTime() << " - DISABLED VERIFICATION ON: subBusID: "<<currentSubstationBus->getPAOName()<< "( "<<currentSubstationBus->getPAOId()<<" ) "<<endl;
                                                         } 
-                                                        //ALSO need to reset verification flags/ busperforming verificationflags/ on feeders and capbanks!!!
                                                     }
                                                 }
                                                 catch(...)
@@ -482,7 +506,7 @@ void CtiCapController::controlLoop()
                                             }
                                             int strategy = (long)currentSubstationBus->getVerificationStrategy();
 
-                                            currentSubstationBus->setCapBanksToVerifyFlags(strategy);
+                                            currentSubstationBus->setCapBanksToVerifyFlags(strategy, ccEvents);
 
                                             if( (!stringCompareIgnoreCase(currentSubstationBus->getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod) ||
                                                  !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(),CtiCCSubstationBus::BusOptimizedFeederControlMethod) ) &&
@@ -490,7 +514,7 @@ void CtiCapController::controlLoop()
                                             {
                                                 try
                                                 {
-                                                    currentSubstationBus->analyzeVerificationByFeeder(currentDateTime, pointChanges, ccEvents, pilMessages);
+                                                    currentSubstationBus->analyzeVerificationByFeeder(currentDateTime, pointChanges, ccEvents, pilMessages, capMessages);
                                                 }
                                                 catch(...)
                                                 {
@@ -498,7 +522,7 @@ void CtiCapController::controlLoop()
                                                     dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                                                 }
                                             }
-                                            else if(currentSubstationBus->areThereMoreCapBanksToVerify())
+                                            else if(currentSubstationBus->areThereMoreCapBanksToVerify(ccEvents))
                                             {
                                                 try
                                                 {
@@ -508,10 +532,6 @@ void CtiCapController::controlLoop()
                                                          dout << CtiTime() << " ------ CAP BANK VERIFICATION LIST:  SUB-" << currentSubstationBus->getPAOName()<<" CB-"<<currentSubstationBus->getCurrentVerificationCapBankId() << endl;
                                                     }
                                                     currentSubstationBus->startVerificationOnCapBank(currentDateTime, pointChanges, ccEvents, pilMessages);
-                                                    //currentSubstationBus->setPerformingVerificationFlag(TRUE);
-                                                    // 
-                                                    //currentSubstationBus->setBusUpdatedFlag(TRUE);
-                                                    
                                                     currentSubstationBus->setBusUpdatedFlag(TRUE);
                                                 }
                                                 catch(...)
@@ -542,21 +562,14 @@ void CtiCapController::controlLoop()
                                                     //reset VerificationFlag
                                                     currentSubstationBus->setVerificationFlag(FALSE);
                                                     currentSubstationBus->setBusUpdatedFlag(TRUE);
-                                                    CtiCCExecutorFactory f;
-                                                    CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationVerificationMsg(CtiCCSubstationVerificationMsg::DISABLE_SUBSTATION_BUS_VERIFICATION, currentSubstationBus->getPAOId(),0, -1));
-                                                    executor->Execute();
-                                                    delete executor;
-                                                    executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::ENABLE_SUBSTATION_BUS, currentSubstationBus->getPAOId()));
-                                                    executor->Execute();
-                                                    delete executor;
+                                                    capMessages.push_back(new CtiCCSubstationVerificationMsg(CtiCCSubstationVerificationMsg::DISABLE_SUBSTATION_BUS_VERIFICATION, currentSubstationBus->getPAOId(),0, -1));
+                                                    capMessages.push_back(new CtiCCCommand(CtiCCCommand::ENABLE_SUBSTATION_BUS, currentSubstationBus->getPAOId()));
 
                                                     if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
                                                     {                 
                                                        CtiLockGuard<CtiLogger> logger_guard(dout);
                                                        dout << CtiTime() << " - DISABLED VERIFICATION ON: subBusID: "<<currentSubstationBus->getPAOName() << endl;
                                                     } 
-
-                                                    //ALSO need to reset verification flags/ busperforming verificationflags/ on feeders and capbanks!!!
                                                 }
                                                 catch(...)
                                                 {
@@ -564,7 +577,6 @@ void CtiCapController::controlLoop()
                                                     dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                                                 }
                                             }
-                                            //currentSubstationBus->setPerformingVerificationFlag(TRUE);
                                         }
                                         catch(...)
                                         {
@@ -673,6 +685,39 @@ void CtiCapController::controlLoop()
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                 }
+                try
+                {
+                    //execute cap commands
+                    if( multiCapMsg->getCount() > 0 )
+                    {
+                        multiCapMsg->resetTime(); 
+                        if( _CC_DEBUG & CC_DEBUG_EXTENDED )
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " CAP CREATED MESSAGES " << endl;
+                            multiCapMsg->dump();
+                        }
+                        CtiMultiMsg_vec& temp = multiCapMsg->getData( );
+                        for(int i=0;i<temp.size( );i++)
+                        {
+                            CtiCCMessage* msg = new CtiCCMessage();
+
+                            msg = (CtiCCMessage *) temp[i];
+                            CtiCCExecutorFactory f;
+                            CtiCCExecutor* executor = f.createExecutor(msg);
+                            executor->Execute();
+                            delete executor;
+                           // delete msg;
+                        } 
+                        multiCapMsg = new CtiMultiMsg();
+                    }
+                }
+                catch(...)
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                }
+
 
                 try
                 {
@@ -700,35 +745,6 @@ void CtiCapController::controlLoop()
                 {
                     if( substationBusChanges.size() > 0 && !waitToBroadCastEverything)
                     {
-                        try
-                        {
-                            for(LONG i=0;i<substationBusChanges.size();i++)
-                            {
-                                CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)substationBusChanges[i];
-                                CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
-
-                                for(LONG j=0;j<ccFeeders.size();j++)
-                                {
-                                    CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j];
-                                    if (!stringCompareIgnoreCase(currentSubstationBus->getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod)  &&
-                                        stringCompareIgnoreCase(currentFeeder->getStrategyName(),"(none)")  &&
-                                        (currentFeeder->getPeakStartTime() > 0 && currentFeeder->getPeakStopTime() > 0 ))
-                                    {
-                                        currentFeeder->isPeakTime(currentDateTime);
-                                    }
-                                    else
-                                    {
-                                        currentFeeder->setPeakTimeFlag(currentSubstationBus->isPeakTime(currentDateTime));
-                                    }
-                                }
-                            }
-                        }
-                        catch(...)
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                        }
-
                         //send the substation bus changes to all cap control clients
                         try
                         {
@@ -739,6 +755,7 @@ void CtiCapController::controlLoop()
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                         }
+
                         CtiCCExecutorFactory f1;
                         CtiCCExecutor* executor1 = f1.createExecutor(new CtiCCSubstationBusMsg(substationBusChanges));
                         try
@@ -1478,8 +1495,6 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
                         {
                             CtiCCSubstationBusStore::getInstance()->setWasSubBusDeletedFlag(TRUE);
                         }
-                        //CtiCCSubstationBusStore::getInstance()->setValid(false);
-                        //CtiPAOScheduleManager::getInstance()->setValid(false);
 
                         long objType = CtiCCSubstationBusStore::Unknown;
                         long changeId = dbChange->getId();
@@ -1507,21 +1522,40 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
                         }
                         else if (dbChange->getDatabase() == ChangePointDb)
                         {   
-                            if (CtiCCSubstationBusStore::getInstance()->findSubBusByPointID(dbChange->getId(), 0) != NULL)
+                            int subCount = 0;
+                            int feedCount = 0;
+                            int capCount = 0;
+                            if (CtiCCSubstationBusStore::getInstance()->findSubBusByPointID(dbChange->getId(), subCount) != NULL)
                             {
-                                CtiCCSubstationBusPtr sub = CtiCCSubstationBusStore::getInstance()->findSubBusByPointID(dbChange->getId(), 0);
+                                CtiCCSubstationBusPtr sub = CtiCCSubstationBusStore::getInstance()->findSubBusByPointID(dbChange->getId(), subCount)->second;
                                 objType = CtiCCSubstationBusStore::SubBus;
                                 changeId = sub->getPAOId();
                             }
-                            else if (CtiCCSubstationBusStore::getInstance()->findFeederByPointID(dbChange->getId(), 0) != NULL)
+                            else if (CtiCCSubstationBusStore::getInstance()->findFeederByPointID(dbChange->getId(), feedCount) != NULL)
                             {
-                                CtiCCFeederPtr feed = CtiCCSubstationBusStore::getInstance()->findFeederByPointID(dbChange->getId(), 0);
+                                CtiCCFeederPtr feed = CtiCCSubstationBusStore::getInstance()->findFeederByPointID(dbChange->getId(), feedCount)->second;
                                 objType = CtiCCSubstationBusStore::Feeder;
                                 changeId = feed->getPAOId();
                             }
-                            else if (CtiCCSubstationBusStore::getInstance()->findCapBankByPointID(dbChange->getId(), 0) != NULL)
+                            else if (CtiCCSubstationBusStore::getInstance()->findCapBankByPointID(dbChange->getId(), capCount) != NULL)
                             {
-                                CtiCCCapBankPtr cap = CtiCCSubstationBusStore::getInstance()->findCapBankByPointID(dbChange->getId(), 0);
+                                CtiCCCapBankPtr cap = CtiCCSubstationBusStore::getInstance()->findCapBankByPointID(dbChange->getId(), capCount)->second;
+                                objType = CtiCCSubstationBusStore::CapBank;
+                                changeId = cap->getPAOId();
+                            }
+                        }
+                        else if (resolvePAOCategory(dbChange->getCategory()) == PAO_CATEGORY_DEVICE &&
+                                 (resolveDeviceType(dbChange->getObjectType()) == TYPEVERSACOMCBC ||
+                                  resolveDeviceType(dbChange->getObjectType()) == TYPEEXPRESSCOMCBC ||
+                                  resolveDeviceType(dbChange->getObjectType()) == TYPECBC7010 ||
+                                   resolveDeviceType(dbChange->getObjectType()) == TYPECBC7020 ||
+                                   resolveDeviceType(dbChange->getObjectType()) == TYPEFISHERPCBC ||
+                                   resolveDeviceType(dbChange->getObjectType()) == TYPECBC6510 ) ) 
+                        {
+                            long capBankId = CtiCCSubstationBusStore::getInstance()->findCapBankIDbyCbcID(dbChange->getId());
+                            if (capBankId != NULL) 
+                            {
+                                CtiCCCapBankPtr cap = CtiCCSubstationBusStore::getInstance()->findCapBankByPAObjectID(capBankId);
                                 objType = CtiCCSubstationBusStore::CapBank;
                                 changeId = cap->getPAOId();
                             }
@@ -1672,12 +1706,13 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
 
     try
     {   CtiCCSubstationBus* currentSubstationBus = NULL;
-        int subCount = store->getNbrOfSubBusesWithPointID(pointID);
+        int subCount = 0;
+        std::multimap< long, CtiCCSubstationBusPtr >::iterator subIter = store->findSubBusByPointID(pointID, subCount);
         while (subCount > 0)
         {
             try
             {
-                currentSubstationBus = store->findSubBusByPointID(pointID, subCount);
+                currentSubstationBus = subIter->second;
                 if (currentSubstationBus != NULL)
                 {
                     if( currentSubstationBus->getCurrentVarLoadPointId() == pointID )
@@ -1687,13 +1722,18 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                             currentSubstationBus->setLastCurrentVarPointUpdateTime(timestamp);
                             currentSubstationBus->setNewPointDataReceivedFlag(TRUE);
                         }
-                        currentSubstationBus->setCurrentVarLoadPointValue(value);
+                        if (currentSubstationBus->getCurrentVarLoadPointValue() != value) 
+                        {
+                            currentSubstationBus->setCurrentVarLoadPointValue(value);
+                            currentSubstationBus->setBusUpdatedFlag(TRUE);
+                        }
+
                         if (currentSubstationBus->getAltDualSubId() == currentSubstationBus->getPAOId() &&
-                            !stringCompareIgnoreCase(currentSubstationBus->getControlUnits(),CtiCCSubstationBus::KVARControlUnits))
+                            !stringCompareIgnoreCase(currentSubstationBus->getControlUnits(), CtiCCSubstationBus::KVARControlUnits) )
                         {
                             currentSubstationBus->setAltSubControlValue(value);
+                            currentSubstationBus->setBusUpdatedFlag(TRUE);
                         }
-                        currentSubstationBus->setBusUpdatedFlag(TRUE);
                         currentSubstationBus->figureEstimatedVarLoadPointValue();
                         currentSubstationBus->setCurrentVarPointQuality(quality);
                         if( currentSubstationBus->getEstimatedVarLoadPointId() > 0 )
@@ -1736,8 +1776,11 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                             currentSubstationBus->setCurrentVarLoadPointValue(currentSubstationBus->convertKQToKVAR(tempKQ,value));
                         }
 
-                        currentSubstationBus->setCurrentWattLoadPointValue(value);
-                        currentSubstationBus->setBusUpdatedFlag(TRUE);
+                        if (currentSubstationBus->getCurrentWattLoadPointValue() != value) 
+                        {
+                            currentSubstationBus->setCurrentWattLoadPointValue(value);
+                            currentSubstationBus->setBusUpdatedFlag(TRUE);
+                        }
 
                         if( currentSubstationBus->getCurrentVarLoadPointId() > 0 )
                         {
@@ -1764,14 +1807,18 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                     else if( currentSubstationBus->getCurrentVoltLoadPointId() == pointID )
                     {
 
-                        currentSubstationBus->setCurrentVoltLoadPointValue(value);
+                        if (currentSubstationBus->getCurrentVoltLoadPointValue() != value) 
+                        {
+                            currentSubstationBus->setCurrentVoltLoadPointValue(value);
+                            currentSubstationBus->setBusUpdatedFlag(TRUE);
+                        }
                         if (currentSubstationBus->getAltDualSubId() == currentSubstationBus->getPAOId() &&
                             !stringCompareIgnoreCase(currentSubstationBus->getControlUnits(),CtiCCSubstationBus::VoltControlUnits))
                         {
                             currentSubstationBus->setAltSubControlValue(value);
+                            currentSubstationBus->setBusUpdatedFlag(TRUE);
                         }
                         currentSubstationBus->setNewPointDataReceivedFlag(TRUE);
-                        currentSubstationBus->setBusUpdatedFlag(TRUE);
                         found = TRUE;
                        // break;
                     }
@@ -1922,14 +1969,18 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                 dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
             }
             subCount--;
+            subIter++;
         }
-        int feederCount = store->getNbrOfFeedersWithPointID(pointID);
+        int feederCount = 0;
+        std::multimap< long, CtiCCFeederPtr >::iterator feedIter = store->findFeederByPointID(pointID, feederCount);
+        CtiCCFeederPtr currentFeeder = NULL;
         while (feederCount > 0)
-        {
+        {   
+            currentFeeder = feedIter->second;
             try
             {
                 currentSubstationBus = NULL;
-                CtiCCFeederPtr currentFeeder = store->findFeederByPointID(pointID, feederCount);
+                //CtiCCFeederPtr currentFeeder = store->findFeederByPointID(pointID, feederCount);
                 if (currentFeeder != NULL)
                 {
                     long subBusId = store->findSubBusIDbyFeederID(currentFeeder->getPAOId());
@@ -1947,8 +1998,11 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                                 currentFeeder->setLastCurrentVarPointUpdateTime(timestamp);
                                 currentFeeder->setNewPointDataReceivedFlag(TRUE);
                             }
-                            currentFeeder->setCurrentVarLoadPointValue(value);
-                            currentSubstationBus->setBusUpdatedFlag(TRUE);
+                            if (currentFeeder->getCurrentVarLoadPointValue() != value) 
+                            {
+                                currentFeeder->setCurrentVarLoadPointValue(value);
+                                currentSubstationBus->setBusUpdatedFlag(TRUE);
+                            }
                             currentFeeder->figureEstimatedVarLoadPointValue();
                             currentFeeder->setCurrentVarPointQuality(quality);
                             if( currentFeeder->getEstimatedVarLoadPointId() > 0 )
@@ -1991,8 +2045,11 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                                 currentFeeder->setCurrentVarLoadPointValue(currentSubstationBus->convertKQToKVAR(tempKQ,value));
                             }
 
-                            currentFeeder->setCurrentWattLoadPointValue(value);
-                            currentSubstationBus->setBusUpdatedFlag(TRUE);
+                            if (currentFeeder->getCurrentWattLoadPointValue() != value) 
+                            {
+                                currentFeeder->setCurrentWattLoadPointValue(value);
+                                currentSubstationBus->setBusUpdatedFlag(TRUE);
+                            }
 
                             if( currentFeeder->getCurrentVarLoadPointId() > 0 )
                             {
@@ -2018,8 +2075,11 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                         }
                         else if( currentFeeder->getCurrentVoltLoadPointId() == pointID )
                         {
-                            currentFeeder->setCurrentVoltLoadPointValue(value);
-                            currentSubstationBus->setBusUpdatedFlag(TRUE);
+                            if (currentFeeder->getCurrentVoltLoadPointValue() != value) 
+                            {
+                                currentFeeder->setCurrentVoltLoadPointValue(value);
+                                currentSubstationBus->setBusUpdatedFlag(TRUE);
+                            }
 
                             found = TRUE;
                            // break;
@@ -2032,15 +2092,19 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
             }
+            feedIter++;
             feederCount--;
         }
 
-        int capCount = store->getNbrOfCapBanksWithPointID(pointID);
+        int capCount = 0;
+        std::multimap< long, CtiCCCapBankPtr >::iterator capIter = store->findCapBankByPointID(pointID, capCount);
+        CtiCCCapBankPtr currentCapBank = NULL;
+
         while (capCount > 0)
         {                  
             try
             {
-                CtiCCCapBank* currentCapBank = store->findCapBankByPointID(pointID, capCount);
+                currentCapBank = capIter->second;
                 currentSubstationBus = NULL;
                 CtiCCFeeder* currentFeeder = NULL;
                 if (currentCapBank != NULL)
@@ -2071,10 +2135,13 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                             {
                                 currentSubstationBus->setBusUpdatedFlag(TRUE);
                             }
-
-                            currentCapBank->setControlStatus((LONG)value);
-                            currentCapBank->setTagsControlStatus((LONG)tags);
-                            currentCapBank->setLastStatusChangeTime(timestamp);
+                            //JULIE: TXU fix for status change time setting to old date on disabled banks.
+                            if (!currentCapBank->getDisableFlag()) 
+                            {    
+                                currentCapBank->setControlStatus((LONG)value);
+                                currentCapBank->setTagsControlStatus((LONG)tags);
+                                currentCapBank->setLastStatusChangeTime(timestamp);
+                            }
                             currentSubstationBus->figureEstimatedVarLoadPointValue();
                             if( currentSubstationBus->getEstimatedVarLoadPointId() > 0 )
                                 sendMessageToDispatch(new CtiPointDataMsg(currentSubstationBus->getEstimatedVarLoadPointId(),currentSubstationBus->getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType));
@@ -2118,9 +2185,14 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                                 {
                                     if (currentMonPoint->getValue() != value)
                                     {
+                                        if (currentMonPoint->getScanInProgress()) 
+                                        {
+                                            currentMonPoint->setScanInProgress(FALSE);
+                                        }
                                         currentSubstationBus->setBusUpdatedFlag(TRUE);
                                         currentSubstationBus->setNewPointDataReceivedFlag(TRUE);
                                         currentSubstationBus->setMultiBusCurrentState(NEW_MULTI_POINT_DATA_RECEIVED);
+                                        currentFeeder->setMultiBusCurrentState(NEW_MULTI_POINT_DATA_RECEIVED);
                                         currentFeeder->setNewPointDataReceivedFlag(TRUE);
                                     }
                                     currentMonPoint->setValue(value);
@@ -2137,8 +2209,8 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
             }
+            currentCapBank++;
             capCount--;
-
         }
     }
     catch(...)

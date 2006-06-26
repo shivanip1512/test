@@ -162,7 +162,7 @@ void CtiCCService::Init()
         dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
     }
 
-    _DB_RELOAD_WAIT = 30;  //30 seconds
+    _DB_RELOAD_WAIT = 5;  //5 seconds
 
     strcpy(var, "CAP_CONTROL_DB_RELOAD_WAIT");
     if( !(str = gConfigParms.getValueAsString(var)).empty() )
