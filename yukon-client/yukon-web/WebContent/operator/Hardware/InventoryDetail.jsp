@@ -642,7 +642,7 @@ function revealLog() {
                 <table width="400" border="0" cellspacing="0" cellpadding="5" align="center" bgcolor="#FFFFFF">
                   <tr> 
                     <td align="center"> 
-                      <%if (!configBean.getHasStaticLoadGroupMapping()) {%> 
+                      <%if (!configBean.isWriteToFileAllowed()) {%> 
                       <input type="submit" name="Config" value="Config">
                         <%}
 

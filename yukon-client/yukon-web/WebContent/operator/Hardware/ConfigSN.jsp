@@ -362,7 +362,7 @@ function removeAllConfig(form) {
                         </table>
 <%
 		}
-		else if(configBean.getHasStaticLoadGroupMapping()) 
+		else if(configBean.isWriteToFileAllowed()) 
 		{%>
 			            Group: 
                         <select id="Group" name="Group" onchange="setContentChanged(true)">
@@ -413,7 +413,7 @@ function removeAllConfig(form) {
                 <table width="64%" border="0" cellspacing="0" cellpadding="3" align="center" bgcolor="#FFFFFF">
                   <tr> 
 						<%
-					  	if(configBean.getHasStaticLoadGroupMapping()) 
+					  	if(configBean.isWriteToFileAllowed()) 
 					  	{%> 
 		                    <td> 
 		                      <div align="center"> 

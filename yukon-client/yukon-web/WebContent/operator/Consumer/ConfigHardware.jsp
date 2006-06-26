@@ -109,7 +109,7 @@ function changeProgSelection(chkBox) {
                   <tr> 
                     <td width="5%" class="HeaderCell">&nbsp; </td>
                     <td width="35%" class="HeaderCell">Program</td>
-<% if (!useHardwareAddressing || configBean.getHasStaticLoadGroupMapping()) { %>
+<% if (!useHardwareAddressing || configBean.isWriteToFileAllowed()) { %>
                     <td width="35%" class="HeaderCell">Assigned Group</td>
 <% } %>
                     <td width="25%" class="HeaderCell">Relay</td>
@@ -151,7 +151,7 @@ function changeProgSelection(chkBox) {
                       <% if (assigned) out.print("checked"); %>>
                     </td>
                     <td width="35%" class="TableCell" height="2"><%= ServletUtils.getProgramDisplayNames(program)[0] %></td>
-				<% if (configBean.getHasStaticLoadGroupMapping()) 
+				<% if (configBean.isWriteToFileAllowed()) 
 					{ 	
 					pageContext.setAttribute("groupID", groupID);
 					pageContext.setAttribute("appCategoryID",program.getProgramID());
@@ -231,7 +231,7 @@ function changeProgSelection(chkBox) {
                     <td align="center"> 
 <% if (configurable) { %>
                       <%
-					  	if(!configBean.getHasStaticLoadGroupMapping()) 
+					  	if(!configBean.isWriteToFileAllowed()) 
 					  	{%> 
                       <input type="submit" name="Config" value="Config">
                       <% } %>
