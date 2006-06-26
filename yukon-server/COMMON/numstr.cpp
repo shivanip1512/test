@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/12/28 16:20:49 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2006/06/26 19:47:29 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -53,7 +53,9 @@ CtiNumStr &CtiNumStr::operator=( const CtiNumStr &aRef )
 
     return *this;
 }
-string CtiNumStr::toString(){
+
+string CtiNumStr::toString()
+{
     switch( _dataType )
     {
         case Char:
@@ -115,8 +117,8 @@ CtiNumStr::operator string ( )
             _snprintf( _dataString, DataStringLength, "*** CtiNumStr Error ***" );
             _dataString[DataStringLength-1] = 0;
     }
-    string s = _dataString;
-    return s;
+
+    return _dataString;
 }
 
 
@@ -349,38 +351,34 @@ void CtiNumStr::buildPointerString( void )
 }
 
 
-string operator +(const string& str, CtiNumStr& numStr){
+string operator +(const string &str, CtiNumStr &numStr)
+{
     return str + numStr.toString();
 }
-string operator +(CtiNumStr & numStr, const string & str){
+
+string operator +(CtiNumStr &numStr, const string &str)
+{
     return numStr.toString() + str;
 }
 
 
-string operator +(const string & str, const char* s){
+string operator +(const string & str, const char *s)
+{
     return str + string(s);
 }
 
-string operator +(const char* s, const string & str){
+string operator +(const char *s, const string &str)
+{
     return string(s) + str;
 }
 
-
-string operator +(const char * s, CtiNumStr & numStr){
+string operator +(const char *s, CtiNumStr &numStr)
+{
     return string(s) + numStr.toString();
 }
 
-string operator +(CtiNumStr & numStr, const char * s){
+string operator +(CtiNumStr &numStr, const char *s)
+{
     return numStr.toString() + string(s);
 }
 
-//  remove after RWCString is gone for good
-/*
-string operator +(const RWCString& rwcs,  CtiNumStr & numStr){
-    return rwcs + numStr.toString().c_str();
-
-}
-string operator +(CtiNumStr & numStr, const RWCString& rwcs){
-    return string(numStr.toString().c_str() + rwcs);
-}
-*/
