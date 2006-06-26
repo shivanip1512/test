@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/dllbase.cpp-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2006/05/03 19:33:30 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2006/06/26 15:47:46 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -81,6 +81,7 @@ IM_EX_CTIBASE int           gDefaultPortCommFailCount = 5;
 IM_EX_CTIBASE unsigned char gMCT400SeriesSPID = 0xFF;
 IM_EX_CTIBASE short         gSimulatePorts = 0;
 IM_EX_CTIBASE set<long>     gSimulatedPortList;
+IM_EX_CTIBASE set<long>     gScanForceDevices;
 
 /*
  *  These are global to the ctibase, but
@@ -353,6 +354,26 @@ DLLEXPORT void InitYukonBaseGlobals(void)
         gDefaultPortCommFailCount = atoi(str.c_str());
     }
     if(DebugLevel & 0x0001) cout << " Default Yukon PORT comm fail count is " << gDefaultPortCommFailCount << endl;
+
+    if( !(str = gConfigParms.getValueAsString("YUKON_SCAN_FORCE")).empty() )
+    {
+        boost::char_separator<char> sep(",");
+        Boost_char_tokenizer tok(str, sep);
+        Boost_char_tokenizer::iterator tok_iter = tok.begin();
+
+        string id_str;
+        long   id;
+
+        gScanForceDevices.clear();
+
+        while( (tok_iter != tok.end()) && !(id_str = *tok_iter++).empty() )
+        {
+            if( id = atol(id_str.c_str()) )
+            {
+                gScanForceDevices.insert(id);
+            }
+        }
+    }
 
     if( !(str = gConfigParms.getValueAsString("YUKON_SIMULATE_PORTS")).empty() )
     {
