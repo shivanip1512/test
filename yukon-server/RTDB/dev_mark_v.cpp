@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2006/03/23 15:29:17 $
+* REVISION     :  $Revision: 1.34 $
+* DATE         :  $Date: 2006/06/26 20:19:49 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -951,11 +951,7 @@ void CtiDeviceMarkV::correctValue( CtiTransdataTracker::lpRecord rec, int yyMap,
 
    value = temp.sh;
    quality = checkQuality( yyMap, value );
-
-   if( quality != NormalQuality )
-   {
-      value = value & 0x1fff;    //lop off the top 3 bits
-   }
+   value = value & 0x1fff;    //lop off the top 3 bits
 }
 
 //=====================================================================================================================
@@ -988,7 +984,12 @@ int CtiDeviceMarkV::checkQuality( int yyMap, int lpValue )
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " " << getName() << " quality is " << string(CtiNumStr(quality).xhex().zpad(2)) << endl;
                 }
-            } // FALL THROUGH
+
+                if(gConfigParms.isTrue("MARKV_PERFECT_QUALITY"))    quality = QuestionableQuality;
+                else                                                quality = NormalQuality;
+
+                break;
+            }
       case 0x0000:
          quality = NormalQuality;
          break;
