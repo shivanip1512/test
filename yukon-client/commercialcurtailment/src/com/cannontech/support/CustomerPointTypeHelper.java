@@ -6,10 +6,13 @@ import java.util.TreeSet;
 
 import org.apache.commons.lang.Validate;
 
-import com.cannontech.cc.dao.CustomerDao;
+import com.cannontech.cc.dao.CustomerStubDao;
 import com.cannontech.cc.model.CICustomerPointData;
 import com.cannontech.cc.model.CICustomerStub;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.DBPersistentDao;
+import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.device.VirtualDevice;
 import com.cannontech.database.data.lite.LiteCICustomer;
@@ -30,7 +33,23 @@ public class CustomerPointTypeHelper {
     private CustomerPointTypeLookup pointTypeLookup;
     private String customerDevicePrefix = "";
     private String customerDeviceSuffix = " Point Data";
-    private CustomerDao customerDao;
+    private CustomerStubDao customerStubDao;
+    private PointDao pointDao;
+    private DeviceDao deviceDao;
+    private PaoDao paoDao;
+    private DBPersistentDao dbPersistentDao;
+
+    public void setDeviceDao(DeviceDao deviceDao) {
+        this.deviceDao = deviceDao;
+    }
+
+    public void setPaoDao(PaoDao paoDao) {
+        this.paoDao = paoDao;
+    }
+
+    public void setPointDao(PointDao pointDao) {
+        this.pointDao = pointDao;
+    }
 
     public CustomerPointTypeHelper() {
         super();
@@ -48,7 +67,7 @@ public class CustomerPointTypeHelper {
         if (data == null) {
             throw new NoPointException(customer.getId(), type);
         }
-        LitePoint litePoint = DaoFactory.getPointDao().getLitePoint(data.getPointId());
+        LitePoint litePoint = pointDao.getLitePoint(data.getPointId());
         return litePoint;
     }
     
@@ -100,7 +119,7 @@ public class CustomerPointTypeHelper {
         boolean found = false;
         // see if point already exists
         LitePoint[] litePointsForPAObject = 
-            DaoFactory.getPaoDao().getLitePointsForPAObject(customerDevice.getLiteID());
+            paoDao.getLitePointsForPAObject(customerDevice.getLiteID());
         for (int i = 0; i < litePointsForPAObject.length; i++) {
             LitePoint point = litePointsForPAObject[i];
             if (point.getPointName().equals(pointName)) {
@@ -118,7 +137,7 @@ public class CustomerPointTypeHelper {
                                                              PointUnits.UOMID_UNDEF);
             point.getPoint().setArchiveType(PointTypes.ARCHIVE_ON_TIMER_OR_UPDATE);
             point.getPoint().setArchiveInterval(7*24*60*60); // 1 week as seconds
-            DaoFactory.getDbPersistentDao().performDBChange(point, Transaction.INSERT);
+            dbPersistentDao.performDBChange(point, Transaction.INSERT);
         }
         CICustomerPointData customerPoint = new CICustomerPointData();
         customerPoint.setType(type);
@@ -126,7 +145,7 @@ public class CustomerPointTypeHelper {
         customerPoint.setPointId(pointId);
         customer.addPoint(customerPoint);
         
-        customerDao.save(customer);
+        customerStubDao.save(customer);
     }
     
     protected LiteYukonPAObject getCustomerDevice(CICustomerStub customer) {
@@ -137,7 +156,7 @@ public class CustomerPointTypeHelper {
         
         // returns null if not found
         //TODO create new search function that looks at category, class, type, and name
-        LiteYukonPAObject yukonPAObject = DaoFactory.getDeviceDao().getLiteYukonPAObject(deviceName,
+        LiteYukonPAObject yukonPAObject = deviceDao.getLiteYukonPAObject(deviceName,
                                                                            generatedDeviceCategory, 
                                                                            generatedDeviceClass,
                                                                            generatedDeviceType);
@@ -151,7 +170,7 @@ public class CustomerPointTypeHelper {
             device.setPAOClass(generatedDeviceClass);
             device.setDeviceType(generatedDeviceType);
             
-            DaoFactory.getDbPersistentDao().performDBChange(device, Transaction.INSERT);
+            dbPersistentDao.performDBChange(device, Transaction.INSERT);
             yukonPAObject = (LiteYukonPAObject) LiteFactory.createLite(device);
         }
         
@@ -162,8 +181,12 @@ public class CustomerPointTypeHelper {
         this.pointTypeLookup = pointTypeLookup;
     }
 
-    public void setCustomerDao(CustomerDao customerDao) {
-        this.customerDao = customerDao;
+    public void setCustomerDao(CustomerStubDao customerDao) {
+        this.customerStubDao = customerDao;
+    }
+
+    public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
+        this.dbPersistentDao = dbPersistentDao;
     }
 
 

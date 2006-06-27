@@ -44,7 +44,7 @@ import com.cannontech.cc.service.exception.EventCreationException;
 import com.cannontech.cc.service.exception.EventModificationException;
 import com.cannontech.common.exception.PointException;
 import com.cannontech.common.util.TimeUtil;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.SimplePointAccessDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -65,6 +65,7 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
     private TransactionTemplate transactionTemplate;
     private SimplePointAccessDao pointAccess;
     private EconomicService economicService;
+    private PointDao pointDao;
     
     @Override
     public String getMethodKey() {
@@ -127,13 +128,9 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
         event.addRevision(revision);
         builder.setEventRevision(revision);
         
-        Calendar calendar = Calendar.getInstance(tz);
         builder.getEvent().setStartTime(previous.getStopTime());
         
-        calendar.setTime(builder.getEvent().getStartTime());
-        calendar.add(Calendar.MINUTE, 
-                     -getDefaultNotifTimeBacksetMinutes(program));
-        builder.getEvent().setNotificationTime(calendar.getTime());
+        builder.getEvent().setNotificationTime(previous.getStopTime());
         
         builder.getEvent().setWindowLengthMinutes(getWindowLengthMinutes());
         builder.setNumberOfWindows(getDefaultDurationMinutes(program) / getWindowLengthMinutes() / 2);
@@ -142,25 +139,25 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
     }
 
     protected int getDefaultNotifTimeBacksetMinutes(Program program) {
-        return getParameterValueInt(program, ProgramParameterKey.DEFAULT_NOTIFICATION_OFFSET_MINUTES);
+        return programParameterDao.getParameterValueInt(program, ProgramParameterKey.DEFAULT_NOTIFICATION_OFFSET_MINUTES);
     }
     
     protected int getDefaultStartTimeOffsetMinutes(Program program) {
-        return getParameterValueInt(program, ProgramParameterKey.DEFAULT_EVENT_OFFSET_MINUTES);
+        return programParameterDao.getParameterValueInt(program, ProgramParameterKey.DEFAULT_EVENT_OFFSET_MINUTES);
     }
     
     protected int getDefaultDurationMinutes(Program program) {
-        return getParameterValueInt(program, ProgramParameterKey.DEFAULT_EVENT_DURATION_MINUTES);
+        return programParameterDao.getParameterValueInt(program, ProgramParameterKey.DEFAULT_EVENT_DURATION_MINUTES);
     }
     
     protected BigDecimal getDefaultEnergyPrice(Program program) {
-        float value = getParameterValueFloat(program, ProgramParameterKey.DEFAULT_ENERGY_PRICE);
-        // specify rounding to five decimal places
+        float value = programParameterDao.getParameterValueFloat(program, ProgramParameterKey.DEFAULT_ENERGY_PRICE);
+        // specify rounding to five significant places
         return new BigDecimal(value, new MathContext(5));
     }
     
-    private int getStopNotifOffsetMinutes() {
-        return 5;
+    protected int getMinimumNotificationMinutes(Program program) {
+        return programParameterDao.getParameterValueInt(program, ProgramParameterKey.MINIMUM_NOTIFICATION_MINUTES);
     }
     
     public int getWindowLengthMinutes() {
@@ -181,7 +178,7 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
     protected BigDecimal getPointValue(EconomicEventParticipant customer, CICustomerPointType type) throws PointException {
         CICustomerPointData data = customer.getCustomer().getPointData().get(type);
         Validate.notNull(data, "Customer " + customer.getCustomer() + " does not have a point for " + type);
-        LitePoint litePoint = DaoFactory.getPointDao().getLitePoint(data.getPointId());
+        LitePoint litePoint = pointDao.getLitePoint(data.getPointId());
         double pointValue = pointAccess.getPointValue(litePoint);
         // It is now somewhat important to round our double. I'm guessing that
         // ten digits of precision is a good number. This will ensure that
@@ -189,16 +186,15 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
         return new BigDecimal(pointValue, new MathContext(10));
     }
     
-    public Date getStopNotificationTime(EconomicEvent event) {
-        Date stopTime = event.getStopTime();
-        Date stopNotifDate = TimeUtil.addMinutes(stopTime, getStopNotifOffsetMinutes());
-        return stopNotifDate;
-    }
-    
     public void verifyTimes(EconomicBuilder builder) throws EventCreationException {
         if (builder.getEvent().getStartTime().before(builder.getEvent().getNotificationTime())) {
             // start time is equal to or less than notification time
             throw new EventCreationException("Start time must be after notification time.");
+        }
+        int notifMinutes = TimeUtil.differenceMinutes(builder.getEvent().getNotificationTime(), builder.getEvent().getStartTime());
+        int minNotification = getMinimumNotificationMinutes(builder.getProgram());
+        if (notifMinutes < minNotification) {
+            throw new EventCreationException("Notification time must be greater than " + minNotification + " minutes.");
         }
         Date now  = new Date();
         if (builder.getEvent().getNotificationTime().before(now)) {
@@ -267,6 +263,7 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
         event = (EconomicEvent) transactionTemplate.execute(new TransactionCallback() {
             public Object doInTransaction(TransactionStatus status) {
                 EconomicEvent event;
+                
                 // verify times
                 verifyTimes(builder);
                 
@@ -277,6 +274,11 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
                     // verify customers for non-extension events
                     verifyCustomers(builder);
                 }
+                if (builder.getEvent().isEventExtension()) {
+                    // verify customers for non-extension events
+                    builder.getEvent().setNotificationTime(new Date());
+                }
+                
                 event = createDatabaseObjects(builder);
                 return event;
             }
@@ -792,6 +794,10 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
 
     public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
         this.transactionTemplate = transactionTemplate;
+    }
+
+    public void setPointDao(PointDao pointDao) {
+        this.pointDao = pointDao;
     }
 
 

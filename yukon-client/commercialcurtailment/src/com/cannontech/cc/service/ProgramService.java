@@ -23,7 +23,7 @@ import com.cannontech.cc.model.Group;
 import com.cannontech.cc.model.Program;
 import com.cannontech.cc.model.ProgramParameter;
 import com.cannontech.cc.model.ProgramType;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.EnergyCompanyDao;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
@@ -33,7 +33,8 @@ public class ProgramService {
     private GroupDao groupDao;
     private AvailableProgramGroupDao availableProgramGroupDao;
     private ProgramParameterDao programParameterDao;
-    
+    private EnergyCompanyDao energyCompanyDao;
+   
     public ProgramService() {
         super();
     }
@@ -48,7 +49,7 @@ public class ProgramService {
     
     @Transactional
     public List<Program> getProgramList(LiteYukonUser yukonUser) {
-        LiteEnergyCompany energyCompany = DaoFactory.getEnergyCompanyDao().getEnergyCompany(yukonUser);
+        LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(yukonUser);
         
         List<Program> programs = 
             programDao.getProgramsForEnergyCompany(energyCompany.getEnergyCompanyID());
@@ -67,7 +68,7 @@ public class ProgramService {
     
     @Transactional
     public List<ProgramType> getProgramTypeList(LiteYukonUser yukonUser) {
-        LiteEnergyCompany energyCompany = DaoFactory.getEnergyCompanyDao().getEnergyCompany(yukonUser);
+        LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(yukonUser);
         List<ProgramType> programTypes = 
             programTypeDao.getAllProgramTypes(energyCompany.getEnergyCompanyID());
         
@@ -140,7 +141,7 @@ public class ProgramService {
     }
 
     public Program createNewProgram(LiteYukonUser user) {
-        LiteEnergyCompany energyCompany = DaoFactory.getEnergyCompanyDao().getEnergyCompany(user);
+        LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(user);
         Program newProgram = new Program();
         List<ProgramType> programTypes = 
             programTypeDao.getAllProgramTypes(energyCompany.getEnergyCompanyID());
@@ -202,9 +203,9 @@ public class ProgramService {
 
     public TimeZone getTimeZone(Program program) {
         int energyCompanyId = program.getProgramType().getEnergyCompanyId();
-        LiteEnergyCompany energyCompany = DaoFactory.getEnergyCompanyDao().getEnergyCompany(energyCompanyId);
+        LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(energyCompanyId);
         
-        return DaoFactory.getEnergyCompanyDao().getEnergyCompanyTimeZone(energyCompany);
+        return energyCompanyDao.getEnergyCompanyTimeZone(energyCompany);
     }
     
     public ProgramParameterDao getProgramParameterDao() {
@@ -213,6 +214,10 @@ public class ProgramService {
 
     public void setProgramParameterDao(ProgramParameterDao programParameterDao) {
         this.programParameterDao = programParameterDao;
+    }
+
+    public void setEnergyCompanyDao(EnergyCompanyDao energyCompanyDao) {
+        this.energyCompanyDao = energyCompanyDao;
     }
 
 }

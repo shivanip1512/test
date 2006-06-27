@@ -10,13 +10,14 @@ import java.util.TreeSet;
 
 import org.apache.commons.lang.Validate;
 
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.EnergyCompanyDao;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.db.customer.CICustomerPointType;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 
 public class CustomerPointTypeLookup {
+    private EnergyCompanyDao energyCompanyDao;
     /**
      * This holds the map of keys to list of point types. In this
      * context, the "key" is the string value that is stored under
@@ -65,7 +66,7 @@ public class CustomerPointTypeLookup {
 
     public Set<String> getPointTypeGroups(LiteEnergyCompany energyCompany) {
         String property = 
-            DaoFactory.getEnergyCompanyDao().getEnergyCompanyProperty(energyCompany, 
+            energyCompanyDao.getEnergyCompanyProperty(energyCompany, 
                                                         EnergyCompanyRole.APPLICABLE_POINT_TYPE_KEY);
         
         if (property == null) {
@@ -85,7 +86,7 @@ public class CustomerPointTypeLookup {
      */
     public Set<String> getPointTypeGroups(LiteCICustomer liteCICustomer) {
         int energyCompanyID = liteCICustomer.getEnergyCompanyID();
-        LiteEnergyCompany energyCompany = DaoFactory.getEnergyCompanyDao().getEnergyCompany(energyCompanyID);
+        LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(energyCompanyID);
         return getPointTypeGroups(energyCompany);
     }
 
@@ -97,7 +98,7 @@ public class CustomerPointTypeLookup {
      */
     public Set<CICustomerPointType> getApplicablePoints(LiteCICustomer liteCICustomer) {
         int energyCompanyID = liteCICustomer.getEnergyCompanyID();
-        LiteEnergyCompany energyCompany = DaoFactory.getEnergyCompanyDao().getEnergyCompany(energyCompanyID);
+        LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(energyCompanyID);
         return getApplicablePoints(energyCompany);
     }
 
@@ -112,6 +113,10 @@ public class CustomerPointTypeLookup {
             }
             applicablePointLookup.put(key, enumSet);
         }
+    }
+
+    public void setEnergyCompanyDao(EnergyCompanyDao energyCompanyDao) {
+        this.energyCompanyDao = energyCompanyDao;
     }
 
     

@@ -8,14 +8,14 @@ import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
-import com.cannontech.cc.dao.CustomerDao;
+import com.cannontech.cc.dao.CustomerStubDao;
 import com.cannontech.cc.model.CICustomerStub;
 import com.cannontech.cc.model.Group;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.hibernate.YukonBaseHibernateDao;
 
-public class CustomerDaoImpl extends YukonBaseHibernateDao implements
-        CustomerDao {
+public class CustomerStubDaoImpl extends YukonBaseHibernateDao implements
+        CustomerStubDao {
 
     public void save(CICustomerStub object) {
         getHibernateTemplate().saveOrUpdate(object);

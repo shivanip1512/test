@@ -90,23 +90,23 @@ public abstract class BaseNotificationStrategy extends StrategyBase {
     }
 
     protected int getDefaultNotifTimeBacksetMinutes(Program program) {
-        return getParameterValueInt(program, ProgramParameterKey.DEFAULT_NOTIFICATION_OFFSET_MINUTES);
+        return programParameterDao.getParameterValueInt(program, ProgramParameterKey.DEFAULT_NOTIFICATION_OFFSET_MINUTES);
     }
     
     protected int getDefaultStartTimeOffsetMinutes(Program program) {
-        return getParameterValueInt(program, ProgramParameterKey.DEFAULT_EVENT_OFFSET_MINUTES);
+        return programParameterDao.getParameterValueInt(program, ProgramParameterKey.DEFAULT_EVENT_OFFSET_MINUTES);
     }
     
     protected int getDefaultDurationMinutes(Program program) {
-        return getParameterValueInt(program, ProgramParameterKey.DEFAULT_EVENT_DURATION_MINUTES);
+        return programParameterDao.getParameterValueInt(program, ProgramParameterKey.DEFAULT_EVENT_DURATION_MINUTES);
     }
     
     protected int getMinimumDurationMinutes(Program program) {
-        return getParameterValueInt(program, ProgramParameterKey.MINIMUM_EVENT_DURATION_MINUTES);
+        return programParameterDao.getParameterValueInt(program, ProgramParameterKey.MINIMUM_EVENT_DURATION_MINUTES);
     }
     
     protected int getMinimumNotificationMinutes(Program program) {
-        return getParameterValueInt(program, ProgramParameterKey.MINIMUM_NOTIFICATION_MINUTES);
+        return programParameterDao.getParameterValueInt(program, ProgramParameterKey.MINIMUM_NOTIFICATION_MINUTES);
     }
     
     public void verifyTimes(CurtailmentBuilder builder) throws EventCreationException {

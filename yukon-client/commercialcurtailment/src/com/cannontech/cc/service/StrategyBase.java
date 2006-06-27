@@ -12,8 +12,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.commons.lang.StringUtils;
-
 import com.cannontech.cc.dao.ProgramParameterDao;
 import com.cannontech.cc.dao.UnknownParameterException;
 import com.cannontech.cc.model.BaseEvent;
@@ -32,15 +30,11 @@ import com.cannontech.database.data.notification.NotifType;
 public abstract class StrategyBase {
     private ProgramService programService;
     private GroupService groupService;
-    private ProgramParameterDao programParameterDao;
     private Set<ProgramParameterKey> parameters = new TreeSet<ProgramParameterKey>();
+    protected ProgramParameterDao programParameterDao;
     
     public ProgramParameterDao getProgramParameterDao() {
         return programParameterDao;
-    }
-
-    public void setProgramParameterDao(ProgramParameterDao programParameterDao) {
-        this.programParameterDao = programParameterDao;
     }
 
     public GroupService getGroupService() {
@@ -57,31 +51,6 @@ public abstract class StrategyBase {
 
     public void setProgramService(ProgramService programService) {
         this.programService = programService;
-    }
-    
-    public String getParameterValue(Program program, ProgramParameterKey key) {
-        String result = null;
-        try {
-            ProgramParameter parameter;
-            parameter = getProgramParameterDao().getFor(key, program);
-            if (!StringUtils.isBlank(parameter.getParameterValue())) {
-                result = parameter.getParameterValue();
-            }
-        } catch (UnknownParameterException e) {
-        }
-        if (result == null) {
-            // get default
-            result = key.getDefaultValue();
-        }
-        return result;
-    }
-    
-    public int getParameterValueInt(Program program, ProgramParameterKey key) {
-        return Integer.parseInt(getParameterValue(program, key));
-    }
-    
-    public float getParameterValueFloat(Program program, ProgramParameterKey key) {
-        return Float.parseFloat(getParameterValue(program, key));
     }
     
     public abstract String getMethodKey();
@@ -129,7 +98,7 @@ public abstract class StrategyBase {
         for (ProgramParameterKey key : parameters) {
             ProgramParameter parameter;
             try {
-                parameter = programParameterDao.getFor(key, program);
+                parameter = programParameterDao.getFor(program, key);
             } catch (UnknownParameterException e) {
                 parameter = new ProgramParameter();
                 parameter.setParameterKey(key);
@@ -159,6 +128,10 @@ public abstract class StrategyBase {
 
     public void setParameters(Set<ProgramParameterKey> parameters) {
         this.parameters = parameters;
+    }
+
+    public void setProgramParameterDao(ProgramParameterDao programParameterDao) {
+        this.programParameterDao = programParameterDao;
     }
 
 

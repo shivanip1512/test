@@ -7,22 +7,23 @@ import java.util.Set;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cannontech.cc.dao.CustomerDao;
+import com.cannontech.cc.dao.CustomerStubDao;
 import com.cannontech.cc.dao.GroupCustomerNotifDao;
 import com.cannontech.cc.dao.GroupDao;
 import com.cannontech.cc.model.CICustomerStub;
 import com.cannontech.cc.model.Group;
 import com.cannontech.cc.model.GroupCustomerNotif;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.EnergyCompanyDao;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.support.CustomerPointTypeHelper;
 
 public class GroupService {
     private GroupDao groupDao;
-    private CustomerDao customerDao;
+    private CustomerStubDao customerStubDao;
     private GroupCustomerNotifDao groupCustomerNotifDao;
     private CustomerPointTypeHelper pointTypeHelper;
+    private EnergyCompanyDao energyCompanyDao;
 
     public GroupCustomerNotifDao getGroupCustomerNotifDao() {
         return groupCustomerNotifDao;
@@ -33,7 +34,7 @@ public class GroupService {
     }
 
     public List<Group> getAllGroups(LiteYukonUser user) {
-        LiteEnergyCompany energyCompany = DaoFactory.getEnergyCompanyDao().getEnergyCompany(user);
+        LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(user);
         List<Group> groupsForEnergyCompany = groupDao.getGroupsForEnergyCompany(energyCompany.getEnergyCompanyID());
         Collections.sort(groupsForEnergyCompany);
         return groupsForEnergyCompany;
@@ -55,16 +56,16 @@ public class GroupService {
         this.groupDao = groupDao;
     }
 
-    public CustomerDao getCustomerDao() {
-        return customerDao;
+    public CustomerStubDao getCustomerStubDao() {
+        return customerStubDao;
     }
 
-    public void setCustomerDao(CustomerDao customerDao) {
-        this.customerDao = customerDao;
+    public void setCustomerStubDao(CustomerStubDao customerDao) {
+        this.customerStubDao = customerDao;
     }
 
     public Group createNewGroup(LiteYukonUser yukonUser) {
-        LiteEnergyCompany energyCompany = DaoFactory.getEnergyCompanyDao().getEnergyCompany(yukonUser);
+        LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(yukonUser);
         Group newGroup = new Group();
         
         newGroup.setEnergyCompanyId(energyCompany.getEnergyCompanyID());
@@ -91,9 +92,9 @@ public class GroupService {
     public List<GroupCustomerNotif> getUnassignedCustomers(Group group, boolean newGroup) {
         List<CICustomerStub> customers;
         if (newGroup) {
-            customers = customerDao.getCustomersForEC(group.getEnergyCompanyId());
+            customers = customerStubDao.getCustomersForEC(group.getEnergyCompanyId());
         } else {
-            customers = customerDao.getUnassignedCustomers(group);
+            customers = customerStubDao.getUnassignedCustomers(group);
         }
         ArrayList<GroupCustomerNotif> customerList = new ArrayList<GroupCustomerNotif>(customers.size());
         for (CICustomerStub customer : customers) {
@@ -125,6 +126,10 @@ public class GroupService {
 
     public void setPointTypeHelper(CustomerPointTypeHelper pointTypeHelper) {
         this.pointTypeHelper = pointTypeHelper;
+    }
+
+    public void setEnergyCompanyDao(EnergyCompanyDao energyCompanyDao) {
+        this.energyCompanyDao = energyCompanyDao;
     }
 }
 

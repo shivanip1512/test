@@ -2,6 +2,8 @@ package com.cannontech.cc.daohibe;
 
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.cannontech.cc.dao.ProgramParameterDao;
 import com.cannontech.cc.dao.UnknownParameterException;
 import com.cannontech.cc.model.Program;
@@ -24,7 +26,7 @@ public class ProgramParameterDaoImpl extends YukonBaseHibernateDao implements
         return (ProgramParameter) getHibernateTemplate().get(ProgramParameter.class, id);
     }
     
-    public ProgramParameter getFor(ProgramParameterKey parameterKey, Program program) 
+    public ProgramParameter getFor(Program program, ProgramParameterKey parameterKey) 
     throws UnknownParameterException {
         String query = 
             "select pp from ProgramParameter pp " +
@@ -49,5 +51,31 @@ public class ProgramParameterDaoImpl extends YukonBaseHibernateDao implements
         getHibernateTemplate().bulkUpdate("delete ProgramParameter pp " +
                 "where pp.program = ?", program);
     }
+    
+    public String getParameterValue(Program program, ProgramParameterKey key) {
+        String result = null;
+        try {
+            ProgramParameter parameter;
+            parameter = getFor(program, key);
+            if (!StringUtils.isBlank(parameter.getParameterValue())) {
+                result = parameter.getParameterValue();
+            }
+        } catch (UnknownParameterException e) {
+        }
+        if (result == null) {
+            // get default
+            result = key.getDefaultValue();
+        }
+        return result;
+    }
+    
+    public int getParameterValueInt(Program program, ProgramParameterKey key) {
+        return Integer.parseInt(getParameterValue(program, key));
+    }
+    
+    public float getParameterValueFloat(Program program, ProgramParameterKey key) {
+        return Float.parseFloat(getParameterValue(program, key));
+    }
+
 
 }

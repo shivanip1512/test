@@ -3,14 +3,15 @@ package com.cannontech.cc.service;
 import java.util.List;
 
 import com.cannontech.cc.dao.BaseEventDao;
-import com.cannontech.cc.dao.CustomerDao;
+import com.cannontech.cc.dao.CustomerStubDao;
 import com.cannontech.cc.model.BaseEvent;
 import com.cannontech.cc.model.CICustomerStub;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 public class CustomerEventService {
+    private CustomerStubDao customerStubDao;
     private CustomerDao customerDao;
     private BaseEventDao baseEventDao;
 
@@ -19,8 +20,8 @@ public class CustomerEventService {
     }
     
     public CICustomerStub getCustomer(LiteYukonUser user) {
-        LiteCICustomer liteCICustomer = DaoFactory.getCustomerDao().getCustomerForUser(user);
-        CICustomerStub customerStub = customerDao.getForLite(liteCICustomer);
+        LiteCICustomer liteCICustomer = customerDao.getCustomerForUser(user);
+        CICustomerStub customerStub = customerStubDao.getForLite(liteCICustomer);
         return customerStub;
     }
     
@@ -44,12 +45,12 @@ public class CustomerEventService {
     
     // dependency injection getters/setters
 
-    public CustomerDao getCustomerDao() {
-        return customerDao;
+    public CustomerStubDao getCustomerDao() {
+        return customerStubDao;
     }
 
-    public void setCustomerDao(CustomerDao customerDao) {
-        this.customerDao = customerDao;
+    public void setCustomerDao(CustomerStubDao customerDao) {
+        this.customerStubDao = customerDao;
     }
 
     public BaseEventDao getBaseEventDao() {
@@ -58,6 +59,10 @@ public class CustomerEventService {
 
     public void setBaseEventDao(BaseEventDao baseEventDao) {
         this.baseEventDao = baseEventDao;
+    }
+
+    public void setCustomerDao(CustomerDao customerDao) {
+        this.customerDao = customerDao;
     }
 
 }

@@ -19,7 +19,7 @@ import com.cannontech.cc.service.builder.VerifiedCustomer;
 import com.cannontech.cc.service.exception.EventModificationException;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.exception.PointException;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.EnergyCompanyDao;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.customer.CICustomerPointType;
@@ -28,6 +28,7 @@ import com.cannontech.support.CustomerPointTypeHelper;
 public class IsocEconomicStrategy extends BaseEconomicStrategy {
     IsocCommonStrategy isocCommonStrategy;
     private CustomerPointTypeHelper pointTypeHelper;
+    private EnergyCompanyDao energyCompanyDao;
     
     public void setPointTypeHelper(CustomerPointTypeHelper pointTypeHelper) {
         this.pointTypeHelper = pointTypeHelper;
@@ -76,8 +77,8 @@ public class IsocEconomicStrategy extends BaseEconomicStrategy {
 
     protected void checkPropossedSelections(EconomicEventParticipantSelection selection, 
                                             LiteYukonUser user, Date time) throws EventModificationException {
-        LiteEnergyCompany energyCompany = DaoFactory.getEnergyCompanyDao().getEnergyCompany(user);
-        TimeZone timeZone = DaoFactory.getEnergyCompanyDao().getEnergyCompanyTimeZone(energyCompany);
+        LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(user);
+        TimeZone timeZone = energyCompanyDao.getEnergyCompanyTimeZone(energyCompany);
         DateFormat dateFormat = SimpleDateFormat.getTimeInstance(SimpleDateFormat.SHORT);
         dateFormat.setTimeZone(timeZone);
         List<EconomicEventParticipantSelectionWindow> selectionWindows = selection.getSelectionWindows();
@@ -136,6 +137,11 @@ public class IsocEconomicStrategy extends BaseEconomicStrategy {
 
     public BigDecimal getCustomerElectionBuyThrough(EconomicEventParticipant customer) throws PointException {
         return getPointValue(customer, CICustomerPointType.AdvBuyThroughKw);
+    }
+
+
+    public void setEnergyCompanyDao(EnergyCompanyDao energyCompanyDao) {
+        this.energyCompanyDao = energyCompanyDao;
     }
 
 }

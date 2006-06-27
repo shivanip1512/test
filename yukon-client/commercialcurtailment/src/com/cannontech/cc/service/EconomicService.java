@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.apache.commons.lang.Validate;
 
-import com.cannontech.cc.dao.CustomerDao;
+import com.cannontech.cc.dao.CustomerStubDao;
 import com.cannontech.cc.dao.EconomicEventDao;
 import com.cannontech.cc.dao.EconomicEventNotifDao;
 import com.cannontech.cc.dao.EconomicEventParticipantDao;
@@ -16,7 +16,7 @@ import com.cannontech.cc.model.EconomicEventParticipantSelection;
 import com.cannontech.cc.model.EconomicEventParticipantSelectionWindow;
 import com.cannontech.cc.model.EconomicEventPricing;
 import com.cannontech.cc.model.EconomicEventPricingWindow;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
@@ -24,6 +24,7 @@ public class EconomicService {
     private EconomicEventDao economicEventDao;
     private EconomicEventParticipantDao economicEventParticipantDao;
     private EconomicEventNotifDao economicEventNotifDao;
+    private CustomerStubDao customerStubDao;
     private CustomerDao customerDao;
     private StrategyFactory strategyFactory;
 
@@ -46,8 +47,8 @@ public class EconomicService {
     }
     
     public EconomicEventParticipant getParticipant(EconomicEvent event, LiteYukonUser yukonUser) {
-        LiteCICustomer liteCICustomer = DaoFactory.getCustomerDao().getCustomerForUser(yukonUser);
-        CICustomerStub customerStub = customerDao.getForLite(liteCICustomer);
+        LiteCICustomer liteCICustomer = customerDao.getCustomerForUser(yukonUser);
+        CICustomerStub customerStub = customerStubDao.getForLite(liteCICustomer);
         CICustomerStub customer = customerStub;
         return economicEventParticipantDao.getForCustomerAndEvent(customer, event);
     }
@@ -99,8 +100,8 @@ public class EconomicService {
         this.economicEventParticipantDao = economicEventParticipantDao;
     }
 
-    public void setCustomerDao(CustomerDao customerDao) {
-        this.customerDao = customerDao;
+    public void setCustomerDao(CustomerStubDao customerDao) {
+        this.customerStubDao = customerDao;
     }
 
     public EconomicEventNotifDao getEconomicEventNotifDao() {
@@ -113,6 +114,10 @@ public class EconomicService {
 
     public void setStrategyFactory(StrategyFactory strategyFactory) {
         this.strategyFactory = strategyFactory;
+    }
+
+    public void setCustomerDao(CustomerDao customerDao) {
+        this.customerDao = customerDao;
     }
 
 

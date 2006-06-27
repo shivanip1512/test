@@ -47,6 +47,7 @@
         <value>DEFAULT_NOTIFICATION_OFFSET_MINUTES</value>
         <value>DEFAULT_EVENT_DURATION_MINUTES</value>
         <value>DEFAULT_ENERGY_PRICE</value>
+        <value>MINIMUM_NOTIFICATION_MINUTES</value>
       </set>
     </property>
   </bean>
@@ -107,7 +108,7 @@
   </bean>
   <bean id="availableProgramGroupDao" class="com.cannontech.cc.daohibe.AvailableProgramGroupDaoImpl" parent="yukonHibeDao"/>
   <bean id="groupCustomerNotifDao" class="com.cannontech.cc.daohibe.GroupCustomerNotifDaoImpl" parent="yukonHibeDao"/>
-  <bean id="customerDao" class="com.cannontech.cc.daohibe.CustomerDaoImpl" parent="yukonHibeDao"/>
+  <bean id="customerDao" class="com.cannontech.cc.daohibe.CustomerStubDaoImpl" parent="yukonHibeDao"/>
   <bean id="curtailmentEventDao" class="com.cannontech.cc.daohibe.CurtailmentEventDaoImpl" parent="yukonHibeDao"/>
   <bean id="curtailmentEventNotifDao" class="com.cannontech.cc.daohibe.CurtailmentEventNotifDaoImpl" parent="yukonHibeDao"/>
   <bean id="curtailmentEventParticipantDao" class="com.cannontech.cc.daohibe.CurtailmentEventParticipantDaoImpl" parent="yukonHibeDao"/>

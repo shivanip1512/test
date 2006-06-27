@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import com.cannontech.cc.dao.CustomerDao;
+import com.cannontech.cc.dao.CustomerStubDao;
 import com.cannontech.cc.model.CICustomerStub;
 import com.cannontech.common.exception.PointDataException;
 import com.cannontech.core.dao.SimplePointAccessDao;
@@ -19,7 +19,7 @@ import com.cannontech.support.CustomerPointTypeLookup;
 import com.cannontech.support.NoPointException;
 
 public class CustomerPointService {
-    private CustomerDao customerDao;
+    private CustomerStubDao customerDao;
     private CustomerPointTypeLookup pointTypeLookup;
     private CustomerPointTypeHelper pointTypeHelper;
     private SimplePointAccessDao pointAccess;
@@ -84,7 +84,7 @@ public class CustomerPointService {
         return customersForEC;
     }
     
-    public void setCustomerDao(CustomerDao customerDao) {
+    public void setCustomerDao(CustomerStubDao customerDao) {
         this.customerDao = customerDao;
     }
 
