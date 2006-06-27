@@ -10,13 +10,17 @@ import java.util.Vector;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.PoolManager;
+import com.cannontech.database.SqlStatement;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.DeviceClasses;
+import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.db.capcontrol.DeviceCBC;
 import com.cannontech.database.db.device.DeviceMeterGroup;
 import com.cannontech.database.db.device.lm.LMGroup;
 import com.cannontech.database.db.device.lm.LMGroupExpressCom;
@@ -37,6 +41,7 @@ import com.cannontech.yukon.IDatabaseCache;
 public class CommandDeviceBean
 {
 	private HashMap loadGroupIDToLiteLoadGroupsMap = null;
+    private HashMap cbcIDToLiteCBCMap = null;
 	private boolean clear = false;	//flag to clear all selection settings
 	private boolean changed = false;
 	private int userID = -1;//	admin userid    
@@ -64,12 +69,14 @@ public class CommandDeviceBean
 	public static final int LMGROUP_ROUTE_ORDER_BY = 5;
 	public static final int LMGROUP_SERIAL_ORDER_BY = 6;
 	public static final int LMGROUP_CAPACITY_ORDER_BY = 7;
+    public static final int CBC_SERIAL_ORDER_BY = 8;
  
 	// Possible Filters 
 	public static final int NO_FILTER = 0;
 	public static final int ROUTE_FILTER = 1;
 	public static final int COLLECTION_GROUP_FILTER = 2;
 	public static final int COMM_CHANNEL_FILTER = 3;
+    public static final int CBC_TYPE_FILTER = 4;
 
 	private static final String DEVICE_NAME_STRING = "Device Name";
 	private static final String DEVICE_TYPE_STRING = "Device Type";
@@ -84,6 +91,8 @@ public class CommandDeviceBean
 	private static final String LMGROUP_CAPACITY_STRING = "kW Capactiy";
 	private static final String LMGROUP_ROUTE_STRING = "Group Route";
 	
+    private static final String CBC_SERIAL_STRING = "Serial Number";
+    
 	private static final String[] orderByStrings_Core = new String[] { 
 			DEVICE_NAME_STRING, 
 			DEVICE_TYPE_STRING, 
@@ -117,7 +126,8 @@ public class CommandDeviceBean
 	
 	public static final String[] orderByStrings_CapControl = new String[] { 
 			DEVICE_NAME_STRING, 
-			DEVICE_TYPE_STRING};
+			DEVICE_TYPE_STRING,
+            CBC_SERIAL_STRING};
  
 	private static final String[] searchByStrings_Core = new String[] { 
 			DEVICE_NAME_STRING, 
@@ -158,6 +168,8 @@ public class CommandDeviceBean
 	public ArrayList validCommChannels = null;
 	//List of <String, (collectionGroup)> values
 	public ArrayList validCollGroups = null;
+    //List of <int(CBC Types)> values
+    public ArrayList validCBCTypes = null;
 	
 	/**
 	 * Sort deviceTypeCommands by their displayOrder
@@ -221,6 +233,39 @@ public class CommandDeviceBean
 		}
 	};
 
+	/**
+	 * Sort deviceTypeCommands by their displayOrder
+	 */
+    public java.util.Comparator CBC_SERIAL_COMPARATOR = new java.util.Comparator()
+    {
+        public int compare(Object o1, Object o2)
+        {
+            String thisVal = null, anotherVal = null;
+
+            if (o1 instanceof LiteYukonPAObject && o2 instanceof LiteYukonPAObject)
+            {
+                YCLiteCBC lcbc1 = (YCLiteCBC)getCBCIDToLiteCBCMap().get(new Integer( ((LiteYukonPAObject) o1).getYukonID()));
+                YCLiteCBC lcbc2 = (YCLiteCBC)getCBCIDToLiteCBCMap().get(new Integer( ((LiteYukonPAObject) o2).getYukonID()));
+                if (lcbc1 != null && lcbc2 != null)
+                {
+                    thisVal = lcbc1.getSerial();
+                    anotherVal = lcbc2.getSerial();
+            
+                    if (thisVal.equalsIgnoreCase(anotherVal))
+                    {
+                        thisVal = DaoFactory.getPaoDao().getYukonPAOName(lcbc1.getCbcID());
+                        anotherVal = DaoFactory.getPaoDao().getYukonPAOName(lcbc2.getCbcID());
+                    }
+                }
+            }
+            return (thisVal.compareToIgnoreCase(anotherVal));
+        }
+
+        public boolean equals(Object obj)
+        {
+            return false;
+        }
+    };
 	/**
 	 * Sort deviceTypeCommands by their displayOrder
 	 */
@@ -477,6 +522,61 @@ public class CommandDeviceBean
 						if( getLoadGroupIDToLiteLoadGroupsMap().get(new Integer(lPao.getYukonID())) == null) 
 							isValid = false;                            
 					}
+                    else if( getSortBy() == PAOGroups.CAT_CAPCONTROL)
+                    {
+                        if( getCBCIDToLiteCBCMap().get(new Integer(lPao.getYukonID())) == null) 
+                            isValid = false;                            
+                    }                    
+                    /*else if( getSortBy() == DeviceTypes.CAPBANKCONTROLLER)
+                    {
+                        if( !isCBCVersacomSortBy(lPao))
+                            isValid = false;
+                    }
+                    else if( getSortBy() == DeviceTypes.CBC_EXPRESSCOM)
+                    {
+                        if( !isCBCExpresscomSortBy(lPao))
+                            isValid = false;
+                    }
+                    else if( getSortBy() == DeviceTypes.CBC_FP_2800)
+                    {
+                        if( !isCBC_FP_2800(lPao))
+                            isValid = false;
+                    }
+                    else if( getSortBy() == DeviceTypes.CBC_7010)
+                    {
+                        if( !isCBC_7010(lPao))
+                            isValid = false;
+                    }
+                    else if( getSortBy() == DeviceTypes.CBC_7011)
+                    {
+                        if( !isCBC_7011(lPao))
+                            isValid = false;
+                    }
+                    else if( getSortBy() == DeviceTypes.CBC_7012)
+                    {
+                        if( !isCBC_7012(lPao))
+                            isValid = false;
+                    }
+                    else if( getSortBy() == DeviceTypes.CBC_7020)
+                    {
+                        if( !isCBC_7020(lPao))
+                            isValid = false;
+                    }
+                    else if( getSortBy() == DeviceTypes.CBC_7022)
+                    {
+                        if( !isCBC_7022(lPao))
+                            isValid = false;
+                    }
+                    else if( getSortBy() == DeviceTypes.CBC_7023)
+                    {
+                        if( !isCBC_7023(lPao))
+                            isValid = false;
+                    }
+                    else if( getSortBy() == DeviceTypes.CBC_7024)
+                    {
+                        if( !isCBC_7024(lPao))
+                            isValid = false;
+                    }*/
 					else
 					{
 						if( ! (getSortBy() == lPao.getPaoClass()) ) isValid = false;
@@ -496,6 +596,10 @@ public class CommandDeviceBean
 						else if( getFilterBy() == COMM_CHANNEL_FILTER)
 						{
 							if (!(String.valueOf(lPao.getPortID()).equals(getFilterValue()))) isValid = false;
+						}
+                        else if( getFilterBy() == CBC_TYPE_FILTER)
+                        {
+                            if (!(String.valueOf(PAOGroups.getPAOTypeString(lPao.getType())).equals(getFilterValue()))) isValid = false;
 						}
 					}
                     
@@ -765,6 +869,9 @@ public class CommandDeviceBean
 			case LMGROUP_SERIAL_ORDER_BY:
 				Collections.sort(getDeviceList(), LMGROUP_SERIAL_COMPARATOR);
 				break;
+            case CBC_SERIAL_ORDER_BY:
+                Collections.sort(getDeviceList(), CBC_SERIAL_COMPARATOR);
+                break;                
 			default:
 				break;
 		}
@@ -822,6 +929,53 @@ public class CommandDeviceBean
 		return validCollGroups;
 	}
 
+    public ArrayList getValidCBCTypes()
+    {
+        if (validCBCTypes == null)
+        {
+            try
+            {
+                String[] valids = retrieveCBCTypes();
+                validCBCTypes = new ArrayList(valids.length);
+                for (int i = 0; i < valids.length; i++)
+                    validCBCTypes.add(valids[i]);
+            }
+            catch (SQLException e)
+            {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+        return validCBCTypes;
+    }
+    
+    public final static String[] retrieveCBCTypes() throws java.sql.SQLException
+    {
+        String[] retVal = null; 
+        
+        SqlStatement stmt = new SqlStatement(
+                "SELECT DISTINCT TYPE FROM " + YukonPAObject.TABLE_NAME +
+                " WHERE CATEGORY = '"+PAOGroups.STRING_CAT_DEVICE+"' "+
+                " AND PAOCLASS = '"+PAOGroups.STRING_CAT_CAPCONTROL+"' "+
+                " AND TYPE != '"+ DeviceTypes.STRING_CAP_BANK[0] + "'" , 
+             CtiUtilities.getDatabaseAlias() );
+                                                     
+        try
+        {                                           
+            stmt.execute();
+    
+            retVal = new String[stmt.getRowCount()];
+            for( int i = 0; i < stmt.getRowCount(); i++ )
+                retVal[i] = new String( ((String)stmt.getRow(i)[0]) );  
+        }
+        catch( Exception e )
+        {
+            CTILogger.error( e.getMessage(), e );
+        }   
+    
+        return retVal;
+    }
+    
 	/**
 	 * @return
 	 */
@@ -921,6 +1075,18 @@ public class CommandDeviceBean
 			if (lPao.getPortID() != PAOGroups.INVALID)
 				return DaoFactory.getPaoDao().getYukonPAOName(lPao.getPortID());
 		}
+        else if(valueString.equalsIgnoreCase(CBC_SERIAL_STRING))
+        {
+            YCLiteCBC lcbc = (YCLiteCBC)getCBCIDToLiteCBCMap().get(new Integer(lPao.getYukonID()));
+            if (lcbc != null)
+            {
+                if( valueString.equalsIgnoreCase(CBC_SERIAL_STRING))
+                {
+                    return lcbc.getSerial();
+                }
+            }
+            
+        }        
 		else
 		{
 			YCLiteLoadGroup llg = (YCLiteLoadGroup)getLoadGroupIDToLiteLoadGroupsMap().get(new Integer(lPao.getYukonID()));
@@ -1192,4 +1358,63 @@ public class CommandDeviceBean
 		}
 		return loadGroupIDToLiteLoadGroupsMap;
 	}
+    
+    public HashMap getCBCIDToLiteCBCMap()
+    {
+        if (cbcIDToLiteCBCMap == null)
+        {
+            cbcIDToLiteCBCMap = new HashMap();
+            //Vector of Integer values(CBC ids)
+            Vector cbcIDs = null; 
+
+            java.sql.Connection conn = null;
+            java.sql.PreparedStatement stmt = null;
+            java.sql.ResultSet rset = null;
+    
+            try
+            {
+                conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+    
+                if( conn == null )
+                {
+                    CTILogger.info("Error getting database connection.");
+                    return null;
+                }
+                else
+                {
+                    //Load all cbcs                   
+                    StringBuffer sql = new StringBuffer(" SELECT DISTINCT DEVICEID, SERIALNUMBER, ROUTEID " +
+                            " FROM " + DeviceCBC.TABLE_NAME);
+                    stmt = conn.prepareStatement(sql.toString());
+                    rset = stmt.executeQuery();
+                    while (rset.next())
+                    {
+                        int cbcID = rset.getInt(1);
+                        String serial = rset.getString(2);                        
+                        int routeID = rset.getInt(3);
+                        YCLiteCBC lcbc = new YCLiteCBC(cbcID, routeID, serial);
+                        cbcIDToLiteCBCMap.put(new Integer(cbcID), lcbc);
+                    }
+                }
+            }
+            catch( java.sql.SQLException e )
+            {
+                e.printStackTrace();
+            }
+            finally
+            {
+                try
+                {
+                    if (rset != null) rset.close();
+                    if( stmt != null ) stmt.close();
+                    if( conn != null ) conn.close();
+                }
+                catch( java.sql.SQLException e )
+                {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return cbcIDToLiteCBCMap;
+    }    
 }
