@@ -258,7 +258,7 @@ public class LiteCustomer extends LiteBase {
 	public Vector<Integer> getAccountIDs() {
 		if (accountIDs == null)
         {
-			accountIDs = new Vector<Integer>();
+			accountIDs = new Vector<Integer>(1);
             retrieveExtended();
         }
 		return accountIDs;
