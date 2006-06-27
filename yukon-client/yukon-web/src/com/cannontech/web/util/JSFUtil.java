@@ -7,8 +7,12 @@ import javax.faces.application.FacesMessage;
 import javax.faces.component.EditableValueHolder;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
+import javax.faces.model.SelectItem;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.constants.YukonListEntry;
+import com.cannontech.common.constants.YukonSelectionList;
+import com.cannontech.core.dao.DaoFactory;
 
 public abstract class JSFUtil {
 
@@ -56,6 +60,19 @@ public abstract class JSFUtil {
         }
 
         return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static SelectItem[] convertSelectionList(int selectionListId) {
+        YukonSelectionList yukonSelectionList = DaoFactory.getYukonListDao().getYukonSelectionList(selectionListId);
+        List<YukonListEntry> yukonListEntries = yukonSelectionList.getYukonListEntries();
+        SelectItem[] items = new SelectItem[yukonListEntries.size()];
+        int i = 0;
+        for (YukonListEntry entry : yukonListEntries) {
+            SelectItem selectItem = new SelectItem(entry.getEntryID(), entry.getEntryText());
+            items[i++] = selectItem;
+        }
+        return items;
     }
 
 }
