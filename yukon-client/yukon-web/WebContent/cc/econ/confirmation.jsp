@@ -75,7 +75,7 @@
   </t:column>
   <t:column>
     <f:facet name="header">
-      <t:outputText value="Energy Price ($/MWh)"/>
+      <t:outputText value="Energy Price ($/kWh)"/>
       <br>
     </f:facet>
     <t:outputText value="#{thisPrice.energyPrice}"/>
