@@ -29,69 +29,70 @@ public class DBPersistentDaoImpl implements DBPersistentDao
 {
     private IDatabaseCache databaseCache;
     
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see com.cannontech.core.dao.DBPersistentDao#retrieveDBPersistent(com.cannontech.database.data.lite.LiteBase)
      */
-	public DBPersistent retrieveDBPersistent(LiteBase liteObject)
-	{
-		//create a DBPersistent from a liteBase object
-		DBPersistent dbPersistent = null;
-		if( liteObject != null)
-		{
-			dbPersistent = LiteFactory.createDBPersistent(liteObject);
-			try {
-				Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, dbPersistent);
-				dbPersistent = t.execute();
-			}
-			catch(Exception e) {
-				com.cannontech.clientutils.CTILogger.error(e.getMessage(), e);
-			}
-		}
-		return dbPersistent;
-	}
-	/* (non-Javadoc)
+    public DBPersistent retrieveDBPersistent(LiteBase liteObject)
+    {
+        //create a DBPersistent from a liteBase object
+        DBPersistent dbPersistent = null;
+        if( liteObject != null)
+        {
+            dbPersistent = LiteFactory.createDBPersistent(liteObject);
+            try {
+                Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, dbPersistent);
+                dbPersistent = t.execute();
+            }
+            catch(Exception e) {
+                com.cannontech.clientutils.CTILogger.error(e.getMessage(), e);
+            }
+        }
+        return dbPersistent;
+    }
+    /* (non-Javadoc)
      * @see com.cannontech.core.dao.DBPersistentDao#performDBChange(com.cannontech.database.db.DBPersistent, com.cannontech.yukon.IServerConnection, int)
      */
-	public void performDBChange(DBPersistent item, IServerConnection connToDispatch, int transactionType)
-	{
-		int dbChangeType = -1;
-		
-		switch(transactionType)
-		{
-			case Transaction.INSERT:
-				dbChangeType = DBChangeMsg.CHANGE_TYPE_ADD;
-				break;
-			case Transaction.DELETE:
-				dbChangeType = DBChangeMsg.CHANGE_TYPE_DELETE;
-				break;
-			case Transaction.UPDATE:
-				dbChangeType = DBChangeMsg.CHANGE_TYPE_UPDATE;
-				break;
-			default:
-				throw new IllegalArgumentException("Unknown Transaction type " + 
-                                                   transactionType + ", no transaction performed");
-		}
+    public void performDBChange(DBPersistent item, IServerConnection connToDispatch, int transactionType)
+    {
+        int dbChangeType = -1;
+        
+        switch(transactionType)
+        {
+            case Transaction.INSERT:
+                dbChangeType = DBChangeMsg.CHANGE_TYPE_ADD;
+                break;
+            case Transaction.DELETE:
+                dbChangeType = DBChangeMsg.CHANGE_TYPE_DELETE;
+                break;
+            case Transaction.UPDATE:
+                dbChangeType = DBChangeMsg.CHANGE_TYPE_UPDATE;
+                break;
+            default:
+                dbChangeType = DBChangeMsg.CHANGE_TYPE_NONE;
+        }
 
-		try
-		{
-			Transaction t = Transaction.createTransaction( transactionType, item);
-			item = t.execute();
-			
-			//write the DBChangeMessage out to Dispatch since it was a Successfull UPDATE
-			DBChangeMsg[] dbChange = databaseCache.createDBChangeMessages((CTIDbChange)item, dbChangeType);
-					
-			for( int i = 0; i < dbChange.length; i++)
-			{
-				databaseCache.handleDBChangeMessage(dbChange[i]);
-				connToDispatch.write(dbChange[i]);
-			}
-		}
-		catch( TransactionException e )
-		{
-			throw new PersistenceException("Unable to save DBPersistent (item=" + 
+        try
+        {
+            Transaction t = Transaction.createTransaction( transactionType, item);
+            item = t.execute();
+            
+            //write the DBChangeMessage out to Dispatch since it was a Successfull UPDATE
+            if (dbChangeType != DBChangeMsg.CHANGE_TYPE_NONE) {
+            DBChangeMsg[] dbChange = databaseCache.createDBChangeMessages((CTIDbChange)item, dbChangeType);
+                    
+            for( int i = 0; i < dbChange.length; i++)
+            {
+                databaseCache.handleDBChangeMessage(dbChange[i]);
+                connToDispatch.write(dbChange[i]);
+                }
+            }
+        }
+        catch( TransactionException e )
+        {
+            throw new PersistenceException("Unable to save DBPersistent (item=" + 
                                            item + ", transactionType=" + transactionType + ")", e);
-		}
-	}
+        }
+    }
     
     /* (non-Javadoc)
      * @see com.cannontech.core.dao.DBPersistentDao#performDBChange(com.cannontech.database.db.DBPersistent, int)
