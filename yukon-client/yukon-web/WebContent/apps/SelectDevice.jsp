@@ -42,6 +42,7 @@ function changeFilter(filterBy) {
 	document.getElementById("DivRoute").style.display = (filterBy == <%= CommandDeviceBean.ROUTE_FILTER %>)? "" : "none";
 	document.getElementById("DivCommChannel").style.display = (filterBy == <%= CommandDeviceBean.COMM_CHANNEL_FILTER %>)? "" : "none";
 	document.getElementById("DivCollectionGroup").style.display = (filterBy == <%= CommandDeviceBean.COLLECTION_GROUP_FILTER%>)? "" : "none";
+    document.getElementById("DivCBCType").style.display = (filterBy == <%= CommandDeviceBean.CBC_TYPE_FILTER%>)? "" : "none";
 }
 
 function init() {
@@ -61,6 +62,8 @@ function setFilterValue(form){
 		form.FilterValue.value = form.CommChannelFilterValue.value;
 	else if( document.getElementById("DivCollectionGroup").style.display == "")
 		form.FilterValue.value = form.CollGroupFilterValue.value;
+    else if( document.getElementById("DivCBCType").style.display == "")
+        form.FilterValue.value = form.CBCTypeFilterValue.value;        
 	form.submit();
 }
 </script>
@@ -296,12 +299,13 @@ function setFilterValue(form){
 						    <% if (currentSortBy == DeviceClasses.IED || 
 							    currentSortBy == DeviceClasses.RTU ||
 							    currentSortBy == DeviceClasses.CARRIER ||
-							    currentSortBy == DeviceClasses.TRANSMITTER){%>
+							    currentSortBy == DeviceClasses.TRANSMITTER ||
+                                currentSortBy == PAOGroups.CAT_CAPCONTROL){%>
                             <div align="right">Filter by:</div>
                             <%}%>
                           </td>
                           <td width="35%"> 
-						    						    <% if (currentSortBy == DeviceClasses.CARRIER){%>
+  						    <% if (currentSortBy == DeviceClasses.CARRIER){%>
                             <select name="FilterBy" onChange="changeFilter(this.value)">
 	                          <option value="<%=CommandDeviceBean.NO_FILTER%>" <%=(commandDeviceBean.getFilterBy() == CommandDeviceBean.NO_FILTER) ?  "selected" : ""%>>(none)</option>
                               <option value="<%=CommandDeviceBean.ROUTE_FILTER%>" <%=(commandDeviceBean.getFilterBy() == CommandDeviceBean.ROUTE_FILTER) ?  "selected" : ""%>>Route</option>
@@ -317,7 +321,12 @@ function setFilterValue(form){
                             <select name="FilterBy" onChange="changeFilter(this.value)">
 	                          <option value="<%=CommandDeviceBean.NO_FILTER%>" <%=(commandDeviceBean.getFilterBy() == CommandDeviceBean.NO_FILTER) ?  "selected" : ""%>>(none)</option>
                               <option value="<%=CommandDeviceBean.COMM_CHANNEL_FILTER%>" <%=(commandDeviceBean.getFilterBy() == CommandDeviceBean.COMM_CHANNEL_FILTER) ?  "selected" : ""%>>Comm Channel</option>
-                            </select>                            
+                            </select>
+                            <%} else if (currentSortBy == PAOGroups.CAT_CAPCONTROL){%>
+                            <select name="FilterBy" onChange="changeFilter(this.value)">
+                              <option value="<%=CommandDeviceBean.NO_FILTER%>" <%=(commandDeviceBean.getFilterBy() == CommandDeviceBean.NO_FILTER) ?  "selected" : ""%>>(none)</option>
+                              <option value="<%=CommandDeviceBean.CBC_TYPE_FILTER%>" <%=(commandDeviceBean.getFilterBy() == CommandDeviceBean.CBC_TYPE_FILTER) ?  "selected" : ""%>>CBC Type</option>
+                            </select> 
 	                         <%} else {%>
 			    			<input type="hidden" name="FilterBy" value="<%=CommandDeviceBean.NO_FILTER%>">
 	                         <%}%>
@@ -353,6 +362,16 @@ function setFilterValue(form){
                                 <%}%>
                               </select>
                             </div>
+                            <div id="DivCBCType" style="display:none"> 
+                              <select name="CBCTypeFilterValue">
+                              <% for (int i = 0; i < commandDeviceBean.getValidCBCTypes().size(); i++)
+                              {
+                                String val = (String)commandDeviceBean.getValidCBCTypes().get(i);
+                                %>
+                                <option value="<%=val%>" <%=(commandDeviceBean.getFilterValue().equalsIgnoreCase(val) ? "selected" :"")%>><%=val%></option>
+                                <%}%>
+                              </select>
+                            </div>                            
                           </td>
                         </tr>
                       </table>
