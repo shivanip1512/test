@@ -1,5 +1,6 @@
 package com.cannontech.web.cc;
 
+import java.util.Collections;
 import java.util.List;
 
 import com.cannontech.cc.model.BaseEvent;
@@ -23,17 +24,23 @@ public class CustomerEventBean {
     
     public List<BaseEvent> getCurrentEventList() {
         LiteYukonUser yukonUser = commercialCurtailmentBean.getYukonUser();
-        return customerEventService.getCurrentEvents(yukonUser);
+        List<BaseEvent> currentEvents = customerEventService.getCurrentEvents(yukonUser);
+        Collections.reverse(currentEvents);
+        return currentEvents;
     }
     
     public List<BaseEvent> getPendingEventList() {
         LiteYukonUser yukonUser = commercialCurtailmentBean.getYukonUser();
-        return customerEventService.getPendingEvents(yukonUser);
+        List<BaseEvent> pendingEvents = customerEventService.getPendingEvents(yukonUser);
+        Collections.reverse(pendingEvents);
+        return pendingEvents;
     }
     
     public List<BaseEvent> getRecentEventList() {
         LiteYukonUser yukonUser = commercialCurtailmentBean.getYukonUser();
-        return customerEventService.getRecentEvents(yukonUser);
+        List<BaseEvent> recentEvents = customerEventService.getRecentEvents(yukonUser);
+        Collections.reverse(recentEvents);
+        return recentEvents;
     }
 
     public String showEventDetail() {
