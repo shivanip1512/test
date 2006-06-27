@@ -101,6 +101,7 @@ public class DBChangeMsg extends com.cannontech.message.util.Message
 	public static final int CHANGE_DSM2_PROGRAM_DB = 50;
 
 	//Possible values for the typeOfChange field	
+	public static final int CHANGE_TYPE_NONE = -1;
 	public static final int CHANGE_TYPE_ADD = 0;
 	public static final int CHANGE_TYPE_DELETE = 1;
 	public static final int CHANGE_TYPE_UPDATE = 2;
