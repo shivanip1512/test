@@ -1528,7 +1528,8 @@ public synchronized java.util.List getAllYukonPAObjects()
 	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getAllCustomers()
 	 */
-	public synchronized List getAllCustomers() {
+	@SuppressWarnings("unchecked")
+    public synchronized List getAllCustomers() {
 		if (allCustomers == null)
 		{
 			allCustomers = new ArrayList();
