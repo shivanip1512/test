@@ -19,6 +19,8 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.cannontech.clientutils.CTILogger;
+
 public class MultiTableIncrementer {
     private DataSource dataSource;
     private String sequenceTableName;
@@ -61,9 +63,12 @@ public class MultiTableIncrementer {
                 con.setAutoCommit(false);
                 //int previousIsolationLevel = con.getTransactionIsolation();
                 //con.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
-                Statement statement = con.createStatement();
+                Statement statement = null;
+                PreparedStatement pStatement = null;
+                ResultSet resultSet = null;
                 try {
-                    ResultSet resultSet = statement.executeQuery(valueSql);
+                    statement = con.createStatement();
+                    resultSet = statement.executeQuery(valueSql);
                     int  lastValue;
                     if (resultSet.next()) {
                         lastValue = resultSet.getInt(1);
@@ -73,7 +78,7 @@ public class MultiTableIncrementer {
                     }
                     
                     // update the table
-                    PreparedStatement pStatement = con.prepareStatement(incrementSql);
+                    pStatement = con.prepareStatement(incrementSql);
                     pStatement.setInt(1, lastValue + 1);
                     pStatement.setInt(2, lastValue);
                     int affected = pStatement.executeUpdate();
@@ -83,10 +88,16 @@ public class MultiTableIncrementer {
                     // get the current value
                     return lastValue + 1;
                 } finally {
-                    statement.close();
-                    con.commit();
-                    //con.setTransactionIsolation(previousIsolationLevel);
-                    con.setAutoCommit(previousAutoCommit);
+                    try {
+                        resultSet.close();
+                        statement.close();
+                        pStatement.close();
+                        con.commit();
+                        //con.setTransactionIsolation(previousIsolationLevel);
+                        con.setAutoCommit(previousAutoCommit);
+                    } catch (Exception e) {
+                        CTILogger.error("Exception in finally block", e);
+                    }
                 }
             }
 
