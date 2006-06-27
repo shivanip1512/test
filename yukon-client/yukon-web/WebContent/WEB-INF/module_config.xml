@@ -171,7 +171,7 @@
         <link>/user/CILC/user_trending_sp.jsp</link>
       </option>
       <option name="Profile">
-        <link>/user/CILC/user_ee_profile_sp.jsp</link>
+        <link>/user/CILC/customerProfile.jsf</link>
       </option>
     </toplinks>
     <css file="/cc/base.css"/>
@@ -188,7 +188,7 @@
   <module name="stars">
     <skin name="purple"/>
   </module>
-    
+  
    <module name="blank">
   </module>
 </mainmenu>
