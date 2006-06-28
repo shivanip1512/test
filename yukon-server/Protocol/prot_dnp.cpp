@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.31 $
-* DATE         :  $Date: 2006/02/09 20:47:42 $
+* REVISION     :  $Revision: 1.32 $
+* DATE         :  $Date: 2006/06/28 20:50:05 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -523,7 +523,7 @@ int DNPInterface::decode( CtiXfer &xfer, int status )
                         s = "Device time: ";
                         s.append(t.asString());
                         s.append(".");
-                        s.append(CtiNumStr(time->getMilliseconds()).zpad(3));
+                        s.append(CtiNumStr((int)time->getMilliseconds()).zpad(3));
 
                         if( (t.seconds() - TimeDifferential) > now.seconds() || (t.seconds() + TimeDifferential) < now.seconds() )
                         {
