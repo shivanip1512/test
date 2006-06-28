@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.69 $
-* DATE         :  $Date: 2006/06/23 17:34:31 $
+* REVISION     :  $Revision: 1.70 $
+* DATE         :  $Date: 2006/06/28 15:52:59 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -43,10 +43,11 @@ using namespace MCT;
 using Protocol::Emetcon;
 
 
-const CtiDeviceMCT410::DLCCommandSet CtiDeviceMCT410::_commandStore   = CtiDeviceMCT410::initCommandStore();
-const CtiDeviceMCT410::QualityMap    CtiDeviceMCT410::_errorQualities = CtiDeviceMCT410::initErrorQualities();
-const CtiDeviceMCT4xx::ConfigPartsList CtiDeviceMCT410::_config_parts = CtiDeviceMCT410::initConfigParts();
-const CtiDeviceMCT::DynamicPaoAddressing_t CtiDeviceMCT410::_dynPaoAddressing = CtiDeviceMCT410::initDynPaoAddressing();
+const CtiDeviceMCT410::DLCCommandSet   CtiDeviceMCT410::_commandStore   = CtiDeviceMCT410::initCommandStore();
+const CtiDeviceMCT410::QualityMap      CtiDeviceMCT410::_errorQualities = CtiDeviceMCT410::initErrorQualities();
+const CtiDeviceMCT4xx::ConfigPartsList CtiDeviceMCT410::_config_parts   = CtiDeviceMCT410::initConfigParts();
+
+const CtiDeviceMCT::DynamicPaoAddressing_t         CtiDeviceMCT410::_dynPaoAddressing     = CtiDeviceMCT410::initDynPaoAddressing();
 const CtiDeviceMCT::DynamicPaoFunctionAddressing_t CtiDeviceMCT410::_dynPaoFuncAddressing = CtiDeviceMCT410::initDynPaoFuncAddressing();
 
 CtiDeviceMCT410::CtiDeviceMCT410( ) :
@@ -568,8 +569,14 @@ CtiDeviceMCT410::DLCCommandSet CtiDeviceMCT410::initCommandStore( )
 
     cs._cmd     = Emetcon::GetConfig_Time;
     cs._io      = Emetcon::IO_Read;
-    cs._funcLen = make_pair((int)Memory_RTCPos,
-                            (int)Memory_RTCLen);
+    cs._funcLen = make_pair((int)Memory_TimeZoneOffsetPos,
+                            (int)(Memory_TimeZoneOffsetLen + Memory_RTCLen));
+    s.insert(cs);
+
+    cs._cmd     = Emetcon::PutConfig_TimeZoneOffset;
+    cs._io      = Emetcon::IO_Write;
+    cs._funcLen = make_pair((int)Memory_TimeZoneOffsetPos,
+                            (int)Memory_TimeZoneOffsetLen);
     s.insert(cs);
 
     cs._cmd     = Emetcon::PutConfig_Intervals;
@@ -3042,6 +3049,8 @@ INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
                     }
                     else
                     {
+                        //  !!!  //  !!!  add info here  !!!
+
                         resultString = getName() + " / " + pPoint->getName() + " = (invalid data)" + freeze_info_string;
 
                         ReturnMsg->setResultString(ReturnMsg->ResultString() + resultString);
@@ -4537,22 +4546,6 @@ INT CtiDeviceMCT410::decodeGetConfigTOU(INMESS *InMessage, CtiTime &TimeNow, lis
             resultString += "Time zone offset: " + CtiNumStr((float)tz_offset / 60.0, 1) + " hours ( " + CtiNumStr(tz_offset) + " minutes)\n";
         }
 
-        time = InMessage->Buffer.DSt.Message[0] << 24 |
-               InMessage->Buffer.DSt.Message[1] << 16 |
-               InMessage->Buffer.DSt.Message[2] <<  8 |
-               InMessage->Buffer.DSt.Message[3];
-
-        tmpTime = CtiTime(time);
-
-        if( InMessage->Sequence == Emetcon::GetConfig_Time )
-        {
-            resultString = getName() + " / Current Time: " + tmpTime.asString();
-        }
-        else if( InMessage->Sequence == Emetcon::GetConfig_TSync )
-        {
-            resultString = getName() + " / Time Last Synced at: " + tmpTime.asString();
-        }
-
         if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -4585,21 +4578,32 @@ INT CtiDeviceMCT410::decodeGetConfigTime(INMESS *InMessage, CtiTime &TimeNow, li
         CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
         string resultString;
         unsigned long time;
+        char timezone_offset;
         CtiTime tmpTime;
-
-        time = InMessage->Buffer.DSt.Message[0] << 24 |
-               InMessage->Buffer.DSt.Message[1] << 16 |
-               InMessage->Buffer.DSt.Message[2] <<  8 |
-               InMessage->Buffer.DSt.Message[3];
-
-        tmpTime = CtiTime(time);
 
         if( InMessage->Sequence == Emetcon::GetConfig_Time )
         {
-            resultString = getName() + " / Current Time: " + tmpTime.asString();
+            timezone_offset = InMessage->Buffer.DSt.Message[0];
+
+            time = InMessage->Buffer.DSt.Message[1] << 24 |
+                   InMessage->Buffer.DSt.Message[2] << 16 |
+                   InMessage->Buffer.DSt.Message[3] <<  8 |
+                   InMessage->Buffer.DSt.Message[4];
+
+            tmpTime = CtiTime(time + rwEpoch);
+
+            resultString  = getName() + " / Current Time: " + tmpTime.asString() + "\n";
+            resultString += getName() + " / Timezone Offset: " + CtiNumStr(((float)timezone_offset) / 4.0, 2) + " hours";
         }
         else if( InMessage->Sequence == Emetcon::GetConfig_TSync )
         {
+            time = InMessage->Buffer.DSt.Message[0] << 24 |
+                   InMessage->Buffer.DSt.Message[1] << 16 |
+                   InMessage->Buffer.DSt.Message[2] <<  8 |
+                   InMessage->Buffer.DSt.Message[3];
+
+            tmpTime = CtiTime(time);
+
             resultString = getName() + " / Time Last Synced at: " + tmpTime.asString();
         }
 

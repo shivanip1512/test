@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.48 $
-* DATE         :  $Date: 2006/06/23 19:03:23 $
+* REVISION     :  $Revision: 1.49 $
+* DATE         :  $Date: 2006/06/28 15:53:36 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -38,9 +38,10 @@ using Cti::Protocol::Emetcon;
 using namespace Cti::Config::MCT;
 using namespace Cti::Config;
 
-const CtiDeviceMCT470::DLCCommandSet CtiDeviceMCT470::_commandStore   = CtiDeviceMCT470::initCommandStore();
+const CtiDeviceMCT470::DLCCommandSet   CtiDeviceMCT470::_commandStore = CtiDeviceMCT470::initCommandStore();
 const CtiDeviceMCT4xx::ConfigPartsList CtiDeviceMCT470::_config_parts = CtiDeviceMCT470::initConfigParts();
-const CtiDeviceMCT::DynamicPaoAddressing_t CtiDeviceMCT470::_dynPaoAddressing = CtiDeviceMCT470::initDynPaoAddressing();
+
+const CtiDeviceMCT::DynamicPaoAddressing_t         CtiDeviceMCT470::_dynPaoAddressing     = CtiDeviceMCT470::initDynPaoAddressing();
 const CtiDeviceMCT::DynamicPaoFunctionAddressing_t CtiDeviceMCT470::_dynPaoFuncAddressing = CtiDeviceMCT470::initDynPaoFuncAddressing();
 
 CtiDeviceMCT470::CtiDeviceMCT470( ) :
@@ -70,6 +71,7 @@ CtiDeviceMCT470 &CtiDeviceMCT470::operator=( const CtiDeviceMCT470 &aRef )
 CtiDeviceMCT4xx::ConfigPartsList CtiDeviceMCT470::initConfigParts()
 {
     CtiDeviceMCT4xx::ConfigPartsList tempList;
+
     tempList.push_back(CtiDeviceMCT4xx::PutConfigPart_dst);
     tempList.push_back(CtiDeviceMCT4xx::PutConfigPart_demand_lp);
     tempList.push_back(CtiDeviceMCT4xx::PutConfigPart_options);
@@ -181,8 +183,8 @@ CtiDeviceMCT470::DLCCommandSet CtiDeviceMCT470::initCommandStore( )
 
     cs._cmd     = Emetcon::GetConfig_Time;
     cs._io      = Emetcon::IO_Read;
-    cs._funcLen = make_pair((int)MCT470_Memory_RTCPos,
-                            (int)MCT470_Memory_RTCLen);
+    cs._funcLen = make_pair((int)MCT470_Memory_TimeZoneOffsetPos,
+                            (int)(MCT470_Memory_TimeZoneOffsetLen + MCT470_Memory_RTCLen));
     s.insert(cs);
 
     cs._cmd     = Emetcon::GetConfig_TSync;
@@ -191,6 +193,11 @@ CtiDeviceMCT470::DLCCommandSet CtiDeviceMCT470::initCommandStore( )
                             (int)MCT470_Memory_LastTSyncLen);
     s.insert(cs);
 
+    cs._cmd     = Emetcon::PutConfig_TimeZoneOffset;
+    cs._io      = Emetcon::IO_Write;
+    cs._funcLen = make_pair((int)MCT470_Memory_TimeZoneOffsetPos,
+                            (int)MCT470_Memory_TimeZoneOffsetLen);
+    s.insert(cs);
 
     cs._cmd     = Emetcon::PutConfig_Intervals;
     cs._io      = Emetcon::IO_Function_Write;
