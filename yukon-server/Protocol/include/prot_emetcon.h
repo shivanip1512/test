@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_emetcon.h-arc  $
-* REVISION     :  $Revision: 1.32 $
-* DATE         :  $Date: 2006/06/09 18:17:19 $
+* REVISION     :  $Revision: 1.33 $
+* DATE         :  $Date: 2006/06/28 15:49:08 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -222,6 +222,7 @@ public:
         PutConfig_Options,
         PutConfig_Outage,
         PutConfig_TimeAdjustTolerance,
+        PutConfig_TimeZoneOffset,
         PutConfig_TOU,  //  this may need to be removed in light of the new config install commands
 
         PutConfig_ARMC,
