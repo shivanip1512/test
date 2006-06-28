@@ -1489,8 +1489,6 @@ void  CtiCommandParser::doParsePutConfig(const string &_CmdStr)
                 {
                     _cmd["force"] = CtiParseValue(true);
                 }
-
-
             }
         }
 
@@ -1578,7 +1576,6 @@ void  CtiCommandParser::doParsePutConfig(const string &_CmdStr)
             }
         case ProtocolExpresscomType:
             {
-
                 doParsePutConfigExpresscom(CmdStr);
                 break;
             }
@@ -1614,7 +1611,6 @@ void  CtiCommandParser::doParsePutConfig(const string &_CmdStr)
             }
         }
     }
-
     else
     {
         // Something went WAY wrong....
@@ -1805,6 +1801,9 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
     boost::regex  re_loadlimit("load limit " + str_num + " "
                                + str_num);
     boost::regex  re_holiday("holiday " + str_num + "( " + str_date + ")+");
+
+    //  matches any of PST, PDT, MST, MDT, CST, CDT, EST, EDT, and whole/fractional hour offsets
+    boost::regex  re_timezone("timezone ([pmce][ds]?t)|(-?" + str_floatnum + ")");
 
     char *p;
 
@@ -2014,6 +2013,31 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
                 }
 
                 _cmd["rawdata"] = CtiParseValue( rawData );
+            }
+        }
+        if(CmdStr.contains(" timezone"))
+        {
+            if(!(token = CmdStr.match(re_timezone)).empty())
+            {
+                CtiTokenizer cmdtok(token);
+                char *end;
+                double timezone;
+
+                //  go past "timezone"
+                cmdtok();
+
+                temp2 = cmdtok();
+                timezone = strtod(temp2.data(), &end);
+
+                //  Did we read a numeric value?
+                if( end != temp2.data() )
+                {
+                    _cmd["timezone_offset"] = CtiParseValue( timezone );
+                }
+                else
+                {
+                    _cmd["timezone_name"]   = CtiParseValue( temp2.c_str() );
+                }
             }
         }
         if(CmdStr.contains(" role"))

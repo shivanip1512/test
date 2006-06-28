@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2006/05/26 15:11:04 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2006/06/28 15:54:09 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -175,6 +175,55 @@ INT CtiDeviceMCT4xx::executePutConfig(CtiRequestMsg                  *pReq,
         {
             delete OutMessage;
             OutMessage = NULL;
+        }
+    }
+    else if( parse.isKeyValid("timezone_offset") ||
+             parse.isKeyValid("timezone_name") )
+    {
+        unsigned short function, length, io;
+
+        if( getOperation(Emetcon::PutConfig_TimeZoneOffset, function, length, io) )
+        {
+            int timezone_blocks = 0;
+
+            if( parse.isKeyValid("timezone_offset") )
+            {
+                double timezone_offset = parse.getdValue("timezone_offset", -999.0);
+
+                timezone_blocks = (int)(timezone_offset * 4.0);
+            }
+            if( parse.isKeyValid("timezone_name") )
+            {
+                string timezone_name = parse.getsValue("timezone_name");
+
+                if( !timezone_name.empty() )
+                {
+                    switch( timezone_name.at(0) )
+                    {
+                        case 'p':   timezone_blocks = -8 * 4;   break;  //  pacific time
+                        case 'm':   timezone_blocks = -7 * 4;   break;  //  mountain time
+                        case 'c':   timezone_blocks = -6 * 4;   break;  //  central time
+                        case 'e':   timezone_blocks = -5 * 4;   break;  //  eastern time
+                    }
+                }
+                else
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                }
+            }
+
+            OutMessage->Sequence = Emetcon::PutConfig_TimeZoneOffset;
+            OutMessage->Buffer.BSt.Function   = function;
+            OutMessage->Buffer.BSt.Length     = length;
+            OutMessage->Buffer.BSt.IO         = io;
+            OutMessage->Buffer.BSt.Message[0] = timezone_blocks;
+        }
+        else
+        {
+            nRet = NoMethod;
         }
     }
     else
@@ -632,7 +681,7 @@ int CtiDeviceMCT4xx::executePutConfigHoliday(CtiRequestMsg *pReq,CtiCommandParse
             if(!getOperation(Emetcon::PutConfig_Holiday, function, length, io))
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - Operation PutConfig_LongloadProfile not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - Operation PutConfig_Holiday not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 nRet = NoConfigData;
             }
             else
