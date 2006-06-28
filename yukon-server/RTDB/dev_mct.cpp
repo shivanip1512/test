@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.87 $
-* DATE         :  $Date: 2006/06/23 18:05:59 $
+* REVISION     :  $Revision: 1.88 $
+* DATE         :  $Date: 2006/06/28 15:51:26 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -948,6 +948,8 @@ INT CtiDeviceMCT::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
         case Emetcon::PutConfig_Disconnect:
         case Emetcon::PutConfig_LoadProfileReportPeriod:
         case Emetcon::PutConfig_TOU:
+        case Emetcon::PutConfig_TimeZoneOffset:
+        case Emetcon::PutConfig_Holiday:
         {
             status = decodePutConfig(InMessage, TimeNow, vgList, retList, outList);
             break;
