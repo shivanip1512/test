@@ -124,12 +124,6 @@ public class IsocEconomicStrategy extends BaseEconomicStrategy {
         this.isocCommonStrategy = isocCommonStrategy;
     }
     
-    @Override
-    public Boolean canEventBeCancelled(EconomicEvent event, LiteYukonUser user) {
-        return false;
-    }
-
-
     public BigDecimal getCustomerElectionPrice(EconomicEventParticipant customer) throws PointException {
         return getPointValue(customer, CICustomerPointType.AdvBuyThrough$);
     }

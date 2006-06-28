@@ -193,9 +193,7 @@ public class DetailEconomicBean implements BaseDetailBean {
     }
     
     public String cancelEvent() {
-        //getStrategy().cancelEvent(event,commercialCurtailment.getYukonUser());
-        
-        //return JSFUtil.redirect("/cc/notif/detail.jsf?eventId=" + getEventId());
+        getStrategy().cancelEvent(getEvent(),commercialCurtailment.getYukonUser());
         return null;
     }
 
