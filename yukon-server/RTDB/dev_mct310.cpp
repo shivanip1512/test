@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.49 $
-* DATE         :  $Date: 2006/03/23 15:29:17 $
+* REVISION     :  $Revision: 1.50 $
+* DATE         :  $Date: 2006/06/29 14:48:12 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1264,7 +1264,7 @@ INT CtiDeviceMCT310::decodeGetStatusInternal( INMESS *InMessage, CtiTime &TimeNo
 
             pointResult = getName() + " / " + point->getName() + ": " + ResolveStateName(point->getStateGroupID(), powerfailStatus);
 
-            pData = CTIDBG_new CtiPointDataMsg(point->getPointID(), powerfailStatus, NormalQuality, DemandAccumulatorPointType, resultString);
+            pData = CTIDBG_new CtiPointDataMsg(point->getPointID(), powerfailStatus, NormalQuality, StatusPointType, pointResult);
 
             ReturnMsg->PointData().push_back(pData);
         }
