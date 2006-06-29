@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src"/>
+	<classpathentry excluding="com/cannontech/core/dynamic/" kind="src" path="src"/>
 	<classpathentry kind="lib" path="/third-party/SqlServer.jar"/>
 	<classpathentry kind="lib" path="/third-party/acme.jar"/>
 	<classpathentry kind="lib" path="/third-party/classes12.jar"/>
 	<classpathentry kind="lib" path="/third-party/j2ee.jar"/>
 	<classpathentry kind="lib" path="/third-party/jaxm-api.jar"/>
-	<classpathentry kind="lib" path="/third-party/jcchart401K.jar"/>
 	<classpathentry kind="lib" path="/third-party/jcfield401K.jar"/>
 	<classpathentry kind="lib" path="/third-party/jcpagelayout450K.jar"/>
-	<classpathentry kind="lib" path="/third-party/led.jar"/>
 	<classpathentry kind="lib" path="/third-party/rwav.jar"/>
 	<classpathentry kind="lib" path="/third-party/saaj.jar"/>
 	<classpathentry kind="lib" path="/third-party/log4j-1.2.4.jar">
@@ -18,7 +16,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="/third-party/jfreechart.jar"/>
-	<classpathentry kind="lib" path="/third-party/junit.jar"/>
 	<classpathentry kind="lib" path="/third-party/xerces.jar"/>
 	<classpathentry kind="lib" path="/third-party/jcommon.jar"/>
 	<classpathentry kind="lib" path="/third-party/jtds.jar"/>
@@ -34,5 +31,6 @@
 	<classpathentry sourcepath="Z:/java/Third-Party Sources/hibernate-3.2.0.cr1.zip" kind="lib" path="/third-party/hibernate3.jar"/>
 	<classpathentry exported="true" sourcepath="Z:/java/Third-Party Sources/spring-framework-1.2.7.zip" kind="lib" path="/third-party/spring.jar"/>
 	<classpathentry kind="lib" path="/third-party/commons-collections-3.2.jar"/>
+	<classpathentry kind="lib" path="/third-party/junit-4.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

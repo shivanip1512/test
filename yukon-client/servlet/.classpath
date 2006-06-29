@@ -6,10 +6,8 @@
 	<classpathentry kind="lib" path="/third-party/acme.jar"/>
 	<classpathentry kind="lib" path="/third-party/j2ee.jar"/>
 	<classpathentry kind="lib" path="/third-party/jaxm-api.jar"/>
-	<classpathentry kind="lib" path="/third-party/jcchart401K.jar"/>
 	<classpathentry kind="lib" path="/third-party/jcfield401K.jar"/>
 	<classpathentry kind="lib" path="/third-party/jcpagelayout450K.jar"/>
-	<classpathentry kind="lib" path="/third-party/led.jar"/>
 	<classpathentry sourcepath="D:/rwav-src.jar" kind="lib" path="/third-party/rwav.jar"/>
 	<classpathentry kind="lib" path="/third-party/xerces.jar"/>
 	<classpathentry kind="src" path="/macs"/>
@@ -17,7 +15,6 @@
 	<classpathentry kind="lib" path="/third-party/castor-xml.jar"/>
 	<classpathentry sourcepath="/third-party/log4j-1.2.4.jar" kind="lib" path="/third-party/log4j-1.2.4.jar"/>
 	<classpathentry kind="lib" path="/third-party/jfreechart.jar"/>
-	<classpathentry kind="lib" path="/third-party/junit.jar"/>
 	<classpathentry kind="lib" path="/third-party/jcommon.jar"/>
 	<classpathentry kind="src" path="/billing"/>
 	<classpathentry kind="src" path="/tdc"/>

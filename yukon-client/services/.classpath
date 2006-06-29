@@ -5,7 +5,6 @@
 	<classpathentry kind="src" path="/common"/>
 	<classpathentry kind="src" path="/yukonappserver"/>
 	<classpathentry kind="src" path="/notification"/>
-	<classpathentry kind="lib" path="/third-party/jcchart401K.jar"/>
 	<classpathentry kind="lib" path="/third-party/jcfield401K.jar"/>
 	<classpathentry kind="lib" path="/third-party/jcommon.jar"/>
 	<classpathentry kind="lib" path="/third-party/jcpagelayout450K.jar"/>

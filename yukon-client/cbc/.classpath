@@ -1,27 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry path="src" kind="src"/>
-	<classpathentry path="/tdc" kind="src"/>
-	<classpathentry path="/third-party/SqlServer.jar" kind="lib"/>
-	<classpathentry path="/third-party/acme.jar" kind="lib"/>
-	<classpathentry path="/third-party/jaxm-api.jar" kind="lib"/>
-	<classpathentry path="/third-party/jcchart401K.jar" kind="lib"/>
-	<classpathentry path="/third-party/jcfield401K.jar" kind="lib"/>
-	<classpathentry path="/third-party/jcpagelayout450K.jar" kind="lib"/>
-	<classpathentry path="/third-party/led.jar" kind="lib"/>
-	<classpathentry path="/third-party/rwav.jar" kind="lib"/>
-	<classpathentry path="/third-party/saaj.jar" kind="lib"/>
-	<classpathentry path="/third-party/xerces.jar" kind="lib"/>
-	<classpathentry path="/common" kind="src"/>
-	<classpathentry path="/third-party/log4j-1.2.4.jar" kind="lib"/>
-	<classpathentry path="/third-party/jfreechart.jar" kind="lib"/>
-	<classpathentry path="/third-party/junit.jar" kind="lib"/>
-	<classpathentry path="/third-party/jcommon.jar" kind="lib"/>
-	<classpathentry path="/esub" kind="src"/>
-	<classpathentry path="/third-party/jloox30.jar" kind="lib"/>
-	<classpathentry path="/third-party/jtds.jar" kind="lib"/>
-	<classpathentry path="org.eclipse.jdt.launching.JRE_CONTAINER" kind="con"/>
-	<classpathentry path="/third-party/j2ee.jar" kind="lib"/>
-	<classpathentry sourcepath="Z:/java/Third-Party Sources/spring-framework-1.2.7.zip" path="/third-party/spring.jar" kind="lib"/>
-	<classpathentry path="bin" kind="output"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="/tdc"/>
+	<classpathentry kind="lib" path="/third-party/SqlServer.jar"/>
+	<classpathentry kind="lib" path="/third-party/acme.jar"/>
+	<classpathentry kind="lib" path="/third-party/jaxm-api.jar"/>
+	<classpathentry kind="lib" path="/third-party/jcfield401K.jar"/>
+	<classpathentry kind="lib" path="/third-party/jcpagelayout450K.jar"/>
+	<classpathentry kind="lib" path="/third-party/led.jar"/>
+	<classpathentry kind="lib" path="/third-party/rwav.jar"/>
+	<classpathentry kind="lib" path="/third-party/saaj.jar"/>
+	<classpathentry kind="lib" path="/third-party/xerces.jar"/>
+	<classpathentry kind="src" path="/common"/>
+	<classpathentry kind="lib" path="/third-party/log4j-1.2.4.jar"/>
+	<classpathentry kind="lib" path="/third-party/jfreechart.jar"/>
+	<classpathentry kind="lib" path="/third-party/jcommon.jar"/>
+	<classpathentry kind="src" path="/esub"/>
+	<classpathentry kind="lib" path="/third-party/jloox30.jar"/>
+	<classpathentry kind="lib" path="/third-party/jtds.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="/third-party/j2ee.jar"/>
+	<classpathentry sourcepath="Z:/java/Third-Party Sources/spring-framework-1.2.7.zip" kind="lib" path="/third-party/spring.jar"/>
+	<classpathentry kind="output" path="bin"/>
 </classpath>

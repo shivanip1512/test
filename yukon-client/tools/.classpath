@@ -6,7 +6,6 @@
 	<classpathentry exported="true" kind="lib" path="/third-party/j2ee.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/jaxm-api.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/saaj.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/jcchart401K.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/jcfield401K.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/jcpagelayout450K.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/led.jar"/>
@@ -20,7 +19,6 @@
 	<classpathentry exported="true" kind="lib" path="/third-party/jruntags.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/struts.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/jfreechart.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/junit.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/jcommon.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/classes12.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/jloox30.jar"/>
