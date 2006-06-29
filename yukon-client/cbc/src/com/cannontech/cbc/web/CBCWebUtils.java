@@ -158,6 +158,7 @@ public class CBCWebUtils implements CBCParamValues
 	 * has the CBC controls property set to true.
 	 * 
 	 */
+    //TODO: There shouldn't be a dependency on httpsession here!
 	public static synchronized boolean hasControlRights( HttpSession session )
 	{
 		LiteYukonUser yukUser = (LiteYukonUser)ServletUtil.getYukonUser(session);
