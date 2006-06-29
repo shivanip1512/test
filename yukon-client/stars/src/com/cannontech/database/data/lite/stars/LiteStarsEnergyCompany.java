@@ -2446,25 +2446,28 @@ public class LiteStarsEnergyCompany extends LiteBase {
         int comparableDigitEndIndex = 0;
         String rotationDigitProperty = DaoFactory.getAuthDao().getRolePropertyValue(DaoFactory.getYukonUserDao().getLiteYukonUser(getUserID()), ConsumerInfoRole.ROTATION_DIGIT_LENGTH);
         int accountNumSansRotationDigitsIndex = accountNo.length();
+        boolean adjustForRotationDigits = false, adjustForAccountLength = false;
         if(rotationDigitProperty != null && rotationDigitProperty.compareTo(CtiUtilities.STRING_NONE) != 0 && Integer.parseInt(rotationDigitProperty) > 0
                 && Integer.parseInt(rotationDigitProperty) < accountNo.length())
         {
             accountNumSansRotationDigitsIndex = accountNo.length() - Integer.parseInt(rotationDigitProperty);
             accountNo = accountNo.substring(0, accountNumSansRotationDigitsIndex);
+            adjustForRotationDigits = true;
         }
         if(comparableDigitProperty != null && comparableDigitProperty.compareTo(CtiUtilities.STRING_NONE) != 0 && Integer.parseInt(comparableDigitProperty) > 0)
         {
             comparableDigitEndIndex = Integer.parseInt(comparableDigitProperty);
             if(accountNo.length() >= comparableDigitEndIndex)
                 accountNo = accountNo.substring(0, comparableDigitEndIndex);
+            adjustForAccountLength = true;
         }
         
 		for (int i = 0; i < custAcctInfoList.size(); i++) {
             LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) custAcctInfoList.get(i);
             String comparableAcctNum = liteAcctInfo.getCustomerAccount().getAccountNumber();
-            if(accountNumSansRotationDigitsIndex > 0 && comparableAcctNum.length() >= accountNumSansRotationDigitsIndex)
+            if(accountNumSansRotationDigitsIndex > 0 && comparableAcctNum.length() >= accountNumSansRotationDigitsIndex && adjustForRotationDigits)
                 comparableAcctNum = comparableAcctNum.substring(0, accountNumSansRotationDigitsIndex);
-            if(comparableDigitEndIndex > 0 && comparableAcctNum.length() >= comparableDigitEndIndex)
+            if(comparableDigitEndIndex > 0 && comparableAcctNum.length() >= comparableDigitEndIndex && adjustForAccountLength)
                 comparableAcctNum = comparableAcctNum.substring(0, comparableDigitEndIndex);
             if (comparableAcctNum.equalsIgnoreCase( accountNo ))
             {
