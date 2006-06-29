@@ -260,7 +260,7 @@ public final class YukonCRSIntegrator
                                 meterHardwareBase.getInventoryBase().setAlternateTrackingNumber(alternateTrackingNumber);
                                 Transaction.createTransaction(Transaction.UPDATE, meterHardwareBase).execute();
                             }
-
+                            successCounter++;
                             DBChangeMsg dbChangeMessage = new DBChangeMsg(
                                 customerAccount.getCustomerAccount().getAccountID(),
                                 DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB,
@@ -305,6 +305,7 @@ public final class YukonCRSIntegrator
                 }
             }
         }
+        CTILogger.info("CRSTOYUKON PremiseMeterChange Integration complete:  Imported " + successCounter + " PremiseMeterChanges.");
     }
     /**
      * Process the PTJ, create Yukon objects, etc.
@@ -314,6 +315,7 @@ public final class YukonCRSIntegrator
     {
         CRSToSAM_PTJ currentEntry = null;
 
+        int newWorkOrderCount = 0;
         for(int j = 0; j < entries.size(); j++)
     	{
         	StringBuffer errorMsg = new StringBuffer("");
@@ -629,7 +631,7 @@ public final class YukonCRSIntegrator
         	{
         		workOrder.getWorkOrderBase().setDateReported(eventWorkOrder.getEventBase().getEventTimestamp());	//set the work order DateReported with the most recent event date.
             	workOrder = (com.cannontech.database.data.stars.report.WorkOrderBase)Transaction.createTransaction(Transaction.INSERT, workOrder).execute();
-
+            	newWorkOrderCount++;
 	            DBChangeMsg dbChangeMessage = new DBChangeMsg(
     				workOrder.getWorkOrderBase().getOrderID(),
     				DBChangeMsg.CHANGE_WORK_ORDER_DB,
@@ -655,6 +657,7 @@ public final class YukonCRSIntegrator
 				e.printStackTrace();
 			}
         }
+        CTILogger.info("CRSTOYUKON PTJ Integration complete:  Imported " + newWorkOrderCount + " new Work Orders.");
     }
     		
     public void runSwitchReplacement(ArrayList entries)
