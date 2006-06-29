@@ -12,6 +12,8 @@
 <%@ page import="com.cannontech.roles.operator.EnergyBuybackRole" %>
 <%@ page import="com.cannontech.roles.operator.OddsForControlRole" %>
 <%@ page import="com.cannontech.roles.operator.CICurtailmentRole" %>
+<%@ page import="com.cannontech.roles.operator.EsubDrawingsRole" %>
+<%@ page import="com.cannontech.roles.capcontrol.CBCSettingsRole" %>
 
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ include file="Consumer/include/StarsHeader.jsp" %>
@@ -65,7 +67,7 @@ function confirmDelete() {
 <cti:checkRole roleid="<%= ConsumerInfoRole.ROLEID %>">
   <tr> 
     <td width="102" background="../WebConfig/yukon/ConsumerImage.jpg" height="102">&nbsp;</td>
-    <td width="555" bgcolor="#FFFFFF" height="102" valign="top"><img src="../WebConfig/yukon/ConsumerHeader.gif" width="229" height="15" border="0"><br>
+    <td width="555" bgcolor="#FFFFFF" height="102" valign="top"><img src="../WebConfig/yukon/ConsumerHeader.gif" height="15" border="0"><br>
       <table width="525" border="0" cellspacing="0" cellpadding="3" align="center">
         <tr> 
           <td width="25%"><font face="Arial, Helvetica, sans-serif" size="2"> 
@@ -149,7 +151,7 @@ function confirmDelete() {
   </tr>
   <tr> 
     <td width="102" height="102" background="../WebConfig/yukon/MeterImage.jpg">&nbsp;</td>
-    <td width="555" bgcolor="#FFFFFF" height="102" valign="top"><img src="../WebConfig/yukon/MeteringHeader.gif" width="161" height="15"><br>
+    <td width="555" bgcolor="#FFFFFF" height="102" valign="top"><img src="../WebConfig/yukon/MeteringHeader.gif" height="15"><br>
       <table width="525" border="0" cellspacing="0" cellpadding="3" align="center">
         <tr> 
           <td width="25%">&nbsp;</td>
@@ -245,7 +247,32 @@ function confirmDelete() {
     <td width="1" background="../WebConfig/yukon/Icons/VerticalRule.gif" height="102"></td>
   </tr>
 </cti:checkMultiRole>
-
+<cti:checkRole roleid="<%= CBCSettingsRole.ROLEID %>">
+  <tr> 
+    <td width="102" bgcolor="#000000" height="1"><img src="../WebConfig/yukon/Icons/VerticalRule.gif"></td>
+    <td width="555" bgcolor="#000000" height="1"><img src="../WebConfig/yukon/Icons/VerticalRule.gif"></td>
+    <td width="1" background="../WebConfig/yukon/Icons/VerticalRule.gif" height="1"></td>
+  </tr>
+  <tr>
+    <td width="102" bgcolor="#000000" height="102" background="../WebConfig/yukon/CapControlImage.jpg">&nbsp;</td>
+    <td bgcolor="#FFFFFF" height="102" valign="top"><img src="../WebConfig/yukon/CapControlHeader.gif" height="15"><br>
+      <table width="525" border="0" cellspacing="0" cellpadding="3" align="center">
+        <tr> 
+          <td width="25%">&nbsp;</td>
+          <td width="25%">&nbsp;</td>
+          <td width="25%">&nbsp;</td>
+          <td width="25%">&nbsp;</td>
+        </tr>
+        <tr>
+          <td align = "center" class = "MainText" width="25%"> 
+            <div align = "center" style = "border:solid 1px #666999;"><a href = "../capcontrol/subareas.jsp" class = "Link1" style = "text-decoration:none;">Cap Control</a></div>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="1" background="../WebConfig/yukon/Icons/VerticalRule.gif" height="16"></td>
+  </tr>
+</cti:checkRole>
 <cti:checkRole roleid="<%= InventoryRole.ROLEID %>">
   <tr> 
     <td width="102" bgcolor="#000000" height="1"><img src="../WebConfig/yukon/Icons/VerticalRule.gif"></td>
@@ -254,7 +281,7 @@ function confirmDelete() {
   </tr>
   <tr> 
     <td width="102" height="102" background="../WebConfig/yukon/InventoryImage.jpg">&nbsp;</td>
-    <td width="555" bgcolor="#FFFFFF" height="102" valign="top"><img src="../WebConfig/yukon/InventoryHeader.gif" width="148" height="15"><br>
+    <td width="555" bgcolor="#FFFFFF" height="102" valign="top"><img src="../WebConfig/yukon/InventoryHeader.gif" height="15"><br>
       <table width="525" border="0" cellspacing="0" cellpadding="3" align="center">
         <tr> 
           <td width="25%" height="30" valign="bottom">&nbsp;</td>
@@ -321,7 +348,7 @@ function confirmDelete() {
   </tr>
   <tr> 
     <td width="102" height="102" background="../WebConfig/yukon/WorkImage.jpg">&nbsp;</td>
-    <td width="555" bgcolor="#FFFFFF" height="102" valign="top"><img src="../WebConfig/yukon/WorkHeader.gif" width="104" height="15"><br>
+    <td width="555" bgcolor="#FFFFFF" height="102" valign="top"><img src="../WebConfig/yukon/WorkHeader.gif" height="15"><br>
       <table width="525" border="0" cellspacing="0" cellpadding="3" align="center">
         <tr valign="bottom"> 
           <td width="25%">&nbsp;</td>
@@ -375,7 +402,7 @@ function confirmDelete() {
   </tr>
   <tr>
     <td width="102" bgcolor="#000000" height="102" background="../WebConfig/yukon/AnalysisImage.jpg">&nbsp;</td>
-    <td bgcolor="#FFFFFF" height="102" valign="top"><img src="../WebConfig/yukon/AnalysisHeader.gif" width="76" height="15"><br>
+    <td bgcolor="#FFFFFF" height="102" valign="top"><img src="../WebConfig/yukon/AnalysisHeader.gif" height="15"><br>
       <table width="525" border="0" cellspacing="0" cellpadding="3" align="center">
         <tr> 
           <td width="25%">&nbsp;</td>
@@ -402,6 +429,32 @@ function confirmDelete() {
     <td width="1" background="../WebConfig/yukon/Icons/VerticalRule.gif" height="16"></td>
   </tr>
 </cti:checkMultiRole>
+<!--<cti:checkRole roleid="<%= EsubDrawingsRole.ROLEID %>">
+  <tr> 
+    <td width="102" bgcolor="#000000" height="1"><img src="../WebConfig/yukon/Icons/VerticalRule.gif"></td>
+    <td width="555" bgcolor="#000000" height="1"><img src="../WebConfig/yukon/Icons/VerticalRule.gif"></td>
+    <td width="1" background="../WebConfig/yukon/Icons/VerticalRule.gif" height="1"></td>
+  </tr>
+  <tr>
+    <td width="102" bgcolor="#000000" height="102" background="../WebConfig/yukon/EsubImage.jpg">&nbsp;</td>
+    <td bgcolor="#FFFFFF" height="102" valign="top"><img src="../WebConfig/yukon/EsubHeader.gif" height="15"><br>
+      <table width="525" border="0" cellspacing="0" cellpadding="3" align="center">
+        <tr> 
+          <td width="25%">&nbsp;</td>
+          <td width="25%">&nbsp;</td>
+          <td width="25%">&nbsp;</td>
+          <td width="25%">&nbsp;</td>
+        </tr>
+        <tr>
+          <td align = "center" class = "MainText" width="25%"> 
+            <div align = "center" style = "border:solid 1px #666999;"><a href = "../esub/sublist.html" class = "Link1" style = "text-decoration:none;">Esubstation</a></div>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="1" background="../WebConfig/yukon/Icons/VerticalRule.gif" height="16"></td>
+  </tr>
+</cti:checkRole>-->
 <cti:checkRole roleid="<%= AdministratorRole.ROLEID %>">
   <tr> 
     <td width="102" bgcolor="#000000" height="1"><img src="../WebConfig/yukon/Icons/VerticalRule.gif"></td>
@@ -410,7 +463,7 @@ function confirmDelete() {
   </tr>
   <tr>
     <td width="102" bgcolor="#000000" height="102" background="../WebConfig/yukon/AdminImage.jpg">&nbsp;</td>
-    <td bgcolor="#FFFFFF" height="102" valign="top"><img src="../WebConfig/yukon/AdminHeader.gif" width="129" height="15"><br>
+    <td bgcolor="#FFFFFF" height="102" valign="top"><img src="../WebConfig/yukon/AdminHeader.gif" height="15"><br>
       <table width="525" border="0" cellspacing="0" cellpadding="3" align="center">
         <tr> 
           <td width="25%">&nbsp;</td>
