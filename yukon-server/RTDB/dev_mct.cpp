@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.88 $
-* DATE         :  $Date: 2006/06/28 15:51:26 $
+* REVISION     :  $Revision: 1.89 $
+* DATE         :  $Date: 2006/06/29 14:46:30 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -35,6 +35,7 @@
 #include "msg_cmd.h"
 #include "pt_numeric.h"
 #include "pt_accum.h"
+#include "pt_status.h"
 #include "porter.h"
 #include "utility.h"
 #include "dllyukon.h"
@@ -866,8 +867,28 @@ INT CtiDeviceMCT::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMes
 
     status = ModelDecode(InMessage, TimeNow, vgList, retList, outList);
 
-    if( status )
+    if( !status && InMessage->Buffer.DSt.Length )
     {
+        boost::shared_ptr<CtiPointStatus> point;
+        CtiPointDataMsg *pData;
+        CtiReturnMsg    *retMsg;
+
+        //  eventually, this block should use the same ReturnMsg as above - actually, a LOT of the work replicated
+        //    within these decode functions could be consolidated to this function...  or maybe it could be moved to DLCBase so
+        //    the repeaters get it, too... ?  Do they have a powerfail status?
+        if( point = boost::static_pointer_cast<CtiPointStatus>(getDevicePointOffsetTypeEqual( MCT_PointOffset_Status_Powerfail, StatusPointType )) )
+        {
+            string pointResult;
+
+            pointResult = getName() + " / " + point->getName() + ": " + ResolveStateName(point->getStateGroupID(), InMessage->Buffer.DSt.Power);
+
+            pData  = CTIDBG_new CtiPointDataMsg(point->getPointID(), InMessage->Buffer.DSt.Power, NormalQuality, StatusPointType, pointResult);
+            retMsg = CTIDBG_new CtiReturnMsg(getID());
+
+            retMsg->PointData().push_back(pData);
+
+            vgList.push_back(retMsg);
+        }
     }
 
     return status;
