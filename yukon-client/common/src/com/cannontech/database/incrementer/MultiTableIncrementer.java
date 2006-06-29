@@ -54,7 +54,7 @@ public class MultiTableIncrementer {
         }
     }
     
-    public int getNextValue() {
+    public synchronized int getNextValue() {
         initializeSql();
         JdbcTemplate jdbc = new JdbcTemplate(dataSource);
         Number result = (Number)jdbc.execute(new ConnectionCallback() {
