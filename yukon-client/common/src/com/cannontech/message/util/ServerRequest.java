@@ -7,6 +7,7 @@ import java.util.Random;
 
 import com.cannontech.message.server.ServerRequestMsg;
 import com.cannontech.message.server.ServerResponseMsg;
+import com.cannontech.yukon.IServerConnection;
 
 /**
  * ServerRequest is used to make a synchronous request to a Yukon server.
@@ -40,6 +41,7 @@ import com.cannontech.message.server.ServerResponseMsg;
  * 	// didn't get a response!
  * }
  * @author aaron
+ * TODO: Fix exception handling
  */
 public class ServerRequest implements MessageListener 
 {
@@ -60,7 +62,7 @@ public class ServerRequest implements MessageListener
             _currentRequestID = r.nextInt();
 	}
 
-	private ClientConnection _connection;
+	private IServerConnection _connection;
 	private ServerRequestMsg _requestMsg;
 	private ServerResponseMsg _responseMsg;
 	private int _requestID;
@@ -72,7 +74,7 @@ public class ServerRequest implements MessageListener
 	 * @param msg - Some type of message that represents a request
 	 * @return
 	 */
-	public static ServerRequest makeServerRequest(ClientConnection conn, Message msg) {
+	public static ServerRequest makeServerRequest(IServerConnection conn, Message msg) {
 		ServerRequestMsg requestMsg = new ServerRequestMsg();
 		requestMsg.setPayload(msg);
 		return new ServerRequest(conn, requestMsg);
@@ -84,7 +86,7 @@ public class ServerRequest implements MessageListener
 	 * @param msg - Some type of message that represents a request
 	 * @return
 	 */
-	public static ServerRequest[] makeServerRequests(ClientConnection conn, Message[] msg) 
+	public static ServerRequest[] makeServerRequests(IServerConnection conn, Message[] msg) 
 	{
 		ServerRequest[] srvrReq = new ServerRequest[ msg.length ];
 		for( int i = 0; i < msg.length; i++ )
@@ -104,7 +106,7 @@ public class ServerRequest implements MessageListener
 	 * @return
 	 * @throws Exception
 	 */
-	public synchronized ServerResponseMsg execute() throws Exception {
+	public synchronized ServerResponseMsg execute() {
 		return execute(DEFAULT_TIMEOUT);
 	}
 	
@@ -112,18 +114,19 @@ public class ServerRequest implements MessageListener
 	 * Returns a ServerResponseMsg that matches the request.
 	 * If no matching response is received a Timeout response will be returned 
      * after the given timeout number of milliseconds.
-     * 
 	 * @param timeout
 	 * @return
 	 * @throws Exception
 	 */
-	public synchronized ServerResponseMsg execute(long timeout) throws InterruptedException {
+	public synchronized ServerResponseMsg execute(long timeout) {
 		try { 
 			//Add this as a listener so we can look for a response
 			_connection.addMessageListener(this);
 			_connection.write(_requestMsg);
 			wait(timeout);
 		}
+        catch(InterruptedException ie) {
+        }
 		finally {
 			//Make sure to remove us or else there will be a leak!
 			_connection.removeMessageListener(this);
@@ -142,7 +145,7 @@ public class ServerRequest implements MessageListener
 	 * @param conn
 	 * @param requestMsg
 	 */		
-	public ServerRequest(ClientConnection conn, ServerRequestMsg requestMsg) {
+	public ServerRequest(IServerConnection conn, ServerRequestMsg requestMsg) {
 		_connection = conn;
 		_requestMsg = requestMsg;
 		

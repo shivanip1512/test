@@ -1,6 +1,5 @@
 package com.cannontech.message.util;
 
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.message.server.ServerRequestMsg;
 import com.cannontech.message.server.ServerResponseMsg;
 
@@ -19,16 +18,13 @@ public class ServerRequestHelper {
                                            Message msg, 
                                            int timeoutMilliSeconds) {
         Object result = null;
-        try {
-            ServerRequest req = ServerRequest.makeServerRequest(conn, msg);
-            ServerResponseMsg responseMsg = req.execute(timeoutMilliSeconds); // could block up to 60 seconds
-            if(responseMsg.getStatus() == ServerResponseMsg.STATUS_OK) {
-                // good response
-                result = responseMsg.getPayload();
-            }
-        } catch (InterruptedException e) {
-            CTILogger.error("Was interrupted while waiting for server response", e);
+        ServerRequest req = ServerRequest.makeServerRequest(conn, msg);
+        ServerResponseMsg responseMsg = req.execute(timeoutMilliSeconds); // could block up to 60 seconds
+        if(responseMsg.getStatus() == ServerResponseMsg.STATUS_OK) {
+            // good response
+            result = responseMsg.getPayload();
         }
+
         if (result == null) {
             throw new BadServerResponseException();
         }
