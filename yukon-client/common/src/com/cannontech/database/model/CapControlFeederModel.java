@@ -1,5 +1,7 @@
 package com.cannontech.database.model;
 
+import com.cannontech.yukon.IDatabaseCache;
+
 /**
  * This type was created in VisualAge.
  */
@@ -18,7 +20,7 @@ public CapControlFeederModel() {
  * @return java.util.List
  */
 public synchronized java.util.List getCacheList(
-		com.cannontech.database.cache.DefaultDatabaseCache cache ) 
+		IDatabaseCache cache ) 
 {
 	return cache.getAllCapControlFeeders();
 }

@@ -1,9 +1,9 @@
 package com.cannontech.database.model;
 
 import com.cannontech.common.gui.tree.CheckNode;
-import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.yukon.IDatabaseCache;
 
 
 /**
@@ -20,7 +20,7 @@ public class LMGroupsCheckBoxModel extends DeviceCheckBoxTreeModel
 	{
 		super( showPointNodes, new CheckNode(ModelFactory.getModelString(ModelFactory.LMGROUP_CHECKBOX)) );
 	}
-	public synchronized java.util.List getCacheList( DefaultDatabaseCache cache ) 
+	public synchronized java.util.List getCacheList( IDatabaseCache cache ) 
 	{
 		return cache.getAllLoadManagement();
 	}

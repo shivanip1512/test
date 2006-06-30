@@ -6,8 +6,8 @@
  */
 package com.cannontech.database.model;
 import com.cannontech.common.gui.tree.CheckNode;
-import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * @author bjonasson
@@ -32,7 +32,7 @@ public class CommChannelCheckBoxTreeModel extends DeviceCheckBoxTreeModel
 		return ( class_ == PAOGroups.CLASS_PORT && category_ == PAOGroups.CAT_PORT );
 	}
 	
-	public synchronized java.util.List getCacheList( DefaultDatabaseCache cache ) 
+	public synchronized java.util.List getCacheList( IDatabaseCache cache ) 
 	{
 		return cache.getAllPorts();
 	}

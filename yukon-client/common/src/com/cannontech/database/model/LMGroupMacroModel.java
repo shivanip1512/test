@@ -7,6 +7,7 @@
 package com.cannontech.database.model;
 
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.yukon.IDatabaseCache;
 /**
  * @author jdayton
  *
@@ -27,8 +28,7 @@ public LMGroupMacroModel() {
  * Creation date: (4/24/2002 9:24:01 AM)
  * @return java.util.List
  */
-public synchronized java.util.List getCacheList(
-		com.cannontech.database.cache.DefaultDatabaseCache cache ) 
+public synchronized java.util.List getCacheList(IDatabaseCache cache ) 
 {
 	return cache.getAllLoadManagement();
 }

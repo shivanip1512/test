@@ -4,6 +4,7 @@ package com.cannontech.database.model;
  * This type was created in VisualAge.
  */
 import com.cannontech.database.data.device.DeviceTypesFuncs;
+import com.cannontech.yukon.IDatabaseCache;
 
 public class LMProgramModel extends DeviceTreeModel
 {
@@ -19,8 +20,7 @@ public LMProgramModel() {
  * Creation date: (4/24/2002 9:24:01 AM)
  * @return java.util.List
  */
-public synchronized java.util.List getCacheList(
-		com.cannontech.database.cache.DefaultDatabaseCache cache ) 
+public synchronized java.util.List getCacheList(IDatabaseCache cache ) 
 {
 	return cache.getAllLoadManagement();
 }

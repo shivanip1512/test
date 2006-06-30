@@ -40,8 +40,7 @@ public boolean isDeviceValid( int category_, int class_, int type_ )
     
 }
 
-protected synchronized java.util.List getCacheList(
-        com.cannontech.database.cache.DefaultDatabaseCache cache ) 
+protected synchronized java.util.List getCacheList(IDatabaseCache cache ) 
 {
     return cache.getAllYukonPAObjects();
 }

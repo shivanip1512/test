@@ -1,5 +1,7 @@
 package com.cannontech.database.model;
 
+import com.cannontech.yukon.IDatabaseCache;
+
 /**
  * This type was created in VisualAge.
  */
@@ -27,8 +29,7 @@ public LMGroupsModel( boolean showPointNodes )
  * Creation date: (4/24/2002 9:24:01 AM)
  * @return java.util.List
  */
-public synchronized java.util.List getCacheList(
-		com.cannontech.database.cache.DefaultDatabaseCache cache ) 
+public synchronized java.util.List getCacheList(IDatabaseCache cache ) 
 {
 	return cache.getAllLoadManagement();
 }
