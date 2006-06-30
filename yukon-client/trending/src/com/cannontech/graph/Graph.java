@@ -8,6 +8,8 @@ package com.cannontech.graph;
  * @author:  Aaron Lauinger 
  */
 import java.awt.Rectangle;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
@@ -723,7 +725,7 @@ public void getDataNow(java.util.List paobjects)
 
 	if( paobjects == null)
 	{	
-		IDatabaseCache cache = new DefaultDatabaseCache();
+		IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 		paobjects = cache.getAllDevices();	//populate our list of paobjects with all devices then!
 	}
 	
@@ -737,11 +739,11 @@ public void getDataNow(java.util.List paobjects)
 			messageCommand.setOperation(Command.ALTERNATE_SCAN_RATE);
 			messageCommand.setPriority(14);
 			
-			java.util.Vector opArgList = new java.util.Vector(4);
-			opArgList.add(new Long(-1));	//token
-			opArgList.add(new Long(new Integer(paobject.getLiteID()).longValue()));	//deviceID
-			opArgList.add(new Long(-1));	//open?
-			opArgList.add(new Long(0));	//duration in secs
+            List<Integer> opArgList = new ArrayList<Integer>(4);
+			opArgList.add(-1);	//token
+			opArgList.add(paobject.getLiteID());	//deviceID
+			opArgList.add(-1);	//open?
+			opArgList.add(0);	//duration in secs
 			
 			messageCommand.setOpArgList(opArgList);
 			multi.getVector().add(messageCommand);
