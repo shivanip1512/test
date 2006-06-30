@@ -7,6 +7,9 @@ package com.cannontech.clientutils;
  * @Version: <version>
  */
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -121,14 +124,15 @@ private void getExternalResources()
 public PointRegistration getPointRegistration( Long[] ptIDs )
 {
 	//Register for points
-	PointRegistration pReg = new PointRegistration();	 		
-	com.roguewave.tools.v2_0.Slist list = new com.roguewave.tools.v2_0.Slist();
+	PointRegistration pReg = new PointRegistration();	
+    List<Integer> list = new ArrayList<Integer>();
 	
 	if( ptIDs != null )
 	{
-		for( int i = 0; i < ptIDs.length; i++ )
-			list.insert( ptIDs[i] );
-
+		for( int i = 0; i < ptIDs.length; i++ ) {
+            long id = ptIDs[i];
+			list.add((int)id);
+        }
 		pReg.setPointList( list );
 	}
 	else
