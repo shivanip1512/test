@@ -3,6 +3,9 @@ package com.cannontech.message.util;
 /**
  * This type was created in VisualAge.
  */
+import java.util.ArrayList;
+import java.util.List;
+
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
@@ -62,14 +65,15 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	
 	cmd.setOperation( vstr.extractInt() );
 	cmd.setOpString( (String) vstr.restoreObject(SimpleMappings.CString));
-
-	int count = vstr.extractInt(); //get the vector element count
+    
+    int count = vstr.extractInt(); //get the vector element count
+    List<Integer> opArgList = new ArrayList<Integer>(count);
 	
-	for( int i = 0; i < count; i++ )
-	{
-		cmd.getOpArgList().addElement( new Integer(vstr.extractInt()) );		
+	for( int i = 0; i < count; i++ ) {
+        opArgList.add(vstr.extractInt());
 	}
 	
+    cmd.setOpArgList(opArgList);
 }
 /**
  * saveGuts method comment.
@@ -81,15 +85,12 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 
 	vstr.insertInt( cmd.getOperation() );
 	vstr.saveObject( cmd.getOpString(), SimpleMappings.CString );
-//	vstr.saveObject( cmd.getOpArgList(), polystr );
 
-	int count = cmd.getOpArgList().size();	
-	vstr.insertInt( count ); //send the vector element count
+    List<Integer> opArgList = cmd.getOpArgList();
+	vstr.insertInt(opArgList.size()); //send the vector element count
 
-	for( int i = 0; i < count; i++ )
-	{
-		vstr.insertInt( Integer.parseInt(cmd.getOpArgList().elementAt( i ).toString()) );
-	}
-
+    for (Integer arg : opArgList) {
+        vstr.insertInt(arg);
+    }
 }
 }

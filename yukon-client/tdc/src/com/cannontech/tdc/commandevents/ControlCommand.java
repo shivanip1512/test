@@ -5,7 +5,8 @@ package com.cannontech.tdc.commandevents;
  * Creation date: (8/30/00 9:43:39 AM)
  * @author: 
  */
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.cannontech.message.util.Command;
 import com.cannontech.tdc.roweditor.SendData;
@@ -40,17 +41,19 @@ public ControlCommand() {
 public static void send( long deviceID, long pointID, int rawState ) 
 {
 	/*** Start building the Command.opArgList() **************************/
-	Vector data = new Vector( 4 );
+	List<Integer> data = new ArrayList<Integer>(4);
 
-	data.addElement( new Integer(-1) );  // this is the ClientRegistrationToken
+	data.add(-1);  // this is the ClientRegistrationToken
 
-	if( deviceID > 0 )
-		data.addElement( new Integer((int)deviceID));
-	else
-		data.addElement( new Integer(0) );	
+	if( deviceID > 0 ) {
+		data.add((int)deviceID);
+    }
+	else {
+		data.add(0);
+    }
 		
-	data.addElement( new Integer((int)pointID) );
-	data.addElement( new Integer(rawState) );
+	data.add((int)pointID);
+	data.add(rawState);
 	/*** End building the Command.opArgList() ****************************/
 
 	Command cmd = new Command();

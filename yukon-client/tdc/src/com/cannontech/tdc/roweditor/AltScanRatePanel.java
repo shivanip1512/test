@@ -4,6 +4,9 @@ package com.cannontech.tdc.roweditor;
  * Creation date: (3/8/00 11:45:00 AM)
  * @author: 
  */
+import java.util.ArrayList;
+import java.util.List;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
@@ -320,15 +323,14 @@ public void JButtonSendAction_actionPerformed(java.util.EventObject newEvent)
 		cmdMsg.setOperation( Command.ALTERNATE_SCAN_RATE );
 		cmdMsg.setPriority(14);
 			
-		java.util.Vector opArgList = new java.util.Vector(4);
-		opArgList.add( new Long(Command.DEFAULT_CLIENT_REGISTRATION_TOKEN) );
-		opArgList.add( new Long(new Integer(paobject.getLiteID()).longValue()) );	//deviceID
-		opArgList.add( new Long(-1) );	//open?
-		opArgList.add( new Long(duration) );	//duration in secs
+        List<Integer> opArgList = new ArrayList<Integer>(4);     
+		opArgList.add(Command.DEFAULT_CLIENT_REGISTRATION_TOKEN);
+		opArgList.add(paobject.getLiteID());	//deviceID
+		opArgList.add(-1);	//open?
+		opArgList.add((int)duration);	//duration in secs
 			
 		cmdMsg.setOpArgList(opArgList);
 	
-System.out.println( "  DUR = " + duration );
 		// now send the point data	
 		SendData.getInstance().sendCommandMsg( cmdMsg );
 	}

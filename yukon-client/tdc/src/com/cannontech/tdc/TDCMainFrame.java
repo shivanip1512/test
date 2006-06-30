@@ -14,6 +14,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JOptionPane;
@@ -3257,8 +3258,8 @@ public void jMenuItemResetCntrlHrs_ActionPerformed(java.awt.event.ActionEvent ac
 	if( res == JOptionPane.OK_OPTION )
 	{
 		// build up our opArgList for our command	message
-		Vector data = new Vector(1);
-		data.addElement( new Integer(Command.DEFAULT_CLIENT_REGISTRATION_TOKEN) );  // this is the ClientRegistrationToken	
+        List<Integer> data = new ArrayList<Integer>(1);
+		data.add(Command.DEFAULT_CLIENT_REGISTRATION_TOKEN);  // this is the ClientRegistrationToken	
 
 		// create our command message
 		Command cmd = new Command();

@@ -6,7 +6,8 @@ package com.cannontech.tdc.commandevents;
  * @author: 
  * @Version: <version>
  */
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.cannontech.message.util.Command;
 import com.cannontech.tdc.roweditor.SendData;
@@ -28,13 +29,13 @@ public AckAlarm()
  */
 public static void sendAckAll( int pointid ) 
 {
-	java.util.Vector data = new java.util.Vector( 2 );  // we are only sending 1 ack event and the token
-	data.addElement( new Integer(-1) );  // this is the ClientRegistrationToken
+    List<Integer> data = new ArrayList<Integer>(2);
+	data.add(-1);  // this is the ClientRegistrationToken
 	
 	//add the pointID
-	data.addElement( new Integer(pointid) );
+	data.add(pointid);
 	//add the ACK_ALL reserved value instead of the AlarmCondition
-	data.addElement( new Integer(Command.ACK_ALL_TOKEN) );
+	data.add(Command.ACK_ALL_TOKEN);
 
 		
 	// Sends a vangogh command message to capcontrol, which then forwards the exact
@@ -58,13 +59,12 @@ public static void send( int[] pointids, int[] conditions )
 		throw new IllegalStateException("The pointIDS and AlarmConditions must be a one to one mapping");
 		
 		
-	Vector data = new Vector( pointids.length + 1 );
-	data.addElement( new Integer(-1) );  // this is the ClientRegistrationToken
+    List<Integer> data = new ArrayList<Integer>(pointids.length+1);
+	data.add(-1);  // this is the ClientRegistrationToken
 	
-	for( int i = 0 ; i < pointids.length; i++ )
-	{
-		data.addElement( new Integer(pointids[i]) );
-		data.addElement( new Integer(conditions[i]) );
+	for( int i = 0 ; i < pointids.length; i++ ) {
+		data.add(pointids[i]);
+		data.add(conditions[i]);
 	}
 
 	Command cmd = new Command();

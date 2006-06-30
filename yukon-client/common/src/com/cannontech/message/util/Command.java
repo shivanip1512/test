@@ -1,5 +1,8 @@
 package com.cannontech.message.util;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * This type was created in VisualAge.
  */
@@ -26,7 +29,7 @@ public class Command extends com.cannontech.message.util.Message
     public static final int POINT_TAG_ADJUST = 170;  //vector (token, pointID, tagsToSet[], tagsToReset[])
     public static final int PORTER_CONSOLE_INPUT = 180; //vector (token, operation)
 	public static final int RESET_CNTRL_HOURS = 190; //Resets the Seasonal control history hours to zero
-	
+    public static final int POINT_DATA_REQUEST = 200; // List of point ids to be report if knowne
 	
 	private static final int LAST_COMMAND = 10000; //Make this big
 
@@ -42,8 +45,8 @@ public class Command extends com.cannontech.message.util.Message
 	public static final int ACK_ALL_TOKEN = -1;
 	
 	private int operation = 0;
-	private java.lang.String opString = "";
-	private java.util.Vector opArgList = new java.util.Vector();
+	private String opString = "";
+	private List<Integer> opArgList = new ArrayList<Integer>();
 /**
  * Command constructor comment.
  */
@@ -55,7 +58,7 @@ public Command() {
  * Creation date: (6/15/00 2:35:20 PM)
  * @return java.util.Vector
  */
-public java.util.Vector getOpArgList() {
+public List<Integer> getOpArgList() {
 	return opArgList;
 }
 /**
@@ -78,7 +81,7 @@ public java.lang.String getOpString() {
  * Creation date: (6/15/00 2:35:20 PM)
  * @param newOpArgList java.util.Vector
  */
-public void setOpArgList(java.util.Vector newOpArgList) {
+public void setOpArgList(List<Integer> newOpArgList) {
 	opArgList = newOpArgList;
 }
 /**

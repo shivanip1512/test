@@ -20,8 +20,8 @@ import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
-import java.util.Vector;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
@@ -2877,14 +2877,14 @@ private void addTagMenuItems( int selRow )
 public void jRadioButtonMenuItemAllowPt_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
 	int selectedRow = getDisplayTable().getSelectedRow();
-	int pointID = (int)getTableDataModel().getPointValue(selectedRow).getPointID();
+	int pointID = getTableDataModel().getPointValue(selectedRow).getPointID();
 
 	// build up our opArgList for our command	message
-	Vector data = new Vector(4);
-	data.addElement( new Integer(Command.DEFAULT_CLIENT_REGISTRATION_TOKEN) );  // this is the ClientRegistrationToken	
-	data.addElement( new Integer(Command.ABLEMENT_POINT_IDTYPE) );
-	data.addElement( new Integer(pointID) );
-	data.addElement( new Integer(Command.ABLEMENT_ENABLE) );
+    List<Integer> data = new ArrayList<Integer>(4);
+	data.add(Command.DEFAULT_CLIENT_REGISTRATION_TOKEN);  // this is the ClientRegistrationToken	
+	data.add(Command.ABLEMENT_POINT_IDTYPE);
+	data.add(pointID);
+	data.add(Command.ABLEMENT_ENABLE);
 
 	// create our command message
 	Command cmd = new Command();
@@ -2908,11 +2908,11 @@ public void jRadioButtonMenuItemDisableDev_ItemStateChanged(java.awt.event.ItemE
 	if( ptVal != null )
 	{
 		// build up our opArgList for our command	message
-		Vector data = new Vector(4);
-		data.addElement( new Integer(Command.DEFAULT_CLIENT_REGISTRATION_TOKEN) );  // this is the ClientRegistrationToken	
-		data.addElement( new Integer(Command.ABLEMENT_DEVICE_IDTYPE) );
-		data.addElement( new Integer(ptVal.getDeviceID()) );
-		data.addElement( new Integer(Command.ABLEMENT_DISABLE) );
+        List<Integer> data = new ArrayList<Integer>(4);
+		data.add(Command.DEFAULT_CLIENT_REGISTRATION_TOKEN);  // this is the ClientRegistrationToken	
+		data.add(Command.ABLEMENT_DEVICE_IDTYPE);
+		data.add(ptVal.getDeviceID());
+		data.add(Command.ABLEMENT_DISABLE);
 	
 		// create our command message
 		Command cmd = new Command();
@@ -2938,14 +2938,14 @@ public void jRadioButtonMenuItemDisableDev_ItemStateChanged(java.awt.event.ItemE
 public void jRadioButtonMenuItemDisablePt_ItemStateChanged(java.awt.event.ItemEvent itemEvent) 
 {
 	int selectedRow = getDisplayTable().getSelectedRow();
-	int pointID = (int)getTableDataModel().getPointValue(selectedRow).getPointID();
+	int pointID = getTableDataModel().getPointValue(selectedRow).getPointID();
 
 	// build up our opArgList for our command	message
-	Vector data = new Vector(4);
-	data.addElement( new Integer(Command.DEFAULT_CLIENT_REGISTRATION_TOKEN) );  // this is the ClientRegistrationToken	
-	data.addElement( new Integer(Command.ABLEMENT_POINT_IDTYPE) );
-	data.addElement( new Integer(pointID) );
-	data.addElement( new Integer(Command.ABLEMENT_DISABLE) );
+    List<Integer> data = new ArrayList<Integer>(4); 
+	data.add(Command.DEFAULT_CLIENT_REGISTRATION_TOKEN);  // this is the ClientRegistrationToken	
+	data.add(Command.ABLEMENT_POINT_IDTYPE);
+	data.add(pointID);
+	data.add(Command.ABLEMENT_DISABLE);
 
 	// create our command message
 	Command cmd = new Command();
@@ -2967,11 +2967,11 @@ public void jRadioButtonMenuItemEnableDev_ItemStateChanged(java.awt.event.ItemEv
 	int deviceID = getTableDataModel().getPointValue(selectedRow).getDeviceID();
 
 	// build up our opArgList for our command	message
-	Vector data = new Vector(4);
-	data.addElement( new Integer(Command.DEFAULT_CLIENT_REGISTRATION_TOKEN) );  // this is the ClientRegistrationToken	
-	data.addElement( new Integer(Command.ABLEMENT_DEVICE_IDTYPE) );
-	data.addElement( new Integer(deviceID) );
-	data.addElement( new Integer(Command.ABLEMENT_ENABLE) );
+    List<Integer> data = new ArrayList<Integer>(4);
+	data.add(Command.DEFAULT_CLIENT_REGISTRATION_TOKEN);  // this is the ClientRegistrationToken	
+	data.add(Command.ABLEMENT_DEVICE_IDTYPE);
+	data.add(deviceID);
+	data.add(Command.ABLEMENT_ENABLE); 
 
 	// create our command message
 	Command cmd = new Command();
@@ -2990,14 +2990,14 @@ public void jRadioButtonMenuItemEnableDev_ItemStateChanged(java.awt.event.ItemEv
 public void jRadioButtonMenuItemEnbablePt_ItemStateChanged(java.awt.event.ItemEvent itemEvent) 
 {
 	int selectedRow = getDisplayTable().getSelectedRow();
-	int pointID = (int)getTableDataModel().getPointValue(selectedRow).getPointID();
+	int pointID = getTableDataModel().getPointValue(selectedRow).getPointID();
 
 	// build up our opArgList for our command	message
-	Vector data = new Vector(4);
-	data.addElement( new Integer(Command.DEFAULT_CLIENT_REGISTRATION_TOKEN) );  // this is the ClientRegistrationToken	
-	data.addElement( new Integer(Command.ABLEMENT_POINT_IDTYPE) );
-	data.addElement( new Integer(pointID) );
-	data.addElement( new Integer(Command.ABLEMENT_ENABLE) );
+    List<Integer> data = new ArrayList<Integer>(4);
+	data.add(Command.DEFAULT_CLIENT_REGISTRATION_TOKEN);  // this is the ClientRegistrationToken	
+	data.add(Command.ABLEMENT_POINT_IDTYPE);
+	data.add(pointID);
+	data.add(Command.ABLEMENT_ENABLE);
 
 	// create our command message
 	Command cmd = new Command();
@@ -3041,11 +3041,11 @@ public void jMenuItemInhibitDev_ActionPerformed(java.awt.event.ActionEvent actio
 	if( res == javax.swing.JOptionPane.OK_OPTION )
 	{	
 		// build up our opArgList for our command	message
-		Vector data = new Vector(4);
-		data.addElement( new Integer(Command.DEFAULT_CLIENT_REGISTRATION_TOKEN) );  // this is the ClientRegistrationToken
-		data.addElement( new Integer(Command.ABLEMENT_DEVICE_IDTYPE) );
-		data.addElement( new Integer(deviceID) );
-		data.addElement( new Integer(cmdInhib) );
+        List<Integer> data = new ArrayList<Integer>(4);        
+		data.add(Command.DEFAULT_CLIENT_REGISTRATION_TOKEN);  // this is the ClientRegistrationToken
+		data.add(Command.ABLEMENT_DEVICE_IDTYPE);
+		data.add(deviceID);
+		data.add(cmdInhib);
 
 	
 		// create our command message
@@ -3108,14 +3108,14 @@ public void jMenuItemCreateTag_ActionPerformed(java.awt.event.ActionEvent source
 public void jRadioButtonMenuItemInhibitPt_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
 	int selectedRow = getDisplayTable().getSelectedRow();
-	int pointID = (int)getTableDataModel().getPointValue(selectedRow).getPointID();
+	int pointID = getTableDataModel().getPointValue(selectedRow).getPointID();
 
 	// build up our opArgList for our command	message
-	Vector data = new Vector(4);
-	data.addElement( new Integer(Command.DEFAULT_CLIENT_REGISTRATION_TOKEN) );  // this is the ClientRegistrationToken	
-	data.addElement( new Integer(Command.ABLEMENT_POINT_IDTYPE) );
-	data.addElement( new Integer(pointID) );
-	data.addElement( new Integer(Command.ABLEMENT_DISABLE) );
+    List<Integer> data = new ArrayList<Integer>(4);
+	data.add(Command.DEFAULT_CLIENT_REGISTRATION_TOKEN);  // this is the ClientRegistrationToken	
+	data.add(Command.ABLEMENT_POINT_IDTYPE);
+	data.add(pointID);
+	data.add(Command.ABLEMENT_DISABLE);
 
 	// create our command message
 	Command cmd = new Command();

@@ -1,6 +1,6 @@
 package com.cannontech.message.util;
 
-import java.util.Vector;
+import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.version.VersionTools;
@@ -34,18 +34,18 @@ public class MessageUtils
 	{
 		if( dispCmdMsg.getOperation() == Command.ARE_YOU_THERE)
 		{
-			Vector msgVect = dispCmdMsg.getOpArgList();
+            List<Integer> opArgList = dispCmdMsg.getOpArgList();
 			
-			if( msgVect.size() >= 4 )
+			if( opArgList.size() >= 4 )
 			{
-				Integer servMaj = (Integer)msgVect.get(1);
-				Integer servMin = (Integer)msgVect.get(2);
-				Integer servBuild = (Integer)msgVect.get(3);
+				int servMaj = opArgList.get(1);
+				int servMin = opArgList.get(2);
+				int servBuild = opArgList.get(3);
 
 				//if all zeros, this is a development version, let it continue
-				if( servMaj.intValue() == 0
-					&& servMin.intValue() == 0
-					&& servBuild.intValue() == 0 )
+				if( servMaj == 0
+					&& servMin == 0
+					&& servBuild == 0 )
 				{
 					return null;
 				}

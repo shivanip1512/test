@@ -6,7 +6,9 @@ package com.cannontech.tdc.commandevents;
  * @author: 
  * @Version: <version>
  */
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import com.cannontech.message.util.Command;
 import com.cannontech.tdc.roweditor.SendData;
@@ -30,20 +32,20 @@ public static void send( int[] pointids, int[] conditions )
 		throw new IllegalStateException("The pointIDS and AlarmConditions must be a one to one mapping");
 		
 		
-	Vector data = new Vector( pointids.length + 1 );
-	data.addElement( new Integer(-1) );  // this is the ClientRegistrationToken
+    List<Integer> data = new ArrayList<Integer>(pointids.length+1);
+	data.add(-1);  // this is the ClientRegistrationToken
 	
 	for( int i = 0 ; i < pointids.length; i++ )
 	{
-		data.addElement( new Integer(pointids[i]) );
-		data.addElement( new Integer(conditions[i]) );
+		data.add(pointids[i]);
+		data.add(conditions[i]);
 	}
 
 	Command cmd = new Command();
 	cmd.setUserName( com.cannontech.common.util.CtiUtilities.getUserName() );
 	cmd.setOperation( Command.CLEAR_ALARM );
 	cmd.setOpArgList( data );
-	cmd.setTimeStamp( new java.util.Date() );
+	cmd.setTimeStamp( new Date() );
 
 	SendData.getInstance().sendCommandMsg( cmd );
 }
