@@ -32,7 +32,7 @@ import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.NativeIntVector;
 import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.database.cache.DBChangeListener;
+import com.cannontech.database.cache.DBChangeLiteListener;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteBase;
@@ -57,7 +57,7 @@ import com.cannontech.yukon.IDatabaseCache;
 import com.cannontech.yukon.IServerConnection;
 import com.cannontech.yukon.conns.ConnPool;
 
-public class YukonCommander extends JFrame implements DBChangeListener, ActionListener, FocusListener, KeyListener, TreeSelectionListener, MouseListener, Observer {
+public class YukonCommander extends JFrame implements DBChangeLiteListener, ActionListener, FocusListener, KeyListener, TreeSelectionListener, MouseListener, Observer {
 	private YC yc;
 
 	private int [] treeModels = null;
@@ -1237,7 +1237,7 @@ public class YukonCommander extends JFrame implements DBChangeListener, ActionLi
 	}
 	
 	/**
-	 * @see com.cannontech.database.cache.DBChangeListener#handleDBChangeMsg(DBChangeMsg, LiteBase)
+	 * @see com.cannontech.database.cache.DBChangeLiteListener#handleDBChangeMsg(DBChangeMsg, LiteBase)
 	 */
 	public void handleDBChangeMsg(DBChangeMsg msg, LiteBase object)
 	{
@@ -1317,7 +1317,7 @@ public class YukonCommander extends JFrame implements DBChangeListener, ActionLi
 			
 		setRouteModel(); //fill route combo box
 
-		DefaultDatabaseCache.getInstance().addDBChangeListener(this);
+		DefaultDatabaseCache.getInstance().addDBChangeLiteListener(this);
 	
 		addWindowListener(new java.awt.event.WindowAdapter(){
 			public void windowClosing(java.awt.event.WindowEvent e){ 

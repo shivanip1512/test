@@ -18,13 +18,14 @@ import com.cannontech.yukon.conns.ConnPool;
 /*
  * This class helps the cache support notifying anyone interested in a database change.
  * When a DBChangeMsg comes in, it will tell the cache to handle it and the proceed
- * to tell all of the dbChangeListeners registered with it.
+ * to tell all of the dbChangeLiteListeners registered with it.
  * 
  * Usually this registration is doing through the cache, don't use this class directly.
  * This class is subject to change and you should probably not depend on it for new uses.
  */
 public class CacheDBChangeListener implements MessageListener {
-	private List<DBChangeListener> dbChangeListeners = new ArrayList<DBChangeListener>();
+    private List<DBChangeLiteListener> dbChangeLiteListeners = new ArrayList<DBChangeLiteListener>();
+    private List<DBChangeListener> dbChangeListeners = new ArrayList<DBChangeListener>();
 
 	/**
 	 * CacheDBChangeListener constructor comment.
@@ -37,26 +38,40 @@ public class CacheDBChangeListener implements MessageListener {
 	/**
 	 * 
 	 * @param listener
-	 *            com.cannontech.database.cache.DBChangeListener
+	 *            com.cannontech.database.cache.DBChangeLiteListener
 	 */
-	public void addDBChangeListener(DBChangeListener listener) {
-		synchronized (dbChangeListeners) {
-			if (!dbChangeListeners.contains(listener)) {
-				dbChangeListeners.add(listener);
+	public void addDBChangeLiteListener(DBChangeLiteListener listener) {
+		synchronized (dbChangeLiteListeners) {
+			if (!dbChangeLiteListeners.contains(listener)) {
+				dbChangeLiteListeners.add(listener);
 			}
 		}
 	}
 
+    public void addDBChangeListener(DBChangeListener listener) {
+        synchronized (dbChangeListeners) {
+            if (!dbChangeListeners.contains(listener)) {
+                dbChangeListeners.add(listener);
+            }
+        }
+    }
+    
 	/**
 	 * 
 	 * @param listener
-	 *            com.cannontech.database.cache.DBChangeListener
+	 *            com.cannontech.database.cache.DBChangeLiteListener
 	 */
-	public void removeDBChangeListener(DBChangeListener listener) {
-		synchronized (dbChangeListeners) {
-			dbChangeListeners.remove(listener);
+	public void removeDBChangeLiteListener(DBChangeLiteListener listener) {
+		synchronized (dbChangeLiteListeners) {
+			dbChangeLiteListeners.remove(listener);
 		}
 	}
+    
+    public void removeDBChangeListener(DBChangeListener listener) {
+        synchronized (dbChangeListeners) {
+            dbChangeListeners.remove(listener);
+        }
+    }
 
 	/**
 	 * If the message received was a DBChangeMsg the ask the cache to figure out
@@ -65,8 +80,8 @@ public class CacheDBChangeListener implements MessageListener {
 	public void messageReceived(MessageEvent e) {
 		Object msg = e.getMessage();
 		if (msg != null && msg instanceof DBChangeMsg) {
-			synchronized (dbChangeListeners) {
-				for (DBChangeListener listener : dbChangeListeners) {
+			synchronized (dbChangeLiteListeners) {
+				for (DBChangeLiteListener listener : dbChangeLiteListeners) {
 					// handle the Cache's DBChangeMessages
 					LiteBase lBase = DefaultDatabaseCache.getInstance()
 							.handleDBChangeMessage((DBChangeMsg) msg);
@@ -75,6 +90,12 @@ public class CacheDBChangeListener implements MessageListener {
 					listener.handleDBChangeMsg((DBChangeMsg) msg, lBase);
 				}
 			}
+            
+            synchronized (dbChangeListeners) {
+                for (DBChangeListener listener : dbChangeListeners) {
+                    listener.dbChangeReceived((DBChangeMsg)msg);
+                }
+            }
 		}
 	}
 }
