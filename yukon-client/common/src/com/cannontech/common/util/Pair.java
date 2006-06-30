@@ -4,11 +4,11 @@ package com.cannontech.common.util;
  * Class to represent pairs of objects.
  * @author alauinger
  */
-public class Pair {
-	public Object first;
-	public Object second;
+public class Pair<K,V> {
+	public K first;
+	public V second;
 	
-	public Pair(Object first, Object second) {
+	public Pair(K first, V second) {
 	 	this.first = first;
 	 	this.second = second;
 	}
@@ -33,7 +33,7 @@ public class Pair {
 	 * Sets the first.
 	 * @param first The first to set
 	 */
-	public void setFirst(Object first) {
+	public void setFirst(K first) {
 		this.first = first;
 	}
 
@@ -41,8 +41,24 @@ public class Pair {
 	 * Sets the second.
 	 * @param second The second to set
 	 */
-	public void setSecond(Object second) {
+	public void setSecond(V second) {
 		this.second = second;
 	}
+    
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof Pair) {
+            Pair p = (Pair) obj;
+            return (first.equals(p.first) && second.equals(p.second));
+        }
+        else {
+            return false;
+        }
+    }
+    
+    @Override
+    public int hashCode() {
+        return first.hashCode() ^ second.hashCode();
+    }
 
 }
