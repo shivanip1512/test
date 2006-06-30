@@ -61,7 +61,7 @@ public class XmlIncrementer implements KeyedIncrementer {
                     // foreach sequence
                     String sequenceName = sequence.getAttributeValue("name");
                     
-                    MultiTableIncrementer currentIncrementer = new MultiTableIncrementer(dataSource);
+                    MultiTableIncrementer currentIncrementer = new CachingTableIncrementer(dataSource);
                     currentIncrementer.setSequenceTableName(sequenceTableName);
                     currentIncrementer.setValueColumnName(valueColumnName);
                     currentIncrementer.setKeyColumnName(keyColumnName);

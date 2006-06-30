@@ -9,11 +9,10 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
-import org.springframework.dao.DataAccessException;
 import org.springframework.dao.IncorrectUpdateSemanticsDataAccessException;
-import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.jdbc.support.SQLErrorCodeSQLExceptionTranslator;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -47,62 +46,64 @@ public class MultiTableIncrementer {
                 + " = '" + sequenceKey + "'";
     
             incrementSql = "update " + sequenceTableName + " set " 
-                + valueColumnName +  "= ? "
-                + " where " + keyColumnName + " = '" + sequenceKey + "'"
-                + " and " + valueColumnName +  " = ?";
+                + valueColumnName +  "=" + valueColumnName + "+ ? "
+                + " where " + keyColumnName + " = '" + sequenceKey + "'";
             dirty = false;
         }
     }
     
-    public synchronized int getNextValue() {
+    public int getNextValue() {
+        return getNextValue(1);
+    }
+    
+    protected int getNextValue(int incrementBy) {
         initializeSql();
-        JdbcTemplate jdbc = new JdbcTemplate(dataSource);
-        Number result = (Number)jdbc.execute(new ConnectionCallback() {
-            public Object doInConnection(Connection con) throws SQLException, DataAccessException {
-                boolean previousAutoCommit = con.getAutoCommit();
-                con.setAutoCommit(false);
-                //int previousIsolationLevel = con.getTransactionIsolation();
-                //con.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
-                Statement statement = null;
-                PreparedStatement pStatement = null;
-                ResultSet resultSet = null;
-                try {
-                    statement = con.createStatement();
-                    resultSet = statement.executeQuery(valueSql);
-                    int  lastValue;
-                    if (resultSet.next()) {
-                        lastValue = resultSet.getInt(1);
-                    } else {
-                        statement.executeUpdate(insertSql);
-                        lastValue = 0;
-                    }
-                    
-                    // update the table
-                    pStatement = con.prepareStatement(incrementSql);
-                    pStatement.setInt(1, lastValue + 1);
-                    pStatement.setInt(2, lastValue);
-                    int affected = pStatement.executeUpdate();
-                    if (affected != 1) {
-                        throw new IncorrectUpdateSemanticsDataAccessException("More than one row affected :" + affected);
-                    }
-                    // get the current value
-                    return lastValue + 1;
-                } finally {
-                    try {
-                        resultSet.close();
-                        statement.close();
-                        pStatement.close();
-                        con.commit();
-                        //con.setTransactionIsolation(previousIsolationLevel);
-                        con.setAutoCommit(previousAutoCommit);
-                    } catch (Exception e) {
-                        CTILogger.error("Exception in finally block", e);
-                    }
-                }
+        Connection con = null;
+        Statement statement = null;
+        PreparedStatement pStatement = null;
+        ResultSet resultSet = null;
+        boolean previousAutoCommit = false;
+        try {
+            con = dataSource.getConnection();
+            previousAutoCommit = con.getAutoCommit();
+            con.setAutoCommit(false);
+            
+            // update the table
+            pStatement = con.prepareStatement(incrementSql);
+            pStatement.setInt(1, incrementBy);
+            int affected = pStatement.executeUpdate();
+            if (affected != 1) {
+                throw new IncorrectUpdateSemanticsDataAccessException("More than one row affected :" + affected);
             }
 
-        });
-        return result.intValue();
+            statement = con.createStatement();
+            resultSet = statement.executeQuery(valueSql);
+            int  lastValue;
+            if (resultSet.next()) {
+                lastValue = resultSet.getInt(1);
+            } else {
+                statement.executeUpdate(insertSql);
+                lastValue = 0;
+            }
+            
+            // get the current value
+            return lastValue;
+        } catch (SQLException e){
+            SQLErrorCodeSQLExceptionTranslator translator = new SQLErrorCodeSQLExceptionTranslator(dataSource);
+            throw translator.translate("Unable to getNextValue", null, e);
+        } finally {
+            try {
+                con.commit();
+                resultSet.close();
+                statement.close();
+                pStatement.close();
+                con.setAutoCommit(previousAutoCommit);
+                con.close();
+            } catch (Exception e) {
+                CTILogger.error("Exception in finally block", e);
+            }
+        }
+
     }
 
     public void initializeSequence(final String tableName, final String identityColumn) {
