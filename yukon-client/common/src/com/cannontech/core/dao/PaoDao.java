@@ -6,54 +6,6 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 
 public interface PaoDao {
-
-    /**
-     * Insert the method's description here.
-     * Creation date: (3/26/2001 9:41:59 AM)
-     * @return LitePoint
-     * @param pointID int
-     */
-    /* This method returns a HashTable that has a LiteYukonPAObject as the key and */
-    /*   an ArrayList of LitePoints as its values */
-    /*
-     public java.util.Hashtable getAllLitePAOWithPoints()
-     {
-     DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
-     java.util.Hashtable paoTable = null;
-     
-     synchronized (cache)
-     {
-     java.util.List paos = cache.getAllYukonPAObjects();
-     java.util.List points = cache.getAllPoints();
-     java.util.Collections.sort(paos, com.cannontech.database.data.lite.LiteComparators.liteStringComparator);
-     java.util.Collections.sort(points, com.cannontech.database.data.lite.LiteComparators.liteStringComparator);
-     LitePoint litePoint = null;
-     LiteYukonPAObject litePAO = null;
-     
-     paoTable = new java.util.Hashtable( paos.size() );
-     
-     for (int i = 0; i < paos.size(); i++)
-     {
-     litePAO = (LiteYukonPAObject) paos.get(i);
-     
-     java.util.ArrayList pointList = new java.util.ArrayList( points.size() );
-     
-     for (int j = 0; j < points.size(); j++)
-     {				
-     litePoint = (LitePoint) points.get(j);				
-     if (litePoint.getPaobjectID() == litePAO.getYukonID())
-     pointList.add( litePoint );
-     }
-     
-     //add the liteDevice along with its litePoints
-     paoTable.put( litePAO, pointList );
-     
-     }
-     }
-     
-     return paoTable;
-     }
-     */
     /**
      * This method was created in VisualAge.
      * @return int[][]
@@ -75,6 +27,15 @@ public interface PaoDao {
      */
     public LiteYukonPAObject getLiteYukonPAO(int paoID);
 
+    /**
+     * Returns a list of lite pao objects by type
+     * 
+     * @param paoType
+     * @return
+     * @see com.cannontech.database.data.pao.DeviceTypes
+     */
+    public List<LiteYukonPAObject> getLiteYukonPAObjectByType(int paoType);
+    
     public List getAllCapControlSubBuses();
 
     /**
@@ -100,4 +61,7 @@ public interface PaoDao {
      */
     public LiteYukonPAObject[] getAllUnusedCCPAOs(Integer ignoreID);
 
+    public int countLiteYukonPaoByName(String name, boolean partialMatch);
+    public List<LiteYukonPAObject> getLiteYukonPaoByName(String name, boolean partialMatch);
+    
 }

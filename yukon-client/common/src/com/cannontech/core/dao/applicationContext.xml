@@ -57,6 +57,7 @@
     <property name="databaseCache" ref="databaseCache"/>    
   </bean>  
   <bean id="paoDao" class="com.cannontech.core.dao.impl.PaoDaoImpl" >
+    <property name="jdbcOps" ref="jdbcTemplate"/> 
     <property name="databaseCache" ref="databaseCache"/>    
   </bean>
   <bean id="pointDao" class="com.cannontech.core.dao.impl.PointDaoImpl" >
@@ -91,6 +92,10 @@
   
    <bean id="yukonDataSource" class="com.cannontech.database.YukonDataSource">
     <constructor-arg value="yukon"/>
+   </bean>
+   
+   <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+     <property name="dataSource" ref="yukonDataSource"/>
    </bean>
   
   <bean id="databaseCache" class="com.cannontech.mbean.ServerDatabaseCache" >

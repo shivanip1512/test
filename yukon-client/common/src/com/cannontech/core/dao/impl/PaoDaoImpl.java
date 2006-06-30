@@ -5,70 +5,36 @@ package com.cannontech.core.dao.impl;
  * Creation date: (3/26/2001 9:40:33 AM)
  * @author: 
  */
+import java.math.BigDecimal;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.RowMapper;
+
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.db.device.DeviceCarrierSettings;
+import com.cannontech.database.db.device.DeviceDirectCommSettings;
+import com.cannontech.database.db.pao.YukonPAObject;
 import com.cannontech.yukon.IDatabaseCache;
 
 public final class PaoDaoImpl implements PaoDao 
 {
+    private static final String paoSql = 
+        "SELECT y.PAObjectID, y.Category, y.PAOName, " +
+        "y.Type, y.PAOClass, y.Description, d.PORTID, dcs.ADDRESS " +
+        "FROM " + YukonPAObject.TABLE_NAME+ " y left outer join " + DeviceDirectCommSettings.TABLE_NAME + " d " +
+        "on y.paobjectid = d.deviceid " +
+        "left outer join " + DeviceCarrierSettings.TABLE_NAME + " DCS ON Y.PAOBJECTID = DCS.DEVICEID ";
+    
+    private JdbcOperations jdbcOps;    
     private IDatabaseCache databaseCache;
     
-/**
- * PointFuncs constructor comment.
- */
-public PaoDaoImpl() {
-	super();
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/26/2001 9:41:59 AM)
- * @return LitePoint
- * @param pointID int
- */
-/* This method returns a HashTable that has a LiteYukonPAObject as the key and */
-/*   an ArrayList of LitePoints as its values */
-/*
-public java.util.Hashtable getAllLitePAOWithPoints()
-{
-	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
-	java.util.Hashtable paoTable = null;
-
-	synchronized (cache)
-	{
-		java.util.List paos = cache.getAllYukonPAObjects();
-		java.util.List points = cache.getAllPoints();
-		java.util.Collections.sort(paos, com.cannontech.database.data.lite.LiteComparators.liteStringComparator);
-		java.util.Collections.sort(points, com.cannontech.database.data.lite.LiteComparators.liteStringComparator);
-		LitePoint litePoint = null;
-		LiteYukonPAObject litePAO = null;
-
-		paoTable = new java.util.Hashtable( paos.size() );
-		
-		for (int i = 0; i < paos.size(); i++)
-		{
-			litePAO = (LiteYukonPAObject) paos.get(i);
-
-			java.util.ArrayList pointList = new java.util.ArrayList( points.size() );
-			
-			for (int j = 0; j < points.size(); j++)
-			{				
-				litePoint = (LitePoint) points.get(j);				
-				if (litePoint.getPaobjectID() == litePAO.getYukonID())
-					pointList.add( litePoint );
-			}
-
-			//add the liteDevice along with its litePoints
-			paoTable.put( litePAO, pointList );
-
-		}
-	}
-
-	return paoTable;
-}
-*/
 /* (non-Javadoc)
  * @see com.cannontech.core.dao.PaoDao#getAllPointIDsAndTypesForPAObject(int)
  */
@@ -144,6 +110,13 @@ public LiteYukonPAObject getLiteYukonPAO( int paoID )
 	}
 }
 
+public List<LiteYukonPAObject> getLiteYukonPAObjectByType(int paoType) {
+    String typeStr = PAOGroups.getPAOTypeString(paoType);
+    String sql = paoSql;
+    sql += "where type=" + typeStr;
+    
+    return null;
+}
 /* (non-Javadoc)
  * @see com.cannontech.core.dao.PaoDao#getAllCapControlSubBuses()
  */
@@ -255,4 +228,73 @@ public LiteYukonPAObject[] getAllUnusedCCPAOs( Integer ignoreID ) {
 public void setDatabaseCache(IDatabaseCache databaseCache) {
     this.databaseCache = databaseCache;
 }
+
+public void setJdbcOps(JdbcOperations jdbcOps) {
+    this.jdbcOps = jdbcOps;
+}
+
+public int countLiteYukonPaoByName(String name, boolean partialMatch) {
+    
+    String sql;
+    if(partialMatch) {
+        sql = "select count(*) from YukonPAObject where paoname like '" + name + "%'";    
+    }
+    else {
+        sql = "select count(*) from YukonPAObject where paoname='" + name + "'";    
+    }
+    
+    JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
+    return (Integer) jdbcOps.queryForObject(sql,Integer.class);
+}
+
+public List<LiteYukonPAObject> getLiteYukonPaoByName(String name, boolean partialMatch) {
+        
+    String sql = paoSql;
+    if(partialMatch) {
+        sql += "where y.PAOName like '?%'";
+    }
+    else {
+        sql += "where y.PAOName='?'";
+        
+    }
+    sql += "ORDER BY y.Category, y.PAOClass, y.PAOName";
+    
+    JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
+    List<LiteYukonPAObject> paos = jdbcOps.query(sql, new Object[]{ name }, new RowMapper() {
+        public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
+            return createLiteYukonPAObject(rs);
+        };
+    });
+    
+    return paos;
+}
+
+    private LiteYukonPAObject createLiteYukonPAObject(java.sql.ResultSet rset)
+            throws SQLException {
+        int paoID = rset.getInt(1);
+        String paoCategory = rset.getString(2).trim();
+        String paoName = rset.getString(3).trim();
+        String paoType = rset.getString(4).trim();
+        String paoClass = rset.getString(5).trim();
+        String paoDescription = rset.getString(6).trim();
+
+        // this column may be null!!
+        BigDecimal portID = (BigDecimal) rset.getObject(7);
+        // this column may be null!!
+        BigDecimal address = (BigDecimal) rset.getObject(8);
+
+        LiteYukonPAObject pao = new LiteYukonPAObject(paoID, paoName, PAOGroups
+                .getCategory(paoCategory), PAOGroups.getPAOType(paoCategory,
+                paoType), PAOGroups.getPAOClass(paoCategory, paoClass),
+                paoDescription);
+
+        if (portID != null)
+            pao.setPortID(portID.intValue());
+
+        if (address != null)
+            pao.setAddress(address.intValue());
+
+        return pao;
+
+    }
 }
