@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.cannontech.database.cache.DBChangeListener;
+import com.cannontech.database.cache.DBChangeLiteListener;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
@@ -19,7 +20,8 @@ import com.cannontech.message.dispatch.message.DBChangeMsg;
  */
 public interface IDatabaseCache
 {
-	public void addDBChangeListener(DBChangeListener listener);
+	public void addDBChangeLiteListener(DBChangeLiteListener listener);
+    public void addDBChangeListener(DBChangeListener listener);
 	public DBChangeMsg[] createDBChangeMessages( com.cannontech.database.db.CTIDbChange newItem, int changeType);
 	public java.util.List getAllAlarmCategories();
 	public java.util.List getAllYukonImages();
@@ -199,7 +201,8 @@ public interface IDatabaseCache
 	public void releaseUserRoleMap();
     public void releaseUserContactMap();
 
-	public void removeDBChangeListener(DBChangeListener listener);
+	public void removeDBChangeLiteListener(DBChangeLiteListener listener);
+    public void removeDBChangeListener(DBChangeListener listener);
 	public void setDatabaseAlias(String newAlias);
     public List getDevicesByCommPort(int portId);
     public List getDevicesByDeviceAddress(Integer masterAddress, Integer slaveAddress);

@@ -13,6 +13,7 @@ import com.cannontech.common.util.Pair;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.cache.CacheDBChangeListener;
 import com.cannontech.database.cache.DBChangeListener;
+import com.cannontech.database.cache.DBChangeLiteListener;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteCICustomer;
@@ -201,12 +202,17 @@ protected ServerDatabaseCache(String databaseAlias) {
 /**
  * Insert the method's description here.
  * Creation date: (12/20/2001 1:09:04 PM)
- * @param DBChangeListener
+ * @param DBChangeLiteListener
  */
-public synchronized void addDBChangeListener(DBChangeListener listener) 
+public synchronized void addDBChangeLiteListener(DBChangeLiteListener listener) 
 {
-	getDbChangeListener().addDBChangeListener( listener );
+	getDbChangeListener().addDBChangeLiteListener( listener );
 }
+
+public synchronized void addDBChangeListener(DBChangeListener listener) {
+    getDbChangeListener().addDBChangeListener(listener);
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (3/29/2001 12:27:17 PM)
@@ -3511,13 +3517,18 @@ public synchronized void releaseAllDeviceTypeCommands()
 /**
  * Insert the method's description here.
  * Creation date: (12/20/2001 1:09:04 PM)
- * @param DBChangeListener
+ * @param DBChangeLiteListener
  */
-public synchronized void removeDBChangeListener(DBChangeListener listener) 
+public synchronized void removeDBChangeLiteListener(DBChangeLiteListener listener) 
 {
 	if( getDbChangeListener() != null )
-		getDbChangeListener().removeDBChangeListener( listener );
+		getDbChangeListener().removeDBChangeLiteListener( listener );
 
+}
+
+public synchronized void removeDBChangeListener(DBChangeListener listener) {
+    if( getDbChangeListener() != null )
+        getDbChangeListener().removeDBChangeListener( listener );        
 }
 
 /**

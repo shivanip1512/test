@@ -9,7 +9,7 @@ import java.util.GregorianCalendar;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.login.ClientSession;
-import com.cannontech.database.cache.DBChangeListener;
+import com.cannontech.database.cache.DBChangeLiteListener;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.db.graph.GraphRenderers;
@@ -39,7 +39,7 @@ public class WebGraph implements Runnable
 	private Thread strtThread = null;
 
 	//since this guy uses the cache, he better care about DBUpdates
-	private DBChangeListener dbChangeListener = null;
+	private DBChangeLiteListener dbChangeListener = null;
 
 	/**
 	 * WebGraph constructor comment.
@@ -371,7 +371,7 @@ public class WebGraph implements Runnable
 	 */
 	public void start()
 	{
-		dbChangeListener = new DBChangeListener() {
+		dbChangeListener = new DBChangeLiteListener() {
 			public void handleDBChangeMsg(DBChangeMsg msg, LiteBase treeObject)
 			{
 				if (!msg.getSource().equals(com.cannontech.common.util.CtiUtilities.DEFAULT_MSG_SOURCE))
@@ -384,7 +384,7 @@ public class WebGraph implements Runnable
 				}
 			}			
 		};
-		DefaultDatabaseCache.getInstance().addDBChangeListener( dbChangeListener );
+		DefaultDatabaseCache.getInstance().addDBChangeLiteListener( dbChangeListener );
 		
 		strtThread = new Thread( this, "WebGraph" );
 		strtThread.start();
@@ -397,7 +397,7 @@ public class WebGraph implements Runnable
 	{
 		try
 		{
-			DefaultDatabaseCache.getInstance().removeDBChangeListener( dbChangeListener );
+			DefaultDatabaseCache.getInstance().removeDBChangeLiteListener( dbChangeListener );
 			
 			Thread t = strtThread;
 			strtThread = null;

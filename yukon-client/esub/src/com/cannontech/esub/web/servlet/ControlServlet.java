@@ -2,7 +2,8 @@ package com.cannontech.esub.web.servlet;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -92,11 +93,11 @@ public class ControlServlet extends HttpServlet {
 			return;
 		}
 		/*** Start building the Command.opArgList() **************************/
-		Vector opArgList = new Vector( 4 );
-		opArgList.addElement( new Integer(-1) );  // this is the ClientRegistrationToken
-		opArgList.addElement( new Integer(deviceID));
-		opArgList.addElement( new Integer(pointID) );
-		opArgList.addElement( new Integer(rawstate) );
+        List<Integer> opArgList = new ArrayList<Integer>(4);
+		opArgList.add(-1);  // this is the ClientRegistrationToken
+		opArgList.add(deviceID);
+		opArgList.add(pointID);
+		opArgList.add(rawstate);
 			
 		Command cmd = new Command();
 		cmd.setUserName(user.getUsername());

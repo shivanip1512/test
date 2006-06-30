@@ -29,7 +29,7 @@ import com.cannontech.common.cache.PointChangeCache;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.cache.DBChangeListener;
+import com.cannontech.database.cache.DBChangeLiteListener;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LitePoint;
@@ -72,7 +72,7 @@ import com.cannontech.yukon.conns.ConnPool;
  * To change the template for this generated type comment go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-public class Multispeak implements MessageListener, DBChangeListener {
+public class Multispeak implements MessageListener, DBChangeLiteListener {
 	
 	/** An instance of this */
 	private static Multispeak _mspInstance = null;
@@ -99,7 +99,7 @@ public class Multispeak implements MessageListener, DBChangeListener {
 			CTILogger.info("New MSP instance created");
 			_mspInstance = new Multispeak();
 			_mspInstance.getPilConn().addMessageListener(_mspInstance);
-			DefaultDatabaseCache.getInstance().addDBChangeListener(_mspInstance);
+			DefaultDatabaseCache.getInstance().addDBChangeLiteListener(_mspInstance);
 			CTILogger.info("Porter Connection Valid: " + Multispeak.getInstance().getPilConn().isValid());
 		}
 
@@ -504,7 +504,7 @@ public class Multispeak implements MessageListener, DBChangeListener {
 	}
 	
 	/* (non-Javadoc)
-	 * @see com.cannontech.database.cache.DBChangeListener#handleDBChangeMsg(com.cannontech.message.dispatch.message.DBChangeMsg, com.cannontech.database.data.lite.LiteBase)
+	 * @see com.cannontech.database.cache.DBChangeLiteListener#handleDBChangeMsg(com.cannontech.message.dispatch.message.DBChangeMsg, com.cannontech.database.data.lite.LiteBase)
 	 */
 	public void handleDBChangeMsg(DBChangeMsg msg, LiteBase lBase)
 	{

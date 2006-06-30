@@ -1,6 +1,7 @@
 package com.cannontech.esub.web.servlet;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -108,13 +109,13 @@ public class ClearAlarm extends HttpServlet {
 	 * @param cmd
 	 */
 	private void ackSignals(List signalList, Command cmd) {
-		Vector argList = cmd.getOpArgList();
+		List<Integer> argList = cmd.getOpArgList();
 		if(signalList != null) {
 			Iterator iter = signalList.iterator();
 			while(iter.hasNext()) {
 				Signal sig = (Signal) iter.next();
-				argList.add(new Integer(sig.getPointID()));
-				argList.add(new Integer(sig.getCondition()));
+				argList.add(sig.getPointID());
+				argList.add(sig.getCondition());
 			}
 		}				
 	}
@@ -127,11 +128,12 @@ public class ClearAlarm extends HttpServlet {
 	private Command createAckCommand(LiteYukonUser user) {
 		Command cmd = new Command();
 		cmd.setOperation(Command.ACKNOWLEGDE_ALARM);
-		Vector argList = new Vector();
+        List<Integer> argList = new ArrayList<Integer>(1);
+        argList.add(-1);
+        
 		cmd.setOpArgList(argList);
 		cmd.setUserName(user.getUsername());
 		
-		argList.add(new Integer(-1));
 		return cmd;
 	}
 }

@@ -8,7 +8,7 @@ package com.cannontech.yukon;
  */
 public interface ITimedDatabaseCache {
 
-//   public void addDBChangeListener(DBChangeListener listener);
+//   public void addDBChangeListener(DBChangeLiteListener listener);
 //   public DBChangeMsg[] createDBChangeMessages( com.cannontech.database.db.CTIDbChange newItem, int changeType );
 
    public java.util.List getAllPeakPointHistory();
@@ -24,7 +24,7 @@ public interface ITimedDatabaseCache {
 
    public void loadAllTimedCache();
    public void releaseAllPeakPointHistory();
-//   public void removeDBChangeListener(DBChangeListener listener);
+//   public void removeDBChangeListener(DBChangeLiteListener listener);
    public void setDatabaseAlias(String newAlias);
    public void setUpdateTimeInMillis(long millis);
 }

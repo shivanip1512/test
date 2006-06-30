@@ -57,7 +57,7 @@ import com.cannontech.stars.xml.serialize.StarsServiceRequestHistory;
  * @author yao
  *
  */
-public class StarsDatabaseCache implements DBChangeListener {
+public class StarsDatabaseCache implements DBChangeLiteListener {
 	
 	public static final int DEFAULT_ENERGY_COMPANY_ID = EnergyCompany.DEFAULT_ENERGY_COMPANY_ID;
 	
@@ -79,7 +79,7 @@ public class StarsDatabaseCache implements DBChangeListener {
 	private Hashtable lmCtrlHists = null;
 		
 	private void init() {		
-		DefaultDatabaseCache.getInstance().addDBChangeListener(this);
+		DefaultDatabaseCache.getInstance().addDBChangeLiteListener(this);
 	}
 	
 	private void releaseAllCache() {

@@ -99,7 +99,7 @@ public class DatabaseEditor
 		java.util.Observer,
 		com.cannontech.clientutils.popup.PopUpEventListener,
 		javax.swing.event.PopupMenuListener,
-		com.cannontech.database.cache.DBChangeListener 
+		com.cannontech.database.cache.DBChangeLiteListener 
 {
    //all editor frame sizes
    private static final Dimension EDITOR_FRAME_SIZE = new Dimension(435, 500);
@@ -2076,7 +2076,7 @@ private void initConnections()
 
 
 	//tell the cache we want to listen for DBChangeMessages
-	com.cannontech.database.cache.DefaultDatabaseCache.getInstance().addDBChangeListener(this);
+	com.cannontech.database.cache.DefaultDatabaseCache.getInstance().addDBChangeLiteListener(this);
 
 	
 	// add the mouselistener for the JTree

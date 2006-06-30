@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.cannontech.database.cache.DBChangeListener;
+import com.cannontech.database.cache.DBChangeLiteListener;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
@@ -49,11 +50,15 @@ public class DatabaseCacheBean implements IDatabaseCache
     * @ejb:interface-method
     * tview-type="remote" 
    **/
-   public void addDBChangeListener(DBChangeListener listener) 
+   public void addDBChangeLiteListener(DBChangeLiteListener listener) 
    {
-      getCache().addDBChangeListener( listener );
+      getCache().addDBChangeLiteListener( listener );
    }
 
+   public void addDBChangeListener(DBChangeListener listener) {
+       getCache().addDBChangeListener(listener);
+   }
+   
    /**
     * @ejb:interface-method
     * tview-type="remote" 
@@ -735,10 +740,14 @@ public class DatabaseCacheBean implements IDatabaseCache
     * @ejb:interface-method
     * tview-type="remote" 
    **/
-   public synchronized  void removeDBChangeListener(DBChangeListener listener) 
+   public synchronized  void removeDBChangeLiteListener(DBChangeLiteListener listener) 
    {
-      getCache().removeDBChangeListener( listener );
+      getCache().removeDBChangeLiteListener( listener );
    }
+   
+   public void removeDBChangeListener(DBChangeListener listener) {
+       getCache().removeDBChangeListener(listener);
+    }
    
    /**
     * @ejb:interface-method
