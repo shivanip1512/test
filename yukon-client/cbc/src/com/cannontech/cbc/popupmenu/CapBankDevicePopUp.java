@@ -1,5 +1,8 @@
 package com.cannontech.cbc.popupmenu;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.swing.JSeparator;
 
 import com.cannontech.cbc.capbankeditor.CapBankTempMovePanel;
@@ -399,13 +402,13 @@ private void initialize()
  */
 public void jMenuItemAckAlarm_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
-	java.util.Vector data = new java.util.Vector( 2 );  // we are only sending 1 ack event and the token
-	data.addElement( new Integer(-1) );  // this is the ClientRegistrationToken
+    List<Integer> data = new ArrayList<Integer>(2);
+	data.add(-1);  // this is the ClientRegistrationToken
 	
 	//add the pointID
-	data.addElement( getCapBankDevice().getStatusPointID() );
+	data.add( getCapBankDevice().getStatusPointID() );
 	//add the ACK_ALL reserved value instead of the AlarmCondition
-	data.addElement( new Integer(Command.ACK_ALL_TOKEN) );
+	data.add(Command.ACK_ALL_TOKEN);
 
 		
 	// Sends a vangogh command message to capcontrol, which then forwards the exact
