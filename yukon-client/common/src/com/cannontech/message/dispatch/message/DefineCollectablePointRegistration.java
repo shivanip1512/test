@@ -3,6 +3,8 @@ package com.cannontech.message.dispatch.message;
 /**
  * This type was created in VisualAge.
  */
+import java.util.List;
+
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 
@@ -67,8 +69,7 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 
 	vstr.insertInt( pReg.getRegFlags() );
 
-	com.roguewave.tools.v2_0.Slist list = pReg.getPointList();
-
+	List<Integer> list = pReg.getPointList();
 	if( list == null )
 	{
 		vstr.insertInt(0);
@@ -80,7 +81,7 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 
 	for( int i = 0; i < count; i++ )
 	{
-		vstr.insertLong( ((Long) pReg.getPointList().at(i)).intValue() );
+		vstr.insertLong(list.get(i));
 	}
 
 	
