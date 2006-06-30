@@ -1133,10 +1133,10 @@ public class CommandDeviceBean
 	}
 	public void setSearchValue(String searchValue)
 	{
-		if( !this.searchValue.equalsIgnoreCase(searchValue))
+		if( !this.searchValue.equalsIgnoreCase(searchValue.trim()))
 			setChanged(true);
         
-		this.searchValue = searchValue;
+		this.searchValue = searchValue.trim();
 	}
 	public boolean isChanged()
 	{
