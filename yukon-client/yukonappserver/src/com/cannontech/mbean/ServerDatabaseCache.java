@@ -1348,7 +1348,7 @@ public synchronized java.util.List getAllYukonPAObjects()
 	{
 		allYukonPAObjects = new ArrayList();
 		allPAOsMap = new HashMap();
-		YukonPAOLoader yukLoader = new YukonPAOLoader(allYukonPAObjects, allPAOsMap, databaseAlias);
+		YukonPAOLoader yukLoader = new YukonPAOLoader(allYukonPAObjects, allPAOsMap);
 		yukLoader.run();
 		
 		return allYukonPAObjects;

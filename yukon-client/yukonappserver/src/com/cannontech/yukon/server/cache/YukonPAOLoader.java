@@ -28,14 +28,12 @@ public class YukonPAOLoader implements Runnable
 	private Map<Integer, LiteYukonPAObject> allPAOsMap = null;
 
 	private List<LiteYukonPAObject> allPAObjects = null;
-	private String databaseAlias = null;
 	
-	public YukonPAOLoader(java.util.ArrayList pAObjectArray, Map paoMap_, String alias) 
+	public YukonPAOLoader(java.util.ArrayList pAObjectArray, Map paoMap_) 
 	{
 		super();
 		this.allPAObjects = pAObjectArray;
 		this.allPAOsMap = paoMap_;
-		this.databaseAlias = alias;
 	}
 
 	/**
