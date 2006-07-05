@@ -1,8 +1,8 @@
 package com.cannontech.core.dao.impl;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+
+import org.springframework.jdbc.core.JdbcOperations;
 
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
@@ -20,6 +20,7 @@ public final class DeviceDaoImpl implements DeviceDao {
     
     private PaoDao paoDao;
     private IDatabaseCache databaseCache;
+    private JdbcOperations jdbcOps;    
     
 /**
  * PointFuncs constructor comment.
@@ -27,51 +28,8 @@ public final class DeviceDaoImpl implements DeviceDao {
 public DeviceDaoImpl() {
 	super();
 }
-/* (non-Javadoc)
- * @see com.cannontech.core.dao.DeviceDao#getAllDeviceIDs()
- */
-public Integer[] getAllDeviceIDs()
-{
-	synchronized(databaseCache)
-	{
-		List devices = databaseCache.getAllDevices();
-		Collections.sort(devices);
-		ArrayList retList = new ArrayList(devices.size());
-
-		for(int i=0;i<devices.size();i++)
-		{
-            retList.add( new Integer( ((LiteYukonPAObject)devices.get(i)).getYukonID() ) );
-		}	
-        Integer[] ids = new Integer[retList.size()];
-		return (Integer[])retList.toArray(ids);
-	}
-}
-/* (non-Javadoc)
- * @see com.cannontech.core.dao.DeviceDao#getAllInjectorIDs()
- */
-public Integer[] getAllInjectorIDs()
-{
-	synchronized(databaseCache)
-	{
-		java.util.List devices = databaseCache.getAllDevices();
-		java.util.Collections.sort(devices);
-		java.util.ArrayList ids = new java.util.ArrayList(devices.size());
-
-		String currentType;
-		 														
-		for(int i=0;i<devices.size();i++)
-		{
-			if( com.cannontech.database.data.device.DeviceTypesFuncs.isInjector( ((LiteYukonPAObject)devices.get(i)).getType() )  )
-			{
-				ids.add( new Integer( ((LiteYukonPAObject)devices.get(i)).getYukonID() ) );
-			}
-
-		}		
-		
-		return (Integer[])ids.toArray();
-	}
-}
-/* (non-Javadoc)
+/**
+ * @deprecated
  * @see com.cannontech.core.dao.DeviceDao#getAllLiteDevicesWithPoints()
  */
 /* This method returns a HashTable that has a LiteDevice as the key and */
@@ -120,8 +78,7 @@ public java.util.Hashtable getAllLiteDevicesWithPoints()
 /* (non-Javadoc)
  * @see com.cannontech.core.dao.DeviceDao#getLiteDevice(int)
  */
-public LiteYukonPAObject getLiteDevice(final int deviceID) 
-{
+public LiteYukonPAObject getLiteDevice(final int deviceID) {
 	return paoDao.getLiteYukonPAO( deviceID );
 }
 
@@ -130,7 +87,7 @@ public LiteYukonPAObject getLiteDevice(final int deviceID)
  */
 public LiteDeviceMeterNumber getLiteDeviceMeterNumber(int deviceID)
 {
-    List allDevMtrGrps = databaseCache.getAllDeviceMeterGroups();
+List allDevMtrGrps = databaseCache.getAllDeviceMeterGroups();
     
     LiteDeviceMeterNumber ldmn = null;
     for (int i = 0; i < allDevMtrGrps.size(); i++)
@@ -232,4 +189,7 @@ public void setPaoDao(PaoDao paoDao) {
     this.paoDao = paoDao;
 }
  
+public void setJdbcOps(JdbcOperations jdbcOps) {
+    this.jdbcOps = jdbcOps;
+}
 }

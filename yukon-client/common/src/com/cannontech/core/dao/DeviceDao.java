@@ -6,19 +6,7 @@ import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 
 public interface DeviceDao {
-
-    /**
-     * This method was created in VisualAge.
-     * @return java.lang.Integer
-     */
-    public Integer[] getAllDeviceIDs();
-
-    /**
-     * This method was created in VisualAge.
-     * @return java.lang.Integer
-     */
-    public Integer[] getAllInjectorIDs();
-
+    
     /**
      * Insert the method's description here.
      * Creation date: (3/26/2001 9:41:59 AM)
