@@ -1,6 +1,5 @@
 package com.cannontech.database.db.pao;
 
-import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * This type was created in VisualAge.
@@ -89,79 +88,6 @@ public java.lang.String getDescription() {
  */
 public java.lang.Character getDisableFlag() {
 	return disableFlag;
-}
-
-
-/**
- * This method was created in VisualAge.
- * @return java.lang.Integer
- */
-public final static Integer getNextYukonPAObjectID()
-{
-
-	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-	synchronized(cache)
-	{
-		java.util.List paObjects = cache.getAllYukonPAObjects();
-		java.util.Collections.sort(paObjects);
-
-		int counter = 1;
-		int currentID;
-		 														
-		for(int i=0;i<paObjects.size();i++)
-		{
-			currentID = ((com.cannontech.database.data.lite.LiteYukonPAObject)paObjects.get(i)).getYukonID();
-
-			if( currentID > counter )
-				break;
-			else
-				counter = currentID + 1;
-		}		
-		
-		return new Integer( counter );
-	}
-}
-
-
-/**
- * This method was created in VisualAge.
- * @return java.lang.Integer
- */
-public final static int[] getNextYukonPAObjectIDs( int idCount )
-{
-	//THIS IS A SUPER HACK WAY TO DO THINGS, CHANGE IN THE FUTURE  (It is quick and dirty!!)
-	// *************** BEGIN SUPER HACK *************************/
-	com.cannontech.clientutils.CTILogger.info("----- getNextYukonPAObjectIDs(yukonPAObjectsCnt) called with " + idCount + " ids!");
-
-	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-	int[] returnIDs = new int[idCount];
-	
-	synchronized(cache)
-	{
-		java.util.List paObjects = cache.getAllYukonPAObjects();
-		int[] ids = new int[paObjects.size()];
-		int counter = 1;
-
-		for( int i = 0; i < paObjects.size(); i++ )
-			ids[i] = ((com.cannontech.database.data.lite.LiteYukonPAObject)paObjects.get(i)).getYukonID();		
-
-		java.util.Arrays.sort(ids);
-
-		for( int i = 0; i < idCount; i++ )
-		{
-			int loc = -1;
-			while( (loc = java.util.Arrays.binarySearch(ids, counter)) >= 0 )
-				counter++;
-
-			//unfound value
-			returnIDs[i] = counter;
-			counter++;		
-		}
-		
-		return returnIDs;//new Integer( counter );
-	}
-	
-	// *************** END SUPER HACK *************************/
 }
 
 

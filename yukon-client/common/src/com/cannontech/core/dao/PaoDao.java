@@ -46,6 +46,14 @@ public interface PaoDao {
     public int getMaxPAOid();
 
     /**
+     * Returns the next unused pa object id
+     * @return
+     */
+    public int getNextPaoId();
+    
+    public int[] getNextPaoIds(int count);
+    
+    /**
      * This method was created in VisualAge.
      * @return String
      */

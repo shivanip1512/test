@@ -5,6 +5,8 @@ package com.cannontech.database.data.device.lm;
  * Creation date: (12/6/00 3:54:11 PM)
  * @author: 
  */
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.db.device.lm.LMControlAreaProgram;
 import com.cannontech.database.db.device.lm.LMControlScenarioProgram;
 import com.cannontech.database.db.device.lm.LMProgramControlWindow;
@@ -34,10 +36,12 @@ public LMProgramBase() {
  */
 public void add() throws java.sql.SQLException 
 {
-	if( getPAObjectID() == null )
-		setPAObjectID( com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID() );
+	if( getPAObjectID() == null ) {
+        PaoDao paoDao = DaoFactory.getPaoDao();
+        setPAObjectID(paoDao.getNextPaoId());
+    }
 
-	super.add();
+    super.add();
 	getProgram().add();
 
 	for( int i = 0; i < getLmProgramControlWindowVector().size(); i++ )

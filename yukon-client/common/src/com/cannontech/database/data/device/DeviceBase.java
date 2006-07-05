@@ -1,5 +1,7 @@
 package com.cannontech.database.data.device;
 
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.db.customer.DeviceCustomerList;
 import com.cannontech.database.db.device.Device;
 import com.cannontech.database.db.device.DynamicDeviceScanData;
@@ -25,10 +27,12 @@ public DeviceBase() {
  */
 public void add() throws java.sql.SQLException 
 {
-	if( getDevice().getDeviceID() == null )
-		setDeviceID( com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID() );
+	if( getDevice().getDeviceID() == null ) {
+	    PaoDao paoDao = DaoFactory.getPaoDao();   
+        setDeviceID(paoDao.getNextPaoId());   
+    }
 
-	super.add();
+    super.add();
 	getDevice().add();
 }
 /**

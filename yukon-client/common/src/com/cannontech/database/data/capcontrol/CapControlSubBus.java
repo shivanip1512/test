@@ -2,6 +2,8 @@ package com.cannontech.database.data.capcontrol;
 
 import java.util.ArrayList;
 
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.pao.PAOGroups;
 
 /**
@@ -33,8 +35,10 @@ public CapControlSubBus(Integer subBusID)
  */
 public void add() throws java.sql.SQLException 
 {
-	if( getCapControlPAOID() == null )
-		setCapControlPAOID( com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID() );
+	if( getCapControlPAOID() == null ) {
+        PaoDao paoDao = DaoFactory.getPaoDao();
+		setCapControlPAOID(paoDao.getNextPaoId());
+    }
 
 	super.add();
 	getCapControlSubstationBus().add();

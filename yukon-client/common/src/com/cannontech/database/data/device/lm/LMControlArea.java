@@ -2,6 +2,8 @@ package com.cannontech.database.data.device.lm;
 
 import java.util.Vector;
 
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.db.NestedDBPersistent;
 import com.cannontech.database.db.NestedDBPersistentComparators;
 import com.cannontech.database.db.device.lm.LMControlAreaProgram;
@@ -33,9 +35,11 @@ public LMControlArea() {
  */
 public void add() throws java.sql.SQLException 
 {
-	if( getPAObjectID() == null )
-		setPAObjectID( com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID() );
-
+	if( getPAObjectID() == null ) {
+        PaoDao paoDao = DaoFactory.getPaoDao();   
+		setPAObjectID(paoDao.getNextPaoId());
+    }
+    
 	super.add();
 	getControlArea().add();
 

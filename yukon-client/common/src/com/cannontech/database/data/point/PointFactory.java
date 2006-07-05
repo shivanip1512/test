@@ -1,6 +1,8 @@
 package com.cannontech.database.data.point;
 
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.pao.TypeBase;
 import com.cannontech.database.db.pao.YukonPAObject;
@@ -302,8 +304,9 @@ public static synchronized void createBankOpCntPoint(
 	//defaults pointControl
 	//an analog point is created
 
+    PaoDao paoDao = DaoFactory.getPaoDao();
 	newVal.addDBPersistent( 
-		createBankOpCntPoint( YukonPAObject.getNextYukonPAObjectID().intValue() ) );
+		createBankOpCntPoint(paoDao.getNextPaoId() ) );
 }
 
 /**
@@ -337,8 +340,9 @@ public static synchronized PointBase createBankOpCntPoint( Integer capBankID )
 public static synchronized void createBankStatusPt(
 		SmartMultiDBPersistent newVal )
 {
+    PaoDao paoDao = DaoFactory.getPaoDao();
 	newVal.addDBPersistent(
-			createBankStatusPt(YukonPAObject.getNextYukonPAObjectID()) );		
+			createBankStatusPt(paoDao.getNextPaoId()));		
 }
 
 /**

@@ -5,6 +5,7 @@
 package com.cannontech.database.data.point;
 
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
@@ -45,7 +46,8 @@ public class PointUtil {
             }
 
             com.cannontech.database.data.multi.MultiDBPersistent newVal = new com.cannontech.database.data.multi.MultiDBPersistent();
-            ((DeviceBase) val).setDeviceID(com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID());
+            PaoDao paoDao = DaoFactory.getPaoDao();
+            ((DeviceBase) val).setDeviceID(paoDao.getNextPaoId());
 
             newVal.getDBPersistentVector().add(val);
 

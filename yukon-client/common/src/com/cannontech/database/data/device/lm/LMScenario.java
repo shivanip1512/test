@@ -8,6 +8,8 @@ package com.cannontech.database.data.device.lm;
 
 import java.util.Vector;
 
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.db.NestedDBPersistent;
 import com.cannontech.database.db.NestedDBPersistentComparators;
@@ -35,7 +37,8 @@ public class LMScenario extends YukonPAObject implements com.cannontech.database
 	{
 		if( getScenarioID() == null )
 		{
-			setScenarioID( com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID() );
+            PaoDao paoDao = DaoFactory.getPaoDao();
+			setScenarioID(paoDao.getNextPaoId());
 			if(getAllThePrograms() != null)
 			{
 				for(int j = 0; j < getAllThePrograms().size(); j++)

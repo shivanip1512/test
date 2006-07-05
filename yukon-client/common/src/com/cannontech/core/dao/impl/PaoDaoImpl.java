@@ -13,6 +13,7 @@ import java.util.List;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 
+import com.cannontech.common.util.StopWatch;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.data.lite.LitePoint;
@@ -21,6 +22,7 @@ import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.device.DeviceCarrierSettings;
 import com.cannontech.database.db.device.DeviceDirectCommSettings;
 import com.cannontech.database.db.pao.YukonPAObject;
+import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.yukon.IDatabaseCache;
 
 public final class PaoDaoImpl implements PaoDao 
@@ -34,6 +36,7 @@ public final class PaoDaoImpl implements PaoDao
     
     private JdbcOperations jdbcOps;    
     private IDatabaseCache databaseCache;
+    private NextValueHelper nextValueHelper;
     
 /* (non-Javadoc)
  * @see com.cannontech.core.dao.PaoDao#getAllPointIDsAndTypesForPAObject(int)
@@ -134,15 +137,22 @@ public List getAllCapControlSubBuses() {
  */
 public int getMaxPAOid()
 {
-	synchronized( databaseCache )
-	{
-		java.util.List paobjects = databaseCache.getAllYukonPAObjects();
-		java.util.Collections.sort( paobjects, com.cannontech.database.data.lite.LiteComparators.liteYukonPAObjectIDComparator );
-
-		return ((LiteYukonPAObject)paobjects.get(paobjects.size() - 1)).getYukonID();
-	}
-
+    return jdbcOps.queryForInt("select max(paObjectId) from YukonPaObject");
 }
+
+public int getNextPaoId() {
+    return nextValueHelper.getNextValue("YukonPaObject");
+}
+
+public int[] getNextPaoIds(int count) {
+    //TODO: Modify nextValueHelper to get multiple ids, this is expensive
+    int[] ids = new int[count];
+    for (int i = 0; i < ids.length; i++) {
+        ids[i]= nextValueHelper.getNextValue("YukonPaObject");
+    }
+    return null;
+}
+
 /* (non-Javadoc)
  * @see com.cannontech.core.dao.PaoDao#getYukonPAOName(int)
  */
@@ -249,15 +259,25 @@ public int countLiteYukonPaoByName(String name, boolean partialMatch) {
 
 public List<LiteYukonPAObject> getLiteYukonPaoByName(String name, boolean partialMatch) {
         
+    StopWatch sw = new StopWatch();
+    sw.start();
     String sql = paoSql;
+    
     if(partialMatch) {
-        sql += "where y.PAOName like '?%'";
+      sql += "where y.PAOName like ? ";
     }
     else {
-        sql += "where y.PAOName='?'";
+        sql += "where y.PAOName=? ";
         
     }
+    
+    //sql += "where y.PAOName=? ";
     sql += "ORDER BY y.Category, y.PAOClass, y.PAOName";
+    
+    
+    if(partialMatch) {
+        name += "%";
+    }
     
     JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
     List<LiteYukonPAObject> paos = jdbcOps.query(sql, new Object[]{ name }, new RowMapper() {
@@ -266,6 +286,7 @@ public List<LiteYukonPAObject> getLiteYukonPaoByName(String name, boolean partia
         };
     });
     
+    System.out.println("getLiteYukonPaoByName elapsed time: " + sw.getElapsedTime() + " size: " + paos.size());
     return paos;
 }
 

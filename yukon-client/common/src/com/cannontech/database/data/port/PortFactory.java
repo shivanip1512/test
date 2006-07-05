@@ -4,6 +4,8 @@ package com.cannontech.database.data.port;
  * This type was created in VisualAge.
  */
 
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.pao.PortTypes;
 import com.cannontech.database.db.port.CommPort;
  
@@ -136,7 +138,8 @@ public static DirectPort createPort( int typeOfPort )
 	}
 
 	//Grab a unique id
-	port.setPortID( com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID() );
+    PaoDao paoDao = DaoFactory.getPaoDao();
+	port.setPortID(paoDao.getNextPaoId());
 	port.setPAOCategory( com.cannontech.database.data.pao.PAOGroups.STRING_CAT_PORT );
 	port.setPAOClass( com.cannontech.database.data.pao.PAOGroups.STRING_CAT_PORT );
 	

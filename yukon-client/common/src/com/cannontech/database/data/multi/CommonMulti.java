@@ -5,6 +5,7 @@ package com.cannontech.database.data.multi;
  * Creation date: (12/31/2001 11:40:21 AM)
  * @author: 
  */
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 
@@ -42,9 +43,9 @@ public void add() throws java.sql.SQLException
 		//there must be 2 or more PAObjects for us to even care
 		if( yukonPAObjectsCnt > 1 )
 		{
-			int[] newIDS = com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectIDs(yukonPAObjectsCnt);
+			int[] newIDS = DaoFactory.getPaoDao().getNextPaoIds(yukonPAObjectsCnt); 
 
-			int j = 0;
+            int j = 0;
 			for( int i = 0; i < getDBPersistentVector().size(); i++ )
 			{
 				//all possible instances of com.cannontech.database.data.pao.YukonPAObject MUST be below			

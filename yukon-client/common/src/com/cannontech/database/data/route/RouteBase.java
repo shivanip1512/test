@@ -1,5 +1,7 @@
 package com.cannontech.database.data.route;
 
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.db.route.Route;
 
 /**
@@ -22,9 +24,10 @@ public RouteBase()
  */
 public void add() throws java.sql.SQLException 
 {
-	
-	if( getRoute().getRouteID() == null )
-		setRouteID( com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID() );
+	if( getRoute().getRouteID() == null ) {
+        PaoDao paoDao = DaoFactory.getPaoDao();
+        setRouteID(paoDao.getNextPaoId());
+    }
 
 	super.add();
 	getRoute().add();	
