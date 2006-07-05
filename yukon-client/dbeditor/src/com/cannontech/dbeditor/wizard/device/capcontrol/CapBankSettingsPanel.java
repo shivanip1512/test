@@ -5,6 +5,8 @@ package com.cannontech.dbeditor.wizard.device.capcontrol;
  */
 import java.awt.Dimension;
 
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.point.PointFactory;
@@ -435,7 +437,8 @@ public Object getValue(Object val)
 	PointFactory.createBankOpCntPoint( newVal );		
 	//}
 
-	((DeviceBase) val).setDeviceID( com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID() );
+    PaoDao paoDao = DaoFactory.getPaoDao();
+	((DeviceBase) val).setDeviceID(paoDao.getNextPaoId());
 	newVal.addDBPersistent( capBank );
 
 	//the capBank is the owner in this case

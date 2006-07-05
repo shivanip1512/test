@@ -6,6 +6,7 @@ package com.cannontech.dbeditor.wizard.copy.lm;
 
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.device.lm.IGroupRoute;
 import com.cannontech.database.data.device.lm.LMGroup;
 import com.cannontech.database.data.lite.LitePoint;
@@ -336,7 +337,8 @@ public Object getValue(Object o)
 	LMGroup group = (LMGroup)o;
 	int previousGroupID = group.getPAObjectID().intValue();
 	
-	group.setPAObjectID( com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID() );
+    PaoDao paoDao = DaoFactory.getPaoDao();
+	group.setPAObjectID(paoDao.getNextPaoId());
 	
 	group.setPAOName( getJTextFieldName().getText() );
 	

@@ -1,10 +1,12 @@
 package com.cannontech.dbeditor.editor.device.capcontrol;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointTypes;
@@ -12,6 +14,7 @@ import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * This type was created in VisualAge.
+ * @deprecated
  */
 public class DeviceCapBankEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
 
@@ -1201,12 +1204,9 @@ public void operationalStateComboBox_ActionPerformed(java.awt.event.ActionEvent 
 		
 			if( lstToAdd.size() > 0 )
 			{
-				java.util.Collections.sort( lstToAdd, com.cannontech.database.data.lite.LiteComparators.liteStringComparator);
+				Collections.sort( lstToAdd, LiteComparators.liteStringComparator);
 				for( int i = 0; i < lstToAdd.size(); i++ )
-					getControlDeviceComboBox().addItem( lstToAdd.get(i) );
-					
-				ArrayList pts = (ArrayList)
-					DaoFactory.getDeviceDao().getAllLiteDevicesWithPoints().get(getControlDeviceComboBox().getSelectedItem());
+					getControlDeviceComboBox().addItem( lstToAdd.get(i) );					 
 			}
 		}
 	}

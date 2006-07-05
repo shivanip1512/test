@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.capcontrol.CapBankController;
 import com.cannontech.database.data.capcontrol.ICapBankController;
@@ -287,7 +288,8 @@ private com.cannontech.database.data.multi.SmartMultiDBPersistent createExtraObj
       throw new IllegalStateException("CBC class of: " + newCBC.getClass().getName() + " not found");
 
 
-	newCBC.setDeviceID( com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID() );
+    PaoDao paoDao = DaoFactory.getPaoDao();
+	newCBC.setDeviceID(paoDao.getNextPaoId());
 
   	String cbcName = getJTextFieldCBCName().getText();
 	//if no specified name, just use the serial number in the name

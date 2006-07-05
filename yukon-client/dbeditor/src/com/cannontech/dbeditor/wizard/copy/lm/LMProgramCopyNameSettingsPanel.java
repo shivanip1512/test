@@ -7,6 +7,8 @@ package com.cannontech.dbeditor.wizard.copy.lm;
 import java.util.Collections;
 
 import com.cannontech.common.gui.util.TextFieldDocument;
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.device.lm.LMProgramBase;
 import com.cannontech.database.data.device.lm.LMProgramDirect;
 import com.cannontech.database.data.lite.LiteComparators;
@@ -432,9 +434,9 @@ private javax.swing.JTextField getJTextFieldName() {
 public Object getValue(Object o) 
 {
 	LMProgramDirect program = (LMProgramDirect)o;
-	int previousProgramID = program.getPAObjectID().intValue();
 	
-	program.setPAObjectID( com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID() );
+    PaoDao paoDao = DaoFactory.getPaoDao();
+	program.setPAObjectID(paoDao.getNextPaoId());
 
 	program.setName( getJTextFieldName().getText() );
 	program.getProgram().setControlType( getJComboBoxOperationalState().getSelectedItem().toString() );

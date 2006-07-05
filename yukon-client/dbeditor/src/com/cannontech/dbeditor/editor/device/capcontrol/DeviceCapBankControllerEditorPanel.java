@@ -3,6 +3,8 @@ package com.cannontech.dbeditor.editor.device.capcontrol;
 import java.awt.event.FocusEvent;
 
 import com.cannontech.common.gui.util.TextFieldDocument;
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.capcontrol.CapBankController;
 import com.cannontech.database.data.capcontrol.ICapBankController;
 import com.cannontech.database.data.device.DeviceFactory;
@@ -947,7 +949,8 @@ public com.cannontech.database.data.device.DeviceBase createNewCBC(
 
 
    //get a new PAOID for the CBC
-   capBankController.setDeviceID( com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID() );
+    PaoDao paoDao = DaoFactory.getPaoDao();
+    capBankController.setDeviceID(paoDao.getNextPaoId());
    
    //add the CBC to the Multi
    multiVal.getDBPersistentVector().add(capBankController);

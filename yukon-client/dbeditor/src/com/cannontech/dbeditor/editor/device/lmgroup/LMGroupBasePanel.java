@@ -4,8 +4,6 @@ import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.device.lm.IGroupRoute;
 import com.cannontech.database.data.device.lm.LMGroup;
-import com.cannontech.database.data.point.PointFactory;
-import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.yukon.IDatabaseCache;
 
 public class LMGroupBasePanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
@@ -276,92 +274,6 @@ private void connEtoC9(java.awt.event.ActionEvent arg1) {
 		// user code end
 		handleException(ivjExc);
 	}
-}
-/**
- * Insert the method's description here.
- * Creation date: (11/18/2001 3:41:52 PM)
- * @return com.cannontech.database.data.multi.SmartMultiDBPersistent
-*/
-private com.cannontech.database.data.multi.SmartMultiDBPersistent createExtraObjects()
-{
-
-	return null;
-}
-/**
- * Insert the method's description here.
- * Creation date: (11/18/2001 3:41:52 PM)
- * @return com.cannontech.database.data.multi.SmartMultiDBPersistent
-*/
-private void createExtraObjects( com.cannontech.database.data.multi.SmartMultiDBPersistent smartDB )
-{
-	if( smartDB != null )
-	{
-		Integer paoID = com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID();
-		
-		//create and add the points here
-		com.cannontech.database.data.point.PointBase historyPoint =
-			com.cannontech.database.data.point.PointFactory.createPoint(com.cannontech.database.data.point.PointTypes.STATUS_POINT);
-
-		int[] ids = com.cannontech.database.db.point.Point.getNextPointIDs(5);
-		
-		//set default for point tables
-		historyPoint = PointFactory.createNewPoint(
-				new Integer(ids[0]),
-				com.cannontech.database.data.point.PointTypes.STATUS_POINT,
-				"CONTROL STATUS",
-				paoID,
-				new Integer(0) );
-
-		historyPoint.getPoint().setStateGroupID( 
-				new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_TWO_STATE_STATUS) );
-		
-		((com.cannontech.database.data.point.StatusPoint) historyPoint).setPointStatus(
-				new com.cannontech.database.db.point.PointStatus( new Integer(ids[0]) ));
-
-		((com.cannontech.database.data.point.StatusPoint) historyPoint).getPointStatus().setControlOffset(
-				new Integer(1) );
-
-		((com.cannontech.database.data.point.StatusPoint) historyPoint).getPointStatus().setControlType(
-				com.cannontech.database.data.point.PointTypes.getType(
-				com.cannontech.database.data.point.PointTypes.CONTROLTYPE_NORMAL) );
-
-
-		smartDB.addDBPersistent(historyPoint);
-
-		smartDB.addDBPersistent( 
-			PointFactory.createAnalogPoint(
-				"ANNUAL HISTORY",
-				paoID,
-				new Integer(ids[1]),
-				PointTypes.PT_OFFSET_ANNUAL_HISTORY,
-				com.cannontech.database.data.point.PointUnits.UOMID_COUNTS) );			
-		
-		smartDB.addDBPersistent( 
-				PointFactory.createAnalogPoint(
-					"DAILY HISTORY",
-					paoID,
-					new Integer(ids[2]),
-					PointTypes.PT_OFFSET_DAILY_HISTORY,
-					com.cannontech.database.data.point.PointUnits.UOMID_COUNTS) );			
-
-		smartDB.addDBPersistent( 
-			PointFactory.createAnalogPoint(
-				"SEASON HISTORY",
-				paoID,
-				new Integer(ids[3]),
-				PointTypes.PT_OFFSET_SEASONAL_HISTORY,
-				com.cannontech.database.data.point.PointUnits.UOMID_COUNTS) );			
-		
-		smartDB.addDBPersistent( 
-			PointFactory.createAnalogPoint(
-				"MONTH HISTORY",
-				paoID,
-				new Integer(ids[4]),
-				PointTypes.PT_OFFSET_MONTHLY_HISTORY,
-				com.cannontech.database.data.point.PointUnits.UOMID_COUNTS) );			
-	
-	}
-
 }
 /**
  * Return the ConfigurationPanel property value.

@@ -14,6 +14,8 @@ import javax.swing.event.ListSelectionListener;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.wizard.CancelInsertException;
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.IDLCBase;
@@ -289,7 +291,8 @@ public Object getValue(Object val)
 		     == com.cannontech.database.data.pao.DeviceClasses.TRANSMITTER)
 	{
 		com.cannontech.database.data.multi.SmartMultiDBPersistent newVal = new com.cannontech.database.data.multi.SmartMultiDBPersistent();
-		((DeviceBase) val).setDeviceID( com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID() );
+        PaoDao paoDao = DaoFactory.getPaoDao();
+		((DeviceBase) val).setDeviceID(paoDao.getNextPaoId());
 		
 		//checks device type and accordingly sets route type
 		
@@ -322,7 +325,7 @@ public Object getValue(Object val)
 		//A route is automatically added to each transmitter
 		//create new route to be added
 		com.cannontech.database.data.route.RouteBase route = com.cannontech.database.data.route.RouteFactory.createRoute(routeType);
-		Integer routeID = com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID();
+		Integer routeID = paoDao.getNextPaoId();
 		
 		//make sure the name will fit in the DB!!
 		route.setRouteName(
@@ -372,8 +375,8 @@ public Object getValue(Object val)
 	else if( DeviceTypesFuncs.isMeter(devType) 
 				 && devType != DeviceTypes.DR_87 )
 	{
-		((DeviceBase) val).setDeviceID( 
-				com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID() );
+        PaoDao paoDao = DaoFactory.getPaoDao();
+		((DeviceBase) val).setDeviceID(paoDao.getNextPaoId());
 
 		SmartMultiDBPersistent smartDB = null;
       

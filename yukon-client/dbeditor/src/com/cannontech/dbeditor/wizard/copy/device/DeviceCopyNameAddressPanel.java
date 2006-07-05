@@ -4,6 +4,8 @@ import java.awt.Dimension;
 
 import javax.swing.JLabel;
 
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.capcontrol.CapBankController;
 import com.cannontech.database.data.capcontrol.CapBankController6510;
@@ -564,7 +566,8 @@ private javax.swing.JTextField getJTextFieldPhoneNumber() {
 		int previousDeviceID = device.getDevice().getDeviceID().intValue();
 		com.cannontech.database.data.route.RouteBase newRoute = null;
 	
-		device.setDeviceID( com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID() );
+        PaoDao paoDao = DaoFactory.getPaoDao();   
+		device.setDeviceID(paoDao.getNextPaoId());
 	
 		boolean hasRoute = false;
 		boolean hasPoints = false;
@@ -655,7 +658,7 @@ private javax.swing.JTextField getJTextFieldPhoneNumber() {
 							type = com.cannontech.database.data.pao.PAOGroups.getPAOTypeString( ((com.cannontech.database.data.lite.LiteYukonPAObject) routes.get(i)).getType() );
 							newRoute = com.cannontech.database.data.route.RouteFactory.createRoute(type);
 	
-							routeID = com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID();
+							routeID = paoDao.getNextPaoId();
 							hasRoute = true;
 							break;
 	
@@ -665,14 +668,14 @@ private javax.swing.JTextField getJTextFieldPhoneNumber() {
 				
 				if (hasRoute) 
 				{
-					((com.cannontech.database.data.route.RouteBase) newRoute).setRouteID( com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID() );
-					((com.cannontech.database.data.route.RouteBase) newRoute).setRouteType( type );
-					((com.cannontech.database.data.route.RouteBase) newRoute).setRouteName(nameString);
-					((com.cannontech.database.data.route.RouteBase) newRoute).setDeviceID(
+					newRoute.setRouteID(paoDao.getNextPaoId());
+					newRoute.setRouteType( type );
+					newRoute.setRouteName(nameString);
+					newRoute.setDeviceID(
 						((com.cannontech.database.data.route.RouteBase) oldRoute).getDeviceID() );
-					((com.cannontech.database.data.route.RouteBase) newRoute).setDefaultRoute(
+					newRoute.setDefaultRoute(
 						((com.cannontech.database.data.route.RouteBase) oldRoute).getDefaultRoute() );
-					((com.cannontech.database.data.route.RouteBase) newRoute).setDeviceID(device.getDevice().getDeviceID());
+					newRoute.setDeviceID(device.getDevice().getDeviceID());
 					
 					if( type.equalsIgnoreCase(com.cannontech.database.data.pao.RouteTypes.STRING_CCU) )
 					{

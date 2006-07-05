@@ -2,12 +2,16 @@ package com.cannontech.core.dao.impl;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
@@ -24,6 +28,7 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.point.CapBankMonitorPointParams;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.db.capcontrol.CCMonitorBankList;
 import com.cannontech.database.db.point.RawPointHistory;
 import com.cannontech.yukon.IDatabaseCache;
@@ -37,6 +42,7 @@ public final class PointDaoImpl implements PointDao {
     
     private PaoDao paoDao;
     private IDatabaseCache databaseCache;
+    private JdbcOperations jdbcOps;
     
 /**
  * PointFuncs constructor comment.
@@ -99,6 +105,20 @@ public List getLitePointsByUOMID(int[] uomIDs, int[] types)
    }
    Collections.sort(pointList, LiteComparators.liteStringComparator);
    return pointList;
+}
+
+public List<LitePoint> getLitePointsByPaObjectId(int paObjectId) {
+    String sql = "SELECT P.POINTID, POINTNAME, POINTTYPE, PAOBJECTID, POINTOFFSET, STATEGROUPID, UM.FORMULA, UM.UOMID" +
+    " FROM ( POINT P LEFT OUTER JOIN POINTUNIT PU "+
+    " ON P.POINTID = PU.POINTID )  LEFT OUTER JOIN UNITMEASURE UM ON PU.UOMID = UM.UOMID "+
+    " WHERE PaObjectId = ? " +
+    " ORDER BY PAObjectID, POINTOFFSET ";
+    List<LitePoint> points = jdbcOps.query(sql, new Object[] { paObjectId }, new RowMapper() {
+        public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
+            return createLitePoint(rs);
+        };
+    });
+    return points;
 }
 
 	/* (non-Javadoc)
@@ -258,5 +278,33 @@ public List getLitePointsByUOMID(int[] uomIDs, int[] types)
     
     public void setPaoDao(PaoDao paoDao) {
         this.paoDao = paoDao;
+    }
+    
+    public void setJdbcOps(JdbcOperations jdbcOps) {
+        this.jdbcOps = jdbcOps;
+    }
+    
+    private LitePoint createLitePoint(ResultSet rset) throws SQLException {
+        int pointID = rset.getInt(1);
+        String pointName = rset.getString(2).trim();
+        String pointType = rset.getString(3).trim();
+        int paobjectID = rset.getInt(4);
+        int pointOffset = rset.getInt(5);
+        int stateGroupID = rset.getInt(6);
+        String formula = rset.getString(7);
+        int uofmID = rset.getInt(8);
+        if( rset.wasNull() ) //if uomid is null, set it to an INVALID int
+            uofmID = PointUnits.UOMID_INVALID;
+
+        
+     //process all the bit mask tags here
+        long tags = LitePoint.POINT_UOFM_GRAPH;
+        if( "usage".equalsIgnoreCase(formula) )
+            tags = LitePoint.POINT_UOFM_USAGE;
+                                
+        LitePoint lp =
+            new LitePoint( pointID, pointName, com.cannontech.database.data.point.PointTypes.getType(pointType),
+                                                                                    paobjectID, pointOffset, stateGroupID, tags, uofmID );
+        return lp;
     }
 }

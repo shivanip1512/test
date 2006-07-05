@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.capcontrol.CCYukonPAOFactory;
@@ -131,6 +133,7 @@ public class DataTools
    
    public void createCapControlDB( int routeID, int subCount )
    {
+        PaoDao paoDao = DaoFactory.getPaoDao();
    		intParam1 = routeID;
    		int feederTotal = 3; //per sub
    		int bankTotal = 4;  //per feeder
@@ -148,14 +151,14 @@ public class DataTools
    				for( int k = 0; k < bankTotal; k++ )
    				{
    					SmartMultiDBPersistent sm = (SmartMultiDBPersistent)createCBCBank(
-   							YukonPAObject.getNextYukonPAObjectID().intValue() );
+   							paoDao.getNextPaoId() );
 
    	   	   			writeToSQLDatabase( sm );
    	   	   			bankIDs[k] = ((CapBank)sm.getOwnerDBPersistent()).getPAObjectID().intValue();
    				}
 
 
-   				feederIDs[j] = YukonPAObject.getNextYukonPAObjectID().intValue();
+   				feederIDs[j] = paoDao.getNextPaoId();
    				for( int x = 0; x < bankIDs.length; x++ )
 					ccBankList.add( new CCFeederBankList(
    							new Integer(feederIDs[j]),
@@ -171,7 +174,7 @@ public class DataTools
    			
 
 	   			
-   			CapControlSubBus s = createCBCSubBus( YukonPAObject.getNextYukonPAObjectID().intValue() );
+   			CapControlSubBus s = createCBCSubBus( paoDao.getNextPaoId() );
    			for( int x = 0; x < feederIDs.length; x++ )
 			ccFeederList.add( new CCFeederSubAssignment(
 						  new Integer(feederIDs[x]),
@@ -236,7 +239,8 @@ public class DataTools
 		newCBC.setPAOName( "CBC " + SERIAL_FORM.format(serialNumber) );
 
 		//set the paoID
-		newCBC.setDeviceID( YukonPAObject.getNextYukonPAObjectID() );
+        PaoDao paoDao = DaoFactory.getPaoDao();           
+		newCBC.setDeviceID(paoDao.getNextPaoId());
 		
 
 		//a status point is automatically added to all capbank controllers

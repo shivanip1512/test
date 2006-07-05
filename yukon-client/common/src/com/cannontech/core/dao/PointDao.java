@@ -34,6 +34,14 @@ public interface PointDao {
     public List getLitePointsByUOMID(int[] uomIDs, int[] types);
 
     /**
+     * Returns a list of all the lite points associated with the given 
+     * pa object id.
+     * @param paObjectId
+     * @return
+     */
+    public List<LitePoint> getLitePointsByPaObjectId(int paObjectId);
+    
+    /**
      * Returns the name of the point with a given id.
      * @param id
      * @return String

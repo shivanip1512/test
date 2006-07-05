@@ -27,6 +27,7 @@ import javax.swing.Timer;
 import javax.swing.border.TitledBorder;
 
 import com.cannontech.clientutils.commandlineparameters.CommandLineParser;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.capcontrol.CapBank;
@@ -502,7 +503,8 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 				timer.start();
 			}else bar.start();
 			
-			int[] ids = com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectIDs((val.getTo()-val.getFrom()+1)*2);
+            int count = (val.getTo()-val.getFrom()+1)*2;
+            int[] ids = DaoFactory.getPaoDao().getNextPaoIds(count);
 			
 			int index = 0;
 			

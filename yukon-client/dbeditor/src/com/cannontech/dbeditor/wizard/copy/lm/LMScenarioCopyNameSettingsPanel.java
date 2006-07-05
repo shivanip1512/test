@@ -5,6 +5,8 @@ package com.cannontech.dbeditor.wizard.copy.lm;
  */
 
 import com.cannontech.common.gui.util.TextFieldDocument;
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.device.lm.LMScenario;
 
 public class LMScenarioCopyNameSettingsPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
@@ -296,9 +298,9 @@ private javax.swing.JTextField getJTextFieldName() {
 public Object getValue(Object o) 
 {
 	LMScenario scenario = (LMScenario)o;
-	int previousScenarioID = scenario.getPAObjectID().intValue();
 	
-	scenario.setScenarioID( com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID() );
+    PaoDao paoDao = DaoFactory.getPaoDao();
+	scenario.setScenarioID(paoDao.getNextPaoId());
 
 	scenario.setScenarioName( getJTextFieldName().getText() );
 	

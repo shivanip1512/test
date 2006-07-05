@@ -20,6 +20,7 @@ import com.cannontech.common.util.Pair;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dao.DBDeleteResult;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
@@ -47,12 +48,6 @@ import com.cannontech.device.range.DeviceAddressRange;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.stars.util.*;
-import com.cannontech.stars.util.EventUtils;
-import com.cannontech.stars.util.InventoryUtils;
-import com.cannontech.stars.util.ServerUtils;
-import com.cannontech.stars.util.ServletUtils;
-import com.cannontech.stars.util.SwitchCommandQueue;
-import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.action.YukonSwitchCommandAction;
 import com.cannontech.stars.xml.serialize.DeviceStatus;
@@ -447,7 +442,8 @@ public class InventoryManagerUtil {
 		
 		DeviceBase device = com.cannontech.database.data.device.DeviceFactory.createDevice( mctType );
 		
-		device.setDeviceID( YukonPAObject.getNextYukonPAObjectID() );
+        PaoDao paoDao = DaoFactory.getPaoDao();
+		device.setDeviceID(paoDao.getNextPaoId());
 		device.setPAOName( deviceName );
 		
 		((CarrierBase)device).getDeviceCarrierSettings().setAddress( physicalAddr );

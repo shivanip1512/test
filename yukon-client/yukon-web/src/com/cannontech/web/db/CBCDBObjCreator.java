@@ -1,5 +1,7 @@
 package com.cannontech.web.db;
 
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.capcontrol.CCYukonPAOFactory;
 import com.cannontech.database.data.capcontrol.CapBankController;
@@ -100,7 +102,8 @@ public class CBCDBObjCreator {
 				
 
 				//add the new children and the owner for this SmartMulti
-				Integer nextDevID = com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID();
+                PaoDao paoDao = DaoFactory.getPaoDao();
+				Integer nextDevID = paoDao.getNextPaoId();
 				((DeviceBase)cbcObj).setDeviceID( nextDevID );
 				retSmart.addOwnerDBPersistent( cbcObj );
 

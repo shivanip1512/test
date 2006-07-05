@@ -4,6 +4,8 @@ import javax.swing.SwingUtilities;
 
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.device.lm.IGroupRoute;
 import com.cannontech.database.data.device.lm.LMGroup;
 import com.cannontech.database.data.device.lm.MacroGroup;
@@ -299,7 +301,8 @@ private void createExtraObjects( com.cannontech.database.data.multi.SmartMultiDB
 {
 	if( smartDB != null )
 	{
-		Integer paoID = com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID();
+        PaoDao paoDao = DaoFactory.getPaoDao();
+		Integer paoID = paoDao.getNextPaoId();
 		
 		//create and add the points here
 		com.cannontech.database.data.point.PointBase historyPoint =

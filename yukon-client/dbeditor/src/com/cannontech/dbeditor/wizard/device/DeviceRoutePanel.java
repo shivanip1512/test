@@ -7,6 +7,8 @@ import java.awt.Dimension;
 import java.util.List;
 import java.util.Vector;
 
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.device.CarrierBase;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.RepeaterBase;
@@ -158,7 +160,8 @@ public class DeviceRoutePanel
 			com.cannontech.database.data.multi.MultiDBPersistent newVal = new com.cannontech.database.data.multi.MultiDBPersistent();
 			newVal.getDBPersistentVector().add(val);
 
-			((DeviceBase) val).setDeviceID(com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID());
+            PaoDao paoDao = DaoFactory.getPaoDao();
+			((DeviceBase) val).setDeviceID(paoDao.getNextPaoId());
 			
 			Integer pointID = 
 				new Integer( com.cannontech.database.db.point.Point.getNextPointID() );
@@ -220,7 +223,7 @@ public class DeviceRoutePanel
 			//A route is automatically added to each transmitter
 			if (chosenRoute instanceof CCURoute) {
 			com.cannontech.database.data.route.RouteBase route = com.cannontech.database.data.route.RouteFactory.createRoute(com.cannontech.database.data.pao.RouteTypes.STRING_CCU);
-			Integer routeID = com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID();
+
 			route.setRouteName(((DeviceBase) val).getPAOName());
 
 			//set default values for route tables possibly using same values in chosen route		
