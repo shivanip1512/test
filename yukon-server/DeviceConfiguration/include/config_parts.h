@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/config_type_mct_addressing.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2006/04/20 17:06:35 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2006/07/06 20:33:02 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,6 +19,7 @@
 #include "config_base.h"
 class CtiConfigManager;
 //***** See instructions at bottom on how to add a new config part.
+
 
 namespace Cti    {
 namespace Config {
@@ -283,18 +284,21 @@ class IM_EX_CONFIG ConfigurationPart : public Base
 {
     friend class CtiConfigManager;
 private:
-    typedef map<int,string> ConfigDataContainer;
+    typedef std::map<int,string>                            ConfigDataContainer;
+    typedef std::pair<ConfigDataContainer::iterator, bool>  ConfigDataInsertResult;
 
     ConfigDataContainer     _dataMap;
 public:
     T getResolvedKey(string key);
-    bool setValueWithKey(const string &value, T enumKey);
+    //bool setValueWithKey(const string &value, T enumKey);
     string getValueFromKey(T enumKey);
     long getLongValueFromKey(T enumKey);
 
     virtual CtiConfig_type getType();
 
 protected:
+    //These are here for those who believe they can ensure T correctness by themselves (no Type checking)
+    //Note the friend class CtiConfigManager has access to these functions.
     virtual int getProtectedResolvedKey(string key);
     virtual bool setProtectedValueWithKey(const string &value, const int key);
 };
@@ -324,22 +328,25 @@ EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<CBC::CBCAddressing>;
 EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<CBC::CBC_DNP>;
 EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<CBC::CBC_UDP>;
 
-template <class T>
+/*template <class T>
 bool ConfigurationPart<T>::setValueWithKey(const string &value, T enumKey)
 {
+    ConfigDataInsertResult result;
     LockGuard config_guard(_mux);//make thread safe
 
-    _dataMap.insert(ConfigDataContainer::value_type(enumKey,value));
+    result = _dataMap.insert(ConfigDataContainer::value_type(enumKey,value));
+    if(!result.second)
+    {
+        result.first->second = value;
+    }
     return true;
-}
+}*/
 
 //Get the string stored for this key
 //Returns a null string if there is no stored value.
 template <class T>
 string ConfigurationPart<T>::getValueFromKey(T enumKey)
 {
-    LockGuard config_guard(_mux);//make thread safe
-
     ConfigDataContainer::iterator tempItr = _dataMap.find(enumKey);
     if(tempItr != _dataMap.end())
     {
@@ -386,8 +393,6 @@ int ConfigurationPart<T>::getProtectedResolvedKey(string key)
 template <class T>
 bool ConfigurationPart<T>::setProtectedValueWithKey(const string &value, int key)
 {
-    LockGuard config_guard(_mux);//make thread safe
-
     _dataMap.insert(ConfigDataContainer::value_type(key,value));
     return true;
 }

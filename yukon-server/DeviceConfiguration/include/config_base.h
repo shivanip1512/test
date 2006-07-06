@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/include/config_base.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/12/20 17:16:44 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2006/07/06 20:33:02 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -33,8 +33,6 @@ class IM_EX_CONFIG Base
 {
     friend class CtiConfigManager;
 protected:
-    typedef CtiLockGuard<CtiMutex> LockGuard;//This must be used in every class that sets the value with key, or returns values.
-    mutable CtiMutex    _mux;
     virtual int getProtectedResolvedKey(string key);
     virtual bool setProtectedValueWithKey(const string &value, const int key);
 
