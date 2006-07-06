@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_point.h-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2006/03/23 15:29:19 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2006/07/06 09:49:27 $
 *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
  * All Rights Reserved
@@ -25,6 +25,7 @@
 
 
 #include <rw/db/connect.h>
+#include <map>
 
 #include "dlldefs.h"
 #include "smartmap.h"
@@ -39,11 +40,11 @@ class IM_EX_PNTDB CtiPointManager
 {
 public:
 
-   typedef CtiLockGuard<CtiMutex>      LockGuard;
-   typedef CtiSmartMap< CtiPoint >     coll_type;              // This is the collection type!
-   typedef coll_type::ptr_type         ptr_type;
-   typedef coll_type::spiterator       spiterator;
-   typedef coll_type::insert_pair      insert_pair;
+   typedef CtiLockGuard<CtiMutex>    LockGuard;
+   typedef CtiSmartMap <CtiPoint>    coll_type;              // This is the collection type!
+   typedef coll_type::ptr_type       ptr_type;
+   typedef coll_type::spiterator     spiterator;
+   typedef coll_type::insert_pair    insert_pair;
 
 private:
 
@@ -54,6 +55,9 @@ private:
     void refreshPointProperties(LONG pntID = 0, LONG paoID = 0);
     void refreshPointLimits(LONG pntID = 0, LONG paoID = 0);
     void refreshAlarming(LONG pntID = 0, LONG paoID = 0);
+
+    map          < long, long > _control_offsets;  //  this map contains all control point offsets
+    std::multimap< long, long > _type_offsets;     //  this map contains all point offsets
 
 public:
 
