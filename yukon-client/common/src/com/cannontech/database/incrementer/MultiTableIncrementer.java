@@ -30,6 +30,7 @@ public class MultiTableIncrementer {
     private String valueSql;
     private String incrementSql;
     private boolean dirty = false;
+    private Exception initializationException = null;
     
     public MultiTableIncrementer(DataSource dataSource) {
         this.dataSource = dataSource;
@@ -57,6 +58,9 @@ public class MultiTableIncrementer {
     }
     
     protected int getNextValue(int incrementBy) {
+        if (initializationException != null) {
+            throw new RuntimeException("Exception during initialization.", initializationException);
+        }
         initializeSql();
         Connection con = null;
         Statement statement = null;
@@ -107,33 +111,38 @@ public class MultiTableIncrementer {
     }
 
     public void initializeSequence(final String tableName, final String identityColumn) {
-        initializeSql();
-        final JdbcTemplate jdbc = new JdbcTemplate(dataSource);
-        PlatformTransactionManager transactionManager = new DataSourceTransactionManager(dataSource);
-        TransactionTemplate tt = new TransactionTemplate(transactionManager);
-        tt.execute(new TransactionCallback() {
-            public Object doInTransaction(TransactionStatus status) {
-                // get current max
-                String maxSql = "select max(" + identityColumn + ") from " + tableName;
-                long currentMax = jdbc.queryForLong(maxSql);
-                
-                // make sure row exists
-                String checkSql = "select " + keyColumnName + " from " + sequenceTableName + 
-                                  " where " + keyColumnName + " = '" + sequenceKey + "'";
-                List matches = jdbc.queryForList(checkSql, String.class);
-                if (matches.isEmpty()) {
-                    jdbc.execute(insertSql);
-                }
-                
-                String updateSql = "update " + sequenceTableName + " set " 
-                    + valueColumnName +  " = " + currentMax 
-                    + " where " + keyColumnName + " = '" + sequenceKey + "'"
-                    + " and " + currentMax + " > " + valueColumnName;
-                jdbc.execute(updateSql);
+        try {
+            initializeSql();
+            final JdbcTemplate jdbc = new JdbcTemplate(dataSource);
+            PlatformTransactionManager transactionManager = new DataSourceTransactionManager(dataSource);
+            TransactionTemplate tt = new TransactionTemplate(transactionManager);
+            tt.execute(new TransactionCallback() {
+                public Object doInTransaction(TransactionStatus status) {
+                    // get current max
+                    String maxSql = "select max(" + identityColumn + ") from " + tableName;
+                    long currentMax = jdbc.queryForLong(maxSql);
 
-                return null;
-            }
-        });
+                    // make sure row exists
+                    String checkSql = "select " + keyColumnName + " from " + sequenceTableName
+                        + " where " + keyColumnName + " = '" + sequenceKey + "'";
+                    List matches = jdbc.queryForList(checkSql, String.class);
+                    if (matches.isEmpty()) {
+                        jdbc.execute(insertSql);
+                    }
+
+                    String updateSql = "update " + sequenceTableName + " set " + valueColumnName
+                        + " = " + currentMax + " where " + keyColumnName + " = '" + sequenceKey
+                        + "'" + " and " + currentMax + " > " + valueColumnName;
+                    jdbc.execute(updateSql);
+
+                    return null;
+                }
+            });
+        } catch (Exception e) {
+            initializationException = e;
+            CTILogger.warn("Unable to initialize " + sequenceKey + " sequence: " + e.getMessage() + 
+                           ". An exception will be thrown if this sequence is used.");
+        }
     }
     
     public String getKeyColumnName() {
