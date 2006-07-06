@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_dlcbase.h-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2006/02/27 23:58:31 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2006/07/06 20:08:31 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -30,41 +30,14 @@
 #include <utility>
 using std::set;
 
-class CtiDLCCommandStore
-{
-public:
-
-    UINT _cmd;  // Command
-    UINT _io;   // Function read/write ?
-
-    pair< UINT, UINT > _funcLen;  // Function and Length.
-
-
-    CtiDLCCommandStore() :
-    _cmd(0),    // == DLCCmd_Invalid
-    _io(0)
-    {
-    }
-
-    explicit CtiDLCCommandStore( const UINT &cmd ) :
-    _cmd(cmd),
-    _io(0)
-    {
-    }
-
-    bool operator<( const CtiDLCCommandStore &rhs ) const
-    {
-        return( _cmd < rhs._cmd );
-    }
-};
 
 class IM_EX_DEVDB CtiDeviceDLCBase : public CtiDeviceSingle
 {
 private:
 
     CtiTableDeviceRoute  getDeviceRoute() const;
-    CtiTableDeviceRoute& getDeviceRoute();
-    CtiDeviceDLCBase& setDeviceRoute(const CtiTableDeviceRoute& aRoute);
+    CtiTableDeviceRoute &getDeviceRoute();
+    CtiDeviceDLCBase    &setDeviceRoute(const CtiTableDeviceRoute& aRoute);
 
     static unsigned int _lpRetryMultiplier;
     static unsigned int _lpRetryMinimum;
@@ -98,14 +71,50 @@ protected:
                            list< OUTMESS* >     &outList,
                            bool                        wait );
 
+    class CommandStore
+    {
+    public:
+
+        UINT cmd, io, function, length;
+
+        CommandStore() :
+            cmd(0),    // == DLCCmd_Invalid
+            io(0),
+            function(0),
+            length(0)
+        {
+        }
+
+        explicit CommandStore( UINT command ) :
+            cmd(command),
+            io(0),
+            function(0),
+            length(0)
+        {
+        }
+
+        CommandStore( UINT command, UINT io, UINT function, UINT length ) :
+            cmd(command),
+            io(io),
+            function(function),
+            length(length)
+        {
+        }
+
+        bool operator<( const CommandStore &rhs ) const
+        {
+            return( cmd < rhs.cmd );
+        }
+    };
+
+    typedef set< CommandStore > CommandSet;
+
 public:
 
     enum
     {
         DLC_BroadcastAddress = 0x3fffff
     };
-
-    typedef set< CtiDLCCommandStore > DLCCommandSet;
 
     typedef CtiDeviceSingle Inherited;
 
@@ -116,8 +125,8 @@ public:
     CtiDeviceDLCBase& operator=(const CtiDeviceDLCBase& aRef);
 
     CtiTableDeviceCarrier  getCarrierSettings() const;
-    CtiTableDeviceCarrier& getCarrierSettings();
-    CtiDeviceDLCBase& setCarrierSettings( const CtiTableDeviceCarrier & aCarrierSettings );
+    CtiTableDeviceCarrier &getCarrierSettings();
+    CtiDeviceDLCBase      &setCarrierSettings( const CtiTableDeviceCarrier & aCarrierSettings );
 
     virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
 
