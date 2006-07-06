@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.89 $
-* DATE         :  $Date: 2006/06/29 14:46:30 $
+* REVISION     :  $Revision: 1.90 $
+* DATE         :  $Date: 2006/07/06 20:11:48 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -68,11 +68,11 @@ using Cti::Protocol::Emetcon;
 #define TAMPER_BIT            0x08
 
 
-
 using std::make_pair;
 using std::set;
 
-set< CtiDLCCommandStore > CtiDeviceMCT::_commandStore;
+
+const CtiDeviceMCT::CommandSet CtiDeviceMCT::_commandStore = CtiDeviceMCT::initCommandStore();
 
 
 CtiDeviceMCT::CtiDeviceMCT() :
@@ -414,93 +414,37 @@ int CtiDeviceMCT::checkDemandQuality( unsigned long &pulses, PointQuality_t &qua
 //
 //  My apologies to those who follow.
 //
-bool CtiDeviceMCT::initCommandStore()
+CtiDeviceMCT::CommandSet CtiDeviceMCT::initCommandStore()
 {
-    bool failed = false;
-    CtiDLCCommandStore cs;
+    CommandSet cs;
 
     //  initialize any pan-MCT operations
-    cs._cmd     = Emetcon::GetConfig_Model;
-    cs._io      = Emetcon::IO_Read;
-    cs._funcLen = make_pair( (int)MCT_ModelPos,
-                             (int)MCT_ModelLen );   // Decode happens in the children please...
-    _commandStore.insert( cs );
+    cs.insert(CommandStore(Emetcon::GetConfig_Model,     Emetcon::IO_Read, MCT_ModelPos, MCT_ModelLen));   // Decode happens in the children please...
+    cs.insert(CommandStore(Emetcon::Command_Loop,        Emetcon::IO_Read, MCT_ModelPos, 1));
+    cs.insert(CommandStore(Emetcon::PutConfig_Install,   Emetcon::IO_Read, MCT_ModelPos, MCT_SspecLen));
 
-    cs._cmd     = Emetcon::Command_Loop;
-    cs._io      = Emetcon::IO_Read;
-    cs._funcLen = make_pair( (int)MCT_ModelPos, 1 );
-    _commandStore.insert( cs );
+    cs.insert(CommandStore(Emetcon::PutConfig_GroupAddrEnable,  Emetcon::IO_Write, MCT_Command_GroupAddrEnable,  0));
+    cs.insert(CommandStore(Emetcon::PutConfig_GroupAddrInhibit, Emetcon::IO_Write, MCT_Command_GroupAddrInhibit, 0));
 
-    cs._cmd     = Emetcon::PutConfig_Install;
-    cs._io      = Emetcon::IO_Read;
-    cs._funcLen = make_pair( (int)MCT_ModelPos,
-                             (int)MCT_SspecLen );
-    _commandStore.insert( cs );
+    cs.insert(CommandStore(Emetcon::GetConfig_Raw,       Emetcon::IO_Read,  0,           0));  //  this will be filled in by executeGetConfig
 
-    cs._cmd     = Emetcon::PutConfig_GroupAddrEnable;
-    cs._io      = Emetcon::IO_Write;
-    cs._funcLen = make_pair( (int)MCT_Command_GroupAddrEnable, 0 );
-    _commandStore.insert( cs );
+    cs.insert(CommandStore(Emetcon::Control_Shed,        Emetcon::IO_Write, 0,           0));  //  this will be filled in by executeControl
+    cs.insert(CommandStore(Emetcon::Control_Restore,     Emetcon::IO_Write, MCT_Restore, 0));
 
-    cs._cmd     = Emetcon::PutConfig_GroupAddrInhibit;
-    cs._io      = Emetcon::IO_Write;
-    cs._funcLen = make_pair( (int)MCT_Command_GroupAddrInhibit, 0 );
-    _commandStore.insert( cs );
+    cs.insert(CommandStore(Emetcon::Control_Close,       Emetcon::IO_Write | Q_ARML, MCT_Command_Close, 0));
+    cs.insert(CommandStore(Emetcon::Control_Open,        Emetcon::IO_Write | Q_ARML, MCT_Command_Open,  0));
 
-    cs._cmd     = Emetcon::GetConfig_Raw;
-    cs._io      = Emetcon::IO_Read;
-    cs._funcLen = make_pair( 0, 0 );  //  this will be filled in by executeGetConfig
-    _commandStore.insert( cs );
+    cs.insert(CommandStore(Emetcon::Control_Conn,        Emetcon::IO_Write | Q_ARML, MCT_Command_Close, 0));
+    cs.insert(CommandStore(Emetcon::Control_Disc,        Emetcon::IO_Write | Q_ARML, MCT_Command_Open,  0));
 
-    cs._cmd     = Emetcon::Control_Shed;
-    cs._io      = Emetcon::IO_Write;
-    cs._funcLen = make_pair( 0, 0 );  //  this will be filled in by executeControl
-    _commandStore.insert( cs );
-
-    cs._cmd     = Emetcon::Control_Restore;
-    cs._io      = Emetcon::IO_Write;
-    cs._funcLen = make_pair( (int)MCT_Restore, 0 );
-    _commandStore.insert( cs );
-
-    cs._cmd     = Emetcon::Control_Close;
-    cs._io      = Emetcon::IO_Write | Q_ARML;
-    cs._funcLen = make_pair( (int)MCT_Command_Close, 0 );
-    _commandStore.insert( cs );
-
-    cs._cmd     = Emetcon::Control_Open;
-    cs._io      = Emetcon::IO_Write | Q_ARML;
-    cs._funcLen = make_pair( (int)MCT_Command_Open, 0 );
-    _commandStore.insert( cs );
-
-    cs._cmd     = Emetcon::Control_Conn;
-    cs._io      = Emetcon::IO_Write | Q_ARML;
-    cs._funcLen = make_pair( (int)MCT_Command_Close, 0 );
-    _commandStore.insert( cs );
-
-    cs._cmd     = Emetcon::Control_Disc;
-    cs._io      = Emetcon::IO_Write | Q_ARML;
-    cs._funcLen = make_pair( (int)MCT_Command_Open, 0 );
-    _commandStore.insert( cs );
-
-    cs._cmd     = Emetcon::PutConfig_ARMC;
-    cs._io      = Emetcon::IO_Write;
-    cs._funcLen = make_pair( (int)MCT_Command_ARMC, 0);
-    _commandStore.insert( cs );
-
-    cs._cmd     = Emetcon::PutConfig_ARML;
-    cs._io      = Emetcon::IO_Write;
-    cs._funcLen = make_pair( (int)MCT_Command_ARML, 0);
-    _commandStore.insert( cs );
+    cs.insert(CommandStore(Emetcon::PutConfig_ARMC,      Emetcon::IO_Write, MCT_Command_ARMC, 0));
+    cs.insert(CommandStore(Emetcon::PutConfig_ARML,      Emetcon::IO_Write, MCT_Command_ARML, 0));
 
     //  putconfig_tsync is in MCT2XX and MCT310 because the 2XX requires an ARMC
     //    also, the getconfig time location is different for 2XX and 3XX, so that's in each's base as well
-    cs._cmd     = Emetcon::GetConfig_TSync;
-    cs._io      = Emetcon::IO_Read;
-    cs._funcLen = make_pair( (int)MCT_TSyncPos,
-                             (int)MCT_TSyncLen );
-    _commandStore.insert( cs );
+    cs.insert(CommandStore(Emetcon::GetConfig_TSync,     Emetcon::IO_Read, MCT_TSyncPos, MCT_TSyncLen));
 
-    return failed;
+    return cs;
 }
 
 
@@ -4818,14 +4762,14 @@ bool CtiDeviceMCT::getOperation( const UINT &cmd, USHORT &function, USHORT &leng
       initCommandStore();
    }
 
-   DLCCommandSet::iterator itr = _commandStore.find(CtiDLCCommandStore(cmd));
+   CommandSet::iterator itr = _commandStore.find(CommandStore(cmd));
 
    if( itr != _commandStore.end() )     // It's prego!
    {
-      CtiDLCCommandStore &cs = *itr;
-      function = cs._funcLen.first;     // Copy over the found funcLen pair!
-      length = cs._funcLen.second;      // Copy over the found funcLen pair!
-      io = cs._io;
+      function  = itr->function;     // Copy over the found funcLen pair!
+      length    = itr->length;      // Copy over the found funcLen pair!
+      io        = itr->io;
+
       found = true;
    }
 

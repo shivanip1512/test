@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2006/04/11 20:46:43 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2006/07/06 20:11:49 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,7 +28,16 @@ using std::set;
 
 class IM_EX_DEVDB CtiDeviceMCTBroadcast : public CtiDeviceDLCBase
 {
+private:
+
+    int _last_freeze;
+
+    static const CommandSet _commandStore;
+    static CommandSet initCommandStore();
+
 protected:
+
+    bool getOperation( const UINT &cmdType, USHORT &function, USHORT &length, USHORT &io );
 
     enum
     {
@@ -38,29 +47,20 @@ protected:
         MCTBCAST_LeadMeterOffset    = 4186111  //  4186112 - 1
     };
 
-private:
-
-    int _last_freeze;
-
-    static DLCCommandSet _commandStore;
-
-public:
-
-    typedef CtiDeviceDLCBase Inherited;
-
-    CtiDeviceMCTBroadcast();
-    virtual ~CtiDeviceMCTBroadcast();
-
-    static bool initCommandStore( );
-    bool getOperation( const UINT &cmdType, USHORT &function, USHORT &length, USHORT &io );
-
     INT executePutStatus( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT executePutConfig( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT executePutValue( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
 
-    virtual INT ExecuteRequest ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
-    // virtual INT ErrorDecode ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
+    typedef CtiDeviceDLCBase Inherited;
+
+public:
+
+    CtiDeviceMCTBroadcast();
+    virtual ~CtiDeviceMCTBroadcast();
+
+    virtual INT ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     virtual INT ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
+    // virtual INT ErrorDecode ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
 
     virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
     virtual void DecodeDatabaseReader(RWDBReader &rdr);

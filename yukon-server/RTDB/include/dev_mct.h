@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct.h-arc  $
-* REVISION     :  $Revision: 1.43 $
-* DATE         :  $Date: 2006/04/11 20:41:00 $
+* REVISION     :  $Revision: 1.44 $
+* DATE         :  $Date: 2006/07/06 20:11:48 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -34,10 +34,14 @@ public:
 
 private:
 
-    static DLCCommandSet _commandStore;
+    static const CommandSet _commandStore;
+    static CommandSet initCommandStore();
+
     CtiTime _lastReadDataPurgeTime;
 
 protected:
+
+    virtual bool getOperation( const UINT &cmdType, USHORT &function, USHORT &length, USHORT &io );
 
     enum WireConfig
     {
@@ -75,7 +79,7 @@ protected:
 
     static bool getMCTDebugLevel(int mask);
 
-    struct MessageReadData//Stores message data so we know what is coming back at us for our generic decode
+    struct MessageReadData  //  Stores message data so we know what is coming back at us for our generic decode
     {
         USHORT newSequence;
         USHORT oldSequence;
@@ -94,6 +98,7 @@ protected:
             return retval;
         }
     };
+
     typedef set<MessageReadData> MessageReadDataSet_t;
 
     struct DynamicPaoAddressing
@@ -219,9 +224,6 @@ public:
     string getDescription( const CtiCommandParser &parse ) const;
 
     virtual LONG getDemandInterval() const;
-
-    static bool initCommandStore( );
-    virtual bool getOperation( const UINT &cmdType, USHORT &function, USHORT &length, USHORT &io );
 
     virtual void getDynamicPaoAddressing(int address, int &foundAddress, int &foundLength, CtiTableDynamicPaoInfo::Keys &foundKey);
     virtual void getDynamicPaoFunctionAddressing(int function, int address, int &foundAddress, int &foundLength, CtiTableDynamicPaoInfo::Keys &foundKey);

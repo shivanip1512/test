@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct22X.h-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2006/02/27 23:58:32 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2006/07/06 20:11:48 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,7 +23,16 @@
 
 class CtiDeviceMCT22X : public CtiDeviceMCT2XX
 {
+private:
+
+   static const CommandSet _commandStore;
+   static CommandSet initCommandStore();
+
+   typedef CtiDeviceMCT2XX Inherited;
+
 protected:
+
+    virtual bool getOperation( const UINT &cmd,  USHORT &function, USHORT &length, USHORT &io );
 
     enum
     {
@@ -37,14 +46,11 @@ protected:
         MCT22X_DemandLen   =    6
     };
 
+    virtual INT ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
 
-private:
-
-   static DLCCommandSet _commandStore;
+    int decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
 
 public:
-
-   typedef CtiDeviceMCT2XX Inherited;
 
    CtiDeviceMCT22X();
    CtiDeviceMCT22X(const CtiDeviceMCT22X& aRef);
@@ -52,11 +58,6 @@ public:
    virtual ~CtiDeviceMCT22X();
 
    CtiDeviceMCT22X& operator=(const CtiDeviceMCT22X& aRef);
-
-   static  bool initCommandStore();
-   virtual bool getOperation( const UINT &cmd,  USHORT &function, USHORT &length, USHORT &io );
-
-   virtual INT ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
-   int decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
 };
+
 #endif // #ifndef __DEV_MCT22X_H__

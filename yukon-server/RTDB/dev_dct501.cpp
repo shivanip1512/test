@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dct501.cpp-arc  $
-* REVISION     :  $Revision: 1.31 $
-* DATE         :  $Date: 2006/03/23 15:29:16 $
+* REVISION     :  $Revision: 1.32 $
+* DATE         :  $Date: 2006/07/06 20:11:48 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -33,17 +33,17 @@ using std::make_pair;
 using Cti::Protocol::Emetcon;
 
 
-set< CtiDLCCommandStore > CtiDeviceDCT501::_commandStore;
+const CtiDeviceDCT501::CommandSet CtiDeviceDCT501::_commandStore = CtiDeviceDCT501::initCommandStore();
 
 
-CtiDeviceDCT501::CtiDeviceDCT501( ) {}
+CtiDeviceDCT501::CtiDeviceDCT501( ) { }
 
 CtiDeviceDCT501::CtiDeviceDCT501( const CtiDeviceDCT501 &aRef )
 {
     *this = aRef;
 }
 
-CtiDeviceDCT501::~CtiDeviceDCT501( ) {}
+CtiDeviceDCT501::~CtiDeviceDCT501( ) { }
 
 CtiDeviceDCT501& CtiDeviceDCT501::operator=(const CtiDeviceDCT501& aRef)
 {
@@ -56,30 +56,14 @@ CtiDeviceDCT501& CtiDeviceDCT501::operator=(const CtiDeviceDCT501& aRef)
 }
 
 
-bool CtiDeviceDCT501::initCommandStore()
+CtiDeviceDCT501::CommandSet CtiDeviceDCT501::initCommandStore()
 {
-    bool failed = false;
+    CommandSet cs;
 
-    CtiDLCCommandStore cs;
+    cs.insert(CommandStore(Emetcon::Scan_Integrity,  Emetcon::IO_Read, DCT_AnalogsPos, DCT_AnalogsLen));
+    cs.insert(CommandStore(Emetcon::GetValue_Demand, Emetcon::IO_Read, DCT_AnalogsPos, DCT_AnalogsLen));
 
-    cs._cmd     = Emetcon::Scan_Integrity;
-    cs._io      = Emetcon::IO_Read;
-    cs._funcLen = make_pair( (int)DCT_AnalogsPos,
-                             (int)DCT_AnalogsLen );
-    _commandStore.insert( cs );
-
-    cs._cmd     = Emetcon::GetValue_Demand;
-    cs._io      = Emetcon::IO_Read;
-    cs._funcLen = make_pair( (int)DCT_AnalogsPos,
-                             (int)DCT_AnalogsLen );
-    _commandStore.insert( cs );
-
-//    cs._cmd     = Emetcon::PutConfig_LoadProfileInterval;
-//    cs._io      = Emetcon::IO_Write;
-//    cs._funcLen = make_pair( (int)MCT_LPInt_Func, 0 );
-//    _commandStore.insert( cs );
-
-    return failed;
+    return cs;
 }
 
 
@@ -87,23 +71,17 @@ bool CtiDeviceDCT501::getOperation( const UINT &cmd, USHORT &function, USHORT &l
 {
     bool found = false;
 
-    if(_commandStore.empty())  // Must initialize!
-    {
-        CtiDeviceDCT501::initCommandStore();
-    }
-
-    DLCCommandSet::iterator itr = _commandStore.find(CtiDLCCommandStore(cmd));
+    CommandSet::iterator itr = _commandStore.find(CommandStore(cmd));
 
     if( itr != _commandStore.end() )
     {
-        CtiDLCCommandStore &cs = *itr;
-        function = cs._funcLen.first;             // Copy over the found function!
-        length = cs._funcLen.second;              // Copy over the found length!
-        io = cs._io;                              // Copy over the found io indicator!
+        function = itr->function;
+        length   = itr->length;
+        io       = itr->io;
 
         found = true;
     }
-    else                                         // Look in the parent if not found in the child!
+    else    // Look in the parent if not found in the child
     {
         found = Inherited::getOperation(cmd, function, length, io);
     }

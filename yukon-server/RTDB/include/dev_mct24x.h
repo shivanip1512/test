@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct2xx.h-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2006/02/27 23:58:32 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2006/07/06 20:11:48 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,7 +23,17 @@
 
 class IM_EX_DEVDB CtiDeviceMCT24X : public CtiDeviceMCT2XX
 {
+private:
+
+    static const CommandSet _commandStore;
+    static CommandSet initCommandStore();
+
+    CtiTime _lastLPRequestAttempt,
+            _lastLPRequestBlockStart;
+
 protected:
+
+    virtual bool getOperation( const UINT &cmd,  USHORT &function, USHORT &length, USHORT &io );
 
     enum
     {
@@ -53,11 +63,6 @@ protected:
         MCT24X_Status_Closed     = 0x42
     };
 
-private:
-
-    static DLCCommandSet _commandStore;
-    CtiTime _lastLPRequestAttempt, _lastLPRequestBlockStart;
-
 public:
 
     typedef CtiDeviceMCT2XX Inherited;
@@ -67,9 +72,6 @@ public:
     virtual ~CtiDeviceMCT24X( );
 
     CtiDeviceMCT24X &operator=( const CtiDeviceMCT24X &aRef );
-
-    static  bool initCommandStore( );
-    virtual bool getOperation( const UINT &cmd,  USHORT &function, USHORT &length, USHORT &io );
 
     ULONG calcNextLPScanTime( void );
     INT   calcAndInsertLPRequests( OUTMESS *&OutMessage, list< OUTMESS* > &outList );

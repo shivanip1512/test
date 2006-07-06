@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct2XX.cpp-arc  $
-* REVISION     :  $Revision: 1.32 $
-* DATE         :  $Date: 2006/03/23 15:29:17 $
+* REVISION     :  $Revision: 1.33 $
+* DATE         :  $Date: 2006/07/06 20:11:48 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -26,12 +26,11 @@
 #include "porter.h"
 #include "pt_numeric.h"
 #include "numstr.h"
-using std::make_pair;
 
 using Cti::Protocol::Emetcon;
 
 
-set< CtiDLCCommandStore > CtiDeviceMCT2XX::_commandStore;
+const CtiDeviceMCT2XX::CommandSet CtiDeviceMCT2XX::_commandStore = CtiDeviceMCT2XX::initCommandStore();
 
 
 CtiDeviceMCT2XX::CtiDeviceMCT2XX( ) { }
@@ -54,84 +53,34 @@ CtiDeviceMCT2XX& CtiDeviceMCT2XX::operator=(const CtiDeviceMCT2XX& aRef)
 }
 
 
-bool CtiDeviceMCT2XX::initCommandStore()
+CtiDeviceMCT2XX::CommandSet CtiDeviceMCT2XX::initCommandStore()
 {
-    bool failed = false;
+    CommandSet cs;
 
-    CtiDLCCommandStore cs;
-
-    cs._cmd     = Emetcon::PutConfig_Raw;
-    cs._io      = Emetcon::IO_Write | Q_ARMC;
-    cs._funcLen = make_pair( 0, 0 );  //  this will be filled in by executePutConfig
-    _commandStore.insert( cs );
+    cs.insert(CommandStore(Emetcon::PutConfig_Raw,          Emetcon::IO_Write | Q_ARMC, 0, 0));  //  this will be filled in by executePutConfig
 
     //  MCT 2xx common commands
-    cs._cmd     = Emetcon::GetValue_PFCount;
-    cs._io      = Emetcon::IO_Read;
-    cs._funcLen = make_pair( (int)MCT2XX_PFCountPos,
-                             (int)MCT2XX_PFCountLen );
-    _commandStore.insert( cs );
+    cs.insert(CommandStore(Emetcon::GetValue_PFCount,       Emetcon::IO_Read,           MCT2XX_PFCountPos,  MCT2XX_PFCountLen));
 
-    cs._cmd     = Emetcon::PutValue_ResetPFCount;
-    cs._io      = Emetcon::IO_Write | Q_ARMC;
-    cs._funcLen = make_pair( (int)MCT2XX_PFCountPos,
-                             (int)MCT2XX_PFCountLen );
-    _commandStore.insert( cs );
+    cs.insert(CommandStore(Emetcon::PutValue_ResetPFCount,  Emetcon::IO_Write | Q_ARMC, MCT2XX_PFCountPos,  MCT2XX_PFCountLen));
 
-    cs._cmd     = Emetcon::GetStatus_Internal;
-    cs._io      = Emetcon::IO_Read;
-    cs._funcLen = make_pair( (int)MCT2XX_GenStatPos,
-                             (int)MCT2XX_GenStatLen );
-    _commandStore.insert( cs );
+    cs.insert(CommandStore(Emetcon::GetStatus_Internal,     Emetcon::IO_Read,           MCT2XX_GenStatPos,  MCT2XX_GenStatLen));
 
-    cs._cmd     = Emetcon::PutStatus_Reset;
-    cs._io      = Emetcon::IO_Write | Q_ARMC;
-    cs._funcLen = make_pair( (int)MCT2XX_ResetPos,
-                             (int)MCT2XX_ResetLen );
-    _commandStore.insert( cs );
+    cs.insert(CommandStore(Emetcon::PutStatus_Reset,        Emetcon::IO_Write | Q_ARMC, MCT2XX_ResetPos,    MCT2XX_ResetLen));
 
-    cs._cmd     = Emetcon::GetConfig_Multiplier;
-    cs._io      = Emetcon::IO_Read;
-    cs._funcLen = make_pair( (int)MCT2XX_MultPos,
-                             (int)MCT2XX_MultLen );
-    _commandStore.insert( cs );
+    cs.insert(CommandStore(Emetcon::GetConfig_Multiplier,   Emetcon::IO_Read,           MCT2XX_MultPos,     MCT2XX_MultLen));
 
-    cs._cmd     = Emetcon::PutConfig_Multiplier;
-    cs._io      = Emetcon::IO_Write | Q_ARMC;
-    cs._funcLen = make_pair( (int)MCT2XX_MultPos,
-                             (int)MCT2XX_MultLen );
-    _commandStore.insert( cs );
+    cs.insert(CommandStore(Emetcon::PutConfig_Multiplier,   Emetcon::IO_Write | Q_ARMC, MCT2XX_MultPos,     MCT2XX_MultLen));
 
-    cs._cmd     = Emetcon::GetConfig_Options;
-    cs._io      = Emetcon::IO_Read;
-    cs._funcLen = make_pair( (int)MCT2XX_OptionPos,
-                             (int)MCT2XX_OptionLen );
-    _commandStore.insert( cs );
+    cs.insert(CommandStore(Emetcon::GetConfig_Options,      Emetcon::IO_Read,           MCT2XX_OptionPos,   MCT2XX_OptionLen));
 
-    cs._cmd     = Emetcon::GetConfig_Time;
-    cs._io      = Emetcon::IO_Read;
-    cs._funcLen = make_pair( (int)MCT2XX_TimePos,
-                             (int)MCT2XX_TimeLen );
-    _commandStore.insert( cs );
+    cs.insert(CommandStore(Emetcon::GetConfig_Time,         Emetcon::IO_Read,           MCT2XX_TimePos,     MCT2XX_TimeLen));
 
-    cs._cmd     = Emetcon::PutConfig_TSync;
-    cs._io      = Emetcon::IO_Write | Q_ARMC;
-    cs._funcLen = make_pair( (int)MCT_TSyncPos,
-                             (int)MCT_TSyncLen );
-    _commandStore.insert( cs );
+    cs.insert(CommandStore(Emetcon::PutConfig_TSync,        Emetcon::IO_Write | Q_ARMC, MCT_TSyncPos,       MCT_TSyncLen));
 
-    cs._cmd     = Emetcon::PutConfig_UniqueAddr;
-    cs._io      = Emetcon::IO_Write | Q_ARMC;
-    cs._funcLen = make_pair((int)MCT2XX_UniqAddrPos,
-                            (int)MCT2XX_UniqAddrLen);
-    _commandStore.insert( cs );
+    cs.insert(CommandStore(Emetcon::PutConfig_UniqueAddr,   Emetcon::IO_Write | Q_ARMC, MCT2XX_UniqAddrPos, MCT2XX_UniqAddrLen));
 
-    cs._cmd     = Emetcon::PutConfig_Raw;
-    cs._io      = Emetcon::IO_Write | Q_ARMC;
-    cs._funcLen = make_pair( 0, 0 );
-    _commandStore.insert( cs );
-
-    return failed;
+    return cs;
 }
 
 
@@ -144,14 +93,13 @@ bool CtiDeviceMCT2XX::getOperation( const UINT &cmd, USHORT &function, USHORT &l
         CtiDeviceMCT2XX::initCommandStore();
     }
 
-    DLCCommandSet::iterator itr = _commandStore.find(CtiDLCCommandStore(cmd));
+    CommandSet::iterator itr = _commandStore.find(CommandStore(cmd));
 
     if( itr != _commandStore.end() )
     {
-        CtiDLCCommandStore &cs = *itr;
-        function = cs._funcLen.first;             // Copy over the found function!
-        length = cs._funcLen.second;              // Copy over the found length!
-        io = cs._io;                              // Copy over the found io indicator!
+        function = itr->function;             // Copy over the found function!
+        length   = itr->length;              // Copy over the found length!
+        io       = itr->io;                              // Copy over the found io indicator!
 
         found = true;
     }

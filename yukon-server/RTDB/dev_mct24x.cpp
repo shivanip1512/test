@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct2XX.cpp-arc  $
-* REVISION     :  $Revision: 1.38 $
-* DATE         :  $Date: 2006/03/23 15:29:17 $
+* REVISION     :  $Revision: 1.39 $
+* DATE         :  $Date: 2006/07/06 20:11:48 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -31,7 +31,7 @@
 using Cti::Protocol::Emetcon;
 
 
-set< CtiDLCCommandStore > CtiDeviceMCT24X::_commandStore;
+const CtiDeviceMCT24X::CommandSet CtiDeviceMCT24X::_commandStore = CtiDeviceMCT24X::initCommandStore();
 
 
 CtiDeviceMCT24X::CtiDeviceMCT24X( )
@@ -58,114 +58,37 @@ CtiDeviceMCT24X& CtiDeviceMCT24X::operator=(const CtiDeviceMCT24X& aRef)
 }
 
 
-bool CtiDeviceMCT24X::initCommandStore()
+CtiDeviceMCT24X::CommandSet CtiDeviceMCT24X::initCommandStore()
 {
-    bool failed = false;
+    CommandSet cs;
 
-    CtiDLCCommandStore cs;
+    cs.insert(CommandStore(Emetcon::GetConfig_GroupAddress,           Emetcon::IO_Read,           MCT2XX_GroupAddrPos,            MCT2XX_GroupAddrLen));
+    cs.insert(CommandStore(Emetcon::PutConfig_GroupAddr_GoldSilver,   Emetcon::IO_Write | Q_ARMC, MCT2XX_GroupAddrGoldSilverPos,  MCT2XX_GroupAddrGoldSilverLen));
+    cs.insert(CommandStore(Emetcon::PutConfig_GroupAddr_Bronze,       Emetcon::IO_Write | Q_ARMC, MCT2XX_GroupAddrBronzePos,      MCT2XX_GroupAddrBronzeLen));
+    cs.insert(CommandStore(Emetcon::PutConfig_GroupAddr_Lead,         Emetcon::IO_Write | Q_ARMC, MCT2XX_GroupAddrLeadPos,        MCT2XX_GroupAddrLeadLen));
 
-    cs._cmd     = Emetcon::GetConfig_GroupAddress;
-    cs._io      = Emetcon::IO_Read;
-    cs._funcLen = make_pair( (int)MCT2XX_GroupAddrPos,
-                             (int)MCT2XX_GroupAddrLen );
-    _commandStore.insert( cs );
+    cs.insert(CommandStore(Emetcon::Scan_General,                     Emetcon::IO_Read,           MCT24X_StatusPos,               MCT24X_StatusLen));
 
-    cs._cmd     = Emetcon::PutConfig_GroupAddr_GoldSilver;
-    cs._io      = Emetcon::IO_Write | Q_ARMC;
-    cs._funcLen = make_pair( (int)MCT2XX_GroupAddrGoldSilverPos,
-                             (int)MCT2XX_GroupAddrGoldSilverLen );
-    _commandStore.insert( cs );
+    cs.insert(CommandStore(Emetcon::Scan_Accum,                       Emetcon::IO_Function_Read,  MCT24X_MReadPos,                MCT24X_MReadLen));
+    cs.insert(CommandStore(Emetcon::GetValue_Default,                 Emetcon::IO_Function_Read,  MCT24X_MReadPos,                MCT24X_MReadLen));
 
-    cs._cmd     = Emetcon::PutConfig_GroupAddr_Bronze;
-    cs._io      = Emetcon::IO_Write | Q_ARMC;
-    cs._funcLen = make_pair( (int)MCT2XX_GroupAddrBronzePos,
-                             (int)MCT2XX_GroupAddrBronzeLen );
-    _commandStore.insert( cs );
+    cs.insert(CommandStore(Emetcon::PutValue_KYZ,                     Emetcon::IO_Write | Q_ARMC, MCT24X_PutMReadPos,             MCT24X_PutMReadLen));
 
-    cs._cmd     = Emetcon::PutConfig_GroupAddr_Lead;
-    cs._io      = Emetcon::IO_Write | Q_ARMC;
-    cs._funcLen = make_pair( (int)MCT2XX_GroupAddrLeadPos,
-                             (int)MCT2XX_GroupAddrLeadLen );
-    _commandStore.insert( cs );
+    cs.insert(CommandStore(Emetcon::Scan_Integrity,                   Emetcon::IO_Read,           MCT24X_DemandPos,               MCT24X_DemandLen));
+    cs.insert(CommandStore(Emetcon::GetValue_Demand,                  Emetcon::IO_Read,           MCT24X_DemandPos,               MCT24X_DemandLen));
 
-    cs._cmd     = Emetcon::Scan_General;
-    cs._io      = Emetcon::IO_Read;
-    cs._funcLen = make_pair( (int)MCT24X_StatusPos,
-                             (int)MCT24X_StatusLen );
-    _commandStore.insert( cs );
+    cs.insert(CommandStore(Emetcon::Scan_LoadProfile,                 Emetcon::IO_Read,           0,                              0));
 
-    cs._cmd     = Emetcon::Scan_Accum;
-    cs._io      = Emetcon::IO_Function_Read;
-    cs._funcLen = make_pair( (int)MCT24X_MReadPos,
-                             (int)MCT24X_MReadLen );
-    _commandStore.insert( cs );
+    cs.insert(CommandStore(Emetcon::GetStatus_External,               Emetcon::IO_Read,           MCT24X_StatusPos,               MCT24X_StatusLen));
+    cs.insert(CommandStore(Emetcon::GetStatus_LoadProfile,            Emetcon::IO_Read,           MCT24X_LPStatusPos,             MCT24X_LPStatusLen));
 
-    cs._cmd     = Emetcon::GetValue_Default;
-    cs._io      = Emetcon::IO_Function_Read;
-    cs._funcLen = make_pair( (int)MCT24X_MReadPos,
-                             (int)MCT24X_MReadLen );
-    _commandStore.insert( cs );
+    cs.insert(CommandStore(Emetcon::GetConfig_DemandInterval,         Emetcon::IO_Read,           MCT24X_DemandIntervalPos,       MCT24X_DemandIntervalLen));
+    cs.insert(CommandStore(Emetcon::PutConfig_DemandInterval,         Emetcon::IO_Write | Q_ARMC, MCT24X_DemandIntervalPos,       MCT24X_DemandIntervalLen));
 
-    cs._cmd     = Emetcon::PutValue_KYZ;
-    cs._io      = Emetcon::IO_Write | Q_ARMC;
-    cs._funcLen = make_pair( (int)MCT24X_PutMReadPos,
-                             (int)MCT24X_PutMReadLen );
-    _commandStore.insert( cs );
+    cs.insert(CommandStore(Emetcon::GetConfig_LoadProfileInterval,    Emetcon::IO_Read,           MCT24X_LPIntervalPos,           MCT24X_LPIntervalLen));
+    cs.insert(CommandStore(Emetcon::PutConfig_LoadProfileInterval,    Emetcon::IO_Write,          MCT_Command_LPInt,              0));
 
-    cs._cmd     = Emetcon::Scan_Integrity;
-    cs._io      = Emetcon::IO_Read;
-    cs._funcLen = make_pair( (int)MCT24X_DemandPos,
-                             (int)MCT24X_DemandLen);
-    _commandStore.insert( cs );
-
-    cs._cmd     = Emetcon::GetValue_Demand;
-    cs._io      = Emetcon::IO_Read;
-    cs._funcLen = make_pair( (int)MCT24X_DemandPos,
-                             (int)MCT24X_DemandLen);
-    _commandStore.insert( cs );
-
-    cs._cmd     = Emetcon::Scan_LoadProfile;
-    cs._io      = Emetcon::IO_Read;
-    cs._funcLen = make_pair( 0,0 );
-    _commandStore.insert( cs );
-
-    cs._cmd     = Emetcon::GetStatus_External;
-    cs._io      = Emetcon::IO_Read;
-    cs._funcLen = make_pair( (int)MCT24X_StatusPos,
-                             (int)MCT24X_StatusLen );
-    _commandStore.insert( cs );
-
-    cs._cmd     = Emetcon::GetStatus_LoadProfile;
-    cs._io      = Emetcon::IO_Read;
-    cs._funcLen = make_pair( (int)MCT24X_LPStatusPos,
-                             (int)MCT24X_LPStatusLen );
-    _commandStore.insert( cs );
-
-    cs._cmd     = Emetcon::GetConfig_DemandInterval;
-    cs._io      = Emetcon::IO_Read;
-    cs._funcLen = make_pair( (int)MCT24X_DemandIntervalPos,
-                             (int)MCT24X_DemandIntervalLen );
-    _commandStore.insert( cs );
-
-    cs._cmd     = Emetcon::PutConfig_DemandInterval;
-    cs._io      = Emetcon::IO_Write | Q_ARMC;
-    cs._funcLen = make_pair( (int)MCT24X_DemandIntervalPos,
-                             (int)MCT24X_DemandIntervalLen );
-    _commandStore.insert( cs );
-
-    cs._cmd     = Emetcon::GetConfig_LoadProfileInterval;
-    cs._io      = Emetcon::IO_Read;
-    cs._funcLen = make_pair( (int)MCT24X_LPIntervalPos,
-                             (int)MCT24X_LPIntervalLen );
-    _commandStore.insert( cs );
-
-    cs._cmd     = Emetcon::PutConfig_LoadProfileInterval;
-    cs._io      = Emetcon::IO_Write;
-    cs._funcLen = make_pair( (int)MCT_Command_LPInt, 0 );
-    _commandStore.insert( cs );
-
-
-    return failed;
+    return cs;
 }
 
 
@@ -173,30 +96,24 @@ bool CtiDeviceMCT24X::getOperation( const UINT &cmd, USHORT &function, USHORT &l
 {
     bool found = false;
 
-    if(_commandStore.empty())  // Must initialize!
-    {
-        CtiDeviceMCT24X::initCommandStore();
-    }
-
-    DLCCommandSet::iterator itr = _commandStore.find(CtiDLCCommandStore(cmd));
+    CommandSet::iterator itr = _commandStore.find(CommandStore(cmd));
 
     if( itr != _commandStore.end() )
     {
-        CtiDLCCommandStore &cs = *itr;
-        function = cs._funcLen.first;             // Copy over the found function!
-        length = cs._funcLen.second;              // Copy over the found length!
-        io = cs._io;                              // Copy over the found io indicator!
+        function = itr->function;   // Copy over the found function
+        length   = itr->length;     // Copy over the found length
+        io       = itr->io;         // Copy over the found io indicator
 
         found = true;
 
-        if( getType() == TYPEMCT250 &&
-            (cmd == Emetcon::Scan_General || cmd == Emetcon::GetStatus_External) )
+        //  special case for the 250's status scan
+        if( getType() == TYPEMCT250 && (cmd == Emetcon::Scan_General || cmd == Emetcon::GetStatus_External) )
         {
             function = MCT250_StatusPos;
             length   = MCT250_StatusLen;
         }
     }
-    else                                         // Look in the parent if not found in the child!
+    else    // Look in the parent if not found in the child
     {
         found = Inherited::getOperation(cmd, function, length, io);
     }

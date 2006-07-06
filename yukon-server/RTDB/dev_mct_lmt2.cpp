@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct_lmt2.cpp-arc  $
-* REVISION     :  $Revision: 1.32 $
-* DATE         :  $Date: 2006/03/23 15:29:17 $
+* REVISION     :  $Revision: 1.33 $
+* DATE         :  $Date: 2006/07/06 20:11:48 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -27,7 +27,7 @@
 using Cti::Protocol::Emetcon;
 
 
-set< CtiDLCCommandStore > CtiDeviceMCT_LMT2::_commandStore;
+const CtiDeviceMCT_LMT2::CommandSet CtiDeviceMCT_LMT2::_commandStore = CtiDeviceMCT_LMT2::initCommandStore();
 
 
 CtiDeviceMCT_LMT2::CtiDeviceMCT_LMT2() {}
@@ -49,41 +49,17 @@ CtiDeviceMCT_LMT2& CtiDeviceMCT_LMT2::operator=(const CtiDeviceMCT_LMT2& aRef)
 }
 
 
-bool CtiDeviceMCT_LMT2::initCommandStore()
+CtiDeviceMCT_LMT2::CommandSet CtiDeviceMCT_LMT2::initCommandStore()
 {
-   bool failed = false;
+   CommandSet cs;
 
-   CtiDLCCommandStore cs;
+   cs.insert(CommandStore(Emetcon::Scan_LoadProfile,                Emetcon::IO_Read,   0,                          0));
+   cs.insert(CommandStore(Emetcon::PutStatus_ResetOverride,         Emetcon::IO_Write,  MCT_LMT2_ResetOverrideFunc, 0));
+   cs.insert(CommandStore(Emetcon::GetStatus_LoadProfile,           Emetcon::IO_Read,   MCT_LMT2_LPStatusPos,       MCT_LMT2_LPStatusLen));
+   cs.insert(CommandStore(Emetcon::GetConfig_LoadProfileInterval,   Emetcon::IO_Read,   MCT_LMT2_LPIntervalPos,     MCT_LMT2_LPIntervalLen));
+   cs.insert(CommandStore(Emetcon::PutConfig_LoadProfileInterval,   Emetcon::IO_Write,  MCT_Command_LPInt,          0));
 
-   cs._cmd     = Emetcon::Scan_LoadProfile;
-   cs._io      = Emetcon::IO_Read;
-   cs._funcLen = make_pair( 0,0 );
-   _commandStore.insert( cs );
-
-   cs._cmd     = Emetcon::PutStatus_ResetOverride;
-   cs._io      = Emetcon::IO_Write;
-   cs._funcLen = make_pair( (int)MCT_LMT2_ResetOverrideFunc, 0 );
-   _commandStore.insert( cs );
-
-   cs._cmd     = Emetcon::GetStatus_LoadProfile;
-   cs._io      = Emetcon::IO_Read;
-   cs._funcLen = make_pair( (int)MCT_LMT2_LPStatusPos,
-                            (int)MCT_LMT2_LPStatusLen );
-   _commandStore.insert( cs );
-
-   cs._cmd     = Emetcon::GetConfig_LoadProfileInterval;
-   cs._io      = Emetcon::IO_Read;
-   cs._funcLen = make_pair( (int)MCT_LMT2_LPIntervalPos,
-                            (int)MCT_LMT2_LPIntervalLen );
-   _commandStore.insert( cs );
-
-   cs._cmd     = Emetcon::PutConfig_LoadProfileInterval;
-   cs._io      = Emetcon::IO_Write;
-   cs._funcLen = make_pair( (int)MCT_Command_LPInt, 0 );
-   _commandStore.insert( cs );
-
-
-   return failed;
+   return cs;
 }
 
 
@@ -91,24 +67,17 @@ bool CtiDeviceMCT_LMT2::getOperation( const UINT &cmd, USHORT &function, USHORT 
 {
    bool found = false;
 
-   if(_commandStore.empty())  // Must initialize!
-   {
-      CtiDeviceMCT_LMT2::initCommandStore();
-   }
-
-   DLCCommandSet::iterator itr = _commandStore.find(CtiDLCCommandStore(cmd));
+   CommandSet::iterator itr = _commandStore.find(CommandStore(cmd));
 
    if( itr != _commandStore.end() )    // It's prego!
    {
-      CtiDLCCommandStore &cs = *itr;
-      function = cs._funcLen.first;          // Copy over the found funcLen pair!
-      length = cs._funcLen.second;           // Copy over the found funcLen pair!
-      io = cs._io;
+      function = itr->function;
+      length   = itr->length;
+      io       = itr->io;
+
       found = true;
    }
-
-   // Look in the parent if not found in the child!
-   if(!found)
+   else     // Look in the parent if not found in the child
    {
       found = Inherited::getOperation(cmd, function, length, io);
    }

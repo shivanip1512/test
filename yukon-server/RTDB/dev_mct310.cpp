@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.50 $
-* DATE         :  $Date: 2006/06/29 14:48:12 $
+* REVISION     :  $Revision: 1.51 $
+* DATE         :  $Date: 2006/07/06 20:11:48 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -31,9 +31,9 @@
 
 using Cti::Protocol::Emetcon;
 
-using std::make_pair;
 
-set< CtiDLCCommandStore > CtiDeviceMCT310::_commandStore;
+const CtiDeviceMCT310::CommandSet CtiDeviceMCT310::_commandStore = CtiDeviceMCT310::initCommandStore();
+
 
 CtiDeviceMCT310::CtiDeviceMCT310( )
 {
@@ -59,236 +59,77 @@ CtiDeviceMCT310& CtiDeviceMCT310::operator=( const CtiDeviceMCT310 &aRef )
 }
 
 
-bool CtiDeviceMCT310::initCommandStore( )
+CtiDeviceMCT310::CommandSet CtiDeviceMCT310::initCommandStore( )
 {
-    bool failed = false;
+    CommandSet cs;
 
-    CtiDLCCommandStore cs;
-
-    cs._cmd     = Emetcon::PutConfig_Raw;
-    cs._io      = Emetcon::IO_Write;
-    cs._funcLen = make_pair( 0, 0 );  //  this will be filled in by executePutConfig
-    _commandStore.insert( cs );
+    cs.insert(CommandStore(Emetcon::PutConfig_Raw, Emetcon::IO_Write, 0, 0));  //  this will be filled in by executePutConfig
 
     //  300 series common commands
-    cs._cmd     = Emetcon::GetConfig_Time;
-    cs._io      = Emetcon::IO_Read;
-    cs._funcLen = make_pair((int)MCT3XX_TimePos,
-                            (int)MCT3XX_TimeLen);
-    _commandStore.insert( cs );
+    cs.insert(CommandStore(Emetcon::GetConfig_Time,                 Emetcon::IO_Read,           MCT3XX_TimePos,                 MCT3XX_TimeLen));
 
-    cs._cmd     = Emetcon::GetConfig_DemandInterval;
-    cs._io      = Emetcon::IO_Read;
-    cs._funcLen = make_pair((int)MCT3XX_DemandIntervalPos,
-                            (int)MCT3XX_DemandIntervalLen);
-    _commandStore.insert( cs );
+    cs.insert(CommandStore(Emetcon::GetConfig_DemandInterval,       Emetcon::IO_Read,           MCT3XX_DemandIntervalPos,       MCT3XX_DemandIntervalLen));
+    cs.insert(CommandStore(Emetcon::GetConfig_LoadProfileInterval,  Emetcon::IO_Read,           MCT3XX_LPIntervalPos,           MCT3XX_LPIntervalLen));
+    cs.insert(CommandStore(Emetcon::GetConfig_Multiplier,           Emetcon::IO_Read,           MCT3XX_Mult1Pos,                MCT3XX_MultLen));
+    cs.insert(CommandStore(Emetcon::GetConfig_Options,              Emetcon::IO_Read,           MCT3XX_OptionPos,               MCT3XX_OptionLen));
+    cs.insert(CommandStore(Emetcon::GetConfig_GroupAddress,         Emetcon::IO_Read,           MCT3XX_GroupAddrPos,            MCT3XX_GroupAddrLen));
 
-    cs._cmd     = Emetcon::GetConfig_LoadProfileInterval;
-    cs._io      = Emetcon::IO_Read;
-    cs._funcLen = make_pair((int)MCT3XX_LPIntervalPos,
-                            (int)MCT3XX_LPIntervalLen);
-    _commandStore.insert( cs );
+    cs.insert(CommandStore(Emetcon::PutConfig_UniqueAddr,           Emetcon::IO_Write,          MCT3XX_UniqAddrPos,             MCT3XX_UniqAddrLen));
+    cs.insert(CommandStore(Emetcon::PutConfig_GroupAddr_GoldSilver, Emetcon::IO_Write,          MCT3XX_GroupAddrGoldSilverPos,  MCT3XX_GroupAddrGoldSilverLen));
+    cs.insert(CommandStore(Emetcon::PutConfig_GroupAddr_Bronze,     Emetcon::IO_Write,          MCT3XX_GroupAddrBronzePos,      MCT3XX_GroupAddrBronzeLen));
+    cs.insert(CommandStore(Emetcon::PutConfig_GroupAddr_Lead,       Emetcon::IO_Write,          MCT3XX_GroupAddrLeadPos,        MCT3XX_GroupAddrLeadLen));
 
-    cs._cmd     = Emetcon::GetConfig_Multiplier;
-    cs._io      = Emetcon::IO_Read;
-    cs._funcLen = make_pair((int)MCT3XX_Mult1Pos,
-                            (int)MCT3XX_MultLen);
-    _commandStore.insert( cs );
+    cs.insert(CommandStore(Emetcon::PutConfig_DemandInterval,       Emetcon::IO_Write,          MCT3XX_DemandIntervalPos,       MCT3XX_DemandIntervalLen));
+    cs.insert(CommandStore(Emetcon::PutConfig_LoadProfileInterval,  Emetcon::IO_Write,          MCT_Command_LPInt,              0));
 
-    cs._cmd     = Emetcon::GetConfig_Options;
-    cs._io      = Emetcon::IO_Read;
-    cs._funcLen = make_pair((int)MCT3XX_OptionPos,
-                            (int)MCT3XX_OptionLen);
-    _commandStore.insert( cs );
+    cs.insert(CommandStore(Emetcon::PutConfig_Multiplier,           Emetcon::IO_Write,          MCT3XX_Mult1Pos,                MCT3XX_MultLen));
 
-    cs._cmd     = Emetcon::GetConfig_GroupAddress;
-    cs._io      = Emetcon::IO_Read;
-    cs._funcLen = make_pair((int)MCT3XX_GroupAddrPos,
-                            (int)MCT3XX_GroupAddrLen);
-    _commandStore.insert( cs );
+    cs.insert(CommandStore(Emetcon::PutConfig_TSync,                Emetcon::IO_Write,          MCT_TSyncPos,                   MCT_TSyncLen));
 
-    cs._cmd     = Emetcon::PutConfig_UniqueAddr;
-    cs._io      = Emetcon::IO_Write;
-    cs._funcLen = make_pair((int)MCT3XX_UniqAddrPos,
-                            (int)MCT3XX_UniqAddrLen);
-    _commandStore.insert( cs );
+    cs.insert(CommandStore(Emetcon::PutConfig_OnOffPeak,            Emetcon::IO_Write,          MCT3XX_MinMaxPeakConfigPos,     1));
+    cs.insert(CommandStore(Emetcon::PutConfig_MinMax,               Emetcon::IO_Write,          MCT3XX_MinMaxPeakConfigPos,     1));
 
-    cs._cmd     = Emetcon::PutConfig_GroupAddr_GoldSilver;
-    cs._io      = Emetcon::IO_Write;
-    cs._funcLen = make_pair((int)MCT3XX_GroupAddrGoldSilverPos,
-                            (int)MCT3XX_GroupAddrGoldSilverLen);
-    _commandStore.insert( cs );
-
-    cs._cmd     = Emetcon::PutConfig_GroupAddr_Bronze;
-    cs._io      = Emetcon::IO_Write;
-    cs._funcLen = make_pair((int)MCT3XX_GroupAddrBronzePos,
-                            (int)MCT3XX_GroupAddrBronzeLen);
-    _commandStore.insert( cs );
-
-    cs._cmd     = Emetcon::PutConfig_GroupAddr_Lead;
-    cs._io      = Emetcon::IO_Write;
-    cs._funcLen = make_pair((int)MCT3XX_GroupAddrLeadPos,
-                            (int)MCT3XX_GroupAddrLeadLen);
-    _commandStore.insert( cs );
-
-    cs._cmd     = Emetcon::PutConfig_DemandInterval;
-    cs._io      = Emetcon::IO_Write;
-    cs._funcLen = make_pair((int)MCT3XX_DemandIntervalPos,
-                            (int)MCT3XX_DemandIntervalLen);
-    _commandStore.insert( cs );
-
-    cs._cmd     = Emetcon::PutConfig_LoadProfileInterval;
-    cs._io      = Emetcon::IO_Write;
-    cs._funcLen = make_pair((int)MCT_Command_LPInt, 0);
-    _commandStore.insert( cs );
-
-    cs._cmd     = Emetcon::PutConfig_Multiplier;
-    cs._io      = Emetcon::IO_Write;
-    cs._funcLen = make_pair((int)MCT3XX_Mult1Pos,
-                            (int)MCT3XX_MultLen);
-    _commandStore.insert( cs );
-
-    cs._cmd     = Emetcon::PutConfig_TSync;
-    cs._io      = Emetcon::IO_Write;
-    cs._funcLen = make_pair((int)MCT_TSyncPos,
-                            (int)MCT_TSyncLen);
-    _commandStore.insert( cs );
-
-    cs._cmd     = Emetcon::PutConfig_OnOffPeak;
-    cs._io      = Emetcon::IO_Write;
-    cs._funcLen = make_pair((int)MCT3XX_MinMaxPeakConfigPos, 1);
-    _commandStore.insert( cs );
-
-    cs._cmd     = Emetcon::PutConfig_MinMax;
-    cs._io      = Emetcon::IO_Write;
-    cs._funcLen = make_pair((int)MCT3XX_MinMaxPeakConfigPos, 1);
-    _commandStore.insert( cs );
-
-    cs._cmd     = Emetcon::Scan_Accum;
-    cs._io      = Emetcon::IO_Function_Read;
-    cs._funcLen = make_pair((int)MCT3XX_FuncReadMReadPos,
-                            (int)MCT3XX_FuncReadMReadLen);
-    _commandStore.insert( cs );
-
-    cs._cmd     = Emetcon::GetValue_Default;
-    cs._io      = Emetcon::IO_Function_Read;
-    cs._funcLen = make_pair((int)MCT3XX_FuncReadMReadPos,
-                            (int)MCT3XX_FuncReadMReadLen);
-    _commandStore.insert( cs );
+    cs.insert(CommandStore(Emetcon::Scan_Accum,                     Emetcon::IO_Function_Read,  MCT3XX_FuncReadMReadPos,        MCT3XX_FuncReadMReadLen));
+    cs.insert(CommandStore(Emetcon::GetValue_Default,               Emetcon::IO_Function_Read,  MCT3XX_FuncReadMReadPos,        MCT3XX_FuncReadMReadLen));
 
 //  ACH add frozen support for 310
-/*
-    cs._cmd     = Emetcon::GetValue_FrozenKWH;
-    cs._io      = Emetcon::IO_Function_Read;
-    cs._funcLen = make_pair((int)MCT3XX_FuncReadFrozenPos,
-                            (int)MCT3XX_FuncReadFrozenLen);
-    _commandStore.insert( cs );
-*/
-    cs._cmd     = Emetcon::GetStatus_Internal;
-    cs._io      = Emetcon::IO_Read;
-    cs._funcLen = make_pair((int)MCT3XX_GenStatPos,
-                            (int)MCT3XX_GenStatLen);
-    _commandStore.insert( cs );
+//  cs.insert(CommandStore(Emetcon::GetValue_FrozenKWH,             Emetcon::IO_Function_Read,  MCT3XX_FuncReadFrozenPos, MCT3XX_FuncReadFrozenLen);
 
-    cs._cmd     = Emetcon::PutStatus_Reset;
-    cs._io      = Emetcon::IO_Write;
-    cs._funcLen = make_pair((int)MCT3XX_ResetPos,
-                            (int)MCT3XX_ResetLen);
-    _commandStore.insert( cs );
+    cs.insert(CommandStore(Emetcon::GetStatus_Internal,             Emetcon::IO_Read,           MCT3XX_GenStatPos,              MCT3XX_GenStatLen));
 
-    cs._cmd     = Emetcon::GetValue_PFCount;
-    cs._io      = Emetcon::IO_Read;
-    cs._funcLen = make_pair((int)MCT3XX_PFCountPos,
-                            (int)MCT3XX_PFCountLen);
-    _commandStore.insert( cs );
+    cs.insert(CommandStore(Emetcon::PutStatus_Reset,                Emetcon::IO_Write,          MCT3XX_ResetPos,                MCT3XX_ResetLen));
 
-    cs._cmd     = Emetcon::PutValue_ResetPFCount;
-    cs._io      = Emetcon::IO_Write;
-    cs._funcLen = make_pair((int)MCT3XX_PFCountPos,
-                            (int)MCT3XX_PFCountLen);
-    _commandStore.insert( cs );
+    cs.insert(CommandStore(Emetcon::GetValue_PFCount,               Emetcon::IO_Read,           MCT3XX_PFCountPos,              MCT3XX_PFCountLen));
+    cs.insert(CommandStore(Emetcon::PutValue_ResetPFCount,          Emetcon::IO_Write,          MCT3XX_PFCountPos,              MCT3XX_PFCountLen));
 
-    cs._cmd     = Emetcon::PutStatus_PeakOn;
-    cs._io      = Emetcon::IO_Write;
-    cs._funcLen = make_pair((int)MCT3XX_FunctionPeakOn, 0);
-    _commandStore.insert( cs );
+    cs.insert(CommandStore(Emetcon::PutStatus_PeakOn,               Emetcon::IO_Write,          MCT3XX_FunctionPeakOn,          0));
+    cs.insert(CommandStore(Emetcon::PutStatus_PeakOff,              Emetcon::IO_Write,          MCT3XX_FunctionPeakOff,         0));
 
-    cs._cmd     = Emetcon::PutStatus_PeakOff;
-    cs._io      = Emetcon::IO_Write;
-    cs._funcLen = make_pair((int)MCT3XX_FunctionPeakOff, 0);
-    _commandStore.insert( cs );
-
-    cs._cmd     = Emetcon::PutStatus_FreezeOne;
-    cs._io      = Emetcon::IO_Write;
-    cs._funcLen = make_pair((int)MCT_Command_FreezeOne, 0);
-    _commandStore.insert( cs );
-
-    cs._cmd     = Emetcon::PutStatus_FreezeTwo;
-    cs._io      = Emetcon::IO_Write;
-    cs._funcLen = make_pair((int)MCT_Command_FreezeTwo, 0);
-    _commandStore.insert( cs );
+    cs.insert(CommandStore(Emetcon::PutStatus_FreezeOne,            Emetcon::IO_Write,          MCT_Command_FreezeOne,          0));
+    cs.insert(CommandStore(Emetcon::PutStatus_FreezeTwo,            Emetcon::IO_Write,          MCT_Command_FreezeTwo,          0));
 
     //  only valid for sspec 1007 (and above?)
-    cs._cmd      = Emetcon::Scan_Integrity;
-    cs._io       = Emetcon::IO_Read;
-    cs._funcLen  = make_pair((int)MCT310_DemandPos,
-                             (int)MCT310_DemandLen);
-    _commandStore.insert( cs );
+    cs.insert(CommandStore(Emetcon::Scan_Integrity,                 Emetcon::IO_Read,           MCT310_DemandPos,               MCT310_DemandLen));
 
     //  310 specific commands
     //  310 cannot do a FR0x92 (MCT31X_FuncReadDemand) and can only collect 1 demand reading!
-    cs._cmd      = Emetcon::Scan_Integrity;
-    cs._io       = Emetcon::IO_Read;
-    cs._funcLen  = make_pair((int)MCT310_DemandPos,
-                             (int)MCT310_DemandLen);
-    _commandStore.insert( cs );
+    cs.insert(CommandStore(Emetcon::Scan_Integrity,                 Emetcon::IO_Read,           MCT310_DemandPos,               MCT310_DemandLen));
+    cs.insert(CommandStore(Emetcon::GetValue_Demand,                Emetcon::IO_Read,           MCT310_DemandPos,               MCT310_DemandLen));
 
-    cs._cmd      = Emetcon::GetValue_Demand;
-    cs._io       = Emetcon::IO_Read;
-    cs._funcLen  = make_pair((int)MCT310_DemandPos,
-                             (int)MCT310_DemandLen);
-    _commandStore.insert( cs );
+    cs.insert(CommandStore(Emetcon::PutValue_KYZ,                   Emetcon::IO_Write,          MCT3XX_PutMRead1Pos,            MCT3XX_PutMReadLen));
 
-    cs._cmd      = Emetcon::PutValue_KYZ;
-    cs._io       = Emetcon::IO_Write;
-    cs._funcLen  = make_pair((int)MCT3XX_PutMRead1Pos,
-                             (int)MCT3XX_PutMReadLen);
-    _commandStore.insert( cs );
-
-    cs._cmd      = Emetcon::GetValue_PeakDemand;
-    cs._io       = Emetcon::IO_Function_Read;
-    cs._funcLen  = make_pair((int)MCT3XX_FuncReadMinMaxDemandPos, 4);
-    _commandStore.insert( cs );
-
-    cs._cmd      = Emetcon::GetValue_FrozenPeakDemand;
-    cs._io       = Emetcon::IO_Function_Read;
-    cs._funcLen  = make_pair((int)MCT3XX_FuncReadFrozenDemandPos, 4);
-    _commandStore.insert( cs );
+    cs.insert(CommandStore(Emetcon::GetValue_PeakDemand,            Emetcon::IO_Function_Read,  MCT3XX_FuncReadMinMaxDemandPos, 4));
+    cs.insert(CommandStore(Emetcon::GetValue_FrozenPeakDemand,      Emetcon::IO_Function_Read,  MCT3XX_FuncReadFrozenDemandPos, 4));
 
     //  only valid for 310IL, this case handled in getOperation
-    cs._cmd      = Emetcon::Scan_LoadProfile;
-    cs._io       = Emetcon::IO_Function_Read;
-    cs._funcLen  = make_pair(0, 0);
-    _commandStore.insert( cs );
+    cs.insert(CommandStore(Emetcon::Scan_LoadProfile,               Emetcon::IO_Function_Read,  0,  0));
 
-    cs._cmd      = Emetcon::GetStatus_Disconnect;
-    cs._io       = Emetcon::IO_Read;
-    cs._funcLen  = make_pair((int)MCT310_StatusPos,
-                             (int)MCT310_StatusLen);
-    _commandStore.insert( cs );
+    cs.insert(CommandStore(Emetcon::GetStatus_Disconnect,           Emetcon::IO_Read,           MCT310_StatusPos,               MCT310_StatusLen));
+    cs.insert(CommandStore(Emetcon::GetStatus_LoadProfile,          Emetcon::IO_Read,           MCT3XX_LPStatusPos,             MCT3XX_LPStatusLen));
 
-    cs._cmd      = Emetcon::GetStatus_LoadProfile;
-    cs._io       = Emetcon::IO_Read;
-    cs._funcLen  = make_pair((int)MCT3XX_LPStatusPos,
-                             (int)MCT3XX_LPStatusLen);
-    _commandStore.insert( cs );
+    cs.insert(CommandStore(Emetcon::Control_Latch,                  Emetcon::IO_Write | Q_ARML, MCT_Command_Latch,              0));
 
-    cs._cmd      = Emetcon::Control_Latch;
-    cs._io       = Emetcon::IO_Write | Q_ARML;
-    cs._funcLen  = make_pair((int)MCT_Command_Latch, 0);
-    _commandStore.insert( cs );
-
-    return failed;
+    return cs;
 }
 
 
@@ -296,31 +137,25 @@ bool CtiDeviceMCT310::getOperation( const UINT &cmd, USHORT &function, USHORT &l
 {
     bool found = false;
 
-    if( _commandStore.empty( ) )  // Must initialize!
-    {
-        CtiDeviceMCT310::initCommandStore( );
-    }
-
-    DLCCommandSet::iterator itr = _commandStore.find( CtiDLCCommandStore( cmd ) );
+    CommandSet::iterator itr = _commandStore.find( CommandStore( cmd ) );
 
     //  the 310IL/IDL is the only 310 that supports load profile, and i didn't want to add a seperate class for the one action
-    if( getType( ) != TYPEMCT310IL  &&
-        getType( ) != TYPEMCT310IDL &&
-        cmd == Emetcon::Scan_LoadProfile )
+    if( cmd == Emetcon::Scan_LoadProfile &&
+        getType( ) != TYPEMCT310IL  &&
+        getType( ) != TYPEMCT310IDL )
     {
         //  for emphasis...
         found = false;
     }
     else if( itr != _commandStore.end( ) )
     {
-        CtiDLCCommandStore &cs = *itr;
-        function = cs._funcLen.first;   //  Copy the relevant bits from the commandStore
-        length   = cs._funcLen.second;  //
-        io       = cs._io;              //
+        function = itr->function;    //  Copy the relevant bits from the commandStore
+        length   = itr->length;      //
+        io       = itr->io;          //
 
         found = true;
     }
-    else                                //  Look in the parent if not found in the child!
+    else  //  Look in the parent if not found in the child
     {
         found = Inherited::getOperation( cmd, function, length, io );
     }

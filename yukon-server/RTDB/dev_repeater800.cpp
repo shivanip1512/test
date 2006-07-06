@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2006/03/23 15:29:18 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2006/07/06 20:11:48 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -29,169 +29,158 @@
 #include "numstr.h"
 
 using Cti::Protocol::Emetcon;
-using std::make_pair;
 using std::string;
 
-set< CtiDLCCommandStore > CtiDeviceRepeater800::_commandStore;
+
+const CtiDeviceRepeater800::CommandSet CtiDeviceRepeater800::_commandStore = CtiDeviceRepeater800::initCommandStore();
 
 
 CtiDeviceRepeater800::CtiDeviceRepeater800() {}
 
 CtiDeviceRepeater800::CtiDeviceRepeater800(const CtiDeviceRepeater800& aRef)
 {
-   *this = aRef;
+    *this = aRef;
 }
 
 CtiDeviceRepeater800::~CtiDeviceRepeater800() {}
 
 CtiDeviceRepeater800& CtiDeviceRepeater800::operator=(const CtiDeviceRepeater800& aRef)
 {
-   if(this != &aRef)
-   {
-      Inherited::operator=(aRef);
-   }
-   return *this;
+    if(this != &aRef)
+    {
+        Inherited::operator=(aRef);
+    }
+
+    return *this;
 }
 
-bool CtiDeviceRepeater800::initCommandStore()
+CtiDeviceRepeater800::CommandSet CtiDeviceRepeater800::initCommandStore()
 {
-   bool failed = false;
+    CommandSet cs;
 
-   CtiDLCCommandStore cs;
+    cs.insert(CommandStore(Emetcon::GetValue_PFCount,    Emetcon::IO_Read,   Rpt800_PFCountPos,  Rpt800_PFCountLen));
 
-   cs._cmd = Emetcon::GetValue_PFCount;
-   cs._io  = Emetcon::IO_Read;
-   cs._funcLen = make_pair((int)Rpt800_PFCountPos,
-                           (int)Rpt800_PFCountLen);
-   _commandStore.insert( cs );
-
-   return failed;
+    return cs;
 }
 
 
 bool CtiDeviceRepeater800::getOperation( const UINT &cmd, USHORT &function, USHORT &length, USHORT &io )
 {
-   bool found = false;
+    bool found = false;
 
-   if(_commandStore.empty())  // Must initialize!
-   {
-      CtiDeviceRepeater800::initCommandStore();
-   }
+    CommandSet::iterator itr = _commandStore.find(CommandStore(cmd));
 
-   DLCCommandSet::iterator itr = _commandStore.find(CtiDLCCommandStore(cmd));
+    if( itr != _commandStore.end() )
+    {
+        function = itr->function;
+        length   = itr->length;
+        io       = itr->io;
 
-   if( itr != _commandStore.end() )
-   {
-      CtiDLCCommandStore &cs = *itr;
-      function = cs._funcLen.first;             // Copy over the found function!
-      length = cs._funcLen.second;              // Copy over the found length!
-      io = cs._io;                              // Copy over the found io indicator!
+        found = true;
+    }
+    else    // Look in the parent if not found in the child!
+    {
+        //  CtiDevRepeater900 is the base...
+        found = Inherited::getOperation(cmd, function, length, io);
+    }
 
-      found = true;
-   }
-   //  CtiDevRepeater900 is the base...
-   else                                         // Look in the parent if not found in the child!
-   {
-      found = Inherited::getOperation(cmd, function, length, io);
-   }
-
-   return found;
+    return found;
 }
 
 
 INT CtiDeviceRepeater800::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
-   INT status = NORMAL;
+    INT status = NORMAL;
 
 
-   switch(InMessage->Sequence)
-   {
-   case (Emetcon::GetValue_PFCount):
-      {
-         status = decodeGetValuePFCount(InMessage, TimeNow, vgList, retList, outList);
-         break;
-      }
-   default:
-      {
-         status = Inherited::ResultDecode(InMessage, TimeNow, vgList, retList, outList);
+    switch(InMessage->Sequence)
+    {
+        case (Emetcon::GetValue_PFCount):
+        {
+            status = decodeGetValuePFCount(InMessage, TimeNow, vgList, retList, outList);
+            break;
+        }
+        default:
+        {
+            status = Inherited::ResultDecode(InMessage, TimeNow, vgList, retList, outList);
 
-         if(status != NORMAL)
-         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << " IM->Sequence = " << InMessage->Sequence << " " << getName() << endl;
-         }
-         break;
-      }
-   }
+            if(status != NORMAL)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << " IM->Sequence = " << InMessage->Sequence << " " << getName() << endl;
+            }
+            break;
+        }
+    }
 
-   return status;
+    return status;
 }
 
 
 INT CtiDeviceRepeater800::decodeGetValuePFCount(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
-   INT status = NORMAL;
+    INT status = NORMAL;
 
-   DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
 
-   if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
-   {
-      // No error occured, we must do a real decode!
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    {
+        // No error occured, we must do a real decode!
 
-      INT   j;
-      ULONG pfCount = 0;
+        INT   j;
+        ULONG pfCount = 0;
 
-      CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-      CtiPointDataMsg      *pData = NULL;
+        CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+        CtiPointDataMsg      *pData = NULL;
 
-      if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
-      {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-         return MEMORY;
-      }
+            return MEMORY;
+        }
 
-      ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-      for(j = 0; j < 2; j++)
-      {
-         pfCount = (pfCount << 8) + InMessage->Buffer.DSt.Message[j];
-      }
+        for(j = 0; j < 2; j++)
+        {
+            pfCount = (pfCount << 8) + InMessage->Buffer.DSt.Message[j];
+        }
 
-      {
-         string resultString, pointString;
-         double value;
+        {
+            string resultString, pointString;
+            double value;
 
-         LockGuard guard(monitor());               // Lock the MCT device!
-         CtiPointSPtr pPoint;
+            LockGuard guard(monitor());               // Lock the MCT device!
+            CtiPointSPtr pPoint;
 
-         if( pPoint = getDevicePointOffsetTypeEqual(20, PulseAccumulatorPointType) )
-         {
-             value = boost::static_pointer_cast<CtiPointNumeric>(pPoint)->computeValueForUOM(pfCount);
+            if( pPoint = getDevicePointOffsetTypeEqual(20, PulseAccumulatorPointType) )
+            {
+                value = boost::static_pointer_cast<CtiPointNumeric>(pPoint)->computeValueForUOM(pfCount);
 
-             pointString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(value, 0);  //  boost::static_pointer_cast<CtiPointNumeric>(pPoint)->getPointUnits().getDecimalPlaces());
+                pointString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(value, 0);  //  boost::static_pointer_cast<CtiPointNumeric>(pPoint)->getPointUnits().getDecimalPlaces());
 
-             if( pData = CTIDBG_new CtiPointDataMsg(pPoint->getID(), value, NormalQuality, PulseAccumulatorPointType, pointString) )
-             {
-                 ReturnMsg->PointData().push_back(pData);
-                 pData = NULL;  // We just put it on the list...
-             }
-         }
-         else
-         {
-             resultString += getName() + " / Blink Counter = " + CtiNumStr(pfCount) + "\n";
+                if( pData = CTIDBG_new CtiPointDataMsg(pPoint->getID(), value, NormalQuality, PulseAccumulatorPointType, pointString) )
+                {
+                    ReturnMsg->PointData().push_back(pData);
+                    pData = NULL;  // We just put it on the list...
+                }
+            }
+            else
+            {
+                resultString += getName() + " / Blink Counter = " + CtiNumStr(pfCount) + "\n";
 
-             ReturnMsg->setResultString(resultString);
-         }
-      }
+                ReturnMsg->setResultString(resultString);
+            }
+        }
 
-      retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
-   }
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    }
 
-   return status;
+    return status;
 }
 
 

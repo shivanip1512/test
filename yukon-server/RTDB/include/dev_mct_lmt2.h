@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct_lmt2.h-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2006/02/27 23:58:32 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2006/07/06 20:11:49 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,7 +23,17 @@
 
 class CtiDeviceMCT_LMT2 : public CtiDeviceMCT22X
 {
+private:
+
+   static const CommandSet _commandStore;
+   static CommandSet initCommandStore();
+
+   CtiTime _lastLPRequestAttempt,
+           _lastLPRequestBlockStart;
+
 protected:
+
+    virtual bool getOperation( const UINT &cmd,  USHORT &function, USHORT &length, USHORT &io );
 
     enum
     {
@@ -36,28 +46,6 @@ protected:
         MCT_LMT2_ResetOverrideFunc = 0x57
     };
 
-private:
-
-   static DLCCommandSet _commandStore;
-   CtiTime _lastLPRequestAttempt, _lastLPRequestBlockStart;
-
-public:
-
-   typedef CtiDeviceMCT22X Inherited;
-
-    CtiDeviceMCT_LMT2();
-    CtiDeviceMCT_LMT2( const CtiDeviceMCT_LMT2 &aRef );
-    virtual ~CtiDeviceMCT_LMT2();
-
-    CtiDeviceMCT_LMT2& operator=(const CtiDeviceMCT_LMT2& aRef);
-
-    static  bool initCommandStore( );
-    virtual bool getOperation( const UINT &cmd,  USHORT &function, USHORT &length, USHORT &io );
-
-    ULONG calcNextLPScanTime( void );
-    INT   calcAndInsertLPRequests( OUTMESS *&OutMessage, list< OUTMESS* > &outList );
-    virtual bool  calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage );
-
     virtual INT ModelDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
 
     INT decodeScanLoadProfile     ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
@@ -68,5 +56,21 @@ public:
     INT decodeGetStatusInternal( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
 
     INT decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
+
+    typedef CtiDeviceMCT22X Inherited;
+
+public:
+
+    CtiDeviceMCT_LMT2();
+    CtiDeviceMCT_LMT2( const CtiDeviceMCT_LMT2 &aRef );
+    virtual ~CtiDeviceMCT_LMT2();
+
+    CtiDeviceMCT_LMT2& operator=(const CtiDeviceMCT_LMT2& aRef);
+
+    ULONG calcNextLPScanTime( void );
+    INT   calcAndInsertLPRequests( OUTMESS *&OutMessage, list< OUTMESS* > &outList );
+    virtual bool  calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage );
+
 };
+
 #endif // #ifndef __DEV_MCT_LMT2_H__

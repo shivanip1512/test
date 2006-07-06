@@ -24,8 +24,14 @@
 
 class IM_EX_DEVDB CtiDeviceRepeater800 : public CtiDeviceRepeater900
 {
+private:
+
+   static const CommandSet _commandStore;
+   static CommandSet initCommandStore();
 
 protected:
+
+    virtual bool getOperation( const UINT &cmd,  USHORT &function, USHORT &length, USHORT &io );
 
     enum
     {
@@ -33,28 +39,21 @@ protected:
         Rpt800_PFCountLen =    3
     };
 
-private:
+    INT decodeGetValuePFCount(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
 
-   static DLCCommandSet _commandStore;
+    typedef CtiDeviceRepeater900 Inherited;
 
 public:
 
-   typedef CtiDeviceRepeater900 Inherited;
-
    CtiDeviceRepeater800();
-
    CtiDeviceRepeater800(const CtiDeviceRepeater800& aRef);
 
    virtual ~CtiDeviceRepeater800();
 
    CtiDeviceRepeater800& operator=(const CtiDeviceRepeater800& aRef);
 
-   static bool initCommandStore( );
-   virtual bool getOperation( const UINT &cmd,  USHORT &function, USHORT &length, USHORT &io );
-
    virtual INT ResultDecode(INMESS*InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
 
-   INT decodeGetValuePFCount(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
 };
 
 #endif // #ifndef __DEV_REPEATER800_H__

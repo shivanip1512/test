@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct310.h-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2006/02/27 23:58:32 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2006/07/06 20:11:48 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -25,9 +25,12 @@ class IM_EX_DEVDB CtiDeviceMCT310 : public CtiDeviceMCT
 {
 private:
 
-    static DLCCommandSet _commandStore;
+    static const CommandSet _commandStore;
+    static CommandSet initCommandStore();
 
 protected:
+
+    virtual bool getOperation( const UINT &cmd,  USHORT &function, USHORT &length, USHORT &io );
 
     enum
     {
@@ -107,32 +110,6 @@ protected:
         MCT3XX_GroupAddrGoldSilverLen  =    1
     };
 
-public:
-
-    enum
-    {
-        MCT310_StatusConnected         = 0x00,
-        MCT310_StatusConnectArmed      = 0x40,
-        MCT310_StatusConnectInProgress = 0x80,
-        MCT310_StatusDisconnected      = 0xc0
-    };
-
-    typedef CtiDeviceMCT Inherited;
-
-    CtiDeviceMCT310( );
-    CtiDeviceMCT310( const CtiDeviceMCT310 &aRef );
-    virtual ~CtiDeviceMCT310( );
-
-    CtiDeviceMCT310 &operator=( const CtiDeviceMCT310 &aRef );
-
-    static bool initCommandStore( );
-    virtual bool getOperation( const UINT &cmd,  USHORT &function, USHORT &length, USHORT &io );
-
-    //  virtual so that the MCT318 can override them
-    virtual ULONG calcNextLPScanTime( void );
-    virtual INT   calcAndInsertLPRequests( OUTMESS *&OutMessage, list< OUTMESS* > &outList );
-    virtual bool  calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage );
-
     virtual INT ModelDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
 
     INT decodeGetValueKWH         ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
@@ -144,6 +121,29 @@ public:
     INT decodeGetConfigOptions    ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeScanLoadProfile     ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodePutConfigPeakMode   ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
+
+    typedef CtiDeviceMCT Inherited;
+
+public:
+
+    enum
+    {
+        MCT310_StatusConnected         = 0x00,
+        MCT310_StatusConnectArmed      = 0x40,
+        MCT310_StatusConnectInProgress = 0x80,
+        MCT310_StatusDisconnected      = 0xc0
+    };
+
+    CtiDeviceMCT310( );
+    CtiDeviceMCT310( const CtiDeviceMCT310 &aRef );
+    virtual ~CtiDeviceMCT310( );
+
+    CtiDeviceMCT310 &operator=( const CtiDeviceMCT310 &aRef );
+
+    //  virtual so that the MCT318 can override them
+    virtual ULONG calcNextLPScanTime( void );
+    virtual INT   calcAndInsertLPRequests( OUTMESS *&OutMessage, list< OUTMESS* > &outList );
+    virtual bool  calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage );
 
     void decodeAccumulators( ULONG *result, INT accum_cnt, BYTE *Data );
     void decodeStati( INT &stat, INT which, BYTE *Data );

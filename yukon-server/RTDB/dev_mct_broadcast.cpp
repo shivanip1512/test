@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2006/04/11 20:46:43 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2006/07/06 20:11:48 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -30,7 +30,7 @@
 using Cti::Protocol::Emetcon;
 
 
-set< CtiDLCCommandStore > CtiDeviceMCTBroadcast::_commandStore;
+const CtiDeviceMCTBroadcast::CommandSet CtiDeviceMCTBroadcast::_commandStore = CtiDeviceMCTBroadcast::initCommandStore();
 
 
 CtiDeviceMCTBroadcast::CtiDeviceMCTBroadcast()
@@ -433,63 +433,35 @@ INT CtiDeviceMCTBroadcast::executePutValue(CtiRequestMsg                  *pReq,
 //
 //  My apologies to those who follow.
 //
-bool CtiDeviceMCTBroadcast::initCommandStore()
+CtiDeviceMCTBroadcast::CommandSet CtiDeviceMCTBroadcast::initCommandStore()
 {
-    bool failed = false;
-    CtiDLCCommandStore cs;
+    CommandSet cs;
 
+    cs.insert(CommandStore(Emetcon::PutStatus_Reset,            Emetcon::IO_Function_Write, MCTBCAST_ResetPF, MCTBCAST_ResetPFLen));
 
-    cs._cmd     = Emetcon::PutStatus_Reset;
-    cs._io      = Emetcon::IO_Function_Write;
-    cs._funcLen = make_pair((int)MCTBCAST_ResetPF, (int)MCTBCAST_ResetPFLen);
-    _commandStore.insert(cs);
+    cs.insert(CommandStore(Emetcon::PutStatus_FreezeOne,        Emetcon::IO_Function_Write, CtiDeviceMCT::MCT_Command_FreezeOne, 0));
+    cs.insert(CommandStore(Emetcon::PutStatus_FreezeTwo,        Emetcon::IO_Function_Write, CtiDeviceMCT::MCT_Command_FreezeTwo, 0));
 
-    cs._cmd     = Emetcon::PutStatus_FreezeOne;
-    cs._io      = Emetcon::IO_Function_Write;
-    cs._funcLen = make_pair((int)CtiDeviceMCT::MCT_Command_FreezeOne, 0);
-    _commandStore.insert(cs);
+    cs.insert(CommandStore(Emetcon::PutValue_IEDReset,          Emetcon::IO_Function_Write, 0, 0));
 
-    cs._cmd     = Emetcon::PutStatus_FreezeTwo;
-    cs._io      = Emetcon::IO_Function_Write;
-    cs._funcLen = make_pair((int)CtiDeviceMCT::MCT_Command_FreezeTwo, 0);
-    _commandStore.insert(cs);
+    cs.insert(CommandStore(Emetcon::PutStatus_FreezeVoltageOne, Emetcon::IO_Write, CtiDeviceMCT410::MCT4XX_Command_FreezeVoltageOne, 0));
+    cs.insert(CommandStore(Emetcon::PutStatus_FreezeVoltageTwo, Emetcon::IO_Write, CtiDeviceMCT410::MCT4XX_Command_FreezeVoltageTwo, 0));
 
-    cs._cmd     = Emetcon::PutValue_IEDReset;
-    cs._io      = Emetcon::IO_Function_Write;
-    cs._funcLen = make_pair(0, 0);
-    _commandStore.insert(cs);
-
-    cs._cmd     = Emetcon::PutStatus_FreezeVoltageOne;
-    cs._io      = Emetcon::IO_Write;
-    cs._funcLen = make_pair((int)CtiDeviceMCT410::MCT4XX_Command_FreezeVoltageOne, 0);
-    _commandStore.insert(cs);
-
-    cs._cmd     = Emetcon::PutStatus_FreezeVoltageTwo;
-    cs._io      = Emetcon::IO_Write;
-    cs._funcLen = make_pair((int)CtiDeviceMCT410::MCT4XX_Command_FreezeVoltageTwo, 0);
-    _commandStore.insert(cs);
-
-
-    return failed;
+    return cs;
 }
 
 bool CtiDeviceMCTBroadcast::getOperation( const UINT &cmd, USHORT &function, USHORT &length, USHORT &io )
 {
     bool found = false;
 
-    if(_commandStore.empty())  // Must initialize!
-    {
-        initCommandStore();
-    }
-
-    DLCCommandSet::iterator itr = _commandStore.find(CtiDLCCommandStore(cmd));
+    CommandSet::iterator itr = _commandStore.find(CommandStore(cmd));
 
     if( itr != _commandStore.end() )    // It's prego!
     {
-        CtiDLCCommandStore &cs = *itr;
-        function = cs._funcLen.first;           // Copy over the found funcLen pair!
-        length = cs._funcLen.second;           // Copy over the found funcLen pair!
-        io = cs._io;
+        function = itr->function;
+        length   = itr->length;
+        io       = itr->io;
+
         found = true;
     }
 

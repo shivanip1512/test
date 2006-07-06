@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct210.cpp-arc  $
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2006/02/27 23:58:30 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2006/07/06 20:11:48 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -32,7 +32,8 @@
 using Cti::Protocol::Emetcon;
 
 
-set< CtiDLCCommandStore > CtiDeviceMCT210::_commandStore;
+const CtiDeviceMCT210::CommandSet CtiDeviceMCT210::_commandStore = CtiDeviceMCT210::initCommandStore();
+
 
 CtiDeviceMCT210::CtiDeviceMCT210()
 {
@@ -57,75 +58,27 @@ CtiDeviceMCT210& CtiDeviceMCT210::operator=(const CtiDeviceMCT210 &aRef)
 }
 
 
-bool CtiDeviceMCT210::initCommandStore()
+CtiDeviceMCT210::CommandSet CtiDeviceMCT210::initCommandStore()
 {
-    bool failed = false;
-
-    CtiDLCCommandStore cs;
+    CommandSet cs;
 
     //  MCT 210 commands
-    cs._cmd     = Emetcon::GetValue_Default;
-    cs._io      = Emetcon::IO_Read;
-    cs._funcLen = make_pair( (int)MCT210_MReadPos,
-                             (int)MCT210_MReadLen );
-    _commandStore.insert( cs );
+    cs.insert(CommandStore(Emetcon::GetValue_Default,       Emetcon::IO_Read,           MCT210_MReadPos,    MCT210_MReadLen));
+    cs.insert(CommandStore(Emetcon::Scan_Accum,             Emetcon::IO_Read,           MCT210_MReadPos,    MCT210_MReadLen));
 
-    cs._cmd     = Emetcon::Scan_Accum;
-    cs._io      = Emetcon::IO_Read;
-    cs._funcLen = make_pair( (int)MCT210_MReadPos,
-                             (int)MCT210_MReadLen );
-    _commandStore.insert( cs );
+    cs.insert(CommandStore(Emetcon::PutValue_KYZ,           Emetcon::IO_Write | Q_ARMC, MCT210_PutMReadPos, MCT210_PutMReadLen));
 
-    cs._cmd     = Emetcon::PutValue_KYZ;
-    cs._io      = Emetcon::IO_Write | Q_ARMC;
-    cs._funcLen = make_pair( (int)MCT210_PutMReadPos,
-                             (int)MCT210_PutMReadLen );
-    _commandStore.insert( cs );
+    cs.insert(CommandStore(Emetcon::GetValue_Demand,        Emetcon::IO_Read,           MCT210_DemandPos,   MCT210_DemandLen));
+    cs.insert(CommandStore(Emetcon::Scan_Integrity,         Emetcon::IO_Read,           MCT210_DemandPos,   MCT210_DemandLen));
+    cs.insert(CommandStore(Emetcon::GetStatus_Disconnect,   Emetcon::IO_Read,           MCT210_StatusPos,   MCT210_StatusLen));
+    cs.insert(CommandStore(Emetcon::GetStatus_Internal,     Emetcon::IO_Read,           MCT210_GenStatPos,  MCT210_GenStatLen));
 
-    cs._cmd     = Emetcon::GetValue_Demand;
-    cs._io      = Emetcon::IO_Read;
-    cs._funcLen = make_pair( (int)MCT210_DemandPos,
-                             (int)MCT210_DemandLen );
-    _commandStore.insert( cs );
+    cs.insert(CommandStore(Emetcon::PutStatus_Reset,        Emetcon::IO_Write | Q_ARMC, MCT210_ResetPos,    MCT210_ResetLen));
 
-    cs._cmd     = Emetcon::Scan_Integrity;
-    cs._io      = Emetcon::IO_Read;
-    cs._funcLen = make_pair( (int)MCT210_DemandPos,
-                             (int)MCT210_DemandLen );
-    _commandStore.insert( cs );
+    cs.insert(CommandStore(Emetcon::GetConfig_Multiplier,   Emetcon::IO_Read,           MCT210_MultPos,     MCT210_MultLen));
+    cs.insert(CommandStore(Emetcon::PutConfig_Multiplier,   Emetcon::IO_Write | Q_ARMC, MCT210_MultPos,     MCT210_MultLen));
 
-    cs._cmd     = Emetcon::GetStatus_Disconnect;
-    cs._io      = Emetcon::IO_Read;
-    cs._funcLen = make_pair( (int)MCT210_StatusPos,
-                             (int)MCT210_StatusLen );
-    _commandStore.insert( cs );
-
-    cs._cmd     = Emetcon::GetStatus_Internal;
-    cs._io      = Emetcon::IO_Read;
-    cs._funcLen = make_pair( (int)MCT210_GenStatPos,
-                             (int)MCT210_GenStatLen );
-    _commandStore.insert( cs );
-
-    cs._cmd     = Emetcon::PutStatus_Reset;
-    cs._io      = Emetcon::IO_Write | Q_ARMC;
-    cs._funcLen = make_pair( (int)MCT210_ResetPos,
-                             (int)MCT210_ResetLen );
-    _commandStore.insert( cs );
-
-    cs._cmd     = Emetcon::GetConfig_Multiplier;
-    cs._io      = Emetcon::IO_Read;
-    cs._funcLen = make_pair( (int)MCT210_MultPos,
-                             (int)MCT210_MultLen );
-    _commandStore.insert( cs );
-
-    cs._cmd     = Emetcon::PutConfig_Multiplier;
-    cs._io      = Emetcon::IO_Write | Q_ARMC;
-    cs._funcLen = make_pair( (int)MCT210_MultPos,
-                             (int)MCT210_MultLen );
-    _commandStore.insert( cs );
-
-
-    return failed;
+    return cs;
 }
 
 
@@ -133,23 +86,17 @@ bool CtiDeviceMCT210::getOperation( const UINT &cmd, USHORT &function, USHORT &l
 {
     bool found = false;
 
-    if(_commandStore.empty())  // Must initialize!
-    {
-        CtiDeviceMCT210::initCommandStore();
-    }
-
-    DLCCommandSet::iterator itr = _commandStore.find(CtiDLCCommandStore(cmd));
+    CommandSet::iterator itr = _commandStore.find(CommandStore(cmd));
 
     if( itr != _commandStore.end() )
     {
-        CtiDLCCommandStore &cs = *itr;
-        function = cs._funcLen.first;             // Copy over the found function!
-        length = cs._funcLen.second;              // Copy over the found length!
-        io = cs._io;                              // Copy over the found io indicator!
+        function = itr->function;
+        length   = itr->length;
+        io       = itr->io;
 
         found = true;
     }
-    else                                         // Look in the parent if not found in the child!
+    else    // Look in the parent if not found in the child
     {
         found = Inherited::getOperation(cmd, function, length, io);
     }

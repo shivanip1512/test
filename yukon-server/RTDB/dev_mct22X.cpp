@@ -8,13 +8,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct22X.cpp-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2006/03/23 15:29:17 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2006/07/06 20:11:48 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
-
 
 
 #include "devicetypes.h"
@@ -28,7 +27,7 @@
 using Cti::Protocol::Emetcon;
 
 
-set< CtiDLCCommandStore > CtiDeviceMCT22X::_commandStore;
+const CtiDeviceMCT22X::CommandSet CtiDeviceMCT22X::_commandStore = CtiDeviceMCT22X::initCommandStore();
 
 CtiDeviceMCT22X::CtiDeviceMCT22X() {}
 
@@ -49,62 +48,23 @@ CtiDeviceMCT22X& CtiDeviceMCT22X::operator=(const CtiDeviceMCT22X &aRef)
 }
 
 
-bool CtiDeviceMCT22X::initCommandStore()
+CtiDeviceMCT22X::CommandSet CtiDeviceMCT22X::initCommandStore()
 {
-   bool failed = false;
+   CommandSet cs;
 
-   CtiDLCCommandStore cs;
+   cs.insert(CommandStore(Emetcon::GetConfig_GroupAddress,          Emetcon::IO_Read,           MCT2XX_GroupAddrPos,            MCT2XX_GroupAddrLen));
+   cs.insert(CommandStore(Emetcon::PutConfig_GroupAddr_GoldSilver,  Emetcon::IO_Write | Q_ARMC, MCT2XX_GroupAddrGoldSilverPos,  MCT2XX_GroupAddrGoldSilverLen));
+   cs.insert(CommandStore(Emetcon::PutConfig_GroupAddr_Bronze,      Emetcon::IO_Write | Q_ARMC, MCT2XX_GroupAddrBronzePos,      MCT2XX_GroupAddrBronzeLen));
+   cs.insert(CommandStore(Emetcon::PutConfig_GroupAddr_Lead,        Emetcon::IO_Write | Q_ARMC, MCT2XX_GroupAddrLeadPos,        MCT2XX_GroupAddrLeadLen));
 
-   cs._cmd     = Emetcon::GetConfig_GroupAddress;
-   cs._io      = Emetcon::IO_Read;
-   cs._funcLen = make_pair( (int)MCT2XX_GroupAddrPos,
-                            (int)MCT2XX_GroupAddrLen );
-   _commandStore.insert( cs );
-
-   cs._cmd     = Emetcon::PutConfig_GroupAddr_GoldSilver;
-   cs._io      = Emetcon::IO_Write | Q_ARMC;
-   cs._funcLen = make_pair( (int)MCT2XX_GroupAddrGoldSilverPos,
-                            (int)MCT2XX_GroupAddrGoldSilverLen );
-   _commandStore.insert( cs );
-
-   cs._cmd     = Emetcon::PutConfig_GroupAddr_Bronze;
-   cs._io      = Emetcon::IO_Write | Q_ARMC;
-   cs._funcLen = make_pair( (int)MCT2XX_GroupAddrBronzePos,
-                            (int)MCT2XX_GroupAddrBronzeLen );
-   _commandStore.insert( cs );
-
-   cs._cmd     = Emetcon::PutConfig_GroupAddr_Lead;
-   cs._io      = Emetcon::IO_Write | Q_ARMC;
-   cs._funcLen = make_pair( (int)MCT2XX_GroupAddrLeadPos,
-                            (int)MCT2XX_GroupAddrLeadLen );
-   _commandStore.insert( cs );
-
-   cs._cmd     = Emetcon::GetValue_Default;
-   cs._io      = Emetcon::IO_Read;
-   cs._funcLen = make_pair( (int)MCT22X_MReadPos,
-                            (int)MCT22X_MReadLen );
-   _commandStore.insert( cs );
-
-   cs._cmd     = Emetcon::Scan_Accum;
-   cs._io      = Emetcon::IO_Read;
-   cs._funcLen = make_pair( (int)MCT22X_MReadPos,
-                            (int)MCT22X_MReadLen );
-   _commandStore.insert( cs );
+   cs.insert(CommandStore(Emetcon::GetValue_Default,    Emetcon::IO_Read,   MCT22X_MReadPos,    MCT22X_MReadLen));
+   cs.insert(CommandStore(Emetcon::Scan_Accum,          Emetcon::IO_Read,   MCT22X_MReadPos,    MCT22X_MReadLen));
 
 //  this meter requires you to subtract the current and previous meter readings to get a 5-minute demand value
-   cs._cmd     = Emetcon::GetValue_Demand;
-   cs._io      = Emetcon::IO_Read;
-   cs._funcLen = make_pair( (int)MCT22X_DemandPos,
-                            (int)MCT22X_DemandLen );
-   _commandStore.insert( cs );
+   cs.insert(CommandStore(Emetcon::GetValue_Demand,     Emetcon::IO_Read,   MCT22X_DemandPos,   MCT22X_DemandLen));
+   cs.insert(CommandStore(Emetcon::Scan_Integrity,      Emetcon::IO_Read,   MCT22X_DemandPos,   MCT22X_DemandLen));
 
-   cs._cmd     = Emetcon::Scan_Integrity;
-   cs._io      = Emetcon::IO_Read;
-   cs._funcLen = make_pair( (int)MCT22X_DemandPos,
-                            (int)MCT22X_DemandLen );
-   _commandStore.insert( cs );
-
-   return failed;
+   return cs;
 }
 
 
@@ -112,23 +72,17 @@ bool CtiDeviceMCT22X::getOperation( const UINT &cmd, USHORT &function, USHORT &l
 {
    bool found = false;
 
-   if(_commandStore.empty())  // Must initialize!
-   {
-      CtiDeviceMCT22X::initCommandStore();
-   }
-
-   DLCCommandSet::iterator itr = _commandStore.find(CtiDLCCommandStore(cmd));
+   CommandSet::iterator itr = _commandStore.find(CommandStore(cmd));
 
    if( itr != _commandStore.end() )
    {
-      CtiDLCCommandStore &cs = *itr;
-      function = cs._funcLen.first;             // Copy over the found function!
-      length = cs._funcLen.second;              // Copy over the found length!
-      io = cs._io;                              // Copy over the found io indicator!
+      function = itr->function;     // Copy over the found function
+      length   = itr->length;       // Copy over the found length
+      io       = itr->io;           // Copy over the found io indicator
 
       found = true;
    }
-   else                                         // Look in the parent if not found in the child!
+   else     // Look in the parent if not found in the child
    {
       found = Inherited::getOperation(cmd, function, length, io);
    }

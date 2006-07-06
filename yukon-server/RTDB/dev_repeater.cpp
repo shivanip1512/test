@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.35 $
-* DATE         :  $Date: 2006/02/27 23:58:31 $
+* REVISION     :  $Revision: 1.36 $
+* DATE         :  $Date: 2006/07/06 20:11:48 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -30,10 +30,9 @@
 #include "numstr.h"
 
 using Cti::Protocol::Emetcon;
-using std::make_pair;
 
 
-set< CtiDLCCommandStore > CtiDeviceRepeater900::_commandStore;
+const CtiDeviceRepeater900::CommandSet CtiDeviceRepeater900::_commandStore = CtiDeviceRepeater900::initCommandStore();
 
 
 CtiDeviceRepeater900::CtiDeviceRepeater900() { }
@@ -55,41 +54,17 @@ CtiDeviceRepeater900& CtiDeviceRepeater900::operator=(const CtiDeviceRepeater900
 }
 
 
-bool CtiDeviceRepeater900::initCommandStore()
+CtiDeviceRepeater900::CommandSet CtiDeviceRepeater900::initCommandStore()
 {
-    bool failed = false;
+    CommandSet cs;
 
-    CtiDLCCommandStore cs;
+    cs.insert(CommandStore(Emetcon::Scan_General,       Emetcon::IO_Read,   Rpt_ModelPos,       1));
+    cs.insert(CommandStore(Emetcon::Command_Loop,       Emetcon::IO_Read,   Rpt_ModelPos,       1));
+    cs.insert(CommandStore(Emetcon::PutConfig_Role,     Emetcon::IO_Write,  Rpt_RoleBasePos,    Rpt_RoleLen));
+    cs.insert(CommandStore(Emetcon::GetConfig_Role,     Emetcon::IO_Read,   Rpt_RoleBasePos,    Rpt_RoleLen));
+    cs.insert(CommandStore(Emetcon::GetConfig_Model,    Emetcon::IO_Read,   Rpt_ModelPos,       Rpt_ModelLen));
 
-    cs._cmd = Emetcon::Scan_General;
-    cs._io  = Emetcon::IO_Read;
-    cs._funcLen = make_pair((int)Rpt_ModelPos, 1);
-    _commandStore.insert( cs );
-
-    cs._cmd = Emetcon::Command_Loop;
-    cs._io  = Emetcon::IO_Read;
-    cs._funcLen = make_pair((int)Rpt_ModelPos, 1);
-    _commandStore.insert( cs );
-
-    cs._cmd = Emetcon::PutConfig_Role;
-    cs._io  = Emetcon::IO_Write;
-    cs._funcLen = make_pair((int)Rpt_RoleBasePos,
-                            (int)Rpt_RoleLen);
-    _commandStore.insert( cs );
-
-    cs._cmd = Emetcon::GetConfig_Role;
-    cs._io  = Emetcon::IO_Read;
-    cs._funcLen = make_pair((int)Rpt_RoleBasePos,
-                            (int)Rpt_RoleLen);
-    _commandStore.insert( cs );
-
-    cs._cmd = Emetcon::GetConfig_Model;
-    cs._io  = Emetcon::IO_Read;
-    cs._funcLen = make_pair((int)Rpt_ModelPos,
-                            (int)Rpt_ModelLen);
-    _commandStore.insert( cs );
-
-   return failed;
+    return cs;
 }
 
 
@@ -97,19 +72,13 @@ bool CtiDeviceRepeater900::getOperation( const UINT &cmd, USHORT &function, USHO
 {
     bool found = false;
 
-    if(_commandStore.empty())  // Must initialize!
-    {
-        CtiDeviceRepeater900::initCommandStore();
-    }
-
-    DLCCommandSet::iterator itr = _commandStore.find(CtiDLCCommandStore(cmd));
+    CommandSet::iterator itr = _commandStore.find(CommandStore(cmd));
 
     if( itr != _commandStore.end() )
     {
-        CtiDLCCommandStore &cs = *itr;
-        function = cs._funcLen.first;             // Copy over the found function!
-        length = cs._funcLen.second;              // Copy over the found length!
-        io = cs._io;                              // Copy over the found io indicator!
+        function = itr->function;
+        length   = itr->length;
+        io       = itr->io;
 
         found = true;
     }
@@ -427,8 +396,8 @@ INT CtiDeviceRepeater900::executePutConfig(CtiRequestMsg          *pReq,
        string strStages = parse.getsValue("multi_rolerpt");
 
        string strTemp;
-       
-       //boost::tokenizer<>::iterator beg=tok.begin(); 
+
+       //boost::tokenizer<>::iterator beg=tok.begin();
 
        boost::tokenizer<> fixtok(strFixed);
        boost::tokenizer<> vouttok(strVarOut);
