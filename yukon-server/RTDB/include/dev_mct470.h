@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT470.h-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2006/05/23 16:22:53 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2006/07/06 20:12:40 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -25,43 +25,64 @@
 
 class IM_EX_DEVDB CtiDeviceMCT470 : public CtiDeviceMCT410
 {
-public:
+private:
 
-    enum
+    static const CommandSet _commandStore;
+    static CommandSet initCommandStore();
+
+    static const DynamicPaoAddressing_t _dynPaoAddressing;
+    static const DynamicPaoFunctionAddressing_t _dynPaoFuncAddressing;
+
+    static CtiDeviceMCT4xx::ConfigPartsList initConfigParts();
+    static const CtiDeviceMCT4xx::ConfigPartsList _config_parts;
+
+    CtiTableDeviceMCTIEDPort _iedPort;
+    CtiTime                  _iedTime;
+
+    enum IED_PointOffsets
     {
-        MCT470_ChannelCount  = 4,
+        MCT470_PointOffset_TotalKWH    =  1,
+        MCT470_PointOffset_TOU_KWBase  =  2,
+        MCT470_PointOffset_TotalKW     = 10,
+        MCT470_PointOffset_TotalKMH    = 11,
+        MCT470_PointOffset_TOU_KMBase  = 12,
+        MCT470_PointOffset_TotalKM     = 20,
 
-        MCT470_MaxIEDReadAge = 600,  //  in seconds
-
-        MCT430A_Sspec       = 1037,
-        MCT430S_Sspec       = 1046,
-
-        MCT470_Sspec        = 1030,
-        MCT470_SspecRevMin  =    5,  //  rev e
-        MCT470_SspecRevMax  =   15,  //  rev o is max for now
-
-        MCT470_SspecRev_IEDZeroWriteMin = 13,
-
-        MCT470_Memory_ChannelOffset = 0x1a,
-
-        MCT470_FuncRead_ChannelSetupPos = 0x20,
-        MCT470_FuncRead_ChannelSetupLen =    7,
-
-        MCT470_FuncRead_LPStatusCh1Ch2Pos = 0x97,
-        MCT470_FuncRead_LPStatusCh3Ch4Pos = 0x9c,
-        MCT470_FuncRead_LPStatusLen       =   11,
-
-        MCT470_FuncWrite_IEDCommand            = 0xd0,
-        MCT470_FuncWrite_IEDCommandLen         =    4,
-
-        MCT470_FuncWrite_IEDCommandData        = 0xd1,
-        MCT470_FuncWrite_IEDCommandDataBaseLen =    5,
-
-        MCT470_FuncWrite_CurrentReading        = 0xd5,
-        MCT470_FuncWrite_CurrentReadingLen     =    5,
+        MCT470_PointOffset_VoltsPhaseA = 41,
+        MCT470_PointOffset_VoltsPhaseB = 42,
+        MCT470_PointOffset_VoltsPhaseC = 43,
     };
 
+    enum IED_Types
+    {
+        NoIEDType          = 0x00,
+        LandisGyrS4        = 0x10,
+        AlphaA1            = 0x20,
+        AlphaPowerPlus     = 0x30,
+        GeneralElectricKV  = 0x40,
+        GeneralElectricKV2 = 0x50,
+        Sentinel           = 0x60,
+
+        IED_Mask           = 0xF0
+    };
+
+    long getLoadProfileInterval( unsigned channel );
+    long _lastConfigRequest;
+
+    //  this probably won't be used... ?
+    /*
+    struct dynamic_request_times
+    {
+        unsigned long sspec;
+        unsigned long loadprofile_rate;
+        unsigned long loadprofile_config;
+        unsigned long ied_loadprofile_rate;
+    } _dyn_request;
+    */
+
 protected:
+
+    virtual bool getOperation( const UINT &cmd,  USHORT &function, USHORT &length, USHORT &io );
 
     enum
     {
@@ -278,88 +299,6 @@ protected:
 
     void sendIntervals         (OUTMESS *&OutMessage, list< OUTMESS* > &outList);
 
-private:
-
-    static DLCCommandSet initCommandStore();
-    static const DLCCommandSet _commandStore;
-
-    static const DynamicPaoAddressing_t _dynPaoAddressing;
-    static const DynamicPaoFunctionAddressing_t _dynPaoFuncAddressing;
-
-    static CtiDeviceMCT4xx::ConfigPartsList initConfigParts();
-    static const CtiDeviceMCT4xx::ConfigPartsList _config_parts;
-
-    CtiTableDeviceMCTIEDPort _iedPort;
-    CtiTime                  _iedTime;
-
-    enum IED_PointOffsets
-    {
-        MCT470_PointOffset_TotalKWH    =  1,
-        MCT470_PointOffset_TOU_KWBase  =  2,
-        MCT470_PointOffset_TotalKW     = 10,
-        MCT470_PointOffset_TotalKMH    = 11,
-        MCT470_PointOffset_TOU_KMBase  = 12,
-        MCT470_PointOffset_TotalKM     = 20,
-
-        MCT470_PointOffset_VoltsPhaseA = 41,
-        MCT470_PointOffset_VoltsPhaseB = 42,
-        MCT470_PointOffset_VoltsPhaseC = 43,
-    };
-
-    enum IED_Types
-    {
-        NoIEDType          = 0x00,
-        LandisGyrS4        = 0x10,
-        AlphaA1            = 0x20,
-        AlphaPowerPlus     = 0x30,
-        GeneralElectricKV  = 0x40,
-        GeneralElectricKV2 = 0x50,
-        Sentinel           = 0x60,
-
-        IED_Mask           = 0xF0
-    };
-
-    long getLoadProfileInterval( unsigned channel );
-    long _lastConfigRequest;
-
-    //  this probably won't be used... ?
-    /*
-    struct dynamic_request_times
-    {
-        unsigned long sspec;
-        unsigned long loadprofile_rate;
-        unsigned long loadprofile_config;
-        unsigned long ied_loadprofile_rate;
-    } _dyn_request;
-    */
-
-public:
-
-    typedef CtiDeviceMCT4xx Inherited;
-
-    CtiDeviceMCT470( );
-    CtiDeviceMCT470( const CtiDeviceMCT470 &aRef );
-    virtual ~CtiDeviceMCT470( );
-
-    CtiDeviceMCT470 &operator=( const CtiDeviceMCT470 &aRef );
-
-    void setDisconnectAddress( unsigned long address );
-
-    static DynamicPaoAddressing_t initDynPaoAddressing();
-    static DynamicPaoFunctionAddressing_t initDynPaoFuncAddressing();
-    void getDynamicPaoAddressing(int address, int &foundAddress, int &foundLength, CtiTableDynamicPaoInfo::Keys &foundKey);
-    void getDynamicPaoFunctionAddressing(int function, int address, int &foundAddress, int &foundLength, CtiTableDynamicPaoInfo::Keys &foundKey);
-
-    CtiDeviceMCT4xx::ConfigPartsList getPartsList();
-
-    virtual bool getOperation( const UINT &cmd,  USHORT &function, USHORT &length, USHORT &io );
-
-    virtual ULONG calcNextLPScanTime( void );
-    virtual INT   calcAndInsertLPRequests( OUTMESS *&OutMessage, list< OUTMESS* > &outList );
-    virtual bool  calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage );
-
-    virtual void DecodeDatabaseReader( RWDBReader &rdr );
-
     virtual INT ModelDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
 
     virtual INT executeScan     (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS* >&outList);
@@ -387,5 +326,62 @@ public:
     INT decodeGetConfigIntervals   ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetConfigChannelSetup( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetConfigModel       ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
+
+public:
+
+    enum
+    {
+        MCT470_ChannelCount  = 4,
+
+        MCT470_MaxIEDReadAge = 600,  //  in seconds
+
+        MCT430A_Sspec       = 1037,
+        MCT430S_Sspec       = 1046,
+
+        MCT470_Sspec        = 1030,
+        MCT470_SspecRevMin  =    5,  //  rev e
+        MCT470_SspecRevMax  =   15,  //  rev o is max for now
+
+        MCT470_SspecRev_IEDZeroWriteMin = 13,
+
+        MCT470_Memory_ChannelOffset = 0x1a,
+
+        MCT470_FuncRead_ChannelSetupPos = 0x20,
+        MCT470_FuncRead_ChannelSetupLen =    7,
+
+        MCT470_FuncRead_LPStatusCh1Ch2Pos = 0x97,
+        MCT470_FuncRead_LPStatusCh3Ch4Pos = 0x9c,
+        MCT470_FuncRead_LPStatusLen       =   11,
+
+        MCT470_FuncWrite_IEDCommand            = 0xd0,
+        MCT470_FuncWrite_IEDCommandLen         =    4,
+
+        MCT470_FuncWrite_IEDCommandData        = 0xd1,
+        MCT470_FuncWrite_IEDCommandDataBaseLen =    5,
+
+        MCT470_FuncWrite_CurrentReading        = 0xd5,
+        MCT470_FuncWrite_CurrentReadingLen     =    5,
+    };
+
+    typedef CtiDeviceMCT4xx Inherited;
+
+    CtiDeviceMCT470( );
+    CtiDeviceMCT470( const CtiDeviceMCT470 &aRef );
+    virtual ~CtiDeviceMCT470( );
+
+    CtiDeviceMCT470 &operator=( const CtiDeviceMCT470 &aRef );
+
+    static DynamicPaoAddressing_t initDynPaoAddressing();
+    static DynamicPaoFunctionAddressing_t initDynPaoFuncAddressing();
+    void getDynamicPaoAddressing(int address, int &foundAddress, int &foundLength, CtiTableDynamicPaoInfo::Keys &foundKey);
+    void getDynamicPaoFunctionAddressing(int function, int address, int &foundAddress, int &foundLength, CtiTableDynamicPaoInfo::Keys &foundKey);
+
+    CtiDeviceMCT4xx::ConfigPartsList getPartsList();
+
+    virtual ULONG calcNextLPScanTime( void );
+    virtual INT   calcAndInsertLPRequests( OUTMESS *&OutMessage, list< OUTMESS* > &outList );
+    virtual bool  calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage );
+
+    virtual void DecodeDatabaseReader( RWDBReader &rdr );
 };
 #endif // #ifndef __DEV_MCT470_H__

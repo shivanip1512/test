@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.49 $
-* DATE         :  $Date: 2006/06/28 15:53:36 $
+* REVISION     :  $Revision: 1.50 $
+* DATE         :  $Date: 2006/07/06 20:12:40 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -38,7 +38,7 @@ using Cti::Protocol::Emetcon;
 using namespace Cti::Config::MCT;
 using namespace Cti::Config;
 
-const CtiDeviceMCT470::DLCCommandSet   CtiDeviceMCT470::_commandStore = CtiDeviceMCT470::initCommandStore();
+const CtiDeviceMCT470::CommandSet      CtiDeviceMCT470::_commandStore = CtiDeviceMCT470::initCommandStore();
 const CtiDeviceMCT4xx::ConfigPartsList CtiDeviceMCT470::_config_parts = CtiDeviceMCT470::initConfigParts();
 
 const CtiDeviceMCT::DynamicPaoAddressing_t         CtiDeviceMCT470::_dynPaoAddressing     = CtiDeviceMCT470::initDynPaoAddressing();
@@ -90,224 +90,64 @@ CtiDeviceMCT4xx::ConfigPartsList CtiDeviceMCT470::getPartsList()
     return _config_parts;
 }
 
-CtiDeviceMCT470::DLCCommandSet CtiDeviceMCT470::initCommandStore( )
+CtiDeviceMCT470::CommandSet CtiDeviceMCT470::initCommandStore( )
 {
-    CtiDLCCommandStore cs;
-    DLCCommandSet s;
+    CommandSet cs;
 
-    cs._cmd     = Emetcon::Command_Loop;
-    cs._io      = Emetcon::IO_Read;
-    cs._funcLen = make_pair( (int)MCT_ModelPos, 1 );
-    s.insert( cs );
+    cs.insert(CommandStore(Emetcon::Command_Loop,               Emetcon::IO_Read,           MCT_ModelPos,               1));
+    cs.insert(CommandStore(Emetcon::Scan_Accum,                 Emetcon::IO_Function_Read,  MCT470_FuncRead_MReadPos,   MCT470_FuncRead_MReadLen));
+    cs.insert(CommandStore(Emetcon::GetValue_Default,           Emetcon::IO_Function_Read,  MCT470_FuncRead_MReadPos,   MCT470_FuncRead_MReadLen));
+    cs.insert(CommandStore(Emetcon::Scan_Integrity,             Emetcon::IO_Function_Read,  MCT470_FuncRead_DemandPos,  MCT470_FuncRead_DemandLen));
+    cs.insert(CommandStore(Emetcon::GetValue_Demand,            Emetcon::IO_Function_Read,  MCT470_FuncRead_DemandPos,  MCT470_FuncRead_DemandLen));
+    cs.insert(CommandStore(Emetcon::Scan_LoadProfile,           Emetcon::IO_Function_Read,  0,                          0));
+    cs.insert(CommandStore(Emetcon::GetValue_Demand,            Emetcon::IO_Function_Read,  MCT470_FuncRead_DemandPos,  MCT470_FuncRead_DemandLen));
+    cs.insert(CommandStore(Emetcon::GetValue_PeakDemand,        Emetcon::IO_Function_Read,  MCT470_FuncRead_PeakDemandBasePos,  MCT470_FuncRead_PeakDemandLen));
+    cs.insert(CommandStore(Emetcon::PutValue_KYZ,               Emetcon::IO_Write,          MCT470_FuncWrite_CurrentReading,    MCT470_FuncWrite_CurrentReadingLen));
+    cs.insert(CommandStore(Emetcon::PutConfig_Raw,              Emetcon::IO_Write,          0,                          0));  //  filled in later
+    cs.insert(CommandStore(Emetcon::GetConfig_Raw,              Emetcon::IO_Read,           0,                          0));  //  filled in later
+    cs.insert(CommandStore(Emetcon::GetConfig_Model,            Emetcon::IO_Read,           MCT470_Memory_ModelPos,     MCT470_Memory_ModelLen));
+    cs.insert(CommandStore(Emetcon::GetConfig_Multiplier,       Emetcon::IO_Read,           MCT470_Memory_ChannelMultiplierPos, MCT470_Memory_ChannelMultiplierLen));
+    cs.insert(CommandStore(Emetcon::PutConfig_Multiplier,       Emetcon::IO_Function_Write, MCT470_Memory_ChannelMultiplierPos, MCT470_Memory_ChannelMultiplierLen));
+    cs.insert(CommandStore(Emetcon::PutConfig_TSync,            Emetcon::IO_Function_Write, MCT4XX_FuncWrite_TSyncPos,          MCT4XX_FuncWrite_TSyncLen));
+    cs.insert(CommandStore(Emetcon::GetConfig_Time,             Emetcon::IO_Read,           MCT470_Memory_TimeZoneOffsetPos,    MCT470_Memory_TimeZoneOffsetLen +
+                                                                                                                                MCT470_Memory_RTCLen));
+    cs.insert(CommandStore(Emetcon::GetConfig_TSync,            Emetcon::IO_Read,           MCT470_Memory_LastTSyncPos,         MCT470_Memory_LastTSyncLen));
+    cs.insert(CommandStore(Emetcon::PutConfig_TimeZoneOffset,   Emetcon::IO_Write,          MCT470_Memory_TimeZoneOffsetPos,    MCT470_Memory_TimeZoneOffsetLen));
+    cs.insert(CommandStore(Emetcon::PutConfig_Intervals,        Emetcon::IO_Function_Write, MCT470_FuncWrite_IntervalsPos,      MCT470_FuncWrite_IntervalsLen));
+    cs.insert(CommandStore(Emetcon::GetConfig_Intervals,        Emetcon::IO_Read,           MCT470_Memory_IntervalsPos,         MCT470_Memory_IntervalsLen));
+    cs.insert(CommandStore(Emetcon::GetConfig_ChannelSetup,     Emetcon::IO_Function_Read,  MCT470_FuncRead_ChannelSetupPos,    MCT470_FuncRead_ChannelSetupLen));
+    cs.insert(CommandStore(Emetcon::GetValue_LoadProfile,       Emetcon::IO_Function_Read,  0,                                  0));
+    cs.insert(CommandStore(Emetcon::GetStatus_LoadProfile,      Emetcon::IO_Function_Read,  MCT470_FuncRead_LPStatusCh1Ch2Pos,  MCT470_FuncRead_LPStatusLen));
+    cs.insert(CommandStore(Emetcon::GetStatus_Internal,         Emetcon::IO_Read,           MCT470_Memory_StatusPos,            MCT470_Memory_StatusLen));
+    cs.insert(CommandStore(Emetcon::GetValue_IED,               Emetcon::IO_Function_Read,  0,  13));  //  filled in by "getvalue ied" code
+    cs.insert(CommandStore(Emetcon::GetValue_IEDDemand,         Emetcon::IO_Function_Read,  MCT470_FuncRead_IED_RealTime,       9));  //  magic number
+    cs.insert(CommandStore(Emetcon::GetConfig_IEDTime,          Emetcon::IO_Function_Read,  MCT470_FuncRead_IED_TOU_MeterStatus, 13));  //  magic number
+    cs.insert(CommandStore(Emetcon::PutValue_IEDReset,          Emetcon::IO_Function_Write, MCT470_FuncWrite_IEDCommand,        MCT470_FuncWrite_IEDCommandLen));
+    cs.insert(CommandStore(Emetcon::PutStatus_FreezeOne,        Emetcon::IO_Write,          MCT_Command_FreezeOne,              0));
+    cs.insert(CommandStore(Emetcon::PutStatus_FreezeTwo,        Emetcon::IO_Write,          MCT_Command_FreezeTwo,              0));
 
-    cs._cmd     = Emetcon::Scan_Accum;
-    cs._io      = Emetcon::IO_Function_Read;
-    cs._funcLen = make_pair((int)MCT470_FuncRead_MReadPos,
-                            (int)MCT470_FuncRead_MReadLen );
-    s.insert(cs);
+    //******************************** Config Related starts here *************************
+    cs.insert(CommandStore(Emetcon::PutConfig_Addressing,       Emetcon::IO_Write,          MCT470_Memory_AddressingPos,        MCT470_Memory_AddressingLen));
+    cs.insert(CommandStore(Emetcon::PutConfig_LongloadProfile,  Emetcon::IO_Function_Write, FuncWrite_LLPStoragePos,            FuncWrite_LLPStorageLen));
+    cs.insert(CommandStore(Emetcon::GetConfig_LongloadProfile,  Emetcon::IO_Function_Read,  FuncRead_LLPStatusPos,              FuncRead_LLPStatusLen));
+    cs.insert(CommandStore(Emetcon::PutConfig_DST,              Emetcon::IO_Write,          MCT470_Memory_DSTBeginPos,          MCT470_Memory_DSTBeginLen +
+                                                                                                                                MCT470_Memory_DSTEndLen   +
+                                                                                                                                MCT470_Memory_TimeZoneOffsetLen));
+    //  used for both "putconfig install" and "putconfig holiday" commands
+    cs.insert(CommandStore(Emetcon::PutConfig_Holiday,          Emetcon::IO_Write,          MCT470_Memory_Holiday1Pos,          MCT470_Memory_Holiday1Len +
+                                                                                                                                MCT470_Memory_Holiday2Len +
+                                                                                                                                MCT470_Memory_Holiday3Len));
 
-    cs._cmd     = Emetcon::GetValue_Default;
-    cs._io      = Emetcon::IO_Function_Read;
-    cs._funcLen = make_pair((int)MCT470_FuncRead_MReadPos,
-                            (int)MCT470_FuncRead_MReadLen );
-    s.insert(cs);
+    cs.insert(CommandStore(Emetcon::GetConfig_Holiday,          Emetcon::IO_Read,           MCT470_Memory_Holiday1Pos,          MCT470_Memory_Holiday1Len +
+                                                                                                                                MCT470_Memory_Holiday2Len +
+                                                                                                                                MCT470_Memory_Holiday3Len));
 
-    cs._cmd     = Emetcon::Scan_Integrity;
-    cs._io      = Emetcon::IO_Function_Read;
-    cs._funcLen = make_pair((int)MCT470_FuncRead_DemandPos,
-                            (int)MCT470_FuncRead_DemandLen );
-    s.insert(cs);
+    cs.insert(CommandStore(Emetcon::PutConfig_Options,          Emetcon::IO_Write,          MCT470_FuncWrite_ConfigAlarmMaskPos, MCT470_FuncWrite_ConfigAlarmMaskLen));
+    cs.insert(CommandStore(Emetcon::PutConfig_TimeAdjustTolerance, Emetcon::IO_Write,       MCT470_Memory_TimeAdjustTolPos,     MCT470_Memory_TimeAdjustTolLen));
 
-    cs._cmd     = Emetcon::GetValue_Demand;
-    cs._io      = Emetcon::IO_Function_Read;
-    cs._funcLen = make_pair((int)MCT470_FuncRead_DemandPos,
-                            (int)MCT470_FuncRead_DemandLen );
-    s.insert(cs);
+    //************************************ End Config Related *****************************
 
-    cs._cmd     = Emetcon::Scan_LoadProfile;
-    cs._io      = Emetcon::IO_Function_Read;
-    cs._funcLen = make_pair(0, 0);
-    s.insert(cs);
-
-    cs._cmd     = Emetcon::GetValue_Demand;
-    cs._io      = Emetcon::IO_Function_Read;
-    cs._funcLen = make_pair((int)MCT470_FuncRead_DemandPos,
-                            (int)MCT470_FuncRead_DemandLen );
-    s.insert(cs);
-
-    cs._cmd      = Emetcon::GetValue_PeakDemand;
-    cs._io       = Emetcon::IO_Function_Read;
-    cs._funcLen  = make_pair((int)MCT470_FuncRead_PeakDemandBasePos,
-                             (int)MCT470_FuncRead_PeakDemandLen );
-    s.insert(cs);
-
-    cs._cmd      = Emetcon::PutValue_KYZ;
-    cs._io       = Emetcon::IO_Write;
-    cs._funcLen  = make_pair((int)MCT470_FuncWrite_CurrentReading,
-                             (int)MCT470_FuncWrite_CurrentReadingLen );
-    s.insert(cs);
-
-    cs._cmd     = Emetcon::PutConfig_Raw;
-    cs._io      = Emetcon::IO_Write;
-    cs._funcLen = make_pair( 0, 0 );  //  filled in later
-    s.insert(cs);
-
-    cs._cmd     = Emetcon::GetConfig_Raw;
-    cs._io      = Emetcon::IO_Read;
-    cs._funcLen = make_pair( 0, 0 );  //  filled in later
-    s.insert(cs);
-
-    cs._cmd     = Emetcon::GetConfig_Model;
-    cs._io      = Emetcon::IO_Read;
-    cs._funcLen = make_pair((int)MCT470_Memory_ModelPos,
-                            (int)MCT470_Memory_ModelLen);
-    s.insert(cs);
-
-    cs._cmd     = Emetcon::GetConfig_Multiplier;
-    cs._io      = Emetcon::IO_Read;
-    cs._funcLen = make_pair((int)MCT470_Memory_ChannelMultiplierPos,
-                            (int)MCT470_Memory_ChannelMultiplierLen);
-    s.insert(cs);
-
-    cs._cmd     = Emetcon::PutConfig_Multiplier;
-    cs._io      = Emetcon::IO_Function_Write;
-    cs._funcLen = make_pair((int)MCT470_Memory_ChannelMultiplierPos,
-                            (int)MCT470_Memory_ChannelMultiplierLen);
-    s.insert(cs);
-
-    cs._cmd     = Emetcon::PutConfig_TSync;
-    cs._io      = Emetcon::IO_Function_Write;
-    cs._funcLen = make_pair((int)MCT4XX_FuncWrite_TSyncPos,
-                            (int)MCT4XX_FuncWrite_TSyncLen);
-    s.insert(cs);
-
-    cs._cmd     = Emetcon::GetConfig_Time;
-    cs._io      = Emetcon::IO_Read;
-    cs._funcLen = make_pair((int)MCT470_Memory_TimeZoneOffsetPos,
-                            (int)(MCT470_Memory_TimeZoneOffsetLen + MCT470_Memory_RTCLen));
-    s.insert(cs);
-
-    cs._cmd     = Emetcon::GetConfig_TSync;
-    cs._io      = Emetcon::IO_Read;
-    cs._funcLen = make_pair((int)MCT470_Memory_LastTSyncPos,
-                            (int)MCT470_Memory_LastTSyncLen);
-    s.insert(cs);
-
-    cs._cmd     = Emetcon::PutConfig_TimeZoneOffset;
-    cs._io      = Emetcon::IO_Write;
-    cs._funcLen = make_pair((int)MCT470_Memory_TimeZoneOffsetPos,
-                            (int)MCT470_Memory_TimeZoneOffsetLen);
-    s.insert(cs);
-
-    cs._cmd     = Emetcon::PutConfig_Intervals;
-    cs._io      = Emetcon::IO_Function_Write;
-    cs._funcLen = make_pair((int)MCT470_FuncWrite_IntervalsPos,
-                            (int)MCT470_FuncWrite_IntervalsLen);
-    s.insert(cs);
-
-    cs._cmd     = Emetcon::GetConfig_Intervals;
-    cs._io      = Emetcon::IO_Read;
-    cs._funcLen = make_pair((int)MCT470_Memory_IntervalsPos,
-                            (int)MCT470_Memory_IntervalsLen);
-    s.insert(cs);
-
-    cs._cmd     = Emetcon::GetConfig_ChannelSetup;
-    cs._io      = Emetcon::IO_Function_Read;
-    cs._funcLen = make_pair((int)MCT470_FuncRead_ChannelSetupPos,
-                            (int)MCT470_FuncRead_ChannelSetupLen);
-    s.insert(cs);
-
-    cs._cmd     = Emetcon::GetValue_LoadProfile;
-    cs._io      = Emetcon::IO_Function_Read;
-    cs._funcLen = make_pair(0, 0);
-    s.insert(cs);
-
-    cs._cmd     = Emetcon::GetStatus_LoadProfile;
-    cs._io      = Emetcon::IO_Function_Read;
-    cs._funcLen = make_pair((int)MCT470_FuncRead_LPStatusCh1Ch2Pos,
-                            (int)MCT470_FuncRead_LPStatusLen);
-    s.insert(cs);
-
-    cs._cmd     = Emetcon::GetStatus_Internal;
-    cs._io      = Emetcon::IO_Read;
-    cs._funcLen = make_pair((int)MCT470_Memory_StatusPos,
-                            (int)MCT470_Memory_StatusLen);
-    s.insert(cs);
-
-    cs._cmd     = Emetcon::GetValue_IED;
-    cs._io      = Emetcon::IO_Function_Read;
-    cs._funcLen = make_pair(0, 13);  //  filled in by "getvalue ied" code
-    s.insert(cs);
-
-    cs._cmd     = Emetcon::GetValue_IEDDemand;
-    cs._io      = Emetcon::IO_Function_Read;
-    cs._funcLen = make_pair((int)MCT470_FuncRead_IED_RealTime, 9);  //  magic number
-    s.insert(cs);
-
-    cs._cmd     = Emetcon::GetConfig_IEDTime;
-    cs._io      = Emetcon::IO_Function_Read;
-    cs._funcLen = make_pair((int)MCT470_FuncRead_IED_TOU_MeterStatus, 13);  //  magic number
-    s.insert(cs);
-
-    cs._cmd     = Emetcon::PutValue_IEDReset;
-    cs._io      = Emetcon::IO_Function_Write;
-    cs._funcLen = make_pair((int)MCT470_FuncWrite_IEDCommand,
-                            (int)MCT470_FuncWrite_IEDCommandLen);
-    s.insert(cs);
-
-    cs._cmd     = Emetcon::PutStatus_FreezeOne;
-    cs._io      = Emetcon::IO_Write;
-    cs._funcLen = make_pair((int)MCT_Command_FreezeOne, 0);
-    s.insert(cs);
-
-    cs._cmd     = Emetcon::PutStatus_FreezeTwo;
-    cs._io      = Emetcon::IO_Write;
-    cs._funcLen = make_pair((int)MCT_Command_FreezeTwo, 0);
-    s.insert(cs);
-
-    //**************************************** Config Related starts here*************************
-    cs._cmd     = Emetcon::PutConfig_Addressing;
-    cs._io      = Emetcon::IO_Write;
-    cs._funcLen  = make_pair((int)MCT470_Memory_AddressingPos,(int)MCT470_Memory_AddressingLen);
-    s.insert(cs);
-
-    cs._cmd     = Emetcon::PutConfig_LongloadProfile;
-    cs._io      = Emetcon::IO_Function_Write;
-    cs._funcLen = make_pair((int)FuncWrite_LLPStoragePos, (int)FuncWrite_LLPStorageLen);
-    s.insert(cs);
-
-    cs._cmd     = Emetcon::GetConfig_LongloadProfile;
-    cs._io      = Emetcon::IO_Function_Read;
-    cs._funcLen = make_pair((int)FuncRead_LLPStatusPos, (int)FuncRead_LLPStatusLen);
-    s.insert(cs);
-
-    cs._cmd     = Emetcon::PutConfig_DST;
-    cs._io      = Emetcon::IO_Write;
-    cs._funcLen = make_pair((int)MCT470_Memory_DSTBeginPos, (int)(MCT470_Memory_DSTBeginLen+MCT470_Memory_DSTEndLen+MCT470_Memory_TimeZoneOffsetLen));
-    s.insert(cs);
-
-    cs._cmd     = Emetcon::PutConfig_Holiday;  //  used for both "putconfig install" and "putconfig holiday" commands
-    cs._io      = Emetcon::IO_Write;
-    cs._funcLen = make_pair((int)MCT470_Memory_Holiday1Pos, (int)(MCT470_Memory_Holiday1Len + MCT470_Memory_Holiday2Len + MCT470_Memory_Holiday3Len));
-    s.insert(cs);
-
-    cs._cmd     = Emetcon::GetConfig_Holiday;
-    cs._io      = Emetcon::IO_Read;
-    cs._funcLen = make_pair((int)MCT470_Memory_Holiday1Pos, (int)(MCT470_Memory_Holiday1Len + MCT470_Memory_Holiday2Len + MCT470_Memory_Holiday3Len));
-    s.insert(cs);
-
-    cs._cmd     = Emetcon::PutConfig_Options;
-    cs._io      = Emetcon::IO_Write;
-    cs._funcLen = make_pair((int)MCT470_FuncWrite_ConfigAlarmMaskPos, (int)MCT470_FuncWrite_ConfigAlarmMaskLen);
-    s.insert(cs);
-
-    cs._cmd     = Emetcon::PutConfig_TimeAdjustTolerance;
-    cs._io      = Emetcon::IO_Write;
-    cs._funcLen = make_pair((int)MCT470_Memory_TimeAdjustTolPos, (int)MCT470_Memory_TimeAdjustTolLen);
-    s.insert(cs);
-    //***********************************************End Config related
-
-    return s;
+    return cs;
 }
 
 CtiDeviceMCT::DynamicPaoFunctionAddressing_t CtiDeviceMCT470::initDynPaoFuncAddressing()
@@ -473,15 +313,13 @@ bool CtiDeviceMCT470::getOperation( const UINT &cmd, USHORT &function, USHORT &l
 {
     bool found = false;
 
-    DLCCommandSet::const_iterator itr = _commandStore.find( CtiDLCCommandStore( cmd ) );
+    CommandSet::const_iterator itr = _commandStore.find( CommandStore( cmd ) );
 
     if( itr != _commandStore.end( ) )
     {
-        const CtiDLCCommandStore &cs = *itr;
-
-        function = cs._funcLen.first;   //  Copy the relevant bits from the commandStore
-        length   = cs._funcLen.second;  //
-        io       = cs._io;              //
+        function = itr->function;   //  Copy the relevant bits from the commandStore
+        length   = itr->length;
+        io       = itr->io;
 
         found = true;
     }
