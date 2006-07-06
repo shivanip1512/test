@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_point.cpp-arc  $
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2006/06/16 20:05:56 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2006/07/06 19:50:55 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -311,6 +311,27 @@ void CtiPointManager::refreshList(BOOL (*testFunc)(CtiPointBase*,void*), void *a
                             dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             dout << "  Evicting " << pTempCtiPoint->getName() << " from list" << endl;
                         }
+
+                        //  Remove the point from the type/offset lookup map
+                        std::multimap<long, long>::iterator type_itr;
+                        for( type_itr  = _type_offsets.lower_bound(pTempCtiPoint->getPointOffset());
+                             type_itr != _type_offsets.upper_bound(pTempCtiPoint->getPointOffset());
+                             type_itr++ )
+                         {
+                             if( pTempCtiPoint->getType() == type_itr->second )
+                             {
+                                 _type_offsets.erase(type_itr);
+
+                                 break;
+                             }
+                         }
+
+                        //  If it's a status point with control, remove it from the control point lookup as well
+                        if( pTempCtiPoint->getType() == StatusPointType &&
+                            pTempCtiPoint->getControlOffset() )
+                        {
+                            _control_offsets.erase(pTempCtiPoint->getControlOffset());
+                        }
                     }
 
                 } while(pTempCtiPoint);
@@ -326,6 +347,8 @@ void CtiPointManager::refreshList(BOOL (*testFunc)(CtiPointBase*,void*), void *a
         //Make sure the list is cleared
         { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Attempting to clear point list..." << endl;}
         _smartMap.removeAll(NULL, 0);
+        _type_offsets.erase(_type_offsets.begin(), _type_offsets.end());
+        _control_offsets.erase(_control_offsets.begin(), _control_offsets.end());
 
         { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "getPoints:  " << e.why() << endl;}
         RWTHROW(e);
@@ -361,6 +384,8 @@ void CtiPointManager::DumpList(void)
         { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Attempting to clear device list..." << endl;}
 
         _smartMap.removeAll(NULL, 0);
+        _type_offsets.erase(_type_offsets.begin(), _type_offsets.end());
+        _control_offsets.erase(_control_offsets.begin(), _control_offsets.end());
 
         { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "DumpPoints:  " << e.why() << endl;}
         RWTHROW(e);
@@ -441,7 +466,7 @@ CtiPointBase* PointFactory(RWDBReader &rdr)
     }
 
     // Identify the point so it knows what it is.
-    if(Point) Point->getPointBase().setType((CtiPointType_t)PtType);
+    if(Point) Point->setType((CtiPointType_t)PtType);
 
     return Point;
 }
@@ -478,6 +503,16 @@ void CtiPointManager::refreshPoints(bool &rowFound, RWDBReader& rdr, BOOL (*test
                 // Add it to my list....
                 pTempCtiPoint->setUpdatedFlag();               // Mark it updated
                 _smartMap.insert( pTempCtiPoint->getID(), pTempCtiPoint ); // Stuff it in the list
+
+                //  add it into the offset lookup map
+                _type_offsets.insert(std::make_pair(pTempCtiPoint->getPointOffset(), pTempCtiPoint->getPointID()));
+
+                //  if it's a control point, add it into the control offset lookup map
+                if( pTempCtiPoint->getType() == StatusPointType &&
+                    pTempCtiPoint->getControlOffset() )
+                {
+                    _control_offsets.insert(std::make_pair(pTempCtiPoint->getControlOffset(), pTempCtiPoint->getPointID()));
+                }
             }
             else
             {
@@ -492,9 +527,38 @@ CtiPointManager::ptr_type CtiPointManager::getOffsetTypeEqual(LONG pao, INT Offs
     ptr_type p;
     ptr_type pRet;
 
+    LockGuard  guard(getMux());
+
+    std::multimap<long, long>::const_iterator type_itr;
+
+    for( type_itr  = _type_offsets.lower_bound(Offset);
+         type_itr != _type_offsets.upper_bound(Offset);
+         type_itr++ )
+    {
+        p = getEqual(type_itr->second);
+
+        //  do we really need to check against the pao?
+        if( p && p->getDeviceID() == pao && p->getType() == Type )
+        {
+            if( p->getUpdatedFlag() )
+            {
+                //  make sure we don't return any pseudo status points
+                if( !(p->getType() == StatusPointType && p->isPseudoPoint()) )
+                {
+                    pRet = p;
+                }
+            }
+            else
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " " << p->getName() << " point is non-updated" << endl;
+            }
+        }
+    }
+
+/*
     spiterator itr;
 
-    LockGuard  guard(getMux());
     for( itr = begin(); itr != end() && !pRet; itr++)
     {
         p = itr->second;
@@ -574,6 +638,7 @@ CtiPointManager::ptr_type CtiPointManager::getOffsetTypeEqual(LONG pao, INT Offs
             }
         }
     }
+*/
 
     return pRet;
 }
@@ -653,6 +718,10 @@ CtiPointManager::~CtiPointManager()
 void CtiPointManager::DeleteList(void)
 {
     _smartMap.removeAll(NULL, 0);
+
+    //  do these need to be muxed?
+    _type_offsets.erase(_type_offsets.begin(), _type_offsets.end());
+    _control_offsets.erase(_control_offsets.begin(), _control_offsets.end());
 }
 
 bool CtiPointManager::orphan(long pid)
@@ -671,9 +740,35 @@ CtiPointManager::ptr_type CtiPointManager::getControlOffsetEqual(LONG pao, INT O
     ptr_type p;
     ptr_type pRet;
 
+    LockGuard  guard(getMux());
+
+    std::map<long, long>::const_iterator control_itr = _control_offsets.find(Offset);
+
+    if( control_itr != _control_offsets.end() )
+    {
+        p = getEqual(control_itr->second);
+
+        if( p )
+        {
+            //  do we really need to check against pao?
+            if( p->getDeviceID() == pao )
+            {
+                if( p->getUpdatedFlag() )
+                {
+                    pRet = p;
+                }
+                else
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " " << p->getName() << " point is non-updated" << endl;
+                }
+            }
+        }
+    }
+
+/*
     spiterator itr;
 
-    LockGuard  guard(getMux());
     for(itr = begin(); itr != end(); itr++)
     {
         p = itr->second;
@@ -696,6 +791,7 @@ CtiPointManager::ptr_type CtiPointManager::getControlOffsetEqual(LONG pao, INT O
             }
         }
     }
+*/
 
     return pRet;
 }
