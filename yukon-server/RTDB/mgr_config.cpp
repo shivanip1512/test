@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/mgr_config.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2006/04/20 17:06:18 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2006/07/06 20:32:25 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -27,7 +27,7 @@ using std::string;
 using namespace Cti;
 using namespace Config;
 
-CtiConfigManager::CtiConfigManager()
+CtiConfigManager::CtiConfigManager() : isInitialized(false)
 {
 }
 
@@ -37,212 +37,66 @@ CtiConfigManager::~CtiConfigManager()
 
 void CtiConfigManager::refreshConfigurations()
 {
-    CtiConfigDeviceSPtr  pTempCtiConfigDevice;
+    CtiTime start, stop;
 
-    CtiTime start, stop, querytime;
-
-    _typeConfig.clear();
-    _deviceConfig.clear();
-
-    start = start.now();
-    {   
-        RWDBConnection conn = getConnection();
-        RWDBDatabase db = getDatabase();
-    
-        RWDBSelector selector = db.selector();
-
-        RWDBTable typeTbl = db.table( string2RWCString(getConfigValuesTableName()) );
-    
-        selector << typeTbl["partid"]
-            << typeTbl["value"]
-            << typeTbl["valueid"]
-            << typeTbl["configrowid"];
-    
-        selector.from(typeTbl);
-
-        RWDBTable confTbl = db.table(string2RWCString(getConfigTypeTableName()) );
-    
-        selector << confTbl["partid"]
-            << confTbl["partname"]
-            << confTbl["parttype"];
-    
-        selector.from(confTbl);
-       
-        selector.where (confTbl["partid"] == typeTbl["partid"]);
-    
-        RWDBReader rdr = selector.reader(conn);
-    
-        while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
-        {
-            int partID;
-            CtiConfig_type type;
-            string tempString,value,valueid;
-    
-            rdr[confTbl["partid"]]>>partID;
-            rdr["parttype"] >>tempString;
-            type = resolveConfigType(tempString);
-    
-            rdr["value"] >> value;
-            rdr["valueid"] >> valueid;
-    
-            if(_typeConfig.find(partID)==_typeConfig.end() && type != ConfigTypeInvalid)//This key is not in the map yet
-            {
-                _typeConfig.insert(ConfigTypeMap::value_type(partID,createConfigByType(type)));//Should I remember this pointer and not do the next lookup? I dont think it is too expensive
-            }
-
-            if(!valueid.empty() && !value.empty())
-            {
-                try{
-                    insertValueIntoConfigMap(partID, value, valueid);
-                }
-                catch(...)
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << "*** CHECKPOINT *** " << " Exception Thrown, type "<<type<< " probably is invalid " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << CtiTime() << "*** CHECKPOINT *** " << " Configs will NOT be properly loaded " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-            }
-        }
-    }
-    stop = stop.now();
-    if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
+    _typeConfig.removeAll(NULL,0);
+    _deviceConfig.removeAll(NULL,0);
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds to load config values " << endl;
+        LockGuard map_guard(_mapMux);
+        _categoryToConfig.clear();
+        _configToCategory.clear();
     }
 
-    start = start.now();
-    {  
-        RWDBConnection conn = getConnection();
-        RWDBDatabase db = getDatabase();
-    
-        RWDBSelector selector = db.selector();
-    
-        RWDBTable typeTbl = db.table( string2RWCString(getConfigPartsTableName()) );
-    
-        selector << typeTbl["configid"]
-            << typeTbl["partid"]
-            << typeTbl["configrowid"];
-    
-        selector.from(typeTbl);
-       
-        RWDBReader rdr = selector.reader(conn);
+    loadCategories();
 
-        while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
-        {
-            int partID, configID;
-    
-            rdr["configid"] >>configID;
-            rdr["partid"]>>partID;
-
-            ConfigDeviceMap::iterator deviceMapItr;
-
-            LockGuard conf_guard(_devMux);
-
-            if((deviceMapItr = _deviceConfig.find(configID))==_deviceConfig.end())//This key is not in the map yet
-            {
-                CtiConfigDeviceSPtr devPtr(CTIDBG_new CtiConfigDevice());
-                ConfigDeviceMap::_Pairib tempPair = _deviceConfig.insert(ConfigDeviceMap::value_type(configID,devPtr));
-                deviceMapItr = tempPair.first;
-            }
-
-            ConfigTypeMap::iterator typeMapItr;
-            if((typeMapItr = _typeConfig.find(partID))!=_typeConfig.end())
-            {
-                deviceMapItr->second->insertConfig(typeMapItr->second);
-            }
-
-            if(!((deviceMapItr = _deviceConfig.find(configID))==_deviceConfig.end()) && typeMapItr != _typeConfig.end())//This is debugging code and could be removed.
-            {
-                if(deviceMapItr->second->getConfigFromType(typeMapItr->second->getType()) == typeMapItr->second)
-                {
-                }
-                else
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " PartID "<< partID<<" was NOT correctly added to ConfigID "<<configID<< endl;
-                }
-            }
-        }
-
-    }
-    stop = stop.now();
-    if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds to load config parts " << endl;
-    }
+    loadConfigs();
 
     //ok, so in theory right now my 2 maps are built up.. although I should only need one of them
     //Now I want to give the device configs to the devices themselves
 
-    start = start.now();
-    {  
-        RWDBConnection conn = getConnection();
-        RWDBDatabase db = getDatabase();
-    
-        RWDBSelector selector = db.selector();
-    
-        RWDBTable typeTbl = db.table(string2RWCString(getConfigDeviceTableName()) );
-    
-        selector << typeTbl["deviceid"]
-            << typeTbl["configid"];
-    
-        selector.from(typeTbl);
-       
-        RWDBReader rdr = selector.reader(conn);
+    updateDeviceConfigs();
+}
 
-        
-        while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
-        {
-            int devID, configID;
-    
-            rdr["configid"] >>configID;
-            rdr["deviceid"]>>devID;
-
-            CtiDeviceSPtr pDev = _devMgr->getEqual(devID);
-
-            ConfigDeviceMap::iterator deviceMapItr;
-
-            LockGuard conf_guard(_devMux);//make this access more thread safe.
-            
-            if((deviceMapItr = _deviceConfig.find(configID))!=_deviceConfig.end() && pDev)//This key is not in the map
-            {
-                pDev->setDeviceConfig(deviceMapItr->second);
-            }
-    
-        }
-
-    }
-    stop = stop.now();
-    if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
+//This function was created so the initialization only happens once. I dont like it and
+//will have it replaced as soon as I think of something better.
+void CtiConfigManager::initialize(CtiDeviceManager &mgr)
+{
+    if( !isInitialized )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds to assign pointers to devices " << endl;
+        setDeviceManager(mgr);
+        refreshConfigurations();
+        isInitialized = true;
     }
-
-
-
 }
 
-string CtiConfigManager::getConfigPartsTableName()
+string CtiConfigManager::getConfigurationCategoryTableName()
 {
-    return "ConfigurationParts";
-}
-
-string CtiConfigManager::getConfigValuesTableName()
-{
-    return "ConfigurationValue";
+    return "DCConfigurationCategory";
 }
 
 string CtiConfigManager::getConfigDeviceTableName()
 {
-    return "DeviceConfiguration";
+    return "DCDeviceConfiguration";
 }
 
-string CtiConfigManager::getConfigTypeTableName()
+string CtiConfigManager::getItemValuesTableName()
 {
-    return "ConfigurationPartsName";
+    return "DCCategoryItem";
+}
+
+string CtiConfigManager::getCategoryTypeTableName()
+{
+    return "DCCategoryType";
+}
+
+string CtiConfigManager::getItemTypeTableName()
+{
+    return "DCItemType";
+}
+
+string CtiConfigManager::getCategoryTableName()
+{
+    return "DCCategory";
 }
 
 BaseSPtr CtiConfigManager::createConfigByType(const int type)
@@ -394,15 +248,16 @@ BaseSPtr CtiConfigManager::createConfigByType(const int type)
     }
 }
 
-bool CtiConfigManager::insertValueIntoConfigMap(const int partID, const string &value, const string &valueid)
+bool CtiConfigManager::insertValueIntoConfigMap(const long categoryID, const string &value, const string &valueid)
 {
     BaseSPtr    pTempCtiConfigBase;
 
-    pTempCtiConfigBase = (_typeConfig.find(partID)->second);
+    pTempCtiConfigBase = _typeConfig.find(categoryID);
+
     if(!pTempCtiConfigBase)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << "*** CHECKPOINT *** " << " No config loaded with partID "<<partID<< " in " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << "*** CHECKPOINT *** " << " No config loaded with categoryID "<<categoryID<< " in " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
     else
     {
@@ -425,16 +280,401 @@ void CtiConfigManager::setDeviceManager(CtiDeviceManager &mgr)
 }
 
 //Config ID that is.
-CtiConfigDeviceSPtr CtiConfigManager::getDeviceConfigFromID(int ID)
+CtiConfigDeviceSPtr CtiConfigManager::getDeviceConfigFromID(long configID)
 {
-    ConfigDeviceMap::iterator deviceMapItr;
-    LockGuard conf_guard(_devMux);
-    if((deviceMapItr = _deviceConfig.find(ID))!=_deviceConfig.end())//This key is in the map
+    CtiConfigDeviceSPtr tempSPtr;
+    tempSPtr = _deviceConfig.find(configID);
+    if(tempSPtr)//This key is in the map
     {
-        return deviceMapItr->second;
+        return tempSPtr;
     }
     else
     {
         return CtiConfigDeviceSPtr();
+    }
+}
+
+void CtiConfigManager::processDBUpdate(LONG identifier, string category, string objectType, int updateType)
+{
+    if( category == "config" && identifier != 0 )
+    {
+        if( objectType == "config" )
+        {
+            switch(updateType)
+            {
+            case ChangeTypeUpdate:
+            case ChangeTypeAdd:
+                {
+                    removeFromMaps(identifier);
+                    loadConfigs(identifier);
+                    updateDeviceConfigs(identifier);
+                    break;
+                }
+            case ChangeTypeDelete:
+                {
+                    removeFromMaps(identifier);
+                    _deviceConfig.remove(identifier);
+                    break;
+                }
+            default:
+                {
+                    break;
+                }
+            }
+        }
+        else if( objectType == "device" )
+        {
+            switch(updateType)
+            {
+            case ChangeTypeUpdate:
+            case ChangeTypeAdd:
+                {
+                    updateDeviceConfigs(0, identifier);
+                    break;
+                }
+            case ChangeTypeDelete:
+                {
+                    CtiDeviceSPtr pDev = _devMgr->getEqual(identifier);
+                    if( pDev )
+                    {
+                        pDev->setDeviceConfig(CtiConfigDeviceSPtr());//set to null
+                    }
+                    break;
+                }
+            default:
+                {
+                    break;
+                }
+            }
+        }
+        else if( objectType == "category" )
+        {
+            //oddly, I dont care about adds or removals because both are taken care of in other ways.
+            if( updateType == ChangeTypeUpdate )
+            {
+                //Load the new data
+                loadCategories(identifier);
+
+                //Then find out which devices we need to update..
+                {
+                    LockGuard map_guard(_mapMux);
+                    ConfigTypeToDeviceMap::iterator iter = _categoryToConfig.find(identifier);
+                    if( iter != _categoryToConfig.end() )
+                    {
+                        std::set<long>::iterator setIter = iter->second.begin();
+                        for( ; setIter != iter->second.end(); setIter++ )
+                        {
+                            loadConfigs(*setIter);
+                        }
+                    }
+                }
+                
+                //Since it is more efficient, we will just send out all of the device configs again
+                updateDeviceConfigs();
+            }
+        }
+    }
+    else if( category == "config" && identifier == 0 )
+    {
+        refreshConfigurations();
+    }
+}
+
+void CtiConfigManager::loadCategories(long categoryID)
+{
+    CtiTime start, stop;
+
+    if( categoryID != 0 )
+    {
+        _typeConfig.remove(categoryID);//Give us a fresh start
+    }
+
+    start = start.now();
+    {   
+        RWDBConnection conn = getConnection();
+        RWDBDatabase db = getDatabase();
+    
+        RWDBSelector selector = db.selector();
+
+        //Warning!!! Due to problems with roguewave and the selector I am using direct location
+        //reads from the RWDBReader. Be careful changing the selector/reading order
+
+        RWDBTable itemValTbl = db.table( string2RWCString(getItemValuesTableName()) );
+        selector << itemValTbl["categoryid"]//0
+            << itemValTbl["itemtypeid"]//1
+            << itemValTbl["value"];  //2
+        selector.from(itemValTbl);
+
+        RWDBTable categoryTypeTbl = db.table(string2RWCString(getCategoryTypeTableName()) );
+        selector << categoryTypeTbl["categorytypeid"]//3
+            << categoryTypeTbl["name"];//4
+        selector.from(categoryTypeTbl);
+
+        RWDBTable itemTbl = db.table( string2RWCString(getItemTypeTableName()) );
+        selector << itemTbl["itemtypeid"]//5
+            << itemTbl["name"];//6
+        selector.from(itemTbl);
+
+        RWDBTable categoryTbl = db.table(string2RWCString(getCategoryTableName()) );
+        selector << categoryTbl["categoryid"]//7
+            << categoryTbl["categorytypeid"]//8
+            << categoryTbl["name"];//9
+        selector.from(categoryTbl);
+       
+        selector.where(itemTbl["itemtypeid"] == itemValTbl["itemtypeid"] && categoryTbl["categoryid"] == itemValTbl["categoryid"]);
+        selector.where(categoryTypeTbl["categorytypeid"] == categoryTbl["categorytypeid"] && selector.where());
+        if( categoryID != 0 )
+        {
+            selector.where(categoryTbl["categoryid"] == categoryID && selector.where());
+        }
+        RWDBReader rdr = selector.reader(conn);
+
+        while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
+        {
+            long categoryID;
+            CtiConfig_type type;
+            string tempType,value,valueName;
+    
+            rdr[categoryTypeTbl["categoryid"]]>>categoryID;
+            rdr[4] >>tempType; //categoryTypeTbl["name"]
+                
+            rdr[itemValTbl["value"]] >> value;
+            rdr[6] >> valueName;//itemTbl["name"]
+    
+            if( !_typeConfig.find(categoryID) )//This key is not in the map yet
+            {
+                type = resolveConfigType(tempType);
+                if( type != ConfigTypeInvalid )
+                {
+                    _typeConfig.insert(categoryID,createConfigByType(type));//Should I remember this pointer and not do the next lookup? I dont think it is too expensive
+                }
+            }
+
+            if(!valueName.empty() && !value.empty())
+            {
+                try{
+                    insertValueIntoConfigMap(categoryID, value, valueName);
+                }
+                catch(...)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << "*** CHECKPOINT *** " << " Exception Thrown, type "<<type<< " probably is invalid " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << "*** CHECKPOINT *** " << " Configs will NOT be properly loaded " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+            }
+        }
+    }
+    stop = stop.now();
+    if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds to load config values " << endl;
+    }
+}
+
+void CtiConfigManager::loadConfigs(long configID)
+{
+    CtiTime start, stop;
+
+    if( configID != 0 )
+    {
+        _deviceConfig.remove(configID);//Give us a fresh start
+    }
+
+    start = start.now();
+    {  
+        RWDBConnection conn = getConnection();
+        RWDBDatabase db = getDatabase();
+    
+        RWDBSelector selector = db.selector();
+    
+        RWDBTable typeTbl = db.table( string2RWCString(getConfigurationCategoryTableName()) );
+    
+        selector << typeTbl["configid"]
+            << typeTbl["categoryid"];
+    
+        selector.from(typeTbl);
+        if( configID != 0 )
+        {
+            selector.where( typeTbl["configid"] == configID && selector.where() );
+        }
+       
+        RWDBReader rdr = selector.reader(conn);
+
+        while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
+        {
+            long categoryID, configID;
+    
+            rdr["configid"] >>configID;
+            rdr["categoryid"]>>categoryID;
+
+            {
+                LockGuard map_guard(_mapMux);
+                ConfigTypeToDeviceMap::iterator iter = _categoryToConfig.find(categoryID);
+                if( iter != _categoryToConfig.end() )
+                {
+                    iter->second.insert(configID);
+                }
+                else
+                {
+                    set<long> insertSet;
+                    insertSet.insert(configID);
+                    _categoryToConfig.insert(ConfigTypeToDeviceMap::value_type(categoryID, insertSet));
+                }
+    
+                iter = _configToCategory.find(configID);
+                if( iter != _configToCategory.end() )
+                {
+                    iter->second.insert(categoryID);
+                }
+                else
+                {
+                    set<long> insertSet;
+                    insertSet.insert(categoryID);
+                    _configToCategory.insert(ConfigTypeToDeviceMap::value_type(configID, insertSet));
+                }
+            }
+
+            CtiConfigDeviceSPtr configDevSPtr = _deviceConfig.find(configID);
+
+            if( !configDevSPtr )//This key is not in the map yet
+            {
+                CtiConfigDeviceSPtr devPtr(CTIDBG_new CtiConfigDevice());
+                ConfigDeviceMap::insert_pair tempPair = _deviceConfig.insert(configID,devPtr);
+                configDevSPtr = tempPair.first->second;
+            }
+
+            BaseSPtr categorySPtr;
+            if( (categorySPtr = _typeConfig.find(categoryID)) && configDevSPtr )
+            {
+                configDevSPtr->insertConfig(categorySPtr);
+            }
+
+            if( (configDevSPtr = _deviceConfig.find(configID)) && categorySPtr )//This is debugging code and could be removed.
+            {
+                if( configDevSPtr->getConfigFromType(categorySPtr->getType()) == categorySPtr )
+                {
+                }
+                else
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " PartID "<< categoryID<<" was NOT correctly added to ConfigID "<<configID<< endl;
+                }
+            }
+        }
+
+    }
+    stop = stop.now();
+    if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds to load config parts " << endl;
+    }
+}
+
+//Send configs to devices
+void CtiConfigManager::updateDeviceConfigs(long configID, long deviceID)
+{
+    CtiTime start, stop;
+
+    start = start.now();
+    {  
+        RWDBConnection conn = getConnection();
+        RWDBDatabase db = getDatabase();
+    
+        RWDBSelector selector = db.selector();
+    
+        RWDBTable typeTbl = db.table(string2RWCString(getConfigDeviceTableName()) );
+    
+        selector << typeTbl["deviceid"]
+            << typeTbl["configid"];
+    
+        selector.from(typeTbl);
+        if( configID != 0 )
+        {
+            selector.where(typeTbl["configid"] == configID && selector.where());
+        }
+        else if( deviceID != 0 )
+        {
+            selector.where(typeTbl["deviceid"] == deviceID && selector.where());
+        }
+       
+        RWDBReader rdr = selector.reader(conn);
+
+        
+        while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
+        {
+            long devID, configID;
+    
+            rdr["configid"] >>configID;
+            rdr["deviceid"]>>devID;
+
+            CtiDeviceSPtr pDev = _devMgr->getEqual(devID);
+
+            CtiConfigDeviceSPtr tempSPtr;
+
+            if( (tempSPtr = _deviceConfig.find(configID)) && pDev )
+            {
+                pDev->setDeviceConfig(tempSPtr);
+            }
+    
+        }
+
+    }
+    stop = stop.now();
+    if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds to assign pointers to devices " << endl;
+    }
+}
+
+void CtiConfigManager::removeFromMaps(long configID, long categoryID)
+{
+    if( configID )
+    {
+        LockGuard map_guard(_mapMux);
+        ConfigTypeToDeviceMap::iterator categoryIter;
+
+        //First erase all the entries in the category map
+        ConfigTypeToDeviceMap::iterator configIter = _configToCategory.find(configID);
+        if( configIter != _configToCategory.end() )
+        {
+            std::set<long>::iterator setIter = configIter->second.begin();
+            for( ; setIter != configIter->second.end(); setIter++ )
+            {
+                categoryIter = _categoryToConfig.find(*setIter);
+                if( categoryIter != _categoryToConfig.end() )
+                {
+                    categoryIter->second.erase(configID);
+                }
+            }
+
+            _configToCategory.erase(configID);
+        }
+
+    }
+
+    if( categoryID )
+    {
+        LockGuard map_guard(_mapMux);
+        ConfigTypeToDeviceMap::iterator configIter;
+
+        //First erase all the entries in the category map
+        ConfigTypeToDeviceMap::iterator categoryIter = _categoryToConfig.find(configID);
+        if( categoryIter != _configToCategory.end() )
+        {
+            std::set<long>::iterator setIter = categoryIter->second.begin();
+            for( ; setIter != categoryIter->second.end(); setIter++ )
+            {
+                configIter = _configToCategory.find(*setIter);
+                if( configIter != _configToCategory.end() )
+                {
+                    configIter->second.erase(configID);
+                }
+            }
+
+            _categoryToConfig.erase(configID);
+        }
     }
 }

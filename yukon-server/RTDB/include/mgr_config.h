@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/include/mgr_config.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2005/12/20 17:20:30 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2006/07/06 20:32:25 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,37 +19,52 @@
 
 #include "logger.h"
 #include "mgr_device.h"
+#include <map>
 
 
-using namespace Config;
 class IM_EX_DEVDB CtiConfigManager
 {
 private:
-    typedef CtiLockGuard<CtiMutex> LockGuard;
-    mutable CtiMutex    _devMux;//For use with _deviceConfig map.
+    typedef CtiLockGuard<CtiMutex>      LockGuard;
+    //typedef set<long>                                   LongSet;
+    typedef CtiSmartMap< Cti::Config::Base >            ConfigTypeMap;
+    typedef std::map< long, std::set<long> >                 ConfigTypeToDeviceMap;
+    typedef CtiSmartMap< Cti::Config::CtiConfigDevice > ConfigDeviceMap;
 
-    typedef map<int,BaseSPtr>    ConfigTypeMap;
-    typedef map<int,CtiConfigDeviceSPtr>  ConfigDeviceMap;
+    CtiMutex              _mapMux;
+    CtiDeviceManager*     _devMgr;
+    ConfigTypeMap         _typeConfig;
+    ConfigDeviceMap       _deviceConfig;
+    ConfigTypeToDeviceMap _categoryToConfig;
+    ConfigTypeToDeviceMap _configToCategory;
 
-    CtiDeviceManager*   _devMgr;
-    ConfigTypeMap       _typeConfig;
-    ConfigDeviceMap     _deviceConfig;
-
-    string getConfigPartsTableName();
-    string getConfigValuesTableName();
-    string getConfigTypeTableName();
+    string getConfigurationCategoryTableName();
     string getConfigDeviceTableName();
-    BaseSPtr createConfigByType(const int type);
-    bool insertValueIntoConfigMap(const int partID, const string &value, const string &valueid);
+    string getItemValuesTableName();
+    string getCategoryTypeTableName();
+    string getItemTypeTableName();
+    string getCategoryTableName();
+    Cti::Config::BaseSPtr createConfigByType(const int type);
+    bool insertValueIntoConfigMap(const long categoryID, const string &value, const string &valueid);
+
+    void loadCategories(long ID = 0);
+    void loadConfigs(long ID = 0);
+    void updateDeviceConfigs(long configID = 0, long deviceID = 0);
+    void removeFromMaps(long configID = 0, long categoryID = 0);
+
+    void refreshConfigurations();
+    void setDeviceManager(CtiDeviceManager &mgr);
+
+    bool isInitialized;
 
 public:
     CtiConfigManager();
     ~CtiConfigManager();
 
-    void refreshConfigurations();
-    void setDeviceManager(CtiDeviceManager &mgr);
+    void initialize(CtiDeviceManager &mgr);
+    void processDBUpdate(LONG identifer, string category, string objectType, int updateType);
 
-    CtiConfigDeviceSPtr getDeviceConfigFromID(int id);
+    Cti::Config::CtiConfigDeviceSPtr getDeviceConfigFromID(long configID);
     
 };
 #endif __MGR_CONFIG_H__

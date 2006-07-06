@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.97 $
-* DATE         :  $Date: 2006/06/23 16:02:53 $
+* REVISION     :  $Revision: 1.98 $
+* DATE         :  $Date: 2006/07/06 20:32:25 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1483,8 +1483,7 @@ INT RefreshPorterRTDB(void *ptr)
         }
 
         DeviceManager.refresh(DeviceFactory, isNotADevice, NULL, chgid, catstr, devstr);
-        ConfigManager.setDeviceManager(DeviceManager);
-        ConfigManager.refreshConfigurations();
+        ConfigManager.initialize(DeviceManager);
     }
 
     if(!PorterQuit)
@@ -1542,6 +1541,12 @@ INT RefreshPorterRTDB(void *ptr)
                 }
             }
         }
+
+        if(pChg != NULL && (pChg->getDatabase() == ChangeConfigDb))
+        {
+            ConfigManager.processDBUpdate(pChg->getId(), pChg->getCategory(), pChg->getObjectType(), pChg->getTypeOfChange());
+        }
+        
 
         if(pChg != NULL && (pChg->getDatabase() == ChangePointDb))
         {
