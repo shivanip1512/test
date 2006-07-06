@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_base.h-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2006/06/16 20:06:50 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2006/07/06 09:30:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -77,9 +77,6 @@ public:
 
    virtual void DumpData();
 
-   CtiTablePointBase  getPointBase() const;
-   CtiTablePointBase& getPointBase();
-
    INT               getArchiveInterval() const;
    INT               getArchiveType() const;
    INT               getPointOffset() const;
@@ -112,6 +109,7 @@ public:
    bool              isATriggerPoint(); //Only in Dispatch!!
    bool              isAVerificationPoint(); //Only in Dispatch!!
 
+   void              setType(CtiPointType_t type);
    CtiPointType_t    getType() const;
    CtiPointType_t    isA() const;
 

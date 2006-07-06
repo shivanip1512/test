@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/pt_base.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2006/06/16 20:06:50 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2006/07/06 09:29:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -201,8 +201,8 @@ CtiPointBase& CtiPointBase::operator=(const CtiPointBase& aRef)
     {
         Inherited::operator=(aRef);
         {
-            getPointBase()     = aRef.getPointBase();
-            _dynamic           = aRef.replicateDynamicData();
+            _pointBase = aRef._pointBase;
+            _dynamic   = aRef.replicateDynamicData();
         }
     }
 
@@ -234,51 +234,53 @@ void CtiPointBase::DecodeAlarmingDatabaseReader(RWDBReader &rdr)
 
 void CtiPointBase::DumpData()
 {
-    getPointBase().dump();
+    _pointBase.dump();
 }
 
-CtiTablePointBase  CtiPointBase::getPointBase() const            { return _pointBase;}
-CtiTablePointBase& CtiPointBase::getPointBase()                  { return _pointBase;}
+
+INT               CtiPointBase::getArchiveInterval() const       { return _pointBase.getArchiveInterval();}
+INT               CtiPointBase::getArchiveType() const           { return _pointBase.getArchiveType();}
+INT               CtiPointBase::getPointOffset() const           { return _pointBase.getPointOffset();}
+
+LONG              CtiPointBase::getPointID() const               { return _pointBase.getPointID();}
+LONG              CtiPointBase::getID() const                    { return _pointBase.getPointID();}
+
+string            CtiPointBase::getName() const                  { return _pointBase.getName();}
+LONG              CtiPointBase::getDeviceID() const              { return _pointBase.getPAObjectID();}
 
 
-INT               CtiPointBase::getArchiveInterval() const       { return getPointBase().getArchiveInterval();}
-INT               CtiPointBase::getArchiveType() const           { return getPointBase().getArchiveType();}
-INT               CtiPointBase::getPointOffset() const           { return getPointBase().getPointOffset();}
+string            CtiPointBase::getLogicalGroup() const          { return _pointBase.getLogicalGroup();}
+LONG              CtiPointBase::getStateGroupID() const          { return _pointBase.getStateGroupID();}
 
-LONG              CtiPointBase::getPointID() const               { return getPointBase().getPointID();}
-LONG              CtiPointBase::getID() const                    { return getPointBase().getPointID();}
+BOOL              CtiPointBase::getDisableTag() const            { return _pointBase.getDisableTag();}
+BOOL              CtiPointBase::isInService() const              { return !(_pointBase.getDisableTag());}
+BOOL              CtiPointBase::isOutOfService() const           { return _pointBase.getDisableTag();}
 
-string         CtiPointBase::getName() const                  { return getPointBase().getName();}
-LONG              CtiPointBase::getDeviceID() const              { return getPointBase().getPAObjectID();}
+BOOL              CtiPointBase::getAlarmDisableTag() const       { return _pointBase.getAlarmDisableTag();}
+BOOL              CtiPointBase::isAlarmDisabled() const          { return _pointBase.getAlarmDisableTag();}
+
+BOOL              CtiPointBase::getPseudoTag() const             { return _pointBase.getPseudoTag();}
+BOOL              CtiPointBase::isPseudoPoint() const            { return _pointBase.getPseudoTag();}
+
+BOOL              CtiPointBase::getArchivePending() const        { return _pointBase.getArchivePending();}
+BOOL              CtiPointBase::isArchivePending() const         { return _pointBase.getArchivePending();}
+
+CtiPointType_t    CtiPointBase::getType() const                  { return _pointBase.getType();}
+CtiPointType_t    CtiPointBase::isA() const                      { return _pointBase.getType();}
 
 
-string         CtiPointBase::getLogicalGroup() const          { return getPointBase().getLogicalGroup();}
-LONG              CtiPointBase::getStateGroupID() const          { return getPointBase().getStateGroupID();}
-
-BOOL              CtiPointBase::getDisableTag() const            { return getPointBase().getDisableTag();}
-BOOL              CtiPointBase::isInService() const              { return !(getPointBase().getDisableTag());}
-BOOL              CtiPointBase::isOutOfService() const           { return getPointBase().getDisableTag();}
-
-BOOL              CtiPointBase::getAlarmDisableTag() const       { return getPointBase().getAlarmDisableTag();}
-BOOL              CtiPointBase::isAlarmDisabled() const          { return getPointBase().getAlarmDisableTag();}
-
-BOOL              CtiPointBase::getPseudoTag() const             { return getPointBase().getPseudoTag();}
-BOOL              CtiPointBase::isPseudoPoint() const            { return getPointBase().getPseudoTag();}
-
-BOOL              CtiPointBase::getArchivePending() const        { return getPointBase().getArchivePending();}
-BOOL              CtiPointBase::isArchivePending() const         { return getPointBase().getArchivePending();}
-
-CtiPointType_t    CtiPointBase::getType() const                  { return getPointBase().getType();}
-CtiPointType_t    CtiPointBase::isA() const                      { return getPointBase().getType();}
-
+void CtiPointBase::setType(CtiPointType_t type)
+{
+    _pointBase.setType(type);
+}
 
 void CtiPointBase::setArchivePending(BOOL b)
 {
-    getPointBase().setArchivePending(b);
+    _pointBase.setArchivePending(b);
 }
 void CtiPointBase::resetArchivePending(BOOL b)
 {
-    getPointBase().setArchivePending(b);
+    _pointBase.setArchivePending(b);
 }
 
 CtiDynamicPointBase* CtiPointBase::getDynamic()
