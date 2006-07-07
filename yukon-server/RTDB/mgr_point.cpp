@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_point.cpp-arc  $
-* REVISION     :  $Revision: 1.31 $
-* DATE         :  $Date: 2006/07/06 19:50:55 $
+* REVISION     :  $Revision: 1.32 $
+* DATE         :  $Date: 2006/07/07 15:09:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -529,11 +529,12 @@ CtiPointManager::ptr_type CtiPointManager::getOffsetTypeEqual(LONG pao, INT Offs
 
     LockGuard  guard(getMux());
 
-    std::multimap<long, long>::const_iterator type_itr;
+    std::multimap<long, long>::const_iterator type_itr, upper_bound;
 
-    for( type_itr  = _type_offsets.lower_bound(Offset);
-         type_itr != _type_offsets.upper_bound(Offset);
-         type_itr++ )
+    type_itr    = _type_offsets.lower_bound(Offset);
+    upper_bound = _type_offsets.upper_bound(Offset);
+
+    for( ; type_itr != upper_bound; type_itr++ )
     {
         p = getEqual(type_itr->second);
 
