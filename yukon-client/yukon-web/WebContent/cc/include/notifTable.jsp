@@ -23,12 +23,9 @@
   </t:column>
   <t:column>
     <f:facet name="header"><h:outputText value="Time"/></f:facet>
-    <t:outputText value="#{thisNotif.notificationTime}">
-       <f:convertDateTime 
-      timeStyle="medium" 
-      dateStyle="medium"
-      timeZone="#{sCommercialCurtailment.timeZone}"
-      type="both" />
+         <f:convertDateTime 
+            pattern="#{sCommercialCurtailment.dateTimeFormat}" 
+            timeZone="#{sCommercialCurtailment.timeZone}" />
     </t:outputText>
   </t:column>
   <t:column>
