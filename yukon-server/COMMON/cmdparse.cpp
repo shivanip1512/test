@@ -1233,7 +1233,7 @@ void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
     CtiString   temp2;
     CtiString   token;
     boost::regex    re_rolenum("role *" + str_num);
-    boost::regex    re_rawcmd("raw (func(tion)? )?start *= *" + str_hexnum + "( " + str_num + ")?");
+    boost::regex    re_rawcmd("raw (func(tion)? )?start ?= ?" + str_hexnum + "( " + str_num + ")?");
     boost::regex    re_interval("interval(s| lp| li)");  //  match "intervals", "interval lp", and "interval li"
     boost::regex    re_time("time( |$)");  //  only match "time" as a single word
     boost::regex    re_multiplier("mult(iplier)?( kyz *" + str_num + ")?");
@@ -1322,21 +1322,26 @@ void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
                 char *p;
 
                 //  go past "raw"
-                cmdtok();
+                cmdtok(" =");
 
-                temp2 = cmdtok();
+                //  temp2 will either contain "function" or "start"
+                temp2 = cmdtok(" =");
 
                 if(temp2.contains("func"))
                 {
+                    //  if it's "function", make a note and grab the next word
                     _cmd["rawfunc"] = CtiParseValue("TRUE");
-                    temp2 = cmdtok();
+                    temp2 = cmdtok(" =");
                 }
 
+                //  move past "start" to the first hex digit
+                temp2 = cmdtok(" =");
+
                 //  get the start address
-                _cmd["rawloc"] = CtiParseValue( strtol((temp2.match(re_hexnum)).c_str(), &p, 16) );
+                _cmd["rawloc"] = CtiParseValue( strtol(temp2.c_str(), &p, 16) );
 
                 //  get the length
-                temp2 = cmdtok();
+                temp2 = cmdtok(" =");
                 //  if there's length specified
                 if( !temp2.empty() )
                 {
@@ -1431,13 +1436,14 @@ void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
 
 void  CtiCommandParser::doParsePutConfig(const string &_CmdStr)
 {
-
     boost::regex  re_tou("tou [0-9]+( schedule [0-9]+( [a-z]/[0-9]+:[0-9]+)*)* default [a-z]");
+
     CtiString CmdStr(_CmdStr);
     CtiString   temp2;
     CtiString   token;
 
     CtiTokenizer   tok(CmdStr);
+
     token = tok(); // Get the first one into the hopper....
 
     if(!token.empty() && token == "putconfig")
@@ -1785,7 +1791,7 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
     CtiString CmdStr(_CmdStr);
     CtiString temp2;
     CtiString token;
-    boost::regex  re_rawcmd("raw (func(tion)? )?start=0x[0-9a-f]+( 0x[0-9a-f]+)*");
+    boost::regex  re_rawcmd("raw (func(tion)? )?start ?= ?0x[0-9a-f]+( 0x[0-9a-f]+)*");
     boost::regex  re_rolecmd("role [0-9]+" \
                              " [0-9]+" \
                              " [0-9]+" \
@@ -1995,19 +2001,24 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
                 int rawloc;
 
                 //  go past "raw"
-                cmdtok();
+                cmdtok(" =");
 
-                temp2 = cmdtok();
+                //  will either contain "function" or "start"
+                temp2 = cmdtok(" =");
 
                 if(temp2.contains("func"))
                 {
+                    //  if it was "function", make a note and read the next word
                     _cmd["rawfunc"] = CtiParseValue("TRUE");
-                    temp2 = cmdtok();
+                    temp2 = cmdtok(" =");
                 }
 
-                _cmd["rawloc"] = CtiParseValue( strtol((temp2.match(re_hexnum)).c_str(), &p, 16) );
+                //  move past "start" to the hex digit
+                temp2 = cmdtok(" =");
 
-                while( !(temp2 = cmdtok()).empty() )
+                _cmd["rawloc"] = CtiParseValue( strtol(temp2.c_str(), &p, 16) );
+
+                while( !(temp2 = cmdtok(" =")).empty() )
                 {
                     rawData.appendLong( strtol(temp2.c_str(), &p, 16) );
                 }
