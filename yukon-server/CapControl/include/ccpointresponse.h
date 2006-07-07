@@ -44,7 +44,7 @@ public:
     DOUBLE getPreOpValue() const;
     DOUBLE getDelta() const;
 
-    CtiCCPointResponse& setBankId(LONG pointId);
+    CtiCCPointResponse& setBankId(LONG bankId);
     CtiCCPointResponse& setPointId(LONG pointId);
     CtiCCPointResponse& setPreOpValue(DOUBLE value);
     CtiCCPointResponse& setDelta(DOUBLE delta);

@@ -338,7 +338,7 @@ void CtiCapController::controlLoop()
 
                     try
                     {
-                        currentSubstationBus->isPeakTime(currentDateTime);//put here to make sure the peak time flag is set correctly
+                        //currentSubstationBus->isPeakTime(currentDateTime);//put here to make sure the peak time flag is set correctly
 
                         if (currentSubstationBus->isMultiVoltBusAnalysisNeeded(currentDateTime))
                         {                      
@@ -663,7 +663,7 @@ void CtiCapController::controlLoop()
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                 }
-
+                
                 try
                 {
                     //send pil commands to porter
@@ -2185,10 +2185,10 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                                 {
                                     if (currentMonPoint->getValue() != value)
                                     {
-                                        if (currentMonPoint->getScanInProgress()) 
+                                       /* if (currentMonPoint->getScanInProgress()) 
                                         {
                                             currentMonPoint->setScanInProgress(FALSE);
-                                        }
+                                        }*/ 
                                         currentSubstationBus->setBusUpdatedFlag(TRUE);
                                         currentSubstationBus->setNewPointDataReceivedFlag(TRUE);
                                         currentSubstationBus->setMultiBusCurrentState(NEW_MULTI_POINT_DATA_RECEIVED);

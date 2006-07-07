@@ -49,6 +49,15 @@ CtiCCPointResponse::CtiCCPointResponse(const CtiCCPointResponse& point)
 CtiCCPointResponse::~CtiCCPointResponse()
 {
 }
+/*---------------------------------------------------------------------------
+    getBankId
+
+    Returns the unique id of the monitor point
+---------------------------------------------------------------------------*/
+LONG CtiCCPointResponse::getBankId() const
+{
+    return _bankId;
+}
 
 /*---------------------------------------------------------------------------
     getPointId
@@ -79,7 +88,17 @@ DOUBLE CtiCCPointResponse::getPreOpValue() const
 {
     return _preOpValue;
 }
+/*---------------------------------------------------------------------------
+    setPointId
 
+    Sets the pointId of the monitorPoint- use with caution
+---------------------------------------------------------------------------*/
+CtiCCPointResponse& CtiCCPointResponse::setBankId(LONG bankId)
+{
+    _bankId = bankId;
+    //do not notify observers of this !
+    return *this;
+}
 /*---------------------------------------------------------------------------
     setPointId
 
@@ -283,7 +302,7 @@ void CtiCCPointResponse::dumpDynamicData(RWDBConnection& conn, CtiTime& currentD
 
             updater << dynamicCCMonitorPointResponseTable["preopvalue"].assign( _preOpValue )
                     << dynamicCCMonitorPointResponseTable["delta"].assign( _delta );
-            
+                    
             /*{
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - " << updater.asString().data() << endl;

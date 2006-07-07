@@ -243,16 +243,16 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     BOOL checkForAndPerformSendRetry(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
     BOOL checkForAndPerformVerificationSendRetry(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
     void voltControlProcess();
-    void updatePointResponsePreOpValues();
+    void updatePointResponsePreOpValues(CtiCCCapBank* capBank);
     void updatePointResponseDeltas();
     BOOL areAllMonitorPointsNewEnough(const CtiTime& currentDateTime);
     BOOL isScanFlagSet();
     ULONG getMonitorPointScanTime();
-    void scanAllMonitorPoints();
+    BOOL scanAllMonitorPoints();
     BOOL isBusAnalysisNeeded(const CtiTime& currentDateTime);
     BOOL isMultiVoltBusAnalysisNeeded(const CtiTime& currentDateTime);
     BOOL areAllMonitorPointsInVoltageRange(CtiCCMonitorPoint* oorPoint);
-    void voltControlBankSelectProcess(CtiCCMonitorPoint* point, CtiMultiMsg_vec &pointChanges, CtiMultiMsg_vec &ccEvents, CtiMultiMsg_vec &pilMessages);
+    BOOL voltControlBankSelectProcess(CtiCCMonitorPoint* point, CtiMultiMsg_vec &pointChanges, CtiMultiMsg_vec &ccEvents, CtiMultiMsg_vec &pilMessages);
     BOOL areOtherMonitorPointResponsesOk(LONG mPointID, CtiCCCapBank* potentialCap, int action);
 
     BOOL isBusPerformingVerification();
@@ -299,6 +299,8 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     void dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime);
     void setDynamicData(RWDBReader& rdr);
     void setStrategyValues(CtiCCStrategyPtr strategy);
+
+    vector <CtiCCMonitorPointPtr>& getMultipleMonitorPoints() {return _multipleMonitorPoints;};
 
     //Members inherited from RWCollectable
     void restoreGuts(RWvistream& );

@@ -245,13 +245,13 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     BOOL checkForAndPerformVerificationSendRetry(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages, LONG maxConfirmTime, LONG sendRetries);
     BOOL checkMaxDailyOpCountExceeded();
     BOOL voltControlBankSelectProcess(CtiCCMonitorPoint* point, CtiMultiMsg_vec &pointChanges, CtiMultiMsg_vec &ccEvents, CtiMultiMsg_vec& pilMessages);
-    void updatePointResponsePreOpValues();
+    void updatePointResponsePreOpValues(CtiCCCapBank* capBank);
     void updatePointResponseDeltas();
     BOOL areAllMonitorPointsNewEnough(const CtiTime& currentDateTime);
     BOOL isScanFlagSet();
     ULONG getMonitorPointScanTime();
     BOOL scanAllMonitorPoints();
-    void analyzeMultiVoltFeeder(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
+    void analyzeMultiVoltFeeder(const CtiTime& currentDateTime, LONG minConfirmPercent, LONG failurePercent, LONG maxConfirmTime, LONG sendRetries, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
     BOOL areAllMonitorPointsInVoltageRange(CtiCCMonitorPoint* oorPoint);
     BOOL areOtherMonitorPointResponsesOk(LONG mPointID, CtiCCCapBank* potentialCap, int action);
 

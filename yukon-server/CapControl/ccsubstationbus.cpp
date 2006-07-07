@@ -4823,7 +4823,8 @@ void CtiCCSubstationBus::dumpDynamicData(RWDBConnection& conn, CtiTime& currentD
             << dynamicCCSubstationBusTable["currentvoltpointvalue"].assign( _currentvoltloadpointvalue )
             << dynamicCCSubstationBusTable["switchPointStatus"].assign( _switchOverStatus )
             << dynamicCCSubstationBusTable["altSubControlValue"].assign( _altSubControlValue )
-            << dynamicCCSubstationBusTable["eventSeq"].assign( _eventSeq );
+            << dynamicCCSubstationBusTable["eventSeq"].assign( _eventSeq )
+            << dynamicCCSubstationBusTable["multivoltcontrolstate"].assign( _currentMultiBusState );
 
              
             /*{
@@ -4890,7 +4891,8 @@ void CtiCCSubstationBus::dumpDynamicData(RWDBConnection& conn, CtiTime& currentD
             << _currentvoltloadpointvalue
             << _switchOverStatus  
             << _altSubControlValue
-            << _eventSeq;
+            << _eventSeq
+            << _currentMultiBusState;
 
             if( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
@@ -5574,48 +5576,26 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCapBanksToVerifyFlags(int verificatio
 
 
 
-void CtiCCSubstationBus::updatePointResponsePreOpValues()
+void CtiCCSubstationBus::updatePointResponsePreOpValues(CtiCCCapBank* capBank)
 {
-    if( !stringCompareIgnoreCase(getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod) )
+
     {
-        for (LONG i = 0; i < _ccfeeders.size();i++)
-        {
-            CtiCCFeederPtr currentFeeder = (CtiCCFeederPtr)_ccfeeders[i];
-            //check feeder to see if it all monitor points have received new pointdata
-            {
-                currentFeeder->updatePointResponsePreOpValues();
-            }
-        }
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " Updating Point Response PreOpValues for CapBank: " <<capBank->getPAOName() << endl;
     }
-    else
+    for (int i = 0; i < _multipleMonitorPoints.size(); i++)
     {
-        for (int i = 0; i < _multipleMonitorPoints.size(); i++)
+        CtiCCMonitorPoint* point = (CtiCCMonitorPoint*)_multipleMonitorPoints[i];
+
+        for (LONG j=0; j<capBank->getPointResponse().size(); j++)
         {
-            CtiCCMonitorPoint* point = (CtiCCMonitorPoint*)_multipleMonitorPoints[i];
+            CtiCCPointResponse* pResponse = (CtiCCPointResponse*)capBank->getPointResponse()[i];
 
-            for (LONG j = 0; j < _ccfeeders.size();j++)
+            if (point->getPointId() == pResponse->getPointId())
             {
-                CtiCCFeederPtr currentFeeder = (CtiCCFeederPtr)_ccfeeders[j];
-
-                //check feeder to see if it all monitor points have received new pointdata
-
-                CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
-                for(LONG k=0;k<ccCapBanks.size();k++)
-                {
-                    CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
-
-                    for (LONG l=0; l<currentCapBank->getPointResponse().size(); l++)
-                    {
-                        CtiCCPointResponse* pResponse = (CtiCCPointResponse*)currentCapBank->getPointResponse()[l];
-
-                        if (point->getPointId() == pResponse->getPointId())
-                        {
-                            pResponse->setPreOpValue(point->getValue());
-                            break;
-                        }
-                    }
-                }
-            }                                                                                    
+                pResponse->setPreOpValue(point->getValue());
+                break;
+            }
         }
     }
 }
@@ -5650,6 +5630,10 @@ void CtiCCSubstationBus::updatePointResponseDeltas()
                     CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[j];
                     if (currentCapBank->getPAOId() == currentFeeder->getLastCapBankControlledDeviceId())
                     {
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " Updating Point Response Deltas for CapBank: " <<currentCapBank->getPAOName() << endl;
+                        }
                         for (int k = 0; k < _multipleMonitorPoints.size(); k++)
                         {
                             CtiCCMonitorPoint* point = (CtiCCMonitorPoint*)_multipleMonitorPoints[k];
@@ -5664,15 +5648,25 @@ void CtiCCSubstationBus::updatePointResponseDeltas()
         }                                                                                    
         
     }
+
 }
 
 
 
 BOOL CtiCCSubstationBus::areAllMonitorPointsNewEnough(const CtiTime& currentDateTime)
 {
-    BOOL retVal = FALSE;
-    if ( isScanFlagSet() && currentDateTime >= getMonitorPointScanTime() + _SCAN_WAIT_EXPIRE )  //T1 Expired.. Force Process
+        BOOL retVal = FALSE;
+    if ( isScanFlagSet() && currentDateTime.seconds() >= getLastOperationTime().seconds() + (_SCAN_WAIT_EXPIRE *60) )  //T1 Expired.. Force Process
     {
+        for (int i = 0; i < _multipleMonitorPoints.size(); i++)
+        {
+            CtiCCMonitorPoint* point = (CtiCCMonitorPoint*)_multipleMonitorPoints[i];
+            if (point->getScanInProgress())
+            {
+                point->setScanInProgress(FALSE);
+            }
+        }
+        
         retVal = TRUE;
     }
     else
@@ -5680,10 +5674,14 @@ BOOL CtiCCSubstationBus::areAllMonitorPointsNewEnough(const CtiTime& currentDate
         for (int i = 0; i < _multipleMonitorPoints.size(); i++)
         {
             CtiCCMonitorPoint* point = (CtiCCMonitorPoint*)_multipleMonitorPoints[i];
-            if (point->getTimeStamp() > getMonitorPointScanTime() &&
-                point->getTimeStamp() + _POINT_AGE <= currentDateTime)
+            if (point->getTimeStamp().seconds() > (getLastOperationTime().seconds() - 30) &&
+                point->getTimeStamp().seconds() + _POINT_AGE <= currentDateTime.seconds())
             {
                 retVal = TRUE;
+                if (point->getScanInProgress())
+                {
+                    point->setScanInProgress(FALSE);
+                }
             }
             else
             {
@@ -5691,8 +5689,22 @@ BOOL CtiCCSubstationBus::areAllMonitorPointsNewEnough(const CtiTime& currentDate
                 break;
             }
         }
+        if (retVal == TRUE) 
+        {
+            BOOL scanInProgress = FALSE;
+            for (i = 0; i < _multipleMonitorPoints.size(); i++)
+            {
+                CtiCCMonitorPoint* point = (CtiCCMonitorPoint*)_multipleMonitorPoints[i];
+                if (point->getScanInProgress())
+                {
+                    scanInProgress = TRUE;
+                    
+                }
+            }
+        }
     }
     return retVal;
+
 }
 
 ULONG CtiCCSubstationBus::getMonitorPointScanTime()
@@ -5716,8 +5728,9 @@ BOOL CtiCCSubstationBus::isScanFlagSet()
 
 
 
-void CtiCCSubstationBus::scanAllMonitorPoints()
+BOOL CtiCCSubstationBus::scanAllMonitorPoints()
 {
+    BOOL retVal = FALSE;
 
     for (int i = 0; i < _multipleMonitorPoints.size(); i++)
     {
@@ -5754,6 +5767,7 @@ void CtiCCSubstationBus::scanAllMonitorPoints()
                             }
 
                             point->setScanInProgress(TRUE);
+                            retVal = TRUE;
                         }
                         j = _ccfeeders.size();
                         break;
@@ -5764,20 +5778,20 @@ void CtiCCSubstationBus::scanAllMonitorPoints()
     }
 
     //set MonitorPointScanTime
-    return;
+    return retVal;
 }
 
 void CtiCCSubstationBus::analyzeMultiVoltBus(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages)
 {
     BOOL keepGoing = TRUE;
-    CtiCCMonitorPointPtr outOfRangeMonitorPoint = NULL;
+    CtiCCMonitorPoint outOfRangeMonitorPoint;
 
     if ( !stringCompareIgnoreCase(getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod) )
     {
         for (LONG i = 0; i < _ccfeeders.size();i++)
         {
             CtiCCFeederPtr currentFeeder = (CtiCCFeederPtr)_ccfeeders[i];
-            currentFeeder->analyzeMultiVoltFeeder(currentDateTime, pointChanges, ccEvents, pilMessages);
+            currentFeeder->analyzeMultiVoltFeeder(currentDateTime, getMinConfirmPercent(), getFailurePercent(), getMaxConfirmTime(), getControlSendRetries(), pointChanges, ccEvents, pilMessages);
         }
         keepGoing = FALSE;
     }
@@ -5788,18 +5802,37 @@ void CtiCCSubstationBus::analyzeMultiVoltBus(const CtiTime& currentDateTime, Cti
         {
             case NEW_MULTI_POINT_DATA_RECEIVED:
             {
-                if (areAllMonitorPointsNewEnough(currentDateTime))
+                if ((_preOperationMonitorPointScanFlag ||  _operationSentWaitFlag ||  _postOperationMonitorPointScanFlag ))
                 {
-                    _currentMultiBusState = EVALUATE_SUB;
+                    if (areAllMonitorPointsNewEnough(currentDateTime))
+                    {
+                        if (_preOperationMonitorPointScanFlag) 
+                        {
+                            _currentMultiBusState = EVALUATE_SUB;
+                            if (getPreOperationMonitorPointScanFlag())
+                               setPreOperationMonitorPointScanFlag(FALSE);
+                        }
+                        else if (_operationSentWaitFlag)
+                        {
+                            _currentMultiBusState = OPERATION_SENT_WAIT;
+                        }
+                        else //if (_pointOperationMonitorPointScanFlag) 
+                        {
+                            _currentMultiBusState = POST_OP_SCAN_PENDING;
+                        }
+                    }
+                    keepGoing = FALSE;
                 }
                 else
                 {
                     //SCAN Points.
                     if (!(_preOperationMonitorPointScanFlag ||  _operationSentWaitFlag ||  _postOperationMonitorPointScanFlag ))
                     {
-                        scanAllMonitorPoints();
-                        setPreOperationMonitorPointScanFlag(TRUE);
-
+                        if (scanAllMonitorPoints())
+                        {
+                            setPreOperationMonitorPointScanFlag(TRUE);
+                            setLastOperationTime(currentDateTime);
+                        }
                         _currentMultiBusState = PRE_OP_SCAN_PENDING;
                     }
                     else if (_operationSentWaitFlag && !_postOperationMonitorPointScanFlag)
@@ -5816,40 +5849,91 @@ void CtiCCSubstationBus::analyzeMultiVoltBus(const CtiTime& currentDateTime, Cti
             }
             case PRE_OP_SCAN_PENDING:
             {
-                if (currentDateTime <= CtiTime(getLastOperationTime().seconds() + _SCAN_WAIT_EXPIRE))
+                if (currentDateTime.seconds() <= getLastOperationTime().seconds() + (_SCAN_WAIT_EXPIRE * 60))
                 {
                     keepGoing = FALSE;
                 }
                 else
                 {
+
+                    for (int i = 0; i < _multipleMonitorPoints.size(); i++)
+                    {
+                        CtiCCMonitorPoint* point = (CtiCCMonitorPoint*)_multipleMonitorPoints[i];
+                        if (point->getScanInProgress())
+                        {
+                            point->setScanInProgress(FALSE);
+                        }
+                    }
+                    if (getPreOperationMonitorPointScanFlag())
+                        setPreOperationMonitorPointScanFlag(FALSE);
+                    //if (getPostOperationMonitorPointScanFlag())
+                    //    setPostOperationMonitorPointScanFlag(FALSE);
+
                     _currentMultiBusState = EVALUATE_SUB;
+                    keepGoing = TRUE;
                 }
                 break;
             }
             case EVALUATE_SUB:
             {
                 keepGoing = FALSE;
-                if (areAllMonitorPointsInVoltageRange(outOfRangeMonitorPoint))
-                    keepGoing = FALSE;
-                else
+                //outOfRangeMonitorPoint = new CtiCCMonitorPoint();
+                if (!areAllMonitorPointsInVoltageRange(&outOfRangeMonitorPoint))
                 {
                     _currentMultiBusState = SELECT_BANK;
+                    keepGoing = TRUE;
+                }
+                else
+                {
+                    _currentMultiBusState = IDLE;
+                    keepGoing = FALSE;
                 }
                 break;
             }
             case SELECT_BANK:
             {
-                voltControlBankSelectProcess(outOfRangeMonitorPoint, pointChanges, ccEvents, pilMessages);
-                _currentMultiBusState = OPERATION_SENT_WAIT;
+                if (voltControlBankSelectProcess(&outOfRangeMonitorPoint, pointChanges, ccEvents, pilMessages))
+                {
+
+                    //updatePointResponsePreOpValues();
+                     setOperationSentWaitFlag(TRUE);
+                    setLastOperationTime(currentDateTime);
+                    _currentMultiBusState = OPERATION_SENT_WAIT;
+                }
+                else
+                {
+
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " No Bank Available for Control"<< endl;
+                    }
+                    if (getPreOperationMonitorPointScanFlag())
+                        setPreOperationMonitorPointScanFlag(FALSE);
+                    if (getOperationSentWaitFlag())
+                        setOperationSentWaitFlag(FALSE);
+                    if (getPostOperationMonitorPointScanFlag())
+                        setPostOperationMonitorPointScanFlag(FALSE);
+                    _currentMultiBusState = IDLE;
+                }
                 keepGoing = FALSE;
                 break;
             }
             case OPERATION_SENT_WAIT:
             {
-                if (currentDateTime <= CtiTime(getLastOperationTime().seconds() + 60))
+               /* {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " currentDateTime " << RWTime(currentDateTime.seconds()) << " getLastOperationTime() " <<RWTime(getLastOperationTime().seconds()) << endl;
+                }*/
+                if (currentDateTime.seconds() >= getLastOperationTime().seconds() + getMaxConfirmTime() || isAlreadyControlled())
                 {
-                    scanAllMonitorPoints();
-                    setPostOperationMonitorPointScanFlag(TRUE);
+                    capBankControlStatusUpdate(pointChanges, ccEvents);
+                    if (scanAllMonitorPoints())
+                    {
+                        if (getOperationSentWaitFlag())
+                            setOperationSentWaitFlag(FALSE);
+                        setPostOperationMonitorPointScanFlag(TRUE);
+                        setLastOperationTime(currentDateTime);
+                    }
                     _currentMultiBusState = POST_OP_SCAN_PENDING;
                 }
                 keepGoing = FALSE;
@@ -5857,13 +5941,26 @@ void CtiCCSubstationBus::analyzeMultiVoltBus(const CtiTime& currentDateTime, Cti
             }
             case POST_OP_SCAN_PENDING:
             {
-                if (currentDateTime <= CtiTime(getLastOperationTime().seconds() + _SCAN_WAIT_EXPIRE))
+                if (currentDateTime.seconds() <= getLastOperationTime().seconds() + (_SCAN_WAIT_EXPIRE*60))
                 {
                     keepGoing = FALSE;
                     //wait
                 }
-                else
+                else 
                 {
+
+                    for (int i = 0; i < _multipleMonitorPoints.size(); i++)
+                    {
+                        CtiCCMonitorPoint* point = (CtiCCMonitorPoint*)_multipleMonitorPoints[i];
+                        if (point->getScanInProgress())
+                        {
+                            point->setScanInProgress(FALSE);
+                        }
+                    }
+                   // if (getPreOperationMonitorPointScanFlag())
+                    //    setPreOperationMonitorPointScanFlag(FALSE);
+                    if (getPostOperationMonitorPointScanFlag())
+                        setPostOperationMonitorPointScanFlag(FALSE);
                     keepGoing = TRUE;
                     _currentMultiBusState = RECORD_ADAPTIVE_VOLTAGE;
                 }
@@ -5873,7 +5970,8 @@ void CtiCCSubstationBus::analyzeMultiVoltBus(const CtiTime& currentDateTime, Cti
             }
             case RECORD_ADAPTIVE_VOLTAGE:
             {
-                updatePointResponseDeltas();
+                
+                updatePointResponseDeltas(); 
 
                 setPreOperationMonitorPointScanFlag(FALSE);
                 setOperationSentWaitFlag(FALSE);
@@ -5900,94 +5998,206 @@ void CtiCCSubstationBus::analyzeMultiVoltBus(const CtiTime& currentDateTime, Cti
     return;
 }
 
-void CtiCCSubstationBus::voltControlBankSelectProcess(CtiCCMonitorPoint* point, CtiMultiMsg_vec &pointChanges, CtiMultiMsg_vec &ccEvents, CtiMultiMsg_vec &pilMessages)
+BOOL CtiCCSubstationBus::voltControlBankSelectProcess(CtiCCMonitorPoint* point, CtiMultiMsg_vec &pointChanges, CtiMultiMsg_vec &ccEvents, CtiMultiMsg_vec &pilMessages)
 {
+    BOOL retVal = FALSE;
 
     CtiRequestMsg* request = NULL;
    //Check for undervoltage condition first.
+ 
+    if (point->getValue() < point->getLowerBandwidth()) 
+    {   
+        CtiCCCapBank* bestBank = NULL;
+        CtiCCFeeder* bestBankFeeder = NULL;
+        DOUBLE bestDelta = 0;
 
-    for (LONG i = 0; i < _ccfeeders.size();i++)
-    {
-        CtiCCFeederPtr currentFeeder = (CtiCCFeederPtr)_ccfeeders[i];
-        CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
+        for (LONG h = 0; h < _ccfeeders.size();h++)
+        {
+            CtiCCFeederPtr currentFeeder = (CtiCCFeederPtr)_ccfeeders[h];
+            CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
         
-        for (LONG j = 0; j < ccCapBanks.size(); j++)
-        {                                              
-            CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[j];
-
-            if (currentCapBank->getPAOId() == point->getBankId())
+            for (LONG i = 0; i < ccCapBanks.size(); i++)
             {
-                if (point->getValue() < point->getLowerBandwidth())
+                                                          
+                CtiCCCapBank* currentCapBank = (CtiCCCapBank*) ccCapBanks[i];
+                if (currentCapBank->getControlStatus() == CtiCCCapBank::Open || currentCapBank->getControlStatus() == CtiCCCapBank::OpenQuestionable)
                 {
-                    for(LONG k=0;k<currentCapBank->getPointResponse().size();k++)
+                    for(LONG j=0;j<currentCapBank->getPointResponse().size();j++)
                     {
-                        if (currentCapBank->getControlStatus() == CtiCCCapBank::Open || currentCapBank->getControlStatus() == CtiCCCapBank::OpenQuestionable)
+                        CtiCCPointResponse* pResponse = (CtiCCPointResponse*)currentCapBank->getPointResponse()[j];
+
+                        if (point->getPointId() == pResponse->getPointId()) 
                         {
-                            CtiCCPointResponse* pResponse = (CtiCCPointResponse*)currentCapBank->getPointResponse()[k];
                             if (point->getValue() + pResponse->getDelta() >= point->getLowerBandwidth() &&
                                 point->getValue() + pResponse->getDelta() <= point->getUpperBandwidth())
                             {
+                                {
+                                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                                    dout << CtiTime() << " Attempting to Increase Voltage on Feeder: "<<getPAOName()<<" CapBank: "<<currentCapBank->getPAOName() << endl;
+                                }
                                 //Check other monitor point responses using this potential capbank
                                 if (areOtherMonitorPointResponsesOk(point->getPointId(), currentCapBank, CtiCCCapBank::Close))
                                 {
+                                    bestBank = currentCapBank;
+                                    bestBankFeeder = currentFeeder;
 
-                                    //currentCapBank->
                                     DOUBLE controlValue = (!stringCompareIgnoreCase(getControlUnits(),CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
                                     string text = currentFeeder->createTextString(getControlMethod(), CtiCCCapBank::Close, controlValue, getCurrentVarLoadPointValue());
                                     request = currentFeeder->createDecreaseVarRequest(currentCapBank , pointChanges, ccEvents, text);
+
+                                    updatePointResponsePreOpValues(currentCapBank);
                                 }
-             
-             
                             }
+                            else if (point->getValue() + pResponse->getDelta() < point->getLowerBandwidth() )
+                            {
+                                if (pResponse->getDelta() > bestDelta || bestDelta == 0) 
+                                {
+                                    bestDelta = pResponse->getDelta();
+                                    bestBank = currentCapBank;
+                                    bestBankFeeder = currentFeeder;
+                                }
+                            }
+                            break;
                         }
                     }
-                }
-                else if (point->getValue() > point->getUpperBandwidth())
-                {
-                    for(LONG k=0;k<currentCapBank->getPointResponse().size();k++)
+                    if (request != NULL) 
                     {
-                        if (currentCapBank->getControlStatus() == CtiCCCapBank::Close || currentCapBank->getControlStatus() == CtiCCCapBank::CloseQuestionable)
-                        {
-                            CtiCCPointResponse* pResponse = (CtiCCPointResponse*)currentCapBank->getPointResponse()[k];
-                            if (point->getValue() - pResponse->getDelta() >= point->getLowerBandwidth() &&
-                                point->getValue() - pResponse->getDelta() <= point->getUpperBandwidth())
-                            {
-
-                                if (areOtherMonitorPointResponsesOk(point->getPointId(), currentCapBank, CtiCCCapBank::Open) )
-                                {
-                                     //currentCapBank->
-                                    DOUBLE controlValue = (!stringCompareIgnoreCase(getControlUnits(),CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
-                                    string text = currentFeeder->createTextString(getControlMethod(), CtiCCCapBank::Open, controlValue, getCurrentVarLoadPointValue());
-                                    request = currentFeeder->createIncreaseVarRequest(currentCapBank , pointChanges, ccEvents, text);
-                                }
-             
-                            }                    
-                        }
-             
+                        break;
                     }
                 }
             }
+            if (request != NULL) 
+            {
+                break;
+            }
+            
+        }
+        if (bestBank == NULL) 
+        {
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " No Banks Available to Close!" << endl;
+            }
+        }
+        else if (bestBank != NULL && request == NULL) 
+        {
+           if (areOtherMonitorPointResponsesOk(point->getPointId(), bestBank, CtiCCCapBank::Close))
+           {
 
+               DOUBLE controlValue = (!stringCompareIgnoreCase(getControlUnits(),CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
+               string text = bestBankFeeder->createTextString(getControlMethod(), CtiCCCapBank::Close, controlValue, getCurrentVarLoadPointValue());
+               request = bestBankFeeder->createDecreaseVarRequest(bestBank , pointChanges, ccEvents, text);
+
+               updatePointResponsePreOpValues(bestBank);
+           }
+        }
+
+    }
+    else if (point->getValue() > point->getUpperBandwidth())
+    {
+        CtiCCCapBank* bestBank = NULL;
+        CtiCCFeeder* bestBankFeeder = NULL;
+        DOUBLE bestDelta = 0;
+
+        for (LONG h = 0; h < _ccfeeders.size();h++)
+        {
+            CtiCCFeederPtr currentFeeder = (CtiCCFeederPtr)_ccfeeders[h];
+            CtiCCCapBank_SVector ccCapBanks = currentFeeder->getCCCapBanks();
+        
+            for (LONG i = 0; i < ccCapBanks.size(); i++)
+            {
+                CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[i];
+                if (currentCapBank->getControlStatus() == CtiCCCapBank::Close || currentCapBank->getControlStatus() == CtiCCCapBank::CloseQuestionable)
+                {
+                    for(LONG j=0;j<currentCapBank->getPointResponse().size();j++)
+                    {
+                        CtiCCPointResponse* pResponse = (CtiCCPointResponse*)currentCapBank->getPointResponse()[j];
+
+                        if (point->getPointId() == pResponse->getPointId()) 
+                        {
+                            if (point->getValue() - pResponse->getDelta() <= point->getUpperBandwidth() && 
+                                point->getValue() - pResponse->getDelta() >= point->getLowerBandwidth() ) 
+                            {
+                                {
+                                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                                    dout << CtiTime() << " Attempting to Decrease Voltage on Feeder: "<<getPAOName()<<" CapBank: "<<currentCapBank->getPAOName() << endl;
+                                }
+                                //Check other monitor point responses using this potential capbank
+                                if (areOtherMonitorPointResponsesOk(point->getPointId(), currentCapBank, CtiCCCapBank::Open))
+                                {
+                                    bestBank = currentCapBank;
+                                    bestBankFeeder = currentFeeder;
+
+                                    DOUBLE controlValue = (!stringCompareIgnoreCase(getControlUnits(),CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
+                                    string text = currentFeeder->createTextString(getControlMethod(), CtiCCCapBank::Open, controlValue, getCurrentVarLoadPointValue());
+                                    request = currentFeeder->createIncreaseVarRequest(currentCapBank , pointChanges, ccEvents, text);
+
+                                    updatePointResponsePreOpValues(currentCapBank);
+                                }
+                            }
+                            else if (point->getValue() - pResponse->getDelta() > point->getUpperBandwidth() )
+                            {
+                                if (pResponse->getDelta() > bestDelta) 
+                                {
+                                    bestDelta = pResponse->getDelta();
+                                    bestBank = currentCapBank;
+                                    bestBankFeeder = currentFeeder;
+                                }
+                            }
+                            break;
+                        }
+                    }
+                    if (request != NULL) 
+                    {
+                        break;
+                    }
+                }
+            }
+            if (request != NULL) 
+            {
+                break;
+            }
+        }
+        if (bestBank == NULL) 
+        {
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " No Banks Available to Open!" << endl;
+            }
+        }
+        else if (bestBank != NULL && request == NULL) 
+        {
+           if (areOtherMonitorPointResponsesOk(point->getPointId(), bestBank, CtiCCCapBank::Open))
+           {
+
+               DOUBLE controlValue = (!stringCompareIgnoreCase(getControlUnits(),CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
+               string text = bestBankFeeder->createTextString(getControlMethod(), CtiCCCapBank::Open, controlValue, getCurrentVarLoadPointValue());
+               request = bestBankFeeder->createIncreaseVarRequest(bestBank , pointChanges, ccEvents, text);
+
+               updatePointResponsePreOpValues(bestBank);
+           }
         }
     }
+
 
     if( request != NULL )
     {
         pilMessages.push_back(request);
         //setLastOperationTime(currentDateTime);
-
+  
         setOperationSentWaitFlag(TRUE);
-
-       // returnBoolean = TRUE;
+  
+        retVal = TRUE;
     }
-
-    
+  
+    return retVal;
    
 }
 
+
 BOOL CtiCCSubstationBus::areOtherMonitorPointResponsesOk(LONG mPointID, CtiCCCapBank* potentialCap, int action)
 {
-    BOOL retVal = FALSE;
+    BOOL retVal = TRUE;
 
     //action = 0 --> open
     //action = 1 --> close
@@ -5997,31 +6207,63 @@ BOOL CtiCCSubstationBus::areOtherMonitorPointResponsesOk(LONG mPointID, CtiCCCap
         CtiCCMonitorPointPtr otherPoint = (CtiCCMonitorPointPtr)_multipleMonitorPoints[i];
         if (otherPoint->getPointId() != mPointID)
         {
-            CtiCCPointResponsePtr pResponse = (CtiCCPointResponsePtr)potentialCap->getPointResponse()[i];
-
-            if (action) //CLOSE
+            for(LONG j=0;j<potentialCap->getPointResponse().size();j++)
             {
-                if (otherPoint->getValue() + pResponse->getDelta() > otherPoint->getUpperBandwidth() ||
-                    otherPoint->getValue() + pResponse->getDelta() < otherPoint->getLowerBandwidth())
-                {
-                    retVal = FALSE;
-                    break;
-                }
-                else
-                    retVal = TRUE;
+                CtiCCPointResponse* pResponse = (CtiCCPointResponse*)potentialCap->getPointResponse()[j];
 
+                if (otherPoint->getBankId() == pResponse->getBankId()) 
+                {            
+                    if (action) //CLOSE
+                    {
+                        if (pResponse->getDelta() != 0) 
+                        {
+                            if (otherPoint->getValue() + pResponse->getDelta() > otherPoint->getUpperBandwidth() )
+                                //||otherPoint->getValue() + pResponse->getDelta() < otherPoint->getLowerBandwidth())
+                            {
+
+                                {
+                                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                                    dout << CtiTime() << " OPERATION CANCELLED: Other Monitor Point Voltages will be overly affected on Feeder: "<<getPAOName()<<" CapBank: "<<potentialCap->getPAOName() << endl;
+                                }
+                                retVal = FALSE;
+                                break;
+                            }
+                            else
+                                retVal = TRUE;
+                        }
+                        else
+                        {
+                            retVal = TRUE;
+                        }
+                    }
+                    else // OPEN
+                    {
+                        if (pResponse->getDelta() != 0) 
+                        {
+                            if (//otherPoint->getValue() - pResponse->getDelta() > otherPoint->getUpperBandwidth() ||
+                                otherPoint->getValue() - pResponse->getDelta() < otherPoint->getLowerBandwidth())
+                            {
+                                {
+                                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                                    dout << CtiTime() << " OPERATION CANCELLED: Other Monitor Point Voltages will be overly affected on Feeder: "<<getPAOName()<<" CapBank: "<<potentialCap->getPAOName() << endl;
+                                }
+                                retVal = FALSE;
+                                break;
+                            }
+                            else
+                                retVal = TRUE;
+                        }
+                        else
+                        {
+                            retVal = TRUE;
+                        }
+
+                    }
+                }
             }
-            else // OPEN
+            if (retVal == FALSE) 
             {
-                if (otherPoint->getValue() - pResponse->getDelta() > otherPoint->getUpperBandwidth() ||
-                    otherPoint->getValue() - pResponse->getDelta() < otherPoint->getLowerBandwidth())
-                {
-                    retVal = FALSE;
-                    break;
-                }
-                else
-                    retVal = TRUE;
-
+                break;
             }
             
         }
@@ -6044,7 +6286,12 @@ BOOL CtiCCSubstationBus::areAllMonitorPointsInVoltageRange(CtiCCMonitorPoint* oo
         }
         else
         {
-            oorPoint = point;
+
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " Monitor Point: "<<point->getPointId()<<" on CapBank: "<<point->getBankId<<" is outside limits.  Current value: "<<point->getValue() << endl;
+            }
+            *oorPoint = *point;
             retVal = FALSE;
             break;
         }
@@ -6379,6 +6626,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::operator=(const CtiCCSubstationBus& righ
         _altSubControlValue = right._altSubControlValue;
         _eventSeq = right._eventSeq;
         _multiMonitorFlag = right._multiMonitorFlag;
+        _currentMultiBusState = right._currentMultiBusState;
 
         _altSubVoltVal = right._altSubVoltVal;
         _altSubVarVal  = right._altSubVarVal;
@@ -6553,7 +6801,7 @@ void CtiCCSubstationBus::restore(RWDBReader& rdr)
 
 
 
-    setMultiBusCurrentState(NEW_MULTI_POINT_DATA_RECEIVED);
+    setMultiBusCurrentState(IDLE);
 
 }
 
@@ -6648,6 +6896,7 @@ void CtiCCSubstationBus::setDynamicData(RWDBReader& rdr)
         _switchOverStatus = (tempBoolString=="y"?TRUE:FALSE);
         rdr["altSubControlValue"] >> _altSubControlValue;
         rdr["eventSeq"] >> _eventSeq;
+        rdr["multivoltcontrolstate"] >> _currentMultiBusState;
 
         _altSubVoltVal = _currentvoltloadpointvalue;
         _altSubVarVal = _currentvarloadpointvalue; 
