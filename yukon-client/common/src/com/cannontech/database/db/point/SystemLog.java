@@ -17,7 +17,7 @@ public class SystemLog extends com.cannontech.database.db.DBPersistent implement
 	private String description = null;
 	private String userName = null;
 	
-	public static final int COL_DATETIME = 3;
+	public static final int COL_DATETIME = 1;
 
 	/* Log types, match this with log types in yukon.h */
 	public static final int TYPE_GENERAL = 1;
