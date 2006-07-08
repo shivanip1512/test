@@ -23,7 +23,8 @@
   </t:column>
   <t:column>
     <f:facet name="header"><h:outputText value="Time"/></f:facet>
-         <f:convertDateTime 
+    <t:outputText value="#{thisNotif.notificationTime}">
+      <f:convertDateTime 
             pattern="#{sCommercialCurtailment.dateTimeFormat}" 
             timeZone="#{sCommercialCurtailment.timeZone}" />
     </t:outputText>
