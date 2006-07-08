@@ -45,10 +45,12 @@ public abstract class WebUpdatedPAObjectMap implements WebUpdatedDAO {
 	 */
 	private boolean hasObjectBeenUpdatedSince(String id, Date timeStamp) {
 		//see if the timestamp of the object was updated 
-		Date date = ((Date)timestampMap.get(new Integer (id )));
-		if (date != null) {
-			if (date.after(timeStamp))
-				return true;
+		if  (id != null && id.length() > 0) {
+			Date date = ((Date)timestampMap.get(new Integer (id )));
+			if (date != null) {
+				if (date.after(timeStamp))
+					return true;
+			}
 		}
 		return false;
 	}
