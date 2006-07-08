@@ -8,16 +8,20 @@ package com.cannontech.core.dao.impl;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.common.util.StopWatch;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.device.DeviceCarrierSettings;
 import com.cannontech.database.db.device.DeviceDirectCommSettings;
@@ -318,4 +322,17 @@ public List<LiteYukonPAObject> getLiteYukonPaoByName(String name, boolean partia
         return pao;
 
     }
+    public  List getAllSubsForUser (LiteYukonUser user) {
+        List subList = new ArrayList(10);
+        List temp = getAllCapControlSubBuses();
+        for (Iterator iter = temp.iterator(); iter.hasNext();) {
+            LiteYukonPAObject element = (LiteYukonPAObject) iter.next();
+            if (DaoFactory.getAuthDao().userHasAccessPAO(user, element.getLiteID()))
+            {
+                subList.add(element);           
+            }
+        }
+        return subList;
+    }
+
 }
