@@ -1,16 +1,37 @@
+<%@ page pageEncoding="UTF-8" import="java.util.*"%>
+<%@ page import="org.ajaxanywhere.*"%>
 <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h" %>
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %>
 <%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x" %>
+<%@ taglib uri="http://ajaxanywhere.sourceforge.net" prefix="aa" %>
+<%
+
+    if (AAUtils.isAjaxRequest(request)){
+        AAUtils.addZonesToRefresh(request, "strategy");
+    }
+%>
+<f:verbatim>
+<script type="text/JavaScript" src="../../../JavaScript/aa.js"></script>
+<script>
+	ajaxAnywhere.getZonesToReload = function(url, submitButton) {
+		
+		if ( $("aazone.strategy"))
+			return "strategy";
+	}
+	</script>
+</f:verbatim>
 
 <f:subview id="cbcStrategy" rendered="#{capControlForm.visibleTabs['CBCSubstation'] || capControlForm.visibleTabs['CBCFeeder']}" >
-
+	<aa:zoneJSF id="strategy" >
     <f:subview id="paoSubBus" rendered="#{capControlForm.visibleTabs['CBCSubstation']}" >
 		<f:verbatim><br/></f:verbatim>
+		
 		<x:outputLabel for="Sub_Strategy_Selection" value="Selected Strategy: " title="The current control strategy we are using"/>
 		<x:selectOneMenu id="Sub_Strategy_Selection" onchange="submit();" disabled="#{capControlForm.editingCBCStrategy}"
 				value="#{capControlForm.PAOBase.capControlSubstationBus.strategyID}" >
 			<f:selectItems value="#{capControlForm.cbcStrategies}"/>
 		</x:selectOneMenu>
+		
     </f:subview>
 
 
@@ -25,9 +46,11 @@
 
 
 	<f:verbatim><br/></f:verbatim>
+	
 	<h:selectBooleanCheckbox id="Edit_Strategy" onclick="lockButtonsPerSubmit('Strategy_Buttons'); submit();"
 		value="#{capControlForm.editingCBCStrategy}"
 		disabled="#{capControlForm.currentStrategyID == 0}" />
+		
 	<x:outputLabel for="Edit_Strategy" value="Edit Strategy" title="A toggle to edit the selected strategy"/>
 	<x:outputText id="stratNameWarn" styleClass="alert"
 		rendered="#{capControlForm.editingCBCStrategy}" value="  (WARNING: Modifying this strategy will affect all feeders or subs that use this strategy)"/>
@@ -39,7 +62,7 @@
 			action="#{capControlForm.deleteStrategy}" onclick="return window.confirm('Are you sure you want to delete this strategy?\r\nNote: Deleting this strategy will force all data to be saved and the current strategy will be set to (none).');"
 			disabled="#{capControlForm.currentStrategyID == 0}" />
 	</x:panelGroup>
-
+	
 	<h:panelGrid id="body" columns="2" styleClass="gridLayout" columnClasses="gridColumn" >
 		<h:column rendered="#{capControlForm.currentStrategyID != 0}" >
 		    <f:verbatim><br/><fieldset><legend>Strategy Detail</legend></f:verbatim>
@@ -201,7 +224,5 @@
 	
 	</h:panelGrid>
 		
-    
-
-
+</aa:zoneJSF>
 </f:subview>

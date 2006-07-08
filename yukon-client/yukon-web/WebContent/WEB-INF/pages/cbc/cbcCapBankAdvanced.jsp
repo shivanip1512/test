@@ -1,16 +1,38 @@
+<%@ page pageEncoding="UTF-8" import="java.util.*"%>
+<%@ page import="org.ajaxanywhere.*"%>
 <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h" %>
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %>
 <%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x" %>
+<%@ taglib uri="http://ajaxanywhere.sourceforge.net" prefix="aa" %>
 
 <%@ page import="com.cannontech.web.editor.CapControlForm" %>
 <%@ page import="com.cannontech.web.editor.CapBankEditorForm" %>
 <%@ page import="com.cannontech.web.util.JSFParamUtil" %>
+<%
 
+    if (AAUtils.isAjaxRequest(request)){
+        AAUtils.addZonesToRefresh(request, "capBankAdv");
+    }
+%>
+<f:verbatim>
+<script type="text/JavaScript" src="../../../JavaScript/aa.js"></script>
+<script>
+	ajaxAnywhere.getZonesToReload = function(url, submitButton) {
+		
+		if ( $("aazone.capBankAdv") )
+			return "capBankAdv";
+	}
+	 ajaxAnywhere.formName = "editorForm";
+   	 ajaxAnywhere.substituteFormSubmitFunction();
+     ajaxAnywhere.substituteSubmitButtonsBehavior(true);
+</script>
+</f:verbatim>	
 <%
 CapControlForm capControlForm =  (CapControlForm)JSFParamUtil.getJSFVar("capControlForm");
 CapBankEditorForm editor =  (CapBankEditorForm)JSFParamUtil.getJSFVar("capBankEditor");
 editor.init(capControlForm.getPAOBase());
 %>
+<aa:zoneJSF id="capBankAdv">
 <x:saveState value="#{capBankEditor}"/>
  
  <f:subview id="paoCapBank" rendered="#{capControlForm.visibleTabs['CBCCapBank']}" >
@@ -174,3 +196,4 @@ editor.init(capControlForm.getPAOBase());
   			<f:verbatim></fieldset></f:verbatim>
 
     </f:subview>
+    </aa:zoneJSF>
