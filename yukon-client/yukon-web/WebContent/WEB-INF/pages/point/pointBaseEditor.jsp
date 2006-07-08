@@ -33,8 +33,9 @@
 	<f:verbatim></fieldset></f:verbatim>
 	</h:column>
 	
-	<h:column>
-	<f:verbatim><fieldset><legend>Archive</legend></f:verbatim>
+	<h:column >
+	<f:subview id="archive_point_analog" rendered="#{ptEditorForm.visibleTabs['PointAnalog'] || ptEditorForm.visibleTabs['PointAccum'] || ptEditorForm.visibleTabs['PointCalc']}" >
+	<f:verbatim ><fieldset><legend>Archive</legend></f:verbatim>
 		<f:verbatim><br/></f:verbatim>
 		<x:outputLabel for="Archive_Type" value="Archive Data: "/>
 		<x:selectOneMenu id="Archive_Type" value="#{ptEditorForm.pointBase.point.archiveType}"
@@ -47,8 +48,16 @@
 		<x:selectOneMenu id="Archive_Interval" value="#{ptEditorForm.pointBase.point.archiveInterval}" disabled="#{!ptEditorForm.archiveInterEnabled}">
 			<f:selectItems value="#{ptEditorForm.archiveInterval}"/>
 		</x:selectOneMenu>
-	<f:verbatim></fieldset></f:verbatim>
-
+	<f:verbatim></fieldset><br/></f:verbatim>
+	</f:subview>
+	
+	<f:subview id="archive_point_status" rendered="#{ptEditorForm.visibleTabs['PointStatus']}" >
+	<f:verbatim ><fieldset><legend>Archive</legend></f:verbatim>	
+		<x:outputLabel for="archive_checkbox" value="Archive: "/>
+		<x:selectBooleanCheckbox id="archive_checkbox" value="#{ptEditorForm.archiveStatusData}"/>
+		<f:verbatim></fieldset></f:verbatim>
+	</f:subview>	
+	
 
     <f:subview id="pointAnalog" rendered="#{ptEditorForm.visibleTabs['PointAnalog'] || ptEditorForm.visibleTabs['PointAccum'] || ptEditorForm.visibleTabs['PointCalc']}" >
 	    <f:verbatim><br/><fieldset><legend>Analog Summary</legend></f:verbatim>
@@ -91,6 +100,7 @@
 		</x:selectOneMenu>
 		<f:verbatim></fieldset></f:verbatim>
     </f:subview>
+
     
     <f:subview id="pointCalc" rendered="#{ptEditorForm.visibleTabs['PointCalcStatus'] || ptEditorForm.visibleTabs['PointCalc']}" >
 		<f:verbatim><br/><br/><fieldset><legend>Calculation Summary</legend></f:verbatim>
