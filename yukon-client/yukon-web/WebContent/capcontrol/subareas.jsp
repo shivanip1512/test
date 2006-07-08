@@ -1,3 +1,4 @@
+<%@ page import="com.cannontech.common.constants.LoginController" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <cti:standardPage title="Substation Bus Areas" module="capcontrol">
 <%@include file="cbc_inc.jspf"%>
@@ -5,6 +6,10 @@
 <jsp:useBean id="capControlCache"
 	class="com.cannontech.cbc.web.CapControlCache"
 	type="com.cannontech.cbc.web.CapControlCache" scope="application"></jsp:useBean>
+	<%
+	LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);	
+	CapControlUserOwnerDAO userOwner = new CapControlUserOwnerDAO (capControlCache, user);
+	%>
 <jsp:setProperty name="CtiNavObject" property="moduleExitPage" value="<%=request.getRequestURL().toString()%>"/>
 
 <!-- necessary DIV element for the OverLIB popup library -->
@@ -29,17 +34,18 @@
                 <td>PFactor/Est.</td>
               </tr>
               </table>
-              <div class="scrollLarge">
+              <div >
 		<table id="areaTable" width="98%" border="0" cellspacing="0" cellpadding="0" >
 <%
 		String css = "tableCell";
-		for( int i = 0; i < capControlCache.getAreaNames().size(); i++ )
+		for( int i = 0; i < userOwner.getAreaNames().size(); i++ )
 		{
 			css = ("tableCell".equals(css) ? "altTableCell" : "tableCell");
-			String areaStr = (String)capControlCache.getAreaNames().get(i);
-			SubBus[] areaBuses = capControlCache.getSubsByArea(areaStr);
-			//Feeder[] areaFeeders = capControlCache.getFeedersByArea(areaStr);
-			CapBankDevice[] areaCapBanks = capControlCache.getCapBanksByArea(areaStr);
+			String areaStr = (String)userOwner.getAreaNames().get(i);
+			SubBus[] areaBuses = userOwner.getSubsByArea(areaStr);
+			//Feeder[] areaFeeders = userOwner.getFeedersByArea(areaStr);
+			if (areaBuses.length > 0) {
+			CapBankDevice[] areaCapBanks = userOwner.getCapBanksByArea(areaStr);
 			
 			String totalVars =
 				CBCUtils.format( CBCUtils.calcTotalVARS(areaCapBanks) );
@@ -71,8 +77,8 @@
 		for( int j = 0; j < areaBuses.length; j++ )
 		{
 			SubBus subBus = areaBuses[j];
-			Feeder[] subFeeders = capControlCache.getFeedersBySub(subBus.getCcId());
-			CapBankDevice[] subCapBanks = capControlCache.getCapBanksBySub(subBus.getCcId());
+			Feeder[] subFeeders = userOwner.getFeedersBySub(subBus.getCcId());
+			CapBankDevice[] subCapBanks = userOwner.getCapBanksBySub(subBus.getCcId());
 %>
 		        <tr class="<%=css%>" style="display: none;">
 					<td><font class="lIndent"><%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_NAME_COLUMN)%></font></td>
@@ -84,7 +90,7 @@
 <% 		} %>
 			</a>
 
-
+	<%}%>
 <% } %>
 
             </table>
