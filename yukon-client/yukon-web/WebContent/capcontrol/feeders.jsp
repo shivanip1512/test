@@ -1,7 +1,12 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <cti:standardPage title="Feeders" module="capcontrol">
 <%@include file="cbc_inc.jspf"%>
+<cti:includeCss link="../css/greybox/greybox.css"/>
+<cti:includeScript link = "../JavaScript/GreyBox/AmiJS.js"/>
+<cti:includeScript link = "../JavaScript/GreyBox/greybox.js"/>
+
 <%@ page import="com.cannontech.common.constants.LoginController" %>
+<%@page import="com.cannontech.core.dao.*" %>
 
 <jsp:useBean id="capControlCache"
     class="com.cannontech.cbc.web.CapControlCache"
@@ -36,7 +41,11 @@
 </cti:breadCrumbs>
 
 <script type="text/javascript">
-   Event.observe(window, 'load', callBack);
+
+	Event.observe(window, 'load', function () {								
+ 								callBack();
+ 								});
+ 	var GB_IMG_DIR = "../editor/css/greybox/";
 </script>
 <%
 String css = "tableCell";
@@ -71,12 +80,14 @@ if( subBus != null ) {
 					
 					<td>
 					<% if( hasControl ) { %>
+						<!--Create  popup menu html-->
+						<input id="cmd_sub_<%=subBus.getCcId()%>" type="hidden" name = "cmd_dyn" value= "" />				
 						<a type="state" name="cti_dyn" id="<%=subBus.getCcId()%>"
 							style="color: <%=CBCDisplay.getHTMLFgColor(subBus)%>;"
 							href="javascript:void(0);"
 						    <%= popupEvent %> ="return overlib(
-								createIFrame('subCmd.jsp?subId=<%=subBus.getCcId()%>', 210, 170, 'tempIFrame', 0),
-								STICKY, WIDTH,210, HEIGHT,170, OFFSETX,-15,OFFSETY,-15, FULLHTML);"
+								$F('cmd_sub_<%=subBus.getCcId()%>'),
+								STICKY, WIDTH,210, HEIGHT,170, OFFSETX,-15,OFFSETY,-15,MOUSEOFF, FULLHTML);"
 						    onmouseout = <%=nd %> > 
 						    
 					<% } else { %>
@@ -130,7 +141,7 @@ if( subBus != null ) {
          </tr>
        </table>
 
-			<div class="scrollSmall">
+			<div>
 			<table id="fdrTable" width="98%" border="0" cellspacing="0" cellpadding="0">
 <%
 css = "tableCell";
@@ -144,13 +155,14 @@ for( int i = 0; i < feeders.length; i++ )
 
 					<td>
 <% if( hasControl ) { %>
+	<input id="cmd_fdr_<%=feeder.getCcId()%>" type="hidden" name = "cmd_dyn" value= "" />	
 	<a type="state" name="cti_dyn" id="<%=feeder.getCcId()%>"
 		style="color: <%=CBCDisplay.getHTMLFgColor(feeder)%>;"
 		href="javascript:void(0);"
 	    <%= popupEvent %> ="return overlib(
-			createIFrame('feederCmd.jsp?feederId=<%=feeder.getCcId()%>', <%=feeder.getCcName().length() * 8 +  75%>, 75, 'tempIFrame', 0),
+			$F('cmd_fdr_<%=feeder.getCcId()%>'),
 			STICKY, WIDTH,<%=feeder.getCcName().length() * 8 +  75%>, HEIGHT,75, OFFSETX,-15, OFFSETY,-15,
-			 FULLHTML);"
+			MOUSEOFF, FULLHTML);"
 	    onmouseout = <%=nd %> >	
 <% } else { %>
 	<a type="state" name="cti_dyn" id="<%=feeder.getCcId()%>" style="color: <%=CBCDisplay.getHTMLFgColor(feeder)%>;" >
@@ -192,12 +204,27 @@ Event.observe(window, 'load', function() { new CtiNonScrollTable('fdrTable','fdr
 
 	<br>
 
-	<cti:titledContainer title="Capacitor Banks">
+	<cti:titledContainer title="Capacitor Banks" id="last_titled_container">
          <form id="capBankForm" action="feeders.jsp" method="post">
              <table id="capBankHeaderTable" width="100%" border="0" cellspacing="0" cellpadding="0">
+             
+             <tr class="columnHeader lAlign">
+              	<td/>
+              	<td> Parent Feeder </td>
+              	<td/>
+              	<td/>
+              	<td/>
+              	<td/>
+              	<td/>
+              	<td/>
+              <tr/> 
              <tr class="columnHeader lAlign">
                 <td><input type="checkbox" name="chkAllBanksBx"
-                    onclick="checkAll(this, 'cti_chkbxBanks');" /> CB Name (Order)
+                    onclick="checkAll(this, 'cti_chkbxBanks');" /> </td>
+                    
+             <td id="parent_fdr_td"/>  
+ 
+                    <td> CB Name (Order)
                     <img class="rAlign popupImg" src="images\question.gif"
                         onmouseover="statusMsg(this, 'Order is the order the CapBank will control in.<br>Commands that can be sent to a field device are initiated from this column');" />
                 </td>
@@ -207,12 +234,14 @@ Event.observe(window, 'load', function() { new CtiNonScrollTable('fdrTable','fdr
                 <td>Bank Address</td>
                 <td>Date/Time</td>
                 <td>Bank Size</td>
-                <td>Parent Feeder</td>
+  
                 <td>Op Count</td>
-              </tr>
+              </tr>              
+              
+
              </table>
 
-		<div class="scrollSmall">
+		<div>
 			<table id="capBankTable" width="98%" border="0" cellspacing="0" cellpadding="0" >
 
 
@@ -225,13 +254,34 @@ for( int i = 0; i < capBanks.length; i++ )
 	css = ("tableCell".equals(css) ? "altTableCell" : "tableCell");
 %>
 				<tr class="<%=css%>">
-					<td><input type="checkbox" name="cti_chkbxBanks" value="<%=capBank.getCcId()%>"/>
+										
+
+					<td><input type="checkbox" name="cti_chkbxBanks" value="<%=capBank.getCcId()%>" /></td>
+					<td>
+		          	<a href="javascript:void(0);"
+		          		<% if( capBank.isBankMoved() ) {%>
+		          			class="warning" <%= popupEvent %>="return overlib(
+								createIFrame('capBankMove.jsp?capBankId=<%=capBank.getCcId()%>&cmdType=system', 155, 50, 'tempIFrame', 0),
+								STICKY, WIDTH,155, HEIGHT,50, OFFSETX,-15,OFFSETY,-15,
+								 FULLHTML);"
+								onmouseout = <%=nd %> 	
+								
+		          			
+		          		<% } else { %>
+							onmouseover="statusMsg(this, 'Click here to temporarily move this CapBank from it\'s current parent feeder');"
+		          			onclick="showPopUp('tempmove.jsp?bankid='+<%=capBank.getCcId()%>);"
+		          		<% } %>
+						><%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_PARENT_COLUMN)%>
+					</a>					
+					</td>
+					<td>
 					<% if( hasControl && !CtiUtilities.STRING_NONE.equals(subBus.getControlUnits()) ) { %>
+						<input id="cmd_cap_<%=capBank.getCcId()%>_field" type="hidden" name = "cmd_dyn" value= "" />
 						<a href="javascript:void(0);"
 						    <%= popupEvent %>="return overlib(
-								createIFrame('capBankCmd.jsp?capBankId=<%=capBank.getCcId()%>&cmdType=field', 155, 110, 'tempIFrame', 0),
+								$F('cmd_cap_<%=capBank.getCcId()%>_field'),
 								STICKY, WIDTH,155, HEIGHT,110, OFFSETX,-15,OFFSETY,-15,
-								 FULLHTML);"
+								MOUSEOFF, FULLHTML, ABOVE);"
 						    onmouseout = <%=nd %> >	
 							
 							<%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_NAME_COLUMN) %>
@@ -241,17 +291,21 @@ for( int i = 0; i < capBanks.length; i++ )
 							<%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_NAME_COLUMN) %>
 						</span>
 					<% } %>
-					</td>
+					<a href="http://google.com" onclick="return GB_show('Google', 'http://google.com', 480, 600)">
+					 Img
+					</a>
+</td>
 
 					<td>
 					<% if( hasControl ) { %>
+						<input id="cmd_cap_<%=capBank.getCcId()%>_system" type="hidden" name = "cmd_dyn" value= "" />
 						<a type="state" name="cti_dyn" id="<%=capBank.getCcId()%>"
 							style="color: <%=CBCDisplay.getHTMLFgColor(capBank)%>;"
 							href="javascript:void(0);"
 						    <%= popupEvent %>	= "return overlib(
-								createIFrame('capBankCmd.jsp?capBankId=<%=capBank.getCcId()%>&cmdType=system', 155, 200, 'tempIFrame', 0),
+								$F('cmd_cap_<%=capBank.getCcId()%>_system'),
 								STICKY, WIDTH,155, HEIGHT,200, OFFSETX,-15,OFFSETY,-15,
-								 FULLHTML);"
+								MOUSEOFF, FULLHTML, ABOVE);"
 						    
 						    onmouseout = <%=nd %> >	
 							
@@ -268,25 +322,7 @@ for( int i = 0; i < capBanks.length; i++ )
 					</td>
 					
 					<td><%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_BANK_SIZE_COLUMN)%></td>
-					
-					<td>
 
-		          	<a href="javascript:void(0);"
-		          		<% if( capBank.isBankMoved() ) {%>
-		          			class="warning" <%= popupEvent %>="return overlib(
-								createIFrame('capBankMove.jsp?capBankId=<%=capBank.getCcId()%>&cmdType=system', 155, 200, 'tempIFrame', 0),
-								STICKY, WIDTH,155, HEIGHT,200, OFFSETX,-15,OFFSETY,-15,
-								 FULLHTML);"
-								onmouseout = <%=nd %> >	
-								
-		          			
-		          		<% } else { %>
-							onmouseover="statusMsg(this, 'Click here to temporarily move this CapBank from it\'s current parent feeder');"
-		          			onclick="showPopUp('tempmove.jsp?bankid='+<%=capBank.getCcId()%>);"
-		          		<% } %>
-						><%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_PARENT_COLUMN)%>
-					</a>					
-					</td>
 
 					<td><a type="param2" name="cti_dyn" id="<%=capBank.getCcId()%>">
 					<%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_OP_COUNT_COLUMN)%></a>
@@ -299,13 +335,13 @@ for( int i = 0; i < capBanks.length; i++ )
 		<input type="hidden" id="lastUpdate" value="">
     </form>
 <script type="text/javascript">
-Event.observe(window, 'load', function() { new CtiNonScrollTable('capBankTable','capBankHeaderTable');});
+Event.observe(window, 'load', function() { 
+								initFilter($('parent_fdr_td'), $('capBankTable'), 1);			
+								new CtiNonScrollTable('capBankTable','capBankHeaderTable');
+});
 </script>
             
             </cti:titledContainer>
 
-
-
-
-
+	<div id="cmd_msg_div" style="display: none;" />
 </cti:standardPage>
