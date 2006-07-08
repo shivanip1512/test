@@ -44,7 +44,7 @@ import com.cannontech.web.util.JSFParamUtil;
 import com.cannontech.web.util.JSFTreeUtils;
 import com.cannontech.yukon.cbc.CBCUtils;
 
-/**
+/** 
  * @author ryan
  *
  */
@@ -54,10 +54,11 @@ public class CBControllerEditor {
     
     private String cbcControllerStatusMessage = null;
     private HtmlTree pointTree = null;
-    private boolean editingController;
+    private boolean editingController  = false;
     private TreeNode pointList = null;
     private long serialNumber = 0;
     private int deviceType = 0;
+    
     
 
     
@@ -79,15 +80,15 @@ public class CBControllerEditor {
         //if there was anything such as DB exception or empty points
         //message status message will be set
         retrieveDB();
-        
         //complain if the DB object is not null and it is not a Controller
-        if (getPaoCBC() != null && !(getPaoCBC() instanceof ICapBankController)) {
-            CTILogger.warn("The CapController editor only allows PAO ids that map to a Controller, paoID=" + paoId + " is not an instance of a ICapBankController");
-        }
+        if (getPaoCBC() != null) {
+        	if (!(getPaoCBC() instanceof ICapBankController)) {
+        		CTILogger.warn("The CapController editor only allows PAO ids that map to a Controller, paoID=" + paoId + " is not an instance of a ICapBankController");
+        	}
         else {
         	
         	if (deviceCBC instanceof CapBankController702x) {          
-        		showScanRate();
+        		
         		setSerialNumber ( ((CapBankController702x)deviceCBC).getSerialNumber().longValue());
             
         	}
@@ -97,6 +98,8 @@ public class CBControllerEditor {
         	}
 //        	setDeviceType(PAOGroups.getDeviceType(deviceCBC.getPAOType()));
         	this.deviceType = PAOGroups.getDeviceType(deviceCBC.getPAOType());
+        
+        	}
         }
     }
 
@@ -136,14 +139,17 @@ public class CBControllerEditor {
      * @return
      */
     public boolean isTwoWay() {
-        return CBCUtils.isTwoWay(PAOGroups.getDeviceType(getPaoCBC().getPAOType()));
+        if (getPaoCBC() != null)
+        	return CBCUtils.isTwoWay(PAOGroups.getDeviceType(getPaoCBC().getPAOType()));
+        return false;
     }
     
     public boolean isOneWay() {
-        if ( !isTwoWay() && (getPaoCBC() instanceof ICapBankController) )
-            return true;
-        else
-            return false;
+        if (getPaoCBC() != null) {
+        	if ( !isTwoWay() && (getPaoCBC() instanceof ICapBankController) )
+        		return true;
+        }
+        return false;
         
     }
 
@@ -189,36 +195,40 @@ public class CBControllerEditor {
 	        TreeNode points = new TreeNodeBase("pointtype", "analog", false);
 	        TreeNode status = new TreeNodeBase("pointtype", "status", false);
 	        TreeNode accum = new TreeNodeBase("pointtype","accumulator", false);
-	        
-	        LitePoint[] tempArray = DaoFactory.getPaoDao().getLitePointsForPAObject(deviceCBC.getPAObjectID().intValue());
-	
-	        TreeSet statusSet = new TreeSet();
-	        TreeSet analogSet = new TreeSet();
-	        TreeSet accumSet = new TreeSet();
-	        
-	        for (int i = 0; i < tempArray.length; i++) {
-	            LitePoint litePoint = tempArray[i];
-	            int pointType = litePoint.getPointType();
-				if (pointType == PointTypes.ANALOG_POINT || pointType == PointTypes.CALCULATED_POINT) {
-	                analogSet.add(litePoint);
-	            } else if (pointType == PointTypes.STATUS_POINT || pointType == PointTypes.CALCULATED_STATUS_POINT) {
-	                statusSet.add(litePoint);
-	            } else if (pointType == PointTypes.PULSE_ACCUMULATOR_POINT){
-	                accumSet.add(litePoint);
-	            }
+	        if (deviceCBC != null) {
+		        LitePoint[] tempArray = DaoFactory.getPaoDao().getLitePointsForPAObject(deviceCBC.getPAObjectID().intValue());
+		
+		        TreeSet statusSet = new TreeSet();
+		        TreeSet analogSet = new TreeSet();
+		        TreeSet accumSet = new TreeSet();
+		        
+		        for (int i = 0; i < tempArray.length; i++) {
+		            LitePoint litePoint = tempArray[i];
+		            int pointType = litePoint.getPointType();
+					if (pointType == PointTypes.ANALOG_POINT || pointType == PointTypes.CALCULATED_POINT) {
+		                analogSet.add(litePoint);
+		            } else if (pointType == PointTypes.STATUS_POINT || pointType == PointTypes.CALCULATED_STATUS_POINT) {
+		                statusSet.add(litePoint);
+		            } else if (pointType == PointTypes.PULSE_ACCUMULATOR_POINT){
+		                accumSet.add(litePoint);
+		            }
+		        }
+		
+		        points = JSFTreeUtils.createTreeFromPointList(analogSet, points);
+		        status = JSFTreeUtils.createTreeFromPointList(statusSet, status);
+		        accum = JSFTreeUtils.createTreeFromPointList(accumSet, accum);
+		        
+		        pointList.getChildren().add(status);
+		        pointList.getChildren().add(points);
+		        pointList.getChildren().add(accum);
+		        
+		        //make sure we are will be grouping the nodes that have a lot of points attached to them
+		        JSFTreeUtils.splitTree(pointList, 100, "sublevels");
 	        }
-	
-	        points = JSFTreeUtils.createTreeFromPointList(analogSet, points);
-	        status = JSFTreeUtils.createTreeFromPointList(statusSet, status);
-	        accum = JSFTreeUtils.createTreeFromPointList(accumSet, accum);
-	        
-	        pointList.getChildren().add(status);
-	        pointList.getChildren().add(points);
-	        pointList.getChildren().add(accum);
-
-        }
+	    }
         //restore any previous states of tree
         restoreState(getPointTree());
+       
 		return pointList;
     }
 
@@ -379,26 +389,6 @@ public class CBControllerEditor {
 		
 	}
     
-    public void showScanRate() {
-        // find out if this device is TwoWay (used for 2 way CBCs)
-        if (CBCUtils.isTwoWay(PAOGroups.getDeviceType(getPaoCBC().getPAOType()))) 
-        {
-            
-            TwoWayDevice twoWayDev = (TwoWayDevice)getPaoCBC();
-            twoWayDev.getDeviceScanRateMap().put(
-                        DeviceScanRate.TYPE_INTEGRITY,
-                        new DeviceScanRate(getPaoCBC()
-                                .getPAObjectID(), DeviceScanRate.TYPE_INTEGRITY));
-            
-        
-            twoWayDev.getDeviceScanRateMap().put(
-                                                 DeviceScanRate.TYPE_EXCEPTION,
-                                                 new DeviceScanRate(getPaoCBC()
-                                                         .getPAObjectID(), DeviceScanRate.TYPE_EXCEPTION));
-                                     
-                                 
-        }
-    }
 
     public void pointClick (ActionEvent ae){
         FacesMessage fm = new FacesMessage();
@@ -494,7 +484,7 @@ public class CBControllerEditor {
 	public void resetSerialNumber () {  	
     	if (deviceCBC != null) {
 			if (deviceCBC instanceof CapBankController702x) {          
-	    		showScanRate();
+	    		
 	    		setSerialNumber ( ((CapBankController702x)deviceCBC).getSerialNumber().longValue());
 	        
 	    	}
@@ -522,18 +512,22 @@ public class CBControllerEditor {
 
 
 	public boolean isDevice702X() {
-		int deviceType = PAOGroups.getDeviceType(getPaoCBC().getPAOType());
-		if (DeviceTypesFuncs.isCapBankController (deviceType) && 
-				DeviceTypesFuncs.cbcHasPort(deviceType))
-			return true;
+		if (getPaoCBC() != null) {
+			int deviceType = PAOGroups.getDeviceType(getPaoCBC().getPAOType());
+			if (DeviceTypesFuncs.isCapBankController (deviceType) && 
+					DeviceTypesFuncs.cbcHasPort(deviceType))
+				return true;
+		}
 		return false;		
 	}
 
 	public boolean isDevice701X() {
-		int deviceType = PAOGroups.getDeviceType(getPaoCBC().getPAOType());
-		if (DeviceTypesFuncs.isCapBankController (deviceType) && 
-				(! DeviceTypesFuncs.cbcHasPort(deviceType) ) )
-			return true;
+		if (getPaoCBC() != null) {
+			int deviceType = PAOGroups.getDeviceType(getPaoCBC().getPAOType());
+			if (DeviceTypesFuncs.isCapBankController (deviceType) && 
+					(! DeviceTypesFuncs.cbcHasPort(deviceType) ) )
+				return true;
+		}
 		return false;		
 	}
 
