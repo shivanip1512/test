@@ -1,4 +1,6 @@
 <%@ page import="com.cannontech.common.constants.LoginController" %>
+<%@ page import="com.cannontech.cbc.web.CapControlUserOwnerDAO" %>
+<%@page import="com.cannontech.core.dao.*" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <cti:standardPage title="Substations" module="capcontrol">
 <%@include file="cbc_inc.jspf"%>
@@ -12,14 +14,15 @@
 <div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
 
 <%
-    String nd = "\"return nd(5000);\"";
+    String nd = "\"return nd();\"";
     LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);			
 	String popupEvent = DaoFactory.getAuthDao().getRolePropertyValue(user, WebClientRole.POPUP_APPEAR_STYLE);
 	if (popupEvent == null) popupEvent = "onmouseover"; 
     
-    SubBus[] areaSubs =
-        capControlCache.getSubsByArea( cbcSession.getLastArea() );
-
+    //SubBus[] areaSubs =
+    //    capControlCache.getSubsByArea( cbcSession.getLastArea() );
+	CapControlUserOwnerDAO userOwner = new CapControlUserOwnerDAO (capControlCache, user);
+	SubBus[] areaSubs = userOwner.getSubsByArea(cbcSession.getLastArea());
     boolean hasControl = CBCWebUtils.hasControlRights(session);
 %>
 
@@ -31,16 +34,32 @@
 </cti:breadCrumbs>
   
 <script type="text/javascript">
-  Event.observe(window, 'load', callBack);
+	
+ Event.observe(window, 'load', function () {								
+ 								callBack();
+ 								});
 </script>
 
-<cti:titledContainer title="<%="Substation Buses In Area:  " + cbcSession.getLastArea()%>">
+<cti:titledContainer title="<%="Substation Buses In Area:  " + cbcSession.getLastArea()%>" id="last_titled_container">
           
-          
+		<%if (areaSubs.length == 0) {%>
+		<!--
+        <form id="subForm" action="redirect.jsp" method="post">
+		<input type="hidden" name="reason" value="No subs were found. "/>
+		<input type="hidden" name="message" value = "Subs.jsp <i>might<i> be defined in db_editor. ">
+		<input type="hidden" name="redirectUrl" value="/capcontrol/subareas.jsp"/>
+		<script type="text/javascript">
+			$('subForm').submit();
+		</script>
+		</form>
+		-->
+        <%} else  {%> 
+		
+	          
             <form id="subForm" action="feeders.jsp" method="post">
             <input type="hidden" name="<%=CBCSessionInfo.STR_SUBID%>" />
           
-            <table id="subHeaderTable" width="98%" border="0" cellspacing="0" cellpadding="0">
+            <table id="subHeaderTable" width="98%" border="0" cellspacing="0" cellpadding="0" >
               <tr class="columnHeader lAlign">              
                 <td>
                 <input type="checkbox" id="chkAllBx" onclick="checkAll(this, 'cti_chkbxSubs');"/>
@@ -54,7 +73,7 @@
                 <td>Daily / Max Ops</td>
               </tr>
 			</table>
-<div class="scrollLarge">
+<div>
 <table id="subTable" width="98%" border="0" cellspacing="0" cellpadding="0" >
 <%
 String css = "tableCell";
@@ -80,14 +99,17 @@ for( int i = 0; i < areaSubs.length; i++ )
 				</td>
 				
 				<td>
+				
 			<% if( hasControl && !CtiUtilities.STRING_NONE.equals(subBus.getControlUnits()) ) { %>
+				<!--Create  popup menu html-->
+				<input id="cmd_sub_<%=subBus.getCcId()%>" type="hidden" name = "cmd_dyn" value= "" />
 				<a type="state" name="cti_dyn" id="<%=subBus.getCcId()%>"
 					style="color: <%=CBCDisplay.getHTMLFgColor(subBus)%>;"
 					href="javascript:void(0);"
 				    <%= popupEvent %> ="return overlib(
-						createIFrame('subCmd.jsp?subId=<%=subBus.getCcId()%>', 210, 170 ,'tempIFrame', 0),
+						$F('cmd_sub_<%=subBus.getCcId()%>'),
 						STICKY, WIDTH,210, HEIGHT,170, OFFSETX,-15,OFFSETY,-15,
-						 FULLHTML);"
+						MOUSEOFF, FULLHTML, ABOVE);"
 				    onmouseout= <%=nd%> >
 
 			<% } else { %>
@@ -119,12 +141,13 @@ for( int i = 0; i < areaSubs.length; i++ )
 
             </table>
 	</div>
-	<input type="hidden" id="lastUpdate" value="">
-        </form>
-
+	<input type="hidden" id="lastUpdate" value="" />
+		        
+</form>
+<%}%>
 <script type="text/javascript">
 Event.observe(window, 'load', function() { new CtiNonScrollTable('subTable','subHeaderTable');});
 </script>
-      </cti:titledContainer>
-
+</cti:titledContainer>
+	<div id="cmd_msg_div" style="display: none;" />
 </cti:standardPage>
