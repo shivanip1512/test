@@ -1,7 +1,33 @@
+
+<%@ page pageEncoding="UTF-8" import="java.util.*"%>
+<%@ page import="org.ajaxanywhere.*"%>
 <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h"%>
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f"%>
 <%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x"%>
+<%@ taglib uri="http://ajaxanywhere.sourceforge.net" prefix="aa" %>
+<%
+
+    if (AAUtils.isAjaxRequest(request)){
+        AAUtils.addZonesToRefresh(request, "varPointList;wattPointList;voltPointList");
+    }
+%>
 <f:verbatim>
+<script type="text/JavaScript" src="../../../JavaScript/aa.js"></script>
+<script>
+	ajaxAnywhere.getZonesToReload = function(url, submitButton) {
+		
+		if ( $("aazone.varPointList") )
+			return "varPointList";
+		if ( $("aazone.wattPointList") )
+			return "wattPointList";
+		if ( $("aazone.voltPointList") )
+			return "voltPointList";
+	}
+	
+    ajaxAnywhere.formName = "editorForm";
+   	ajaxAnywhere.substituteFormSubmitFunction();
+   	ajaxAnywhere.substituteSubmitButtonsBehavior(true);
+</script>
     <script type="text/javascript">
         addSmartScrolling('VARscrollOffsetTop', 'VARscrollable_div', null, null);
         addSmartScrolling('WATTscrollOffsetTop', 'WATTscrollable_div', null, null);
@@ -56,6 +82,7 @@
 
 				<x:div forceId="true" id="VARscrollable_div" styleClass="scrollSmall">
 
+				<aa:zoneJSF id="varPointList" >
 					<x:tree2 id="subVarPaoListTree" value="#{capControlForm.varTreeData}" var="node" showRootNode="false" varNodeToggler="t" preserveToggle="true" clientSideToggle="false">
 
 						<f:facet name="root">
@@ -70,6 +97,12 @@
 								<x:outputText id="paChCnt" value="#{node.description} (#{node.childCount})" rendered="#{!empty node.children}" />
 							</x:panelGroup>
 						</f:facet>
+						
+						<f:facet name="sublevels">
+							<x:panelGroup>
+								<x:outputText id="subLvlCnt" value="#{node.description} (#{node.childCount})" rendered="#{!empty node.children}" />
+							</x:panelGroup>
+						</f:facet>
 
 						<f:facet name="points">
 							<x:panelGroup>
@@ -82,7 +115,8 @@
 						</f:facet>
 
 					</x:tree2>
-				</x:div>
+				</aa:zoneJSF>
+			</x:div>
 
 
 				<x:commandLink id="subVarPoint_setNone" title="Do not use a point for the VAR value" value="No VAR Point" actionListener="#{capControlForm.varPtTeeClick}" styleClass="medStaticLabel">
@@ -112,6 +146,7 @@
 				<x:outputText id="subWattPoint_none" rendered="#{capControlForm.PAOBase.capControlSubstationBus.currentWattLoadPointID == 0}" value="(none)" styleClass="medLabel" />
 
 				<x:div forceId="true" id="WATTscrollable_div" styleClass="scrollSmall">
+					<aa:zoneJSF id="wattPointList" >
 					<x:tree2 id="subWattListTree" value="#{capControlForm.wattTreeData}" var="node" showRootNode="false" varNodeToggler="t" preserveToggle="true" clientSideToggle="false">
 
 						<f:facet name="root">
@@ -123,6 +158,12 @@
 						<f:facet name="paos">
 							<x:panelGroup>
 								<x:outputText id="wPAChCnt" value="#{node.description} (#{node.childCount})" rendered="#{!empty node.children}" />
+							</x:panelGroup>
+						</f:facet>
+						
+						<f:facet name="sublevels">
+							<x:panelGroup>
+								<x:outputText id="subLvlCnt" value="#{node.description} (#{node.childCount})" rendered="#{!empty node.children}" />
 							</x:panelGroup>
 						</f:facet>
 
@@ -137,6 +178,7 @@
 						</f:facet>
 
 					</x:tree2>
+					</aa:zoneJSF>
 				</x:div>
 				<x:inputHidden forceId="true" id="VARscrollOffsetTop" value="#{capControlForm.offsetMap['VARscrollOffsetTop']}" />
 				<x:inputHidden forceId="true" id="WATTscrollOffsetTop" value="#{capControlForm.offsetMap['WATTscrollOffsetTop']}" />
@@ -170,6 +212,7 @@
 				<x:outputText id="subVoltPoint_none" rendered="#{capControlForm.PAOBase.capControlSubstationBus.currentVoltLoadPointID == 0}" value="(none)" styleClass="medLabel" />
 
 				<x:div forceId="true" id="VOLTscrollable_div" styleClass="scrollSmall">
+					<aa:zoneJSF id="voltPointList" >
 					<x:tree2 id="subVoltPaoListTree" value="#{capControlForm.voltTreeData}" var="node" showRootNode="false" varNodeToggler="t" preserveToggle="true" clientSideToggle="false">
 
 						<f:facet name="root">
@@ -183,6 +226,13 @@
 								<x:outputText id="vltChCnt" value="#{node.description} (#{node.childCount})" rendered="#{!empty node.children}" />
 							</x:panelGroup>
 						</f:facet>
+						
+						<f:facet name="sublevels">
+							<x:panelGroup>
+								<x:outputText id="subLvlCnt" value="#{node.description} (#{node.childCount})" rendered="#{!empty node.children}" />
+							</x:panelGroup>
+						</f:facet>
+						
 
 						<f:facet name="points">
 							<x:panelGroup>
@@ -196,6 +246,7 @@
 						</f:facet>
 
 					</x:tree2>
+					</aa:zoneJSF>
 				</x:div>
 				<x:commandLink id="subVoltPoint_setNone" title="Do not use a point for the Volt value" styleClass="medStaticLabel" value="No Volt Point" actionListener="#{capControlForm.voltPtTeeClick}">
 					<f:param name="ptID" value="0" />
@@ -212,5 +263,7 @@
 	</f:subview>
 
 </f:subview>
+
+
 
 
