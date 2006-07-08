@@ -229,10 +229,9 @@ function createURLreq( elems, initialURL, attrib )
 // -------------------------------------------
 function updateHTML( result)
 {
-	//since IE has problem with large size updates do it
-	//in smaller size chunks
     if( result != null )
     {
+		
         var elems = document.getElementsByName('cti_dyn');
         for (var i = 0; i < result.length; i++)
         {
@@ -259,6 +258,8 @@ function updateHTML( result)
                 }
             }
         }
+		updateCommandMenu(result);
+		
 		var lastUpdate = document.getElementById('lastUpdate');
         lastUpdate.value = new Date().getTime();
         setTimeout('callBack()', clientRefresh );
@@ -266,6 +267,7 @@ function updateHTML( result)
     }
 
 }
+
 
 // -------------------------------------------
 //Callback function for the xml HTTP request to
@@ -288,7 +290,7 @@ function processMenuReq()
         response = req.responseText;
 
         overlib(
-            response, FULLHTML, STICKY, MOUSEOFF, FIXX, 25, FIXY, 95);
+            response, FULLHTML, STICKY, MOUSEOFF, FIXX, 425, FIXY, 225);
 
         //always do this
         freeReq( manMsgID );        
@@ -418,9 +420,13 @@ function editorPost()
     //only allow the editing of the zeroth element for now
     if ( validElems.length <= 0 )
         alert('You must check the item you want to edit first');
-    else
+    else {
+       if (validElems.length > 1)
+        	alert ("You can only edit 1 item at a time");
         window.location =
             getUrlType(validElems) + '&itemid=' + validElems[0].getAttribute('value');
+	
+	}
 }
 
 // -------------------------------------------
@@ -444,9 +450,12 @@ function copyPost()
     //only allow the editing of the zeroth element for now
     if ( validElems.length <= 0 )
         alert('You must check the item you want to edit first');
-    else 
+    else {      
+        if (validElems.length > 1)
+        	alert ("You can only copy 1 item at a time"); 
         window.location = getUrlType(validElems, 'copy') + '&itemid=' + validElems[0].getAttribute('value');        
-        
+        }
+     
     
 }
 
@@ -536,40 +545,43 @@ function toggleImg( imgID ) {
     }
 }
 
+
+
+function alignHeaders(mainTable, headerTable) {
+
+mytable = document.getElementById(mainTable);
+
+hdrTable =  document.getElementById(headerTable);
+hdrRow=hdrTable.getElementsByTagName('tr').item(0);
+
+for (j=0; j < mytable.getElementsByTagName('tr').length; j ++ ) {
+	var myrow = mytable.getElementsByTagName('tr').item(j);
+	
+	if ((myrow != null) && myrow.style.display != 'none') {
+		var colNum = myrow.cells.length;
+	
+		for(i=0;i < colNum - 1; i++) {
+			maxWidth = Math.max(hdrRow.getElementsByTagName('td').item(i).offsetWidth, myrow.cells[i].offsetWidth);
+			hdrRow.getElementsByTagName('td').item(i).width = maxWidth;
+			myrow.cells[i].width = maxWidth;
+			
+			                 	                                       
+			}
+	
+		}
+	}
+}
+
 var CtiNonScrollTable = Class.create();
 CtiNonScrollTable.prototype = {
   initialize: function(mainTable, headerTable) {
     this.mainTable = mainTable;
     this.headerTable = headerTable;
-    this._alignHeaders();
-    Event.observe(window, 'resizeend', this._alignHeaders.bind(this)  ,false);
-},
-
-_alignHeaders: function() {
-
-var mytable = $(this.mainTable);
-var headerTable = $(this.headerTable);
-
-
-mytable = document.getElementById(this.mainTable);
-myrow=mytable.getElementsByTagName('tr').item(0);
-
-hdrTable =  document.getElementById(this.headerTable);
-hdrRow=hdrTable.getElementsByTagName('tr').item(0);
-
-
-var colNum = myrow.cells.length;
-
-for(i=0;i < colNum - 1; i++) {
-
-maxWidth = Math.max(hdrRow.getElementsByTagName('td').item(i).offsetWidth, myrow.cells[i].offsetWidth);
-hdrRow.getElementsByTagName('td').item(i).width = maxWidth;
-myrow.cells[i].width = maxWidth;
-                                                        
-}
-
-}
-
+    alignHeaders(mainTable, headerTable);
+    Event.observe(window, 'resizeend', function () { 
+    												alignHeaders (mainTable, headerTable)
+    	});
+	}
 }
 
 function addLockButtonForButtonGroup (groupId) {
@@ -623,3 +635,64 @@ function pause(numberMillis) {
                 return;
         }
     }
+    
+
+
+	function applyFilter(select_filter, parent_table, column_filter_index) {
+		var rows = parent_table.getElementsByTagName('tr'); 
+		//make all rows visible
+		for (var i=0; i < rows.length; i++) {
+			var row = rows[i];
+			row.style.display = 'block';		
+		}
+		if (select_filter.options[select_filter.selectedIndex].text == 'All Feeders')
+			return;
+		for (var i=0; i < rows.length; i++) {
+			var row = rows[i];
+			var cells = row.getElementsByTagName('td');
+			var parent_fdr = cells[column_filter_index];
+			displayed_name = new String (parent_fdr.innerText);
+		 	selected_name = new String (select_filter.options[select_filter.selectedIndex].text);
+			//displayed name always contains a white space at the end
+			if (trim(displayed_name) != trim (selected_name))
+				row.style.display = 'none';
+		}	
+	}
+
+function initFilter(parent_td, parent_table, column_filter_index) {
+		var unique_options_list = new Array;
+		var rows = parent_table.getElementsByTagName ('tr');	 
+		var html = "<select id='parent_fdr_slct' onchange='applyFilter(this, capBankTable, 1);'>";
+		html +=    "<option> All Feeders </option>"; 
+		parent_td.innerText = "Parent Feeder";
+		parent_td.innerHTML = "";
+		for (var i=0; i < rows.length; i++) {
+			var row = rows[i];
+			var cells = row.getElementsByTagName('td');
+			var displayed_name = cells[column_filter_index].innerText;
+		 	if (!isOnTheList (unique_options_list, displayed_name)) {
+		 		unique_options_list[unique_options_list.length ++] =  displayed_name;
+		 		html += "<option>" + displayed_name + "</option>";
+			}
+		}
+	html += "</select>";		
+	parent_td.innerHTML = html;						
+}
+
+function isOnTheList (list, string) {
+	for(var i=0; i < list.length; i++) {
+		if (list[i] == string)
+			return true;
+	}
+return false;
+}	
+/**
+ * Remove white space from a string.
+ */
+function trim (s) {
+	return s.replace(/^\s+|\s+$/g, '');
+}
+
+
+	
+  
