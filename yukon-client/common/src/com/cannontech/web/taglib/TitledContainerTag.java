@@ -11,10 +11,12 @@ import javax.servlet.jsp.tagext.TagSupport;
  */
 public class TitledContainerTag extends TagSupport {
     private String title;
+    private String id = "cti_titled_container";
     
     public int doStartTag() throws JspException {
         try {
-            pageContext.getOut().print("  <table class=\"roundedTable\">\n" + 
+            pageContext.getOut().print("  <table " + "id= " + "\"" + getId()+ "\" " +
+            		"class=\"roundedTable\">\n" + 
                     "    <tr> \n" + 
                     "      <td class=\"upperLeft\"></td>\n" + 
                     "      <td class=\"top\">");
@@ -58,4 +60,12 @@ public class TitledContainerTag extends TagSupport {
     public void setTitle(String title) {
         this.title = title;
     }
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
 }
