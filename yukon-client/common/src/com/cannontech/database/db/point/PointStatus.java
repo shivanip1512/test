@@ -13,7 +13,7 @@ public class PointStatus extends com.cannontech.database.db.DBPersistent
 	private Integer initialState = new Integer(0);
 	private String controlType = com.cannontech.database.data.point.PointTypes.getType(com.cannontech.database.data.point.PointTypes.CONTROLTYPE_NONE);
 	private Character controlInhibit = new Character('N');
-	private Integer controlOffset = new Integer(0);
+	private Integer controlOffset = new Integer(1);
 	private Integer closeTime1 = new Integer(0);
 	private Integer closeTime2 = new Integer(0);
 	private String stateZeroControl = "control open";
