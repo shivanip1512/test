@@ -208,4 +208,11 @@ a.altTableCell:active, a.altTableCell:visited, a.altTableCell:link, a.altTableCe
 
 .cmdPopupMenu {
     font-size: 12px;
+    background-color: white;
+}
+
+.top {
+    background-color: #888888;
+    font-weight: bold;
+    color: white;
 }
