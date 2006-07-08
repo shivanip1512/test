@@ -88,7 +88,7 @@
                     <h:selectBooleanCheckbox id="scanIntegrityChk" onclick="submit();"
                             valueChangeListener="#{capControlForm.showScanRate}"
                             value="#{capControlForm.CBControllerEditor.editingIntegrity}"
-                            immediate="true" disabled="#{!capControlForm.CBControllerEditor.editingController}"/>
+                            disabled="#{!capControlForm.CBControllerEditor.editingController}"/>
                     <f:verbatim><br/></f:verbatim>
                     <x:outputLabel for="scanIntegrityChk" value="Class 0,1,2,3 Scan" title="Integrity scan type" />
                     <f:verbatim><br/></f:verbatim>
@@ -189,6 +189,12 @@
                                 <x:outputText id="paChCnt" value="#{node.description} (#{node.childCount})" rendered="#{!empty node.children}" />
                             </x:panelGroup>
                         </f:facet>
+                                          								
+						<f:facet name="sublevels">
+							<x:panelGroup>
+								<x:outputText id="subLvlCnt" value="#{node.description} (#{node.childCount})" rendered="#{!empty node.children}" />
+							</x:panelGroup>
+						</f:facet>
                   
                         <f:facet name="points">
                             <x:panelGroup>

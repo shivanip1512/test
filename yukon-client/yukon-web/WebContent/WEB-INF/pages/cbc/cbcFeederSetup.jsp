@@ -1,3 +1,5 @@
+<%@ page pageEncoding="UTF-8" import="java.util.*"%>
+<%@ page import="org.ajaxanywhere.*"%>
 <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h" %>
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %>
 <%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x" %>
@@ -48,7 +50,11 @@
 					<x:outputText id="paChCnt" value="#{node.description} (#{node.childCount})" rendered="#{!empty node.children}"/>
 	        	</x:panelGroup>
 	        </f:facet>
-
+			<f:facet name="sublevels">
+				<x:panelGroup>
+					<x:outputText id="subLvlCnt" value="#{node.description} (#{node.childCount})" rendered="#{!empty node.children}" />
+				</x:panelGroup>
+			</f:facet>
 			<f:facet name="points">
 				<x:panelGroup>
                   	<x:graphicImage value="/editor/images/blue_check.gif" height="14" width="14" hspace="2"
@@ -60,7 +66,7 @@
 
 				</x:panelGroup>
 	        </f:facet>
-
+			
 		</x:tree2>
 		</x:div>
 		
@@ -97,7 +103,11 @@
 					<x:outputText id="wPAChCnt" value="#{node.description} (#{node.childCount})" rendered="#{!empty node.children}"/>
 	        	</x:panelGroup>
 	        </f:facet>
-
+			<f:facet name="sublevels">
+				<x:panelGroup>
+					<x:outputText id="subLvlCnt" value="#{node.description} (#{node.childCount})" rendered="#{!empty node.children}" />
+				</x:panelGroup>
+			</f:facet>	        
 			<f:facet name="points">
 				<x:panelGroup>
                   	<x:graphicImage value="/editor/images/blue_check.gif" height="14" width="14" hspace="2"
@@ -144,6 +154,11 @@
 					<x:outputText id="vltChCnt" value="#{node.description} (#{node.childCount})" rendered="#{!empty node.children}"/>
 	        	</x:panelGroup>
 	        </f:facet>
+			<f:facet name="sublevels">
+				<x:panelGroup>
+					<x:outputText id="subLvlCnt" value="#{node.description} (#{node.childCount})" rendered="#{!empty node.children}" />
+				</x:panelGroup>
+			</f:facet>
 
 			<f:facet name="points">
 				<x:panelGroup>
