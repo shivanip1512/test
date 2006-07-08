@@ -1,11 +1,33 @@
+<%@ page pageEncoding="UTF-8" import="java.util.*"%>
+<%@ page import="org.ajaxanywhere.*"%>
 <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h" %>
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %>
 <%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x" %>
 <%@ page import="com.cannontech.web.editor.point.PointForm" %>
 <%@ page import="com.cannontech.web.editor.CapControlForm" %>
 <%@ page import="com.cannontech.web.util.*" %>
+<%@ taglib uri="http://ajaxanywhere.sourceforge.net" prefix="aa" %>
+<%
 
+    if (AAUtils.isAjaxRequest(request)){
+        AAUtils.addZonesToRefresh(request, "capBankEditor");
+    }
+%>
+<f:verbatim>
+<script type="text/JavaScript" src="../../../JavaScript/aa.js"></script>
+<script>
+	ajaxAnywhere.getZonesToReload = function(url, submitButton) {
+		
+		if ( $("aazone.capBankEditor") ) {
+			return "capBankEditor";
+		}
+		
+	}
+	
 
+			
+</script>
+</f:verbatim>
 <%
 
 PointForm ptEditorForm =
@@ -15,7 +37,7 @@ PointForm ptEditorForm =
 %>
 
 <f:subview id="cbcCapBank" rendered="#{capControlForm.visibleTabs['CBCCapBank']}" >
-
+<aa:zoneJSF id = "capBankEditor">
 <f:verbatim>
 
 <script type="text/javascript">
@@ -25,10 +47,10 @@ addSmartScrolling('capbankHiden', 'capbankDiv', null, null);
 </script>
 
 </f:verbatim>
+	
+    <x:panelGrid id="capbankBody" columns="2" styleClass="gridLayout" columnClasses="gridColumn,gridColumn" >
 
-    <h:panelGrid id="capbankBody" columns="2" styleClass="gridLayout" columnClasses="gridColumn,gridColumn" >
-
-        <h:column>
+        <x:column>
           <f:verbatim>
              <br />
              <br />
@@ -82,9 +104,10 @@ addSmartScrolling('capbankHiden', 'capbankDiv', null, null);
             <f:verbatim><br/><fieldset><legend>Configuration</legend></f:verbatim>
 
             <f:verbatim><br/></f:verbatim>
+            
             <x:outputLabel for="bankOperation" value="Operation Method: " title="How this CapBank should operate in the field"/>
-            <x:selectOneMenu id="bankOperation" onchange="submit();"
-                    value="#{capControlForm.PAOBase.capBank.operationalState}" >
+            <x:selectOneMenu id="bankOperation" 
+                    value="#{capControlForm.PAOBase.capBank.operationalState}"  onchange="submit()">
                 <f:selectItems value="#{selLists.capBankOpStates}"/>
             </x:selectOneMenu>
 
@@ -103,12 +126,13 @@ addSmartScrolling('capbankHiden', 'capbankDiv', null, null);
                 <f:selectItem itemLabel="(none)" itemValue="0"/>
                 <f:selectItems value="#{capControlForm.timeInterval}"/>
             </x:selectOneMenu>
-
+			
 
             <f:verbatim><br/><br/></f:verbatim>
-            <x:div id="capbankDiv" forceId="true" styleClass="scrollSmall" 
-                rendered="#{capControlForm.bankControlPtVisible}" >
-
+            
+            <x:div id="capbankDiv" forceId="true" styleClass="scrollSmall" rendered="#{capControlForm.bankControlPtVisible}" >
+						
+			
             <x:outputLabel for="cntrlPoint" value="Control Device/Point: " title="Point used for monitoring the control (Only displays points that are not yet used by CapBanks)" styleClass="medStaticLabel"/>
             <x:outputText id="cntrlPoint" rendered="#{capControlForm.PAOBase.capBank.controlPointID != 0}"
                 value="#{dbCache.allPAOsMap[dbCache.allPointsMap[capControlForm.PAOBase.capBank.controlPointID].paobjectID].paoName}
@@ -116,13 +140,12 @@ addSmartScrolling('capbankHiden', 'capbankDiv', null, null);
             <x:outputText id="cntrlPoint_none" rendered="#{capControlForm.PAOBase.capBank.controlPointID == 0}"
                 value="(none)" styleClass="medLabel"/>
 
-
             <x:tree2 id="capBankPoints" value="#{capControlForm.capBankPoints}" var="node"
                     showRootNode="false" varNodeToggler="t"
                     preserveToggle="true" clientSideToggle="false" >
                 <f:facet name="root">
                     <x:panelGroup>
-                        <h:commandLink id="paoRoot" action="#{t.toggleExpanded}" value="#{node.description}"/>
+                        <x:commandLink id="paoRoot" action="#{t.toggleExpanded}" value="#{node.description}"/>
                     </x:panelGroup>
                 </f:facet>
     
@@ -137,13 +160,19 @@ addSmartScrolling('capbankHiden', 'capbankDiv', null, null);
                         <x:outputText id="paoNodeCnt" value="#{node.description} (#{node.childCount})" rendered="#{!empty node.children}"/>
                     </x:panelGroup>
                 </f:facet>
-    
+                                  								
+				<f:facet name="sublevels">
+					<x:panelGroup >
+						<x:outputText id="subLvlCnt" value="#{node.description} (#{node.childCount})" rendered="#{!empty node.children}" />
+					</x:panelGroup>
+				</f:facet>
+                    
                 <f:facet name="points">
                     <x:panelGroup>
                         <x:graphicImage value="/editor/images/blue_check.gif" height="14" width="14" hspace="2"
                             rendered="#{capControlForm.PAOBase.capBank.controlPointID == node.identifier}" />
                         <x:commandLink id="pointNode" value="#{node.description}"
-                            actionListener="#{capControlForm.capBankTeeClick}">
+                            actionListener="#{capControlForm.capBankTeeClick}" >
                             <f:param name="ptID" value="#{node.identifier}"/>
                         </x:commandLink>                
     
@@ -151,15 +180,19 @@ addSmartScrolling('capbankHiden', 'capbankDiv', null, null);
                 </f:facet>
     
             </x:tree2>
+            
             </x:div>
+          
+            
             <x:commandLink id="capBankPoint_setNone" title="Do not use a control point" styleClass="medStaticLabel"
                         rendered="#{capControlForm.bankControlPtVisible}"
                         value="No Control Point" actionListener="#{capControlForm.capBankTeeClick}">
                 <f:param name="ptID" value="0"/>
             </x:commandLink>
+            
             <f:verbatim></fieldset></f:verbatim>
-        </h:column>
-        <h:column>
+        </x:column>
+        <x:column>
         
         <f:verbatim><br/><fieldset><legend>CapBank Operations</legend></f:verbatim>
             <f:verbatim><br/></f:verbatim>
@@ -171,7 +204,7 @@ addSmartScrolling('capbankHiden', 'capbankDiv', null, null);
             <x:outputText id="maxDailyOpsDesc" value="(0 = unlimited)"/>
     
             <f:verbatim><br/></f:verbatim>
-            <h:selectBooleanCheckbox id="disabledOps"
+            <x:selectBooleanCheckbox id="disabledOps"
                     value="#{capControlForm.PAOBase.capBank.maxOperationDisabled}" />
             <x:outputLabel for="disabledOps" value="Disable upon reaching max operations" title="Should we be automatically disabled after reaching our max op counts"/>
             <f:verbatim><br><br></f:verbatim>
@@ -191,13 +224,15 @@ addSmartScrolling('capbankHiden', 'capbankDiv', null, null);
             <f:verbatim></fieldset></f:verbatim>
                     <f:verbatim><br/><fieldset><legend>Controller Configuration</legend></f:verbatim>
                         <f:verbatim><br/></f:verbatim> 
+                         
                          <x:outputText value="CBC Controller: " title="Click on the link to edit the CBC"/>
                             <x:commandLink rendered="#{dbCache.allPointsMap[capControlForm.PAOBase.capBank.controlPointID].paobjectID != 0}" id="CBCEditor" value="#{dbCache.allPAOsMap[dbCache.allPointsMap[capControlForm.PAOBase.capBank.controlPointID].paobjectID].paoName}"
-                           actionListener="#{ptEditorForm.paoClick}" title="Click on the link to edit the CBC">
+                           actionListener="#{ptEditorForm.paoClick}" title="Click on the link to edit the CBC" >
+                               
                                 <f:param name="paoID" value="#{dbCache.allPointsMap[capControlForm.PAOBase.capBank.controlPointID].paobjectID}"/>
                             </x:commandLink>
                             <x:outputText styleClass="medStaticLabel" value="No Controller Selected" rendered="#{dbCache.allPointsMap[capControlForm.PAOBase.capBank.controlPointID].paobjectID == 0}"/> 
-
+						
             <f:verbatim><br/></f:verbatim>
             <x:panelGroup id="oneWayCBC" rendered="#{capControlForm.CBControllerEditor.oneWay}">
                 <f:verbatim><br/></f:verbatim>
@@ -253,10 +288,11 @@ addSmartScrolling('capbankHiden', 'capbankDiv', null, null);
                 </x:inputText>
 
 
-                <h:panelGrid id="scanGrid" columns="2" styleClass="gridLayout" columnClasses="gridColumn,gridColumn" >
-                    <h:column>
+                <x:panelGrid id="scanGrid" columns="2" styleClass="gridLayout" columnClasses="gridColumn,gridColumn" >
+                    <x:column>
+                  
                     <f:verbatim><br/></f:verbatim>
-                    <h:selectBooleanCheckbox id="scanIntegrityChk" onclick="submit();"
+                    <x:selectBooleanCheckbox id="scanIntegrityChk" onclick="submit();"
                             valueChangeListener="#{capControlForm.showScanRate}"
                             value="#{capControlForm.CBControllerEditor.editingIntegrity}"
                             immediate="true" disabled="true"/>
@@ -288,12 +324,12 @@ addSmartScrolling('capbankHiden', 'capbankDiv', null, null);
                         <f:selectItem itemLabel="First" itemValue="1" />
                         <f:selectItem itemLabel="Second" itemValue="2" />
                     </x:selectOneMenu>
-                    </h:column>
+                    </x:column>
 
 
-                    <h:column>
+                    <x:column>
                     <f:verbatim><br/></f:verbatim>
-                    <h:selectBooleanCheckbox id="scanExceptionChk" onclick="submit();"
+                    <x:selectBooleanCheckbox id="scanExceptionChk" onclick="submit();"
                             valueChangeListener="#{capControlForm.showScanRate}"
                             value="#{capControlForm.CBControllerEditor.editingException}"
                             immediate="true" disabled="true"/>
@@ -324,21 +360,21 @@ addSmartScrolling('capbankHiden', 'capbankDiv', null, null);
                         <f:selectItem itemLabel="First" itemValue="1" />
                         <f:selectItem itemLabel="Second" itemValue="2" />
                     </x:selectOneMenu>
-                    </h:column>
+                    </x:column>
                     
-                </h:panelGrid>
+                </x:panelGrid>
 
             </x:panelGroup>
+            <
        <f:verbatim></fieldset></f:verbatim>
        
      
-  </h:column>
+  </x:column>
     
 
     
-    </h:panelGrid>
+    </x:panelGrid>
         
     <x:inputHidden id="capbankHiden" forceId="true" value="#{capControlForm.offsetMap['capbankHiden']}"/>
-
-
+</aa:zoneJSF>
 </f:subview>
