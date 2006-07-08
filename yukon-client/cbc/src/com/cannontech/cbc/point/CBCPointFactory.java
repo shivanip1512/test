@@ -34,9 +34,9 @@ public class CBCPointFactory{
        new StatusPointParams(4,"Auto Volt Control"), 
        new StatusPointParams(5,"Last Control - Local"),
        new StatusPointParams(6,"Last Control -Remote"),
-       new StatusPointParams(7,"Last Control – OVUV"),
+       new StatusPointParams(7,"Last Control - OVUV"),
        new StatusPointParams(8,"Last Control - Neutral Fault"),
-       new StatusPointParams(9,"Last Control – Scheduled"),
+       new StatusPointParams(9,"Last Control - Scheduled"),
        new StatusPointParams(10,"Last Control - Digital"),
        new StatusPointParams(11,"Last Control - Analog"),
        new StatusPointParams(12,"Last Control - Temperature"),
@@ -109,7 +109,6 @@ public class CBCPointFactory{
                                                                   PointTypes.STATUS_POINT,
                                                                   array_element.getName(),
                                                                   paoId,
-           
                                                                   new Integer (array_element.getOffset()));
                 point.getPoint()
                      .setStateGroupID(new Integer(StateGroupUtils.STATEGROUP_TWO_STATE_STATUS));
