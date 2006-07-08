@@ -1,5 +1,6 @@
 package com.cannontech.database.data.capcontrol;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -63,13 +64,16 @@ public void delete() throws java.sql.SQLException
 	//remove all the associations this CapBank to any Feeder
 	com.cannontech.database.db.capcontrol.CCFeederBankList.deleteCapBanksFromFeederList( 
 					null, getCapBank().getDeviceID(), getDbConnection() );
-
-	//Delete from all dynamic CabBank tables here
-	delete("DynamicCCCapBank", "CapBankID", getCapBank().getDeviceID() );
-
+	//	Delete from all dynamic CabBank tables here
+    deleteMonitorPoints();
+	delete ("DynamicCCMonitorPointResponse", "BankID", getPAObjectID());
+    delete ("DynamicCCMonitorBankHistory", "BankID", getPAObjectID()); 
+	delete("DynamicCCCapBank", "CapBankID", getPAObjectID() );
+	CCMonitorBankList.deleteMonitorPointsOnCapBankList(getPAObjectID());
 	getCapBank().delete();
 	
 	super.delete();
+
 }
 /**
  * This method was created in VisualAge.
@@ -153,4 +157,16 @@ public void setCcMonitorBankList(List ccMonitorBankList) {
 	this.ccMonitorBankList = ccMonitorBankList;
 }
 
+/**
+ * @throws SQLException
+ */
+private void deleteMonitorPoints() throws SQLException {
+	List monitorPoints = CCMonitorBankList.getMonitorPointsOnCapBankList(getPAObjectID());    
+    if (monitorPoints != null) {
+    	for (Iterator iter = monitorPoints.iterator(); iter.hasNext();) {
+    		CCMonitorBankList element = (CCMonitorBankList) iter.next();
+    		delete ("DynamicCCMonitorPointResponse", "PointID", element.getPointId());
+    	}
+    } 
+}
 }
