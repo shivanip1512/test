@@ -27,7 +27,8 @@ function addSmartScrolling(hidden_id, div_id, indx_id, comp_id){
             div_el.scrollTop = indx_el.value * scrollPerNode(comp_el, div_el);
 	       }	    
     }
-	div_el.onscroll = function () {hidden_el.value = div_el.scrollTop + 1;};
+	if (div_el != null)
+		div_el.onscroll = function () {hidden_el.value = div_el.scrollTop + 1;};
 	});
 }
 

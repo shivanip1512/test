@@ -1,0 +1,379 @@
+//function to generate HTML for the command menu
+function updateCommandMenu(result) {
+
+ if (result != null) {
+ 	var cmds = document.getElementsByName ('cmd_dyn');
+ 	for (var i = 0; i < result.length; i++) { 		
+        var xmlID = getElementTextNS(result[i], 0, 'id');
+        
+        for (var j=0; j < cmds.length; j++) {
+        	
+        	//cmdName = cmd_sub_1213
+        	var cmdId = cmds[j].id;
+        	//['cmd','sub','1213']
+        	var temp = cmdId.split('_');
+        	var type = temp[1];
+        	var id =   temp[2];
+        	//special case since we allow field and system commands for cap banks
+        	var sub_type = temp[3];
+    
+        	var opts;
+ 			if (id == xmlID) {
+ 				//sub command is unique in that it requires additional params to be extracted from the result
+ 				if (type == 'sub')
+ 					{
+ 					 var verify = getElementTextNS(result[i], 0,'param7');
+ 					 var name = getElementTextNS(result[i], 0,'param8');
+ 					 if ( verify == 'true'){
+ 					 	opts = [true, name];
+ 					 	
+ 					 } 
+ 					 else {
+ 					 	opts= [false, name];
+ 					 } 
+ 					}
+ 				 else if (type == 'fdr') {
+ 				 	var name = getElementTextNS(result[i], 0,'param7');
+ 				 	opts = [false, name];
+ 				 }
+ 				 else if (type =='cap') {
+ 				 
+ 				 	var name = getElementTextNS(result[i], 0,'param3');
+ 				 	var allow_ovuv = getElementTextNS(result[i], 0,'param4');
+ 				 	var all_manual_sts = getElementTextNS(result[i], 0,'param5');
+ 				 	
+ 				 	opts = [false, name, sub_type, allow_ovuv, all_manual_sts];
+ 				 }
+ 				//otherwise the only thing left is to get state
+ 				var state = getElementTextNS(result[i], 0,'state');
+ 				
+ 				update_Command_Menu	(type, id, state, opts);	       	
+        	}
+        }
+ 	}
+  }
+}
+//switch to get the html for menu based on type
+function update_Command_Menu (type, id, state, opts) {
+	
+	var header = "<HTML><BODY><div id='cmdDiv" + id + "' ";
+	header += " style='background:white; height:1cm; width:1cm; border:1px solid black;'>";
+	//!!!!!!!!!!!!!!attempt to use ctiTitledContainer!!!!!!!!!!!!!!!!!!!!!
+	//header += " class='cmdPopupMenu' >";
+	//var container = new CTITitledContainer (opts[1]);
+	//var _start_Tag = container.startTag();
+	//var _end_Tag = container.endTag();
+	//header += _start_Tag;
+	//var footer = _end_Tag; 
+	
+	footer = " </div></BODY></HTML>";	
+	var html = header;
+	switch (type) {
+		case 'sub':
+			html += generateSubMenu (id, state, opts);
+			break;
+		case 'fdr':
+			html += generateFeederMenu (id, state, opts);
+			break;
+		case 'cap':
+			html += generateCapBankMenu (id, state, opts);
+			break;
+	}
+	html += footer;
+	//update document to the generated html
+	var html_id = 'cmd_'+type+'_'+id;
+	if (type == 'cap')
+		html_id += '_' + opts[2];
+	
+
+	document.getElementById(html_id).value = html;	 	
+}
+
+//function to generate
+//html for the sub command menu
+function generateSubMenu (id, state, opts) {
+ var ALL_SUB_CMDS = {
+ 					 confirm_close:9,
+ 				 	 enable_sub:0,
+	 				 disable_sub:1,
+	 				 reset_op_cnt:12,
+	 				 v_all_banks:40,
+	 				 v_fq_banks:41,
+	 				 v_failed_banks:42,
+	 				 v_question_banks:43,
+	 				 v_disable_verify:44
+	 				}
+ //var table_header = "<table>";
+ var table_footer = "</table>";
+ var table_body = "<table >";
+ table_body += "<tr><td class='top'>" + opts[1] + "</td></tr>"
+ 
+ if (id > 0) {
+ 	table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.confirm_close, 'Confirm_Sub');
+ 	if (state != 'DISABLED') {
+ 		table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.disable_sub, 'Disable_Sub');
+ 	}
+ 	else {
+ 		table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.enable_sub, 'Enable_Sub');
+ 	}
+ 	
+ 	table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.reset_op_cnt, 'Reset_Op_Counts');
+ 	if (!opts[0]){
+ 		table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.v_all_banks, 'Verify_All_Banks');
+ 		table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.v_fq_banks, 'Verify_Failed_And_Questionable_Banks');
+ 		table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.v_failed_banks, 'Verify_Failed_Banks');
+ 		table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.v_question_banks, 'Verify_Questionable_Banks');
+ 	}
+ 	else {
+ 		table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.v_disable_verify, 'Verify_Stop');	
+ 	}
+ }
+
+	//table_header+= table_body;
+	table_body+= table_footer;
+	return table_body;
+
+}
+
+//function to generate
+//html for the feeder command menu
+function generateFeederMenu (id, state, opts) {
+ var ALL_FDR_CMDS = {
+ 				 	 enable_fdr:2,
+	 				 disable_fdr:3,
+	 				 reset_op_cnt:12
+	 				}
+ //var table_header = "<table>";
+ var table_footer = "</table>";
+ var table_body = "<table >";
+ table_body += "<tr><td class='top'>" + opts[1] + "</td></tr>"
+
+ if (id > 0) {
+ 	if (state != 'DISABLED') {
+ 		table_body += add_AJAX_Function('feeder', id, ALL_FDR_CMDS.disable_fdr, 'Disable_Feeder');
+ 	}
+ 	else {
+ 		table_body += add_AJAX_Function('feeder', id, ALL_FDR_CMDS.enable_fdr, 'Enable_Feeder');
+ 	}
+ 	
+ 	table_body += add_AJAX_Function('feeder', id, ALL_FDR_CMDS.reset_op_cnt, 'Reset_Op_Counts');
+ }
+
+	//table_header+= table_body;
+	table_body+= table_footer;
+	return table_body;
+
+}
+//function to generate cap bank menu
+function generateCapBankMenu (id, state, opts) {
+ var ALL_CAP_CMDS = {
+ 	confirm_open:8,
+ 	open_capbank:6,
+ 	close_capbank:7,
+ 	bank_enable_ovuv:17,
+ 	bank_disable_ovuv:18,
+ 	enable_capbank:4,
+ 	disable_capbank:5,
+ 	reset_op_cnt:12
+ 	}
+ var table_footer = "</table>";
+ var table_body = "<table >";
+ //opts = [false, name, sub_type, allow_ovuv, all_manual_sts];
+ var allow_ovuv = opts[3];
+ //contains all the possible manual states for a cap bank
+ var manual_states = opts[4];
+ table_body += "<tr><td class='top'>" + opts[1] + "</td></tr>"
+	
+	if (id > 0) {
+		if (opts[2] == 'field') {
+		   table_body += add_AJAX_Function('cap', id, ALL_CAP_CMDS.confirm_open, 'Confirm', false);
+		   table_body += add_AJAX_Function('cap', id, ALL_CAP_CMDS.open_capbank, 'Open_Capacitor', false);
+		   table_body += add_AJAX_Function('cap', id, ALL_CAP_CMDS.close_capbank, 'Close_Capacitor', false);
+		
+		if (allow_ovuv == 'true') {
+		   table_body += add_AJAX_Function('cap', id, ALL_CAP_CMDS.bank_enable_ovuv, 'Enable_OV/UV', false);
+		   table_body += add_AJAX_Function('cap', id, ALL_CAP_CMDS.bank_disable_ovuv, 'Disable_OV/UV', false);	
+		   }
+		
+		}
+		else if (opts[2] == 'system') {
+		     
+		     if (state.indexOf('DISABLED') > -1) {
+		     	table_body += add_AJAX_Function('cap', id, ALL_CAP_CMDS.enable_capbank, 'Enable_CapBank', false);
+		     }
+		     else {
+		     	table_body += add_AJAX_Function('cap', id, ALL_CAP_CMDS.disable_capbank, 'Disable_CapBank', false);	
+		     }
+		     table_body += add_AJAX_Function('cap', id, ALL_CAP_CMDS.reset_op_cnt, 'Reset_Op_Counts', false);
+		//split the string up into elements
+		//states = "Open:0,Close:1"
+		var states = manual_states.split(',');
+		for (var i=0; i < states.length; i++) {
+		    //Open:1
+		    var st = states[i];
+		    var temp = st.split (':');
+		    var state_name = temp[0];
+		    var raw_st_id = temp[1];
+		    table_body += add_AJAX_Function('cap', id, raw_st_id, state_name, true);
+		    }
+		
+		}
+		
+	}
+	table_body+= table_footer;
+	return table_body;
+}
+
+//function that returns html string for js ajax function that will
+//execute on the server when the user clicks on the 
+//command menu 
+function add_AJAX_Function (type, pao_id, cmd_id, cmd_name, is_manual_state) {
+var ajax_func = "<tr><td>";
+ajax_func += "<a  href='javascript:void(0);'";
+ajax_func += " class='optDeselect'" 
+ajax_func += " onmouseover='changeOptionStyle(this);' "
+ajax_func += " onclick=";
+var str_cmd = '\"' + cmd_name + '\"';
+switch (type) {
+ case 'sub':
+	
+	ajax_func +=  	"'executeSubCommand (" + pao_id + "," + cmd_id + "," + str_cmd + "); '";
+	break;
+ case 'feeder':
+ 	ajax_func +=  	"'executeFeederCommand (" + pao_id + "," + cmd_id + "," + str_cmd + "); '";
+	break;
+ case 'cap':
+ 	ajax_func +=  	"'executeCapBankCommand (" + pao_id + "," + cmd_id + "," + is_manual_state + "," + str_cmd + "); '";
+	break;
+	}
+	
+ajax_func += ">"+ cmd_name+"</a>";
+ajax_func += "</td></tr>";
+return ajax_func;
+}
+
+//AJAX command functions
+///////////////////////////////////////////////
+function executeSubCommand (paoId, command, cmd_name) {
+	new Ajax.Request ('/servlet/CBCServlet', 
+	{method:'post', 
+	parameters:'cmdID='+command+'&paoID='+paoId + '&controlType=SUB_TYPE',
+	onSuccess: function () { display_status(cmd_name, "Command sent successfully", "green"); },
+	onFailure: function () { display_status(cmd_name, "Command failed", "red"); }, 
+	asynchronous:true });
+	var cmdDiv = document.getElementById ('cmdDiv' + paoId);
+	cmdDiv.style.display = 'none';
+}
+
+
+function executeFeederCommand (paoId, command, cmd_name) {
+	new Ajax.Request ('/servlet/CBCServlet', 
+	{method:'post', 
+	 parameters:'cmdID='+command+'&paoID='+paoId + '&controlType=FEEDER_TYPE', 
+	 onSuccess: function () { display_status(cmd_name, "Message sent successfully", "green"); },
+	 onFailure: function () { display_status(cmd_name, "Command failed", "red"); }, 
+	 asynchronous:true });
+	var cmdDiv = document.getElementById ('cmdDiv' + paoId);
+	cmdDiv.style.display = 'none';
+}
+
+function executeCapBankCommand (paoId, command, is_manual_state, cmd_name) {
+	if (is_manual_state)
+		new Ajax.Request ('/servlet/CBCServlet', 
+		{method:'post', 
+		parameters:'opt='+command+'&cmdID='+30+'&paoID='+paoId + '&controlType=CAPBANK_TYPE', 
+	 	onSuccess: function () { display_status(cmd_name, "Message sent successfully", "green"); },
+		onFailure: function () { display_status(cmd_name, "Command failed", "red"); }, 
+		asynchronous:true });
+	else
+		new Ajax.Request ('/servlet/CBCServlet', 
+		{method:'post', 
+		parameters:'cmdID='+command+'&paoID='+paoId + '&controlType=CAPBANK_TYPE', 
+		onSuccess: function () { display_status(cmd_name, "Message sent successfully", "green"); },
+		onFailure: function () { display_status(cmd_name, "Command failed", "red"); }, 
+		asynchronous:true });
+		
+	var cmdDiv = document.getElementById ('cmdDiv' + paoId);
+	cmdDiv.style.display = 'none';
+}
+///////////////////////////////////////////////
+
+//attempt to use the current ctiTitledContainer tag
+function CTITitledContainer (t) {
+	this.title = t;
+}
+
+CTITitledContainer.prototype.startTag = function () {
+var start_tag = "  <table class='resizeRoundTable'>"; 
+    start_tag += "    <tr> "; 
+    start_tag += "      <td class='upperLeft'></td>";
+    start_tag += "      <td class='top'>";
+    start_tag += this.title;
+    start_tag += "</td>"; 
+	start_tag += "<td class='upperRight'></td>"; 
+    start_tag += "    </tr>"; 
+    start_tag += "    <tr>"; 
+    start_tag += "      <td class='leftSide'></td>"; 
+    start_tag += "<td>";
+
+return start_tag;
+};
+
+CTITitledContainer.prototype.endTag = function () {
+var endTag = "";
+ 	endTag += "</td>"; 
+    endTag += "      <td class='rightSide'></td>"; 
+	endTag +=     "    </tr>"; 
+	endTag +=     "    <tr>"; 
+	endTag +=     "      <td class='lowerLeft'></td>"; 
+	endTag +=     "      <td class='bottom'></td>"; 
+	endTag +=     "      <td class='lowerRight'></td>"; 
+	endTag +=     "    </tr>"; 
+	endTag +=     "  </table>"; 
+	endTag +=     "";
+
+return endTag;
+};
+
+//function to display wheather the call to serlvlet went through
+//will pop up a div that has a header with 'cmd_name' with gray background
+//'msg' in the body that with 'color' for background
+
+function display_status(cmd_name, msg, color) {
+
+var msg_div = $('cmd_msg_div');
+msg_div.style.color = color;
+//msg_div.style.backgroundColor = 'green';
+msg_div.style.position = 'absolute';
+var last_titled_cont  = $('last_titled_container'); 
+if (last_titled_cont != null) {
+	msg_div.style.left = last_titled_cont.width;
+	msg_div.style.top =  last_titled_cont.height;
+}
+else {
+	msg_div.style.left = 0;
+	msg_div.style.top =  0;
+}
+var titledCont = new CTITitledContainer (cmd_name);
+
+msg_div.innerHTML = titledCont.startTag() +  
+					msg + 	 
+					titledCont.endTag();
+var timeout = 0;
+
+if (color == "red") {
+	msg_div.style.display = 'block';
+	Effect.Pulsate('cmd_msg_div', {duration: 8});
+	timeout = 8000;
+	}
+ else {
+ 	Effect.Appear('cmd_msg_div');
+	timeout = 2000;
+	}
+	setTimeout ('hideMsgDiv()', timeout);	
+}
+
+function hideMsgDiv() {
+Effect.Fade('cmd_msg_div');
+}
+
