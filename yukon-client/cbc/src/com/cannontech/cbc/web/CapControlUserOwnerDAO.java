@@ -103,7 +103,7 @@ public class CapControlUserOwnerDAO implements CapControlDAO {
 		SubBus[] subs =  _ccDao.getSubsByArea(area);
 		SubBus[] retArray = new SubBus[subs.length];
 		List subsAllowedToView = new ArrayList(10);
-		for (int i=0; i < area.length(); i++) {
+		for (int i=0; i < subs.length; i++) {
 			SubBus sub = subs[i];
 			if (DaoFactory.getAuthDao().userHasAccessPAO(_user, sub.getCcId().intValue()))
 				subsAllowedToView.add(sub);
