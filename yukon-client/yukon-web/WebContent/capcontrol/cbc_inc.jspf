@@ -1,15 +1,15 @@
 <%@page import="java.util.*" %>
-<%@page import="com.cannontech.core.dao.DaoFactory" %>
 <%@page import="com.cannontech.roles.capcontrol.CBCSettingsRole" %>
 <%@page import="com.cannontech.roles.application.WebClientRole" %>
 <%@page import="com.cannontech.roles.application.CommanderRole" %>
 <%@page import="com.cannontech.yukon.cbc.*" %>
 <%@page import="com.cannontech.util.*" %>
-<%@page import="com.cannontech.util.ServletUtil" %>
 <%@page import="com.cannontech.cbc.web.*" %>
 <%@page import="com.cannontech.servlet.CBCServlet" %>
 <%@page import="com.cannontech.database.data.lite.*" %>
 <%@page import="com.cannontech.web.lite.*" %>
+<%@page import="com.cannontech.core.dao.*" %>
+
 <%@page import="com.cannontech.common.util.CtiUtilities" %>
 <%@page import="com.cannontech.database.data.point.SystemLogData" %>
 
@@ -20,10 +20,18 @@
 -->
 <cti:checklogin/>
 <cti:isPropertyFalse propertyid="<%= CBCSettingsRole.ACCESS %>">
-	<jsp:forward page="/operator/Operations.jsp"/>
+	<jsp:forward page="/capcontrol/redirect.jsp">
+		<jsp:param name="reason" value="Access to the page could not be granted." />
+		<jsp:param name="message" value="*** Please check your CapControlSettings.ACCESS options" />
+		<jsp:param name="redirectUrl" value="/operator/Operations.jsp"/>
+	</jsp:forward>	
 </cti:isPropertyFalse>
+
+<script type="text/JavaScript" src="../JavaScript/cc_command_menu.js"></script>
 <script type="text/JavaScript" src="js/cbc_funcs.js"></script>
 <script type="text/JavaScript" src="../JavaScript/prototype.js"></script>
+<script type="text/JavaScript" src="../JavaScript/scriptaculous/scriptaculous.js"></script>
+
 <script type="text/JavaScript" src="../JavaScript/xmlhttp.js"></script>
 <script type="text/JavaScript" src="../JavaScript/ol/overlib_mini.js"></script>
 <script type="text/JavaScript" src="../JavaScript/validation.js"></script>
