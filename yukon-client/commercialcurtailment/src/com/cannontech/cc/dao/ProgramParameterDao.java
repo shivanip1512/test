@@ -5,6 +5,7 @@ import java.util.List;
 import com.cannontech.cc.model.Program;
 import com.cannontech.cc.model.ProgramParameter;
 import com.cannontech.cc.model.ProgramParameterKey;
+import com.cannontech.database.cache.functions.StandardDaoOperations;
 
 public interface ProgramParameterDao extends StandardDaoOperations<com.cannontech.cc.model.ProgramParameter> {
 

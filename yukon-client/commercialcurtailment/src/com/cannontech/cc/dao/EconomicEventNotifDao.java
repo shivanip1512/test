@@ -5,6 +5,7 @@ import java.util.List;
 import com.cannontech.cc.model.EconomicEvent;
 import com.cannontech.cc.model.EconomicEventNotif;
 import com.cannontech.cc.model.EconomicEventParticipant;
+import com.cannontech.database.cache.functions.StandardDaoOperations;
 import com.cannontech.enums.NotificationReason;
 
 public interface EconomicEventNotifDao extends StandardDaoOperations<EconomicEventNotif> {

@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.cannontech.cc.model.CurtailmentEvent;
 import com.cannontech.cc.model.CurtailmentEventNotif;
+import com.cannontech.database.cache.functions.StandardDaoOperations;
 import com.cannontech.enums.NotificationReason;
 
 public interface CurtailmentEventNotifDao extends StandardDaoOperations<CurtailmentEventNotif> {

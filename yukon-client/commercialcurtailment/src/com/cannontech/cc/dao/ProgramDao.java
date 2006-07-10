@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.cannontech.cc.model.Program;
 import com.cannontech.cc.model.ProgramType;
+import com.cannontech.database.cache.functions.StandardDaoOperations;
 
 public interface ProgramDao extends StandardDaoOperations<Program> {
     public List<Program> getProgramsForEnergyCompany(Integer energyCompanyId);
