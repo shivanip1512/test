@@ -33,14 +33,16 @@
           <tr><td>
           	<a id="tempMoveBack" href="javascript:void(0);" class="optDeselect"
 				onmouseover="changeOptionStyle(this)"
-				onclick="postMany('frmCapBankCmd', 'paoID', <%=capBankId%>, 'cmdID', <%=CBCCommand.RETURN_BANK_TO_FEEDER%>); top.document.getElementById('tempIFrame').style.display='none'; setTimeout ('window.parent.location.replace (\'feeders.jsp\')', <%=CBCUtils.TEMP_MOVE_REFRESH%>);"
-				>Temp Move Back</a>
+				onclick= "new Ajax.Request('/servlet/CBCServlet', 
+				{
+				method:'post', 
+				parameters:'paoID=<%=capBankId%>&cmdID=<%=CBCCommand.RETURN_BANK_TO_FEEDER%>&controlType=<%=CBCServlet.TYPE_CAPBANK%>&redirectURL=/capcontrol/feeders.jsp',
+				onSuccess: function () {
+					top.document.getElementById('tempIFrame').style.display='none';
+					window.parent.location.replace ('feeders.jsp');
+					}
+				});" > Temp Move Back</a>
 		  </td></tr>
-<% } else {%>
-	
-<script type="text/javascript">
-	setTimeout ('window.parent.location.replace (\'feeders.jsp\')', 0);
-</script>
 
 <%} %>
 
