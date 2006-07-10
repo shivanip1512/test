@@ -1024,7 +1024,6 @@ public class InventoryBean {
     
     public void setFilterByList(ArrayList newFilters)
     {
-        setPage(1);
         ArrayList oldFilters = filterByList;
         filterByList = newFilters;
         boolean memberSpecified = false;

@@ -1538,6 +1538,7 @@ public class InventoryManager extends HttpServlet {
         
         iBean.setFilterByList(filters);
         iBean.setViewResults(false);
+        iBean.setPage(1);
         session.setAttribute("inventoryBean", iBean);
         session.setAttribute( ServletUtils.FILTER_INVEN_LIST, filters );
         if(hwSelection)
@@ -1628,6 +1629,7 @@ public class InventoryManager extends HttpServlet {
     {
         InventoryBean iBean = (InventoryBean) session.getAttribute("inventoryBean");
         iBean.setViewResults(!iBean.getViewResults());
+        iBean.setPage(1);
         //session.setAttribute("inventoryBean", iBean);
         
         redirect = req.getContextPath() + "/operator/Hardware/Inventory.jsp";
