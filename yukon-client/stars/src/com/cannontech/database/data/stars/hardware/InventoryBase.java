@@ -1,6 +1,13 @@
 package com.cannontech.database.data.stars.hardware;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
+
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.stars.customer.CustomerAccount;
+import com.cannontech.database.data.stars.event.EventInventory;
 import com.cannontech.database.db.DBPersistent;
 
 
@@ -45,6 +52,19 @@ public class InventoryBase extends DBPersistent {
 		com.cannontech.database.data.stars.event.LMHardwareEvent.deleteAllLMHardwareEvents(
 				getInventoryBase().getInventoryID() );
 		
+        ArrayList<EventInventory> stateChanges = EventInventory.retrieveEventInventories(getInventoryBase().getInventoryID());
+        for(int i = 0; i < stateChanges.size(); i++)
+        {
+            try
+            {
+                Transaction.createTransaction( Transaction.DELETE, stateChanges.get(i) ).execute();
+            }
+            catch(TransactionException e)
+            {
+                CTILogger.error( e.getMessage(), e );
+            }
+        }
+        
 		delete( "ECToInventoryMapping", "InventoryID", getInventoryBase().getInventoryID() );
         delete( "InventoryToWarehouseMapping", "InventoryID", getInventoryBase().getInventoryID());
 		getInventoryBase().delete();
