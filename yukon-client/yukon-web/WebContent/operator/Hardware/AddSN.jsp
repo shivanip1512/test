@@ -57,6 +57,7 @@ function changeMember(form) {
             <div align="center"> 
               <% String header = "ADD SERIAL NUMBER RANGE"; %>
               <%@ include file="include/SearchBar.jspf" %>
+              <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			  
               <form name="form1" method="post" action="<%= request.getContextPath() %>/servlet/InventoryManager">
