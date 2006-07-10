@@ -1523,7 +1523,6 @@ public class InventoryManager extends HttpServlet {
         
         if(filterTexts == null)
         {
-            iBean.setFilterByList(filters);
             //session.setAttribute("inventoryBean", iBean);
             session.setAttribute( ServletUtils.FILTER_INVEN_LIST, filters );
             session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "There are no filters defined.");
@@ -1537,6 +1536,7 @@ public class InventoryManager extends HttpServlet {
             filters.add(wrapper);
         }
         
+        iBean.setFilterByList(filters);
         iBean.setViewResults(false);
         session.setAttribute("inventoryBean", iBean);
         session.setAttribute( ServletUtils.FILTER_INVEN_LIST, filters );
