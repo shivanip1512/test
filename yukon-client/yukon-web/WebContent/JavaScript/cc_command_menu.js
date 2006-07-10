@@ -43,16 +43,18 @@ function updateCommandMenu(result) {
  				 	var all_manual_sts = getElementTextNS(result[i], 0,'param5');
  				 	
  				 	opts = [false, name, sub_type, allow_ovuv, all_manual_sts];
+ 				 	document.getElementById ('cmd_cap_move_back_' + id).value = generate_CB_Move_Back (id, name);		       	
  				 }
  				//otherwise the only thing left is to get state
  				var state = getElementTextNS(result[i], 0,'state');
  				
- 				update_Command_Menu	(type, id, state, opts);	       	
+ 				update_Command_Menu	(type, id, state, opts);
         	}
         }
  	}
   }
 }
+
 //switch to get the html for menu based on type
 function update_Command_Menu (type, id, state, opts) {
 	
@@ -86,7 +88,8 @@ function update_Command_Menu (type, id, state, opts) {
 		html_id += '_' + opts[2];
 	
 
-	document.getElementById(html_id).value = html;	 	
+	document.getElementById(html_id).value = html;
+	 	
 }
 
 //function to generate
@@ -164,6 +167,32 @@ function generateFeederMenu (id, state, opts) {
 	return table_body;
 
 }
+
+							
+
+//function to generate the cap bank move back menu
+function generate_CB_Move_Back (id, name) {
+	 //start and end of div html
+	 var div_start_tag = "<HTML><BODY><div id='cb_move_back_" + id + "' ";
+	 var div_end_tag = " </div></BODY></HTML>";
+	 //css for the div
+	 div_start_tag += " style='background:white; height:1cm; width:1cm; border:1px solid black;'>";
+	 //init return variable
+	 var html = div_start_tag;
+	 //generate the table
+	 var table_footer = "</table>";
+	 var table_body = "<table >";
+	 table_body += "<tr><td class='top'>" + name + "</td></tr>"
+	 table_body += add_AJAX_Function('cap_move_back', id, 11, 'Temp_Move_Back', false);
+	 table_body+= table_footer;
+	 //append table to the div
+	 html += table_body;
+	 //append end tag to the div
+	 html += div_end_tag;
+ 
+ return html;			  
+}
+
 //function to generate cap bank menu
 function generateCapBankMenu (id, state, opts) {
  var ALL_CAP_CMDS = {
@@ -245,7 +274,11 @@ switch (type) {
  case 'cap':
  	ajax_func +=  	"'executeCapBankCommand (" + pao_id + "," + cmd_id + "," + is_manual_state + "," + str_cmd + "); '";
 	break;
-	}
+ case 'cap_move_back':
+    ajax_func +=    "'execute_CapBankMoveBack (" + 	pao_id + "," + cmd_id + "); '";
+    break;
+
+}
 	
 ajax_func += ">"+ cmd_name+"</a>";
 ajax_func += "</td></tr>";
@@ -296,6 +329,23 @@ function executeCapBankCommand (paoId, command, is_manual_state, cmd_name) {
 	var cmdDiv = document.getElementById ('cmdDiv' + paoId);
 	cmdDiv.style.display = 'none';
 }
+
+function execute_CapBankMoveBack (paoId, command) {
+	new Ajax.Request('/servlet/CBCServlet', 
+	{ method:'post', 
+	  parameters:'paoID='+ paoId +'&cmdID=' + command + '&controlType=CAPBANK_TYPE&redirectURL=/capcontrol/feeders.jsp',
+		onSuccess: function () { window.location.replace ('feeders.jsp');
+	},
+		onFailure: function () { display_status('Move Bank', "Command failed", "red"); },
+	asynchronous:true
+	});
+	var cmdDiv = document.getElementById ('cb_move_back_' + paoId);
+	cmdDiv.style.display = 'none';
+	
+		
+} 
+
+
 ///////////////////////////////////////////////
 
 //attempt to use the current ctiTitledContainer tag
