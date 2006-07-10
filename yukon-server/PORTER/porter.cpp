@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.98 $
-* DATE         :  $Date: 2006/07/06 20:32:25 $
+* REVISION     :  $Revision: 1.99 $
+* DATE         :  $Date: 2006/07/10 15:47:36 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1546,7 +1546,7 @@ INT RefreshPorterRTDB(void *ptr)
         {
             ConfigManager.processDBUpdate(pChg->getId(), pChg->getCategory(), pChg->getObjectType(), pChg->getTypeOfChange());
         }
-        
+
 
         if(pChg != NULL && (pChg->getDatabase() == ChangePointDb))
         {
@@ -2393,7 +2393,7 @@ void LoadCommFailPoints()
     commFailDeviceIDToPointIDMap.clear();       // No more map.
 
     LONG did, pid;
-    string sql = string("select paobjectid, pointid from point where pointoffset = ") + CtiNumStr(COMM_FAIL_OFFSET);
+    string sql = string("select paobjectid, pointid from point where pointoffset = ") + CtiNumStr(COMM_FAIL_OFFSET) + string(" and pointtype = 'Status'");
 
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
