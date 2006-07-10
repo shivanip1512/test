@@ -443,8 +443,6 @@ public class InventoryBean {
                 hardwares = filteredHardware;
             }
             
-            setPage(1);
-            
             /*
              * Do the meatier filters now, after the total number of hardware has become a little bit more reasonable
              */
@@ -1026,7 +1024,8 @@ public class InventoryBean {
     
     public void setFilterByList(ArrayList newFilters)
     {
-	    ArrayList oldFilters = filterByList;
+        setPage(1);
+        ArrayList oldFilters = filterByList;
         filterByList = newFilters;
         boolean memberSpecified = false;
         
