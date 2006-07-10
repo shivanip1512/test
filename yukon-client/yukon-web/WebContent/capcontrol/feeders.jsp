@@ -13,7 +13,6 @@
     type="com.cannontech.cbc.web.CapControlCache" scope="application"></jsp:useBean>
 
 <jsp:setProperty name="CtiNavObject" property="moduleExitPage" value="<%=request.getRequestURL().toString()%>"/>
-
 <!-- necessary DIV element for the OverLIB popup library -->
 <div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
 
@@ -40,13 +39,20 @@
     <cti:crumbLink url="feeders.jsp" title="Feeders" />
 </cti:breadCrumbs>
 
-<script type="text/javascript">
 
-	Event.observe(window, 'load', function () {								
+<script type="text/javascript">
+   	Event.observe(window, 'load', function () {								
  								callBack();
  								});
  	var GB_IMG_DIR = "../editor/css/greybox/";
-</script>
+   
+   var GB_IMG_DIR = "../editor/css/greybox/";
+   GreyBox.preloadGreyBoxImages();
+   
+   function onGreyBoxClose () {
+   	window.parent.location.replace('feeders.jsp');
+   }
+ </script>
 <%
 String css = "tableCell";
 %>
@@ -241,7 +247,7 @@ Event.observe(window, 'load', function() { new CtiNonScrollTable('fdrTable','fdr
 
              </table>
 
-		<div>
+		<div id="capBankDiv">
 			<table id="capBankTable" width="98%" border="0" cellspacing="0" cellpadding="0" >
 
 
@@ -258,18 +264,19 @@ for( int i = 0; i < capBanks.length; i++ )
 
 					<td><input type="checkbox" name="cti_chkbxBanks" value="<%=capBank.getCcId()%>" /></td>
 					<td>
+		          	<input id="cmd_cap_move_back_<%=capBank.getCcId()%>" type="hidden" value= "" />
 		          	<a href="javascript:void(0);"
-		          		<% if( capBank.isBankMoved() ) {%>
-		          			class="warning" <%= popupEvent %>="return overlib(
-								createIFrame('capBankMove.jsp?capBankId=<%=capBank.getCcId()%>&cmdType=system', 155, 50, 'tempIFrame', 0),
-								STICKY, WIDTH,155, HEIGHT,50, OFFSETX,-15,OFFSETY,-15,
-								 FULLHTML);"
-								onmouseout = <%=nd %> 	
-								
-		          			
+		          		<% if( capBank.isBankMoved() ) { %>
+		       
+		          			class="warning" <%= popupEvent %>=
+		          			"
+							return overlib(
+									$F('cmd_cap_move_back_<%=capBank.getCcId()%>'),
+									STICKY, WIDTH,155, HEIGHT,50, OFFSETX,-15,OFFSETY,-15, FULLHTML);"
+									onmouseout = <%=nd %> 
 		          		<% } else { %>
 							onmouseover="statusMsg(this, 'Click here to temporarily move this CapBank from it\'s current parent feeder');"
-		          			onclick="showPopUp('tempmove.jsp?bankid='+<%=capBank.getCcId()%>);"
+		          			onclick="return GB_show('CapBank Temp Move (Pick feeder by clicking on name)','tempmove.jsp?bankid='+<%=capBank.getCcId()%>, 500, 700, onGreyBoxClose);"
 		          		<% } %>
 						><%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_PARENT_COLUMN)%>
 					</a>					
@@ -344,4 +351,5 @@ Event.observe(window, 'load', function() {
             </cti:titledContainer>
 
 	<div id="cmd_msg_div" style="display: none;" />
+
 </cti:standardPage>
