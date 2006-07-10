@@ -109,6 +109,32 @@ insert into YukonListEntry values (1034,1003,0,'Non Yukon Meter',1204);
 
 insert into YukonRoleProperty values(-80002,-800,'Intro Text','An important message from your energy provider','The text that is read after the phone is answered, but before the pin has been entered');
 
+create table SequenceNumber  (
+   LastValue            NUMBER                          not null,
+   SequenceName         VARCHAR2(20)                    not null
+);
+
+alter table SequenceNumber
+   add constraint PK_SEQUENCENUMBER primary key (SequenceName);
+
+/* @error ignore-begin */
+insert into YukonRoleProperty values(-20890,-201,'Address State Label','State','Labelling for the address field which is usually state in the US or province in Canada');
+insert into YukonRoleProperty values(-20891,-201,'Address County Label','County','Labelling for the address field which is usually county in the US or postal code in Canada');
+insert into YukonRoleProperty values(-20892,-201,'Address PostalCode Label','Zip','Labelling for the address field which is usually zip code in the US or postal code in Canada');
+
+insert into yukongrouprole values (-890,-301,-201,-20890,'(none)'); 
+insert into yukongrouprole values (-891,-301,-201,-20891,'(none)');
+insert into yukongrouprole values (-892,-301,-201,-20892,'(none)');
+insert into yukongrouprole values (-893,-301,-201,-20893,'(none)');
+
+insert into yukongrouprole values (-2190,-303,-201,-20890,'(none)');
+insert into yukongrouprole values (-2191,-303,-201,-20891,'(none)');
+insert into yukongrouprole values (-2192,-303,-201,-20892,'(none)'); 
+insert into yukongrouprole values (-2193,-303,-201,-20893,'(none)');
+/* @error ignore-end */ 
+
+insert into YukonRole values(-211,'CI Curtailment','Operator','Operator access to C&I Curtailment'); 
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */

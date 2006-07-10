@@ -129,6 +129,11 @@ alter table CALCBASE modify QualityFlag not null;
 /* @error ignore */
 alter table DynamicPointAlarming drop constraint FKf_DynPtAl_SysL;
 
+
+alter table dynamicccfeeder add eventSeq number;
+update dynamicccfeeder  set eventSeq = 0;
+alter table dynamicccfeeder modify eventSeq number not null;
+
 alter table dynamicccfeeder add currVerifyCBId NUMBER;
 update dynamicccfeeder  set currVerifyCBId = -1;
 alter table dynamicccfeeder modify currVerifyCBId not null;
@@ -206,11 +211,11 @@ alter table DynamicCCMonitorPointResponse
 
 alter table Capcontrolsubstationbus add multiMonitorControl CHAR(1);
 update  Capcontrolsubstationbus set  multiMonitorControl = 'N';
-alter table   Capcontrolsubstationbus modify multiMonitorControl not null;
+alter table Capcontrolsubstationbus modify multiMonitorControl not null;
 
 alter table Capcontrolfeeder add multiMonitorControl char(1);
 update  Capcontrolfeeder set  multiMonitorControl = 'N';
-alter table Capcontrolfeeder modify multiMonitorControl char(1) not null;
+alter table   Capcontrolfeeder modify  multiMonitorControl char(1) not null;
 
 alter table NotificationDestination drop constraint PKey_NotDestID;
 alter table NotificationDestination drop column DestinationOrder;
@@ -220,9 +225,6 @@ alter table dynamicccsubstationbus add eventSeq numeric;
 update dynamicccsubstationbus  set eventSeq = 0;
 alter table dynamicccsubstationbus modify eventSeq numeric not null;
 
-alter table dynamicccfeeder add eventSeq numeric;
-update dynamicccfeeder  set eventSeq = 0;
-alter table dynamicccfeeder modify eventSeq numeric not null;
 
 /* @error ignore-begin */
 /* Below is an attempt to create every table and constraint

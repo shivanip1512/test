@@ -448,7 +448,7 @@ alter table CapControlFeeder alter column StrategyID numeric not null;
 go
 
 insert into CapControlStrategy
-select feederid, 'Fdr: '  paoname, 'IndividualFeeder',0,'N',0,0,0,0,0,0,'NYYYYYNN','(none)',0,0,
+select feederid, 'Fdr: '  + paoname, 'IndividualFeeder',0,'N',0,0,0,0,0,0,'NYYYYYNN','(none)',0,0,
 PEAKSETPOINT+UpperBandwidth, PEAKSETPOINT-LowerBandwidth, OFFPEAKSETPOINT+UpperBandwidth, OFFPEAKSETPOINT-LowerBandwidth
 from capcontrolfeeder, yukonpaobject
 where paobjectid = feederid;
@@ -472,7 +472,7 @@ alter table CapControlSubstationBus alter column StrategyID numeric not null;
 go
 
 insert into CapControlStrategy
-select substationbusid, 'Sub: '  paoname, ControlMethod,MAXDAILYOPERATION,
+select substationbusid, 'Sub: ' + paoname, ControlMethod,MAXDAILYOPERATION,
 MaxOperationDisableFlag,PEAKSTARTTIME,PEAKSTOPTIME,CONTROLINTERVAL,MINRESPONSETIME,
 MINCONFIRMPERCENT,FAILUREPERCENT,DAYSOFWEEK,ControlUnits,ControlDelayTime,ControlSendRetries,
 PEAKSETPOINT+UpperBandwidth, PEAKSETPOINT-LowerBandwidth, OFFPEAKSETPOINT+UpperBandwidth, OFFPEAKSETPOINT-LowerBandwidth

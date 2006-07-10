@@ -167,6 +167,14 @@ go
 alter table DynamicPointAlarming drop constraint FKf_DynPtAl_SysL;
 go
 
+
+alter table dynamicccfeeder add eventSeq numeric;
+go
+update dynamicccfeeder  set eventSeq = 0;
+go
+alter table dynamicccfeeder alter column eventSeq numeric not null;
+go
+
 alter table dynamicccfeeder add currVerifyCBId numeric;
 go
 update dynamicccfeeder  set currVerifyCBId = -1;
@@ -297,12 +305,6 @@ go
 alter table dynamicccsubstationbus alter column eventSeq numeric not null;
 go
 
-alter table dynamicccfeeder add eventSeq numeric;
-go
-update dynamicccfeeder  set eventSeq = 0;
-go
-alter table dynamicccfeeder alter column eventSeq numeric not null;
-go
 
 /* @error ignore-begin */
 /* Below is an attempt to create every table and constraint

@@ -164,4 +164,4 @@ update command set label = 'Reset and Write current min/max voltage to frozen re
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
 /**************************************************************/
-/* __YUKON_VERSION__ */
+insert into CTIDatabase values('3.2', 'DBAdmin', '01-JULY-2006', 'DB Update Script', 7 );

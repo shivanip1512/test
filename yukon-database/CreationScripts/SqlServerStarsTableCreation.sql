@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     5/8/2006 4:47:30 PM                          */
+/* Created on:     7/10/2006 2:25:06 PM                         */
 /*==============================================================*/
 
 
@@ -51,6 +51,16 @@ if exists (select 1
             and   indid > 0
             and   indid < 255)
    drop index CustomerAccount.Indx_CstAcc_CstId
+go
+
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('CustomerAccount')
+            and   name  = 'Indx_acctid_custid'
+            and   indid > 0
+            and   indid < 255)
+   drop index CustomerAccount.Indx_acctid_custid
 go
 
 
@@ -901,6 +911,16 @@ go
 /* Index: Indx_CstAcc_CstId                                     */
 /*==============================================================*/
 create   index Indx_CstAcc_CstId on CustomerAccount (
+CustomerID
+)
+go
+
+
+/*==============================================================*/
+/* Index: Indx_acctid_custid                                    */
+/*==============================================================*/
+create   index Indx_acctid_custid on CustomerAccount (
+AccountID,
 CustomerID
 )
 go

@@ -1,10 +1,10 @@
 /*==============================================================*/
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     5/8/2006 4:46:41 PM                          */
+/* Created on:     7/10/2006 2:23:32 PM                         */
 /*==============================================================*/
 
 
-set scan off
+set define off
 
 
 drop index CstSrvCstProp_FK;
@@ -16,6 +16,8 @@ drop index CstLdTy_CstLdInf_FK;
 drop index CstAccCstPro_FK;
 
 drop index Indx_CstAcc_CstId;
+
+drop index Indx_acctid_custid;
 
 drop index CstAccCstHrdB_FK;
 
@@ -398,6 +400,14 @@ create index CstAccCstPro_FK on CustomerAccount (
 /* Index: Indx_CstAcc_CstId                                     */
 /*==============================================================*/
 create index Indx_CstAcc_CstId on CustomerAccount (
+   CustomerID ASC
+);
+
+/*==============================================================*/
+/* Index: Indx_acctid_custid                                    */
+/*==============================================================*/
+create index Indx_acctid_custid on CustomerAccount (
+   AccountID ASC,
    CustomerID ASC
 );
 

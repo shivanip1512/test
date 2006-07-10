@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     6/21/2006 1:46:22 PM                         */
+/* Created on:     7/10/2006 2:41:43 PM                         */
 /*==============================================================*/
 
 
@@ -68,13 +68,15 @@ drop index Indx_CapCntrlStrat_name_UNQ;
 
 drop index AK_KEY_CmdGrp_Name;
 
-drop index AK_CONFNM_NAME;
+drop index INDX_CONTID_LNAME;
 
-drop index AK_CONFPTNM_NAME;
+drop index INDX_CONTID_LNAME_FNAME;
 
 drop index Indx_ContLstName;
 
 drop index Indx_CntNotif_CntId;
+
+drop index INDX_CUSTID_PCONTID;
 
 drop index Indx_Cstmr_PcId;
 
@@ -222,14 +224,6 @@ drop table Command cascade constraints;
 
 drop table CommandGroup cascade constraints;
 
-drop table ConfigurationName cascade constraints;
-
-drop table ConfigurationParts cascade constraints;
-
-drop table ConfigurationPartsName cascade constraints;
-
-drop table ConfigurationValue cascade constraints;
-
 drop table Contact cascade constraints;
 
 drop table ContactNotifGroupMap cascade constraints;
@@ -245,6 +239,26 @@ drop table CustomerBaseLinePoint cascade constraints;
 drop table CustomerLoginSerialGroup cascade constraints;
 
 drop table CustomerNotifGroupMap cascade constraints;
+
+drop table DCCategory cascade constraints;
+
+drop table DCCategoryItem cascade constraints;
+
+drop table DCCategoryItemType cascade constraints;
+
+drop table DCCategoryType cascade constraints;
+
+drop table DCConfiguration cascade constraints;
+
+drop table DCConfigurationCategory cascade constraints;
+
+drop table DCConfigurationCategoryType cascade constraints;
+
+drop table DCConfigurationType cascade constraints;
+
+drop table DCDeviceConfiguration cascade constraints;
+
+drop table DCItemType cascade constraints;
 
 drop table DEVICE cascade constraints;
 
@@ -287,8 +301,6 @@ drop table DateOfSeason cascade constraints;
 drop table DeviceAddress cascade constraints;
 
 drop table DeviceCBC cascade constraints;
-
-drop table DeviceConfiguration cascade constraints;
 
 drop table DeviceCustomerList cascade constraints;
 
@@ -465,6 +477,10 @@ drop table MCTBroadCastMapping cascade constraints;
 drop table MCTConfig cascade constraints;
 
 drop table MCTConfigMapping cascade constraints;
+
+drop table MSPInterface cascade constraints;
+
+drop table MSPVendor cascade constraints;
 
 drop table NotificationDestination cascade constraints;
 
@@ -699,7 +715,10 @@ insert into billingfileformats values( 16, 'NISC TOU (kVarH)');
 insert into billingfileformats values( -17, 'SEDC (yyyyMMdd)');
 insert into billingfileformats values( -18, 'ATS');
 insert into billingfileformats values( -19, ' NISC-Turtle No Limit kWh ');
-insert into billingfileformats values(20, 'IVUE_BI_T65');
+insert into billingfileformats values(-20, 'IVUE_BI_T65');
+insert into billingfileformats values(21, 'SIMPLE_TOU');
+insert into billingfileformats values(22, 'EXTENDED_TOU');
+
 alter table BillingFileFormats
    add constraint PK_BILLINGFILEFORMATS primary key (FormatID);
 
@@ -1480,15 +1499,15 @@ insert into command values(-102, 'scan general update', 'General Meter Scan and 
 insert into command values(-103, 'scan general frozen update', 'General Meter Scan Frozen and DB Update', 'SENTINEL');
 insert into command values(-104, 'putvalue reset', 'Reset Demand', 'SENTINEL');
 insert into command values(-105, 'getvalue lp channel ?''Channel (1 or 4)'' ?''MM/DD/YYYY HH:mm''', 'Read block of data (six intevals) from start date/time specified', 'MCT-410IL');
-insert into command values(-106, 'getvalue outage ?''Outage Log (1 - 6)''', 'Read two outages per read.  Specify 1 (returns 1&2), 3 (returns 3&4), 5 (returns 5&6)', 'MCT-410IL');
+insert into command values(-106, 'getvalue outage ?''Outage Log (1 - 6)''', 'Read two outages per read.  Specify 1(1&2), 3(3&4), 5(5&6)', 'MCT-410IL');
 insert into command values(-107, 'getvalue peak frozen', 'Read frozen demand - kW and kWh', 'MCT-410IL');
 insert into command values(-108, 'getvalue voltage frozen', 'Read frozen voltage - min, max', 'MCT-410IL');
 insert into command values(-109, 'putvalue powerfail reset', 'Reset blink counter', 'MCT-410IL');
 insert into command values(-110, 'getvalue voltage frozen', 'Read frozen voltage - min, max', 'MCT-410IL');
-insert into command values(-111, 'getconfig intervals', 'Read rates for Last Interval Demand, Load Profile Demand, Voltage Last Interval Demand, Voltage Profile Demand', 'All MCT-4xx Series');
+insert into command values(-111, 'getconfig intervals', 'Read rates for LI, LP, Volt LI, and Volt Profile Demand', 'All MCT-4xx Series');
 insert into command values(-112, 'putconfig emetcon intervals', 'Write rate intervals from database to MCT', 'MCT-410IL');
-insert into command values(-113, 'putstatus emetcon freeze ?''(one or two)''', 'Reset current peak demand, write current peak demand - kW and kWh to frozen register', 'MCT-410IL');
-insert into command values(-114, 'putstatus emetcon freeze voltage ?''(one or two)''', 'Reset current min/max voltage, write current min/max voltage to frozen register', 'MCT-410IL');
+insert into command values(-113, 'putstatus emetcon freeze ?''(one or two)''', 'Reset and Write current peak demand - kW and kWh to frozen register', 'MCT-410IL');
+insert into command values(-114, 'putstatus emetcon freeze voltage ?''(one or two)''', 'Reset and Write current min/max voltage to frozen register', 'MCT-410IL');
 
 insert into command values(-115, 'getvalue ied current kwha', 'Read Current Rate A kWh/Peak kW', 'MCT-470');
 insert into command values(-116, 'getvalue ied current kwhb', 'Read Current Rate B kWh/Peak kW', 'MCT-470');
@@ -1499,6 +1518,10 @@ insert into command values(-120, 'getvalue ied frozen kwhb', 'Read Frozen Rate B
 insert into command values(-121, 'getvalue ied frozen kwhc', 'Read Frozen Rate C kWh/Peak kW', 'MCT-470');
 insert into command values(-122, 'getvalue ied frozen kwhd', 'Read Frozen Rate D kWh/Peak kW', 'MCT-470');
 insert into command values(-123, 'getconfig options', 'Read Options', 'MCT-470');
+
+insert into command values(-124, 'putconfig raw 38 0', 'Install Emetcon Gold 1', 'VersacomSerial');
+insert into command values(-125, 'putconfig raw 38 1', 'Install Emetcon Gold 1', 'VersacomSerial');
+insert into command values(-126, 'putconfig raw 38 2', 'Install Emetcon Gold 1', 'VersacomSerial');
 alter table Command
    add constraint PK_COMMAND primary key (CommandID);
 
@@ -1522,68 +1545,6 @@ create unique index AK_KEY_CmdGrp_Name on CommandGroup (
 );
 
 /*==============================================================*/
-/* Table: ConfigurationName                                     */
-/*==============================================================*/
-create table ConfigurationName  (
-   ConfigID             NUMBER                          not null,
-   ConfigName           VARCHAR2(40)                    not null
-);
-
-alter table ConfigurationName
-   add constraint PK_CONFIGURATIONNAME primary key (ConfigID);
-
-/*==============================================================*/
-/* Index: AK_CONFNM_NAME                                        */
-/*==============================================================*/
-create unique index AK_CONFNM_NAME on ConfigurationName (
-   ConfigName ASC
-);
-
-/*==============================================================*/
-/* Table: ConfigurationParts                                    */
-/*==============================================================*/
-create table ConfigurationParts  (
-   ConfigID             NUMBER                          not null,
-   PartID               NUMBER                          not null,
-   ConfigRowID          NUMBER                          not null
-);
-
-alter table ConfigurationParts
-   add constraint PK_CONFIGURATIONPARTS primary key (ConfigRowID);
-
-/*==============================================================*/
-/* Table: ConfigurationPartsName                                */
-/*==============================================================*/
-create table ConfigurationPartsName  (
-   PartID               NUMBER                          not null,
-   PartName             VARCHAR2(40)                    not null,
-   PartType             VARCHAR2(40)                    not null
-);
-
-alter table ConfigurationPartsName
-   add constraint PK_CONFIGURATIONPARTSNAME primary key (PartID);
-
-/*==============================================================*/
-/* Index: AK_CONFPTNM_NAME                                      */
-/*==============================================================*/
-create unique index AK_CONFPTNM_NAME on ConfigurationPartsName (
-   PartName ASC
-);
-
-/*==============================================================*/
-/* Table: ConfigurationValue                                    */
-/*==============================================================*/
-create table ConfigurationValue  (
-   PartID               NUMBER                          not null,
-   ValueID              VARCHAR2(40)                    not null,
-   Value                VARCHAR2(40)                    not null,
-   ConfigRowID          NUMBER                          not null
-);
-
-alter table ConfigurationValue
-   add constraint PK_CONFIGURATIONVALUE primary key (ConfigRowID);
-
-/*==============================================================*/
 /* Table: Contact                                               */
 /*==============================================================*/
 create table Contact  (
@@ -1602,6 +1563,23 @@ alter table Contact
 /* Index: Indx_ContLstName                                      */
 /*==============================================================*/
 create index Indx_ContLstName on Contact (
+   ContLastName ASC
+);
+
+/*==============================================================*/
+/* Index: INDX_CONTID_LNAME                                     */
+/*==============================================================*/
+create index INDX_CONTID_LNAME on Contact (
+   ContactID ASC,
+   ContLastName ASC
+);
+
+/*==============================================================*/
+/* Index: INDX_CONTID_LNAME_FNAME                               */
+/*==============================================================*/
+create index INDX_CONTID_LNAME_FNAME on Contact (
+   ContactID ASC,
+   ContFirstName ASC,
    ContLastName ASC
 );
 
@@ -1667,6 +1645,14 @@ create index Indx_Cstmr_PcId on Customer (
 );
 
 /*==============================================================*/
+/* Index: INDX_CUSTID_PCONTID                                   */
+/*==============================================================*/
+create index INDX_CUSTID_PCONTID on Customer (
+   CustomerID ASC,
+   PrimaryContactID ASC
+);
+
+/*==============================================================*/
 /* Table: CustomerAdditionalContact                             */
 /*==============================================================*/
 create table CustomerAdditionalContact  (
@@ -1711,6 +1697,119 @@ create table CustomerNotifGroupMap  (
 
 alter table CustomerNotifGroupMap
    add constraint PK_CUSTOMERNOTIFGROUPMAP primary key (CustomerID, NotificationGroupID);
+
+/*==============================================================*/
+/* Table: DCCategory                                            */
+/*==============================================================*/
+create table DCCategory  (
+   CategoryID           NUMBER                          not null,
+   CategoryTypeID       NUMBER                          not null,
+   Name                 VARCHAR2(40)                    not null
+);
+
+alter table DCCategory
+   add constraint PK_DCCATEGORY primary key (CategoryID);
+
+/*==============================================================*/
+/* Table: DCCategoryItem                                        */
+/*==============================================================*/
+create table DCCategoryItem  (
+   CategoryID           NUMBER                          not null,
+   ItemTypeID           NUMBER                          not null,
+   Value                VARCHAR2(40)                    not null
+);
+
+alter table DCCategoryItem
+   add constraint PK_DCCATEGORYITEM primary key (CategoryID, ItemTypeID);
+
+/*==============================================================*/
+/* Table: DCCategoryItemType                                    */
+/*==============================================================*/
+create table DCCategoryItemType  (
+   CategoryTypeID       NUMBER                          not null,
+   ItemTypeID           NUMBER                          not null
+);
+
+alter table DCCategoryItemType
+   add constraint PK_DCCATEGORYITEMTYPE primary key (CategoryTypeID, ItemTypeID);
+
+/*==============================================================*/
+/* Table: DCCategoryType                                        */
+/*==============================================================*/
+create table DCCategoryType  (
+   CategoryTypeID       NUMBER                          not null,
+   Name                 VARCHAR2(40)                    not null
+);
+
+alter table DCCategoryType
+   add constraint PK_DCCATEGORYTYPE primary key (CategoryTypeID);
+
+/*==============================================================*/
+/* Table: DCConfiguration                                       */
+/*==============================================================*/
+create table DCConfiguration  (
+   ConfigID             NUMBER                          not null,
+   ConfigTypeID         NUMBER                          not null,
+   Name                 VARCHAR2(40)                    not null
+);
+
+alter table DCConfiguration
+   add constraint PK_DCCONFIGURATION primary key (ConfigID);
+
+/*==============================================================*/
+/* Table: DCConfigurationCategory                               */
+/*==============================================================*/
+create table DCConfigurationCategory  (
+   ConfigID             NUMBER                          not null,
+   CategoryID           NUMBER                          not null
+);
+
+alter table DCConfigurationCategory
+   add constraint PK_DCCONFIGURATIONCATEGORY primary key (ConfigID, CategoryID);
+
+/*==============================================================*/
+/* Table: DCConfigurationCategoryType                           */
+/*==============================================================*/
+create table DCConfigurationCategoryType  (
+   ConfigTypeID         NUMBER                          not null,
+   CategoryTypeID       NUMBER                          not null
+);
+
+alter table DCConfigurationCategoryType
+   add constraint PK_DCCONFIGURATIONCATEGORYTYPE primary key (ConfigTypeID, CategoryTypeID);
+
+/*==============================================================*/
+/* Table: DCConfigurationType                                   */
+/*==============================================================*/
+create table DCConfigurationType  (
+   ConfigTypeID         NUMBER                          not null,
+   Name                 VARCHAR2(40)                    not null
+);
+
+alter table DCConfigurationType
+   add constraint PK_DCCONFIGURATIONTYPE primary key (ConfigTypeID);
+
+/*==============================================================*/
+/* Table: DCDeviceConfiguration                                 */
+/*==============================================================*/
+create table DCDeviceConfiguration  (
+   DeviceID             NUMBER                          not null,
+   ConfigID             NUMBER                          not null
+);
+
+alter table DCDeviceConfiguration
+   add constraint PK_DCDEVICECONFIGURATION primary key (DeviceID, ConfigID);
+
+/*==============================================================*/
+/* Table: DCItemType                                            */
+/*==============================================================*/
+create table DCItemType  (
+   ItemTypeID           NUMBER                          not null,
+   Name                 VARCHAR2(40)                    not null
+);
+
+alter table DCItemType
+   add constraint PK_DCITEMTYPE primary key (ItemTypeID);
 
 /*==============================================================*/
 /* Table: DEVICE                                                */
@@ -2290,17 +2389,6 @@ alter table DeviceCBC
    add constraint PK_DEVICECBC primary key (DEVICEID);
 
 /*==============================================================*/
-/* Table: DeviceConfiguration                                   */
-/*==============================================================*/
-create table DeviceConfiguration  (
-   DeviceID             NUMBER                          not null,
-   ConfigID             NUMBER                          not null
-);
-
-alter table DeviceConfiguration
-   add constraint PK_DEVICECONFIGURATION primary key (DeviceID);
-
-/*==============================================================*/
 /* Table: DeviceCustomerList                                    */
 /*==============================================================*/
 create table DeviceCustomerList  (
@@ -2867,6 +2955,76 @@ INSERT INTO DEVICETYPECOMMAND VALUES (-423, -111, 'MCT-470', 16, 'Y', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-424, -7, 'MCT-470', 17, 'Y', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-425, -8, 'MCT-470', 18, 'Y', -1);
 
+INSERT INTO DEVICETYPECOMMAND VALUES (-426, -3, 'MCT-430A', 1, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-427, -20, 'MCT-430A', 2, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-428, -21, 'MCT-430A', 3, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-429, -22, 'MCT-430A', 4, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-430, -115, 'MCT-430A', 5, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-431, -116, 'MCT-430A', 6, 'N', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-432, -117, 'MCT-430A', 7, 'N', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-433, -118, 'MCT-430A', 8, 'N', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-434, -119, 'MCT-430A', 9, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-435, -120, 'MCT-430A', 10, 'N', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-436, -121, 'MCT-430A', 11, 'N', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-437, -122, 'MCT-430A', 12, 'N', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-448, -123, 'MCT-430A', 13, 'Y', -1);
+
+INSERT INTO DEVICETYPECOMMAND VALUES (-449, -3, 'MCT-430S', 1, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-450, -20, 'MCT-430S', 2, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-451, -21, 'MCT-430S', 3, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-452, -22, 'MCT-430S', 4, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-453, -115, 'MCT-430S', 5, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-454, -116, 'MCT-430S', 6, 'N', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-455, -117, 'MCT-430S', 7, 'N', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-456, -118, 'MCT-430S', 8, 'N', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-457, -119, 'MCT-430S', 9, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-458, -120, 'MCT-430S', 10, 'N', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-459, -121, 'MCT-430S', 11, 'N', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-460, -122, 'MCT-430S', 12, 'N', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-461, -123, 'MCT-430S', 13, 'Y', -1);
+
+INSERT INTO DEVICETYPECOMMAND VALUES (-462, -30, 'CBC Expresscom', 1, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-463, -31, 'CBC Expresscom', 2, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-464, -32, 'CBC Expresscom', 3, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-465, -33, 'CBC Expresscom', 4, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-466, -30, 'CBC 7010', 1, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-467, -31, 'CBC 7010', 2, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-468, -32, 'CBC 7010', 3, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-469, -33, 'CBC 7010', 4, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-470, -30, 'CBC 7011', 1, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-471, -31, 'CBC 7011', 2, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-472, -32, 'CBC 7011', 3, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-473, -33, 'CBC 7011', 4, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-474, -30, 'CBC 7011', 1, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-475, -31, 'CBC 7011', 2, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-476, -32, 'CBC 7011', 3, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-477, -33, 'CBC 7011', 4, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-478, -30, 'CBC 7012', 1, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-479, -31, 'CBC 7012', 2, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-480, -32, 'CBC 7012', 3, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-481, -33, 'CBC 7012', 4, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-482, -30, 'CBC 7020', 1, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-483, -31, 'CBC 7020', 2, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-484, -32, 'CBC 7020', 3, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-485, -33, 'CBC 7020', 4, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-486, -30, 'CBC 7022', 1, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-487, -31, 'CBC 7022', 2, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-488, -32, 'CBC 7022', 3, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-489, -33, 'CBC 7022', 4, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-490, -30, 'CBC 7023', 1, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-491, -31, 'CBC 7023', 2, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-492, -32, 'CBC 7023', 3, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-493, -33, 'CBC 7023', 4, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-494, -30, 'CBC 7024', 1, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-495, -31, 'CBC 7024', 2, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-496, -32, 'CBC 7024', 3, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-497, -33, 'CBC 7024', 4, 'Y', -1);
+
+INSERT INTO DEVICETYPECOMMAND VALUES (-498, -124, 'VersacomSerial', 19, 'N', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-499, -125, 'VersacomSerial', 20, 'N', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-500, -126, 'VersacomSerial', 21, 'N', -1);
+
+
 alter table DeviceTypeCommand
    add constraint PK_DEVICETYPECOMMAND primary key (DeviceCommandID, CommandGroupID);
 
@@ -2954,7 +3112,8 @@ create table DynamicCCFeeder  (
    CurrentVoltPointValue FLOAT                           not null,
    EventSeq             NUMBER                          not null,
    CurrVerifyCBId       NUMBER                          not null,
-   CurrVerifyCBOrigState NUMBER                          not null
+   CurrVerifyCBOrigState NUMBER                          not null,
+   MultiVoltControlState NUMBER                          not null
 );
 
 alter table DynamicCCFeeder
@@ -3021,7 +3180,8 @@ create table DynamicCCSubstationBus  (
    CurrentVoltPointValue FLOAT                           not null,
    SwitchPointStatus    CHAR(1)                         not null,
    AltSubControlValue   FLOAT                           not null,
-   EventSeq             NUMBER                          not null
+   EventSeq             NUMBER                          not null,
+   MultiVoltControlState NUMBER                          not null
 );
 
 alter table DynamicCCSubstationBus
@@ -4339,6 +4499,43 @@ alter table MCTConfigMapping
    add constraint PK_MCTCONFIGMAPPING primary key (MctID, ConfigID);
 
 /*==============================================================*/
+/* Table: MSPInterface                                          */
+/*==============================================================*/
+create table MSPInterface  (
+   VendorID             NUMBER                          not null,
+   Interface            VARCHAR2(12)                    not null,
+   Endpoint             VARCHAR2(32)                    not null
+);
+
+insert into MSPInterface values (1, 'CB_MR', 'CB_MRSoap');
+insert into MSPInterface values (1, 'MR_CB', 'MR_CBSoap');
+insert into MSPInterface values (1, 'EA_MR', 'EA_MRSoap');
+insert into MSPInterface values (1, 'MR_EA', 'MR_EASoap');
+insert into MSPInterface values (1, 'OA_OD', 'OA_ODSoap');
+insert into MSPInterface values (1, 'OD_OA', 'OD_OASoap');
+insert into MSPInterface values (1, 'CB_CD', 'CB_CDSoap');
+insert into MSPInterface values (1, 'CD_CB', 'CD_CBSoap');
+alter table MSPInterface
+   add constraint PK_MSPINTERFACE primary key (VendorID, Interface, Endpoint);
+
+/*==============================================================*/
+/* Table: MSPVendor                                             */
+/*==============================================================*/
+create table MSPVendor  (
+   VendorID             NUMBER                          not null,
+   CompanyName          VARCHAR2(64)                    not null,
+   UserName             VARCHAR2(64)                    not null,
+   Password             VARCHAR2(64)                    not null,
+   UniqueKey            VARCHAR2(32)                    not null,
+   Timeout              NUMBER                          not null,
+   URL                  VARCHAR2(120)                   not null
+);
+
+insert into MSPVendor values (1, 'cannon', '(none)', '(none)', 'meterNumber', 0, 'http://127.0.0.1:8080/soap');
+alter table MSPVendor
+   add constraint PK_MSPVENDOR primary key (VendorID);
+
+/*==============================================================*/
 /* Table: NotificationDestination                               */
 /*==============================================================*/
 create table NotificationDestination  (
@@ -4567,12 +4764,12 @@ alter table POINTSTATUS
 /*==============================================================*/
 create table POINTTRIGGER  (
    PointID              NUMBER                          not null,
-   TriggerID            number                          not null,
-   TriggerDeadband      float                           not null,
-   VerificationID       number                          not null,
-   VerificationDeadband float                           not null,
-   CommandTimeout       number                          not null,
-   Parameters           varchar2(40)                    not null
+   TriggerID            NUMBER                          not null,
+   TriggerDeadband      FLOAT                           not null,
+   VerificationID       NUMBER                          not null,
+   VerificationDeadband FLOAT                           not null,
+   CommandTimeout       NUMBER                          not null,
+   Parameters           VARCHAR2(40)                    not null
 );
 
 alter table POINTTRIGGER
@@ -5591,6 +5788,11 @@ insert into yukongrouprole values (-886,-301,-201,-20886,'(none)');
 insert into yukongrouprole values (-887,-301,-201,-20887,'(none)');
 insert into yukongrouprole values (-888,-301,-201,-20888,'(none)');
 insert into yukongrouprole values (-889,-301,-201,-20889,'(none)');
+insert into yukongrouprole values (-890,-301,-201,-20890,'(none)');
+insert into yukongrouprole values (-891,-301,-201,-20891,'(none)');
+insert into yukongrouprole values (-892,-301,-201,-20892,'(none)');
+insert into yukongrouprole values (-893,-301,-201,-20893,'(none)');
+
 
 /* Add the user-control properties to the Web Client Customers group */
 insert into yukongrouprole values ( -985, -302, -306, -30600, '(none)');
@@ -5930,6 +6132,10 @@ insert into yukongrouprole values (-2186,-303,-201,-20886,'(none)');
 insert into yukongrouprole values (-2187,-303,-201,-20887,'(none)');
 insert into yukongrouprole values (-2188,-303,-201,-20888,'(none)');
 insert into yukongrouprole values (-2189,-303,-201,-20889,'(none)');
+insert into yukongrouprole values (-2190,-303,-201,-20890,'(none)');
+insert into yukongrouprole values (-2191,-303,-201,-20891,'(none)');
+insert into yukongrouprole values (-2192,-303,-201,-20892,'(none)');
+insert into yukongrouprole values (-2193,-303,-201,-20893,'(none)');
 
 insert into yukongrouprole values (-2200,-304,-108,-10800,'/user/ConsumerStat/stat/General.jsp');
 insert into yukongrouprole values (-2202,-304,-108,-10802,'(none)');
@@ -6589,6 +6795,7 @@ insert into YukonRole values (-209,'Inventory','Operator','Operator Access to ha
 
 /* operator work order management role */
 insert into YukonRole values (-210,'Work Order','Operator','Operator Access to work order management');
+insert into YukonRole values(-211,'CI Curtailment','Operator','Operator access to C&I Curtailment'); 
 
 /* CI customer roles */
 insert into YukonRole values(-300,'Direct Loadcontrol','CICustomer','Customer access to commercial/industrial customer direct loadcontrol');
@@ -6928,6 +7135,10 @@ insert into YukonRoleProperty values(-20886,-201,'Heading Administration','Admin
 insert into YukonRoleProperty values(-20887,-201,'Sub-Heading Switches','Switches','Sub-heading of the switch links');
 insert into YukonRoleProperty values(-20888,-201,'Sub-Heading Thermostats','Thermostats','Sub-heading of the thermostat links');
 insert into YukonRoleProperty values(-20889,-201,'Sub-Heading Meters','Meters','Sub-heading of the meter links');
+insert into YukonRoleProperty values(-20890,-201,'Address State Label','State','Labelling for the address field which is usually state in the US or province in Canada');
+insert into YukonRoleProperty values(-20891,-201,'Address County Label','County','Labelling for the address field which is usually county in the US or postal code in Canada');
+insert into YukonRoleProperty values(-20892,-201,'Address PostalCode Label','Zip','Labelling for the address field which is usually zip code in the US or postal code in Canada');
+insert into YukonRoleProperty values(-20893,-201,'Inventory Checking Create','true','Allow creation of inventory if not found during Inventory Checking');
 
 /* Operator Hardware Inventory Role Properties */
 insert into YukonRoleProperty values(-20900,-209,'Show All Inventory','true','Controls whether to allow showing all inventory');
@@ -6944,6 +7155,8 @@ insert into YukonRoleProperty values(-20908,-209,'Multiple Warehouses','false','
 insert into YukonRoleProperty values(-21000,-210,'Show All Work Orders','true','Controls whether to allow showing all work orders');
 insert into YukonRoleProperty values(-21001,-210,'Create Work Order','true','Controls whether to allow creating new work orders');
 insert into YukonRoleProperty values(-21002,-210,'Work Order Report','true','Controls whether to allow reporting on work orders');
+
+insert into YukonRoleProperty values(-21100,-211,'CI Curtailment Label','CI Curtailment','The operator specific name for C&I Curtailment'); 
 
 /* CICustomer Direct Loadcontrol Role Properties */
 insert into YukonRoleProperty values(-30000,-300,'Direct Loadcontrol Label','Direct Control','The customer specific name for direct loadcontrol');
@@ -7059,7 +7272,7 @@ insert into YukonRoleProperty values(-80001,-800,'Number of Channels','1','The n
 insert into YukonRoleProperty values(-80002,-800,'Intro Text','An important message from your energy provider','The text that is read after the phone is answered, but before the pin has been entered');
 
 /* Notification / Configuration role properties */
-insert into YukonRoleProperty values(-80100,-801,'Template Root','http://localhost:8080/WebConfig/custom/notif_templates/','A URL base where the notification templates will be stored (file: or http: are okay).');
+insert into YukonRoleProperty values(-80100,-801,'Template Root','Server/web/webapps/yukon/WebConfig/custom/notif_templates/','Either a URL base where the notification templates will be stored (file: or http:) or a directory relative to YUKON_BASE.');
 
 /* Loadcontrol Role Properties */
 insert into YukonRoleProperty values(-90000,-900,'Direct Loadcontrol Label','Direct Control','The operator specific name for direct loadcontrol');
@@ -7717,6 +7930,10 @@ alter table CCurtEEParticipant
    add constraint FK_CCURTEEPART_CCURTEE foreign key (CCurtEconomicEventID)
       references CCurtEconomicEvent (CCurtEconomicEventID);
 
+alter table CCurtEEParticipant
+   add constraint FK_CCURTEEPART_CUST foreign key (CustomerID)
+      references CICustomerBase (CustomerID);
+
 alter table CCurtEEParticipantSelection
    add constraint FK_CCURTEEPARTSEL_CCURTEEPR foreign key (CCurtEEPricingID)
       references CCurtEEPricing (CCurtEEPricingID);
@@ -7790,10 +8007,6 @@ alter table CICUSTOMERPOINTDATA
       references POINT (POINTID);
 
 alter table CICustomerBase
-   add constraint FK_CCURTEEPART_CUST foreign key (CustomerID)
-      references CCurtEEParticipant (CustomerID);
-
-alter table CICustomerBase
    add constraint FK_CUSTTYPE_ENTRYID foreign key (CiCustType)
       references YukonListEntry (EntryID);
 
@@ -7844,18 +8057,6 @@ alter table CommErrorHistory
 alter table CommPort
    add constraint FK_COMMPORT_REF_COMPO_YUKONPAO foreign key (PORTID)
       references YukonPAObject (PAObjectID);
-
-alter table ConfigurationParts
-   add constraint FK_ConfPart_ConfName foreign key (ConfigID)
-      references ConfigurationName (ConfigID);
-
-alter table ConfigurationParts
-   add constraint FK_ConfPart_ConfPartName foreign key (PartID)
-      references ConfigurationPartsName (PartID);
-
-alter table ConfigurationValue
-   add constraint FK_ConfVal_ConfPart foreign key (PartID)
-      references ConfigurationPartsName (PartID);
 
 alter table Contact
    add constraint FK_RefCstLg_CustCont foreign key (LogInID)
@@ -7920,6 +8121,38 @@ alter table CustomerNotifGroupMap
 alter table CustomerNotifGroupMap
    add constraint FK_NTFG_CSTNOFGM foreign key (NotificationGroupID)
       references NotificationGroup (NotificationGroupID);
+
+alter table DCCategory
+   add constraint FK_DCCAT_DCCATTYPE foreign key (CategoryTypeID)
+      references DCCategoryType (CategoryTypeID);
+
+alter table DCCategoryItem
+   add constraint FK_DCCATITEM_DCCAT foreign key (CategoryID)
+      references DCCategory (CategoryID);
+
+alter table DCCategoryItem
+   add constraint FK_DCCATITEM_DCITEMTYPE foreign key (ItemTypeID)
+      references DCItemType (ItemTypeID);
+
+alter table DCConfiguration
+   add constraint FK_DCCONFIG_DCCONFIGTYPE foreign key (ConfigTypeID)
+      references DCConfigurationType (ConfigTypeID);
+
+alter table DCConfigurationCategory
+   add constraint FK_DCCONFIGCAT_DCCAT foreign key (CategoryID)
+      references DCCategory (CategoryID);
+
+alter table DCConfigurationCategory
+   add constraint FK_DCCONFIGCAT_DCCONFIG foreign key (ConfigID)
+      references DCConfiguration (ConfigID);
+
+alter table DCDeviceConfiguration
+   add constraint FK_DCDEVCONFIG_DCCONFIG foreign key (ConfigID)
+      references DCConfiguration (ConfigID);
+
+alter table DCDeviceConfiguration
+   add constraint FK_DCDEVCONFIG_YKPAO foreign key (DeviceID)
+      references YukonPAObject (PAObjectID);
 
 alter table DEVICE
    add constraint FK_Dev_YukPAO foreign key (DEVICEID)
@@ -8012,14 +8245,6 @@ alter table DeviceCBC
 alter table DeviceCBC
    add constraint SYS_C0013460 foreign key (ROUTEID)
       references Route (RouteID);
-
-alter table DeviceConfiguration
-   add constraint FK_DevConf_ConfName foreign key (ConfigID)
-      references ConfigurationName (ConfigID);
-
-alter table DeviceConfiguration
-   add constraint FK_DevConf_YukPAO foreign key (DeviceID)
-      references YukonPAObject (PAObjectID);
 
 alter table DeviceCustomerList
    add constraint FK_DvStLsCst foreign key (CustomerID)
@@ -8519,6 +8744,10 @@ alter table MCTConfigMapping
 alter table MCTConfigMapping
    add constraint FK_McCfgM_McCfg foreign key (ConfigID)
       references MCTConfig (ConfigID);
+
+alter table MSPInterface
+   add constraint FK_Intrfc_Vend foreign key (VendorID)
+      references MSPVendor (VendorID);
 
 alter table NotificationDestination
    add constraint FK_NotifDest_NotifGrp foreign key (NotificationGroupID)
