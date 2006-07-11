@@ -694,7 +694,7 @@ private javax.swing.JTextField getJTextFieldPhoneNumber() {
 	
 		if (getPointCopyCheckBox().isSelected())
 		{
-			java.util.Vector devicePoints = null;
+			java.util.Vector devicePoints = new java.util.Vector();
             
             com.cannontech.database.data.point.PointBase pointBase = null;
             List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(previousDeviceID);
@@ -713,12 +713,12 @@ private javax.swing.JTextField getJTextFieldPhoneNumber() {
                 }
             }	
 			
-			int startingPointID = DaoFactory.getPointDao().getNextPointId();
+			//int startingPointID = DaoFactory.getPointDao().getNextPointId();
 			Integer newDeviceID = device.getDevice().getDeviceID();
 
 			for (int i = 0; i < devicePoints.size(); i++)
 			{
-				((com.cannontech.database.data.point.PointBase) devicePoints.get(i)).setPointID(new Integer(startingPointID + i));
+				((com.cannontech.database.data.point.PointBase) devicePoints.get(i)).setPointID(DaoFactory.getPointDao().getNextPointId());
 				((com.cannontech.database.data.point.PointBase) devicePoints.get(i)).getPoint().setPaoID(newDeviceID);
 				objectsToAdd.getDBPersistentVector().add(devicePoints.get(i));
 			}

@@ -410,7 +410,7 @@ public void setValue(Object val) {
     int deviceId = ((com.cannontech.database.data.device.DeviceBase)val).getDevice().getDeviceID();
     List<LitePoint> points = pointDao.getLitePointsByPaObjectId(deviceId);
     numberOfDevicePoints = points.size();
-    getStartingPointNumberSpinner().setValue(new Integer(pointDao.getMaxPointID()+2));
+    getStartingPointNumberSpinner().setValue(new Integer(pointDao.getNextPointId()));
 }
 
 /**

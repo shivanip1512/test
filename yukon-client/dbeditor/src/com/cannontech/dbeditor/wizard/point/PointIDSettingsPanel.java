@@ -93,8 +93,8 @@ private void connEtoC4(java.awt.event.ItemEvent arg1) {
 public void deviceComboBox_ItemStateChanged(java.awt.event.ItemEvent itemEvent) {
 
 	getUsedPointIDLabel().setText("");
-    int nextPointId = DaoFactory.getPointDao().getMaxPointID()+1;
-    getPointIDSpinner().setValue(new Integer(nextPointId + 1) );
+    int nextPointId = DaoFactory.getPointDao().getNextPointId();
+    getPointIDSpinner().setValue(new Integer(nextPointId));
   
     revalidate();
 	repaint();

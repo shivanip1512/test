@@ -527,7 +527,7 @@ private void handleMCT_310IL()
          PointFactory.createDmdAccumPoint(
             "kW-LP",
             getCurrentDevice().getPAObjectID(),
-            new Integer( DaoFactory.getPointDao().getMaxPointID() + 1 ),
+            new Integer( DaoFactory.getPointDao().getNextPointId() ),
             PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND,
             PointUnits.UOMID_KW,
             .01 );

@@ -161,7 +161,8 @@ public class DeviceRoutePanel
 			newVal.getDBPersistentVector().add(val);
 
             PaoDao paoDao = DaoFactory.getPaoDao();
-			((DeviceBase) val).setDeviceID(paoDao.getNextPaoId());
+            ((DeviceBase) val).setDeviceID(paoDao.getNextPaoId());
+           // ((DeviceBase) val).setDeviceID(paoDao.getMaxPAOid()+1);
 			
 			Integer pointID = DaoFactory.getPointDao().getNextPointId();
          

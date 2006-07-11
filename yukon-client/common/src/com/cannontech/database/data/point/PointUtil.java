@@ -6,6 +6,7 @@ package com.cannontech.database.data.point;
 
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
@@ -54,7 +55,8 @@ public class PointUtil {
             // accumulator point is automatically added
             com.cannontech.database.data.point.PointBase newPoint = com.cannontech.database.data.point.PointFactory.createPoint(com.cannontech.database.data.point.PointTypes.PULSE_ACCUMULATOR_POINT);
 
-            int pointID = DaoFactory.getPointDao().getMaxPointID();
+            PointDao pointDao = DaoFactory.getPointDao();
+            //int pointID = DaoFactory.getPointDao().getNextPointId();
 
             double multiplier = 0.01;
             double blinkCountMult = 1.0;
@@ -81,7 +83,7 @@ public class PointUtil {
                       .add(PointFactory.createPulseAccumPoint("kWh",
                       ((DeviceBase) val).getDevice()
                                         .getDeviceID(),
-                      new Integer(++pointID),
+                      pointDao.getNextPointId(),
                       PointTypes.PT_OFFSET_TOTAL_KWH,
                       com.cannontech.database.data.point.PointUnits.UOMID_KWH,
                       multiplier));
@@ -90,7 +92,7 @@ public class PointUtil {
                       .add(PointFactory.createPulseAccumPoint("Blink Count",
                       ((DeviceBase) val).getDevice()
                                         .getDeviceID(),
-                      new Integer(++pointID),
+                      pointDao.getNextPointId(),
                       PointTypes.PT_OFFSET_BLINK_COUNT,
                       com.cannontech.database.data.point.PointUnits.UOMID_COUNTS,
                       blinkCountMult));
@@ -102,7 +104,7 @@ public class PointUtil {
                     .add(PointFactory.createDmdAccumPoint("kW",
                     ((DeviceBase) val).getDevice()
                     .getDeviceID(),
-                    new Integer(++pointID),
+                    pointDao.getNextPointId(),                    
                     PointTypes.PT_OFFSET_KW_DEMAND,
                     com.cannontech.database.data.point.PointUnits.UOMID_KW,
                     multiplier));
@@ -114,7 +116,7 @@ public class PointUtil {
                       .add(PointFactory.createDmdAccumPoint("kW-LP",
                     ((DeviceBase) val).getDevice()
                                       .getDeviceID(),
-                    new Integer(++pointID),
+                     pointDao.getNextPointId(),                                                          
                     PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND,
                     com.cannontech.database.data.point.PointUnits.UOMID_KW,
                     multiplier));
@@ -127,7 +129,7 @@ public class PointUtil {
                     .add(PointFactory.createDmdAccumPoint("Voltage-LP",
                     ((DeviceBase) val).getDevice()
                                       .getDeviceID(),
-                    new Integer(++pointID),
+                    pointDao.getNextPointId(),                                                                                                
                     PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND,
                     com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
                     multiplier));
@@ -136,7 +138,7 @@ public class PointUtil {
                     .add(PointFactory.createDmdAccumPoint("Peak kW",
                     ((DeviceBase) val).getDevice()
                                       .getDeviceID(),
-                    new Integer(++pointID),
+                    pointDao.getNextPointId(),                                                                                                
                     PointTypes.PT_OFFSET_PEAK_KW_DEMAND,
                     com.cannontech.database.data.point.PointUnits.UOMID_KW,
                     multiplier));
@@ -145,7 +147,7 @@ public class PointUtil {
                     .add(PointFactory.createDmdAccumPoint("Max Volts",
                     ((DeviceBase) val).getDevice()
                                       .getDeviceID(),
-                    new Integer(++pointID),
+                    pointDao.getNextPointId(),                                                                                                
                     PointTypes.PT_OFFSET_MAX_VOLT_DEMAND,
                     com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
                     multiplier));
@@ -154,7 +156,7 @@ public class PointUtil {
                     .add(PointFactory.createDmdAccumPoint("Min Volts",
                     ((DeviceBase) val).getDevice()
                                       .getDeviceID(),
-                    new Integer(++pointID),
+                    pointDao.getNextPointId(),                                                                                                
                     PointTypes.PT_OFFSET_MIN_VOLT_DEMAND,
                     com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
                     multiplier));
@@ -163,7 +165,7 @@ public class PointUtil {
                     .add(PointFactory.createDmdAccumPoint("Frozen Peak Demand",
                     ((DeviceBase) val).getDevice()
                                       .getDeviceID(),
-                    new Integer(++pointID),
+                    pointDao.getNextPointId(),                                                                                                
                     PointTypes.PT_OFFSET_FROZEN_PEAK_DEMAND,
                     com.cannontech.database.data.point.PointUnits.UOMID_KW,
                     multiplier));
@@ -172,7 +174,7 @@ public class PointUtil {
                     .add(PointFactory.createDmdAccumPoint("Frozen Max Volts",
                     ((DeviceBase) val).getDevice()
                                       .getDeviceID(),
-                    new Integer(++pointID),
+                    pointDao.getNextPointId(),                                                                                                
                     PointTypes.PT_OFFSET_FROZEN_MAX_VOLT,
                     com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
                     multiplier));
@@ -181,7 +183,7 @@ public class PointUtil {
                     .add(PointFactory.createDmdAccumPoint("Frozen Min Volts",
                     ((DeviceBase) val).getDevice()
                                       .getDeviceID(),
-                    new Integer(++pointID),
+                    pointDao.getNextPointId(),                                                                                                
                     PointTypes.PT_OFFSET_FROZEN_MIN_VOLT,
                     com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
                     multiplier));
@@ -190,7 +192,7 @@ public class PointUtil {
                     .add(PointFactory.createDmdAccumPoint("kW",
                     ((DeviceBase) val).getDevice()
                                       .getDeviceID(),
-                    new Integer(++pointID),
+                    pointDao.getNextPointId(),                                                                                                
                     PointTypes.PT_OFFSET_KW_DEMAND,
                     com.cannontech.database.data.point.PointUnits.UOMID_KW,
                     multiplier));
@@ -199,7 +201,7 @@ public class PointUtil {
                     .add(PointFactory.createDmdAccumPoint("Voltage",
                     ((DeviceBase) val).getDevice()
                                       .getDeviceID(),
-                    new Integer(++pointID),
+                    pointDao.getNextPointId(),                                                                                                
                     PointTypes.PT_OFFSET_VOLTAGE_DEMAND,
                     com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
                     multiplier));
@@ -221,7 +223,7 @@ public class PointUtil {
                     .add(PointFactory.createAnalogPoint("Total KWh",
                     ((DeviceBase) val).getDevice()
                     .getDeviceID(),
-                    new Integer(++pointID),
+                    pointDao.getNextPointId(),
                     PointTypes.PT_OFFSET_TOTAL_KWH,
                     com.cannontech.database.data.point.PointUnits.UOMID_KWH,
                     mult));
@@ -241,7 +243,7 @@ public class PointUtil {
                     .add(PointFactory.createAnalogPoint("Peak KW (Rate A KW)",
                     ((DeviceBase) val).getDevice()
                     .getDeviceID(),
-                    new Integer(++pointID),
+                    pointDao.getNextPointId(),                    
                     2,
                     com.cannontech.database.data.point.PointUnits.UOMID_KW,
                     mult));
@@ -258,7 +260,7 @@ public class PointUtil {
                     .add(PointFactory.createAnalogPoint("Rate A KWh",
                     ((DeviceBase) val).getDevice()
                     .getDeviceID(),
-                    new Integer(++pointID),
+                    pointDao.getNextPointId(),                                        
                     3,
                     com.cannontech.database.data.point.PointUnits.UOMID_KWH,
                     mult));
@@ -278,7 +280,7 @@ public class PointUtil {
                     .add(PointFactory.createAnalogPoint("Last Interval KW",
                     ((DeviceBase) val).getDevice()
                     .getDeviceID(),
-                    new Integer(++pointID),
+                    pointDao.getNextPointId(),
                     10,
                     com.cannontech.database.data.point.PointUnits.UOMID_KW,
                     mult));
@@ -288,7 +290,7 @@ public class PointUtil {
             if (val instanceof MCT310ID || val instanceof MCT310IDL || val instanceof MCT410IL) {
                 // an automatic status point is created for certain devices
                 // set default for point tables
-                PointBase newPoint2 = PointFactory.createNewPoint(new Integer(++pointID),
+                PointBase newPoint2 = PointFactory.createNewPoint(pointDao.getNextPointId(),
                       PointTypes.STATUS_POINT,
                       "DISCONNECT STATUS",
                       ((DeviceBase) val).getDevice()
