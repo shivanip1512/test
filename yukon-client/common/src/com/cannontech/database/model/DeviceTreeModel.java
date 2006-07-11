@@ -268,7 +268,7 @@ public boolean insertTreeObject( LiteBase lb )
 		if( isDeviceValid(liteYuk.getCategory(), liteYuk.getPaoClass(), liteYuk.getType() ) )
 		{
 			DBTreeNode node = getNewNode(lb);
-
+			node.setWillHaveChildren(true);
 			//add all new tree nodes to the top, for now
 			int[] ind = { 0 };
 			
