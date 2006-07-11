@@ -5,7 +5,7 @@ import com.cannontech.spring.YukonSpringHook;
 public class DaoFactory {
     
     public static AlarmCatDao getAlarmCatDao() {
-        return (AlarmCatDao) YukonSpringHook.getBean("alarmDao");
+        return (AlarmCatDao) YukonSpringHook.getBean("alarmCatDao");
     }
     
     public static AlarmDao getAlarmDao() {
