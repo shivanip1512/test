@@ -71,7 +71,7 @@
 	var clientRefresh = 
 		parseInt(
 		<%=DaoFactory.getAuthDao().getRolePropertyValue( 
-			ServletUtil.getYukonUser(session),
+			com.cannontech.util.ServletUtil.getYukonUser(session),
 			CBCSettingsRole.CBC_REFRESH_RATE)%>, 10) * 1000;
 	
 </script>
