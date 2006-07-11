@@ -1,8 +1,9 @@
 package com.cannontech.common.gui.util;
 
-import java.util.Collections;
+import java.util.List;
 
-import com.cannontech.database.data.lite.LiteComparators;
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**
@@ -377,42 +378,16 @@ public void jComboBoxDevice_ActionPerformed(java.awt.event.ActionEvent actionEve
 		com.cannontech.database.data.lite.LiteYukonPAObject selectedDevice = 
 				(com.cannontech.database.data.lite.LiteYukonPAObject)getJComboBoxDevice().getSelectedItem();
 		
-		IDatabaseCache cache = 
-				com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+        List<LitePoint> devicePoints = DaoFactory.getPointDao().getLitePointsByPaObjectId(selectedDevice.getYukonID());
+        for (LitePoint point : devicePoints) {
+            getJComboBoxPoint().addItem(point);
+        }
+   		
+		//disable the point combo if there are no points found
+		getJComboBoxPoint().setEnabled( getJComboBoxPoint().getModel().getSize() > 0 );
 
-		synchronized( cache )
-		{
-			//a Vector only needed to store temporary things
-			java.util.List pointTempList = new java.util.Vector();
-
-			//change our dummy points device ID to the current DeviceID
-			DUMMY_LITE_POINT.setPaobjectID( selectedDevice.getYukonID() );
-
-			//sorts and searches our point list
-			com.cannontech.common.util.CtiUtilities.binarySearchRepetition(
-				cache.getAllPoints(),
-				DUMMY_LITE_POINT, //must have the needed DeviceID set!!
-				com.cannontech.database.data.lite.LiteComparators.litePointDeviceIDComparator,
-				pointTempList );
-
-			//sort all points by name
-			Collections.sort( pointTempList, LiteComparators.liteStringComparator );
-			
-			for( int i = 0; i < pointTempList.size(); i++ )
-			{
-				com.cannontech.database.data.lite.LitePoint lp = (com.cannontech.database.data.lite.LitePoint)pointTempList.get(i);
-				
-				if( isPointValid( lp ) )
-					getJComboBoxPoint().addItem( lp );
-			}
-
-			//disable the point combo if there are no points found
-			getJComboBoxPoint().setEnabled( getJComboBoxPoint().getModel().getSize() > 0 );
-
-			if( !getJComboBoxPoint().isEnabled() )
-				getJComboBoxPoint().addItem( "(No Points Found)" );
-		}
-	
+		if( !getJComboBoxPoint().isEnabled() )
+			getJComboBoxPoint().addItem( "(No Points Found)" );	
 	}
 
 	//may as well use and existing messaging scheme

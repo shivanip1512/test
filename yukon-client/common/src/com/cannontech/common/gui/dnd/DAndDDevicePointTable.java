@@ -5,10 +5,11 @@ package com.cannontech.common.gui.dnd;
  * Creation date: (3/7/00 2:09:37 PM)
  * @author: 
  */
-import com.cannontech.database.cache.DefaultDatabaseCache;
+import java.util.List;
+
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.yukon.IDatabaseCache;
 
 public class DAndDDevicePointTable extends DragAndDropTable implements java.awt.dnd.DropTargetListener, java.awt.dnd.DragGestureListener
 {
@@ -35,29 +36,21 @@ public class DAndDDevicePointTable extends DragAndDropTable implements java.awt.
 	 */
 	private void addDevice(LiteYukonPAObject device)
 	{
-		IDatabaseCache cache = DefaultDatabaseCache.getInstance();
-		java.util.List devicePoints = cache.getAllPoints();
-		
-		for (int i=0; i<devicePoints.size(); i++)
-		{
-			if( device.getYukonID() == ((LitePoint)devicePoints.get(i)).getPaobjectID() )
-				addPoint( (LitePoint)devicePoints.get(i) );
-		}
+        List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(device.getYukonID());
+        for (LitePoint point : points) {
+            addPoint(point);
+        }
 	}
 	
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (1/31/00 2:08:42 PM)
 	 */
-	public void addDevice( LitePoint[] points )
+	public void addDevice( List<LitePoint> points )
 	{
-		if( points.length > 0 ) // only add devices that have points
-		{	
-			for( int i = 0; i < points.length; i++ )
-			{		
-				addPoint( points[i] );
-			}
-		}
+        for (LitePoint point : points) {
+            addPoint(point);
+        }
 	}
 	
 	/* (non-Javadoc)
