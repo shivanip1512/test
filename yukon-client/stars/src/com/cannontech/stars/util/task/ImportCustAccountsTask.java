@@ -18,12 +18,12 @@ import java.util.Hashtable;
 import org.apache.commons.fileupload.FileItem;
 
 import com.cannontech.clientutils.ActivityLogger;
-import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteLMProgramWebPublishing;

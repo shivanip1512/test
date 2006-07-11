@@ -6,6 +6,7 @@ package com.cannontech.tdc.addpoints;
  * @author: 
  */
 import java.awt.Cursor;
+import java.util.List;
 
 import javax.swing.ListSelectionModel;
 
@@ -520,9 +521,10 @@ public void jButtonAdd_ActionPerformed(java.awt.event.ActionEvent actionEvent)
 					// handle the selected device
 					if( userObject instanceof LiteYukonPAObject )
 					{
-						getRightTable().addDevice(
-							DaoFactory.getPaoDao().getLitePointsForPAObject( 
-									((LiteYukonPAObject)userObject).getYukonID()) );
+                        int paoId = ((LiteYukonPAObject)userObject).getYukonID();
+                        List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(paoId);
+                        
+						getRightTable().addDevice(points);
 					} 
 					else if( userObject instanceof LitePoint )
 					{

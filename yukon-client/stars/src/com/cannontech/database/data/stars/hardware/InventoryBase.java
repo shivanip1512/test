@@ -1,6 +1,5 @@
 package com.cannontech.database.data.stars.hardware;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 import com.cannontech.clientutils.CTILogger;
