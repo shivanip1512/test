@@ -1118,6 +1118,21 @@ public static final boolean isInSet( int[] idSet, int id )
 }
 
 /**
+ * Returns true of the given id is in the given array
+ */
+public static final boolean isInSet( Integer[] idSet, int id )
+{
+    if( idSet == null )
+        return false;
+    
+    for( int i = 0; i < idSet.length; i++ )
+        if( idSet[i] == id )
+            return true;
+
+    return false;
+}
+
+/**
  * This method was created in VisualAge.
  * @param cBox javax.swing.JCheckBox
  * @param state java.lang.Integer
@@ -1511,7 +1526,6 @@ public static long convertTemperature(long temperature, String fromUnit, String 
     double dblTemperature = temperature;
     return Math.round(convertTemperature(dblTemperature, fromUnit, toUnit));
 }
-
 }
 
 
