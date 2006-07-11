@@ -43,7 +43,7 @@ public class OneDevice_AnalogPointCreate extends PointCreate
 		multi.setCreateNewPAOIDs( false );
 	
 		int addCount = 0;
-		int pointID = com.cannontech.database.db.point.Point.getNextPointID();
+		int pointID = DaoFactory.getPointDao().getNextPointId();
 		for (int i = 1; i < createCount+1; i++)
 		{
 			com.cannontech.clientutils.CTILogger.info("Adding PointId " + pointID + " to Device " + litePaobject.getPaoName());

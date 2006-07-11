@@ -4,8 +4,11 @@ package com.cannontech.datagenerator.point;
  * Creation date: (1/10/2001 11:18:45 PM)
  * @author: 
  */
+import java.util.List;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
@@ -198,8 +201,6 @@ abstract class PointCreate
 		{
 			java.util.List devices = cache.getAllDevices();
 			java.util.Collections.sort(devices, LiteComparators.liteYukonPAObjectIDComparator);
-			java.util.List points = cache.getAllPoints();
-			java.util.Collections.sort(points, LiteComparators.litePointDeviceIDComparator);
 			
 			for (int i = 0; i < devices.size(); i++)
 			{
@@ -207,12 +208,17 @@ abstract class PointCreate
 				if( isDeviceValid(litePaobject) )
 				{
 					int deviceDevID = litePaobject.getLiteID();
-					
-					//makes a list of points devices to add power fail points to
-					if( addPointToDevice( points, deviceDevID ))
-					{
-						deviceVector.addElement(litePaobject);
-					}
+                    boolean foundPoint = false;
+					List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(deviceDevID);
+                    for (LitePoint point : points) {
+                        if(isPointCreated(point)) {
+                           foundPoint = true; 
+                        }
+                    }
+//                  makes a list of points devices to add power fail points to
+                    if(foundPoint) {
+                        deviceVector.add(litePaobject);
+                    }
 				}
 			}
 			CTILogger.info(deviceVector.size() + " Total Devices needing points added.");

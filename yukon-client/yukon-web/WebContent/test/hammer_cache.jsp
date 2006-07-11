@@ -20,14 +20,10 @@ com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllLMScenari
 com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllLMPrograms();
 com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllLoadManagement() ;
 com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllContactNotificationGroups();
-com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllPoints();;
-com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllPointsMap();
 com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllPAOsMap();
 com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllCustomersMap();
 com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllPointsUnits();
 com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllPointLimits() ;
-com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllPointidMultiplierHashMap();
-com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllPointIDOffsetMap() ;
 com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllPorts() ;
 com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllRoutes() ;
 //com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllStateGroups();

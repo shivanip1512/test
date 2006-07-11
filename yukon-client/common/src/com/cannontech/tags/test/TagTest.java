@@ -8,9 +8,6 @@ import java.util.Set;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.util.ThreadPool;
-import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.tags.Tag;
 import com.cannontech.tags.TagManager;
 
@@ -90,7 +87,7 @@ while(true) {
 	}
 	
 	public void run() {
-		try {
+	/*	try {
 		
 		ThreadPool thrPool = new ThreadPool(5);		
 		Iterator i = DefaultDatabaseCache.getInstance().getAllPoints().iterator();
@@ -113,5 +110,6 @@ while(true) {
 		catch(InterruptedException ie) {
 			ie.printStackTrace();
 		}
+        */
 	}
 }

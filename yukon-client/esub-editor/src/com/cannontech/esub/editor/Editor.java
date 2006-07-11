@@ -427,7 +427,6 @@ public class Editor extends JPanel {
 		
 		//get this stuff loaded into the cache asap
 		DefaultDatabaseCache.getInstance().getAllDevices();
-		DefaultDatabaseCache.getInstance().getAllPoints();
 		DefaultDatabaseCache.getInstance().getAllStateGroupMap();
 	}
 	/**

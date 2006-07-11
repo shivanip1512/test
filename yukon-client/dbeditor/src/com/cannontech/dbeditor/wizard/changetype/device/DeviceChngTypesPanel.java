@@ -1,5 +1,6 @@
 package com.cannontech.dbeditor.wizard.changetype.device;
 import java.awt.Dimension;
+import java.util.List;
 import java.util.Vector;
 
 import com.cannontech.core.dao.DaoFactory;
@@ -500,13 +501,10 @@ private void listDeviceType_Selection( javax.swing.event.ListSelectionEvent ev )
 
 private void handleMCT_310IL()
 {
-	
-	LitePoint[] ltPoints = DaoFactory.getPaoDao().getLitePointsForPAObject( 
-					getCurrentDevice().getPAObjectID().intValue() );
-	
-	for( int i = 0; i < ltPoints.length; i++ ) {
-		LitePoint point = ltPoints[i];	
+    int deviceId = getCurrentDevice().getPAObjectID();
+	List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(deviceId);
 
+    for (LitePoint point : points) {
 		if( point.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT
 			 && point.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND ){
 
@@ -545,15 +543,12 @@ private void handleMCT_410IL()
 	 * Multipliers need to be changed, handle the disconnects, existing lp points, etc.
 	 */
 
-	LitePoint[] ltPoints = DaoFactory.getPaoDao().getLitePointsForPAObject( 
-					getCurrentDevice().getPAObjectID().intValue() );
-	
-	extra410Objs = new Vector(ltPoints.length);
-	
-	for( int i = 0; i < ltPoints.length; i++ ) 
-	{
-		LitePoint point = ltPoints[i];	
+    int deviceId = getCurrentDevice().getPAObjectID();
+    List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(deviceId); 
 
+	extra410Objs = new Vector(points.size());
+	
+    for (LitePoint point : points) {
 		if( point.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT
 			 && point.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND )
 		{
@@ -637,9 +632,10 @@ private void handleMCT_410IL()
 
 private void handleMCT_470()
 {
+    /*
 	LitePoint[] ltPoints = DaoFactory.getPaoDao().getLitePointsForPAObject( 
 					getCurrentDevice().getPAObjectID().intValue() );
-	/*
+	
 	for( int i = 0; i < ltPoints.length; i++ ) {
 		LitePoint point = ltPoints[i];	
 

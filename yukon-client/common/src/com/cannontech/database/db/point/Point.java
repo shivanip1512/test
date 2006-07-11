@@ -3,12 +3,8 @@ package com.cannontech.database.db.point;
 /**
  * This type was created in VisualAge.
  */
-import java.sql.Connection;
-
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointLogicalGroups;
-import com.cannontech.yukon.IDatabaseCache;
 
 public class Point extends com.cannontech.database.db.DBPersistent 
 {
@@ -108,24 +104,6 @@ public String getLogicalGroup() {
  * This method was created in VisualAge.
  * @return java.lang.Integer
  */
-public final static Integer getNextCachedPointID() 
-{
-	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-	synchronized(cache)
-	{
-		java.util.List points = cache.getAllPoints();
-		java.util.Collections.sort(points);
-
-		if(points == null || points.size() <= 0)
-			return new Integer(0);
-		else	
-			return new Integer(((LitePoint)points.get(points.size() - 1)).getPointID() + 1 );
-	}
-}
-/**
- * This method was created in VisualAge.
- * @return java.lang.Integer
- */
 public final static int getNextPointID()
 {
 	int retVal = 0;
@@ -170,90 +148,6 @@ public final static int getNextPointID()
 	}
 
 	return retVal;
-}
-/**
- * This method was created in VisualAge.
- * @return java.lang.Integer
- */
-public final static int getNextPointID( Connection conn )
-{
-	int retVal = 0;
-	java.sql.PreparedStatement pstmt = null;
-	java.sql.ResultSet rset = null;
-		
-	try
-	{		
-		if( conn == null )
-		{
-			throw new IllegalStateException("Database connection can not be (null).");
-		}
-		else
-		{
-			pstmt = conn.prepareStatement("select max(pointid) AS maxid from point");
-			rset = pstmt.executeQuery();							
-
-			// Just one please
-			if( rset.next() )
-				retVal = rset.getInt("maxid") + 1;
-		}		
-	}
-	catch( java.sql.SQLException e )
-	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-	}
-	finally
-	{
-		try
-		{
-			if( pstmt != null ) pstmt.close();
-		} 
-		catch( java.sql.SQLException e2 )
-		{
-			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
-		}	
-	}
-
-	return retVal;
-}
-/**
- * This method was created in VisualAge.
- * @return int[]
- */
-public final static int[] getNextPointIDs( int idCount )
-{
-	//THIS IS A SUPER HACK WAY TO DO THINGS, CHANGE IN THE FUTURE  (It is quick and dirty!!)
-	// *************** BEGIN SUPER HACK *************************/
-	com.cannontech.clientutils.CTILogger.info("----- getNextPointIDs(yukonPAObjectsCnt) called with " + idCount + " ids!");
-
-	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-	int[] returnIDs = new int[idCount];
-	
-	synchronized(cache)
-	{
-		java.util.List ptObjects = cache.getAllPoints();
-		int[] ids = new int[ptObjects.size()];
-		int counter = 1;
-
-		for( int i = 0; i < ptObjects.size(); i++ )
-			ids[i] = ((com.cannontech.database.data.lite.LitePoint)ptObjects.get(i)).getPointID();		
-
-		java.util.Arrays.sort(ids);
-
-		for( int i = 0; i < idCount; i++ )
-		{
-			int loc = -1;
-			while( (loc = java.util.Arrays.binarySearch(ids, counter)) >= 0 )
-				counter++;
-
-			//unfound value
-			returnIDs[i] = counter;
-			counter++;		
-		}
-		
-		return returnIDs;//new Integer( counter );
-	}
-	
-	// *************** END SUPER HACK *************************/
 }
 /**
  * Insert the method's description here.

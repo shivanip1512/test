@@ -34,6 +34,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -124,15 +125,13 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 		  	resp.setContentType("text/plain");
 //		  	CSVQuoter quoter = new CSVQuoter(",");
 
-
-			LitePoint [] litePoints = DaoFactory.getPaoDao().getLitePointsForPAObject(localBean.getDeviceID());
+            List<LitePoint> litePoints = DaoFactory.getPointDao().getLitePointsByPaObjectId(localBean.getDeviceID());
 			if( litePoints != null)
 			{
-				for (int i = 0; i < litePoints.length; i++)
-				{
-					if( litePoints[i].getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND)
+                for (LitePoint point : litePoints) {
+					if(point.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND)
 					{
-						out.write(new String("LP Peak Report - " + litePoints[i].getPointName() + "\r\n").getBytes());
+						out.write(new String("LP Peak Report - " + point.getPointName() + "\r\n").getBytes());
 						
 						PointData pointData = (PointData)localBean.getRecentPointData(localBean.getDeviceID(), PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND, PointTypes.LP_PEAK_REPORT);						
 						if( pointData != null)
@@ -149,9 +148,9 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 							out.write(new String("\r\n").getBytes());
 						}
 					}
-					else if( litePoints[i].getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND )
+					else if(point.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND)
 					{
-						out.write(new String("LP Peak Report - " + litePoints[i].getPointName() + "\r\n").getBytes());
+						out.write(new String("LP Peak Report - " + point.getPointName() + "\r\n").getBytes());
 						
 						PointData pointData = (PointData)localBean.getRecentPointData(localBean.getDeviceID(), PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND, PointTypes.LP_PEAK_REPORT);						
 						if( pointData != null)

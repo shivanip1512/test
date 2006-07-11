@@ -196,14 +196,14 @@ public class CBControllerEditor {
 	        TreeNode status = new TreeNodeBase("pointtype", "status", false);
 	        TreeNode accum = new TreeNodeBase("pointtype","accumulator", false);
 	        if (deviceCBC != null) {
-		        LitePoint[] tempArray = DaoFactory.getPaoDao().getLitePointsForPAObject(deviceCBC.getPAObjectID().intValue());
+                int deviceId = deviceCBC.getPAObjectID();
+                List<LitePoint> litePoints = DaoFactory.getPointDao().getLitePointsByPaObjectId(deviceId);
 		
 		        TreeSet statusSet = new TreeSet();
 		        TreeSet analogSet = new TreeSet();
 		        TreeSet accumSet = new TreeSet();
-		        
-		        for (int i = 0; i < tempArray.length; i++) {
-		            LitePoint litePoint = tempArray[i];
+
+                for (LitePoint litePoint : litePoints) {
 		            int pointType = litePoint.getPointType();
 					if (pointType == PointTypes.ANALOG_POINT || pointType == PointTypes.CALCULATED_POINT) {
 		                analogSet.add(litePoint);

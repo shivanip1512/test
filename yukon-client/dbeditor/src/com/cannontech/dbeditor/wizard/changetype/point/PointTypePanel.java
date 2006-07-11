@@ -1,5 +1,10 @@
 package com.cannontech.dbeditor.wizard.changetype.point;
 
+import java.util.List;
+
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.point.PointBase;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**
@@ -693,27 +698,13 @@ public Object getValue(Object val)
 		java.util.Vector usedPointOffsetsVector = new java.util.Vector();
 
 		//fill vector with points of same deviceID
-		IDatabaseCache cache =
-			com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-		synchronized (cache)
-	{
-			java.util.List points = cache.getAllPoints();
-			java.util.Collections.sort(points, com.cannontech.database.data.lite.LiteComparators.litePointDeviceIDComparator);
-			com.cannontech.database.data.lite.LitePoint litePoint = null;
-			for (int i = 0; i < points.size(); i++)
-			{
-				litePoint = ((com.cannontech.database.data.lite.LitePoint) points.get(i));
-				if (((com.cannontech.database.data.point.PointBase) val).getPoint().getPaoID().intValue() == litePoint.getPaobjectID()
-					&& type == litePoint.getPointType())
-				{
-					usedPointOffsetsVector.addElement(litePoint);
-				}
-				else if (litePoint.getPaobjectID() > ((com.cannontech.database.data.point.PointBase) val).getPoint().getPaoID().intValue())
-				{
-					break;
-				}
-			}
-		}
+        int deviceId = ((PointBase)val).getPoint().getPaoID();
+        List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(deviceId);
+        for (LitePoint p : points) {
+            if(type == p.getPointType()) {
+                usedPointOffsetsVector.add(p);
+            }
+        }		
 
 		//search through vector to find next available pointOffset -- if vector is empty then pointoffset the same
 		int pointOffset = 1;

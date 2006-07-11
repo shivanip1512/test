@@ -163,6 +163,19 @@ public final static int getType(String typeStr) {
 	//Must not have found it
 	throw new Error("PointTypes::getType(String) - Unrecognized type:  '" + typeStr + "'");
 }
+
+public static String[] convertPointTypes(Integer[] pointTypes) {
+    if(pointTypes == null) {
+        return new String[0];
+    }
+    String[] pointTypesStr = new String[pointTypes.length];
+
+    for(int i = 0; i < pointTypes.length; i++) {
+        pointTypesStr[i] = PointTypes.getType(pointTypes[i]);
+    }
+    return pointTypesStr;
+}
+
 /**
  * This method was created in VisualAge.
  * @return java.lang.String

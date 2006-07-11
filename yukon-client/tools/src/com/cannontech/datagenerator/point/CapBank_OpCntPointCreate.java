@@ -13,6 +13,7 @@ package com.cannontech.datagenerator.point;
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.AnalogPoint;
@@ -70,7 +71,7 @@ public class CapBank_OpCntPointCreate extends PointCreate
 		multi.setCreateNewPAOIDs( false );
 	
 		int addCount = 0;
-		int pointID = com.cannontech.database.db.point.Point.getNextPointID();
+		int pointID = DaoFactory.getPointDao().getNextPointId();
 		for( int i = 0; i < opCountDevices.size(); i++)
 		{
 			com.cannontech.database.data.lite.LiteYukonPAObject litePaobject = 

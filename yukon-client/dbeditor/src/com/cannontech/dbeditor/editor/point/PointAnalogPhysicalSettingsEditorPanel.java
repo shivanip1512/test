@@ -5,7 +5,6 @@ package com.cannontech.dbeditor.editor.point;
  */
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.yukon.IDatabaseCache;
 
 public class PointAnalogPhysicalSettingsEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, java.awt.event.ItemListener, javax.swing.event.CaretListener, com.klg.jclass.util.value.JCValueListener
 {
@@ -16,7 +15,7 @@ public class PointAnalogPhysicalSettingsEditorPanel extends com.cannontech.commo
 	private com.klg.jclass.field.JCSpinField ivjDeadbandSpinner = null;
 	private javax.swing.JCheckBox ivjDeadbandCheckBox = null;
 	private com.klg.jclass.field.JCSpinField ivjPointOffsetSpinner = null;
-	private java.util.Vector usedPointOffsetsVector = null;
+	//private java.util.Vector usedPointOffsetsVector = null;
 	private javax.swing.JPanel ivjDeadbandPanel = null;
 	private javax.swing.JLabel ivjUsedPointOffsetLabel = null;
 	private javax.swing.JLabel ivjDataOffsetLabel = null;
@@ -867,7 +866,7 @@ public void setValue(Object val)
 		getDataOffsetTextField().setText( point.getPointAnalog().getDataOffset().toString() );
 	
 	getUsedPointOffsetLabel().setText("");
-	usedPointOffsetsVector = new java.util.Vector();
+//	usedPointOffsetsVector = new java.util.Vector();
 	Integer pointOffset = point.getPoint().getPointOffset();
 	Double deadband = point.getPointAnalog().getDeadband();
 	String transducerType = point.getPointAnalog().getTransducerType();
@@ -892,6 +891,7 @@ public void setValue(Object val)
 	if( transducerType != null )
 		CtiUtilities.setSelectedInComboBox( getTransducerTypeComboBox(), transducerType );
 
+    /*
 	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized(cache)
 	{
@@ -914,7 +914,7 @@ public void setValue(Object val)
 				break;
 			}
 		}
-	}
+	}*/
 }
 /**
  * Method to handle events for the JCValueListener interface.

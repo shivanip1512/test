@@ -42,9 +42,6 @@ public interface IDatabaseCache
 	public java.util.List getAllMCTs();
 	public java.util.List getAllGraphDefinitions();
 
-	// This cache is derive from the point cache
-	//public java.util.List getAllGraphTaggedPoints();
-
 	public java.util.List getAllHolidaySchedules();
 	public java.util.List getAllBaselines();
 	public java.util.List getAllConfigs();
@@ -61,19 +58,14 @@ public interface IDatabaseCache
 	public java.util.List getAllTOUSchedules();
 	public java.util.List getAllTOUDays();
 
-	public java.util.List getAllPoints();
-    public java.util.List getAllSystemPoints();
-	//Map<Integer(ptID), LitePoint>
-	public java.util.Map getAllPointsMap();
-	
+	public java.util.List getAllSystemPoints();
+		
 	//Map<Integer(contactNotifID), LiteContactNotification>
 	public java.util.Map getAllContactNotifsMap();
 
 	public java.util.List getAllPointsUnits();
 	public java.util.List getAllPointLimits();
-	public java.util.HashMap getAllPointidMultiplierHashMap();
-	//Map<Integer,Integer>
-	public java.util.Map getAllPointIDOffsetMap();
+
 	public java.util.List getAllPorts();
 	public java.util.List getAllRoutes();
 	
@@ -189,7 +181,7 @@ public interface IDatabaseCache
 	public void releaseAllTOUSchedules();
 	public void releaseAllTOUDays();
 	public void releaseAllNotificationGroups();
-	public void releaseAllPoints();
+	//public void releaseAllPoints();
 	public void releaseAllStateGroups();
 	public void releaseAllUnitMeasures();
 	public void releaseAllYukonPAObjects();

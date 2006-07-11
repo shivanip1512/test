@@ -7,6 +7,7 @@ import javax.swing.tree.TreePath;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.yukon.IDatabaseCache;
@@ -170,6 +171,7 @@ private void addPoints(DBTreeNode deviceNode )
  */
 private boolean createDevicePointList(java.util.List points, java.util.List destList, int deviceDevID )
 {
+    
 	//searches and sorts the list!
 	CtiUtilities.binarySearchRepetition( 
 					points,
@@ -320,16 +322,16 @@ protected synchronized void runUpdate()
 	{
 		java.util.List devices = getCacheList(cache);
 		java.util.Collections.sort(devices, com.cannontech.database.data.lite.LiteComparators.liteStringComparator);
-		java.util.List points = null;
+//		java.util.List points = null;
 
-		if (showPoints)
-			points = cache.getAllPoints();
+//		if (showPoints)
+//			points = cache.getAllPoints();
 
 		DBTreeNode rootNode = (DBTreeNode) getRoot();
 		rootNode.removeAllChildren();
 
-		int deviceDevID;
-		int deviceClass;
+//		int deviceDevID;
+//		int deviceClass;
 		for (int i = 0; i < devices.size(); i++)
 		{
 			if( isDeviceValid(
@@ -426,7 +428,7 @@ public synchronized void treePathWillExpand(javax.swing.tree.TreePath path)
 		synchronized (cache)
 		{
 			int deviceDevID = ((com.cannontech.database.data.lite.LiteYukonPAObject)node.getUserObject()).getYukonID();
-			java.util.List points = cache.getAllPoints();
+			//java.util.List points = cache.getAllPoints();
 
 			//change our dummy points device ID to the current DeviceID
 			DUMMY_LITE_POINT.setPaobjectID(deviceDevID);
@@ -438,7 +440,9 @@ public synchronized void treePathWillExpand(javax.swing.tree.TreePath path)
 				pointTempList.clear();
 				
 				//makes a list of points associated with the current deviceNode
-				createDevicePointList( points, pointTempList, deviceDevID );
+				//createDevicePointList( points, pointTempList, deviceDevID );
+                PointDao pointDao = DaoFactory.getPointDao();
+                pointTempList = pointDao.getLitePointsByPaObjectId(deviceDevID);
 
 				//sorts the pointList according to name or offset, (default is set to sort by name)
 				java.util.Collections.sort(pointTempList, com.cannontech.database.data.lite.LiteComparators.liteStringComparator);

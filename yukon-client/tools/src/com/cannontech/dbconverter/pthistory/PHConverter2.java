@@ -8,7 +8,6 @@ import java.sql.Statement;
 
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.point.PointQualities;
-import com.cannontech.yukon.IDatabaseCache;
 
 /**
 * * Import DSM/2 point history into the yukon database by inserting data directly into the rawpointhistory table.
@@ -434,25 +433,5 @@ private boolean exists(int pointID)
 			return true;
 	}
 	return false;
-}
-private java.util.Vector getPointVector()
-{
-	if( pointVector == null)
-	{
-		IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-		synchronized (cache)
-		{
-			java.util.List points = cache.getAllPoints();
-			java.util.Collections.sort(points, com.cannontech.database.data.lite.LiteComparators.litePointIDComparator);
-
-			pointVector = new java.util.Vector(points.size());
-			for (int i = 0; i < points.size(); i++)
-			{
-				com.cannontech.database.data.lite.LitePoint litePoint = ((com.cannontech.database.data.lite.LitePoint) points.get(i));
-				pointVector.add(new Integer(litePoint.getLiteID()));
-			}
-		} //synch
-	}
-	return pointVector;
 }
 }

@@ -343,7 +343,7 @@ public Object getValue(Object val)
 				new com.cannontech.database.db.route.CarrierRoute(routeID) );
 		}		
 
-		Integer pointID = new Integer( com.cannontech.database.db.point.Point.getNextPointID() );
+		Integer pointID = DaoFactory.getPointDao().getNextPointId();
 
 		//A status point is automatically added to each transmitter
 		com.cannontech.database.data.point.PointBase newPoint = PointFactory.createNewPoint(
@@ -384,8 +384,7 @@ public Object getValue(Object val)
       if( DeviceTypesFuncs.isIon(devType) )
       {
          smartDB = new SmartMultiDBPersistent();
-         Integer pointID = 
-               new Integer( com.cannontech.database.db.point.Point.getNextPointID() );
+         Integer pointID = DaoFactory.getPointDao().getNextPointId();
          
          //A status point is automatically added to each transmitter
          com.cannontech.database.data.point.PointBase newPoint = PointFactory.createNewPoint(
@@ -433,7 +432,7 @@ private SmartMultiDBPersistent createPoints( DeviceBase val )
 	else
 	{
 		//majority of the cases are the same
-		int[] ids = com.cannontech.database.db.point.Point.getNextPointIDs(4);
+		int[] ids = DaoFactory.getPointDao().getNextPointIds(4);
 		
 		//add all ther point to the smart object
 		smartDB.addDBPersistent( 

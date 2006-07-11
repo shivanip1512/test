@@ -1,19 +1,18 @@
 package com.cannontech.web.editor.point;
 
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.ListIterator;
 import java.util.Set;
 import java.util.TreeSet;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * @author ryan
@@ -32,7 +31,7 @@ public class PointLists {
      * Determines if the given point is in our set of valid UofM
      *
      */
-    private boolean isPointUofM(LitePoint lPoint, int[] uofmIDs) {
+    private boolean isPointUofM(LitePoint lPoint, Integer[] uofmIDs) {
 
         if (lPoint == null)
             return false;
@@ -45,43 +44,18 @@ public class PointLists {
      * UofM id set
      *
      */
-    public LiteYukonPAObject[] getPAOsByUofMPoints(int[] uofmIDs) {
-        IDatabaseCache cache = DefaultDatabaseCache.getInstance();
-
-        //ensures uniqueness and ordering by name
-        TreeSet paoSet = new TreeSet(LiteComparators.liteStringComparator);
-
-        synchronized (cache) {
-            java.util.List allPoints = cache.getAllPoints();
-            LitePoint litePoint = null;
-
-            for (int i = 0; i < allPoints.size(); i++) {
-
-                litePoint = (LitePoint) allPoints.get(i);
-
-                //use the validPt boolean to see if this point is worthy
-                if (isPointUofM(litePoint, uofmIDs)
-                        && litePoint.getPointType() == PointTypes.ANALOG_POINT
-                        || litePoint.getPointType() == PointTypes.CALCULATED_POINT) {
-                    LiteYukonPAObject liteDevice = DaoFactory.getPaoDao()
-                            .getLiteYukonPAO(litePoint.getPaobjectID());
-
-                    if (DeviceClasses.isCoreDeviceClass(liteDevice
-                            .getPaoClass()))
-                        paoSet.add(liteDevice);
-                }
-            }
-        }
-
-        //return the uniquly ordered elements
-        return (LiteYukonPAObject[]) paoSet
-                .toArray(new LiteYukonPAObject[paoSet.size()]);
+    public LiteYukonPAObject[] getPAOsByUofMPoints(Integer[] uofmIDs) {
+        Integer[] pointTypes = new Integer[] { PointTypes.ANALOG_POINT, PointTypes.CALCULATED_POINT };
+        List<LiteYukonPAObject> paos = DaoFactory.getPaoDao().getLiteYukonPAObjectBy(null, null,DeviceClasses.CORE_DEVICE_CLASSES,pointTypes,uofmIDs);
+        
+        Collections.sort(paos, LiteComparators.liteStringComparator);
+        return paos.toArray(new LiteYukonPAObject[paos.size()]);
     }
 
     /**
      * Comment
      */
-    public LitePoint[] getPointsByUofMPAOs(int paoID, int[] uofmIDs) {
+    public LitePoint[] getPointsByUofMPAOs(int paoID, Integer[] uofmIDs) {
 
         //if the (none) object is selected, just return
         //     getJComboBoxVarPoint().setEnabled(
@@ -90,50 +64,34 @@ public class PointLists {
         //         return new LitePoint[0];
 
         //ensures uniqueness and ordering by name
-        TreeSet pointSet = new TreeSet(LiteComparators.liteStringComparator);
-
-        LitePoint[] litePts = DaoFactory.getPaoDao().getLitePointsForPAObject(paoID);
-        Arrays.sort(litePts, LiteComparators.liteStringComparator); //sort the small list by PointName
-
-        for (int i = 0; i < litePts.length; i++) {
-            if (isPointUofM(litePts[i], uofmIDs)
-                    && (litePts[i].getPointType() == PointTypes.ANALOG_POINT || litePts[i]
-                            .getPointType() == PointTypes.CALCULATED_POINT)) {
-                pointSet.add(litePts[i]);
+        List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(paoID);
+        ListIterator<LitePoint> iter = points.listIterator();
+        while(iter.hasPrevious()) {
+            LitePoint p = iter.previous();
+            if((p.getPointType() != PointTypes.ANALOG_POINT && 
+                p.getPointType() != PointTypes.CALCULATED_POINT) ||
+                !isPointUofM(p, uofmIDs)) {
+                iter.remove();
             }
         }
-
-        //return the uniquly ordered elements
-        return (LitePoint[]) pointSet.toArray(new LitePoint[pointSet.size()]);
+        Collections.sort(points, LiteComparators.liteStringComparator);
+        return points.toArray(new LitePoint[points.size()]);
     }
 
 
     public static Set getAllTwoStateStatusPoints() {
-        IDatabaseCache cache = DefaultDatabaseCache.getInstance();
-        TreeSet pointSet = new TreeSet();
-        synchronized (cache) {
-            java.util.List allPoints = cache.getAllPoints();
-            LitePoint litePoint = null;
-
-            for (int i = 0; i < allPoints.size(); i++) {
-
-                litePoint = (LitePoint) allPoints.get(i);
-
-                int pointType = litePoint.getPointType();
-                if ((pointType == PointTypes.STATUS_POINT) || pointType == PointTypes.CALCULATED_STATUS_POINT ) {
-                    if (!litePoint.getPointName().equals("BANK STATUS")) {
-	                    int stateGrpId = litePoint.getStateGroupID();
-	                    LiteStateGroup liteStateGroup = DaoFactory.getStateDao().getLiteStateGroup(stateGrpId);
-	                    if (liteStateGroup != null) {
-		                    if (liteStateGroup.getStatesList().size() == 2) {
-		                        pointSet.add(litePoint);
-		                    }
-	                    }
-	               }
-	           }
-           }
+        List<LitePoint> twoStatePoints = DaoFactory.getPointDao().getLitePointsByNumStates(2);
+        ListIterator<LitePoint> iter = twoStatePoints.listIterator();
+        while(iter.hasPrevious()) {
+            LitePoint p = iter.previous();
+            if((p.getPointType() != PointTypes.STATUS_POINT &&
+                p.getPointType() != PointTypes.CALCULATED_STATUS_POINT) ||
+                p.getPointName().equals("BANK STATUS")) {
+                iter.remove();
+            }
         }
-
+        
+        TreeSet pointSet = new TreeSet(twoStatePoints);
         return pointSet;
     }
 

@@ -1,8 +1,9 @@
 package com.cannontech.dbeditor.editor.contact;
 
 import java.awt.Dimension;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.TreeSet;
 
 import javax.swing.JButton;
@@ -14,7 +15,6 @@ import javax.swing.event.CaretEvent;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -22,7 +22,6 @@ import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.customer.CICustomerPointData;
 import com.cannontech.database.db.customer.CICustomerPointType;
-import com.cannontech.yukon.IDatabaseCache;
 
 public class CICustomerPointDataPanel extends JPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener 
 
@@ -152,23 +151,19 @@ public class CICustomerPointDataPanel extends JPanel implements java.awt.event.A
         setDeviceComboBoxes( comboBox );
     }
 
+    //TODO: This is inefficient
     private void setDeviceComboBoxes( final javax.swing.JComboBox comboBox )
     {     
         if( comboBox == null ) return;
-        LitePoint litePoint = null;
         
-        IDatabaseCache cache = DefaultDatabaseCache.getInstance();
-        synchronized(cache)
-        {
-            java.util.List allPoints = cache.getAllPoints();
-
+        List<LitePoint> points = DaoFactory.getPointDao().
+            getLitePointsBy(new Integer[] { PointTypes.ANALOG_POINT, PointTypes.CALCULATED_POINT },
+                                null, null, null, null);
+        
             //ensures uniqueness and ordering by name
             TreeSet paoSet = new TreeSet( LiteComparators.liteStringComparator );
 
-            for( int i = 0; i < allPoints.size(); i++ )
-            {
-                litePoint = (LitePoint)allPoints.get(i);
-
+            for(LitePoint litePoint : points) {
                 //use the validPt boolean to see if this point is worthy
                 if( isPointValid(litePoint) )
                 {
@@ -182,10 +177,7 @@ public class CICustomerPointDataPanel extends JPanel implements java.awt.event.A
             //add the unique ordered elements to the combo box
             Iterator it = paoSet.iterator();
             while( it.hasNext() )
-                comboBox.addItem( it.next() );
-
-        }
-        
+                comboBox.addItem( it.next() );        
     }
     
     /**
@@ -492,15 +484,12 @@ public class CICustomerPointDataPanel extends JPanel implements java.awt.event.A
         }
 
         //add the point to the pointCombo if the point is valid
-        LitePoint[] litePts = DaoFactory.getPaoDao().getLitePointsForPAObject( deviceID );
-        Arrays.sort( litePts, LiteComparators.liteStringComparator ); //sort the small list by PointName
-        
-        for( int i = 0; i < litePts.length; i++ ) {
-            if( isPointValid(litePts[i]) )
-            {
-                pointCombo.addItem( litePts[i] );
+        List<LitePoint> litePts = DaoFactory.getPointDao().getLitePointsByPaObjectId(deviceID);
+        Collections.sort(litePts, LiteComparators.liteStringComparator);
+        for (LitePoint point : litePts) {
+            if( isPointValid(point) ) {
+                pointCombo.addItem(point);
             }
-        
         }
 
         return;

@@ -1,5 +1,6 @@
 package com.cannontech.database.data.device;
 
+import java.util.List;
 import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
@@ -1074,7 +1075,7 @@ public static Object changeType (String newType,
 						PointFactory.createPulseAccumPoint(
 						   "kWh",
 						   ((DeviceBase) val).getDevice().getDeviceID(),
-						   new Integer(com.cannontech.database.db.point.Point.getNextPointID()),
+						   DaoFactory.getPointDao().getNextPointId(),
 						   PointTypes.PT_OFFSET_TOTAL_KWH,
 						   com.cannontech.database.data.point.PointUnits.UOMID_KWH,
 						   0.1) ).execute();
@@ -1086,7 +1087,7 @@ public static Object changeType (String newType,
 						PointFactory.createPulseAccumPoint(
 						   "Blink Count",
 						   ((DeviceBase) val).getDevice().getDeviceID(),
-						   new Integer(com.cannontech.database.db.point.Point.getNextPointID()),
+                           DaoFactory.getPointDao().getNextPointId(),
 						   PointTypes.PT_OFFSET_BLINK_COUNT,
 						   com.cannontech.database.data.point.PointUnits.UOMID_COUNTS,
 						   1.0) ).execute();
@@ -1098,7 +1099,7 @@ public static Object changeType (String newType,
 						PointFactory.createDmdAccumPoint(
 						   "kW-LP",
 						   ((DeviceBase) val).getDevice().getDeviceID(),
-						   new Integer(com.cannontech.database.db.point.Point.getNextPointID()),
+                           DaoFactory.getPointDao().getNextPointId(),
 						   PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND,
 						   com.cannontech.database.data.point.PointUnits.UOMID_KW,
 						   0.1) ).execute();
@@ -1108,7 +1109,7 @@ public static Object changeType (String newType,
 					PointFactory.createDmdAccumPoint(
 						"Voltage-LP",
 						((DeviceBase) val).getDevice().getDeviceID(),
-						new Integer(com.cannontech.database.db.point.Point.getNextPointID()),
+                        DaoFactory.getPointDao().getNextPointId(),                        
 						PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND,
 						com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
 						0.1) ).execute();
@@ -1117,7 +1118,7 @@ public static Object changeType (String newType,
 					PointFactory.createDmdAccumPoint(
 						"Peak kW",
 						((DeviceBase) val).getDevice().getDeviceID(),
-						new Integer(com.cannontech.database.db.point.Point.getNextPointID()),
+                        DaoFactory.getPointDao().getNextPointId(),                                                
 						PointTypes.PT_OFFSET_PEAK_KW_DEMAND,
 						com.cannontech.database.data.point.PointUnits.UOMID_KW,
 						0.1) ).execute();
@@ -1126,7 +1127,7 @@ public static Object changeType (String newType,
 					PointFactory.createDmdAccumPoint(
 						"Max Volts",
 						((DeviceBase) val).getDevice().getDeviceID(),
-						new Integer(com.cannontech.database.db.point.Point.getNextPointID()),
+                        DaoFactory.getPointDao().getNextPointId(),                                                                        
 						PointTypes.PT_OFFSET_MAX_VOLT_DEMAND,
 						com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
 						0.1) ).execute();
@@ -1135,7 +1136,7 @@ public static Object changeType (String newType,
 					PointFactory.createDmdAccumPoint(
 						"Min Volts",
 						((DeviceBase) val).getDevice().getDeviceID(),
-						new Integer(com.cannontech.database.db.point.Point.getNextPointID()),
+                        DaoFactory.getPointDao().getNextPointId(),                                                                                                
 						PointTypes.PT_OFFSET_MIN_VOLT_DEMAND,
 						com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
 						0.1) ).execute();
@@ -1144,7 +1145,7 @@ public static Object changeType (String newType,
 					PointFactory.createDmdAccumPoint(
 						"Frozen Peak Demand",
 						((DeviceBase) val).getDevice().getDeviceID(),
-						new Integer(com.cannontech.database.db.point.Point.getNextPointID()),
+                        DaoFactory.getPointDao().getNextPointId(),
 						PointTypes.PT_OFFSET_FROZEN_PEAK_DEMAND,
 						com.cannontech.database.data.point.PointUnits.UOMID_KW,
 						0.1) ).execute();			
@@ -1153,7 +1154,7 @@ public static Object changeType (String newType,
 					PointFactory.createDmdAccumPoint(
 						"Frozen Max Volts",
 						((DeviceBase) val).getDevice().getDeviceID(),
-						new Integer(com.cannontech.database.db.point.Point.getNextPointID()),
+                        DaoFactory.getPointDao().getNextPointId(),
 						PointTypes.PT_OFFSET_FROZEN_MAX_VOLT,
 						com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
 						0.1) ).execute();
@@ -1162,7 +1163,7 @@ public static Object changeType (String newType,
 					PointFactory.createDmdAccumPoint(
 						"Frozen Min Volts",
 						((DeviceBase) val).getDevice().getDeviceID(),
-						new Integer(com.cannontech.database.db.point.Point.getNextPointID()),
+                        DaoFactory.getPointDao().getNextPointId(),                        
 						PointTypes.PT_OFFSET_FROZEN_MIN_VOLT,
 						com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
 						0.1) ).execute();
@@ -1171,7 +1172,7 @@ public static Object changeType (String newType,
 					PointFactory.createDmdAccumPoint(
 						"kW",
 						((DeviceBase) val).getDevice().getDeviceID(),
-						new Integer(com.cannontech.database.db.point.Point.getNextPointID()),
+                        DaoFactory.getPointDao().getNextPointId(),                        
 						PointTypes.PT_OFFSET_KW_DEMAND,
 						com.cannontech.database.data.point.PointUnits.UOMID_KW,
 						0.1) ).execute();
@@ -1180,7 +1181,7 @@ public static Object changeType (String newType,
 					PointFactory.createDmdAccumPoint(
 						"Voltage",
 						((DeviceBase) val).getDevice().getDeviceID(),
-						new Integer(com.cannontech.database.db.point.Point.getNextPointID()),
+                        DaoFactory.getPointDao().getNextPointId(),                        
 						PointTypes.PT_OFFSET_VOLTAGE_DEMAND,
 						com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
 						0.1) ).execute();
@@ -1203,12 +1204,10 @@ public static Object changeType (String newType,
 		}else if( val instanceof MCT310 && oldDevice instanceof MCT410IL) 
         {
             //TODO delete old 410 points
-            LitePoint[] ltPoints = DaoFactory.getPaoDao().getLitePointsForPAObject( 
-                    currentDevice.getPAObjectID().intValue() );
-    
-            for( int i = 0; i < ltPoints.length; i++ ) {
-                LitePoint point = ltPoints[i];  
-        
+            int deviceId = currentDevice.getPAObjectID();
+            List<LitePoint> ltPoints = DaoFactory.getPointDao().getLitePointsByPaObjectId(deviceId);
+
+            for (LitePoint point : ltPoints) {
                 if( (point.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT
                      && point.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND ) || 
                      

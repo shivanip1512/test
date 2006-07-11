@@ -1,6 +1,7 @@
 package com.cannontech.dbeditor.wizard.copy.device;
 
 import java.awt.Dimension;
+import java.util.List;
 
 import javax.swing.JLabel;
 
@@ -24,6 +25,7 @@ import com.cannontech.database.data.device.RTCBase;
 import com.cannontech.database.data.device.RemoteBase;
 import com.cannontech.database.data.device.Repeater900;
 import com.cannontech.database.data.device.Series5Base;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.device.DeviceCarrierSettings;
 import com.cannontech.yukon.IDatabaseCache;
@@ -693,49 +695,34 @@ private javax.swing.JTextField getJTextFieldPhoneNumber() {
 		if (getPointCopyCheckBox().isSelected())
 		{
 			java.util.Vector devicePoints = null;
-			IDatabaseCache cache =
-				com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-			synchronized (cache)
-		{
-				java.util.List allPoints = cache.getAllPoints();
-				devicePoints = new java.util.Vector();
-	
-				com.cannontech.database.data.point.PointBase pointBase = null;
-				com.cannontech.database.data.lite.LitePoint litePoint = null;
-	
-				for (int i = 0; i < allPoints.size(); i++)
-				{
-					litePoint = (com.cannontech.database.data.lite.LitePoint) allPoints.get(i);
-					if (litePoint.getPaobjectID() == previousDeviceID)
-					{
-						pointBase = (com.cannontech.database.data.point.PointBase) com.cannontech.database.data.lite.LiteFactory.createDBPersistent(litePoint);
-						try
-						{
-							com.cannontech.database.Transaction t =
-								com.cannontech.database.Transaction.createTransaction(com.cannontech.database.Transaction.RETRIEVE, pointBase);
-							t.execute();
-							devicePoints.addElement(pointBase);
-						}
-						catch (com.cannontech.database.TransactionException e)
-						{
-							com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-						}
-					}
-				}
-	
-				java.util.Collections.sort(allPoints, com.cannontech.database.data.lite.LiteComparators.litePointIDComparator);
-				int startingPointID = ((com.cannontech.database.data.lite.LitePoint) allPoints.get(allPoints.size() - 1)).getPointID() + 10;
-				Integer newDeviceID = device.getDevice().getDeviceID();
-	
-				for (int i = 0; i < devicePoints.size(); i++)
-				{
-					((com.cannontech.database.data.point.PointBase) devicePoints.get(i)).setPointID(new Integer(startingPointID + i));
-					((com.cannontech.database.data.point.PointBase) devicePoints.get(i)).getPoint().setPaoID(newDeviceID);
-					objectsToAdd.getDBPersistentVector().add(devicePoints.get(i));
-				}
-				hasPoints = true;
+            
+            com.cannontech.database.data.point.PointBase pointBase = null;
+            List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(previousDeviceID);
+            for (LitePoint point : points) {
+                pointBase = (com.cannontech.database.data.point.PointBase) com.cannontech.database.data.lite.LiteFactory.createDBPersistent(point);
+                try
+                {
+                    com.cannontech.database.Transaction t =
+                        com.cannontech.database.Transaction.createTransaction(com.cannontech.database.Transaction.RETRIEVE, pointBase);
+                    t.execute();
+                    devicePoints.addElement(pointBase);
+                }
+                catch (com.cannontech.database.TransactionException e)
+                {
+                    com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+                }
+            }	
+			
+			int startingPointID = DaoFactory.getPointDao().getNextPointId();
+			Integer newDeviceID = device.getDevice().getDeviceID();
+
+			for (int i = 0; i < devicePoints.size(); i++)
+			{
+				((com.cannontech.database.data.point.PointBase) devicePoints.get(i)).setPointID(new Integer(startingPointID + i));
+				((com.cannontech.database.data.point.PointBase) devicePoints.get(i)).getPoint().setPaoID(newDeviceID);
+				objectsToAdd.getDBPersistentVector().add(devicePoints.get(i));
 			}
-	
+			hasPoints = true;				
 		}
 		
 		//user can input new phone number; otherwise they may later control/scan the wrong device
@@ -940,16 +927,11 @@ private javax.swing.JTextField getJTextFieldPhoneNumber() {
 		IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 		synchronized(cache)
 		{
-			java.util.List allPoints = cache.getAllPoints();
-			for(int i=0;i<allPoints.size();i++)
-			{
-				if( ((com.cannontech.database.data.lite.LitePoint)allPoints.get(i)).getPaobjectID() == deviceDeviceID )
-				{
-					getPointCopyCheckBox().setEnabled(true);
-					getPointCopyCheckBox().setSelected(true);
-					break;
-				}
-			}
+            List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(deviceDeviceID);
+            if(points.size() > 0) {
+                getPointCopyCheckBox().setEnabled(true);
+                getPointCopyCheckBox().setSelected(true);                
+            }
 		}
 	}
 

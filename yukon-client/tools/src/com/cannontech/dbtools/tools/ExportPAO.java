@@ -8,6 +8,7 @@ import java.io.ObjectOutputStream;
 import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import com.cannontech.clientutils.CTILogger;
@@ -44,21 +45,21 @@ public class ExportPAO {
 		int id = Integer.parseInt(args[0]);
 		String fileName = args[1];
 
-		LiteYukonPAObject litePao = DaoFactory.getPaoDao().getLiteYukonPAO(id);		
-		LitePoint[] litePoints = DaoFactory.getPaoDao().getLitePointsForPAObject(id);
+		LiteYukonPAObject litePao = DaoFactory.getPaoDao().getLiteYukonPAO(id);
+        List<LitePoint> litePoints = DaoFactory.getPointDao().getLitePointsByPaObjectId(id);
 		
 		DBPersistent dbPao = LiteFactory.createDBPersistent(litePao);
 		CTILogger.info("paoid: " + id);
 		dbPao.setDbConnection(conn);
 		dbPao.retrieve();
 		
-		DBPersistent[] dbPoints = new DBPersistent[litePoints.length];
+		DBPersistent[] dbPoints = new DBPersistent[litePoints.size()];
 		HashMap stateGroupMap = new HashMap();
 		
-		for(int i = 0; i < litePoints.length; i++) {
-			dbPoints[i] = LiteFactory.createDBPersistent(litePoints[i]);
+		for(int i = 0; i < litePoints.size(); i++) {
+			dbPoints[i] = LiteFactory.createDBPersistent(litePoints.get(i));
 			
-			CTILogger.info("point id: " + litePoints[i].getLiteID());
+			CTILogger.info("point id: " + litePoints.get(i).getLiteID());
 			dbPoints[i].setDbConnection(conn);
 			dbPoints[i].retrieve();
 			

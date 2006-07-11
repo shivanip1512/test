@@ -70,7 +70,7 @@ public class DisconnectPointCreate extends PointCreate
 		multi.setCreateNewPAOIDs( false );
 	
 		int addCount = 0;
-		int pointID = com.cannontech.database.db.point.Point.getNextPointID();
+		int pointID = DaoFactory.getPointDao().getNextPointId();
 		for( int i = 0; i < disconnectDevices.size(); i++)
 		{
 			com.cannontech.database.data.lite.LiteYukonPAObject litePaobject = 

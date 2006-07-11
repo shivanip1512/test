@@ -163,8 +163,7 @@ public class DeviceRoutePanel
             PaoDao paoDao = DaoFactory.getPaoDao();
 			((DeviceBase) val).setDeviceID(paoDao.getNextPaoId());
 			
-			Integer pointID = 
-				new Integer( com.cannontech.database.db.point.Point.getNextPointID() );
+			Integer pointID = DaoFactory.getPointDao().getNextPointId();
          
 			//A status point is automatically added to each repeater
 			com.cannontech.database.data.point.PointBase newPoint = PointFactory.createNewPoint(

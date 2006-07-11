@@ -1,7 +1,10 @@
 package com.cannontech.dbeditor.wizard.device.lmgroup;
 
+import java.util.List;
+
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteComparators;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -332,19 +335,18 @@ private void initComboBoxes()
 				 || com.cannontech.database.data.device.DeviceTypesFuncs.isCapBankController(liteDevice)
 				 || com.cannontech.database.data.device.DeviceTypesFuncs.isMCT(liteDevice.getType()) )
 			{
-				com.cannontech.database.data.lite.LitePoint[] points = DaoFactory.getPaoDao().getLitePointsForPAObject(
-																		liteDevice.getYukonID() );
+                List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(liteDevice.getYukonID());
 				
 				//pointList gets inserted into the hashtable
-				java.util.ArrayList pointList = new java.util.ArrayList(points.length / 2);
+				java.util.ArrayList pointList = new java.util.ArrayList(points.size() / 2);
 				
-				for( int j = 0; j < points.length; j++ )
-					if( points[j].getPointType() == com.cannontech.database.data.point.PointTypes.STATUS_POINT )
+                for (LitePoint point: points) {
+					if(point.getPointType() == com.cannontech.database.data.point.PointTypes.STATUS_POINT )
 					{
 			         //a DBPersistent must be created from the Lite object so you can do a retrieve
 			         // this process is expensive!!!  This is why LitePoints are stored in the localHashTable
 			         com.cannontech.database.data.point.StatusPoint dbPoint = (com.cannontech.database.data.point.StatusPoint)
-			         					com.cannontech.database.data.lite.LiteFactory.createDBPersistent( points[j] );
+			         					com.cannontech.database.data.lite.LiteFactory.createDBPersistent( point );
 			         try
 			         {
 			            com.cannontech.database.Transaction t = 
@@ -355,7 +357,7 @@ private void initComboBoxes()
 
 				         //only add status points that have control
 				         if( com.cannontech.database.data.point.PointTypes.hasControl(dbPoint.getPointStatus().getControlType()) )
-				         	pointList.add( points[j] );  //adds a LitePoint to our pointList
+				         	pointList.add( point );  //adds a LitePoint to our pointList
 
 			         }
 			         catch (Exception e)
@@ -364,6 +366,7 @@ private void initComboBoxes()
 			         }
 
 					}
+                }
 
 				
 				if( pointList.size() > 0 )
@@ -496,9 +499,6 @@ public void jComboBoxControlDevice_ActionPerformed(java.awt.event.ActionEvent ac
 	if( getJComboBoxControlDevice().getSelectedItem() != null )
 	{
 		getJComboBoxControlPoint().removeAllItems();
-
-		com.cannontech.database.data.lite.LitePoint[] points = DaoFactory.getPaoDao().getLitePointsForPAObject(
-				((com.cannontech.database.data.lite.LiteYukonPAObject)getJComboBoxControlDevice().getSelectedItem()).getYukonID() );
 
 		java.util.ArrayList litePointList = (java.util.ArrayList)
 						localHashTable.get( getJComboBoxControlDevice().getSelectedItem() );

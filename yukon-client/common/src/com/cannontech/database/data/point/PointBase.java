@@ -6,6 +6,7 @@ package com.cannontech.database.data.point;
 import java.util.List;
 import java.util.Vector;
 
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.db.graph.GraphDataSeries;
 import com.cannontech.database.db.point.DynamicAccumulator;
 import com.cannontech.database.db.point.DynamicPointDispatch;
@@ -34,8 +35,10 @@ public PointBase() {
  */
 public void add() throws java.sql.SQLException 
 {
-	if( getPoint().getPointID() == null )
-		setPointID( new Integer(com.cannontech.database.db.point.Point.getNextPointID(getDbConnection())) );
+	if( getPoint().getPointID() == null ) {
+        int nextId = DaoFactory.getPointDao().getNextPointId();
+		setPointID(nextId);
+    }
 
 	getPoint().add();
 

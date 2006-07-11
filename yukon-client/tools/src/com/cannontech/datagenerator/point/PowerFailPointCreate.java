@@ -5,6 +5,7 @@ package com.cannontech.datagenerator.point;
  * @author: 
  */
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.AccumulatorPoint;
 public class PowerFailPointCreate extends PointCreate
@@ -61,7 +62,7 @@ public class PowerFailPointCreate extends PointCreate
 		multi.setCreateNewPAOIDs( false );
 	
 		int addCount = 0;
-		int pointID = com.cannontech.database.db.point.Point.getNextPointID();
+		int pointID = DaoFactory.getPointDao().getNextPointId();
 		for( int i = 0; i < powerFailDevices.size(); i++)
 		{
 			com.cannontech.database.data.lite.LiteYukonPAObject litePaobject = 

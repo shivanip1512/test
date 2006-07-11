@@ -73,7 +73,7 @@ public final class PointUnits
 	public static final int UOMID_A = 55;
 
 
-   public static final int[] CAP_CONTROL_VAR_UOMIDS =
+   public static final Integer[] CAP_CONTROL_VAR_UOMIDS =
    {
       UOMID_KVAR,
       UOMID_VARS,
@@ -82,13 +82,13 @@ public final class PointUnits
    };
 
 
-   public static final int[] CAP_CONTROL_WATTS_UOMIDS =
+   public static final Integer[] CAP_CONTROL_WATTS_UOMIDS =
    {
       UOMID_KW,
       UOMID_MW
    };
    
-   public static final int[] CAP_CONTROL_VOLTS_UOMIDS =
+   public static final Integer[] CAP_CONTROL_VOLTS_UOMIDS =
    {
 	  UOMID_KVOLTS,
 	  UOMID_VOLTS,

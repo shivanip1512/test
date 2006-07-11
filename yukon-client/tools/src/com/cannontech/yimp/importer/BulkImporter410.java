@@ -17,6 +17,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.LogWriter;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
@@ -463,7 +464,7 @@ public void runImport(Vector imps)
 		//actual 410 creation
 		else
 		{
-			Integer deviceID = DBFuncs.getNextMCTID();
+			Integer deviceID = DaoFactory.getPaoDao().getNextPaoId();
 			GregorianCalendar now = new GregorianCalendar();
 			lastImportTime = now;
 			Integer templateID = template400SeriesBase.getPAObjectID();
@@ -484,7 +485,8 @@ public void runImport(Vector imps)
 			boolean hasPoints = false;
 			for (int i = 0; i < points.size(); i++)
 			{
-				((com.cannontech.database.data.point.PointBase) points.get(i)).setPointID(new Integer(DBFuncs.getNextPointID() + i));
+                int nextPointId = DaoFactory.getPointDao().getNextPointId();
+				((com.cannontech.database.data.point.PointBase) points.get(i)).setPointID(nextPointId);
 				((com.cannontech.database.data.point.PointBase) points.get(i)).getPoint().setPaoID(deviceID);
 				objectsToAdd.getDBPersistentVector().add(points.get(i));
 				hasPoints = true;

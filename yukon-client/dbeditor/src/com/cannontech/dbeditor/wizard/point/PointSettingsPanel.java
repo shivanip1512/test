@@ -165,7 +165,8 @@ public Object getValue(Object val) {
 	String name = getNameTextField().getText();
 	com.cannontech.database.data.lite.LiteYukonPAObject liteDevice = (com.cannontech.database.data.lite.LiteYukonPAObject) getDeviceComboBox().getSelectedItem();
 
-	point.setPointID( com.cannontech.database.db.point.Point.getNextCachedPointID() );
+    int nextId = DaoFactory.getPointDao().getNextPointId();
+	point.setPointID(nextId);
 	point.getPoint().setPointName(name);
 	point.getPoint().setPaoID( new Integer(liteDevice.getYukonID()) );
 

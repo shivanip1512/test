@@ -86,12 +86,10 @@ public class CapBankEditorForm extends DBEditorForm {
 			CapBank capBank = ((CapBank) getDbPersistent());			
 			int controlDeviceId = capBank.getCapBank().getControlDeviceID().intValue();
 			if (controlDeviceId > 0) {
-				LitePoint[] allPoints = DaoFactory.getPaoDao()
-						.getLitePointsForPAObject(controlDeviceId);
-			for (int i = 0; i < allPoints.length; i++) {
-				LitePoint point = allPoints[i];			
-				if (point.getUofmID() == PointUnits.UOMID_VOLTS)
-					{							
+                List<LitePoint> allPoints = 
+                    DaoFactory.getPointDao().getLitePointsByPaObjectId(controlDeviceId);
+                for (LitePoint point : allPoints) {
+    				if (point.getUofmID() == PointUnits.UOMID_VOLTS) {							
 						CapBankMonitorPointParams monitorPoint = new CapBankMonitorPointParams(point);
 						//set the cap bank id to replace the CBC if with Cap Bank Id
 						monitorPoint.setCapBankId(capBank.getCapBank().getDeviceID().intValue());
@@ -101,8 +99,8 @@ public class CapBankEditorForm extends DBEditorForm {
 						if(!isPointAssigned (monitorPoint)) {
 							unassignedPoints.add(monitorPoint);
 						}								
-					}
-				}				
+    					}
+    				}				
 			}
 					Collections.sort(unassignedPoints, JSFComparators.monitorPointComparator);
 			}

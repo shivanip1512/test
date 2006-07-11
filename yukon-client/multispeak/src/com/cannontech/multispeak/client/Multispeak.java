@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
@@ -195,10 +196,8 @@ public class Multispeak implements MessageListener, DBChangeLiteListener {
 	        String result = "MeterReadEvent: Reading Failed (" + keyValue + ") " + returnMsg.getResultString();
 	        CTILogger.info(result);
 	        
-	        LitePoint[] litePoints = DaoFactory.getPaoDao().getLitePointsForPAObject(lPao.getYukonID());
-			for (int i = 0; i < litePoints.length; i ++)
-			{
-				LitePoint lp = litePoints[i];
+            List<LitePoint> litePoints = DaoFactory.getPointDao().getLitePointsByPaObjectId(lPao.getYukonID());
+            for (LitePoint lp : litePoints) {
 				if( lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT && lp.getPointOffset() == 1)	//kW
 				{
 					PointData pointData = PointChangeCache.getPointChangeCache().getValue(lp.getPointID());
@@ -582,15 +581,12 @@ public class Multispeak implements MessageListener, DBChangeLiteListener {
 		MeterRead[] meterReadArray = new MeterRead[0];
 		if (lPao != null)
 		{
-			LitePoint[] litePoints = DaoFactory.getPaoDao().getLitePointsForPAObject(lPao.getYukonID());
+            List<LitePoint> litePoints = DaoFactory.getPointDao().getLitePointsByPaObjectId(lPao.getYukonID());
 			IntVector pointIDs = new IntVector(2);	//we only want the point IDs for kW and kWh
-			for (int i = 0; i < litePoints.length; i ++)
-			{
-				LitePoint lp = litePoints[i];
+            for (LitePoint lp : litePoints) {
 				if( (lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT || lp.getPointType() == PointTypes.PULSE_ACCUMULATOR_POINT) &&
 						lp.getPointOffset() == 1)
 					pointIDs.addElement(lp.getPointID());
-
 			}
 
 			if (pointIDs.size() > 0)

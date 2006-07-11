@@ -16,7 +16,7 @@ public class Command extends com.cannontech.message.util.Message
 	public static final int LOOP_CLIENT = 40;  //Send a mesage back to client
 	public static final int TRACE_ROUTE = 50; //Prints a blurb out in each place it is encountered.
 	public static final int ARE_YOU_THERE = 60;
-	public static final int ACKNOWLEGDE_ALARM = 70;
+	public static final int ACKNOWLEGDE_ALARM = 70; 
 	public static final int CLEAR_ALARM = 80;
 	public static final int TOKEN_GRANT = 90;
 	public static final int REREGISTRATION_REQUEST = 100;	

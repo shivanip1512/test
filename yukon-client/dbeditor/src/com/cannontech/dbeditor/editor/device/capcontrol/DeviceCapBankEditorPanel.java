@@ -2,15 +2,16 @@ package com.cannontech.dbeditor.editor.device.capcontrol;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * This type was created in VisualAge.
@@ -236,12 +237,10 @@ private void connEtoC8(java.awt.event.ActionEvent arg1) {
 		if(getControlDeviceComboBox().getModel().getSize() > 0)
 		{
 			int deviceID = ((LiteYukonPAObject)getControlDeviceComboBox().getSelectedItem()).getYukonID();
-			LitePoint[] litPts = DaoFactory.getPaoDao().getLitePointsForPAObject( deviceID );
-			for(int i = 0; i < litPts.length; i++)
-			{
-				if( litPts[i].getPointType() == PointTypes.STATUS_POINT)
-				{
-					getControlPointComboBox().addItem( litPts[i] );
+            List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(deviceID);
+            for (LitePoint point : points) {
+				if( point.getPointType() == PointTypes.STATUS_POINT) {
+					getControlPointComboBox().addItem(point);
 				}
 			}
 		}
@@ -1170,45 +1169,27 @@ public void operationalStateComboBox_ActionPerformed(java.awt.event.ActionEvent 
 		
 		if( getControlDeviceComboBox().getModel().getSize() > 0 )
 			getControlDeviceComboBox().removeAllItems();	
-	
-		IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-		synchronized(cache)
+           
+        PointDao pointDao = DaoFactory.getPointDao();
+        LiteYukonPAObject[] devices = DaoFactory.getPaoDao().getAllUnusedCCPAOs(0);
+        ArrayList lstToAdd = new ArrayList(devices.length);
+        for (int i = 0; i < devices.length; i++) {
+            List<LitePoint> devicePoints = pointDao.getLitePointsByPaObjectId(devices[i].getYukonID());
+            for (LitePoint p : devicePoints) {
+                if(p.getPointType() == PointTypes.STATUS_POINT) {
+                    lstToAdd.add(devices[i]);
+                    break;
+                }
+            }
+        }
+			
+		if( lstToAdd.size() > 0 )
 		{
-			java.util.List devices = cache.getAllUnusedCCDevices();
-		
-			ArrayList lstToAdd = new ArrayList( devices.size() );
-			java.util.List points = cache.getAllPoints();
-
-			int deviceID;
-			LiteYukonPAObject liteDevice = null;
-			LitePoint litePoint = null;
-
-			for( int i = 0; i < points.size(); i++ )
-			{
-				litePoint = (LitePoint)points.get(i);
-			
-				liteDevice = DaoFactory.getPaoDao().getLiteYukonPAO( litePoint.getPaobjectID() );
-				
-				//System device, leave it alone
-				if(litePoint.getPaobjectID() == 0)
-					continue;
-
-				if( litePoint.getPointType() == PointTypes.STATUS_POINT )
-				{
-					//expensive to call the contains() method, that is why we do this lastly
-					if( devices.contains(liteDevice) ) //only add this device if it is not already used
-						lstToAdd.add( liteDevice );
-				}
-			
-			}
-		
-			if( lstToAdd.size() > 0 )
-			{
-				Collections.sort( lstToAdd, LiteComparators.liteStringComparator);
-				for( int i = 0; i < lstToAdd.size(); i++ )
-					getControlDeviceComboBox().addItem( lstToAdd.get(i) );					 
-			}
+			Collections.sort( lstToAdd, LiteComparators.liteStringComparator);
+			for( int i = 0; i < lstToAdd.size(); i++ )
+				getControlDeviceComboBox().addItem( lstToAdd.get(i) );					 
 		}
+	
 	}
 		
 	return;
@@ -1272,61 +1253,40 @@ public void setValue(Object val)
 	if( getControlDeviceComboBox().getModel().getSize() > 0 )
 		getControlDeviceComboBox().removeAllItems();	
 
-	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-	synchronized(cache)
+    PointDao pointDao = DaoFactory.getPointDao();
+    LiteYukonPAObject[] devices = DaoFactory.getPaoDao().getAllUnusedCCPAOs(0);
+    ArrayList lstToAdd = new ArrayList(devices.length);
+    for (int i = 0; i < devices.length; i++) {
+        List<LitePoint> devicePoints = pointDao.getLitePointsByPaObjectId(devices[i].getYukonID());
+        for (LitePoint p : devicePoints) {
+            if(p.getPointType() == PointTypes.STATUS_POINT) {
+                lstToAdd.add(devices[i]);
+                break;
+            }
+        }
+    }
+		
+	if( lstToAdd.size() > 0 )
 	{
-		java.util.List devices = cache.getAllUnusedCCDevices();
-		
-		ArrayList lstToAdd = new ArrayList( devices.size() );
-		java.util.List points = cache.getAllPoints();
+		LiteYukonPAObject usedDevice = 
+				DaoFactory.getPaoDao().getLiteYukonPAO(controlDeviceID.intValue());
 
-		int deviceID;
-		LiteYukonPAObject liteDevice = null;
-		LitePoint litePoint = null;
-
-		for( int i = 0; i < points.size(); i++ )
+		//usedDevice is null for all Fixed CapBanks
+		if( usedDevice != null )
 		{
-			litePoint = 
-					(LitePoint)points.get(i);
-			
-			liteDevice = DaoFactory.getPaoDao().getLiteYukonPAO( litePoint.getPaobjectID() );
+			//we must manually add the currently used device so it is selectable, all used devices are filtered
+			// out at this point including the currently selected one!
+			lstToAdd.add( usedDevice );
+			java.util.Collections.sort( lstToAdd, com.cannontech.database.data.lite.LiteComparators.liteStringComparator);
+			for( int i = 0; i < lstToAdd.size(); i++ )
+				getControlDeviceComboBox().addItem( lstToAdd.get(i) );
+				
 
-			if( litePoint.getPointType() == PointTypes.STATUS_POINT )
-			{
-				//expensive to call the contains() method, that is why we do this lastly
-				if( devices.contains(liteDevice) ) //only add this device if it is not already used
-					lstToAdd.add( liteDevice );
-			}
-			
+			getControlDeviceComboBox().setSelectedItem( usedDevice );
+				
+			getControlPointComboBox().setSelectedItem(
+				DaoFactory.getPointDao().getLitePoint(controlPointID.intValue()) );
 		}
-		
-		if( lstToAdd.size() > 0 )
-		{
-			LiteYukonPAObject usedDevice = 
-					DaoFactory.getPaoDao().getLiteYukonPAO(controlDeviceID.intValue());
-
-			//usedDevice is null for all Fixed CapBanks
-			if( usedDevice != null )
-			{
-				//we must manually add the currently used device so it is selectable, all used devices are filtered
-				// out at this point including the currently selected one!
-				lstToAdd.add( usedDevice );
-				java.util.Collections.sort( lstToAdd, com.cannontech.database.data.lite.LiteComparators.liteStringComparator);
-				for( int i = 0; i < lstToAdd.size(); i++ )
-					getControlDeviceComboBox().addItem( lstToAdd.get(i) );
-					
-
-				getControlDeviceComboBox().setSelectedItem( usedDevice );
-
-				ArrayList pts = (ArrayList)
-					DaoFactory.getDeviceDao().getAllLiteDevicesWithPoints().get(usedDevice);
-					
-				getControlPointComboBox().setSelectedItem(
-					DaoFactory.getPointDao().getLitePoint(controlPointID.intValue()) );
-			}
-		}
-		
 	}
-
 }
 }

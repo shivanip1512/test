@@ -14,7 +14,7 @@ public class PointStatusPhysicalSettingsEditorPanel extends com.cannontech.commo
 	private javax.swing.JLabel ivjPointOffsetLabel = null;
 	private com.klg.jclass.field.JCSpinField ivjPointOffsetSpinner = null;
 	private javax.swing.JCheckBox ivjPhysicalPointOffsetCheckBox = null;
-	private java.util.Vector usedPointOffsetsVector = null;
+	//private java.util.Vector usedPointOffsetsVector = null;
 	private javax.swing.JLabel ivjUsedPointOffsetLabel = null;
 	private javax.swing.JLabel ivjCloseTime1Label = null;
 	private com.klg.jclass.field.JCSpinField ivjCloseTime1Spinner = null;
@@ -1255,7 +1255,7 @@ public void setValue(Object val)
 	com.cannontech.database.data.point.StatusPoint point = (com.cannontech.database.data.point.StatusPoint) val;
 
 	getUsedPointOffsetLabel().setText("");
-	usedPointOffsetsVector = new java.util.Vector();
+	//usedPointOffsetsVector = new java.util.Vector();
 
 	Integer pointOffset = point.getPoint().getPointOffset();
 
@@ -1275,8 +1275,8 @@ public void setValue(Object val)
 		getPhysicalPointOffsetCheckBox().setSelected(false);
 		getPointOffsetSpinner().setValue( new Integer(0) );
 	}
-
-	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+/*
+    IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized(cache)
 	{
 		java.util.List points = cache.getAllPoints();
@@ -1297,7 +1297,7 @@ public void setValue(Object val)
 				break;
 		}
 	}
-
+*/
 	//do all the setting for the values in the Control Settings JPanel
 	String controlType = point.getPointStatus().getControlType();
 	Integer controlPointOffset = point.getPointStatus().getControlOffset();
@@ -1318,6 +1318,8 @@ public void setValue(Object val)
 	//set the text for the state zero label and state one label the their proper state text
 	//Load all the state groups
 	int stateGroupID = point.getPoint().getStateGroupID().intValue();
+    
+    IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized(cache)
 	{

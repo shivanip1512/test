@@ -23,7 +23,6 @@ import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
-import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteSettlementConfig;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonGroup;
@@ -56,7 +55,6 @@ import com.cannontech.yukon.server.cache.LMConstraintLoader;
 import com.cannontech.yukon.server.cache.LMPAOExclusionLoader;
 import com.cannontech.yukon.server.cache.LMScenarioProgramLoader;
 import com.cannontech.yukon.server.cache.PointLimitLoader;
-import com.cannontech.yukon.server.cache.PointLoader;
 import com.cannontech.yukon.server.cache.PointUnitLoader;
 import com.cannontech.yukon.server.cache.SeasonScheduleLoader;
 import com.cannontech.yukon.server.cache.SettlementConfigLoader;
@@ -99,7 +97,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	private String databaseAlias = CtiUtilities.getDatabaseAlias();
 
 	private ArrayList allYukonPAObjects = null;
-	private ArrayList allPoints = null;
+	//private ArrayList allPoints = null;
     private ArrayList allSystemPoints = null;
 	private ArrayList allUnitMeasures = null;
 	private ArrayList allNotificationGroups = null;
@@ -161,9 +159,9 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	
 	
 	//Maps that are created by the joining/parsing of existing lists
-	private HashMap allPointidMultiplierHashMap = null;
-	private Map allPointIDOffsetHashMap = null;
-	private Map allPointsMap = null;
+	//private HashMap allPointidMultiplierHashMap = null;
+	//private Map allPointIDOffsetHashMap = null;
+	//private Map allPointsMap = null;
 	private Map allPAOsMap = null;
 	private Map allCustomersMap = null;    
 	private Map allContactsMap = null;
@@ -494,98 +492,6 @@ public synchronized java.util.List getAllGraphDefinitions()
 		return allGraphDefinitions;
 	}
 }
-// This cache is derive from the point cache
-public synchronized java.util.List getAllGraphTaggedPoints()
-{
-	 if( allGraphTaggedPoints != null )
-		  return allGraphTaggedPoints;
-	 else
-	 {
-		  //temp code
-		  java.util.Date timerStart = null;
-		  java.util.Date timerStop = null;
-		  //temp code
-
-		  //temp code
-		  timerStart = new java.util.Date();
-		  //temp code
-
-		  allGraphTaggedPoints = new ArrayList();
-
-
-		  String sqlString = "SELECT PU.POINTID, UM.FORMULA " +
-			"FROM POINTUNIT PU , UNITMEASURE UM WHERE PU.UOMID = UM.UOMID";
-
-		  java.sql.Connection conn = null;
-		  java.sql.Statement stmt = null;
-		  java.sql.ResultSet rset = null;
-		  try
-		  {
-			   conn = com.cannontech.database.PoolManager.getInstance().getConnection( this.databaseAlias );
-			   stmt = conn.createStatement();
-			   rset = stmt.executeQuery(sqlString);
-
-			   while (rset.next())
-			   {
-					int pointID = rset.getInt(1);
-					String formula = rset.getString(2);
-					LitePoint point = DaoFactory.getPointDao().getLitePoint( pointID );
-
-					// tags may need to be changed here if there
-					//  are more tags added to this bit field
-					long tags = LitePoint.POINT_UOFM_GRAPH;      //default value of tags for now.
-
-					if( formula.equalsIgnoreCase("usage"))
-						tags = LitePoint.POINT_UOFM_USAGE;
-
-					point.setTags( tags );
-					allGraphTaggedPoints.add(  point );
-
-			   }
-			   // Grab all status points too...!
-			   for (int i = 0; i < getAllPoints().size(); i++)
-			   {
-					LitePoint point = ((LitePoint) getAllPoints().get(i));
-					if ( point.getPointType() == com.cannontech.database.data.point.PointTypes.STATUS_POINT )
-					{
-						 point.setTags( LitePoint.POINT_UOFM_GRAPH );
-						 allGraphTaggedPoints.add (point);
-					}
-			   }
-
-		  }
-		  catch( java.sql.SQLException e )
-		  {
-			   CTILogger.error( e.getMessage(), e );
-		  }
-		  finally
-		  {
-			   try
-			   {
-					if( stmt != null )
-						 stmt.close();
-					if( conn != null )
-						 conn.close();
-			   }
-			   catch( java.sql.SQLException e )
-			   {
-					CTILogger.error( e.getMessage(), e );
-			   }
-		  }
-          
-		  //temp code
-		  timerStop = new java.util.Date();
-		  CTILogger.info( 
-							  (timerStop.getTime() - timerStart.getTime())*.001 + " Secs for getAllGraphTaggedPoints()" );
-            
-		  //sort our points by pointoffset
-		  java.util.Collections.sort( allGraphTaggedPoints, com.cannontech.database.data.lite.LiteComparators.litePointPointOffsetComparator );
-          
-		  return allGraphTaggedPoints;
-	 }
-
-}
-
 /**
  * Insert the method's description here.
  * Creation date: (3/14/00 3:19:19 PM)
@@ -886,25 +792,6 @@ public synchronized java.util.List getAllContactNotificationGroups()
  * Creation date: (3/14/00 3:19:19 PM)
  * @return java.util.Collection
  */
-public synchronized java.util.List getAllPoints(){
-
-	if( allPoints != null )
-		return allPoints;
-	else
-	{
-		allPoints = new ArrayList();
-		allPointsMap = new HashMap();
-		PointLoader pointLoader = new PointLoader(allPoints, allPointsMap, databaseAlias);
-		pointLoader.run();
-		return allPoints;
-	}
-}
-
-/**
- * Insert the method's description here.
- * Creation date: (3/14/00 3:19:19 PM)
- * @return java.util.Collection
- */
 public synchronized java.util.List getAllSystemPoints(){
 
     if( allSystemPoints != null )
@@ -917,24 +804,6 @@ public synchronized java.util.List getAllSystemPoints(){
         systemPointLoader.run();
         return allSystemPoints;
     }
-}
-
-/**
- * Insert the method's description here.
- * Creation date: (3/14/00 3:19:19 PM)
- * @return java.util.Collection
- */
-public synchronized java.util.Map getAllPointsMap()
-{
-	if( allPointsMap != null )
-		return allPointsMap;
-	else
-	{
-		releaseAllPoints();
-		getAllPoints();
-
-		return allPointsMap;
-	}
 }
 
 /**
@@ -1051,102 +920,6 @@ public synchronized java.util.List getAllPointLimits() {
 		return allPointLimits;
 	}
 }
-/**
- * Get a map of type HashMap<Integer(point id),Double(multiplier>
- * Creation date: (3/14/00 3:19:19 PM)
- * @return java.util.HashMap
- */
-public synchronized java.util.HashMap getAllPointidMultiplierHashMap(){
-	loadPointMaps();
-	return allPointidMultiplierHashMap;
-}
-
-/**
- * Get a map of type Map<Integer(point id), Integer(data offset)
- * @return java.util.Map
- */
-public synchronized java.util.Map getAllPointIDOffsetMap() {
-	loadPointMaps();
-	return allPointIDOffsetHashMap;
-}
-
-/**
- * Convenience method to load multiplier and offset maps
- * Populates allPointidMultiplierHashMap and allPointIDOffsetHashMap
- */
-private synchronized void loadPointMaps() {
-	if( allPointidMultiplierHashMap != null &&
-		allPointIDOffsetHashMap != null)
-		return;
-	
-	{
-
-	allPointIDOffsetHashMap = new java.util.HashMap(getAllPoints().size()*2);
-	allPointidMultiplierHashMap = new java.util.HashMap(getAllPoints().size()*2);	//guess of how many points there may be.
-	
-	String sql = new String("SELECT ACC.POINTID, ACC.MULTIPLIER, ACC.DATAOFFSET FROM POINTACCUMULATOR ACC");
-
-	java.sql.Connection conn = null;
-	java.sql.PreparedStatement pstmt = null;
-	java.sql.ResultSet rset = null;
-	try
-	{
-		conn = com.cannontech.database.PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-
-		if( conn == null )
-		{
-			CTILogger.error(":  Error getting database connection.");
-			return;
-		}
-		else
-		{
-			pstmt = conn.prepareStatement(sql.toString());
-			rset = pstmt.executeQuery();
-
-			while( rset.next() )
-			{
-				Integer pointID = new Integer(rset.getInt(1));
-				Double multiplier = new Double(rset.getDouble(2));
-				Integer offset = new Integer(rset.getInt(3));
-				allPointidMultiplierHashMap.put(pointID, multiplier);
-				allPointIDOffsetHashMap.put(pointID, offset);				
-			}
-			
-			sql = new String("SELECT ANA.POINTID, ANA.MULTIPLIER, ANA.DATAOFFSET FROM POINTANALOG ANA");
-			pstmt = conn.prepareStatement(sql.toString());
-			rset = pstmt.executeQuery();
-			
-			while( rset.next())
-			{
-				Integer pointID = new Integer( rset.getInt(1));
-				Double multiplier = new Double( rset.getDouble(2));
-				Integer offset = new Integer(rset.getInt(3));
-				allPointidMultiplierHashMap.put(pointID, multiplier);
-				allPointIDOffsetHashMap.put(pointID, offset);
-			}
-		}
-	}
-	catch( java.sql.SQLException e )
-	{
-		e.printStackTrace();
-	}
-	finally
-	{
-		try
-		{
-			if( pstmt != null ) pstmt.close();
-			if( conn != null ) conn.close();
-		} 
-		catch( java.sql.SQLException e2 )
-		{
-			e2.printStackTrace();//sometin is up
-			return;
-		}	
-	}
-		return;
-	}
-}
-
 /**
  * getAllPorts method comment.
  *
@@ -1817,8 +1590,8 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg)
 	{
 		allGraphTaggedPoints = null;
 		allPointsUnits = null;
-		allPointidMultiplierHashMap = null;
-		allPointIDOffsetHashMap = null;
+		//allPointidMultiplierHashMap = null;
+		//allPointIDOffsetHashMap = null;
 		allPointLimits = null;
 		retLBase = handlePointChange( dbType, id );
 	}
@@ -2899,16 +2672,12 @@ private synchronized LiteBase handleNotificationGroupChange( int changeType, int
 private synchronized LiteBase handlePointChange( int changeType, int id )
 {
 	LiteBase lBase = null;
-
-	// if the storage is not already loaded, we must not care about it
-	if( allPoints == null )
-		return lBase;
 	
 	switch(changeType)
 	{
 		case DBChangeMsg.CHANGE_TYPE_ADD:
 		
-				lBase = (LiteBase)allPointsMap.get( new Integer(id) );				
+			/*	lBase = (LiteBase)allPointsMap.get( new Integer(id) );				
 				if( lBase == null )
 				{
 					LitePoint lp = new LitePoint(id);
@@ -2917,19 +2686,19 @@ private synchronized LiteBase handlePointChange( int changeType, int id )
 					allPointsMap.put( new Integer(lp.getPointID()), lp );
 
 					lBase = lp;
-				}
+				}*/
 				break;
 
 		case DBChangeMsg.CHANGE_TYPE_UPDATE:
-		
+		/*
 				LitePoint lp = (LitePoint)allPointsMap.get( new Integer(id) );				
 				lp.retrieve( databaseAlias );
 				
-				lBase = lp;
+				lBase = lp;*/
 				break;
 
 		case DBChangeMsg.CHANGE_TYPE_DELETE:
-
+/*
 				for(int i=0;i<allPoints.size();i++)
 				{
 					if( ((LitePoint)allPoints.get(i)).getPointID() == id )
@@ -2938,11 +2707,11 @@ private synchronized LiteBase handlePointChange( int changeType, int id )
 						lBase = (LiteBase)allPoints.remove(i);
 						break;
 					}
-				}
+				}*/
 				break;
 
 		default:
-				releaseAllPoints();
+				//releaseAllPoints();
 				break;
 	}
 
@@ -3253,7 +3022,7 @@ public synchronized void releaseAllAlarmCategories()
 public synchronized void releaseAllCache()
 {
 	allYukonPAObjects = null;
-	allPoints = null;
+//	allPoints = null;
     allSystemPoints = null;
 	allStateGroupMap = null;
 	allUnitMeasures = null;
@@ -3316,9 +3085,9 @@ public synchronized void releaseAllCache()
     
     
 	//Maps that are created by the joining/parsing of existing lists
-	allPointidMultiplierHashMap = null;
-	allPointIDOffsetHashMap = null;
-	allPointsMap = null;
+	//allPointidMultiplierHashMap = null;
+	//allPointIDOffsetHashMap = null;
+	//allPointsMap = null;
 	allPAOsMap = null;
 	allCustomersMap = null;
 	allContactsMap = null;
@@ -3441,15 +3210,6 @@ public synchronized void releaseAllCustomers()
 {
 	allCustomers = null;
 	allCustomersMap = null;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/14/00 3:22:47 PM)
- */
-public synchronized void releaseAllPoints()
-{
-	allPoints = null;
-	allPointsMap = null;
 }
 
 /**

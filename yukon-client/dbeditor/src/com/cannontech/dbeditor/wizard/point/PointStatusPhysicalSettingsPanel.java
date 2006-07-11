@@ -1,7 +1,10 @@
 package com.cannontech.dbeditor.wizard.point;
 
+import java.util.List;
+
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * This type was created in VisualAge.
@@ -576,27 +579,13 @@ public void reinitialize(Integer pointDeviceID, int pointType)
 	getUsedPointOffsetLabel().setText("");
 	usedPointOffsetsVector = new java.util.Vector();
 	
-	IDatabaseCache cache =
-		com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-	synchronized (cache)
-{
-		java.util.List points = cache.getAllPoints();
-		java.util.Collections.sort(points, com.cannontech.database.data.lite.LiteComparators.litePointDeviceIDComparator);
-		com.cannontech.database.data.lite.LitePoint litePoint = null;
-		for (int i = 0; i < points.size(); i++)
-		{
-			litePoint = ((com.cannontech.database.data.lite.LitePoint) points.get(i));
-			if (pointDeviceID.intValue() == litePoint.getPaobjectID() && pointType == litePoint.getPointType())
-			{
-				usedPointOffsetsVector.addElement(litePoint);
-			}
-			else if (litePoint.getPaobjectID() > pointDeviceID.intValue())
-			{
-				break;
-			}
-		}
-	}
-
+    List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(pointDeviceID);
+    for (LitePoint point : points) {
+        if(point.getPointType() == pointType) {
+            usedPointOffsetsVector.add(point);
+        }
+    }       
+   
 	getPointOffsetSpinner().setValue(new Integer(1));
 	if (usedPointOffsetsVector.size() > 0)
 	{

@@ -26,13 +26,13 @@ public final class DeviceClasses
    public static final String STRING_CLASS_VIRTUAL = "VIRTUAL";
    public static final String STRING_CLASS_LOADMANAGER = "LOADMANAGEMENT";
    
-   public static final int[] IN_DEVICEDIRECTCOMMSETTINGS_TABLE = 
+   public static final Integer[] IN_DEVICEDIRECTCOMMSETTINGS_TABLE = 
    {
 	  //DeviceDirectCommSettings
 	  RTU, TRANSMITTER, METER, IED, 
    };
 
-   public static final int[] CORE_DEVICE_CLASSES = 
+   public static final Integer[] CORE_DEVICE_CLASSES = 
    {
 		CARRIER, IED, METER,
 		RTU, TRANSMITTER, VIRTUAL, PAOGroups.CAT_CAPCONTROL

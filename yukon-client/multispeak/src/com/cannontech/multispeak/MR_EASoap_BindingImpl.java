@@ -146,10 +146,8 @@ public class MR_EASoap_BindingImpl implements com.cannontech.multispeak.MR_EASoa
 			mr.setMeterNo(meterID);
 			mr.setObjectID(meterID);
 
-			LitePoint[] litePoints = DaoFactory.getPaoDao().getLitePointsForPAObject(lPao.getYukonID());
-			for (int j = 0; j < litePoints.length; j++)
-			{
-				LitePoint lp = litePoints[j];
+            List<LitePoint> litePoints = DaoFactory.getPointDao().getLitePointsByPaObjectId(lPao.getYukonID());
+            for (LitePoint lp : litePoints) {
 				if( lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT && lp.getPointOffset() == 1)	//kW
 				{
 					PointData pointData = PointChangeCache.getPointChangeCache().getValue(lp.getPointID());

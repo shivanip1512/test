@@ -42,7 +42,8 @@ public class YukonPAOLoader implements Runnable
 	public void run() 
 	{
         StopWatch sw = new StopWatch();
-
+        sw.start();
+        
 		String sqlString = 
 				"SELECT y.PAObjectID, y.Category, y.PAOName, " +
 				"y.Type, y.PAOClass, y.Description, d.PORTID, dcs.ADDRESS, dr.routeid " +

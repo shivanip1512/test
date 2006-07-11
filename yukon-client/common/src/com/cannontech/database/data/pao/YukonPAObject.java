@@ -1,18 +1,18 @@
 package com.cannontech.database.data.pao;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.NestedDBPersistent;
 import com.cannontech.database.db.NestedDBPersistentComparators;
 import com.cannontech.database.db.pao.PAOExclusion;
 import com.cannontech.database.db.pao.PAOScheduleAssign;
 import com.cannontech.database.db.user.UserPaoOwner;
-import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * This type was created in VisualAge.
@@ -97,29 +97,16 @@ public void deletePartial() throws java.sql.SQLException
  */
 private void deletePoints() throws java.sql.SQLException
 {
+    List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(getPAObjectID());
+    for (LitePoint point : points) {
+        com.cannontech.database.data.point.PointBase chubbyPt = com.cannontech.database.data.point.PointFactory.createPoint( point.getPointType() );
+        chubbyPt.setPointID(point.getPointID());
+        chubbyPt.setDbConnection( getDbConnection() );
 
-	IDatabaseCache cache = DefaultDatabaseCache.getInstance();
-	synchronized( cache )
-	{
-		java.util.List points = cache.getAllPoints();
-		
-		for( int i = 0; i < points.size(); i++ )
-		{
-			com.cannontech.database.data.lite.LitePoint pt = (com.cannontech.database.data.lite.LitePoint)points.get(i);
-
-			if( pt.getPaobjectID() == getPAObjectID().intValue() )
-			{
-				com.cannontech.database.data.point.PointBase chubbyPt = com.cannontech.database.data.point.PointFactory.createPoint( pt.getPointType() );
-				chubbyPt.setPointID( new Integer(pt.getPointID()) );
-				chubbyPt.setDbConnection( getDbConnection() );
-
-				chubbyPt.delete();
-			}
-
-		}
-	}
-		
+        chubbyPt.delete();
+    }		
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (12/19/2001 1:45:25 PM)
@@ -142,8 +129,7 @@ public com.cannontech.message.dispatch.message.DBChangeMsg[] getDBChangeMsgs( in
 	if( typeOfChange == com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_DELETE )
 	{
 		//get all the point ids and their types that are owned by this PAObject
-		int[][] idsAndTypes = DaoFactory.getPaoDao().getAllPointIDsAndTypesForPAObject(
-					getPAObjectID().intValue() );
+		int[][] idsAndTypes = DaoFactory.getPointDao().getAllPointIDsAndTypesForPAObject(getPAObjectID());
 
 		//add a new message for each point
 		for( int i = 0; i < idsAndTypes.length; i++ )

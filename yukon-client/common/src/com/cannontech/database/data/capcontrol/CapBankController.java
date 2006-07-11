@@ -3,6 +3,7 @@ package com.cannontech.database.data.capcontrol;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.NativeIntVector;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointBase;
@@ -118,8 +119,7 @@ public static PointBase createStatusControlPoint( Integer cbcDeviceID )
 	PointBase newPoint = PointFactory.createPoint(
 			com.cannontech.database.data.point.PointTypes.STATUS_POINT);
 
-	Integer pointID = new Integer( com.cannontech.database.db.point.Point.getNextPointID() );
-
+	Integer pointID = DaoFactory.getPointDao().getNextPointId();
 
 	//set default for point tables
 	newPoint = PointFactory.createNewPoint(		

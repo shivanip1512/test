@@ -73,14 +73,12 @@ public class LiteBaseResults
 							CTILogger.error( "Error with matching regular expression pattern", pse );
 						}
 							
-						LitePoint[] devPoints =
-							DaoFactory.getPaoDao().getLitePointsForPAObject( pao.getLiteID() );
-						for( int j = 0; j < devPoints.length; j++ )
-						{
-							Matcher ptM = p.matcher( devPoints[j].getPointName() );
+                        List<LitePoint> devPoints = DaoFactory.getPointDao().getLitePointsByPaObjectId(pao.getLiteID());
+                        for (LitePoint point : devPoints) {
+							Matcher ptM = p.matcher(point.getPointName());
 							try {
 								if( ptM.matches() )
-									tempVect.add( new LiteWrapper(devPoints[j]) );
+									tempVect.add( new LiteWrapper(point) );
 							} catch( PatternSyntaxException pse ) {
 								CTILogger.error( "Error with matching regular expression pattern", pse );
 							}

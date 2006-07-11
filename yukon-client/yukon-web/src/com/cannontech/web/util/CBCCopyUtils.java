@@ -1,5 +1,7 @@
 package com.cannontech.web.util;
 
+import java.util.List;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.TransactionException;
@@ -26,12 +28,12 @@ public class CBCCopyUtils {
 	}
 
 	public static void copyAllPointsForPAO(Integer fromID, Integer toID) {
-		LitePoint[] points = DaoFactory.getPaoDao().getLitePointsForPAObject(fromID
-				.intValue());
+        List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(fromID);
 		MultiDBPersistent dbPersistentVector = new MultiDBPersistent();
-		for (int i = 0; i < points.length; i++) {
+        
+        for (LitePoint point : points) {
 			DBPersistent pointCopy = copy(DaoFactory.getDbPersistentDao()
-					.retrieveDBPersistent(points[i]));
+					.retrieveDBPersistent(point));
 			((PointBase) pointCopy).getPoint().setPaoID(toID);
 			dbPersistentVector.getDBPersistentVector().add(pointCopy);
 		}

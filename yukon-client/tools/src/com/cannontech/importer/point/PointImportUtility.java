@@ -15,7 +15,7 @@ package com.cannontech.importer.point;
 import java.util.HashMap;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.database.db.point.Point;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -67,7 +67,7 @@ public class PointImportUtility
 			 * LowLimit1,Duration1,HiLimit2,LowLimit2,Duration2,Archivetype,ArchInterval,NonUpdate,
 			 * RateOfChange,LimitSet1,LimitSet2,HighReasonablility,LowReasonability
 			 */
-			Integer pointID = new Integer(Point.getNextPointID() + addCount);
+			Integer pointID = DaoFactory.getPointDao().getNextPointId();
 			
 			String pointName = tokenizer.nextElement().toString();
 			if(emptyField(pointName))
@@ -491,7 +491,7 @@ public class PointImportUtility
 
 			com.cannontech.database.data.point.StatusPoint statusPoint = new com.cannontech.database.data.point.StatusPoint();
 			
-			Integer pointID = new Integer(Point.getNextPointID() + addCount);
+			Integer pointID = DaoFactory.getPointDao().getNextPointId();
 				
 			String pointName = tokenizer.nextElement().toString();
 			if(emptyField(pointName))

@@ -114,7 +114,7 @@ public final static com.cannontech.database.data.pao.YukonPAObject createLoadMan
 		((com.cannontech.database.data.device.DeviceBase)retLm).getDevice().setAlarmInhibit(new Character('N') );
 		((com.cannontech.database.data.device.DeviceBase)retLm).getDevice().setControlInhibit(new Character('N') );
 	}
-		
+	
 	return retLm;
 }
 }

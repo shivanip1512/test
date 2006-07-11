@@ -1,20 +1,19 @@
 package com.cannontech.dbeditor.wizard.capsubbus;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.TreeSet;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.NativeIntVector;
 import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUnits;
-import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * Insert the type's description here.
@@ -30,8 +29,8 @@ public class JPanelCCPointVarWatts extends javax.swing.JPanel implements java.aw
 //   private final LitePoint[] WATT_POINTS;
 
 	//used to store the current set of UofM ids, when null we are looking at all UofM ids
-	private int[] currentVarUofMIDset = null;
-	private int[] currentWattUofMIDset = null;
+	private Integer[] currentVarUofMIDset = null;
+	private Integer[] currentWattUofMIDset = null;
 	
 	
 	
@@ -879,18 +878,14 @@ public void jComboBoxCalcWattsDevice_ActionPerformed(java.awt.event.ActionEvent 
    if( getJComboBoxCalcWattsDevice().getSelectedItem() == LiteYukonPAObject.LITEPAOBJECT_NONE )
       return;
 
-
-	LitePoint[] litePts = DaoFactory.getPaoDao().getLitePointsForPAObject( deviceID );
-	Arrays.sort( litePts, LiteComparators.liteStringComparator ); //sort the small list by PointName
-   for( int i = 0; i < litePts.length; i++ )
-   {
-      if( isValidWattPoint( litePts[i] ) 
-      	 && (litePts[i].getPointType() == PointTypes.ANALOG_POINT
-              || litePts[i].getPointType() == PointTypes.CALCULATED_POINT) )
-      {      
-         getJComboBoxCalcWattsPoint().addItem( litePts[i] );
+   List<LitePoint> litePoints = DaoFactory.getPointDao().getLitePointsByPaObjectId(deviceID);
+   Collections.sort(litePoints, LiteComparators.liteStringComparator);
+   for (LitePoint point : litePoints) {
+      if( isValidWattPoint(point) 
+      	 && (point.getPointType() == PointTypes.ANALOG_POINT
+              || point.getPointType() == PointTypes.CALCULATED_POINT) ) {      
+         getJComboBoxCalcWattsPoint().addItem(point);
       }
-   	
    }
 
 	return;
@@ -925,15 +920,13 @@ public void jComboBoxVarDevice_ActionPerformed(java.awt.event.ActionEvent action
       return;
 
 
-	LitePoint[] litePts = DaoFactory.getPaoDao().getLitePointsForPAObject( deviceID );
-	Arrays.sort( litePts, LiteComparators.liteStringComparator ); //sort the small list by PointName
-	for( int i = 0; i < litePts.length; i++ )
-	{
-		if( isValidVarPoint( litePts[i] ) 
-			 && (litePts[i].getPointType() == PointTypes.ANALOG_POINT
-				  || litePts[i].getPointType() == PointTypes.CALCULATED_POINT) )
-		{      
-			getJComboBoxVarPoint().addItem( litePts[i] );
+   List<LitePoint> litePts = DaoFactory.getPointDao().getLitePointsByPaObjectId(deviceID);
+   Collections.sort(litePts, LiteComparators.liteStringComparator); //sort the small list by PointName
+   for (LitePoint point : litePts) {
+		if( isValidVarPoint(point ) 
+			 && (point.getPointType() == PointTypes.ANALOG_POINT
+				  || point.getPointType() == PointTypes.CALCULATED_POINT) ) {      
+			getJComboBoxVarPoint().addItem(point);
 		}
 	}
 	
@@ -979,41 +972,38 @@ public static void main(java.lang.String[] args) {
 private void setDeviceComboBoxes( final javax.swing.JComboBox comboBox )
 {     
    LitePoint litePoint = null;
-	
-	IDatabaseCache cache = DefaultDatabaseCache.getInstance();
-	synchronized(cache)
-	{
-		java.util.List allPoints = cache.getAllPoints();
 		
-		//ensures uniqueness and ordering by name
-		TreeSet paoSet = new TreeSet( LiteComparators.liteStringComparator );
-
-		boolean validPt = false;
-	   for( int i = 0; i < allPoints.size(); i++ )
-	   {
-	      litePoint = (LitePoint)allPoints.get(i);
-			if( comboBox == getJComboBoxVarDevice() )
-				validPt = isValidVarPoint( litePoint );
-			else if( comboBox == getJComboBoxCalcWattsDevice() )
-				validPt = isValidWattPoint( litePoint );
-
-
-			//use the validPt boolean to see if this point is worthy
-			if( validPt
-				 && (litePoint.getPointType() == PointTypes.ANALOG_POINT
-					  || litePoint.getPointType() == PointTypes.CALCULATED_POINT) )
-			{               
-				LiteYukonPAObject liteDevice = DaoFactory.getPaoDao().getLiteYukonPAO( litePoint.getPaobjectID() );
-
-		      if( DeviceClasses.isCoreDeviceClass(liteDevice.getPaoClass()) )
-		      {
-					paoSet.add( liteDevice );
-		      }
-		      
+    //SUPER HACK!  
+    List<LitePoint> allPoints = DaoFactory.getPointDao().getLitePointsBy(null,null,null,null,null);
 	
-	      }
-	   }
+	//ensures uniqueness and ordering by name
+	TreeSet paoSet = new TreeSet( LiteComparators.liteStringComparator );
 
+	boolean validPt = false;
+   for( int i = 0; i < allPoints.size(); i++ )
+   {
+      litePoint = (LitePoint)allPoints.get(i);
+		if( comboBox == getJComboBoxVarDevice() )
+			validPt = isValidVarPoint( litePoint );
+		else if( comboBox == getJComboBoxCalcWattsDevice() )
+			validPt = isValidWattPoint( litePoint );
+
+
+		//use the validPt boolean to see if this point is worthy
+		if( validPt
+			 && (litePoint.getPointType() == PointTypes.ANALOG_POINT
+				  || litePoint.getPointType() == PointTypes.CALCULATED_POINT) )
+		{               
+			LiteYukonPAObject liteDevice = DaoFactory.getPaoDao().getLiteYukonPAO( litePoint.getPaobjectID() );
+
+	      if( DeviceClasses.isCoreDeviceClass(liteDevice.getPaoClass()) )
+	      {
+				paoSet.add( liteDevice );
+	      }
+	      
+
+      }
+	   
 		//add the unique ordered elements to the combo box
 		Iterator it = paoSet.iterator();
 		while( it.hasNext() )

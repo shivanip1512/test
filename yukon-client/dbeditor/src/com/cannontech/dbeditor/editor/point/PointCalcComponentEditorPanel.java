@@ -5,6 +5,7 @@ package com.cannontech.dbeditor.editor.point;
  */
 
 import java.util.Collections;
+import java.util.List;
 
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.core.dao.DaoFactory;
@@ -435,12 +436,10 @@ public void deviceComboBox_ActionPerformed(java.awt.event.ActionEvent actionEven
 	if( getPointComboBox().getModel().getSize() > 0 )
 		getPointComboBox().removeAllItems();
 
-
-	LitePoint[] paoPoints =
-			DaoFactory.getPaoDao().getLitePointsForPAObject( deviceID );
-	
-	for( int j = 0; j < paoPoints.length; j++ )
-		getPointComboBox().addItem( paoPoints[j] );
+    List<LitePoint> paoPoints = DaoFactory.getPointDao().getLitePointsByPaObjectId(deviceID);
+    for (LitePoint point : paoPoints) {
+		getPointComboBox().addItem(point);
+    }
 }
 /**
  * Comment
@@ -651,13 +650,11 @@ private javax.swing.JComboBox getDeviceComboBox() {
 
 					ivjDeviceComboBox.addItem( pao );
 
-					if( i == 0 )
-					{
-						LitePoint[] paoPoints =
-								DaoFactory.getPaoDao().getLitePointsForPAObject( pao.getYukonID() );
-				
-						for( int j = 0; j < paoPoints.length; j++ )
-							getPointComboBox().addItem( paoPoints[j] ); 
+					if( i == 0 ) {
+                        List<LitePoint> paoPoints = DaoFactory.getPointDao().getLitePointsByPaObjectId(pao.getYukonID());
+                        for (LitePoint point : paoPoints) {
+							getPointComboBox().addItem(point);
+                        }
 					}						
 				}
 			}

@@ -1,7 +1,12 @@
 package com.cannontech.datagenerator.point;
 
+import java.util.List;
+
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.point.PointBase;
@@ -9,7 +14,6 @@ import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.data.point.StatusPoint;
-import com.cannontech.database.db.point.Point;
 import com.cannontech.database.db.point.PointStatus;
 import com.cannontech.yukon.IDatabaseCache;
 /**
@@ -60,7 +64,7 @@ public class LoadGroup_ControlPointCreate extends PointCreate
 		multi.setCreateNewPAOIDs( false );
 	
 		int addCount = 0;
-		int pointID = Point.getNextPointID();
+		int pointID = DaoFactory.getPointDao().getNextPointId();
 		for( int i = 0; i < devicesVector.size(); i++)
 		{
 			LiteYukonPAObject litePaobject = (LiteYukonPAObject)devicesVector.get(i);
@@ -212,8 +216,7 @@ public class LoadGroup_ControlPointCreate extends PointCreate
 		{
 			java.util.List groups = cache.getAllLoadManagement();
 			java.util.Collections.sort(groups, com.cannontech.database.data.lite.LiteComparators.liteYukonPAObjectIDComparator);
-			java.util.List points = cache.getAllPoints();
-			java.util.Collections.sort(points, com.cannontech.database.data.lite.LiteComparators.litePointDeviceIDComparator);
+            PointDao pointDao = DaoFactory.getPointDao();
 
 			createPointHashtable = new java.util.Hashtable(groups.size());
 			
@@ -227,11 +230,17 @@ public class LoadGroup_ControlPointCreate extends PointCreate
 					CreatePointList item = new CreatePointList();
 					createPointHashtable.put(new Integer(paobjectID), item);
 					
-					//makes a list of points devices to add control history points to
-					if( addPointToDevice( points, paobjectID ))
-					{
-						deviceVector.addElement(litePaobject);
-					}
+                    boolean foundPoint = false;
+                    List<LitePoint> devicePoints = pointDao.getLitePointsByPaObjectId(paobjectID);
+                    for (LitePoint point : devicePoints) {
+                        if(isPointCreated(point)) {
+                            foundPoint = true;
+                        }
+                    }
+                    //makes a list of points devices to add control history points to
+                    if(!foundPoint) {
+                        deviceVector.add(litePaobject);
+                    }
 				}
 			}
 			CTILogger.info(deviceVector.size() + " Total Devices needing points added.");

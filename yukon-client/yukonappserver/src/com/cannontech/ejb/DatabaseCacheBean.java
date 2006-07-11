@@ -302,30 +302,11 @@ public class DatabaseCacheBean implements IDatabaseCache
     * @ejb:interface-method
     * tview-type="remote" 
    **/
-   public synchronized java.util.List getAllPoints()
-   {
-      return getCache().getAllPoints();
-   }
-
-   /**
-    * @ejb:interface-method
-    * tview-type="remote" 
-   **/
    public synchronized java.util.List getAllSystemPoints()
    {
       return getCache().getAllSystemPoints();
    }
 
-   
-	/**
-	 * @ejb:interface-method
-	 * tview-type="remote" 
-	**/
-	public synchronized java.util.Map getAllPointsMap()
-	{
-		return getCache().getAllPointsMap();		
-	}
-	
    /**
     * @ejb:interface-method
     * tview-type="remote" 
@@ -345,24 +326,6 @@ public class DatabaseCacheBean implements IDatabaseCache
 		return getCache().getAllPointLimits();
 	}	
 	
-   /**
-    * @ejb:interface-method
-    * tview-type="remote" 
-   **/
-   public synchronized java.util.HashMap getAllPointidMultiplierHashMap()
-   {
-      return getCache().getAllPointidMultiplierHashMap();
-   }
-   
-   /**
-	* @ejb:interface-method
-	* tview-type="remote" 
-   **/
-   public synchronized java.util.Map getAllPointIDOffsetMap()
-   {
-	 return getCache().getAllPointIDOffsetMap();
-   }
-   
    /**
     * @ejb:interface-method
     * tview-type="remote" 
@@ -691,15 +654,6 @@ public class DatabaseCacheBean implements IDatabaseCache
    public synchronized void releaseAllNotificationGroups()
    {
       getCache().releaseAllNotificationGroups();
-   }
-
-   /**
-    * @ejb:interface-method
-    * tview-type="remote" 
-   **/
-   public synchronized void releaseAllPoints()
-   {   
-      getCache().releaseAllPoints();
    }
 
    /**

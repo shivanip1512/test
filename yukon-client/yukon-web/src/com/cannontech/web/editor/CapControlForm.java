@@ -30,7 +30,6 @@ import org.apache.myfaces.custom.tree2.TreeStateBase;
 import com.cannontech.cbc.point.CBCPointFactory;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.capcontrol.CCYukonPAOFactory;
 import com.cannontech.database.data.capcontrol.CapBank;
@@ -259,8 +258,8 @@ public class CapControlForm extends DBEditorForm {
 
 		if (varTreeData == null){
 			varTreeData = new TreeNodeBase("root", "Var Points", false);
-			int [] types = { PointTypes.ANALOG_POINT, PointTypes.CALCULATED_POINT};
-			List points = DaoFactory.getPointDao().getLitePointsByUOMID(PointUnits.CAP_CONTROL_VAR_UOMIDS,  types);
+			Integer [] types = { PointTypes.ANALOG_POINT, PointTypes.CALCULATED_POINT};
+            List<LitePoint> points = DaoFactory.getPointDao().getLitePointsBy(types, PointUnits.CAP_CONTROL_VAR_UOMIDS,null,null,null);
 			JSFTreeUtils.createPAOTreeFromPointList (points, varTreeData, JSFParamUtil.getYukonUser());
 		}	
 		return varTreeData;
@@ -273,8 +272,8 @@ public class CapControlForm extends DBEditorForm {
 	public TreeNode getWattTreeData() {
 		if (wattTreeData == null){
 			wattTreeData =  new TreeNodeBase("root", "Watt Points", false);
-			int [] types = { PointTypes.ANALOG_POINT, PointTypes.CALCULATED_POINT};
-			List points = DaoFactory.getPointDao().getLitePointsByUOMID(PointUnits.CAP_CONTROL_WATTS_UOMIDS,  types);
+			Integer [] types = { PointTypes.ANALOG_POINT, PointTypes.CALCULATED_POINT};
+            List<LitePoint> points = DaoFactory.getPointDao().getLitePointsBy(types, PointUnits.CAP_CONTROL_WATTS_UOMIDS,null,null,null);            
 			JSFTreeUtils.createPAOTreeFromPointList (points, wattTreeData, JSFParamUtil.getYukonUser());
 		}	
 		return wattTreeData;
@@ -288,8 +287,8 @@ public class CapControlForm extends DBEditorForm {
 	public TreeNode getVoltTreeData() {
 		if (voltTreeData == null){
 			voltTreeData = new TreeNodeBase("root", "Volt Points", false);
-			int [] types = { PointTypes.ANALOG_POINT, PointTypes.CALCULATED_POINT};
-			List points = DaoFactory.getPointDao().getLitePointsByUOMID(PointUnits.CAP_CONTROL_VOLTS_UOMIDS,  types);
+			Integer [] types = { PointTypes.ANALOG_POINT, PointTypes.CALCULATED_POINT};
+            List<LitePoint> points = DaoFactory.getPointDao().getLitePointsBy(types, PointUnits.CAP_CONTROL_VOLTS_UOMIDS,null,null,null);                        
 			JSFTreeUtils.createPAOTreeFromPointList (points, voltTreeData, JSFParamUtil.getYukonUser());
 		}	
 		return voltTreeData;
@@ -358,15 +357,13 @@ public class CapControlForm extends DBEditorForm {
 					"paos", lPaos[i].getPaoName(), String.valueOf(lPaos[i]
 							.getYukonID()), false);
 
-			LitePoint[] lPoints = DaoFactory.getPaoDao().getLitePointsForPAObject(lPaos[i]
-					.getYukonID());
-			for (int j = 0; j < lPoints.length; j++) {
-
+            List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(lPaos[i].getYukonID());
+            for (LitePoint point : points) {
 				// status points are only allowed in this list
-				if (lPoints[j].getPointType() == PointTypes.STATUS_POINT)
+				if (point.getPointType() == PointTypes.STATUS_POINT)
 					paoNodes[i].getChildren().add(
-							new TreeNodeBase("points", lPoints[j]
-									.getPointName(), String.valueOf(lPoints[j]
+							new TreeNodeBase("points", point
+									.getPointName(), String.valueOf(point
 									.getPointID()), true));
 			}
 
@@ -1961,8 +1958,9 @@ public class CapControlForm extends DBEditorForm {
     }
     
     public LitePoint[] getCapBankPointList() {
-        
-        return DaoFactory.getPaoDao().getLitePointsForPAObject(((YukonPAObject)getDbPersistent()).getPAObjectID().intValue());        
+        int paoId = ((YukonPAObject)getDbPersistent()).getPAObjectID();
+        List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(paoId);
+        return points.toArray(new LitePoint[points.size()]);
     }
     
     public void capBankPointClick (ActionEvent ae){

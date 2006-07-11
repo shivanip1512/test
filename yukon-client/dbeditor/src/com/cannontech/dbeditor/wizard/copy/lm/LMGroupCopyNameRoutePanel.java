@@ -4,12 +4,15 @@ package com.cannontech.dbeditor.wizard.copy.lm;
  * This type was created in VisualAge.
  */
 
+import java.util.List;
+
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.device.lm.IGroupRoute;
 import com.cannontech.database.data.device.lm.LMGroup;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.point.PointBase;
 import com.cannontech.yukon.IDatabaseCache;
 
 /*
@@ -352,12 +355,11 @@ public Object getValue(Object o)
 	com.cannontech.database.data.multi.MultiDBPersistent objectsToAdd = new com.cannontech.database.data.multi.MultiDBPersistent();
 	objectsToAdd.getDBPersistentVector().add(group);
 	
-	LitePoint[] litPts = DaoFactory.getPaoDao().getLitePointsForPAObject( previousGroupID );
-	int startingPointID = com.cannontech.database.db.point.Point.getNextPointID();
-	
-	for(int c = 0; c < litPts.length; c++)
-	{
-		com.cannontech.database.data.point.PointBase pointBase = (com.cannontech.database.data.point.PointBase) com.cannontech.database.data.lite.LiteFactory.createDBPersistent(litPts[c]);
+    List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(previousGroupID);
+	int newPointId = DaoFactory.getPointDao().getNextPointId();
+
+    for (LitePoint litePoint : points) {
+		PointBase pointBase = (PointBase) com.cannontech.database.data.lite.LiteFactory.createDBPersistent(litePoint);
 		try
 		{
 			com.cannontech.database.Transaction t =
@@ -368,7 +370,7 @@ public Object getValue(Object o)
 		{
 			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
-		pointBase.setPointID(new Integer(startingPointID + c));
+		pointBase.setPointID(newPointId++);
 		pointBase.getPoint().setPaoID(group.getPAObjectID());
 		objectsToAdd.getDBPersistentVector().add(pointBase);
 	}	

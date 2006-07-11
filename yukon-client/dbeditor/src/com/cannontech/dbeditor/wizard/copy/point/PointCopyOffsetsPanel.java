@@ -1,11 +1,14 @@
 package com.cannontech.dbeditor.wizard.copy.point;
 
+import java.util.List;
+
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.AccumulatorPoint;
 import com.cannontech.database.data.point.AnalogPoint;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.StatusPoint;
-import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * This type was created in VisualAge.
@@ -644,27 +647,13 @@ public void setCopyValue(Object val, int newDeviceID)
 		
 	getUsedPointOffsetLabel().setText("");
 	usedPointOffsetsVector = new java.util.Vector();
-	
-	IDatabaseCache cache =
-		com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-	synchronized (cache)
-{
-		java.util.List points = cache.getAllPoints();
-		java.util.Collections.sort(points, com.cannontech.database.data.lite.LiteComparators.litePointDeviceIDComparator);
-		com.cannontech.database.data.lite.LitePoint litePoint = null;
-		for (int i = 0; i < points.size(); i++)
-		{
-			litePoint = ((com.cannontech.database.data.lite.LitePoint) points.get(i));
-			if (newDeviceID == litePoint.getPaobjectID() && PointTypes.getType(thePoint.getPoint().getPointType()) == litePoint.getPointType())
-			{
-				usedPointOffsetsVector.addElement(litePoint);
-			}
-			else if (litePoint.getPaobjectID() > newDeviceID)
-			{
-				break;
-			}
-		}
-	}
+
+    List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(newDeviceID);
+    for (LitePoint point : points) {
+        if(point.getPointType() == PointTypes.getType(thePoint.getPoint().getPointType())) {
+            usedPointOffsetsVector.add(point);
+        }
+    }		
 
 	getPointOffsetSpinner().setValue(thePoint.getPoint().getPointOffset());
 	if (usedPointOffsetsVector.size() > 0)

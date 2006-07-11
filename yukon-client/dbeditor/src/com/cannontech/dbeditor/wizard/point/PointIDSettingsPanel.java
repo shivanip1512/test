@@ -1,5 +1,7 @@
 package com.cannontech.dbeditor.wizard.point;
 
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**
@@ -11,7 +13,6 @@ public class PointIDSettingsPanel extends com.cannontech.common.gui.util.DataInp
 	private javax.swing.JLabel ivjDeviceLabel = null;
 	private javax.swing.JLabel ivjNameLabel = null;
 	private javax.swing.JTextField ivjNameTextField = null;
-	private java.util.Vector usedPointIDs = null;
 	private javax.swing.JLabel ivjPointIDLabel = null;
 	private com.klg.jclass.field.JCSpinField ivjPointIDSpinner = null;
 	private javax.swing.JLabel ivjUsedPointIDLabel = null;
@@ -92,43 +93,11 @@ private void connEtoC4(java.awt.event.ItemEvent arg1) {
 public void deviceComboBox_ItemStateChanged(java.awt.event.ItemEvent itemEvent) {
 
 	getUsedPointIDLabel().setText("");
-	usedPointIDs.removeAllElements();
-
-	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-
-	synchronized(cache)
-	{
-		java.util.List devicePoints = cache.getAllPoints();
-		for (int i=0; i<devicePoints.size(); i++)
-		{
-			usedPointIDs.addElement(new Integer(((com.cannontech.database.data.lite.LitePoint)devicePoints.get(i)).getPointID()));
-		}
-
-		getPointIDSpinner().setValue(new Integer(1));
-		if (usedPointIDs.size() > 0)
-		{
-			for (int i=0; i<usedPointIDs.size(); i++)
-			{
-				Object PointIDSpinVal = getPointIDSpinner().getValue();
-				if( PointIDSpinVal instanceof Long )
-				{
-					if( ((Long)PointIDSpinVal).intValue() == ((Integer)usedPointIDs.elementAt(i)).intValue() )
-						getPointIDSpinner().setValue(new Integer(((Long)PointIDSpinVal).intValue() + 1) );
-					else
-						break;
-				}
-				else if( PointIDSpinVal instanceof Integer )
-				{
-					if( ((Integer)PointIDSpinVal).intValue() == ((Integer)usedPointIDs.elementAt(i)).intValue() )
-						getPointIDSpinner().setValue(new Integer(((Integer)PointIDSpinVal).intValue() + 1) );
-					else
-						break;
-				}
-			}
-		}
-		revalidate();
-		repaint();
-	}
+    int nextPointId = DaoFactory.getPointDao().getMaxPointID()+1;
+    getPointIDSpinner().setValue(new Integer(nextPointId + 1) );
+  
+    revalidate();
+	repaint();
 }
 /**
  * Return the JComboBox1 property value.
@@ -479,35 +448,22 @@ public void nameTextField_CaretUpdate(javax.swing.event.CaretEvent caretEvent) {
  * Comment
  */
 public void PointIDSpinner_ValueChanged(com.klg.jclass.util.value.JCValueEvent arg1) {
-	if(usedPointIDs != null)
-	{
-		getUsedPointIDLabel().setText("");
-		if (usedPointIDs.size() > 0)
-		{
-			for (int i=0; i<usedPointIDs.size(); i++)
-			{
-				Object PointIDSpinVal = getPointIDSpinner().getValue();
-				if( PointIDSpinVal instanceof Long )
-				{
-					if( ((Long)PointIDSpinVal).intValue() == ((Integer)usedPointIDs.elementAt(i)).intValue() )
-					{
-						getUsedPointIDLabel().setText("ID Already Assigned");
-						break;
-					}
-				}
-				else if( PointIDSpinVal instanceof Integer )
-				{
-					if( ((Integer)PointIDSpinVal).intValue() == ((Integer)usedPointIDs.elementAt(i)).intValue() )
-					{
-						getUsedPointIDLabel().setText("ID Already Assigned");
-						break;
-					}
-				}
-			}
-		}
-		revalidate();
-		repaint();
-	}
+    Object pointIdVal = getPointIDSpinner().getValue();
+    int pointId = -1;
+    if(pointIdVal instanceof Long) {
+        pointId = ((Long)pointIdVal).intValue();
+    }        
+    else if(pointIdVal instanceof Integer) {
+        pointId = (Integer) pointIdVal;
+    }
+
+    LitePoint lp = DaoFactory.getPointDao().getLitePoint(pointId);
+    if(lp != null) {
+        getUsedPointIDLabel().setText("ID Already Assigned");
+    }
+
+	revalidate();
+	repaint();
 	fireInputUpdate();
 	return;
 }
@@ -531,8 +487,6 @@ public void setValueCore(Object val, Integer initialPAOId )
 		java.util.List devices = cache.getAllDevices();
 		java.util.Collections.sort( devices, com.cannontech.database.data.lite.LiteComparators.liteStringComparator );
 		
-		java.util.List points = cache.getAllPoints();
-		
 		if( getDeviceComboBox().getModel().getSize() > 0 )
 			getDeviceComboBox().removeAllItems();
 
@@ -550,15 +504,10 @@ public void setValueCore(Object val, Integer initialPAOId )
 			}
 
 		getUsedPointIDLabel().setText("");
-		usedPointIDs = new java.util.Vector();
-
-		for (int i=0; i<points.size(); i++)
-		{
-			usedPointIDs.addElement(new Integer(((com.cannontech.database.data.lite.LitePoint)points.get(i)).getPointID()));
-		}
 	}
 
-	getPointIDSpinner().setValue( com.cannontech.database.db.point.Point.getNextCachedPointID() );
+    int nextId = DaoFactory.getPointDao().getNextPointId();
+	getPointIDSpinner().setValue(nextId);
 }
 /**
  * Insert the method's description here.
@@ -572,7 +521,6 @@ public void setValueLM(Object val, Integer initialPAOId)
 	synchronized(cache)
 	{
 		java.util.List devices = cache.getAllLoadManagement();
-		java.util.List points = cache.getAllPoints();
 		java.util.Collections.sort( devices, com.cannontech.database.data.lite.LiteComparators.liteStringComparator );
 		
 		if( getDeviceComboBox().getModel().getSize() > 0 )
@@ -592,17 +540,10 @@ public void setValueLM(Object val, Integer initialPAOId)
 	
 			}
 		}
-
-		getUsedPointIDLabel().setText("");
-		usedPointIDs = new java.util.Vector();
-
-		for (int i=0; i<points.size(); i++)
-		{
-			usedPointIDs.addElement(new Integer(((com.cannontech.database.data.lite.LitePoint)points.get(i)).getPointID()));
-		}
 	}
 
-	getPointIDSpinner().setValue( com.cannontech.database.db.point.Point.getNextCachedPointID() );
+    int nextId = DaoFactory.getPointDao().getNextPointId();
+	getPointIDSpinner().setValue(nextId);
 }
 
 public void setFirstFocus() 

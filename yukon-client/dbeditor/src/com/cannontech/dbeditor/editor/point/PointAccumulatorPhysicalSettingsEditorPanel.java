@@ -1,6 +1,5 @@
 package com.cannontech.dbeditor.editor.point;
 
-import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * This type was created in VisualAge.
@@ -11,7 +10,6 @@ public class PointAccumulatorPhysicalSettingsEditorPanel extends com.cannontech.
 	private javax.swing.JLabel ivjPointOffsetLabel = null;
 	private com.klg.jclass.field.JCSpinField ivjPointOffsetSpinner = null;
 	private javax.swing.JCheckBox ivjPhysicalPointOffsetCheckBox = null;
-	private java.util.Vector usedPointOffsetsVector = null;
 	private javax.swing.JLabel ivjUsedPointOffsetLabel = null;
 	private javax.swing.JLabel ivjDataOffsetLabel = null;
 	private javax.swing.JTextField ivjDataOffsetTextField = null;
@@ -603,7 +601,7 @@ public void setValue(Object val) {
 	com.cannontech.database.data.point.AccumulatorPoint point = (com.cannontech.database.data.point.AccumulatorPoint) val;
 
 	getUsedPointOffsetLabel().setText("");
-	usedPointOffsetsVector = new java.util.Vector();
+//	usedPointOffsetsVector = new java.util.Vector();
 	Integer pointOffset = point.getPoint().getPointOffset();
 
 	if( pointOffset != null )
@@ -616,7 +614,7 @@ public void setValue(Object val) {
 		getPhysicalPointOffsetCheckBox().setSelected(false);
 		getPointOffsetSpinner().setValue( new Integer(0) );
 	}
-
+/*
 	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized(cache)
 	{
@@ -640,7 +638,7 @@ public void setValue(Object val) {
 			}
 		}
 	}
-	
+*/	
 	if ( point.getPointAccumulator().getMultiplier() != null )
 		getMultiplierTextField().setText( point.getPointAccumulator().getMultiplier().toString() );
 	if ( point.getPointAccumulator().getDataOffset() != null )

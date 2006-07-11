@@ -2,11 +2,9 @@ package com.cannontech.esub.util;
 
 import java.text.DecimalFormat;
 import java.util.Iterator;
-import java.util.Map;
 
 import com.cannontech.common.cache.PointChangeCache;
 import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LitePointLimit;
 import com.cannontech.database.data.lite.LitePointUnit;
@@ -132,22 +130,15 @@ public class UpdateUtil {
 		}
 		
 		if( (displayAttrib & PointAttributes.MULTIPLIER) != 0 ) {
-			Map multMap = DefaultDatabaseCache.getInstance().getAllPointidMultiplierHashMap();
-			Double mult = (Double) multMap.get( new Integer(pointID) );
-			
-			if( mult != null ) {
-				text += mult.toString();
-				prev = true;
-			}
+            double mult = DaoFactory.getPointDao().getPointMultiplier(pointID);
+            text += Double.toString(mult);
+            prev = true;
 		}
 		
 		if( (displayAttrib & PointAttributes.DATA_OFFSET) != 0 ) {
-			Map offsetMap = DefaultDatabaseCache.getInstance().getAllPointIDOffsetMap();
-			Integer offset = (Integer) offsetMap.get(new Integer(pointID));
-			if(offset != null) {
-				text += offset.toString();
-				prev = true;
-			}
+            int offset = DaoFactory.getPointDao().getPointOffset(pointID);
+            text += Integer.toString(offset);
+            prev = true;
 		}
 		
 		if( (displayAttrib & PointAttributes.ALARM_TEXT) != 0 ) {

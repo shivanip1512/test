@@ -1,6 +1,8 @@
 package com.cannontech.datagenerator.point;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteComparators;
@@ -10,7 +12,6 @@ import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUnits;
-import com.cannontech.database.db.point.Point;
 import com.cannontech.yukon.IDatabaseCache;
 /**
  * @author snebben
@@ -67,7 +68,7 @@ public class MCT410AllPointCreate extends PointCreate
 	
 		double multiplier = 0.1;
 		int addCount = 0;
-		int pointID = Point.getNextPointID();
+		int pointID = DaoFactory.getPointDao().getNextPointId();
 		for( int i = 0; i < devicesVector.size(); i++)
 		{
 			LiteYukonPAObject litePaobject = (LiteYukonPAObject)devicesVector.get(i);
@@ -326,8 +327,7 @@ public class MCT410AllPointCreate extends PointCreate
 		{
 			java.util.List mcts = cache.getAllMCTs();
 			java.util.Collections.sort(mcts, LiteComparators.liteYukonPAObjectIDComparator);
-			java.util.List points = cache.getAllPoints();
-			java.util.Collections.sort(points, LiteComparators.litePointDeviceIDComparator);
+            PointDao pointDao = DaoFactory.getPointDao();
 
 			createPointHashtable = new java.util.Hashtable(mcts.size());
 			
@@ -341,11 +341,9 @@ public class MCT410AllPointCreate extends PointCreate
 					CreatePointList item = new CreatePointList();
 					createPointHashtable.put(new Integer(paobjectID), item);
 					
-					//makes a list of points devices to add control history points to
-					if( addPointToDevice( points, paobjectID ))
-					{
-						deviceVector.addElement(litePaobject);
-					}
+                    if(pointDao.getLitePointsByPaObjectId(paobjectID).size() == 0) {
+                        deviceVector.addElement(litePaobject);
+                    }
 				}
 			}
 			CTILogger.info(deviceVector.size() + " Total Devices needing points added.");

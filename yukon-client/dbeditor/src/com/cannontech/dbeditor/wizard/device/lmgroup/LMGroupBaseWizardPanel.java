@@ -5,10 +5,10 @@ import javax.swing.SwingUtilities;
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.device.lm.IGroupRoute;
 import com.cannontech.database.data.device.lm.LMGroup;
 import com.cannontech.database.data.device.lm.MacroGroup;
+import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.yukon.IDatabaseCache;
@@ -297,18 +297,17 @@ private com.cannontech.database.data.multi.SmartMultiDBPersistent createExtraObj
  * Creation date: (11/18/2001 3:41:52 PM)
  * @return com.cannontech.database.data.multi.SmartMultiDBPersistent
 */
-private void createExtraObjects( com.cannontech.database.data.multi.SmartMultiDBPersistent smartDB )
+private void createExtraObjects( LMGroup lmGroup, SmartMultiDBPersistent smartDB )
 {
 	if( smartDB != null )
 	{
-        PaoDao paoDao = DaoFactory.getPaoDao();
-		Integer paoID = paoDao.getNextPaoId();
+		Integer paoID = lmGroup.getPAObjectID();
 		
 		//create and add the points here
 		com.cannontech.database.data.point.PointBase historyPoint =
 			com.cannontech.database.data.point.PointFactory.createPoint(com.cannontech.database.data.point.PointTypes.STATUS_POINT);
 
-		int[] ids = com.cannontech.database.db.point.Point.getNextPointIDs(6);
+		int[] ids = DaoFactory.getPointDao().getNextPointIds(6);
 		
 		//set default for point tables
 		historyPoint = PointFactory.createNewPoint(
@@ -1024,7 +1023,10 @@ public Object getValue(Object val)
 		smartDB.addDBPersistent( lmGroup );
 		smartDB.setOwnerDBPersistent( lmGroup );
 			
-		createExtraObjects( smartDB );
+        int groupId = DaoFactory.getPaoDao().getNextPaoId();
+        lmGroup.setDeviceID(groupId);
+        
+		createExtraObjects( lmGroup, smartDB );
 
 		return smartDB;
 	}

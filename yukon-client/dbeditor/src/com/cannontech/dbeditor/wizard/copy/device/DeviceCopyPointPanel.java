@@ -1,6 +1,10 @@
 package com.cannontech.dbeditor.wizard.copy.device;
 
-import com.cannontech.yukon.IDatabaseCache;
+import java.util.List;
+
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PointDao;
+import com.cannontech.database.data.lite.LitePoint;
 
 /**
  * This type was created in VisualAge.
@@ -8,7 +12,6 @@ import com.cannontech.yukon.IDatabaseCache;
 
 public class DeviceCopyPointPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.klg.jclass.util.value.JCValueListener, java.awt.event.KeyListener{
 	private int numberOfDevicePoints = 0;
-	private java.util.Vector usedPointNumbers = null;
 	private java.util.Vector devicePoints = null;
 	private javax.swing.JLabel ivjEndingPointNumberField = null;
 	private javax.swing.JLabel ivjEndingPointNumberLabel = null;
@@ -368,50 +371,33 @@ public void nameTextField_CaretUpdate(javax.swing.event.CaretEvent caretEvent) {
  */
 public void pointNumberSpinner_ValueChanged(com.klg.jclass.util.value.JCValueEvent arg1) {
 	fireInputUpdate();
-	if(usedPointNumbers != null)
-	{
-		getUsedPointNumberLabel().setText("");
+    getUsedPointNumberLabel().setText("");
+    
+    Object startingPointNumberSpinVal = getStartingPointNumberSpinner().getValue();
+    Integer startingPointNumber = null;
+    if( startingPointNumberSpinVal instanceof Long )
+        startingPointNumber = new Integer( ((Long)startingPointNumberSpinVal).intValue() );
+    else if( startingPointNumberSpinVal instanceof Integer )
+        startingPointNumber = new Integer( ((Integer)startingPointNumberSpinVal).intValue() );
 
-		Object startingPointNumberSpinVal = getStartingPointNumberSpinner().getValue();
-		Integer startingPointNumber = null;
-		if( startingPointNumberSpinVal instanceof Long )
-			startingPointNumber = new Integer( ((Long)startingPointNumberSpinVal).intValue() );
-		else if( startingPointNumberSpinVal instanceof Integer )
-			startingPointNumber = new Integer( ((Integer)startingPointNumberSpinVal).intValue() );
-
-		Integer endingPointNumber = null;
-		if( startingPointNumber	!= null)
-			endingPointNumber = new Integer( startingPointNumber.intValue() + numberOfDevicePoints );
-		getEndingPointNumberField().setText( endingPointNumber.toString() );
-		
-		if (usedPointNumbers.size() > 0)
-		{
-			for (int i=0; i<usedPointNumbers.size(); i++)
-			{
-				if( startingPointNumberSpinVal instanceof Long )
-				{
-					if( (((Long)startingPointNumberSpinVal).intValue() <= ((Integer)usedPointNumbers.elementAt(i)).intValue()) &&
-							(endingPointNumber.intValue() >= ((Integer)usedPointNumbers.elementAt(i)).intValue()) )
-					{
-						getUsedPointNumberLabel().setText("IDs Already Assigned in Range");
-						break;
-					}
-				}
-				else if( startingPointNumberSpinVal instanceof Integer )
-				{
-					getEndingPointNumberField().setText( Integer.toString(numberOfDevicePoints + ((Integer)startingPointNumberSpinVal).intValue()) );
-					if( (((Integer)startingPointNumberSpinVal).intValue() <= ((Integer)usedPointNumbers.elementAt(i)).intValue()) &&
-							(endingPointNumber.intValue() >= ((Integer)usedPointNumbers.elementAt(i)).intValue()) )
-					{
-						getUsedPointNumberLabel().setText("IDs Already Assigned in Range");
-						break;
-					}
-				}
-			}
-		}
-		revalidate();
-		repaint();
-	}
+    Integer endingPointNumber = null;
+    if( startingPointNumber != null)
+        endingPointNumber = new Integer( startingPointNumber.intValue() + numberOfDevicePoints );
+    getEndingPointNumberField().setText( endingPointNumber.toString() );
+   		
+    Integer[] ids = new Integer[endingPointNumber-startingPointNumber];
+    for(int i = 0; i < ids.length; i++) {
+        ids[i] = startingPointNumber+i; 
+    }
+    
+    List<LitePoint> pointsInRange = DaoFactory.getPointDao().getLitePoints(ids);
+    if(pointsInRange.size() > 0) {
+        getUsedPointNumberLabel().setText("IDs Already Assigned in Range");
+    }
+    		
+	revalidate();
+	repaint();
+	
 	return;
 }
 /**
@@ -420,50 +406,13 @@ public void pointNumberSpinner_ValueChanged(com.klg.jclass.util.value.JCValueEve
  */
 public void setValue(Object val) {
 
-	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-	synchronized(cache)
-	{
-		java.util.List allPoints = cache.getAllPoints();
-
-		usedPointNumbers = new java.util.Vector();
-		devicePoints = new java.util.Vector();
-
-		int deviceDeviceID = ((com.cannontech.database.data.device.DeviceBase)val).getDevice().getDeviceID().intValue();
-		com.cannontech.database.data.point.PointBase pointBase = null;
-		com.cannontech.database.data.lite.LitePoint litePoint = null;
-
-		for(int i=0;i<allPoints.size();i++)
-		{
-			litePoint = (com.cannontech.database.data.lite.LitePoint)allPoints.get(i);
-			if( litePoint.getPaobjectID() == deviceDeviceID )
-			{
-				pointBase = (com.cannontech.database.data.point.PointBase)com.cannontech.database.data.lite.LiteFactory.createDBPersistent(litePoint);
-				try
-				{
-					com.cannontech.database.Transaction t = com.cannontech.database.Transaction.createTransaction(
-                        com.cannontech.database.Transaction.RETRIEVE, 
-                        pointBase);
-
-					pointBase = (com.cannontech.database.data.point.PointBase)t.execute();
-				}
-				catch(com.cannontech.database.TransactionException e)
-				{
-					com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-				}
-
-				devicePoints.addElement(pointBase);
-			}
-			usedPointNumbers.add( new Integer(litePoint.getPointID()) );
-		}
-		
-		numberOfDevicePoints = devicePoints.size();
-
-		java.util.Collections.sort( allPoints, com.cannontech.database.data.lite.LiteComparators.litePointIDComparator );
-		int startingPointID = ((com.cannontech.database.data.lite.LitePoint)allPoints.get( allPoints.size() - 1 )).getPointID();				
-
-		getStartingPointNumberSpinner().setValue( new Integer(startingPointID + 2) );
-	}
+    PointDao pointDao = DaoFactory.getPointDao();
+    int deviceId = ((com.cannontech.database.data.device.DeviceBase)val).getDevice().getDeviceID();
+    List<LitePoint> points = pointDao.getLitePointsByPaObjectId(deviceId);
+    numberOfDevicePoints = points.size();
+    getStartingPointNumberSpinner().setValue(new Integer(pointDao.getMaxPointID()+2));
 }
+
 /**
  * Method to handle events for the JCValueListener interface.
  * @param arg1 com.klg.jclass.util.value.JCValueEvent

@@ -8,6 +8,7 @@ package com.cannontech.yimp.util;
 
 import java.sql.Connection;
 import java.util.Date;
+import java.util.List;
 import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
@@ -21,7 +22,6 @@ import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.db.device.DeviceCarrierSettings;
-import com.cannontech.database.db.point.Point;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.yukon.IServerConnection;
 
@@ -178,49 +178,15 @@ public class DBFuncs
 		
 		return returnDeviceID;
 	}
-	public static int[] getNextPAObjectID(int numberOfImportEntries)
-	{
-		int retVal = 0;
-		int[] ids = new int[numberOfImportEntries];
-		
-		SqlStatement stmt = new SqlStatement("select max(paobjectid) AS maxid from yukonpaobject", "yukon");
-		
-		try
-		{		
-			stmt.execute();							
-
-			// Just one please
-			if( stmt.getRowCount() > 0 )
-			{
-				retVal = ((java.math.BigDecimal) stmt.getRow(0)[0]).intValue();	
-			}
-		}
-		catch(Exception e )
-		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-		}
-		
-		for(int j = 0; j < numberOfImportEntries; j++)
-		{
-			ids[j] = retVal + j;
-		}
-		
-		com.cannontech.clientutils.CTILogger.info("----- getNextYukonPAObjectIDs(yukonPAObjectsCnt) returning with " + numberOfImportEntries + " ids!");
-		
-		return ids;
-	}
-	
 	public static Vector getPointsForPAO( Integer paoID )
 	{
-		LitePoint[] points = DaoFactory.getPaoDao().getLitePointsForPAObject( paoID.intValue() );
-		
-		Vector daPoints = new Vector(points.length);
+        List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(paoID);
+
+		Vector daPoints = new Vector(points.size());
 		
 		PointBase pointBase = null;
-	
-		for (int i = 0; i < points.length; i++)
-		{
-			pointBase = (PointBase) LiteFactory.createDBPersistent(points[i]);
+		for (LitePoint point: points) {
+			pointBase = (PointBase) LiteFactory.createDBPersistent(point);
 			
 			try
 			{
@@ -237,11 +203,6 @@ public class DBFuncs
 			
 		return daPoints;
 	
-	}
-	
-	public final static int getNextPointID()
-	{
-		return Point.getNextPointID();
 	}
 	
 	public static boolean writeLastImportTime(Date lastImport)
@@ -387,32 +348,6 @@ public class DBFuncs
 		
 		dispatchConnection.write(chumpChange);
 				
-	}
-	
-	/*
-	 * Get the max paobjectid
-	 */
-	public static Integer getNextMCTID()
-	{
-		Integer maxID = new Integer(20000);
-	
-		SqlStatement stmt = new SqlStatement("SELECT MAX(PAOBJECTID) FROM YUKONPAOBJECT", "yukon");
-	
-		try
-		{
-			stmt.execute();
-			
-			if( stmt.getRowCount() > 0 )
-			{
-				maxID = new Integer( ((java.math.BigDecimal) stmt.getRow(0)[0]).intValue() + 1);	
-			}
-		}
-		catch( Exception e )
-		{
-			e.printStackTrace();
-		}
-	
-		return maxID;
 	}
 	
 	

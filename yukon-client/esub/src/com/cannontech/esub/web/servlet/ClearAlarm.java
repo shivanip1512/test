@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -72,9 +71,8 @@ public class ClearAlarm extends HttpServlet {
 	 * @param user
 	 */
 	private void ackDevice(int deviceId, Command cmd) {
-		LitePoint[] points = DaoFactory.getPaoDao().getLitePointsForPAObject(deviceId);
-		for (int i = 0; i < points.length; i++) {
-			LitePoint point = points[i];
+        List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(deviceId);
+        for (LitePoint point : points) {
 			ackPoint(point.getPointID(), cmd);	
 		}
 	}
