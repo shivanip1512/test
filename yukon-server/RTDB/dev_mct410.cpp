@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.71 $
-* DATE         :  $Date: 2006/07/06 20:12:40 $
+* REVISION     :  $Revision: 1.72 $
+* DATE         :  $Date: 2006/07/11 19:15:05 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -574,9 +574,6 @@ ULONG CtiDeviceMCT410::calcNextLPScanTime( void )
     {
         for( int i = 0; i < MCT4XX_LPChannels; i++ )
         {
-// ---
-//            demand_rate = getLoadProfile().getLoadProfileDemandRate();
-
             if( (i + 1) == MCT410_LPVoltageChannel )
             {
                 demand_rate = getLoadProfile().getVoltageProfileRate();
@@ -585,7 +582,6 @@ ULONG CtiDeviceMCT410::calcNextLPScanTime( void )
             {
                 demand_rate = getLoadProfile().getLoadProfileDemandRate();
             }
-// ---
 
             block_size  = demand_rate * 6;
 
@@ -715,9 +711,6 @@ INT CtiDeviceMCT410::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS
     {
         for( int i = 0; i < MCT4XX_LPChannels; i++ )
         {
-// ---
-//            demand_rate = getLoadProfile().getLoadProfileDemandRate();
-
             if( (i + 1) == MCT410_LPVoltageChannel )
             {
                 demand_rate = getLoadProfile().getVoltageProfileRate();
@@ -727,7 +720,6 @@ INT CtiDeviceMCT410::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS
                 demand_rate = getLoadProfile().getLoadProfileDemandRate();
             }
 
-// ---
             block_size  = demand_rate * 6;
 
             if( useScanFlags() )
@@ -3386,11 +3378,11 @@ INT CtiDeviceMCT410::decodeGetValueVoltage( INMESS *InMessage, CtiTime &TimeNow,
 
             if( InMessage->Sequence == Emetcon::GetValue_FrozenVoltage )
             {
-                resultString += getName() + " / Frozen Max Voltage = " + CtiNumStr(max_volt_info.value) + " @ " + maxTime.asString();
+                resultString += getName() + " / Frozen Max Voltage = " + CtiNumStr(max_volt_info.value) + " @ " + maxTime.asString() + "\n";
             }
             else
             {
-                resultString += getName() + " / Max Voltage = " + CtiNumStr(max_volt_info.value) + " @ " + maxTime.asString();
+                resultString += getName() + " / Max Voltage = " + CtiNumStr(max_volt_info.value) + " @ " + maxTime.asString() + "\n";
             }
         }
 
@@ -3414,11 +3406,11 @@ INT CtiDeviceMCT410::decodeGetValueVoltage( INMESS *InMessage, CtiTime &TimeNow,
 
             if( InMessage->Sequence == Emetcon::GetValue_FrozenVoltage )
             {
-                resultString += getName() + " / Frozen Min Voltage = " + CtiNumStr(min_volt_info.value) + " @ " + minTime.asString();
+                resultString += getName() + " / Frozen Min Voltage = " + CtiNumStr(min_volt_info.value) + " @ " + minTime.asString() + "\n";
             }
             else
             {
-                resultString += getName() + " / Min Voltage = " + CtiNumStr(min_volt_info.value) + " @ " + minTime.asString();
+                resultString += getName() + " / Min Voltage = " + CtiNumStr(min_volt_info.value) + " @ " + minTime.asString() + "\n";
             }
         }
 
