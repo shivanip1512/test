@@ -2,26 +2,11 @@ package com.cannontech.core.dao;
 
 import java.util.List;
 
-import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 public interface PaoDao {
-    /**
-     * This method was created in VisualAge.
-     * @return int[][]
-     */
-    // the format returned is :   
-    //			int[X][0] == id
-    //			int[X][1] == lite type
-    public int[][] getAllPointIDsAndTypesForPAObject(int deviceid);
-
-    /**
-     * This method was created in VisualAge.
-     * @return String
-     */
-    public LitePoint[] getLitePointsForPAObject(int paoID);
-
+    
     /**
      * This method was created in VisualAge.
      * @return String
@@ -36,6 +21,28 @@ public interface PaoDao {
      * @see com.cannontech.database.data.pao.DeviceTypes
      */
     public List<LiteYukonPAObject> getLiteYukonPAObjectByType(int paoType);
+    
+    /**
+     * Return a list of LiteYukonPAObject that satisified the given criteria.
+     * Unless it is null, each criteria (paoType,paoClass,etc) is AND'd with the other criteria.
+     * Within each criteria, OR logic is used.
+     * 
+     * Set a criteria to NULL and it won't be considered.
+     * 
+     * Example:
+     * Integer[] pointTypes = new Integer[] { PointTypes.ANALOG_POINT, PointTypes.STATUS_POINT };
+     * Integer[] uOfMIds = new Integer[] { 1 };
+     * List<LiteYukonPAObject> paos = paoDao.getLiteYukonPAObjectBy(null, null, null, pointTypes, uOfMIds);
+     * 
+     *  Returns LiteYukonPaObjects that have at least one analog or status point and at least one point with a unit of measure id of 1
+     * @param paoType
+     * @param paoCategory
+     * @param paoClass
+     * @param pointTypes
+     * @param uOfMId
+     * @return
+     */
+    public List<LiteYukonPAObject> getLiteYukonPAObjectBy(Integer[] paoType, Integer[] paoCategory, Integer[] paoClass, Integer[] pointTypes, Integer[] uOfMId);
     
     public List getAllCapControlSubBuses();
 
@@ -72,5 +79,6 @@ public interface PaoDao {
 
     public int countLiteYukonPaoByName(String name, boolean partialMatch);
     public List<LiteYukonPAObject> getLiteYukonPaoByName(String name, boolean partialMatch);
+    
     public  List getAllSubsForUser (LiteYukonUser user);
 }

@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.cannontech.common.cache.PointChangeCache;
 import com.cannontech.core.dao.AlarmDao;
-import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 
 /**
@@ -15,16 +15,8 @@ import com.cannontech.database.data.lite.LitePoint;
  */
 public final class AlarmDaoImpl implements AlarmDao {
     
-    private PaoDao paoDao;
+    private PointDao pointDao;
     private PointChangeCache pointChangeCache;
-    
-	public void setPointChangeCache(PointChangeCache pointChangeCache) {
-        this.pointChangeCache = pointChangeCache;
-    }
-
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
-    }
 
     /* (non-Javadoc)
      * @see com.cannontech.core.dao.AlarmDao#getSignalsForPoint(int)
@@ -50,10 +42,8 @@ public final class AlarmDaoImpl implements AlarmDao {
      */
 	public List getSignalsForPao(int paoId) {
 		List paoSignals = new ArrayList();
-		
-		LitePoint[] points = paoDao.getLitePointsForPAObject(paoId);
-		for (int i = 0; i < points.length; i++) {
-			LitePoint point = points[i];
+		List<LitePoint> points = pointDao.getLitePointsByPaObjectId(paoId);
+		for (LitePoint point : points) {
 			List signals = pointChangeCache.getSignals(point.getPointID());
 			paoSignals.addAll(signals);
 		}
@@ -68,9 +58,8 @@ public final class AlarmDaoImpl implements AlarmDao {
 		
 		for (int i = 0; i < paoIds.length; i++) {
 			int paoId = paoIds[i];
-			LitePoint[] points = paoDao.getLitePointsForPAObject(paoId);
-			for (int j = 0; j < points.length; j++) {
-				LitePoint point = points[j];
+            List<LitePoint> points = pointDao.getLitePointsByPaObjectId(paoId);
+			for (LitePoint point : points) {
 				List signals = pointChangeCache.getSignals(point.getPointID());
 				paoSignals.addAll(signals);
 			}
@@ -96,4 +85,12 @@ public final class AlarmDaoImpl implements AlarmDao {
 		}
 		return acSignals;
 	}
+    
+    public void setPointChangeCache(PointChangeCache pointChangeCache) {
+        this.pointChangeCache = pointChangeCache;
+    }
+
+    public void setPointDao(PointDao pointDao) {
+        this.pointDao = pointDao;
+    }
 }

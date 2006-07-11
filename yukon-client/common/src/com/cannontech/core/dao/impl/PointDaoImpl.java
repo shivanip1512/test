@@ -6,7 +6,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -15,130 +14,147 @@ import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.capcontrol.CapBank;
-import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LitePointLimit;
 import com.cannontech.database.data.lite.LitePointUnit;
 import com.cannontech.database.data.lite.LiteStateGroup;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.point.CapBankMonitorPointParams;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.db.capcontrol.CCMonitorBankList;
 import com.cannontech.database.db.point.RawPointHistory;
+import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**
- * Insert the type's description here.
- * Creation date: (3/26/2001 9:40:33 AM)
- * @author: 
+ * Implementation of PointDao
+ * Creation date: (7/01/2006 9:40:33 AM)
+ * @author: alauinger
  */
 public final class PointDaoImpl implements PointDao {
+
+    private static final String litePointSql = 
+        "SELECT P.POINTID, POINTNAME, POINTTYPE, PAOBJECTID, POINTOFFSET, STATEGROUPID, UM.FORMULA, UM.UOMID" +
+        " FROM " +         
+        "( POINT P LEFT OUTER JOIN POINTUNIT PU ON P.POINTID = PU.POINTID " +
+        "LEFT OUTER JOIN UNITMEASURE UM ON PU.UOMID = UM.UOMID )";
     
-    private PaoDao paoDao;
-    private IDatabaseCache databaseCache;
-    private JdbcOperations jdbcOps;
+    private static final String litePointPaoSql = 
+        "SELECT P.POINTID, POINTNAME, POINTTYPE, PAOBJECTID, POINTOFFSET, STATEGROUPID, UM.FORMULA, UM.UOMID" +
+        " FROM " +    
+        "( POINT P LEFT OUTER JOIN POINTUNIT PU ON P.POINTID = PU.POINTID " +
+        "LEFT OUTER JOIN UNITMEASURE UM ON PU.UOMID = UM.UOMID " +
+        "LEFT OUTER JOIN YUKONPAOBJECT YPO ON P.PAOBJECTID=YPO.PAOBJECTID )";
+
     
-/**
- * PointFuncs constructor comment.
- */
-public PointDaoImpl() {
-	super();
-}
-/* (non-Javadoc)
- * @see com.cannontech.core.dao.PointDao#getLitePoint(int)
- */
-public LitePoint getLitePoint(int pointID) 
-{
-	synchronized( databaseCache )
-	{
-		return (LitePoint) 
-			databaseCache.getAllPointsMap().get( new Integer(pointID) );
-	}
-}
-
-/* (non-Javadoc)
- * @see com.cannontech.core.dao.PointDao#getMaxPointID()
- */
-public int getMaxPointID()
-{
-	synchronized( databaseCache )
-	{
-		java.util.List points = databaseCache.getAllPoints();
-		java.util.Collections.sort( points, com.cannontech.database.data.lite.LiteComparators.litePointIDComparator );
-
-		return ((LitePoint)points.get(points.size() - 1)).getPointID();
-	}
-
-}
-
-/* (non-Javadoc)
- * @see com.cannontech.core.dao.PointDao#getLitePointsByUOMID(int[], int[])
- */
-public List getLitePointsByUOMID(int[] uomIDs, int[] types) 
-{
-   java.util.ArrayList pointList = new java.util.ArrayList(32);
-   
-   synchronized( databaseCache ) {
-      java.util.List points = databaseCache.getAllPoints(); 
-      for( int i = 0; i < points.size(); i++ ) {      
-		LitePoint litePoint = (LitePoint)points.get(i);
-		for( int j = 0; j < uomIDs.length; j++ ) {
-            if( litePoint.getUofmID() == uomIDs[j] ) {
-            	for (int k=0; k < types.length; k ++) {
-            	   if (litePoint.getLiteType() == types[k]) {
-   						LiteYukonPAObject liteDevice = paoDao.getLiteYukonPAO(litePoint.getPaobjectID());
-   						if (DeviceClasses.isCoreDeviceClass(liteDevice.getPaoClass())) {
-   							pointList.add( litePoint );
-   							break;	
-   						}
-            	   }
-            	}   
-            }
-		}
-      }
-   }
-   Collections.sort(pointList, LiteComparators.liteStringComparator);
-   return pointList;
-}
-
-public List<LitePoint> getLitePointsByPaObjectId(int paObjectId) {
-    String sql = "SELECT P.POINTID, POINTNAME, POINTTYPE, PAOBJECTID, POINTOFFSET, STATEGROUPID, UM.FORMULA, UM.UOMID" +
-    " FROM ( POINT P LEFT OUTER JOIN POINTUNIT PU "+
-    " ON P.POINTID = PU.POINTID )  LEFT OUTER JOIN UNITMEASURE UM ON PU.UOMID = UM.UOMID "+
-    " WHERE PaObjectId = ? " +
-    " ORDER BY PAObjectID, POINTOFFSET ";
-    List<LitePoint> points = jdbcOps.query(sql, new Object[] { paObjectId }, new RowMapper() {
+    private static final RowMapper litePointRowMapper = new RowMapper() {
         public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
             return createLitePoint(rs);
         };
-    });
-    return points;
-}
+    };
+    
+    private IDatabaseCache databaseCache;
+    private JdbcOperations jdbcOps;
+    private NextValueHelper nextValueHelper;
+    
+    /* (non-Javadoc)
+     * @see com.cannontech.core.dao.PointDao#getLitePoint(int)
+     */
+    public LitePoint getLitePoint(int pointID) {
+        String sql = litePointSql + " WHERE P.POINTID = ?";
+        LitePoint p = (LitePoint) jdbcOps.queryForObject(sql, new Object[] { pointID }, PointDaoImpl.litePointRowMapper);
+        return p;
+    }
+    
+    public List<LitePoint> getLitePoints(Integer[] pointIds) {
+        StringBuilder sql = new StringBuilder(litePointSql);
+        SqlUtil.buildInClause("where", "p", "pointid", pointIds, sql);
+        List<LitePoint> points = 
+            jdbcOps.query(sql.toString(), PointDaoImpl.litePointRowMapper);
+        return points;
+    }
+    
+    /* (non-Javadoc)
+     * @see com.cannontech.core.dao.PointDao#getMaxPointID()
+     */
+    public int getMaxPointID() {
+        return jdbcOps.queryForInt("select max(pointid) from point");
+    }
+    
+    public int getNextPointId() {
+        return nextValueHelper.getNextValue("point");
+    }
+    
+    public int[] getNextPointIds(int count) {
+        int[] ids = new int[count];
+        for(int i = 0; i < count; i++) {
+            ids[i] = getNextPointId();
+        }
+        return ids;
+    }
 
+    /* (non-Javadoc)
+     * @see com.cannontech.core.dao.PointDao#getLitePointsByUOMID(int[], int[])
+     */
+    public List<LitePoint> getLitePointsBy(Integer[] pointTypes, Integer[] uomIDs, Integer[] paoTypes, Integer[] paoCategories, Integer[] paoClasses) {
+        StringBuilder sql = new StringBuilder(litePointPaoSql);
+    
+        String[] pointTypesStr = PointTypes.convertPointTypes(pointTypes);
+        SqlUtil.buildInClause("where", "p", "pointtype", pointTypesStr, sql);
+        SqlUtil.buildInClause("and", "pu", "uomid", uomIDs, sql);
+        SqlUtil.buildInClause("and", "ypo", "type", paoTypes, sql);
+        SqlUtil.buildInClause("and", "ypo", "cateogry", paoCategories, sql);
+        SqlUtil.buildInClause("and", "ypo", "paoclass", paoClasses, sql);
+        
+        List<LitePoint> points = 
+           jdbcOps.query(sql.toString(), PointDaoImpl.litePointRowMapper);
+       return points;
+    }
+    
+    public List<LitePoint> getLitePointsByNumStates(int numberOfStates) {
+        String sql = litePointSql + 
+            " P.STATEGROUPID IN (select stategroupid from state group by stategroupid having count(rawstate)=?) ";
+        
+        List<LitePoint> points = 
+            jdbcOps.query(sql, new Object[] { numberOfStates }, PointDaoImpl.litePointRowMapper);
+        return points;
+    }
+
+    public List<LitePoint> getLitePointsByPaObjectId(int paObjectId) {
+        String sql = litePointSql +
+        " WHERE PaObjectId = ? ";
+        List<LitePoint> points = 
+            jdbcOps.query(sql, new Object[] { paObjectId }, PointDaoImpl.litePointRowMapper);
+        return points;
+    }
+
+    /* (non-Javadoc)
+     * @see com.cannontech.core.dao.PaoDao#getAllPointIDsAndTypesForPAObject(int)
+     */
+    // the format returned is :   
+    //          int[X][0] == id
+    //          int[X][1] == lite type
+    public int[][] getAllPointIDsAndTypesForPAObject( int deviceid ) {        
+        List<LitePoint> points = getLitePointsByPaObjectId(deviceid);
+        int[][] idAndTypes = new int[points.size()][2];
+        for(int i = 0; i < points.size(); i++) {
+            idAndTypes[i][0] = ((LitePoint)points.get(i)).getPointID();
+            idAndTypes[i][1] = ((LitePoint)points.get(i)).getPointType();
+        }
+        return idAndTypes;
+    }
+    
 	/* (non-Javadoc)
      * @see com.cannontech.core.dao.PointDao#getPointName(int)
      */
-	public String getPointName(int id) 
-	{
-		synchronized(databaseCache) 
-		{
-			LitePoint lp =
-				(LitePoint)databaseCache.getAllPointsMap().get( new Integer(id) );
-				
-			if( lp != null )
-				return lp.getPointName();
-			else
-				return null;
-		}
+	public String getPointName(int pointId) {
+        LitePoint p = getLitePoint(pointId);
+        return p.getPointName();
 	}
 
-	
 	/* (non-Javadoc)
      * @see com.cannontech.core.dao.PointDao#getPointLimit(int)
      */
@@ -175,8 +191,7 @@ public List<LitePoint> getLitePointsByPaObjectId(int paObjectId) {
 	/* (non-Javadoc)
      * @see com.cannontech.core.dao.PointDao#getStateGroup(int)
      */
-	public LiteStateGroup getStateGroup( int stateGroupID ) 
-	{
+	public LiteStateGroup getStateGroup( int stateGroupID ) {
 		return (LiteStateGroup)
 			databaseCache.getAllStateGroupMap().get( new Integer(stateGroupID) );
 	}
@@ -184,12 +199,9 @@ public List<LitePoint> getLitePointsByPaObjectId(int paObjectId) {
 	/* (non-Javadoc)
      * @see com.cannontech.core.dao.PointDao#getPointIDByDeviceID_Offset_PointType(int, int, int)
      */
-	public int getPointIDByDeviceID_Offset_PointType(int deviceID, int pointOffset, int pointType)
-	{
-		LitePoint [] litePoints = paoDao.getLitePointsForPAObject(deviceID);
-		for (int i = 0; i < litePoints.length; i++)
-		{
-			LitePoint lp = litePoints[i];
+	public int getPointIDByDeviceID_Offset_PointType(int deviceID, int pointOffset, int pointType) {
+        List<LitePoint> litePoints = getLitePointsByPaObjectId(deviceID);
+		for (LitePoint lp : litePoints) {
 			if( lp.getPointOffset() == pointOffset && pointType == lp.getPointType())
 				return lp.getPointID();
 		}
@@ -276,15 +288,15 @@ public List<LitePoint> getLitePointsByPaObjectId(int paObjectId) {
         this.databaseCache = databaseCache;
     }
     
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
-    }
-    
     public void setJdbcOps(JdbcOperations jdbcOps) {
         this.jdbcOps = jdbcOps;
     }
     
-    private LitePoint createLitePoint(ResultSet rset) throws SQLException {
+    public void setNextValueHelper(NextValueHelper nextValueHelper) {
+        this.nextValueHelper = nextValueHelper;
+    }
+    
+    private static LitePoint createLitePoint(ResultSet rset) throws SQLException {
         int pointID = rset.getInt(1);
         String pointName = rset.getString(2).trim();
         String pointType = rset.getString(3).trim();
@@ -306,5 +318,15 @@ public List<LitePoint> getLitePointsByPaObjectId(int paObjectId) {
             new LitePoint( pointID, pointName, com.cannontech.database.data.point.PointTypes.getType(pointType),
                                                                                     paobjectID, pointOffset, stateGroupID, tags, uofmID );
         return lp;
+    }
+    
+    public int getPointOffset(int pointId) {
+        String sql = "select dataoffset from pointanalog where pointid=?";
+        return (Integer)jdbcOps.queryForObject(sql, Integer.class);
+    }
+    
+    public double getPointMultiplier(int pointId) {
+        String sql = "select multiplier from pointanalog where pointid=?";
+        return (Double)jdbcOps.queryForObject(sql, Double.class);
     }
 }

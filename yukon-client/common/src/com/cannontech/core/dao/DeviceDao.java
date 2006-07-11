@@ -6,17 +6,7 @@ import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 
 public interface DeviceDao {
-    
-    /**
-     * Insert the method's description here.
-     * Creation date: (3/26/2001 9:41:59 AM)
-     * @return com.cannontech.database.data.lite.LitePoint
-     * @param pointID int
-     */
-    /* This method returns a HashTable that has a LiteDevice as the key and */
-    /*   an ArrayList of LitePoints as its values */
-    public java.util.Hashtable getAllLiteDevicesWithPoints();
-
+        
     /**
      * Insert the method's description here.
      * Creation date: (3/26/2001 9:41:59 AM)

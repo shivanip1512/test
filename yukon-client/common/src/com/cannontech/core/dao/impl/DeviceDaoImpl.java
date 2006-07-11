@@ -28,53 +28,6 @@ public final class DeviceDaoImpl implements DeviceDao {
 public DeviceDaoImpl() {
 	super();
 }
-/**
- * @deprecated
- * @see com.cannontech.core.dao.DeviceDao#getAllLiteDevicesWithPoints()
- */
-/* This method returns a HashTable that has a LiteDevice as the key and */
-/*   an ArrayList of LitePoints as its values */
-public java.util.Hashtable getAllLiteDevicesWithPoints() 
-{
-	java.util.Hashtable deviceTable = new java.util.Hashtable( 128 );
-
-	synchronized (databaseCache)
-	{
-		java.util.List points = databaseCache.getAllPoints();
-		java.util.Collections.sort(points, com.cannontech.database.data.lite.LiteComparators.liteStringComparator);
-
-		com.cannontech.database.data.lite.LitePoint litePoint = null;
-		LiteYukonPAObject liteDevice = null;
-
-		for (int i = 0; i < points.size(); i++)
-		{
-			litePoint = (com.cannontech.database.data.lite.LitePoint) points.get(i);
-			liteDevice = paoDao.getLiteYukonPAO( litePoint.getPaobjectID() );
-			
-			if(litePoint.getPaobjectID() == 0)
-				continue;
-			
-			if( liteDevice.getCategory() == com.cannontech.database.data.pao.PAOGroups.CAT_DEVICE )
-			{				
-				java.util.ArrayList tmpPtLst= (java.util.ArrayList)deviceTable.get( liteDevice );
-				
-				if( tmpPtLst == null ) //not added yet
-				{
-					java.util.ArrayList pointList = new java.util.ArrayList();
-					deviceTable.put( liteDevice, pointList );
-				}
-				else				 
-				{
-					//all ready added the device, just add the point
-					tmpPtLst.add( litePoint );
-				}
-			}
-		}
-
-	}
-
-	return deviceTable;
-}
 /* (non-Javadoc)
  * @see com.cannontech.core.dao.DeviceDao#getLiteDevice(int)
  */

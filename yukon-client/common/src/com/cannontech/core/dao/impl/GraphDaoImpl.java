@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.GraphDao;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LiteGraphDefinition;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -48,23 +50,16 @@ public final class GraphDaoImpl implements GraphDao {
 		GraphDataSeries[] allSeries = GraphDataSeries.getAllGraphDataSeries(new Integer(gDefID));
 		java.util.List liteYukonPaobjectsVector = new java.util.Vector(allSeries.length);
 		
-		synchronized(databaseCache)
-		{
-			Iterator iter = databaseCache.getAllPoints().iterator();
-			while(iter.hasNext())
-			{
-				LitePoint litePoint = (LitePoint) iter.next();
-				for(int i = 0; i < allSeries.length; i++)
-				{
-					if( ((GraphDataSeries)allSeries[i]).getPointID().intValue() == litePoint.getLiteID())
-					{
-						LiteYukonPAObject litePaobject = paoDao.getLiteYukonPAO(litePoint.getPaobjectID());
-						if (! liteYukonPaobjectsVector.contains(litePaobject))
-							liteYukonPaobjectsVector.add(litePaobject);
-					}
-				}
-			}
-		}
+        PointDao pointDao = DaoFactory.getPointDao();
+        PaoDao paoDao = DaoFactory.getPaoDao();
+        
+        for (int i = 0; i < allSeries.length; i++) {
+            int pointId = allSeries[i].getPointID();
+            LitePoint point = pointDao.getLitePoint(pointId);
+            LiteYukonPAObject pao = paoDao.getLiteYukonPAO(point.getPaobjectID());
+            liteYukonPaobjectsVector.add(pao);
+        }
+
 		return liteYukonPaobjectsVector;
 	}
 	

@@ -7,7 +7,7 @@
   	<property name="databaseCache" ref="databaseCache"/>
   </bean>
   <bean id="alarmDao" class="com.cannontech.core.dao.impl.AlarmDaoImpl" >
-  	<property name="paoDao" ref="paoDao"/>
+  	<property name="pointDao" ref="pointDao"/>
   	<property name="pointChangeCache" ref="pointChangeCache"/>
   </bean>  
   <bean id="authDao" class="com.cannontech.core.dao.impl.AuthDaoImpl" >
@@ -58,13 +58,15 @@
     <property name="databaseCache" ref="databaseCache"/>    
   </bean>  
   <bean id="paoDao" class="com.cannontech.core.dao.impl.PaoDaoImpl" >
+  	<property name="authDao" ref="authDao"/>
     <property name="jdbcOps" ref="jdbcTemplate"/> 
-    <property name="databaseCache" ref="databaseCache"/>    
+    <property name="databaseCache" ref="databaseCache"/>   
+    <property name="nextValueHelper" ref="nextValueHelper"/>
   </bean>
   <bean id="pointDao" class="com.cannontech.core.dao.impl.PointDaoImpl" >
-    <property name="paoDao" ref="paoDao"/>  
     <property name="databaseCache" ref="databaseCache"/>      
     <property name="jdbcOps" ref="jdbcTemplate"/>     
+    <property name="nextValueHelper" ref="nextValueHelper"/>
   </bean>
   <bean id="roleDao" class="com.cannontech.core.dao.impl.RoleDaoImpl" >
   	<property name="authDao" ref="authDao"/>
