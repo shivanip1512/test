@@ -55,7 +55,6 @@ import com.cannontech.yukon.server.cache.LMConstraintLoader;
 import com.cannontech.yukon.server.cache.LMPAOExclusionLoader;
 import com.cannontech.yukon.server.cache.LMScenarioProgramLoader;
 import com.cannontech.yukon.server.cache.PointLimitLoader;
-import com.cannontech.yukon.server.cache.PointUnitLoader;
 import com.cannontech.yukon.server.cache.SeasonScheduleLoader;
 import com.cannontech.yukon.server.cache.SettlementConfigLoader;
 import com.cannontech.yukon.server.cache.StateGroupLoader;
@@ -63,7 +62,6 @@ import com.cannontech.yukon.server.cache.SystemPointLoader;
 import com.cannontech.yukon.server.cache.TOUDayLoader;
 import com.cannontech.yukon.server.cache.TOUScheduleLoader;
 import com.cannontech.yukon.server.cache.TagLoader;
-import com.cannontech.yukon.server.cache.UnitMeasureLoader;
 import com.cannontech.yukon.server.cache.UserEnergyCompanyLoader;
 import com.cannontech.yukon.server.cache.UserPoaOwnerLoader;
 import com.cannontech.yukon.server.cache.YukonGroupLoader;
@@ -99,7 +97,6 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	private ArrayList allYukonPAObjects = null;
 	//private ArrayList allPoints = null;
     private ArrayList allSystemPoints = null;
-	private ArrayList allUnitMeasures = null;
 	private ArrayList allNotificationGroups = null;
 		
 	private ArrayList allAlarmCategories = null;
@@ -113,7 +110,6 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	private ArrayList allDMG_CollectionGroups = null;	//distinct DeviceMeterGroup.collectionGroup
 	private ArrayList allDMG_AlternateGroups = null;	//distinct DeviceMeterGroup.alternateGroup
 	private ArrayList allDMG_BillingGroups = null;	//distinct DeviceMeterGroup.billingGroup
-	private ArrayList allPointsUnits = null;
 	private ArrayList allPointLimits = null;
 	private ArrayList allYukonImages = null;
 	private ArrayList allCICustomers = null;
@@ -891,24 +887,6 @@ public synchronized java.util.Map getAllCustomersMap()
 }
 
 
-/**
- * Insert the method's description here.
- * Creation date: (3/14/00 3:19:19 PM)
- * @return java.util.Collection
- */
-public synchronized java.util.List getAllPointsUnits(){
-
-	if( allPointsUnits != null )
-		return allPointsUnits;
-	else
-	{
-		allPointsUnits = new ArrayList();
-		PointUnitLoader pointUnitLoader = new PointUnitLoader(allPointsUnits, databaseAlias);
-		pointUnitLoader.run();
-		return allPointsUnits;
-	}
-}
-
 public synchronized java.util.List getAllPointLimits() {
 	if( allPointLimits != null ) 
 		return allPointLimits;
@@ -1017,23 +995,6 @@ public synchronized java.util.Map getAllSettlementConfigsMap()
 	}
 }
 
-/**
- * Insert the method's description here.
- * Creation date: (3/14/00 3:19:19 PM)
- * @return java.util.Collection
- */
-public synchronized java.util.List getAllUnitMeasures(){
-
-	if( allUnitMeasures != null )
-		return allUnitMeasures;
-	else
-	{
-		allUnitMeasures = new ArrayList();
-		UnitMeasureLoader unitMeasureLoader = new UnitMeasureLoader(allUnitMeasures, databaseAlias);
-		unitMeasureLoader.run();
-		return allUnitMeasures;
-	}
-}
 // This cache is derive from the Device cache
 public synchronized java.util.List getAllUnusedCCDevices()
 {
@@ -1589,7 +1550,7 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg)
 	if( database == DBChangeMsg.CHANGE_POINT_DB )
 	{
 		allGraphTaggedPoints = null;
-		allPointsUnits = null;
+		//allPointsUnits = null;
 		//allPointidMultiplierHashMap = null;
 		//allPointIDOffsetHashMap = null;
 		allPointLimits = null;
@@ -2676,7 +2637,8 @@ private synchronized LiteBase handlePointChange( int changeType, int id )
 	switch(changeType)
 	{
 		case DBChangeMsg.CHANGE_TYPE_ADD:
-		
+		    // Return this so clients like the editor get a db change :(
+            lBase = DaoFactory.getPointDao().getLitePoint(id);
 			/*	lBase = (LiteBase)allPointsMap.get( new Integer(id) );				
 				if( lBase == null )
 				{
@@ -2690,6 +2652,7 @@ private synchronized LiteBase handlePointChange( int changeType, int id )
 				break;
 
 		case DBChangeMsg.CHANGE_TYPE_UPDATE:
+            lBase = DaoFactory.getPointDao().getLitePoint(id);
 		/*
 				LitePoint lp = (LitePoint)allPointsMap.get( new Integer(id) );				
 				lp.retrieve( databaseAlias );
@@ -3025,7 +2988,7 @@ public synchronized void releaseAllCache()
 //	allPoints = null;
     allSystemPoints = null;
 	allStateGroupMap = null;
-	allUnitMeasures = null;
+//	allUnitMeasures = null;
 	allNotificationGroups = null;
 	allContactNotifsMap = null;
     
@@ -3040,7 +3003,7 @@ public synchronized void releaseAllCache()
 	allDMG_CollectionGroups = null;
 	allDMG_AlternateGroups = null;
 	allDMG_BillingGroups = null;    
-	allPointsUnits = null;
+	//allPointsUnits = null;
 	allPointLimits = null;
 	allYukonImages = null;
 	allCICustomers = null;
@@ -3248,14 +3211,7 @@ public synchronized void releaseAllStateGroups()
 {
 	allStateGroupMap = null;
 }
-/**
- * Insert the method's description here.
- * Creation date: (3/14/00 3:22:47 PM)
- */
-public synchronized void releaseAllUnitMeasures(){
 
-	allUnitMeasures = null;
-}
 /**
  * Insert the method's description here.
  * Creation date: (3/14/00 3:22:47 PM)

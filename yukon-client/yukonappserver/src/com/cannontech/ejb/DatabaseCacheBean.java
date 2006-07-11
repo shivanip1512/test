@@ -308,16 +308,6 @@ public class DatabaseCacheBean implements IDatabaseCache
    }
 
    /**
-    * @ejb:interface-method
-    * tview-type="remote" 
-   **/
-   public synchronized java.util.List getAllPointsUnits()
-   {
-      return getCache().getAllPointsUnits();
-   }
-   
-	
-   /**
 	* @ejb:interface-method
 	* tview-type="remote"
    **/
@@ -363,24 +353,14 @@ public class DatabaseCacheBean implements IDatabaseCache
    
    /**
     * @ejb:interface-method
-    * tview-type="remote" 
-   **/
-   public synchronized java.util.List getAllUnitMeasures()
-   {
-      return getCache().getAllUnitMeasures();
-   }
-   
-   /**
-    * @ejb:interface-method
-    * tview-type="remote" 
+    * tview-type="remote"  
    **/
    public synchronized java.util.List getAllUnusedCCDevices()
    {
       return getCache().getAllUnusedCCDevices();
    }
    
-   
-
+  
    /**
     * @ejb:interface-method
     * tview-type="remote" 
@@ -663,15 +643,6 @@ public class DatabaseCacheBean implements IDatabaseCache
    public synchronized void releaseAllStateGroups()
    {   
       getCache().releaseAllStateGroups();
-   }
-
-   /**
-    * @ejb:interface-method
-    * tview-type="remote" 
-   **/
-   public synchronized void releaseAllUnitMeasures()
-   {   
-      getCache().releaseAllUnitMeasures();
    }
 
    /**
