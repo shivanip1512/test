@@ -1,10 +1,32 @@
+<%@ page pageEncoding="UTF-8" import="java.util.*"%>
+<%@ page import="org.ajaxanywhere.*"%>
 <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h" %>
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %>
 <%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x" %>
+<%@ taglib uri="http://ajaxanywhere.sourceforge.net" prefix="aa" %>
+<%
 
-
+    if (AAUtils.isAjaxRequest(request)){
+        AAUtils.addZonesToRefresh(request, "subSchedule");
+    }
+%>
+<f:verbatim>
+<script type="text/JavaScript" src="../../../JavaScript/aa.js"></script>
+<script>
+	ajaxAnywhere.getZonesToReload = function(url, submitButton) {
+		
+		if ( $("aazone.subSchedule") )
+			return "subSchedule";
+		
+	}
+	
+    ajaxAnywhere.formName = "editorForm";
+   	ajaxAnywhere.substituteFormSubmitFunction();
+   	ajaxAnywhere.substituteSubmitButtonsBehavior(true);
+</script>
+</f:verbatim>
 <f:subview id="subSchedSetup" rendered="#{capControlForm.visibleTabs['CBCSubstation']}" >
-
+<aa:zoneJSF id = "subSchedule">
     <f:subview id="paoSubBus" rendered="#{capControlForm.visibleTabs['CBCSubstation']}" >
 
     <h:panelGrid id="subBody" columns="1" styleClass="gridLayout" 
@@ -79,5 +101,5 @@
     </h:panelGrid>
 
     </f:subview>
-
+</aa:zoneJSF>
 </f:subview>
