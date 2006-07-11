@@ -1589,15 +1589,15 @@ public class YC extends Observable implements MessageListener
     
     private int getLogPointID( int pointType, int pointOffset)
     {
-        LitePoint[] litePoints = DaoFactory.getPaoDao().getLitePointsForPAObject(deviceID);
-        for (int i = 0; i < litePoints.length; i++)
-        {
-            LitePoint litePoint = litePoints[i];
-            if( litePoint.getPointType() == pointType && litePoint.getPointOffset() == pointOffset)
-                return litePoint.getPointID();
+        List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(deviceID);
+        for (LitePoint point : points) {
+            if(point.getPointType() == pointType && point.getPointOffset() == pointOffset) {
+                return point.getPointID();
+            }
         }
         return PointTypes.SYS_PID_SYSTEM;
     }
+    
     public String getLogUserName()
     {
         return logUserName;

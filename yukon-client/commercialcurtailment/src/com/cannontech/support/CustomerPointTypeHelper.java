@@ -1,6 +1,7 @@
 package com.cannontech.support;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -10,6 +11,7 @@ import com.cannontech.cc.dao.CustomerStubDao;
 import com.cannontech.cc.model.CICustomerPointData;
 import com.cannontech.cc.model.CICustomerStub;
 import com.cannontech.core.dao.DBPersistentDao;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
@@ -27,7 +29,6 @@ import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.db.customer.CICustomerPointType;
-import com.cannontech.database.db.point.Point;
 
 public class CustomerPointTypeHelper {
     private CustomerPointTypeLookup pointTypeLookup;
@@ -118,10 +119,8 @@ public class CustomerPointTypeHelper {
         int pointId = 0;
         boolean found = false;
         // see if point already exists
-        LitePoint[] litePointsForPAObject = 
-            paoDao.getLitePointsForPAObject(customerDevice.getLiteID());
-        for (int i = 0; i < litePointsForPAObject.length; i++) {
-            LitePoint point = litePointsForPAObject[i];
+        List<LitePoint> litePointsForPaObject = DaoFactory.getPointDao().getLitePointsByPaObjectId(customerDevice.getLiteID());
+        for (LitePoint point : litePointsForPaObject) {
             if (point.getPointName().equals(pointName)) {
                 pointId = point.getPointID();
                 found = true;
@@ -129,7 +128,7 @@ public class CustomerPointTypeHelper {
             }
         }
         if (!found) {
-            pointId = Point.getNextPointID();
+            pointId = DaoFactory.getPointDao().getNextPointId();
             PointBase point = PointFactory.createAnalogPoint(pointName, 
                                                              customerDevice.getYukonID(), 
                                                              pointId, 
