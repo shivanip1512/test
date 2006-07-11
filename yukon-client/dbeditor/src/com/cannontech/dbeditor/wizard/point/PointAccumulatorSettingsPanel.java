@@ -1,6 +1,9 @@
 package com.cannontech.dbeditor.wizard.point;
 
-import com.cannontech.yukon.IDatabaseCache;
+import java.util.List;
+
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.data.lite.LiteUnitMeasure;
 
 /**
  * This type was created in VisualAge.
@@ -290,16 +293,13 @@ private javax.swing.JComboBox getUnitOfMeasureComboBox() {
 			ivjUnitOfMeasureComboBox.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjUnitOfMeasureComboBox.setMaximumRowCount(6);
 			// user code begin {1}
-
+            
 			//Add units of measure to the Unit of Measure combo box
-			IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-			synchronized(cache)
-			{
-				java.util.List allUnitMeasures = cache.getAllUnitMeasures();
-				for(int i=0; i<allUnitMeasures.size(); i++)
-					getUnitOfMeasureComboBox().addItem( allUnitMeasures.get(i) );
-			}
-			
+            List<LiteUnitMeasure> unitMeasures = 
+                 DaoFactory.getUnitMeasureDao().getLiteUnitMeasures();
+            for (LiteUnitMeasure lum : unitMeasures) {
+                getUnitOfMeasureComboBox().addItem(lum);
+            }			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}

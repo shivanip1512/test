@@ -132,23 +132,15 @@ public class PointForm extends DBEditorForm
 	 *
 	 */
 	public SelectItem[] getUofMs() {		
-
 		if( uofms == null ) {
-
-			IDatabaseCache cache = DefaultDatabaseCache.getInstance();
-			synchronized(cache) {
-				List allUnitMeasures = cache.getAllUnitMeasures();
-				
-				uofms = new SelectItem[ allUnitMeasures.size() ];
-				for( int i=0; i<allUnitMeasures.size(); i++ ) {
-					
-					LiteUnitMeasure lu = (LiteUnitMeasure)allUnitMeasures.get(i);
-					uofms[i] = new SelectItem(  //value, label
-							new Integer(lu.getUomID()),
-							lu.getUnitMeasureName() );
-				}
-			}
-		}
+		    List<LiteUnitMeasure> unitMeasures = 
+		        DaoFactory.getUnitMeasureDao().getLiteUnitMeasures();
+            uofms = new SelectItem[unitMeasures.size()];
+            for (int i = 0; i < uofms.length; i++) {
+                LiteUnitMeasure lum = unitMeasures.get(i);
+                uofms[i] = new SelectItem(lum.getUomID(), lum.getUnitMeasureName());
+            }
+        }
 		
 		return uofms;
 	}

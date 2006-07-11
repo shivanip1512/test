@@ -1,7 +1,10 @@
 package com.cannontech.dbeditor.wizard.point;
 
+import java.util.List;
+
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.data.lite.LiteUnitMeasure;
 import com.cannontech.database.data.point.CalcStatusPoint;
-import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * This type was created in VisualAge.
@@ -225,12 +228,10 @@ public Object getValue(Object val) {
 		//point.getPoint().setPseudoFlag(new Character('P'));
 		point.getPoint().setPointOffset(new Integer(0));
 
-		IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-		synchronized(cache)
-		{
-			java.util.List unitMeasures = cache.getAllUnitMeasures();
-			point.getPointUnit().setUomID( new Integer( ((com.cannontech.database.data.lite.LiteUnitMeasure)unitMeasures.get(0)).getUomID()) );
-		}
+        List<LiteUnitMeasure> unitMeasures = 
+            DaoFactory.getUnitMeasureDao().getLiteUnitMeasures();
+        //Better be at least 1!
+        point.getPointUnit().setUomID(unitMeasures.get(0).getUomID());
 		point.getPointUnit().setDecimalPlaces(new Integer(com.cannontech.dbeditor.DatabaseEditor.getDecimalPlaces()));
 	}
 	

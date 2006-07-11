@@ -4,7 +4,11 @@ package com.cannontech.dbeditor.editor.point;
  * This type was created in VisualAge.
  */
 
+import java.util.List;
+
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.data.lite.LiteUnitMeasure;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -744,16 +748,11 @@ private void initialize() {
 	setBorder(border);
 
 	//load unit of measure combo box with all possible values
-	
-	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-	synchronized(cache)
-	{
-		java.util.List allUnitMeasures = cache.getAllUnitMeasures();
-		for(int i=0; i<allUnitMeasures.size(); i++)
-			getUnitOfMeasureComboBox().addItem( allUnitMeasures.get(i) );
-	}
-
-
+    List<LiteUnitMeasure> unitMeasures = 
+         DaoFactory.getUnitMeasureDao().getLiteUnitMeasures();
+    for (LiteUnitMeasure lum : unitMeasures) {
+        getUnitOfMeasureComboBox().addItem(lum);
+    }
 	
 	//Load the Archive Type combo box with default possible values
     getArchiveTypeComboBox().addItem(PointTypes.ARCHIVE_NONE);

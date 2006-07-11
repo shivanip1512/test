@@ -1,6 +1,10 @@
 package com.cannontech.dbeditor.wizard.point;
 
-import com.cannontech.yukon.IDatabaseCache;
+import java.util.List;
+
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.data.lite.LiteUnitMeasure;
+import com.cannontech.database.data.point.PointUnits;
 
 /**
  * This type was created in VisualAge.
@@ -335,24 +339,14 @@ private void initialize() {
 	}
 	// user code begin {2}
 
-	//Add units of measure to the Unit of Measure combo box
-	IDatabaseCache cache =
-		com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-	synchronized (cache)
-   {
-		java.util.List allUnitMeasures = cache.getAllUnitMeasures();
-		for (int i = 0; i < allUnitMeasures.size(); i++)
-      {
-			getUnitOfMeasureComboBox().addItem(allUnitMeasures.get(i));
-         
-         if( ((com.cannontech.database.data.lite.LiteUnitMeasure)allUnitMeasures.get(i)).getUomID()
-              == com.cannontech.database.data.point.PointUnits.UOMID_KW )
-         {
-            getUnitOfMeasureComboBox().setSelectedIndex( i ); //default to KW
-         }
-      }
-           
-	}
+    List<LiteUnitMeasure> unitMeasures = DaoFactory.getUnitMeasureDao().getLiteUnitMeasures();
+    for (LiteUnitMeasure um : unitMeasures) {
+        getUnitOfMeasureComboBox().addItem(um);
+        if(um.getUomID() == PointUnits.UOMID_KW) {
+            getUnitOfMeasureComboBox().setSelectedItem(um);
+        }
+    }
+		
 	getMultiplierTextField().setText("1.0");
 	getDataOffsetTextField().setText("0.0");
 	getJCSpinFieldDecimalPlaces().getDataProperties().getValueModel().setValue(new Integer (com.cannontech.dbeditor.DatabaseEditor.getDecimalPlaces()));
