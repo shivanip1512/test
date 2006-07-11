@@ -82,7 +82,7 @@
     <property name="databaseCache" ref="databaseCache"/>      
   </bean>
   <bean id="unitMeasureDao" class="com.cannontech.core.dao.impl.UnitMeasureDaoImpl" >
-      <property name="databaseCache" ref="databaseCache"/>      
+      <property name="jdbcOps" ref="jdbcTemplate"/>
   </bean>
   <bean id="yukonImageDao" class="com.cannontech.core.dao.impl.YukonImageDaoImpl" >
      <property name="databaseCache" ref="databaseCache"/>      

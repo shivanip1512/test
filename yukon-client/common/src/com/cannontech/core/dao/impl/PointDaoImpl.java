@@ -56,6 +56,12 @@ public final class PointDaoImpl implements PointDao {
         };
     };
     
+    private static final RowMapper litePointUnitRowMapper = new RowMapper() {
+        public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
+            return createLitePointUnit(rs);
+        };
+    };
+    
     private IDatabaseCache databaseCache;
     private JdbcOperations jdbcOps;
     private NextValueHelper nextValueHelper;
@@ -176,16 +182,11 @@ public final class PointDaoImpl implements PointDao {
      * @see com.cannontech.core.dao.PointDao#getPointUnit(int)
      */
 	public LitePointUnit getPointUnit(int pointID) {
-		synchronized(databaseCache) {
-			Iterator iter = databaseCache.getAllPointsUnits().iterator();
-			while(iter.hasNext()) {
-				LitePointUnit lpu = (LitePointUnit) iter.next();
-				if( lpu.getPointID() == pointID ) {
-					return lpu;
-				}
-			}
-		}
-		return null;
+        String sql = 
+            "SELECT POINTID,UOMID,DECIMALPLACES FROM POINTUNIT WHERE POINTID=?";
+        LitePointUnit lpu = (LitePointUnit) 
+            jdbcOps.queryForObject(sql, new Object[] { pointID }, litePointUnitRowMapper);
+        return lpu;
 	}
 	
 	/* (non-Javadoc)
@@ -284,6 +285,17 @@ public final class PointDaoImpl implements PointDao {
 		}
 			return monitorPointList;
 	}
+    
+    public int getPointOffset(int pointId) {
+        String sql = "select dataoffset from pointanalog where pointid=?";
+        return (Integer)jdbcOps.queryForObject(sql, new Object[] {pointId}, Integer.class);
+    }
+    
+    public double getPointMultiplier(int pointId) {
+        String sql = "select multiplier from pointanalog where pointid=?";
+        return (Double)jdbcOps.queryForObject(sql, new Object[] {pointId}, Double.class);
+    }
+    
 	public void setDatabaseCache(IDatabaseCache databaseCache) {
         this.databaseCache = databaseCache;
     }
@@ -320,13 +332,15 @@ public final class PointDaoImpl implements PointDao {
         return lp;
     }
     
-    public int getPointOffset(int pointId) {
-        String sql = "select dataoffset from pointanalog where pointid=?";
-        return (Integer)jdbcOps.queryForObject(sql, Integer.class);
+    private static LitePointUnit createLitePointUnit(ResultSet rset) throws SQLException {
+        int pointID = rset.getInt(1);
+        int uomID = rset.getInt(2);
+        int decimalPlaces = rset.getInt(3);
+
+        com.cannontech.database.data.lite.LitePointUnit lpu =
+            new com.cannontech.database.data.lite.LitePointUnit( pointID, uomID, decimalPlaces);
+        return lpu;
     }
     
-    public double getPointMultiplier(int pointId) {
-        String sql = "select multiplier from pointanalog where pointid=?";
-        return (Double)jdbcOps.queryForObject(sql, Double.class);
-    }
+
 }

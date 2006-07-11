@@ -63,7 +63,6 @@ public interface IDatabaseCache
 	//Map<Integer(contactNotifID), LiteContactNotification>
 	public java.util.Map getAllContactNotifsMap();
 
-	public java.util.List getAllPointsUnits();
 	public java.util.List getAllPointLimits();
 
 	public java.util.List getAllPorts();
@@ -77,7 +76,6 @@ public interface IDatabaseCache
 	public java.util.Map getAllSettlementConfigsMap();
 
 	public java.util.List getAllTags();
-	public java.util.List getAllUnitMeasures();
 
 	public java.util.List getAllYukonUsers();
 	public java.util.List getAllYukonGroups();
@@ -183,7 +181,6 @@ public interface IDatabaseCache
 	public void releaseAllNotificationGroups();
 	//public void releaseAllPoints();
 	public void releaseAllStateGroups();
-	public void releaseAllUnitMeasures();
 	public void releaseAllYukonPAObjects();
 	public void releaseAllYukonUsers();
 	public void releaseAllDeviceTypeCommands();
