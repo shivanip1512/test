@@ -41,7 +41,7 @@ public void add() throws java.sql.SQLException
 
 
 		//there must be 2 or more PAObjects for us to even care
-		if( yukonPAObjectsCnt > 1 )
+		/*if( yukonPAObjectsCnt > 1 )
 		{
 			int[] newIDS = DaoFactory.getPaoDao().getNextPaoIds(yukonPAObjectsCnt); 
 
@@ -87,7 +87,7 @@ public void add() throws java.sql.SQLException
 			}				
 
 	
-		}
+		}*/
 
 			
 	}
