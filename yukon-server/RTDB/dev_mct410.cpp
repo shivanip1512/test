@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.73 $
-* DATE         :  $Date: 2006/07/12 15:13:27 $
+* REVISION     :  $Revision: 1.74 $
+* DATE         :  $Date: 2006/07/12 19:05:23 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2057,6 +2057,11 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
                                 interest_om->Buffer.BSt.Message[5] = (utc_time)       & 0x000000ff;
 
                                 interest_om->Buffer.BSt.Message[6] = request_range    & 0x000000ff;
+
+                                //  add a bit of a delay so the 410 can calculate...
+                                //    this delay may need to be increased by other means, depending
+                                //    on how long the larger peak report calculations take
+                                interest_om->MessageFlags |= MessageFlag_AddSilence;
 
                                 outList.push_back(interest_om);
                                 interest_om = 0;
