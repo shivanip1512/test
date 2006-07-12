@@ -1,6 +1,5 @@
 <%@ page import="com.cannontech.common.constants.LoginController" %>
 <%@ page import="com.cannontech.cbc.web.CapControlUserOwnerDAO" %>
-<%@page import="com.cannontech.core.dao.*" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <cti:standardPage title="Substations" module="capcontrol">
 <%@include file="cbc_inc.jspf"%>
@@ -16,7 +15,7 @@
 <%
     String nd = "\"return nd();\"";
     LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);			
-	String popupEvent = DaoFactory.getAuthDao().getRolePropertyValue(user, WebClientRole.POPUP_APPEAR_STYLE);
+	String popupEvent = AuthFuncs.getRolePropertyValue(user, WebClientRole.POPUP_APPEAR_STYLE);
 	if (popupEvent == null) popupEvent = "onmouseover"; 
     
     //SubBus[] areaSubs =
@@ -43,8 +42,8 @@
 <cti:titledContainer title="<%="Substation Buses In Area:  " + cbcSession.getLastArea()%>" id="last_titled_container">
           
 		<%if (areaSubs.length == 0) {%>
-		<!--
-        <form id="subForm" action="redirect.jsp" method="post">
+		<!-- 
+		<form id="subForm" action="redirect.jsp" method="post">
 		<input type="hidden" name="reason" value="No subs were found. "/>
 		<input type="hidden" name="message" value = "Subs.jsp <i>might<i> be defined in db_editor. ">
 		<input type="hidden" name="redirectUrl" value="/capcontrol/subareas.jsp"/>
@@ -53,7 +52,7 @@
 		</script>
 		</form>
 		-->
-        <%} else  {%> 
+		<%} else  {%> 
 		
 	          
             <form id="subForm" action="feeders.jsp" method="post">
@@ -109,7 +108,7 @@ for( int i = 0; i < areaSubs.length; i++ )
 				    <%= popupEvent %> ="return overlib(
 						$F('cmd_sub_<%=subBus.getCcId()%>'),
 						STICKY, WIDTH,210, HEIGHT,170, OFFSETX,-15,OFFSETY,-15,
-						MOUSEOFF, FULLHTML, ABOVE);"
+						MOUSEOFF, FULLHTML);"
 				    onmouseout= <%=nd%> >
 
 			<% } else { %>
