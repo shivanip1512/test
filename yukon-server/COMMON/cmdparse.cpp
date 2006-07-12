@@ -1808,8 +1808,8 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
                                + str_num);
     boost::regex  re_holiday("holiday " + str_num + "( " + str_date + ")+");
 
-    //  matches any of PST, PDT, MST, MDT, CST, CDT, EST, EDT, and whole/fractional hour offsets
-    boost::regex  re_timezone("timezone ([pmce][ds]?t)|(-?" + str_floatnum + ")");
+    //  matches any of AKT, HT, PT, MT, CT, ET, the standard/daylight versions of each, and whole/fractional hour offsets
+    boost::regex  re_timezone("timezone (((ak|h|p|m|c|e)[ds]?t)|(-?" + str_floatnum + "))");
 
     char *p;
 

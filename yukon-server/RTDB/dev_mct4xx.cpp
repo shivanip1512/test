@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2006/06/28 15:54:09 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2006/07/12 17:56:24 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -200,10 +200,12 @@ INT CtiDeviceMCT4xx::executePutConfig(CtiRequestMsg                  *pReq,
                 {
                     switch( timezone_name.at(0) )
                     {
-                        case 'p':   timezone_blocks = -8 * 4;   break;  //  pacific time
-                        case 'm':   timezone_blocks = -7 * 4;   break;  //  mountain time
-                        case 'c':   timezone_blocks = -6 * 4;   break;  //  central time
-                        case 'e':   timezone_blocks = -5 * 4;   break;  //  eastern time
+                        case 'h':   timezone_blocks = -10 * 4;   break;  //  hawaiian time
+                        case 'a':   timezone_blocks =  -9 * 4;   break;  //  alaskan time
+                        case 'p':   timezone_blocks =  -8 * 4;   break;  //  pacific time
+                        case 'm':   timezone_blocks =  -7 * 4;   break;  //  mountain time
+                        case 'c':   timezone_blocks =  -6 * 4;   break;  //  central time
+                        case 'e':   timezone_blocks =  -5 * 4;   break;  //  eastern time
                     }
                 }
                 else
