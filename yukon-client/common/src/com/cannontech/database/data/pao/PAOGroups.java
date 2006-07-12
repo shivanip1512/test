@@ -823,4 +823,21 @@ public final static boolean isStringDevice(final String typeString, final String
 
 	return false;
 }
+
+public final static String[] convertPaoTypes(Integer[] paoTypes) {
+    String[] str = new String[paoTypes.length];
+    for (int i = 0; i < paoTypes.length; i++) {
+        str[i] = getPAOTypeString(paoTypes[i]);
+    }
+    return str;
+}
+
+public final static String[] convertPaoCategories(Integer[] paoCategories) {
+    String[] str = new String[paoCategories.length];
+    for (int i = 0; i < paoCategories.length; i++) {
+        str[i] = getCategory(paoCategories[i]);
+    }
+    return str;
+}
+
 }

@@ -178,4 +178,12 @@ public final static boolean isMeterClass(int deviceClass)
 			return false;
 	}
 }
+
+    public final static String[] convertPaoClasses(Integer[] paoClasses) {
+        String[] classStr = new String[paoClasses.length];
+        for (int i = 0; i < paoClasses.length; i++) {
+            classStr[i] = getClass(paoClasses[i]);
+        }
+        return classStr;
+    }
 }
