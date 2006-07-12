@@ -1526,6 +1526,11 @@ public static long convertTemperature(long temperature, String fromUnit, String 
     double dblTemperature = temperature;
     return Math.round(convertTemperature(dblTemperature, fromUnit, toUnit));
 }
+
+public static Integer[] ensureNotNull(Integer[] arr) {
+    return (arr == null ? new Integer[0] : arr);
+}
+
 }
 
 
