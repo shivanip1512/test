@@ -1,12 +1,10 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <cti:standardPage title="Feeders" module="capcontrol">
 <%@include file="cbc_inc.jspf"%>
-<cti:includeCss link="../css/greybox/greybox.css"/>
-<cti:includeScript link = "../JavaScript/GreyBox/AmiJS.js"/>
-<cti:includeScript link = "../JavaScript/GreyBox/greybox.js"/>
-
 <%@ page import="com.cannontech.common.constants.LoginController" %>
-<%@page import="com.cannontech.core.dao.*" %>
+<%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject" %>
+<%@ page import="com.cannontech.yukon.cbc.CBCUtils" %>
+<%@ page import="com.cannontech.core.dao.DaoFactory" %>
 
 <jsp:useBean id="capControlCache"
     class="com.cannontech.cbc.web.CapControlCache"
@@ -21,7 +19,7 @@
 	String nd = "\"return nd(5000);\"";
 	int subid = cbcSession.getLastSubID();
 	LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);			
-	String popupEvent = DaoFactory.getAuthDao().getRolePropertyValue(user, WebClientRole.POPUP_APPEAR_STYLE);
+	String popupEvent = AuthFuncs.getRolePropertyValue(user, WebClientRole.POPUP_APPEAR_STYLE);
 	if (popupEvent == null) popupEvent = "onmouseover";
 	SubBus subBus = capControlCache.getSubBus( new Integer(subid) );
 	Feeder[] feeders = capControlCache.getFeedersBySub( new Integer(subid) );
@@ -44,7 +42,6 @@
    	Event.observe(window, 'load', function () {								
  								callBack();
  								});
- 	var GB_IMG_DIR = "../editor/css/greybox/";
    
    var GB_IMG_DIR = "../editor/css/greybox/";
    GreyBox.preloadGreyBoxImages();
@@ -234,6 +231,7 @@ Event.observe(window, 'load', function() { new CtiNonScrollTable('fdrTable','fdr
                     <img class="rAlign popupImg" src="images\question.gif"
                         onmouseover="statusMsg(this, 'Order is the order the CapBank will control in.<br>Commands that can be sent to a field device are initiated from this column');" />
                 </td>
+         
                 <td>State <img class="rAlign popupImg" src="images\question.gif"
                         onmouseover="statusMsg(this, 'System Commands, those commands that do NOT send out a message to a field device, can be initiated from this column');"/>
                 </td>
@@ -297,11 +295,22 @@ for( int i = 0; i < capBanks.length; i++ )
 						<span>
 							<%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_NAME_COLUMN) %>
 						</span>
-					<% } %>
-					<a href="http://google.com" onclick="return GB_show('Google', 'http://google.com', 480, 600)">
-					 Img
+					<% } 
+					%>
+
+					<!-- -------------------------------------->
+					<%
+					LiteYukonPAObject obj = DaoFactory.getPaoDao().getLiteYukonPAO(capBank.getControlDeviceID().intValue());					
+					if (CBCUtils.isTwoWay(obj)) {
+					%>					
+						<a href="#" 
+							onclick="return GB_show('Device <%=obj.getPaoName()%>', 'cbcPointTimestamps.jsp?cbcID=<%=obj.getLiteID()%>', 500, 600)" >
+					        <img class="rAlign popupImg" src="images\magnifier.gif"
+                        		onmouseover="statusMsg(this, 'Click here to see the timestmap information.<br>for the cap bank controller device');" />
+       
 					</a>
-</td>
+					<%}%>
+					</td>
 
 					<td>
 					<% if( hasControl ) { %>

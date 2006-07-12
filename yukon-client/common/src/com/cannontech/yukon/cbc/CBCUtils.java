@@ -4,7 +4,11 @@ import java.text.NumberFormat;
 import java.util.Comparator;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.data.device.TwoWayDevice;
+import com.cannontech.database.data.lite.LiteFactory;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 
 /**
@@ -196,4 +200,13 @@ public final class CBCUtils
             	return false;
     	}   
     }
+    
+    public static boolean isTwoWay (LiteYukonPAObject obj) { 	
+    	DBPersistent dbPers = LiteFactory.convertLiteToDBPersAndRetrieve(obj);
+    	if (dbPers instanceof TwoWayDevice)
+    		return true;
+    	else	
+    		return false;
+    }
+
 }

@@ -1,14 +1,20 @@
 package com.cannontech.core.dao.impl;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.List;
 
 import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.data.point.CBCPointTimestampParams;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**
@@ -144,5 +150,31 @@ public void setPaoDao(PaoDao paoDao) {
  
 public void setJdbcOps(JdbcOperations jdbcOps) {
     this.jdbcOps = jdbcOps;
+}
+
+public  List getCBCPointTimeStamps (Integer cbcID) {
+    
+    String sqlStmt = 
+        "SELECT Point.PointID, Point.PointName, DynamicPointDispatch.Timestamp "
+          + "FROM Point, DynamicPointDispatch WHERE "
+          + "DynamicPointDispatch.PointId IN ( " 
+          +  "SELECT PointId FROM Point WHERE PaObjectId = ?) "
+          +  "AND " 
+          +  "Point.PointId = DynamicPointDispatch.PointId";
+    
+    JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();            
+    
+    List pointList = yukonTemplate.query(sqlStmt, new Integer[] {cbcID},
+            new RowMapper() {
+                public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    CBCPointTimestampParams pointTimestamp = new CBCPointTimestampParams(); 
+                    pointTimestamp.setPointId (new Integer ( rs.getBigDecimal(1).intValue() ));
+                    pointTimestamp.setPointName (new String ( rs.getString(2)));
+                    pointTimestamp.setTimestamp((Timestamp) ( rs.getTimestamp(3)));
+                    return pointTimestamp;                      
+                }
+            });
+
+    return pointList;   
 }
 }

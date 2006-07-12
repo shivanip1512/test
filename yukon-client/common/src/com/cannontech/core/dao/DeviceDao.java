@@ -6,7 +6,7 @@ import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 
 public interface DeviceDao {
-        
+    
     /**
      * Insert the method's description here.
      * Creation date: (3/26/2001 9:41:59 AM)
@@ -67,4 +67,5 @@ public interface DeviceDao {
     public List getDevicesByDeviceAddress(Integer masterAddress,
             Integer slaveAddress);
 
+    public  List getCBCPointTimeStamps (Integer cbcID);
 }

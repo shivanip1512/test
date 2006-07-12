@@ -11,7 +11,9 @@ public class CBCNavigationUtil {
 													"subCmd.jsp",
 													"charts.jsp",
 													"capBankMove.jsp",
-													"tempmove.jsp"};
+													"tempmove.jsp",
+													"cbcPointTimestamps.jsp"
+													};
     public CBCNavigationUtil() {
         super();
     }
