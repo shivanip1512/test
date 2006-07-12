@@ -117,7 +117,7 @@ public interface PointDao {
      * @param pointId
      * @return
      */
-    public int getPointOffset(int pointId);
+    public int getPointDataOffset(int pointId);
     
     /**
      * Returns the point multiplier for the given point

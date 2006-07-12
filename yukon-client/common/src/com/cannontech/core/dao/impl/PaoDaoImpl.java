@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -30,10 +31,11 @@ public final class PaoDaoImpl implements PaoDao
 {
     private static final String litePaoSql = 
         "SELECT y.PAObjectID, y.Category, y.PAOName, " +
-        "y.Type, y.PAOClass, y.Description, d.PORTID, dcs.ADDRESS " +
+        "y.Type, y.PAOClass, y.Description, d.PORTID, dcs.ADDRESS, dr.routeid " +
         "FROM yukonpaobject y left outer join devicedirectcommsettings d " +
         "on y.paobjectid = d.deviceid " +
-        "left outer join devicecarriersettings DCS ON Y.PAOBJECTID = DCS.DEVICEID ";
+        "left outer join devicecarriersettings DCS ON Y.PAOBJECTID = DCS.DEVICEID " +
+        "left outer join deviceroutes dr on y.paobjectid = dr.deviceid ";
     
     private static final RowMapper litePaoRowMapper = new RowMapper() {
         public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -45,8 +47,7 @@ public final class PaoDaoImpl implements PaoDao
     private IDatabaseCache databaseCache;
     private NextValueHelper nextValueHelper;
     private AuthDao authDao;
-    
-    
+        
     /* (non-Javadoc)
      * @see com.cannontech.core.dao.PaoDao#getLiteYukonPAO(int)
      */
@@ -60,9 +61,10 @@ public final class PaoDaoImpl implements PaoDao
     public List<LiteYukonPAObject> getLiteYukonPAObjectByType(int paoType) {
         String typeStr = PAOGroups.getPAOTypeString(paoType);
         String sql = litePaoSql;
-        sql += "where type=? ";
+        sql += "where UPPER(type)=? ";
         
-        List<LiteYukonPAObject> paos = jdbcOps.query(sql, new Object[] { typeStr }, litePaoRowMapper );
+        List<LiteYukonPAObject> paos = 
+            jdbcOps.query(sql, new Object[] { StringUtils.upperCase(typeStr) }, litePaoRowMapper );
         return paos;
     }
     
@@ -185,7 +187,6 @@ public final class PaoDaoImpl implements PaoDao
     		LiteYukonPAObject retVal[] = (LiteYukonPAObject[])
     			lPaos.toArray( new LiteYukonPAObject[ lPaos.size() + 1 ] );
     
-    		retVal[lPaos.size()] = getLiteYukonPAO( ignoreID.intValue() );   
     		return retVal;
     	}
     }
@@ -255,22 +256,26 @@ public final class PaoDaoImpl implements PaoDao
         String paoType = rset.getString(4).trim();
         String paoClass = rset.getString(5).trim();
         String paoDescription = rset.getString(6).trim();
-
-        // this column may be null!!
-        BigDecimal portID = (BigDecimal) rset.getObject(7);
-        // this column may be null!!
-        BigDecimal address = (BigDecimal) rset.getObject(8);
-
+        
         LiteYukonPAObject pao = new LiteYukonPAObject(paoID, paoName, PAOGroups
                 .getCategory(paoCategory), PAOGroups.getPAOType(paoCategory,
                 paoType), PAOGroups.getPAOClass(paoCategory, paoClass),
                 paoDescription);
 
-        if (portID != null)
-            pao.setPortID(portID.intValue());
+        int portId = rset.getInt(7);
+        if(!rset.wasNull()) {
+            pao.setPortID(portId);
+        }
+        
+        int address = rset.getInt(8);
+        if(!rset.wasNull()) {
+            pao.setAddress(address);
+        }
 
-        if (address != null)
-            pao.setAddress(address.intValue());
+        int routeId = rset.getInt(9);
+        if(!rset.wasNull()) {
+            pao.setRouteID(routeId);
+        }
 
         return pao;
 
