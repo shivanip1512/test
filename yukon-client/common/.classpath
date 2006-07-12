@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry excluding="com/cannontech/core/dynamic/" kind="src" path="src"/>
+	<classpathentry kind="src" path="integration"/>
 	<classpathentry kind="lib" path="/third-party/SqlServer.jar"/>
 	<classpathentry kind="lib" path="/third-party/acme.jar"/>
 	<classpathentry kind="lib" path="/third-party/classes12.jar"/>
