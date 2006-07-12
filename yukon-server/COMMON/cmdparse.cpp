@@ -1975,8 +1975,8 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
                 }
                 if( !temp.compareTo("reading") )
                 {
-                    _cmd["centron_reading_forward"] = CtiParseValue(CtiString(cmdtok()));
-                    _cmd["centron_reading_reverse"] = CtiParseValue(CtiString(cmdtok()));
+                    _cmd["centron_reading_forward"] = CtiParseValue(atoi(CtiString(cmdtok()).c_str()));
+                    _cmd["centron_reading_reverse"] = CtiParseValue(atoi(CtiString(cmdtok()).c_str()));
                 }
             }
         }
