@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.72 $
-* DATE         :  $Date: 2006/07/11 19:15:05 $
+* REVISION     :  $Revision: 1.73 $
+* DATE         :  $Date: 2006/07/12 15:13:27 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -4122,7 +4122,7 @@ INT CtiDeviceMCT410::decodeGetStatusLoadProfile( INMESS *InMessage, CtiTime &Tim
         lpTime = CtiTime(tmpTime);
 
         resultString += "Current Interval Time: " + lpTime.asString() + "\n";
-        resultString += "Current Interval Pointer: " + CtiNumStr(DSt->Message[4]) + string("\n");
+        //resultString += "Current Interval Pointer: " + CtiNumStr(DSt->Message[4]) + string("\n");
         resultString += (DSt->Message[5] & 0x01)?"Boundary Error\n":"";
         resultString += (DSt->Message[5] & 0x02)?"Power Fail\n":"";
         resultString += (DSt->Message[5] & 0x80)?"Channel 1 Overflow\n":"";
@@ -4141,7 +4141,7 @@ INT CtiDeviceMCT410::decodeGetStatusLoadProfile( INMESS *InMessage, CtiTime &Tim
         lpTime = CtiTime(tmpTime);
 
         resultString += "Current Interval Time: " + lpTime.asString() + "\n";
-        resultString += "Current Interval Pointer: " + CtiNumStr(DSt->Message[10]) + string("\n");
+        //resultString += "Current Interval Pointer: " + CtiNumStr(DSt->Message[10]) + string("\n");
         resultString += (DSt->Message[11] & 0x01)?"Boundary Error\n":"";
         resultString += (DSt->Message[11] & 0x02)?"Power Fail\n":"";
 
@@ -4227,7 +4227,7 @@ INT CtiDeviceMCT410::decodeGetConfigTOU(INMESS *InMessage, CtiTime &TimeNow, lis
 
             for( int offset = 0; offset < 2; offset++ )
             {
-                int rates, byte_offset, time_offset;
+                int rates, current_rate, previous_rate, byte_offset, time_offset;
 
                 resultString += getName() + " / TOU Schedule " + CtiNumStr(schedulenum + offset) + ":\n";
 
@@ -4248,6 +4248,7 @@ INT CtiDeviceMCT410::decodeGetConfigTOU(INMESS *InMessage, CtiTime &TimeNow, lis
                 rates >>= 2;
 
                 time_offset = 0;
+                previous_rate = -1;
                 for( int switchtime = 0; switchtime < 5; switchtime++ )
                 {
                     int hour, minute;
@@ -4257,14 +4258,14 @@ INT CtiDeviceMCT410::decodeGetConfigTOU(INMESS *InMessage, CtiTime &TimeNow, lis
                     hour   = time_offset / 3600;
                     minute = (time_offset / 60) % 60;
 
-                    if( hour > 23 )
+                    current_rate = rates & 0x03;
+
+                    if( hour <= 23 || current_rate != previous_rate )
                     {
-                        resultString += "(past end of day): " + RWCString((char)('A' + (rates & 0x03))) + "\n";
+                        resultString += CtiNumStr(hour).zpad(2) + ":" + CtiNumStr(minute).zpad(2) + ": " + (char)('A' + current_rate) + "\n";
                     }
-                    else
-                    {
-                        resultString += CtiNumStr(hour).zpad(2) + ":" + CtiNumStr(minute).zpad(2) + ": " + RWCString((char)('A' + (rates & 0x03))) + "\n";
-                    }
+
+                    previous_rate = current_rate;
 
                     rates >>= 2;
                 }
@@ -4278,14 +4279,17 @@ INT CtiDeviceMCT410::decodeGetConfigTOU(INMESS *InMessage, CtiTime &TimeNow, lis
 
             resultString += "Day table: \n";
 
+            char *(daynames[8]) = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Holiday"};
+
             for( int i = 0; i < 8; i++ )
             {
                 int dayschedule = InMessage->Buffer.DSt.Message[1 - i/4] >> ((i % 4) * 2) & 0x03;
 
-                resultString += "Day " + CtiNumStr(i+1) + ": Schedule " + CtiNumStr(dayschedule + 1) + "\n";
+                resultString += daynames[i];
+                resultString += " (" + CtiNumStr(i+1) + "): Schedule " + CtiNumStr(dayschedule + 1) + "\n";
             }
 
-            resultString = "Default rate: ";
+            resultString += "Default rate: ";
 
             if( InMessage->Buffer.DSt.Message[2] == 0xff )
             {
@@ -4300,21 +4304,7 @@ INT CtiDeviceMCT410::decodeGetConfigTOU(INMESS *InMessage, CtiTime &TimeNow, lis
             resultString += (char)('A' + (InMessage->Buffer.DSt.Message[3] & 0x7f));
             resultString += "\n";
 
-            if( InMessage->Buffer.DSt.Message[3] & 0x80 )
-            {
-                resultString += "(Critical peak active)\n";
-            }
-
-            resultString += "Current schedule: " + CtiNumStr((int)(InMessage->Buffer.DSt.Message[4] & 0x03)) + "\n";
-
-            if( InMessage->Buffer.DSt.Message[4] & 0x80 )
-            {
-                resultString += "(Holiday active)\n";
-            }
-            if( InMessage->Buffer.DSt.Message[4] & 0x40 )
-            {
-                resultString += "(DST active)\n";
-            }
+            resultString += "Current schedule: " + CtiNumStr((int)(InMessage->Buffer.DSt.Message[4] & 0x03) + 1) + "\n";
 
             resultString += "Current switch time: ";
 
@@ -4337,6 +4327,19 @@ INT CtiDeviceMCT410::decodeGetConfigTOU(INMESS *InMessage, CtiTime &TimeNow, lis
             int tz_offset = (char)InMessage->Buffer.DSt.Message[10] * 15;
 
             resultString += "Time zone offset: " + CtiNumStr((float)tz_offset / 60.0, 1) + " hours ( " + CtiNumStr(tz_offset) + " minutes)\n";
+
+            if( InMessage->Buffer.DSt.Message[3] & 0x80 )
+            {
+                resultString += "Critical peak active\n";
+            }
+            if( InMessage->Buffer.DSt.Message[4] & 0x80 )
+            {
+                resultString += "Holiday active\n";
+            }
+            if( InMessage->Buffer.DSt.Message[4] & 0x40 )
+            {
+                resultString += "DST active\n";
+            }
         }
 
         if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
@@ -4442,9 +4445,9 @@ INT CtiDeviceMCT410::decodeGetConfigCentron(INMESS *InMessage, CtiTime &TimeNow,
 
             switch( DSt->Message[0] & 0x03 )
             {
-                case 0x0:   resultString += "5x1 display (5 digits, 1kWHr resolution)\n";
-                case 0x1:   resultString += "4x1 display (4 digits, 1kWHr resolution)\n";
-                case 0x2:   resultString += "4x10 display (4 digits, 10kWHr resolution)\n";
+                case 0x0:   resultString += "5x1 display (5 digits, 1kWHr resolution)\n";   break;
+                case 0x1:   resultString += "4x1 display (4 digits, 1kWHr resolution)\n";   break;
+                case 0x2:   resultString += "4x10 display (4 digits, 10kWHr resolution)\n"; break;
                 case 0x3:
                 default:    resultString += "Unknown display resolution (" + CtiNumStr(DSt->Message[0] & 0x03) + ")\n";
             }
