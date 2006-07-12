@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.50 $
-* DATE         :  $Date: 2006/07/06 20:12:40 $
+* REVISION     :  $Revision: 1.51 $
+* DATE         :  $Date: 2006/07/12 18:54:44 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -107,7 +107,7 @@ CtiDeviceMCT470::CommandSet CtiDeviceMCT470::initCommandStore( )
     cs.insert(CommandStore(Emetcon::GetConfig_Raw,              Emetcon::IO_Read,           0,                          0));  //  filled in later
     cs.insert(CommandStore(Emetcon::GetConfig_Model,            Emetcon::IO_Read,           MCT470_Memory_ModelPos,     MCT470_Memory_ModelLen));
     cs.insert(CommandStore(Emetcon::GetConfig_Multiplier,       Emetcon::IO_Read,           MCT470_Memory_ChannelMultiplierPos, MCT470_Memory_ChannelMultiplierLen));
-    cs.insert(CommandStore(Emetcon::PutConfig_Multiplier,       Emetcon::IO_Function_Write, MCT470_Memory_ChannelMultiplierPos, MCT470_Memory_ChannelMultiplierLen));
+    cs.insert(CommandStore(Emetcon::PutConfig_Multiplier,       Emetcon::IO_Write,          MCT470_Memory_ChannelMultiplierPos, MCT470_Memory_ChannelMultiplierLen));
     cs.insert(CommandStore(Emetcon::PutConfig_TSync,            Emetcon::IO_Function_Write, MCT4XX_FuncWrite_TSyncPos,          MCT4XX_FuncWrite_TSyncLen));
     cs.insert(CommandStore(Emetcon::GetConfig_Time,             Emetcon::IO_Read,           MCT470_Memory_TimeZoneOffsetPos,    MCT470_Memory_TimeZoneOffsetLen +
                                                                                                                                 MCT470_Memory_RTCLen));
