@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.83 $
-* DATE         :  $Date: 2006/06/14 15:16:11 $
+* REVISION     :  $Revision: 1.84 $
+* DATE         :  $Date: 2006/07/12 22:03:01 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -216,7 +216,9 @@ static void applyInvalidateNotUpdated(const long unusedkey, CtiDeviceSPtr Device
 
 static void applyClearMacroDeviceList(const long unusedkey, CtiDeviceSPtr Device, void* d)
 {
-    if( Device->getType() == TYPE_MACRO )
+    LONG paoid = (LONG)d;
+
+    if( Device->getType() == TYPE_MACRO && (!paoid || Device->getID() == paoid) )
         ((CtiDeviceMacro *)(Device.get()))->clearDeviceList();
 }
 
@@ -2249,7 +2251,7 @@ void CtiDeviceManager::refreshMacroSubdevices(LONG paoID)
     if(childcount != 0 && macroResult.status().errorCode() == RWDBStatus::ok)
     {
         rdr = myMacroTable.reader();
-        apply(applyClearMacroDeviceList, NULL);
+        apply(applyClearMacroDeviceList, (void*)paoID);
 
         while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
         {
