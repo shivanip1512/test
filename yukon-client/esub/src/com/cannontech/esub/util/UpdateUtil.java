@@ -136,7 +136,7 @@ public class UpdateUtil {
 		}
 		
 		if( (displayAttrib & PointAttributes.DATA_OFFSET) != 0 ) {
-            int offset = DaoFactory.getPointDao().getPointOffset(pointID);
+            int offset = DaoFactory.getPointDao().getPointDataOffset(pointID);
             text += Integer.toString(offset);
             prev = true;
 		}
