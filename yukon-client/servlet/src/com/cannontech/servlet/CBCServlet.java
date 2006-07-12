@@ -21,7 +21,10 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.WebUpdatedDAO;
 import com.cannontech.common.constants.LoginController;
 import com.cannontech.common.util.StringUtils;
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.roles.capcontrol.CBCSettingsRole;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
 import com.cannontech.servlet.nav.DBEditorNav;
 import com.cannontech.servlet.xml.DynamicUpdate;
@@ -229,7 +232,7 @@ private String createXMLResponse(HttpServletRequest req, HttpServletResponse res
 				continue;
 			}
 			
-			if (handleCapBankGET(updatedIds[i], xmlMsgs, i)) {
+			if (handleCapBankGET(req, updatedIds[i], xmlMsgs, i)) {
 				continue;
 			}
 		}
@@ -265,6 +268,7 @@ private boolean handleSubGET( String ids, ResultXML[] xmlMsgs, int indx )
 
 	if( sub == null )
 		return false;
+	
 
 	String[] optParams =
 	{
@@ -274,7 +278,11 @@ private boolean handleSubGET( String ids, ResultXML[] xmlMsgs, int indx )
 		/*param3*/CBCUtils.CBC_DISPLAY.getSubBusValueAt(sub, CBCDisplay.SUB_TIME_STAMP_COLUMN).toString(),
 		/*param4*/CBCUtils.CBC_DISPLAY.getSubBusValueAt(sub, CBCDisplay.SUB_POWER_FACTOR_COLUMN).toString(),
 		/*param5*/CBCUtils.CBC_DISPLAY.getSubBusValueAt(sub, CBCDisplay.SUB_WATTS_COLUMN).toString(),
-		/*param6*/CBCUtils.CBC_DISPLAY.getSubBusValueAt(sub, CBCDisplay.SUB_DAILY_OPERATIONS_COLUMN).toString()
+		/*param6*/CBCUtils.CBC_DISPLAY.getSubBusValueAt(sub, CBCDisplay.SUB_DAILY_OPERATIONS_COLUMN).toString(),
+		
+		/*param7*/(sub.getVerificationFlag().booleanValue())? "true" : "false",
+		/*param8*/CBCUtils.CBC_DISPLAY.getSubBusValueAt (sub, CBCDisplay.SUB_NAME_COLUMN).toString()	
+
 	};
 
 	xmlMsgs[indx] = new ResultXML(
@@ -307,7 +315,9 @@ private boolean handleFeederGET( String ids, ResultXML[] xmlMsgs, int indx )
 		/*param3*/CBCUtils.CBC_DISPLAY.getFeederValueAt(fdr, CBCDisplay.FDR_TIME_STAMP_COLUMN).toString(),
 		/*param4*/CBCUtils.CBC_DISPLAY.getFeederValueAt(fdr, CBCDisplay.FDR_POWER_FACTOR_COLUMN).toString(),
 		/*param5*/CBCUtils.CBC_DISPLAY.getFeederValueAt(fdr, CBCDisplay.FDR_WATTS_COLUMN).toString(),
-		/*param6*/CBCUtils.CBC_DISPLAY.getFeederValueAt(fdr, CBCDisplay.FDR_DAILY_OPERATIONS_COLUMN).toString()
+		/*param6*/CBCUtils.CBC_DISPLAY.getFeederValueAt(fdr, CBCDisplay.FDR_DAILY_OPERATIONS_COLUMN).toString(),
+		/*param7*/CBCUtils.CBC_DISPLAY.getFeederValueAt (fdr, CBCDisplay.FDR_NAME_COLUMN).toString()	
+		
 	};
 
 	xmlMsgs[indx] = new ResultXML(
@@ -322,21 +332,31 @@ private boolean handleFeederGET( String ids, ResultXML[] xmlMsgs, int indx )
 /**
  * Sets the XML data for the given CapBank id. Return true if the given
  * id is a CapBank id, else returns false.
+ * @param req 
  *  
  */
-private boolean handleCapBankGET( String ids, ResultXML[] xmlMsgs, int indx )
+private boolean handleCapBankGET( HttpServletRequest req, String ids, ResultXML[] xmlMsgs, int indx )
 {
 	CapBankDevice capBank =
 		getCapControlCache().getCapBankDevice( new Integer(ids) );
-
+	//see if the user has the rights to change ov/uv
+	String allow_ovuv = init_isOVUV(req);
+	String liteStates = init_All_Manual_Cap_States();
+	
 	if( capBank == null )
 		return false;
 
+	//get all the system states and concat them into a string
+
+	
 	String[] optParams =
 	{
 		/*param0*/CBCDisplay.getHTMLFgColor(capBank),
 		/*param1*/CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_TIME_STAMP_COLUMN).toString(),
-		/*param2*/CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_OP_COUNT_COLUMN).toString()
+		/*param2*/CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_OP_COUNT_COLUMN).toString(),
+		/*param3*/CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_NAME_COLUMN).toString(),
+		/*param4*/allow_ovuv,
+		/*param5*/liteStates
 	};
 
 	xmlMsgs[indx] = new ResultXML(
@@ -345,6 +365,34 @@ private boolean handleCapBankGET( String ids, ResultXML[] xmlMsgs, int indx )
 		optParams );
 
 	return true;
+}
+
+/**
+ * @return
+ */
+private String init_All_Manual_Cap_States() {
+	String liteStates = "";
+	LiteState[] cbcStates = CBCDisplay.getCBCStateNames();
+	//create a comma separated string of all states
+	//"Any:-1,Open:0,Close:1"
+	for (int i = 0; i < cbcStates.length; i++) {
+		LiteState state = cbcStates[i];
+		liteStates += state.toString() + ":" + state.getStateRawState();
+		if (i < (cbcStates.length - 1))
+			liteStates+= ",";
+	}
+	return liteStates;
+}
+
+/**
+ * @param req
+ * @return
+ */
+private String init_isOVUV(HttpServletRequest req) {
+	HttpSession session = req.getSession(false);
+	LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);
+	boolean allow_ovuv = DaoFactory.getAuthDao().checkRoleProperty(user, CBCSettingsRole.CBC_ALLOW_OVUV);
+	return ("" + allow_ovuv).toLowerCase();
 }
 
 /**
