@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_pt_unit.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/12/20 17:16:08 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2006/07/13 21:14:11 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -48,6 +48,7 @@ protected:
    LONG                 _pointID;
    INT                  _unitID;            // FK constraint against table  UnitMeasure
    INT                  _decimalPlaces;     // Number of " " for display purposes.
+   INT                  _decimalDigits;     // Maximum digits allowed (forced rollover).
    DOUBLE               _highReasonablityLimit;
    DOUBLE               _lowReasonablityLimit;
 
@@ -73,6 +74,8 @@ public:
 
    INT                  getDecimalPlaces() const;
    CtiTablePointUnit&   setDecimalPlaces(const INT &id);
+   INT                  getDecimalDigits() const;
+   CtiTablePointUnit&   setDecimalDigits(const INT &digits);
    DOUBLE               getHighReasonabilityLimit() const;
    CtiTablePointUnit&   setHighReasonabilityLimit(DOUBLE d);
    DOUBLE               getLowReasonabilityLimit() const;

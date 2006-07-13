@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/pt_numeric.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2006/04/05 16:23:52 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2006/07/13 21:14:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -325,6 +325,7 @@ double CtiPointNumeric::getDefaultValue( ) const
 DOUBLE CtiPointNumeric::computeValueForUOM(DOUBLE Value) const
 {
     int calcType = getPointUnits().getUnitMeasure().getCalcType();
+    int digits   = _pointUnits.getDecimalDigits();
 
     switch( calcType )
     {
@@ -348,6 +349,11 @@ DOUBLE CtiPointNumeric::computeValueForUOM(DOUBLE Value) const
             Value = (DOUBLE) sqrt (fabs ((DOUBLE) (Value * getMultiplier())));
             break;
         }
+    }
+
+    if( digits > 0 )
+    {
+        Value = fmod(Value, pow(10,digits));
     }
 
     return Value;

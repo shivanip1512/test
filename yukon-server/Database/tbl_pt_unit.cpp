@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pt_unit.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/12/20 17:16:07 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2006/07/13 21:14:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -24,6 +24,7 @@ _defaultValue(0.0),
 _logFrequency(INT_MAX),
 _unitID(0),
 _decimalPlaces(2),
+_decimalDigits(0),
 _highReasonablityLimit(DBL_MAX),
 _lowReasonablityLimit(-DBL_MAX)
 {}
@@ -34,6 +35,7 @@ _defaultValue(0.0),
 _logFrequency(INT_MAX),
 _unitID(0),
 _decimalPlaces(2),
+_decimalDigits(0),
 _highReasonablityLimit(DBL_MAX),
 _lowReasonablityLimit(-DBL_MAX)
 {
@@ -47,6 +49,7 @@ CtiTablePointUnit& CtiTablePointUnit::operator=(const CtiTablePointUnit& aRef)
         _pointID                = aRef.getPointID();
         _unitID                 = aRef.getUnitID();
         _decimalPlaces          = aRef.getDecimalPlaces();
+        _decimalDigits          = aRef.getDecimalDigits();
         _highReasonablityLimit  = aRef.getHighReasonabilityLimit();
         _lowReasonablityLimit   = aRef.getLowReasonabilityLimit();
         _logFrequency           = aRef.getLogFrequency();
@@ -73,6 +76,7 @@ void CtiTablePointUnit::DecodeDatabaseReader(RWDBReader &rdr)
     rdr["pointid"]                  >> _pointID;
     rdr["uomid"]                    >> _unitID;
     rdr["decimalplaces"]            >> _decimalPlaces;
+    rdr["decimaldigits"]            >> _decimalDigits;
     rdr["highreasonabilitylimit"]   >> _highReasonablityLimit;
     rdr["lowreasonabilitylimit"]    >> _lowReasonablityLimit;
 
@@ -129,6 +133,7 @@ void CtiTablePointUnit::dump() const
     dout << " PointID                                  : " << _pointID << endl;
     dout << " UOM ID                                   : " << _unitID << endl;
     dout << " Decimal Places                           : " << _decimalPlaces << endl;
+    dout << " Decimal Digits                           : " << _decimalDigits << endl;
     dout << " High Reasonabiliy Limit                  : " << _highReasonablityLimit << endl;
     dout << " Low  Reasonabiliy Limit                  : " << _lowReasonablityLimit << endl;
 }
@@ -141,6 +146,7 @@ void CtiTablePointUnit::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelec
     tbl["pointid"] <<
     tbl["uomid"] <<
     tbl["decimalplaces"] <<
+    tbl["decimaldigits"] <<
     tbl["highreasonabilitylimit"] <<
     tbl["lowreasonabilitylimit"];
 
@@ -177,6 +183,17 @@ CtiTablePointUnit& CtiTablePointUnit::setDecimalPlaces(const INT &dp)
 {
 
     _decimalPlaces = dp;
+    return *this;
+}
+INT CtiTablePointUnit::getDecimalDigits() const
+{
+
+    return _decimalDigits;
+}
+CtiTablePointUnit& CtiTablePointUnit::setDecimalDigits(const INT &digits)
+{
+
+    _decimalDigits = digits;
     return *this;
 }
 DOUBLE CtiTablePointUnit::getHighReasonabilityLimit() const
