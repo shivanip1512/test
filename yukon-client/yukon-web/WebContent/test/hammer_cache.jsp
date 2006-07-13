@@ -10,7 +10,6 @@ com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllDeviceMet
 com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllDevices() ;
 com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllMCTs() ;
 com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllGraphDefinitions();
-//com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllGraphTaggedPoints();
 com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllHolidaySchedules();
 com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllBaselines();
 com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllConfigs();
@@ -22,13 +21,11 @@ com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllLoadManag
 com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllContactNotificationGroups();
 com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllPAOsMap();
 com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllCustomersMap();
-com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllPointsUnits();
 com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllPointLimits() ;
 com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllPorts() ;
 com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllRoutes() ;
 //com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllStateGroups();
 com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllTags() ;
-com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllUnitMeasures();
 com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllUnusedCCDevices();
 com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllYukonPAObjects();
 com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllYukonGroups() ;		
