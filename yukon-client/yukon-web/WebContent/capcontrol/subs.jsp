@@ -15,7 +15,7 @@
 <%
     String nd = "\"return nd();\"";
     LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);			
-	String popupEvent = AuthFuncs.getRolePropertyValue(user, WebClientRole.POPUP_APPEAR_STYLE);
+	String popupEvent = DaoFactory.getAuthDao().getRolePropertyValue(user, WebClientRole.POPUP_APPEAR_STYLE);
 	if (popupEvent == null) popupEvent = "onmouseover"; 
     
     //SubBus[] areaSubs =
