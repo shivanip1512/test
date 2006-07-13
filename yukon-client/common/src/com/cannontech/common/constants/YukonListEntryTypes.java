@@ -19,6 +19,7 @@ public interface YukonListEntryTypes
 	public static final int YUK_ENTRY_ID_CELL_PHONE = 8;
 	public static final int YUK_ENTRY_ID_EMAIL_CELL = 9;
 	public static final int YUK_ENTRY_ID_CALL_BACK_PHONE = 10;
+    public static final int YUK_ENTRY_ID_IVR_LOGIN = 11;
         
     //standard YukonDefinitionIDs that should be in every DB
 	public static final int YUK_DEF_ID_EMAIL = 1;

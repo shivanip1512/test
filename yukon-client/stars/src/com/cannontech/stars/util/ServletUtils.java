@@ -374,6 +374,28 @@ public class ServletUtils {
 		return formatedPhoneNo.toString();
 	}
     
+    public static String formatPin(String pin) throws WebClientException 
+    {
+        pin = pin.trim();
+        if (pin.equals("")) return "";
+        
+        if(pin.length() > 19)
+        {
+            throw new WebClientException( "Invalid IVR information format '" + pin + "'. This IVR field should have fewer than 20 digits." );
+        }
+        
+        try
+        {
+            Long.parseLong(pin);
+        }
+        catch(NumberFormatException e)
+        {
+            throw new WebClientException( "Invalid IVR information format '" + pin + "'. This field is required to be numeric.'" );
+        }
+        
+        return pin;
+    }
+    
 	public static String formatAddress(StarsCustomerAddress starsAddr) {
 		if (starsAddr == null) return "";
     	

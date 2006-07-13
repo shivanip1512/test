@@ -137,10 +137,17 @@ public class UpdateContactsAction implements ActionBase {
 				
 				for (int i = tricksy; i < notifCatIDs.length; i++) {
 					int notifCatID = Integer.parseInt( notifCatIDs[i] );
-					if (notifCatID > 0 && notifications[i - tricksy].trim().length() > 0) {
+					if (notifCatID > 0 && notifications[i - tricksy].trim().length() > 0) 
+                    {
 						if (notifCatID == YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE || notifCatID == YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE
 							|| notifCatID == YukonListEntryTypes.YUK_ENTRY_ID_CELL_PHONE)
-							notifications[i - tricksy] = ServletUtils.formatPhoneNumber( notifications[i - tricksy] );
+                        {
+                            notifications[i - tricksy] = ServletUtils.formatPhoneNumber( notifications[i - tricksy] );
+                        }
+                        else if(notifCatID == YukonListEntryTypes.YUK_ENTRY_ID_PIN || notifCatID == YukonListEntryTypes.YUK_ENTRY_ID_IVR_LOGIN)
+                        {
+                            notifications[i - tricksy] = ServletUtils.formatPin( notifications[i - tricksy] );
+                        }
 						
 						ContactNotification contNotif = ServletUtils.createContactNotification( notifications[i - tricksy], notifCatID );
 						if (contactID == account.getPrimaryContact().getContactID() && notifCatID == YukonListEntryTypes.YUK_ENTRY_ID_EMAIL) {
