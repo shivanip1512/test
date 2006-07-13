@@ -57,8 +57,18 @@ function updateCommandMenu(result) {
 
 //switch to get the html for menu based on type
 function update_Command_Menu (type, id, state, opts) {
-	
-	var header = "<HTML><BODY><div id='cmdDiv" + id + "' ";
+	//all elements on the page must have a unique id if they are
+	//accessed using document.getElementById
+	//In case of manual and field commands options we have 2 divs for 1 cap bank
+	//if we will just identify it by id it will not be unique
+	//Will result in [xxx] is null or not an object error whenever the element with a non-unique id is
+	//accessed using document.getElementById
+	var cmd_div_uniq_id = 'cmdDiv';
+	if ((opts[2] == 'system') && (type == 'cap')) {
+		cmd_div_uniq_id += '_system_';
+	}
+	   
+	var header = "<HTML><BODY><div id='" + cmd_div_uniq_id + id + "' ";
 	header += " style='background:white; height:1cm; width:1cm; border:1px solid black;'>";
 	//!!!!!!!!!!!!!!attempt to use ctiTitledContainer!!!!!!!!!!!!!!!!!!!!!
 	//header += " class='cmdPopupMenu' >";
@@ -311,22 +321,27 @@ function executeFeederCommand (paoId, command, cmd_name) {
 }
 
 function executeCapBankCommand (paoId, command, is_manual_state, cmd_name) {
-	if (is_manual_state)
+	var unique_id = 'cmdDiv';
+	if (is_manual_state) {
 		new Ajax.Request ('/servlet/CBCServlet', 
 		{method:'post', 
 		parameters:'opt='+command+'&cmdID='+30+'&paoID='+paoId + '&controlType=CAPBANK_TYPE', 
 	 	onSuccess: function () { display_status(cmd_name, "Message sent successfully", "green"); },
 		onFailure: function () { display_status(cmd_name, "Command failed", "red"); }, 
 		asynchronous:true });
-	else
+		unique_id += '_system_';
+		unique_id += paoId;
+	}
+	else {
 		new Ajax.Request ('/servlet/CBCServlet', 
 		{method:'post', 
 		parameters:'cmdID='+command+'&paoID='+paoId + '&controlType=CAPBANK_TYPE', 
 		onSuccess: function () { display_status(cmd_name, "Message sent successfully", "green"); },
 		onFailure: function () { display_status(cmd_name, "Command failed", "red"); }, 
 		asynchronous:true });
-		
-	var cmdDiv = document.getElementById ('cmdDiv' + paoId);
+		unique_id += paoId;
+	}
+	var cmdDiv = document.getElementById (unique_id);
 	cmdDiv.style.display = 'none';
 }
 
