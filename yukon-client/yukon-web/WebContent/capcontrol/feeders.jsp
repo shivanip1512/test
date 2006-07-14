@@ -16,7 +16,7 @@
 
 <%
 	
-	String nd = "\"return nd(5000);\"";
+	String nd = "\"return nd();\"";
 	int subid = cbcSession.getLastSubID();
 	LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);			
 	String popupEvent = DaoFactory.getAuthDao().getRolePropertyValue(user, WebClientRole.POPUP_APPEAR_STYLE);
