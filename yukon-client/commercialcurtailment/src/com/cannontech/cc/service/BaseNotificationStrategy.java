@@ -1,5 +1,6 @@
 package com.cannontech.cc.service;
 
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -176,9 +177,12 @@ public abstract class BaseNotificationStrategy extends StrategyBase {
         if (event.getState().equals(CurtailmentEventState.CANCELLED)) {
             return false;
         }
+        if (event.getState().equals(CurtailmentEventState.MODIFIED)) {
+            return false;
+        }
         final int UNSTOPPABLE_WINDOW_MINUTES = 2;
         Date now = new Date();
-        Date paddedNotif = TimeUtil.addMinutes(event.getNotificationTime(), UNSTOPPABLE_WINDOW_MINUTES);
+        Date paddedNotif = event.getNotificationTime();
         Date paddedStart = TimeUtil.addMinutes(event.getStartTime(), -UNSTOPPABLE_WINDOW_MINUTES);
         return now.before(paddedStart) && now.after(paddedNotif);
     }
@@ -265,6 +269,15 @@ public abstract class BaseNotificationStrategy extends StrategyBase {
 
         event.setState(CurtailmentEventState.CANCELLED);
         curtailmentEventDao.save(event);
+    }
+
+    @Override
+    public boolean isConsideredActive(BaseEvent event) {
+        CurtailmentEventState[] activeStates = 
+            new CurtailmentEventState[] {CurtailmentEventState.INITIAL,
+                                         CurtailmentEventState.MODIFIED};
+        CurtailmentEvent curtailmentEvent = (CurtailmentEvent)event;
+        return Arrays.asList(activeStates).contains(curtailmentEvent.getState());
     }
 
     @Override

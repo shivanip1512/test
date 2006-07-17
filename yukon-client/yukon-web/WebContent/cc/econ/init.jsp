@@ -77,9 +77,10 @@
       <t:outputLabel value="Number of windows" for="windowInput"/>
     </td>
     <td>
-      <t:inputText id="windowInput" value="#{sEconomicCreate.builder.numberOfWindows}" size="5">
+      <t:inputText id="windowInput" value="#{sEconomicCreate.builder.numberOfWindows}" 
+            size="5"
+            required="true">
         <f:validateLongRange minimum="1"/>
-        <f:validateLength minimum="1"/>
       </t:inputText>
       (Each window is <t:outputText value="#{sEconomicCreate.windowLength}"/> minutes long)
     </td>

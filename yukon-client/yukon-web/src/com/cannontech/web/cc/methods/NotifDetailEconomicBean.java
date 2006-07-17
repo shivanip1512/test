@@ -28,6 +28,9 @@ public class NotifDetailEconomicBean {
         return null;
     }
     
+    public String mainEvent() {
+        return "econDetail";
+    }
     
     // getters and setters
     

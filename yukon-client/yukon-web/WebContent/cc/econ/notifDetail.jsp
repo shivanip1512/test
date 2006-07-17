@@ -13,6 +13,8 @@
   Event for 
   <t:outputText value="#{sNotifEconomicDetail.participant.customer.companyName}"/>
 </h2>
+<h:form>
+<t:commandLink action="#{sNotifEconomicDetail.mainEvent}" value="Return"/>
 <div class="jsfMessages"> 
 <t:messages showSummary="false" showDetail="true" 
             errorClass="jsfError" 
@@ -21,9 +23,15 @@
             fatalClass="jsfFatal"/> 
 </div>
 
-<h:form>
 
 <table class="horizBorders">
+  <tr>
+    <td>Event Number</td>
+    <td>
+      <t:outputText 
+         value="#{sEconomicDetail.event.displayName}"/>
+    </td>
+  </tr>
   <tr>
     <td>Start Date</td>
     <td>

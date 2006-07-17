@@ -261,8 +261,8 @@
         <managed-bean-class>com.cannontech.web.cc.EventOverviewBean</managed-bean-class>
         <managed-bean-scope>request</managed-bean-scope>
         <managed-property>
-          <property-name>baseEventDao</property-name>
-          <value>#{baseEventDao}</value>
+          <property-name>eventService</property-name>
+          <value>#{eventService}</value>
         </managed-property>
         <managed-property>
             <property-name>eventDetailHelper</property-name>

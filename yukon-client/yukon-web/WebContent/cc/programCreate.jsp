@@ -17,7 +17,7 @@
 <h:form>
 <div>
 Program Name: <t:inputText value="#{sProgramDetail.program.name}">
-  <f:validateLength minimum="4" />
+  <f:validateLength minimum="2" />
 </t:inputText>
 </div>
 <div>Program Type: 

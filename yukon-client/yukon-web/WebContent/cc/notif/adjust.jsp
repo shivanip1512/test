@@ -35,9 +35,12 @@
 <t:outputLabel value="Duration" for="durationInput"/>
     </td>
     <td>
-<t:inputText id="durationInput" value="#{sNotificationDetail.changeBuilder.newLength}" size="5">
+<t:inputText id="durationInput" 
+     value="#{sNotificationDetail.changeBuilder.newLength}" 
+     size="5"
+     required="true">
         <f:validateLongRange minimum="1"/>
-        <f:validateLength minimum="1"/></t:inputText>
+</t:inputText>
     </td>
   </tr>
   <tr>

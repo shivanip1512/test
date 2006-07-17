@@ -5,6 +5,7 @@
 
   <bean id="programService" class="com.cannontech.cc.service.ProgramService" singleton="false" autowire="byType" />
   <bean id="groupService" class="com.cannontech.cc.service.GroupService" singleton="false" autowire="byType" />
+  <bean id="eventService" class="com.cannontech.cc.service.EventService" singleton="false" autowire="byType" />
   <bean id="customerPointService" class="com.cannontech.cc.service.CustomerPointService" autowire="byType" dependency-check="objects"/>
   <bean id="customerEventService" class="com.cannontech.cc.service.CustomerEventService" autowire="byType" dependency-check="objects" />
   <bean id="economicService" class="com.cannontech.cc.service.EconomicService" autowire="byType" />
@@ -82,13 +83,15 @@
    </property>
   </bean>
   
-  <bean id="isocCommonStrategy" class="com.cannontech.cc.service.IsocCommonStrategy" autowire="byType">
+  <bean id="isocCommonStrategy" class="com.cannontech.cc.service.IsocCommonStrategy" singleton="true" autowire="byType">
     <property name="strategyKeys">
       <set>
         <value>isocSameDay</value>
         <value>isocNotification</value>
+        <value>isocSupersedeNotification</value>
       </set>
     </property>
+    <property name="requiredPointGroup" value="ISOC"/>
   </bean>
   
   

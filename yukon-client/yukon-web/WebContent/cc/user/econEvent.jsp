@@ -107,7 +107,10 @@
       <t:outputText value="Energy Buy Through (kW)"/>
     </f:facet>
     <t:inputText value="#{sEconomicUserDetail.currentRowBuyThrough}" 
-                  displayValueOnly="#{!sEconomicUserDetail.currentRowPriceEditable}"/>
+                 displayValueOnly="#{!sEconomicUserDetail.currentRowPriceEditable}"
+                 required="true">
+      <f:validateLongRange minimum="0" maximum="100000"/>
+    </t:inputText>
   </t:column>
 </t:dataTable>
 

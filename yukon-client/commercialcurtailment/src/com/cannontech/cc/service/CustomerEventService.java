@@ -14,6 +14,7 @@ public class CustomerEventService {
     private CustomerStubDao customerStubDao;
     private CustomerDao customerDao;
     private BaseEventDao baseEventDao;
+    private EventService eventService;
 
     public CustomerEventService() {
         super();
@@ -27,20 +28,20 @@ public class CustomerEventService {
     
     public List<BaseEvent> getCurrentEvents(LiteYukonUser user) {
         CICustomerStub customer = getCustomer(user);
-        List<BaseEvent> allEvents = baseEventDao.getCurrentEvents(customer);
-        return allEvents;
+        List<BaseEvent> allForCustomer = baseEventDao.getAllForCustomer(customer, eventService.new CurrentEventPredicate());
+        return allForCustomer;
     }
     
     public List<BaseEvent> getPendingEvents(LiteYukonUser user) {
         CICustomerStub customer = getCustomer(user);
-        List<BaseEvent> allEvents = baseEventDao.getPendingEvents(customer);
-        return allEvents;
+        List<BaseEvent> allForCustomer = baseEventDao.getAllForCustomer(customer, eventService.new PendingEventPredicate());
+        return allForCustomer;
     }
     
     public List<BaseEvent> getRecentEvents(LiteYukonUser user) {
         CICustomerStub customer = getCustomer(user);
-        List<BaseEvent> allEvents = baseEventDao.getRecentEvents(customer);
-        return allEvents;
+        List<BaseEvent> allForCustomer = baseEventDao.getAllForCustomer(customer, eventService.new RecentEventPredicate());
+        return allForCustomer;
     }
     
     // dependency injection getters/setters
@@ -63,6 +64,10 @@ public class CustomerEventService {
 
     public void setCustomerDao(CustomerDao customerDao) {
         this.customerDao = customerDao;
+    }
+
+    public void setEventService(EventService eventService) {
+        this.eventService = eventService;
     }
 
 }

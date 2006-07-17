@@ -23,18 +23,11 @@ import com.cannontech.core.dao.EnergyCompanyDao;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.customer.CICustomerPointType;
-import com.cannontech.support.CustomerPointTypeHelper;
 
 public class IsocEconomicStrategy extends BaseEconomicStrategy {
-    IsocCommonStrategy isocCommonStrategy;
-    private CustomerPointTypeHelper pointTypeHelper;
+    private IsocCommonStrategy isocCommonStrategy;
     private EnergyCompanyDao energyCompanyDao;
     
-    public void setPointTypeHelper(CustomerPointTypeHelper pointTypeHelper) {
-        this.pointTypeHelper = pointTypeHelper;
-    }
-
-
     public IsocEconomicStrategy() {
         super();
     }
@@ -66,11 +59,6 @@ public class IsocEconomicStrategy extends BaseEconomicStrategy {
             }
         }
         
-        boolean pointSatisfied = 
-            pointTypeHelper.isPointGroupSatisfied(vCustomer.getCustomer(), "ISOC");
-        if (!pointSatisfied) {
-            vCustomer.addExclusion(VerifiedCustomer.Status.EXCLUDE, "all 'ISOC' points do not exist");
-        }
         
         isocCommonStrategy.checkEventCustomer(vCustomer, myBuilder.getEvent());
     }

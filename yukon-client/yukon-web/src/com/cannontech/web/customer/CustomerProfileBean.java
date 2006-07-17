@@ -26,6 +26,7 @@ public class CustomerProfileBean {
     private Contact primaryContact;
     private List<Contact> additionalContactList = new ArrayList<Contact>();
     private Map<Contact, YukonUser> userLookup = new HashMap<Contact, YukonUser>();
+    private ContactNotification selectedNotification;
     private CustomerDao customerDao;
     private DBPersistentDao dbPersistentDao;
     
@@ -108,6 +109,11 @@ public class CustomerProfileBean {
         return null;
     }
     
+    public String deleteNotification() {
+        selectedContact.getContactNotifVect().remove(selectedNotification);
+        return null;
+    }
+    
     public String addContact() {
         Contact contact = new Contact(null);
         getAdditionalContactList().add(contact);
@@ -141,6 +147,14 @@ public class CustomerProfileBean {
 
     public Map<Contact, YukonUser> getUserLookup() {
         return userLookup;
+    }
+
+    public ContactNotification getSelectedNotification() {
+        return selectedNotification;
+    }
+
+    public void setSelectedNotification(ContactNotification selectedNotification) {
+        this.selectedNotification = selectedNotification;
     }
 
     public CustomerDao getCustomerDao() {

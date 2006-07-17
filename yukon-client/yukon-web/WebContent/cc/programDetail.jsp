@@ -21,7 +21,7 @@
 <tr>
   <td><t:outputLabel value="Program Name" for="programName" styleClass="propertyEntry"/></td>
   <td><t:inputText id="programName" value="#{sProgramDetail.program.name}" >
-    <f:validateLength minimum="4" />
+    <f:validateLength minimum="2" />
     </t:inputText></td>
 </tr>
 </table>

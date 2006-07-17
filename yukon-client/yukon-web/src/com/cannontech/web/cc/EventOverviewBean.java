@@ -5,8 +5,8 @@ import java.util.List;
 
 import javax.faces.model.ListDataModel;
 
-import com.cannontech.cc.dao.BaseEventDao;
 import com.cannontech.cc.model.BaseEvent;
+import com.cannontech.cc.service.EventService;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.web.cc.methods.BaseDetailBean;
 
@@ -14,10 +14,11 @@ public class EventOverviewBean {
     private ListDataModel pendingEventListModel = null;
     private ListDataModel recentEventListModel = null;
     private ListDataModel currentEventListModel = null;
-    private BaseEventDao baseEventDao;
+    private EventService eventService;
     private EventDetailHelper eventDetailHelper;
     private CommercialCurtailmentBean commercialCurtailmentBean;
     private BaseEvent selectedEvent;
+    
     
     public BaseEvent getSelectedEvent() {
         return selectedEvent;
@@ -42,7 +43,7 @@ public class EventOverviewBean {
     public ListDataModel getPendingEventListModel() {
         if (pendingEventListModel == null) {
             LiteEnergyCompany energyCompany = commercialCurtailmentBean.getEnergyCompany();
-            List<BaseEvent> eventList = baseEventDao.getPendingEvents(energyCompany);
+            List<BaseEvent> eventList = eventService.getPendingEventList(energyCompany);
             Collections.reverse(eventList);
             pendingEventListModel = new ListDataModel(eventList);
         }
@@ -56,7 +57,7 @@ public class EventOverviewBean {
     public ListDataModel getCurrentEventListModel() {
         if (currentEventListModel == null) {
             LiteEnergyCompany energyCompany = commercialCurtailmentBean.getEnergyCompany();
-            List<BaseEvent> eventList = baseEventDao.getCurrentEvents(energyCompany);
+            List<BaseEvent> eventList = eventService.getCurrentEventList(energyCompany);
             Collections.reverse(eventList);
             currentEventListModel = new ListDataModel(eventList);
         }
@@ -70,7 +71,7 @@ public class EventOverviewBean {
     public ListDataModel getRecentEventListModel() {
         if (recentEventListModel == null) {
             LiteEnergyCompany energyCompany = commercialCurtailmentBean.getEnergyCompany();
-            List<BaseEvent> eventList = baseEventDao.getRecentEvents(energyCompany);
+            List<BaseEvent> eventList = eventService.getRecentEventList(energyCompany);
             Collections.reverse(eventList);
             recentEventListModel = new ListDataModel(eventList);
         }
@@ -93,14 +94,6 @@ public class EventOverviewBean {
     
     //setters for dependency injection
 
-    public BaseEventDao getBaseEventDao() {
-        return baseEventDao;
-    }
-
-    public void setBaseEventDao(BaseEventDao baseEventDao) {
-        this.baseEventDao = baseEventDao;
-    }
-
     public EventDetailHelper getEventDetailHelper() {
         return eventDetailHelper;
     }
@@ -109,5 +102,12 @@ public class EventOverviewBean {
         this.eventDetailHelper = eventDetailHelper;
     }
 
+    public EventService getEventService() {
+        return eventService;
+    }
+
+    public void setEventService(EventService eventService) {
+        this.eventService = eventService;
+    }
 
 }

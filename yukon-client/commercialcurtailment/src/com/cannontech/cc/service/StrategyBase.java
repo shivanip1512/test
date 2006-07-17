@@ -55,6 +55,12 @@ public abstract class StrategyBase {
     
     public abstract String getMethodKey();
     
+    /** Meant to be used to determine if an event is NOT cancelled or
+     *  NOT an accounting-only event or NOT a suppressed event.
+     * @return
+     */
+    public abstract boolean isConsideredActive(BaseEvent event);
+    
     public 
     List<VerifiedNotifCustomer> 
     getVerifiedCustomerList(EventBuilderBase builder, 

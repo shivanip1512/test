@@ -2,7 +2,10 @@ package com.cannontech.cc.service;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -13,7 +16,11 @@ import org.apache.commons.collections.iterators.ReverseListIterator;
 import com.cannontech.cc.dao.BaseEventDao;
 import com.cannontech.cc.model.BaseEvent;
 import com.cannontech.cc.model.CICustomerStub;
+import com.cannontech.cc.model.CurtailmentEvent;
+import com.cannontech.cc.model.EconomicEvent;
 import com.cannontech.cc.service.builder.VerifiedCustomer;
+import com.cannontech.cc.service.enums.EconomicEventState;
+import com.cannontech.cc.service.enums.CurtailmentEventState;
 import com.cannontech.common.exception.PointException;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.dao.SimplePointAccessDao;
@@ -26,15 +33,17 @@ public class IsocCommonStrategy extends StrategyGroupBase {
     private CustomerPointTypeHelper pointTypeHelper;
     private BaseEventDao baseEventDao;
 
+    private final class StopTimeComparator implements Comparator<BaseEvent> {
+        public int compare(BaseEvent o1, BaseEvent o2) {
+            return o1.getStopTime().compareTo(o2.getStopTime());
+        }
+    }
+    private final Comparator<BaseEvent> stopTimeComparatot = new StopTimeComparator();
+
     public IsocCommonStrategy() {
         super();
     }
 
-    @Override
-    public String getRequiredPointGroup() {
-        return "ISOC";
-    }
-    
     private int getTotalEventHours(CICustomerStub customer) {
         //get first day this year
         Date now = new Date();
@@ -50,11 +59,21 @@ public class IsocCommonStrategy extends StrategyGroupBase {
         cal.add(Calendar.YEAR, 1);
         Date to = cal.getTime();
         
-        return getBaseEventDao().getTotalEventDuration(customer, getStrategyKeys(), from, to) / 60;
+        List<BaseEvent> allEvents = getBaseEventDao().getAllForCustomer(customer, from, to);
+        int totalMinutes = 0;
+        for (BaseEvent event : allEvents) {
+            
+            if (doesEventContributeToAllowedHours(event)) {
+                totalMinutes += event.getDuration();
+            }
+        }
+        int totalHours = totalMinutes / 60;
+        return totalHours;
     }
     
     public boolean hasCustomerExceededAllowedHours(CICustomerStub customer, int propossedEventLength) throws PointException {
-        LitePoint allowedHoursPoint = pointTypeHelper.getPoint(customer, CICustomerPointType.InterruptHours);
+        LitePoint allowedHoursPoint = 
+            pointTypeHelper.getPoint(customer, CICustomerPointType.InterruptHours);
         int allowedHours = (int) pointAccess.getPointValue(allowedHoursPoint);
         // applies to current year
         int actualHours = getTotalEventHours(customer);
@@ -71,6 +90,7 @@ public class IsocCommonStrategy extends StrategyGroupBase {
 
     public void checkEventCustomer(VerifiedCustomer vCustomer, BaseEvent event) {
         try {
+            checkRequiredPoints(vCustomer);
             checkEventOverlap(vCustomer, event);
             checkAllowedHours(vCustomer, event); 
             checkNoticeTime(vCustomer, event);
@@ -79,11 +99,19 @@ public class IsocCommonStrategy extends StrategyGroupBase {
         }
     }
 
+    private void checkRequiredPoints(VerifiedCustomer vCustomer) {
+        boolean pointSatisfied = 
+            pointTypeHelper.isPointGroupSatisfied(vCustomer.getCustomer(), getRequiredPointGroup());
+        if (!pointSatisfied) {
+            vCustomer.addExclusion(VerifiedCustomer.Status.EXCLUDE, "all 'ISOC' points do not exist");
+        }
+    }
+
     public void checkEventOverlap(VerifiedCustomer vCustomer, BaseEvent event) {
         List<BaseEvent> forCustomer = baseEventDao.getAllForCustomer(vCustomer.getCustomer());
+        Collections.sort(forCustomer, stopTimeComparatot);
         // technically this list should be sorted by stop time, but because
         // events can't overlap, sorting by start time produces the same order
-        Iterator iterator = new ReverseListIterator(forCustomer);
         for (Iterator iter = new ReverseListIterator(forCustomer); iter.hasNext();) {
             BaseEvent otherEvent = (BaseEvent) iter.next();
             // rely on ordering to short circuit
@@ -92,7 +120,10 @@ public class IsocCommonStrategy extends StrategyGroupBase {
                 // because of the event ordering, no more possible collisions exist
                 break;
             }
-            if (otherEvent.getStartTime().before(event.getStopTime())) {
+            Date otherStart = otherEvent.getStartTime();
+            Date thisStop = event.getStopTime();
+            if (doEventsOverlap(event, otherEvent)
+                && otherStart.before(thisStop)) {
                 // we have a collision
                 vCustomer.addExclusion(VerifiedCustomer.Status.EXCLUDE, 
                 "already in an event (" + otherEvent.getDisplayName() + ") at that time");
@@ -100,6 +131,42 @@ public class IsocCommonStrategy extends StrategyGroupBase {
             }
             
         }
+    }
+    
+    /**
+     * The idea is to check if they COULD overlap (based on their state). This 
+     * method shouldn't check the times.
+     * @param propossedEvent
+     * @param existingEvent
+     * @return
+     */
+    public boolean doEventsOverlap(BaseEvent propossedEvent, BaseEvent existingEvent) {
+        // for this implementation, the propossedEvent doesn't matter and we can just
+        // delegate to the following method which checks the same thing
+        return doesEventContributeToAllowedHours(existingEvent);
+    }
+    
+    public boolean doesEventContributeToAllowedHours(BaseEvent event) {
+        String strategy = event.getProgram().getProgramType().getStrategy();
+        if (!getStrategyKeys().contains(strategy)) {
+            return false;
+        }
+        if (event instanceof EconomicEvent) {
+            EconomicEvent existingEventEcon = (EconomicEvent) event;
+            List<EconomicEventState> excludedStates = 
+                Arrays.asList(EconomicEventState.CANCELLED, EconomicEventState.SUPPRESSED);
+            if (excludedStates.contains(existingEventEcon.getState())) {
+                return false;
+            }
+        } else if (event instanceof CurtailmentEvent) {
+            CurtailmentEvent existingEventCurt = (CurtailmentEvent) event;
+            List<CurtailmentEventState> excludedStates = 
+                Arrays.asList(CurtailmentEventState.CANCELLED);
+            if (excludedStates.contains(existingEventCurt.getState())) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public void checkNoticeTime(VerifiedCustomer vCustomer, BaseEvent event) throws PointException {

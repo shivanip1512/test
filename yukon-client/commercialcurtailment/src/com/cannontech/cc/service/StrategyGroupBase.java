@@ -7,13 +7,24 @@ import com.cannontech.cc.dao.BaseEventDao;
 public abstract class StrategyGroupBase {
     private BaseEventDao baseEventDao;
     private Set<String> strategyKeys;
+    private String requiredPointGroup;
 
     public StrategyGroupBase() {
         super();
     }
     
-    public abstract String getRequiredPointGroup();
+    public String getRequiredPointGroup() {
+        return requiredPointGroup;
+    }
     
+    public void setRequiredPointGroup(String requiredPointGroup) {
+        this.requiredPointGroup = requiredPointGroup;
+    }
+    
+    /**
+     * Currently injected by Spring for all extending classes.
+     * @param strategyKeys
+     */
     public void setStrategyKeys(Set<String> strategyKeys) {
         this.strategyKeys = strategyKeys;
     }

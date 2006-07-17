@@ -3,6 +3,7 @@ package com.cannontech.cc.service;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -212,6 +213,7 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
             window.setPricingRevision(builder.getEventRevision());
             window.setEnergyPrice(bigDecimal);
             window.setOffset(i);
+            builder.getEventRevision().addWindow(window);
             windowList.add(window);
         }
         builder.setPrices(windowList);
@@ -314,13 +316,7 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
             EconomicEventPricing revision = builder.getEventRevision();
             Date now = new Date(); // now
             revision.setCreationTime(now);
-            //event.addRevision(revision);
-            //getEconomicEventPricingDao().save(revision);
 
-            for (EconomicEventPricingWindow window : builder.getPrices()) {
-                revision.addWindow(window);
-                //getEconomicEventPricingWindowDao().save(window);
-            }
             getEconomicEventDao().save(event);
 
             List<EconomicEventParticipant> participantList = builder.getParticipantList();
@@ -706,6 +702,13 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
             return 0;
         }
         return (float)success/(float)total;
+    }
+    
+    @Override
+    public boolean isConsideredActive(BaseEvent event) {
+        EconomicEventState[] activeStates = new EconomicEventState[] {EconomicEventState.INITIAL};
+        EconomicEvent economicEvent = (EconomicEvent) event;
+        return Arrays.asList(activeStates).contains(economicEvent.getState());
     }
 
     @Override
