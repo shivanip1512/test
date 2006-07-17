@@ -2,6 +2,7 @@
 <%@ page import="com.cannontech.servlet.LCConnectionServlet" %>
 <%@ page import="com.cannontech.web.loadcontrol.LoadcontrolCache" %>
 <%@ page import="com.cannontech.loadcontrol.data.LMProgramDirect" %>
+<%@ page import="com.cannontech.core.dao.DaoNotFoundException" %>
 <%
 	StarsApplianceCategory category = null;
 	int catIdx = Integer.parseInt( request.getParameter("Category") );
@@ -114,7 +115,15 @@ var iconNameEnvrn = new Array();
 	for (int i = 0; i < category.getStarsEnrLMProgramCount(); i++) {
 		StarsEnrLMProgram program = category.getStarsEnrLMProgram(i);
 		String progName = "(none)";
-		if (program.getDeviceID() > 0) progName = DaoFactory.getPaoDao().getYukonPAOName(program.getDeviceID());
+		if (program.getDeviceID() > 0)
+        {
+            try
+            {
+                progName = DaoFactory.getPaoDao().getYukonPAOName(program.getDeviceID());    
+            }
+            catch(DaoNotFoundException e) {}
+        }
+         
 		StarsWebConfig cfg = program.getStarsWebConfig();
 		String[] dispNames = StarsUtils.splitString(cfg.getAlternateDisplayName(), ",");
 		String[] imgNames = ServletUtils.getImageNames( cfg.getLogoLocation() );

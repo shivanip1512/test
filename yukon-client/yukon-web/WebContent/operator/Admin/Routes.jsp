@@ -1,3 +1,4 @@
+<%@ page import="com.cannontech.core.dao.DaoNotFoundException" %>
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%
 	LiteYukonPAObject[] inheritedRoutes = null;
@@ -85,8 +86,20 @@ function removeRoutes(form) {
 	if (form.RoutesAvailable.length > 0 && form.RoutesAvailable.options[0].value == 0)
 		insertIdx = 1;
 	
-	if (defaultRouteSelected && !removeWarned) {
-		if (confirm('You are going to remove the default route "<%= DaoFactory.getPaoDao().getYukonPAOName(liteEC.getDefaultRouteID()) %>" from the energy company. ' +
+	<%
+        String dftRoute;
+        try
+        {
+            dftRoute = DaoFactory.getPaoDao().getYukonPAOName(liteEC.getDefaultRouteID());
+            dftRoute = "Default - " + dftRoute;
+        }
+        catch(DaoNotFoundException e)
+        {
+            dftRoute = "RouteInvalid";
+        } 
+    %>
+    if (defaultRouteSelected && !removeWarned) {
+		if (confirm('You are going to remove the default route "<%= dftRoute %>" from the energy company. ' +
 			'Doing so could cause severe problem to your system. Are you sure you want to continue?'))
 			removeWarned = true;
 		else
