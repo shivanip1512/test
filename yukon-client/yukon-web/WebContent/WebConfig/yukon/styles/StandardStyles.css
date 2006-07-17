@@ -100,7 +100,7 @@ body {
 }
 
 #Menu #topMenu a:hover, #Menu #topMenu a.stdhdr_selected {
-    color: rgb(204,204,204);
+    color: #f90;
 }
 
 #Menu .stdhdr_rightSide {
@@ -133,7 +133,7 @@ table.roundedTable {
 
 table.resizeRoundTable {
 	
-	border-collapse: collapse;
+    border-collapse: collapse;
     border-spacing: 0;
 }
 
@@ -209,4 +209,11 @@ table.resizeRoundTable td.top {
     color: white;
 }
 
+/* used for "CSS" Icons in the clearbits folder */
+img.cssicon, input.cssicon {
+  background-color: #f00;
+  background-image: url(../Icons/clearbits/bg_rounded.gif);
+  background-repeat: no-repeat;
+  border: none;
+}
 
