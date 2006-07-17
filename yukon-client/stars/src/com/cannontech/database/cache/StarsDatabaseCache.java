@@ -13,6 +13,7 @@ import java.util.Vector;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.DaoNotFoundException;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteBase;
@@ -631,9 +632,17 @@ public class StarsDatabaseCache implements DBChangeLiteListener {
 					liteProg.setGroupIDs( groupIDs );
 					
 					StarsEnrLMProgram program = ServletUtils.getEnrollmentProgram( energyCompany.getStarsEnrollmentPrograms(), liteProg.getProgramID() );
-					if (program != null) {
-						program.setYukonName( DaoFactory.getPaoDao().getYukonPAOName(liteProg.getDeviceID()) );
-						StarsLiteFactory.setAddressingGroups( program, liteProg );
+					if (program != null) 
+                    {
+						try
+                        {
+						    program.setYukonName( DaoFactory.getPaoDao().getYukonPAOName(liteProg.getDeviceID()) );
+                        }
+                        catch(DaoNotFoundException e)
+                        {
+                            program.setYukonName( CtiUtilities.STRING_NONE );
+                        }
+                        StarsLiteFactory.setAddressingGroups( program, liteProg );
 					}
 				}
 				catch (java.sql.SQLException e) {

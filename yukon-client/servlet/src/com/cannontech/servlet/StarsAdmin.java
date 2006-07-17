@@ -19,6 +19,7 @@ import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.DaoNotFoundException;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
@@ -811,8 +812,15 @@ public class StarsAdmin extends HttpServlet {
 					
 					String newDispName = progDispNames[i];
 					if (newDispName.length() == 0 && deviceID > 0)
-						newDispName = DaoFactory.getPaoDao().getYukonPAOName( deviceID );
-					if (newDispName.length() == 0) {
+                    {
+						try
+                        {
+                            newDispName = DaoFactory.getPaoDao().getYukonPAOName( deviceID );
+                        }
+                        catch(DaoNotFoundException e) {}
+                    }
+					if (newDispName.length() == 0) 
+                    {
 						session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "The display name of a virtual program cannot be empty" );
 						redirect = referer;
 						return;
