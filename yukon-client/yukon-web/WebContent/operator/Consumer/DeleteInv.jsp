@@ -1,6 +1,7 @@
 <%@ include file="include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteInventoryBase" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteStarsLMHardware" %>
+<%@ page import="com.cannontech.core.dao.DaoNotFoundException" %>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
 	int invID = Integer.parseInt(request.getParameter("InvID"));
@@ -45,14 +46,25 @@
                   <tr>
                     <td align="center"> 
                       <%
-	if (liteInv instanceof LiteStarsLMHardware) {
+	if (liteInv instanceof LiteStarsLMHardware) 
+    {
 		String serialNo = ((LiteStarsLMHardware)liteInv).getManufacturerSerialNumber();
 %>
                       The hardware with serial number <%= serialNo %> will be 
                       removed from the account. 
                       <%
-	} else {
-		String deviceName = DaoFactory.getPaoDao().getYukonPAOName(liteInv.getDeviceID());
+	} 
+    else 
+    {
+		String deviceName;
+        try
+        {
+            deviceName = DaoFactory.getPaoDao().getYukonPAOName(liteInv.getDeviceID());
+        }
+        catch(DaoNotFoundException e) 
+        {
+            deviceName = "(none)";
+        }
 %>
                       The device &quot;<%= deviceName %>&quot; will be removed 
                       from the account. 

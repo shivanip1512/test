@@ -2,6 +2,7 @@
 <%@ page import="com.cannontech.database.data.pao.PAOGroups" %>
 <%@ page import="com.cannontech.database.data.pao.RouteTypes" %>
 <%@ page import="com.cannontech.stars.web.util.InventoryManagerUtil" %>
+<%@ page import="com.cannontech.core.dao.DaoNotFoundException" %>
 <%
 	boolean inWizard = request.getParameter("Wizard") != null;
 	if (!inWizard && accountInfo == null) {
@@ -508,11 +509,16 @@ function confirmCancel() {
                                 <td width="200"> 
                                   <select name="Route" onchange="setContentChanged(true)">
 <%
-	String dftRoute = DaoFactory.getPaoDao().getYukonPAOName(liteEC.getDefaultRouteID());
-	if (dftRoute != null)
-		dftRoute = "Default - " + dftRoute;
-	else
-		dftRoute = "Default - (None)";
+	String dftRoute;
+    try
+    {
+        dftRoute = DaoFactory.getPaoDao().getYukonPAOName(liteEC.getDefaultRouteID());
+        dftRoute = "Default - " + dftRoute;
+    }
+    catch(DaoNotFoundException e)
+    {
+        dftRoute = "Default - (None)";
+    }
 %>
                                     <option value="0"><%= dftRoute %></option>
 <%
