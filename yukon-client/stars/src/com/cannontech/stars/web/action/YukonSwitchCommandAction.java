@@ -18,6 +18,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.DaoNotFoundException;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.StarsDatabaseCache;
@@ -661,20 +662,39 @@ public class YukonSwitchCommandAction implements ActionBase {
 				throw new WebClientException("Unsupported configuration type for serial #" + liteHw.getManufacturerSerialNumber() + ".");
 			}
 		}
-		else if (groupID != null) {
-			String groupName = DaoFactory.getPaoDao().getYukonPAOName( groupID.intValue() );
-			String cmd = "putconfig serial " + liteHw.getManufacturerSerialNumber() + " template '" + groupName + "'";
-			commands.add( cmd );
+		else if (groupID != null) 
+        {
+			try
+            {
+			    String groupName = DaoFactory.getPaoDao().getYukonPAOName( groupID.intValue() );
+                String cmd = "putconfig serial " + liteHw.getManufacturerSerialNumber() + " template '" + groupName + "'";
+                commands.add( cmd );
+            }
+            catch(DaoNotFoundException e)
+            {
+                CTILogger.error( e.getMessage(), e );
+            }
 		}
-		else {
-			if (liteHw.getAccountID() > 0) {
+		else 
+        {
+			if (liteHw.getAccountID() > 0) 
+            {
 				LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInformation( liteHw.getAccountID(), true );
-				for (int i = 0; i < liteAcctInfo.getAppliances().size(); i++) {
+				for (int i = 0; i < liteAcctInfo.getAppliances().size(); i++) 
+                {
 					LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(i);
-					if (liteApp.getInventoryID() == liteHw.getInventoryID() && liteApp.getAddressingGroupID() > 0) {
-						String groupName = DaoFactory.getPaoDao().getYukonPAOName( liteApp.getAddressingGroupID() );
-						String cmd = "putconfig serial " + liteHw.getManufacturerSerialNumber() + " template '" + groupName + "'";
-						commands.add( cmd );
+					if (liteApp.getInventoryID() == liteHw.getInventoryID() && liteApp.getAddressingGroupID() > 0) 
+                    {
+						try
+                        {
+                            String groupName = DaoFactory.getPaoDao().getYukonPAOName( liteApp.getAddressingGroupID() );
+    						String cmd = "putconfig serial " + liteHw.getManufacturerSerialNumber() + " template '" + groupName + "'";
+    						commands.add( cmd );
+                        }
+                        catch(DaoNotFoundException e)
+                        {
+                            CTILogger.error( e.getMessage(), e );
+                        }
 					}
 				}
 			}
@@ -886,8 +906,17 @@ public class YukonSwitchCommandAction implements ActionBase {
         
         String loadGroupName = null;
         if(optGroupID != null)
-            loadGroupName = DaoFactory.getPaoDao().getYukonPAOName(optGroupID);        
-            
+        {
+            try
+            {
+                loadGroupName = DaoFactory.getPaoDao().getYukonPAOName(optGroupID);        
+            }
+            catch(DaoNotFoundException e)
+            {
+                CTILogger.error( e.getMessage(), e );
+            }
+        }
+        
         final String fs = System.getProperty( "file.separator" );
         File ecDir = new File( ServerUtils.getFileWriteSwitchConfigDir() + fs + energyCompany.getName() );
         if (!ecDir.exists())
@@ -930,12 +959,13 @@ public class YukonSwitchCommandAction implements ActionBase {
         
         if(loadGroupName != null)
         {
-            if ((liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL || forceInService)
+            /*if ((liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL || forceInService)
                     && InventoryUtils.supportServiceInOut( liteHw.getLmHardwareTypeID() ))
             {
                 // Send an in service command first
                 fileWriteEnableCommand( energyCompany, liteHw, null );
-            }
+            }*/
+            fileWriteReceiverConfigLine(commFile, cmd);
         }
         else
         {
@@ -946,7 +976,6 @@ public class YukonSwitchCommandAction implements ActionBase {
                 ": Unable to find a load group in Yukon with the specified groupID of " + optGroupID;
         }
         
-        fileWriteReceiverConfigLine(commFile, cmd);
         /*TODO Not sure if we want to leave this in since we don't know for sure that Gill has
          * run the written out commands to the switch.  Could be false advertising...
         // Add "Config" to hardware events
