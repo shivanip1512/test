@@ -23,6 +23,7 @@ import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.DaoNotFoundException;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
@@ -953,11 +954,17 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 					suProg[3] = -1;	// LoadNumber (optional)
 					
 					if (fields[ImportManagerUtil.IDX_ADDR_GROUP].trim().length() > 0) {
-						for (int j = 0; j < liteProg.getGroupIDs().length; j++) {
-							if (DaoFactory.getPaoDao().getYukonPAOName( liteProg.getGroupIDs()[j] ).equalsIgnoreCase( fields[ImportManagerUtil.IDX_ADDR_GROUP] )) {
-								suProg[2] = liteProg.getGroupIDs()[j];
-								break;
-							}
+						for (int j = 0; j < liteProg.getGroupIDs().length; j++) 
+                        {
+                            try
+                            {
+                                if (DaoFactory.getPaoDao().getYukonPAOName( liteProg.getGroupIDs()[j] ).equalsIgnoreCase( fields[ImportManagerUtil.IDX_ADDR_GROUP] )) 
+                                {
+                                    suProg[2] = liteProg.getGroupIDs()[j];
+                                    break;
+                                }
+                            }
+                            catch(DaoNotFoundException e) {}
 						}
 						
 						if (suProg[2] == -1)

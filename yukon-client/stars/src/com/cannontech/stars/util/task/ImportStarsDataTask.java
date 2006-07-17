@@ -30,6 +30,7 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.DaoNotFoundException;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
@@ -1835,8 +1836,19 @@ public class ImportStarsDataTask extends TimeConsumingTask {
 								}
 							}
 						}
-						else if (ImportManagerUtil.LIST_NAMES[i][0].equals("LoadGroup")) {
-							line += "\"" + DaoFactory.getPaoDao().getYukonPAOName( id.intValue() ) + "\"";
+						else if (ImportManagerUtil.LIST_NAMES[i][0].equals("LoadGroup")) 
+                        {
+							String paoName;
+                            try
+                            {
+                                paoName = DaoFactory.getPaoDao().getYukonPAOName( id.intValue() );
+                            }
+                            catch(DaoNotFoundException e)
+                            {
+                                CTILogger.error(e.getMessage(), e);
+                                paoName = "NOTFOUND";
+                            }
+                            line += "\"" + paoName + "\"";
 						}
 						else {
 							YukonSelectionList list = energyCompany.getYukonSelectionList( ImportManagerUtil.LIST_NAMES[i][0] );
