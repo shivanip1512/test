@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.cannontech.cc.model.CICustomerStub;
 import com.cannontech.cc.model.Group;
-import com.cannontech.database.cache.functions.StandardDaoOperations;
+import com.cannontech.core.dao.support.StandardDaoOperations;
 import com.cannontech.database.data.lite.LiteCICustomer;
 
 public interface CustomerStubDao extends StandardDaoOperations<CICustomerStub> {

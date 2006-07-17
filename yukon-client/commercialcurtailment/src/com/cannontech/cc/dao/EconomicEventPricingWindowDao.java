@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.cannontech.cc.model.EconomicEventPricing;
 import com.cannontech.cc.model.EconomicEventPricingWindow;
-import com.cannontech.database.cache.functions.StandardDaoOperations;
+import com.cannontech.core.dao.support.StandardDaoOperations;
 
 public interface EconomicEventPricingWindowDao extends StandardDaoOperations<EconomicEventPricingWindow> {
 

@@ -1,4 +1,4 @@
-package com.cannontech.database.cache.functions;
+package com.cannontech.core.dao.support;
 
 
 public interface StandardDaoOperations<T> {
