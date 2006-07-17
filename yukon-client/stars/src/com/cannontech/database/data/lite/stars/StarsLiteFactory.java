@@ -15,6 +15,7 @@ import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.DaoNotFoundException;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.customer.CustomerTypes;
@@ -1847,7 +1848,17 @@ public class StarsLiteFactory {
 			
 			MCT mct = new MCT();
 			if (liteInv.getDeviceID() > 0)
-				mct.setDeviceName( DaoFactory.getPaoDao().getYukonPAOName(liteInv.getDeviceID()) );
+            {
+				try
+                {
+				    mct.setDeviceName( DaoFactory.getPaoDao().getYukonPAOName(liteInv.getDeviceID()) );
+                }
+				catch(DaoNotFoundException e) 
+                {
+                    CTILogger.error(e.getMessage(), e);
+                    mct.setDeviceName( "(none)" );
+                }
+            }
 			else if (liteInv.getDeviceLabel() != null && liteInv.getDeviceLabel().length() > 0)
 				mct.setDeviceName( liteInv.getDeviceLabel() );
 			else
@@ -2111,12 +2122,21 @@ public class StarsLiteFactory {
 					GenericMacro[] groups = GenericMacro.getGenericMacros(
 							new Integer(litePao.getYukonID()), MacroTypes.GROUP, conn );
 					
-					for (int k = 0; k < groups.length; k++) {
+					for (int k = 0; k < groups.length; k++) 
+                    {
 						int groupID = groups[k].getChildID().intValue();
 						AddressingGroup group = new AddressingGroup();
 						group.setEntryID( groupID );
-						group.setContent( DaoFactory.getPaoDao().getYukonPAOName(groupID) );
-						starsProg.addAddressingGroup( group );
+                        try
+                        {
+						    group.setContent( DaoFactory.getPaoDao().getYukonPAOName(groupID) );
+                        }
+                        catch(DaoNotFoundException e)
+                        {
+                            CTILogger.error(e.getMessage(), e);
+                            group.setContent("No Yukon name found.");
+                        }
+                        starsProg.addAddressingGroup( group );
 					}
 				}
 				catch (java.sql.SQLException e) {
@@ -2159,8 +2179,18 @@ public class StarsLiteFactory {
 			starsProg.setProgramID( liteProg.getProgramID() );
 			starsProg.setDeviceID( liteProg.getDeviceID() );
 			if (liteProg.getDeviceID() > 0)
-				starsProg.setYukonName( DaoFactory.getPaoDao().getYukonPAOName(liteProg.getDeviceID()) );
-			
+            {
+				try
+                {
+                    starsProg.setYukonName( DaoFactory.getPaoDao().getYukonPAOName(liteProg.getDeviceID()) );
+                }
+                catch(DaoNotFoundException e)
+                {
+                    CTILogger.error(e.getMessage(), e);
+                    starsProg.setYukonName( "No Yukon name found." );
+                }
+            }
+            
 			liteConfig = StarsDatabaseCache.getInstance().getWebConfiguration( liteProg.getWebSettingsID() );
 			starsProg.setStarsWebConfig( createStarsWebConfig(liteConfig) );
 			
