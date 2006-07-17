@@ -1,3 +1,4 @@
+<%@ page import="com.cannontech.core.dao.DaoNotFoundException" %>
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%
 	Properties savedReq = null;
@@ -244,11 +245,16 @@ function init() {
                           <td width="70%"> 
                             <select name="Route">
 <%
-	String dftRoute = DaoFactory.getPaoDao().getYukonPAOName(member.getDefaultRouteID());
-	if (dftRoute != null)
-		dftRoute = "Default - " + dftRoute;
-	else
-		dftRoute = "Default - (None)";
+	String dftRoute;
+    try
+    {
+        dftRoute = DaoFactory.getPaoDao().getYukonPAOName(liteEC.getDefaultRouteID());
+        dftRoute = "Default - " + dftRoute;
+    }
+    catch(DaoNotFoundException e)
+    {
+        dftRoute = "Default - (None)";
+    }
 %>
                               <option value="0"><%= dftRoute %></option>
                               <%

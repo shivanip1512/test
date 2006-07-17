@@ -1,3 +1,4 @@
+<%@ page import="com.cannontech.core.dao.DaoNotFoundException" %>
 <html>
 <!-- Java script needed for the Calender Function--->
 <%@ include file="../include/user_header.jsp" %>
@@ -92,12 +93,23 @@ MM_reloadPage(true);
 					  for (int i = 0; i < custDevices.size(); i++)
 					  {
 					    DeviceCustomerList dcl = (DeviceCustomerList) custDevices.get(i);
-					    %>
+					    
+                        int devID = dcl.getDeviceID().intValue();
+                        String paoName;
+                        try
+                        {
+                             paoName = DaoFactory.getPaoDao().getYukonPAOName(dcl.getDeviceID().intValue());
+                        }
+                        catch(DaoNotFoundException e)
+                        {
+                            paoName = "noPaoName";
+                        }    
+                        %>
 						<tr>
                           <td width="35"> 
-                            <input type="checkbox" name="custDevices" value="<%=dcl.getDeviceID().intValue()%>">
+                            <input type="checkbox" name="custDevices" value="<%=devID%>">
                           </td>
-  						  <td width="300"><%=DaoFactory.getPaoDao().getYukonPAOName(dcl.getDeviceID().intValue())%></td>
+  						  <td width="300"><%=paoName%></td>
 						</tr>
 					<%} %>
                       </table>
