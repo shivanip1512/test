@@ -5,6 +5,7 @@
 <%@ page import="com.cannontech.database.data.pao.PAOGroups" %>
 <%@ page import="com.cannontech.web.navigation.CtiNavObject" %>
 <%@ page import="com.cannontech.database.db.stars.hardware.Warehouse" %>
+<%@ page import="com.cannontech.core.dao.DaoNotFoundException" %>
 <jsp:useBean id="configBean" class="com.cannontech.stars.web.bean.ConfigBean" scope="page"/>
 <jsp:useBean id="detailBean" class="com.cannontech.stars.web.bean.InventoryDetailBean" scope="page"/>
 
@@ -217,7 +218,13 @@ function revealLog() {
 <%} else {
                 String deviceName = "(none)";
                 if (inventory.getDeviceID() > 0)
-                    deviceName = DaoFactory.getPaoDao().getYukonPAOName(inventory.getDeviceID());
+                {
+                    try
+                    {
+                        deviceName = DaoFactory.getPaoDao().getYukonPAOName(inventory.getDeviceID());
+                    }
+                    catch(DaoNotFoundException e) {}
+                }
                 else if (inventory.getMCT() != null)
                     deviceName = inventory.getMCT().getDeviceName();
 %>
@@ -416,11 +423,17 @@ function revealLog() {
                                 </td>
                                 <td width="210"> 
                                   <select name="Route" onchange="setContentChanged(true)">
-<%String dftRoute = DaoFactory.getPaoDao().getYukonPAOName(liteEC.getDefaultRouteID());
-                if (dftRoute != null)
-                    dftRoute = "Default - " + dftRoute;
-                else
-                    dftRoute = "Default - (None)";
+<%
+    String dftRoute;
+    try
+    {
+        dftRoute = DaoFactory.getPaoDao().getYukonPAOName(liteEC.getDefaultRouteID());
+        dftRoute = "Default - " + dftRoute;
+    }
+    catch(DaoNotFoundException e)
+    {
+        dftRoute = "Default - (None)";
+    }
 %>
                                     <option value="0"><%=dftRoute%></option>
 <%LiteYukonPAObject[] routes = liteEC.getAllRoutes();
