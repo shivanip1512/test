@@ -1,5 +1,6 @@
 <%@ include file="include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.web.navigation.CtiNavObject" %>
+<%@ page import="com.cannontech.core.dao.DaoNotFoundException" %>
 <%
 	String action = request.getParameter("action");
 	String referer = (String) session.getAttribute(ServletUtils.ATT_REFERRER);
@@ -37,7 +38,13 @@
 				if (inventory.getLMHardware() != null)
 					serialNo = inventory.getLMHardware().getManufacturerSerialNumber();
 				else if (inventory.getDeviceID() > 0)
-					deviceName = DaoFactory.getPaoDao().getYukonPAOName(inventory.getDeviceID());
+                {
+					try
+                    {
+                        deviceName = DaoFactory.getPaoDao().getYukonPAOName(inventory.getDeviceID());
+                    }
+                    catch(DaoNotFoundException e) {}
+                }
 				else if (inventory.getMCT() != null)
 					deviceName = inventory.getMCT().getDeviceName();
 			}
@@ -59,7 +66,13 @@
 			if (inventory.getLMHardware() != null)
 				serialNo = inventory.getLMHardware().getManufacturerSerialNumber();
 			else if (inventory.getDeviceID() > 0)
-				deviceName = DaoFactory.getPaoDao().getYukonPAOName(inventory.getDeviceID());
+            {
+				try
+                {
+                    deviceName = DaoFactory.getPaoDao().getYukonPAOName(inventory.getDeviceID());
+                }
+                catch(DaoNotFoundException e) {}
+            }
 			else if (inventory.getMCT() != null)
 				deviceName = inventory.getMCT().getDeviceName();
 		}

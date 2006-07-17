@@ -2,6 +2,7 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.common.util.Pair" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteStarsLMHardware" %>
+<%@ page import="com.cannontech.core.dao.DaoNotFoundException" %>
 <jsp:useBean id="configBean" class="com.cannontech.stars.web.bean.ConfigBean" scope="page"/>
  
 <%
@@ -313,11 +314,16 @@ function removeAllConfig(form) {
                             Specify a route: 
                             <select name="Route" disabled>
 <%
-	String dftRoute = DaoFactory.getPaoDao().getYukonPAOName(liteEC.getDefaultRouteID());
-	if (dftRoute != null)
-		dftRoute = "Default - " + dftRoute;
-	else
-		dftRoute = "Default - (None)";
+	String dftRoute;
+    try
+    {
+        dftRoute = DaoFactory.getPaoDao().getYukonPAOName(liteEC.getDefaultRouteID());
+        dftRoute = "Default - " + dftRoute;
+    }
+    catch(DaoNotFoundException e)
+    {
+        dftRoute = "Default - (None)";
+    }
 %>
                               <option value="0"><%= dftRoute %></option>
 <%
