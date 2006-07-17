@@ -22,6 +22,7 @@ import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.DaoNotFoundException;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.Transaction;
@@ -1771,8 +1772,17 @@ public class LiteStarsEnergyCompany extends LiteBase {
         ArrayList inventory = getAllInventory();
         for (int i = 0; i < inventory.size(); i++) {
             LiteInventoryBase liteInv = (LiteInventoryBase) inventory.get(i);
+            String paoName;
+            try
+            {
+                paoName = DaoFactory.getPaoDao().getYukonPAOName(liteInv.getDeviceID());
+            }
+            catch(DaoNotFoundException e)
+            {
+                paoName = "noneFound";
+            }
             if (liteInv.getDeviceID() > 0 && liteInv.getCategoryID() == categoryID
-                && DaoFactory.getPaoDao().getYukonPAOName(liteInv.getDeviceID()).toUpperCase().startsWith( deviceName.toUpperCase() ))
+                && paoName.toUpperCase().startsWith( deviceName.toUpperCase() ))
             {
                 return new Pair(liteInv, this);
             }
