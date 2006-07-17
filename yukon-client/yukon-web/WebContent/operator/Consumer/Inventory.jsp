@@ -1,6 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
 <%@ include file="include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.database.data.pao.PAOGroups" %>
+<%@ page import="com.cannontech.core.dao.DaoNotFoundException" %>
 <jsp:useBean id="detailBean" class="com.cannontech.stars.web.bean.InventoryDetailBean" scope="page"/>
 
     <%pageContext.setAttribute("liteEC", liteEC);%>
@@ -26,7 +27,8 @@
 		deviceType = DaoFactory.getYukonListDao().getYukonListEntry(inventory.getDeviceType().getEntryID()).getEntryText();
 		serialName = inventory.getLMHardware().getManufacturerSerialNumber();
 	}
-	else {
+	else 
+    {
 		if (inventory.getDeviceID() > 0) {
 			LiteYukonPAObject litePao = DaoFactory.getPaoDao().getLiteYukonPAO(inventory.getDeviceID());
 			deviceType = PAOGroups.getPAOTypeString(litePao.getType());
@@ -136,7 +138,7 @@ function revealLog() {
                   <td width="300" valign="top" bgcolor="#FFFFFF"> 
                     <table width="300" border="0" cellspacing="0" cellpadding="0">
                       <tr> 
-                          <td valign="top"><span class="SubtitleHeader">DEVICE INFO</span> 
+                          <td><span class="SubtitleHeader">DEVICE INFO</span> 
                             <hr>
 <% if (invChecking || inventory.getLMHardware() == null) { %>
                             <input type="hidden" name="DeviceType" value="<%= inventory.getDeviceType().getEntryID() %>">
@@ -301,7 +303,7 @@ function revealLog() {
                             </tr>
                           </table>
                   </td>
-                  <td width="300" valign="top" bgcolor="#FFFFFF"> 
+                  <td width="300" bgcolor="#FFFFFF"> 
                     <div align="center"> 
                       <table width="300" border="0" cellspacing="0" cellpadding="0">
                         <tr> 
@@ -392,11 +394,16 @@ function revealLog() {
                                   <td width="200"> 
                                     <select name="Route" onchange="setContentChanged(true)">
 <%
-	String dftRoute = DaoFactory.getPaoDao().getYukonPAOName(liteEC.getDefaultRouteID());
-	if (dftRoute != null)
-		dftRoute = "Default - " + dftRoute;
-	else
-		dftRoute = "Default - (None)";
+	String dftRoute;
+    try
+    {
+        dftRoute = DaoFactory.getPaoDao().getYukonPAOName(liteEC.getDefaultRouteID());
+        dftRoute = "Default - " + dftRoute;
+	}
+	catch(DaoNotFoundException e)
+    {
+    	dftRoute = "Default - (None)";
+    }
 %>
                                       <option value="0"><%= dftRoute %></option>
 <%

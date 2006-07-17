@@ -13,12 +13,13 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.common.util.StopWatch;
-import com.cannontech.core.dao.AuthDao;
-import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.*;
+import com.cannontech.core.dao.DaoNotFoundException;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -37,8 +38,10 @@ public final class PaoDaoImpl implements PaoDao
         "left outer join devicecarriersettings DCS ON Y.PAOBJECTID = DCS.DEVICEID " +
         "left outer join deviceroutes dr on y.paobjectid = dr.deviceid ";
     
-    private static final RowMapper litePaoRowMapper = new RowMapper() {
-        public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
+    private static final RowMapper litePaoRowMapper = new RowMapper() 
+    {
+        public Object mapRow(ResultSet rs, int rowNum) throws SQLException 
+        {
             return createLiteYukonPAObject(rs);
         };
     };
@@ -51,14 +54,24 @@ public final class PaoDaoImpl implements PaoDao
     /* (non-Javadoc)
      * @see com.cannontech.core.dao.PaoDao#getLiteYukonPAO(int)
      */
-    public LiteYukonPAObject getLiteYukonPAO( int paoID ) {
-        String sql = litePaoSql + "where y.paobjectid=?";
-        LiteYukonPAObject pao = (LiteYukonPAObject) 
+    public LiteYukonPAObject getLiteYukonPAO( int paoID ) 
+    {
+        try
+        {
+            String sql = litePaoSql + "where y.paobjectid=?";
+            
+            LiteYukonPAObject pao = (LiteYukonPAObject) 
                 jdbcOps.queryForObject(sql, new Object[] { paoID }, litePaoRowMapper);
-        return pao;
+            return pao;
+        }
+        catch(IncorrectResultSizeDataAccessException e)
+        {
+            throw new DaoNotFoundException("A PAObject with id " + paoID + "cannot be found.");
+        }
     }
     
-    public List<LiteYukonPAObject> getLiteYukonPAObjectByType(int paoType) {
+    public List<LiteYukonPAObject> getLiteYukonPAObjectByType(int paoType) 
+    {
         String typeStr = PAOGroups.getPAOTypeString(paoType);
         String sql = litePaoSql;
         sql += "where UPPER(type)=? ";
@@ -70,7 +83,8 @@ public final class PaoDaoImpl implements PaoDao
     
     public List<LiteYukonPAObject> getLiteYukonPAObjectBy(
             Integer[] paoType, Integer[] paoCategory, 
-            Integer[] paoClass, Integer[] pointTypes, Integer[] uOfMId) {
+            Integer[] paoClass, Integer[] pointTypes, Integer[] uOfMId) 
+    {
     
         StringBuilder sql = new StringBuilder(litePaoSql);
         sql.append(
@@ -91,7 +105,8 @@ public final class PaoDaoImpl implements PaoDao
     /* (non-Javadoc)
      * @see com.cannontech.core.dao.PaoDao#getAllCapControlSubBuses()
      */
-    public List getAllCapControlSubBuses() {
+    public List getAllCapControlSubBuses() 
+    {
     	List subBusList = null;
     	synchronized (databaseCache)
     	{
@@ -103,30 +118,43 @@ public final class PaoDaoImpl implements PaoDao
     /* (non-Javadoc)
      * @see com.cannontech.core.dao.PaoDao#getMaxPAOid()
      */
-    public int getMaxPAOid() {
+    public int getMaxPAOid() 
+    {
         return jdbcOps.queryForInt("select max(paObjectId) from YukonPaObject");
     }
     
-    public int getNextPaoId() {
+    public int getNextPaoId() 
+    {
         return nextValueHelper.getNextValue("YukonPaObject");
     }
     
-    public int[] getNextPaoIds(int count) {
+    public int[] getNextPaoIds(int count) 
+    {
         int[] ids = new int[count];
-        for (int i = 0; i < ids.length; i++) {
+        for (int i = 0; i < ids.length; i++) 
+        {
             ids[i]= nextValueHelper.getNextValue("YukonPaObject");
         }
         return ids;
     }
 
-    public String getYukonPAOName(int paoID) {
-        String sql = "select paoname from yukonpaobject where paobjectid=?";
-        String name = (String) 
-            jdbcOps.queryForObject(sql, new Object[] { paoID }, String.class);
-        return name;
+    public String getYukonPAOName(int paoID) 
+    {
+        try
+        {
+            String sql = "select paoname from yukonpaobject where paobjectid=?";
+            String name = (String) 
+                jdbcOps.queryForObject(sql, new Object[] { paoID }, String.class);
+            return name;
+        }
+        catch(IncorrectResultSizeDataAccessException e)
+        {
+            throw new DaoNotFoundException("A PAObject with id " + paoID + "cannot be found.");
+        }
     }
 
-    public LiteYukonPAObject[] getAllLiteRoutes() {
+    public LiteYukonPAObject[] getAllLiteRoutes() 
+    {
     	//Get an instance of the databaseCache.
     	java.util.ArrayList routeList = new java.util.ArrayList(10);
     	synchronized(databaseCache)
@@ -140,6 +168,7 @@ public final class PaoDaoImpl implements PaoDao
     			routeList.add(litePao);	
     		}
     	}
+        
     	LiteYukonPAObject retVal[] = new LiteYukonPAObject[routeList.size()];
     	routeList.toArray( retVal );
     	return retVal;
@@ -178,9 +207,10 @@ public final class PaoDaoImpl implements PaoDao
     /* (non-Javadoc)
      * @see com.cannontech.core.dao.PaoDao#getAllUnusedCCPAOs(java.lang.Integer)
      */
-    public LiteYukonPAObject[] getAllUnusedCCPAOs( Integer ignoreID ) {
-    		
-    	synchronized( databaseCache ) {
+    public LiteYukonPAObject[] getAllUnusedCCPAOs( Integer ignoreID ) 
+    {
+    	synchronized( databaseCache ) 
+        {
     
     		List lPaos = databaseCache.getAllUnusedCCDevices();
     		
@@ -191,10 +221,11 @@ public final class PaoDaoImpl implements PaoDao
     	}
     }
 
-    public int countLiteYukonPaoByName(String name, boolean partialMatch) {
-        
+    public int countLiteYukonPaoByName(String name, boolean partialMatch) throws DaoNotFoundException
+    {
         String sql;
-        if(partialMatch) {
+        if(partialMatch) 
+        {
             sql = "select count(*) from YukonPAObject where paoname like '" + name + "%'";    
         }
         else {
@@ -205,8 +236,8 @@ public final class PaoDaoImpl implements PaoDao
         return (Integer) jdbcOps.queryForObject(sql,Integer.class);
     }
 
-    public List<LiteYukonPAObject> getLiteYukonPaoByName(String name, boolean partialMatch) {
-            
+    public List<LiteYukonPAObject> getLiteYukonPaoByName(String name, boolean partialMatch) 
+    {
         StopWatch sw = new StopWatch();
         sw.start();
         String sql = litePaoSql;
@@ -222,8 +253,8 @@ public final class PaoDaoImpl implements PaoDao
         //sql += "where y.PAOName=? ";
         sql += "ORDER BY y.Category, y.PAOClass, y.PAOName";
         
-        
-        if(partialMatch) {
+        if(partialMatch) 
+        {
             name += "%";
         }
         
@@ -232,24 +263,28 @@ public final class PaoDaoImpl implements PaoDao
         return paos;
     }
 
-    public void setDatabaseCache(IDatabaseCache databaseCache) {
+    public void setDatabaseCache(IDatabaseCache databaseCache) 
+    {
         this.databaseCache = databaseCache;
     }
     
-    public void setJdbcOps(JdbcOperations jdbcOps) {
+    public void setJdbcOps(JdbcOperations jdbcOps) 
+    {
         this.jdbcOps = jdbcOps;
     }
     
-    public void setNextValueHelper(NextValueHelper nextValueHelper) {
+    public void setNextValueHelper(NextValueHelper nextValueHelper) 
+    {
         this.nextValueHelper = nextValueHelper;
     }
 
-    public void setAuthDao(AuthDao authDao) {
+    public void setAuthDao(AuthDao authDao) 
+    {
         this.authDao = authDao;
     }
     
-    private static LiteYukonPAObject createLiteYukonPAObject(java.sql.ResultSet rset)
-            throws SQLException {
+    private static LiteYukonPAObject createLiteYukonPAObject(java.sql.ResultSet rset) throws SQLException 
+    {
         int paoID = rset.getInt(1);
         String paoCategory = rset.getString(2).trim();
         String paoName = rset.getString(3).trim();
@@ -263,17 +298,20 @@ public final class PaoDaoImpl implements PaoDao
                 paoDescription);
 
         int portId = rset.getInt(7);
-        if(!rset.wasNull()) {
+        if(!rset.wasNull()) 
+        {
             pao.setPortID(portId);
         }
         
         int address = rset.getInt(8);
-        if(!rset.wasNull()) {
+        if(!rset.wasNull()) 
+        {
             pao.setAddress(address);
         }
 
         int routeId = rset.getInt(9);
-        if(!rset.wasNull()) {
+        if(!rset.wasNull())
+        {
             pao.setRouteID(routeId);
         }
 
@@ -281,10 +319,12 @@ public final class PaoDaoImpl implements PaoDao
 
     }
     
-    public  List getAllSubsForUser (LiteYukonUser user) {
+    public  List getAllSubsForUser (LiteYukonUser user) 
+    {
         List subList = new ArrayList(10);
         List temp = getAllCapControlSubBuses();
-        for (Iterator iter = temp.iterator(); iter.hasNext();) {
+        for (Iterator iter = temp.iterator(); iter.hasNext();) 
+        {
             LiteYukonPAObject element = (LiteYukonPAObject) iter.next();
             if (authDao.userHasAccessPAO(user, element.getLiteID()))
             {
@@ -293,5 +333,4 @@ public final class PaoDaoImpl implements PaoDao
         }
         return subList;
     }
-    
 }
