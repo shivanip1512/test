@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.34 $
-* DATE         :  $Date: 2006/06/23 19:30:06 $
+* REVISION     :  $Revision: 1.35 $
+* DATE         :  $Date: 2006/07/18 21:00:47 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1058,7 +1058,7 @@ INT CtiProtocolExpresscom::assembleControl(CtiCommandParser &parse, CtiOutMessag
         INT delay      = parse.getiValue("delaytime_sec", 0) / 60;
         bool noramp    = (parse.getiValue("xcnoramp", 0) ? true : false);
         bool tc        = (parse.getiValue("xctruecycle", 0) ? true : false);
-        
+
         // Add these two items to the list for control accounting!
         parse.setValue("control_reduction", parse.getiValue("cycle", 0) );
         parse.setValue("control_interval", 60 * period * repeat);
@@ -1071,7 +1071,7 @@ INT CtiProtocolExpresscom::assembleControl(CtiCommandParser &parse, CtiOutMessag
         {
             targetReductionCycleControl(relaymask, parse.getiValue("cycle", 0), period, repeat, delay, noramp, tc, parse);
         }
-        
+
     }
     else if(CtlReq == CMD_FLAG_CTL_RESTORE)
     {
@@ -1324,7 +1324,7 @@ INT CtiProtocolExpresscom::parseSchedule(CtiCommandParser &parse)
     BYTE dow;
     BYTE pod;
 
-    vector< BYTE > schedule(1024);
+    vector< BYTE > schedule;
 
     schedule.push_back(0);      // This is the number of schedule points!
 
@@ -1379,7 +1379,7 @@ INT CtiProtocolExpresscom::schedulePoint(vector< BYTE > &schedule)
     {
         BYTE data[1024];
 
-        for(int i = 0; i < schedule.size(); i++)
+        for(int i = 0; i < schedule.size() && i < 1024; i++)
         {
             data[i] = schedule[i];
         }
