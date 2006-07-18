@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2006/07/12 17:56:24 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2006/07/18 15:21:53 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -42,6 +42,7 @@ const char *CtiDeviceMCT4xx::PutConfigPart_llp           = "llp";
 const char *CtiDeviceMCT4xx::PutConfigPart_lpchannel     = "lpchannel";
 const char *CtiDeviceMCT4xx::PutConfigPart_relays        = "relays";
 const char *CtiDeviceMCT4xx::PutConfigPart_precanned_table = "precannedtable";
+const char *CtiDeviceMCT4xx::PutConfigPart_centron       = "centron";
 
 const CtiDeviceMCT4xx::ConfigPartsList CtiDeviceMCT4xx::_config_parts = initConfigParts();
 
@@ -310,6 +311,10 @@ int CtiDeviceMCT4xx::executePutConfigSingle(CtiRequestMsg         *pReq,
     {
         nRet = executePutConfigPrecannedTable(pReq,parse,OutMessage,vgList,retList,outList);
     }
+    else if( installValue == PutConfigPart_centron )
+    {
+        nRet = executePutConfigCentron(pReq,parse,OutMessage,vgList,retList,outList);
+    }
     else
     {   //Not sure if this is correct, this could just return NoMethod. This is here
         //just in case anyone wants to use a putconfig install  for anything but configs.
@@ -481,11 +486,6 @@ int CtiDeviceMCT4xx::executePutConfigVThreshold(CtiRequestMsg *pReq,CtiCommandPa
 
 int CtiDeviceMCT4xx::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList)
 {
-    if(OutMessage)
-    {
-        delete OutMessage;
-        OutMessage = NULL;
-    }
     return NoMethod;
 }
 
@@ -505,6 +505,11 @@ int CtiDeviceMCT4xx::executePutConfigPrecannedTable(CtiRequestMsg *pReq,CtiComma
 }
 
 int CtiDeviceMCT4xx::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList)
+{
+    return NoMethod;
+}
+
+int CtiDeviceMCT4xx::executePutConfigCentron(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList)
 {
     return NoMethod;
 }
