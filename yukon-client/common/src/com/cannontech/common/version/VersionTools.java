@@ -178,6 +178,7 @@ private final static boolean tableExists( String tableName_ )
 {
 	java.sql.Connection conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
 	java.sql.PreparedStatement stat = null;
+	java.sql.ResultSet rs = null;
 	boolean retVal = false;
 	
 	try
@@ -189,7 +190,7 @@ private final static boolean tableExists( String tableName_ )
 								tableName.toUpperCase(), 
 								"%" );
 */
-		java.sql.ResultSet rs = conn.getMetaData().getTables( 
+        rs = conn.getMetaData().getTables( 
 							null, null, tableName_.toUpperCase(), null );
 
 		if( rs.next() )
@@ -201,6 +202,7 @@ private final static boolean tableExists( String tableName_ )
 	{
 		try
 		{
+			if( rs != null ) rs.close();				
 			if( stat != null ) stat.close();				
 			if( conn != null ) conn.close();
 		}
