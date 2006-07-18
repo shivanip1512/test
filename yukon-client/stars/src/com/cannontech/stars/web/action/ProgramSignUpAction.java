@@ -30,6 +30,7 @@ import com.cannontech.database.db.stars.hardware.LMHardwareConfiguration;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
+import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.util.WebClientException;
@@ -78,13 +79,24 @@ public class ProgramSignUpAction implements ActionBase {
 				String[] catIDs = req.getParameterValues( "CatID" );
 				String[] progIDs = req.getParameterValues( "ProgID" );
 				if (progIDs != null) {
-					for (int i = 0; i < progIDs.length; i++) {
+					for (int i = 0; i < progIDs.length; i++) 
+                    {
 						if (progIDs[i].length() == 0) continue;
 						
 						SULMProgram program = new SULMProgram();
 						program.setProgramID( Integer.parseInt(progIDs[i]) );
 						program.setApplianceCategoryID( Integer.parseInt(catIDs[i]) );
-						programs.addSULMProgram( program );
+                        if(req.getParameter("notOperator").compareTo("true") == 0)
+                        {
+                            /*Going to need to do some guesswork since consumers aren't allowed
+                             * to choose load groups.  At this point, we will need to require
+                             * that the switch or stat has been configured or enrolled previously from the
+                             * operator side.  If it has not, there may not be an entry in the configuration tables
+                             */
+                            program.setAddressingGroupID(ServerUtils.ADDRESSING_GROUP_NOT_FOUND);
+                               
+                        }
+                        programs.addSULMProgram( program );
 					}
 				}
 			}
@@ -146,7 +158,8 @@ public class ProgramSignUpAction implements ActionBase {
 			}
             
 			String progEnrBefore = null;
-			for (int i = 0; i < liteAcctInfo.getPrograms().size(); i++) {
+			for (int i = 0; i < liteAcctInfo.getPrograms().size(); i++) 
+            {
 				LiteStarsLMProgram liteProg = (LiteStarsLMProgram) liteAcctInfo.getPrograms().get(i);
 				String progName = StarsUtils.getPublishedProgramName( liteProg.getPublishedProgram() );
 				if (progEnrBefore == null)
@@ -155,6 +168,32 @@ public class ProgramSignUpAction implements ActionBase {
 					progEnrBefore += ", " + progName;
 			}
 			
+            /*Going to need to do some guesswork since consumers aren't allowed
+             * to choose load groups. 
+             * --If the program has more than one group, we will take the first one in the list.  Could be
+             * A DANGEROUS ASSUMPTION.  TODO: Track groups better.
+             * --At this point, we will need to require that the switch or stat has been configured or enrolled 
+             * previously from the operator side.  If it has not, there may not be a groupID set.
+             */
+            
+            for(int j = 0; j < progSignUp.getStarsSULMPrograms().getSULMProgramCount(); j++)
+            {
+                if(progSignUp.getStarsSULMPrograms().getSULMProgram(j).getAddressingGroupID() == ServerUtils.ADDRESSING_GROUP_NOT_FOUND)
+                {
+                    int progID = progSignUp.getStarsSULMPrograms().getSULMProgram(j).getProgramID();
+                    LiteLMProgramWebPublishing webProg = energyCompany.getProgram(progID);
+                    int grpID = webProg.getGroupIDs()[0];
+                    if(grpID > 0)
+                    {
+                        progSignUp.getStarsSULMPrograms().getSULMProgram(j).setAddressingGroupID(grpID);
+                    }
+                    else
+                    {
+                        throw new WebClientException("Program not set defined correctly.  Contact your administrator.");
+                    }
+                }
+            }
+            
 			String trackHwAddr = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING );
 			boolean useHardwareAddressing = (trackHwAddr != null) && Boolean.valueOf(trackHwAddr).booleanValue();
 	        

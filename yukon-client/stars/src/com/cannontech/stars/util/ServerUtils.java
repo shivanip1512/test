@@ -27,6 +27,8 @@ public class ServerUtils {
 	public static final int COMMAND_PRIORITY_CONFIG = 6;
 	public static final int COMMAND_PRIORITY_SERVICE = 7;
 
+    public static final int ADDRESSING_GROUP_NOT_FOUND = -999999;
+    
 	// Increment this for every message
 	private static long userMessageIDCounter = 1;
 	
