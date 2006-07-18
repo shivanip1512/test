@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVER/con_mgr.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2006/06/15 20:41:56 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2006/07/18 21:19:18 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,6 +23,8 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "dlldefs.h"
 #include "collectable.h"
 #include "con_mgr.h"
+#include "msg_server_resp.h"
+
 
 
 CtiConnectionManager::CtiConnectionManager( const INT &Port, const string &HostMachine, Que_t *inQ) :
@@ -32,6 +34,7 @@ CtiConnectionManager::CtiConnectionManager( const INT &Port, const string &HostM
    ClientQuestionable(FALSE),
    ClientRegistered(FALSE),
    _clientExpirationDelay(180),
+   _serverRequestId(0),
    CtiConnection(Port, HostMachine, inQ)
 {
    // cout << "**** Connection Manager!!! *****" << endl;
@@ -44,6 +47,7 @@ CtiConnectionManager::CtiConnectionManager(CtiExchange *xchg, Que_t *inQ) :
    ClientQuestionable(FALSE),
    ClientRegistered(FALSE),
    _clientExpirationDelay(180),
+   _serverRequestId(0),
    CtiConnection(xchg, inQ)
 {}
 
@@ -85,5 +89,29 @@ RWBoolean CtiConnectionManager::operator==(const CtiConnectionManager& aRef) con
 unsigned CtiConnectionManager::hash(const CtiConnectionManager& aRef)
 {
    return (unsigned)&aRef;            // The address of the Object?
+}
+
+int CtiConnectionManager::getRequestId() const
+{
+    return _serverRequestId;
+}
+void CtiConnectionManager::setRequestId(int rid)
+{
+    _serverRequestId = rid;
+}
+
+int CtiConnectionManager::WriteConnQue(CtiMessage *pMsg, unsigned millitimeout, bool cleaniftimedout, int payload_status, string payload_string )
+{
+    CtiMessage *pWrite = pMsg;  // Default to sending the original message.
+
+    if( getRequestId() )    // This client is waiting to send a response!  Wrap it the way he wants it.
+    {
+        CtiServerResponseMsg* resp = new CtiServerResponseMsg(getRequestId(), payload_status, payload_string);
+        resp->setPayload(pMsg);
+        setRequestId(0);        // Only one per request please!
+        pWrite = resp;
+    }
+
+    return Inherited::WriteConnQue(pWrite, millitimeout, cleaniftimedout);
 }
 

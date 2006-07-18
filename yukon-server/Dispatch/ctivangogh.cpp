@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.154 $
-* DATE         :  $Date: 2006/06/23 03:32:31 $
+* REVISION     :  $Revision: 1.155 $
+* DATE         :  $Date: 2006/07/18 21:19:18 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -50,6 +50,8 @@
 #include "msg_signal.h"
 #include "msg_commerrorhistory.h"
 #include "msg_notif_alarm.h"
+#include "msg_server_req.h"
+#include "msg_server_resp.h"
 #include "ctivangogh.h"
 
 #include "pt_base.h"
@@ -375,6 +377,19 @@ void CtiVanGogh::VGMainThread()
 
             if(MsgPtr != NULL)
             {
+                if(MsgPtr->isA() == MSG_SERVER_REQUEST)
+                {
+                    CtiServerRequestMsg *pSvrReq = (CtiServerRequestMsg*)MsgPtr;
+                    MsgPtr = (CtiMessage*)pSvrReq->getPayload();
+                    MsgPtr->setConnectionHandle(pSvrReq->getConnectionHandle());
+
+                    CtiServer::ptr_type sptrCM = mConnectionTable.find((long)pSvrReq->getConnectionHandle());
+                    if(sptrCM)
+                    {
+                        sptrCM->setRequestId(pSvrReq->getID());  // Stow this, you'll need it for a response.
+                    }
+                }
+
                 QueryPerformanceCounter(&dequeueTime);
 
                 msgCounts.inc( MsgPtr->isA() );
@@ -437,22 +452,19 @@ void CtiVanGogh::VGMainThread()
 
                             QueryPerformanceCounter(&completeTime);
 
-                            if(1)
+                            if(processExecutionTime(PERF_TO_MS(completeTime, dequeueTime, perfFrequency)))
                             {
-                                if(processExecutionTime(PERF_TO_MS(completeTime, dequeueTime, perfFrequency)))
                                 {
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        if(pExec->getMessage())
-                                            dout << CtiTime() << " Message Type " << pExec->getMessage()->typeString() << " get ms = " << PERF_TO_MS(dequeueTime, getQTime, perfFrequency) << "  ms = " << PERF_TO_MS(completeTime, dequeueTime, perfFrequency) << endl;
-                                    }
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    if(pExec->getMessage())
+                                        dout << CtiTime() << " Message Type " << pExec->getMessage()->typeString() << " get ms = " << PERF_TO_MS(dequeueTime, getQTime, perfFrequency) << "  ms = " << PERF_TO_MS(completeTime, dequeueTime, perfFrequency) << endl;
+                                }
 
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << CtiTime() << " The last message took more than 5 sec to process in dispatch " << endl;
-                                        //if(pExec->getMessage())
-                                        //    pExec->getMessage()->dump();
-                                    }
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << CtiTime() << " The last message took more than 5 sec to process in dispatch " << endl;
+                                    //if(pExec->getMessage())
+                                    //    pExec->getMessage()->dump();
                                 }
                             }
 
@@ -1272,6 +1284,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                 CtiMultiMsg *pMulti = CTIDBG_new CtiMultiMsg;
 
                 CtiServerExclusion pmguard(_server_exclusion);
+                int payload_status = CtiServerResponseMsg::OK;
 
                 for(i = 0; i < Cmd->getOpArgList().size(); i++ )
                 {
@@ -1294,12 +1307,16 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                             pMulti->getData().push_back(pDat);
                         }
                     }
+                    else
+                    {
+                        payload_status = CtiServerResponseMsg::ERR;
+                    }
                 }
 
                 CtiServer::ptr_type sptrCM = mConnectionTable.find((long)Cmd->getConnectionHandle());
 
                 if(sptrCM && pMulti && pMulti->getCount())
-                    sptrCM->WriteConnQue(pMulti);
+                    sptrCM->WriteConnQue(pMulti, 0, true, payload_status);
                 else delete
                     pMulti;
 
@@ -3598,7 +3615,7 @@ INT CtiVanGogh::checkPointDataStateQuality(CtiPointDataMsg  *pData, CtiMultiWrap
                                 if( verificationPtr = TriggerMgr.getPointTriggerFromVerificationID(pPoint->getID()) )
                                 {
                                     CtiPointSPtr pCtrlPt = PointMgr.getEqual(verificationPtr->dbTriggerData.getPointID());
-                            
+
                                     if(pCtrlPt)      // We do know this point..
                                     {
                                         CtiDynamicPointDispatch *pCtrlDyn = (CtiDynamicPointDispatch*)pCtrlPt->getDynamic();
@@ -3606,7 +3623,7 @@ INT CtiVanGogh::checkPointDataStateQuality(CtiPointDataMsg  *pData, CtiMultiWrap
                                         pendable->_value = pData->getValue();
                                         pendable->_tags = pCtrlDyn->getDispatch().getTags();
                                         _pendingOpThread.push( pendable );
-                                
+
                                         if(pCtrlDyn->getDispatch().getTags() & TAG_CONTROL_PENDING)                                          // Are we still awaiting the start of control?
                                         {
                                             if(gDispatchDebugLevel & DISPATCH_DEBUG_CONTROLS)
@@ -3712,7 +3729,7 @@ INT CtiVanGogh::markPointNonUpdated(CtiPointSPtr point, CtiMultiWrapper &aWrap)
                 {
                     CtiSignalMsg *pSig = CTIDBG_new CtiSignalMsg(point->getID(), 0, "Non Updated", getAlarmStateName( point->getAlarming().getAlarmCategory(alarm) ), GeneralLogType, point->getAlarming().getAlarmCategory(alarm));
                     pSig->setPointValue(pDyn->getDispatch().getValue());
-                    
+
                     tagSignalAsAlarm(point, pSig, alarm);
                     updateDynTagsForSignalMsg(point,pSig,alarm,true);
                     aWrap.getMulti()->insert( pSig );
@@ -7485,7 +7502,7 @@ void CtiVanGogh::checkStatusCommandFail(int alarm, CtiPointDataMsg *pData, CtiMu
                 pendable->_pointID = verificationPtr->dbTriggerData.getPointID();
 
                 CtiPointSPtr pCtrlPt = PointMgr.getEqual(verificationPtr->dbTriggerData.getPointID());
-                            
+
                 if( pCtrlPt )      // We do know this point..
                 {
                     CtiDynamicPointDispatch *pCtrlDyn = (CtiDynamicPointDispatch*)pCtrlPt->getDynamic();
@@ -7701,9 +7718,9 @@ void CtiVanGogh::sendPointTriggers( const CtiPointDataMsg &aPD , CtiPointSPtr po
         CtiLockGuard<CtiMutex> guard(TriggerMgr.getMux());
         CtiPointTriggerManager::coll_type *pointMap = TriggerMgr.getPointIteratorFromTrigger(point->getPointID());
         CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)point->getDynamic();
-    
+
         double pointValue = aPD.getValue();
-    
+
         if( !(pDyn->getDispatch().getTags() & (TAG_DISABLE_CONTROL_BY_POINT | TAG_DISABLE_CONTROL_BY_DEVICE)) )
         {
             if( pointMap )
@@ -7721,7 +7738,7 @@ void CtiVanGogh::sendPointTriggers( const CtiPointDataMsg &aPD , CtiPointSPtr po
                         }
                         CtiRequestMsg *pReq = 0;
                         string cmdstr;
-        
+
                         //Should we worry about a point that references itself (could be infinite loop if set to deadband == 0)
                         CtiPointSPtr controlPoint = PointMgr.getEqual(iter->second->dbTriggerData.getPointID());
                         if( controlPoint )

@@ -6,6 +6,7 @@
 RWDEFINE_COLLECTABLE( CtiServerResponseMsg, MSG_SERVER_RESPONSE );
 
 CtiServerResponseMsg::CtiServerResponseMsg(const CtiServerResponseMsg& resp)
+: _id(-1), _status(UNINIT), _message(""), _payload(NULL)
 {
     operator=(resp);
 }
@@ -20,17 +21,18 @@ void CtiServerResponseMsg::saveGuts(RWvostream &strm) const
     strm << _id << _status << _message;
     if(_payload != NULL)
     {
-	strm << 1 << _payload;
+        strm << 1 << *_payload;
     }
     else
     {
-	strm << 0;
+        strm << 0;
     }
 }
 
 void CtiServerResponseMsg::restoreGuts(RWvistream &strm)
 {
     int has_payload;
+    RWCollectable *col;
 
     /*
      * payload is optional, check for TRUE before reading
@@ -40,8 +42,11 @@ void CtiServerResponseMsg::restoreGuts(RWvistream &strm)
     strm >> _id >> _status >> _message >> has_payload;
     if(has_payload)
     {
-	strm >> _payload;
+        strm >> col;
+        _payload = (CtiMessage*)col;
     }
+    else
+        _payload = 0;
 }
 
 void CtiServerResponseMsg::What() const
@@ -52,12 +57,12 @@ void CtiServerResponseMsg::What() const
 
 void CtiServerResponseMsg::dump() const
 {
-   Inherited::dump();
+    Inherited::dump();
 
-   CtiLockGuard<CtiLogger> doubt_guard(dout);
-   dout << " Response ID:  " << _id << endl;
-   dout << " Status:  " << endl;
-   dout << " Message:  " << endl;
+    CtiLockGuard<CtiLogger> doubt_guard(dout);
+    dout << " Response ID:  " << _id << endl;
+    dout << " Status:  " << endl;
+    dout << " Message:  " << endl;
 }
 
 CtiMessage* CtiServerResponseMsg::replicateMessage() const
@@ -67,11 +72,19 @@ CtiMessage* CtiServerResponseMsg::replicateMessage() const
 }
 
 CtiServerResponseMsg::CtiServerResponseMsg()
-: _id(-1), _status(UNINIT), _message(""), _payload(NULL) {}
+: _id(-1), _status(UNINIT), _message(""), _payload(NULL)
+{
+}
 
 CtiServerResponseMsg::CtiServerResponseMsg(int id, int status, string message)
-: _id(id), _status(status), _message(message), _payload(NULL) { }
-CtiServerResponseMsg::~CtiServerResponseMsg() {}
+: _id(id), _status(status), _message(message), _payload(NULL)
+{
+}
+
+CtiServerResponseMsg::~CtiServerResponseMsg()
+{
+    if(_payload) delete _payload;
+}
 
 /* Boring, canonical "getter" and "setter" member functions below */
 int CtiServerResponseMsg::getID() const
@@ -86,7 +99,7 @@ CtiServerResponseMsg& CtiServerResponseMsg::setID(int id)
 }
 
 int CtiServerResponseMsg::getStatus() const
-{ 
+{
     return _status;
 }
 
@@ -107,13 +120,38 @@ CtiServerResponseMsg& CtiServerResponseMsg::setMessage(const string& message)
     return *this;
 }
 
-RWCollectable* CtiServerResponseMsg::getPayload() const
+CtiMessage* CtiServerResponseMsg::releasePayload()
+{
+    CtiMessage *p = _payload;
+    _payload = 0;
+    return p;
+}
+
+CtiMessage* CtiServerResponseMsg::getPayload() const
 {
     return _payload;
 }
 
-CtiServerResponseMsg& CtiServerResponseMsg::setPayload(RWCollectable* payload)
+CtiServerResponseMsg& CtiServerResponseMsg::setPayload(CtiMessage* payload)
 {
+    if(_payload) delete _payload;
     _payload = payload;
+
     return *this;
 }
+
+CtiServerResponseMsg& CtiServerResponseMsg::operator=(const CtiServerResponseMsg& aRef)
+{
+   if(this != &aRef)
+   {
+      Inherited::operator=(aRef);
+      setID(aRef.getID());
+      setStatus(aRef.getStatus());
+      setMessage(aRef.getMessage());
+      setPayload(aRef.getPayload() ? aRef.getPayload()->replicateMessage() : 0);
+   }
+
+   return *this;
+}
+
+

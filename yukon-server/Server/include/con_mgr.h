@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVER/INCLUDE/con_mgr.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2006/01/05 19:30:11 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2006/07/18 21:19:18 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -42,6 +42,7 @@ protected:
    string         ClientName;
    int               ClientAppId;
 
+   int              _serverRequestId;
 
    CtiConnectionManager() :
       ClientRegistered(FALSE),
@@ -79,6 +80,12 @@ public:
 
    RWBoolean operator==(const CtiConnectionManager& aRef) const;
    static unsigned hash(const CtiConnectionManager& aRef);
+
+   int getRequestId() const;
+   void setRequestId(int rid);
+
+   int WriteConnQue(CtiMessage*, unsigned millitimeout = 0, bool cleaniftimedout = true, int payload_status = 0, string payload_string = string() );
+
 };
 
 #endif      // #ifndef __CON_MGR_H__

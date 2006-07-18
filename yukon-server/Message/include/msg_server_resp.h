@@ -26,31 +26,33 @@ public:
     RWDECLARE_COLLECTABLE( CtiServerResponseMsg );
 
     typedef  CtiMessage Inherited;
-    
+
     /* Possible values for status */
     enum {
-	OK,
-	ERR,
-	UNINIT
+    OK,
+    ERR,
+    UNINIT
     };
-    
+
     CtiServerResponseMsg();
     CtiServerResponseMsg(const CtiServerResponseMsg& req);
     CtiServerResponseMsg(int id, int status, string message);
     virtual ~CtiServerResponseMsg();
 
+    CtiServerResponseMsg& operator=(const CtiServerResponseMsg& aRef);
+
     int getID() const;
     CtiServerResponseMsg& setID(int id);
-    
+
     int getStatus() const;
     CtiServerResponseMsg& setStatus(int status);
-    
+
     const string& getMessage() const;
     CtiServerResponseMsg& setMessage(const string& message);
 
-    RWCollectable* getPayload() const;
-    CtiServerResponseMsg& setPayload(RWCollectable* payload);
-    
+    CtiMessage* getPayload() const;
+    CtiServerResponseMsg& setPayload(CtiMessage* payload);
+    CtiMessage* releasePayload();                               // Removes from response and claims ownership of the memory.
     virtual void saveGuts(RWvostream &aStream) const;
     virtual void restoreGuts(RWvistream& aStream);
 
@@ -58,13 +60,13 @@ public:
 
     void What() const;
     virtual void dump() const;
-    
+
 protected:
     int _id;
     int _status;
     string _message;
 
-    RWCollectable* _payload;
+    CtiMessage* _payload;
 };
 
 
