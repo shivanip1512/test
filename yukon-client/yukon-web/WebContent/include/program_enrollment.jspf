@@ -96,12 +96,14 @@ function confirmCancel() {
             <table width="90%" border="0" align = "center">
               <tr>
                 <td align = "center"><span class="TableCell">
-<% if (isOperator) { %>
-				  Select the check boxes and corresponding radio button of the programs this 
-				  customer would like to be enrolled in.
+<%  boolean notOperator = false;
+    if (isOperator) { %>
+                  Select the check boxes and corresponding radio button of the programs this 
+                  customer would like to be enrolled in.
 <% } else { %>
-				  <cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_DESC_ENROLLMENT %>"/> 
-<% } %>
+                  <cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_DESC_ENROLLMENT %>"/> 
+<% notOperator = true;
+} %>
                   <br>
                   <br>
                   </span> 
@@ -110,6 +112,7 @@ function confirmCancel() {
 				    <input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>">
 				    <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>">
 				    <input type="hidden" name="<%= ServletUtils.CONFIRM_ON_MESSAGE_PAGE %>">
+                                        <input type="hidden" name="notOperator" value="<%=notOperator%>">
 <% if (needMoreInfo) { %>
 				    <input type="hidden" name="<%= ServletUtils.NEED_MORE_INFORMATION %>" value="true">
 				    <input type="hidden" name="REDIRECT2" value="<%= request.getContextPath() %>/operator/Consumer/Programs2.jsp">
