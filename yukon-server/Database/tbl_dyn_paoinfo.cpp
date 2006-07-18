@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2005/12/20 17:16:06 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2006/07/18 15:20:57 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -83,6 +83,8 @@ const string CtiTableDynamicPaoInfo::_key_mct_event_flags_mask_2       = "mct ev
 const string CtiTableDynamicPaoInfo::_key_mct_meter_alarm_mask         = "mct meter alarm mask";
 const string CtiTableDynamicPaoInfo::_key_mct_demand_limit             = "mct demand limit";
 const string CtiTableDynamicPaoInfo::_key_mct_connect_delay            = "mct connect delay";
+const string CtiTableDynamicPaoInfo::_key_mct_disconnect_minutes       = "mct disconnect minutes";
+const string CtiTableDynamicPaoInfo::_key_mct_connect_minutes          = "mct connect minutes";
 
 const string CtiTableDynamicPaoInfo::_key_mct_holiday_1                = "mct holiday 1";
 const string CtiTableDynamicPaoInfo::_key_mct_holiday_3                = "mct holiday 3";
@@ -111,6 +113,8 @@ const string CtiTableDynamicPaoInfo::_key_mct_load_profile_k_ratio_4        = "m
 const string CtiTableDynamicPaoInfo::_key_mct_relay_a_timer                 = "mct relay a timer";
 const string CtiTableDynamicPaoInfo::_key_mct_relay_b_timer                 = "mct relay b timer";
 
+const string CtiTableDynamicPaoInfo::_key_mct_centron_parameters            = "mct centron parameters";
+const string CtiTableDynamicPaoInfo::_key_mct_centron_ratio                 = "mct centron ratio";
 
 const string CtiTableDynamicPaoInfo::_key_mct_precanned_table_read_interval = "mct precanned table read interval";
 const string CtiTableDynamicPaoInfo::_key_mct_precanned_meter_number        = "mct precanned meter number";
@@ -177,6 +181,8 @@ CtiTableDynamicPaoInfo::key_map_t CtiTableDynamicPaoInfo::init_key_map()
     retval.insert(make_pair(Key_MCT_OutageCycles,               &_key_mct_outage_cycles));
     retval.insert(make_pair(Key_MCT_DemandThreshold,            &_key_mct_demand_limit));
     retval.insert(make_pair(Key_MCT_ConnectDelay,               &_key_mct_connect_delay));
+    retval.insert(make_pair(Key_MCT_DisconnectMinutes,          &_key_mct_disconnect_minutes));
+    retval.insert(make_pair(Key_MCT_ConnectMinutes,             &_key_mct_connect_minutes));
     retval.insert(make_pair(Key_MCT_Holiday1,                   &_key_mct_holiday_1));
     retval.insert(make_pair(Key_MCT_Holiday2,                   &_key_mct_holiday_3));
     retval.insert(make_pair(Key_MCT_Holiday3,                   &_key_mct_holiday_2));
@@ -200,6 +206,9 @@ CtiTableDynamicPaoInfo::key_map_t CtiTableDynamicPaoInfo::init_key_map()
 
     retval.insert(make_pair(Key_MCT_RelayATimer,                &_key_mct_relay_a_timer));
     retval.insert(make_pair(Key_MCT_RelayBTimer,                &_key_mct_relay_b_timer));
+
+    retval.insert(make_pair(Key_MCT_CentronParameters,          &_key_mct_centron_parameters));
+    retval.insert(make_pair(Key_MCT_CentronRatio,               &_key_mct_centron_ratio));
 
     retval.insert(make_pair(Key_MCT_PrecannedTableReadInterval, &_key_mct_precanned_table_read_interval));
     retval.insert(make_pair(Key_MCT_PrecannedMeterNumber,       &_key_mct_precanned_meter_number));

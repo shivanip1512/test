@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2005/12/20 17:16:08 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2006/07/18 15:20:57 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -73,10 +73,14 @@ public:
         Key_MCT_OutageCycles,
         Key_MCT_DemandThreshold,
         Key_MCT_ConnectDelay,
+        Key_MCT_DisconnectMinutes,
+        Key_MCT_ConnectMinutes,
         Key_MCT_LLPChannel1Len,
         Key_MCT_LLPChannel2Len,
         Key_MCT_LLPChannel3Len,
         Key_MCT_LLPChannel4Len,
+        Key_MCT_CentronParameters,
+        Key_MCT_CentronRatio,
         Key_MCT_Holiday1,
         Key_MCT_Holiday2,
         Key_MCT_Holiday3,
@@ -171,6 +175,8 @@ protected:
 
     static const string _key_mct_demand_limit;
     static const string _key_mct_connect_delay;
+    static const string _key_mct_disconnect_minutes;
+    static const string _key_mct_connect_minutes;
 
     static const string _key_mct_llp_channel1_len;
     static const string _key_mct_llp_channel2_len;
@@ -198,6 +204,9 @@ protected:
 
     static const string _key_mct_relay_a_timer;
     static const string _key_mct_relay_b_timer;
+
+    static const string _key_mct_centron_parameters;
+    static const string _key_mct_centron_ratio;
 
     static const string _key_mct_precanned_table_read_interval;
     static const string _key_mct_precanned_meter_number;
