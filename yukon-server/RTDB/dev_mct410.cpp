@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.74 $
-* DATE         :  $Date: 2006/07/12 19:05:23 $
+* REVISION     :  $Revision: 1.75 $
+* DATE         :  $Date: 2006/07/18 15:22:53 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -269,6 +269,16 @@ CtiDeviceMCT::DynamicPaoAddressing_t CtiDeviceMCT410::initDynPaoAddressing()
     addressData.key = CtiTableDynamicPaoInfo::Key_MCT_Holiday3;
     addressSet.insert(addressData);
 
+    addressData.address = Memory_CentronParametersPos;
+    addressData.length = Memory_CentronParametersLen;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_CentronParameters;
+    addressSet.insert(addressData);
+
+    addressData.address = Memory_CentronMultiplierPos;
+    addressData.length = Memory_CentronMultiplierLen;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_CentronRatio;
+    addressSet.insert(addressData);
+
     return addressSet;
 }
 
@@ -333,6 +343,17 @@ CtiDeviceMCT::DynamicPaoFunctionAddressing_t CtiDeviceMCT410::initDynPaoFuncAddr
     addressData.length = 1;
     addressData.key = CtiTableDynamicPaoInfo::Key_MCT_ConnectDelay;
     addressSet.insert(addressData);
+
+    addressData.address = 9;
+    addressData.length = 1;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_DisconnectMinutes;
+    addressSet.insert(addressData);
+
+    addressData.address = 10;
+    addressData.length = 1;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_ConnectMinutes;
+    addressSet.insert(addressData);
+
 
     functionSet.insert(DynamicPaoFunctionAddressing_t::value_type(FuncRead_DisconnectConfigPos,addressSet));
 
@@ -404,6 +425,8 @@ CtiDeviceMCT4xx::ConfigPartsList CtiDeviceMCT410::initConfigParts()
     tempList.push_back(CtiDeviceMCT4xx::PutConfigPart_holiday);
     tempList.push_back(CtiDeviceMCT4xx::PutConfigPart_llp);
     tempList.push_back(CtiDeviceMCT4xx::PutConfigPart_usage);
+    tempList.push_back(CtiDeviceMCT4xx::PutConfigPart_centron);
+    tempList.push_back(CtiDeviceMCT4xx::PutConfigPart_tou);
 
     return tempList;
 }
@@ -884,6 +907,8 @@ INT CtiDeviceMCT410::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
 
             do
             {
+                //Note that this does not currently take into account SSpec based reads which can have varying length.
+                //It is assumed that SSPec changes do NOT change the order of recieved bytes.
                 getDynamicPaoFunctionAddressing(location, searchLocation, foundAddress, foundLength, foundKey);
 
                 if( foundAddress >= 0 && foundLength > 0 && foundKey != CtiTableDynamicPaoInfo::Key_Invalid &&
@@ -2312,7 +2337,7 @@ int CtiDeviceMCT410::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandPars
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                nRet = NOTNORMAL;
+                nRet = NoConfigData;
             }
             else
             {
@@ -2343,32 +2368,19 @@ int CtiDeviceMCT410::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandPars
             }
         }
         else
-            nRet = NoMethod;
+            nRet = NoConfigData;
     }
     else
-        nRet = NoMethod;
+        nRet = NoConfigData;
 
     return nRet;
 }
 
-/*int CtiDeviceMCT410::executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList)
+int CtiDeviceMCT410::executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList)
 {
-    OUTMESS *OutMessage;
+    int nRet = NORMAL;
 
-    // Load all the other stuff that is needed
-
-    OutMessage->DeviceID  = getID();
-    OutMessage->TargetID  = getID();
-    OutMessage->Port      = getPortID();
-    OutMessage->Remote    = getAddress();
-    OutMessage->Priority  = MAXPRIORITY-4;//standard seen in rest of devices.
-    OutMessage->TimeOut   = 2;
-    OutMessage->Retry     = 2;
-    OutMessage->Sequence = Cti::Protocol::Emetcon::PutConfig_Install;  //  this will be handled by the putconfig decode - basically, a no-op
-
-    OutMessage->Request.RouteID   = getRouteID();
-    strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
-
+    CtiConfigDeviceSPtr deviceConfig = getDeviceConfig();
 
     long value;
     if(deviceConfig)
@@ -2391,6 +2403,7 @@ int CtiDeviceMCT410::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandPars
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                nRet = NoConfigData;
             }
             else
             {
@@ -2463,13 +2476,17 @@ int CtiDeviceMCT410::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandPars
                 }
             }
         }
+        else
+            nRet = NoConfigData;
     }
+    else
+        nRet = NoConfigData;
 
     CtiLockGuard<CtiLogger> doubt_guard(dout);
     dout << CtiTime() << " **** Checkpoint - TOU config not defined for MCT410 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
 
     return NORMAL;
-}*/
+}
 
 int CtiDeviceMCT410::executePutConfigDisconnect(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList)
 {
@@ -2484,18 +2501,43 @@ int CtiDeviceMCT410::executePutConfigDisconnect(CtiRequestMsg *pReq,CtiCommandPa
 
         if( tempBasePtr && tempBasePtr->getType() == ConfigTypeMCTDisconnect )
         {
-            long threshold, delay;
+            long threshold, delay, cycleDisconnectMinutes, cycleConnectMinutes;
 
             MCTDisconnectSPtr config = boost::static_pointer_cast< ConfigurationPart<MCTDisconnect> >(tempBasePtr);
             threshold = config->getLongValueFromKey(DemandThreshold);
             delay = config->getLongValueFromKey(ConnectDelay);
+            cycleDisconnectMinutes = config->getLongValueFromKey(CyclingDisconnectMinutes);
+            cycleConnectMinutes = config->getLongValueFromKey(CyclingConnectMinutes);
+            long revision = getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision);
 
-            if( threshold == numeric_limits<long>::min() || delay == numeric_limits<long>::min() )
+            if( revision >= MCT410_SspecRev_Disconnect_Min && revision < MCT410_SspecRev_Disconnect_Cycle
+                && (cycleDisconnectMinutes | cycleConnectMinutes) != 0
+                && (cycleDisconnectMinutes | cycleConnectMinutes) != numeric_limits<long>::min() )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint - Cycle Requires revision > " << (string)CtiNumStr(MCT410_SspecRev_Disconnect_Cycle-1) << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " Device: " << getName() << " Revision: " << (string)CtiNumStr(revision) << endl;
+            }
 
+            if( revision >= MCT410_SspecRev_Disconnect_Cycle 
+                && (cycleDisconnectMinutes == numeric_limits<long>::min() || cycleConnectMinutes == numeric_limits<long>::min()) )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 nRet = NoConfigData;
+            }
+            else if( threshold == numeric_limits<long>::min() || delay == numeric_limits<long>::min() )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                nRet = NoConfigData;
+            }
+            else if( revision > 0 && revision < MCT410_SspecRev_Disconnect_Min )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint - Disconnect Requires revision > " << (string)CtiNumStr(MCT410_SspecRev_Disconnect_Min-1) << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " Device: " << getName() << " Revision: " << (string)CtiNumStr(revision) << endl;
+                nRet = FNI;
             }
             else
             {
@@ -2512,13 +2554,93 @@ int CtiDeviceMCT410::executePutConfigDisconnect(CtiRequestMsg *pReq,CtiCommandPa
                     OutMessage->Buffer.BSt.Message[3] = (threshold>>8);
                     OutMessage->Buffer.BSt.Message[4] = (threshold);
                     OutMessage->Buffer.BSt.Message[5] = (delay);
+                    //Seeing as these cost me nothing to send (2 c-words either way) I will always send them.
+                    //Also note, if we are of a revision with no cycle, these will simply be ignored
+                    OutMessage->Buffer.BSt.Message[6] = (cycleDisconnectMinutes == numeric_limits<long>::min() ? 0 : cycleDisconnectMinutes);
+                    OutMessage->Buffer.BSt.Message[7] = (cycleConnectMinutes == numeric_limits<long>::min() ? 0 : cycleConnectMinutes);
 
                     outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
                     OutMessage->Buffer.BSt.Function   = FuncRead_DisconnectConfigPos;
-                    OutMessage->Buffer.BSt.Length     = FuncRead_DisconnectConfigLen;
+                    OutMessage->Buffer.BSt.Length     = revision >= MCT410_SspecRev_Disconnect_Cycle ? FuncRead_DisconnectConfigLen + 2 : FuncRead_DisconnectConfigLen;
                     OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Read;
                     OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+                    OutMessage->Priority             += 1;//return to normal
+                }
+            }
+        }
+        else
+            nRet = NoConfigData;
+    }
+    else
+        nRet = NoConfigData;
+
+    return nRet;
+}
+
+int CtiDeviceMCT410::executePutConfigCentron(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList)
+{
+    int nRet = NORMAL;
+
+    long value;
+    CtiConfigDeviceSPtr deviceConfig = getDeviceConfig();
+
+    if( deviceConfig )
+    {
+        BaseSPtr tempBasePtr = deviceConfig->getConfigFromType(ConfigTypeMCTCentron);
+
+        if( tempBasePtr && tempBasePtr->getType() == ConfigTypeMCTCentron )
+        {
+            long parameters, ratio, spid;
+
+            MCTCentronSPtr config = boost::static_pointer_cast< ConfigurationPart<MCTCentron> >(tempBasePtr);
+            parameters = config->getLongValueFromKey(CentronParameters);
+            ratio = config->getLongValueFromKey(CentronTransformerRatio);
+            spid = CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_AddressServiceProviderID);
+
+            if( spid == numeric_limits<long>::min() )
+            {
+                //We dont have it in dynamic pao info yet, we will get it from the config tables
+                BaseSPtr addressTempBasePtr = deviceConfig->getConfigFromType(ConfigTypeMCTAddressing);
+
+                if(addressTempBasePtr && addressTempBasePtr->getType() == ConfigTypeMCTAddressing)
+                {
+                    MCTAddressingSPtr addressConfig = boost::static_pointer_cast< ConfigurationPart<MCTAddressing> >(addressTempBasePtr);
+                    spid = addressConfig->getLongValueFromKey(ServiceProviderID);
+                }
+            }
+
+            if( parameters == numeric_limits<long>::min() || ratio == numeric_limits<long>::min() )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                nRet = NoConfigData;
+            }
+            else
+            {
+                if(parse.isKeyValid("force")
+                   || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_CentronParameters) != parameters
+                   || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_CentronRatio)      != ratio )
+                {
+                    OutMessage->Buffer.BSt.Function   = FuncWrite_CentronParametersPos;
+                    OutMessage->Buffer.BSt.Length     = FuncWrite_CentronParametersLen;
+                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Write;
+                    OutMessage->Buffer.BSt.Message[0] = (spid);
+                    OutMessage->Buffer.BSt.Message[1] = (parameters);
+                    OutMessage->Buffer.BSt.Message[2] = (ratio);
+
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+
+                    OutMessage->Buffer.BSt.Function   = Memory_CentronParametersPos;
+                    OutMessage->Buffer.BSt.Length     = Memory_CentronParametersLen;
+                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
+                    OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+
+                    OutMessage->Buffer.BSt.Function   = Memory_CentronMultiplierPos;
+                    OutMessage->Buffer.BSt.Length     = Memory_CentronMultiplierLen;
+                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
                     outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
                     OutMessage->Priority             += 1;//return to normal
                 }

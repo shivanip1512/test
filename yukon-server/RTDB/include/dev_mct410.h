@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT410.h-arc  $
-* REVISION     :  $Revision: 1.35 $
-* DATE         :  $Date: 2006/07/06 20:12:40 $
+* REVISION     :  $Revision: 1.36 $
+* DATE         :  $Date: 2006/07/18 15:22:53 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -273,7 +273,7 @@ protected:
         FuncWrite_CentronParametersLen =    3,
 
         FuncWrite_DisconnectConfigPos  = 0xfe,
-        FuncWrite_DisconnectConfigLen  =    6,
+        FuncWrite_DisconnectConfigLen  =    8,
 
     };
 
@@ -319,10 +319,12 @@ protected:
 
         MCT410_Sspec            = 1029,
 
-        MCT410_SspecRev_NewLLP_Min    =    8,
-        MCT410_SspecRev_TOUPeak_Min   =   13,
-        MCT410_SspecRev_NewOutage_Min =    8,
-        MCT410_SspecRev_NewOutage_Max =   30,
+        MCT410_SspecRev_NewLLP_Min       =    8,
+        MCT410_SspecRev_TOUPeak_Min      =   13,
+        MCT410_SspecRev_NewOutage_Min    =    8,
+        MCT410_SspecRev_NewOutage_Max    =   30,
+        MCT410_SspecRev_Disconnect_Min   =    8,
+        MCT410_SspecRev_Disconnect_Cycle =   12,
 
         MCT4XX_DawnOfTime       = 0x386d4380  //  jan 1, 2000, in UTC seconds
 
@@ -374,6 +376,8 @@ protected:
     int executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >&outList);
     int executePutConfigDisconnect(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList);
     int executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList);
+    int executePutConfigCentron(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList);
+    int executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList);
 
     virtual INT ModelDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
 
