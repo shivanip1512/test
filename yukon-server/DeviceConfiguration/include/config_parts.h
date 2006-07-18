@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/config_type_mct_addressing.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2006/07/06 20:33:02 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2006/07/18 15:25:52 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -86,7 +86,9 @@ enum MCTDisconnect
 {
     MCTDisconnectInvalid = 0,
     DemandThreshold,
-    ConnectDelay
+    ConnectDelay,
+    CyclingDisconnectMinutes,
+    CyclingConnectMinutes
 };
 
 enum MCTLongLoadProfile
@@ -142,6 +144,13 @@ enum MCTSystemOptions
 {
     MCTSystemOptionsInvalid = 0,
     DemandMetersToScan,
+};
+
+enum MCTCentron
+{
+    MCTCentronInvalid = 0,
+    CentronParameters,
+    CentronTransformerRatio
 };
 
 }//namespace mct
@@ -316,6 +325,7 @@ EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCT::MCTLoadProfileC
 EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCT::MCTRelays>;
 EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCT::MCTPrecannedTable>;
 EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCT::MCTSystemOptions>;
+EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCT::MCTCentron>;
 EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<CBC::CBCVoltage>;
 EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<CBC::CBCCommsLost>;
 EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<CBC::CBCNeutralCurrent>;
@@ -415,6 +425,7 @@ typedef ConfigurationPart<MCT::MCTLoadProfileChannels> * MCTLoadProfileChannelsS
 typedef ConfigurationPart<MCT::MCTRelays> *              MCTRelaysSPtr;
 typedef ConfigurationPart<MCT::MCTPrecannedTable> *      MCTPrecannedTableSPtr;
 typedef ConfigurationPart<MCT::MCTSystemOptions> *       MCTSystemOptionsSPtr;
+typedef ConfigurationPart<MCT::MCTCentron> *             MCTCentronSPtr;
 
 typedef ConfigurationPart<CBC::CBCVoltage> *             CBCVoltageSPtr;
 typedef ConfigurationPart<CBC::CBCCommsLost> *           CBCCommsLostSPtr;
@@ -441,6 +452,7 @@ typedef shared_ptr< ConfigurationPart<MCT::MCTLoadProfileChannels> > MCTLoadProf
 typedef shared_ptr< ConfigurationPart<MCT::MCTRelays> >              MCTRelaysSPtr;
 typedef shared_ptr< ConfigurationPart<MCT::MCTPrecannedTable> >      MCTPrecannedTableSPtr;
 typedef shared_ptr< ConfigurationPart<MCT::MCTSystemOptions> >       MCTSystemOptionsSPtr;
+typedef shared_ptr< ConfigurationPart<MCT::MCTCentron> >             MCTCentronSPtr;
 
 typedef shared_ptr< ConfigurationPart<CBC::CBCVoltage> >             CBCVoltageSPtr;
 typedef shared_ptr< ConfigurationPart<CBC::CBCCommsLost> >           CBCCommsLostSPtr;

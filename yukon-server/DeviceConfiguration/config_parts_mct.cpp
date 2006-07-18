@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/config_type_mct_addressing.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2006/03/30 16:04:38 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2006/07/18 15:25:52 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -195,6 +195,14 @@ MCTDisconnect ConfigurationPart<MCTDisconnect>::getResolvedKey(string key)
     {
         return ConnectDelay;
     }
+    if(key == "cycling disconnect minutes")
+    {
+        return CyclingDisconnectMinutes;
+    }
+    if(key == "cycling connect minutes")
+    {
+        return CyclingConnectMinutes;
+    }
     else
     {
         return MCTDisconnectInvalid;
@@ -355,6 +363,23 @@ MCTSystemOptions ConfigurationPart<MCTSystemOptions>::getResolvedKey(string key)
     }
 }
 
+MCTCentron ConfigurationPart<MCTCentron>::getResolvedKey(string key)
+{
+    CtiToLower(key);
+    if(key == "parameters")
+    {
+        return CentronParameters;
+    }
+    if(key == "transformer ratio")
+    {
+        return CentronTransformerRatio;
+    }
+    else
+    {
+        return MCTCentronInvalid;
+    }
+}
+
 //******************************************************************************
 //getType() begins here
 CtiConfig_type ConfigurationPart<MCTAddressing>::getType()
@@ -382,7 +407,7 @@ CtiConfig_type ConfigurationPart<MCT_DST>::getType()
     return ConfigTypeMCTDST;
 }
 
-CtiConfig_type ConfigurationPart<MCT_TOU>::getType()//DO NOT USE ME
+CtiConfig_type ConfigurationPart<MCT_TOU>::getType()
 {
     return ConfigTypeMCTTOU;
 }
@@ -420,6 +445,11 @@ CtiConfig_type ConfigurationPart<MCTPrecannedTable>::getType()
 CtiConfig_type ConfigurationPart<MCTSystemOptions>::getType()
 {
     return ConfigTypeMCTSystemOptions;
+}
+
+CtiConfig_type ConfigurationPart<MCTCentron>::getType()
+{
+    return ConfigTypeMCTCentron;
 }
 
 }//Config
