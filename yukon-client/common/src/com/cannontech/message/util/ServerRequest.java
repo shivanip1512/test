@@ -81,24 +81,6 @@ public class ServerRequest implements MessageListener
 	}
 
 	/**
-	 * Factory method to create a ServerRequest
-	 * @param conn - Connection to a Yukon server
-	 * @param msg - Some type of message that represents a request
-	 * @return
-	 */
-	public static ServerRequest[] makeServerRequests(IServerConnection conn, Message[] msg) 
-	{
-		ServerRequest[] srvrReq = new ServerRequest[ msg.length ];
-		for( int i = 0; i < msg.length; i++ )
-		{
-			srvrReq[i] = makeServerRequest(conn, msg[i]);
-		}
-
-		return srvrReq;
-	}
-
-
-	/**
 	 * Returns a ServerResponseMsg that matches the request.
 	 * If no matching response is received a Timeout response will be returned
 	 * ater DEFAULT_TIMEOUT.
