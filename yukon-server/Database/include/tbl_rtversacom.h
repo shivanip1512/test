@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_rtversacom.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/12/20 17:16:09 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2006/07/19 19:02:01 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -41,6 +41,8 @@ protected:
    INT      Division;            // 1-16
    INT      Bus;                 // 1-8   // Zero based in code so 0-7
    INT      Amp;                 // 1-2   // Zero based in code so 0-1
+
+   UINT     Individual;          // 0-4,000,000,000+ (for expresscom)
 
 private:
 
@@ -87,5 +89,10 @@ public:
    virtual RWDBStatus Update();
    virtual RWDBStatus Delete();
    virtual RWDBStatus Restore();
+
+   INT  getSPID() const;
+   INT  getGeo() const;
+   INT  getSubstation() const;
+   UINT getIndividual() const;
 };
 #endif // #ifndef __TBL_RTVERSACOM_H__

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_rtversacom.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/12/20 17:16:07 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2006/07/19 19:02:01 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -41,6 +41,7 @@ CtiTableVersacomRoute& CtiTableVersacomRoute::operator=(const CtiTableVersacomRo
         Section        = aRef.getSection();
         Class          = aRef.getClass();
         Division       = aRef.getDivision();
+        Individual     = aRef.getIndividual();
         Bus            = aRef.getBus();
         Amp            = aRef.getAmp();
 
@@ -150,6 +151,26 @@ CtiTableVersacomRoute& CtiTableVersacomRoute::setAmp( const INT aAmp )
     return *this;
 }
 
+INT  CtiTableVersacomRoute::getSPID() const
+{
+    return UtilityID;
+}
+
+INT  CtiTableVersacomRoute::getGeo() const
+{
+    return Section;
+}
+
+INT  CtiTableVersacomRoute::getSubstation() const
+{
+    return Class;
+}
+
+UINT  CtiTableVersacomRoute::getIndividual() const
+{
+    return Individual;
+}
+
 void CtiTableVersacomRoute::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
 #if 1
@@ -202,6 +223,7 @@ void CtiTableVersacomRoute::DecodeDatabaseReader(RWDBReader &rdr)
     rdr["sectionaddress"]   >> Section;
     rdr["classaddress"]     >> Class;
     rdr["divisionaddress"]  >> Division;
+    rdr["divisionaddress"]  >> Individual;
     rdr["busnumber"]        >> Bus;
     rdr["ampcardset"]       >> Amp;
 
