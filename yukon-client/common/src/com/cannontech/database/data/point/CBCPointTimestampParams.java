@@ -6,6 +6,7 @@ import java.util.Date;
 public class CBCPointTimestampParams {
 private Integer pointId = new Integer (0);
 private String pointName = "";
+private Double value = new Double (0.0);
 private Date timestamp = new Date();
 
 	public CBCPointTimestampParams() {
@@ -34,6 +35,14 @@ private Date timestamp = new Date();
 
 	public String getPointName() {
 		return pointName;
+	}
+
+	public Double getValue() {
+		return value;
+	}
+
+	public void setValue(Double value) {
+		this.value = value;
 	}
 
 }

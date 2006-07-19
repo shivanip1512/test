@@ -152,10 +152,10 @@ public void setJdbcOps(JdbcOperations jdbcOps) {
     this.jdbcOps = jdbcOps;
 }
 
-public  List getCBCPointTimeStamps (Integer cbcID) {
+public List getCBCPointTimeStamps (Integer cbcID) {
     
     String sqlStmt = 
-        "SELECT Point.PointID, Point.PointName, DynamicPointDispatch.Timestamp "
+        "SELECT Point.PointID, Point.PointName, DynamicPointDispatch.Value, DynamicPointDispatch.Timestamp "
           + "FROM Point, DynamicPointDispatch WHERE "
           + "DynamicPointDispatch.PointId IN ( " 
           +  "SELECT PointId FROM Point WHERE PaObjectId = ?) "
@@ -170,11 +170,13 @@ public  List getCBCPointTimeStamps (Integer cbcID) {
                     CBCPointTimestampParams pointTimestamp = new CBCPointTimestampParams(); 
                     pointTimestamp.setPointId (new Integer ( rs.getBigDecimal(1).intValue() ));
                     pointTimestamp.setPointName (new String ( rs.getString(2)));
-                    pointTimestamp.setTimestamp((Timestamp) ( rs.getTimestamp(3)));
+                    pointTimestamp.setValue(new Double ( rs.getDouble(3)) );
+                    pointTimestamp.setTimestamp((Timestamp) ( rs.getTimestamp(4)));
                     return pointTimestamp;                      
                 }
             });
 
     return pointList;   
 }
+
 }

@@ -13,6 +13,7 @@
         <table id="innerTable" width="95%" border="0" cellspacing="0" cellpadding="0">
 			<tr class="columnHeader lAlign">
 				<td>Name</td>
+				<td>Value</td>
 				<td>Timestamp</td>
 			</tr>
 
@@ -27,6 +28,9 @@ for( int i = 0; i < pointList.size(); i++ )
 			<tr class="<%=css%>">
 				<td>
 				 <%=pointTS.getPointName() %>
+				</td>
+				<td>
+				<%=pointTS.getValue()%>
 				</td>
 				<td>
 				<%=pointTS.getTimestamp().toString()%>
