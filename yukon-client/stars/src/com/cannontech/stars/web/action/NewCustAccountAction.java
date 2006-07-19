@@ -232,7 +232,7 @@ public class NewCustAccountAction implements ActionBase {
     					login.setUsername(lastName.toLowerCase() + time.substring(time.length() - 2));
     				else
     					login.setUsername(firstInitial + lastName.toLowerCase());
-    				login.setPassword(new Long(java.util.Calendar.getInstance().getTimeInMillis()).toString());
+    				login.setPassword(time);
     				/*String groupIDs = DaoFactory.getEnergyCompanyDao().getEnergyCompanyProperty(user.getYukonUser(), EnergyCompanyRole.CUSTOMER_GROUP_IDS);
     				Integer defaultGroupID = new Integer(0);
     				if(groupIDs != null)

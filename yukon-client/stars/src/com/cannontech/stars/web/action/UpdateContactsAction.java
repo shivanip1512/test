@@ -115,7 +115,7 @@ public class UpdateContactsAction implements ActionBase {
     						firstInitial = firstName.toLowerCase().substring(0,1);
     					String newUserName = firstInitial + lastName.toLowerCase();
     					if (DaoFactory.getYukonUserDao().getLiteYukonUser( newUserName ) != null)
-    						newUserName = lastName + time.substring(time.length() - 2);
+    						newUserName = lastName.toLowerCase() + time.substring(time.length() - 2);
     					login.getYukonUser().setUsername(newUserName);
     					login.getYukonUser().setPassword(time); 
     					login.getYukonGroups().addElement(((com.cannontech.database.data.user.YukonGroup)LiteFactory.convertLiteToDBPers(custGroups[0])).getYukonGroup());
