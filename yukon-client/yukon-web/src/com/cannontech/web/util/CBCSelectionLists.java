@@ -128,7 +128,10 @@ public class CBCSelectionLists {
 	private static final SelectItem[] cbcControlAlgorithim =  {
 		new SelectItem(CalcComponentTypes.LABEL_KVAR, CalcComponentTypes.LABEL_KVAR),
 		new SelectItem(CalcComponentTypes.PFACTOR_KW_KVAR_FUNCTION, CalcComponentTypes.PFACTOR_KW_KVAR_FUNCTION),
-		new SelectItem(CalcComponentTypes.PFACTOR_KW_KQ_FUNCTION, CalcComponentTypes.PFACTOR_KW_KQ_FUNCTION),
+		//removed because no points to attach yet
+		//new SelectItem(CalcComponentTypes.PFACTOR_KW_KQ_FUNCTION, CalcComponentTypes.PFACTOR_KW_KQ_FUNCTION),
+		new SelectItem(CalcComponentTypes.LABEL_MULTI_VOLT, CalcComponentTypes.LABEL_MULTI_VOLT),
+		
 		new SelectItem(CalcComponentTypes.LABEL_VOLTS, CalcComponentTypes.LABEL_VOLTS)
 	};
 
