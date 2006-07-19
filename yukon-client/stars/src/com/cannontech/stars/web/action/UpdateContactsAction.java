@@ -109,14 +109,15 @@ public class UpdateContactsAction implements ActionBase {
     					com.cannontech.database.data.user.YukonUser login = new com.cannontech.database.data.user.YukonUser();
     					LiteStarsEnergyCompany liteEC = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
     					com.cannontech.database.data.lite.LiteYukonGroup[] custGroups = liteEC.getResidentialCustomerGroups();
-    					String firstInitial= "";
+    					String time = new Long(java.util.Calendar.getInstance().getTimeInMillis()).toString();
+                        String firstInitial= "";
     					if(firstName != null)
     						firstInitial = firstName.toLowerCase().substring(0,1);
     					String newUserName = firstInitial + lastName.toLowerCase();
     					if (DaoFactory.getYukonUserDao().getLiteYukonUser( newUserName ) != null)
-    						newUserName = firstName.toLowerCase() + lastName.toLowerCase();
+    						newUserName = lastName + time.substring(time.length() - 2);
     					login.getYukonUser().setUsername(newUserName);
-    					login.getYukonUser().setPassword(new Long(java.util.Calendar.getInstance().getTimeInMillis()).toString()); 
+    					login.getYukonUser().setPassword(time); 
     					login.getYukonGroups().addElement(((com.cannontech.database.data.user.YukonGroup)LiteFactory.convertLiteToDBPers(custGroups[0])).getYukonGroup());
     					login.getYukonUser().setStatus(UserUtils.STATUS_ENABLED);
     					//login.setEnergyCompany()

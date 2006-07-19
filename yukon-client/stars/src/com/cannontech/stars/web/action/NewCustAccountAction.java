@@ -180,7 +180,7 @@ public class NewCustAccountAction implements ActionBase {
     						firstInitial = firstName.toLowerCase().substring(0,1);
     					String newUserName = firstInitial + lastName.toLowerCase();
     					if (DaoFactory.getYukonUserDao().getLiteYukonUser( newUserName ) != null)
-                            newUserName = lastName + time.substring(time.length() - 2);
+                            newUserName = lastName.toLowerCase() + time.substring(time.length() - 2);
     					login.getYukonUser().setUsername(newUserName);
     					login.getYukonUser().setPassword(time); 
                         if(custGroups.length > 0)
@@ -229,7 +229,7 @@ public class NewCustAccountAction implements ActionBase {
     					firstInitial = "#";
     				}
     				if(DaoFactory.getYukonUserDao().getLiteYukonUser( firstInitial + lastName ) != null)
-    					login.setUsername(lastName + time.substring(time.length() - 2));
+    					login.setUsername(lastName.toLowerCase() + time.substring(time.length() - 2));
     				else
     					login.setUsername(firstInitial + lastName.toLowerCase());
     				login.setPassword(new Long(java.util.Calendar.getInstance().getTimeInMillis()).toString());
