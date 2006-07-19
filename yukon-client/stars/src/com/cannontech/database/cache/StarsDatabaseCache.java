@@ -371,9 +371,6 @@ public class StarsDatabaseCache implements DBChangeLiteListener {
     
 	public void handleDBChangeMsg(DBChangeMsg msg, LiteBase lBase)
 	{
-		if (msg.getSource().equals(com.cannontech.common.util.CtiUtilities.DEFAULT_MSG_SOURCE))
-			return;
-		
 		CTILogger.debug(" ## DBChangeMsg ##\n" + msg);
 		
 		ArrayList companies = getAllEnergyCompanies();

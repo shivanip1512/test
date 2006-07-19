@@ -3,6 +3,7 @@ package com.cannontech.database.cache;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.util.MessageEvent;
@@ -79,23 +80,31 @@ public class CacheDBChangeListener implements MessageListener {
 	 */
 	public void messageReceived(MessageEvent e) {
 		Object msg = e.getMessage();
-		if (msg != null && msg instanceof DBChangeMsg) {
-			synchronized (dbChangeLiteListeners) {
-				for (DBChangeLiteListener listener : dbChangeLiteListeners) {
-					// handle the Cache's DBChangeMessages
-					LiteBase lBase = DefaultDatabaseCache.getInstance()
-							.handleDBChangeMessage((DBChangeMsg) msg);
-
-					// do the listeners handler of DBChangeMessages
-					listener.handleDBChangeMsg((DBChangeMsg) msg, lBase);
-				}
-			}
-            
-            synchronized (dbChangeListeners) {
-                for (DBChangeListener listener : dbChangeListeners) {
-                    listener.dbChangeReceived((DBChangeMsg)msg);
-                }
+		if (msg instanceof DBChangeMsg) {
+            DBChangeMsg dbMsg = (DBChangeMsg) msg;
+            if (!dbMsg.getSource().equals(CtiUtilities.DEFAULT_MSG_SOURCE)) {
+                handleDBChangeMessage(dbMsg);
             }
 		}
 	}
+    
+    public void handleDBChangeMessage(DBChangeMsg msg) {
+        synchronized (dbChangeLiteListeners) {
+            for (DBChangeLiteListener listener : dbChangeLiteListeners) {
+                // handle the Cache's DBChangeMessages
+                LiteBase lBase = DefaultDatabaseCache.getInstance()
+                        .handleDBChangeMessage(msg);
+
+                // do the listeners handler of DBChangeMessages
+                listener.handleDBChangeMsg(msg, lBase);
+            }
+        }
+        
+        synchronized (dbChangeListeners) {
+            for (DBChangeListener listener : dbChangeListeners) {
+                listener.dbChangeReceived(msg);
+            }
+        }
+    }
+
 }

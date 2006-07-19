@@ -10,6 +10,7 @@ import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
+import com.cannontech.database.cache.CacheDBChangeListener;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.db.CTIDbChange;
@@ -28,6 +29,7 @@ import com.cannontech.yukon.conns.ConnPool;
 public class DBPersistentDaoImpl implements DBPersistentDao
 {
     private IDatabaseCache databaseCache;
+    private CacheDBChangeListener cacheDBChangeListener;
     
     /* (non-Javadoc)
      * @see com.cannontech.core.dao.DBPersistentDao#retrieveDBPersistent(com.cannontech.database.data.lite.LiteBase)
@@ -77,13 +79,14 @@ public class DBPersistentDaoImpl implements DBPersistentDao
             item = t.execute();
             
             //write the DBChangeMessage out to Dispatch since it was a Successfull UPDATE
-            if (dbChangeType != DBChangeMsg.CHANGE_TYPE_NONE) {
-            DBChangeMsg[] dbChange = databaseCache.createDBChangeMessages((CTIDbChange)item, dbChangeType);
-                    
-            for( int i = 0; i < dbChange.length; i++)
+            if (dbChangeType != DBChangeMsg.CHANGE_TYPE_NONE)
             {
-                databaseCache.handleDBChangeMessage(dbChange[i]);
-                connToDispatch.write(dbChange[i]);
+                DBChangeMsg[] dbChange = databaseCache.createDBChangeMessages((CTIDbChange)item, dbChangeType);
+                
+                for( int i = 0; i < dbChange.length; i++)
+                {
+                    cacheDBChangeListener.handleDBChangeMessage(dbChange[i]);
+                    connToDispatch.write(dbChange[i]);
                 }
             }
         }
@@ -105,6 +108,9 @@ public class DBPersistentDaoImpl implements DBPersistentDao
     
     public void setDatabaseCache(IDatabaseCache databaseCache) {
         this.databaseCache = databaseCache;
+    }
+    public void setCacheDBChangeListener(CacheDBChangeListener cacheDBChangeListener) {
+        this.cacheDBChangeListener = cacheDBChangeListener;
     }
     
 }
