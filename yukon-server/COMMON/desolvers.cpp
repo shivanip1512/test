@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/desolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.42 $
-* DATE         :  $Date: 2006/01/03 20:23:36 $
+* REVISION     :  $Revision: 1.43 $
+* DATE         :  $Date: 2006/07/19 19:00:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -628,6 +628,10 @@ string Ret;
     else if(aType == RouteTypeVersacom)
     {
         Ret = "versacom";
+    }
+    else if(aType == RouteTypeExpresscom)
+    {
+        Ret = "expresscom";
     }
     else if(aType == RouteTypeTap)
     {

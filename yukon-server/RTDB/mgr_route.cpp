@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_route.cpp-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2006/02/27 23:58:31 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2006/07/19 19:00:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,6 +20,7 @@
 #include "rte_xcu.h"
 #include "rte_ccu.h"
 #include "rte_versacom.h"
+#include "rte_expresscom.h"
 #include "rte_macro.h"
 
 #include "tbl_rtversacom.h"
@@ -397,6 +398,11 @@ void CtiRouteManager::RefreshVersacomRoutes(bool &rowFound, RWDBReader& rdr, BOO
 
                 CtiRouteVersacom *pVersacom = (CtiRouteVersacom*)pTempCtiRoute.get();
                 pVersacom->DecodeVersacomDatabaseReader(rdr);        // Fills himself in from the reader
+            }
+            else if(pTempCtiRoute->getType() == RouteTypeExpresscom)
+            {
+                CtiRouteExpresscom *pExpresscom = (CtiRouteExpresscom*)pTempCtiRoute.get();
+                pExpresscom->DecodeVersacomDatabaseReader(rdr);        // Fills himself in from the reader
             }
         }
     }

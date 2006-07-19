@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/slctdev.cpp-arc  $
-* REVISION     :  $Revision: 1.51 $
-* DATE         :  $Date: 2006/04/20 17:06:52 $
+* REVISION     :  $Revision: 1.52 $
+* DATE         :  $Date: 2006/07/19 19:01:47 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -84,6 +84,7 @@
 #include "rte_ccu.h"
 #include "rte_xcu.h"
 #include "rte_versacom.h"
+#include "rte_expresscom.h"
 
 #include "devicetypes.h"
 #include "rtdb.h"
@@ -509,6 +510,11 @@ DLLEXPORT CtiRouteBase* RouteFactory(RWDBReader &rdr)
         case RouteTypeVersacom:
             {
                 Route = (CtiRouteBase*) CTIDBG_new CtiRouteVersacom;
+                break;
+            }
+        case RouteTypeExpresscom:
+            {
+                Route = (CtiRouteBase*) CTIDBG_new CtiRouteExpresscom;
                 break;
             }
         case RouteTypeRepeater:

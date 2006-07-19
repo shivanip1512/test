@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.66 $
-* DATE         :  $Date: 2006/05/19 15:27:53 $
+* REVISION     :  $Revision: 1.67 $
+* DATE         :  $Date: 2006/07/19 19:00:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -62,6 +62,10 @@ INT resolveRouteType( const string& _rwsTemp)
     else if(rwsTemp == "versacom")
     {
         Ret = RouteTypeVersacom;
+    }
+    else if(rwsTemp == "expresscom")
+    {
+        Ret = RouteTypeExpresscom;
     }
     else if(rwsTemp == "tap paging" || rwsTemp == "tappaging")
     {

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/yukon.h-arc  $
-* REVISION     :  $Revision: 1.54 $
-* DATE         :  $Date: 2006/06/23 16:26:11 $
+* REVISION     :  $Revision: 1.55 $
+* DATE         :  $Date: 2006/07/19 19:00:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -364,6 +364,7 @@ enum CtiRoute_t
     RouteTypeLCU,
     RouteTypeRepeater,
     RouteTypeVersacom,
+    RouteTypeExpresscom,
     RouteTypeTap,
     RouteTypeWCTP,
     RouteTypeRTC,

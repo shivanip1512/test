@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_system.cpp-arc  $
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2006/04/19 20:44:46 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2006/07/19 19:00:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -410,6 +410,7 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                         case RouteTypeLCU:
                         case RouteTypeRepeater:
                         case RouteTypeVersacom:
+                        case RouteTypeExpresscom:
                         case RouteTypeTap:
                         case RouteTypeWCTP:
                         case RouteTypeSNPP:
