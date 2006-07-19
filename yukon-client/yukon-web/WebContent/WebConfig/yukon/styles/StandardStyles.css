@@ -42,8 +42,8 @@ body {
 }
   
 #Content {
-  margin: 15px 0 0 0;
-  }
+  margin: 15px 7px 0 7px;
+}
   
 
 #Menu #topMenu {
@@ -131,14 +131,7 @@ table.roundedTable {
     width: 100%;
 }
 
-table.resizeRoundTable {
-	
-    border-collapse: collapse;
-    border-spacing: 0;
-}
-
-table.roundedTable td.upperLeft,
-table.resizeRoundTable  td.upperLeft{
+table.roundedTable td.upperLeft {
     border-style: hidden;
     padding: 0;
     background-image: url(../Header_left.gif);
@@ -146,8 +139,7 @@ table.resizeRoundTable  td.upperLeft{
     width: 6px;
 }
 
-table.roundedTable td.upperRight,
-table.resizeRoundTable td.upperRight{
+table.roundedTable td.upperRight {
     border-style: hidden;
     padding: 0;
     background-image: url(../Header_right.gif);
@@ -155,8 +147,7 @@ table.resizeRoundTable td.upperRight{
     width: 6px;
 }
 
-table.roundedTable td.lowerLeft,
-table.resizeRoundTable td.lowerLeft {
+table.roundedTable td.lowerLeft {
     border-style: hidden;
     padding: 0;
     background-image: url(../Bottom_left.gif);
@@ -165,8 +156,7 @@ table.resizeRoundTable td.lowerLeft {
     height: 9px;
 }
 
-table.roundedTable td.lowerRight,
-table.resizeRoundTable td.lowerRight {
+table.roundedTable td.lowerRight {
     border-style: hidden;
     padding: 0;
     background-image: url(../Bottom_right.gif);
@@ -175,8 +165,7 @@ table.resizeRoundTable td.lowerRight {
     height: 9px;
 }
 
-table.roundedTable td.leftSide,
-table.resizeRoundTable td.leftSide {
+table.roundedTable td.leftSide {
     border-style: hidden;
     padding: 0;
     background-image: url(../Side_left.gif);
@@ -184,8 +173,7 @@ table.resizeRoundTable td.leftSide {
     width: 6px;
 }
 
-table.roundedTable td.rightSide,
-table.resizeRoundTable td.rightSide {
+table.roundedTable td.rightSide {
     border-style: hidden;
     padding: 0;
     background-image: url(../Side_right.gif);
@@ -193,8 +181,7 @@ table.resizeRoundTable td.rightSide {
     width: 6px;
 }
 
-table.roundedTable td.bottom,
-table.resizeRoundTable td.bottom {
+table.roundedTable td.bottom {
     border-style: hidden;
     padding: 0;
     background-image: url(../Bottom.gif);
@@ -202,9 +189,8 @@ table.resizeRoundTable td.bottom {
     height: 9px;
 }
 
-table.roundedTable td.top,
-table.resizeRoundTable td.top {
-	background-color: #888888;
+table.roundedTable td.top {
+    background-color: #888888;
     font-weight: bold;
     color: white;
 }
