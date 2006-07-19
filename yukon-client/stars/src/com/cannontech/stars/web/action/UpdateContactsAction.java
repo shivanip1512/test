@@ -27,6 +27,7 @@ import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.db.customer.CustomerAdditionalContact;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
@@ -102,25 +103,32 @@ public class UpdateContactsAction implements ActionBase {
 					/*very hackish...should not be hitting the DB in the build method...
 					 * this is part of the whole HECO development rush...some day we will pay
 					 */
-					com.cannontech.database.data.user.YukonUser login = new com.cannontech.database.data.user.YukonUser();
-					LiteStarsEnergyCompany liteEC = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
-					com.cannontech.database.data.lite.LiteYukonGroup[] custGroups = liteEC.getResidentialCustomerGroups();
-					String firstInitial= "";
-					if(firstName != null)
-						firstInitial = firstName.toLowerCase().substring(0,1);
-					String newUserName = firstInitial + lastName.toLowerCase();
-					if (DaoFactory.getYukonUserDao().getLiteYukonUser( newUserName ) != null)
-						newUserName = firstName.toLowerCase() + lastName.toLowerCase();
-					login.getYukonUser().setUsername(newUserName);
-					login.getYukonUser().setPassword(new Long(java.util.Calendar.getInstance().getTimeInMillis()).toString()); 
-					login.getYukonGroups().addElement(((com.cannontech.database.data.user.YukonGroup)LiteFactory.convertLiteToDBPers(custGroups[0])).getYukonGroup());
-					login.getYukonUser().setStatus(UserUtils.STATUS_ENABLED);
-					//login.setEnergyCompany()
-					login = (YukonUser)
-						Transaction.createTransaction(Transaction.INSERT, login).execute();
-					LiteYukonUser liteUser = new LiteYukonUser( login.getUserID().intValue() );
-					ServerUtils.handleDBChange(liteUser, DBChangeMsg.CHANGE_TYPE_ADD);
-					contact.setLoginID(login.getUserID().intValue());
+					//ConsumerInfoRole.CREATE_LOGIN_FOR_ACCOUNT needs to be true for this to happen
+                    if(DaoFactory.getAuthDao().checkRoleProperty(user.getUserID(), ConsumerInfoRole.CREATE_LOGIN_FOR_ACCOUNT))
+                    {
+    					com.cannontech.database.data.user.YukonUser login = new com.cannontech.database.data.user.YukonUser();
+    					LiteStarsEnergyCompany liteEC = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
+    					com.cannontech.database.data.lite.LiteYukonGroup[] custGroups = liteEC.getResidentialCustomerGroups();
+    					String firstInitial= "";
+    					if(firstName != null)
+    						firstInitial = firstName.toLowerCase().substring(0,1);
+    					String newUserName = firstInitial + lastName.toLowerCase();
+    					if (DaoFactory.getYukonUserDao().getLiteYukonUser( newUserName ) != null)
+    						newUserName = firstName.toLowerCase() + lastName.toLowerCase();
+    					login.getYukonUser().setUsername(newUserName);
+    					login.getYukonUser().setPassword(new Long(java.util.Calendar.getInstance().getTimeInMillis()).toString()); 
+    					login.getYukonGroups().addElement(((com.cannontech.database.data.user.YukonGroup)LiteFactory.convertLiteToDBPers(custGroups[0])).getYukonGroup());
+    					login.getYukonUser().setStatus(UserUtils.STATUS_ENABLED);
+    					//login.setEnergyCompany()
+    					login = (YukonUser)
+    						Transaction.createTransaction(Transaction.INSERT, login).execute();
+    					LiteYukonUser liteUser = new LiteYukonUser( login.getUserID().intValue() );
+    					ServerUtils.handleDBChange(liteUser, DBChangeMsg.CHANGE_TYPE_ADD);
+    					contact.setLoginID(login.getUserID().intValue());
+                    }
+                    else
+                        contact.setLoginID(UserUtils.USER_DEFAULT_ID);
+                    
 					updateContacts.addAdditionalContact( (AdditionalContact)contact );
 				}				
 				contact.setLastName( lastName );
