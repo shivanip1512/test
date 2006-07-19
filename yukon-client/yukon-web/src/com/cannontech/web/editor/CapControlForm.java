@@ -13,6 +13,8 @@ import java.util.Set;
 import java.util.Vector;
 
 import javax.faces.application.FacesMessage;
+import javax.faces.component.UIComponent;
+import javax.faces.component.UIInput;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ValueChangeEvent;
@@ -29,6 +31,7 @@ import org.apache.myfaces.custom.tree2.TreeStateBase;
 
 import com.cannontech.cbc.point.CBCPointFactory;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.StringUtils;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.capcontrol.CCYukonPAOFactory;
@@ -144,6 +147,8 @@ public class CapControlForm extends DBEditorForm {
     private TreeNode varTreeData = null;
     private TreeNode wattTreeData = null;
     private TreeNode voltTreeData = null;
+    
+    private SelectItem[] controlMethods = null;
     
     
 	/**
@@ -1998,11 +2003,25 @@ public class CapControlForm extends DBEditorForm {
 	public void setSwitchPointEnabled(boolean switchPointEnabled) {
 		this.switchPointEnabled = switchPointEnabled;
 	}
+	
+	//delegate to this class because generic class doesn't have to know about business rules	
+	public SelectItem[]  getControlMethods () {
+	String algorithm = ((CapControlStrategy)getCbcStrategiesMap().get( new Integer ( getCurrentStrategyID() ))).getControlUnits();
+	
+	if (algorithm.equalsIgnoreCase(CalcComponentTypes.LABEL_MULTI_VOLT)) {
+		controlMethods = new SelectItem [2];
+		controlMethods[0] = new SelectItem(CapControlStrategy.CNTRL_INDIVIDUAL_FEEDER,
+				StringUtils.addCharBetweenWords( ' ', CapControlStrategy.CNTRL_INDIVIDUAL_FEEDER));
+		controlMethods[1] = new SelectItem(CapControlStrategy.CNTRL_SUBSTATION_BUS,
+						StringUtils.addCharBetweenWords( ' ', CapControlStrategy.CNTRL_SUBSTATION_BUS));
 
-
-
-  
-    
-    
-
+		
+	}
+	
+	else
+		controlMethods = new CBCSelectionLists().getCbcControlMethods();
+	return controlMethods;
+	
+	}
+		
 }

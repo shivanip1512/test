@@ -74,7 +74,7 @@
 			<x:outputLabel for="Control_Method" value="Control Method: " title="How the CapBanks are to be controlled"/>
 			<x:selectOneMenu id="Control_Method" onchange="submit();" disabled="#{!capControlForm.editingCBCStrategy}"
 					value="#{capControlForm.cbcStrategiesMap[capControlForm.currentStrategyID].controlMethod}" >
-				<f:selectItems value="#{selLists.cbcControlMethods}"/>
+				<f:selectItems value="#{capControlForm.controlMethods}"/>
 			</x:selectOneMenu>
 	
 			<f:verbatim><br/></f:verbatim>

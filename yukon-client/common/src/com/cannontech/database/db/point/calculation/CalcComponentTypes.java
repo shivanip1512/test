@@ -18,6 +18,8 @@ public class CalcComponentTypes
 	
 	public static final String LABEL_KVAR = "kVAr";
 	public static final String LABEL_VOLTS = "VOLTS";
+	public static final String LABEL_MULTI_VOLT = "Multi Volt";
+	
 
 	
 	
