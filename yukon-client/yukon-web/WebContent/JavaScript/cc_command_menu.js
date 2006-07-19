@@ -1,4 +1,5 @@
 //function to generate HTML for the command menu
+var MOVED_CB_REDIRECT_URL = 999;
 function updateCommandMenu(result) {
 
  if (result != null) {
@@ -64,9 +65,6 @@ function update_Command_Menu (type, id, state, opts) {
 	//Will result in [xxx] is null or not an object error whenever the element with a non-unique id is
 	//accessed using document.getElementById
 	var cmd_div_uniq_id = 'cmdDiv';
-	if ((opts[2] == 'system') && (type == 'cap')) {
-		cmd_div_uniq_id += '_system_';
-	}
 	   
 	var header = "<HTML><BODY><div id='" + cmd_div_uniq_id + id + "' ";
 	header += " style='background:white; height:1cm; width:1cm; border:1px solid black;'>";
@@ -181,7 +179,7 @@ function generateFeederMenu (id, state, opts) {
 							
 
 //function to generate the cap bank move back menu
-function generate_CB_Move_Back (id, name) {
+function generate_CB_Move_Back (id, name, red) {
 	 //start and end of div html
 	 var div_start_tag = "<HTML><BODY><div id='cb_move_back_" + id + "' ";
 	 var div_end_tag = " </div></BODY></HTML>";
@@ -193,7 +191,7 @@ function generate_CB_Move_Back (id, name) {
 	 var table_footer = "</table>";
 	 var table_body = "<table >";
 	 table_body += "<tr><td class='top'>" + name + "</td></tr>"
-	 table_body += add_AJAX_Function('cap_move_back', id, 11, 'Temp_Move_Back', false);
+	 table_body += add_AJAX_Function('cap_move_back', id, 11, 'Temp_Move_Back', false, red);
 	 table_body+= table_footer;
 	 //append table to the div
 	 html += table_body;
@@ -263,10 +261,21 @@ function generateCapBankMenu (id, state, opts) {
 	return table_body;
 }
 
+//helper function to set opcounts
+function enableOpCounts (pao_id) {
+	window.document.getElementById ("cmdDiv"+pao_id).style.display = 'none';	
+	window.document.getElementById ("cb_state_td_hdr1").style.display = '';
+	window.document.getElementById ("cb_state_td_hdr2").style.display = '';
+	enableDisplayAll ('capBankTable');
+	alignHeadersIgnoreDisplayNone ('capBankTable','capBankHeaderTable');	
+	window.document.getElementById ("cap_opcnt_span"+pao_id).style.display = '';
+}
+
+
 //function that returns html string for js ajax function that will
 //execute on the server when the user clicks on the 
 //command menu 
-function add_AJAX_Function (type, pao_id, cmd_id, cmd_name, is_manual_state) {
+function add_AJAX_Function (type, pao_id, cmd_id, cmd_name, is_manual_state, red) {
 var ajax_func = "<tr><td>";
 ajax_func += "<a  href='javascript:void(0);'";
 ajax_func += " class='optDeselect'" 
@@ -282,10 +291,21 @@ switch (type) {
  	ajax_func +=  	"'executeFeederCommand (" + pao_id + "," + cmd_id + "," + str_cmd + "); '";
 	break;
  case 'cap':
- 	ajax_func +=  	"'executeCapBankCommand (" + pao_id + "," + cmd_id + "," + is_manual_state + "," + str_cmd + "); '";
+ 	//special case for reset op-counts
+	if (cmd_id == 12) {
+		var temp_str = "'enableOpCounts(" + pao_id + ");'"; 
+		ajax_func += temp_str;
+	}
+ 	else
+ 		ajax_func +=  	"'executeCapBankCommand (" + pao_id + "," + cmd_id + "," + is_manual_state + "," + str_cmd + "); '";
+	
 	break;
  case 'cap_move_back':
-    ajax_func +=    "'execute_CapBankMoveBack (" + 	pao_id + "," + cmd_id + "); '";
+    if (red == 999)
+    	ajax_func +=    "'execute_CapBankMoveBack (" + 	pao_id + "," + cmd_id + "," + red + "); '";
+	else
+  		ajax_func +=    "'execute_CapBankMoveBack (" + 	pao_id + "," + cmd_id + "); '";
+		
     break;
 
 }
@@ -294,6 +314,7 @@ ajax_func += ">"+ cmd_name+"</a>";
 ajax_func += "</td></tr>";
 return ajax_func;
 }
+
 
 //AJAX command functions
 ///////////////////////////////////////////////
@@ -310,6 +331,7 @@ function executeSubCommand (paoId, command, cmd_name) {
 
 
 function executeFeederCommand (paoId, command, cmd_name) {
+	
 	new Ajax.Request ('/servlet/CBCServlet', 
 	{method:'post', 
 	 parameters:'cmdID='+command+'&paoID='+paoId + '&controlType=FEEDER_TYPE', 
@@ -320,36 +342,48 @@ function executeFeederCommand (paoId, command, cmd_name) {
 	cmdDiv.style.display = 'none';
 }
 
-function executeCapBankCommand (paoId, command, is_manual_state, cmd_name) {
-	var unique_id = 'cmdDiv';
+function executeCapBankCommand (paoId, command, is_manual_state, cmd_name, cmd_div_name) {
+	var unique_id = 'cmdDiv'+paoId;
+	var cmdDiv;
+	var RESET_OP_CNT = 12;
 	if (is_manual_state) {
 		new Ajax.Request ('/servlet/CBCServlet', 
 		{method:'post', 
 		parameters:'opt='+command+'&cmdID='+30+'&paoID='+paoId + '&controlType=CAPBANK_TYPE', 
 	 	onSuccess: function () { display_status(cmd_name, "Message sent successfully", "green"); },
 		onFailure: function () { display_status(cmd_name, "Command failed", "red"); }, 
-		asynchronous:true });
-		unique_id += '_system_';
-		unique_id += paoId;
+		asynchronous:true });		
 	}
 	else {
-		new Ajax.Request ('/servlet/CBCServlet', 
-		{method:'post', 
-		parameters:'cmdID='+command+'&paoID='+paoId + '&controlType=CAPBANK_TYPE', 
-		onSuccess: function () { display_status(cmd_name, "Message sent successfully", "green"); },
-		onFailure: function () { display_status(cmd_name, "Command failed", "red"); }, 
-		asynchronous:true });
-		unique_id += paoId;
+		//special case for reset_op_counts command
+		if (command == RESET_OP_CNT) {
+			handleOpcountRequest (command, paoId, cmd_name)					
+			cmdDiv = handleOpcountDiv (cmd_div_name);
+		}
+		else {
+			new Ajax.Request ('/servlet/CBCServlet', 
+			{method:'post', 
+			parameters:'cmdID='+command+'&paoID='+paoId + '&controlType=CAPBANK_TYPE', 
+			onSuccess: function () { display_status(cmd_name, "Message sent successfully", "green"); },
+			onFailure: function () { display_status(cmd_name, "Command failed", "red"); }, 
+			asynchronous:true });
+			cmdDiv = document.getElementById (unique_id);
+		}
 	}
-	var cmdDiv = document.getElementById (unique_id);
 	cmdDiv.style.display = 'none';
 }
 
-function execute_CapBankMoveBack (paoId, command) {
+function execute_CapBankMoveBack (paoId, command, redirect) {
+	var red = '/capcontrol/feeders.jsp';
+	var replace = 'feeders.jsp';
+	if (redirect == MOVED_CB_REDIRECT_URL) {
+		red = '/capcontrol/movedCapBanks.jsp';
+		replace = 'movedCapBanks.jsp'
+		}
 	new Ajax.Request('/servlet/CBCServlet', 
 	{ method:'post', 
-	  parameters:'paoID='+ paoId +'&cmdID=' + command + '&controlType=CAPBANK_TYPE&redirectURL=/capcontrol/feeders.jsp',
-		onSuccess: function () { window.location.replace ('feeders.jsp');
+	  parameters:'paoID='+ paoId +'&cmdID=' + command + '&controlType=CAPBANK_TYPE&redirectURL=' + red,
+		onSuccess: function () { window.location.replace (replace);
 	},
 		onFailure: function () { display_status('Move Bank', "Command failed", "red"); },
 	asynchronous:true
@@ -440,5 +474,40 @@ if (color == "red") {
 
 function hideMsgDiv() {
 Effect.Fade('cmd_msg_div');
+}
+
+function getMoveBackMenu() {
+var hiddens = document.getElementsByName("pf_hidden");
+for (var i=0; i < hiddens.length; i++) {
+	var hidden = hiddens[i];
+	var cap_bank_id = hidden.id.split('_')[1];
+	hidden.value = generate_CB_Move_Back (cap_bank_id, hidden.parentNode.id, MOVED_CB_REDIRECT_URL);
+	}
+}
+
+function handleOpcountRequest (command, paoId, cmd_name) {
+var op_cnt = document.getElementById('opcnt_input'+paoId).value;
+//make sure that contains a valid number
+if (!isValidOpcount (op_cnt)) {
+	alert ('Opcount specified is INVALID. New Opcount value will be set to 0');
+	op_cnt = 0;
+}
+else
+	op_cnt = parseInt(op_cnt);
+new Ajax.Request ('/servlet/CBCServlet', 
+				{method:'post', 
+				parameters:'cmdID='+command+'&paoID='+paoId + '&controlType=CAPBANK_TYPE&opt='+op_cnt, 
+				onSuccess: function () { display_status(cmd_name, "Message sent successfully", "green"); },
+				onFailure: function () { display_status(cmd_name, "Command failed", "red"); }, 
+				asynchronous:true });
+
+}
+
+function handleOpcountDiv (cmd_div_name) {
+	var cmdDiv = document.getElementById (cmd_div_name);
+	document.getElementById('cb_state_td_hdr1').style.display = 'none';
+	document.getElementById('cb_state_td_hdr2').style.display = 'none';
+	alignHeaders ('capBankTable','capBankHeaderTable');
+	return cmdDiv;
 }
 

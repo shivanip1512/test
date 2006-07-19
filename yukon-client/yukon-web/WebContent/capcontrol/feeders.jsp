@@ -216,6 +216,7 @@ Event.observe(window, 'load', function() { new CtiNonScrollTable('fdrTable','fdr
               	<td> Parent Feeder </td>
               	<td/>
               	<td/>
+              	<td id="cb_state_td_hdr1" style="display:none"/>
               	<td/>
               	<td/>
               	<td/>
@@ -232,9 +233,10 @@ Event.observe(window, 'load', function() { new CtiNonScrollTable('fdrTable','fdr
                         onmouseover="statusMsg(this, 'Order is the order the CapBank will control in.<br>Commands that can be sent to a field device are initiated from this column');" />
                 </td>
          
-                <td>State <img class="rAlign popupImg" src="images\question.gif"
+                <td  >State <img class="rAlign popupImg" src="images\question.gif"
                         onmouseover="statusMsg(this, 'System Commands, those commands that do NOT send out a message to a field device, can be initiated from this column');"/>
                 </td>
+                <td id="cb_state_td_hdr2" style="display:none" > Opcount Value</td>
                 <td>Bank Address</td>
                 <td>Date/Time</td>
                 <td>Bank Size</td>
@@ -312,7 +314,7 @@ for( int i = 0; i < capBanks.length; i++ )
 					<%}%>
 					</td>
 
-					<td>
+					<td >
 					<% if( hasControl ) { %>
 						<input id="cmd_cap_<%=capBank.getCcId()%>_system" type="hidden" name = "cmd_dyn" value= "" />
 						<a type="state" name="cti_dyn" id="<%=capBank.getCcId()%>"
@@ -330,8 +332,15 @@ for( int i = 0; i < capBanks.length; i++ )
 					<% } %>
 					<%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_STATUS_COLUMN) %>
 					</a>
+					
 					</td>
-
+					<td id="cap_opcnt_span<%=capBank.getCcId()%>" style="display:none; " >
+						<label for="opcount" id="opcnt_label"> Opcount Value: </label>
+						<input type="text" name="opcount" id="opcnt_input<%=capBank.getCcId()%>" maxlength="5" size="5"/>
+						<a href="javascript:void(0);" onclick="return executeCapBankCommand (<%=capBank.getCcId()%>,12,false,'Reset_OpCount', 'cap_opcnt_span<%=capBank.getCcId()%>');" >
+						Reset</a>
+					
+					</td>
 					<td><%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_BANK_ADDRESS_COLUMN)%></td>
 					<td><a type="param1" name="cti_dyn" id="<%=capBank.getCcId()%>">
 					<%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_TIME_STAMP_COLUMN)%></a>

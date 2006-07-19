@@ -548,6 +548,47 @@ function toggleImg( imgID ) {
 
 
 function alignHeaders(mainTable, headerTable) {
+mytable = document.getElementById(mainTable);
+
+hdrTable =  document.getElementById(headerTable);
+hdrRow=hdrTable.getElementsByTagName('tr').item(0);
+
+for (j=0; j < mytable.getElementsByTagName('tr').length; j ++ ) {
+	var myrow = mytable.getElementsByTagName('tr').item(j);	 
+	 if ((myrow != null) && myrow.style.display != 'none' && hdrRow.style.display != 'none') {
+		var colNum = myrow.cells.length;
+		
+		for(i=0;i < colNum - 1; i++) {
+			var hdrCell = hdrRow.getElementsByTagName('td').item(i);
+			var myrowCell = myrow.cells[i];
+			if ((hdrCell.style.display != 'none') && (myrowCell.style.display != 'none')) {
+				maxWidth = Math.max(hdrCell.offsetWidth, myrowCell.offsetWidth);
+				hdrCell.width = maxWidth;
+				myrowCell.width = maxWidth;
+				}
+			                 	                                       
+			}
+	
+		}
+	}
+}
+
+function enableDisplayAll (mainTable) {
+	var mytable = document.getElementById(mainTable);
+	for (j=0; j < mytable.getElementsByTagName('tr').length; j ++ ) {
+		var myrow = mytable.getElementsByTagName('tr').item(j);
+	 
+	 	if ((myrow != null) && myrow.style.display != 'none') {
+			var colNum = myrow.cells.length;
+			for(i=0;i < colNum - 1; i++) {
+				myrow.cells[i].style.display = '';
+			}
+		}
+	}
+}
+
+
+function alignHeadersIgnoreDisplayNone (mainTable, headerTable) {
 
 mytable = document.getElementById(mainTable);
 
@@ -557,14 +598,15 @@ hdrRow=hdrTable.getElementsByTagName('tr').item(0);
 for (j=0; j < mytable.getElementsByTagName('tr').length; j ++ ) {
 	var myrow = mytable.getElementsByTagName('tr').item(j);
 	
-	if ((myrow != null) && myrow.style.display != 'none') {
+	 if (myrow != null) {
 		var colNum = myrow.cells.length;
 	
 		for(i=0;i < colNum - 1; i++) {
 			maxWidth = Math.max(hdrRow.getElementsByTagName('td').item(i).offsetWidth, myrow.cells[i].offsetWidth);
 			hdrRow.getElementsByTagName('td').item(i).width = maxWidth;
 			myrow.cells[i].width = maxWidth;
-			
+			if (i == 4)
+				myrow.cells[i].style.display = 'none';
 			                 	                                       
 			}
 	
@@ -692,6 +734,16 @@ return false;
 function trim (s) {
 	return s.replace(/^\s+|\s+$/g, '');
 }
+
+function isValidOpcount (number){
+var ret = parseInt(number)
+if (Number.NaN != ret) {
+	if ((ret >=0) && (ret < 100000))
+		return true;
+		}
+return false;
+}
+
 
 
 	

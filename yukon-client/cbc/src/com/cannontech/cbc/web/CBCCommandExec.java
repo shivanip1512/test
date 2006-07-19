@@ -143,7 +143,7 @@ public class CBCCommandExec
             pt.setUserName( _getUserName() );
 
             //the actual new value for the selected state 
-            pt.setValue( 0.0 );
+            pt.setValue( (double)_optionalParams[0] );
             
             cbcCache.getConnection().write( pt );
         }        
