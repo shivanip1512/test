@@ -1,4 +1,4 @@
-<%@ page import="com.cannontech.core.dao.DaoNotFoundException" %>
+<%@ page import="com.cannontech.core.dao.NotFoundException" %>
 <html>
 <!-- Java script needed for the Calender Function--->
 <%@ include file="../include/user_header.jsp" %>
@@ -100,7 +100,7 @@ MM_reloadPage(true);
                         {
                              paoName = DaoFactory.getPaoDao().getYukonPAOName(dcl.getDeviceID().intValue());
                         }
-                        catch(DaoNotFoundException e)
+                        catch(NotFoundException e)
                         {
                             paoName = "noPaoName";
                         }    

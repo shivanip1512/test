@@ -5,7 +5,7 @@
 <%@ page import="com.cannontech.database.data.pao.PAOGroups" %>
 <%@ page import="com.cannontech.web.navigation.CtiNavObject" %>
 <%@ page import="com.cannontech.database.db.stars.hardware.Warehouse" %>
-<%@ page import="com.cannontech.core.dao.DaoNotFoundException" %>
+<%@ page import="com.cannontech.core.dao.NotFoundException" %>
 <jsp:useBean id="configBean" class="com.cannontech.stars.web.bean.ConfigBean" scope="page"/>
 <jsp:useBean id="detailBean" class="com.cannontech.stars.web.bean.InventoryDetailBean" scope="page"/>
 
@@ -223,7 +223,7 @@ function revealLog() {
                     {
                         deviceName = DaoFactory.getPaoDao().getYukonPAOName(inventory.getDeviceID());
                     }
-                    catch(DaoNotFoundException e) {}
+                    catch(NotFoundException e) {}
                 }
                 else if (inventory.getMCT() != null)
                     deviceName = inventory.getMCT().getDeviceName();
@@ -430,7 +430,7 @@ function revealLog() {
         dftRoute = DaoFactory.getPaoDao().getYukonPAOName(liteEC.getDefaultRouteID());
         dftRoute = "Default - " + dftRoute;
     }
-    catch(DaoNotFoundException e)
+    catch(NotFoundException e)
     {
         dftRoute = "Default - (None)";
     }

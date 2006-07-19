@@ -1,6 +1,6 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.database.data.lite.stars.*" %>
-<%@ page import="com.cannontech.core.dao.DaoNotFoundException" %>
+<%@ page import="com.cannontech.core.dao.NotFoundException" %>
 <%
 	if (request.getParameter("Init") != null) {
 		// The "Create Hardware" link in the nav is clicked
@@ -265,7 +265,7 @@ function validate(form) {
                 dftRoute = DaoFactory.getPaoDao().getYukonPAOName(liteEC.getDefaultRouteID());
                 dftRoute = "Default - " + dftRoute;
             }
-            catch(DaoNotFoundException e)
+            catch(NotFoundException e)
             {
                 dftRoute = "Default - (None)";
             }

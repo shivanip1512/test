@@ -2,7 +2,7 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.common.util.Pair" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteStarsLMHardware" %>
-<%@ page import="com.cannontech.core.dao.DaoNotFoundException" %>
+<%@ page import="com.cannontech.core.dao.NotFoundException" %>
 <jsp:useBean id="configBean" class="com.cannontech.stars.web.bean.ConfigBean" scope="page"/>
  
 <%
@@ -320,7 +320,7 @@ function removeAllConfig(form) {
         dftRoute = DaoFactory.getPaoDao().getYukonPAOName(liteEC.getDefaultRouteID());
         dftRoute = "Default - " + dftRoute;
     }
-    catch(DaoNotFoundException e)
+    catch(NotFoundException e)
     {
         dftRoute = "Default - (None)";
     }

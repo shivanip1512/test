@@ -20,6 +20,7 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.StarsDatabaseCache;
@@ -275,7 +276,8 @@ public class InventoryManager extends HttpServlet {
 			//quick fix for the Xcel demo...need to find a more stable wizard check solution for the long term
 			MultiAction wizardly = (MultiAction) session.getAttribute( ServletUtils.ATT_NEW_ACCOUNT_WIZARD );
 			//if (referer.indexOf("Wizard") < 0) {
-			if (wizardly == null) {
+			/*************************MOCHILA: Add inventory***************************************/
+            if (wizardly == null) {
 				// If we're trying to create/update a hardware and it's not in the wizard,
 				// create/update the hardware immediately after this step. Let the user
 				// update the hardware information later.
@@ -469,12 +471,21 @@ public class InventoryManager extends HttpServlet {
 					StarsInventory starsInv = (StarsInventory) StarsFactory.newStarsInv(StarsInventory.class);
 					starsInv.setDeviceID( deviceID );
 					
-					if (InventoryUtils.isMCT( categoryID )) {
+					if (InventoryUtils.isMCT( categoryID )) 
+                    {
 						starsInv.setDeviceType( (DeviceType)StarsFactory.newStarsCustListEntry(
 								energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT), DeviceType.class) );
 						
 						MCT mct = new MCT();
-						mct.setDeviceName( DaoFactory.getPaoDao().getYukonPAOName(deviceID) );
+                        try
+                        {
+                            mct.setDeviceName( DaoFactory.getPaoDao().getYukonPAOName(deviceID) );
+                        }
+                        catch(NotFoundException e)
+                        {
+                            CTILogger.error(e.getMessage(), e);
+                            mct.setDeviceName( "(none)");
+                        }
 						starsInv.setMCT( mct );
 					}
 					

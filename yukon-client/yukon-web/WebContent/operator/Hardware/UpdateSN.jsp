@@ -1,4 +1,4 @@
-<%@ page import="com.cannontech.core.dao.DaoNotFoundException" %>
+<%@ page import="com.cannontech.core.dao.NotFoundException" %>
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%
 	Properties savedReq = null;
@@ -251,7 +251,7 @@ function init() {
         dftRoute = DaoFactory.getPaoDao().getYukonPAOName(liteEC.getDefaultRouteID());
         dftRoute = "Default - " + dftRoute;
     }
-    catch(DaoNotFoundException e)
+    catch(NotFoundException e)
     {
         dftRoute = "Default - (None)";
     }
