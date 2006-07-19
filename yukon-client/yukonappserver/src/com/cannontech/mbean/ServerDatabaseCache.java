@@ -233,26 +233,7 @@ public synchronized java.util.List getAllAlarmCategories(){
 	}
 }
 
-/**
- * Insert the method's description here.
- * Creation date: (3/14/00 3:19:19 PM)
- */
-/*
-public synchronized java.util.List getAllContactNotifications()
-{
-	if( allContactNotifications != null )
-		return allContactNotifications;
-	else
-	{
-		// FIXFIX ---should not return the NotifGroups!!!!!
-		allContactNotifications = new ArrayList();
-		ContactNotificationGroupLoader alarmStateLoader = new ContactNotificationGroupLoader(allContactNotifications, databaseAlias);
-		alarmStateLoader.run();
-		return allContactNotifications;
-	}
 
-}
-*/
 /**
  * Returns a list of all
  * com.cannontech.database.data.lite.LiteYukonImage
@@ -2165,65 +2146,6 @@ private synchronized LiteBase handleTOUScheduleChange( int changeType, int id )
 	return lBase;
 }
 
-//private synchronized LiteBase handleTOUDayChange( int changeType, int id )
-//{
-//	boolean alreadyAdded = false;
-//	LiteBase lBase = null;
-//
-//	// if the storage is not already loaded, we must not care about it
-//	if( allTOUDays == null )
-//		return lBase;
-//
-//	switch(changeType)
-//	{
-//		case DBChangeMsg.CHANGE_TYPE_ADD:
-//				for(int i=0;i<allTOUDays.size();i++)
-//				{
-//					if( ((com.cannontech.database.data.lite.LiteTOUDay)allTOUDays.get(i)).getDayID() == id )
-//					{
-//						alreadyAdded = true;
-//						lBase = (LiteBase)allTOUDays.get(i);
-//						break;
-//					}
-//				}
-//				if( !alreadyAdded )
-//				{
-//					com.cannontech.database.data.lite.LiteTOUDay lh = new com.cannontech.database.data.lite.LiteTOUDay(id);
-//					lh.retrieve(databaseAlias);
-//					allTOUDays.add(lh);
-//					lBase = lh;
-//				}
-//				break;
-//				
-//		case DBChangeMsg.CHANGE_TYPE_UPDATE:
-//				for(int i=0;i<allTOUDays.size();i++)
-//				{
-//					if( ((com.cannontech.database.data.lite.LiteTOUDay)allTOUDays.get(i)).getDayID() == id )
-//					{
-//						((com.cannontech.database.data.lite.LiteTOUDay)allTOUDays.get(i)).retrieve(databaseAlias);
-//						lBase = (LiteBase)allTOUDays.get(i);
-//						break;
-//					}
-//				}
-//				break;
-//				
-//		case DBChangeMsg.CHANGE_TYPE_DELETE:
-//				for(int i=0;i<allTOUDays.size();i++)
-//				{
-//					if( ((com.cannontech.database.data.lite.LiteTOUDay)allTOUDays.get(i)).getDayID() == id )
-//					{
-//						lBase = (LiteBase)allTOUDays.remove(i);
-//						break;
-//					}
-//				}
-//				break;
-//		default:
-//				releaseAllTOUDays();
-//				break;
-//	}
-//
-//	return lBase;
-//}
 /**
  * Insert the method's description here.
  * Creation date: (12/7/00 12:34:05 PM)
@@ -2565,67 +2487,7 @@ private synchronized LiteBase handleNotificationGroupChange( int changeType, int
 
 	return lBase;
 }
-/**
- * Insert the method's description here.
- * Creation date: (12/7/00 12:34:05 PM)
- */
-//private synchronized LiteBase handleContactNotificationChange( int changeType, int id )
-//{
-//	boolean alreadyAdded = false;
-//	LiteBase lBase = null;
-//
-//	// if the storage is not already loaded, we must not care about it
-//	if( allContactNotifications == null )
-//		return lBase;
-//
-//	switch(changeType)
-//	{
-//		case DBChangeMsg.CHANGE_TYPE_ADD:
-//				for(int i=0;i<allContactNotifications.size();i++)
-//				{
-//					if( ((LiteContactNotification)allContactNotifications.get(i)).getContactID() == id )
-//					{
-//						alreadyAdded = true;
-//						lBase = (LiteBase)allContactNotifications.get(i);
-//						break;
-//					}
-//				}
-//				if( !alreadyAdded )
-//				{
-//					LiteContactNotification lg = new LiteContactNotification(id);
-//					lg.retrieve(databaseAlias);
-//					allContactNotifications.add(lg);
-//					lBase = lg;
-//				}
-//				break;
-//		case DBChangeMsg.CHANGE_TYPE_UPDATE:
-//				for(int i=0;i<allContactNotifications.size();i++)
-//				{
-//					if( ((LiteContactNotification)allContactNotifications.get(i)).getContactID() == id )
-//					{
-//						((LiteContactNotification)allContactNotifications.get(i)).retrieve(databaseAlias);
-//						lBase = (LiteBase)allContactNotifications.get(i);
-//						break;
-//					}
-//				}
-//				break;
-//		case DBChangeMsg.CHANGE_TYPE_DELETE:
-//				for(int i=0;i<allContactNotifications.size();i++)
-//				{
-//					if( ((LiteContactNotification)allContactNotifications.get(i)).getContactID() == id )
-//					{
-//						lBase = (LiteBase)allContactNotifications.remove(i);
-//						break;
-//					}
-//				}
-//				break;
-//		default:
-//				releaseAllContactNotifications();
-//				break;
-//	}
-//
-//	return lBase;
-//}
+
 /**
  * Insert the method's description here.
  * Creation date: (12/7/00 12:34:05 PM)
@@ -2639,43 +2501,17 @@ private synchronized LiteBase handlePointChange( int changeType, int id )
 		case DBChangeMsg.CHANGE_TYPE_ADD:
 		    // Return this so clients like the editor get a db change :(
             lBase = DaoFactory.getPointDao().getLitePoint(id);
-			/*	lBase = (LiteBase)allPointsMap.get( new Integer(id) );				
-				if( lBase == null )
-				{
-					LitePoint lp = new LitePoint(id);
-					lp.retrieve(databaseAlias);
-					allPoints.add(lp);
-					allPointsMap.put( new Integer(lp.getPointID()), lp );
-
-					lBase = lp;
-				}*/
-				break;
+            break;
 
 		case DBChangeMsg.CHANGE_TYPE_UPDATE:
-            lBase = DaoFactory.getPointDao().getLitePoint(id);
-		/*
-				LitePoint lp = (LitePoint)allPointsMap.get( new Integer(id) );				
-				lp.retrieve( databaseAlias );
-				
-				lBase = lp;*/
-				break;
+            lBase = DaoFactory.getPointDao().getLitePoint(id);    	
+			break;
 
 		case DBChangeMsg.CHANGE_TYPE_DELETE:
-/*
-				for(int i=0;i<allPoints.size();i++)
-				{
-					if( ((LitePoint)allPoints.get(i)).getPointID() == id )
-					{
-						allPointsMap.remove( new Integer(id) );
-						lBase = (LiteBase)allPoints.remove(i);
-						break;
-					}
-				}*/
-				break;
+		    break;
 
 		default:
-				//releaseAllPoints();
-				break;
+			break;
 	}
 
 	return lBase;
@@ -2985,10 +2821,8 @@ public synchronized void releaseAllAlarmCategories()
 public synchronized void releaseAllCache()
 {
 	allYukonPAObjects = null;
-//	allPoints = null;
     allSystemPoints = null;
 	allStateGroupMap = null;
-//	allUnitMeasures = null;
 	allNotificationGroups = null;
 	allContactNotifsMap = null;
     
@@ -3003,7 +2837,6 @@ public synchronized void releaseAllCache()
 	allDMG_CollectionGroups = null;
 	allDMG_AlternateGroups = null;
 	allDMG_BillingGroups = null;    
-	//allPointsUnits = null;
 	allPointLimits = null;
 	allYukonImages = null;
 	allCICustomers = null;
@@ -3048,9 +2881,6 @@ public synchronized void releaseAllCache()
     
     
 	//Maps that are created by the joining/parsing of existing lists
-	//allPointidMultiplierHashMap = null;
-	//allPointIDOffsetHashMap = null;
-	//allPointsMap = null;
 	allPAOsMap = null;
 	allCustomersMap = null;
 	allContactsMap = null;
@@ -3247,45 +3077,6 @@ public synchronized void removeDBChangeListener(DBChangeListener listener) {
         getDbChangeListener().removeDBChangeListener( listener );        
 }
 
-/**
- * Insert the method's description here.
- * Creation date: (2/27/2002 5:36:31 PM)
- * @param loaders java.lang.Runnable[]
- */
-private void runLoaders(Runnable[] loaders) throws Exception
-{
-
-	// The 2 in the ThreadPool constructor is the max number of db connections
-	com.cannontech.common.util.ThreadPool tp = new com.cannontech.common.util.ThreadPool(2);
-	for( int i = 0; i < loaders.length; i++ )
-		tp.enqueueRunnable( loaders[i] );
-
-	tp.stop();
-	tp.join();
-	
-/*	Thread t1 = new Thread();
-	Thread t2 = new Thread();
-	int i = 0;
-	while( i < loaders.length )
-	{
-		if( !t1.isAlive() )
-		{
-			t1 = new Thread(loaders[i++]);
-			t1.start();
-		}
-
-		if( !t2.isAlive() )
-		{
-			t2 = new Thread(loaders[i++]);
-			t2.start();
-		}
-
-		Thread.currentThread().sleep(5);
-	}
-	t1.join();
-	t2.join();
-*/
-}
 /**
  * Insert the method's description here.
  * Creation date: (3/14/00 3:22:47 PM)
