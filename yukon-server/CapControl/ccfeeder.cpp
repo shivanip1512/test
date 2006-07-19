@@ -3419,10 +3419,24 @@ CtiCCFeeder& CtiCCFeeder::setMultiBusCurrentState(int state)
      _currentMultiBusState = state;
      return *this;
 }
+CtiCCFeeder& CtiCCFeeder::setFirstMultiPointReceivedTime(const CtiTime& pointTime)
+{
+    /*if ( _firstMultiPointReceivedTime != pointTime)
+    {
+        _dirty = TRUE;
+    } */
+     _firstMultiPointReceivedTime = pointTime;
+     return *this;
+}
 
 int CtiCCFeeder::getMultiBusCurrentState() const
 {
     return _currentMultiBusState;
+}
+
+const CtiTime& CtiCCFeeder::getFirstMultiPointReceivedTime() const
+{
+    return _firstMultiPointReceivedTime;
 }
 
 BOOL CtiCCFeeder::getVerificationFlag() const
@@ -3775,47 +3789,61 @@ void CtiCCFeeder::analyzeMultiVoltFeeder(const CtiTime& currentDateTime, LONG mi
             {
                 case NEW_MULTI_POINT_DATA_RECEIVED:
                 {
-                    if ((_preOperationMonitorPointScanFlag ||  _operationSentWaitFlag ||  _postOperationMonitorPointScanFlag ))
+                    if (getFirstMultiPointReceivedTime().seconds() + 10 < currentDateTime.seconds() ) 
                     {
-                        if (areAllMonitorPointsNewEnough(currentDateTime))
+                        if ((_preOperationMonitorPointScanFlag ||  _operationSentWaitFlag ||  _postOperationMonitorPointScanFlag ))
                         {
-                            if (_preOperationMonitorPointScanFlag) 
+                            if (areAllMonitorPointsNewEnough(currentDateTime))
                             {
-                                _currentMultiBusState = EVALUATE_SUB;
-                                if (getPreOperationMonitorPointScanFlag())
-                                   setPreOperationMonitorPointScanFlag(FALSE);
+                                if (_preOperationMonitorPointScanFlag) 
+                                {
+                                    _currentMultiBusState = EVALUATE_SUB;
+                                    if (getPreOperationMonitorPointScanFlag())
+                                       setPreOperationMonitorPointScanFlag(FALSE);
+                                }
+                                else if (_operationSentWaitFlag)
+                                {
+                                    _currentMultiBusState = OPERATION_SENT_WAIT;
+                                }
+                                else //if (_pointOperationMonitorPointScanFlag) 
+                                {
+                                    _currentMultiBusState = POST_OP_SCAN_PENDING;
+                                }
                             }
-                            else if (_operationSentWaitFlag)
+                            keepGoing = FALSE;
+                        }
+                        else
+                        {
+                            //SCAN Points.
+                            if (!(_preOperationMonitorPointScanFlag ||  _operationSentWaitFlag ||  _postOperationMonitorPointScanFlag ))
+                            {
+                                if (areAllMonitorPointsNewEnough(currentDateTime))
+                                {
+                                   _currentMultiBusState = EVALUATE_SUB; 
+                                }
+                                else
+                                {
+                                    if (scanAllMonitorPoints())
+                                    {
+                                        setPreOperationMonitorPointScanFlag(TRUE);
+                                        setLastOperationTime(currentDateTime);
+                                    }
+                                    _currentMultiBusState = PRE_OP_SCAN_PENDING;
+                                }
+                            }
+                            else if (_operationSentWaitFlag && !_postOperationMonitorPointScanFlag)
                             {
                                 _currentMultiBusState = OPERATION_SENT_WAIT;
                             }
-                            else //if (_pointOperationMonitorPointScanFlag) 
+                            else if (_postOperationMonitorPointScanFlag)
                             {
                                 _currentMultiBusState = POST_OP_SCAN_PENDING;
                             }
+                            keepGoing = FALSE;
                         }
-                        keepGoing = FALSE;
                     }
                     else
                     {
-                        //SCAN Points.
-                        if (!(_preOperationMonitorPointScanFlag ||  _operationSentWaitFlag ||  _postOperationMonitorPointScanFlag ))
-                        {
-                            if (scanAllMonitorPoints())
-                            {
-                                setPreOperationMonitorPointScanFlag(TRUE);
-                                setLastOperationTime(currentDateTime);
-                            }
-                            _currentMultiBusState = PRE_OP_SCAN_PENDING;
-                        }
-                        else if (_operationSentWaitFlag && !_postOperationMonitorPointScanFlag)
-                        {
-                            _currentMultiBusState = OPERATION_SENT_WAIT;
-                        }
-                        else if (_postOperationMonitorPointScanFlag)
-                        {
-                            _currentMultiBusState = POST_OP_SCAN_PENDING;
-                        }
                         keepGoing = FALSE;
                     }
                     break;
@@ -3991,12 +4019,21 @@ void CtiCCFeeder::updatePointResponsePreOpValues(CtiCCCapBank* capBank)
         {
             CtiCCMonitorPoint* point = (CtiCCMonitorPoint*)_multipleMonitorPoints[i];
 
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " Bank ID: " <<capBank->getPAOName()<<" has "<<capBank->getPointResponse().size()<<" point responses"<< endl;
+            }
             for (LONG j=0; j<capBank->getPointResponse().size(); j++)
             {
-                CtiCCPointResponse* pResponse = (CtiCCPointResponse*)capBank->getPointResponse()[i];
+                CtiCCPointResponse* pResponse = (CtiCCPointResponse*)capBank->getPointResponse()[j];
 
                 if (point->getPointId() == pResponse->getPointId())
                 {
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " Bank ID: " <<capBank->getPAOName()<<" Point ID: "<<pResponse->getPointId()<<" Value: "<<point->getValue() << endl;
+                    }
+
                     pResponse->setPreOpValue(point->getValue());
                     break;
                 }
@@ -4485,6 +4522,7 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime
         }
     }
 }
+
 
 /*-------------------------------------------------------------------------
     restoreGuts

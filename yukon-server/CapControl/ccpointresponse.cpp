@@ -238,6 +238,10 @@ void CtiCCPointResponse::restore(RWDBReader& rdr)
 ---------------------------------------------------------------------------*/
 void CtiCCPointResponse::setDynamicData(RWDBReader& rdr)
 {
+    LONG temp1;
+    LONG temp2;
+    rdr["bankid"]  >> temp1;
+    rdr["pointid"] >> temp2;
     rdr["preopvalue"] >> _preOpValue;
     rdr["delta"] >> _delta;
     _insertDynamicDataFlag = FALSE;

@@ -25,6 +25,7 @@
 #include "msg_cmd.h"
 #include "ccpointresponse.h"
 #include "ccmonitorpoint.h"
+#include "cctwowaycbcpoints.h"
 #include "dbaccess.h"
 #include "observe.h"
 #include "ctitime.h"
@@ -139,6 +140,8 @@ public:
     CtiCCCapBank* replicate() const;
     virtual int compareTo(const RWCollectable* right) const;
 
+    CtiCCTwoWayPoints* getTwoWayPoints();
+
     BOOL isDirty() const;
     void dumpDynamicData();
     void dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime);
@@ -223,6 +226,7 @@ private:
     BOOL _verificationFlag;
     BOOL _performingVerificationFlag;
     BOOL _verificationDoneFlag;
+    CtiCCTwoWayPoints *_twoWayPoints;
 
     
     //don't stream

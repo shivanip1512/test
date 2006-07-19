@@ -34,6 +34,8 @@ RWDEFINE_COLLECTABLE( CtiCCCapBank, CTICCCAPBANK_ID )
 ---------------------------------------------------------------------------*/
 CtiCCCapBank::CtiCCCapBank()
 {
+    _twoWayPoints = NULL;
+
 }
 
 CtiCCCapBank::CtiCCCapBank(RWDBReader& rdr)
@@ -41,12 +43,15 @@ CtiCCCapBank::CtiCCCapBank(RWDBReader& rdr)
     restore(rdr);
      _monitorPoint.clear();
      _pointResponses.clear();
-
+     _twoWayPoints = NULL;
 }
 
 CtiCCCapBank::CtiCCCapBank(const CtiCCCapBank& cap)
 {
     operator=(cap);
+    _twoWayPoints = NULL;
+
+
 }
 
 /*---------------------------------------------------------------------------
@@ -74,7 +79,20 @@ CtiCCCapBank::~CtiCCCapBank()
         }
         _pointResponses.clear();
     }
+    if (_twoWayPoints != NULL) 
+    {
+        delete _twoWayPoints;
+        _twoWayPoints = NULL;
+    }  
     
+
+}
+CtiCCTwoWayPoints* CtiCCCapBank::getTwoWayPoints()
+{
+    if ( _twoWayPoints == NULL )
+          _twoWayPoints = new CtiCCTwoWayPoints();
+    
+    return _twoWayPoints;
 
 }
 

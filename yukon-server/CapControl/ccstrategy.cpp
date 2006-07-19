@@ -182,10 +182,22 @@ void CtiCCStrategy::restore(RWDBReader &rdr)
     rdr["controlsendretries"] >> _controlsendretries;
     rdr["peaklag"] >> _peaklag;
     rdr["peaklead"] >> _peaklead;
+    if (!stringCompareIgnoreCase(_controlunits, CtiCCSubstationBus::KVARControlUnits)||
+        !stringCompareIgnoreCase(_controlunits, CtiCCSubstationBus::PF_BY_KVARControlUnits)||
+        !stringCompareIgnoreCase(_controlunits, CtiCCSubstationBus::PF_BY_KQControlUnits)) 
+    {   
+        _peaklag = fabs(_peaklag);
+        _peaklead =  -fabs(_peaklead);
+    }
     rdr["offpklag"] >> _offpklag;
     rdr["offpklead"] >> _offpklead;
-
-
+    if (!stringCompareIgnoreCase(_controlunits, CtiCCSubstationBus::KVARControlUnits)||
+        !stringCompareIgnoreCase(_controlunits, CtiCCSubstationBus::PF_BY_KVARControlUnits)||
+        !stringCompareIgnoreCase(_controlunits, CtiCCSubstationBus::PF_BY_KQControlUnits)) 
+    {
+        _offpklag = fabs(_offpklag);
+        _offpklead =  -fabs(_offpklead);  
+    }
 
 }
 

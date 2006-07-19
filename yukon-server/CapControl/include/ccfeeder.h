@@ -151,6 +151,8 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     LONG getCurrentVerificationCapBankId() const;
     LONG getCurrentVerificationCapBankOrigState() const;
     int getMultiBusCurrentState() const;
+
+    const CtiTime& getFirstMultiPointReceivedTime() const;
     
     CtiCCCapBank_SVector& getCCCapBanks();
     void deleteCCCapBank(long capBankId);
@@ -228,6 +230,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiCCFeeder& setCurrentVerificationCapBankId(LONG capBankId);
     CtiCCFeeder& setCurrentVerificationCapBankState(LONG status);
     CtiCCFeeder& setMultiBusCurrentState(int state);
+    CtiCCFeeder& setFirstMultiPointReceivedTime(const CtiTime& pointTime);
 
     CtiCCCapBank* findCapBankToChangeVars(DOUBLE kvarSolution);
     CtiRequestMsg* createIncreaseVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, string textInfo);
@@ -385,6 +388,7 @@ private:
     LONG _currentCapBankToVerifyAssumedOrigState;
     
     int _currentMultiBusState;
+    CtiTime _firstMultiPointReceivedTime;
     //don't stream
     BOOL _insertDynamicDataFlag;
     BOOL _dirty;
