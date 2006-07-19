@@ -122,6 +122,9 @@
           <option name="Recent Controls">
             <script>showRecentCmds('tabledata.jsp?type=RC')</script>
           </option>
+          <option name="Recent Cap Bank Moves">
+       		<link>movedCapBanks.jsp</link>  
+       	  </option>
         </sublinks>
       </option>
     </toplinks>
