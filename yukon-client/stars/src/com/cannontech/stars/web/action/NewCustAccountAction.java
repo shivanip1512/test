@@ -174,14 +174,15 @@ public class NewCustAccountAction implements ActionBase {
 					if(DaoFactory.getAuthDao().checkRoleProperty(user.getUserID(), ConsumerInfoRole.CREATE_LOGIN_FOR_ACCOUNT))
                     {
                         com.cannontech.database.data.user.YukonUser login = new com.cannontech.database.data.user.YukonUser();
-    					String firstInitial= "";
+                        String time = new Long(java.util.Calendar.getInstance().getTimeInMillis()).toString();
+                        String firstInitial= "";
     					if(firstName != null)
     						firstInitial = firstName.toLowerCase().substring(0,1);
     					String newUserName = firstInitial + lastName.toLowerCase();
     					if (DaoFactory.getYukonUserDao().getLiteYukonUser( newUserName ) != null)
-    						newUserName = firstName.toLowerCase() + lastName.toLowerCase();
+                            newUserName = lastName + time.substring(time.length() - 2);
     					login.getYukonUser().setUsername(newUserName);
-    					login.getYukonUser().setPassword(new Long(java.util.Calendar.getInstance().getTimeInMillis()).toString()); 
+    					login.getYukonUser().setPassword(time); 
                         if(custGroups.length > 0)
                             login.getYukonGroups().addElement(((com.cannontech.database.data.user.YukonGroup)LiteFactory.convertLiteToDBPers(custGroups[0])).getYukonGroup());
     					login.getYukonUser().setStatus(UserUtils.STATUS_ENABLED);
@@ -217,7 +218,8 @@ public class NewCustAccountAction implements ActionBase {
     				String lastName = primContact.getLastName();
     				String firstName = primContact.getFirstName();
     				String firstInitial = "";
-    
+                    String time = new Long(java.util.Calendar.getInstance().getTimeInMillis()).toString();
+                    
     				if(firstName != null && firstName.length() > 0)
     					firstInitial = firstName.toLowerCase().substring(0,1);
     					
@@ -227,7 +229,7 @@ public class NewCustAccountAction implements ActionBase {
     					firstInitial = "#";
     				}
     				if(DaoFactory.getYukonUserDao().getLiteYukonUser( firstInitial + lastName ) != null)
-    					login.setUsername(firstName.toLowerCase() + lastName.toLowerCase());	
+    					login.setUsername(lastName + time.substring(time.length() - 2));
     				else
     					login.setUsername(firstInitial + lastName.toLowerCase());
     				login.setPassword(new Long(java.util.Calendar.getInstance().getTimeInMillis()).toString());
