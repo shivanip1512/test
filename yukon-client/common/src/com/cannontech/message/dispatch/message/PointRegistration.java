@@ -1,6 +1,9 @@
 package com.cannontech.message.dispatch.message;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * This type was created in VisualAge.
@@ -22,7 +25,7 @@ public class PointRegistration extends com.cannontech.message.util.Message {
 	public static final int REG_NO_UPLOAD = 0x00010000;
 
 	private int regFlags;
-	private List<Integer> pointList;
+	private Set<Integer> pointIds;
     
 /**
  * PointRegistration constructor comment.
@@ -33,9 +36,10 @@ public PointRegistration() {
 /**
  * This method was created in VisualAge.
  * @return com.roguewave.tools.v2_0.Slist
+ * @deprecated
  */
 public List<Integer> getPointList() {
-	return pointList;
+	return new ArrayList<Integer>(pointIds);
 }
 /**
  * This method was created in VisualAge.
@@ -47,10 +51,20 @@ public int getRegFlags() {
 /**
  * This method was created in VisualAge.
  * @param newValue com.roguewave.tools.v2_0.Slist
+ * @deprecated
  */
 public void setPointList(List<Integer> newValue) {
-	this.pointList = newValue;
+	pointIds = new HashSet(newValue);
 }
+
+public void setPointIds(Set<Integer> pointIds) {
+    this.pointIds = pointIds;
+}
+
+public Set<Integer> getPointIds() {
+    return pointIds;
+}
+
 /**
  * This method was created in VisualAge.
  * @param newValue int
