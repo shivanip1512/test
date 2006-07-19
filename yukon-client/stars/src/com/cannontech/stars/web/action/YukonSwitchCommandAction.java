@@ -18,7 +18,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.core.dao.DaoNotFoundException;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.StarsDatabaseCache;
@@ -670,7 +670,7 @@ public class YukonSwitchCommandAction implements ActionBase {
                 String cmd = "putconfig serial " + liteHw.getManufacturerSerialNumber() + " template '" + groupName + "'";
                 commands.add( cmd );
             }
-            catch(DaoNotFoundException e)
+            catch(NotFoundException e)
             {
                 CTILogger.error( e.getMessage(), e );
             }
@@ -691,7 +691,7 @@ public class YukonSwitchCommandAction implements ActionBase {
     						String cmd = "putconfig serial " + liteHw.getManufacturerSerialNumber() + " template '" + groupName + "'";
     						commands.add( cmd );
                         }
-                        catch(DaoNotFoundException e)
+                        catch(NotFoundException e)
                         {
                             CTILogger.error( e.getMessage(), e );
                         }
@@ -911,7 +911,7 @@ public class YukonSwitchCommandAction implements ActionBase {
             {
                 loadGroupName = DaoFactory.getPaoDao().getYukonPAOName(optGroupID);        
             }
-            catch(DaoNotFoundException e)
+            catch(NotFoundException e)
             {
                 CTILogger.error( e.getMessage(), e );
             }

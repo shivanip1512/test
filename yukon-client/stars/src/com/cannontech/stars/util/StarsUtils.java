@@ -27,7 +27,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.core.dao.DaoNotFoundException;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
@@ -274,7 +274,7 @@ public class StarsUtils {
             {
 			    progName = DaoFactory.getPaoDao().getYukonPAOName( liteProg.getDeviceID() );
             }
-            catch(DaoNotFoundException e) 
+            catch(NotFoundException e) 
             {
                 CTILogger.error(e.getMessage(), e);
             }

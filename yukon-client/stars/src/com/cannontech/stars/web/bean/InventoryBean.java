@@ -14,7 +14,7 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
 import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.core.dao.DaoNotFoundException;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -141,7 +141,7 @@ public class InventoryBean {
                     {
                         devName1 = DaoFactory.getPaoDao().getYukonPAOName( inv1.getDeviceID() );
                     }
-                    catch(DaoNotFoundException e) {}
+                    catch(NotFoundException e) {}
                 }
 				else if (inv1.getDeviceLabel() != null && inv1.getDeviceLabel().length() > 0)
 					devName1 = inv1.getDeviceLabel();

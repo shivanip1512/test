@@ -22,7 +22,7 @@ import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
 import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.core.dao.DaoNotFoundException;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.Transaction;
@@ -1777,7 +1777,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
             {
                 paoName = DaoFactory.getPaoDao().getYukonPAOName(liteInv.getDeviceID());
             }
-            catch(DaoNotFoundException e)
+            catch(NotFoundException e)
             {
                 paoName = "noneFound";
             }

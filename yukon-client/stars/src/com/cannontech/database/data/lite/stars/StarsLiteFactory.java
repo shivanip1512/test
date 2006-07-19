@@ -15,7 +15,7 @@ import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.core.dao.DaoNotFoundException;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.customer.CustomerTypes;
@@ -1853,7 +1853,7 @@ public class StarsLiteFactory {
                 {
 				    mct.setDeviceName( DaoFactory.getPaoDao().getYukonPAOName(liteInv.getDeviceID()) );
                 }
-				catch(DaoNotFoundException e) 
+				catch(NotFoundException e) 
                 {
                     CTILogger.error(e.getMessage(), e);
                     mct.setDeviceName( "(none)" );
@@ -2131,7 +2131,7 @@ public class StarsLiteFactory {
                         {
 						    group.setContent( DaoFactory.getPaoDao().getYukonPAOName(groupID) );
                         }
-                        catch(DaoNotFoundException e)
+                        catch(NotFoundException e)
                         {
                             CTILogger.error(e.getMessage(), e);
                             group.setContent("No Yukon name found.");
@@ -2184,7 +2184,7 @@ public class StarsLiteFactory {
                 {
                     starsProg.setYukonName( DaoFactory.getPaoDao().getYukonPAOName(liteProg.getDeviceID()) );
                 }
-                catch(DaoNotFoundException e)
+                catch(NotFoundException e)
                 {
                     CTILogger.error(e.getMessage(), e);
                     starsProg.setYukonName( "No Yukon name found." );

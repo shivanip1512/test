@@ -30,7 +30,7 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.core.dao.DaoNotFoundException;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
@@ -1843,7 +1843,7 @@ public class ImportStarsDataTask extends TimeConsumingTask {
                             {
                                 paoName = DaoFactory.getPaoDao().getYukonPAOName( id.intValue() );
                             }
-                            catch(DaoNotFoundException e)
+                            catch(NotFoundException e)
                             {
                                 CTILogger.error(e.getMessage(), e);
                                 paoName = "NOTFOUND";

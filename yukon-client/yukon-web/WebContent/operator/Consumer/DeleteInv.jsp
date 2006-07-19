@@ -1,7 +1,7 @@
 <%@ include file="include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteInventoryBase" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteStarsLMHardware" %>
-<%@ page import="com.cannontech.core.dao.DaoNotFoundException" %>
+<%@ page import="com.cannontech.core.dao.NotFoundException" %>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
 	int invID = Integer.parseInt(request.getParameter("InvID"));
@@ -61,7 +61,7 @@
         {
             deviceName = DaoFactory.getPaoDao().getYukonPAOName(liteInv.getDeviceID());
         }
-        catch(DaoNotFoundException e) 
+        catch(NotFoundException e) 
         {
             deviceName = "(none)";
         }

@@ -12,7 +12,7 @@ import javax.xml.soap.SOAPMessage;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.core.dao.DaoNotFoundException;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.stars.LiteAddress;
@@ -241,7 +241,7 @@ public class SendOptOutNotificationAction implements ActionBase {
                         {
 						    groupName = DaoFactory.getPaoDao().getYukonPAOName( liteApp.getAddressingGroupID() );
                         }
-                        catch(DaoNotFoundException e) {}
+                        catch(NotFoundException e) {}
                     }
 					text.append(", Group: ").append(groupName).append(LINE_SEPARATOR);
 					

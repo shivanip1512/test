@@ -2,7 +2,7 @@
 <%@ page import="com.cannontech.servlet.LCConnectionServlet" %>
 <%@ page import="com.cannontech.web.loadcontrol.LoadcontrolCache" %>
 <%@ page import="com.cannontech.loadcontrol.data.LMProgramDirect" %>
-<%@ page import="com.cannontech.core.dao.DaoNotFoundException" %>
+<%@ page import="com.cannontech.core.dao.NotFoundException" %>
 <%
 	StarsApplianceCategory category = null;
 	int catIdx = Integer.parseInt( request.getParameter("Category") );
@@ -121,7 +121,7 @@ var iconNameEnvrn = new Array();
             {
                 progName = DaoFactory.getPaoDao().getYukonPAOName(program.getDeviceID());    
             }
-            catch(DaoNotFoundException e) {}
+            catch(NotFoundException e) {}
         }
          
 		StarsWebConfig cfg = program.getStarsWebConfig();

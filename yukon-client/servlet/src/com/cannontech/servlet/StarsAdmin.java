@@ -19,7 +19,7 @@ import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.core.dao.DaoNotFoundException;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
@@ -817,7 +817,7 @@ public class StarsAdmin extends HttpServlet {
                         {
                             newDispName = DaoFactory.getPaoDao().getYukonPAOName( deviceID );
                         }
-                        catch(DaoNotFoundException e) {}
+                        catch(NotFoundException e) {}
                     }
 					if (newDispName.length() == 0) 
                     {

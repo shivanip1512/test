@@ -276,7 +276,7 @@ public class InventoryManager extends HttpServlet {
 			//quick fix for the Xcel demo...need to find a more stable wizard check solution for the long term
 			MultiAction wizardly = (MultiAction) session.getAttribute( ServletUtils.ATT_NEW_ACCOUNT_WIZARD );
 			//if (referer.indexOf("Wizard") < 0) {
-			/*************************MOCHILA: Add inventory***************************************/
+            
             if (wizardly == null) {
 				// If we're trying to create/update a hardware and it's not in the wizard,
 				// create/update the hardware immediately after this step. Let the user

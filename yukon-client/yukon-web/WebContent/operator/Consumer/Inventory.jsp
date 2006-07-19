@@ -1,7 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
 <%@ include file="include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.database.data.pao.PAOGroups" %>
-<%@ page import="com.cannontech.core.dao.DaoNotFoundException" %>
+<%@ page import="com.cannontech.core.dao.NotFoundException" %>
 <jsp:useBean id="detailBean" class="com.cannontech.stars.web.bean.InventoryDetailBean" scope="page"/>
 
     <%pageContext.setAttribute("liteEC", liteEC);%>
@@ -400,7 +400,7 @@ function revealLog() {
         dftRoute = DaoFactory.getPaoDao().getYukonPAOName(liteEC.getDefaultRouteID());
         dftRoute = "Default - " + dftRoute;
 	}
-	catch(DaoNotFoundException e)
+	catch(NotFoundException e)
     {
     	dftRoute = "Default - (None)";
     }

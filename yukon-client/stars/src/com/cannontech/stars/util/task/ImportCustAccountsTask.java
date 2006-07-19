@@ -23,7 +23,7 @@ import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.core.dao.DaoNotFoundException;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
@@ -964,7 +964,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
                                     break;
                                 }
                             }
-                            catch(DaoNotFoundException e) {}
+                            catch(NotFoundException e) {}
 						}
 						
 						if (suProg[2] == -1)

@@ -1,4 +1,4 @@
-<%@ page import="com.cannontech.core.dao.DaoNotFoundException" %>
+<%@ page import="com.cannontech.core.dao.NotFoundException" %>
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%
 	LiteYukonPAObject[] inheritedRoutes = null;
@@ -93,7 +93,7 @@ function removeRoutes(form) {
             dftRoute = DaoFactory.getPaoDao().getYukonPAOName(liteEC.getDefaultRouteID());
             dftRoute = "Default - " + dftRoute;
         }
-        catch(DaoNotFoundException e)
+        catch(NotFoundException e)
         {
             dftRoute = "RouteInvalid";
         } 

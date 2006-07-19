@@ -13,7 +13,7 @@ import java.util.Vector;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.core.dao.DaoNotFoundException;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteBase;
@@ -638,7 +638,7 @@ public class StarsDatabaseCache implements DBChangeLiteListener {
                         {
 						    program.setYukonName( DaoFactory.getPaoDao().getYukonPAOName(liteProg.getDeviceID()) );
                         }
-                        catch(DaoNotFoundException e)
+                        catch(NotFoundException e)
                         {
                             program.setYukonName( CtiUtilities.STRING_NONE );
                         }
