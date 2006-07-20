@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/pt_numeric.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2006/07/13 21:14:11 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2006/07/20 21:46:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -279,12 +279,51 @@ void        CtiPointNumeric::setDataOffset(DOUBLE d)
 bool CtiPointNumeric::limitStateCheck( const int limitOrState, double val, int &direction)
 {
    direction = LIMIT_IN_RANGE;          // This indicates that
+   int state = limitOrState + CtiTablePointAlarming::limit0;// restore to original value
 
    if(getLowLimit(limitOrState) >= getHighLimit(limitOrState))
    {
        direction = LIMIT_SETUP_ERROR;
    }
-   else
+   else if( state >= CtiTablePointAlarming::limitLow0 && state <= CtiTablePointAlarming::limitHigh1 )
+   {
+       switch(state)
+       {
+           case CtiTablePointAlarming::limitLow0:
+           {
+               if( val < getLowLimit(CtiTablePointAlarming::limit0-CtiTablePointAlarming::limit0) )
+               {
+                   direction = LIMIT_EXCEEDS_LO;
+               }
+               break;
+           }
+           case CtiTablePointAlarming::limitLow1:
+           {
+               if( val < getLowLimit(CtiTablePointAlarming::limit1-CtiTablePointAlarming::limit0) )
+               {
+                   direction = LIMIT_EXCEEDS_LO;
+               }
+               break;
+           }
+           case CtiTablePointAlarming::limitHigh0:
+           {
+               if( val > getHighLimit(CtiTablePointAlarming::limit0-CtiTablePointAlarming::limit0) )
+               {
+                   direction = LIMIT_EXCEEDS_HI;
+               }
+               break;
+           }
+           case CtiTablePointAlarming::limitHigh1:
+           {
+               if( val > getHighLimit(CtiTablePointAlarming::limit1-CtiTablePointAlarming::limit0) )
+               {
+                   direction = LIMIT_EXCEEDS_HI;
+               }
+               break;
+           }
+       }
+   }
+   else 
    {
        if( val < getLowLimit(limitOrState) )
        {
