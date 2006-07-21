@@ -407,6 +407,7 @@ public class StarsFactory {
 		contact.getContact().setContFirstName( starsContact.getFirstName() );
 		contact.getContact().setLogInID( new Integer(starsContact.getLoginID()) );
         
+		//TODO: Not a good way to do this
 		contact.getContactNotifVect().removeAllElements();
         
         for (int i = 0; i < starsContact.getContactNotificationCount(); i++) 

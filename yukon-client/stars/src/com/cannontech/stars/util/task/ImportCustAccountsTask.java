@@ -77,7 +77,9 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 		"USERNAME",
 		"PASSWORD",
 		"LOGIN_GROUP",
-        "COMPANY_NAME"
+        "COMPANY_NAME",
+        "IVR_PIN",
+        "IVR_USERNAME"
 	};
     
 	private static final String[] HW_COLUMNS = {
@@ -120,6 +122,8 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 	private static final int COL_PASSWORD = acct_col++;
 	private static final int COL_LOGIN_GROUP = acct_col++;
     private static final int COL_COMPANY_NAME = acct_col++;
+    private static final int COL_IVR_PIN = acct_col++;
+    private static final int COL_IVR_USERNAME = acct_col++;
 	
     // Column indices of the generic hardware info file
 	private static int hw_col = 0;
@@ -906,6 +910,10 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 			fields[ImportManagerUtil.IDX_LOGIN_GROUP] = columns[ colIdx[COL_LOGIN_GROUP] ];
         if (colIdx[COL_COMPANY_NAME] >= 0 && colIdx[COL_COMPANY_NAME] < columns.length)
             fields[ImportManagerUtil.IDX_COMPANY_NAME] = columns[ colIdx[COL_COMPANY_NAME] ];
+        if (colIdx[COL_IVR_PIN] >= 0 && colIdx[COL_IVR_PIN] < columns.length)
+            fields[ImportManagerUtil.IDX_IVR_PIN] = columns[ colIdx[COL_IVR_PIN] ];
+        if (colIdx[COL_IVR_USERNAME] >= 0 && colIdx[COL_IVR_USERNAME] < columns.length)
+            fields[ImportManagerUtil.IDX_IVR_USERNAME] = columns[ colIdx[COL_IVR_USERNAME] ];
     }
 	
 	private void setHardwareFields(String[] fields, String[] columns, int[] colIdx) {

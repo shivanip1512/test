@@ -16,6 +16,8 @@ import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.data.lite.LiteContact;
+import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
@@ -146,6 +148,8 @@ public class ImportManagerUtil {
 	public static final int IDX_ACCOUNT_NO = acct_idx++;
 	public static final int IDX_CUSTOMER_TYPE = acct_idx++;
 	public static final int IDX_COMPANY_NAME = acct_idx++;
+    public static final int IDX_IVR_PIN = acct_idx++;
+    public static final int IDX_IVR_USERNAME = acct_idx++;
 	public static final int IDX_CUSTOMER_NUMBER = acct_idx++;
 	public static final int IDX_LAST_NAME = acct_idx++;
 	public static final int IDX_FIRST_NAME = acct_idx++;
@@ -548,6 +552,28 @@ public class ImportManagerUtil {
 			email.setDisabled( true );
 			primContact.addContactNotification( email );
 	    }
+        
+        if (fields[IDX_IVR_PIN].trim().length() > 0) {
+            try {
+                ContactNotification ivrPin = ServletUtils.createContactNotification(
+                        ServletUtils.formatPin(fields[IDX_IVR_PIN]), YukonListEntryTypes.YUK_ENTRY_ID_PIN );
+                if (ivrPin != null) primContact.addContactNotification( ivrPin );
+            }
+            catch (WebClientException e) {
+                if (problem != null) problem.appendProblem( e.getMessage() );
+            }
+        }
+        
+        if (fields[IDX_IVR_USERNAME].trim().length() > 0) {
+            try {
+                ContactNotification ivrLogin = ServletUtils.createContactNotification(
+                        ServletUtils.formatPin(fields[IDX_IVR_USERNAME]), YukonListEntryTypes.YUK_ENTRY_ID_IVR_LOGIN );
+                if (ivrLogin != null) primContact.addContactNotification( ivrLogin );
+            }
+            catch (WebClientException e) {
+                if (problem != null) problem.appendProblem( e.getMessage() );
+            }
+        }
 	    
 	    account.setPrimaryContact( primContact );
 	}
@@ -597,6 +623,39 @@ public class ImportManagerUtil {
 	    StarsUpdateCustomerAccount updateAccount = new StarsUpdateCustomerAccount();
 	    setStarsCustAccount( updateAccount, fields, energyCompany, problem );
 	    
+        /*On an update, don't overwrite the loginID with -9999*/
+        LiteContact existingContact = DaoFactory.getContactDao().getContact(liteAcctInfo.getCustomer().getPrimaryContactID());
+        updateAccount.getPrimaryContact().setLoginID(existingContact.getLoginID());
+        
+        /*
+         * This is very ugly.  We do not want to lose other notifications that are outside the scope of the
+         * import flat file.  It would make more sense to do this within StarsFactory.setCustomerContact( primContact, starsPrimContact );
+         * However, that method and UpdateCustAccountAction.updateAccount() are also used for normal account updating through the GUI.
+         * TODO: move this functionality so that we are no longer doing this and then undoing it again right away; get rid of the 
+         * "remove all contact and replace with just these" functionality.  Also marked with a TODO in StarsFactory.
+         */
+        for(int j = 0; j < existingContact.getLiteContactNotifications().size(); j++)
+        {
+            LiteContactNotification existingNotif = (LiteContactNotification) existingContact.getLiteContactNotifications().get(j);
+            boolean found = false;
+            for(int i = 0; i < updateAccount.getPrimaryContact().getContactNotificationCount(); i++)
+            {
+                if(existingNotif.getNotificationCategoryID() == updateAccount.getPrimaryContact().getContactNotification(i).getNotifCatID() 
+                        && existingNotif.getNotification().compareTo(updateAccount.getPrimaryContact().getContactNotification(i).getNotification()) == 0)
+                {
+                    found = true;
+                    break;
+                }
+            }
+            if(!found)
+            {
+                ContactNotification contNotif = new ContactNotification();
+                contNotif.setNotifCatID(existingNotif.getNotificationCategoryID());
+                contNotif.setNotification(existingNotif.getNotification());
+                contNotif.setDisabled(existingNotif.getDisableFlag().compareTo("Y") == 0);
+                updateAccount.getPrimaryContact().addContactNotification(contNotif);
+            }
+        }
 	    UpdateCustAccountAction.updateCustomerAccount( updateAccount, liteAcctInfo, energyCompany );
 	    
 		int loginID = DaoFactory.getContactDao().getContact( liteAcctInfo.getCustomer().getPrimaryContactID() ).getLoginID();
