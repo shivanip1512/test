@@ -12,6 +12,8 @@ import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.TimeZone;
 import java.util.Vector;
 
@@ -1522,15 +1524,22 @@ public static double convertTemperature(double temperature, String fromUnit, Str
     }
 }
 
-public static long convertTemperature(long temperature, String fromUnit, String toUnit) {
-    double dblTemperature = temperature;
-    return Math.round(convertTemperature(dblTemperature, fromUnit, toUnit));
-}
+    public static long convertTemperature(long temperature, String fromUnit, String toUnit) {
+        double dblTemperature = temperature;
+        return Math.round(convertTemperature(dblTemperature, fromUnit, toUnit));
+    }
+    
+    public static Integer[] ensureNotNull(Integer[] arr) {
+        return (arr == null ? new Integer[0] : arr);
+    }
 
-public static Integer[] ensureNotNull(Integer[] arr) {
-    return (arr == null ? new Integer[0] : arr);
-}
-
+    public static <T> Set<T> asSet(T... a) {
+        Set<T> s = new HashSet<T>((int) (a.length/0.75f+1),0.75f);
+        for (T t : a) {
+            s.add(t);
+        }
+        return s;
+    }
 }
 
 
