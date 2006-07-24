@@ -165,6 +165,12 @@ void CtiCCSubstationVerificationExecutor::EnableSubstationBusVerification()
                 {
                     //Check to see if sub is already being operated on.  Set flag, which will finish out normal control
                     //before verification controls start.
+                    if( _CC_DEBUG & CC_DEBUG_STANDARD )
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - Verification Start Message received from client for sub: "<<currentSubstationBus->getPAOName()<<" ("<<currentSubstationBus->getPAOId()<<")"<< endl;
+                    }
+
                     CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
                     for(LONG j=0;j<ccFeeders.size();j++)
                     {
@@ -178,6 +184,23 @@ void CtiCCSubstationVerificationExecutor::EnableSubstationBusVerification()
                                 currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending) 
                             {
                                 currentSubstationBus->setWaitToFinishRegularControlFlag(TRUE);
+                                string text =  "Verification will be delayed for Sub: ";
+                                text += currentSubstationBus->getPAOName();
+                                text += ", Cap Bank: ";
+                                text += currentCapBank->getPAOName();
+                                text += " is being controlled.";
+
+
+                                INT seqId = CCEventSeqIdGen();
+                                currentSubstationBus->setEventSequence(seqId);
+                                CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSubstationBus->getPAOId(), 0, capControlEnableVerification, currentSubstationBus->getEventSequence(), 1, text, "cap control"));
+                                
+                                if( _CC_DEBUG & CC_DEBUG_STANDARD )
+                                {
+                                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                                    dout << CtiTime() <<  " - Verification will be delayed until Current Cap Bank Control is completed."<< endl;
+                                }
+
                                 break;
                             }
                         }
@@ -849,6 +872,7 @@ void CtiCCCommandExecutor::OpenCapBank()
     CtiMultiMsg_vec& ccEvents = eventMulti->getData();
 
     CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
+    CtiCCSubstationBus_vec updatedSubs;
 
     for(LONG i=0;i<ccSubstationBuses.size();i++)
     {
@@ -865,6 +889,7 @@ void CtiCCCommandExecutor::OpenCapBank()
                 if( bankID == currentCapBank->getControlDeviceId() )
                 {
                     found = TRUE;
+                    updatedSubs.push_back(currentSubstationBus);
 
                     if (!currentSubstationBus->getVerificationFlag() && currentSubstationBus->getStrategyId() > 0)
                     {    
@@ -1026,6 +1051,13 @@ void CtiCCCommandExecutor::OpenCapBank()
 
         if (eventMulti->getCount() >0)
             CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
+        if (updatedSubs.size() > 0) 
+        {
+            CtiCCExecutorFactory f;
+            CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationBusMsg(updatedSubs));
+            executor->Execute();
+            delete executor;
+        }
     }
     else
     {
@@ -1057,6 +1089,7 @@ void CtiCCCommandExecutor::CloseCapBank()
     CtiMultiMsg_vec& ccEvents = eventMulti->getData();
 
     CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
+    CtiCCSubstationBus_vec updatedSubs;
 
     for(LONG i=0;i<ccSubstationBuses.size();i++)
     {
@@ -1074,6 +1107,7 @@ void CtiCCCommandExecutor::CloseCapBank()
                 if( bankID == currentCapBank->getControlDeviceId() )
                 {
                     found = TRUE;
+                    updatedSubs.push_back(currentSubstationBus);
                     if (!currentSubstationBus->getVerificationFlag() && currentSubstationBus->getStrategyId() > 0)
                     {    
 
@@ -1242,6 +1276,13 @@ void CtiCCCommandExecutor::CloseCapBank()
 
         if (eventMulti->getCount() >0)
             CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
+        if (updatedSubs.size() > 0) 
+        {
+            CtiCCExecutorFactory f;
+            CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationBusMsg(updatedSubs));
+            executor->Execute();
+            delete executor;
+        }
 
     }
     else
@@ -1474,6 +1515,7 @@ void CtiCCCommandExecutor::ConfirmOpen()
     CtiMultiMsg_vec& ccEvents = eventMulti->getData();
 
     CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
+    CtiCCSubstationBus_vec updatedSubs;
 
     for(LONG i=0;i<ccSubstationBuses.size();i++)
     {
@@ -1491,6 +1533,7 @@ void CtiCCCommandExecutor::ConfirmOpen()
                 if( bankID == currentCapBank->getControlDeviceId() )
                 {
                     found = TRUE;
+                    updatedSubs.push_back(currentSubstationBus);
                     if (!currentSubstationBus->getVerificationFlag() && currentSubstationBus->getStrategyId() > 0)
                     {   
                         savedBusRecentlyControlledFlag = currentSubstationBus->getRecentlyControlledFlag();
@@ -1682,6 +1725,13 @@ void CtiCCCommandExecutor::ConfirmOpen()
         CtiCapController::getInstance()->manualCapBankControl( reqMsg, multi );
         if (eventMulti->getCount() >0)
             CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
+        if (updatedSubs.size() > 0) 
+        {
+            CtiCCExecutorFactory f;
+            CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationBusMsg(updatedSubs, CtiCCSubstationBusMsg::SubBusAdded));
+            executor->Execute();
+            delete executor;
+        }
     }
     else
     {
@@ -1713,6 +1763,7 @@ void CtiCCCommandExecutor::ConfirmClose()
     CtiMultiMsg_vec& ccEvents = eventMulti->getData();
 
     CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
+    CtiCCSubstationBus_vec updatedSubs;
 
     for(LONG i=0;i<ccSubstationBuses.size();i++)
     {
@@ -1730,6 +1781,7 @@ void CtiCCCommandExecutor::ConfirmClose()
                 if( bankID == currentCapBank->getControlDeviceId() )
                 {
                     found = TRUE;
+                    updatedSubs.push_back(currentSubstationBus);
                     if (!currentSubstationBus->getVerificationFlag() && currentSubstationBus->getStrategyId() > 0)
                     {
                         savedBusRecentlyControlledFlag = currentSubstationBus->getRecentlyControlledFlag();
@@ -1924,6 +1976,13 @@ void CtiCCCommandExecutor::ConfirmClose()
         CtiCapController::getInstance()->manualCapBankControl( reqMsg, multi );
         if (eventMulti->getCount() >0)
             CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
+        if (updatedSubs.size() > 0) 
+        {
+            CtiCCExecutorFactory f;
+            CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationBusMsg(updatedSubs, CtiCCSubstationBusMsg::SubBusAdded));
+            executor->Execute();
+            delete executor;
+        }
     }
     else
     {
