@@ -14,5 +14,5 @@
 	 	<property name="asyncDynamicDataSource" ref="asyncDynamicDataSource"/>
 	 	<property name="dispatchConnection" ref="dispatchConnection"/>
 	 </bean>	 
-	 <bean id="serverRequest" class="com.cannontech.message.util.ServerRequestImpl"/>
+	 <bean id="serverRequest" class="com.cannontech.message.util.ServerRequestImpl" singleton="false"/>
 </beans>
