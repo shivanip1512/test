@@ -27,6 +27,7 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
+import com.cannontech.database.data.point.AnalogPoint;
 import com.cannontech.database.data.point.CalcStatusPoint;
 import com.cannontech.database.data.point.CalculatedPoint;
 import com.cannontech.database.data.point.PointBase;
@@ -37,9 +38,11 @@ import com.cannontech.database.data.point.PointUtil;
 import com.cannontech.database.data.point.ScalarPoint;
 import com.cannontech.database.data.point.StatusPoint;
 import com.cannontech.database.db.point.PointAlarming;
+import com.cannontech.database.db.point.PointLimit;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
 import com.cannontech.servlet.nav.DBEditorTypes;
 import com.cannontech.web.editor.DBEditorForm;
+import com.cannontech.web.exceptions.InvalidPointLimits;
 import com.cannontech.web.exceptions.InvalidPointOffsetException;
 import com.cannontech.web.util.CBCSelectionLists;
 import com.cannontech.web.wizard.PointWizardModel;
@@ -605,6 +608,7 @@ public class PointForm extends DBEditorForm
 	 * Executes any last minute object updates before writting
 	 * the data to the databse. The return value is where the requested
 	 * value is redirected as defined in our faces-config.xml
+	 * @throws InvalidPointLimits 
 	 * 
 	 */
 	public void update() {
@@ -645,6 +649,11 @@ public class PointForm extends DBEditorForm
             facesMsg.setDetail(errorString);
             facesMsg.setSeverity(FacesMessage.SEVERITY_ERROR);
 		}
+        catch (InvalidPointLimits iple) {
+                String errorString = iple.getMessage();
+                facesMsg.setDetail(errorString);
+                facesMsg.setSeverity(FacesMessage.SEVERITY_ERROR);
+        }
 		finally {
 			FacesContext.getCurrentInstance().addMessage("cti_db_update", facesMsg);		
 		}
@@ -735,16 +744,33 @@ public class PointForm extends DBEditorForm
         this.wizData = wizData;
     }
 
-    protected void checkForErrors() throws InvalidPointOffsetException {
+    protected void checkForErrors() throws InvalidPointOffsetException, InvalidPointLimits {
         int offset = getPointBase().getPoint().getPointOffset().intValue();
         int type = PointTypes.getType (getPointBase().getPoint().getPointType());
         Integer paoId = getWizData().getParentId();
         //make sure we are not erroring out because of the same offset
         LitePoint litePoint = DaoFactory.getPointDao().getLitePoint(getPointBase().getPoint().getPointID().intValue());
+        
+        if (!checkPointLimits ())   
+            throw new InvalidPointLimits ("High point limit can't be lower than Low point Limit");
         if (litePoint.getPointOffset() == offset)
         	return;
         if (!PointOffsetUtils.isValidPointOffset(offset,paoId ,type)) {
             throw new InvalidPointOffsetException("The point offset if invalid for " + getPointBase().getPoint().getPointType() +  " point type. Consider increasing offset");
         }
      }
+    private boolean checkPointLimits() {
+        if (getPointBase() instanceof AnalogPoint) {
+            AnalogPoint point = (AnalogPoint) getPointBase();
+            PointLimit limitOne = point.getLimitOne();
+            PointLimit limitTwo = point.getLimitTwo();
+            
+            if (limitOne != null && limitTwo != null) {
+                if ( (limitOne.getHighLimit().doubleValue() < limitOne.getLowLimit().doubleValue()) ||
+                        (limitTwo.getHighLimit().doubleValue() < limitTwo.getLowLimit().doubleValue()) )
+                    return false;
+            }
+        }               
+        return true;
+    }
 }
