@@ -10,7 +10,7 @@ create table DynamicCCFeeder (
    CurrentVarPointValue float                not null,
    CurrentWattPointValue float                not null,
    NewPointDataReceivedFlag char(1)              not null,
-   LastCurrentVarUpdate date             not null,
+   LastCurrentVarUpdateTime date             not null,
    EstimatedVarPointValue float                not null,
    CurrentDailyOperations number              not null,
    RecentlyControlledFlag char(1)              not null,
@@ -224,4 +224,4 @@ update YUKONROLEPROPERTY set defaultvalue = 'Server/web/webapps/yukon/WebConfig/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
 /**************************************************************/
-/* __YUKON_VERSION__ */
+insert into CTIDatabase values('3.2', 'DBAdmin', '21-JULY-2006', 'DB Update Script', 8 );

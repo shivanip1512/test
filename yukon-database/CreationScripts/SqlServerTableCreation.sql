@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     7/10/2006 2:40:57 PM                         */
+/* Created on:     7/24/2006 9:19:05 AM                         */
 /*==============================================================*/
 
 
@@ -3930,7 +3930,8 @@ go
 /*==============================================================*/
 create table DCItemType (
    ItemTypeID           numeric              not null,
-   Name                 varchar(40)          not null
+   Name                 varchar(40)          not null,
+   Description          varchar(320)         not null
 )
 go
 
@@ -7450,12 +7451,13 @@ create table POINTUNIT (
    UOMID                numeric              not null,
    DECIMALPLACES        numeric              not null,
    HighReasonabilityLimit float                not null,
-   LowReasonabilityLimit float                not null
+   LowReasonabilityLimit float                not null,
+   DecimalDigits        numeric              not null
 )
 go
 
 
-insert into pointunit values( 100, 9, 1, 1.0E+30, -1.0E+30);
+insert into pointunit values( 100, 9, 1, 1.0E+30, -1.0E+30, 0);
 alter table POINTUNIT
    add constraint PK_POINTUNITID primary key  (POINTID)
 go
@@ -9061,6 +9063,7 @@ insert into YukonListEntry values( 7, 1, 0, 'Voice PIN', 3 );
 insert into YukonListEntry values( 8, 1, 0, 'Cell Phone', 2 );
 insert into YukonListEntry values( 9, 1, 0, 'Email to Cell', 1);
 insert into YukonListEntry values( 10, 1, 0, 'Call Back Phone', 2);
+insert into YukonListEntry values( 11, 1, 0, 'IVR Login', 3 );
 
 insert into YukonListEntry values (100, 100, 0, 'Addition', 0);
 insert into YukonListEntry values (101, 100, 0, 'Subtraction', 0);

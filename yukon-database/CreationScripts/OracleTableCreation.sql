@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     7/10/2006 2:41:43 PM                         */
+/* Created on:     7/24/2006 9:19:57 AM                         */
 /*==============================================================*/
 
 
@@ -1805,7 +1805,8 @@ alter table DCDeviceConfiguration
 /*==============================================================*/
 create table DCItemType  (
    ItemTypeID           NUMBER                          not null,
-   Name                 VARCHAR2(40)                    not null
+   Name                 VARCHAR2(40)                    not null,
+   Description          VARCHAR2(320)                   not null
 );
 
 alter table DCItemType
@@ -4783,10 +4784,11 @@ create table POINTUNIT  (
    UOMID                NUMBER                          not null,
    DECIMALPLACES        NUMBER                          not null,
    HighReasonabilityLimit FLOAT                           not null,
-   LowReasonabilityLimit FLOAT                           not null
+   LowReasonabilityLimit FLOAT                           not null,
+   DecimalDigits        NUMBER                          not null
 );
 
-insert into pointunit values( 100, 9, 1, 1.0E+30, -1.0E+30);
+insert into pointunit values( 100, 9, 1, 1.0E+30, -1.0E+30, 0);
 alter table POINTUNIT
    add constraint PK_POINTUNITID primary key (POINTID);
 
@@ -6248,6 +6250,7 @@ insert into YukonListEntry values( 7, 1, 0, 'Voice PIN', 3 );
 insert into YukonListEntry values( 8, 1, 0, 'Cell Phone', 2 );
 insert into YukonListEntry values( 9, 1, 0, 'Email to Cell', 1);
 insert into YukonListEntry values( 10, 1, 0, 'Call Back Phone', 2);
+insert into YukonListEntry values( 11, 1, 0, 'IVR Login', 3 );
 
 insert into YukonListEntry values (100, 100, 0, 'Addition', 0);
 insert into YukonListEntry values (101, 100, 0, 'Subtraction', 0);

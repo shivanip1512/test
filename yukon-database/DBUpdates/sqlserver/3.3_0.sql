@@ -116,7 +116,9 @@ alter table CICustomerBase add constraint FK_CUSTTYPE_ENTRYID foreign key (CICus
     references YukonListEntry (EntryID);
 go
 
+/* @error ignore */
 insert into YukonRoleProperty values(-20160,-201,'Create Login With Account','false','Require that a login is created with every new customer account.');
+
 insert into YukonListEntry values (10431,1053,0,'Consumption Type',2911);
 insert into YukonListEntry values (1090, 1007, 0, 'Chiller', 1409);
 insert into YukonListEntry values (1091, 1007, 0, 'Dual Stage', 1410);
@@ -182,4 +184,4 @@ go
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
 /**************************************************************/
-insert into CTIDatabase values('3.3', 'Ryan', '06-Jan-2006', 'Manual version insert done', 0 );
+insert into CTIDatabase values('3.3', 'Ryan', '06-July-2006', 'Manual version insert done', 0 );

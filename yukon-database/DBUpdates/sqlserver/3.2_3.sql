@@ -5286,12 +5286,6 @@ alter table DynamicPointAlarming
 go
 
 
-alter table DynamicPointAlarming
-   add constraint FKf_DynPtAl_SysL foreign key (LogID)
-      references SYSTEMLOG (LOGID);
-go
-
-
 alter table DynamicTags
    add constraint FK_DynTgs_Pt foreign key (PointID)
       references POINT (POINTID);

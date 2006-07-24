@@ -292,4 +292,5 @@ go
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
 /**************************************************************/
-/* __YUKON_VERSION__ */
+insert into CTIDatabase values('3.2', 'DBUPdater', '21-JULY-2006', 'DB Update Script', 8 );
+go
