@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     7/24/2006 9:19:57 AM                         */
+/* Created on:     7/24/2006 10:29:59 AM                        */
 /*==============================================================*/
 
 
@@ -1806,6 +1806,9 @@ alter table DCDeviceConfiguration
 create table DCItemType  (
    ItemTypeID           NUMBER                          not null,
    Name                 VARCHAR2(40)                    not null,
+   Required             CHAR(1)                         not null,
+   MinLength            NUMBER                          not null,
+   MaxLengh             NUMBER                          not null,
    Description          VARCHAR2(320)                   not null
 );
 

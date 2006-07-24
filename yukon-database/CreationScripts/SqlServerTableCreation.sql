@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     7/24/2006 9:19:05 AM                         */
+/* Created on:     7/24/2006 10:29:14 AM                        */
 /*==============================================================*/
 
 
@@ -3931,6 +3931,9 @@ go
 create table DCItemType (
    ItemTypeID           numeric              not null,
    Name                 varchar(40)          not null,
+   Required             char(1)              not null,
+   MinLength            numeric              not null,
+   MaxLengh             numeric              not null,
    Description          varchar(320)         not null
 )
 go
