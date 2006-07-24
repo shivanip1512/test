@@ -1,20 +1,21 @@
 package com.cannontech.core.dao.impl;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.springframework.jdbc.core.JdbcOperations;
-import org.springframework.jdbc.core.RowMapper;
 
+import com.cannontech.common.cache.PointChangeCache;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.CBCPointTimestampParams;
+import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**
@@ -153,30 +154,23 @@ public void setJdbcOps(JdbcOperations jdbcOps) {
 }
 
 public List getCBCPointTimeStamps (Integer cbcID) {
-    
-    String sqlStmt = 
-        "SELECT Point.PointID, Point.PointName, DynamicPointDispatch.Value, DynamicPointDispatch.Timestamp "
-          + "FROM Point, DynamicPointDispatch WHERE "
-          + "DynamicPointDispatch.PointId IN ( " 
-          +  "SELECT PointId FROM Point WHERE PaObjectId = ?) "
-          +  "AND " 
-          +  "Point.PointId = DynamicPointDispatch.PointId";
-    
-    JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();            
-    
-    List pointList = yukonTemplate.query(sqlStmt, new Integer[] {cbcID},
-            new RowMapper() {
-                public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
-                    CBCPointTimestampParams pointTimestamp = new CBCPointTimestampParams(); 
-                    pointTimestamp.setPointId (new Integer ( rs.getBigDecimal(1).intValue() ));
-                    pointTimestamp.setPointName (new String ( rs.getString(2)));
-                    pointTimestamp.setValue(new Double ( rs.getDouble(3)) );
-                    pointTimestamp.setTimestamp((Timestamp) ( rs.getTimestamp(4)));
-                    return pointTimestamp;                      
-                }
-            });
-
-    return pointList;   
-}
+    List pointList = new ArrayList (10);
+    PointChangeCache pointCache = PointChangeCache.getPointChangeCache();
+    List points = DaoFactory.getPointDao().getLitePointsByPaObjectId(cbcID.intValue());
+    for (Iterator iter = points.iterator(); iter.hasNext();) {
+        LitePoint point = (LitePoint) iter.next();
+        CBCPointTimestampParams pointTimestamp = new CBCPointTimestampParams();
+        PointData pointData = ((PointData)pointCache.getValue(point.getLiteID()));
+        if (point != null && pointData != null) {
+            pointTimestamp.setPointId(new Integer (point.getLiteID()));
+            pointTimestamp.setPointName(point.getPointName());
+            pointTimestamp.setValue(new Double ( pointData.getValue() ) );
+            pointTimestamp.setTimestamp(pointData.getPointDataTimeStamp());
+        
+        }
+            pointList.add(pointTimestamp);
+    }
+    return pointList;
+    }
 
 }
