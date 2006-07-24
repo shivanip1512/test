@@ -27,6 +27,7 @@ import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 import com.cannontech.loadcontrol.messages.LMManualControlResponse;
 import com.cannontech.message.server.ServerResponseMsg;
 import com.cannontech.message.util.ServerRequest;
+import com.cannontech.message.util.ServerRequestImpl;
 import com.cannontech.util.ServletUtil;
 
 
@@ -658,18 +659,14 @@ public class LCUtils
 
 		try
 		{ 
-			ServerRequest[] srvrReq = new ServerRequest[ programResp.length ];
-
+			ServerRequest serverRequest = new ServerRequestImpl();
 			ServerResponseMsg[] responseMsgs =
-					new ServerResponseMsg[ srvrReq.length ];
+					new ServerResponseMsg[ programResp.length ];
 
-			for( int i = 0; i < srvrReq.length; i++ )
+			for( int i = 0; i < responseMsgs.length; i++ )
 			{
-				srvrReq[i] = ServerRequest.makeServerRequest(
-						LoadControlClientConnection.getInstance(),
-						programResp[i].getLmRequest() );
-
-				responseMsgs[i] = srvrReq[i].execute();
+                responseMsgs[i] = 
+                    serverRequest.makeServerRequest(LoadControlClientConnection.getInstance(), programResp[i].getLmRequest()); 
 			}
 
 			//fill in our responses

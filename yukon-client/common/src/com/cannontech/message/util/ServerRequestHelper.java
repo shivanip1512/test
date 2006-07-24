@@ -18,8 +18,9 @@ public class ServerRequestHelper {
                                            Message msg, 
                                            int timeoutMilliSeconds) {
         Object result = null;
-        ServerRequest req = ServerRequest.makeServerRequest(conn, msg);
-        ServerResponseMsg responseMsg = req.execute(timeoutMilliSeconds); // could block up to 60 seconds
+        
+        ServerRequest req = new ServerRequestImpl();
+        ServerResponseMsg responseMsg = req.makeServerRequest(conn, msg, timeoutMilliSeconds);// could block up to 60 seconds
         if(responseMsg.getStatus() == ServerResponseMsg.STATUS_OK) {
             // good response
             result = responseMsg.getPayload();

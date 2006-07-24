@@ -24,6 +24,7 @@ import com.cannontech.message.server.ServerResponseMsg;
 import com.cannontech.message.util.ClientConnection;
 import com.cannontech.message.util.CollectableBoolean;
 import com.cannontech.message.util.ServerRequest;
+import com.cannontech.message.util.ServerRequestImpl;
 import com.cannontech.message.util.ServerRequestHelper;
 import com.cannontech.yukon.INotifConnection;
 import com.roguewave.vsj.CollectableStreamer;
@@ -91,12 +92,11 @@ public class NotifClientConnection extends ClientConnection implements INotifCon
 		ServerResponseMsg responseMsg = null;
 		VoiceDataRequestMsg vdReqMsg = new VoiceDataRequestMsg();
 		vdReqMsg.callToken = token;
-		ServerRequest srvrReq =
-			ServerRequest.makeServerRequest( this, vdReqMsg );
 
 		try {
+            ServerRequest srvrReq = new ServerRequestImpl();
 			//request the object from the server
-			responseMsg = srvrReq.execute();
+			responseMsg = srvrReq.makeServerRequest(this, vdReqMsg);
 		}
 		catch(Exception e) {
 			CTILogger.error( "No response received from server", e );

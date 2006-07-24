@@ -110,14 +110,14 @@ public class ServerResponseMsg extends Message {
 	/**
 	 * @param i
 	 */
-	protected void setId(int i) {
+	public void setId(int i) {
 		_id = i;
 	}
 
 	/**
 	 * @param string
 	 */
-	protected void setMessage(String string) {
+	public void setMessage(String string) {
 		_message = string;
 	}
 
