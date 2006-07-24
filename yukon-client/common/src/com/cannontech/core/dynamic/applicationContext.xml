@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+	<description>
+		Defines dynamic data service related beans
+	</description>
+	 <bean id="asyncDynamicDataSource" class="com.cannontech.dynamic.impl.AsyncDynamiDataSourceImpl">
+		<property name="dispatchConnection" ref="dispatchConnection"/>
+		<property name="serverRequest" ref="serverRequest"/>
+		<property name="databaseCache" ref="databaseCache"/>
+	 </bean>
+	 <bean id="dynamicDataSoruce" class="com.cannontech.dynamic.impl.DynamicDataSource">
+	 	<property name="asyncDynamicDataSource" ref="asyncDynamicDataSource"/>
+	 	<property name="dispatchConnection" ref="dispatchConnection"/>
+	 </bean>	 
+	 <bean id="serverRequest" class="com.cannontech.message.util.ServerRequestImpl"/>
+</beans>
