@@ -29,11 +29,4 @@ public interface ServerRequest {
     public abstract ServerResponseMsg makeServerRequest(IServerConnection conn,
             Message msg, long timeout);
 
-    /**
-     * Called by the connection.
-     * If we receive a response with the id we expect then notify the thread
-     * blocked in execute.
-     */
-    public abstract void messageReceived(MessageEvent e);
-
 }
