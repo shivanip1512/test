@@ -2180,19 +2180,28 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                         {
                             CtiCCTwoWayPoints* twoWayPts = (CtiCCTwoWayPoints*)currentCapBank->getTwoWayPoints();
                             if (twoWayPts->setTwoWayStatusPointValue(pointID, value))
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Set a cbc 2 way status point..."<< endl;
+                            {   
+                                if( _CC_DEBUG & CC_DEBUG_POINT_DATA )
+                                {
+                                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                                    dout << CtiTime() << " - Set a cbc 2 way status point..."<< endl;
+                                }
                             }
                             else if (twoWayPts->setTwoWayAnalogPointValue(pointID, value))
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Set a cbc 2 way Analog point..."<< endl;
+                                if( _CC_DEBUG & CC_DEBUG_POINT_DATA )
+                                {
+                                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                                    dout << CtiTime() << " - Set a cbc 2 way Analog point..."<< endl;
+                                }
                             }
                             else if (twoWayPts->setTwoWayPulseAccumulatorPointValue(pointID, value))
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Set a cbc 2 way Pulse Accumulator point..."<< endl;
+                                if( _CC_DEBUG & CC_DEBUG_POINT_DATA )
+                                {
+                                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                                    dout << CtiTime() << " - Set a cbc 2 way Pulse Accumulator point..."<< endl;
+                                }
                             }
                             found = TRUE;
 
@@ -2223,8 +2232,6 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                                     }
                                     currentMonPoint->setValue(value);
                                     currentMonPoint->setTimeStamp(timestamp);
-
-
                                     break;
                                 }
                             }

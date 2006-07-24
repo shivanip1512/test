@@ -3012,14 +3012,20 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                            getCurrentVarPointQuality() == NormalQuality )
                        {    
                            DOUBLE change;
+                           DOUBLE oldValue;
+                           DOUBLE newValue;
                            if( !stringCompareIgnoreCase(_controlmethod, CtiCCSubstationBus::IndividualFeederControlMethod) ||
                                !stringCompareIgnoreCase(_controlmethod, CtiCCSubstationBus::BusOptimizedFeederControlMethod) )
                            {
-                               change = currentFeeder->getCurrentVarLoadPointValue() - currentFeeder->getVarValueBeforeControl();
+                               oldValue =  currentFeeder->getVarValueBeforeControl();
+                               newValue =  currentFeeder->getCurrentVarLoadPointValue();
+                               change = newValue - oldValue;
                            }
                            else
                            {
-                               change = getCurrentVarLoadPointValue() - getVarValueBeforeControl();
+                               oldValue =  getVarValueBeforeControl();
+                               newValue =  getCurrentVarLoadPointValue();
+                               change = newValue - oldValue;
                            }
                            if( change < 0 )
                            {
@@ -3044,7 +3050,7 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                                {
                                    currentCapBank->setControlStatus(CtiCCCapBank::OpenFail);
                                    text = string("Var: ");
-                                   text += doubleToString(getCurrentVarLoadPointValue());
+                                   text += doubleToString(newValue);
                                    text += " ( ";
                                    text += doubleToString(ratio*100.0);
                                    text += "% change), OpenFail";
@@ -3055,7 +3061,7 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                                {
                                    currentCapBank->setControlStatus(CtiCCCapBank::OpenQuestionable);
                                    text = string("Var: ");
-                                   text += doubleToString(getCurrentVarLoadPointValue());
+                                   text += doubleToString(newValue);
                                    text += " ( ";
                                    text += doubleToString(ratio*100.0);
                                    text += "% change), OpenQuestionable";
@@ -3066,7 +3072,7 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                                {
                                    currentCapBank->setControlStatus(CtiCCCapBank::Open);
                                    text = string("Var: ");
-                                   text += doubleToString(getCurrentVarLoadPointValue());
+                                   text += doubleToString(newValue);
                                    text += " ( ";
                                    text += doubleToString(ratio*100.0);
                                    text += "% change), Open";
@@ -3079,7 +3085,7 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                            {
                                currentCapBank->setControlStatus(CtiCCCapBank::Open);
                                text = string("Var: ");
-                               text += doubleToString(getCurrentVarLoadPointValue());
+                               text += doubleToString(newValue);
                                text += " ( ";
                                text += doubleToString(ratio*100.0);
                                text += "% change), Open";
@@ -3108,15 +3114,22 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                            getCurrentVarPointQuality() == NormalQuality )
                        {
                            DOUBLE change;
+                           DOUBLE oldValue;
+                           DOUBLE newValue;
                            if( !stringCompareIgnoreCase(_controlmethod, CtiCCSubstationBus::IndividualFeederControlMethod) ||
                                !stringCompareIgnoreCase(_controlmethod, CtiCCSubstationBus::BusOptimizedFeederControlMethod) )
                            {
-                               change = currentFeeder->getVarValueBeforeControl() - currentFeeder->getCurrentVarLoadPointValue();
+                               oldValue =  currentFeeder->getVarValueBeforeControl();
+                               newValue =  currentFeeder->getCurrentVarLoadPointValue();
+                               change = oldValue - newValue;
                            }
                            else
                            {
-                               change = getVarValueBeforeControl() - getCurrentVarLoadPointValue();
+                               oldValue =  getVarValueBeforeControl();
+                               newValue =  getCurrentVarLoadPointValue();
+                               change = oldValue - newValue;
                            }
+                           
                            if( change < 0 )
                            {
                                {
@@ -3140,7 +3153,7 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                                {
                                    currentCapBank->setControlStatus(CtiCCCapBank::CloseFail);
                                    text = string("Var: ");
-                                   text += doubleToString(getCurrentVarLoadPointValue());
+                                   text += doubleToString(newValue);
                                    text += " ( ";
                                    text += doubleToString(ratio*100.0);
                                    text += "% change), CloseFail";
@@ -3151,7 +3164,7 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                                {
                                    currentCapBank->setControlStatus(CtiCCCapBank::CloseQuestionable);
                                    text = string("Var: ");
-                                   text += doubleToString(getCurrentVarLoadPointValue());
+                                   text += doubleToString(newValue);
                                    text += " ( ";
                                    text += doubleToString(ratio*100.0);
                                    text += "% change), CloseQuestionable";
@@ -3162,7 +3175,7 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                                {
                                    currentCapBank->setControlStatus(CtiCCCapBank::Close);
                                    text = string("Var: ");
-                                   text += doubleToString(getCurrentVarLoadPointValue());
+                                   text += doubleToString(newValue);
                                    text += " ( ";
                                    text += doubleToString(ratio*100.0);
                                    text += "% change), Closed";
@@ -3175,7 +3188,7 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                            {
                                currentCapBank->setControlStatus(CtiCCCapBank::Close);
                                text = string("Var: ");
-                               text += doubleToString(getCurrentVarLoadPointValue());
+                               text += doubleToString(newValue);
                                text += " ( ";
                                text += doubleToString(ratio*100.0);
                                text += "% change), Closed";
@@ -3785,6 +3798,7 @@ BOOL CtiCCSubstationBus::isAlreadyControlled()
                                     }
                                     break;
                                 }
+
                             }
                         }
                     }
@@ -4049,6 +4063,25 @@ BOOL CtiCCSubstationBus::sendNextCapBankVerificationControl(const CtiTime& curre
                 CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[j];
                 if( currentCapBank->getPAOId() == _currentVerificationCapBankId )
                 {
+                    DOUBLE controlValue;
+                    DOUBLE confirmValue;
+                    if( !stringCompareIgnoreCase(_controlmethod,CtiCCSubstationBus::IndividualFeederControlMethod) )
+                    { 
+                        controlValue = (!stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::VoltControlUnits) ? currentFeeder->getCurrentVoltLoadPointValue() : currentFeeder->getCurrentVarLoadPointValue());
+                        confirmValue = currentFeeder->getCurrentVarLoadPointValue();
+                    }
+                    else if ( !stringCompareIgnoreCase(_controlmethod,CtiCCSubstationBus::BusOptimizedFeederControlMethod)) 
+                    {
+                        controlValue = (!stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : currentFeeder->getCurrentVarLoadPointValue());
+                        confirmValue = currentFeeder->getCurrentVarLoadPointValue();
+                    }
+                    else 
+                    {
+                        controlValue = (!stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
+                        confirmValue = getCurrentVarLoadPointValue();
+                    }
+
+
                     if (currentCapBank->getVCtrlIndex() == 1)
                     {
                         {
@@ -4061,14 +4094,13 @@ BOOL CtiCCSubstationBus::sendNextCapBankVerificationControl(const CtiTime& curre
                     {
                         if (getCurrentVerificationCapBankOrigState() == CtiCCCapBank::Open)
                         {
-                            DOUBLE controlValue = (!stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
                             int control =  CtiCCCapBank::Open;
                             if (findStringIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 70") &&_USE_FLIP_FLAG == TRUE )
                             {
                                 control = 4; //flip
                             }
                             currentFeeder->setEventSequence(getEventSequence());
-                            string text = currentFeeder->createTextString(getControlMethod(), control, controlValue, getCurrentVarLoadPointValue()) ;
+                            string text = currentFeeder->createTextString(getControlMethod(), control, controlValue, confirmValue) ;
                             request = currentFeeder->createIncreaseVarVerificationRequest(currentCapBank, pointChanges, ccEvents, text);
                         }
                         else if (getCurrentVerificationCapBankOrigState() == CtiCCCapBank::Close)
@@ -4090,14 +4122,13 @@ BOOL CtiCCSubstationBus::sendNextCapBankVerificationControl(const CtiTime& curre
                             else
                             {
 
-                                DOUBLE controlValue = (!stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
                                 int control =  CtiCCCapBank::Close;
                                 if (findStringIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 70") && _USE_FLIP_FLAG == TRUE )
                                 {
                                     control = 4; //flip
                                 }
                                 currentFeeder->setEventSequence(getEventSequence());
-                                string text = currentFeeder->createTextString(getControlMethod(), control, controlValue, getCurrentVarLoadPointValue()) ;
+                                string text = currentFeeder->createTextString(getControlMethod(), control, controlValue, confirmValue) ;
                                 request = currentFeeder->createDecreaseVarVerificationRequest(currentCapBank, pointChanges, ccEvents, text);
                             }
                         }
@@ -4123,27 +4154,25 @@ BOOL CtiCCSubstationBus::sendNextCapBankVerificationControl(const CtiTime& curre
                             }
                             else
                             {
-                                DOUBLE controlValue = (!stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
                                 int control =  CtiCCCapBank::Close;
                                 if (findStringIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 70") && _USE_FLIP_FLAG == TRUE )
                                 {
                                     control = 4; //flip
                                 }
                                 currentFeeder->setEventSequence(getEventSequence());
-                                string text = currentFeeder->createTextString(getControlMethod(), control, controlValue, getCurrentVarLoadPointValue()) ;
+                                string text = currentFeeder->createTextString(getControlMethod(), control, controlValue, confirmValue) ;
                                 request = currentFeeder->createDecreaseVarVerificationRequest(currentCapBank, pointChanges, ccEvents, text);
                             }
                         }
                         else if (getCurrentVerificationCapBankOrigState() == CtiCCCapBank::Close)
                         {
-                            DOUBLE controlValue = (!stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
                             int control =  CtiCCCapBank::Open;
                             if (findStringIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 70") && _USE_FLIP_FLAG == TRUE )
                             {
                                 control = 4; //flip
                             }
                             currentFeeder->setEventSequence(getEventSequence());
-                            string text = currentFeeder->createTextString(getControlMethod(), control, controlValue, getCurrentVarLoadPointValue()) ;
+                            string text = currentFeeder->createTextString(getControlMethod(), control, controlValue, confirmValue) ;
                             request = currentFeeder->createIncreaseVarVerificationRequest(currentCapBank, pointChanges, ccEvents, text);
                         }
 
@@ -4230,31 +4259,48 @@ CtiCCSubstationBus& CtiCCSubstationBus::startVerificationOnCapBank(const CtiTime
                     currentCapBank->setPerformingVerificationFlag(TRUE);
                     currentFeeder->setPerformingVerificationFlag(TRUE);
 
+                    DOUBLE controlValue;
+                    DOUBLE confirmValue;
+                    if( !stringCompareIgnoreCase(_controlmethod,CtiCCSubstationBus::IndividualFeederControlMethod) )
+                    { 
+                        controlValue = (!stringCompareIgnoreCase(_controlunits, CtiCCSubstationBus::VoltControlUnits) ? currentFeeder->getCurrentVoltLoadPointValue() : currentFeeder->getCurrentVarLoadPointValue());
+                        confirmValue = currentFeeder->getCurrentVarLoadPointValue();
+                    }
+                    else if ( !stringCompareIgnoreCase(_controlmethod, CtiCCSubstationBus::BusOptimizedFeederControlMethod)) 
+                    {
+                        controlValue = (!stringCompareIgnoreCase(_controlunits, CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : currentFeeder->getCurrentVarLoadPointValue());
+                        confirmValue = currentFeeder->getCurrentVarLoadPointValue();
+                    }
+                    else 
+                    {
+                        controlValue = (!stringCompareIgnoreCase(_controlunits, CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
+                        confirmValue = getCurrentVarLoadPointValue();
+                    }
+
+
 
                     if (getCurrentVerificationCapBankOrigState() == CtiCCCapBank::Open)
                     {
 
                         //add capbank reclose delay check here...
-                        DOUBLE controlValue = (!stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
                         int control =  CtiCCCapBank::Close;
                         if (findStringIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 70") && _USE_FLIP_FLAG == TRUE )
                         {
                             control = 4; //flip
                         }
                         currentFeeder->setEventSequence(getEventSequence());
-                        string text = currentFeeder->createTextString(getControlMethod(), control, controlValue, getCurrentVarLoadPointValue()) ;
+                        string text = currentFeeder->createTextString(getControlMethod(), control, controlValue, confirmValue) ;
                         request = currentFeeder->createDecreaseVarVerificationRequest(currentCapBank, pointChanges, ccEvents, text);
                     }
                     else if (getCurrentVerificationCapBankOrigState() == CtiCCCapBank::Close)
                     {
-                        DOUBLE controlValue = (!stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
                         int control =  CtiCCCapBank::Open;
                         if (findStringIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 70") && _USE_FLIP_FLAG == TRUE )
                         {
                             control = 4; //flip
                         }
                         currentFeeder->setEventSequence(getEventSequence());
-                        string text = currentFeeder->createTextString(getControlMethod(), control, controlValue, getCurrentVarLoadPointValue()) ;
+                        string text = currentFeeder->createTextString(getControlMethod(), control, controlValue, confirmValue) ;
                         request = currentFeeder->createIncreaseVarVerificationRequest(currentCapBank, pointChanges, ccEvents, text);
                     }
 
@@ -4339,12 +4385,22 @@ BOOL CtiCCSubstationBus::isVerificationAlreadyControlled()
             {
                 DOUBLE oldCalcValue = getVarValueBeforeControl();
                 DOUBLE newCalcValue = getCurrentVarLoadPointValue();
+                
+
                 for(LONG i=0;i<_ccfeeders.size();i++)
                 {
                     CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders.at(i);
 
                     if( currentFeeder->getPAOId() == getCurrentVerificationFeederId() )
                     {
+                        if( !stringCompareIgnoreCase(_controlmethod, CtiCCSubstationBus::IndividualFeederControlMethod) ||
+                            !stringCompareIgnoreCase(_controlmethod, CtiCCSubstationBus::BusOptimizedFeederControlMethod))
+                        {
+                            oldCalcValue = currentFeeder->getVarValueBeforeControl();    
+                            newCalcValue = currentFeeder->getCurrentVarLoadPointValue(); 
+                        }
+
+
                         CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
                         for(LONG j=0;j<ccCapBanks.size();j++)
                         {
@@ -6994,8 +7050,8 @@ const string CtiCCSubstationBus::ManualOnlyControlMethod         = "ManualOnly";
 
 const string CtiCCSubstationBus::KVARControlUnits         = "KVAR";
 const string CtiCCSubstationBus::VoltControlUnits         = "Volts";
-const string CtiCCSubstationBus::MultiVoltControlUnits    = "Multi Volts";
-const string CtiCCSubstationBus::MultiVoltVarControlUnits = "Multi Volts/VAR";
+const string CtiCCSubstationBus::MultiVoltControlUnits    = "Multi Volt";
+const string CtiCCSubstationBus::MultiVoltVarControlUnits = "Multi Volt/VAR";
 const string CtiCCSubstationBus::PF_BY_KVARControlUnits   = "P-Factor KW/KVar";
 const string CtiCCSubstationBus::PF_BY_KQControlUnits     = "P-Factor KW/KQ";
                                                 

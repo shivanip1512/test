@@ -1023,6 +1023,9 @@ void CtiCCCommandExecutor::OpenCapBank()
         CtiRequestMsg* reqMsg = new CtiRequestMsg(controlID,"control open");
         reqMsg->setSOE(5);
         CtiCapController::getInstance()->manualCapBankControl( reqMsg, multi );
+
+        if (eventMulti->getCount() >0)
+            CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
     }
     else
     {
@@ -1237,7 +1240,9 @@ void CtiCCCommandExecutor::CloseCapBank()
         reqMsg->setSOE(5);
         CtiCapController::getInstance()->manualCapBankControl( reqMsg, multi );
 
-        //CtiCapController::getInstance()->eventThing( eventMulti );
+        if (eventMulti->getCount() >0)
+            CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
+
     }
     else
     {
