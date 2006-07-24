@@ -12,11 +12,12 @@ public class PointUnit extends com.cannontech.database.db.DBPersistent
 	private Integer decimalPlaces = new Integer(DEFAULT_DECIMAL_PLACES);
 	private Double highReasonabilityLimit = new Double(com.cannontech.common.util.CtiUtilities.INVALID_MAX_DOUBLE);
 	private Double lowReasonabilityLimit = new Double(com.cannontech.common.util.CtiUtilities.INVALID_MIN_DOUBLE);
+	private Integer decimalDigits = new Integer ( 0 );
 	
 	public static final String CONSTRAINT_COLUMNS[] = { "POINTID" };
 	public static final String SETTER_COLUMNS[] = 
 	{ 
-		"UomID", "DecimalPlaces", "HighReasonabilityLimit", "LowReasonabilityLimit"
+		"UomID", "DecimalPlaces", "HighReasonabilityLimit", "LowReasonabilityLimit", "DecimalDigits"
 	};
 
 	public final static String TABLE_NAME = "PointUnit";
@@ -32,7 +33,7 @@ public PointUnit()
 /**
  * PointUnit constructor comment.
  */
-public PointUnit(Integer pointID, Integer umID, Integer newDecimalPlaces, Double highReasonValue, Double lowReasonValue ) 
+public PointUnit(Integer pointID, Integer umID, Integer newDecimalPlaces, Double highReasonValue, Double lowReasonValue, Integer decimalDigits) 
 {
 	super();
 	
@@ -41,6 +42,7 @@ public PointUnit(Integer pointID, Integer umID, Integer newDecimalPlaces, Double
 	setDecimalPlaces( newDecimalPlaces );
 	setHighReasonabilityLimit( highReasonValue );
 	setLowReasonabilityLimit( lowReasonValue );
+	setDecimalDigits(decimalDigits);
 }
 /**
  * add method comment.
@@ -48,7 +50,7 @@ public PointUnit(Integer pointID, Integer umID, Integer newDecimalPlaces, Double
 public void add() throws java.sql.SQLException 
 {
 	Object addValues[] = { getPointID(), getUomID(), getDecimalPlaces(),
-			getHighReasonabilityLimit(), getLowReasonabilityLimit() };
+			getHighReasonabilityLimit(), getLowReasonabilityLimit(), getDecimalDigits() };
 
 	add( TABLE_NAME, addValues );
 }
@@ -113,6 +115,7 @@ public void retrieve() throws java.sql.SQLException
 		setDecimalPlaces( (Integer) results[1] );
 		setHighReasonabilityLimit( (Double) results[2] );
 		setLowReasonabilityLimit( (Double) results[3] );
+		setDecimalDigits ( (Integer) results[4] );
 	}
 	else
 		throw new Error(getClass() + " - Incorrect Number of results retrieved");
@@ -163,11 +166,17 @@ public void setUomID(java.lang.Integer newUomID) {
 public void update() throws java.sql.SQLException 
 {
 	Object setValues[] = { getUomID(), getDecimalPlaces(),
-			getHighReasonabilityLimit(), getLowReasonabilityLimit() };
+			getHighReasonabilityLimit(), getLowReasonabilityLimit(), getDecimalDigits() };
 	
 	Object constraintValues[] = { getPointID() };
 
 	update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
+}
+public Integer getDecimalDigits() {
+	return decimalDigits;
+}
+public void setDecimalDigits(Integer decimalDigits) {
+	this.decimalDigits = decimalDigits;
 }
 
 /**

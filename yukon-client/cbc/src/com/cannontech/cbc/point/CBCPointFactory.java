@@ -142,7 +142,7 @@ public class CBCPointFactory{
                 
                 PointUnit punit = new PointUnit(point.getPoint().getPointID(),new Integer (PointUnits.UOMID_COUNTS), 
                                                 new Integer(0),
-                                                new Double(0.0), new Double(0.0));
+                                                new Double(0.0), new Double(0.0), new Integer (0));
                                                                                  
                                                                                  
                                                                                 

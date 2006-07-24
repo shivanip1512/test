@@ -5,9 +5,13 @@ import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.pao.TypeBase;
+import com.cannontech.database.db.pao.YukonPAObject;
 import com.cannontech.database.db.point.PointStatus;
 import com.cannontech.database.db.point.PointUnit;
 import com.cannontech.database.db.point.calculation.CalcBase;
+import com.cannontech.database.db.point.calculation.CalcComponent;
+import com.cannontech.database.db.point.calculation.CalcComponentTypes;
+import com.cannontech.database.db.point.calculation.CalcPointBaseline;
 import com.cannontech.database.db.state.StateGroupUtils;
 
 /**
@@ -114,34 +118,37 @@ public static final PointBase retrievePoint(Integer id, String databaseAlias) th
 public static PointBase createAnalogPoint( String pointName, Integer paoID, 
 		Integer pointID, int pointOffset, int pointUnit )
 {
-    AnalogPoint point;
+	com.cannontech.database.data.point.PointBase point =
+		com.cannontech.database.data.point.PointFactory.createPoint(com.cannontech.database.data.point.PointTypes.ANALOG_POINT);
 	
-	point = (AnalogPoint) PointFactory.createNewPoint(		
+	point = PointFactory.createNewPoint(		
 			pointID,
-			PointTypes.ANALOG_POINT,
+			com.cannontech.database.data.point.PointTypes.ANALOG_POINT,
 			pointName,
 			paoID,
 			new Integer(pointOffset) );
 	
-	point.getPoint().setStateGroupID( StateGroupUtils.STATEGROUP_ANALOG);
+	point.getPoint().setStateGroupID( 
+		new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_ANALOG) );
 	
 	//defaults - pointUnit
-	point.setPointUnit(
-		new PointUnit(
+	((com.cannontech.database.data.point.ScalarPoint)point).setPointUnit(
+		new com.cannontech.database.db.point.PointUnit(
 			pointID,
-			pointUnit,
-			PointUnit.DEFAULT_DECIMAL_PLACES,
-			0.0,
-			0.0));
+			new Integer(pointUnit),
+			new Integer(com.cannontech.database.db.point.PointUnit.DEFAULT_DECIMAL_PLACES),
+			new Double(0.0),
+			new Double(0.0),
+			new Integer (0)));
 	
 	//defaults - pointAnalog
-	point.setPointAnalog(
+	((com.cannontech.database.data.point.AnalogPoint)point).setPointAnalog(
 		new com.cannontech.database.db.point.PointAnalog(
 			pointID,
-			-1.0,
-			PointTypes.getType(PointTypes.TRANSDUCER_NONE),
-			1.0,
-			0.0));
+			new Double(-1.0),
+			com.cannontech.database.data.point.PointTypes.getType(com.cannontech.database.data.point.PointTypes.TRANSDUCER_NONE),
+			new Double(1.0),
+			new Double(0.0)));
 
 	
 	return point;	
@@ -170,7 +177,8 @@ public static PointBase createAnalogPoint( String pointName, Integer paoID,
             new Integer(pointUnit),
             new Integer(com.cannontech.database.db.point.PointUnit.DEFAULT_DECIMAL_PLACES),
             new Double(0.0),
-            new Double(0.0)));
+            new Double(0.0),
+            new Integer (0)));
     
     //defaults - pointAnalog
     ((com.cannontech.database.data.point.AnalogPoint)point).setPointAnalog(
@@ -217,7 +225,8 @@ public static PointBase createDmdAccumPoint( String pointName, Integer paoID,
          new Integer(pointUnit),
          new Integer(com.cannontech.database.db.point.PointUnit.DEFAULT_DECIMAL_PLACES),
          new Double(0.0),
-         new Double(0.0)));
+         new Double(0.0),
+         new Integer (0)));
    
    return point;  
 }
@@ -287,7 +296,8 @@ public static PointBase createPulseAccumPoint( String pointName, Integer paoID,
          new Integer(pointUnit),
          new Integer(com.cannontech.database.db.point.PointUnit.DEFAULT_DECIMAL_PLACES),
          new Double(0.0),
-         new Double(0.0)));
+         new Double(0.0),
+         new Integer (0)));
    
    return point;  
 }
@@ -302,8 +312,7 @@ public static synchronized void createBankOpCntPoint(
 {	
 	//defaults pointControl
 	//an analog point is created
-
-    PaoDao paoDao = DaoFactory.getPaoDao();
+  PaoDao paoDao = DaoFactory.getPaoDao();
 	newVal.addDBPersistent( 
 		createBankOpCntPoint(paoDao.getNextPaoId() ) );
 }
@@ -339,7 +348,7 @@ public static synchronized PointBase createBankOpCntPoint( Integer capBankID )
 public static synchronized void createBankStatusPt(
 		SmartMultiDBPersistent newVal )
 {
-    PaoDao paoDao = DaoFactory.getPaoDao();
+	PaoDao paoDao = DaoFactory.getPaoDao();
 	newVal.addDBPersistent(
 			createBankStatusPt(paoDao.getNextPaoId()));		
 }
@@ -413,7 +422,8 @@ public static PointBase createCalculatedPoint(Integer paoId, String name){
                                       new Integer (PointUnits.UOMID_UNDEF),
                                       new Integer(PointUnit.DEFAULT_DECIMAL_PLACES),
                                       new Double(0.0),
-                                      new Double(0.0));
+                                      new Double(0.0),
+                                      new Integer (0));
     
     ((ScalarPoint)point).setPointUnit(punit);
                                                                            
