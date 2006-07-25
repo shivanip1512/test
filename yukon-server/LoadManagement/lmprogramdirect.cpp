@@ -665,7 +665,9 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                             CtiLMGroupPtr currentLMGroup = *i;
                             if( currentLMGroup->getGroupControlState() != CtiLMGroupBase::ActiveState &&
                                 //Added activepending state in case constraints keep group from activating right away
-                                currentLMGroup->getGroupControlState() != CtiLMGroupBase::ActivePendingState)
+                                currentLMGroup->getGroupControlState() != CtiLMGroupBase::ActivePendingState &&
+                                //This means at least 1 item was enabled, we can be fully active if all others are disabled
+                                !currentLMGroup->getControlInhibit() && !currentLMGroup->getDisableFlag() )
                             {
                                 setProgramState(CtiLMProgramBase::ActiveState);
                                 break;
