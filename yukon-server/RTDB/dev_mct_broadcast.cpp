@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2006/07/06 20:11:48 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2006/07/25 22:13:30 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -439,8 +439,8 @@ CtiDeviceMCTBroadcast::CommandSet CtiDeviceMCTBroadcast::initCommandStore()
 
     cs.insert(CommandStore(Emetcon::PutStatus_Reset,            Emetcon::IO_Function_Write, MCTBCAST_ResetPF, MCTBCAST_ResetPFLen));
 
-    cs.insert(CommandStore(Emetcon::PutStatus_FreezeOne,        Emetcon::IO_Function_Write, CtiDeviceMCT::MCT_Command_FreezeOne, 0));
-    cs.insert(CommandStore(Emetcon::PutStatus_FreezeTwo,        Emetcon::IO_Function_Write, CtiDeviceMCT::MCT_Command_FreezeTwo, 0));
+    cs.insert(CommandStore(Emetcon::PutStatus_FreezeOne,        Emetcon::IO_Function_Write, CtiDeviceMCT::Command_FreezeOne, 0));
+    cs.insert(CommandStore(Emetcon::PutStatus_FreezeTwo,        Emetcon::IO_Function_Write, CtiDeviceMCT::Command_FreezeTwo, 0));
 
     cs.insert(CommandStore(Emetcon::PutValue_IEDReset,          Emetcon::IO_Function_Write, 0, 0));
 

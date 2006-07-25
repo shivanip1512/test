@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct.h-arc  $
-* REVISION     :  $Revision: 1.44 $
-* DATE         :  $Date: 2006/07/06 20:11:48 $
+* REVISION     :  $Revision: 1.45 $
+* DATE         :  $Date: 2006/07/25 22:12:50 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -138,51 +138,52 @@ protected:
         MCTDebug_DynamicInfo = 1 << 3,
     };
 
-    enum
+    enum Memory
     {
-        MCT_ModelPos                  = 0x00,
-        MCT_ModelLen                  =    8,
-        MCT_SspecLen                  =    5,
+        Memory_ModelPos                  = 0x00,
+        Memory_ModelLen                  =    8,
+        Memory_SspecPos                  = 0x00,
+        Memory_SspecLen                  =    5,
 
-        MCT_TimePos                   = 0x46,
-        MCT_TimeLen                   =    3,
-        MCT_TSyncPos                  = 0x49,
-        MCT_TSyncLen                  =    3, //  5,  <-- !!  don't send the extra 2 bytes - this fools Porter into letting it through unscathed
+        Memory_TimePos                   = 0x46,
+        Memory_TimeLen                   =    3,
+        Memory_TSyncPos                  = 0x49,
+        Memory_TSyncLen                  =    3, //  5,  <-- !!  don't send the extra 2 bytes - this fools Porter into letting it through unscathed
 
-        MCT_Command_Open             = 0x41,
-        MCT_Command_Close            = 0x42,
+        Command_Open             = 0x41,
+        Command_Close            = 0x42,
 
-        MCT_Command_Latch            = 0x48,
+        Command_Latch            = 0x48,
 
-        MCT_Command_GroupAddrInhibit = 0x53,
-        MCT_Command_GroupAddrEnable  = 0x54,
-        MCT_Command_ARML             = 0x60,
-        MCT_Command_ARMD             = 0x61,
-        MCT_Command_ARMC             = 0x62,
+        Command_GroupAddrInhibit = 0x53,
+        Command_GroupAddrEnable  = 0x54,
+        Command_ARML             = 0x60,
+        Command_ARMD             = 0x61,
+        Command_ARMC             = 0x62,
 
-        MCT_Command_LPInt            = 0x70,
+        Command_LPInt            = 0x70,
 
-        MCT_Restore                   = 0x00,
-        MCT_Shed_Base_07m             = 0x00,
-        MCT_Shed_Base_15m             = 0x10,
-        MCT_Shed_Base_30m             = 0x20,
-        MCT_Shed_Base_60m             = 0x30,
+        Command_Restore          = 0x00,
+        Shed_Base_07m            = 0x00,
+        Shed_Base_15m            = 0x10,
+        Shed_Base_30m            = 0x20,
+        Shed_Base_60m            = 0x30,
 
-        MCT_Rollover                  = 100000,   //  5 digits
-        MCT_DemandIntervalDefault     = 300,      //  5 minute default demand, if not specified in the database...
-        MCT_MaxPulseCount             = 10000000,
-
-        MCT_PeakOffset                = 10,  //  peak demand points are offset by this amount (point offset 11, 12, 13...)
-
-        MCT_LPWindow                  = 60,
     };
 
-    enum
+    enum Miscellaneous
     {
-        MCT_PointOffset_Status_Powerfail      =  10,
-        MCT_PointOffset_Accumulator_Powerfail =  20,
+        DemandInterval_Default      = 300,      //  5 minute default demand, if not specified in the database...
 
-        MCT_PointOffset_LoadProfileOffset     = 100
+        LoadProfileCollectionWindow = 60,
+    };
+
+    enum PointOffsets
+    {
+        PointOffset_Status_Powerfail      =  10,
+        PointOffset_Accumulator_Powerfail =  20,
+
+        PointOffset_LoadProfileOffset     = 100,
     };
 
 public:
@@ -190,12 +191,12 @@ public:
     enum
     {
         //  for dev_mctbroadcast...  maybe he should be a friend someday
-        MCT_Command_FreezeOne = 0x51,
-        MCT_Command_FreezeTwo = 0x52,
+        Command_FreezeOne = 0x51,
+        Command_FreezeTwo = 0x52,
 
         //  for dev_dlcbase...  maybe he should be a friend someday
-        MCT_TestAddress1  = 0x155555,
-        MCT_TestAddress2  = 0x2aaaaa,
+        TestAddress1  = 0x155555,
+        TestAddress2  = 0x2aaaaa,
     };
 
     typedef CtiDeviceCarrier Inherited;
@@ -273,7 +274,6 @@ public:
     void setExpectedFreeze( int freeze );  //  overrides a do-nothing virtual in dev_base
     int  getNextFreeze( void ) const;
 
-    static  DOUBLE translateStatusValue( INT PointOffset, INT PointType, INT DeviceType, PUSHORT DataValueArray );
     static  INT extractStatusData( INMESS *InMessage, INT type, USHORT *StatusData );
     static  INT verifyAlphaBuffer( DSTRUCT *DSt );
 

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct2XX.cpp-arc  $
-* REVISION     :  $Revision: 1.39 $
-* DATE         :  $Date: 2006/07/06 20:11:48 $
+* REVISION     :  $Revision: 1.40 $
+* DATE         :  $Date: 2006/07/25 22:16:19 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -86,7 +86,7 @@ CtiDeviceMCT24X::CommandSet CtiDeviceMCT24X::initCommandStore()
     cs.insert(CommandStore(Emetcon::PutConfig_DemandInterval,         Emetcon::IO_Write | Q_ARMC, MCT24X_DemandIntervalPos,       MCT24X_DemandIntervalLen));
 
     cs.insert(CommandStore(Emetcon::GetConfig_LoadProfileInterval,    Emetcon::IO_Read,           MCT24X_LPIntervalPos,           MCT24X_LPIntervalLen));
-    cs.insert(CommandStore(Emetcon::PutConfig_LoadProfileInterval,    Emetcon::IO_Write,          MCT_Command_LPInt,              0));
+    cs.insert(CommandStore(Emetcon::PutConfig_LoadProfileInterval,    Emetcon::IO_Write,          Command_LPInt,                  0));
 
     return cs;
 }
@@ -128,7 +128,7 @@ ULONG CtiDeviceMCT24X::calcNextLPScanTime( void )
     unsigned long midnightOffset;
     int lpBlockSize, lpDemandRate, lpMaxBlocks;
 
-    CtiPointSPtr pPoint = getDevicePointOffsetTypeEqual(1 + MCT_PointOffset_LoadProfileOffset, DemandAccumulatorPointType);
+    CtiPointSPtr pPoint = getDevicePointOffsetTypeEqual(1 + PointOffset_LoadProfileOffset, DemandAccumulatorPointType);
 
     //  make sure to completely recalculate this every time
     _nextLPScanTime = YUKONEOT;
@@ -178,7 +178,7 @@ ULONG CtiDeviceMCT24X::calcNextLPScanTime( void )
         nextTime += LPBlockEvacuationTime;
 
         //  if we're overdue
-        while( (nextTime <= (Now - MCT_LPWindow)) ||
+        while( (nextTime <= (Now - LoadProfileCollectionWindow)) ||
                (nextTime <= _lastLPRequest) )
         {
             nextTime += getLPRetryRate(lpDemandRate);
@@ -458,7 +458,7 @@ INT CtiDeviceMCT24X::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, 
                 max_blocks = 8;
             }
 
-            point = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual( 1 + MCT_PointOffset_LoadProfileOffset, DemandAccumulatorPointType ));
+            point = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual( 1 + PointOffset_LoadProfileOffset, DemandAccumulatorPointType ));
 
             if( point )
             {
