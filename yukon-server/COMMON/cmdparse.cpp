@@ -31,10 +31,12 @@ static const CtiString str_anynum  ("(" + str_num + "|" + str_hexnum + ")");
 static const CtiString str_date("([0-9]+[/-][0-9]+[/-][0-9]+)");
 static const CtiString str_time("([0-9]+:[0-9]+(:[0-9]+)?)");
 
-static boost::regex   re_num     (str_num);
-static boost::regex   re_floatnum(str_floatnum);
-static boost::regex   re_hexnum  (str_hexnum);
-static boost::regex   re_anynum  (str_anynum);
+static const boost::regex   re_num     (str_num);
+static const boost::regex   re_floatnum(str_floatnum);
+static const boost::regex   re_hexnum  (str_hexnum);
+static const boost::regex   re_anynum  (str_anynum);
+static const boost::regex   re_date    (str_date);
+static const boost::regex   re_time    (str_time);
 
 CtiCommandParser::CtiCommandParser(const string str) :
 _cmdString(str)
@@ -365,7 +367,7 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
     UINT        flag = 0;
     UINT        offset = 0;
 
-    CtiString   temp2;
+    CtiString   temp;
     CtiString   token;
 
     boost::regex   re_kxx  ("(kwh|kvah|kvarh)[abcdt]?");  //  Match on kwh, kwha,b,c,d,t
@@ -379,12 +381,17 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
 
     boost::regex   re_demand(" dema|( kw| kvar| kva)( |$)");  //  match "dema"nd, but also match "kw", "kvar", or "kva"
 
-    //  getvalue lp channel 1 12/14/04 12:00
-    //  getvalue lp channel 1 8-13-2005 14:45
-    boost::regex  re_lp("lp channel " + str_num + " " + str_date + " " + str_time);
+    //  getvalue lp channel 1 12/14/04 12:00         //  reads a block of 6 readings, starting from the specified time and date
+    //
+    //  getvalue lp channel 2 12/13/2005             //  grabs the whole day
+    //  getvalue lp channel 2 12/13/2005 12/15/2005  //  this wil do range of entire days
+    //  getvalue lp channel 2 12/13/2005 12:00 12/15/2005  //  this grabs the second half of 13th, and all of the 14th and 15th
+    boost::regex  re_lp("lp channel " + str_num + " " + str_date + "( " + str_time + ")?( " + str_date + "( " + str_time + ")?)?");
+
     //  getvalue lp peak daily channel 2 9/30/04 30
     //  getvalue lp peak hour channel 3 10-15-2003 15
     boost::regex  re_lp_peak("lp peak (day|hour|interval) channel " + str_num + " " + str_date + " " + str_num);
+
     boost::regex  re_outage("outage " + str_num);
 
     boost::regex  re_offset("off(set)? *" + str_num);
@@ -414,29 +421,29 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
 
             if(!token.empty())
             {
-                if(!(temp2 = token.match(re_hrate)).empty())
+                if(!(temp = token.match(re_hrate)).empty())
                 {
-                    if(temp2 == "ha")
+                    if(temp == "ha")
                     {
                         flag &= ~CMD_FLAG_GV_RATEMASK;
                         flag |= CMD_FLAG_GV_RATEA;
                     }
-                    else if(temp2 == "hb")
+                    if(temp == "hb")
                     {
                         flag &= ~CMD_FLAG_GV_RATEMASK;
                         flag |= CMD_FLAG_GV_RATEB;
                     }
-                    else if(temp2 == "hc")
+                    if(temp == "hc")
                     {
                         flag &= ~CMD_FLAG_GV_RATEMASK;
                         flag |= CMD_FLAG_GV_RATEC;
                     }
-                    else if(temp2 == "hd")
+                    if(temp == "hd")
                     {
                         flag &= ~CMD_FLAG_GV_RATEMASK;
                         flag |= CMD_FLAG_GV_RATED;
                     }
-                    else if(temp2 == "ht")
+                    if(temp == "ht")
                     {
                         flag &= ~CMD_FLAG_GV_RATEMASK;
                         flag |= CMD_FLAG_GV_RATET;
@@ -453,23 +460,45 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
         {
             if(!(token = CmdStr.match(re_lp)).empty())
             {
-                //  getvalue lp channel 1 12/14/04 12:00
-                //  getvalue lp channel 1 8-13-2005 14:45
                 CtiTokenizer cmdtok(token);
+
+                _cmd["lp_command"] = CtiParseValue("lp");
 
                 cmdtok();  //  move past lp
                 cmdtok();  //  move past channel
 
-                _cmd["lp_command"] = CtiParseValue("lp");
                 _cmd["lp_channel"] = atoi(CtiString(cmdtok()).c_str());
-                _cmd["lp_date"]    = cmdtok();
-                _cmd["lp_time"]    = cmdtok();
+                _cmd["lp_date_start"] = cmdtok();
+
+                temp = cmdtok();
+
+                //  the optional "start time" parameter
+                if( !(temp.match(re_time)).empty() )
+                {
+                    _cmd["lp_time_start"] = temp;
+                    temp = cmdtok();
+                }
+
+                //  the optional "end date" parameter
+                if( !(temp.match(re_date)).empty() )
+                {
+                    _cmd["lp_date_end"] = temp;
+                    temp = cmdtok();
+
+                    //  the optional "end time" parameter
+                    if( !(temp.match(re_time)).empty() )
+                    {
+                        _cmd["lp_time_end"] = temp;
+                    }
+                }
             }
             else if(!(token = CmdStr.match(re_lp_peak)).empty())
             {
                 //  getvalue lp peak daily channel 2 9/30/04 30
                 //  getvalue lp peak hourly channel 3 10-15-2003 15
                 CtiTokenizer cmdtok(token);
+
+                _cmd["lp_command"]    = CtiParseValue("peak");
 
                 cmdtok();  //  move past lp
                 cmdtok();  //  move past peak
@@ -478,10 +507,17 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
 
                 cmdtok();  //  move past channel
 
-                _cmd["lp_command"] = CtiParseValue("peak");
-                _cmd["lp_channel"] = atoi(CtiString(cmdtok()).c_str());
-                _cmd["lp_date"]    = cmdtok();
-                _cmd["lp_range"]   = atoi(CtiString(cmdtok()).c_str());
+                _cmd["lp_channel"]    = atoi(CtiString(cmdtok()).c_str());
+                _cmd["lp_date_start"] = cmdtok();
+                _cmd["lp_range"]      = atoi(CtiString(cmdtok()).c_str());
+            }
+            else if( CmdStr.contains(" status") )
+            {
+                _cmd["lp_command"]    = CtiParseValue("status");
+            }
+            else if( CmdStr.contains(" cancel") )
+            {
+                _cmd["lp_command"]    = CtiParseValue("cancel");
             }
         }
         else if(!(token = CmdStr.match(re_demand)).empty())      // Sourcing from CmdStr, which is the entire command string.
@@ -505,9 +541,9 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
             flag |= CMD_FLAG_OFFSET;
 
             // What offset is needed now...
-            if(!(temp2 = token.match(re_num)).empty())
+            if(!(temp = token.match(re_num)).empty())
             {
-                offset = atoi(temp2.c_str());
+                offset = atoi(temp.c_str());
             }
             else
             {
@@ -539,17 +575,15 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
             // Default Get Value request has been specified....
         }
 
-
-
-        if(!(temp2 = CmdStr.match(re_rate)).empty())
+        if(!(temp = CmdStr.match(re_rate)).empty())
         {
             flag &= ~CMD_FLAG_GV_RATEMASK;   // This one overrides...
 
-            if(temp2[temp2.length() - 1] == 'a')       flag |= CMD_FLAG_GV_RATEA;
-            else if(temp2[temp2.length() - 1] == 'b')  flag |= CMD_FLAG_GV_RATEB;
-            else if(temp2[temp2.length() - 1] == 'c')  flag |= CMD_FLAG_GV_RATEC;
-            else if(temp2[temp2.length() - 1] == 'd')  flag |= CMD_FLAG_GV_RATED;
-            else if(temp2[temp2.length() - 1] == 't')  flag |= CMD_FLAG_GV_RATET;
+            if(temp[temp.length() - 1] == 'a')  flag |= CMD_FLAG_GV_RATEA;
+            if(temp[temp.length() - 1] == 'b')  flag |= CMD_FLAG_GV_RATEB;
+            if(temp[temp.length() - 1] == 'c')  flag |= CMD_FLAG_GV_RATEC;
+            if(temp[temp.length() - 1] == 'd')  flag |= CMD_FLAG_GV_RATED;
+            if(temp[temp.length() - 1] == 't')  flag |= CMD_FLAG_GV_RATET;
         }
 
         if(CmdStr.contains(" ied"))      // Sourcing from CmdStr, which is the entire command string.
