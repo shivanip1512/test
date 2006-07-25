@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.51 $
-* DATE         :  $Date: 2006/07/06 20:11:48 $
+* REVISION     :  $Revision: 1.52 $
+* DATE         :  $Date: 2006/07/25 22:11:44 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -33,6 +33,30 @@ using Cti::Protocol::Emetcon;
 
 
 const CtiDeviceMCT310::CommandSet CtiDeviceMCT310::_commandStore = CtiDeviceMCT310::initCommandStore();
+
+
+#define STATUS1_BIT_MCT3XX    0x80
+#define STATUS2_BIT_MCT3XX    0x40
+#define STATUS3_BIT_MCT3XX    0x20
+#define STATUS4_BIT_MCT3XX    0x10
+#define STATUS5_BIT_MCT3XX    0x01
+#define STATUS6_BIT_MCT3XX    0x02
+#define STATUS7_BIT_MCT3XX    0x08
+#define STATUS8_BIT_MCT3XX    0x04
+#define STATUS1_BIT           0x40
+#define STATUS2_BIT           0x80
+#define STATUS3_BIT           0x02
+#define STATUS4_BIT           0x04
+#define OVERFLOW_BIT          0x01
+#define L_PWRFAIL_BIT         0x02
+#define S_PWRFAIL_BIT         0x04
+#define OVERFLOW310_BIT       0x04
+#define L_PWRFAIL310_BIT      0x08
+#define S_PWRFAIL310_BIT      0x10
+#define TAMPER_BIT            0x08
+
+
+
 
 
 CtiDeviceMCT310::CtiDeviceMCT310( )
@@ -80,11 +104,11 @@ CtiDeviceMCT310::CommandSet CtiDeviceMCT310::initCommandStore( )
     cs.insert(CommandStore(Emetcon::PutConfig_GroupAddr_Lead,       Emetcon::IO_Write,          MCT3XX_GroupAddrLeadPos,        MCT3XX_GroupAddrLeadLen));
 
     cs.insert(CommandStore(Emetcon::PutConfig_DemandInterval,       Emetcon::IO_Write,          MCT3XX_DemandIntervalPos,       MCT3XX_DemandIntervalLen));
-    cs.insert(CommandStore(Emetcon::PutConfig_LoadProfileInterval,  Emetcon::IO_Write,          MCT_Command_LPInt,              0));
+    cs.insert(CommandStore(Emetcon::PutConfig_LoadProfileInterval,  Emetcon::IO_Write,          Command_LPInt,                  0));
 
     cs.insert(CommandStore(Emetcon::PutConfig_Multiplier,           Emetcon::IO_Write,          MCT3XX_Mult1Pos,                MCT3XX_MultLen));
 
-    cs.insert(CommandStore(Emetcon::PutConfig_TSync,                Emetcon::IO_Write,          MCT_TSyncPos,                   MCT_TSyncLen));
+    cs.insert(CommandStore(Emetcon::PutConfig_TSync,                Emetcon::IO_Write,          Memory_TSyncPos,                Memory_TSyncLen));
 
     cs.insert(CommandStore(Emetcon::PutConfig_OnOffPeak,            Emetcon::IO_Write,          MCT3XX_MinMaxPeakConfigPos,     1));
     cs.insert(CommandStore(Emetcon::PutConfig_MinMax,               Emetcon::IO_Write,          MCT3XX_MinMaxPeakConfigPos,     1));
@@ -105,8 +129,8 @@ CtiDeviceMCT310::CommandSet CtiDeviceMCT310::initCommandStore( )
     cs.insert(CommandStore(Emetcon::PutStatus_PeakOn,               Emetcon::IO_Write,          MCT3XX_FunctionPeakOn,          0));
     cs.insert(CommandStore(Emetcon::PutStatus_PeakOff,              Emetcon::IO_Write,          MCT3XX_FunctionPeakOff,         0));
 
-    cs.insert(CommandStore(Emetcon::PutStatus_FreezeOne,            Emetcon::IO_Write,          MCT_Command_FreezeOne,          0));
-    cs.insert(CommandStore(Emetcon::PutStatus_FreezeTwo,            Emetcon::IO_Write,          MCT_Command_FreezeTwo,          0));
+    cs.insert(CommandStore(Emetcon::PutStatus_FreezeOne,            Emetcon::IO_Write,          Command_FreezeOne,              0));
+    cs.insert(CommandStore(Emetcon::PutStatus_FreezeTwo,            Emetcon::IO_Write,          Command_FreezeTwo,              0));
 
     //  only valid for sspec 1007 (and above?)
     cs.insert(CommandStore(Emetcon::Scan_Integrity,                 Emetcon::IO_Read,           MCT310_DemandPos,               MCT310_DemandLen));
@@ -127,7 +151,7 @@ CtiDeviceMCT310::CommandSet CtiDeviceMCT310::initCommandStore( )
     cs.insert(CommandStore(Emetcon::GetStatus_Disconnect,           Emetcon::IO_Read,           MCT310_StatusPos,               MCT310_StatusLen));
     cs.insert(CommandStore(Emetcon::GetStatus_LoadProfile,          Emetcon::IO_Read,           MCT3XX_LPStatusPos,             MCT3XX_LPStatusLen));
 
-    cs.insert(CommandStore(Emetcon::Control_Latch,                  Emetcon::IO_Write | Q_ARML, MCT_Command_Latch,              0));
+    cs.insert(CommandStore(Emetcon::Control_Latch,                  Emetcon::IO_Write | Q_ARML, Command_Latch,                  0));
 
     return cs;
 }
@@ -170,7 +194,7 @@ ULONG CtiDeviceMCT310::calcNextLPScanTime( void )
     unsigned long midnightOffset;
     int lpBlockSize, lpDemandRate, lpMaxBlocks;
 
-    CtiPointSPtr pPoint = getDevicePointOffsetTypeEqual(1 + MCT_PointOffset_LoadProfileOffset, DemandAccumulatorPointType);
+    CtiPointSPtr pPoint = getDevicePointOffsetTypeEqual(1 + PointOffset_LoadProfileOffset, DemandAccumulatorPointType);
 
     //  make sure to completely recalculate this every time
     _nextLPScanTime = YUKONEOT;
@@ -220,7 +244,7 @@ ULONG CtiDeviceMCT310::calcNextLPScanTime( void )
         nextTime += LPBlockEvacuationTime;
 
         //  if we're overdue
-        while( (nextTime <= (Now - MCT_LPWindow)) ||
+        while( (nextTime <= (Now - LoadProfileCollectionWindow)) ||
                (nextTime <= _lastLPRequest) )
         {
             nextTime += getLPRetryRate(lpDemandRate);
@@ -370,6 +394,188 @@ bool CtiDeviceMCT310::calcLPRequestLocation( const CtiCommandParser &parse, OUTM
     }
 
     return retVal;
+}
+
+
+DOUBLE CtiDeviceMCT310::translateStatusValue (INT PointOffset, INT PointType, INT DeviceType, PUSHORT DataValueArray)
+{
+    /* key off the point offset */
+    switch(PointOffset)
+    {
+        case 1:
+        {
+            if(DataValueArray[0] & STATUS1_BIT_MCT3XX)
+            {
+               return((DOUBLE) CLOSED);
+            }
+            else
+            {
+               return((DOUBLE) OPENED);
+            }
+
+            break;
+        }
+
+        case 2:
+        {
+            if(DataValueArray[0] & STATUS2_BIT_MCT3XX)
+            {
+                return((DOUBLE) CLOSED);
+            }
+            else
+            {
+                return((DOUBLE) OPENED);
+            }
+
+            break;
+        }
+
+        case 3:
+        {
+            if(DataValueArray[0] & STATUS3_BIT_MCT3XX)
+            {
+                return((DOUBLE) CLOSED);
+            }
+            else
+            {
+                return((DOUBLE) OPENED);
+            }
+
+            break;
+        }
+
+        case 4:
+        {
+            if(DataValueArray[0] & STATUS4_BIT_MCT3XX)
+            {
+                return((DOUBLE) CLOSED);
+            }
+            else
+            {
+                return((DOUBLE) OPENED);
+            }
+
+            break;
+        }
+
+        case 5:
+        {
+            if(DataValueArray[0] & STATUS5_BIT_MCT3XX)
+            {
+                return((DOUBLE) CLOSED);
+            }
+            else
+            {
+                return((DOUBLE) OPENED);
+            }
+
+            break;
+        }
+
+        case 6:
+        {
+            if(DataValueArray[0] & STATUS6_BIT_MCT3XX)
+            {
+                return((DOUBLE) CLOSED);
+            }
+            else
+            {
+                return((DOUBLE) OPENED);
+            }
+
+            break;
+        }
+
+        case 7:
+        {
+            if(DataValueArray[0] & STATUS7_BIT_MCT3XX)
+            {
+                return((DOUBLE) CLOSED);
+            }
+            else
+            {
+                return((DOUBLE) OPENED);
+            }
+
+            break;
+        }
+
+        case 8:
+        {
+            if(DataValueArray[0] & STATUS8_BIT_MCT3XX)
+            {
+                return((DOUBLE) CLOSED);
+            }
+            else
+            {
+                return((DOUBLE) OPENED);
+            }
+
+            break;
+        }
+
+        case 11:
+        {
+            /* Short Power Fail Flag */
+            if(DeviceType == TYPEMCT310)
+            {
+                /* special bit for mct310 */
+                if(DataValueArray[4] & S_PWRFAIL310_BIT)
+                {
+                   return((DOUBLE) CLOSED);
+                }
+
+                return((DOUBLE) OPENED);
+            }
+            else
+            {
+                if(DataValueArray[4] & S_PWRFAIL_BIT)
+                {
+                    return((DOUBLE) CLOSED);
+                }
+
+                return((DOUBLE) OPENED);
+            }
+
+            break;
+        }
+
+        case 12:
+        {
+            /* reading overflow Flag */
+            if(DeviceType == TYPEMCT310)
+            {
+                /* special bit for mct310 */
+                if(DataValueArray[4] & OVERFLOW310_BIT)
+                {
+                    return((DOUBLE) CLOSED);
+                }
+
+                return((DOUBLE) OPENED);
+            }
+            else
+            {
+                if(DataValueArray[4] & OVERFLOW_BIT)
+                {
+                    return((DOUBLE) CLOSED);
+                }
+
+                return((DOUBLE) OPENED);
+            }
+
+            break;
+        }
+
+        default:
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+        return((DOUBLE) INVALID);
+    }
+
+    //  We shouldn't even ever get here...
+    return(NORMAL);
 }
 
 
@@ -595,9 +801,9 @@ INT CtiDeviceMCT310::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
                 getType() == TYPEMCT310IDL ||
                 getType() == TYPEMCT310IL )
             {
-                while( Value > MCT_Rollover )
+                while( Value > MCT310_Rollover )
                 {
-                    Value -= MCT_Rollover;
+                    Value -= MCT310_Rollover;
                 }
             }
 
@@ -619,9 +825,9 @@ INT CtiDeviceMCT310::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
                 getType() == TYPEMCT310IDL ||
                 getType() == TYPEMCT310IL )
             {
-                while( RecentValue > MCT_Rollover )
+                while( RecentValue > MCT310_Rollover )
                 {
-                    RecentValue -= MCT_Rollover;
+                    RecentValue -= MCT310_Rollover;
                 }
             }
 
@@ -881,7 +1087,7 @@ INT CtiDeviceMCT310::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, 
                 max_blocks = 8;
             }
 
-            point = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual( 1 + MCT_PointOffset_LoadProfileOffset, DemandAccumulatorPointType ));
+            point = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual( 1 + PointOffset_LoadProfileOffset, DemandAccumulatorPointType ));
 
             if( point )
             {
@@ -1024,7 +1230,7 @@ void CtiDeviceMCT310::decodeAccumulators(ULONG result[], INT accum_cnt, BYTE *Da
             result[i] = (result[i] << 8) + Data[j];
         }
 
-        if(result[i] > MCT_MaxPulseCount)
+        if(result[i] > MCT310_MaxPulseCount)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1093,7 +1299,7 @@ INT CtiDeviceMCT310::decodeGetStatusInternal( INMESS *InMessage, CtiTime &TimeNo
             powerfailStatus = 0;
         }
 
-        if( point = boost::static_pointer_cast<CtiPointStatus>(getDevicePointOffsetTypeEqual( MCT_PointOffset_Status_Powerfail, StatusPointType ) ))
+        if( point = boost::static_pointer_cast<CtiPointStatus>(getDevicePointOffsetTypeEqual( PointOffset_Status_Powerfail, StatusPointType ) ))
         {
             string pointResult;
 

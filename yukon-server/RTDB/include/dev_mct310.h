@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct310.h-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2006/07/06 20:11:48 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2006/07/25 22:11:44 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -107,8 +107,13 @@ protected:
         MCT3XX_GroupAddrLeadPos        = 0x11,
         MCT3XX_GroupAddrLeadLen        =    3,
         MCT3XX_GroupAddrGoldSilverPos  = 0x14,
-        MCT3XX_GroupAddrGoldSilverLen  =    1
+        MCT3XX_GroupAddrGoldSilverLen  =    1,
+
+        MCT310_Rollover                = 100000,   //  5 digits
+        MCT310_MaxPulseCount           = 10000000,
     };
+
+    static  DOUBLE translateStatusValue( INT PointOffset, INT PointType, INT DeviceType, PUSHORT DataValueArray );
 
     virtual INT ModelDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
 
