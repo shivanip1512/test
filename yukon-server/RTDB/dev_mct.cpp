@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.90 $
-* DATE         :  $Date: 2006/07/06 20:11:48 $
+* REVISION     :  $Revision: 1.91 $
+* DATE         :  $Date: 2006/07/25 22:17:33 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -45,28 +45,6 @@
 
 using std::list;
 using Cti::Protocol::Emetcon;
-
-
-#define STATUS1_BIT_MCT3XX    0x80
-#define STATUS2_BIT_MCT3XX    0x40
-#define STATUS3_BIT_MCT3XX    0x20
-#define STATUS4_BIT_MCT3XX    0x10
-#define STATUS5_BIT_MCT3XX    0x01
-#define STATUS6_BIT_MCT3XX    0x02
-#define STATUS7_BIT_MCT3XX    0x08
-#define STATUS8_BIT_MCT3XX    0x04
-#define STATUS1_BIT           0x40
-#define STATUS2_BIT           0x80
-#define STATUS3_BIT           0x02
-#define STATUS4_BIT           0x04
-#define OVERFLOW_BIT          0x01
-#define L_PWRFAIL_BIT         0x02
-#define S_PWRFAIL_BIT         0x04
-#define OVERFLOW310_BIT       0x04
-#define L_PWRFAIL310_BIT      0x08
-#define S_PWRFAIL310_BIT      0x10
-#define TAMPER_BIT            0x08
-
 
 using std::make_pair;
 using std::set;
@@ -272,10 +250,9 @@ void CtiDeviceMCT::getDynamicPaoFunctionAddressing(int function, int address, in
 
 LONG CtiDeviceMCT::getDemandInterval() const
 {
-    LONG retval = MCT_DemandIntervalDefault;
+    LONG retval = DemandInterval_Default;
 
-    if( getLastIntervalDemandRate() )
-        retval = getLastIntervalDemandRate();
+    if( getLastIntervalDemandRate() )   retval = getLastIntervalDemandRate();
 
     return retval;
 }
@@ -419,30 +396,30 @@ CtiDeviceMCT::CommandSet CtiDeviceMCT::initCommandStore()
     CommandSet cs;
 
     //  initialize any pan-MCT operations
-    cs.insert(CommandStore(Emetcon::GetConfig_Model,     Emetcon::IO_Read, MCT_ModelPos, MCT_ModelLen));   // Decode happens in the children please...
-    cs.insert(CommandStore(Emetcon::Command_Loop,        Emetcon::IO_Read, MCT_ModelPos, 1));
-    cs.insert(CommandStore(Emetcon::PutConfig_Install,   Emetcon::IO_Read, MCT_ModelPos, MCT_SspecLen));
+    cs.insert(CommandStore(Emetcon::GetConfig_Model,     Emetcon::IO_Read, Memory_ModelPos, Memory_ModelLen));   // Decode happens in the children please...
+    cs.insert(CommandStore(Emetcon::Command_Loop,        Emetcon::IO_Read, Memory_ModelPos, 1));
+    cs.insert(CommandStore(Emetcon::PutConfig_Install,   Emetcon::IO_Read, Memory_SspecPos, Memory_SspecLen));
 
-    cs.insert(CommandStore(Emetcon::PutConfig_GroupAddrEnable,  Emetcon::IO_Write, MCT_Command_GroupAddrEnable,  0));
-    cs.insert(CommandStore(Emetcon::PutConfig_GroupAddrInhibit, Emetcon::IO_Write, MCT_Command_GroupAddrInhibit, 0));
+    cs.insert(CommandStore(Emetcon::PutConfig_GroupAddrEnable,  Emetcon::IO_Write, Command_GroupAddrEnable,  0));
+    cs.insert(CommandStore(Emetcon::PutConfig_GroupAddrInhibit, Emetcon::IO_Write, Command_GroupAddrInhibit, 0));
 
-    cs.insert(CommandStore(Emetcon::GetConfig_Raw,       Emetcon::IO_Read,  0,           0));  //  this will be filled in by executeGetConfig
+    cs.insert(CommandStore(Emetcon::GetConfig_Raw,       Emetcon::IO_Read,  0,               0));  //  this will be filled in by executeGetConfig
 
-    cs.insert(CommandStore(Emetcon::Control_Shed,        Emetcon::IO_Write, 0,           0));  //  this will be filled in by executeControl
-    cs.insert(CommandStore(Emetcon::Control_Restore,     Emetcon::IO_Write, MCT_Restore, 0));
+    cs.insert(CommandStore(Emetcon::Control_Shed,        Emetcon::IO_Write, 0,               0));  //  this will be filled in by executeControl
+    cs.insert(CommandStore(Emetcon::Control_Restore,     Emetcon::IO_Write, Command_Restore, 0));
 
-    cs.insert(CommandStore(Emetcon::Control_Close,       Emetcon::IO_Write | Q_ARML, MCT_Command_Close, 0));
-    cs.insert(CommandStore(Emetcon::Control_Open,        Emetcon::IO_Write | Q_ARML, MCT_Command_Open,  0));
+    cs.insert(CommandStore(Emetcon::Control_Close,       Emetcon::IO_Write | Q_ARML, Command_Close, 0));
+    cs.insert(CommandStore(Emetcon::Control_Open,        Emetcon::IO_Write | Q_ARML, Command_Open,  0));
 
-    cs.insert(CommandStore(Emetcon::Control_Conn,        Emetcon::IO_Write | Q_ARML, MCT_Command_Close, 0));
-    cs.insert(CommandStore(Emetcon::Control_Disc,        Emetcon::IO_Write | Q_ARML, MCT_Command_Open,  0));
+    cs.insert(CommandStore(Emetcon::Control_Conn,        Emetcon::IO_Write | Q_ARML, Command_Close, 0));
+    cs.insert(CommandStore(Emetcon::Control_Disc,        Emetcon::IO_Write | Q_ARML, Command_Open,  0));
 
-    cs.insert(CommandStore(Emetcon::PutConfig_ARMC,      Emetcon::IO_Write, MCT_Command_ARMC, 0));
-    cs.insert(CommandStore(Emetcon::PutConfig_ARML,      Emetcon::IO_Write, MCT_Command_ARML, 0));
+    cs.insert(CommandStore(Emetcon::PutConfig_ARMC,      Emetcon::IO_Write, Command_ARMC, 0));
+    cs.insert(CommandStore(Emetcon::PutConfig_ARML,      Emetcon::IO_Write, Command_ARML, 0));
 
     //  putconfig_tsync is in MCT2XX and MCT310 because the 2XX requires an ARMC
     //    also, the getconfig time location is different for 2XX and 3XX, so that's in each's base as well
-    cs.insert(CommandStore(Emetcon::GetConfig_TSync,     Emetcon::IO_Read, MCT_TSyncPos, MCT_TSyncLen));
+    cs.insert(CommandStore(Emetcon::GetConfig_TSync,     Emetcon::IO_Read, Memory_TSyncPos, Memory_TSyncLen));
 
     return cs;
 }
@@ -820,7 +797,7 @@ INT CtiDeviceMCT::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMes
         //  eventually, this block should use the same ReturnMsg as above - actually, a LOT of the work replicated
         //    within these decode functions could be consolidated to this function...  or maybe it could be moved to DLCBase so
         //    the repeaters get it, too... ?  Do they have a powerfail status?
-        if( point = boost::static_pointer_cast<CtiPointStatus>(getDevicePointOffsetTypeEqual( MCT_PointOffset_Status_Powerfail, StatusPointType )) )
+        if( point = boost::static_pointer_cast<CtiPointStatus>(getDevicePointOffsetTypeEqual( PointOffset_Status_Powerfail, StatusPointType )) )
         {
             string pointResult;
 
@@ -1202,7 +1179,7 @@ INT CtiDeviceMCT::ErrorDecode(INMESS *InMessage, CtiTime& Now, list< CtiMessage*
 
                             if( channel )
                             {
-                                insertPointFail( InMessage, retMsg, ScanRateLoadProfile, channel + MCT_PointOffset_LoadProfileOffset, DemandAccumulatorPointType );
+                                insertPointFail( InMessage, retMsg, ScanRateLoadProfile, channel + PointOffset_LoadProfileOffset, DemandAccumulatorPointType );
                             }
 
                             break;
@@ -1214,7 +1191,7 @@ INT CtiDeviceMCT::ErrorDecode(INMESS *InMessage, CtiTime& Now, list< CtiMessage*
                             {
                                 if( getLoadProfile().isChannelValid(i) )
                                 {
-                                    insertPointFail( InMessage, retMsg, ScanRateLoadProfile, (i + 1) + MCT_PointOffset_LoadProfileOffset, DemandAccumulatorPointType );
+                                    insertPointFail( InMessage, retMsg, ScanRateLoadProfile, (i + 1) + PointOffset_LoadProfileOffset, DemandAccumulatorPointType );
                                 }
                             }
 
@@ -2395,7 +2372,7 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
                     errRet = NULL;
                 }
             }
-            else if( getAddress() != MCT_TestAddress1 && getAddress() != MCT_TestAddress2 )
+            else if( getAddress() != TestAddress1 && getAddress() != TestAddress2 )
             {
                 found = false;
 
@@ -3047,19 +3024,19 @@ INT CtiDeviceMCT::executeControl(CtiRequestMsg                  *pReq,
             {
                 if( shed_duration <= 450 )
                 {
-                    shed_function_base = MCT_Shed_Base_07m;
+                    shed_function_base = Shed_Base_07m;
                 }
                 else if( shed_duration <= 900 )
                 {
-                    shed_function_base = MCT_Shed_Base_15m;
+                    shed_function_base = Shed_Base_15m;
                 }
                 else if( shed_duration <= 1800 )
                 {
-                    shed_function_base = MCT_Shed_Base_30m;
+                    shed_function_base = Shed_Base_30m;
                 }
                 else
                 {
-                    shed_function_base = MCT_Shed_Base_60m;
+                    shed_function_base = Shed_Base_60m;
                 }
 
                 //  if at least one of relays a-d (1-4) are selected
@@ -3278,7 +3255,7 @@ INT CtiDeviceMCT::decodeGetValue(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
 
                 resultStr = getName() + " / Blink Counter = " + CtiNumStr(pfCount);
 
-                if( (pPoint = getDevicePointOffsetTypeEqual( MCT_PointOffset_Accumulator_Powerfail, PulseAccumulatorPointType )) )
+                if( (pPoint = getDevicePointOffsetTypeEqual( PointOffset_Accumulator_Powerfail, PulseAccumulatorPointType )) )
                 {
                     Value = boost::static_pointer_cast<CtiPointNumeric>(pPoint)->computeValueForUOM(pfCount);
 
@@ -4079,592 +4056,6 @@ bool CtiDeviceMCT::hasVariableDemandRate( int type, int sspec )
     }
 
     return retVal;
-}
-
-
-DOUBLE CtiDeviceMCT::translateStatusValue (INT PointOffset, INT PointType, INT DeviceType, PUSHORT DataValueArray)
-{
-    /* key off the point offset */
-    switch(PointOffset)
-    {
-        case 1:
-        {
-            /* first physical point */
-            switch(DeviceType)
-            {
-                case TYPELMT2:
-                case TYPEDCT501:
-                case TYPEMCT250:
-                    /* only this point is a legal 3-state 2 of the types */
-                    if(PointType == THREESTATEPOINT)
-                    {
-                        /* its a three state status */
-                        if(DataValueArray[4] & STATUS1_BIT && DataValueArray[4] & STATUS2_BIT)
-                        {
-                            return((DOUBLE) STATEFOUR);
-                        }
-                        else if(DataValueArray[4] & STATUS1_BIT)
-                        {
-                            return((DOUBLE) CLOSED);
-                        }
-                        else if(DataValueArray[4] & STATUS2_BIT)
-                        {
-                            return((DOUBLE) OPENED);
-                        }
-                        else
-                        {
-                            return((DOUBLE) INDETERMINATE);
-                        }
-                    }
-                    else
-                    {
-                        if(DataValueArray[4] & STATUS1_BIT)
-                        {
-                            return((DOUBLE) CLOSED);
-                        }
-                        else
-                        {
-                            return((DOUBLE) OPENED);
-                        }
-                    }
-                case TYPEMCT248:
-                    if(DataValueArray[7] == 66)
-                    {
-                        return((DOUBLE) CLOSED);
-                    }
-
-                    if(DataValueArray[7] == 65)
-                    {
-                        return((DOUBLE) OPENED);
-                    }
-
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-                    return((DOUBLE) INVALID);
-
-         case TYPEMCT310:        // In basic,.. SELECT 310 TO 370
-         case TYPEMCT310ID:
-         case TYPEMCT310IDL:
-         case TYPEMCT318:
-         case TYPEMCT310IL:
-         case TYPEMCT318L:
-         case TYPEMCT360:
-         case TYPEMCT370:
-            if(DataValueArray[0] & STATUS1_BIT_MCT3XX)
-            {
-               return((DOUBLE) CLOSED);
-            }
-            else
-            {
-               return((DOUBLE) OPENED);
-            }
-
-         default:
-            {
-               {
-                  CtiLockGuard<CtiLogger> doubt_guard(dout);
-                  dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-               }
-               return((DOUBLE) INVALID);
-            }
-         }
-
-         break;
-      }
-   case 2:
-      {
-         /* second physical point */
-         switch(DeviceType)
-         {
-         case TYPELMT2:
-         case TYPEDCT501:
-         case TYPEMCT250:
-            if(DataValueArray[4] & STATUS2_BIT)
-            {
-               return((DOUBLE) CLOSED);
-            }
-
-            return((DOUBLE) OPENED);
-
-         case TYPEMCT310:        // In basic,.. SELECT 310 TO 370
-         case TYPEMCT310ID:
-         case TYPEMCT310IDL:
-         case TYPEMCT318:
-         case TYPEMCT310IL:
-         case TYPEMCT318L:
-         case TYPEMCT360:
-         case TYPEMCT370:
-            if(DataValueArray[0] & STATUS2_BIT_MCT3XX)
-            {
-               return((DOUBLE) CLOSED);
-            }
-            else
-            {
-               return((DOUBLE) OPENED);
-            }
-
-
-         default:
-            {
-               CtiLockGuard<CtiLogger> doubt_guard(dout);
-               dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-            return((DOUBLE) INVALID);
-
-         }
-
-         break;
-      }
-   case 3:
-      {
-         /* third physical point */
-         switch(DeviceType)
-         {
-         case TYPEMCT250:
-            if(PointType == THREESTATEPOINT)
-            {
-               /* its a three state status */
-               if(DataValueArray[6] & STATUS3_BIT && DataValueArray[6] & STATUS4_BIT)
-               {
-                  return((DOUBLE) STATEFOUR);
-               }
-               else if(DataValueArray[6] & STATUS3_BIT)
-               {
-                  return((DOUBLE) CLOSED);
-               }
-               else if(DataValueArray[6] & STATUS4_BIT)
-               {
-                  return((DOUBLE) OPENED);
-               }
-               else
-               {
-                  return((DOUBLE) INDETERMINATE);
-               }
-            }
-
-            if(DataValueArray[6] & STATUS3_BIT)
-            {
-               return((DOUBLE) CLOSED);
-            }
-
-            return((DOUBLE) OPENED);
-
-         case TYPEMCT310:        // In basic,.. SELECT 310 TO 370
-         case TYPEMCT310ID:
-         case TYPEMCT310IDL:
-         case TYPEMCT318:
-         case TYPEMCT310IL:
-         case TYPEMCT318L:
-         case TYPEMCT360:
-         case TYPEMCT370:
-            if(DataValueArray[0] & STATUS3_BIT_MCT3XX)
-            {
-               return((DOUBLE) CLOSED);
-            }
-            else
-            {
-               return((DOUBLE) OPENED);
-            }
-
-         default:
-            {
-               CtiLockGuard<CtiLogger> doubt_guard(dout);
-               dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-            return((DOUBLE) INVALID);
-         }
-
-         break;
-      }
-   case 4:
-      {
-         /* fourth physical point */
-         switch(DeviceType)
-         {
-         case TYPEMCT250:
-            if(DataValueArray[6] & STATUS4_BIT)
-            {
-               return((DOUBLE) CLOSED);
-            }
-
-            return((DOUBLE) OPENED);
-
-         case TYPEMCT310:        // In basic,.. SELECT 310 TO 370
-         case TYPEMCT310ID:
-         case TYPEMCT310IDL:
-         case TYPEMCT318:
-         case TYPEMCT310IL:
-         case TYPEMCT318L:
-         case TYPEMCT360:
-         case TYPEMCT370:
-            if(DataValueArray[0] & STATUS4_BIT_MCT3XX)
-            {
-               return((DOUBLE) CLOSED);
-            }
-            else
-            {
-               return((DOUBLE) OPENED);
-            }
-
-         default:
-            {
-               CtiLockGuard<CtiLogger> doubt_guard(dout);
-               dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-            return((DOUBLE) INVALID);
-         }
-
-         break;
-      }
-   case 5:
-      {
-         /* fifth physical point */
-         switch(DeviceType)
-         {
-
-         case TYPEMCT310:        // In basic,.. SELECT 310 TO 370
-         case TYPEMCT310ID:
-         case TYPEMCT310IDL:
-         case TYPEMCT318:
-         case TYPEMCT310IL:
-         case TYPEMCT318L:
-         case TYPEMCT360:
-         case TYPEMCT370:
-            if(DataValueArray[0] & STATUS5_BIT_MCT3XX)
-            {
-               return((DOUBLE) CLOSED);
-            }
-            else
-            {
-               return((DOUBLE) OPENED);
-            }
-
-         default:
-            {
-               CtiLockGuard<CtiLogger> doubt_guard(dout);
-               dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-            return((DOUBLE) INVALID);
-         }
-
-         break;
-      }
-   case 6:
-      {
-         /* sixth physical point */
-         switch(DeviceType)
-         {
-
-         case TYPEMCT310:        // In basic,.. SELECT 310 TO 370
-         case TYPEMCT310ID:
-         case TYPEMCT310IDL:
-         case TYPEMCT318:
-         case TYPEMCT310IL:
-         case TYPEMCT318L:
-         case TYPEMCT360:
-         case TYPEMCT370:
-            if(DataValueArray[0] & STATUS6_BIT_MCT3XX)
-            {
-               return((DOUBLE) CLOSED);
-            }
-            else
-            {
-               return((DOUBLE) OPENED);
-            }
-
-         default:
-            {
-               CtiLockGuard<CtiLogger> doubt_guard(dout);
-               dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-            return((DOUBLE) INVALID);
-         }
-
-         break;
-      }
-   case 7:
-      {
-         /* seventh physical point */
-         switch(DeviceType)
-         {
-
-         case TYPEMCT310:        // In basic,.. SELECT 310 TO 370
-         case TYPEMCT310ID:
-         case TYPEMCT310IDL:
-         case TYPEMCT318:
-         case TYPEMCT310IL:
-         case TYPEMCT318L:
-         case TYPEMCT360:
-         case TYPEMCT370:
-            if(DataValueArray[0] & STATUS7_BIT_MCT3XX)
-            {
-               return((DOUBLE) CLOSED);
-            }
-            else
-            {
-               return((DOUBLE) OPENED);
-            }
-
-         default:
-            {
-               CtiLockGuard<CtiLogger> doubt_guard(dout);
-               dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-            return((DOUBLE) INVALID);
-         }
-
-         break;
-      }
-   case 8:
-      {
-         /* eighth physical point */
-         switch(DeviceType)
-         {
-
-         case TYPEMCT310:        // In basic,.. SELECT 310 TO 370
-         case TYPEMCT310ID:
-         case TYPEMCT310IDL:
-         case TYPEMCT318:
-         case TYPEMCT310IL:
-         case TYPEMCT318L:
-         case TYPEMCT360:
-         case TYPEMCT370:
-            if(DataValueArray[0] & STATUS8_BIT_MCT3XX)
-            {
-               return((DOUBLE) CLOSED);
-            }
-            else
-            {
-               return((DOUBLE) OPENED);
-            }
-
-         default:
-            {
-               CtiLockGuard<CtiLogger> doubt_guard(dout);
-               dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-            return((DOUBLE) INVALID);
-         }
-
-         break;
-      }
-   case 9:
-      {
-         /* time sync flag */
-         switch(DeviceType)
-         {
-         case TYPELMT2:
-         case TYPEDCT501:
-         case TYPEMCT212:
-         case TYPEMCT224:
-         case TYPEMCT226:
-         case TYPEMCT240:
-         case TYPEMCT242:
-         case TYPEMCT250:
-            if(DataValueArray[0])
-            {
-               return((DOUBLE) CLOSED);
-            }
-
-            return((DOUBLE) OPENED);
-
-         default:
-            {
-               CtiLockGuard<CtiLogger> doubt_guard(dout);
-               dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-            return((DOUBLE) INVALID);
-         }
-
-         break;
-      }
-   case 10:
-      {
-         /* Long Power Fail Flag */
-         switch(DeviceType)
-         {
-         case TYPELMT2:
-         case TYPEDCT501:
-         case TYPEMCT212:
-         case TYPEMCT224:
-         case TYPEMCT226:
-         case TYPEMCT240:
-         case TYPEMCT242:
-         case TYPEMCT250:
-            if(DataValueArray[4] & L_PWRFAIL_BIT)
-            {
-               return((DOUBLE) CLOSED);
-            }
-
-            return((DOUBLE) OPENED);
-
-         case TYPEMCT310:
-            if(DataValueArray[4] & L_PWRFAIL310_BIT)
-            {
-               return((DOUBLE) CLOSED);
-            }
-
-            return((DOUBLE) OPENED);
-
-         default:
-            return((DOUBLE) INVALID);
-         }
-
-         break;
-      }
-   case 11:
-      {
-         /* Short Power Fail Flag */
-         if(DeviceType == TYPEMCT310)
-         {
-            /* special bit for mct310 */
-            if(DataValueArray[4] & S_PWRFAIL310_BIT)
-            {
-               return((DOUBLE) CLOSED);
-            }
-
-            return((DOUBLE) OPENED);
-         }
-         else
-         {
-            if(DataValueArray[4] & S_PWRFAIL_BIT)
-            {
-               return((DOUBLE) CLOSED);
-            }
-
-            return((DOUBLE) OPENED);
-         }
-
-         break;
-      }
-   case 12:
-      {
-         /* reading overflow Flag */
-         if(DeviceType == TYPEMCT310)
-         {
-            /* special bit for mct310 */
-            if(DataValueArray[4] & OVERFLOW310_BIT)
-            {
-               return((DOUBLE) CLOSED);
-            }
-
-            return((DOUBLE) OPENED);
-         }
-         else
-         {
-            if(DataValueArray[4] & OVERFLOW_BIT)
-            {
-               return((DOUBLE) CLOSED);
-            }
-
-            return((DOUBLE) OPENED);
-         }
-
-         break;
-      }
-   case 13:
-   case 15:
-      {
-         /* load survey or Tou active Flag */
-         switch(DeviceType)
-         {
-         case TYPELMT2:
-         case TYPEDCT501:
-         case TYPEMCT240:
-         case TYPEMCT242:
-         case TYPEMCT250:
-            /* load survey halt flag */
-            if(DataValueArray[3])
-            {
-               return((DOUBLE) CLOSED);
-            }
-
-            return((DOUBLE) OPENED);
-
-         default:
-            {
-               CtiLockGuard<CtiLogger> doubt_guard(dout);
-               dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-            return((DOUBLE) INVALID);
-         }
-
-         break;
-      }
-   case 14:
-      {
-         /* Tamper or override/local-remote flag */
-         switch(DeviceType)
-         {
-         case TYPEDCT501:
-         case TYPELMT2:
-            if(DataValueArray[2])
-            {
-               return((DOUBLE) CLOSED);
-            }
-
-            return((DOUBLE) OPENED);
-
-         case TYPEMCT210:
-         case TYPEMCT212:
-         case TYPEMCT213:
-         case TYPEMCT224:
-         case TYPEMCT226:
-         case TYPEMCT240:
-         case TYPEMCT242:
-         case TYPEMCT248:
-         case TYPEMCT250:
-            /* This is the tamper flag */
-            if(DataValueArray[4] & TAMPER_BIT)
-            {
-               return((DOUBLE) CLOSED);
-            }
-
-            return((DOUBLE) OPENED);
-
-         default:
-            {
-               CtiLockGuard<CtiLogger> doubt_guard(dout);
-               dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-            return((DOUBLE) INVALID);
-         }
-
-         break;
-      }
-   case 16:
-      {
-         /* tou halt flag */
-         switch(DeviceType)
-         {
-         case TYPELMT2:
-         case TYPEDCT501:
-            if(DataValueArray[1])
-            {
-               return((DOUBLE)  CLOSED);
-            }
-            else
-            {
-               return((DOUBLE)  OPENED);
-            }
-
-            break;
-
-
-         break;
-      }
-      default:
-         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-         }
-         return((DOUBLE)  INVALID);
-      }
-   }
-
-   return(NORMAL);
 }
 
 
