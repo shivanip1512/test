@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT410.h-arc  $
-* REVISION     :  $Revision: 1.36 $
-* DATE         :  $Date: 2006/07/18 15:22:53 $
+* REVISION     :  $Revision: 1.37 $
+* DATE         :  $Date: 2006/07/25 22:15:04 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -25,25 +25,18 @@
 
 class IM_EX_DEVDB CtiDeviceMCT410 : public CtiDeviceMCT4xx
 {
-protected:
-
-    //  forward declaration
-    typedef map<unsigned long, pair<PointQuality_t, int> > QualityMap;  //  the int will hold ErrorClasses OR'd together
-
 private:
 
     static const CommandSet _commandStore;
     static CommandSet initCommandStore();
 
-    static const DynamicPaoAddressing_t _dynPaoAddressing;
+    static const DynamicPaoAddressing_t         _dynPaoAddressing;
     static const DynamicPaoFunctionAddressing_t _dynPaoFuncAddressing;
 
-    static QualityMap initErrorQualities( void );
-    static CtiDeviceMCT4xx::ConfigPartsList initConfigParts();
+    static const ConfigPartsList _config_parts;
+    static ConfigPartsList initConfigParts();
 
     typedef CtiDeviceMCT4xx Inherited;
-
-    static const CtiDeviceMCT4xx::ConfigPartsList _config_parts;
 
 protected:
 
@@ -111,14 +104,14 @@ protected:
         Memory_DemandIntervalPos  = 0x1a,
         Memory_DemandIntervalLen  =    1,
 
-        Memory_LoadProfileIntervalPos  = 0x1b,
-        Memory_LoadProfileIntervalLen  =    1,
+        Memory_LoadProfileIntervalPos   = 0x1b,
+        Memory_LoadProfileIntervalLen   =    1,
 
-        Memory_VoltageDemandIntervalPos  = 0x1C,
-        Memory_VoltageDemandIntervalLen  =    1,
+        Memory_VoltageDemandIntervalPos = 0x1C,
+        Memory_VoltageDemandIntervalLen =    1,
 
-        Memory_VoltageLPIntervalPos  = 0x1D,
-        Memory_VoltageLPIntervalLen  =    1,
+        Memory_VoltageLPIntervalPos = 0x1D,
+        Memory_VoltageLPIntervalLen =    1,
 
         Memory_OverVThresholdPos  = 0x1e,
         Memory_OverVThresholdLen  =    2,
@@ -254,9 +247,6 @@ protected:
         FuncWrite_LLPStoragePos      = 0x04,
         FuncWrite_LLPStorageLen      =    5,
 
-        FuncWrite_LLPInterestPos     = 0x05,
-        FuncWrite_LLPInterestLen     =    6,
-
         FuncWrite_LLPPeakInterestPos = 0x06,
         FuncWrite_LLPPeakInterestLen =    7,
 
@@ -277,27 +267,7 @@ protected:
 
     };
 
-    enum ValueType
-    {
-        ValueType_Voltage,
-        ValueType_KW,
-        ValueType_LoadProfile_Voltage,
-        ValueType_LoadProfile_KW,
-        ValueType_Accumulator,
-        ValueType_FrozenAccumulator,
-        ValueType_Raw
-    };
-
-    enum ErrorClasses
-    {
-        EC_MeterReading    = 0x0001,
-        EC_DemandReading   = 0x0002,
-        EC_TOUDemand       = 0x0004,
-        EC_TOUFrozenDemand = 0x0008,
-        EC_LoadProfile     = 0x0010
-    };
-
-    enum
+    enum PointOffsets
     {
         MCT410_PointOffset_Voltage       =    4,
         MCT410_PointOffset_MaxVoltage    =   14,
@@ -305,19 +275,12 @@ protected:
 
         MCT410_PointOffset_Analog_Outage =  100,
 
-        MCT4XX_PointOffset_PeakOffset    =   10,
-
         MCT410_PointOffset_TOUBase       =  100,  //  this is okay because TOU only has peak and frozen demand - it must start at 111 anyway
-        MCT4XX_PointOffset_RateOffset    =   20   //  gets added for rate B, C, D
     };
 
-    enum
+    enum SspecInformation
     {
-        MCT4XX_LPChannels       =    4,
-        MCT410_LPVoltageChannel =    4,
-        MCT4XX_LPRecentBlocks   =   16,
-
-        MCT410_Sspec            = 1029,
+        MCT410_Sspec = 1029,
 
         MCT410_SspecRev_NewLLP_Min       =    8,
         MCT410_SspecRev_TOUPeak_Min      =   13,
@@ -325,59 +288,34 @@ protected:
         MCT410_SspecRev_NewOutage_Max    =   30,
         MCT410_SspecRev_Disconnect_Min   =    8,
         MCT410_SspecRev_Disconnect_Cycle =   12,
-
-        MCT4XX_DawnOfTime       = 0x386d4380  //  jan 1, 2000, in UTC seconds
-
     };
 
-    //  this is more extensible than a pair
-    struct point_info_t
+    enum ChannelIdentifiers
     {
-        double value;
-        PointQuality_t quality;
-        int freeze_bit;
-        //  this could hold a timestamp someday if i get really adventurous
+        Channel_Voltage = 4,
     };
 
-    unsigned char crc8(const unsigned char *buf, unsigned int len);
-    point_info_t  getData(unsigned char *buf, int len, ValueType vt=ValueType_KW);
-    static const QualityMap _errorQualities;
-
-    CtiPointDataMsg *makePointDataMsg(CtiPointSPtr p, const point_info_t &pi, const string &pointString);
+    long getLoadProfileInterval(unsigned channel);
+    point_info_t getLoadProfileData(unsigned channel, unsigned char *buf, unsigned len);
 
     bool _intervalsSent;
 
-    struct lp_info_t
-    {
-        unsigned long archived_reading;
-        unsigned long current_request;
-        unsigned long current_schedule;
-    } _lp_info[MCT4XX_LPChannels];
+    static DynamicPaoAddressing_t         initDynPaoAddressing();
+    static DynamicPaoFunctionAddressing_t initDynPaoFuncAddressing();
+    void getDynamicPaoAddressing(int address, int &foundAddress, int &foundLength, CtiTableDynamicPaoInfo::Keys &foundKey);
+    void getDynamicPaoFunctionAddressing(int function, int address, int &foundAddress, int &foundLength, CtiTableDynamicPaoInfo::Keys &foundKey);
 
-    struct llp_interest_t
-    {
-        unsigned long time;
-        int offset;
-        int channel;
-    } _llpInterest;
+    virtual INT executeGetValue (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList);
+    virtual INT executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList);
+    virtual INT executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList);
 
-    struct llp_peak_report_interest_t
-    {
-        unsigned long time;
-        int channel;
-        int period;
-        int command;
-    } _llpPeakInterest;
+    CtiDeviceMCT4xx::ConfigPartsList getPartsList();
 
-    virtual INT executeGetValue (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS* >&outList);
-    virtual INT executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS* >&outList);
-    virtual INT executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS* >&outList);
-
-    int executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >&outList);
-    int executePutConfigDisconnect(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList);
-    int executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList);
-    int executePutConfigCentron(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList);
-    int executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList);
+    int executePutConfigDemandLP  (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS * > &outList);
+    int executePutConfigDisconnect(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS * > &outList);
+    int executePutConfigOptions   (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS * > &outList);
+    int executePutConfigCentron   (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS * > &outList);
+    int executePutConfigTOU       (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS * > &outList);
 
     virtual INT ModelDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
 
@@ -387,9 +325,7 @@ protected:
     INT decodeGetValueVoltage               ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetValueOutage                ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetValueFreezeCounter         ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
-    INT decodeGetValueLoadProfile           ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetValueLoadProfilePeakReport ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
-    INT decodeScanLoadProfile               ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetStatusInternal             ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetStatusLoadProfile          ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetConfigTOU                  ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
@@ -404,19 +340,6 @@ public:
     enum
     {
         MCT410_ChannelCount = 3,
-
-        UniversalAddress = 4194012,
-
-        MCT4XX_Command_FreezeVoltageOne = 0x59,
-        MCT4XX_Command_FreezeVoltageTwo = 0x5A,
-
-        MCT4XX_Command_PowerfailReset = 0x89,
-        MCT4XX_Command_Reset          = 0x8A,
-
-        MCT4XX_FuncWrite_Command      = 0x00,
-
-        MCT4XX_FuncWrite_TSyncPos       = 0xf0,
-        MCT4XX_FuncWrite_TSyncLen       =    6
     };
 
     enum Disconnect_Raw
@@ -443,14 +366,7 @@ public:
 
     void setDisconnectAddress( unsigned long address );
 
-    static DynamicPaoAddressing_t initDynPaoAddressing();
-    static DynamicPaoFunctionAddressing_t initDynPaoFuncAddressing();
-    void getDynamicPaoAddressing(int address, int &foundAddress, int &foundLength, CtiTableDynamicPaoInfo::Keys &foundKey);
-    void getDynamicPaoFunctionAddressing(int function, int address, int &foundAddress, int &foundLength, CtiTableDynamicPaoInfo::Keys &foundKey);
-
     void sendIntervals( OUTMESS *&OutMessage, list< OUTMESS* > &outList );
-
-    CtiDeviceMCT4xx::ConfigPartsList getPartsList();
 
     virtual ULONG calcNextLPScanTime( void );
     virtual INT   calcAndInsertLPRequests( OUTMESS *&OutMessage, list< OUTMESS* > &outList );

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT470.h-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2006/07/06 20:12:40 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2006/07/25 22:15:04 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -83,6 +83,8 @@ private:
 protected:
 
     virtual bool getOperation( const UINT &cmd,  USHORT &function, USHORT &length, USHORT &io );
+
+    typedef CtiDeviceMCT4xx Inherited;
 
     enum
     {
@@ -299,12 +301,19 @@ protected:
 
     void sendIntervals         (OUTMESS *&OutMessage, list< OUTMESS* > &outList);
 
+    static DynamicPaoAddressing_t         initDynPaoAddressing();
+    static DynamicPaoFunctionAddressing_t initDynPaoFuncAddressing();
+    void getDynamicPaoAddressing(int address, int &foundAddress, int &foundLength, CtiTableDynamicPaoInfo::Keys &foundKey);
+    void getDynamicPaoFunctionAddressing(int function, int address, int &foundAddress, int &foundLength, CtiTableDynamicPaoInfo::Keys &foundKey);
+
     virtual INT ModelDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
 
     virtual INT executeScan     (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS* >&outList);
     virtual INT executeGetValue (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS* >&outList);
     virtual INT executePutValue (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS* >&outList);
     virtual INT executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS* >&outList);
+
+    CtiDeviceMCT4xx::ConfigPartsList getPartsList();
 
     int executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList);
     int executePutConfigRelays(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList);
@@ -318,8 +327,6 @@ protected:
     INT decodeGetValuePeakDemand   ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetValueIED          ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetConfigIED         ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
-    INT decodeGetValueLoadProfile  ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
-    INT decodeScanLoadProfile      ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetStatusInternal    ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetStatusLoadProfile ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetConfigTime        ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
@@ -363,20 +370,11 @@ public:
         MCT470_FuncWrite_CurrentReadingLen     =    5,
     };
 
-    typedef CtiDeviceMCT4xx Inherited;
-
     CtiDeviceMCT470( );
     CtiDeviceMCT470( const CtiDeviceMCT470 &aRef );
     virtual ~CtiDeviceMCT470( );
 
     CtiDeviceMCT470 &operator=( const CtiDeviceMCT470 &aRef );
-
-    static DynamicPaoAddressing_t initDynPaoAddressing();
-    static DynamicPaoFunctionAddressing_t initDynPaoFuncAddressing();
-    void getDynamicPaoAddressing(int address, int &foundAddress, int &foundLength, CtiTableDynamicPaoInfo::Keys &foundKey);
-    void getDynamicPaoFunctionAddressing(int function, int address, int &foundAddress, int &foundLength, CtiTableDynamicPaoInfo::Keys &foundKey);
-
-    CtiDeviceMCT4xx::ConfigPartsList getPartsList();
 
     virtual ULONG calcNextLPScanTime( void );
     virtual INT   calcAndInsertLPRequests( OUTMESS *&OutMessage, list< OUTMESS* > &outList );
@@ -384,4 +382,5 @@ public:
 
     virtual void DecodeDatabaseReader( RWDBReader &rdr );
 };
+
 #endif // #ifndef __DEV_MCT470_H__

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.75 $
-* DATE         :  $Date: 2006/07/18 15:22:53 $
+* REVISION     :  $Revision: 1.76 $
+* DATE         :  $Date: 2006/07/25 22:15:04 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -44,7 +44,7 @@ using Protocol::Emetcon;
 
 
 const CtiDeviceMCT410::CommandSet      CtiDeviceMCT410::_commandStore   = CtiDeviceMCT410::initCommandStore();
-const CtiDeviceMCT410::QualityMap      CtiDeviceMCT410::_errorQualities = CtiDeviceMCT410::initErrorQualities();
+
 const CtiDeviceMCT4xx::ConfigPartsList CtiDeviceMCT410::_config_parts   = CtiDeviceMCT410::initConfigParts();
 
 const CtiDeviceMCT::DynamicPaoAddressing_t         CtiDeviceMCT410::_dynPaoAddressing     = CtiDeviceMCT410::initDynPaoAddressing();
@@ -53,9 +53,12 @@ const CtiDeviceMCT::DynamicPaoFunctionAddressing_t CtiDeviceMCT410::_dynPaoFuncA
 CtiDeviceMCT410::CtiDeviceMCT410( ) :
     _intervalsSent(false)  //  whee!  you're going to be gone soon, sucker!
 {
-    _llpInterest.time    = 0;
-    _llpInterest.channel = 0;
-    _llpInterest.offset  = 0;
+    _llpInterest.time     = 0;
+    _llpInterest.time_end = 0;
+    _llpInterest.channel  = 0;
+    _llpInterest.offset   = 0;
+    _llpInterest.retry    = false;
+    _llpInterest.failed   = false;
 
     _llpPeakInterest.channel = 0;
     _llpPeakInterest.command = 0;
@@ -90,19 +93,6 @@ CtiDeviceMCT410 &CtiDeviceMCT410::operator=( const CtiDeviceMCT410 &aRef )
     return *this;
 }
 
-
-//  eventually allow this function to construct the pointdata string as well
-CtiPointDataMsg *CtiDeviceMCT410::makePointDataMsg(CtiPointSPtr p, const point_info_t &pi, const string &pointString)
-{
-    CtiPointDataMsg *pdm = 0;
-
-    if( p )
-    {
-        pdm = CTIDBG_new CtiPointDataMsg(p->getID(), pi.value, pi.quality, p->getType(), pointString);
-    }
-
-    return pdm;
-}
 
 void CtiDeviceMCT410::setDisconnectAddress( unsigned long address )
 {
@@ -416,6 +406,7 @@ void CtiDeviceMCT410::getDynamicPaoFunctionAddressing(int function, int address,
 CtiDeviceMCT4xx::ConfigPartsList CtiDeviceMCT410::initConfigParts()
 {
     CtiDeviceMCT4xx::ConfigPartsList tempList;
+
     tempList.push_back(CtiDeviceMCT4xx::PutConfigPart_dst);
     tempList.push_back(CtiDeviceMCT4xx::PutConfigPart_vthreshold);
     tempList.push_back(CtiDeviceMCT4xx::PutConfigPart_demand_lp);
@@ -431,12 +422,32 @@ CtiDeviceMCT4xx::ConfigPartsList CtiDeviceMCT410::initConfigParts()
     return tempList;
 }
 
+
 CtiDeviceMCT4xx::ConfigPartsList CtiDeviceMCT410::getPartsList()
 {
     return _config_parts;
 }
 
-CtiDeviceMCT410::CommandSet CtiDeviceMCT410::initCommandStore( )
+
+CtiDeviceMCT410::point_info_t CtiDeviceMCT410::getLoadProfileData(unsigned channel, unsigned char *buf, unsigned len)
+{
+    point_info_t pi;
+
+    if( channel == Channel_Voltage )
+    {
+        pi = getData(buf, len, ValueType_LoadProfile_Voltage);
+    }
+    else
+    {
+        pi = getData(buf, len, ValueType_LoadProfile_KW);
+        pi.value *= 3600 / getLoadProfileInterval(channel);
+    }
+
+    return pi;
+}
+
+
+CtiDeviceMCT410::CommandSet CtiDeviceMCT410::initCommandStore()
 {
     CommandSet cs;
 
@@ -476,8 +487,8 @@ CtiDeviceMCT410::CommandSet CtiDeviceMCT410::initCommandStore( )
     cs.insert(CommandStore(Emetcon::GetValue_PFCount,           Emetcon::IO_Read,           Memory_PowerfailCountPos,       Memory_PowerfailCountLen));
     cs.insert(CommandStore(Emetcon::PutValue_ResetPFCount,      Emetcon::IO_Write,          MCT4XX_Command_PowerfailReset,  0));
     cs.insert(CommandStore(Emetcon::PutStatus_Reset,            Emetcon::IO_Write,          MCT4XX_Command_Reset,           0));
-    cs.insert(CommandStore(Emetcon::PutStatus_FreezeOne,        Emetcon::IO_Write,          MCT_Command_FreezeOne,          0));
-    cs.insert(CommandStore(Emetcon::PutStatus_FreezeTwo,        Emetcon::IO_Write,          MCT_Command_FreezeTwo,          0));
+    cs.insert(CommandStore(Emetcon::PutStatus_FreezeOne,        Emetcon::IO_Write,          Command_FreezeOne,              0));
+    cs.insert(CommandStore(Emetcon::PutStatus_FreezeTwo,        Emetcon::IO_Write,          Command_FreezeTwo,              0));
     cs.insert(CommandStore(Emetcon::PutStatus_FreezeVoltageOne, Emetcon::IO_Write,          MCT4XX_Command_FreezeVoltageOne, 0));
     cs.insert(CommandStore(Emetcon::PutStatus_FreezeVoltageTwo, Emetcon::IO_Write,          MCT4XX_Command_FreezeVoltageTwo, 0));
 
@@ -509,50 +520,15 @@ CtiDeviceMCT410::CommandSet CtiDeviceMCT410::initCommandStore( )
 }
 
 
-CtiDeviceMCT410::QualityMap CtiDeviceMCT410::initErrorQualities( void )
+long CtiDeviceMCT410::getLoadProfileInterval( unsigned channel )
 {
-    QualityMap m;
+    int retval;
 
-    //  Meter Communications Problem
-    m.insert(make_pair(0xFFFFFFFF, make_pair(InvalidQuality, 0)));
-    m.insert(make_pair(0xFFFFFFFE, make_pair(InvalidQuality, EC_MeterReading  |
-                                                             EC_DemandReading |
-                                                             EC_LoadProfile)));
+    if( (channel + 1) == Channel_Voltage )  retval = getLoadProfile().getVoltageProfileRate();
+    else                                    retval = getLoadProfile().getLoadProfileDemandRate();
 
-    //  No Data Yet Available
-    m.insert(make_pair(0xFFFFFFFD, make_pair(InvalidQuality, EC_TOUFrozenDemand)));
-    m.insert(make_pair(0xFFFFFFFC, make_pair(InvalidQuality, EC_MeterReading    |
-                                                             EC_DemandReading   |
-                                                             EC_TOUDemand       |
-                                                             EC_TOUFrozenDemand |
-                                                             EC_LoadProfile)));
-
-    //  Data not available for interval
-    m.insert(make_pair(0xFFFFFFFB, make_pair(InvalidQuality, 0)));
-    m.insert(make_pair(0xFFFFFFFA, make_pair(InvalidQuality, EC_LoadProfile)));
-
-    //  Device Filler
-    m.insert(make_pair(0xFFFFFFF9, make_pair(DeviceFillerQuality, 0)));
-    m.insert(make_pair(0xFFFFFFF8, make_pair(DeviceFillerQuality, EC_LoadProfile)));
-
-    //  Power failure occurred during interval
-    m.insert(make_pair(0xFFFFFFF7, make_pair(PowerfailQuality, 0)));
-    m.insert(make_pair(0xFFFFFFF6, make_pair(PowerfailQuality, EC_LoadProfile)));
-
-    //  Power restored in this interval
-    m.insert(make_pair(0xFFFFFFF5, make_pair(PartialIntervalQuality, 0)));
-    m.insert(make_pair(0xFFFFFFF4, make_pair(PartialIntervalQuality, EC_LoadProfile)));
-
-    //  Overflow
-    m.insert(make_pair(0xFFFFFFE1, make_pair(OverflowQuality, EC_TOUFrozenDemand)));
-    m.insert(make_pair(0xFFFFFFE0, make_pair(OverflowQuality, EC_DemandReading   |
-                                                              EC_TOUDemand       |
-                                                              EC_TOUFrozenDemand |
-                                                              EC_LoadProfile)));
-
-    return m;
+    return retval;
 }
-
 
 
 bool CtiDeviceMCT410::getOperation( const UINT &cmd, USHORT &function, USHORT &length, USHORT &io )
@@ -580,16 +556,16 @@ bool CtiDeviceMCT410::getOperation( const UINT &cmd, USHORT &function, USHORT &l
 
 ULONG CtiDeviceMCT410::calcNextLPScanTime( void )
 {
-    CtiTime        Now;
+    CtiTime       Now;
     unsigned long next_time, planned_time;
-    int           demand_rate, block_size;
+    int           interval_len, block_len;
 
     next_time = YUKONEOT;
 
     if( !_intervalsSent )
     {
         //  send load profile interval on the next 5 minute boundary
-        next_time  = (Now.seconds() - MCT_LPWindow) + 300;
+        next_time  = (Now.seconds() - LoadProfileCollectionWindow) + 300;
 
         next_time -= next_time % 300;
     }
@@ -597,18 +573,10 @@ ULONG CtiDeviceMCT410::calcNextLPScanTime( void )
     {
         for( int i = 0; i < MCT4XX_LPChannels; i++ )
         {
-            if( (i + 1) == MCT410_LPVoltageChannel )
-            {
-                demand_rate = getLoadProfile().getVoltageProfileRate();
-            }
-            else
-            {
-                demand_rate = getLoadProfile().getLoadProfileDemandRate();
-            }
+            interval_len = getLoadProfileInterval(i);
+            block_len    = interval_len * 6;
 
-            block_size  = demand_rate * 6;
-
-            CtiPointSPtr pPoint = getDevicePointOffsetTypeEqual((i+1) + MCT_PointOffset_LoadProfileOffset, DemandAccumulatorPointType);
+            CtiPointSPtr pPoint = getDevicePointOffsetTypeEqual((i + 1) + PointOffset_LoadProfileOffset, DemandAccumulatorPointType);
 
             //  if we're not collecting load profile, or there's no point defined, don't scan
             if( !getLoadProfile().isChannelValid(i) || pPoint )
@@ -635,11 +603,11 @@ ULONG CtiDeviceMCT410::calcNextLPScanTime( void )
 
             //  basically, we plan to request again after a whole block has been recorded...
             //    then we add on a little bit to make sure the MCT is out of the memory
-            planned_time  = _lp_info[i].archived_reading + block_size;
-            planned_time -= planned_time % block_size;  //  make double sure we're block-aligned
+            planned_time  = _lp_info[i].archived_reading + block_len;
+            planned_time -= planned_time % block_len;  //  make double sure we're block-aligned
             planned_time += LPBlockEvacuationTime;      //  add on the safeguard time
 
-            /*
+            if( getMCTDebugLevel(MCTDebug_LoadProfile) )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << "**** Checkpoint - lp calctime check... **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -648,15 +616,14 @@ ULONG CtiDeviceMCT410::calcNextLPScanTime( void )
                 dout << "_lp_info[" << i << "].current_schedule = " << _lp_info[i].current_schedule << endl;
                 dout << "_lp_info[" << i << "].current_request  = " << _lp_info[i].current_request << endl;
             }
-            */
 
             _lp_info[i].current_schedule = planned_time;
 
             //  if we've already made the request for a block, or we're overdue...  almost the same thing
             if( (_lp_info[i].current_request >= _lp_info[i].archived_reading) ||
-                (planned_time <= (Now.seconds() - MCT_LPWindow)) )
+                (planned_time <= (Now.seconds() - LoadProfileCollectionWindow)) )
             {
-                unsigned int overdue_rate = getLPRetryRate(demand_rate);
+                unsigned int overdue_rate = getLPRetryRate(interval_len);
 
                 _lp_info[i].current_schedule  = (Now.seconds() - LPBlockEvacuationTime) + overdue_rate;
                 _lp_info[i].current_schedule -= (Now.seconds() - LPBlockEvacuationTime) % overdue_rate;
@@ -669,7 +636,7 @@ ULONG CtiDeviceMCT410::calcNextLPScanTime( void )
                 next_time = _lp_info[i].current_schedule;
             }
 
-            /*
+            if( getMCTDebugLevel(MCTDebug_LoadProfile) )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << "**** Checkpoint - lp calctime check... **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -679,7 +646,6 @@ ULONG CtiDeviceMCT410::calcNextLPScanTime( void )
                 dout << "_lp_info[" << i << "].current_request  = " << _lp_info[i].current_request << endl;
                 dout << "next_time = " << next_time << endl;
             }
-            */
         }
     }
 
@@ -718,11 +684,11 @@ INT CtiDeviceMCT410::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS
 {
     int nRet = NoError;
 
-    CtiTime         Now;
-    unsigned int   demand_rate, block_size;
-    int            channel, block;
-    string         descriptor;
-    OUTMESS       *tmpOutMess;
+    CtiTime       Now;
+    unsigned int  interval_len, block_len;
+    int           channel, block;
+    string        descriptor;
+    OUTMESS      *tmpOutMess;
 
     if( !_intervalsSent )
     {
@@ -734,16 +700,8 @@ INT CtiDeviceMCT410::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS
     {
         for( int i = 0; i < MCT4XX_LPChannels; i++ )
         {
-            if( (i + 1) == MCT410_LPVoltageChannel )
-            {
-                demand_rate = getLoadProfile().getVoltageProfileRate();
-            }
-            else
-            {
-                demand_rate = getLoadProfile().getLoadProfileDemandRate();
-            }
-
-            block_size  = demand_rate * 6;
+            interval_len = getLoadProfileInterval(i);
+            block_len    = interval_len * 6;
 
             if( useScanFlags() )
             {
@@ -754,11 +712,11 @@ INT CtiDeviceMCT410::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS
                     _lp_info[i].current_request  = _lp_info[i].archived_reading;
 
                     //  make sure we only ask for what the function reads can access
-                    if( (Now.seconds() - _lp_info[i].current_request) >= (unsigned long)(MCT4XX_LPRecentBlocks * block_size) )
+                    if( (Now.seconds() - _lp_info[i].current_request) >= (unsigned long)(MCT4XX_LPRecentBlocks * block_len) )
                     {
                         //  go back as far as we can
                         _lp_info[i].current_request  = Now.seconds();
-                        _lp_info[i].current_request -= MCT4XX_LPRecentBlocks * block_size;
+                        _lp_info[i].current_request -= MCT4XX_LPRecentBlocks * block_len;
                     }
 
                     if( getMCTDebugLevel(MCTDebug_LoadProfile) )
@@ -767,16 +725,16 @@ INT CtiDeviceMCT410::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS
                         dout << CtiTime() << " **** Checkpoint - LP variable check for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         dout << "Now.seconds() = " << Now.seconds() << endl;
                         dout << "_lp_info[" << i << "].archived_reading = " << _lp_info[i].archived_reading << endl;
-                        dout << "MCT4XX_LPRecentBlocks * block_size = " << MCT4XX_LPRecentBlocks * block_size << endl;
+                        dout << "MCT4XX_LPRecentBlocks * block_len = " << MCT4XX_LPRecentBlocks * block_len << endl;
                         dout << "_lp_info[" << i << "].current_request = " << _lp_info[i].current_request << endl;
                     }
 
                     //  make sure we're aligned (note - rwEpoch is an even multiple of 86400, so no worries)
-                    _lp_info[i].current_request -= _lp_info[i].current_request % block_size;
+                    _lp_info[i].current_request -= _lp_info[i].current_request % block_len;
 
                     //  which block to grab?
                     channel = i + 1;
-                    block   = (Now.seconds() - _lp_info[i].current_request) / block_size;
+                    block   = (Now.seconds() - _lp_info[i].current_request) / block_len;
 
                     descriptor = " channel " + CtiNumStr(channel) + string(" block ") + CtiNumStr(block);
 
@@ -975,21 +933,9 @@ INT CtiDeviceMCT410::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
             break;
         }
 
-        case Emetcon::GetValue_LoadProfile:
-        {
-            status = decodeGetValueLoadProfile(InMessage, TimeNow, vgList, retList, outList);
-            break;
-        }
-
         case Emetcon::GetValue_LoadProfilePeakReport:
         {
             status = decodeGetValueLoadProfilePeakReport(InMessage, TimeNow, vgList, retList, outList);
-            break;
-        }
-
-        case Emetcon::Scan_LoadProfile:
-        {
-            status = decodeScanLoadProfile(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
@@ -1055,25 +1001,16 @@ INT CtiDeviceMCT410::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
         case (Emetcon::Control_Disc):
         {
             CtiReturnMsg *ReturnMsg;
-/*
-            if( ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr) )
-            {
-                ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-                ReturnMsg->setResultString(getName() + " / Control sent");
-
-                retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList, true );
-            }
-*/
-            //  this is distasteful, but it works...
-            //  we need to allow downtime for the MCT to transmit to its disconnect collar
-            CTISleep(3000);
 
             CtiRequestMsg newReq(getID(),
                                  "getstatus disconnect noqueue",
                                  InMessage->Return.UserID,
                                  0,
                                  InMessage->Return.RouteID,
-                                 InMessage->Return.MacroOffset);
+                                 InMessage->Return.MacroOffset,
+                                 0,
+                                 0,
+                                 InMessage->Priority);
 
             newReq.setConnectionHandle((void *)InMessage->Return.Connection);
 
@@ -1099,158 +1036,6 @@ INT CtiDeviceMCT410::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
 
 
     return status;
-}
-
-
-unsigned char CtiDeviceMCT410::crc8( const unsigned char *buf, unsigned int len )
-{
-    const unsigned char llpcrc_poly = 0x07;
-
-    /* Function to calculate the 8 bit crc of the channel of interest
-         and the period of interest start time.  This 8 bit crc will
-         be sent back in byte 1 of a long load profile read.
-
-       Parameters: uint8_t channel - This is the channel that is going
-                                       to be returned.
-                   uint8_t *time - A pointer to the period of interest start time
-
-       Return: uint8_t crc
-       */
-
-    unsigned short crc = 0;
-    unsigned char  current_byte;
-
-    // Walk through the bytes of data
-    for( int i = 0; i <= len; i++ )
-    {
-        if( i < len )
-        {
-            current_byte = buf[i];
-        }
-        else
-        {
-            current_byte = 0;
-        }
-
-        // Walk through each bit of the byte
-        for(int bit = 0; bit < 8; bit++ )
-        {
-            // Move the data bits into the crc
-            crc <<= 1;
-            if( current_byte & 0x80 )
-            {
-                crc |= 0x0001;
-            }
-
-            // Do the crc calculation
-            if( crc & 0x0100 )
-            {
-                crc ^= llpcrc_poly;
-            }
-
-            // Move the data byte ahead 1 bit
-            current_byte <<= 1;
-        }
-    }
-
-    return (unsigned char)(crc & 0xff);
-}
-
-
-CtiDeviceMCT410::point_info_t CtiDeviceMCT410::getData( unsigned char *buf, int len, ValueType vt )
-{
-    PointQuality_t quality    = NormalQuality;
-    __int64 value = 0;
-    unsigned long error_code = 0xffffffff;  //  filled with 0xff because some data types are less than 32 bits
-    unsigned char quality_flags, resolution;
-    point_info_t  retval;
-
-    for( int i = 0; i < len; i++ )
-    {
-        //  input data is in MSB order
-        error_code <<= 8;
-        value      <<= 8;
-
-        //  the first byte for some value types needs to be treated specially
-        if( !i && (vt == ValueType_KW ||
-                   vt == ValueType_LoadProfile_KW) )
-        {
-            //  save these for use later
-            quality_flags = buf[i] & 0xc0;
-            resolution    = buf[i] & 0x30;
-
-            value        |= buf[i] & 0x0f;  //  trim off the quality bits and the resolution bits
-            error_code   |= buf[i] | 0xc0;  //  fill in the quality bits to get the true error code
-        }
-        else if( !i && (vt == ValueType_LoadProfile_Voltage) )
-        {
-            quality_flags = buf[i] & 0xc0;
-
-            value        |= buf[i] & 0x3f;  //  trim off the quality bits
-            error_code   |= buf[i] | 0xc0;  //  fill in the quality bits to get the true error code
-        }
-        else
-        {
-            value        |= buf[i];
-            error_code   |= buf[i];
-        }
-    }
-
-    retval.freeze_bit = value & 0x01;
-
-    //  i s'pose this could be a set sometime, eh?
-    QualityMap::const_iterator q_itr = _errorQualities.find(error_code);
-
-    if( q_itr != _errorQualities.end() )
-    {
-        quality = q_itr->second.first;
-        value   = 0;
-    }
-    else
-    {
-        //  only take the demand bits into account if everything else is cool
-        switch( quality_flags )
-        {
-            //  time was adjusted in this interval
-            case 0xc0:  quality = PartialIntervalQuality;    break;
-            //  power was restored in this interval
-            case 0x80:  quality = PartialIntervalQuality;    break;
-            //  power failed in this interval
-            case 0x40:  quality = PowerfailQuality;          break;
-        }
-
-        if( vt == ValueType_Voltage && value > 0x7fff )
-        {
-            value = 0;
-            quality = AbnormalQuality;
-        }
-    }
-
-    retval.value   = value;
-    retval.quality = quality;
-
-    if( vt == ValueType_KW || vt == ValueType_LoadProfile_KW )
-    {
-        if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - demand value " << (unsigned long)value << " resolution " << (int)resolution << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-
-        //  we need to do this here because value is an unsigned long and retval.first is a double
-        switch( resolution )
-        {
-            default:
-            case 0x00:  retval.value /=    10.0;    break;  //  100 WH units -> kWH
-            case 0x10:  retval.value /=   100.0;    break;  //   10 WH units -> kWH
-            case 0x20:  retval.value /=  1000.0;    break;  //    1 WH units -> kWH
-            case 0x30:  retval.value /= 10000.0;    break;  //  0.1 WH units -> kWH
-        }
-
-        retval.value *= 10.0;  //  REMOVE THIS for HEAD or WHATEVER build HAS the proper, pretty, nice 1.0 kWH output code
-    }
-
-    return retval;
 }
 
 
@@ -1813,261 +1598,234 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
     }
     else if( parse.isKeyValid("lp_command") )  //  load profile
     {
-        CtiTime now_time;
-        CtiDate now_date;
-
         unsigned long request_time, relative_time;
 
-        int request_channel = parse.getiValue("lp_channel");
+        int request_channel;
         int year, month, day, hour, minute;
         int interval_len, block_len;
 
-        boost::char_separator<char> date_sep("-/");
-        Boost_char_tokenizer date_tok(parse.getsValue("lp_date"), date_sep);
-        Boost_char_tokenizer::iterator date_tok_iter = date_tok.begin();
-
-        boost::char_separator<char> time_sep(":");
-        Boost_char_tokenizer time_tok(parse.getsValue("lp_time"), time_sep);
-        Boost_char_tokenizer::iterator time_tok_iter = time_tok.begin();
-
-
         string cmd = parse.getsValue("lp_command");
 
-        /*
-        //  getvalue lp channel 1 12/14/04 12:00
-        //  getvalue lp channel 1 8-13-2005 14:45
-        RWCTokenizer cmdtok(token);
-
-        cmdtok();  //  move past lp
-        cmdtok();  //  move past channel
-
-        _cmd["lp_command"] = "lp";
-        _cmd["lp_channel"] = atoi(string(cmdtok()));
-        _cmd["lp_date"]    = cmdtok();
-        _cmd["lp_time"]    = cmdtok();
-        }
-        else if(!(token = CmdStr.match(re_lp_peak)).empty())
+        if( !cmd.compare("status") )
         {
-        //  getvalue lp peak daily channel 2 9/30/04 30
-        //  getvalue lp peak hourly channel 3 10-15-2003 15
-        RWCTokenizer cmdtok(token);
+            CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
 
-        cmdtok();  //  move past lp
-        cmdtok();  //  move past peak
+            ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
 
-        _cmd["lp_peaktype"] = cmdtok();
+            string lp_status_string;
+            lp_status_string += getName() + " / Load profile request status:\n";
 
-        cmdtok();  //  move past channel
+            interval_len = getLoadProfileInterval(_llpInterest.channel);
 
-        _cmd["lp_command"] = "peak";
-        _cmd["lp_channel"] = atoi(string(cmdtok()));
-        _cmd["lp_date"]    = cmdtok();
-        _cmd["lp_range"]   = atoi(string(cmdtok()));
-        */
-
-
-        if( request_channel >  0 &&
-            request_channel <= MCT4XX_LPChannels )
-        {
-            month = atoi((*date_tok_iter++).c_str());
-            day   = atoi((*date_tok_iter++).c_str());
-            year  = atoi((*date_tok_iter++).c_str());
-
-            hour   = atoi((*time_tok_iter++).c_str());
-            minute = atoi((*time_tok_iter++).c_str());
-
-            if( year < 100 )
+            if( _llpInterest.time_end > (_llpInterest.time + _llpInterest.offset + (interval_len * 6) + interval_len) )
             {
-                //  watch out for the y2.1k bug
-                year += 2000;
-            }
-
-// ---
-//            interval_len = getLoadProfile().getLoadProfileDemandRate();
-
-            if( request_channel == MCT410_LPVoltageChannel )
-            {
-                interval_len = getLoadProfile().getVoltageProfileRate();
+                lp_status_string += "Current interval: " + CtiTime(_llpInterest.time + _llpInterest.offset + interval_len).asString() + "\n";
+                lp_status_string += "Ending interval:  " + CtiTime(_llpInterest.time_end).asString() + "\n";
             }
             else
             {
-                interval_len = getLoadProfile().getLoadProfileDemandRate();
+                lp_status_string += "No active load profile requests for this device\n";
+                if( _llpInterest.failed )
+                {
+                    lp_status_string += "Last request failed at interval: " + CtiTime(_llpInterest.time + _llpInterest.offset + interval_len).asString() + "\n";
+                }
+
+                if( _llpInterest.time_end > (MCT4XX_DawnOfTime + rwEpoch) )
+                {
+                    lp_status_string += "Last request end time: " + CtiTime(_llpInterest.time_end).asString() + "\n";
+                }
             }
 
-// ---
-            block_len = 6 * interval_len;
+            ReturnMsg->setResultString(lp_status_string.c_str());
 
-            if( !cmd.compare("lp") )
+            retMsgHandler( OutMessage->Request.CommandStr, NoError, ReturnMsg, vgList, retList, true );
+
+            delete OutMessage;
+            OutMessage = 0;
+            found = false;
+            nRet  = NoError;
+        }
+        else if( !cmd.compare("cancel") )
+        {
+            //  reset it, that way it'll end immediately
+            _llpInterest.time_end = 0;
+
+            CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
+
+            ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
+
+            ReturnMsg->setResultString(getName() + " / Load profile request cancelled\n");
+
+            retMsgHandler( OutMessage->Request.CommandStr, NoError, ReturnMsg, vgList, retList, true );
+
+            delete OutMessage;
+            OutMessage = 0;
+            found = false;
+            nRet  = NoError;
+        }
+        else
+        {
+            request_channel = parse.getiValue("lp_channel");
+
+            if( request_channel >  0 &&
+                request_channel <= MCT4XX_LPChannels )
             {
-                CtiDate parsed_date(day, month, year);
-                CtiTime parsed_time(parsed_date, hour, minute);
+                    interval_len = getLoadProfileInterval(request_channel);
 
-                if( year < 2100 && parsed_date.isValid() && parsed_time.isValid() )
+                block_len = 6 * interval_len;
+
+                //  grab the beginning date
+                CtiTokenizer date_tok(parse.getsValue("lp_date_start"));
+                month = atoi(date_tok("-/").data());
+                day   = atoi(date_tok("-/").data());
+                year  = atoi(date_tok("-/").data());
+                //  note that this code assumes that the current century is 20xx - this will need to change in 2100
+                if( year < 100 )    year += 2000;
+
+                if( !cmd.compare("lp") )
                 {
+                    CtiTime time_start, time_end;
+
                     function = Emetcon::GetValue_LoadProfile;
                     found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
-                }
-                else
-                {
-                    CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
 
-                    if( ReturnMsg )
+                    //  grab the beginning time, if available
+                    if( parse.isKeyValid("lp_time_start") )
                     {
-                        ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
-                        ReturnMsg->setResultString(getName() + " / Invalid date/time for LP request (" + parse.getsValue("lp_date") + " @ " + parse.getsValue("lp_time") + ")");
-
-                        retMsgHandler( OutMessage->Request.CommandStr, NoMethod, ReturnMsg, vgList, retList, true );
-                    }
-                }
-
-                if( found )
-                {
-                    //  FIXME:  we must replicate this functionality in the decode portion - right now, _llpInterest.offset
-                    //            is being overwritten, resulting in faulty decodes
-
-                    request_time  = parsed_time.seconds();
-                    request_time -= request_time % interval_len;
-                    request_time -= interval_len;  //  we report interval-ending, yet request interval-beginning...  so back that thing up
-
-                    //  this is the number of seconds from the current pointer
-                    relative_time = request_time - _llpInterest.time;
-
-                    if( (request_channel == _llpInterest.channel) &&  //  correct channel
-                        (relative_time < (16 * block_len))        &&  //  within 16 blocks
-                        !(relative_time % block_len) )                //  aligned
-                    {
-                        //  it's aligned (and close enough) to the block we're pointing at
-                        function  = 0x40;
-                        function += relative_time / block_len;
-
-                        _llpInterest.offset = relative_time;
+                        CtiTokenizer time_start_tok(parse.getsValue("lp_time_start"));
+                        hour   = atoi(time_start_tok(":").data());
+                        minute = atoi(time_start_tok(":").data());
                     }
                     else
                     {
-                        //  just read the first block - it'll be the one we're pointing at
-                        function  = 0x40;
+                        //  otherwise, default to midnight
+                        hour   = 0;
+                        minute = 0;
+                    }
 
-                        //  we need to set it to the requested interval
-                        CtiOutMessage *interest_om = new CtiOutMessage(*OutMessage);
+                    time_start = CtiTime(CtiDate(day, month, year), hour, minute);
 
-                        if( interest_om )
+                    //  grab the end date, if available
+                    if( parse.isKeyValid("lp_date_end") )
+                    {
+                        CtiTokenizer date_end_tok(parse.getsValue("lp_date_end"));
+
+                        month = atoi(date_end_tok("-/").data());
+                        day   = atoi(date_end_tok("-/").data());
+                        year  = atoi(date_end_tok("-/").data());
+                        //  note that this code assumes that the current century is 20xx - this will need to change in 2100
+                        if( year < 100 )    year += 2000;
+
+                        //  grab the end time, if available
+                        if( parse.isKeyValid("lp_time_end") )
                         {
-                            _llpInterest.time    = request_time;
-                            _llpInterest.offset  = 0;
-                            _llpInterest.channel = request_channel;
+                            CtiTokenizer time_end_tok(parse.getsValue("lp_time_end"));
 
-                            interest_om->Sequence = Emetcon::PutConfig_LoadProfileInterest;
+                            hour   = atoi(time_end_tok(":").data());
+                            minute = atoi(time_end_tok(":").data());
 
-                            interest_om->Buffer.BSt.Function  = FuncWrite_LLPInterestPos;
-                            interest_om->Buffer.BSt.IO        = Emetcon::IO_Function_Write;
-                            interest_om->Buffer.BSt.Length    = FuncWrite_LLPInterestLen;
-                            interest_om->MessageFlags       |= MessageFlag_ExpectMore;
-
-                            unsigned long utc_time = request_time;
-
-                            interest_om->Buffer.BSt.Message[0] = gMCT400SeriesSPID;
-
-                            interest_om->Buffer.BSt.Message[1] = request_channel  & 0x000000ff;
-
-                            interest_om->Buffer.BSt.Message[2] = (utc_time >> 24) & 0x000000ff;
-                            interest_om->Buffer.BSt.Message[3] = (utc_time >> 16) & 0x000000ff;
-                            interest_om->Buffer.BSt.Message[4] = (utc_time >>  8) & 0x000000ff;
-                            interest_om->Buffer.BSt.Message[5] = (utc_time)       & 0x000000ff;
-
-                            outList.push_back(interest_om);
-                            interest_om = 0;
+                            time_end  = CtiTime(CtiDate(day, month, year), hour, minute);
                         }
                         else
                         {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint - unable to create outmessage, cannot set interval **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
+                            //  otherwise, default to the end of the day
+                            time_end  = CtiTime(CtiDate(day, month, year));
+                            time_end += 86400;  //  end of the day/beginning of the next day
+                        }
+                    }
+                    else
+                    {
+                        //  otherwise default to the end of the block
+                        time_end  = time_start;
+
+                        if( parse.isKeyValid("lp_time_start") )
+                        {
+                            //  did they want a specific time?
+                            time_end += block_len;
+                        }
+                        else
+                        {
+                            //  no time specified, they must've wanted a whole day
+                            time_end += 86400;
                         }
                     }
 
-                    OutMessage->Buffer.BSt.Function = function;
-                    OutMessage->Buffer.BSt.IO       = Emetcon::IO_Function_Read;
-                    OutMessage->Buffer.BSt.Length   = 13;
-
-                    function = Emetcon::GetValue_LoadProfile;
-
-                    nRet = NoError;
-                }
-            }
-            else if( !cmd.compare("peak") )
-            {
-                //  !!!  FIXME: this will not allow reporting on any load profile interval size smaller than 1 hour  !!!
-                if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec)         == MCT410_Sspec &&
-                    (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) >= MCT410_SspecRev_NewLLP_Min ||
-                     getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) == 253) )  //  Chef's Special for JSW
-                {
-                    function = Emetcon::GetValue_LoadProfilePeakReport;
-                    found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
-                }
-                else
-                {
-                    CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
-
-                    if( ReturnMsg )
+                    if( !time_start.isValid() || !time_end.isValid() || (time_start >= time_end) )
                     {
+                        CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
+
                         ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
-                        ReturnMsg->setResultString(string(getName()
-                                                          + " / Load profile reporting currently only supported for SSPEC "
-                                                          + CtiNumStr(MCT410_Sspec).toString().c_str()
-                                                          + " revision "
-                                                          + (char)('A' + MCT410_SspecRev_NewLLP_Min - 1)
-                                                          + " and up"));
+
+                        found = false;
+                        nRet  = BADPARAM;
+
+                        string time_error_string = getName() + " / Invalid date/time for LP request (" + parse.getsValue("lp_date_start");
+
+                        if( parse.isKeyValid("lp_time_start") )
+                        {
+                            time_error_string += " @ " + parse.getsValue("lp_time_start");
+                        }
+
+                        if( parse.isKeyValid("lp_date_end") )
+                        {
+                            time_error_string += " - ";
+
+                            time_error_string += parse.getsValue("lp_date_end");
+
+                            if( parse.isKeyValid("lp_time_end") )
+                            {
+                                time_error_string += " @ " + parse.getsValue("lp_time_end");
+                            }
+                        }
+
+                        time_error_string += ")";
+
+                        ReturnMsg->setResultString(time_error_string);
 
                         retMsgHandler( OutMessage->Request.CommandStr, NoMethod, ReturnMsg, vgList, retList, true );
                     }
-                }
-
-                if( found )
-                {
-                    int lp_peak_command = -1;
-                    string lp_peaktype = parse.getsValue("lp_peaktype");
-                    int request_range  = parse.getiValue("lp_range");  //  add safeguards to check that we're not >30 days... ?
-
-                    if( !lp_peaktype.compare("day") )
+                    else
                     {
-                        lp_peak_command = FuncRead_LLPPeakDayPos;
-                    }
-                    else if( !lp_peaktype.compare("hour") )
-                    {
-                        lp_peak_command = FuncRead_LLPPeakHourPos;
-                    }
-                    else if( !lp_peaktype.compare("interval") )
-                    {
-                        lp_peak_command = FuncRead_LLPPeakIntervalPos;
-                    }
+                        //  FIXME:  we must replicate this functionality in the decode portion - right now, _llpInterest.offset
+                        //            is being overwritten, resulting in faulty decodes
+                        request_time  = time_start.seconds();
+                        request_time -= request_time % interval_len;
+                        request_time -= interval_len;  //  we report interval-ending, yet request interval-beginning...  so back that thing up
 
-                    if( lp_peak_command > 0 )
-                    {
-                        //  add on a day - this is the end of the interval, not the beginning,
-                        //    so we need to start at midnight of the following day...  minus one second
-                        request_time  = CtiTime(CtiDate(day + 1, month, year)).seconds() - 1;
+                        _llpInterest.time_end = time_end.seconds();
 
-                        if( request_time    != _llpPeakInterest.time    ||
-                            request_channel != _llpPeakInterest.channel ||
-                            request_range   != _llpPeakInterest.period )
+                        //  this is the number of seconds from the current pointer
+                        relative_time = request_time - _llpInterest.time;
+
+                        if( (request_channel == _llpInterest.channel) &&  //  correct channel
+                            (relative_time < (16 * block_len))        &&  //  within 16 blocks
+                            !(relative_time % block_len) )                //  aligned
                         {
+                            //  it's aligned (and close enough) to the block we're pointing at
+                            function  = 0x40;
+                            function += relative_time / block_len;
+
+                            _llpInterest.offset = relative_time;
+                        }
+                        else
+                        {
+                            //  just read the first block - it'll be the one we're pointing at
+                            function  = 0x40;
+
                             //  we need to set it to the requested interval
                             CtiOutMessage *interest_om = new CtiOutMessage(*OutMessage);
 
                             if( interest_om )
                             {
-                                _llpPeakInterest.time    = request_time;
-                                _llpPeakInterest.channel = request_channel;
-                                _llpPeakInterest.period  = request_range;
+                                _llpInterest.time    = request_time;
+                                _llpInterest.offset  = 0;
+                                _llpInterest.channel = request_channel;
 
-                                interest_om->Priority = OutMessage->Priority + 1;  //  just make sure this goes out first
-                                interest_om->Sequence = Emetcon::PutConfig_LoadProfileReportPeriod;
-                                interest_om->Request.Connection = 0;
+                                interest_om->Sequence = Emetcon::PutConfig_LoadProfileInterest;
 
-                                interest_om->Buffer.BSt.Function  = FuncWrite_LLPPeakInterestPos;
+                                interest_om->Buffer.BSt.Function  = FuncWrite_LLPInterestPos;
                                 interest_om->Buffer.BSt.IO        = Emetcon::IO_Function_Write;
-                                interest_om->Buffer.BSt.Length    = FuncWrite_LLPPeakInterestLen;
+                                interest_om->Buffer.BSt.Length    = FuncWrite_LLPInterestLen;
                                 interest_om->MessageFlags        |= MessageFlag_ExpectMore;
 
                                 unsigned long utc_time = request_time;
@@ -2081,13 +1839,6 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
                                 interest_om->Buffer.BSt.Message[4] = (utc_time >>  8) & 0x000000ff;
                                 interest_om->Buffer.BSt.Message[5] = (utc_time)       & 0x000000ff;
 
-                                interest_om->Buffer.BSt.Message[6] = request_range    & 0x000000ff;
-
-                                //  add a bit of a delay so the 410 can calculate...
-                                //    this delay may need to be increased by other means, depending
-                                //    on how long the larger peak report calculations take
-                                interest_om->MessageFlags |= MessageFlag_AddSilence;
-
                                 outList.push_back(interest_om);
                                 interest_om = 0;
                             }
@@ -2100,26 +1851,156 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
                             }
                         }
 
-                        _llpPeakInterest.command = lp_peak_command;
-
-                        OutMessage->Buffer.BSt.Function = lp_peak_command;
+                        OutMessage->Buffer.BSt.Function = function;
                         OutMessage->Buffer.BSt.IO       = Emetcon::IO_Function_Read;
                         OutMessage->Buffer.BSt.Length   = 13;
+
+                        function = Emetcon::GetValue_LoadProfile;
+
+                            if( strstr(OutMessage->Request.CommandStr, " background") )
+                            {
+                                CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
+
+                                ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
+                                ReturnMsg->setConnectionHandle(OutMessage->Request.Connection);
+                                ReturnMsg->setResultString(getName() + " / Load profile request submitted for background processing - use \"getvalue lp status\" to check progress");
+
+                                retMsgHandler( OutMessage->Request.CommandStr, NoError, ReturnMsg, vgList, retList, true );
+
+                                OutMessage->Priority = 8;
+                                //  make sure the OM doesn't report back to Commander
+                                OutMessage->Request.Connection = 0;
+                            }
 
                         nRet = NoError;
                     }
                 }
+                else if( !cmd.compare("peak") )
+                {
+                    //  !!!  FIXME: this will not allow reporting on any load profile interval size smaller than 1 hour  !!!
+                    if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec)         == MCT410_Sspec &&
+                        (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) >= MCT410_SspecRev_NewLLP_Min ||
+                         getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) == 253) )  //  Chef's Special for JSW
+                    {
+                        function = Emetcon::GetValue_LoadProfilePeakReport;
+                        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+                    }
+                    else
+                    {
+                        CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
+
+                        if( ReturnMsg )
+                        {
+                            ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
+                            ReturnMsg->setResultString(string(getName()
+                                                              + " / Load profile reporting currently only supported for SSPEC "
+                                                              + CtiNumStr(MCT410_Sspec).toString().c_str()
+                                                              + " revision "
+                                                              + (char)('A' + MCT410_SspecRev_NewLLP_Min - 1)
+                                                              + " and up"));
+
+                            retMsgHandler( OutMessage->Request.CommandStr, NoMethod, ReturnMsg, vgList, retList, true );
+                        }
+                    }
+
+                    if( found )
+                    {
+                        int lp_peak_command = -1;
+                        string lp_peaktype = parse.getsValue("lp_peaktype");
+                        int request_range  = parse.getiValue("lp_range");  //  add safeguards to check that we're not >30 days... ?
+
+                        if( !lp_peaktype.compare("day") )
+                        {
+                            lp_peak_command = FuncRead_LLPPeakDayPos;
+                        }
+                        else if( !lp_peaktype.compare("hour") )
+                        {
+                            lp_peak_command = FuncRead_LLPPeakHourPos;
+                        }
+                        else if( !lp_peaktype.compare("interval") )
+                        {
+                            lp_peak_command = FuncRead_LLPPeakIntervalPos;
+                        }
+
+                        if( lp_peak_command > 0 )
+                        {
+                            //  add on a day - this is the end of the interval, not the beginning,
+                            //    so we need to start at midnight of the following day...  minus one second
+                            request_time  = CtiTime(CtiDate(day + 1, month, year)).seconds() - 1;
+
+                            if( request_time    != _llpPeakInterest.time    ||
+                                request_channel != _llpPeakInterest.channel ||
+                                request_range   != _llpPeakInterest.period )
+                            {
+                                //  we need to set it to the requested interval
+                                CtiOutMessage *interest_om = new CtiOutMessage(*OutMessage);
+
+                                if( interest_om )
+                                {
+                                    _llpPeakInterest.time    = request_time;
+                                    _llpPeakInterest.channel = request_channel;
+                                    _llpPeakInterest.period  = request_range;
+
+                                    interest_om->Priority = OutMessage->Priority + 1;  //  just make sure this goes out first
+                                    interest_om->Sequence = Emetcon::PutConfig_LoadProfileReportPeriod;
+                                    interest_om->Request.Connection = 0;
+
+                                    interest_om->Buffer.BSt.Function  = FuncWrite_LLPPeakInterestPos;
+                                    interest_om->Buffer.BSt.IO        = Emetcon::IO_Function_Write;
+                                    interest_om->Buffer.BSt.Length    = FuncWrite_LLPPeakInterestLen;
+                                    interest_om->MessageFlags        |= MessageFlag_ExpectMore;
+
+                                    unsigned long utc_time = request_time;
+
+                                    interest_om->Buffer.BSt.Message[0] = gMCT400SeriesSPID;
+
+                                    interest_om->Buffer.BSt.Message[1] = request_channel  & 0x000000ff;
+
+                                    interest_om->Buffer.BSt.Message[2] = (utc_time >> 24) & 0x000000ff;
+                                    interest_om->Buffer.BSt.Message[3] = (utc_time >> 16) & 0x000000ff;
+                                    interest_om->Buffer.BSt.Message[4] = (utc_time >>  8) & 0x000000ff;
+                                    interest_om->Buffer.BSt.Message[5] = (utc_time)       & 0x000000ff;
+
+                                    interest_om->Buffer.BSt.Message[6] = request_range    & 0x000000ff;
+
+                                    //  add a bit of a delay so the 410 can calculate...
+                                    //    this delay may need to be increased by other means, depending
+                                    //    on how long the larger peak report calculations take
+                                    interest_om->MessageFlags |= MessageFlag_AddSilence;
+
+                                    outList.push_back(interest_om);
+                                    interest_om = 0;
+                                }
+                                else
+                                {
+                                    {
+                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                        dout << CtiTime() << " **** Checkpoint - unable to create outmessage, cannot set interval **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                    }
+                                }
+                            }
+
+                            _llpPeakInterest.command = lp_peak_command;
+
+                            OutMessage->Buffer.BSt.Function = lp_peak_command;
+                            OutMessage->Buffer.BSt.IO       = Emetcon::IO_Function_Read;
+                            OutMessage->Buffer.BSt.Length   = 13;
+
+                            nRet = NoError;
+                        }
+                    }
+                }
             }
-        }
-        else
-        {
-            if( errRet )
+            else
             {
-                string temp = "Bad channel specification - Acceptable values:  1-4";
-                errRet->setResultString( temp );
-                errRet->setStatus(NoMethod);
-                retList.push_back( errRet );
-                errRet = NULL;
+                if( errRet )
+                {
+                    string temp = "Bad channel specification - Acceptable values:  1-4";
+                    errRet->setResultString( temp );
+                    errRet->setStatus(NoMethod);
+                    retList.push_back( errRet );
+                    errRet = NULL;
+                }
             }
         }
     }
@@ -2519,7 +2400,7 @@ int CtiDeviceMCT410::executePutConfigDisconnect(CtiRequestMsg *pReq,CtiCommandPa
                 dout << CtiTime() << " Device: " << getName() << " Revision: " << (string)CtiNumStr(revision) << endl;
             }
 
-            if( revision >= MCT410_SspecRev_Disconnect_Cycle 
+            if( revision >= MCT410_SspecRev_Disconnect_Cycle
                 && (cycleDisconnectMinutes == numeric_limits<long>::min() || cycleConnectMinutes == numeric_limits<long>::min()) )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -2883,7 +2764,7 @@ INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
             }
         }
 
-        for( int i = 0; i < CtiDeviceMCT410::MCT410_ChannelCount; i++ )
+        for( int i = 0; i < MCT410_ChannelCount; i++ )
         {
             int offset = (i * 3);
 
@@ -3108,7 +2989,7 @@ INT CtiDeviceMCT410::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, l
 
         pi = getData(DSt->Message + 4, 2, ValueType_Raw);
 
-        if( pPoint = getDevicePointOffsetTypeEqual( MCT_PointOffset_Accumulator_Powerfail, PulseAccumulatorPointType ) )
+        if( pPoint = getDevicePointOffsetTypeEqual( PointOffset_Accumulator_Powerfail, PulseAccumulatorPointType ) )
         {
             CtiTime pointTime;
 
@@ -3754,155 +3635,6 @@ INT CtiDeviceMCT410::decodeGetValueFreezeCounter( INMESS *InMessage, CtiTime &Ti
 }
 
 
-INT CtiDeviceMCT410::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
-{
-    INT status = NORMAL;
-
-    INT ErrReturn =  InMessage->EventCode & 0x3fff;
-    DSTRUCT *DSt  = &InMessage->Buffer.DSt;
-
-    string valReport, resultString;
-    int       interval_len, block_len, function, channel,
-              badData;
-
-    point_info_t  pi;
-    unsigned long timeStamp, decode_time;
-
-
-    CtiPointNumericSPtr pPoint;
-    CtiReturnMsg    *ReturnMsg = NULL;  // Message sent to VanGogh, inherits from Multi
-    CtiPointDataMsg *pData     = NULL;
-
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
-    {
-        // No error occured, we must do a real decode!
-
-        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-            return MEMORY;
-        }
-
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-
-        unsigned char interest[5];
-        unsigned long tmptime = _llpInterest.time;
-
-        interest[0] = (tmptime >> 24) & 0x000000ff;
-        interest[1] = (tmptime >> 16) & 0x000000ff;
-        interest[2] = (tmptime >>  8) & 0x000000ff;
-        interest[3] = (tmptime)       & 0x000000ff;
-        interest[4] = _llpInterest.channel;
-
-        /*
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-
-            for( int i = 0; i < 5; i++ )
-            {
-                dout << "interest " << i << ": " << (int)interest[i] << endl;
-            }
-
-            dout << "crc8 = " << (int)crc8(interest, 5) << endl;
-            dout << "dst  = " << (int)DSt->Message[0] << endl;
-        }
-        */
-
-        if( crc8(interest, 5) == DSt->Message[0] )
-        {
-            channel      = _llpInterest.channel;
-            decode_time  = _llpInterest.time + _llpInterest.offset;
-
-// ---
-//            interval_len = getLoadProfile().getLoadProfileDemandRate();
-
-            if( channel == MCT410_LPVoltageChannel )
-            {
-                interval_len = getLoadProfile().getVoltageProfileRate();
-            }
-            else
-            {
-                interval_len = getLoadProfile().getLoadProfileDemandRate();
-            }
-// ---
-
-            block_len    = interval_len * 6;
-
-            pPoint = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual( channel + MCT_PointOffset_LoadProfileOffset, DemandAccumulatorPointType ));
-
-            for( int i = 0; i < 6; i++ )
-            {
-                //  this is where the block started...
-                timeStamp  = decode_time + (interval_len * i);
-                //  but we want interval *ending* times, so add on one more interval
-                timeStamp += interval_len;
-
-                if( channel == MCT410_LPVoltageChannel )
-                {
-                    pi = getData(DSt->Message + (i * 2) + 1, 2, ValueType_LoadProfile_Voltage);
-                }
-                else
-                {
-                    pi = getData(DSt->Message + (i * 2) + 1, 2, ValueType_LoadProfile_KW);
-                }
-
-                if( channel != MCT410_LPVoltageChannel )
-                {
-                    pi.value *= 3600 / interval_len;
-                }
-
-                if( pPoint )
-                {
-                    if( pi.quality != InvalidQuality )
-                    {
-                        pi.value = pPoint->computeValueForUOM(pi.value);
-
-                        valReport = getName() + " / " + pPoint->getName() + " @ " + CtiTime(timeStamp).asString() + " = " + CtiNumStr(pi.value, pPoint->getPointUnits().getDecimalPlaces());
-
-                        if( pData = makePointDataMsg(pPoint, pi, valReport) )
-                        {
-                            pData->setTime(timeStamp);
-
-                            ReturnMsg->insert(pData);
-                        }
-                    }
-                    else
-                    {
-                        resultString += getName() + " / " + pPoint->getName() + " @ " + CtiTime(timeStamp).asString() + " = (invalid data)\n";
-                    }
-                }
-                else
-                {
-                    if( pi.quality != InvalidQuality )
-                    {
-                        resultString += getName() + " / LP channel " + CtiNumStr(channel) + " @ " + CtiTime(timeStamp).asString() + " = " + CtiNumStr(pi.value, 0) + "\n";
-                    }
-                    else
-                    {
-                        resultString += getName() + " / LP channel " + CtiNumStr(channel) + " @ " + CtiTime(timeStamp).asString() + " = (invalid data)\n";
-                    }
-                }
-            }
-        }
-        else
-        {
-            resultString = "Load Profile Interest check does not match - try read again";
-
-            _llpInterest.channel = 0;
-            _llpInterest.time    = 0;
-        }
-
-        ReturnMsg->setResultString(resultString);
-
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
-    }
-
-    return status;
-}
-
-
 INT CtiDeviceMCT410::decodeGetValueLoadProfilePeakReport(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
@@ -4007,133 +3739,6 @@ INT CtiDeviceMCT410::decodeGetValueLoadProfilePeakReport(INMESS *InMessage, CtiT
         ReturnMsg->setResultString(result_string);
 
         retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
-    }
-
-    return status;
-}
-
-
-INT CtiDeviceMCT410::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
-{
-    INT status = NORMAL;
-
-    INT ErrReturn =  InMessage->EventCode & 0x3fff;
-    DSTRUCT *DSt  = &InMessage->Buffer.DSt;
-
-    string         val_report;
-    int            channel, block, interval_len;
-    unsigned long  timestamp, pulses;
-    point_info_t   pi;
-
-    CtiCommandParser parse(InMessage->Return.CommandStr);
-
-    CtiPointNumericSPtr point;
-    CtiReturnMsg    *ret_msg = 0;  // Message sent to VanGogh, inherits from Multi
-    CtiPointDataMsg *pdata   = 0;
-
-    if( getMCTDebugLevel(MCTDebug_Scanrates) )
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Load Profile Scan Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
-    {
-        // No error occured, we must do a real decode!
-
-        if((ret_msg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-            return MEMORY;
-        }
-
-        ret_msg->setUserMessageId(InMessage->Return.UserID);
-
-        if( (channel = parse.getiValue("scan_loadprofile_channel", 0)) &&
-            (block   = parse.getiValue("scan_loadprofile_block",   0)) )
-        {
-// --
-//            interval_len = getLoadProfile().getLoadProfileDemandRate();
-
-            if( channel == MCT410_LPVoltageChannel )
-            {
-                interval_len = getLoadProfile().getVoltageProfileRate();
-            }
-            else
-            {
-                interval_len = getLoadProfile().getLoadProfileDemandRate();
-            }
-// ---
-
-            if( point = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual( channel + MCT_PointOffset_LoadProfileOffset, DemandAccumulatorPointType ) ))
-            {
-                //  this is where the block started...
-                timestamp  = TimeNow.seconds();
-                timestamp -= interval_len * 6 * block;
-                timestamp -= timestamp % (interval_len * 6);
-
-                if( timestamp == _lp_info[channel - 1].current_request )
-                {
-                    for( int offset = 5; offset >= 0; offset-- )
-                    {
-                        if( channel == MCT410_LPVoltageChannel )
-                        {
-                            pi = getData(DSt->Message + offset*2 + 1, 2, ValueType_LoadProfile_Voltage);
-                        }
-                        else
-                        {
-                            pi = getData(DSt->Message + offset*2 + 1, 2, ValueType_LoadProfile_KW);
-
-                            //  adjust for the demand interval
-                            pi.value *= 3600 / interval_len;
-                        }
-
-                        //  compute for the UOM
-                        pi.value = point->computeValueForUOM(pi.value);
-
-                        if( pdata = makePointDataMsg(point, pi, "") )
-                        {
-                            //  the data goes from latest to earliest...  it's kind of backwards
-                            pdata->setTime(timestamp + interval_len * (6 - offset));
-
-                            pdata->setTags(TAG_POINT_LOAD_PROFILE_DATA);
-
-                            ret_msg->insert(pdata);
-                        }
-                    }
-
-                    //  unnecessary?
-                    setLastLPTime (timestamp + interval_len * 6);
-
-                    _lp_info[channel - 1].archived_reading = timestamp + interval_len * 6;
-                }
-                else
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - possible LP logic error for device \"" << getName() << "\";  calculated timestamp=" << CtiTime(timestamp) << "; current_request=" << CtiTime(_lp_info[channel - 1].current_request) << endl;
-                        dout << "commandstr = " << InMessage->Return.CommandStr << endl;
-                    }
-                }
-            }
-            else
-            {
-                ret_msg->setResultString("No load profile point defined for '" + getName() + "'");
-            }
-        }
-        else
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - missing scan_loadprofile token in decodeScanLoadProfile for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-
-            ret_msg->setResultString("Malformed LP command string for '" + getName() + "'");
-        }
-
-        retMsgHandler( InMessage->Return.CommandStr, status, ret_msg, vgList, retList );
     }
 
     return status;
