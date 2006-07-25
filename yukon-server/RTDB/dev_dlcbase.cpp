@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dlcbase.cpp-arc  $
-* REVISION     :  $Revision: 1.34 $
-* DATE         :  $Date: 2006/04/19 20:44:45 $
+* REVISION     :  $Revision: 1.35 $
+* DATE         :  $Date: 2006/07/25 22:17:02 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -127,82 +127,45 @@ LONG CtiDeviceDLCBase::getRouteID() const   {   return DeviceRoutes.getRouteID()
 
 INT CtiDeviceDLCBase::retMsgHandler( string commandStr, int status, CtiReturnMsg *retMsg, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, bool expectMore )
 {
-    CtiReturnMsg *tmpVGRetMsg = NULL;
-    CtiMultiMsg_vec subMsgs;
-    CtiCommandParser parse(commandStr);
-    int retVal;
+    CtiReturnMsg    *tmpVGRetMsg = NULL;
+    CtiPointDataMsg *tmpMsg;
+    int retVal = 0;
+    bool force_update = false;
 
-    //  this function replaced the following commented block of code everywhere it's called:
-    //    (except the MCT31x;  it had some special error-handling code.  the replaced code
-    //     is still there, commented out)
-
-    /*
-      if(ReturnMsg != NULL)
-      {
-         if(!(ReturnMsg->ResultString().empty()) || ReturnMsg->getData().entries() > 0)
-         {
-            retList.push_back( ReturnMsg );
-         }
-         else
-         {
-            delete ReturnMsg;
-         }
-      }
-     */
-
-    retVal = FALSE;
-
-    if( retMsg != NULL)
+    if( retMsg )
     {
+        //  is there anything to send?
         if(!(retMsg->ResultString().empty()) || retMsg->PointData().size() > 0)
         {
-            //  if it's an update command
-
-            if( parse.isKeyValid("flag") && (parse.getFlags( ) & CMD_FLAG_UPDATE) )
+            //  if it's an update command, force the points to be sent...
+            //    this is cheaper than creating a parse - this is the equivalent of looking for CMD_FLAG_UPDATE
+            if( commandStr.find(" update") != string::npos )
             {
-                //  make a copy for VanGogh
-                tmpVGRetMsg = (CtiReturnMsg *)retMsg->replicateMessage( );
-
-                subMsgs = tmpVGRetMsg->PointData( );
-
-                //  iterate through the points in the retMsg and set the pointdatas to "MUST ARCHIVE"
-                for( int i = 0; i < subMsgs.size( ); i++ )
-                {
-                    if( (subMsgs[i])->isA( ) == MSG_POINTDATA )
-                        ((CtiPointDataMsg *)(subMsgs[i]))->setTags( TAG_POINT_MUST_ARCHIVE );
-                }
-
-                vgList.push_back( tmpVGRetMsg );
+                force_update = true;
             }
-            else
+
+            const CtiMultiMsg_vec &subMsgs = retMsg->getData();
+
+            CtiMultiMsg_vec::const_iterator itr;
+            //  Check for any "Must Archive" points and send them to Dispatch
+            for( itr = subMsgs.begin(); itr != subMsgs.end(); itr++ )
             {
-                //  Check for any "Must Archive" points and send them to Dispatch
-
-                subMsgs = retMsg->getData( );
-
-                CtiPointDataMsg *tmpMsg;
-
-                for( int i = 0; i < subMsgs.size( ); i++ )
+                if( force_update ||
+                    (((*itr)->isA() == MSG_POINTDATA) && (((CtiPointDataMsg *)*itr)->getTags() & TAG_POINT_MUST_ARCHIVE)) )
                 {
-                    if( (subMsgs[i])->isA( ) == MSG_POINTDATA &&
-                        (((CtiPointDataMsg *)(subMsgs[i]))->getTags( ) & TAG_POINT_MUST_ARCHIVE) )
+                    //  only allocate this object if you need to
+                    if( tmpVGRetMsg == NULL )
                     {
-                        //  only allocate this object if you need to
-                        if( tmpVGRetMsg == NULL )
-                        {
-                            tmpVGRetMsg = CTIDBG_new CtiReturnMsg(*((CtiReturnMsg *)retMsg));
-                        }
-
-                        tmpMsg = CTIDBG_new CtiPointDataMsg( *((CtiPointDataMsg *)(subMsgs[i])) );
-
-                        tmpVGRetMsg->PointData().push_back(tmpMsg);
+                        tmpVGRetMsg = (CtiReturnMsg *)retMsg->replicateMessage();
                     }
-                }
 
-                if( tmpVGRetMsg != NULL )
-                {
-                    vgList.push_back( tmpVGRetMsg );
+                    tmpVGRetMsg->PointData().push_back(((CtiPointDataMsg *)(*itr))->replicateMessage());
                 }
+            }
+
+            if( tmpVGRetMsg )
+            {
+                vgList.push_back(tmpVGRetMsg);
             }
 
             retMsg->setStatus(status);
@@ -212,7 +175,7 @@ INT CtiDeviceDLCBase::retMsgHandler( string commandStr, int status, CtiReturnMsg
                 retMsg->setExpectMore();
             }
 
-            retList.push_back( retMsg );
+            retList.push_back(retMsg);
 
             retVal = TRUE;
         }
@@ -250,8 +213,8 @@ INT CtiDeviceDLCBase::decodeCheckErrorReturn(INMESS *InMessage, list< CtiMessage
         //           either case.
 
         if( InMessage->Buffer.DSt.Length && //  make sure it's not just an ACK
-            getAddress() != CtiDeviceMCT::MCT_TestAddress1 &&  //  also, make sure we're not sending to an FCT-jumpered MCT,
-            getAddress() != CtiDeviceMCT::MCT_TestAddress2 &&  //    since it'll return its native address and not the test address
+            getAddress() != CtiDeviceMCT::TestAddress1 &&  //  also, make sure we're not sending to an FCT-jumpered MCT,
+            getAddress() != CtiDeviceMCT::TestAddress2 &&  //    since it'll return its native address and not the test address
             (getAddress() & 0x1fff) != (InMessage->Buffer.DSt.Address & 0x1fff) )
         {
             //  Address did not match, so it's a comm error
@@ -444,7 +407,7 @@ int CtiDeviceDLCBase::executeOnDLCRoute( CtiRequestMsg              *pReq,
              */
             if(parse.getActionItems().size())
             {
-                for(std::list< string >::iterator itr = parse.getActionItems().begin(); 
+                for(std::list< string >::iterator itr = parse.getActionItems().begin();
                      itr != parse.getActionItems().end();
                      ++itr )
                 {
