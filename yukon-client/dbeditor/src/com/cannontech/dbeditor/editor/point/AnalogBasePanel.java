@@ -20,7 +20,9 @@ public class AnalogBasePanel extends com.cannontech.common.gui.util.DataInputPan
 	private javax.swing.JComboBox ivjArchiveTypeComboBox = null;
 	private javax.swing.JLabel ivjArchiveTypeLabel = null;
 	private javax.swing.JLabel ivjJLabelDecimalPositons = null;
+    private javax.swing.JLabel ivjJLabelDecimalDigits = null;
 	private com.klg.jclass.field.JCSpinField ivjDecimalPlacesSpinner = null;
+    private com.klg.jclass.field.JCSpinField ivjDecimalDigitsSpinner = null;
 	private javax.swing.JPanel ivjJPanelArchive = null;
 	private javax.swing.JPanel ivjJPanelHolder = null;
 /**
@@ -245,6 +247,27 @@ private com.klg.jclass.field.JCSpinField getDecimalPlacesSpinner() {
 	return ivjDecimalPlacesSpinner;
 }
 /**
+ * Return the LogFrequencyHourSpinner1 property value.
+ * @return com.klg.jclass.field.JCSpinField
+ */
+private com.klg.jclass.field.JCSpinField getDecimalDigitsSpinner() {
+    if (ivjDecimalDigitsSpinner == null) {
+        try {
+            ivjDecimalDigitsSpinner = new com.klg.jclass.field.JCSpinField();
+            ivjDecimalDigitsSpinner.setName("DecimalDigitsSpinner");
+            ivjDecimalDigitsSpinner.setPreferredSize(new java.awt.Dimension(50, 22));
+            ivjDecimalDigitsSpinner.setBackground(java.awt.Color.white);
+            ivjDecimalDigitsSpinner.setMinimumSize(new java.awt.Dimension(50, 22));
+            ivjDecimalDigitsSpinner.setDataProperties(new com.klg.jclass.field.DataProperties(new com.klg.jclass.field.validate.JCIntegerValidator(null, new Integer(0), new Integer(10), null, true, null, new Integer(1), "#,##0.###;-#,##0.###", false, false, false, null, new Integer(0)), new com.klg.jclass.util.value.MutableValueModel(java.lang.Integer.class, new Integer(0)), new com.klg.jclass.field.JCInvalidInfo(true, 2, new java.awt.Color(0, 0, 0, 255), new java.awt.Color(255, 255, 255, 255))));
+            ivjDecimalDigitsSpinner.setPreferredSize(new java.awt.Dimension(20,22));
+            ivjDecimalDigitsSpinner.setMinimumSize(new java.awt.Dimension(20,22));
+        } catch (java.lang.Throwable ivjExc) {
+            handleException(ivjExc);
+        }
+    }
+    return ivjDecimalDigitsSpinner;
+}
+/**
  * Return the JLabelDecimalPositons property value.
  * @return javax.swing.JLabel
  */
@@ -255,7 +278,7 @@ private javax.swing.JLabel getJLabelDecimalPositons() {
 			ivjJLabelDecimalPositons = new javax.swing.JLabel();
 			ivjJLabelDecimalPositons.setName("JLabelDecimalPositons");
 			ivjJLabelDecimalPositons.setFont(new java.awt.Font("dialog", 0, 14));
-			ivjJLabelDecimalPositons.setText("Decimal Digits:");
+			ivjJLabelDecimalPositons.setText("Decimal Places:");
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -265,6 +288,23 @@ private javax.swing.JLabel getJLabelDecimalPositons() {
 		}
 	}
 	return ivjJLabelDecimalPositons;
+}
+/**
+ * Return the JLabelDecimalPositons property value.
+ * @return javax.swing.JLabel
+ */
+private javax.swing.JLabel getJLabelDecimalDigits() {
+    if (ivjJLabelDecimalDigits == null) {
+        try {
+            ivjJLabelDecimalDigits = new javax.swing.JLabel();
+            ivjJLabelDecimalDigits.setName("JLabelDecimalDigits");
+            ivjJLabelDecimalDigits.setFont(new java.awt.Font("dialog", 0, 14));
+            ivjJLabelDecimalDigits.setText("Decimal Digits:");
+        } catch (java.lang.Throwable ivjExc) {
+            handleException(ivjExc);
+        }
+    }
+    return ivjJLabelDecimalDigits;
 }
 /**
  * Return the JPanelArchive property value.
@@ -363,11 +403,20 @@ private javax.swing.JPanel getJPanelHolder() {
 			constraintsDecimalPlacesSpinner.ipadx = 20;
 			constraintsDecimalPlacesSpinner.insets = new java.awt.Insets(2, 2, 5, 100);
 			getJPanelHolder().add(getDecimalPlacesSpinner(), constraintsDecimalPlacesSpinner);
-			// user code begin {1}
-			// user code end
+            
+            java.awt.GridBagConstraints constraintsJLabelDecimalDigits = new java.awt.GridBagConstraints();
+            constraintsJLabelDecimalDigits.gridx = 0; constraintsJLabelDecimalDigits.gridy = 2;
+            constraintsJLabelDecimalDigits.anchor = java.awt.GridBagConstraints.WEST;
+            constraintsJLabelDecimalDigits.insets = new java.awt.Insets(3, 0, 7, 12);
+            getJPanelHolder().add(getJLabelDecimalDigits(), constraintsJLabelDecimalDigits);
+
+            java.awt.GridBagConstraints constraintsDecimalDigitsSpinner = new java.awt.GridBagConstraints();
+            constraintsDecimalDigitsSpinner.gridx = 1; constraintsDecimalDigitsSpinner.gridy = 2;
+            constraintsDecimalDigitsSpinner.anchor = java.awt.GridBagConstraints.WEST;
+            constraintsDecimalDigitsSpinner.ipadx = 20;
+            constraintsDecimalDigitsSpinner.insets = new java.awt.Insets(2, 2, 5, 100);
+            getJPanelHolder().add(getDecimalDigitsSpinner(), constraintsDecimalDigitsSpinner);
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
@@ -440,6 +489,7 @@ public Object getValue(Object val) {
 	point.getPoint().setArchiveInterval(CtiUtilities.getIntervalComboBoxSecondsValue(getArchiveIntervalComboBox()));
 	
 	point.getPointUnit().setDecimalPlaces( new Integer(((Number)getDecimalPlacesSpinner().getValue()).intValue() ) );
+    point.getPointUnit().setDecimalDigits( new Integer(((Number)getDecimalDigitsSpinner().getValue()).intValue() ) );
 
 	return point;
 }
@@ -461,6 +511,7 @@ private void initConnections() throws java.lang.Exception {
 	// user code begin {1}
 
 	getDecimalPlacesSpinner().addValueListener(this);
+    getDecimalDigitsSpinner().addValueListener(this);
 	
 	// user code end
 	getArchiveTypeComboBox().addActionListener(this);
@@ -598,6 +649,7 @@ public void setValue(Object val) {
 	
 
 	getDecimalPlacesSpinner().setValue( point.getPointUnit().getDecimalPlaces() );
+    getDecimalDigitsSpinner().setValue( point.getPointUnit().getDecimalDigits() );
 	getArchiveIntervalLabel().setEnabled(false);
 	getArchiveIntervalComboBox().setEnabled(false);
 	for(int i=0;i<getUnitOfMeasureComboBox().getModel().getSize();i++)
@@ -628,7 +680,7 @@ public void setValue(Object val) {
  */
 public void valueChanged(com.klg.jclass.util.value.JCValueEvent arg1) 
 {
-	if (arg1.getSource() == getDecimalPlacesSpinner()) 
+	if ((arg1.getSource() == getDecimalPlacesSpinner()) || (arg1.getSource() == getDecimalDigitsSpinner())) 
 		this.fireInputUpdate();
 }
 /**
