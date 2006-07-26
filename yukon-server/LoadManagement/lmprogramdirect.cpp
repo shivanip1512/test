@@ -3836,7 +3836,9 @@ BOOL CtiLMProgramDirect::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg*
             // Currently program  constraints are already checked by the executor for handling manual control
             // as well sa the starttimedprogram function.  So when we get here the check should have already
             // been made.
-//            if(getConstraintOverride() || con_checker.checkGroupConstraints(getCurrentGearNumber(), getDirectStartTime().seconds(), getDirectStopTime().seconds()))
+            // 
+            // Constraints are not checked in a manual execution. JMO 7/26/2006
+            if(getConstraintOverride() || con_checker.checkManualProgramConstraints(getDirectStartTime().seconds(), getDirectStopTime().seconds()))
             {
                 // are any of our master programs already running?  if so we can't start MASTERSLAVE - this is alreadya  constraint checked in executor
                 returnBoolean = TRUE;
@@ -3860,13 +3862,13 @@ BOOL CtiLMProgramDirect::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg*
                 manualReduceProgramLoad(secondsFrom1901, multiPilMsg,multiDispatchMsg);
                 setProgramState(CtiLMProgramBase::ManualActiveState);
             }
-/*          else
+            else
             {
                 con_checker.dumpViolations();
                 setProgramState(CtiLMProgramBase::InactiveState);
                 setManualControlReceivedFlag(FALSE);
             }
-*/
+
         }
         if( secondsFrom1901 >= getDirectStopTime().seconds() )
         {
