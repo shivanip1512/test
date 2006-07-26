@@ -171,14 +171,18 @@ public void receivedPointData( PointData point )
 	//receivedSignal( point.getSig() );
 
 	Object[] names = getDeviceNameAndPointName( point.getId() );		
-
+	
 	outStream.printTextLine(
 		CommonUtils.formatDate( point.getPointDataTimeStamp() ) + " " +
 		CommonUtils.formatString( names[0].toString(), Logger.DEVICENAME_LENGTH ) + " " +
-		CommonUtils.formatString( names[1].toString(), Logger.POINTNAME_LENGTH ) + " " +
-		CommonUtils.formatString( determinePointValue( point ), Logger.DESCRIPTION_LENGTH ) + " " +
-		CommonUtils.formatString( com.cannontech.database.data.point.PointTypes.getType(point.getType()), Logger.TYPE_LENGTH ),
+		CommonUtils.formatString( names[1].toString(), Logger.POINTNAME_LENGTH ),
 		0l );
+    
+    outStream.printTextLine(
+            "                     " +
+            CommonUtils.formatString( determinePointValue( point ), Logger.DESCRIPTION_LENGTH ) + " " +
+            CommonUtils.formatString( com.cannontech.database.data.point.PointTypes.getType(point.getType()), Logger.TYPE_LENGTH ),
+            0l );
 }
 /**
  * Insert the method's description here.
@@ -207,10 +211,15 @@ public void receivedSignal( Signal point )
 		outStream.printTextLine(
 			CommonUtils.formatString( CommonUtils.formatDate( point.getTimeStamp() ), Logger.TIMESTAMP_LENGTH ) + " " +
 			CommonUtils.formatString( names[0].toString(), Logger.DEVICENAME_LENGTH ) + " " +
-			CommonUtils.formatString( names[1].toString(), Logger.POINTNAME_LENGTH ) + " " +
-			CommonUtils.formatString( point.getDescription(), Logger.DESCRIPTION_LENGTH ) + " " +
-			CommonUtils.formatString( point.getAction(), Logger.ACTION_LENGTH ),
+			CommonUtils.formatString( names[1].toString(), Logger.POINTNAME_LENGTH ),
 			point.getCategoryID() );
+        
+        outStream.printTextLine(
+                "                     " +
+                CommonUtils.formatString( point.getDescription(), Logger.DESCRIPTION_LENGTH ) + " " +
+                CommonUtils.formatString( point.getAction(), Logger.ACTION_LENGTH ),
+                point.getCategoryID() );
+        
 	}
 		
 }

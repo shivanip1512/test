@@ -9,6 +9,8 @@ package com.cannontech.logger;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.print.PrinterJob;
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
 
 import javax.swing.Timer;
 
@@ -387,14 +389,14 @@ public static void main(String[] args)
 private synchronized void printPageNow() 
 {
 	// make sure we have some lines and the document is not currently printing
-	waitForPrinter();
+//	waitForPrinter();
 	
-	if( lineCount > 0 )
-	{
-		document.print( printer );
-		flow.newPage(); 
-		createNewPrinterTools();
-	}
+//	if( lineCount > 0 )
+//	{
+//		document.print( printer );
+//		flow.newPage(); 
+//		createNewPrinterTools();
+//	}
 }
 
 /**
@@ -462,29 +464,70 @@ private void printTitle()
  */
 private void printToPageLayout(String line, long classification) 
 {
-	setLineColor( classification );
+    try 
+    {
+        FileOutputStream fos = new FileOutputStream("LPT1");
+        PrintWriter pw = new PrintWriter(fos);
+        
+        pw.println(line);
+        pw.close();
+        fos.close();
+        lineCount++;
+    } catch (Exception e) {
+        System.out.println("Error printing directly to LPT");
+    }
+    
+//	setLineColor( classification );
+//
+//	flow.print(line);
+//	getTextStyle().setColor( Color.black );
+//	
+//	flow.newLine();
+//	lineCount++;
 
-	flow.print(line);
-	getTextStyle().setColor( Color.black );
-	
-	flow.newLine();
-	lineCount++;
-
-	// print a blank line for every 10 printed lines
-	if( (lineCount % LINE_BREAK) == 0 )
-	{
-		flow.newLine();
-		lineCount++;
-	}
+    
+//	// print a blank line for every 10 printed lines
+//	if( (lineCount % LINE_BREAK) == 0 )
+//	{
+////		flow.newLine();
+//        try 
+//        {
+//            FileOutputStream fos = new FileOutputStream("LPT1");
+//            PrintWriter pw = new PrintWriter(fos);
+//            
+//            pw.println();
+//            pw.close();
+//            fos.close();
+//            lineCount++;
+//        } catch (Exception e) {
+//            System.out.println("Error printing directly to LPT");
+//        }
+//		lineCount++;
+//	}
 
 	if( lineCount == MAX_LINES )
 	{
-		waitForPrinter();			
-		com.cannontech.clientutils.CTILogger.info("Starting Print Job");
-		document.print( printer );
-		com.cannontech.clientutils.CTILogger.info("Finish Print");
-		flow.endFlow();
-		createNewPrinterTools();
+//		waitForPrinter();			
+//		com.cannontech.clientutils.CTILogger.info("Starting Print Job");
+//		document.print( printer );
+//        
+//		com.cannontech.clientutils.CTILogger.info("Finish Print");
+//		flow.endFlow();
+//		createNewPrinterTools();
+        try 
+        {
+            FileOutputStream fos = new FileOutputStream("LPT1");
+            PrintWriter pw = new PrintWriter(fos);
+            
+            pw.println(getTitleText());
+            pw.println(getHeaderText());
+            pw.close();
+            fos.close();
+            lineCount = 1;
+        } catch (Exception e) {
+            System.out.println("Error printing directly to LPT");
+        }
+        lineCount++;
 	}	
 }
 
