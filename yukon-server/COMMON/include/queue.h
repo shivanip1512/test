@@ -9,6 +9,7 @@
 #include <iostream>
 #include <LIMITS>
 
+#include "cparms.h"
 #include "dlldefs.h"
 #include "logger.h"
 #include "utility.h"
@@ -23,7 +24,6 @@ using std::endl;
 
 
 
-
 // Template Queuing class
 template <class T,  class C>
 class IM_EX_CTIBASE CtiQueue
@@ -31,14 +31,24 @@ class IM_EX_CTIBASE CtiQueue
 private:
     boost::condition           dataAvailable;
     mutable boost::timed_mutex mux;
-    std::list<T*>              _sortedCol;
+    std::list<T*>              *_col;
     string                     _name;
 
     struct boost::xtime xt_eot;
 
+
+    std::list<T*> & getCollection()
+    {
+        if(!_col)
+            _col = new std::list<T*>;
+
+        return *_col;
+    }
+
 public:
 
     CtiQueue() :
+    _col(0),
     _name("Unnamed Queue")
     {
         xt_eot.sec  = INT_MAX;
@@ -48,31 +58,54 @@ public:
     virtual ~CtiQueue()
     {
         boost::timed_mutex::scoped_timed_lock scoped_lock(mux, xt_eot);
-        delete_list(_sortedCol);
-        _sortedCol.clear();
+        resetCollection();
     }
 
     void putQueue(T *pt)
     {
+        boost::timed_mutex::scoped_timed_lock scoped_lock(mux, xt_eot);
         try
         {
             if(pt != NULL)
             {
-                boost::timed_mutex::scoped_timed_lock scoped_lock(mux, xt_eot);
-                dataAvailable.notify_one();
-                _sortedCol.push_back(pt);
-
                 try
                 {
-                    _sortedCol.sort();
+                    dataAvailable.notify_one();
                 }
                 catch(...)
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Exception **** " << __FILE__ << " (" << __LINE__ << ") q.size() " << _sortedCol.size() << endl;
+                        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
-                    _sortedCol.clear();     // Dump the queue?
+                }
+
+                try
+                {
+                    getCollection().push_back(pt);
+                }
+                catch(...)
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                }
+
+                if(!gConfigParms.isTrue("YUKON_NOSORT_QUEUES"))
+                {
+                    try
+                    {
+                        getCollection().sort( std::greater<T*>() );
+                    }
+                    catch(...)
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " **** Exception **** " << __FILE__ << " (" << __LINE__ << ") q.size() " << getCollection().size() << endl;
+                        }
+                        resetCollection();     // Dump the queue?
+                    }
                 }
 
                 // mutex automatically released in LockGuard destructor
@@ -80,7 +113,8 @@ public:
         }
         catch(...)
         {
-            {   CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << __FILE__ << " (" << __LINE__ << ")" << endl; }
+            {   CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << __FILE__ << " (" << __LINE__ << ")" << endl;}
+            resetCollection();     // Dump the queue?
         }
     }
 
@@ -90,19 +124,19 @@ public:
         try
         {
             boost::timed_mutex::scoped_timed_lock scoped_lock(mux, xt_eot);
-            while( _sortedCol.empty() )
+            while( getCollection().empty() )
             {
                 dataAvailable.wait(scoped_lock);
             }
 
-            pval = _sortedCol.front();
-            _sortedCol.pop_front();
+            pval = getCollection().front();
+            getCollection().pop_front();
 
-            // cerr << "Number of entries " << _sortedCol.entries() << endl;
+            // cerr << "Number of entries " << getCollection().entries() << endl;
         }
         catch(...)
         {
-            {   CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << __FILE__ << " (" << __LINE__ << ")" << endl; }
+            {   CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << __FILE__ << " (" << __LINE__ << ")" << endl;}
         }
 
         return pval;
@@ -122,25 +156,27 @@ public:
 
             if(scoped_lock.locked())
             {
-                if(_sortedCol.empty())
+                if(getCollection().empty())
                 {
                     wRes = dataAvailable.timed_wait(scoped_lock,xt); // monitor mutex released automatically
                     // thread must have been signalled AND mutex reacquired to reach here OR RW_THR_TIMEOUT
-                    if(wRes == true)
+                    if(wRes == true && !getCollection().empty())
                     {
-                        pval = _sortedCol.front();
-                        _sortedCol.pop_front();
+                        pval = getCollection().front();
+                        getCollection().pop_front();
                     }
-                }else{
-                    pval = _sortedCol.front();
-                    _sortedCol.pop_front();
+                }
+                else
+                {
+                    pval = getCollection().front();
+                    getCollection().pop_front();
                 }
             }
             // mutex automatically released in LockGuard destructor
         }
         catch(...)
         {
-            {   CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << __FILE__ << " (" << __LINE__ << ")" << endl; }
+            {   CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << __FILE__ << " (" << __LINE__ << ")" << endl;}
         }
         return pval;
     }
@@ -154,13 +190,13 @@ public:
             {
                 boost::timed_mutex::scoped_timed_lock scoped_lock(mux, xt_eot);
                 {
-                    _sortedCol.push_back(pt);
+                    getCollection().push_back(pt);
                     dataAvailable.notify_one();
                     putWasDone = true;
 
                     try
                     {
-                        _sortedCol.sort();
+                        getCollection().sort( std::greater<T*>() );
                     }
                     catch(...)
                     {
@@ -171,36 +207,30 @@ public:
         }
         catch(...)
         {
-            {   CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << __FILE__ << " (" << __LINE__ << ")" << endl; }
+            {   CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << __FILE__ << " (" << __LINE__ << ")" << endl;}
         }
 
         return putWasDone;
     }
 
-    /*
-     *  Allows us to shrink or grow the queue in question..
-     */
-    size_t   resize(size_t addition = 1)
-    {
-        boost::timed_mutex::scoped_timed_lock scoped_lock(mux, xt_eot);
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-        return _sortedCol.size();
-    }
-
-
     size_t   entries(void) const       // QueryQue.
     {
-        //TryLockGuard lock(monitor());   // TRY to acquire monitor mutex. Not critical.  May be used as a getter, so we cannot be rigid here.
-        return _sortedCol.size();
+        size_t sz = 0;
+        if(_col)
+        {
+            sz = _col->size();
+        }
+        return sz;
     }
 
     size_t   size(void)        // how big may it be?
     {
-        //TryLockGuard lock(monitor());   // TRY to acquire monitor mutex. Not critical.  May be used as a getter, so we cannot be rigid here.
-        return _sortedCol.size();
+        size_t sz = 0;
+        if(_col)
+        {
+            sz = _col->size();
+        }
+        return sz;
     }
 
     BOOL  isFull(void)
@@ -208,11 +238,11 @@ public:
         return(FALSE);
     }
 
-    void     clearAndDestroy(void)      // Destroys pointed to objects as well.
+    void clearAndDestroy(void)      // Destroys pointed to objects as well.
     {
         boost::timed_mutex::scoped_timed_lock scoped_lock(mux, xt_eot);
-        delete_list(_sortedCol);
-        _sortedCol.clear();
+        delete_list();
+        getCollection().clear();
     }
 
     string getName() const
@@ -228,16 +258,82 @@ public:
     template<class _II, class _Fn> inline
     void ts_for_each(_II _F, _II _L, _Fn _Op, void* d)
     {
-        for (; _F != _L; ++_F)
+        for(; _F != _L; ++_F)
             _Op(*_F, d);
 
     }
     void apply(void (*fn)(T*&,void*), void* d)
     {
         boost::timed_mutex::scoped_timed_lock scoped_lock(mux, xt_eot);
-        ts_for_each(_sortedCol.begin(),_sortedCol.end(),fn,d);
+        ts_for_each(getCollection().begin(),getCollection().end(),fn,d);
     }
 
+    void resetCollection()
+    {
+        try
+        {
+            if(_col)
+            {
+                try
+                {
+                    delete_list();
+                }
+                catch(...)
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                }
+
+                try
+                {
+                    _col->clear();
+                }
+                catch(...)
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                }
+
+                delete _col;
+            }
+        }
+        catch(...)
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+        }
+
+        _col = 0;     // No matter what, I exit leaving the old one behind!
+    }
+
+    inline void delete_list( )
+    {
+        try
+        {
+            if(_col)
+            {
+                while(!_col->empty())
+                {
+                    T *pval = _col->front();
+                    _col->pop_front();
+                    delete pval;
+                }
+            }
+        }
+        catch(...)
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+        }
+    }
 };
 
 // Template Queuing class
@@ -246,7 +342,7 @@ class IM_EX_CTIBASE CtiFIFOQueue
 {
 private:
 
-    std::list<T*> _col;
+    std::list<T*> *_col;
     boost::condition           dataAvailable;
     mutable boost::timed_mutex                mux;
 
@@ -254,9 +350,51 @@ private:
 
     struct boost::xtime xt_eot;
 
+
+    std::list<T*> & getCollection()
+    {
+        if(!_col)
+            _col = new std::list<T*>;
+
+        return *_col;
+    }
+
+    /* must have the mux */
+    void resetCollection()
+    {
+        try
+        {
+            if(_col)
+            {
+                try
+                {
+                    delete_list();
+                    _col->clear();
+                }
+                catch(...)
+                {
+                    {
+                        cerr << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                }
+
+                delete _col;
+            }
+        }
+        catch(...)
+        {
+            {
+                cerr << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+        }
+
+        _col = 0;     // No matter what, I exit leaving the old one behind!
+    }
+
 public:
 
     CtiFIFOQueue() :
+    _col(0),
     _name("Unnamed Queue")
     {
         xt_eot.sec  = INT_MAX;
@@ -266,8 +404,8 @@ public:
     virtual ~CtiFIFOQueue()
     {
         boost::timed_mutex::scoped_timed_lock scoped_lock(mux, xt_eot);
-        delete_list(_col);
-        _col.clear();
+        delete_list();
+        getCollection().clear();
     }
 
     void putQueue(T *pt)
@@ -277,16 +415,16 @@ public:
             if(pt != NULL)
             {
                 {
-                boost::timed_mutex::scoped_timed_lock scoped_lock(mux, xt_eot);
-                _col.push_back(pt);
-                dataAvailable.notify_one();
-                // mutex automatically released in LockGuard destructor
+                    boost::timed_mutex::scoped_timed_lock scoped_lock(mux, xt_eot);
+                    getCollection().push_back(pt);
+                    dataAvailable.notify_one();
+                    // mutex automatically released in LockGuard destructor
                 }
             }
         }
         catch(...)
         {
-            {   CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << __FILE__ << " (" << __LINE__ << ")" << endl; }
+            {   CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << __FILE__ << " (" << __LINE__ << ")" << endl;}
         }
     }
 
@@ -296,18 +434,17 @@ public:
         try
         {
             boost::timed_mutex::scoped_timed_lock scoped_lock(mux, xt_eot);
-            while( _col.empty() )
+            while( getCollection().empty() )
             {
                 dataAvailable.wait(scoped_lock);
             }
-            pval = _col.front();
-            _col.pop_front();
+            pval = getCollection().front();
+            getCollection().pop_front();
 
-            // cerr << "Number of entries " << _sortedCol.entries() << endl;
         }
         catch(...)
         {
-            {   CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << __FILE__ << " (" << __LINE__ << ")" << endl; }
+            {   CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << __FILE__ << " (" << __LINE__ << ")" << endl;}
         }
 
         return pval;
@@ -329,25 +466,27 @@ public:
             if(scoped_lock.locked())
             {
 
-                if(_col.empty())
+                if(getCollection().empty())
                 {
                     wRes = dataAvailable.timed_wait(scoped_lock,xt); // monitor mutex released automatically
                     // thread must have been signalled AND mutex reacquired to reach here OR RW_THR_TIMEOUT
                     if(wRes == true)
                     {
-                        pval = _col.front();
-                        _col.pop_front();
+                        pval = getCollection().front();
+                        getCollection().pop_front();
                     }
-                }else{
-                    pval = _col.front();
-                    _col.pop_front();
+                }
+                else
+                {
+                    pval = getCollection().front();
+                    getCollection().pop_front();
                 }
             }
             // mutex automatically released in LockGuard destructor
         }
         catch(...)
         {
-            {   CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << __FILE__ << " (" << __LINE__ << ")" << endl; }
+            {   CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << __FILE__ << " (" << __LINE__ << ")" << endl;}
         }
         return pval;
     }
@@ -361,7 +500,7 @@ public:
             {
                 {
                     boost::timed_mutex::scoped_timed_lock scoped_lock(mux, xt_eot);
-                    _col.push_back(pt);
+                    getCollection().push_back(pt);
                     dataAvailable.notify_one();
                     // mutex automatically released in LockGuard destructor
                     putWasDone = true;
@@ -370,7 +509,7 @@ public:
         }
         catch(...)
         {
-            {   CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << __FILE__ << " (" << __LINE__ << ")" << endl; }
+            {   CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << __FILE__ << " (" << __LINE__ << ")" << endl;}
         }
 
         return putWasDone;
@@ -381,29 +520,24 @@ public:
      */
     size_t   resize(size_t addition = 1)
     {
-        {
-        boost::timed_mutex::scoped_timed_lock scoped_lock(mux, xt_eot);
-        //LockGuard lock(monitor());   // acquire monitor mutex
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-        return _col.size();
-
-        }
+        return size();
     }
 
 
     size_t   entries(void) const       // QueryQue.
     {
-        //TryLockGuard lock(monitor());   // TRY to acquire monitor mutex. Not critical.  May be used as a getter, so we cannot be rigid here.
-        return _col.size();
+        return size();
     }
 
-    size_t   size(void)        // how big may it be?
+    size_t   size(void) const        // how big may it be?
     {
-        //TryLockGuard lock(monitor());   // TRY to acquire monitor mutex. Not critical.  May be used as a getter, so we cannot be rigid here.
-        return _col.size();
+        boost::timed_mutex::scoped_timed_lock scoped_lock(mux, xt_eot);
+        size_t sz = 0;
+        if(_col)
+        {
+            sz = _col->size();
+        }
+        return sz;
     }
 
     BOOL  isFull(void)
@@ -411,13 +545,11 @@ public:
         return(FALSE);
     }
 
-    void     clearAndDestroy(void)      // Destroys pointed to objects as well.
+    void clearAndDestroy(void)      // Destroys pointed to objects as well.
     {
-        {
         boost::timed_mutex::scoped_timed_lock scoped_lock(mux, xt_eot);
-        delete_list(_col);
-        _col.clear();
-        }
+        delete_list();
+        getCollection().clear();
     }
 
     string getName() const
@@ -433,16 +565,29 @@ public:
     template<class _II, class _Fn> inline
     void ts_for_each(_II _F, _II _L, _Fn _Op, void* d)
     {
-        for (; _F != _L; ++_F)
+        for(; _F != _L; ++_F)
             _Op(*_F, d);
 
     }
     void apply(void (*fn)(T*&,void*), void* d)
     {
         {
-        boost::timed_mutex::scoped_timed_lock scoped_lock(mux, xt_eot);
-        //_col.apply(fn,d);
-        ts_for_each(_col.begin(),_col.end(),fn,d);
+            boost::timed_mutex::scoped_timed_lock scoped_lock(mux, xt_eot);
+            //getCollection().apply(fn,d);
+            ts_for_each(getCollection().begin(),getCollection().end(),fn,d);
+        }
+    }
+
+    inline void delete_list( )
+    {
+        if(_col)
+        {
+            while(!_col->empty())
+            {
+                T *pval = _col->front();
+                _col->pop_front();
+                delete pval;
+            }
         }
     }
 };
