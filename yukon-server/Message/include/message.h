@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/message.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2006/02/17 17:04:33 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2006/07/27 18:37:36 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -123,6 +123,23 @@ public:
 
    virtual bool isValid();
 };
+
+// This will be used to sort these things in a CtiQueue.
+namespace std
+{
+  struct greater<CtiMessage*>
+  {
+    bool operator()(CtiMessage const* p1, CtiMessage const* p2)
+    {
+      if(!p1)
+        return true;
+      if(!p2)
+        return false;
+      return *p1 > *p2;
+    }
+  };
+};
+
 
 #endif      // #ifndef __CTIMESSAGE_H__
 

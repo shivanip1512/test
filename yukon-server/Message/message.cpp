@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/message.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/12/20 17:18:53 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2006/07/27 18:37:36 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -161,14 +161,7 @@ RWBoolean CtiMessage::operator<(const CtiMessage& aRef) const
 
    if(MessagePriority < aRef.getMessagePriority())
    {
-      bRet = RWBoolean(FALSE);   // Higher priority is "less"
-   }
-   else if(MessagePriority == aRef.getMessagePriority())
-   {
-      if(MessageTime >= aRef.getMessageTime())   // Higher time is "greater"
-      {
-         bRet = RWBoolean(FALSE);
-      }
+      bRet = RWBoolean(FALSE);   // Higher priority is "less".  Sorts ahead of lower priority.
    }
    return bRet;
 }
@@ -177,17 +170,11 @@ RWBoolean CtiMessage::operator>(const CtiMessage& aRef) const
 {
    RWBoolean bRet(TRUE);
 
-   if(MessagePriority > aRef.getMessagePriority())
+   if(MessagePriority < aRef.getMessagePriority())
    {
-      bRet = RWBoolean(FALSE);   // Higher priority is "less"
+      bRet = RWBoolean(FALSE);   // Lower priority sorts behind greater.  Lower == is "more" in the lists.
    }
-   else if(MessagePriority == aRef.getMessagePriority())
-   {
-      if(MessageTime < aRef.getMessageTime())   // Higher time is "greater"
-      {
-         bRet = RWBoolean(FALSE);
-      }
-   }
+
    return bRet;
 }
 
