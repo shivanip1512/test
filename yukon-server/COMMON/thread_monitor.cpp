@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2006/02/21 15:27:15 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2006/07/27 18:38:18 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002, 2003, 2004 Cannon Technologies Inc. All rights reserved.
 *---------------------------------------------------------------------------------------------*/
@@ -24,9 +24,9 @@ using std::pair;
 using std::map;
 
 /*********************************************************************************************
-        Example usage of thread_monitor. 
+        Example usage of thread_monitor.
         To find current implementations search for ThreadMonitor.getState() and ThreadMonitor.tickle( data );
-        
+
         //Thread Monitor (code for thread) Any thread that is to be monitored needs code similar to this.
         CtiTime lastTickleTime, lastReportTime;     //defined above, not right before as you see here
         if(lastTickleTime.seconds() < (lastTickleTime.now().seconds() - CtiThreadMonitor::StandardTickleTime))
@@ -54,10 +54,10 @@ using std::map;
         //End Thread Monitor Section (thread specific)
 
         Note that any thread who goes away besides on a shutdown should also include a logout command
-        
+
         ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( GetCurrentThreadId(), "RTDB Archiver Thread", CtiThreadRegData::LogOut, CtiThreadMonitor::StandardMonitorTime ));
-        
-        Now each application needs a polling and reporting section. 
+
+        Now each application needs a polling and reporting section.
         This example was in the DispatchMsgHandlerThread thread. This is a good choice for several reasons, but
         one good reason is that if the communication to dispatch is down, reporting cannot happen anyway, so this thread really
         cannot be monitored. It also uses the connection to dispatch a lot, and so it was a natural fit for our function
@@ -70,7 +70,7 @@ using std::map;
             {
                 previous = next;
                 checkCount = 0;
-                
+
                 pointMessage.setType(StatusPointType);
                 pointMessage.setValue(next);
 
@@ -126,11 +126,15 @@ void CtiThreadMonitor::run( void )
 
         processQueue();
 
-        processExtraCommands();
+        if( !gConfigParms.isTrue("YUKON_DISABLE_THREADMONITOR") )
+        {
 
-        processExpired();
+            processExtraCommands();
 
-        // _queue.clearAndDestroy();
+            processExpired();
+
+            // _queue.clearAndDestroy();
+        }
     }
 
     messageOut( "ts", "Monitor Shutdown" );
@@ -192,29 +196,36 @@ void CtiThreadMonitor::processQueue( void )
         //this says it removes the first entry, so we won't C&D later
         CtiThreadRegData *temp = _queue.getQueue();
 
-        int tempId = temp->getId();
-
-        ThreadData::ptr_type i = _threadData.find( tempId );
-
-        //Note that currently you are set critical or not at initialization and never again.
-        if( i )
+        if( gConfigParms.isTrue("YUKON_DISABLE_THREADMONITOR") )
         {
-            if( !i->getReported() )
-            {
-                messageOut( "tsisvs", "Thread W/ID", i->getId(), "", i->getName(), "has reported" );
-                messageOut( "tsisvs", "Thread W/ID", i->getId(), " Last heard from: ", timeString( i->getTickledTime() ),"");
-            }
-            _threadData.remove(tempId);//smart pointer will delete reg data item!
-        }
-
-        ThreadData::insert_pair insertpair;
-
-        //we try to put the element from the queue into the map
-        insertpair = _threadData.insert( tempId, temp );
-
-        if( !insertpair.second )
-        {   //failed insert, delete the temp. This should be safe.
             delete temp;
+        }
+        else
+        {
+            int tempId = temp->getId();
+
+            ThreadData::ptr_type i = _threadData.find( tempId );
+
+            //Note that currently you are set critical or not at initialization and never again.
+            if( i )
+            {
+                if( !i->getReported() )
+                {
+                    messageOut( "tsisvs", "Thread W/ID", i->getId(), "", i->getName(), "has reported" );
+                    messageOut( "tsisvs", "Thread W/ID", i->getId(), " Last heard from: ", timeString( i->getTickledTime() ),"");
+                }
+                _threadData.remove(tempId);//smart pointer will delete reg data item!
+            }
+
+            ThreadData::insert_pair insertpair;
+
+            //we try to put the element from the queue into the map
+            insertpair = _threadData.insert( tempId, temp );
+
+            if( !insertpair.second )
+            {   //failed insert, delete the temp. This should be safe.
+                delete temp;
+            }
         }
     }
 }
@@ -235,10 +246,10 @@ void CtiThreadMonitor::processExpired( void )
             {
                 CtiThreadRegDataSPtr regData = i->second;
 
-                if( !regData->getActionTaken() || 
+                if( !regData->getActionTaken() ||
                     (regData->getTickledTime() + seconds(TEN_MINUTES_IN_SECONDS*regData->getUnreportedCount())) < ptime(second_clock::local_time()) )
                 {
-                    regData->setUnreportedCount(regData->getUnreportedCount() + 1); 
+                    regData->setUnreportedCount(regData->getUnreportedCount() + 1);
 
                     regData->setActionTaken(true);//trying to ensure we dont act twice on an object that does not go away
 
@@ -470,7 +481,7 @@ void CtiThreadMonitor::messageOut( const char *fmt, ... )
 }
 
 //===========================================================================================================
-// Return current state 
+// Return current state
 //===========================================================================================================
 CtiThreadMonitor::State CtiThreadMonitor::getState( void)
 {

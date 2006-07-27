@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2006/02/16 17:57:31 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2006/07/27 18:38:17 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -22,6 +22,7 @@
 #include "smartmap.h"
 
 
+#include "cparms.h"
 #include "queue.h"
 #include "thread.h"
 #include "thread_register_data.h"
@@ -103,6 +104,7 @@ private:
    string                                                   _output;
 
 };
+
 
 //  included here instead of dllbase.h because ptimes are fat as of 2004-oct-22;
 //    include thread_monitor.h if you want to use the thread monitor in your code

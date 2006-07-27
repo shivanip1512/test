@@ -63,7 +63,7 @@ void CtiCalculateThread::pointChange( long changedID, double newValue, const Cti
         if( _CALC_DEBUG & CALC_DEBUG_POINTDATA )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - Point Data ID: " << changedID << " Val: " << newValue << " Time: " << newTime << " Quality: " << newQuality << endl;
+            dout << CtiTime() << " - Point Data ID: " << changedID << " Val: " << newValue << " Time: " << newTime.asString() << " Quality: " << newQuality << endl;
         }
 
         if( pointPtr != rwnil )
@@ -208,7 +208,7 @@ void CtiCalculateThread::periodicThread( void )
 
             int calcQuality;
             CtiTime calcTime;
-            for( periodicIter = _periodicPoints.begin(); periodicIter != _periodicPoints.end() 
+            for( periodicIter = _periodicPoints.begin(); periodicIter != _periodicPoints.end()
                  ; periodicIter++ )
             {
                 calcPoint = (*periodicIter).second;
@@ -329,7 +329,7 @@ void CtiCalculateThread::onUpdateThread( void )
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " onUpdateThread thread active. TID: " << rwThreadId() << endl;
                     }
-    
+
                     if(!_shutdownOnThreadTimeout)
                     {
                         ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc onUpdateThread", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCalculateThread::periodicComplain, 0) );
@@ -544,7 +544,7 @@ void CtiCalculateThread::historicalThread( void )
         else
         {
             frequencyInSeconds = 60*60;//60 minutes
-        }   
+        }
 
         while( !interrupted )
         {
@@ -560,7 +560,7 @@ void CtiCalculateThread::historicalThread( void )
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " HistoricalThread thread active. TID: " << rwThreadId() << endl;
                     }
-    
+
                     if(!_shutdownOnThreadTimeout)
                     {
                         ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc HistoricalThread", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCalculateThread::periodicComplain, 0) );
@@ -624,7 +624,7 @@ void CtiCalculateThread::historicalThread( void )
                 {
                     continue;//for
                 }
-                
+
                 pointID = calcPoint->getPointId( );
 
                 if( (dbTimeMapIter = dbTimeMap.find( pointID )) != dbTimeMap.end() )//Entry is in the database
@@ -651,11 +651,11 @@ void CtiCalculateThread::historicalThread( void )
                         CtiPointStore* pointStore = CtiPointStore::getInstance();
                         CtiHashKey pointHashKey(calcPoint->getPointId());
                         CtiPointStoreElement* calcPointPtr = (CtiPointStoreElement*)((*pointStore)[&pointHashKey]);
-                    
+
                         newPointValue = calcPoint->calculate( calcQuality, calcTime, calcValid );
-                            
+
                         calcPoint->setNextInterval(calcPoint->getUpdateInterval());
-                        
+
                         if(!calcValid)
                         {
                             //even if we were invalid, we need to move on and try the next time, otherwise we will constantly retry
@@ -664,21 +664,21 @@ void CtiCalculateThread::historicalThread( void )
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << CtiTime() << " ### Calculation of historical point " << calcPoint->getPointId() << " was invalid (ex. div by zero or sqrt(<0))." << endl;
                             }
-                        
+
                             calcQuality = NonUpdatedQuality;
                             newPointValue = 0;
                         }
 
-                        
+
                         sprintf( pointDescription, "calc point %l update", pointID );
-                        
+
                         CtiPointDataMsg *pointData = CTIDBG_new CtiPointDataMsg(pointID, newPointValue, NormalQuality, InvalidPointType, pointDescription);  // Use InvalidPointType so dispatch solves the Analog/Status nature by itself
                         pointData->setTime(iter->first);//The time these points were entered in the historical log
                         newTime = iter->first;//we do this in order of time, so the last one is the time we want.
-                        
+
                         pChg->getData( ).push_back( pointData );
                         pointsInMulti = TRUE;
-                        
+
                         if( _CALC_DEBUG & CALC_DEBUG_THREAD_REPORTING )
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -787,7 +787,7 @@ void CtiCalculateThread::baselineThread( void )
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " BaselineThread thread active. TID: " << rwThreadId() << endl;
                     }
-    
+
                     if(!_shutdownOnThreadTimeout)
                     {
                         ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc BaselineThread", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCalculateThread::periodicComplain, 0) );
@@ -857,7 +857,7 @@ void CtiCalculateThread::baselineThread( void )
                 {
                     continue;//for
                 }
-                
+
                 pointID = calcPoint->getPointId( );
                 baselineID = calcPoint->getBaselineId();
                 baselinePercentID = calcPoint->getBaselinePercentId();
@@ -956,7 +956,7 @@ void CtiCalculateThread::baselineThread( void )
                             continue;//while loop
                         }
                         else if( baselineDataPtr->excludedWeekDays.length() >= 7 &&
-                                 (baselineDataPtr->excludedWeekDays[curTime.date().weekDay()] == 'Y' || 
+                                 (baselineDataPtr->excludedWeekDays[curTime.date().weekDay()] == 'Y' ||
                                   baselineDataPtr->excludedWeekDays[curTime.date().weekDay()] == 'y') )//Sunday = 0
                         {
                             curTime.addDays(-1);
@@ -995,7 +995,7 @@ void CtiCalculateThread::baselineThread( void )
                             sprintf( pointDescription, "calc point %1 update", pointID );
                             CtiPointDataMsg *pointData = CTIDBG_new CtiPointDataMsg(pointID, pointValue, NormalQuality, InvalidPointType, pointDescription, TAG_POINT_MUST_ARCHIVE);  // Use InvalidPointType so dispatch solves the Analog/Status nature by itself
                             pointData->setTime(pointTime.addMinutes(60));//The time these points will appear in historical
-                            
+
                             pChg->getData( ).push_back( pointData );
                             pointsInMulti = TRUE;
                         }
@@ -1032,9 +1032,9 @@ void CtiCalculateThread::baselineThread( void )
                                 dout << CtiTime( ) << "  Sending to point id " << pointID << " and time " << pointTime << endl;
                             }
                         }
-                        
+
                     }
-                    
+
                     //It is worth noting we could make the calc on future days more efficient, but this should not happen very often
                     //The general case is we are only calculating 1 new day each time baseline is run.
                     lastTime.addDays(1);//Causes us to calc on the next day, yay!
@@ -1258,7 +1258,7 @@ void CtiCalculateThread::interruptThreads( CtiCalcThreadInterruptReason reason )
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " CalcThreads interrupted"<< endl;
     }
-    
+
 }
 
 void CtiCalculateThread::resumeThreads(  )
@@ -1568,19 +1568,19 @@ void CtiCalculateThread::clearAndDestroyPointMaps()
             delete_map(_constantPoints);
             _constantPoints.clear();
         }
-    
+
         if( _onUpdatePoints.size() > 0 )
         {
             delete_map(_onUpdatePoints);
             _onUpdatePoints.clear();
         }
-    
+
         if( _periodicPoints.size() > 0 )
         {
             delete_map(_periodicPoints);
             _periodicPoints.clear();
         }
-    
+
         if( _historicalPoints.size() > 0 )
         {
             delete_map(_historicalPoints);
@@ -1914,23 +1914,23 @@ void CtiCalculateThread::getHistoricalTableSinglePointData(long calcPoint, CtiTi
             //  connect to the database
             CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
             RWDBConnection conn = getConnection( );
-    
+
             RWDBDatabase db             = conn.database();
             RWDBTable    table     = db.table("RAWPOINTHISTORY");
             RWDBSelector selector  = db.selector();
-    
+
             selector << table["POINTID"]
             << table["TIMESTAMP"]
             << table["VALUE"];
-    
+
             selector.from( table );
-    
+
             selector.where( selector["POINTID"] == calcPoint );
             selector.where( selector["TIMESTAMP"] > toRWDBDT(lastTime) && selector.where() );
             selector.orderByDescending( selector["TIMESTAMP"] );
-    
+
             RWDBReader  rdr = selector.reader( conn );
-    
+
             //  iterate through the components
             while( rdr() )
             {
@@ -1938,11 +1938,11 @@ void CtiCalculateThread::getHistoricalTableSinglePointData(long calcPoint, CtiTi
                 rdr["POINTID"] >> pointid;
                 rdr["TIMESTAMP"] >> timeStamp;
                 rdr["VALUE"] >> value;
-    
+
                 PointValuePair insertPair(pointid, value);
                 data.insert(DynamicTableSinglePointData::value_type(timeStamp, insertPair));
             }
-    
+
         }
         catch( RWxmsg &msg )
         {
@@ -2002,7 +2002,7 @@ void CtiCalculateThread::updateCalcHistoricalLastUpdatedTime(PointTimeMap &unlis
         }
 
         RWDBUpdater updater = table.updater();
-        
+
         for( iter = updatedPoints.begin(); iter != updatedPoints.end(); iter++ )
         {
             updater.where(table["POINTID"] == iter->first);
@@ -2155,7 +2155,7 @@ void CtiCalculateThread::getCurtailedDates(DatesSet &curtailedDates, long pointI
         selector.from( point );
 
         selector.where( dcl["CUSTOMERID"] == lmReply["CUSTOMERID"] && lmReply["OFFERID"] == lmOffer["OFFERID"] &&
-                        dcl["DEVICEID"] == point["PAOBJECTID"] && lmReply["ACCEPTSTATUS"] == "Accepted" && 
+                        dcl["DEVICEID"] == point["PAOBJECTID"] && lmReply["ACCEPTSTATUS"] == "Accepted" &&
                         point["POINTID"] == pointID && lmOffer["OFFERDATE"] > toRWDBDT(searchTime));
 
         string a = selector.asString();
@@ -2184,7 +2184,7 @@ void CtiCalculateThread::getCurtailedDates(DatesSet &curtailedDates, long pointI
 
 }
 
-//Anything from 00:00:01 to 25:00:00 (next day) is counted for today, when the final values are recorded, 
+//Anything from 00:00:01 to 25:00:00 (next day) is counted for today, when the final values are recorded,
 //They are placed with a timestamp of 25:00:00 (hh:mm:ss)
 bool CtiCalculateThread::processDay(long baselineID, CtiTime curTime, DynamicTableSinglePointData &data, DynamicTableSinglePointData &percentData, int percent, HourlyValues &results)
 {
@@ -2206,14 +2206,14 @@ bool CtiCalculateThread::processDay(long baselineID, CtiTime curTime, DynamicTab
     }
 
     //This assumes that curTime is of the order DDDD:00:00:00
-    for( int i = 0; i < 24; i++ ) 
+    for( int i = 0; i < 24; i++ )
     {
         double value = 0;
         int count = 0;
         DynamicTableSinglePointData::iterator iter;
         if( (iter = data.lower_bound(curTime)) != data.end() )
         {
-            if( iter->first == curTime ) //at 00:00 
+            if( iter->first == curTime ) //at 00:00
             {
                 iter++;
             }

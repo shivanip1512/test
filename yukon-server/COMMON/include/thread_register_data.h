@@ -7,19 +7,19 @@
 *
 * File:   thread_register_data
 *
-* Class:  
+* Class:
 * Date:   9/2/2004
 *
 * Author: Eric Schmit
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2006/02/15 18:42:38 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2006/07/27 18:38:17 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
- 
+
 #include <string>
 
 
@@ -98,7 +98,7 @@ private:
    bool                 _critical;//is it critical or not (default true)
    bool                 _actionTaken;//clear until action is taken (makes sure we dont take action twice!)
    ptime                _tickledTime;
-   int					_unreportedCount;
+   int                  _unreportedCount;
 
    //
    //registeration: must haves
@@ -114,6 +114,24 @@ private:
    behaviourFuncPtr     _action;
    void*                _action_args;
 };
+
+// This will be used to sort these things in a CtiQueue.
+namespace std
+{
+  struct greater<CtiThreadRegData*>
+  {
+    bool operator()(CtiThreadRegData const* p1, CtiThreadRegData const* p2)
+    {
+      //Defined like less for ascending sorting
+      if(!p1)
+        return true;
+      if(!p2)
+        return false;
+      return *p2 < *p1;
+    }
+  };
+};
+
 
 #ifdef VSLICK_TAG_WORKAROUND
 typedef CtiThreadRegData * CtiThreadRegDataSPtr;

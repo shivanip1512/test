@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/DSM2.H-arc  $
-* REVISION     :  $Revision: 1.35 $
-* DATE         :  $Date: 2006/04/24 19:23:22 $
+* REVISION     :  $Revision: 1.36 $
+* DATE         :  $Date: 2006/07/27 18:38:17 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -975,7 +975,28 @@ public:
        return Priority > rhs.Priority; // Bigger is sorted first in terms of priority.
    }
 
+   bool operator>( const CtiOutMessage &rhs ) const
+   {
+       return Priority < rhs.Priority; // Bigger is sorted first in terms of priority.
+   }
+
 } OUTMESS;
+
+// This will be used to sort these things in a CtiQueue.
+namespace std
+{
+  struct greater<CtiOutMessage*>
+  {
+    bool operator()(CtiOutMessage const* p1, CtiOutMessage const* p2)
+    {
+      if(!p1)
+        return true;
+      if(!p2)
+        return false;
+      return *p1 > *p2;
+    }
+  };
+};
 
 
 typedef class CTIINMESS
