@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2006/07/25 22:15:04 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2006/07/31 19:06:48 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1562,7 +1562,7 @@ INT CtiDeviceMCT4xx::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeN
                         if( pData = makePointDataMsg(pPoint, pi, valReport) )
                         {
                             pData->setTime(timeStamp);
-                            pData->setTags(pData->getTags() & TAG_POINT_LOAD_PROFILE_DATA);
+                            pData->setTags(pData->getTags() | TAG_POINT_LOAD_PROFILE_DATA);
 
                             ReturnMsg->insert(pData);
                         }
@@ -1657,7 +1657,7 @@ INT CtiDeviceMCT4xx::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeN
     {
         if( !_llpInterest.retry )
         {
-            interval_len = getLoadProfileInterval(channel);
+            interval_len = getLoadProfileInterval(_llpInterest.channel);
 
             block_len    = interval_len * 6;
 
@@ -1668,7 +1668,7 @@ INT CtiDeviceMCT4xx::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeN
 
             CtiString lp_request_str = "getvalue lp ";
 
-            lp_request_str += "channel " + CtiNumStr(channel) + " " + time_begin.asString() + " " + time_end.asString();
+            lp_request_str += "channel " + CtiNumStr(_llpInterest.channel) + " " + time_begin.asString() + " " + time_end.asString();
 
             //  if it's a background message, it's queued
             if(      strstr(InMessage->Return.CommandStr, " background") )   lp_request_str += " background";
