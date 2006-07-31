@@ -144,4 +144,9 @@
     <property name="configFile" value="classpath:com/cannontech/database/incrementer/table_sequences.xml"/>
   </bean>
   
+  <bean id="pointDeviceSearcherLucene" class="com.cannontech.common.search.PointDeviceLuceneSearcher" singleton="true" autowire="byType">
+      <constructor-arg value="c:/dev/lucene"/>
+  </bean>
+  
+  <alias name="pointDeviceSearcherLucene" alias="pointDeviceSearcher"/>
 </beans>
