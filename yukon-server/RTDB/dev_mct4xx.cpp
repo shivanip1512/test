@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2006/07/31 19:49:46 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2006/07/31 20:28:17 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1664,7 +1664,8 @@ INT CtiDeviceMCT4xx::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeN
 
             _llpInterest.retry = true;
 
-            CtiTime time_begin(_llpInterest.time + _llpInterest.offset + block_len + interval_len),
+            //  we're asking for the same block, not the next block, so don't move ahead a block
+            CtiTime time_begin(_llpInterest.time + _llpInterest.offset + /* block_len + */ interval_len),
                     time_end  (_llpInterest.time_end);
 
             CtiString lp_request_str = "getvalue lp ";
@@ -1864,7 +1865,8 @@ INT CtiDeviceMCT4xx::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
 
                 _llpInterest.retry = true;
 
-                CtiTime time_begin(_llpInterest.time + _llpInterest.offset + block_len + interval_len),
+                //  we're asking for the same block, not the next block, so don't move ahead a block
+                CtiTime time_begin(_llpInterest.time + _llpInterest.offset + /* block_len + */ interval_len),
                         time_end  (_llpInterest.time_end);
 
                 CtiString lp_request_str = "getvalue lp ";
