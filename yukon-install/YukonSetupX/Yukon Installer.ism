@@ -846,6 +846,7 @@
 		<row><td>ISProjectFolder</td><td/><td/><td>1</td></row>
 		<row><td>PATH_TO_BIN_FILES</td><td>C:\j2sdk1.4.1_06\bin</td><td/><td>2</td></row>
 		<row><td>PATH_TO_CLIENT_FILES</td><td>Z:\install\lib\client</td><td/><td>2</td></row>
+		<row><td>PATH_TO_JAVA BACKUP_FILES</td><td>Z:\Java backup</td><td/><td>2</td></row>
 		<row><td>PATH_TO_JDK_FILES</td><td>Z:\java\archive\jdk</td><td/><td>2</td></row>
 		<row><td>PATH_TO_ROGUEWAVE</td><td>Y:\RogueWave\workspaces\WINNT4\MSVC60\15d\lib</td><td/><td>2</td></row>
 		<row><td>PATH_TO_SERVER_FILES</td><td>Z:\install\lib\server</td><td/><td>2</td></row>
@@ -1243,7 +1244,7 @@
 		<col def="S50">Language</col>
 		<col def="I2">Splash</col>
 		<col def="S0">Path</col>
-		<row><td>SetupFile1</td><td>Java 2 SDK, SE v1.4.2_05.msi</td><td/><td>0</td><td>0</td><td>&lt;PATH_TO_JDK_FILES&gt;\Java 2 SDK, SE v1.4.2_05.msi</td></row>
+		<row><td>SetupFile2</td><td>J2SE Development Kit 5.0 Update 6.msi</td><td/><td>0</td><td>0</td><td>&lt;PATH_TO_JAVA BACKUP_FILES&gt;\J2SE Development Kit 5.0 Update 6.msi</td></row>
 	</table>
 
 	<table name="ISSetupPrerequisites">
