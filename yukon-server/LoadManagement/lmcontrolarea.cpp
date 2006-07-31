@@ -998,23 +998,24 @@ DOUBLE CtiLMControlArea::calculateLoadReductionNeeded()
                     }
                 }
             }
-            else if( !stringCompareIgnoreCase(currentTrigger->getTriggerType(), CtiLMControlAreaTrigger::StatusTriggerType) )
+        }
+        else if( !stringCompareIgnoreCase(currentTrigger->getTriggerType(), CtiLMControlAreaTrigger::StatusTriggerType) )
+        {
+            if( currentTrigger->getPointValue() != currentTrigger->getNormalState() )
             {
-                if( currentTrigger->getPointValue() != currentTrigger->getNormalState() )
+                if( returnLoadReductionNeeded == 0.0 )
                 {
-                    if( returnLoadReductionNeeded == 0.0 )
-                    {
-                        returnLoadReductionNeeded = 0.1;
-                    }
-                    triggersTripped++;
+                    returnLoadReductionNeeded = 0.1;
                 }
-            }
-            else
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Unknown Trigger Type in: " << __FILE__ << " at:" << __LINE__ << endl;
+                triggersTripped++;
             }
         }
+        else
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Unknown Trigger Type in: " << __FILE__ << " at:" << __LINE__ << endl;
+        }
+        
 
         if( getRequireAllTriggersActiveFlag() && (triggersTripped > 0) && (triggersTripped < _lmcontrolareatriggers.size()) )
         {
