@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2006/07/31 19:06:48 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2006/07/31 19:49:46 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1655,6 +1655,7 @@ INT CtiDeviceMCT4xx::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeN
     }
     else
     {
+        //  this code is replicated in ErrorDecode()
         if( !_llpInterest.retry )
         {
             interval_len = getLoadProfileInterval(_llpInterest.channel);
@@ -1852,9 +1853,54 @@ INT CtiDeviceMCT4xx::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
     {
         case Emetcon::GetValue_LoadProfile:
         {
+            int interval_len, block_len;
+
+            //  this code is replicated in decodeGetValueLoadProfile()
             if( !_llpInterest.retry )
             {
+                interval_len = getLoadProfileInterval(_llpInterest.channel);
 
+                block_len    = interval_len * 6;
+
+                _llpInterest.retry = true;
+
+                CtiTime time_begin(_llpInterest.time + _llpInterest.offset + block_len + interval_len),
+                        time_end  (_llpInterest.time_end);
+
+                CtiString lp_request_str = "getvalue lp ";
+
+                lp_request_str += "channel " + CtiNumStr(_llpInterest.channel) + " " + time_begin.asString() + " " + time_end.asString();
+
+                //  if it's a background message, it's queued
+                if(      strstr(InMessage->Return.CommandStr, " background") )   lp_request_str += " background";
+                else if( strstr(InMessage->Return.CommandStr, " noqueue") )      lp_request_str += " noqueue";
+
+                CtiRequestMsg newReq(getID(),
+                                     lp_request_str,
+                                     InMessage->Return.UserID,
+                                     0,
+                                     InMessage->Return.RouteID,
+                                     InMessage->Return.MacroOffset,
+                                     0,
+                                     0,
+                                     InMessage->Priority);
+
+                //  this may be NULL if it's a background request, but assign it anyway
+                newReq.setConnectionHandle((void *)InMessage->Return.Connection);
+
+                CtiDeviceBase::ExecuteRequest(&newReq, CtiCommandParser(newReq.CommandString()), vgList, retList, outList);
+
+                CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
+
+                ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+                ReturnMsg->setResultString("Load profile retry submitted");
+
+                retList.push_back(ReturnMsg);
+            }
+            else
+            {
+                _llpInterest.failed = true;
+                _llpInterest.retry  = false;
             }
 
             break;
