@@ -256,5 +256,30 @@
       <rtexprvalue>false</rtexprvalue>
     </attribute>
   </tag>
+  <tag>
+    <name>pointPicker</name>
+    <tagclass>com.cannontech.web.taglib.PointPickerTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+    <attribute>
+      <name>pointIdField</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+   <attribute>
+      <name>constraint</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+   <attribute>
+      <name>pointNameElement</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+   <attribute>
+      <name>paoNameElement</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+  </tag>
   
 </taglib>
