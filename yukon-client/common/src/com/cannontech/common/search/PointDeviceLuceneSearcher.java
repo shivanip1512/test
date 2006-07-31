@@ -28,19 +28,22 @@ public class PointDeviceLuceneSearcher implements PointDeviceSearcher {
     private File indexLocation;
     private Analyzer analyzer = new PointDeviceSearchAnalyzer();
     private final ReentrantReadWriteLock indexLock = new ReentrantReadWriteLock();
-    private IndexSearcher indexSearcher;
+    private IndexSearcher indexSearcher = null;
     
     public PointDeviceLuceneSearcher(File indexLocation) {
         try {
             indexSearcher = new IndexSearcher(indexLocation.getAbsolutePath());
         } catch (IOException e) {
-            throw new RuntimeException("Unable to create Lucene searcher",e);
+            CTILogger.info("Unable to create lucene searcher, index must not be built yet.");
         }
     }
     
     
     public synchronized void resetIndexSearcher() {
         try {
+            if (indexSearcher == null) {
+                indexSearcher = new IndexSearcher(indexLocation.getAbsolutePath());
+            }
             if (indexSearcher.getIndexReader().isCurrent()) {
                 return;
             }

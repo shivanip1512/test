@@ -15,15 +15,15 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import com.cannontech.clientutils.CTILogger;
 
 public class PointDeviceLuceneInitializer extends PointDeviceLuceneIndexer {
-    public PointDeviceLuceneInitializer(File indexLocation) {
+    public PointDeviceLuceneInitializer() {
         super();
-        this.indexLocation = indexLocation;
     }
+    
     public void createInitialIndex() {
         IndexWriter indexWriter = null;
         try {
             indexWriter = new IndexWriter(indexLocation.getAbsolutePath(), new PointDeviceAnalyzer(), true);
-            indexWriter.setMaxBufferedDocs(10);
+            indexWriter.setMaxBufferedDocs(1000);
             long start = System.currentTimeMillis();
             // to create new index, close searcher first
             // now we can recreate searcher
@@ -33,6 +33,7 @@ public class PointDeviceLuceneInitializer extends PointDeviceLuceneIndexer {
             String query = getDocumentQuery();
             RowCallbackHandler rch = new LuceneRowIndexer(indexWriter, start, count);
             jdbcTemplate.query(query, rch );
+            indexWriter.optimize();
             long elapsed = System.currentTimeMillis() - start;
             System.out.println(count + " in " + elapsed + "ms");
         } catch (Exception e) {
@@ -50,7 +51,7 @@ public class PointDeviceLuceneInitializer extends PointDeviceLuceneIndexer {
      * @param args
      */
     public static void main(String[] args) {
-        PointDeviceLuceneInitializer pds = new PointDeviceLuceneInitializer(new File("c:/dev/lucene"));
+        PointDeviceLuceneInitializer pds = new PointDeviceLuceneInitializer();
         DriverManagerDataSource ds = 
             new DriverManagerDataSource("net.sourceforge.jtds.jdbc.Driver", 
                                         "jdbc:jtds:sqlserver://mn1db02:1433;APPNAME=yukon-client;TDS=8.0", 
@@ -61,6 +62,7 @@ public class PointDeviceLuceneInitializer extends PointDeviceLuceneIndexer {
 //                                        "isoc_tom", "isoc_tom");
         JdbcTemplate template = new JdbcTemplate(ds);
         pds.setJdbcTemplate(template);
+        pds.setIndexLocation(new File("c:/dev/lucene"));
         pds.createInitialIndex();
     }
     

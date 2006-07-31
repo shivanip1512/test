@@ -427,6 +427,12 @@
         </init-param>
         <load-on-startup>100</load-on-startup>
     </servlet>
+    <servlet>
+        <servlet-name>LuceneIndexer</servlet-name>
+        <display-name>LuceneIndexer</display-name>
+        <servlet-class>com.cannontech.servlet.LuceneIndexingServlet</servlet-class>
+        <load-on-startup>50</load-on-startup>
+    </servlet>
     <!-- END AXIS servlets -->
 
 <!-- [INSERT GENERATED WEB.XML FRAGMENT HERE] -->
