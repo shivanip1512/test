@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dlcbase.cpp-arc  $
-* REVISION     :  $Revision: 1.35 $
-* DATE         :  $Date: 2006/07/25 22:17:02 $
+* REVISION     :  $Revision: 1.36 $
+* DATE         :  $Date: 2006/07/31 20:27:19 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -151,12 +151,16 @@ INT CtiDeviceDLCBase::retMsgHandler( string commandStr, int status, CtiReturnMsg
             for( itr = subMsgs.begin(); itr != subMsgs.end(); itr++ )
             {
                 if( force_update ||
-                    (((*itr)->isA() == MSG_POINTDATA) && (((CtiPointDataMsg *)*itr)->getTags() & TAG_POINT_MUST_ARCHIVE)) )
+                    (((*itr)->isA() == MSG_POINTDATA) && (((CtiPointDataMsg *)*itr)->getTags() & (TAG_POINT_MUST_ARCHIVE | TAG_POINT_LOAD_PROFILE_DATA))) )
                 {
                     //  only allocate this object if you need to
                     if( tmpVGRetMsg == NULL )
                     {
                         tmpVGRetMsg = (CtiReturnMsg *)retMsg->replicateMessage();
+
+                        //  make sure it's empty so we only append the messages we intend to
+                        delete_vector( tmpVGRetMsg->PointData() );
+                        tmpVGRetMsg->PointData().clear();
                     }
 
                     tmpVGRetMsg->PointData().push_back(((CtiPointDataMsg *)(*itr))->replicateMessage());
