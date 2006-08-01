@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.76 $
-* DATE         :  $Date: 2006/07/25 22:15:04 $
+* REVISION     :  $Revision: 1.77 $
+* DATE         :  $Date: 2006/08/01 18:21:18 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3974,25 +3974,26 @@ INT CtiDeviceMCT410::decodeGetConfigTOU(INMESS *InMessage, CtiTime &TimeNow, lis
                     byte_offset = 7;
                 }
 
+                current_rate = rates & 0x03;
                 resultString += "00:00: ";
-                resultString += (char)('A' + (rates & 0x03));
+                resultString += (char)('A' + current_rate);
                 resultString += "\n";
                 rates >>= 2;
 
                 time_offset = 0;
-                previous_rate = -1;
+                previous_rate = current_rate;
                 for( int switchtime = 0; switchtime < 5; switchtime++ )
                 {
                     int hour, minute;
 
-                    time_offset += InMessage->Buffer.DSt.Message[switchtime + byte_offset] * 300;
+                    time_offset += InMessage->Buffer.DSt.Message[byte_offset + switchtime] * 300;
 
                     hour   = time_offset / 3600;
                     minute = (time_offset / 60) % 60;
 
                     current_rate = rates & 0x03;
 
-                    if( hour <= 23 || current_rate != previous_rate )
+                    if( (hour <= 23) && (current_rate != previous_rate) )
                     {
                         resultString += CtiNumStr(hour).zpad(2) + ":" + CtiNumStr(minute).zpad(2) + ": " + (char)('A' + current_rate) + "\n";
                     }
@@ -4002,59 +4003,19 @@ INT CtiDeviceMCT410::decodeGetConfigTOU(INMESS *InMessage, CtiTime &TimeNow, lis
                     rates >>= 2;
                 }
 
-                resultString += "\n";
+                resultString += "- end of day - \n\n";
             }
         }
         else
         {
-            resultString = getName() + " / TOU Status:\n";
-
-            resultString += "Day table: \n";
-
-            char *(daynames[8]) = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Holiday"};
-
-            for( int i = 0; i < 8; i++ )
-            {
-                int dayschedule = InMessage->Buffer.DSt.Message[1 - i/4] >> ((i % 4) * 2) & 0x03;
-
-                resultString += daynames[i];
-                resultString += " (" + CtiNumStr(i+1) + "): Schedule " + CtiNumStr(dayschedule + 1) + "\n";
-            }
-
-            resultString += "Default rate: ";
-
-            if( InMessage->Buffer.DSt.Message[2] == 0xff )
-            {
-                resultString += "No TOU active\n";
-            }
-            else
-            {
-                resultString += (char)('A' + InMessage->Buffer.DSt.Message[2]) + "\n";
-            }
-
-            resultString += "Current rate: ";
-            resultString += (char)('A' + (InMessage->Buffer.DSt.Message[3] & 0x7f));
-            resultString += "\n";
-
-            resultString += "Current schedule: " + CtiNumStr((int)(InMessage->Buffer.DSt.Message[4] & 0x03) + 1) + "\n";
-
-            resultString += "Current switch time: ";
-
-            if( InMessage->Buffer.DSt.Message[5] == 0xff )
-            {
-                resultString += "not active\n";
-            }
-            else
-            {
-                 resultString += CtiNumStr((int)InMessage->Buffer.DSt.Message[5]) + "\n";
-            }
+            resultString = getName() + " / TOU Status:\n\n";
 
             time = InMessage->Buffer.DSt.Message[6] << 24 |
                    InMessage->Buffer.DSt.Message[7] << 16 |
                    InMessage->Buffer.DSt.Message[8] <<  8 |
                    InMessage->Buffer.DSt.Message[9];
 
-            resultString += "Current time: " + CtiTime(time).asString();
+            resultString += "Current time: " + CtiTime(time).asString() + "\n";
 
             int tz_offset = (char)InMessage->Buffer.DSt.Message[10] * 15;
 
@@ -4071,6 +4032,43 @@ INT CtiDeviceMCT410::decodeGetConfigTOU(INMESS *InMessage, CtiTime &TimeNow, lis
             if( InMessage->Buffer.DSt.Message[4] & 0x40 )
             {
                 resultString += "DST active\n";
+            }
+
+            resultString += "Current rate: " + string(1, (char)('A' + (InMessage->Buffer.DSt.Message[3] & 0x7f))) + "\n";
+
+            resultString += "Current schedule: " + CtiNumStr((int)(InMessage->Buffer.DSt.Message[4] & 0x03) + 1) + "\n";
+/*
+            resultString += "Current switch time: ";
+
+            if( InMessage->Buffer.DSt.Message[5] == 0xff )
+            {
+                resultString += "not active\n";
+            }
+            else
+            {
+                 resultString += CtiNumStr((int)InMessage->Buffer.DSt.Message[5]) + "\n";
+            }
+*/
+            resultString += "Default rate: ";
+
+            if( InMessage->Buffer.DSt.Message[2] == 0xff )
+            {
+                resultString += "No TOU active\n";
+            }
+            else
+            {
+                resultString += string(1, (char)('A' + InMessage->Buffer.DSt.Message[2])) + "\n";
+            }
+
+            resultString += "\nDay table: \n";
+
+            char *(daynames[8]) = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Holiday"};
+
+            for( int i = 0; i < 8; i++ )
+            {
+                int dayschedule = InMessage->Buffer.DSt.Message[1 - i/4] >> ((i % 4) * 2) & 0x03;
+
+                resultString += "Schedule " + CtiNumStr(dayschedule + 1) + " - " + daynames[i] + "\n";
             }
         }
 
