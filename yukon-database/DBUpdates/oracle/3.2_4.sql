@@ -76,7 +76,7 @@ alter table RAWPOINTHISTORY
 create unique index INDX_SYSLG_PTID_TS on SYSTEMLOG (
    LOGID ASC,
    POINTID ASC,
-   date ASC
+   datetime ASC
 );
 
 create table EsubDisplayIndex (
