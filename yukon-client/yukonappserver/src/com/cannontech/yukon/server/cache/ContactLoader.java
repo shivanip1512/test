@@ -16,7 +16,7 @@ import com.cannontech.database.db.contact.ContactNotification;
 public class ContactLoader implements Runnable 
 {
     //if total contact number is over this, better not load this way
-    private final int MAX_CONTACT_LOAD = 1;
+    private final int MAX_CONTACT_LOAD = 50000;
     private boolean willNeedDynamicLoad = false;
     
     //Map<Integer(contactID), LiteContact>
