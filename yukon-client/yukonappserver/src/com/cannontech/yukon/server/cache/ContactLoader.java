@@ -96,7 +96,7 @@ public class ContactLoader implements Runnable
 				"cn.DisableFlag, cn.Notification " + 
 				"FROM " + ContactNotification.TABLE_NAME + " cn " +
 				"where cn.ContactNotifID > " + CtiUtilities.NONE_ZERO_ID + " " +
-                "and cn.ContactID <= " + maxContactID + " " +
+                "and cn.ContactID <= " + maxContactID  + " and cn.contactid > 0 " +
 				"order by cn.ContactID, cn.Ordering";
 			
             // we'll store the last contact to take advantage of the
