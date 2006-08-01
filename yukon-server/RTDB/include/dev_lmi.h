@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2006/03/24 15:58:19 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2006/08/01 18:34:43 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -72,23 +72,22 @@ public:
     CtiDeviceExclusion exclusion() const; // New copy.
     exclusions getExclusions() const;
     CtiTime selectCompletionTime() const;
-    bool isDeviceExcluded(long id) const;
-    bool isExecuting() const;
-    void setExecuting(bool set = true, CtiTime when = CtiTime(YUKONEOT));
-    bool isExecutionProhibited(const CtiTime &now = CtiTime(), LONG did = 0);
+    bool   isDeviceExcluded(long id) const;
+    bool   isExecuting() const;
+    void   setExecuting(bool set = true, CtiTime when = CtiTime(YUKONEOT));
+    bool   isExecutionProhibited(const CtiTime &now = CtiTime(), LONG did = 0);
     size_t setExecutionProhibited(unsigned long id, CtiTime& releaseTime = CtiTime(YUKONEOT));
-    bool removeInfiniteProhibit(unsigned long id);
+    bool   removeInfiniteProhibit(unsigned long id);
 
-    INT queuedWorkCount() const;
-    bool hasQueuedWork() const;
-    bool hasPreloadWork() const;
+    INT     queuedWorkCount() const;
+    bool    hasQueuedWork() const;
+    bool    hasPreloadWork() const;
     CtiTime getPreloadEndTime() const;
-    LONG getPreloadBytes() const;
-    LONG getCycleTime() const;
-    LONG getCycleOffset() const;
+    LONG    getPreloadBytes() const;
+    LONG    getCycleTime() const;
+    LONG    getCycleOffset() const;
 
-    bool readEchoed() const;
-    INT queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt);
+    INT  queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt);
     bool getOutMessage(CtiOutMessage *&OutMessage);
     LONG deviceQueueCommunicationTime() const;
     LONG deviceMaxCommunicationTime() const;
