@@ -745,17 +745,6 @@ void CtiCapController::controlLoop()
                 {
                     if( substationBusChanges.size() > 0 && !waitToBroadCastEverything)
                     {
-                        //send the substation bus changes to all cap control clients
-                        try
-                        {
-                            store->dumpAllDynamicData();
-                        }
-                        catch(...)
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                        }
-
                         CtiCCExecutorFactory f1;
                         CtiCCExecutor* executor1 = f1.createExecutor(new CtiCCSubstationBusMsg(substationBusChanges));
                         try
@@ -791,16 +780,6 @@ void CtiCapController::controlLoop()
                     {
 
                         //send the substation bus changes to all cap control clients
-                        try
-                        {
-                            store->dumpAllDynamicData();
-                        }
-                        catch(...)
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                        }
-
                         CtiCCExecutorFactory f1;
                         CtiCCExecutor* executor1 = f1.createExecutor(new CtiCCSubstationBusMsg(ccSubstationBuses));
                         try
@@ -2221,13 +2200,17 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                                         currentSubstationBus->setNewPointDataReceivedFlag(TRUE);
                                         if (currentSubstationBus->getMultiBusCurrentState() == IDLE) 
                                         {
+                                            currentSubstationBus->setMultiBusCurrentState(NEW_MULTI_POINT_DATA_RECEIVED);
+                                            currentFeeder->setMultiBusCurrentState(NEW_MULTI_POINT_DATA_RECEIVED);
                                         }
                                         if (currentFeeder->getMultiBusCurrentState() == IDLE) 
                                         {
                                             currentFeeder->setFirstMultiPointReceivedTime(timestamp);
+                                            currentSubstationBus->setMultiBusCurrentState(NEW_MULTI_POINT_DATA_RECEIVED);
+                                            currentFeeder->setMultiBusCurrentState(NEW_MULTI_POINT_DATA_RECEIVED);
                                         }
-                                        currentSubstationBus->setMultiBusCurrentState(NEW_MULTI_POINT_DATA_RECEIVED);
-                                        currentFeeder->setMultiBusCurrentState(NEW_MULTI_POINT_DATA_RECEIVED);
+                                        //currentSubstationBus->setMultiBusCurrentState(NEW_MULTI_POINT_DATA_RECEIVED);
+                                        //currentFeeder->setMultiBusCurrentState(NEW_MULTI_POINT_DATA_RECEIVED);
                                         currentFeeder->setNewPointDataReceivedFlag(TRUE);
                                     }
                                     currentMonPoint->setValue(value);
@@ -2255,13 +2238,17 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                                         currentSubstationBus->setNewPointDataReceivedFlag(TRUE);
                                         if (currentSubstationBus->getMultiBusCurrentState() == IDLE) 
                                         {
+                                            currentSubstationBus->setMultiBusCurrentState(NEW_MULTI_POINT_DATA_RECEIVED);
+                                            currentFeeder->setMultiBusCurrentState(NEW_MULTI_POINT_DATA_RECEIVED);
                                         }
                                         if (currentFeeder->getMultiBusCurrentState() == IDLE) 
                                         {
                                             currentFeeder->setFirstMultiPointReceivedTime(timestamp);
+                                            currentSubstationBus->setMultiBusCurrentState(NEW_MULTI_POINT_DATA_RECEIVED);
+                                            currentFeeder->setMultiBusCurrentState(NEW_MULTI_POINT_DATA_RECEIVED);
                                         }
-                                        currentSubstationBus->setMultiBusCurrentState(NEW_MULTI_POINT_DATA_RECEIVED);
-                                        currentFeeder->setMultiBusCurrentState(NEW_MULTI_POINT_DATA_RECEIVED);
+                                        //currentSubstationBus->setMultiBusCurrentState(NEW_MULTI_POINT_DATA_RECEIVED);
+                                        //currentFeeder->setMultiBusCurrentState(NEW_MULTI_POINT_DATA_RECEIVED);
                                         currentFeeder->setNewPointDataReceivedFlag(TRUE);
                                     }
                                     currentMonPoint->setValue(value);

@@ -31,8 +31,6 @@
 #include "ctitime.h"
 #include "ctidate.h"
 
-
-
                 
 class CtiCCCapBank : public RWCollectable
 {
@@ -137,6 +135,8 @@ public:
     CtiCCCapBank& initVerificationControlStatus();
     CtiCCCapBank& addAllCapBankPointsToMsg(CtiCommandMsg *pointAddMsg);
 
+    CtiCCPointResponse* getPointResponse(CtiCCMonitorPoint* point);
+
     CtiCCCapBank* replicate() const;
     virtual int compareTo(const RWCollectable* right) const;
 
@@ -214,13 +214,9 @@ private:
 
     //verification info
     string _additionalFlags;
-
-
     LONG _verificationControlStatus;
-
     int _vCtrlIndex; //1,2, or 3
-    BOOL _retryFlag;
-
+    BOOL _retryFlag;                 
     LONG _prevVerificationControlStatus;
     int _assumedOrigCapBankPos;
     BOOL _verificationFlag;

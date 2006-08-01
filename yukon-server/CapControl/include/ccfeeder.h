@@ -267,12 +267,13 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
 
     std::list <LONG>* getPointIds() {return &_pointIds;};
 
-    BOOL isVerificationAlreadyControlled(LONG minConfirmPercent); 
+    BOOL isVerificationAlreadyControlled(LONG minConfirmPercent);
     BOOL areThereMoreCapBanksToVerify();
     CtiCCFeeder& getNextCapBankToVerify();
 
     BOOL capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, LONG minConfirmPercent, LONG failurePercent, DOUBLE varValueBeforeControl, DOUBLE currentVarLoadPointValue, LONG currentVarPointQuality);
     CtiCCFeeder& addAllFeederPointsToMsg(CtiCommandMsg *pointAddMsg);
+    CtiCCCapBank* getMonitorPointParentBank(CtiCCMonitorPoint* point);
     
     BOOL isDirty() const;
     void dumpDynamicData();

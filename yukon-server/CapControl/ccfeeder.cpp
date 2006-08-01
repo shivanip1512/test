@@ -1670,7 +1670,6 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarVerificationRequest(CtiCCCapBank* c
     return reqMsg;
 }
 
-
 CtiRequestMsg* CtiCCFeeder::createDecreaseVarVerificationRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, string textInfo )  
 {
     CtiRequestMsg* reqMsg = NULL;
@@ -1696,12 +1695,10 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarVerificationRequest(CtiCCCapBank* c
             additional += getParentName();
             additional += " /Feeder: ";
             additional += getPAOName();
-
             pointChanges.push_back(new CtiSignalMsg(capBank->getStatusPointId(),0,textInfo,additional,CapControlLogType,SignalEvent, "cap control verification"));
             ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(1);
             pointChanges.push_back(new CtiPointDataMsg(capBank->getStatusPointId(),capBank->getControlStatus(),NormalQuality,StatusPointType));
             ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(2);
-
             capBank->setLastStatusChangeTime(CtiTime());
 
             //setEventSequence(getEventSequence() + 1);     // should be sub's sequence for verification
@@ -3492,156 +3489,209 @@ BOOL CtiCCFeeder::voltControlBankSelectProcess(CtiCCMonitorPoint* point, CtiMult
    try
    {
         if (point->getValue() < point->getLowerBandwidth()) 
-        {   
+        {
             CtiCCCapBank* bestBank = NULL;
+            CtiCCCapBank* parentBank = NULL;
             DOUBLE bestDelta = 0;
-            for (LONG i = 0; i < _cccapbanks.size(); i++)
-            {                                              
-                CtiCCCapBank* currentCapBank = (CtiCCCapBank*)_cccapbanks[i];
-                if (currentCapBank->getControlStatus() == CtiCCCapBank::Open || currentCapBank->getControlStatus() == CtiCCCapBank::OpenQuestionable)
+
+            //1.  First check this point's parent bank to see if we can close it.
+            parentBank = getMonitorPointParentBank(point);
+            if (parentBank != NULL) 
+            {
+                if (parentBank->getControlStatus() == CtiCCCapBank::Open ||
+                    parentBank->getControlStatus() == CtiCCCapBank::OpenQuestionable) 
                 {
-                    for(LONG j=0;j<currentCapBank->getPointResponse().size();j++)
+                    CtiCCPointResponse* pResponse =  parentBank->getPointResponse(point);
+                    if (pResponse != NULL) 
                     {
-                        CtiCCPointResponse* pResponse = (CtiCCPointResponse*)currentCapBank->getPointResponse()[j];
 
-                        if (point->getPointId() == pResponse->getPointId()) 
+                        if ( (point->getValue() + pResponse->getDelta() <= point->getUpperBandwidth() && 
+                              point->getValue() + pResponse->getDelta() >= point->getLowerBandwidth() ) ||
+                              //pRespone->getDelta() == 0 ||
+                              point->getValue() + pResponse->getDelta() < point->getUpperBandwidth() ) 
                         {
-                            if (point->getValue() + pResponse->getDelta() >= point->getLowerBandwidth() &&
-                                point->getValue() + pResponse->getDelta() <= point->getUpperBandwidth())
                             {
-                                {
-                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << CtiTime() << " Attempting to Increase Voltage on Feeder: "<<getPAOName()<<" CapBank: "<<currentCapBank->getPAOName() << endl;
-                                }
-                                //Check other monitor point responses using this potential capbank
-                                if (areOtherMonitorPointResponsesOk(point->getPointId(), currentCapBank, CtiCCCapBank::Close))
-                                {
-                                    bestBank = currentCapBank;
-
-                                DOUBLE controlValue = (!stringCompareIgnoreCase(getControlUnits(),CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " Attempting to Increase Voltage on Feeder: "<<getPAOName()<<" CapBank: "<<parentBank->getPAOName() << endl;
+                            }
+                            //Check other monitor point responses using this potential capbank
+                            if (areOtherMonitorPointResponsesOk(point->getPointId(), parentBank, CtiCCCapBank::Close))
+                            {
+                                DOUBLE controlValue = (stringCompareIgnoreCase(getControlUnits(),CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
                                 string text = createTextString(getControlMethod(), CtiCCCapBank::Close, controlValue, getCurrentVarLoadPointValue());
-                                request = createDecreaseVarRequest(currentCapBank , pointChanges, ccEvents, text);
+                                request = createDecreaseVarRequest(parentBank, pointChanges, ccEvents, text);
 
-                                    updatePointResponsePreOpValues(currentCapBank);
-                                }
+                                updatePointResponsePreOpValues(parentBank);
                             }
-                            else if (point->getValue() + pResponse->getDelta() < point->getLowerBandwidth() )
+                            else
+                                parentBank = NULL;
+                        }
+                        else
+                            parentBank = NULL;
+                    }
+                } 
+                else
+                    parentBank = NULL;
+            }
+
+            //2.  If parent bank won't work, start checking other banks...
+            if (parentBank == NULL || request == NULL) 
+            {
+                for (LONG i = 0; i < _cccapbanks.size(); i++)
+                {                                              
+                    CtiCCCapBank* currentCapBank = (CtiCCCapBank*)_cccapbanks[i];
+                    if (currentCapBank->getControlStatus() == CtiCCCapBank::Open || 
+                        currentCapBank->getControlStatus() == CtiCCCapBank::OpenQuestionable)
+                    {
+
+                        if (point->getBankId() != currentCapBank->getPAOId()) 
+                        {
+                            CtiCCPointResponse* pResponse =  currentCapBank->getPointResponse(point);
+                            if (pResponse != NULL) 
                             {
-                                if (pResponse->getDelta() > bestDelta || bestDelta == 0) 
+
+                                if ( (point->getValue() + pResponse->getDelta() <= point->getUpperBandwidth() && 
+                                      point->getValue() + pResponse->getDelta() >= point->getLowerBandwidth() ) ||
+                                      pResponse->getDelta() == 0 ||
+                                      point->getValue() + pResponse->getDelta() < point->getUpperBandwidth() ) 
                                 {
-                                    bestDelta = pResponse->getDelta();
-                                    bestBank = currentCapBank;
+                                    {
+                                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                                        dout << CtiTime() << " Attempting to Increase Voltage on Feeder: "<<getPAOName()<<" CapBank: "<<currentCapBank->getPAOName() << endl;
+                                    }
+                                    //Check other monitor point responses using this potential capbank
+                                    if (areOtherMonitorPointResponsesOk(point->getPointId(), currentCapBank, CtiCCCapBank::Close))
+                                    {
+                                        DOUBLE controlValue = (stringCompareIgnoreCase(getControlUnits(), CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
+                                        string text = createTextString(getControlMethod(), CtiCCCapBank::Close, controlValue, getCurrentVarLoadPointValue());
+                                        request = createDecreaseVarRequest(currentCapBank, pointChanges, ccEvents, text);
+
+                                        updatePointResponsePreOpValues(currentCapBank);
+                                    }
                                 }
                             }
+
+                        }
+                        if (request != NULL) 
+                        {
                             break;
                         }
                     }
-                    if (request != NULL) 
-                    {
-                        break;
-                    }
                 }
             }
-            if (bestBank == NULL) 
+            if (request == NULL) 
             {
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << CtiTime() << " No Banks Available to Close!" << endl;
                 }
             }
-            else if (bestBank != NULL && request == NULL) 
-            {
-               if (areOtherMonitorPointResponsesOk(point->getPointId(), bestBank, CtiCCCapBank::Close))
-               {
-
-                   DOUBLE controlValue = (!stringCompareIgnoreCase(getControlUnits(),CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
-                   string text = createTextString(getControlMethod(), CtiCCCapBank::Close, controlValue, getCurrentVarLoadPointValue());
-                   request = createDecreaseVarRequest(bestBank , pointChanges, ccEvents, text);
-
-                   updatePointResponsePreOpValues(bestBank);
-               }
-            }
-
         }
         else if (point->getValue() > point->getUpperBandwidth())
         {
             CtiCCCapBank* bestBank = NULL;
+            CtiCCCapBank* parentBank = NULL;
             DOUBLE bestDelta = 0;
 
-            for (LONG i = 0; i < _cccapbanks.size(); i++)
-            {                                              
-                CtiCCCapBank* currentCapBank = (CtiCCCapBank*)_cccapbanks[i];
-                if (currentCapBank->getControlStatus() == CtiCCCapBank::Close || currentCapBank->getControlStatus() == CtiCCCapBank::CloseQuestionable)
+            //1.  First check this point's parent bank to see if we can open it.
+            parentBank = getMonitorPointParentBank(point);
+            if (parentBank != NULL) 
+            {
+                if (parentBank->getControlStatus() == CtiCCCapBank::Close ||
+                    parentBank->getControlStatus() == CtiCCCapBank::CloseQuestionable) 
                 {
-                    for(LONG j=0;j<currentCapBank->getPointResponse().size();j++)
+                    CtiCCPointResponse* pResponse =  parentBank->getPointResponse(point);
+                    if (pResponse != NULL) 
                     {
-                        CtiCCPointResponse* pResponse = (CtiCCPointResponse*)currentCapBank->getPointResponse()[j];
 
-                        if (point->getPointId() == pResponse->getPointId()) 
+                        if ( (point->getValue() - pResponse->getDelta() <= point->getUpperBandwidth() && 
+                              point->getValue() - pResponse->getDelta() >= point->getLowerBandwidth() ) ||
+                              //pRespone->getDelta() == 0 ||
+                              point->getValue() - pResponse->getDelta() > point->getLowerBandwidth() ) 
                         {
-                            if (point->getValue() - pResponse->getDelta() <= point->getUpperBandwidth() && 
-                                point->getValue() - pResponse->getDelta() >= point->getLowerBandwidth() ) 
                             {
-                                {
-                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << CtiTime() << " Attempting to Decrease Voltage on Feeder: "<<getPAOName()<<" CapBank: "<<currentCapBank->getPAOName() << endl;
-                                }
-                                //Check other monitor point responses using this potential capbank
-                                if (areOtherMonitorPointResponsesOk(point->getPointId(), currentCapBank, CtiCCCapBank::Open))
-                                {
-                                    bestBank = currentCapBank;
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " Attempting to Decrease Voltage on Feeder: "<<getPAOName()<<" CapBank: "<<parentBank->getPAOName() << endl;
+                            }
+                            //Check other monitor point responses using this potential capbank
+                            if (areOtherMonitorPointResponsesOk(point->getPointId(), parentBank, CtiCCCapBank::Open))
+                            {
+                                DOUBLE controlValue = (stringCompareIgnoreCase(getControlUnits(), CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
+                                string text = createTextString(getControlMethod(), CtiCCCapBank::Open, controlValue, getCurrentVarLoadPointValue());
+                                request = createIncreaseVarRequest(parentBank, pointChanges, ccEvents, text);
 
-                                    DOUBLE controlValue = (!stringCompareIgnoreCase(getControlUnits(),CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
-                                    string text = createTextString(getControlMethod(), CtiCCCapBank::Open, controlValue, getCurrentVarLoadPointValue());
-                                    request = createIncreaseVarRequest(currentCapBank , pointChanges, ccEvents, text);
+                                updatePointResponsePreOpValues(parentBank);
+                            }
+                            else
+                                parentBank = NULL;
+                        }
+                        else
+                            parentBank = NULL;
+                    }
+                } 
+                else
+                    parentBank = NULL;
+            }
 
-                                    updatePointResponsePreOpValues(currentCapBank);
+            //2.  If parent bank won't work, start checking other banks...
+            if (parentBank == NULL || request == NULL) 
+            {
+                for (LONG i = 0; i < _cccapbanks.size(); i++)
+                {                                              
+                    CtiCCCapBank* currentCapBank = (CtiCCCapBank*)_cccapbanks[i];
+                    if (currentCapBank->getControlStatus() == CtiCCCapBank::Close || 
+                        currentCapBank->getControlStatus() == CtiCCCapBank::CloseQuestionable)
+                    {
+
+                        if (point->getBankId() != currentCapBank->getPAOId()) 
+                        {
+                            CtiCCPointResponse* pResponse =  currentCapBank->getPointResponse(point);
+                            if (pResponse != NULL) 
+                            {
+                           
+                                if ( (point->getValue() - pResponse->getDelta() <= point->getUpperBandwidth() && 
+                                      point->getValue() - pResponse->getDelta() >= point->getLowerBandwidth() ) ||
+                                      pResponse->getDelta() == 0 ||
+                                      point->getValue() - pResponse->getDelta() > point->getLowerBandwidth() ) 
+                                {
+                                    {
+                                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                                        dout << CtiTime() << " Attempting to Decrease Voltage on Feeder: "<<getPAOName()<<" CapBank: "<<currentCapBank->getPAOName() << endl;
+                                    }
+                                    //Check other monitor point responses using this potential capbank
+                                    if (areOtherMonitorPointResponsesOk(point->getPointId(), currentCapBank, CtiCCCapBank::Open))
+                                    {
+                                        DOUBLE controlValue = (stringCompareIgnoreCase(getControlUnits(), CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
+                                        string text = createTextString(getControlMethod(), CtiCCCapBank::Open, controlValue, getCurrentVarLoadPointValue());
+                                        request = createIncreaseVarRequest(currentCapBank, pointChanges, ccEvents, text);
+                           
+                                        updatePointResponsePreOpValues(currentCapBank);
+                                    }
                                 }
                             }
-                            else if (point->getValue() - pResponse->getDelta() > point->getUpperBandwidth() )
-                            {
-                                if (pResponse->getDelta() > bestDelta || bestDelta == 0) 
-                                {
-                                    bestDelta = pResponse->getDelta();
-                                    bestBank = currentCapBank;
-                                }
-                            }
+
+                        }
+                        if (request != NULL) 
+                        {
                             break;
                         }
                     }
-                    if (request != NULL) 
-                    {
-                        break;
-                    }
                 }
             }
-            if (bestBank == NULL) 
+            //3.  If there are no banks avail which put UpperBW > mp->value > LowerBW...just settle for bestFit..
+            if (request == NULL) 
             {
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << CtiTime() << " No Banks Available to Open!" << endl;
                 }
             }
-            else if (bestBank != NULL && request == NULL) 
-            {
-               if (areOtherMonitorPointResponsesOk(point->getPointId(), bestBank, CtiCCCapBank::Open))
-               {
-
-                   DOUBLE controlValue = (!stringCompareIgnoreCase(getControlUnits(),CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
-                   string text = createTextString(getControlMethod(), CtiCCCapBank::Open, controlValue, getCurrentVarLoadPointValue());
-                   request = createIncreaseVarRequest(bestBank , pointChanges, ccEvents, text);
-
-                   updatePointResponsePreOpValues(bestBank);
-               }
-            }
-        }
+       }
 
 
         if( request != NULL )
         {
             pilMessages.push_back(request);
-            //setLastOperationTime(currentDateTime);
-      
             setOperationSentWaitFlag(TRUE);
       
             retVal = TRUE;
@@ -4013,16 +4063,13 @@ void CtiCCFeeder::updatePointResponsePreOpValues(CtiCCCapBank* capBank)
     {
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " Updating Point Response PreOpValues for CapBank: " <<capBank->getPAOName() << endl;
+            dout << CtiTime() << " Updating POINT RESPONSE PREOPVALUES for CapBank: " <<capBank->getPAOName() << endl;
+            dout << CtiTime() << " Bank ID: " <<capBank->getPAOName()<<" has "<<capBank->getPointResponse().size()<<" point responses"<< endl;
         }
         for (int i = 0; i < _multipleMonitorPoints.size(); i++)
         {
             CtiCCMonitorPoint* point = (CtiCCMonitorPoint*)_multipleMonitorPoints[i];
 
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " Bank ID: " <<capBank->getPAOName()<<" has "<<capBank->getPointResponse().size()<<" point responses"<< endl;
-            }
             for (LONG j=0; j<capBank->getPointResponse().size(); j++)
             {
                 CtiCCPointResponse* pResponse = (CtiCCPointResponse*)capBank->getPointResponse()[j];
@@ -4062,7 +4109,7 @@ void CtiCCFeeder::updatePointResponseDeltas()
            {   
                {
                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                   dout << CtiTime() << " Updating Point Response Deltas for CapBank: " <<currentCapBank->getPAOName() << endl;
+                   dout << CtiTime() << " Updating POINT RESPONSE DELTAS for CapBank: " <<currentCapBank->getPAOName() << endl;
                }
                for (int j = 0; j < _multipleMonitorPoints.size(); j++)
                {
@@ -4720,7 +4767,6 @@ CtiCCFeeder& CtiCCFeeder::operator=(const CtiCCFeeder& right)
         _currentvarpointquality = right._currentvarpointquality;
         _waivecontrolflag = right._waivecontrolflag;
         _additionalFlags = right._additionalFlags;
-        
         _parentControlUnits = right._parentControlUnits;
         _parentName = right._parentName;
         _decimalPlaces = right._decimalPlaces;
@@ -5110,6 +5156,21 @@ string CtiCCFeeder::createTextString(const string& controlMethod, int control, D
     }
     return text; 
 
+}
+
+
+CtiCCCapBank* CtiCCFeeder::getMonitorPointParentBank(CtiCCMonitorPoint* point)
+{
+
+    for (long i = 0; i < _cccapbanks.size(); i++) 
+    {                            
+        CtiCCCapBankPtr cap = (CtiCCCapBankPtr)_cccapbanks[i];
+        if (point->getBankId() == cap->getPAOId()) 
+        {
+            return cap;
+        }
+    }
+    return NULL;
 }
 
 

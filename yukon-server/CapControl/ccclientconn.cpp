@@ -211,6 +211,15 @@ void CtiCCClientConnection::_sendthr()
                     {
                         if( out->isA()!=__RWCOLLECTABLE && oStream->good())
                         {
+                            if( _CC_DEBUG & CC_DEBUG_RIDICULOUS && out->isA() == CTICCSUBSTATIONBUS_MSG_ID) 
+                            {
+                                long x = ((CtiCCSubstationBusMsg*) out)->getCCSubstationBuses()->size();
+                                {
+                                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                                    dout << CtiTime() << " - Message begin writing to socket. Message contains: "<<x<<" sub entries." << endl;
+                                }
+                            }
+
                             try
                             {    
                                 *oStream << out;
@@ -220,6 +229,15 @@ void CtiCCClientConnection::_sendthr()
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                            }
+
+                            if( _CC_DEBUG & CC_DEBUG_RIDICULOUS && out->isA() == CTICCSUBSTATIONBUS_MSG_ID) 
+                            {
+                                long x = ((CtiCCSubstationBusMsg*) out)->getCCSubstationBuses()->size();
+                                {
+                                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                                    dout << CtiTime() << " - Message finished writing to socket. Message contains: "<<x<<" sub entries." << endl;
+                                }
                             }
                         }
                         delete out;

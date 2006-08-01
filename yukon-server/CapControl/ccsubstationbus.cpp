@@ -6363,9 +6363,43 @@ BOOL CtiCCSubstationBus::isMultiVoltBusAnalysisNeeded(const CtiTime& currentDate
        (!stringCompareIgnoreCase(getControlUnits(),CtiCCSubstationBus::MultiVoltControlUnits) ||
             !stringCompareIgnoreCase(getControlUnits(),CtiCCSubstationBus::MultiVoltVarControlUnits) )  )
     {
-        //if (_newpointdatareceivedflag || getVerificationFlag())
+        if (_newpointdatareceivedflag || _currentMultiBusState == NEW_MULTI_POINT_DATA_RECEIVED) 
+        {
             retVal = TRUE;
 
+        }
+        else if( getControlInterval() > 0 )
+        {
+            retVal = (getNextCheckTime().seconds() <= currentDateTime.seconds());
+
+           if (retVal) 
+           {
+               if (getRecentlyControlledFlag()) 
+               {
+                   _currentMultiBusState = OPERATION_SENT_WAIT;
+                    if ( !stringCompareIgnoreCase(getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod) )
+                    {
+                        for (LONG i = 0; i < _ccfeeders.size();i++)
+                        {
+                            CtiCCFeederPtr currentFeeder = (CtiCCFeederPtr)_ccfeeders[i];
+                            currentFeeder->setMultiBusCurrentState(OPERATION_SENT_WAIT);
+                        }
+                    }
+               }
+               else
+               {
+                    _currentMultiBusState = EVALUATE_SUB;
+                    if ( !stringCompareIgnoreCase(getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod) )
+                    {
+                        for (LONG i = 0; i < _ccfeeders.size();i++)
+                        {
+                            CtiCCFeederPtr currentFeeder = (CtiCCFeederPtr)_ccfeeders[i];
+                            currentFeeder->setMultiBusCurrentState(EVALUATE_SUB);
+                        }
+                    }
+               }
+           }
+        }
     }
 
     return retVal;
@@ -6787,7 +6821,6 @@ void CtiCCSubstationBus::restore(RWDBReader& rdr)
     setControlDelayTime(0);
     setControlSendRetries(0);
     
-   
     figureNextCheckTime();
     setNewPointDataReceivedFlag(FALSE);
     setBusUpdatedFlag(FALSE);

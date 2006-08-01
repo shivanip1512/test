@@ -1013,9 +1013,13 @@ CtiCCCapBank& CtiCCCapBank::updatePointResponseDeltas(CtiCCMonitorPoint* point)
 
         if (point->getPointId() == pResponse->getPointId())
         {
-            pResponse->setDelta( ( (pResponse->getDelta()*(point->getNInAvg() -1)) + 
+            LONG nInAvg = (point->getNInAvg()!=0?point->getNInAvg():1);
+            {
+                pResponse->setDelta( ( (pResponse->getDelta()*(nInAvg -1)) + 
                                   fabs(pResponse->getPreOpValue() - point->getValue()) ) / 
-                                  point->getNInAvg());
+                                  nInAvg);
+            }
+            
             break;
         }
     }
@@ -1183,6 +1187,22 @@ CtiCCCapBank& CtiCCCapBank::addAllCapBankPointsToMsg(CtiCommandMsg *pointAddMsg)
     }
  
     return *this;
+}
+
+
+CtiCCPointResponse* CtiCCCapBank::getPointResponse(CtiCCMonitorPoint* point)
+{
+    for (LONG j=0; j<getPointResponse().size(); j++)
+    {
+        CtiCCPointResponse* pResponse = (CtiCCPointResponse*)getPointResponse()[j];
+
+        if (point->getPointId() == pResponse->getPointId())
+        {
+            return pResponse;
+        }
+    }
+    return NULL;
+
 }
 
 /*-------------------------------------------------------------------------

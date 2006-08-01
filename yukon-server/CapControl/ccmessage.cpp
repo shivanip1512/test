@@ -19,6 +19,8 @@
 #include "rwutil.h"
 #include "utility.h"
 
+
+extern ULONG _CC_DEBUG;
 /*===========================================================================
     CtiCCMessage
     
@@ -447,6 +449,21 @@ RWDEFINE_COLLECTABLE( CtiCCSubstationBusMsg, CTICCSUBSTATIONBUS_MSG_ID )
 CtiCCSubstationBusMsg::CtiCCSubstationBusMsg(CtiCCSubstationBus_vec& buses, ULONG bitMask) : CtiCCMessage("CCSubstationBuses"), _ccSubstationBuses(NULL), _msgInfoBitMask(bitMask)
 {
     _ccSubstationBuses = new CtiCCSubstationBus_vec;
+    if( _CC_DEBUG & CC_DEBUG_EXTENDED )  
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - CtiCCSubstationBusMsg has "<< buses.size()<<" entries." << endl;
+    }
+    if( _CC_DEBUG & CC_DEBUG_RIDICULOUS )  
+    {
+        for (int h=0;h < buses.size(); h++) 
+        {
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Sub: "<<((CtiCCSubstationBus*)buses[h])->getPAOName()<< endl;
+            }
+        }
+    }
     for(int i=0;i<buses.size();i++)
     {
         _ccSubstationBuses->push_back(((CtiCCSubstationBus*)buses.at(i))->replicate());
