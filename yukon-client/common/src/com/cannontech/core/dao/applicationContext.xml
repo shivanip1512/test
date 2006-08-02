@@ -145,7 +145,7 @@
   </bean>
   
   <bean id="pointDeviceSearcherLucene" class="com.cannontech.common.search.PointDeviceLuceneSearcher" singleton="true" autowire="byType">
-      <constructor-arg value="c:/dev/lucene"/>
+      <property name="indexLocation" value="c:/dev/lucene" />
   </bean>
   
   <alias name="pointDeviceSearcherLucene" alias="pointDeviceSearcher"/>

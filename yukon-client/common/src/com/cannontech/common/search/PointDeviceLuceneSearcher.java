@@ -3,8 +3,6 @@ package com.cannontech.common.search;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -30,13 +28,7 @@ public class PointDeviceLuceneSearcher implements PointDeviceSearcher {
     private final ReentrantReadWriteLock indexLock = new ReentrantReadWriteLock();
     private IndexSearcher indexSearcher = null;
     
-    public PointDeviceLuceneSearcher(File indexLocation) {
-        this.indexLocation = indexLocation;
-        try {
-            indexSearcher = new IndexSearcher(indexLocation.getAbsolutePath());
-        } catch (IOException e) {
-            CTILogger.info("Unable to create lucene searcher, index must not be built yet.");
-        }
+    public PointDeviceLuceneSearcher() {
     }
     
     
@@ -104,7 +96,6 @@ public class PointDeviceLuceneSearcher implements PointDeviceSearcher {
             int stop; // 0-based, exclusive bound
             stop = Math.min(start + count, hits.length());
             
-            final Iterator hitIter = hits.iterator();
             List<UltraLightPoint> disconnectedCollection = new ArrayList<UltraLightPoint>(count);
             try {
                 for (int i = start; i < stop; ++i) {
@@ -156,7 +147,6 @@ public class PointDeviceLuceneSearcher implements PointDeviceSearcher {
             try {
                 hits = indexSearcher.search(termQuery);
                 if (hits.length() != 1) {
-                    List<UltraLightPoint> nothing = Collections.emptyList();
                     return SearchResult.emptyResult();
                 }
                 Document document = hits.doc(0);
@@ -186,6 +176,8 @@ public class PointDeviceLuceneSearcher implements PointDeviceSearcher {
         return indexLocation;
     }
     
-    
+    public void setIndexLocation(File indexLocation) {
+		this.indexLocation = indexLocation;
+	}
     
 }
