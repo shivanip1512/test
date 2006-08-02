@@ -3,6 +3,7 @@ package com.cannontech.yc.gui;
 /**
  * This type was created in VisualAge.
  */
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -11,6 +12,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseListener;
 import java.awt.print.PrinterException;
+import java.io.IOException;
+import java.io.StringReader;
 import java.net.URL;
 import java.util.Observable;
 import java.util.Observer;
@@ -22,6 +25,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextPane;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.html.HTMLDocument;
+import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.tree.TreePath;
 
 import com.cannontech.clientutils.CTILogger;
@@ -114,30 +121,41 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 			this.textPane = textPane_;
 			this.message = message_;
 		}
-		private java.awt.Color getColor()
+		private String getStyle()
 		{
 			if( message.getStatus() > 0 )
-				return java.awt.Color.red;
+				return "Red";
 			else if (message.getStatus() == 0)
-				return java.awt.Color.blue;
+				return "Blue";
 			else
-				return java.awt.Color.black;
+				return null;
 		}		
 		public void run()
 		{
 			try
 			{
-				javax.swing.text.Document doc = textPane.getDocument();
-				javax.swing.text.SimpleAttributeSet attset = new javax.swing.text.SimpleAttributeSet();
-				attset.addAttribute(javax.swing.text.StyleConstants.Foreground, getColor());
-				attset.addAttribute(javax.swing.text.StyleConstants.Underline, new Boolean(message.isUnderline()));
-//				attset.addAttribute(javax.swing.text.StyleConstants.FontFamily, "rastor fonts");
-				doc.insertString(doc.getLength(), message.getText(), attset);
+                HTMLDocument doc = (HTMLDocument)textPane.getStyledDocument();
+                int beginOffset = doc.getLength();
+                HTMLEditorKit kit = (HTMLEditorKit)textPane.getEditorKit();
+                StringReader reader = new StringReader(message.getText());
+                kit.read(reader, doc, doc.getLength());
+                reader.close();
+                // Set text in the range [5, 7) red
+                doc.setCharacterAttributes(beginOffset, message.getText().length(), textPane.getStyle("Font"), true);
+                String style = getStyle();
+                if( style != null)
+                    doc.setCharacterAttributes(beginOffset, message.getText().length(), textPane.getStyle(style), false);
+
+                
 				textPane.setCaretPosition(doc.getLength());
 			}
 			catch (javax.swing.text.BadLocationException ble)
 			{
 				ble.printStackTrace();
+			} catch (IOException e)
+            {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
 			}
 		}
 	}	
@@ -767,6 +785,18 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 				ivjDebugOutputTextPane = new JTextPane();
 				ivjDebugOutputTextPane.setName("DebugOutputTextPane");
 				ivjDebugOutputTextPane.setBounds(0, 0, 11, 6);
+                ivjDebugOutputTextPane.setContentType("text/html");
+                Style style = ivjDebugOutputTextPane.addStyle("Red", null);
+                StyleConstants.setForeground(style, Color.red);
+                
+                style = ivjDebugOutputTextPane.addStyle("Blue", null);
+                StyleConstants.setForeground(style, Color.blue);
+                
+                style = ivjDebugOutputTextPane.addStyle("Font", null);
+                StyleConstants.setFontSize(style, 12);
+                StyleConstants.setFontFamily(style, "sans-serif");
+
+                
 				// user code begin {1}
 				ivjDebugOutputTextPane.addMouseListener(this);				
 				// user code end
@@ -813,6 +843,16 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 				ivjDisplayOutputTextPane = new JTextPane();
 				ivjDisplayOutputTextPane.setName("DisplayOutputTextPane");
 				ivjDisplayOutputTextPane.setBounds(0, 0, 11, 6);
+                ivjDisplayOutputTextPane.setContentType("text/html");
+                Style style = ivjDisplayOutputTextPane.addStyle("Red", null);
+                StyleConstants.setForeground(style, Color.red);
+                
+                style = ivjDisplayOutputTextPane.addStyle("Blue", null);
+                StyleConstants.setForeground(style, Color.blue);
+                
+                style = ivjDisplayOutputTextPane.addStyle("Font", null);
+                StyleConstants.setFontSize(style, 12);
+                StyleConstants.setFontFamily(style, "sans-serif");
 				// user code begin {1}
 				ivjDisplayOutputTextPane.addMouseListener(this);
 				// user code end
