@@ -379,15 +379,6 @@ public class DatabaseCacheBean implements IDatabaseCache
 		return getCache().getAllPAOsMap();
 	}
 
-    /**
-     * @ejb:interface-method
-     * tview-type="remote" 
-    **/
-    public synchronized java.util.Map getAllContactsMap()
-    {
-        return getCache().getAllContactsMap();
-    }
-
 	/**
 	 * @ejb:interface-method
 	 * tview-type="remote" 

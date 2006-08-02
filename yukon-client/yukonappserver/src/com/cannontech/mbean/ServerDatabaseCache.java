@@ -112,8 +112,8 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	private ArrayList allDMG_BillingGroups = null;	//distinct DeviceMeterGroup.billingGroup
 	private ArrayList allPointLimits = null;
 	private ArrayList allYukonImages = null;
-	private ArrayList allCICustomers = null;
-	private ArrayList allCustomers = null;
+	private List<LiteCICustomer> allCICustomers = null;
+	private List<LiteCustomer> allCustomers = null;
 	private ArrayList allLMProgramConstraints = null;
 	private ArrayList allLMScenarios = null;
 	private ArrayList allLMScenarioProgs = null;
@@ -160,7 +160,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	//private Map allPointsMap = null;
 	private Map allPAOsMap = null;
 	private Map allCustomersMap = null;    
-	private Map allContactsMap = null;
+	private Map<Integer, LiteContact> allContactsMap = new HashMap<Integer, LiteContact>();
     
 	//derived from allYukonUsers,allYukonRoles,allYukonGroups
 	//see type info in IDatabaseCache
@@ -174,7 +174,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	private Map allUsersMap = null;
 	private Map allContactNotifsMap = null;
 	
-	private Map userContactMap = null;
+	private Map<Integer, LiteContact> userContactMap = new HashMap<Integer, LiteContact>();
     private Map userRolePropertyValueMap = null;
 	private Map userRoleMap = null;
 
@@ -299,42 +299,41 @@ public synchronized java.util.List getAllCapControlSubBuses()
  * Insert the method's description here.
  * Creation date: (3/14/00 3:19:19 PM)
  */
-public synchronized java.util.List getAllContacts()
-{
-	if( allContacts != null )
-		return allContacts;
-	else
-	{
-		allContacts = new ArrayList();        
-		allContactsMap = new HashMap();
+public synchronized List getAllContacts() {
+    if ( allContacts != null ) {
+        return allContacts;
+    } else {
+        allContacts = new ArrayList();        
+        allContactsMap.clear();
         allContactNotifsMap = new HashMap();
-
-		ContactLoader contactLoader =
-			new ContactLoader(allContacts, allContactsMap, allContactNotifsMap, databaseAlias);
-
-		contactLoader.run();		
-		return allContacts;
-	}
+        
+        ContactLoader contactLoader =
+            new ContactLoader(allContacts, allContactsMap, allContactNotifsMap, databaseAlias);
+        
+        contactLoader.run();		
+        return allContacts;
+    }
 }
 
 /**
  *
  */
-public synchronized java.util.List getAllCICustomers() 
-{
-	if( allCICustomers == null )
-	{
-		allCICustomers = new ArrayList( getAllCustomers().size());
-
-		for( int i = 0; i < getAllCustomers().size(); i++ )
-		{
-			if( getAllCustomers().get(i) instanceof LiteCICustomer )
-				allCICustomers.add((LiteCICustomer)getAllCustomers().get(i));
-		}
-		allCICustomers.trimToSize();
-	}
-	
-	return allCICustomers;
+public synchronized List<LiteCICustomer> getAllCICustomers() {
+    if( allCICustomers == null ) {
+        List customerList = getAllCustomers();
+        ArrayList<LiteCICustomer> tempAllCICustomers = new ArrayList<LiteCICustomer>( customerList.size());
+        
+        for( int i = 0; i < customerList.size(); i++ ) {
+            LiteCustomer aCustomer = (LiteCustomer) customerList.get(i);
+            if( aCustomer instanceof LiteCICustomer ) {
+                tempAllCICustomers.add((LiteCICustomer)aCustomer);
+            }
+        }
+        tempAllCICustomers.trimToSize();
+        allCICustomers = tempAllCICustomers;
+    }
+    
+    return allCICustomers;
 }
 /**
  * Insert the method's description here.
@@ -818,24 +817,6 @@ public synchronized java.util.Map getAllUsersMap()
 	}
 }
 
-/**
- * Insert the method's description here.
- * Creation date: (3/14/00 3:19:19 PM)
- * @return java.util.Collection
- */
-public synchronized java.util.Map getAllContactsMap()
-{
-	if( allContactsMap != null )
-		return allContactsMap;
-	else
-	{
-		releaseAllContacts();
-		getAllContacts();
-
-		return allContactsMap;
-	}
-}
-
 public synchronized java.util.Map getAllContactNotifsMap()
 {
 	if( allContactNotifsMap != null )
@@ -1250,15 +1231,15 @@ public synchronized java.util.List getAllYukonPAObjects()
 	 * @see com.cannontech.yukon.IDatabaseCache#getAllCustomers()
 	 */
 	@SuppressWarnings("unchecked")
-    public synchronized List getAllCustomers() {
-		if (allCustomers == null)
-		{
-			allCustomers = new ArrayList();
-			allCustomersMap = new HashMap();
-			CustomerLoader custLoader = new CustomerLoader(allCustomers, allCustomersMap, databaseAlias);
-			custLoader.run();
-		}
-		return allCustomers;
+	public synchronized List getAllCustomers() {
+	    if (allCustomers == null)
+	    {
+	        allCustomers = new ArrayList();
+	        allCustomersMap = new HashMap();
+	        CustomerLoader custLoader = new CustomerLoader(allCustomers, allCustomersMap, databaseAlias);
+	        custLoader.run();
+	    }
+	    return allCustomers;
 	}
 	
 	/**
@@ -1434,84 +1415,60 @@ private synchronized LiteBase handleYukonImageChange( int changeType, int id )
  */
 private synchronized LiteBase handleContactChange( int changeType, int id )
 {
-	LiteBase lBase = null;
-	
-	// if the storage is not already loaded, we must not care about it
-	if( allContacts == null )
-		return lBase;
-
-	switch(changeType)
-	{
-		case DBChangeMsg.CHANGE_TYPE_ADD:
-		
-				if( id == DBChangeMsg.CHANGE_INVALID_ID )
-					break;
-		
-				lBase = (LiteBase)allContactsMap.get( new Integer(id) );                
-				if( lBase == null )
-				{
-					LiteContact lc = new LiteContact(id);
-					lc.retrieve(databaseAlias);
-					allContacts.add(lc);
-					allContactsMap.put( new Integer(lc.getContactID()), lc );
+    LiteBase lBase = null;
+    
+    switch(changeType)
+    {
+    case DBChangeMsg.CHANGE_TYPE_ADD:
+    {
+        if ( id == DBChangeMsg.CHANGE_INVALID_ID )
+            break;
         
-					lBase = lc;
-				}
-				break;
-
-		case DBChangeMsg.CHANGE_TYPE_UPDATE:
-
-				LiteContact lc = (LiteContact)allContactsMap.get( new Integer(id) );
-				if (lc == null)
-					lc = getAContactByContactID(id);
-				lc.retrieve( databaseAlias );                
-				lBase = lc;
-
-				if( lBase == null ) //we did not find the contact, just create a new one
-				{
-					lc = new LiteContact(id);
-					lc.retrieve(databaseAlias);
-					allContacts.add(lc);
-					allContactsMap.put( new Integer(lc.getContactID()), lc );
+        LiteContact lc = getAContactByContactID(id);
+        lBase = lc;
         
-					lBase = lc;
-				}
-                
-                //better wipe the user to contact mappings in case a contact changed that was mapped
-                releaseUserContactMap();
-                
-				break;
-
-		case DBChangeMsg.CHANGE_TYPE_DELETE:
-				//special case for this handler!!!!
-				if( id == DBChangeMsg.CHANGE_INVALID_ID )
-				{
-					releaseAllContacts();
-					break;
-				}		
-				
-				for(int i=0;i<allContacts.size();i++)
-				{
-					if( ((LiteContact)allContacts.get(i)).getLiteID() == id )
-					{
-						allContactsMap.remove( new Integer(id) );
-						lBase = (LiteBase)allContacts.remove(i);
-						break;
-					}
-				}
-                
-                //better wipe the user to contact mapping, in case one of the contacts from the map was deleted
-                releaseUserContactMap();
-                
-				break;
-
-		default:
-				releaseAllContacts();
-                releaseUserContactMap();
-				break;
-	}
-
-	return lBase;
+        break;
+    }
+    case DBChangeMsg.CHANGE_TYPE_UPDATE:
+    {
+        LiteContact lc = getAContactByContactID(id);
+        lBase = lc;
+        
+        //better wipe the user to contact mappings in case a contact changed that was mapped
+        releaseUserContactMap();
+        
+        break;
+    }
+    case DBChangeMsg.CHANGE_TYPE_DELETE:
+        //special case for this handler!!!!
+        if ( id == DBChangeMsg.CHANGE_INVALID_ID )
+        {
+            releaseAllContacts();
+            break;
+        }		
+        
+        allContactsMap.remove( new Integer(id) );
+        for (int i=0;i<allContacts.size();i++)
+        {
+            if ( ((LiteContact)allContacts.get(i)).getLiteID() == id )
+            {
+                lBase = (LiteBase)allContacts.remove(i);
+                break;
+            }
+        }
+        
+        //better wipe the user to contact mapping, in case one of the contacts from the map was deleted
+        releaseUserContactMap();
+        
+        break;
+        
+    default:
+        releaseAllContacts();
+        releaseUserContactMap();
+        break;
+    }
+    
+    return lBase;
 }
 /**
  * Insert the method's description here.
@@ -1613,12 +1570,13 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg)
 //	}
 	else if( database == DBChangeMsg.CHANGE_CONTACT_DB )
 	{
-		//clear out the CICustomers & NotificationGroups as they may have changed
-		allCICustomers = null;
-		allNotificationGroups = null;
-		allContactNotifsMap = null;
-
-		retLBase = handleContactChange( dbType, id );		
+	    //clear out the CICustomers & NotificationGroups as they may have changed
+	    allCICustomers = null;
+	    allNotificationGroups = null;
+	    
+	    releaseAllCustomers();
+	    
+	    retLBase = handleContactChange( dbType, id );		
 	}
 	else if( database == DBChangeMsg.CHANGE_GRAPH_DB )
 	{
@@ -2487,7 +2445,6 @@ private synchronized LiteBase handleNotificationGroupChange( int changeType, int
 
 	return lBase;
 }
-
 /**
  * Insert the method's description here.
  * Creation date: (12/7/00 12:34:05 PM)
@@ -2504,14 +2461,14 @@ private synchronized LiteBase handlePointChange( int changeType, int id )
             break;
 
 		case DBChangeMsg.CHANGE_TYPE_UPDATE:
-            lBase = DaoFactory.getPointDao().getLitePoint(id);    	
-			break;
+            lBase = DaoFactory.getPointDao().getLitePoint(id);
+            break;
 
 		case DBChangeMsg.CHANGE_TYPE_DELETE:
-		    break;
+            break;
 
 		default:
-			break;
+            break;
 	}
 
 	return lBase;
@@ -2883,7 +2840,7 @@ public synchronized void releaseAllCache()
 	//Maps that are created by the joining/parsing of existing lists
 	allPAOsMap = null;
 	allCustomersMap = null;
-	allContactsMap = null;
+	allContactsMap.clear();
 	allUsersMap = null;
 
 
@@ -2899,7 +2856,7 @@ public synchronized void releaseAllCache()
 public synchronized void releaseAllContacts()
 {
 	allContacts = null;
-	allContactsMap = null;
+	allContactsMap.clear();
 	allContactNotifsMap = null;
 }
 /**
@@ -3166,17 +3123,17 @@ public synchronized LiteContact getAContactByUserID(int userID)
 {
     LiteContact specifiedContact = null;
     //check cache for previous grabs
-    if(userContactMap == null)
-        userContactMap = new HashMap();
-    else
-        specifiedContact = (LiteContact) userContactMap.get(new Integer(userID));
+    specifiedContact = userContactMap.get(userID);
     
     //not in cache, go to DB.
     if(specifiedContact == null)
     {
         specifiedContact = YukonUserContactLookup.loadSpecificUserContact(userID);
         //found it, put it in the cache for later searches
-        userContactMap.put(new Integer(userID), specifiedContact);
+        if (specifiedContact != null) {
+            userContactMap.put(userID, specifiedContact);
+            allContactsMap.put(specifiedContact.getContactID(), specifiedContact);
+        }
     }
     
     return specifiedContact;
@@ -3185,12 +3142,7 @@ public synchronized LiteContact getAContactByUserID(int userID)
 public synchronized LiteContact getAContactByContactID(int contactID) 
 {
     //check cache for previous grabs
-    if(allContactsMap == null) 
-    {
-        getAllContacts();
-    }
-    
-    LiteContact specifiedContact = (LiteContact) allContactsMap.get(new Integer(contactID));
+    LiteContact specifiedContact = allContactsMap.get(contactID);
     
     //not in cache, go to DB.
     if(specifiedContact == null)
@@ -3198,8 +3150,10 @@ public synchronized LiteContact getAContactByContactID(int contactID)
         specifiedContact = YukonUserContactLookup.loadSpecificContact(contactID);
 
         //found it, put it in the cache for later searches
-        allContactsMap.put(new Integer(contactID), specifiedContact);        
-        allContacts.add(specifiedContact);
+        if (specifiedContact != null) {
+            allContactsMap.put(contactID, specifiedContact);  
+            userContactMap.put(specifiedContact.getLoginID(), specifiedContact);
+        }
     }
     
     return specifiedContact;
@@ -3300,7 +3254,7 @@ public synchronized void releaseUserRolePropertyValueMap()
 
 public synchronized void releaseUserContactMap()
 {
-    userContactMap = null;
+    userContactMap.clear();
 }
 
 /*
@@ -3313,22 +3267,20 @@ public synchronized void adjustUserMappings(int userID)
 {
     MapKeyInts keyInts = new MapKeyInts(userID, CtiUtilities.NONE_ZERO_ID);
    
-    if(userRoleMap != null)
-    {    
-        if(userRoleMap.containsKey(keyInts))
+    if (userRoleMap != null) {    
+        if (userRoleMap.containsKey(keyInts)) {
             releaseUserRoleMap();
+        }
     }
     
-    if(userRolePropertyValueMap != null)
-    {
-        if(userRolePropertyValueMap.containsKey(keyInts))
+    if (userRolePropertyValueMap != null) {
+        if (userRolePropertyValueMap.containsKey(keyInts)) {
             releaseUserRolePropertyValueMap();
+        }
     }
     
-    if(userContactMap != null)
-    {
-        if(userContactMap.containsKey(new Integer(userID)))
-            releaseUserContactMap();
+    if (userContactMap.containsKey(userID)) {
+        releaseUserContactMap();
     }
     
     return;

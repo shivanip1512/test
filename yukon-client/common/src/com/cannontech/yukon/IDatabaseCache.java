@@ -137,9 +137,6 @@ public interface IDatabaseCache
 	//Map<Integer(commandID), LiteCommand>
 	public java.util.Map getAllCommandsMap();
 	
-	//Map<Integer(contactID), LiteContact>
-	public java.util.Map getAllContactsMap();
-	
 	public String getARolePropertyValue(LiteYukonUser user, int rolePropertyID);
 	public LiteYukonRole getARole(LiteYukonUser user, int roleID);
     
