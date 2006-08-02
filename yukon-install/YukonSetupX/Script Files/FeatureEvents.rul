@@ -1,6 +1,6 @@
 #define JAVAVERSION "1.5.0_06"
 //As long as the JRE installer is in one of setup file directories, just put in the name.
-#define JDKINSTALLFILE '"J2SE Development Kit 5.0 Update 6"'
+#define JDKINSTALLFILE '"J2SE Development Kit 5.0 Update 6.msi"'
 
 BOOL uninstallJavaFirst;
 BOOL installJava;

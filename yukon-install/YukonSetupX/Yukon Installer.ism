@@ -382,6 +382,7 @@
 		<row><td>batik.jar</td><td>Common Bin</td><td>batik.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\batik.jar</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>billing.bat</td><td>Common Bin</td><td>billing.bat</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\billing.bat</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>billing.jar</td><td>Common Bin</td><td>billing.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\billing.jar</td><td>1</td><td>NewSubFolder85</td></row>
+		<row><td>boost_thread_vc6_mt_gd_1_31.</td><td>Common Dlls</td><td>boost_thread-vc6-mt-gd-1_31.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_SERVER_FILES&gt;\boost_thread-vc6-mt-gd-1_31.dll</td><td>1</td><td>NewSubFolder72</td></row>
 		<row><td>calc_logic.exe</td><td>Calculation Server</td><td>calc_logic.exe</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_SERVER_FILES&gt;\calc_logic.exe</td><td>1</td><td>NewSubFolder66</td></row>
 		<row><td>calchist.jar</td><td>Common Bin</td><td>calchist.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\calchist.jar</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>cannonstyle.css</td><td>Common Bin</td><td>CannonStyle.css</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\CannonStyle.css</td><td>1</td><td>NewSubFolder85</td></row>
@@ -389,6 +390,7 @@
 		<row><td>cbc.jar</td><td>Common Bin</td><td>cbc.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\cbc.jar</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>cbctest.exe</td><td>Test Applications</td><td>cbctest.exe</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\cbctest.exe</td><td>1</td><td>NewSubFolder83</td></row>
 		<row><td>classes12.jar</td><td>Common Bin</td><td>classes12.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\classes12.jar</td><td>1</td><td>NewSubFolder85</td></row>
+		<row><td>clrdump.dll</td><td>Common Dlls</td><td>ClrDump.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_SERVER_FILES&gt;\ClrDump.dll</td><td>1</td><td>NewSubFolder72</td></row>
 		<row><td>cmdline.dll</td><td>Common Dlls</td><td>cmdline.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\cmdline.dll</td><td>1</td><td>NewSubFolder72</td></row>
 		<row><td>cmdtest.exe</td><td>Test Applications</td><td>cmdtest.exe</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\cmdtest.exe</td><td>1</td><td>NewSubFolder83</td></row>
 		<row><td>commandericon.ico</td><td>Common Bin</td><td>CommanderIcon.ico</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\CommanderIcon.ico</td><td>1</td><td>NewSubFolder85</td></row>
@@ -420,6 +422,7 @@
 		<row><td>db.properties</td><td>Database Properties</td><td>db.properties</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\db.properties</td><td>1</td><td/></row>
 		<row><td>dbeditor.jar</td><td>Database Editor</td><td>dbeditor.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\dbeditor.jar</td><td>1</td><td>NewSubFolder74</td></row>
 		<row><td>dbeditoricon.ico</td><td>Common Bin</td><td>dbEditorIcon.ico</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\dbEditorIcon.ico</td><td>1</td><td>NewSubFolder85</td></row>
+		<row><td>dbghelp.dll</td><td>Common Dlls</td><td>dbghelp.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_SERVER_FILES&gt;\dbghelp.dll</td><td>1</td><td>NewSubFolder72</td></row>
 		<row><td>dbt15d.dll</td><td>Common Dlls</td><td>dbt15d.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_ROGUEWAVE&gt;\dbt15d.dll</td><td>1</td><td>NewSubFolder72</td></row>
 		<row><td>dbtoolsframe.bat</td><td>Common Bin</td><td>DBToolsFrame.bat</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\DBToolsFrame.bat</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>dbupdater.bat</td><td>Common Bin</td><td>DBUpdater.bat</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\DBUpdater.bat</td><td>1</td><td>NewSubFolder85</td></row>
@@ -476,6 +479,7 @@
 		<row><td>log.properties</td><td>Database Properties</td><td>log.properties</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\log.properties</td><td>1</td><td/></row>
 		<row><td>log4j_1.2.4.jar</td><td>Common Bin</td><td>log4j-1.2.4.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\log4j-1.2.4.jar</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>logic.dll</td><td>Common Dlls</td><td>logic.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_SERVER_FILES&gt;\logic.dll</td><td>1</td><td>NewSubFolder72</td></row>
+		<row><td>lucene_core_2.0.0.jar</td><td>Common Bin</td><td>lucene-core-2.0.0.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\lucene-core-2.0.0.jar</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>macs.exe</td><td>MACS Server</td><td>macs.exe</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_SERVER_FILES&gt;\macs.exe</td><td>1</td><td>NewSubFolder75</td></row>
 		<row><td>macs.jar</td><td>Common Bin</td><td>macs.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\macs.jar</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>master.cfg</td><td>Common Directories</td><td>master.cfg</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\master.cfg</td><td>1</td><td>NewSubFolder70</td></row>
@@ -528,15 +532,7 @@
 		<row><td>setjavapath.bat</td><td>Common Bin</td><td>setjavapath.bat</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\setjavapath.bat</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>sigsinktest.exe</td><td>Test Applications</td><td>sigsinktest.exe</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\sigsinktest.exe</td><td>1</td><td>NewSubFolder83</td></row>
 		<row><td>sigsrctest.exe</td><td>Test Applications</td><td>sigsrctest.exe</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\sigsrctest.exe</td><td>1</td><td>NewSubFolder83</td></row>
-		<row><td>spring_aop.jar</td><td>Common Bin</td><td>spring-aop.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\spring-aop.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>spring_beans.jar</td><td>Common Bin</td><td>spring-beans.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\spring-beans.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>spring_context.jar</td><td>Common Bin</td><td>spring-context.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\spring-context.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>spring_core.jar</td><td>Common Bin</td><td>spring-core.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\spring-core.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>spring_dao.jar</td><td>Common Bin</td><td>spring-dao.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\spring-dao.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>spring_hibernate.jar</td><td>Common Bin</td><td>spring-hibernate.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\spring-hibernate.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>spring_jdbc.jar</td><td>Common Bin</td><td>spring-jdbc.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\spring-jdbc.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>spring_orm.jar</td><td>Common Bin</td><td>spring-orm.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\spring-orm.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>spring_web.jar</td><td>Common Bin</td><td>spring-web.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\spring-web.jar</td><td>1</td><td>NewSubFolder85</td></row>
+		<row><td>spring.jar</td><td>Common Bin</td><td>spring.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\spring.jar</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>sqlserver.jar</td><td>Common Bin</td><td>SqlServer.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\SqlServer.jar</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>systray4j.dll</td><td>Common Bin</td><td>systray4j.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\systray4j.dll</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>tabletest.exe</td><td>Test Applications</td><td>tabletest.exe</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\tabletest.exe</td><td>1</td><td>NewSubFolder83</td></row>
