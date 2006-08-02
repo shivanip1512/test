@@ -31,6 +31,7 @@ public class PointDeviceLuceneSearcher implements PointDeviceSearcher {
     private IndexSearcher indexSearcher = null;
     
     public PointDeviceLuceneSearcher(File indexLocation) {
+        this.indexLocation = indexLocation;
         try {
             indexSearcher = new IndexSearcher(indexLocation.getAbsolutePath());
         } catch (IOException e) {
