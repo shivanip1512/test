@@ -29,7 +29,7 @@ public class PointDeviceLuceneSearcher implements PointDeviceSearcher {
     private IndexSearcher indexSearcher = null;
     
     public PointDeviceLuceneSearcher() {
-    }
+        }
     
     
     public synchronized void resetIndexSearcher() {
@@ -166,7 +166,7 @@ public class PointDeviceLuceneSearcher implements PointDeviceSearcher {
         Query query = new MatchAllDocsQuery();
         try {
             Query queryWithCriteria = compileAndCombine(query, criteria);
-            return doQuery(queryWithCriteria, 0, -1);
+            return doQuery(queryWithCriteria, i, j);
         } catch (IOException e) {
             throw new RuntimeException("Couldn't complete search", e);
         }
@@ -179,5 +179,6 @@ public class PointDeviceLuceneSearcher implements PointDeviceSearcher {
     public void setIndexLocation(File indexLocation) {
 		this.indexLocation = indexLocation;
 	}
+    
     
 }

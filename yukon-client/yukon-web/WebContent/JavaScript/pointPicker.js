@@ -1,6 +1,7 @@
 var pointPicker_destPointIdFieldId;
 var pointPicker_currentSearch = '';
 var pointPicker_inSearch = false;
+var pointPicker_lastWasAll = false;
 function pointPicker_showPicker(destPointIdFieldId) {
     // create div to store result
     var bodyElem = document.documentElement.getElementsByTagName("body")[0];
@@ -17,12 +18,12 @@ function pointPicker_showPicker(destPointIdFieldId) {
 
 var onComplete = function() {
     var ss = escape($('query').value);
-    if (pointPicker_currentSearch != ss) {
+    if (!pointPicker_lastWasAll && pointPicker_currentSearch != ss) {
         //do another search
-        pointPicker_doPartialSearch();
+        pointPicker_doPartialSearch(0);
     } else {
         pointPicker_inSearch = false;
-        Element.hide('pointPicker_indicator');
+        $('pointPicker_indicator').style.visibility = 'hidden';
     }
 }
 
@@ -34,11 +35,12 @@ function pointPicker_doKeyUp() {
     };
     var quietDelay = 300;
     setTimeout(timerFunction, quietDelay);
-    Element.show('pointPicker_indicator');
+    $('pointPicker_indicator').style.visibility = 'visible';
 }
 
 function pointPicker_doPartialSearch(start) {
     pointPicker_inSearch = true;
+    pointPicker_lastWasAll = false;
     var ss = escape($('query').value);
     pointPicker_currentSearch = ss;
     var url = '/pointPicker/search?';
@@ -58,17 +60,26 @@ function pointPicker_cancel() {
 }
 
 function pointPicker_previous(index) {
-    pointPicker_doPartialSearch(index);
+    if (pointPicker_lastWasAll) {
+        pointPicker_showAll(index);
+    } else {
+        pointPicker_doPartialSearch(index);
+    }
 }
 
 function pointPicker_next(index) {
-    pointPicker_doPartialSearch(index);
+    if (pointPicker_lastWasAll) {
+        pointPicker_showAll(index);
+    } else {
+        pointPicker_doPartialSearch(index);
+    }
 }
 
 function pointPicker_showAll(start) {
+    pointPicker_lastWasAll = true;
     var url = '/pointPicker/showAll?';
     url += '&currentPointId=' + $(pointPicker_destPointIdFieldId).value;
-    url += '$start=' + start;
+    url += '&start=' + start;
     new Ajax.Updater('pointPicker_results', url, {'method': 'get', 'onComplete': onComplete});
     Element.show('pointPicker_indicator');
 }
