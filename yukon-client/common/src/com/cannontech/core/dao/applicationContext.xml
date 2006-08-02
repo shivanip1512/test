@@ -149,4 +149,9 @@
   </bean>
   
   <alias name="pointDeviceSearcherLucene" alias="pointDeviceSearcher"/>
+  
+  <bean id="pointDeviceSearchInitializer" class="com.cannontech.common.search.PointDeviceLuceneInitializer" singleton="true" autowire="default">
+      <property name="jdbcTemplate" ref="jdbcTemplate" />
+      <property name="indexLocation" value="c:/dev/lucene" />
+  </bean>
 </beans>
