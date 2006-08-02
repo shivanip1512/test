@@ -96,7 +96,7 @@ WINLIBS=kernel32.lib user32.lib advapi32.lib wsock32.lib
 
 
 ALL:            $(CTIPROGS)
-
+		-@if exist $(BOOST)\stage\lib\boost_thread-vc6-mt-1_31.dll copy $(BOOST)\stage\lib\boost_thread-vc6-mt-1_31.dll $(YUKONOUTPUT)
 
 ctibase.dll:    $(BASEOBJS) Makefile
                 @$(MAKE) -nologo -f $(_InputFile) id
@@ -120,6 +120,7 @@ copy:
                 -copy bin\ctibase.dll $(YUKONOUTPUT)
                 -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
                 -if exist bin\ctibase.lib copy bin\ctibase.lib $(COMPILEBASE)\lib
+		-@if exist $(BOOST)\stage\lib\boost_thread-vc6-mt-1_31.dll copy $(BOOST)\stage\lib\boost_thread-vc6-mt-1_31.dll $(YUKONOUTPUT)
 
 deps:
                 scandeps -Output makebase.mak *.cpp
