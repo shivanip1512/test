@@ -43,7 +43,6 @@
         <webClassPathEntry>/third-party/castor-xml.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/cglib-2.1.3.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/classes12.jar</webClassPathEntry>
-        <webClassPathEntry>/third-party/commons-collections-3.1.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/commons-discovery.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/commons-fileupload.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/commons-httpclient.jar</webClassPathEntry>
@@ -59,7 +58,6 @@
         <webClassPathEntry>/third-party/jaxm-api.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/jaxm-runtime.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/jaxrpc.jar</webClassPathEntry>
-        <webClassPathEntry>/third-party/jcchart401K.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/jcfield401K.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/jcommon.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/jcpagelayout450K.jar</webClassPathEntry>
@@ -71,9 +69,9 @@
         <webClassPathEntry>/third-party/jruntags.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/jta.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/jtds.jar</webClassPathEntry>
-        <webClassPathEntry>/third-party/junit.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/led.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/log4j-1.2.4.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/lucene-core-2.0.0.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/mail.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/mx4j-jmx.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/mx4j-tools.jar</webClassPathEntry>
@@ -89,22 +87,12 @@
         <webClassPathEntry>/trending/bin</webClassPathEntry>
         <webClassPathEntry>/trending/resource</webClassPathEntry>
         <webClassPathEntry>/yukon-web/WebContent/WEB-INF/classes</webClassPathEntry>
-        <webClassPathEntry>/yukon-web/WebContent/WEB-INF/lib/commons-beanutils-1.6.1.jar</webClassPathEntry>
-        <webClassPathEntry>/yukon-web/WebContent/WEB-INF/lib/commons-codec-1.2.jar</webClassPathEntry>
-        <webClassPathEntry>/yukon-web/WebContent/WEB-INF/lib/commons-collections-3.1.jar</webClassPathEntry>
-        <webClassPathEntry>/yukon-web/WebContent/WEB-INF/lib/commons-digester-1.5.jar</webClassPathEntry>
-        <webClassPathEntry>/yukon-web/WebContent/WEB-INF/lib/commons-el.jar</webClassPathEntry>
         <webClassPathEntry>/yukon-web/WebContent/WEB-INF/lib/commons-fileupload-1.0.jar</webClassPathEntry>
         <webClassPathEntry>/yukon-web/WebContent/WEB-INF/lib/commons-lang-2.1.jar</webClassPathEntry>
-        <webClassPathEntry>/yukon-web/WebContent/WEB-INF/lib/commons-logging.jar</webClassPathEntry>
         <webClassPathEntry>/yukon-web/WebContent/WEB-INF/lib/commons-validator.jar</webClassPathEntry>
         <webClassPathEntry>/yukon-web/WebContent/WEB-INF/lib/jsp-2.0.jar</webClassPathEntry>
-        <webClassPathEntry>/yukon-web/WebContent/WEB-INF/lib/jstl.jar</webClassPathEntry>
         <webClassPathEntry>/yukon-web/WebContent/WEB-INF/lib/log4j-1.2.8.jar</webClassPathEntry>
-        <webClassPathEntry>/yukon-web/WebContent/WEB-INF/lib/myfaces-api.jar</webClassPathEntry>
-        <webClassPathEntry>/yukon-web/WebContent/WEB-INF/lib/myfaces-impl.jar</webClassPathEntry>
         <webClassPathEntry>/yukon-web/WebContent/WEB-INF/lib/standard.jar</webClassPathEntry>
-        <webClassPathEntry>/yukon-web/WebContent/WEB-INF/lib/tomahawk.jar</webClassPathEntry>
         <webClassPathEntry>/yukon-web/WebContent/WEB-INF/lib/web.jar</webClassPathEntry>
         <webClassPathEntry>/yukonappserver/bin</webClassPathEntry>
     </webClassPathEntries>
