@@ -14,6 +14,7 @@ INCLPATHS+= \
 -I$(SIGNAL)\include \
 -I$(SERVICE)\include \
 -I$(CPARMS)\include \
+-I$(CPARMS) \
 -I$(BOOST) \
 -I$(RW) \
 

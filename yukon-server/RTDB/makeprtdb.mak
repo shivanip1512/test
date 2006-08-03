@@ -8,6 +8,7 @@ INCLPATHS+= \
 -I$(PORTER)\include \
 -I$(MSG)\include \
 -I$(CPARMS)\include \
+-I$(CPARMS) \
 -I$(PROT)\include \
 -I$(BOOST) \
 -I$(RW) \
