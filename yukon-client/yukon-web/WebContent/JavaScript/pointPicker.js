@@ -1,7 +1,6 @@
 var pointPicker_destPointIdFieldId;
 var pointPicker_currentSearch = '';
 var pointPicker_inSearch = false;
-var pointPicker_lastWasAll = false;
 function pointPicker_showPicker(destPointIdFieldId) {
     // create div to store result
     var bodyElem = document.documentElement.getElementsByTagName("body")[0];
@@ -18,7 +17,7 @@ function pointPicker_showPicker(destPointIdFieldId) {
 
 var onComplete = function() {
     var ss = escape($('query').value);
-    if (!pointPicker_lastWasAll && pointPicker_currentSearch != ss) {
+    if (pointPicker_currentSearch != ss) {
         //do another search
         pointPicker_doPartialSearch(0);
     } else {
@@ -40,7 +39,6 @@ function pointPicker_doKeyUp() {
 
 function pointPicker_doPartialSearch(start) {
     pointPicker_inSearch = true;
-    pointPicker_lastWasAll = false;
     var ss = escape($('query').value);
     pointPicker_currentSearch = ss;
     var url = '/pointPicker/search?';
@@ -60,26 +58,33 @@ function pointPicker_cancel() {
 }
 
 function pointPicker_previous(index) {
-    if (pointPicker_lastWasAll) {
-        pointPicker_showAll(index);
-    } else {
-        pointPicker_doPartialSearch(index);
-    }
+    pointPicker_doPartialSearch(index);
 }
 
 function pointPicker_next(index) {
-    if (pointPicker_lastWasAll) {
-        pointPicker_showAll(index);
-    } else {
-        pointPicker_doPartialSearch(index);
-    }
+    pointPicker_doPartialSearch(index);
 }
 
 function pointPicker_showAll(start) {
-    pointPicker_lastWasAll = true;
-    var url = '/pointPicker/showAll?';
-    url += '&currentPointId=' + $(pointPicker_destPointIdFieldId).value;
-    url += '&start=' + start;
-    new Ajax.Updater('pointPicker_results', url, {'method': 'get', 'onComplete': onComplete});
-    Element.show('pointPicker_indicator');
+    $('query').value = '';
+    pointPicker_doKeyUp();
+}
+
+function zoomClick(e, pointid) {
+    var posx = 0;
+    var posy = 0;
+    if (!e) var e = window.event;
+    if (e.pageX || e.pageY)
+    {
+        posx = e.pageX;
+        posy = e.pageY;
+    }
+    else if (e.clientX || e.clientY)
+    {
+        posx = e.clientX + document.body.scrollLeft;
+        posy = e.clientY + document.body.scrollTop;
+    }
+    // posx and posy contain the mouse position relative to the document
+    // Do something with this information
+    alert("Click: " + posx + "," + posy + "; Point: "  + pointid);
 }

@@ -66,7 +66,7 @@ public class PointPickerController extends MultiActionController {
         boolean blank = StringUtils.isBlank(queryString);
         SearchResult<UltraLightPoint> hits;
         if (blank) {
-            hits = SearchResult.emptyResult();
+            hits = pointDeviceSearcher.allPoints(kWCriteria, start, count);
         } else {
             hits = pointDeviceSearcher.search(queryString, kWCriteria, start , count);
         }

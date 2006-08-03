@@ -4,14 +4,16 @@ table.pointPickerResultTable {
     border-collapse: collapse;
 }
 
+table.pointPickerResultTable th {
+    text-align: left;
+}
+
 pointPicker_commandLinks {
     font-size: 80%;
 }
 
-#pointPicker_results {
-    max-height: 353px;
-    overflow: auto;
-    width: 500px;
+#pointPicker_resultArea {
+    height: 349px;
 }
 
 #pointPicker_popup {
@@ -21,8 +23,8 @@ pointPicker_commandLinks {
   left: 120px;
   right: 120px;
   top: 30px;
-  width: auto;
-  height: 370px;
+  width: 500px;
+  height: 390px;
   border: 3px ridge #696;
   padding: 10px;
   z-index: 100;
