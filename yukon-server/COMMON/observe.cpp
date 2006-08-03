@@ -97,7 +97,7 @@ void CtiObservable::notifyObservers()
         std::list< CtiObserver* >::iterator itr = _observers.begin();
         while( itr != _observers.end() )
         {
-            CtiObserver* ptr = *itr;
+            CtiObserver* ptr = *itr++;
              ptr->update(*this);
         }
 
