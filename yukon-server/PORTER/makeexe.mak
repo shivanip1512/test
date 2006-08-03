@@ -16,6 +16,7 @@ INCLPATHS+= \
 -I$(PIL)\include \
 -I$(SERVER)\include \
 -I$(CPARMS)\include \
+-I$(CPARMS) \
 -I$(MSG)\include \
 -I$(PROT)\include \
 -I$(BOOST) \

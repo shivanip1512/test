@@ -4,6 +4,7 @@ include ..\common\rwglobal.inc
 INCLPATHS+= \
 -I$(DISPATCH)\include \
 -I$(CPARMS)\include \
+-I$(CPARMS) \
 -I$(DATABASE)\include \
 -I$(RTDB)\include \
 -I$(COMMON)\include \
