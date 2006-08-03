@@ -10,6 +10,7 @@ INCLPATHS+= \
 -I$(PROCLOG)\include \
 -I$(SERVICE)\include \
 -I$(CPARMS)\include \
+-I$(CPARMS) \
 -I$(DATABASE)\include \
 -I$(RTDB)\include \
 -I$(MSG)\include \
