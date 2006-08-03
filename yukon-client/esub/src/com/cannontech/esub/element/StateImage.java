@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
@@ -55,11 +56,18 @@ public StateImage() {
 }
 
 /**
+ * Gets the litepoint associated with this state image, if any
+ * Returns null if a lite point cannot be found
  * Creation date: (1/8/2002 1:56:26 PM)
  * @return com.cannontech.database.data.lite.LitePoint
  */
-public com.cannontech.database.data.lite.LitePoint getPoint() {
-	return DaoFactory.getPointDao().getLitePoint(pointID);
+public LitePoint getPoint() {
+    try {
+        return DaoFactory.getPointDao().getLitePoint(pointID);
+    } catch(NotFoundException nfe) {
+        //this is OK
+    }
+    return null;
 }
 
 public int getPointID() {
