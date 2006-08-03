@@ -17,6 +17,7 @@ import java.util.Date;
 import java.util.Vector;
 
 import javax.swing.JTextPane;
+import javax.swing.text.BadLocationException;
 
 /**
  * @author snebben
@@ -112,38 +113,47 @@ public class JTextPanePrintable implements Printable
 	{
 		if (vectorOfLines == null)
 		{
+            String text ="";
+            try
+            {
+                text = textPane.getStyledDocument().getText(0, textPane.getStyledDocument().getLength());
+            } catch (BadLocationException e)
+            {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
 			vectorOfLines = new Vector();
 			int beginIndex = 0;
 			int i = 0;
-			for (i = 0; i < textPane.getText().length(); i++)
+			for (i = 0; i < text.length(); i++)
 			{
 				//check if count between \n is greater than 85 chars, this will be too long
 				if( i - beginIndex > 85)
 				{
-					int endIndex = textPane.getText().lastIndexOf(' ', i);
+					int endIndex = text.lastIndexOf(' ', i);
 					if( endIndex < 0)	//no blank found
 					{
-						endIndex = textPane.getText().lastIndexOf('\t', i);
+						endIndex = text.lastIndexOf('\t', i);
 						if( endIndex < 0)	//still not found
 							endIndex = i;	//truncate right where we are!
 					}
 					if( endIndex < beginIndex)	//found one too far back
 						endIndex = i;
-					vectorOfLines.add(textPane.getText().substring(beginIndex, endIndex));
+					vectorOfLines.add(text.substring(beginIndex, endIndex));
 					i = endIndex;
 					beginIndex = i+1;
 				}
-				if (textPane.getText().charAt(i) == '\n')
+				if (text.charAt(i) == '\n')
 				{
 					if( beginIndex < i)
-						vectorOfLines.add( textPane.getText().substring(beginIndex, i));
+						vectorOfLines.add( text.substring(beginIndex, i));
 					else
 						vectorOfLines.add("");
 					beginIndex = i+1;
 				}
 			}
 			//MUST DO THE LAST ROW!!!
-			vectorOfLines.add(textPane.getText().substring(beginIndex));
+			vectorOfLines.add(text.substring(beginIndex));
 		}
 		return vectorOfLines;
 	}
