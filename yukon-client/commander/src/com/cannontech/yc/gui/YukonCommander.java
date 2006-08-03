@@ -1375,7 +1375,11 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 	 */
 	private boolean isValidSetup()
 	{
-		if( getPilConn().isValid() )
+		if( !getPilConn().isValid() )
+
+            {
+                getCommandLogPanel().addLogElement(" ** Warning: Not connected to port control service **");
+            }            
 		{
 			if( getYC().getCommandMode() == YC.CGP_MODE )//CGPMode - User determines validity, not code.
 			{
@@ -1413,10 +1417,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 				}
 			}
 		}
-		else
-		{
-			getCommandLogPanel().addLogElement(" ** Warning: Not connected to port control service **");
-		}
+
 		return false;
 	}
 	

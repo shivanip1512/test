@@ -58,7 +58,6 @@ public class YC extends Observable implements MessageListener
 {
     private final SystemLogHelper _systemLogHelper;
     private String logUserName = null;
-
     
     /** Flag to write command to database, if applicable */
     private boolean updateToDB = false;
@@ -137,7 +136,6 @@ public class YC extends Observable implements MessageListener
 	/**TODO - fix this!!*/
 	/**Flag indicating first display type data (for headings)*/
 	private boolean firstTime = true;
-	
 	
 	public class OutputMessage{
 		public static final int DISPLAY_MESSAGE = 0;	//YC defined text
@@ -827,24 +825,24 @@ public class YC extends Observable implements MessageListener
 		else
 			log = " Serial # \'" + serialNumber + "\'";
 
-		logCommand("[" + format.format(new java.util.Date(timer)) 
-			+ "] - {"+ currentUserMessageID + "} Command Sent to" + log + " -  \'" + request_.getCommandString() + "\'");
 		if( isPilConnValid() )
 		{
+            logCommand("[" + format.format(new java.util.Date(timer)) 
+                        + "] - {"+ currentUserMessageID + "} Command Sent to" + log + " -  \'" + request_.getCommandString() + "\'");
 			startStopWatch(getTimeOut());
+            addRequestMessage(currentUserMessageID);
+            generateMessageID();
             getPilConn().write( request_ );
             logSystemEvent(request_.getCommandString(), request_.getDeviceID());
-            addRequestMessage(currentUserMessageID);
-			generateMessageID();
 		}
 		else
 		{
-			String logOutput= "\n["+ displayFormat.format(new java.util.Date()) + "]- Command request not sent.\n" + 
-				"Connection to porter is not established.\n";
-			OutputMessage message = new OutputMessage(OutputMessage.DEBUG_MESSAGE, logOutput);
+			String logOutput= "<BR>["+ displayFormat.format(new java.util.Date()) + "]- Command request not sent - " + 
+				"connection to Yukon Port Control is not valid.";
+			OutputMessage message = new OutputMessage(OutputMessage.DEBUG_MESSAGE, logOutput, 1);
 			setChanged();
 			this.notifyObservers(message);
-			setResultText( getResultText() + message.getText());
+			appendResultText( message);
 		
 			CTILogger.info("REQUEST NOT SENT: CONNECTION TO PORTER IS NOT VALID");
 		}
@@ -914,11 +912,11 @@ public class YC extends Observable implements MessageListener
 				if( prevUserID != returnMsg.getUserMessageID())
 				{
 					//textColor = java.awt.Color.black;
-					debugOutput = "\n["+ displayFormat.format(returnMsg.getTimeStamp()) + "]-{" + returnMsg.getUserMessageID() +"} {Device: " +  DaoFactory.getPaoDao().getYukonPAOName(returnMsg.getDeviceID()) + "} Return from \'" + returnMsg.getCommandString() + "\'\n";					
+					debugOutput = "<BR>["+ displayFormat.format(returnMsg.getTimeStamp()) + "]-{" + returnMsg.getUserMessageID() +"} {Device: " +  DaoFactory.getPaoDao().getYukonPAOName(returnMsg.getDeviceID()) + "} Return from \'" + returnMsg.getCommandString() + "\'";					
 					message = new OutputMessage(OutputMessage.DEBUG_MESSAGE, debugOutput);
 					setChanged();
 					this.notifyObservers(message);
-					setResultText( getResultText() + message.getText());
+					appendResultText( message);
 					debugOutput = "";
 					prevUserID = returnMsg.getUserMessageID();
 
@@ -929,7 +927,7 @@ public class YC extends Observable implements MessageListener
 						message = new OutputMessage(OutputMessage.DISPLAY_MESSAGE, displayOutput, true);
 						setChanged();
 						this.notifyObservers(message);
-						setResultText( getResultText() + message.getText());
+						appendResultText( message);
 						displayOutput = "";
 						firstTime = false;
 					}*/
@@ -938,6 +936,8 @@ public class YC extends Observable implements MessageListener
 				/** Add all PointData.getStr() objects to the output */
 				for (int i = 0; i < returnMsg.getVector().size(); i++)
 				{
+					if( i > 0)
+                        debugOutput += "<BR>";
 					Object o = returnMsg.getVector().elementAt(i);
 					if (o instanceof com.cannontech.message.dispatch.message.PointData)
 					{
@@ -949,7 +949,7 @@ public class YC extends Observable implements MessageListener
 							{
 								displayOutput += "\t";
 							}
-							debugOutput += pd.getStr() + "\n";
+							debugOutput += pd.getStr();
 						}
 					}
 				}
@@ -984,22 +984,22 @@ public class YC extends Observable implements MessageListener
 							if( returnMsg.getExpectMore() == 0)
 								displayOutput += "Valid";
 						}
-						displayOutput += "\n";
+
 						message = new OutputMessage(OutputMessage.DISPLAY_MESSAGE, displayOutput, returnMsg.getStatus());
 						setChanged();
 						this.notifyObservers(message);
-						setResultText( getResultText() + message.getText());									
+						appendResultText( message);									
 					}
 				}
 				if(returnMsg.getResultString().length() > 0)
 				{
-					debugOutput += returnMsg.getResultString() + "\n";
+					debugOutput += returnMsg.getResultString();
 				}
 				
 				message = new OutputMessage(OutputMessage.DEBUG_MESSAGE, debugOutput, returnMsg.getStatus());
 				setChanged();
 				this.notifyObservers(message);
-				setResultText( getResultText() + message.getText());
+				appendResultText( message);
 				synchronized ( YukonCommander.class )
 				{
 					if( returnMsg.getExpectMore() == 0)	//Only send next message when ret expects nothing more
@@ -1040,12 +1040,12 @@ public class YC extends Observable implements MessageListener
 						}
 						else
 						{
-							debugOutput = "Command cancelled\n";
+							debugOutput = "Command cancelled<BR>";
 							textColor = getYCDefaults().getInvalidTextColor();
 							message = new OutputMessage(OutputMessage.DEBUG_MESSAGE, debugOutput, returnMsg.getStatus());
 							setChanged();
 							this.notifyObservers(message);
-							setResultText( getResultText() + message.getText());
+							appendResultText( message);
 						}
 					}
 				}
@@ -1071,9 +1071,27 @@ public class YC extends Observable implements MessageListener
 	{
 		resultText = string;
 	}
+    /**
+     * appends string to the resultText
+     * @param string String
+     */
+    public void appendResultText(OutputMessage message)
+    {
+        String color = null;
+        if( message.getStatus() > 0 )
+            color = "red";
+        else if (message.getStatus() == 0)
+            color = "blue";
+
+        resultText = getResultText() + "<BR>" +
+                    (color==null?"":"<span style='color:"+color+";'>") +
+                    message.getText() +
+                    (color==null?"":"</span>");
+    }
+    
 	public void clearResultText()
 	{
-		resultText = "";
+		setResultText("");
 	}
 
 	/**
