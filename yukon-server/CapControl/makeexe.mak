@@ -12,6 +12,7 @@ INCLPATHS+= \
 -I$(RTDB)\include \
 -I$(SERVICE)\include \
 -I$(CPARMS)\include \
+-I$(CPARMS) \
 -I$(SERVER)\include \
 -I$(RW) \
 -I$(BOOST) \
