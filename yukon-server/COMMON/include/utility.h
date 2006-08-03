@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/utility.h-arc  $
-* REVISION     :  $Revision: 1.35 $
-* DATE         :  $Date: 2006/04/19 20:44:40 $
+* REVISION     :  $Revision: 1.36 $
+* DATE         :  $Date: 2006/08/03 20:16:00 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -103,6 +103,8 @@ typedef struct {
 IM_EX_CTIBASE string identifyProjectVersion(const CTICOMPILEINFO &Info);
 IM_EX_CTIBASE void identifyProject(const CTICOMPILEINFO &Info);
 IM_EX_CTIBASE void identifyProjectComponents(const CTICOMPONENTINFO *pInfo);
+IM_EX_CTIBASE void identifyCompile( int &major, int &minor, int &build);
+
 
 
 extern CTICOMPILEINFO CompileInfo;
@@ -149,11 +151,11 @@ IM_EX_CTIBASE LONG GetPAOIdOfEnergyPro(long devicesn);
 //String Functions
 inline void CtiToLower( std::string& str)
 {
-	std::transform(str.begin(),str.end(),str.begin(),::tolower);
+    std::transform(str.begin(),str.end(),str.begin(),::tolower);
 }
 inline void CtiToUpper( std::string& str)
 {
-	std::transform(str.begin(),str.end(),str.begin(),::toupper);
+    std::transform(str.begin(),str.end(),str.begin(),::toupper);
 }
 
 inline string trim_right ( std::string & source , std::string t = " ")
@@ -192,9 +194,9 @@ inline int stringContainsIgnoreCase(const std::string& str, const std::string& f
     std::transform(str.begin(), str.end(), s1.begin(), ::tolower);
     std::transform(frag.begin(), frag.end(), s2.begin(), ::tolower);
 
-	if (str.find(frag) == string::npos)
-		return 0;
-	else return 1;
+    if (str.find(frag) == string::npos)
+        return 0;
+    else return 1;
 }
 
 inline string::size_type findStringIgnoreCase(std::string str, std::string sub)
@@ -234,9 +236,9 @@ template<class K, bool bNoDuplicates,class Pr, class A >
 inline void delete_vector( codeproject::sorted_vector<K,bNoDuplicates,Pr,A> V )
 {
 
-   for (codeproject::sorted_vector<K,bNoDuplicates,Pr,A>::iterator itr = V.begin(); 
-        itr != V.end(); 
-        itr++) 
+   for (codeproject::sorted_vector<K,bNoDuplicates,Pr,A>::iterator itr = V.begin();
+        itr != V.end();
+        itr++)
    {
         delete *itr;
    }
@@ -245,9 +247,9 @@ template<class K, bool bNoDuplicates,class Pr, class A >
 inline void delete_vector( codeproject::sorted_vector<K,bNoDuplicates,Pr,A> *V )
 {
 
-   for (codeproject::sorted_vector<K,bNoDuplicates,Pr,A>::iterator itr = V->begin(); 
-        itr != V->end(); 
-        itr++) 
+   for (codeproject::sorted_vector<K,bNoDuplicates,Pr,A>::iterator itr = V->begin();
+        itr != V->end();
+        itr++)
    {
         delete *itr;
    }

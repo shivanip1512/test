@@ -2574,4 +2574,11 @@ double limitValue(double input, double min, double max)
     return input;
 }
 
+void identifyCompile( int & major, int & minor, int & build)
+{
+    major = CompileInfo.major;
+    minor = CompileInfo.minor;
+    build = CompileInfo.build;
+    return;
+}
 
