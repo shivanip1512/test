@@ -1,11 +1,6 @@
 #ifndef __CPARMS_H__
 #define __CPARMS_H__
 
-//#include <rw/collect.h>
-//#include <rw/hashdict.h>
-//#include <rw/thr/mutex.h>
-//#include <rw/thr/recursiv.h>
-
 #include <time.h>
 #include <map>
 #include "rwutil.h"
@@ -21,8 +16,8 @@
 using std::string;
 using std::map; 
 
-typedef std::map<CtiConfigKey*,CtiConfigValue*>::iterator mHash_itr;
-typedef std::pair<std::map<CtiConfigKey*,CtiConfigValue*>::iterator,bool> mHash_pair;
+typedef std::map<CtiConfigKey*,CtiConfigValue*>::iterator mHash_itr2;
+typedef std::pair<std::map<CtiConfigKey*,CtiConfigValue*>::iterator,bool> mHash_pair2;
 
 // Forward decls.
 class CtiConfigParameters;
