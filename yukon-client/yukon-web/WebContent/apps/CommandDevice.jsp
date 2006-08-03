@@ -1,5 +1,8 @@
 <%-- A wrapper file for access to commander with a deviceID.
 --%>
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
+<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
+
 <%@ include file="../operator/Consumer/include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.core.dao.DaoFactory"%> 
 <%@ page import="com.cannontech.database.data.pao.YukonPAObject"%>

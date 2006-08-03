@@ -3,6 +3,9 @@
 <%@ page import="com.cannontech.database.data.lite.LiteCommand"%> 
 <%@ page import="com.cannontech.database.db.command.CommandCategory"%>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject" %>
+<style type="text/css">
+div.scroll { height: 275px;  width: 550px; overflow: scroll; border: 1px solid #666; text-align:left; padding: 8px;}
+</style>
 <%
 //set the deviceID of the YC_BEAN
 YC_BEAN.setDeviceID(deviceID);
@@ -62,7 +65,7 @@ else
 			<% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
             <table width="600" border="0" cellspacing="0" cellpadding="3" class="TableCell">
               <tr> 
-                <td width="30%" class="SubtitleHeader" align="right">Name:</td>
+                <td class="SubtitleHeader" align="right">Name:</td>
                 <% String name;
                 if( serialType.equals("xcom"))
                 	name = "Expresscom";
@@ -75,22 +78,22 @@ else
                 else                
                 	 name = liteYukonPao.getPaoName();
                 %>
-                <td width="50%" class="TableCell"><%=name%></td>
+                <td class="TableCell"><%=name%></td>
               </tr>
               <tr> 
-                <td width="30%" class="SubtitleHeader" align="right">Type:</td>
-                <td width="50%" class="TableCell"><%=YC_BEAN.getDeviceType()%></td>
+                <td class="SubtitleHeader" align="right">Type:</td>
+                <td class="TableCell"><%=YC_BEAN.getDeviceType()%></td>
               </tr>
 			  <% if( serialType.length() > 0) {%>
 			  <tr> 
-                <td width="30%" class="SubtitleHeader" align="right">Serial Number:</td>
-                <td width="50%">
+                <td class="SubtitleHeader" align="right">Serial Number:</td>
+                <td >
                   <input type="text" name="serialNumber" size="20" value="<%=serialNum%>">
 				</td>
 			  </tr>
               <tr> 
-                <td width="30%" class="SubtitleHeader" height="2" align="right">Route:</td>
-                <td width="70%" height="2"> 
+                <td class="SubtitleHeader" height="2" align="right">Route:</td>
+                <td height="2"> 
                   <select id="routeID" name="routeID">
 				    <OPTION VALUE="-1">Select a Route
                     <%
@@ -106,8 +109,8 @@ else
 			  
 			  <%}%>
               <tr> 
-                <td width="30%" class="SubtitleHeader" align="right">Common Commands:</td>
-                <td width="50%">
+                <td class="SubtitleHeader" align="right">Common Commands:</td>
+                <td colspan="2">
                   <select name="commonCommand" onChange="loadCommand()" onInit="loadCommand()">
 					<OPTION value="">Select a Command</option>				  
 				  <%
@@ -125,16 +128,23 @@ else
                 </td>
               </tr>
 			  <tr> 
-                <td width="30%" class="SubtitleHeader" align="right">Execute Command:</td>
-                <td width="50%">
+                <td class="SubtitleHeader" align="right">Execute Command:</td>
+                <td>
                   <input type="text" name="command" size="40" value="<%=YC_BEAN.getCommandString()%>">
 				</td>
-				<td width="20%" rowspan=2 align='left'>
+				<td align='left'>
                   <input type="submit" name="execute" value="Execute" onClick="disableButton(this)">
                 </td>
 			  </tr>
               <tr align="left"> 
                 <td class="SubtitleHeader" colspan="2" valign="top">&nbsp;</td>
+              </tr>
+              <tr>
+                <td class="scroll" colspan="3">
+<div class="scroll">
+<c:out value="${YC_BEAN.resultText}" escapeXml="false"/>
+</div>
+                </td>
               </tr>
               <tr> 
                 <td colspan="3"> 
