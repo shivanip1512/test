@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/msg_cmd.h-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2006/05/22 18:44:13 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2006/08/03 20:14:52 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -97,6 +97,7 @@ public:
       PorterConsoleInput = 180,        // Vector contains token, operation (same as keyboard character. see PorterConsoleInput:porter.cpp)
       ResetControlHours = 190,         // By default resets the Seasonal control history, could add to the op arg list to allow for resets of other control histories; Vector contains token
       PointDataRequest = 200,          // Vector of point ids to be reported if known.
+      AlarmCategoryRequest = 210,      // Vector of alarm categories to return to the requestor.
 
       LastCommand = 10000              //this is to be the last entry in the enum, so add new entries above here, otay
    };

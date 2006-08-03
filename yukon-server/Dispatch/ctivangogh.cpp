@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.156 $
-* DATE         :  $Date: 2006/07/20 21:46:05 $
+* REVISION     :  $Revision: 1.157 $
+* DATE         :  $Date: 2006/08/03 20:14:52 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1306,6 +1306,12 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                             pDat->setTime( pDyn->getTimeStamp() );  // Make the time match the point's last received time
                             pMulti->getData().push_back(pDat);
                         }
+
+                        CtiMultiMsg *pSigMulti = _signalManager.getPointSignals(pPt->getID());
+                        if(pSigMulti)
+                        {
+                            pMulti->getData().push_back(pSigMulti);
+                        }
                     }
                     else
                     {
@@ -1319,6 +1325,47 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                     sptrCM->WriteConnQue(pMulti, 0, true, payload_status);
                 else delete
                     pMulti;
+
+            }
+            catch(...)
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+            }
+
+            break;
+        }
+    case (CtiCommandMsg::AlarmCategoryRequest):
+        {
+            // Vector contains ONLY AlarmCategoryIDs that need to be sent to the client.
+            try
+            {
+                CtiMultiMsg *pMulti = CTIDBG_new CtiMultiMsg;
+
+                CtiServerExclusion pmguard(_server_exclusion);
+                int payload_status = CtiServerResponseMsg::OK;
+
+                for(i = 0; i < Cmd->getOpArgList().size(); i++ )
+                {
+                    unsigned alarm_category = Cmd->getOpArgList()[i];
+
+                    CtiMultiMsg *pSigMulti = _signalManager.getCategorySignals(alarm_category);
+                    if(pSigMulti)
+                    {
+                        pMulti->getData().push_back(pSigMulti);
+                    }
+                }
+
+                CtiServer::ptr_type sptrCM = mConnectionTable.find((long)Cmd->getConnectionHandle());
+
+                if(sptrCM && pMulti && pMulti->getCount())
+                {
+                    sptrCM->WriteConnQue(pMulti, 0, true, payload_status);
+                }
+                else
+                    delete pMulti;
 
             }
             catch(...)

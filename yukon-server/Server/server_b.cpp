@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVER/server_b.cpp-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2006/06/15 20:41:56 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2006/08/03 20:15:10 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -260,6 +260,26 @@ int  CtiServer::commandMsgHandler(CtiCommandMsg *Cmd)
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " Client " << pConn->getClientName() << " responded to AreYouThere " << endl;
                     }
+
+                    if(Cmd->getOpArgList().size() >= 4)
+                    {
+                        LONG token = Cmd->getOpArgList()[0];  // Unused token
+                        LONG major = Cmd->getOpArgList()[1];  // major revision
+                        LONG minor = Cmd->getOpArgList()[2];  // minor revision
+                        LONG build = Cmd->getOpArgList()[3];  // build number
+
+                        if((CompileInfo.major && major != 0) &&
+                           (CompileInfo.major != major || CompileInfo.minor != minor || CompileInfo.build != build) )
+                        {
+                            // This is a mismatch.  We should yelp about it.
+
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << CtiTime() << " !!!! WARNING !!!!   Client " << pConn->getClientName() << " has a version mismatch.  Client revision " << major << "." << minor << "." << build << endl;
+                            }
+                        }
+                    }
+
                     // OK, the client responded... drop our bad connection flag...
                     pConn->setClientQuestionable(FALSE);
                     pConn->setClientRegistered(TRUE);
