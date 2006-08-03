@@ -28,7 +28,7 @@ public class ThermostatSetbackGearPanel extends GenericGearPanel implements com.
 	private javax.swing.JTextField ivjJTextFieldChangeTriggerOffset = null;
 	private com.cannontech.dbeditor.wizard.device.lmprogram.LMExpressStatEditorPanel statEditorPanel = null;
 /**
- * ThermostatPreOperateGearPanel constructor comment.
+ * ThermostatSetbackGearPanel constructor comment.
  */
 public ThermostatSetbackGearPanel() {
 	super();
@@ -788,7 +788,7 @@ private void handleException(java.lang.Throwable exception) {
  */
 private java.awt.GridBagConstraints holderConstraints() {
 	/* This is annoying, but a call to this method must always be in the 
-	initialize of ThermostatPreOperateGear to bring in the proper constraints 
+	initialize of ThermostatSetbackGear to bring in the proper constraints 
 	for the ExpressStat panel.
 	*/
 	java.awt.GridBagConstraints constraintsLMGroupExpressStatEditor = new java.awt.GridBagConstraints();
@@ -830,7 +830,7 @@ private void initialize() {
 	try {
 		// user code begin {1}
 		// user code end
-		setName("ThermostatPreOperateGearPanel");
+		setName("ThermostatSetbackGearPanel");
 		setPreferredSize(new java.awt.Dimension(402, 430));
 		setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
 		setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
@@ -893,7 +893,37 @@ private void initialize() {
  */
 public void jComboBoxWhenChange_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
-	getJLabelChangeDuration().setVisible(false);
+    /*
+     *This is a sloppy fix for the problem that occurred when there were multiple
+     *thermostat gears for the same program.  Field values were carrying over to
+     *other gears and getting accidentally saved into the db. 
+     */
+    getStatEditorPanel().getJTextFieldDeltaB().setText("");
+    getStatEditorPanel().getJTextFieldDeltaD().setText("");
+    getStatEditorPanel().getJTextFieldDeltaF().setText("");
+    getStatEditorPanel().getJTextFieldRand().setText("");
+    getStatEditorPanel().getJTextFieldMax().setText("");
+    getStatEditorPanel().getJTextFieldMin().setText("");
+    getStatEditorPanel().getJTextFieldTa().setText("");
+    getStatEditorPanel().getJTextFieldTb().setText("");
+    getStatEditorPanel().getJTextFieldTc().setText("");
+    getStatEditorPanel().getJTextFieldTd().setText("");
+    getStatEditorPanel().getJTextFieldTe().setText("");
+    getStatEditorPanel().getJTextFieldTf().setText("");
+    getStatEditorPanel().getJCheckBoxDeltaB().setSelected(false);
+    getStatEditorPanel().getJCheckBoxDeltaD().setSelected(false);
+    getStatEditorPanel().getJCheckBoxDeltaF().setSelected(false);
+    getStatEditorPanel().getJCheckBoxRand().setSelected(false);
+    getStatEditorPanel().getJCheckBoxMax().setSelected(false);
+    getStatEditorPanel().getJCheckBoxMin().setSelected(false);
+    getStatEditorPanel().getJCheckBoxTa().setSelected(false);
+    getStatEditorPanel().getJCheckBoxTb().setSelected(false);
+    getStatEditorPanel().getJCheckBoxTc().setSelected(false);
+    getStatEditorPanel().getJCheckBoxTd().setSelected(false);
+    getStatEditorPanel().getJCheckBoxTe().setSelected(false);
+    getStatEditorPanel().getJCheckBoxTf().setSelected(false);
+    
+    getJLabelChangeDuration().setVisible(false);
 	getJCSpinFieldChangeDuration().setVisible(false);
 	getJLabelMinutesChDur().setVisible(false);
 	
@@ -1011,7 +1041,7 @@ public void setStatEditorPanel(com.cannontech.dbeditor.wizard.device.lmprogram.L
  */
 public void setValue(Object o) 
 {
-	LMProgramDirectGear gear = null;
+    LMProgramDirectGear gear = null;
 	
 	if( o == null )
 	{
@@ -1042,7 +1072,7 @@ public void setValue(Object o)
 	if(ts.getValueD().intValue() != 0)
 	{
 		getStatEditorPanel().getJCheckBoxDeltaD().setSelected(true);
-	getStatEditorPanel().getJTextFieldDeltaD().setText(ts.getValueD().toString());
+		getStatEditorPanel().getJTextFieldDeltaD().setText(ts.getValueD().toString());
 	}
 	
 	if(ts.getValueF().intValue() != 0)
