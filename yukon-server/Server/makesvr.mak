@@ -10,6 +10,7 @@ INCLPATHS+= \
 -I$(SERVER)\include \
 -I$(COMMON)\include \
 -I$(CPARMS)\include \
+-I$(CPARMS) \
 -I$(DISPATCH)\include \
 -I$(MSG)\include \
 -I$(RW) \

@@ -5,14 +5,16 @@
 // #include <iostream.h>
 
 // typedef RWCollectable Object;  // Smalltalk typedef
-#include <rw/collect.h>
-#include <rw/hashdict.h>
-#include <rw/btrdict.h>
+//#include <rw/collect.h>
+//#include <rw/hashdict.h>
+//#include <rw/btrdict.h>
 
+#include "argkey.h"
+#include "argval.h"
 
 #include "dlldefs.h"
-typedef map<CtiArgKey*,CtiArgValue*>::iterator mHash_itr;
-typedef std::pair<map<CtiArgKey*,CtiArgValue*>::iterator,bool> mHash_pair;
+typedef std::map<CtiArgKey*,CtiArgValue*>::iterator mHash_itr;
+typedef std::pair<std::map<CtiArgKey*,CtiArgValue*>::iterator,bool> mHash_pair;
 
 class IM_EX_CMDLINE CtiCmdLineOpts
 {

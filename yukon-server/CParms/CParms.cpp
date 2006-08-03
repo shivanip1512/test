@@ -26,7 +26,7 @@ CtiConfigParameters::~CtiConfigParameters()
     CtiParmLockGuard< CtiParmCriticalSection > cs_lock(crit_sctn);
     #endif
 
-    for( mHash_itr itr = mHash.begin(); itr != mHash.end(); itr++ )
+    for( mHash_itr2 itr = mHash.begin(); itr != mHash.end(); itr++ )
     {
         delete (*itr).first;
         delete (*itr).second;
@@ -86,7 +86,7 @@ int CtiConfigParameters::RefreshConfigParameters()
     CtiParmLockGuard< CtiParmCriticalSection > cs_lock(crit_sctn);
     #endif
 
-    for( mHash_itr itr = mHash.begin(); itr != mHash.end(); itr++ )
+    for( mHash_itr2 itr = mHash.begin(); itr != mHash.end(); itr++ )
     {
         delete (*itr).first;
         delete (*itr).second;
@@ -119,7 +119,7 @@ int CtiConfigParameters::RefreshConfigParameters()
 
                                 CtiConfigKey   *Key = new CtiConfigKey(string(chKey));
                                 CtiConfigValue *Val = new CtiConfigValue(string(chValue));
-                                mHash_pair p = mHash.insert( std::make_pair(Key, Val) );
+                                mHash_pair2 p = mHash.insert( std::make_pair(Key, Val) );
                                 if( !p.second )
                                 {
                                     cout << "CPARM " << chKey << " has already been inserted.. \n\tPlease check for duplicate entries in the master.cfg file " << endl;
@@ -174,7 +174,7 @@ CtiConfigParameters::Dump()
     if(mHash.size() > 0)
     {
         cout << endl << "Configuration Parameters:" << endl;
-        for( mHash_itr iter = mHash.begin(); iter != mHash.end(); iter++ )
+        for( mHash_itr2 iter = mHash.begin(); iter != mHash.end(); iter++ )
         {
             Key = (CtiConfigKey*)(*iter).first;
             Value = (CtiConfigValue*)(*iter).second;
@@ -200,7 +200,7 @@ BOOL CtiConfigParameters::isOpt(const string& key)
     #else
     CtiParmLockGuard< CtiParmCriticalSection > cs_lock(crit_sctn);
     #endif
-    mHash_itr itr = mHash.find(&Key);
+    mHash_itr2 itr = mHash.find(&Key);
     
 
     if( itr != mHash.end() )
@@ -221,7 +221,7 @@ bool CtiConfigParameters::isOpt(const string& key, const string& isEqualThisValu
     #else
     CtiParmLockGuard< CtiParmCriticalSection > cs_lock(crit_sctn);
     #endif
-    mHash_itr itr = mHash.find(&Key);
+    mHash_itr2 itr = mHash.find(&Key);
 
     if( (itr != mHash.end()) && !stringCompareIgnoreCase((*itr).second->getValue(),isEqualThisValue) )
         return true;
@@ -251,7 +251,7 @@ CtiConfigParameters::getValueAsString(const string& key, const string& defaultva
     CtiParmLockGuard< CtiParmCriticalSection > cs_lock(crit_sctn);
     #endif
 
-    mHash_itr itr = mHash.find(&Key);
+    mHash_itr2 itr = mHash.find(&Key);
 
     if( itr != mHash.end() )
     {   
