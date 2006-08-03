@@ -11,6 +11,8 @@
 
 
 #include "dlldefs.h"
+typedef map<CtiArgKey*,CtiArgValue*>::iterator mHash_itr;
+typedef std::pair<map<CtiArgKey*,CtiArgValue*>::iterator,bool> mHash_pair;
 
 class IM_EX_CMDLINE CtiCmdLineOpts
 {
@@ -33,7 +35,7 @@ public:
 private:
    INT               OptCount;
    INT               ErrState;
-   RWHashDictionary  mHash;
+   map<CtiArgKey*,CtiArgValue*>  mHash;
 };
 
 

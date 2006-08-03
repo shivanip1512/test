@@ -48,7 +48,8 @@ CtiCmdLineOpts::setOpts(int argc, char **argv)
          CtiArgKey     *NewKey     = new CtiArgKey(key);
          CtiArgValue   *NewValue   = new CtiArgValue(valstr);
 
-         if(!mHash.insertKeyAndValue(NewKey, NewValue))
+         mHash_pair p = mHash.insert( std::make_pair(NewKey, NewValue) );
+         if(  !p.second  )
          {
             cout << "Broken insert " << endl;
          }
@@ -69,14 +70,12 @@ CtiCmdLineOpts::Puke()
    CtiArgValue   *Value;
 
    if(OptCount > 0)
-   {
-      RWHashDictionaryIterator iter(mHash);
-
+   {    
       cout << "Command Line Arguments" << endl;
-      while(iter())
+      for( mHash_itr iter = mHash.begin(); iter != mHash.end(); iter++ )
       {
-         Key = (CtiArgKey*)iter.key();
-         Value = (CtiArgValue*)iter.value();
+         Key = (CtiArgKey*)(*iter).first;
+         Value = (CtiArgValue*)(*iter).second;
 
          cout << "\tKey: " << Key->getKey() << " = " << Value->getValue() << endl;
       }
@@ -88,10 +87,10 @@ CtiCmdLineOpts::isOpt(char key)
 {
    CtiArgKey     Key(key);
    CtiArgValue   *Value;
+   mHash_itr itr;
+   itr = mHash.find(&Key);
 
-   Value = (CtiArgValue*)mHash.findValue(&Key);
-
-   if(Value)
+   if( itr != mHash.end() )
       return TRUE;
    else
       return FALSE;
@@ -105,11 +104,13 @@ CtiCmdLineOpts::ReturnIntOpt(char key)
    CtiArgValue   *Value;
 
    ErrState = NoError;
-
-   Value = (CtiArgValue*)mHash.findValue(&Key);
-
-   if(Value)
+   mHash_itr itr;
+   itr = mHash.find(&Key);
+   
+   if( itr != mHash.end() )
    {
+      Value = (CtiArgValue*)(*itr).second;
+
       if(!Value->isNumeric())
       {
          ErrState = NotNumeric;
@@ -133,10 +134,12 @@ CtiCmdLineOpts::ReturnDoubleOpt(char key)
 
    ErrState = NoError;
 
-   Value = (CtiArgValue*)mHash.findValue(&Key);
+   mHash_itr itr;
+   itr = mHash.find(&Key);
 
-   if(Value)
+   if( itr != mHash.end() )
    {
+      Value = (CtiArgValue*)(*itr).second;
       Value->ReturnDoubleOpt(&dRet);
    }
 
@@ -150,10 +153,12 @@ CtiCmdLineOpts::ReturnStringOpt(char key, char *opt, int len)
    CtiArgKey     Key(key);
    CtiArgValue   *Value;
 
-   Value = (CtiArgValue*)mHash.findValue(&Key);
+   mHash_itr itr;
+   itr = mHash.find(&Key);
 
-   if(Value)
+   if( itr != mHash.end() )
    {
+      Value = (CtiArgValue*)(*itr).second;
       if(!Value->isNumeric())
       {
          ErrState = NotNumeric;

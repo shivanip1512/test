@@ -3,13 +3,11 @@
 #include <string.h>
 #include <stdio.h>
 #include <iomanip>
-using namespace std;
+
 
 #include "cparms.h"
-#include "configkey.h"
-#include "configval.h"
 #include "utility.h"
-
+using namespace std;
 
 CtiConfigParameters::CtiConfigParameters(const string& strName) :
 FileName(strName),
@@ -27,7 +25,13 @@ CtiConfigParameters::~CtiConfigParameters()
     #ifndef USE_RECURSIVE_MUX
     CtiParmLockGuard< CtiParmCriticalSection > cs_lock(crit_sctn);
     #endif
-    mHash.clearAndDestroy();
+
+    for( mHash_itr itr = mHash.begin(); itr != mHash.end(); itr++ )
+    {
+        delete (*itr).first;
+        delete (*itr).second;
+    }
+    mHash.clear();
 }
 
 CtiConfigParameters& CtiConfigParameters::setConfigFile(const string& strName)
@@ -82,7 +86,12 @@ int CtiConfigParameters::RefreshConfigParameters()
     CtiParmLockGuard< CtiParmCriticalSection > cs_lock(crit_sctn);
     #endif
 
-    mHash.clearAndDestroy();
+    for( mHash_itr itr = mHash.begin(); itr != mHash.end(); itr++ )
+    {
+        delete (*itr).first;
+        delete (*itr).second;
+    }
+    mHash.clear();
 
     if( FileName.empty() )
     {
@@ -110,8 +119,8 @@ int CtiConfigParameters::RefreshConfigParameters()
 
                                 CtiConfigKey   *Key = new CtiConfigKey(string(chKey));
                                 CtiConfigValue *Val = new CtiConfigValue(string(chValue));
-
-                                if(!mHash.insertKeyAndValue(Key, Val))
+                                mHash_pair p = mHash.insert( std::make_pair(Key, Val) );
+                                if( !p.second )
                                 {
                                     cout << "CPARM " << chKey << " has already been inserted.. \n\tPlease check for duplicate entries in the master.cfg file " << endl;
                                     cout << "\t" << chKey << " : " << getValueAsString(string(chKey)) << endl;
@@ -162,18 +171,15 @@ CtiConfigParameters::Dump()
     CtiParmLockGuard< CtiParmCriticalSection > cs_lock(crit_sctn);
     #endif
 
-    if(mHash.entries() > 0)
+    if(mHash.size() > 0)
     {
-        RWHashDictionaryIterator iter(mHash);
-
         cout << endl << "Configuration Parameters:" << endl;
-        while(iter())
+        for( mHash_itr iter = mHash.begin(); iter != mHash.end(); iter++ )
         {
-            Key = (CtiConfigKey*)iter.key();
-            Value = (CtiConfigValue*)iter.value();
+            Key = (CtiConfigKey*)(*iter).first;
+            Value = (CtiConfigValue*)(*iter).second;
 
             cout << setiosflags(ios::left) << setw(30) << Key->getKey() << " : " << setw(40) << Value->getValue() << endl;
-
         }
     }
     else
@@ -194,9 +200,10 @@ BOOL CtiConfigParameters::isOpt(const string& key)
     #else
     CtiParmLockGuard< CtiParmCriticalSection > cs_lock(crit_sctn);
     #endif
-    Value = (CtiConfigValue*)mHash.findValue(&Key);
+    mHash_itr itr = mHash.find(&Key);
+    
 
-    if(Value)
+    if( itr != mHash.end() )
         return TRUE;
     else
         return FALSE;
@@ -214,9 +221,9 @@ bool CtiConfigParameters::isOpt(const string& key, const string& isEqualThisValu
     #else
     CtiParmLockGuard< CtiParmCriticalSection > cs_lock(crit_sctn);
     #endif
-    Value = (CtiConfigValue*)mHash.findValue(&Key);
+    mHash_itr itr = mHash.find(&Key);
 
-    if(Value && !stringCompareIgnoreCase(Value->getValue(),isEqualThisValue) )
+    if( (itr != mHash.end()) && !stringCompareIgnoreCase((*itr).second->getValue(),isEqualThisValue) )
         return true;
     else
         return false;
@@ -243,10 +250,12 @@ CtiConfigParameters::getValueAsString(const string& key, const string& defaultva
     #else
     CtiParmLockGuard< CtiParmCriticalSection > cs_lock(crit_sctn);
     #endif
-    Value = (CtiConfigValue*)mHash.findValue(&Key);
 
-    if(Value != NULL)
-    {
+    mHash_itr itr = mHash.find(&Key);
+
+    if( itr != mHash.end() )
+    {   
+        Value = (CtiConfigValue*)(*itr).second;
         retStr = Value->getValue();
     }
     return retStr;

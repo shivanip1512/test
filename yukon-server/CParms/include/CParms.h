@@ -1,19 +1,28 @@
 #ifndef __CPARMS_H__
 #define __CPARMS_H__
 
-#include <rw/collect.h>
-#include <rw/hashdict.h>
-#include <rw/thr/mutex.h>
-#include <rw/thr/recursiv.h>
+//#include <rw/collect.h>
+//#include <rw/hashdict.h>
+//#include <rw/thr/mutex.h>
+//#include <rw/thr/recursiv.h>
+
 #include <time.h>
+#include <map>
 #include "rwutil.h"
 #include "dlldefs.h"
+#include "configkey.h"
+#include "configval.h"
+
 
 #define MAX_CONFIG_BUFFER  1024
 #define MAX_CONFIG_KEY     256
 #define MAX_CONFIG_VALUE   ((MAX_CONFIG_BUFFER) - (MAX_CONFIG_KEY))
 
 using std::string;
+using std::map; 
+
+typedef std::map<CtiConfigKey*,CtiConfigValue*>::iterator mHash_itr;
+typedef std::pair<std::map<CtiConfigKey*,CtiConfigValue*>::iterator,bool> mHash_pair;
 
 // Forward decls.
 class CtiConfigParameters;
@@ -120,7 +129,7 @@ private:
    #else
    CtiParmCriticalSection  crit_sctn;
    #endif
-   RWHashDictionary  mHash;
+   map<CtiConfigKey*,CtiConfigValue*> mHash;
 
 public:
 

@@ -7,36 +7,19 @@
 #include <rw/rstream.h>
 #include <string>
 
-using namespace std;
+using std::string;
 
-class CtiConfigValue : public RWCollectable
+class CtiConfigValue
 {
 private:
    string Value;
 public:
-   RWDECLARE_COLLECTABLE(CtiConfigValue);
 
    CtiConfigValue();
    CtiConfigValue(const string& val);
    ~CtiConfigValue() {}
 
-
-
-   // Inherited virtuals from RWCollectable
-   /*
-   RWspace     binaryStoreSize() const;
-
-   virtual int         compareTo(const RWCollectable*) const;
-   virtual RWBoolean   isEqual(const RWCollectable*) const;
-   virtual unsigned    hash() const;
-   */      
-
    CtiConfigValue& operator=(const CtiConfigValue& key);
-
-   void restoreGuts(RWFile&);
-   void saveGuts(RWFile&) const;
-   void saveGuts(RWvostream&) const;
-   void restoreGuts(RWvistream&);
 
    int ReturnStringOpt (char *opt, int len);
 

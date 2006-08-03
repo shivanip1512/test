@@ -6,10 +6,6 @@
 #include <algorithm>
 
 #include "argval.h"
-#include "hash_functions.h"
-#include "rwutil.h"
-
-RWDEFINE_COLLECTABLE(CtiArgValue, 0x1235)
 
 CtiArgValue::CtiArgValue() : Value()
 {;}
@@ -27,71 +23,6 @@ CtiArgValue::operator=(const CtiArgValue& val)
    Value = val.Value;
    return (*this);
 }
-
-RWspace
-CtiArgValue::binaryStoreSize() const
-{
-   return ::strlen(Value.c_str());
-}
-
-int
-CtiArgValue::compareTo(const RWCollectable *X ) const
-{
-   string aStr = ((const CtiArgValue*)X)->Value;
-
-   if(Value == aStr) return 0;
-
-   if(Value > aStr)
-   {
-      return 1;
-   }
-   else
-   {
-      return -1;
-   }
-}
-
-unsigned
-CtiArgValue::hash() const
-{
-   return RSHash(Value);
-}
-
-RWBoolean
-CtiArgValue::isEqual(const RWCollectable *c) const
-{
-   string aValue = (((const CtiArgValue*)c)->Value);
-   return (Value == aValue);
-}
-
-
-void
-CtiArgValue::restoreGuts(RWFile& aFile)
-{
-   RWCollectable::restoreGuts( aFile );
-   aFile >> Value;
-}
-void
-CtiArgValue::restoreGuts(RWvistream& aStream)
-{
-   RWCollectable::restoreGuts( aStream );
-   aStream >> Value;
-}
-
-void
-CtiArgValue::saveGuts(RWFile &aFile) const
-{
-   RWCollectable::saveGuts( aFile );
-   aFile << Value.c_str();
-}
-
-void
-CtiArgValue::saveGuts(RWvostream &aStream) const
-{
-   RWCollectable::saveGuts( aStream );
-   aStream << Value;
-}
-
 
 int
 CtiArgValue::ReturnIntOpt(int *opt)
