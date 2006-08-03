@@ -9,11 +9,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.capcontrol.CapBank;
@@ -72,9 +74,14 @@ public final class PointDaoImpl implements PointDao {
      * @see com.cannontech.core.dao.PointDao#getLitePoint(int)
      */
     public LitePoint getLitePoint(int pointID) {
-        String sql = litePointSql + " WHERE P.POINTID = ?";
-        LitePoint p = (LitePoint) jdbcOps.queryForObject(sql, new Object[] { pointID }, PointDaoImpl.litePointRowMapper);
-        return p;
+        try {
+            String sql = litePointSql + " WHERE P.POINTID = ?";
+            LitePoint p = (LitePoint) jdbcOps.queryForObject(sql, new Object[] { pointID }, PointDaoImpl.litePointRowMapper);
+            
+            return p;
+        } catch (IncorrectResultSizeDataAccessException e) {
+            throw new NotFoundException("A point with id " + pointID + "cannot be found.");
+        }
     }
     
     public List<LitePoint> getLitePoints(Integer[] pointIds) {
