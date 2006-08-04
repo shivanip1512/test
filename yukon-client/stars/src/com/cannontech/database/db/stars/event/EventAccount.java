@@ -25,7 +25,12 @@ public void add() throws java.sql.SQLException
     add( TABLE_NAME, setValues );
 }
 
-public void delete() throws java.sql.SQLException {}
+public void delete() throws java.sql.SQLException 
+{
+    Object[] constraintValues = { getEventID() };
+
+    delete( TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
+}
 
 public Integer getEventID() 
 {

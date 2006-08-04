@@ -1,9 +1,14 @@
 package com.cannontech.database.data.stars.customer;
 
+import java.util.ArrayList;
 import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.customer.Customer;
+import com.cannontech.database.data.stars.event.EventAccount;
+import com.cannontech.database.data.stars.event.EventInventory;
 import com.cannontech.database.db.DBPersistent;
 
 
@@ -114,6 +119,19 @@ public class CustomerAccount extends DBPersistent {
 		// delete from the mapping table
 		delete( "ECToAccountMapping", "AccountID", getCustomerAccount().getAccountID() );
     	
+        ArrayList<EventAccount> accountChanges = EventAccount.retrieveEventAccounts(getCustomerAccount().getAccountID());
+        for(int i = 0; i < accountChanges.size(); i++)
+        {
+            try
+            {
+                Transaction.createTransaction( Transaction.DELETE, accountChanges.get(i) ).execute();
+            }
+            catch(TransactionException e)
+            {
+                CTILogger.error( e.getMessage(), e );
+            }
+        }
+        
         getCustomerAccount().delete();
         getAccountSite().delete();
         getBillingAddress().delete();
