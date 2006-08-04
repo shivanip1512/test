@@ -430,9 +430,10 @@ public class UpdateCustAccountAction implements ActionBase {
                                     
                 ciCustChanged = true;
                 liteCustomer.setCustomerTypeID(new Integer(CustomerTypes.CUSTOMER_CI));
+                customerDB.setCustomerTypeID(new Integer(CustomerTypes.CUSTOMER_CI));
             }
 			
-			if(altCustFieldChanged)
+			if(altCustFieldChanged || ciCustChanged)
 			{
 				customerDB.setDbConnection(conn);
 				customerDB.update();
