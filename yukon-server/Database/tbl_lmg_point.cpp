@@ -8,11 +8,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2006/04/27 19:38:04 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2006/08/04 20:08:44 $
 *
 * HISTORY      :
 * $Log: tbl_lmg_point.cpp,v $
+* Revision 1.4  2006/08/04 20:08:44  mfisher
+* Fixed SQL for multiple pointgroups in DB
+*
 * Revision 1.3  2006/04/27 19:38:04  cplender
 * Removed some debug printouts.
 *
@@ -129,7 +132,7 @@ void CtiTablePointGroup::getSQL( RWDBDatabase &db, RWDBTable &keyTable, RWDBSele
     selector.from(grpTbl);
     selector.from(ptStatTbl);
 
-    selector.where( ptStatTbl["pointid"] == grpTbl["pointidusage"] && selector.where() );
+    selector.where( ptStatTbl["pointid"] == grpTbl["pointidusage"] && grpTbl["deviceid"] == keyTable["paobjectid"] && selector.where() );
 }
 
 //=====================================================================================================================
