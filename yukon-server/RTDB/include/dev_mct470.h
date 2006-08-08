@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT470.h-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2006/07/25 22:15:04 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2006/08/08 13:37:05 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -51,6 +51,39 @@ private:
         MCT470_PointOffset_VoltsPhaseA = 41,
         MCT470_PointOffset_VoltsPhaseB = 42,
         MCT470_PointOffset_VoltsPhaseC = 43,
+
+        MCT470_DNP_MCTPoint_RealTimeBinary = 0,
+        MCT470_DNP_MCTPoint_PreCannedBinary = 30,
+        MCT470_DNP_MCTPoint_RealTimeAnalog = 43,
+        MCT470_DNP_MCTPoint_PreCannedAnalog = 49,
+        MCT470_DNP_MCTPoint_RealTimeAccumulator = 114,
+        MCT470_DNP_MCTPoint_PreCannedAccumulator = 118,
+
+        MCT470_PointOffset_DNPStatus_RealTime1 = 501,
+        MCT470_PointOffset_DNPStatus_RealTime2 = 516,
+        MCT470_PointOffset_DNPStatus_PrecannedStart = 531,
+        MCT470_PointOffset_DNPAnalog_RealTime1 = 501,
+        MCT470_PointOffset_DNPAnalog_RealTime2 = 504,
+        MCT470_PointOffset_DNPAnalog_Precanned1 = 506,
+        MCT470_PointOffset_DNPAnalog_Precanned2 = 512,
+        MCT470_PointOffset_DNPAnalog_Precanned3 = 518,
+        MCT470_PointOffset_DNPAnalog_Precanned4 = 524,
+        MCT470_PointOffset_DNPAnalog_Precanned5 = 530,
+        MCT470_PointOffset_DNPAnalog_Precanned6 = 536,
+        MCT470_PointOffset_DNPAnalog_Precanned7 = 542,
+        MCT470_PointOffset_DNPAnalog_Precanned8 = 548,
+        MCT470_PointOffset_DNPAnalog_Precanned9 = 654,
+        MCT470_PointOffset_DNPAnalog_Precanned10 = 660,
+        MCT470_PointOffset_DNPCounter_RealTime1 = 501,
+        MCT470_PointOffset_DNPCounter_RealTime2 = 504,
+        MCT470_PointOffset_DNPCounter_Precanned1 = 506,
+        MCT470_PointOffset_DNPCounter_Precanned2 = 512,
+        MCT470_PointOffset_DNPCounter_Precanned3 = 518,
+        MCT470_PointOffset_DNPCounter_Precanned4 = 524,
+        MCT470_PointOffset_DNPCounter_Precanned5 = 530,
+        MCT470_PointOffset_DNPCounter_Precanned6 = 536,
+        MCT470_PointOffset_DNPCounter_Precanned7 = 542,
+        MCT470_PointOffset_DNPCounter_Precanned8 = 548,
     };
 
     enum IED_Types
@@ -68,6 +101,11 @@ private:
 
     long getLoadProfileInterval( unsigned channel );
     long _lastConfigRequest;
+
+    void decodeDNPRealTimeRead(BYTE *buffer, int readNumber, string &resultString, CtiReturnMsg *ReturnMsg);
+    void getBytesFromString(string &values, BYTE* buffer, int buffLen, int &numValues, int fillCount, int bytesPerValue);
+    int sendDNPConfigMessages(int startMCTID,  list< OUTMESS >   &outList, OUTMESS *&OutMessage, string &dataA, string &dataB, CtiTableDynamicPaoInfo::Keys key, bool force);
+    string resolveDNPStatus(int status);
 
     //  this probably won't be used... ?
     /*
@@ -255,6 +293,8 @@ protected:
         MCT470_FuncWrite_PrecannedTablePos = 0xD3,
         MCT470_FuncWrite_PrecannedTableLen =    4,
 
+        MCT470_FuncWrite_DNPReqTable       = 0xD6,
+
         MCT470_Memory_AddressingPos        = 0x0D,
         MCT470_Memory_AddressingLen        =    6,
 
@@ -269,6 +309,12 @@ protected:
 
         MCT470_FuncRead_PrecannedTablePos  = 0x23,
         MCT470_FuncRead_PrecannedTableLen  =   11,
+
+        MCT470_FuncRead_IED_DNPTablePos    = 0x24,
+        MCT470_FuncRead_IED_DNPTableLen    =   13,
+
+        MCT470_FuncRead_IED_CRCPos         = 0x25,
+        MCT470_FuncRead_IED_CRCLen         =   12,
 
         MCT470_FuncRead_MReadPos           = 0x90,
         MCT470_FuncRead_MReadLen           =   12,
@@ -285,6 +331,8 @@ protected:
         MCT470_Memory_TimeAdjustTolPos     = 0x1F,
         MCT470_Memory_TimeAdjustTolLen     =    1,
 
+        MCT470_FuncRead_IED_Precanned_Base     = 0xc1,
+        MCT470_FuncRead_IED_Precanned_Last     = 0xd4,
         MCT470_FuncRead_IED_TOU_CurrentKWBase  = 0xc1,
         MCT470_FuncRead_IED_TOU_CurrentKMBase  = 0xc5,
         MCT470_FuncRead_IED_TOU_CurrentTotals  = 0xc9,
@@ -293,7 +341,13 @@ protected:
 
         MCT470_FuncRead_IED_TOU_MeterStatus    = 0xd3,
 
-        MCT470_FuncRead_IED_RealTime           = 0xd5
+        MCT470_FuncRead_IED_RealTime           = 0xd5,
+        MCT470_FuncRead_IED_RealTime2          = 0xda,
+
+        MCT470_DNP_Analog_Precanned_Offset     = 1,
+        MCT470_DNP_Status_Precanned_Offset     = 0,
+        MCT470_DNP_Counter_Precanned_Offset = 11,
+        MCT470_DNP_Counter_Precanned_Reads  = 8,
     };
 
     bool isLPDynamicInfoCurrent(void);
@@ -321,6 +375,7 @@ protected:
     int executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList);
     int executePutConfigDisconnect(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList);
     int executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList);
+    int executePutConfigDNP(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage >&vgList,list< CtiMessage >&retList,list< OUTMESS >   &outList);
 
     INT decodeGetValueKWH          ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetValueDemand       ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
@@ -329,6 +384,7 @@ protected:
     INT decodeGetConfigIED         ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetStatusInternal    ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetStatusLoadProfile ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
+    INT decodeGetStatusDNP         ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetConfigTime        ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetConfigIntervals   ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetConfigChannelSetup( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );

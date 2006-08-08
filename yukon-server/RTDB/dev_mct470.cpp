@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.52 $
-* DATE         :  $Date: 2006/07/25 22:15:04 $
+* REVISION     :  $Revision: 1.53 $
+* DATE         :  $Date: 2006/08/08 13:37:05 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -121,7 +121,9 @@ CtiDeviceMCT470::CommandSet CtiDeviceMCT470::initCommandStore( )
     cs.insert(CommandStore(Emetcon::GetStatus_Internal,         Emetcon::IO_Read,           MCT470_Memory_StatusPos,            MCT470_Memory_StatusLen));
     cs.insert(CommandStore(Emetcon::GetValue_IED,               Emetcon::IO_Function_Read,  0,  13));  //  filled in by "getvalue ied" code
     cs.insert(CommandStore(Emetcon::GetValue_IEDDemand,         Emetcon::IO_Function_Read,  MCT470_FuncRead_IED_RealTime,       9));  //  magic number
+    cs.insert(CommandStore(Emetcon::GetStatus_IEDDNP,           Emetcon::IO_Function_Read,  MCT470_FuncRead_IED_Precanned_Last, 13));
     cs.insert(CommandStore(Emetcon::GetConfig_IEDTime,          Emetcon::IO_Function_Read,  MCT470_FuncRead_IED_TOU_MeterStatus, 13));  //  magic number
+    cs.insert(CommandStore(Emetcon::GetConfig_IEDDNP,           Emetcon::IO_Function_Read,  MCT470_FuncRead_IED_DNPTablePos, MCT470_FuncRead_IED_DNPTableLen));
     cs.insert(CommandStore(Emetcon::PutValue_IEDReset,          Emetcon::IO_Function_Write, MCT470_FuncWrite_IEDCommand,        MCT470_FuncWrite_IEDCommandLen));
     cs.insert(CommandStore(Emetcon::PutStatus_FreezeOne,        Emetcon::IO_Write,          Command_FreezeOne,                  0));
     cs.insert(CommandStore(Emetcon::PutStatus_FreezeTwo,        Emetcon::IO_Write,          Command_FreezeTwo,                  0));
@@ -1252,6 +1254,7 @@ INT CtiDeviceMCT470::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
             break;
         }
 
+        case Emetcon::GetConfig_IEDDNP:
         case Emetcon::GetConfig_IEDTime:
         case Emetcon::GetConfig_IEDScan:
         {
@@ -1274,6 +1277,12 @@ INT CtiDeviceMCT470::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
         case Emetcon::GetStatus_Internal:
         {
             status = decodeGetStatusInternal(InMessage, TimeNow, vgList, retList, outList);
+            break;
+        }
+
+        case Emetcon::GetStatus_IEDDNP:
+        {
+            status = decodeGetStatusDNP(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
@@ -1388,6 +1397,69 @@ INT CtiDeviceMCT470::executeGetValue( CtiRequestMsg        *pReq,
             //  this will be for the real-time table
             function = Emetcon::GetValue_IEDDemand;
             found = getOperation( function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO );
+        }
+        else if( parse.isKeyValid("ied_dnp") )
+        {
+            int i = 0;
+            if( (i = parse.getiValue("collectionnumber")) != INT_MIN )
+            {
+                if( i == 1 )
+                {
+                    function = Emetcon::GetValue_IED;
+                    found = getOperation( function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO );
+                    OutMessage->Buffer.BSt.Function = MCT470_FuncRead_IED_RealTime;
+                }
+                else if( i == 2 )
+                {
+                    function = Emetcon::GetValue_IED;
+                    found = getOperation( function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO );
+                    OutMessage->Buffer.BSt.Function = MCT470_FuncRead_IED_RealTime2;
+                }
+                else
+                {
+                    nRet = BADRANGE;
+                    found = false;
+                }
+            }
+            else if( (i = parse.getiValue("analognumber")) != INT_MIN )
+            {
+                function = Emetcon::GetValue_IED;   //This means we have to fill in the function
+                found = getOperation( function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO );
+
+                OutMessage->Buffer.BSt.Function = MCT470_FuncRead_IED_Precanned_Base + (i-1) + MCT470_DNP_Analog_Precanned_Offset;
+                if( OutMessage->Buffer.BSt.Function >= MCT470_FuncRead_IED_Precanned_Base + MCT470_DNP_Counter_Precanned_Offset )
+                {
+                    nRet = BADRANGE;
+                    found = false;
+                }
+            }
+            else if( (i = parse.getiValue("accumulatornumber")) != INT_MIN )
+            {
+                function = Emetcon::GetValue_IED;   //This means we have to fill in the function
+                found = getOperation( function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO );
+
+                OutMessage->Buffer.BSt.Function = MCT470_FuncRead_IED_Precanned_Base + (i-1) + MCT470_DNP_Counter_Precanned_Offset;
+                if( i > MCT470_DNP_Counter_Precanned_Reads ) //only 8 reads possible.
+                {
+                    nRet = BADRANGE;
+                    found = false;
+                }
+            }
+            else if( (i = parse.getiValue("statusnumber")) != INT_MIN )
+            {
+                function = Emetcon::GetValue_IED;   //This means we have to fill in the function
+                found = getOperation( function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO );
+
+                OutMessage->Buffer.BSt.Function = MCT470_FuncRead_IED_Precanned_Base + MCT470_DNP_Status_Precanned_Offset;
+            }
+            else if( parse.isKeyValid("dnp_crc") )
+            {
+                function = Emetcon::GetValue_IED;
+                OutMessage->Buffer.BSt.Function = MCT470_FuncRead_IED_CRCPos;
+                OutMessage->Buffer.BSt.Length = MCT470_FuncRead_IED_CRCLen;
+                OutMessage->Buffer.BSt.IO = Emetcon::IO_Function_Read;
+                found = true;
+            }
         }
         // else if()  //  this is where the IED status would be handled
         else
@@ -1654,6 +1726,34 @@ INT CtiDeviceMCT470::executeGetConfig( CtiRequestMsg         *pReq,
         {
             function = Emetcon::GetConfig_IEDScan;
             found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+        }
+        else if( parse.isKeyValid("dnp") )
+        {
+
+            if( parse.isKeyValid("start address") )
+            {
+                function = Emetcon::PutConfig_Raw;
+                OutMessage->Buffer.BSt.Function = MCT470_FuncWrite_DNPReqTable;
+                OutMessage->Buffer.BSt.Length = 1;
+                OutMessage->Buffer.BSt.IO = Emetcon::IO_Function_Write;
+                OutMessage->Buffer.BSt.Message[0] = parse.getiValue("start address");
+                OutMessage->DeviceID  = getID();
+                OutMessage->TargetID  = getID();
+                OutMessage->Port      = getPortID();
+                OutMessage->Remote    = getAddress();
+                OutMessage->TimeOut   = 2;
+                OutMessage->Sequence  = function;         // Helps us figure it out later!
+                OutMessage->Retry     = 2;
+                OutMessage->Request.RouteID   = getRouteID();
+    
+                strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
+                outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
+                incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
+            }
+
+            function = Emetcon::GetConfig_IEDDNP;
+            found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+            incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
         }
     }
     else
@@ -2270,6 +2370,361 @@ int CtiDeviceMCT470::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParse
     return nRet;
 }
 
+int CtiDeviceMCT470::executePutConfigDNP(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage >&vgList,list< CtiMessage >&retList,list< OUTMESS >   &outList)
+{
+    //To anyone who needs to change this later, unfortunatelly a lot of the values here are used as "magic" numbers.
+    //Unfortunatelly any changes will require changes to the code and really non-magic numbers are of very little use to us here.
+    bool doRead = false;//Do the function crc read.
+    int nRet = NORMAL;
+    long value;
+    const int BufferSize = 41;
+    const int AnalogStartValue = MCT470_DNP_MCTPoint_PreCannedAnalog;
+    const int AccumulatorStartValue = MCT470_DNP_MCTPoint_PreCannedAccumulator;
+    bool force = parse.isKeyValid("force");
+    CtiConfigDeviceSPtr deviceConfig = getDeviceConfig();
+
+    if( deviceConfig )
+    {
+        BaseSPtr tempBasePtr = deviceConfig->getConfigFromType(ConfigTypeMCTDNP);
+
+        if( tempBasePtr && tempBasePtr->getType() == ConfigTypeMCTDNP )
+        {
+            BYTE buffer[BufferSize];
+            CtiString collectionBinarya, collectionBinaryb, collectionAnalog, collectionAccumulator;
+            CtiString binaryA, binaryB, analogA, analogB, accumulatorA, accumulatorB;
+
+            //***** Configure the Collection A (real time read 1) data
+            MCT_DNP_SPtr config = boost::static_pointer_cast< ConfigurationPart<MCT_DNP> >(tempBasePtr);
+            collectionBinarya = config->getValueFromKey(DNPCollection1BinaryA);
+            collectionBinaryb = config->getValueFromKey(DNPCollection1BinaryB);
+            collectionAnalog = config->getValueFromKey(DNPCollection1Analog);
+            collectionAccumulator = config->getValueFromKey(DNPCollection1Accumulator);
+
+            if( collectionBinarya.empty() || collectionBinaryb.empty()
+                || collectionAnalog.empty() || collectionAccumulator.empty() )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint - Configuration not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                nRet = NoConfigData;
+            }
+            else
+            {
+                int valCount = 0;
+                //FIX_ME JESS add checking of valCount, warnings, ect...
+                getBytesFromString(collectionBinarya, buffer, BufferSize, valCount, 15, 2);
+                getBytesFromString(collectionBinaryb, buffer+(valCount*2), BufferSize-(valCount*2), valCount, 15-valCount, 2);
+                getBytesFromString(collectionAnalog, buffer+30, BufferSize-30, valCount, 3, 2);
+                getBytesFromString(collectionAccumulator, buffer+36, BufferSize-36, valCount, 2, 2);
+
+                if( parse.isKeyValid("force")
+                    || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_RealTime1CRC) != crc8(buffer, 40) )
+                {
+                    OutMessage->Buffer.BSt.Function   = MCT470_FuncWrite_DNPReqTable;
+                    OutMessage->Buffer.BSt.Length     = 14;
+                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Write;
+                    OutMessage->Buffer.BSt.Message[0] = (MCT470_DNP_MCTPoint_RealTimeBinary);//This is defined in the 470 doc.
+                    OutMessage->Buffer.BSt.Message[1] = (0);//8 bit
+                    OutMessage->Buffer.BSt.Message[2] = (buffer[1]);
+                    OutMessage->Buffer.BSt.Message[3] = (buffer[3]);
+                    OutMessage->Buffer.BSt.Message[4] = (buffer[5]);
+                    OutMessage->Buffer.BSt.Message[5] = (buffer[7]);
+                    OutMessage->Buffer.BSt.Message[6] = (buffer[9]);
+                    OutMessage->Buffer.BSt.Message[7] = (buffer[11]);
+                    OutMessage->Buffer.BSt.Message[8] = (buffer[13]);
+                    OutMessage->Buffer.BSt.Message[9] = (buffer[15]);
+                    OutMessage->Buffer.BSt.Message[10] = (buffer[17]);
+                    OutMessage->Buffer.BSt.Message[11] = (buffer[19]);
+                    OutMessage->Buffer.BSt.Message[12] = (buffer[21]);
+                    OutMessage->Buffer.BSt.Message[13] = (buffer[23]);
+
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+
+                    OutMessage->Buffer.BSt.Length     = 5;
+                    OutMessage->Buffer.BSt.Message[0] = (MCT470_DNP_MCTPoint_RealTimeBinary+12);//This is defined in the 470 doc.
+                    OutMessage->Buffer.BSt.Message[1] = (0);//8 bit
+                    OutMessage->Buffer.BSt.Message[2] = (buffer[25]);
+                    OutMessage->Buffer.BSt.Message[3] = (buffer[27]);
+                    OutMessage->Buffer.BSt.Message[4] = (buffer[29]);
+
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+
+                    OutMessage->Buffer.BSt.Length     = 8;
+                    OutMessage->Buffer.BSt.Message[0] = (MCT470_DNP_MCTPoint_RealTimeAnalog);//This is defined in the 470 doc.
+                    OutMessage->Buffer.BSt.Message[1] = (2);//16 bit
+                    OutMessage->Buffer.BSt.Message[2] = (buffer[31]);
+                    OutMessage->Buffer.BSt.Message[3] = (buffer[30]);
+                    OutMessage->Buffer.BSt.Message[4] = (buffer[33]);
+                    OutMessage->Buffer.BSt.Message[5] = (buffer[32]);
+                    OutMessage->Buffer.BSt.Message[6] = (buffer[35]);
+                    OutMessage->Buffer.BSt.Message[7] = (buffer[34]);
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+
+                    OutMessage->Buffer.BSt.Length     = 6;
+                    OutMessage->Buffer.BSt.Message[0] = (MCT470_DNP_MCTPoint_RealTimeAccumulator);//This is defined in the 470 doc.
+                    OutMessage->Buffer.BSt.Message[1] = (2);//16 bit
+                    OutMessage->Buffer.BSt.Message[2] = (buffer[37]);
+                    OutMessage->Buffer.BSt.Message[3] = (buffer[36]);
+                    OutMessage->Buffer.BSt.Message[4] = (buffer[39]);
+                    OutMessage->Buffer.BSt.Message[5] = (buffer[38]);
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+                }
+            }
+
+            //***** Configure the collection B (real time read 2) data.
+            collectionBinarya = config->getValueFromKey(DNPCollection2BinaryA);
+            collectionBinaryb = config->getValueFromKey(DNPCollection2BinaryB);
+            collectionAnalog = config->getValueFromKey(DNPCollection2Analog);
+            collectionAccumulator = config->getValueFromKey(DNPCollection2Accumulator);
+
+            if( collectionBinarya.empty() || collectionBinaryb.empty()
+                || collectionAnalog.empty() || collectionAccumulator.empty() )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint - Configuration not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                nRet = NoConfigData;
+            }
+            else
+            {
+                int valCount = 0;
+                //FIX_ME JESS add checking of valCount, warnings, ect...
+                getBytesFromString(collectionBinarya, buffer, BufferSize, valCount, 15, 2);
+                getBytesFromString(collectionBinaryb, buffer+(valCount*2), BufferSize-(valCount*2), valCount, 15-valCount, 2);
+                getBytesFromString(collectionAnalog, buffer+30, BufferSize-30, valCount, 3, 2);
+                getBytesFromString(collectionAccumulator, buffer+36, BufferSize-36, valCount, 2, 2);
+
+                if( parse.isKeyValid("force")
+                    || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_RealTime2CRC) != crc8(buffer, 40) )
+                {
+                    OutMessage->Buffer.BSt.Function   = MCT470_FuncWrite_DNPReqTable;
+                    OutMessage->Buffer.BSt.Length     = 14;
+                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Write;
+                    OutMessage->Buffer.BSt.Message[0] = (MCT470_DNP_MCTPoint_RealTimeBinary+15);//This is defined in the 470 doc.
+                    OutMessage->Buffer.BSt.Message[1] = (0);//8 bit
+                    OutMessage->Buffer.BSt.Message[2] = (buffer[1]);
+                    OutMessage->Buffer.BSt.Message[3] = (buffer[3]);
+                    OutMessage->Buffer.BSt.Message[4] = (buffer[5]);
+                    OutMessage->Buffer.BSt.Message[5] = (buffer[7]);
+                    OutMessage->Buffer.BSt.Message[6] = (buffer[9]);
+                    OutMessage->Buffer.BSt.Message[7] = (buffer[11]);
+                    OutMessage->Buffer.BSt.Message[8] = (buffer[13]);
+                    OutMessage->Buffer.BSt.Message[9] = (buffer[15]);
+                    OutMessage->Buffer.BSt.Message[10] = (buffer[17]);
+                    OutMessage->Buffer.BSt.Message[11] = (buffer[19]);
+                    OutMessage->Buffer.BSt.Message[12] = (buffer[21]);
+                    OutMessage->Buffer.BSt.Message[13] = (buffer[23]);
+
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+
+                    OutMessage->Buffer.BSt.Length     = 5;
+                    OutMessage->Buffer.BSt.Message[0] = (MCT470_DNP_MCTPoint_RealTimeBinary+27);//This is defined in the 470 doc.
+                    OutMessage->Buffer.BSt.Message[1] = (0);//8 bit
+                    OutMessage->Buffer.BSt.Message[2] = (buffer[25]);
+                    OutMessage->Buffer.BSt.Message[3] = (buffer[27]);
+                    OutMessage->Buffer.BSt.Message[4] = (buffer[29]);
+
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+
+                    OutMessage->Buffer.BSt.Length     = 8;
+                    OutMessage->Buffer.BSt.Message[0] = (MCT470_DNP_MCTPoint_RealTimeAnalog+3);//This is defined in the 470 doc.
+                    OutMessage->Buffer.BSt.Message[1] = (2);//16 bit
+                    OutMessage->Buffer.BSt.Message[2] = (buffer[31]);
+                    OutMessage->Buffer.BSt.Message[3] = (buffer[30]);
+                    OutMessage->Buffer.BSt.Message[4] = (buffer[33]);
+                    OutMessage->Buffer.BSt.Message[5] = (buffer[32]);
+                    OutMessage->Buffer.BSt.Message[6] = (buffer[35]);
+                    OutMessage->Buffer.BSt.Message[7] = (buffer[34]);
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+
+                    OutMessage->Buffer.BSt.Length     = 6;
+                    OutMessage->Buffer.BSt.Message[0] = (MCT470_DNP_MCTPoint_RealTimeAccumulator+2);//This is defined in the 470 doc.
+                    OutMessage->Buffer.BSt.Message[1] = (2);//16 bit
+                    OutMessage->Buffer.BSt.Message[2] = (buffer[37]);
+                    OutMessage->Buffer.BSt.Message[3] = (buffer[36]);
+                    OutMessage->Buffer.BSt.Message[4] = (buffer[39]);
+                    OutMessage->Buffer.BSt.Message[5] = (buffer[38]);
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+                }
+            }
+
+            //***** Configure the binary precanned table data.
+            binaryA = config->getValueFromKey(DNPBinaryByte1A);
+            binaryB = config->getValueFromKey(DNPBinaryByte1B);
+
+            if( binaryA.empty() || binaryB.empty() )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint - Configuration not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                nRet = NoConfigData;
+            }
+            else
+            {
+                int valCount = 0;
+                //FIX_ME JESS add checking of valCount, warnings, ect...
+                getBytesFromString(binaryA, buffer, BufferSize, valCount, 12, 2);
+                getBytesFromString(binaryB, buffer+valCount*2, BufferSize-valCount*2, valCount, 12-valCount, 2);
+
+                if( parse.isKeyValid("force")
+                    || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_BinaryCRC) != crc8(buffer, 24) )
+                {
+                    OutMessage->Buffer.BSt.Function   = MCT470_FuncWrite_DNPReqTable;
+                    OutMessage->Buffer.BSt.Length     = 14;
+                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Write;
+                    OutMessage->Buffer.BSt.Message[0] = (MCT470_DNP_MCTPoint_PreCannedBinary);//This is defined in the 470 doc.
+                    OutMessage->Buffer.BSt.Message[1] = (0);//8 bit
+                    OutMessage->Buffer.BSt.Message[2] = (buffer[1]);
+                    OutMessage->Buffer.BSt.Message[3] = (buffer[3]);
+                    OutMessage->Buffer.BSt.Message[4] = (buffer[5]);
+                    OutMessage->Buffer.BSt.Message[5] = (buffer[7]);
+                    OutMessage->Buffer.BSt.Message[6] = (buffer[9]);
+                    OutMessage->Buffer.BSt.Message[7] = (buffer[11]);
+                    OutMessage->Buffer.BSt.Message[8] = (buffer[13]);
+                    OutMessage->Buffer.BSt.Message[9] = (buffer[15]);
+                    OutMessage->Buffer.BSt.Message[10] = (buffer[17]);
+                    OutMessage->Buffer.BSt.Message[11] = (buffer[19]);
+                    OutMessage->Buffer.BSt.Message[12] = (buffer[21]);
+                    OutMessage->Buffer.BSt.Message[13] = (buffer[23]);
+
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+                }
+            }
+
+            //***** Configure the analog first set (precanned analog 1 and 2)
+            analogA = config->getValueFromKey(DNPAnalog1);
+            analogB = config->getValueFromKey(DNPAnalog2);
+            sendDNPConfigMessages(AnalogStartValue, outList, OutMessage, analogA, analogB, CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC1, force);
+            analogA = config->getValueFromKey(DNPAnalog3);
+            analogB = config->getValueFromKey(DNPAnalog4);
+            sendDNPConfigMessages(AnalogStartValue+12, outList, OutMessage, analogA, analogB, CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC2, force);
+            analogA = config->getValueFromKey(DNPAnalog5);
+            analogB = config->getValueFromKey(DNPAnalog6);
+            sendDNPConfigMessages(AnalogStartValue+24, outList, OutMessage, analogA, analogB, CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC3, force);
+            analogA = config->getValueFromKey(DNPAnalog7);
+            analogB = config->getValueFromKey(DNPAnalog8);
+            sendDNPConfigMessages(AnalogStartValue+36, outList, OutMessage, analogA, analogB, CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC4, force);
+            analogA = config->getValueFromKey(DNPAnalog9);
+            analogB = config->getValueFromKey(DNPAnalog10);
+            sendDNPConfigMessages(AnalogStartValue+48, outList, OutMessage, analogA, analogB, CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC5, force);
+
+            accumulatorA = config->getValueFromKey(DNPAccumulator1);
+            accumulatorB = config->getValueFromKey(DNPAccumulator2);
+            sendDNPConfigMessages(AccumulatorStartValue, outList, OutMessage, accumulatorA, accumulatorB, CtiTableDynamicPaoInfo::Key_MCT_DNP_AccumulatorCRC1, force);
+            accumulatorA = config->getValueFromKey(DNPAccumulator3);
+            accumulatorB = config->getValueFromKey(DNPAccumulator4);
+            sendDNPConfigMessages(AccumulatorStartValue+12, outList, OutMessage, accumulatorA, accumulatorB, CtiTableDynamicPaoInfo::Key_MCT_DNP_AccumulatorCRC2, force);
+            accumulatorA = config->getValueFromKey(DNPAccumulator5);
+            accumulatorB = config->getValueFromKey(DNPAccumulator6);
+            sendDNPConfigMessages(AccumulatorStartValue+24, outList, OutMessage, accumulatorA, accumulatorB, CtiTableDynamicPaoInfo::Key_MCT_DNP_AccumulatorCRC3, force);
+            accumulatorA = config->getValueFromKey(DNPAccumulator7);
+            accumulatorB = config->getValueFromKey(DNPAccumulator8);
+            sendDNPConfigMessages(AccumulatorStartValue+36, outList, OutMessage, accumulatorA, accumulatorB, CtiTableDynamicPaoInfo::Key_MCT_DNP_AccumulatorCRC4, force);
+        }
+        else
+            nRet = NoConfigData;
+    }
+    else
+        nRet = NoConfigData;
+
+    return nRet;
+}
+
+int CtiDeviceMCT470::sendDNPConfigMessages(int startMCTID,  list< OUTMESS >   &outList, OUTMESS *&OutMessage, string &dataA, string &dataB, CtiTableDynamicPaoInfo::Keys key, bool force)
+{
+    int nRet = NORMAL;
+    int valCount;
+    const int bufferSize = 26;
+    BYTE buffer[bufferSize];
+
+    if( dataA.empty() || dataB.empty() )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** Checkpoint - Configuration not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        nRet = NoConfigData;
+    }
+    else if( bufferSize >= 24 )
+    {
+        int valCount = 0;
+        //FIX_ME JESS add checking of valCount, warnings, ect...
+        getBytesFromString(dataA, buffer, bufferSize, valCount, 6, 2);//16 bit, 6 entries min
+
+        //offset by 12 as we must have 6 entries in previous table, 6 in this one.
+        getBytesFromString(dataB, buffer+12, bufferSize-12, valCount, 6, 2);
+
+        if( force
+            || CtiDeviceBase::getDynamicInfo(key) != crc8(buffer, 24) )
+        {
+            //To make sending efficient, we will check if we can use 8 bit (we ignore 12 bit for now)
+            bool canUse8Bit = true;
+            for( int i = 0; i<24; i+=2 )
+            {
+                if( buffer[i] != 0)
+                {
+                    canUse8Bit = false;
+                }
+            }
+
+            if( canUse8Bit )
+            {
+                OutMessage->Buffer.BSt.Function   = MCT470_FuncWrite_DNPReqTable;
+                OutMessage->Buffer.BSt.Length     = 14;
+                OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Write;
+                OutMessage->Buffer.BSt.Message[0] = (startMCTID);//This is defined in the 470 doc.
+                OutMessage->Buffer.BSt.Message[1] = (0);//8 bit
+                OutMessage->Buffer.BSt.Message[2] = (buffer[1]);
+                OutMessage->Buffer.BSt.Message[3] = (buffer[3]);
+                OutMessage->Buffer.BSt.Message[4] = (buffer[5]);
+                OutMessage->Buffer.BSt.Message[5] = (buffer[7]);
+                OutMessage->Buffer.BSt.Message[6] = (buffer[9]);
+                OutMessage->Buffer.BSt.Message[7] = (buffer[11]);
+                OutMessage->Buffer.BSt.Message[8] = (buffer[13]);
+                OutMessage->Buffer.BSt.Message[9] = (buffer[15]);
+                OutMessage->Buffer.BSt.Message[10] = (buffer[17]);
+                OutMessage->Buffer.BSt.Message[11] = (buffer[19]);
+                OutMessage->Buffer.BSt.Message[12] = (buffer[21]);
+                OutMessage->Buffer.BSt.Message[13] = (buffer[23]);
+
+                outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+            }
+            else
+            {
+                OutMessage->Buffer.BSt.Function   = MCT470_FuncWrite_DNPReqTable;
+                OutMessage->Buffer.BSt.Length     = 14;
+                OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Write;
+                OutMessage->Buffer.BSt.Message[0] = (startMCTID);//This is defined in the 470 doc.
+                OutMessage->Buffer.BSt.Message[1] = (2);//16 bit
+                OutMessage->Buffer.BSt.Message[2] = (buffer[0]);
+                OutMessage->Buffer.BSt.Message[3] = (buffer[1]);
+                OutMessage->Buffer.BSt.Message[4] = (buffer[2]);
+                OutMessage->Buffer.BSt.Message[5] = (buffer[3]);
+                OutMessage->Buffer.BSt.Message[6] = (buffer[4]);
+                OutMessage->Buffer.BSt.Message[7] = (buffer[5]);
+                OutMessage->Buffer.BSt.Message[8] = (buffer[6]);
+                OutMessage->Buffer.BSt.Message[9] = (buffer[7]);
+                OutMessage->Buffer.BSt.Message[10] = (buffer[8]);
+                OutMessage->Buffer.BSt.Message[11] = (buffer[9]);
+                OutMessage->Buffer.BSt.Message[12] = (buffer[10]);
+                OutMessage->Buffer.BSt.Message[13] = (buffer[11]);
+                outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+
+                OutMessage->Buffer.BSt.Message[0] = (startMCTID + 6);//This is defined in the 470 doc.
+                OutMessage->Buffer.BSt.Message[1] = (2);//16 bit
+                OutMessage->Buffer.BSt.Message[2] = (buffer[12]);
+                OutMessage->Buffer.BSt.Message[3] = (buffer[13]);
+                OutMessage->Buffer.BSt.Message[4] = (buffer[14]);
+                OutMessage->Buffer.BSt.Message[5] = (buffer[15]);
+                OutMessage->Buffer.BSt.Message[6] = (buffer[16]);
+                OutMessage->Buffer.BSt.Message[7] = (buffer[17]);
+                OutMessage->Buffer.BSt.Message[8] = (buffer[18]);
+                OutMessage->Buffer.BSt.Message[9] = (buffer[19]);
+                OutMessage->Buffer.BSt.Message[10] = (buffer[20]);
+                OutMessage->Buffer.BSt.Message[11] = (buffer[21]);
+                OutMessage->Buffer.BSt.Message[12] = (buffer[22]);
+                OutMessage->Buffer.BSt.Message[13] = (buffer[23]);
+                outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+            }
+        }
+    }
+    return nRet;
+}
 
 INT CtiDeviceMCT470::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
@@ -2853,6 +3308,111 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                 resultString += getName() + " / Average power factor since last freeze = " + CtiNumStr(pi.value) + "\n";
             }
         }
+        else if( parse.isKeyValid("ied_dnp") )
+        {
+            int i = 0;
+            CtiPointSPtr tempPoint;
+            int status = DSt->Message[12];//Applies only to precanned table reads.
+            if( (i = parse.getiValue("collectionnumber")) != INT_MIN )
+            {
+                decodeDNPRealTimeRead(DSt->Message, i, resultString, ReturnMsg);
+            }
+            else if( (i = parse.getiValue("analognumber")) != INT_MIN )
+            {
+                for( int byte = 0; byte < 6; byte++ )
+                {
+                    pi = getData(DSt->Message + byte*2, 2, ValueType_Raw);
+                    if( !status && (tempPoint = getDevicePointOffsetTypeEqual(MCT470_PointOffset_DNPAnalog_Precanned1+byte+(i-1)*6, AnalogPointType)))
+                    {
+                        pi.value = boost::static_pointer_cast<CtiPointNumeric>(tempPoint)->computeValueForUOM(pi.value);
+
+                        point_string = getName() + " / " + tempPoint->getName() + " = " + CtiNumStr(pi.value, boost::static_pointer_cast<CtiPointNumeric>(tempPoint)->getPointUnits().getDecimalPlaces());
+        
+                        ReturnMsg->PointData().push_back(makePointDataMsg(tempPoint, pi, point_string));
+                    }
+                    else
+                    {
+                        resultString += getName() + " / Analog point " + CtiNumStr(MCT470_PointOffset_DNPAnalog_Precanned1+byte+(i-1)*6) + " = " + CtiNumStr(pi.value) + "\n";
+                    }
+                }
+            }
+            else if( (i = parse.getiValue("accumulatornumber")) != INT_MIN )
+            {
+                for( int byte = 0; byte < 6; byte++ )
+                {
+                    pi = getData(DSt->Message + byte*2, 2, ValueType_Raw);
+                    if( !status && (tempPoint = getDevicePointOffsetTypeEqual(MCT470_PointOffset_DNPCounter_Precanned1+byte+(i-1)*6, PulseAccumulatorPointType)))
+                    {
+                        pi.value = boost::static_pointer_cast<CtiPointNumeric>(tempPoint)->computeValueForUOM(pi.value);
+
+                        point_string = getName() + " / " + tempPoint->getName() + " = " + CtiNumStr(pi.value, boost::static_pointer_cast<CtiPointNumeric>(tempPoint)->getPointUnits().getDecimalPlaces());
+        
+                        ReturnMsg->PointData().push_back(makePointDataMsg(tempPoint, pi, point_string));
+                    }
+                    else
+                    {
+                        resultString += getName() + " / Pulse Accumulator point " + CtiNumStr(MCT470_PointOffset_DNPCounter_Precanned1+byte+(i-1)*6) + " = " + CtiNumStr(pi.value) + "\n";
+                    }
+                }
+            }
+            else if( (i = parse.getiValue("statusnumber")) != INT_MIN )
+            {
+                pi.quality = NormalQuality;
+                for( int byte = 0; byte < 12; byte++ )
+                {
+                    for( int bit = 0; bit < 8; bit++ )
+                    {
+                        pi.value = (DSt->Message[byte] >> bit) & 0x01;
+                        if( !status && (tempPoint = getDevicePointOffsetTypeEqual(MCT470_PointOffset_DNPStatus_PrecannedStart+byte*8+bit, StatusPointType)))
+                        {
+                            point_string = getName() + " / " + tempPoint->getName() + " = " + CtiNumStr(pi.value);
+        
+                            ReturnMsg->PointData().push_back(makePointDataMsg(tempPoint, pi, point_string));
+                        }
+                    }
+
+                    resultString += getName() + " / Binary Data Byte " + CtiNumStr(byte) + " = " + CtiNumStr(DSt->Message[byte]) + "\n";
+                }
+            }
+            else if( parse.isKeyValid("dnp_crc") )
+            {
+                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_RealTime1CRC, InMessage->Buffer.DSt.Message[0]);
+                resultString += "CRC's Returned: " + CtiNumStr(InMessage->Buffer.DSt.Message[0]);
+
+                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_RealTime2CRC, InMessage->Buffer.DSt.Message[1]);
+                resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[1]);
+
+                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_BinaryCRC, InMessage->Buffer.DSt.Message[2]);
+                resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[2]);
+
+                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC1, InMessage->Buffer.DSt.Message[3]);
+                resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[3]);
+
+                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC2, InMessage->Buffer.DSt.Message[4]);
+                resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[4]);
+
+                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC3, InMessage->Buffer.DSt.Message[5]);
+                resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[5]);
+
+                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC4, InMessage->Buffer.DSt.Message[6]);
+                resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[6]);
+
+                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC5, InMessage->Buffer.DSt.Message[7]);
+                resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[7]);
+
+                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AccumulatorCRC1, InMessage->Buffer.DSt.Message[8]);
+                resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[8]);
+
+                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AccumulatorCRC2, InMessage->Buffer.DSt.Message[9]);
+                resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[9]);
+
+                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AccumulatorCRC3, InMessage->Buffer.DSt.Message[10]);
+                resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[10]);
+
+                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AccumulatorCRC4, InMessage->Buffer.DSt.Message[11]);
+                resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[11]);
+            }
+        }
         else
         {
             if( dataInvalid )
@@ -3060,6 +3620,30 @@ INT CtiDeviceMCT470::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, lis
                 break;
             }
 
+            case Emetcon::GetConfig_IEDDNP:
+            {
+                int mctPoint = DSt->Message[0];
+                for( int i = 0; i < 6; i++ )
+                {
+                    pi = getData(DSt->Message + 1 + 2*i, 2, ValueType_Raw);
+                    if( mctPoint + i < MCT470_DNP_MCTPoint_RealTimeAnalog )
+                    {
+                        resultString += "Yukon Binary Point: " + CtiNumStr(mctPoint + i + MCT470_PointOffset_DNPStatus_RealTime1) + " set to DNP point " + CtiNumStr(pi.value-1) + (pi.value <= 0 ? " (disabled) " : "") + "\n";
+                    }
+                    else if( mctPoint + i  < MCT470_DNP_MCTPoint_RealTimeAccumulator )
+                    {
+                        resultString += "Yukon Analog Point: " + CtiNumStr(mctPoint + i + MCT470_PointOffset_DNPAnalog_RealTime1 - MCT470_DNP_MCTPoint_RealTimeAnalog) + " set to DNP point " + CtiNumStr(pi.value-1) + (pi.value <= 0 ? " (disabled) " : "") + "\n";
+                    }
+                    else if( mctPoint + i  >= MCT470_DNP_MCTPoint_RealTimeAccumulator )
+                    {
+                        resultString += "Yukon Accumulator Point: " + CtiNumStr(mctPoint + i + MCT470_PointOffset_DNPCounter_RealTime1 - MCT470_DNP_MCTPoint_RealTimeAccumulator) + " set to DNP point " + CtiNumStr(pi.value-1) + (pi.value <= 0 ? " (disabled) " : "") + "\n";
+                    }
+                }
+                resultString += "For this read, the MCT point in the 470 was: " + CtiNumStr(mctPoint) + ". DNP points are real DNP point id's (0 based).\n";
+                
+                break;
+            }
+
             case Emetcon::GetConfig_IEDScan:
             {
                 resultString += getName() + " / function not implemented yet\n";
@@ -3194,6 +3778,76 @@ INT CtiDeviceMCT470::decodeGetStatusLoadProfile( INMESS *InMessage, CtiTime &Tim
         resultString += "Current Interval Pointer: " + CtiNumStr(DSt->Message[9]) + string("\n");
 
         resultString += "\n";
+
+        ReturnMsg->setResultString(resultString);
+
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    }
+
+    return status;
+}
+
+
+INT CtiDeviceMCT470::decodeGetStatusDNP( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+{
+    INT status = NORMAL, lp_channel;
+
+    INT ErrReturn  = InMessage->EventCode & 0x3fff;
+    unsigned char *geneBuf = InMessage->Buffer.DSt.Message;
+    DSTRUCT *DSt  = &InMessage->Buffer.DSt;
+
+    CtiCommandParser parse(InMessage->Return.CommandStr);
+
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    {
+        // No error occured, we must do a real decode!
+
+        CtiString resultString;
+        unsigned long tmpTime;
+        CtiTime errTime;
+
+        CtiReturnMsg     *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+        CtiPointDataMsg  *pData = NULL;
+
+        if( (ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+            return MEMORY;
+        }
+
+        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+        int dnpStatus =     DSt->Message[0];
+        int mctPoint =      DSt->Message[1];
+        int dnpPoint =      DSt->Message[2] << 8 |
+                            DSt->Message[3];
+        int commandStatus = DSt->Message[4];
+        tmpTime =           DSt->Message[5]  << 24 |
+                            DSt->Message[6]  << 16 |
+                            DSt->Message[7]  <<  8 |
+                            DSt->Message[8];
+
+        CtiTime      ied_time = CtiTime(tmpTime + rwEpoch);
+
+        resultString += getName() + " / DNP status returned: " + resolveDNPStatus(dnpStatus) + "(" + CtiNumStr(dnpStatus) + ")" + "\n";
+
+        if( mctPoint <= 40 )
+        {
+            resultString += "Point Type: Status Point\n";
+        }
+        else if( mctPoint <= 102 )
+        {
+            resultString += "Point Type: Analog Point\n";
+        }
+        else if( mctPoint <= 148 )
+        {
+            resultString += "Point Type: Accumulator Point\n";
+        }
+        resultString += "DNP point: " + CtiNumStr(dnpPoint) + "\n";
+        resultString += "Command status: " + resolveDNPStatus(commandStatus) + "(" + CtiNumStr(commandStatus) + ")" + "\n";
+        resultString += "Last Successful Read: " + ied_time.asString() + "(" + CtiNumStr(tmpTime) + ")" + "\n";
 
         ReturnMsg->setResultString(resultString);
 
@@ -3415,6 +4069,202 @@ INT CtiDeviceMCT470::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, l
     }
 
     return status;
+}
+
+
+//I hate to do this, we must ensure no one ever passes a null buffer into here...
+void CtiDeviceMCT470::decodeDNPRealTimeRead(BYTE *buffer, int readNumber, string &resultString, CtiReturnMsg *ReturnMsg)
+{
+    point_info_t   pi;
+    CtiPointSPtr   tempPoint;
+    string point_string;
+    if( buffer != NULL && ReturnMsg != NULL)
+    {
+        bool errorFlagSet = (buffer[0] & 0x01) ? true : false;
+    
+        if( errorFlagSet )
+        {
+            resultString += "Error flag was set, points will not be updated \n";
+        }
+
+        int binaryoffset = readNumber == 1 ? MCT470_PointOffset_DNPStatus_RealTime1 : MCT470_PointOffset_DNPStatus_RealTime2;
+        int analogoffset = readNumber == 1 ? MCT470_PointOffset_DNPAnalog_RealTime1 : MCT470_PointOffset_DNPAnalog_RealTime2;
+        int counteroffset = readNumber == 1 ? MCT470_PointOffset_DNPCounter_RealTime1 : MCT470_PointOffset_DNPCounter_RealTime2;
+
+        pi = getData(buffer, 1, ValueType_Raw);//Gets pi built up properly...
+        for( int i = 0; i < 7; i++ )//only 7 in the first byte
+        {
+            if( !errorFlagSet && (tempPoint = getDevicePointOffsetTypeEqual(binaryoffset+i, StatusPointType)))
+            {
+                pi.value = (buffer[0] >> (i+1)) & 0x01;
+                point_string = getName() + " / " + tempPoint->getName() + " = " + CtiNumStr(pi.value);
+        
+                ReturnMsg->PointData().push_back(makePointDataMsg(tempPoint, pi, point_string));
+            }
+            else
+            {
+                resultString += getName() + " / Status point " + CtiNumStr(binaryoffset+i) + " = " + CtiNumStr(pi.value) + "\n";
+            }
+        }
+
+        for( i = 0; i < 8; i++ )
+        {
+            if( !errorFlagSet && (tempPoint = getDevicePointOffsetTypeEqual(binaryoffset+i+6, StatusPointType)))
+            {
+                pi.value = (buffer[1] >> i) & 0x01;
+                point_string = getName() + " / " + tempPoint->getName() + " = " + CtiNumStr(pi.value);
+        
+                ReturnMsg->PointData().push_back(makePointDataMsg(tempPoint, pi, point_string));
+            }
+            else
+            {
+                resultString += getName() + " / Status point " + CtiNumStr(binaryoffset+i+6) + " = " + CtiNumStr(pi.value) + "\n";
+            }
+        }
+
+        
+        for( i = 0; i < 3; i++ )
+        {
+            pi = getData(buffer+2*(i+1), 2, ValueType_Raw);
+            if( !errorFlagSet && (tempPoint = getDevicePointOffsetTypeEqual(analogoffset+i, AnalogPointType)))
+            {
+                pi.value = boost::static_pointer_cast<CtiPointNumeric>(tempPoint)->computeValueForUOM(pi.value);
+
+                point_string = getName() + " / " + tempPoint->getName() + " = " + CtiNumStr(pi.value);
+
+                ReturnMsg->PointData().push_back(makePointDataMsg(tempPoint, pi, point_string));
+            }
+            else
+            {
+                resultString += getName() + " / Analog point " + CtiNumStr(analogoffset+i) + " = " + CtiNumStr(pi.value) + "\n";
+            }
+        }
+
+        for( i = 0; i < 2; i++ )
+        {
+            pi = getData(buffer+2*i+8, 2, ValueType_Raw);
+            if( !errorFlagSet && (tempPoint = getDevicePointOffsetTypeEqual(counteroffset+i, PulseAccumulatorPointType)))
+            {
+                pi.value = boost::static_pointer_cast<CtiPointNumeric>(tempPoint)->computeValueForUOM(pi.value);
+
+                point_string = getName() + " / " + tempPoint->getName() + " = " + CtiNumStr(pi.value);
+
+                ReturnMsg->PointData().push_back(makePointDataMsg(tempPoint, pi, point_string));
+            }
+            else
+            {
+                resultString += getName() + " / Pulse Accumulator point " + CtiNumStr(counteroffset+i) + " = " + CtiNumStr(pi.value) + "\n";
+            }
+        }
+        
+    }
+}
+
+//This expects a string in the format: "01 0x01 01 020 055 0x0040" ect..
+void CtiDeviceMCT470::getBytesFromString(string &values, BYTE* buffer, int buffLen, int &numValues, int fillCount, int bytesPerValue)
+{
+    CtiString   valueCopy(values);
+    CtiString   temp;
+    CtiString   token;
+    int iValue;
+
+    if( buffer != NULL )
+    {
+        CtiString anyNum;
+        anyNum = "(([0-9]+) *|(0x[0-9a-f]+) *)+";
+
+        if(!(token = valueCopy.match(anyNum)).empty())
+        {
+            CtiTokenizer cmdtok(token);
+
+            numValues = 0;
+            while( !(temp = cmdtok()).empty() && numValues*bytesPerValue < buffLen )
+            {
+                iValue = atoi(temp.data());
+                for( int i=0; i<bytesPerValue; i++ )
+                {
+                    buffer[numValues*bytesPerValue + i] = iValue>>(8*(bytesPerValue-1-i));
+                }
+                numValues++;
+            }
+        }
+        if( numValues < fillCount)
+        {
+            for( int i=numValues; i<fillCount; i++)
+            {
+                for( int a=0; a<bytesPerValue; a++ )
+                {
+                    buffer[i*bytesPerValue + a] = 0;
+                }
+                
+            }
+        }
+    }
+}
+
+string CtiDeviceMCT470::resolveDNPStatus(int status)
+{
+    string result;
+    switch(status)
+    {
+        case 0:
+        {
+            result = "Success";
+            break;
+        }
+        case 1:
+        {
+            result = "Failed Data Link Header";
+            break;
+        }
+        case 2:
+        {
+            result = "Failed Application Header";
+            break;
+        }
+        case 3:
+        {
+            result = "Failed Object Header";
+            break;
+        }
+        case 4:
+        {
+            result = "Invalid Point Configuration";
+            break;
+        }
+        case 5:
+        {
+            result = "Command Failed";
+            break;
+        }
+        case 6:
+        {
+            result = "Communications Failure";
+            break;
+        }
+        case 7:
+        {
+            result = "Application Message Length Error";
+            break;
+        }
+        case 8:
+        {
+            result = "Data Request Failed";
+            break;
+        }
+        case 9:
+        {
+            result = "Data Storage Failed";
+            break;
+        }
+        default:
+        {
+            result = "Unknown";
+            break;
+        }
+    }
+
+    return result;
 }
 
 
