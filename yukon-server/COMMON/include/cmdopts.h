@@ -13,8 +13,8 @@
 #include "argval.h"
 
 #include "dlldefs.h"
-typedef std::map<CtiArgKey*,CtiArgValue*>::iterator mHash_itr;
-typedef std::pair<std::map<CtiArgKey*,CtiArgValue*>::iterator,bool> mHash_pair;
+typedef std::map<char,CtiArgValue*>::iterator mHash_itr;
+typedef std::pair<std::map<char,CtiArgValue*>::iterator,bool> mHash_pair;
 
 class IM_EX_CMDLINE CtiCmdLineOpts
 {
@@ -37,7 +37,7 @@ public:
 private:
    INT               OptCount;
    INT               ErrState;
-   map<CtiArgKey*,CtiArgValue*>  mHash;
+   map<char,CtiArgValue*>  mHash;
 };
 
 

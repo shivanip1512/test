@@ -28,7 +28,6 @@ CtiConfigParameters::~CtiConfigParameters()
 
     for( mHash_itr2 itr = mHash.begin(); itr != mHash.end(); itr++ )
     {
-        delete (*itr).first;
         delete (*itr).second;
     }
     mHash.clear();
@@ -88,7 +87,6 @@ int CtiConfigParameters::RefreshConfigParameters()
 
     for( mHash_itr2 itr = mHash.begin(); itr != mHash.end(); itr++ )
     {
-        delete (*itr).first;
         delete (*itr).second;
     }
     mHash.clear();
@@ -117,14 +115,15 @@ int CtiConfigParameters::RefreshConfigParameters()
                             {
                                 HeadAndTail(pch, chValue, MAX_CONFIG_VALUE);
 
-                                CtiConfigKey   *Key = new CtiConfigKey(string(chKey));
+                                //CtiConfigKey   *Key = new CtiConfigKey(string(chKey));
+                                
                                 CtiConfigValue *Val = new CtiConfigValue(string(chValue));
-                                mHash_pair2 p = mHash.insert( std::make_pair(Key, Val) );
+                                mHash_pair2 p = mHash.insert( std::make_pair(string(chKey), Val) );
                                 if( !p.second )
                                 {
                                     cout << "CPARM " << chKey << " has already been inserted.. \n\tPlease check for duplicate entries in the master.cfg file " << endl;
                                     cout << "\t" << chKey << " : " << getValueAsString(string(chKey)) << endl;
-                                    delete Key;
+                                    //delete Key;
                                     delete Val;
                                 }
 #ifdef DEBUGLEVEL100
@@ -160,7 +159,7 @@ int CtiConfigParameters::RefreshConfigParameters()
 void
 CtiConfigParameters::Dump()
 {
-    CtiConfigKey     *Key;
+    string Key;
     CtiConfigValue   *Value;
 
     checkForRefresh();
@@ -176,10 +175,10 @@ CtiConfigParameters::Dump()
         cout << endl << "Configuration Parameters:" << endl;
         for( mHash_itr2 iter = mHash.begin(); iter != mHash.end(); iter++ )
         {
-            Key = (CtiConfigKey*)(*iter).first;
+            Key = (*iter).first;
             Value = (CtiConfigValue*)(*iter).second;
 
-            cout << setiosflags(ios::left) << setw(30) << Key->getKey() << " : " << setw(40) << Value->getValue() << endl;
+            cout << setiosflags(ios::left) << setw(30) << Key << " : " << setw(40) << Value->getValue() << endl;
         }
     }
     else
@@ -190,7 +189,6 @@ CtiConfigParameters::Dump()
 
 BOOL CtiConfigParameters::isOpt(const string& key)
 {
-    CtiConfigKey     Key(key);
     CtiConfigValue   *Value;
 
     checkForRefresh();
@@ -200,7 +198,7 @@ BOOL CtiConfigParameters::isOpt(const string& key)
     #else
     CtiParmLockGuard< CtiParmCriticalSection > cs_lock(crit_sctn);
     #endif
-    mHash_itr2 itr = mHash.find(&Key);
+    mHash_itr2 itr = mHash.find(key);
     
 
     if( itr != mHash.end() )
@@ -211,7 +209,7 @@ BOOL CtiConfigParameters::isOpt(const string& key)
 
 bool CtiConfigParameters::isOpt(const string& key, const string& isEqualThisValue)
 {
-    CtiConfigKey     Key(key);
+    //CtiConfigKey     Key(key);
     CtiConfigValue   *Value;
 
     checkForRefresh();
@@ -221,7 +219,7 @@ bool CtiConfigParameters::isOpt(const string& key, const string& isEqualThisValu
     #else
     CtiParmLockGuard< CtiParmCriticalSection > cs_lock(crit_sctn);
     #endif
-    mHash_itr2 itr = mHash.find(&Key);
+    mHash_itr2 itr = mHash.find(key);
 
     if( (itr != mHash.end()) && !stringCompareIgnoreCase((*itr).second->getValue(),isEqualThisValue) )
         return true;
@@ -238,7 +236,7 @@ string
 CtiConfigParameters::getValueAsString(const string& key, const string& defaultval)
 {
     BOOL           bRet = TRUE;
-    CtiConfigKey   Key(key);
+    //CtiConfigKey   Key(key);
     CtiConfigValue *Value;
 
     string retStr = defaultval;      // A Null string.
@@ -251,7 +249,7 @@ CtiConfigParameters::getValueAsString(const string& key, const string& defaultva
     CtiParmLockGuard< CtiParmCriticalSection > cs_lock(crit_sctn);
     #endif
 
-    mHash_itr2 itr = mHash.find(&Key);
+    mHash_itr2 itr = mHash.find(key);
 
     if( itr != mHash.end() )
     {   

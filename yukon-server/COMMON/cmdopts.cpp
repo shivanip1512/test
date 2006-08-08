@@ -45,10 +45,10 @@ CtiCmdLineOpts::setOpts(int argc, char **argv)
             strcpy(valstr, "1");             // A "Non-zero" Value!
          }
 
-         CtiArgKey     *NewKey     = new CtiArgKey(key);
+         //CtiArgKey     *NewKey     = new CtiArgKey(key);
          CtiArgValue   *NewValue   = new CtiArgValue(valstr);
 
-         mHash_pair p = mHash.insert( std::make_pair(NewKey, NewValue) );
+         mHash_pair p = mHash.insert( std::make_pair(key, NewValue) );
          if(  !p.second  )
          {
             cout << "Broken insert " << endl;
@@ -66,7 +66,7 @@ CtiCmdLineOpts::setOpts(int argc, char **argv)
 DLLEXPORT void
 CtiCmdLineOpts::Puke()
 {
-   CtiArgKey     *Key;
+   char     Key;
    CtiArgValue   *Value;
 
    if(OptCount > 0)
@@ -74,10 +74,10 @@ CtiCmdLineOpts::Puke()
       cout << "Command Line Arguments" << endl;
       for( mHash_itr iter = mHash.begin(); iter != mHash.end(); iter++ )
       {
-         Key = (CtiArgKey*)(*iter).first;
+         Key = (*iter).first;
          Value = (CtiArgValue*)(*iter).second;
 
-         cout << "\tKey: " << Key->getKey() << " = " << Value->getValue() << endl;
+         cout << "\tKey: " << Key << " = " << Value->getValue() << endl;
       }
    }
 }
@@ -85,10 +85,10 @@ CtiCmdLineOpts::Puke()
 DLLEXPORT BOOL
 CtiCmdLineOpts::isOpt(char key)
 {
-   CtiArgKey     Key(key);
+   //CtiArgKey     Key(key);
    CtiArgValue   *Value;
    mHash_itr itr;
-   itr = mHash.find(&Key);
+   itr = mHash.find( key );
 
    if( itr != mHash.end() )
       return TRUE;
@@ -100,12 +100,12 @@ DLLEXPORT int
 CtiCmdLineOpts::ReturnIntOpt(char key)
 {
    int   iRet = 0;
-   CtiArgKey     Key(key);
+   //CtiArgKey     Key(key);
    CtiArgValue   *Value;
 
    ErrState = NoError;
    mHash_itr itr;
-   itr = mHash.find(&Key);
+   itr = mHash.find(key);
    
    if( itr != mHash.end() )
    {
@@ -129,13 +129,12 @@ DLLEXPORT double
 CtiCmdLineOpts::ReturnDoubleOpt(char key)
 {
    double         dRet = 0.0;
-   CtiArgKey     Key(key);
    CtiArgValue   *Value;
 
    ErrState = NoError;
 
    mHash_itr itr;
-   itr = mHash.find(&Key);
+   itr = mHash.find(key);
 
    if( itr != mHash.end() )
    {
@@ -150,11 +149,10 @@ DLLEXPORT BOOL
 CtiCmdLineOpts::ReturnStringOpt(char key, char *opt, int len)
 {
    BOOL           bRet = TRUE;
-   CtiArgKey     Key(key);
    CtiArgValue   *Value;
 
    mHash_itr itr;
-   itr = mHash.find(&Key);
+   itr = mHash.find(key);
 
    if( itr != mHash.end() )
    {

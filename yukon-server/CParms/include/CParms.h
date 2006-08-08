@@ -16,8 +16,8 @@
 using std::string;
 using std::map; 
 
-typedef std::map<CtiConfigKey*,CtiConfigValue*>::iterator mHash_itr2;
-typedef std::pair<std::map<CtiConfigKey*,CtiConfigValue*>::iterator,bool> mHash_pair2;
+typedef std::map<string,CtiConfigValue*>::iterator mHash_itr2;
+typedef std::pair<std::map<string,CtiConfigValue*>::iterator,bool> mHash_pair2;
 
 // Forward decls.
 class CtiConfigParameters;
@@ -124,7 +124,7 @@ private:
    #else
    CtiParmCriticalSection  crit_sctn;
    #endif
-   map<CtiConfigKey*,CtiConfigValue*> mHash;
+   map<string,CtiConfigValue*> mHash;
 
 public:
 
