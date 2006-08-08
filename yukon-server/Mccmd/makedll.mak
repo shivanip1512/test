@@ -8,7 +8,6 @@ INCLPATHS+= \
 -I$(COMMON)\include \
 -I$(MCCMD)\include \
 -I$(CPARMS)\include \
--I$(CPARMS) \
 -I$(MSG)\include \
 -I$(RTDB)\include \
 -I$(TCLINC) \

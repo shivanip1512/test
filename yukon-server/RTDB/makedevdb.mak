@@ -9,7 +9,6 @@ INCLPATHS+= \
 -I$(MSG)\include \
 -I$(PROT)\include \
 -I$(CPARMS)\include \
--I$(CPARMS) \
 -I$(PROCLOG)\include \
 -I$(RW) \
 -I$(BOOST) \

@@ -10,7 +10,6 @@ INCLPATHS+= \
 -I$(RTDB)\include \
 -I$(COMMON)\include \
 -I$(CPARMS)\include \
--I$(CPARMS) \
 -I$(PROT)\include \
 -I$(MSG)\include \
 -I$(BOOST) \

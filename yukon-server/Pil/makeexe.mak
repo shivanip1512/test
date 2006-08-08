@@ -8,7 +8,6 @@ INCLPATHS+= \
 -I$(RTDB)\include \
 -I$(COMMON)\include \
 -I$(CPARMS)\include \
--I$(CPARMS) \
 -I$(SERVER)\include \
 -I$(MSG)\include \
 -I$(BOOST) \

@@ -4,7 +4,6 @@ include ..\common\rwglobal.inc
 INCLPATHS+= \
 -I$(COMMON)\include \
 -I$(CPARMS)\include \
--I$(CPARMS) \
 -I$(MSG)\include \
 -I$(BOOST) \
 -I$(RW) \

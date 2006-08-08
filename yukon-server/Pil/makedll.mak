@@ -12,7 +12,6 @@ INCLPATHS+= \
 -I$(DEVICECONFIGURATION)\include \
 -I$(RTDB)\include \
 -I$(CPARMS)\include \
--I$(CPARMS) \
 -I$(MSG)\include \
 -I$(BOOST) \
 -I$(RW) \

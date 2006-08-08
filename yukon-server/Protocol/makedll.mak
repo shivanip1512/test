@@ -6,7 +6,6 @@ INCLPATHS+= \
 -I$(PROT)\include \
 -I$(COMMON)\include \
 -I$(CPARMS)\include \
--I$(CPARMS) \
 -I$(MSG)\include \
 -I$(DATABASE)\include \
 -I$(RTDB)\include \
