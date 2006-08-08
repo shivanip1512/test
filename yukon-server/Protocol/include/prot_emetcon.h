@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_emetcon.h-arc  $
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2006/06/28 15:49:08 $
+* REVISION     :  $Revision: 1.34 $
+* DATE         :  $Date: 2006/08/08 13:36:10 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -148,6 +148,7 @@ public:
         GetStatus_General,
         GetStatus_Disconnect,
         GetStatus_IEDLink,
+        GetStatus_IEDDNP,
         GetStatus_LoadProfile,
         GetStatus_Powerfail,
         GetStatus_Internal,
@@ -175,6 +176,7 @@ public:
         GetConfig_IEDScan,
         GetConfig_IEDPwd,
         GetConfig_IEDTime,
+        GetConfig_IEDDNP,
         GetConfig_Role,  //  only for repeaters
         GetConfig_Raw,
         GetConfig_Intervals,

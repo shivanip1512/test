@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/mgr_config.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2006/07/18 15:26:12 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2006/08/08 13:36:09 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -174,6 +174,11 @@ BaseSPtr CtiConfigManager::createConfigByType(const int type)
             case ConfigTypeMCTCentron:
             {
                 BaseSPtr tempBasePtr (CTIDBG_new ConfigurationPart<MCTCentron>());
+                return tempBasePtr;
+            }
+            case ConfigTypeMCTDNP:
+            {
+                BaseSPtr tempBasePtr (CTIDBG_new ConfigurationPart<MCT_DNP>());
                 return tempBasePtr;
             }
             using namespace CBC;

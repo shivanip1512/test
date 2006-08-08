@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2006/07/31 20:28:17 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2006/08/08 13:36:09 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -44,6 +44,7 @@ const char *CtiDeviceMCT4xx::PutConfigPart_lpchannel       = "lpchannel";
 const char *CtiDeviceMCT4xx::PutConfigPart_relays          = "relays";
 const char *CtiDeviceMCT4xx::PutConfigPart_precanned_table = "precannedtable";
 const char *CtiDeviceMCT4xx::PutConfigPart_centron         = "centron";
+const char *CtiDeviceMCT4xx::PutConfigPart_dnp             = "dnp";
 
 const CtiDeviceMCT4xx::ConfigPartsList CtiDeviceMCT4xx::_config_parts   = initConfigParts();
 
@@ -996,6 +997,10 @@ int CtiDeviceMCT4xx::executePutConfigSingle(CtiRequestMsg         *pReq,
     {
         nRet = executePutConfigCentron(pReq,parse,OutMessage,vgList,retList,outList);
     }
+    else if( installValue == PutConfigPart_dnp )
+    {
+        nRet = executePutConfigDNP(pReq,parse,OutMessage,vgList,retList,outList);
+    }
     else
     {   //Not sure if this is correct, this could just return NoMethod. This is here
         //just in case anyone wants to use a putconfig install  for anything but configs.
@@ -1396,6 +1401,10 @@ int CtiDeviceMCT4xx::executePutConfigUsage(CtiRequestMsg *pReq,CtiCommandParser 
     return NoMethod;
 }
 
+int CtiDeviceMCT4xx::executePutConfigDNP(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList)
+{
+    return NoMethod;
+}
 
 int CtiDeviceMCT4xx::executePutConfigLongLoadProfile(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList)
 {

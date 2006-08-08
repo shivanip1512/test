@@ -396,6 +396,10 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
 
     boost::regex  re_offset("off(set)? *" + str_num);
 
+    boost::regex   re_dnp_collection("dnp collection " + str_num);
+    boost::regex   re_dnp_analog("dnp analog " + str_num);
+    boost::regex   re_dnp_status("dnp status");
+    boost::regex   re_dnp_accumulator("dnp accumulator " + str_num);
 
     CtiTokenizer   tok(CmdStr);
 
@@ -570,6 +574,54 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
         {
             _cmd["freeze_counter"] = CtiParseValue(TRUE);
         }
+        else if(CmdStr.contains(" dnp"))
+        {
+            _cmd["ied_dnp"] = CtiParseValue(TRUE);
+            if(!(token = CmdStr.match(re_dnp_collection)).empty())
+            {
+                //  getvalue outage 1..6
+                CtiTokenizer cmdtok(token);
+
+                cmdtok();  //  move past "dnp"
+                cmdtok();  //  move past "group"
+
+                _cmd["collectionnumber"] = atoi(CtiString(cmdtok()).c_str());
+            }
+            else if(!(token = CmdStr.match(re_dnp_analog)).empty())
+            {
+                //  getvalue outage 1..6
+                CtiTokenizer cmdtok(token);
+
+                cmdtok();  //  move past "dnp"
+                cmdtok();  //  move past "analog"
+
+                _cmd["analognumber"] = atoi(CtiString(cmdtok()).c_str());
+            }
+            else if(!(token = CmdStr.match(re_dnp_status)).empty())
+            {
+                //  getvalue outage 1..6
+                CtiTokenizer cmdtok(token);
+
+                cmdtok();  //  move past "dnp"
+                cmdtok();  //  move past "binary"
+
+                _cmd["statusnumber"] = atoi(CtiString(cmdtok()).c_str());
+            }
+            else if(!(token = CmdStr.match(re_dnp_accumulator)).empty())
+            {
+                //  getvalue outage 1..6
+                CtiTokenizer cmdtok(token);
+
+                cmdtok();  //  move past "dnp"
+                cmdtok();  //  move past "collection"
+
+                _cmd["accumulatornumber"] = atoi(CtiString(cmdtok()).c_str());
+            }
+            else if(CmdStr.contains(" crc"))
+            {
+                _cmd["dnp_crc"] = CtiParseValue(TRUE);
+            }
+        }
         else
         {
             // Default Get Value request has been specified....
@@ -686,6 +738,10 @@ void  CtiCommandParser::doParseGetStatus(const string &_CmdStr)
             if(CmdStr.contains(" ied link"))
             {
                 flag |= CMD_FLAG_GS_LINK;
+            }
+            else if(CmdStr.contains(" ied dnp"))
+            {
+                _cmd["ied_dnp"] =  CtiParseValue(TRUE);
             }
         }
         else
@@ -1275,6 +1331,7 @@ void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
     boost::regex    re_lp_channel(" lp channel " + str_num);
     boost::regex    re_centron("centron (ratio|parameters)");
     boost::regex    re_tou_schedule("tou schedule [0-9]");
+    boost::regex    re_dnp("dnp " + str_num);
 
     char *p;
 
@@ -1408,6 +1465,19 @@ void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
         if(CmdStr.contains(" ied"))
         {
             _cmd["ied"] = CtiParseValue("TRUE");
+            if(CmdStr.contains(" dnp"))
+            {
+                _cmd["dnp"] = CtiParseValue("TRUE");
+                                
+                if(!(token = CmdStr.match(re_dnp)).empty())
+                {
+                    //  was an offset specified?
+                    if(!(temp2 = token.match(re_num)).empty())
+                    {
+                        _cmd["start address"] = atoi(temp2.data());
+                    }
+                }
+            }
         }
         if(CmdStr.contains(" scan"))
         {

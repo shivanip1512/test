@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/config_type_mct_addressing.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2006/07/18 15:25:52 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2006/08/08 13:36:09 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -380,6 +380,138 @@ MCTCentron ConfigurationPart<MCTCentron>::getResolvedKey(string key)
     }
 }
 
+MCT_DNP ConfigurationPart<MCT_DNP>::getResolvedKey(string key)
+{
+    CtiToLower(key);
+    if(key.find("collection") != string::npos)
+    {
+        if(key == "collection 1 binary a")
+        {
+            return DNPCollection1BinaryA;
+        }
+        if(key == "collection 1 binary b")
+        {
+            return DNPCollection1BinaryB;
+        }
+        if(key == "collection 2 binary a")
+        {
+            return DNPCollection2BinaryA;
+        }
+        if(key == "collection 2 binary b")
+        {
+            return DNPCollection2BinaryB;
+        }
+        if(key == "collection 1 analog")
+        {
+            return DNPCollection1Analog;
+        }
+        if(key == "collection 2 analog")
+        {
+            return DNPCollection2Analog;
+        }
+        if(key == "collection 1 accumulator")
+        {
+            return DNPCollection1Accumulator;
+        }
+        if(key == "collection 2 accumulator")
+        {
+            return DNPCollection2Accumulator;
+        }
+    }
+    else if(key.find("analog") != string::npos)
+    {
+        if(key == "analog 1")
+        {
+            return DNPAnalog1;
+        }
+        if(key == "analog 2")
+        {
+            return DNPAnalog2;
+        }
+        if(key == "analog 3")
+        {
+            return DNPAnalog3;
+        }
+        if(key == "analog 4")
+        {
+            return DNPAnalog4;
+        }
+        if(key == "analog 5")
+        {
+            return DNPAnalog5;
+        }
+        if(key == "analog 6")
+        {
+            return DNPAnalog6;
+        }
+        if(key == "analog 7")
+        {
+            return DNPAnalog7;
+        }
+        if(key == "analog 8")
+        {
+            return DNPAnalog8;
+        }
+        if(key == "analog 9")
+        {
+            return DNPAnalog9;
+        }
+        if(key == "analog 10")
+        {
+            return DNPAnalog10;
+        }
+    }
+    else if(key.find("accumulator") != string::npos)
+    {
+        if(key == "accumulator 1")
+        {
+            return DNPAccumulator1;
+        }
+        if(key == "accumulator 2")
+        {
+            return DNPAccumulator2;
+        }
+        if(key == "accumulator 3")
+        {
+            return DNPAccumulator3;
+        }
+        if(key == "accumulator 4")
+        {
+            return DNPAccumulator4;
+        }
+        if(key == "accumulator 5")
+        {
+            return DNPAccumulator5;
+        }
+        if(key == "accumulator 6")
+        {
+            return DNPAccumulator6;
+        }
+        if(key == "accumulator 7")
+        {
+            return DNPAccumulator7;
+        }
+        if(key == "accumulator 8")
+        {
+            return DNPAccumulator8;
+        }
+    }
+    else
+    {
+        if(key == "binary byte 1a")
+        {
+            return DNPBinaryByte1A;
+        }
+        if(key == "binary byte 1b")
+        {
+            return DNPBinaryByte1B;
+        }
+    }
+
+    return MCT_DNPInvalid;
+    
+}
+
 //******************************************************************************
 //getType() begins here
 CtiConfig_type ConfigurationPart<MCTAddressing>::getType()
@@ -450,6 +582,11 @@ CtiConfig_type ConfigurationPart<MCTSystemOptions>::getType()
 CtiConfig_type ConfigurationPart<MCTCentron>::getType()
 {
     return ConfigTypeMCTCentron;
+}
+
+CtiConfig_type ConfigurationPart<MCT_DNP>::getType()
+{
+    return ConfigTypeMCTDNP;
 }
 
 }//Config

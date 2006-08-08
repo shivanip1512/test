@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2006/07/18 15:20:57 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2006/08/08 13:36:09 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -113,6 +113,19 @@ const string CtiTableDynamicPaoInfo::_key_mct_load_profile_k_ratio_4        = "m
 const string CtiTableDynamicPaoInfo::_key_mct_relay_a_timer                 = "mct relay a timer";
 const string CtiTableDynamicPaoInfo::_key_mct_relay_b_timer                 = "mct relay b timer";
 
+const string CtiTableDynamicPaoInfo::_key_mct_dnp_realtime1_crc            = "mct dnp realtime1 crc";
+const string CtiTableDynamicPaoInfo::_key_mct_dnp_realtime2_crc            = "mct dnp realtime2 crc";
+const string CtiTableDynamicPaoInfo::_key_mct_dnp_binary_crc               = "mct dnp binary crc";
+const string CtiTableDynamicPaoInfo::_key_mct_dnp_analog_crc1              = "mct dnp analog crc1";
+const string CtiTableDynamicPaoInfo::_key_mct_dnp_analog_crc2              = "mct dnp analog crc2";
+const string CtiTableDynamicPaoInfo::_key_mct_dnp_analog_crc3              = "mct dnp analog crc3";
+const string CtiTableDynamicPaoInfo::_key_mct_dnp_analog_crc4              = "mct dnp analog crc4";
+const string CtiTableDynamicPaoInfo::_key_mct_dnp_analog_crc5              = "mct dnp analog crc5";
+const string CtiTableDynamicPaoInfo::_key_mct_dnp_accumulator_crc1         = "mct dnp accumulator crc1";
+const string CtiTableDynamicPaoInfo::_key_mct_dnp_accumulator_crc2         = "mct dnp accumulator crc2";
+const string CtiTableDynamicPaoInfo::_key_mct_dnp_accumulator_crc3         = "mct dnp accumulator crc3";
+const string CtiTableDynamicPaoInfo::_key_mct_dnp_accumulator_crc4         = "mct dnp accumulator crc4";
+
 const string CtiTableDynamicPaoInfo::_key_mct_centron_parameters            = "mct centron parameters";
 const string CtiTableDynamicPaoInfo::_key_mct_centron_ratio                 = "mct centron ratio";
 
@@ -213,6 +226,19 @@ CtiTableDynamicPaoInfo::key_map_t CtiTableDynamicPaoInfo::init_key_map()
     retval.insert(make_pair(Key_MCT_PrecannedTableReadInterval, &_key_mct_precanned_table_read_interval));
     retval.insert(make_pair(Key_MCT_PrecannedMeterNumber,       &_key_mct_precanned_meter_number));
     retval.insert(make_pair(Key_MCT_PrecannedTableType,         &_key_mct_precanned_table_type));
+
+    retval.insert(make_pair(Key_MCT_DNP_AccumulatorCRC1,        &_key_mct_dnp_accumulator_crc1));
+    retval.insert(make_pair(Key_MCT_DNP_AccumulatorCRC2,        &_key_mct_dnp_accumulator_crc2));
+    retval.insert(make_pair(Key_MCT_DNP_AccumulatorCRC3,        &_key_mct_dnp_accumulator_crc3));
+    retval.insert(make_pair(Key_MCT_DNP_AccumulatorCRC4,        &_key_mct_dnp_accumulator_crc4));
+    retval.insert(make_pair(Key_MCT_DNP_AnalogCRC1,             &_key_mct_dnp_analog_crc1));
+    retval.insert(make_pair(Key_MCT_DNP_AnalogCRC2,             &_key_mct_dnp_analog_crc2));
+    retval.insert(make_pair(Key_MCT_DNP_AnalogCRC3,             &_key_mct_dnp_analog_crc3));
+    retval.insert(make_pair(Key_MCT_DNP_AnalogCRC4,             &_key_mct_dnp_analog_crc4));
+    retval.insert(make_pair(Key_MCT_DNP_AnalogCRC5,             &_key_mct_dnp_analog_crc5));
+    retval.insert(make_pair(Key_MCT_DNP_RealTime1CRC,           &_key_mct_dnp_realtime1_crc));
+    retval.insert(make_pair(Key_MCT_DNP_RealTime2CRC,           &_key_mct_dnp_realtime2_crc));
+    retval.insert(make_pair(Key_MCT_DNP_BinaryCRC,              &_key_mct_dnp_binary_crc));
 
     retval.insert(make_pair(Key_FrozenRateAPeakTimestamp,       &_key_frozen_rate_a_peak_timestamp));
     retval.insert(make_pair(Key_FrozenRateBPeakTimestamp,       &_key_frozen_rate_b_peak_timestamp));

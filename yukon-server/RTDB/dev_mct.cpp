@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.91 $
-* DATE         :  $Date: 2006/07/25 22:17:33 $
+* REVISION     :  $Revision: 1.92 $
+* DATE         :  $Date: 2006/08/08 13:36:09 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1866,6 +1866,11 @@ INT CtiDeviceMCT::executeGetStatus(CtiRequestMsg                  *pReq,
         if(parse.getFlags() & CMD_FLAG_GS_LINK)
         {
             function = Emetcon::GetStatus_IEDLink;
+            found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+        }
+        else if(parse.isKeyValid("ied_dnp"))
+        {
+            function = Emetcon::GetStatus_IEDDNP;
             found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
         }
     }

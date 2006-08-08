@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/config_resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2006/07/18 15:24:51 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2006/08/08 13:36:09 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
     *-----------------------------------------------------------------------------*/
@@ -86,6 +86,10 @@ CtiConfig_type resolveConfigType(string rwsTemp)
         else if(rwsTemp == "mct centron")
         {
             Ret = ConfigTypeMCTCentron;
+        }
+        else if(rwsTemp == "mct dnp")
+        {
+            Ret = ConfigTypeMCTDNP;
         }
         else
         {

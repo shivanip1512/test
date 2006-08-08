@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/config_type_mct_addressing.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2006/07/18 15:25:52 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2006/08/08 13:36:10 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -151,6 +151,39 @@ enum MCTCentron
     MCTCentronInvalid = 0,
     CentronParameters,
     CentronTransformerRatio
+};
+
+enum MCT_DNP
+{
+    MCT_DNPInvalid = 0,
+    DNPCollection1BinaryA,
+    DNPCollection1BinaryB,
+    DNPCollection1Analog,
+    DNPCollection1Accumulator,
+    DNPCollection2BinaryA,
+    DNPCollection2BinaryB,
+    DNPCollection2Analog,
+    DNPCollection2Accumulator,
+    DNPBinaryByte1A,
+    DNPBinaryByte1B,
+    DNPAnalog1,
+    DNPAnalog2,
+    DNPAnalog3,
+    DNPAnalog4,
+    DNPAnalog5,
+    DNPAnalog6,
+    DNPAnalog7,
+    DNPAnalog8,
+    DNPAnalog9,
+    DNPAnalog10,
+    DNPAccumulator1,
+    DNPAccumulator2,
+    DNPAccumulator3,
+    DNPAccumulator4,
+    DNPAccumulator5,
+    DNPAccumulator6,
+    DNPAccumulator7,
+    DNPAccumulator8,
 };
 
 }//namespace mct
@@ -326,6 +359,7 @@ EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCT::MCTRelays>;
 EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCT::MCTPrecannedTable>;
 EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCT::MCTSystemOptions>;
 EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCT::MCTCentron>;
+EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCT::MCT_DNP>;
 EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<CBC::CBCVoltage>;
 EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<CBC::CBCCommsLost>;
 EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<CBC::CBCNeutralCurrent>;
@@ -426,6 +460,7 @@ typedef ConfigurationPart<MCT::MCTRelays> *              MCTRelaysSPtr;
 typedef ConfigurationPart<MCT::MCTPrecannedTable> *      MCTPrecannedTableSPtr;
 typedef ConfigurationPart<MCT::MCTSystemOptions> *       MCTSystemOptionsSPtr;
 typedef ConfigurationPart<MCT::MCTCentron> *             MCTCentronSPtr;
+typedef ConfigurationPart<MCT::MCT_DNP> *                MCT_DNP_SPtr;
 
 typedef ConfigurationPart<CBC::CBCVoltage> *             CBCVoltageSPtr;
 typedef ConfigurationPart<CBC::CBCCommsLost> *           CBCCommsLostSPtr;
@@ -453,6 +488,7 @@ typedef shared_ptr< ConfigurationPart<MCT::MCTRelays> >              MCTRelaysSP
 typedef shared_ptr< ConfigurationPart<MCT::MCTPrecannedTable> >      MCTPrecannedTableSPtr;
 typedef shared_ptr< ConfigurationPart<MCT::MCTSystemOptions> >       MCTSystemOptionsSPtr;
 typedef shared_ptr< ConfigurationPart<MCT::MCTCentron> >             MCTCentronSPtr;
+typedef shared_ptr< ConfigurationPart<MCT::MCT_DNP> >                MCT_DNP_SPtr;
 
 typedef shared_ptr< ConfigurationPart<CBC::CBCVoltage> >             CBCVoltageSPtr;
 typedef shared_ptr< ConfigurationPart<CBC::CBCCommsLost> >           CBCCommsLostSPtr;

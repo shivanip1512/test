@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2006/07/18 15:20:57 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2006/08/08 13:36:10 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -101,6 +101,18 @@ public:
         Key_MCT_PrecannedTableReadInterval,
         Key_MCT_PrecannedMeterNumber,
         Key_MCT_PrecannedTableType,
+        Key_MCT_DNP_RealTime1CRC,
+        Key_MCT_DNP_RealTime2CRC,
+        Key_MCT_DNP_BinaryCRC,
+        Key_MCT_DNP_AnalogCRC1,
+        Key_MCT_DNP_AnalogCRC2,
+        Key_MCT_DNP_AnalogCRC3,
+        Key_MCT_DNP_AnalogCRC4,
+        Key_MCT_DNP_AnalogCRC5,
+        Key_MCT_DNP_AccumulatorCRC1,
+        Key_MCT_DNP_AccumulatorCRC2,
+        Key_MCT_DNP_AccumulatorCRC3,
+        Key_MCT_DNP_AccumulatorCRC4,
 
         Key_FreezeCounter,
         Key_ExpectedFreeze,
@@ -211,6 +223,19 @@ protected:
     static const string _key_mct_precanned_table_read_interval;
     static const string _key_mct_precanned_meter_number;
     static const string _key_mct_precanned_table_type;
+
+    static const string _key_mct_dnp_realtime1_crc;
+    static const string _key_mct_dnp_realtime2_crc;
+    static const string _key_mct_dnp_binary_crc;
+    static const string _key_mct_dnp_analog_crc1;
+    static const string _key_mct_dnp_analog_crc2;
+    static const string _key_mct_dnp_analog_crc3;
+    static const string _key_mct_dnp_analog_crc4;
+    static const string _key_mct_dnp_analog_crc5;
+    static const string _key_mct_dnp_accumulator_crc1;
+    static const string _key_mct_dnp_accumulator_crc2;
+    static const string _key_mct_dnp_accumulator_crc3;
+    static const string _key_mct_dnp_accumulator_crc4;
 
     static const string _key_udp_ip;
     static const string _key_udp_port;
