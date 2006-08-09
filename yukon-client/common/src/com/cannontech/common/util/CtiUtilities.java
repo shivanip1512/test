@@ -34,7 +34,7 @@ public final class CtiUtilities
 	public static final double INVALID_MIN_DOUBLE = -1E30;
 	public static final double INVALID_MAX_DOUBLE = 1E30;
 	
-    public static final String YUKONDBALIAS = "tom";
+    public static final String YUKONDBALIAS = "yukon";
     
     public static final String CELSIUS_CHARACTER = "C";
     public static final String FAHRENHEIT_CHARACTER = "F";
@@ -1004,10 +1004,6 @@ public static final String[] getTimeZones()
     }
 	return timeZones;
     
-}
-
-public void thisIsADumbMethod() {
-    System.out.println("Aaron is dumb.");
 }
 
 /**
