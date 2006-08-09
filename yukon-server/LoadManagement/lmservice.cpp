@@ -227,7 +227,7 @@ void CtiLMService::Run()
 
             if ( controlAreas == NULL || controlAreas->empty() )
             {
-		store->setValid(false);
+                store->setValid(false);
                 trouble = true;
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - Unable to obtain a connection to the database or no control areas exist...will keep trying." << endl;
@@ -237,7 +237,7 @@ void CtiLMService::Run()
                 trouble = false;
             }
         }
-        } while ( trouble );
+        } while ( trouble && !_quit && !load_management_do_quit ); //!quit and !load_management_do_quit added to make this not lock us up.
 
         SetStatus(SERVICE_START_PENDING, 33, 5000 );
 
