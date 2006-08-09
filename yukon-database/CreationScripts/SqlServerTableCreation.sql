@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     7/24/2006 10:29:14 AM                        */
+/* Created on:     8/3/2006 12:03:27 PM                         */
 /*==============================================================*/
 
 
@@ -2782,7 +2782,7 @@ go
 /* Table: CCurtCENotif                                          */
 /*==============================================================*/
 create table CCurtCENotif (
-   CCurtCENotif         numeric              not null,
+   CCurtCENotifID       numeric              not null,
    NotificationTime     datetime             null,
    NotifTypeID          numeric              not null,
    State                varchar(10)          not null,
@@ -2793,7 +2793,7 @@ go
 
 
 alter table CCurtCENotif
-   add constraint PK_CCURTCENOTIF primary key  (CCurtCENotif)
+   add constraint PK_CCURTCENOTIF primary key  (CCurtCENotifID)
 go
 
 
@@ -2835,7 +2835,8 @@ create table CCurtCurtailmentEvent (
    Message              varchar(255)         not null,
    State                varchar(10)          not null,
    StartTime            datetime             not null,
-   CCurtProgramTypeID   numeric              not null
+   CCurtProgramTypeID   numeric              not null,
+   Identifier           numeric              not null
 )
 go
 
@@ -2949,7 +2950,7 @@ go
 /* Table: CCurtEEPricingWindow                                  */
 /*==============================================================*/
 create table CCurtEEPricingWindow (
-   CCurtEEPricingWindow numeric              not null,
+   CCurtEEPricingWindowID numeric              not null,
    EnergyPrice          numeric(19,2)        not null,
    Offset               numeric              not null,
    CCurtEEPricingID     numeric              null
@@ -2958,7 +2959,7 @@ go
 
 
 alter table CCurtEEPricingWindow
-   add constraint PK_CCURTEEPRICINGWINDOW primary key  (CCurtEEPricingWindow)
+   add constraint PK_CCURTEEPRICINGWINDOW primary key  (CCurtEEPricingWindowID)
 go
 
 
@@ -2982,7 +2983,8 @@ create table CCurtEconomicEvent (
    State                varchar(10)          not null,
    StartTime            datetime             not null,
    CCurtProgramID       numeric              not null,
-   InitialEventID       numeric              null
+   InitialEventID       numeric              null,
+   Identifier           numeric              not null
 )
 go
 
@@ -10897,7 +10899,7 @@ go
 
 alter table CCurtEEParticipantWindow
    add constraint FK_CCRTEEPRTWN_CCRTEEPRIWN foreign key (CCurtEEPricingWindowID)
-      references CCurtEEPricingWindow (CCurtEEPricingWindow)
+      references CCurtEEPricingWindow (CCurtEEPricingWindowID)
 go
 
 

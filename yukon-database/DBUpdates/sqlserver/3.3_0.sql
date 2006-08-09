@@ -173,6 +173,521 @@ insert into yukongrouprole values (-2193,-303,-201,-20893,'(none)');
 go
 /* @error ignore-end */
 
+/*==============================================================*/
+/* Table: CCurtCENotif                                          */
+/*==============================================================*/
+create table CCurtCENotif (
+   CCurtCENotifID       numeric              not null,
+   NotificationTime     datetime             null,
+   NotifTypeID          numeric              not null,
+   State                varchar(10)          not null,
+   Reason               varchar(10)          not null,
+   CCurtCEParticipantID numeric              not null
+);
+go
+
+
+alter table CCurtCENotif
+   add constraint PK_CCURTCENOTIF primary key  (CCurtCENotifID);
+go
+
+
+/*==============================================================*/
+/* Table: CCurtCEParticipant                                    */
+/*==============================================================*/
+create table CCurtCEParticipant (
+   CCurtCEParticipantID numeric              not null,
+   NotifAttribs         varchar(256)         not null,
+   CustomerID           numeric              not null,
+   CCurtCurtailmentEventID numeric              not null
+);
+go
+
+
+alter table CCurtCEParticipant
+   add constraint PK_CCURTCEPARTICIPANT primary key  (CCurtCEParticipantID);
+go
+
+
+/*==============================================================*/
+/* Index: INDX_CCURTCEPART_EVTID_CUSTID                         */
+/*==============================================================*/
+create unique  index INDX_CCURTCEPART_EVTID_CUSTID on CCurtCEParticipant (
+CustomerID,
+CCurtCurtailmentEventID
+);
+go
+
+
+/*==============================================================*/
+/* Table: CCurtCurtailmentEvent                                 */
+/*==============================================================*/
+create table CCurtCurtailmentEvent (
+   CCurtCurtailmentEventID numeric              not null,
+   CCurtProgramID       numeric              null,
+   NotificationTime     datetime             not null,
+   Duration             numeric              not null,
+   Message              varchar(255)         not null,
+   State                varchar(10)          not null,
+   StartTime            datetime             not null,
+   CCurtProgramTypeID   numeric              not null,
+   Identifier           numeric              not null
+);
+go
+
+
+alter table CCurtCurtailmentEvent
+   add constraint PK_CCURTCURTAILMENTEVENT primary key  (CCurtCurtailmentEventID);
+go
+
+
+/*==============================================================*/
+/* Table: CCurtEEParticipant                                    */
+/*==============================================================*/
+create table CCurtEEParticipant (
+   CCurtEEParticipantID numeric              not null,
+   NotifAttribs         varchar(255)         not null,
+   CustomerID           numeric              not null,
+   CCurtEconomicEventID numeric              not null
+);
+go
+
+
+alter table CCurtEEParticipant
+   add constraint PK_CCURTEEPARTICIPANT primary key  (CCurtEEParticipantID);
+go
+
+
+/*==============================================================*/
+/* Table: CCurtEEParticipantSelection                           */
+/*==============================================================*/
+create table CCurtEEParticipantSelection (
+   CCurtEEParticipantSelectionID numeric              not null,
+   ConnectionAudit      varchar(255)         not null,
+   SubmitTime           datetime             not null,
+   State                varchar(255)         not null,
+   CCurtEEParticipantID numeric              not null,
+   CCurtEEPricingID     numeric              not null
+);
+go
+
+
+alter table CCurtEEParticipantSelection
+   add constraint PK_CCURTEEPARTICIPANTSELECTION primary key  (CCurtEEParticipantSelectionID);
+go
+
+
+/*==============================================================*/
+/* Index: INDX_CCURTEEPARTSEL_CCURTEEPR                         */
+/*==============================================================*/
+create unique  index INDX_CCURTEEPARTSEL_CCURTEEPR on CCurtEEParticipantSelection (
+CCurtEEParticipantID,
+CCurtEEPricingID
+);
+go
+
+
+/*==============================================================*/
+/* Table: CCurtEEParticipantWindow                              */
+/*==============================================================*/
+create table CCurtEEParticipantWindow (
+   CCurtEEParticipantWindowID numeric              not null,
+   EnergyToBuy          numeric(19,2)        not null,
+   CCurtEEPricingWindowID numeric              null,
+   CCurtEEParticipantSelectionID numeric              null
+);
+go
+
+
+alter table CCurtEEParticipantWindow
+   add constraint PK_CCURTEEPARTICIPANTWINDOW primary key  (CCurtEEParticipantWindowID);
+go
+
+
+/*==============================================================*/
+/* Index: INDX_CCRTEEPRTWIN_PWNID_PSID                          */
+/*==============================================================*/
+create unique  index INDX_CCRTEEPRTWIN_PWNID_PSID on CCurtEEParticipantWindow (
+CCurtEEPricingWindowID,
+CCurtEEParticipantSelectionID
+);
+go
+
+
+/*==============================================================*/
+/* Table: CCurtEEPricing                                        */
+/*==============================================================*/
+create table CCurtEEPricing (
+   CCurtEEPricingID     numeric              not null,
+   Revision             numeric              not null,
+   CreationTime         datetime             not null,
+   CCurtEconomicEventID numeric              not null
+);
+go
+
+
+alter table CCurtEEPricing
+   add constraint PK_CCURTEEPRICING primary key  (CCurtEEPricingID);
+go
+
+
+/*==============================================================*/
+/* Index: INDX_CCURTECONSVTID_REV                               */
+/*==============================================================*/
+create unique  index INDX_CCURTECONSVTID_REV on CCurtEEPricing (
+Revision,
+CCurtEconomicEventID
+);
+go
+
+
+/*==============================================================*/
+/* Table: CCurtEEPricingWindow                                  */
+/*==============================================================*/
+create table CCurtEEPricingWindow (
+   CCurtEEPricingWindowID numeric              not null,
+   EnergyPrice          numeric(19,2)        not null,
+   Offset               numeric              not null,
+   CCurtEEPricingID     numeric              null
+);
+go
+
+
+alter table CCurtEEPricingWindow
+   add constraint PK_CCURTEEPRICINGWINDOW primary key  (CCurtEEPricingWindowID);
+go
+
+
+/*==============================================================*/
+/* Index: INDX_CCURTEEPRWIN                                     */
+/*==============================================================*/
+create unique  index INDX_CCURTEEPRWIN on CCurtEEPricingWindow (
+Offset,
+CCurtEEPricingID
+);
+go
+
+
+/*==============================================================*/
+/* Table: CCurtEconomicEvent                                    */
+/*==============================================================*/
+create table CCurtEconomicEvent (
+   CCurtEconomicEventID numeric              not null,
+   NotificationTime     datetime             null,
+   WindowLengthMinutes  numeric              not null,
+   State                varchar(10)          not null,
+   StartTime            datetime             not null,
+   CCurtProgramID       numeric              not null,
+   InitialEventID       numeric              null,
+   Identifier           numeric              not null
+);
+go
+
+
+alter table CCurtEconomicEvent
+   add constraint PK_CCURTECONOMICEVENT primary key  (CCurtEconomicEventID);
+go
+
+
+/*==============================================================*/
+/* Table: CCurtEconomicEventNotif                               */
+/*==============================================================*/
+create table CCurtEconomicEventNotif (
+   CCurtEconomicEventNotifID numeric              not null,
+   NotificationTime     datetime             null,
+   NotifTypeID          numeric              not null,
+   State                varchar(10)          not null,
+   Reason               varchar(10)          not null,
+   CCurtEEPricingID     numeric              not null,
+   CCurtEconomicParticipantID numeric              not null
+);
+go
+
+
+alter table CCurtEconomicEventNotif
+   add constraint PK_CCURTECONOMICEVENTNOTIF primary key  (CCurtEconomicEventNotifID);
+go
+
+
+/*==============================================================*/
+/* Table: CCurtGroup                                            */
+/*==============================================================*/
+create table CCurtGroup (
+   CCurtGroupID         numeric              not null,
+   EnergyCompanyID      numeric              null,
+   CCurtGroupName       varchar(255)         not null
+);
+go
+
+
+alter table CCurtGroup
+   add constraint PK_CCURTGROUP primary key  (CCurtGroupID);
+go
+
+
+/*==============================================================*/
+/* Index: INDX_CCURTGROUP_ECID_GRPNM                            */
+/*==============================================================*/
+create unique  index INDX_CCURTGROUP_ECID_GRPNM on CCurtGroup (
+EnergyCompanyID,
+CCurtGroupName
+);
+go
+
+
+/*==============================================================*/
+/* Table: CCurtGroupCustomerNotif                               */
+/*==============================================================*/
+create table CCurtGroupCustomerNotif (
+   CCurtGroupCustomerNotifID numeric              not null,
+   Attribs              varchar(255)         not null,
+   CustomerID           numeric              null,
+   CCurtGroupID         numeric              null
+);
+go
+
+
+alter table CCurtGroupCustomerNotif
+   add constraint PK_CCURTGROUPCUSTOMERNOTIF primary key  (CCurtGroupCustomerNotifID);
+go
+
+
+/*==============================================================*/
+/* Index: INDX_CCRTGRPCSTNOTIF_GID_CID                          */
+/*==============================================================*/
+create unique  index INDX_CCRTGRPCSTNOTIF_GID_CID on CCurtGroupCustomerNotif (
+CustomerID,
+CCurtGroupID
+);
+go
+
+
+/*==============================================================*/
+/* Table: CCurtProgram                                          */
+/*==============================================================*/
+create table CCurtProgram (
+   CCurtProgramID       numeric              not null,
+   CCurtProgramName     varchar(255)         not null,
+   CCurtProgramTypeID   numeric              null
+);
+go
+
+
+alter table CCurtProgram
+   add constraint PK_CCURTPROGRAM primary key  (CCurtProgramID);
+go
+
+
+/*==============================================================*/
+/* Index: INDX_CCURTPGM_PRGNM_PRGTYPEID                         */
+/*==============================================================*/
+create   index INDX_CCURTPGM_PRGNM_PRGTYPEID on CCurtProgram (
+CCurtProgramName,
+CCurtProgramTypeID
+);
+go
+
+
+/*==============================================================*/
+/* Table: CCurtProgramGroup                                     */
+/*==============================================================*/
+create table CCurtProgramGroup (
+   CCurtProgramGroupID  numeric              not null,
+   CCurtProgramID       numeric              null,
+   CCurtGroupID         numeric              null
+);
+go
+
+
+alter table CCurtProgramGroup
+   add constraint PK_CCURTPROGRAMGROUP primary key  (CCurtProgramGroupID);
+go
+
+
+/*==============================================================*/
+/* Index: INDX_CCURTPRGGRP_GRPID_PRGID                          */
+/*==============================================================*/
+create unique  index INDX_CCURTPRGGRP_GRPID_PRGID on CCurtProgramGroup (
+CCurtProgramID,
+CCurtGroupID
+);
+go
+
+
+/*==============================================================*/
+/* Table: CCurtProgramParameter                                 */
+/*==============================================================*/
+create table CCurtProgramParameter (
+   CCurtProgramParameterID numeric              not null,
+   ParameterValue       varchar(255)         not null,
+   ParameterKey         varchar(255)         not null,
+   CCurtProgramID       numeric              null
+);
+go
+
+
+alter table CCurtProgramParameter
+   add constraint PK_CCURTPROGRAMPARAMETER primary key  (CCurtProgramParameterID);
+go
+
+
+/*==============================================================*/
+/* Index: INDX_CCRTPRGPRM_PGID_PMKEY                            */
+/*==============================================================*/
+create   index INDX_CCRTPRGPRM_PGID_PMKEY on CCurtProgramParameter (
+ParameterKey,
+CCurtProgramID
+);
+go
+
+
+/*==============================================================*/
+/* Table: CCurtProgramType                                      */
+/*==============================================================*/
+create table CCurtProgramType (
+   CCurtProgramTypeID   numeric              not null,
+   EnergyCompanyID      numeric              null,
+   CCurtProgramTypeStrategy varchar(255)         null,
+   CCurtProgramTypeName varchar(255)         null
+);
+go
+
+
+alter table CCurtProgramType
+   add constraint PK_CCURTPROGRAMTYPE primary key  (CCurtProgramTypeID);
+go
+
+alter table CCurtCENotif
+   add constraint FK_CCCURTCE_NOTIF_PART foreign key (CCurtCEParticipantID)
+      references CCurtCEParticipant (CCurtCEParticipantID);
+go
+
+
+alter table CCurtCEParticipant
+   add constraint FK_CCURTCE_PART_CURTEVT foreign key (CCurtCurtailmentEventID)
+      references CCurtCurtailmentEvent (CCurtCurtailmentEventID);
+go
+
+
+alter table CCurtCEParticipant
+   add constraint FK_CCURTCURTEVENTCICUST_CICUST foreign key (CustomerID)
+      references CICustomerBase (CustomerID);
+go
+
+
+alter table CCurtCurtailmentEvent
+   add constraint FK_CCURTCURTEVT_CCURTPGM foreign key (CCurtProgramID)
+      references CCurtProgram (CCurtProgramID);
+go
+
+
+alter table CCurtEEParticipant
+   add constraint FK_CCURTEEPART_CCURTEE foreign key (CCurtEconomicEventID)
+      references CCurtEconomicEvent (CCurtEconomicEventID);
+go
+
+
+alter table CCurtEEParticipant
+   add constraint FK_CCURTEEPART_CUST foreign key (CustomerID)
+      references CICustomerBase (CustomerID);
+go
+
+
+alter table CCurtEEParticipantSelection
+   add constraint FK_CCURTEEPARTSEL_CCURTEEPR foreign key (CCurtEEPricingID)
+      references CCurtEEPricing (CCurtEEPricingID);
+go
+
+
+alter table CCurtEEParticipantSelection
+   add constraint FK_CCURTEEPARTSEL_CCURTPART foreign key (CCurtEEParticipantID)
+      references CCurtEEParticipant (CCurtEEParticipantID);
+go
+
+
+alter table CCurtEEParticipantWindow
+   add constraint FK_CCRTEEPRTWIN_CCRTEEPRTSEL foreign key (CCurtEEParticipantSelectionID)
+      references CCurtEEParticipantSelection (CCurtEEParticipantSelectionID);
+go
+
+
+alter table CCurtEEParticipantWindow
+   add constraint FK_CCRTEEPRTWN_CCRTEEPRIWN foreign key (CCurtEEPricingWindowID)
+      references CCurtEEPricingWindow (CCurtEEPricingWindowID);
+go
+
+
+alter table CCurtEEPricing
+   add constraint FK_CCURTEEPR_CCURTECONEVT foreign key (CCurtEconomicEventID)
+      references CCurtEconomicEvent (CCurtEconomicEventID);
+go
+
+
+alter table CCurtEEPricingWindow
+   add constraint FK_CCURTEEPRWIN_CCURTEEPR foreign key (CCurtEEPricingID)
+      references CCurtEEPricing (CCurtEEPricingID);
+go
+
+
+alter table CCurtEconomicEvent
+   add constraint FK_CCURTEEVT_CCURTPGM foreign key (CCurtProgramID)
+      references CCurtProgram (CCurtProgramID);
+go
+
+
+alter table CCurtEconomicEvent
+   add constraint FK_CCURTINITEVT_CCURTECONEVT foreign key (InitialEventID)
+      references CCurtEconomicEvent (CCurtEconomicEventID);
+go
+
+
+alter table CCurtEconomicEventNotif
+   add constraint FK_CCURTEENOTIF_CCURTEEPARTID foreign key (CCurtEconomicParticipantID)
+      references CCurtEEParticipant (CCurtEEParticipantID);
+go
+
+
+alter table CCurtEconomicEventNotif
+   add constraint FK_CCURTEENOTIF_CCURTEEPR foreign key (CCurtEEPricingID)
+      references CCurtEEPricing (CCurtEEPricingID);
+go
+
+
+alter table CCurtGroupCustomerNotif
+   add constraint FK_CCURTGRO_FK_CCURTG_CCURTGRO foreign key (CCurtGroupID)
+      references CCurtGroup (CCurtGroupID);
+go
+
+
+alter table CCurtGroupCustomerNotif
+   add constraint FK_CCURTGRPCUSTNOTIF_CUST foreign key (CustomerID)
+      references CICustomerBase (CustomerID);
+go
+
+
+alter table CCurtProgram
+   add constraint FK_CCURTPRG_CCURTPRGTYPE foreign key (CCurtProgramTypeID)
+      references CCurtProgramType (CCurtProgramTypeID);
+go
+
+
+alter table CCurtProgramGroup
+   add constraint FK_CCURTPRGGRP_CCURTGRP foreign key (CCurtGroupID)
+      references CCurtGroup (CCurtGroupID);
+go
+
+
+alter table CCurtProgramGroup
+   add constraint FK_CCURTPRGGRP_CCURTPRG foreign key (CCurtProgramID)
+      references CCurtProgram (CCurtProgramID);
+go
+
+
+alter table CCurtProgramParameter
+   add constraint FK_CCURTPRGPARAM_CCURTPRGID foreign key (CCurtProgramID)
+      references CCurtProgram (CCurtProgramID);
+go
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */

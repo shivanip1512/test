@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     7/24/2006 10:29:59 AM                        */
+/* Created on:     8/3/2006 12:02:34 PM                         */
 /*==============================================================*/
 
 
@@ -875,7 +875,7 @@ alter table CCMONITORBANKLIST
 /* Table: CCurtCENotif                                          */
 /*==============================================================*/
 create table CCurtCENotif  (
-   CCurtCENotif         NUMBER                          not null,
+   CCurtCENotifID       NUMBER                          not null,
    NotificationTime     DATE,
    NotifTypeID          NUMBER                          not null,
    State                VARCHAR2(10)                    not null,
@@ -884,7 +884,7 @@ create table CCurtCENotif  (
 );
 
 alter table CCurtCENotif
-   add constraint PK_CCURTCENOTIF primary key (CCurtCENotif);
+   add constraint PK_CCURTCENOTIF primary key (CCurtCENotifID);
 
 /*==============================================================*/
 /* Table: CCurtCEParticipant                                    */
@@ -918,7 +918,8 @@ create table CCurtCurtailmentEvent  (
    Message              VARCHAR2(255)                   not null,
    State                VARCHAR2(10)                    not null,
    StartTime            DATE                            not null,
-   CCurtProgramTypeID   NUMBER                          not null
+   CCurtProgramTypeID   NUMBER                          not null,
+   Identifier           NUMBER                          not null
 );
 
 alter table CCurtCurtailmentEvent
@@ -1006,14 +1007,14 @@ create unique index INDX_CCURTECONSVTID_REV on CCurtEEPricing (
 /* Table: CCurtEEPricingWindow                                  */
 /*==============================================================*/
 create table CCurtEEPricingWindow  (
-   CCurtEEPricingWindow NUMBER                          not null,
+   CCurtEEPricingWindowID NUMBER                          not null,
    EnergyPrice          NUMBER(19,2)                    not null,
    Offset               NUMBER                          not null,
    CCurtEEPricingID     NUMBER
 );
 
 alter table CCurtEEPricingWindow
-   add constraint PK_CCURTEEPRICINGWINDOW primary key (CCurtEEPricingWindow);
+   add constraint PK_CCURTEEPRICINGWINDOW primary key (CCurtEEPricingWindowID);
 
 /*==============================================================*/
 /* Index: INDX_CCURTEEPRWIN                                     */
@@ -1033,7 +1034,8 @@ create table CCurtEconomicEvent  (
    State                VARCHAR2(10)                    not null,
    StartTime            DATE                            not null,
    CCurtProgramID       NUMBER                          not null,
-   InitialEventID       NUMBER
+   InitialEventID       NUMBER,
+   Identifier           NUMBER                          not null
 );
 
 alter table CCurtEconomicEvent
@@ -7954,7 +7956,7 @@ alter table CCurtEEParticipantWindow
 
 alter table CCurtEEParticipantWindow
    add constraint FK_CCRTEEPRTWN_CCRTEEPRIWN foreign key (CCurtEEPricingWindowID)
-      references CCurtEEPricingWindow (CCurtEEPricingWindow);
+      references CCurtEEPricingWindow (CCurtEEPricingWindowID);
 
 alter table CCurtEEPricing
    add constraint FK_CCURTEEPR_CCURTECONEVT foreign key (CCurtEconomicEventID)
