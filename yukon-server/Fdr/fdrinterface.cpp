@@ -15,10 +15,13 @@
  *    Copyright (C) 2005 Cannon Technologies, Inc.  All rights reserved.
  *
  *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrinterface.cpp-arc  $
- *    REVISION     :  $Revision: 1.24 $
- *    DATE         :  $Date: 2006/05/23 17:17:43 $
+ *    REVISION     :  $Revision: 1.25 $
+ *    DATE         :  $Date: 2006/08/09 05:03:17 $
  *    History:
  *     $Log: fdrinterface.cpp,v $
+ *     Revision 1.25  2006/08/09 05:03:17  tspar
+ *     changed maps in macs to not use a pointer as a key, to fix the find() calls.
+ *
  *     Revision 1.24  2006/05/23 17:17:43  tspar
  *     bug fix: boost iterator used incorrectly in loop.
  *
@@ -1470,9 +1473,8 @@ bool CtiFDRInterface::updatePointByIdInList(CtiFDRPointList &aList,
     CtiLockGuard<CtiMutex> sendGuard(aList.getMutex());
 
     // check if the point id exists
-    CtiHashKey key(aMessage->getId());
     CtiFDRManager::CTIFdrPointIterator  itr;
-    itr = aList.getPointList()->getMap().find(&key);
+    itr = aList.getPointList()->getMap().find(aMessage->getId());
     if( itr != aList.getPointList()->getMap().end() )
         point = (*itr).second;
     else
@@ -1511,9 +1513,8 @@ bool CtiFDRInterface::findPointIdInList(long aPointId,
     CtiLockGuard<CtiMutex> sendGuard(aList.getMutex());
 
     // check if the point id exists
-    CtiHashKey key(aPointId);
     CtiFDRManager::CTIFdrPointIterator  itr;
-    itr = aList.getPointList()->getMap().find(&key);
+    itr = aList.getPointList()->getMap().find(aPointId);
     if( itr != aList.getPointList()->getMap().end() )
         point = (*itr).second;
     else

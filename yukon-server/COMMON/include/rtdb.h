@@ -60,7 +60,7 @@ class IM_EX_CTIBASE CtiRTDB : public RWMonitor< RWRecursiveLock< RWMutexLock > >
 protected:
 
    // This is a keyed Mapping which does not allow duplicates!
-   map<CtiHashKey*, T* > Map;
+   map<long, T* > Map;
 
    list< T* > _orphans;
 
@@ -68,8 +68,8 @@ protected:
 
 public:
 
-   typedef std::map< CtiHashKey*, T* >::value_type       val_pair;
-   typedef std::map< CtiHashKey*, T* >::iterator       MapIterator;
+   typedef std::map< long, T* >::value_type       val_pair;
+   typedef std::map< long, T* >::iterator       MapIterator;
 
 
    CtiRTDB() {}
@@ -79,8 +79,13 @@ public:
       LockGuard guard(monitor());
       delete_list(_orphans);
       _orphans.clear();       // Clean up the leftovers if there are any.
+      //deletes memory pointed to in the value pointer
+      for (MapIterator itr = Map.begin(); itr != Map.end(); itr++) {
+          delete (*itr).second;
+      }
+      //clear out the remaining
       Map.clear();
-      delete_map(Map);
+
    }
 
    bool orphan( long id )
@@ -91,15 +96,14 @@ public:
        MapIterator itr;
 
        LockGuard  gaurd(monitor());
-       CtiHashKey key(id);
+       //CtiHashKey key(id);
 
-       itr = Map.find( &key );
+       itr = Map.find( id );
        if ( itr != Map.end() ) {
-           CtiHashKey *foundKey = (*itr).first
+           long foundKey = (*itr).first
            temp = (*itr).second
     
-           delete foundKey;
-           Map.erase( &key );
+           Map.erase( id );
        }else
            temp = NULL;
 
@@ -121,7 +125,7 @@ public:
         for (; _F != _L; ++_F)
             _Op(*_F, d);    
     }
-    void apply(void (*applyFun)(const CtiHashKey*, T*&, void*), void* d)
+    void apply(void (*applyFun)(const long, T*&, void*), void* d)
     {
         LockGuard  gaurd(monitor());
         ts_for_each( Map.begin(), Map.end(), applyFun, d );
@@ -162,11 +166,9 @@ public:
          if(testFun( (*itr).second, d))
          {
             temp = (*itr).second;
-            CtiHashKey *key = (*itr).first;
+            long key = (*itr).first;
             Map.erase( (*itr).first );
 
-            // Make sure the key gets cleaned up!
-            delete key;
             break;
          }
       }
@@ -178,12 +180,12 @@ public:
    {
        int count = 0;
 
-       list< CtiHashKey* >       deleteKeys;
+       list< long >       deleteKeys;
        list< CtiDeviceBase* >    deleteObjs;
 
        MapIterator mapitr = Map.begin();
        CtiDeviceBase   *pdev = 0;
-       CtiHashKey      *pkey = 0;
+       long             pkey = 0;
 
        for(; mapitr != Map.end() ; ++mapitr )
        {
@@ -197,14 +199,13 @@ public:
                deleteObjs.push_back(pdev);
            }
        }
-       std::list<CtiHashKey*>::iterator itr = deleteKeys.begin();
+       std::list<long>::iterator itr = deleteKeys.begin();
        while( itr != deleteKeys.end() )
        //for(int kpos = 0; kpos < deleteKeys.entries(); kpos++)
        {
            itr = Map.erase(*itr);
-       }
+       }//TSFLAG
 
-       delete_list(deleteKeys);
        delete_list(deleteObjs);
        deleteKeys.clear();
        deleteObjs.clear();
@@ -218,7 +219,7 @@ public:
       return Map.size();
    }
 
-   map<CtiHashKey* , T* > & getMap()      { return Map; }
+   map<long , T* > & getMap()      { return Map; }
    RWRecursiveLock<RWMutexLock> &      getMux()       { return mutex(); }
 
    int getErrorCode() const { return _dberrorcode; };

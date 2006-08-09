@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mgr_mcsched.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2006/04/24 14:47:33 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2006/08/09 05:03:17 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -61,7 +61,7 @@ bool CtiMCScheduleManager::refreshAllSchedules()
     // and copy it to the real one when we know that it was successful
     // so we can continue to function when the database is not cooperating
     // and so we don't block more time critical threads needlessly
-    map<CtiHashKey*, CtiMCSchedule* > temp_map;
+    map<long, CtiMCSchedule* > temp_map;
     try
     {
         if( !retrieveSimpleSchedules( temp_map ) )
@@ -99,17 +99,23 @@ bool CtiMCScheduleManager::refreshAllSchedules()
 
         // clean up the old schedules and replace them with
         // the new ones
+
+        //deletes memory pointed to in the value pointer
+        for (MapIterator itr = Map.begin(); itr != Map.end(); itr++) {
+            delete (*itr).second;
+        }
         Map.clear();
-        delete_map(Map);
         Map = temp_map;
     }
     else
     {
         // Clean up the temporary map since it was never copied to
         // the real one
-        temp_map.clear();
-        delete_map(temp_map);
 
+        for (MapIterator itr = temp_map.begin(); itr != temp_map.end(); itr++) {
+            delete (*itr).second;
+        }
+        temp_map.clear();
         {
             CtiLockGuard<CtiLogger> guard(dout);
             dout << CtiTime() << " An error occured retrieving schedules from the database" << endl;
@@ -217,8 +223,8 @@ CtiMCSchedule* CtiMCScheduleManager::addSchedule(const CtiMCSchedule& sched)
     sched_to_add->setScheduleID( id );
 
 
-    std::pair< std::map<CtiHashKey*,CtiMCSchedule*>::iterator,bool> pair = 
-        Map.insert( std::pair<CtiHashKey*,CtiMCSchedule*>(new CtiHashKey(id), sched_to_add) );
+    std::pair< std::map<long,CtiMCSchedule*>::iterator,bool> pair = 
+        Map.insert( std::pair<long,CtiMCSchedule*>(id, sched_to_add) );
     if( !pair.second )
     {
         // Failed!
@@ -264,9 +270,9 @@ bool CtiMCScheduleManager::deleteSchedule(long sched_id)
 
     RWRecursiveLock<RWMutexLock>::LockGuard guard( getMux() );
 
-    CtiHashKey key(sched_id);
+    
     CtiMCSchedule* to_delete; 
-    MapIterator itr = Map.find(&key);
+    MapIterator itr = Map.find(sched_id);
     if ( itr != Map.end() ) 
         to_delete = (*itr).second;
     else
@@ -276,21 +282,18 @@ bool CtiMCScheduleManager::deleteSchedule(long sched_id)
     // and then remove it from memory
     if( to_delete != NULL && to_delete->Delete() )
     {
-        CtiHashKey* key_ptr = NULL;
-        MapIterator itr = Map.find( &key );
+        long key_p = NULL;
+        MapIterator itr = Map.find( sched_id );
 
         if (itr != Map.end() ){ 
-            Map.erase( &key );
-            key_ptr =  (*itr).first;
+            Map.erase( sched_id );
+            key_p =  (*itr).first;
         }
         else
-            key_ptr = NULL;
+            key_p = 0;
 
-        if( key_ptr != NULL )
+        if( key_p != 0 )
         {
-
-            delete key_ptr;
-            //delete to_delete;    //why is this commented  -TS
 
             pair< set< CtiMCSchedule* >::iterator, bool > result = _schedules_to_delete.insert( to_delete );
 
@@ -318,8 +321,8 @@ bool CtiMCScheduleManager::deleteSchedule(long sched_id)
 CtiMCSchedule* CtiMCScheduleManager::findSchedule(long id)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( getMux() );
-    CtiHashKey key(id);
-    MapIterator itr = Map.find(&key);
+
+    MapIterator itr = Map.find(id);
     if ( itr != Map.end() ) {
         return (*itr).second;
     }else
@@ -353,7 +356,7 @@ long CtiMCScheduleManager::getID(const string& name)
 
 bool CtiMCScheduleManager::retrieveSimpleSchedules(
                                                   std::map
-                                                  < CtiHashKey*, CtiMCSchedule* >
+                                                  < long, CtiMCSchedule* >
                                                   &sched_map )
 {
     bool success = true;
@@ -403,10 +406,9 @@ bool CtiMCScheduleManager::retrieveSimpleSchedules(
                     rdr["scheduleid"] >> id;
 
                     CtiMCSchedule* temp_sched = new CtiMCSchedule();
-                    CtiHashKey* temp_key = new CtiHashKey(id);
                     // Add it to the map
                     temp_sched->setUpdatedFlag();   // Mark it updated
-                    sched_map.insert( std::pair<CtiHashKey*,CtiMCSchedule*>(temp_key, temp_sched) );
+                    sched_map.insert( std::pair<long,CtiMCSchedule*>(id, temp_sched) );
 
                     if( !temp_sched->DecodeDatabaseReader(rdr) )
                     {
@@ -454,7 +456,7 @@ bool CtiMCScheduleManager::retrieveSimpleSchedules(
 
 bool CtiMCScheduleManager::retrieveScriptedSchedules(
                                                     std::map
-                                                    < CtiHashKey*, CtiMCSchedule* >
+                                                    < long, CtiMCSchedule* >
                                                     &sched_map )
 {
     bool success = true;
@@ -500,10 +502,10 @@ bool CtiMCScheduleManager::retrieveScriptedSchedules(
                     rdr["scheduleid"] >> id;
 
                     CtiMCSchedule* temp_sched = new CtiMCSchedule();
-                    CtiHashKey* temp_key = new CtiHashKey(id);
+                    
                     // Add it to the map
                     temp_sched->setUpdatedFlag();   // Mark it updated
-                    sched_map.insert( std::pair<CtiHashKey*,CtiMCSchedule*>(temp_key, temp_sched) );
+                    sched_map.insert( std::pair<long,CtiMCSchedule*>(id, temp_sched) );
 
                     if( !temp_sched->DecodeDatabaseReader(rdr) )
                     {

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/INCLUDE/mgr_mcsched.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2006/04/24 14:47:33 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2006/08/09 05:03:17 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -51,12 +51,12 @@ private:
 
     bool retrieveSimpleSchedules(
         map
-        < CtiHashKey*, CtiMCSchedule* >&
+        < long, CtiMCSchedule* >&
         sched_map );
 
     bool retrieveScriptedSchedules(
         map
-        < CtiHashKey*, CtiMCSchedule* >&
+        < long, CtiMCSchedule* >&
         sched_map );
 
     long nextScheduleID();

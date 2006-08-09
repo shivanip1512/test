@@ -52,9 +52,13 @@ class IM_EX_FDRBASE CtiFDRManager : public CtiRTDB< CtiFDRPoint >
        
        //void DumpList(void);
        
-        void            DeleteList(void)   { Map.clear();
-                                             delete_map(Map);
-                                           }
+        void            DeleteList(void)   
+        {
+            for (MapIterator itr = Map.begin(); itr != Map.end(); itr++) {
+                delete (*itr).second;
+            }        
+            Map.clear();
+        }
 //        CtiFDRManager & loadPointList(void);
         RWDBStatus loadPointList(void);
 //        CtiFDRManager & refreshPointList(void);
