@@ -44,12 +44,12 @@ public class CurtailmentEventNotifDaoImpl extends YukonBaseHibernateDao
 
     @SuppressWarnings("unchecked")
     public List<CurtailmentEventNotif> getScheduledNotifs() {
-        //TODO use my def of now in case DB time is different
+        //use my def of now in case DB time is different
         String query = "select cen from CurtailmentEventNotif cen " +
                 "inner join fetch cen.participant p " +
                 "inner join fetch p.event e " +
                 "where cen.state = ? " +
-                "  and cen.notificationTime < ?";
+                "  and cen.notificationTime <= ?";
         Object[] args = {NotificationState.SCHEDULED, new Date()};
         return getHibernateTemplate().find(query, args);
     }
