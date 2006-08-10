@@ -135,7 +135,7 @@
   </t:column>
   <t:column>
     <f:facet name="header"><h:outputText value="NOTIF"/></f:facet>
-    <t:outputText value="#{sEconomicDetail.customerNotifForRow}"/>
+    <t:graphicImage value="#{sEconomicDetail.customerNotifForRow}"/>
   </t:column>
   <t:columns value="#{sEconomicDetail.windowModel}" var="window">
     <f:facet name="header">
