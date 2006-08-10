@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.78 $
-* DATE         :  $Date: 2006/08/10 15:27:09 $
+* REVISION     :  $Revision: 1.79 $
+* DATE         :  $Date: 2006/08/10 15:36:34 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1227,8 +1227,25 @@ INT CtiDeviceMCT410::executePutConfig( CtiRequestMsg              *pReq,
     }
     else if( parse.isKeyValid("centron_reading_forward") )
     {
-        int reading_forward = parse.getiValue("centron_reading_forward"),
-            reading_reverse = parse.getiValue("centron_reading_reverse");
+        double reading_forward = parse.getiValue("centron_reading_forward"),
+               reading_reverse = parse.getiValue("centron_reading_reverse");
+
+        long   pulses_forward,
+               pulses_reverse;
+
+        CtiPointBase *tmpPoint = getDevicePointOffsetTypeEqual(1, PulseAccumulatorPointType);
+
+        if( tmpPoint )
+        {
+            //  adjust for the multiplier, if the point exists
+            pulses_forward = (long)(reading_forward / ((CtiPointNumeric *)tmpPoint)->getMultiplier());
+            pulses_reverse = (long)(reading_reverse / ((CtiPointNumeric *)tmpPoint)->getMultiplier());
+        }
+        else
+        {
+            pulses_forward = (long)reading_forward;
+            pulses_reverse = (long)reading_reverse;
+        }
 
         OutMessage->Sequence = Cti::Protocol::Emetcon::PutValue_KYZ;
 
@@ -1237,15 +1254,15 @@ INT CtiDeviceMCT410::executePutConfig( CtiRequestMsg              *pReq,
 
         OutMessage->Buffer.BSt.IO = Cti::Protocol::Emetcon::IO_Function_Write;
 
-        OutMessage->Buffer.BSt.Message[0] = (reading_forward >> 24) & 0xff;
-        OutMessage->Buffer.BSt.Message[1] = (reading_forward >> 16) & 0xff;
-        OutMessage->Buffer.BSt.Message[2] = (reading_forward >>  8) & 0xff;
-        OutMessage->Buffer.BSt.Message[3] =  reading_forward        & 0xff;
+        OutMessage->Buffer.BSt.Message[0] = (pulses_forward >> 24) & 0xff;
+        OutMessage->Buffer.BSt.Message[1] = (pulses_forward >> 16) & 0xff;
+        OutMessage->Buffer.BSt.Message[2] = (pulses_forward >>  8) & 0xff;
+        OutMessage->Buffer.BSt.Message[3] =  pulses_forward        & 0xff;
 
-        OutMessage->Buffer.BSt.Message[4] = (reading_reverse >> 24) & 0xff;
-        OutMessage->Buffer.BSt.Message[5] = (reading_reverse >> 16) & 0xff;
-        OutMessage->Buffer.BSt.Message[6] = (reading_reverse >>  8) & 0xff;
-        OutMessage->Buffer.BSt.Message[7] =  reading_reverse        & 0xff;
+        OutMessage->Buffer.BSt.Message[4] = (pulses_reverse >> 24) & 0xff;
+        OutMessage->Buffer.BSt.Message[5] = (pulses_reverse >> 16) & 0xff;
+        OutMessage->Buffer.BSt.Message[6] = (pulses_reverse >>  8) & 0xff;
+        OutMessage->Buffer.BSt.Message[7] =  pulses_reverse        & 0xff;
 
         found = true;
     }
