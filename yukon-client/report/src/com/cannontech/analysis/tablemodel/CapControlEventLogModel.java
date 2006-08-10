@@ -370,7 +370,7 @@ public class CapControlEventLogModel extends ReportModelBase
 				new ColumnProperties(0, 1, 160, null),
 				new ColumnProperties(0, 1, 130, null),
 				new ColumnProperties(130, 1, 130, null),
-				new ColumnProperties(260, 1, 90, null),
+				new ColumnProperties(260, 1, 90, "HH:mm:ss"),
 				new ColumnProperties(350, 1, 90, null),
 				new ColumnProperties(440, 1, 260, null)
 			};
