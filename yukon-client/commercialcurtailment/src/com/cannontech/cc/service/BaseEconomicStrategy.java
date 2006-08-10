@@ -41,6 +41,7 @@ import com.cannontech.cc.service.builder.EconomicBuilder;
 import com.cannontech.cc.service.builder.VerifiedCustomer;
 import com.cannontech.cc.service.builder.VerifiedPlainCustomer;
 import com.cannontech.cc.service.enums.EconomicEventState;
+import com.cannontech.cc.service.enums.NotificationStatus;
 import com.cannontech.cc.service.exception.EventCreationException;
 import com.cannontech.cc.service.exception.EventModificationException;
 import com.cannontech.common.exception.PointException;
@@ -592,7 +593,6 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
         event.setState(EconomicEventState.SUPPRESSED);
         economicEventDao.save(event);
         notificationProxy.attemptDeleteEconomic(event.getId(), false);
-        notificationProxy.sendEconomicNotification(event.getId(), event.getLatestRevision().getRevision(), EconomicEventAction.CANCELING);
     }
     
     public boolean canUserSubmitSelectionForRevision(EconomicEventParticipantSelection selection, LiteYukonUser user, Date time) {
@@ -688,20 +688,33 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
         return buyThrough.compareTo(BigDecimal.ZERO) == 0;
     }
     
-    public float getNotificationSuccessRate(EconomicEventParticipant participant) {
+    public NotificationStatus getNotificationSuccessStatus(EconomicEventParticipant participant) {
         int success = 0;
         int total = 0;
+        int failure = 0;
+        int scheduled = 0;
         List<EconomicEventNotif> notifs = economicEventNotifDao.getForParticipant(participant);
         for (EconomicEventNotif notif : notifs) {
-            total++;
             if (notif.getState().equals(NotificationState.SUCCEEDED)) {
                 success++;
+                total++;
+            } else if (notif.getState().equals(NotificationState.FAILED)) {
+                failure++;
+                total++;
+            } else {
+                scheduled++;
             }
         }
         if (total == 0) {
-            return 0;
+            return (scheduled > 0) ? NotificationStatus.PENDING : NotificationStatus.MIXED;
         }
-        return (float)success/(float)total;
+        if (success == total) {
+            return NotificationStatus.NO_FAILURES;
+        }
+        if (failure == total) {
+            return NotificationStatus.NO_SUCCESS;
+        }
+        return NotificationStatus.MIXED;
     }
     
     @Override
