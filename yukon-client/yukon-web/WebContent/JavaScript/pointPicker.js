@@ -1,7 +1,11 @@
 var pointPicker_destPointIdFieldId;
 var pointPicker_currentSearch = '';
 var pointPicker_inSearch = false;
-function pointPicker_showPicker(destPointIdFieldId) {
+var pointPicker_criteria = '';
+
+function pointPicker_showPicker(destPointIdFieldId, criteria) {
+    // store constaint away
+    pointPicker_criteria = criteria;
     // create div to store result
     var bodyElem = document.documentElement.getElementsByTagName("body")[0];
     var newDivElem = document.createElement("div");
@@ -11,6 +15,7 @@ function pointPicker_showPicker(destPointIdFieldId) {
     var url = '/pointPicker/initial?';
     url += 'destPointIdFieldId=' + destPointIdFieldId;
     url += '&currentPointId=' + $(destPointIdFieldId).value;
+    url += '&criteria=' + pointPicker_criteria;
     new Ajax.Updater('pointPickerContainer', url, {'method': 'get'});
     pointPicker_destPointIdFieldId = destPointIdFieldId;
 }
@@ -44,6 +49,7 @@ function pointPicker_doPartialSearch(start) {
     var url = '/pointPicker/search?';
     url += 'ss=' + ss;
     url += '&currentPointId=' + $(pointPicker_destPointIdFieldId).value;
+    url += '&criteria=' + pointPicker_criteria;
     url += '&start=' + start;
     new Ajax.Updater('pointPicker_results', url, {'method': 'get', 'onComplete': onComplete});
 }
