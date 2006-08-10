@@ -18,6 +18,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.Pair;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteCustomer;
@@ -82,17 +83,17 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
 	public String getProgressMsg() {
 		if (fullReset) {
 			if (status == STATUS_FINISHED && numFailure == 0) {
-				return numSuccess + " hardwares have been configured successfully.";
+				return numSuccess + " switches have been mapped successfully to addressing groups.";
 			}
 			else
-				return numSuccess + " of " + numToBeConfigured + " hardwares have been configured.";
+				return numSuccess + " of " + numToBeConfigured + " switches have been mapped to addressing groups.";
 		}
 		else {
 			if (status == STATUS_FINISHED && numFailure == 0) {
-			    return numSuccess + " hardware configuration saved to batch.";
+			    return numSuccess + " switches mapped to addressing groups.";
 			}
 			else
-				return numSuccess + " of " + numToBeConfigured + " hardware configuration saved to batch.";
+				return numSuccess + " of " + numToBeConfigured + " switches mapped to addressing groups.";
 		}
 	}
 
@@ -102,7 +103,19 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
 	public void run() {
 		HttpSession session = request.getSession(false);
 		StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-		
+        
+        StringBuffer logEntry = new StringBuffer();
+        if(fullReset)
+            logEntry.append("Full reset ");
+        else
+            logEntry.append("Adjusting all zero entries ");
+        if(sendConfig)
+            logEntry.append("and configs will be sent out if possible.");
+        else
+            logEntry.append("but configs will NOT be attempted.");
+            
+        ActivityLogger.logEvent( user.getUserID(), "STATIC LOAD GROUP MAPPING ACTIVITY", logEntry.toString());
+        
 		mappingsToAdjust = StaticLoadGroupMapping.getAllStaticLoadGroups();
 		if (mappingsToAdjust == null || mappingsToAdjust.size() < 1) {
 			status = STATUS_ERROR;
@@ -136,6 +149,8 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
                 }
 			}
 		}
+        /*May have a problem here if inventory isn't loaded yet since the for loop may move on even if the load task hasn't come back
+         */
 		else {
 			ArrayList descendants = ECUtils.getAllDescendants( energyCompany );
 			for (int j = 0; j < descendants.size(); j++) {
@@ -146,16 +161,16 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
                  */
                 if(!fullReset)
                     existingsConfigs = LMHardwareConfiguration.getAllLMHardwareConfigurationsWithoutLoadGroups(energyCompany.getEnergyCompanyID());
-                for (int j = 0; j < hwsToAdjust.size(); j++) {
-                    if (!hwsToAdjust.contains( hwsFromEC.get(j) ) && hwsFromEC.get(j) instanceof LiteStarsLMHardware) {
+                for (int i = 0; i < hwsToAdjust.size(); i++) {
+                    if (!hwsToAdjust.contains( hwsFromEC.get(i) ) && hwsFromEC.get(i) instanceof LiteStarsLMHardware) {
                         if(!fullReset)
                         {
-                            LMHardwareConfiguration config = existingsConfigs.get(hwsFromEC.get(j).getInventoryID());
+                            LMHardwareConfiguration config = existingsConfigs.get(hwsFromEC.get(i).getInventoryID());
                             if(config != null)
-                                hwsToAdjust.add( hwsFromEC.get(j) );
+                                hwsToAdjust.add( hwsFromEC.get(i) );
                         }
                         else
-                            hwsToAdjust.add( hwsFromEC.get(j) );
+                            hwsToAdjust.add( hwsFromEC.get(i) );
                     }
                 }
 			}
@@ -206,7 +221,7 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
             //get ApplianceCategoryID
             Integer applianceCatID = -1;
             for(int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
-                if(liteAcctInfo.getAppliances().get(j).getApplianceID() == configdb.getApplianceID().intValue())
+                if(liteAcctInfo.getAppliances().get(j).getApplianceID() == configDB.getApplianceID().intValue())
                     applianceCatID = liteAcctInfo.getAppliances().get(j).getApplianceCategoryID();
             }
             //get SwitchTypeID 
@@ -223,7 +238,12 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
             
             try {
                 configDB.setAddressingGroupID(groupMapping.getLoadGroupID());
-                Transaction.createTransaction( Transaction.UPDATE, configDB ).execute();
+                try {
+                    Transaction.createTransaction( Transaction.UPDATE, configDB ).execute();
+                } 
+                catch(TransactionException e) {
+                    throw new WebClientException(e.getMessage());
+                }
                 options = "GroupID:" + groupMapping.getLoadGroupID(); 
                 
     			/*TODO: Will I need this to make sure accounts/inventory get the change?
@@ -232,7 +252,7 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
     			*/
     				
                 if (sendConfig) {
-    				YukonSwitchCommandAction.fileWriteConfigCommand(company, liteHw, searchMembers, options)(company, liteHw, true, options);
+    				YukonSwitchCommandAction.fileWriteConfigCommand(company, liteHw, false, options);
     				
     				if (liteHw.getAccountID() > 0) {
     					StarsCustAccountInformation starsAcctInfo = company.getStarsCustAccountInformation( liteHw.getAccountID() );
@@ -263,7 +283,7 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
 				if (errorMsg == null) errorMsg = e.getMessage();
 				configurationSet.add( hwsToAdjust.get(i) );
 				numFailure++;
-                failureInfo.add("A static mapping could not be sent out for serial number " + liteHw.getManufacturerSerialNumber() 
+                failureInfo.add("A static mapping could not be saved for serial number " + liteHw.getManufacturerSerialNumber() 
                                     + ".  ApplianceCategoryID=" + applianceCatID + ", ZipCode=" + zip + ", ConsumptionTypeID=" 
                                     + consumptionType + ",SwitchTypeID=" + devType);
 			}
@@ -276,6 +296,7 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
 		
 		//if (!fullReset) SwitchCommandQueue.getInstance().addCommand( null, true );
 		status = STATUS_FINISHED;
+         ActivityLogger.logEvent( user.getUserID(), "STATIC LOAD GROUP MAPPING ACTIVITY", "Attempt succeeded." );
         session.removeAttribute( InventoryManagerUtil.INVENTORY_SET );
 		session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Addressing Groups were reset to static mapped values for " + numSuccess + " switches");
         
