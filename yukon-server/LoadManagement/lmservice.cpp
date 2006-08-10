@@ -214,6 +214,9 @@ void CtiLMService::Run()
         //connection is legit now rather than later
         bool trouble = false;
 
+        SetStatus(SERVICE_RUNNING, 0, 0,
+                  SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN );
+
         do
         {
             if ( trouble )
@@ -239,8 +242,6 @@ void CtiLMService::Run()
         }
         } while ( trouble && !_quit && !load_management_do_quit ); //!quit and !load_management_do_quit added to make this not lock us up.
 
-        SetStatus(SERVICE_START_PENDING, 33, 5000 );
-
         if( _LM_DEBUG & LM_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -248,8 +249,6 @@ void CtiLMService::Run()
         }
         CtiLoadManager* manager = CtiLoadManager::getInstance();
         manager->start();
-
-        SetStatus(SERVICE_START_PENDING, 66, 5000 );
 
         if( _LM_DEBUG & LM_DEBUG_STANDARD )
         {
@@ -263,9 +262,6 @@ void CtiLMService::Run()
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime().asString() << " - Load management started." << endl;
         }*/
-
-        SetStatus(SERVICE_RUNNING, 0, 0,
-                  SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN );
 
         while ( !_quit && !load_management_do_quit)
         {
