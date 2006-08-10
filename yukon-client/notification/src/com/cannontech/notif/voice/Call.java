@@ -30,7 +30,7 @@ public class Call {
      * @param message
      *            The message to be delivered
      */
-    protected Call(ContactPhone contactPhone, Object message) {
+    public Call(ContactPhone contactPhone, Object message) {
         _contactPhone = contactPhone;
         _number = contactPhone.getPhoneNumber();
         
