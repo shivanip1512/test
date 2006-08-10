@@ -16,7 +16,7 @@ public interface INotifConnection
 
     public void sendCurtailmentNotification(Integer curtailmentEventId, CurtailmentEventAction action);
 
-    public boolean attemptDeleteCurtailmentNotification(Integer curtailmentEventId);
+    public boolean attemptDeleteCurtailmentNotification(Integer curtailmentEventId, boolean includeStart);
 
     public void sendEconomicNotification(Integer economicEventId, Integer revision, EconomicEventAction action);
 

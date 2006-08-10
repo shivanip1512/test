@@ -145,9 +145,11 @@ public class NotifClientConnection extends ClientConnection implements INotifCon
         write(msg);
     }
     
-    public boolean attemptDeleteCurtailmentNotification(Integer curtailmentEventId) {
+    public boolean attemptDeleteCurtailmentNotification(Integer curtailmentEventId, boolean includeStart) {
         CurtailmentEventDeleteMsg deleteMsg = new CurtailmentEventDeleteMsg();
         deleteMsg.curtailmentEventId = curtailmentEventId;
+        deleteMsg.deleteStart = includeStart;
+        deleteMsg.deleteStop = true;
         CollectableBoolean wasCancelled = (CollectableBoolean) ServerRequestHelper.makeServerRequest(this, deleteMsg);
         return wasCancelled.getValue();
     }
