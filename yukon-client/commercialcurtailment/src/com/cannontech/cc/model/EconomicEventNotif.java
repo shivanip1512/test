@@ -134,7 +134,7 @@ public class EconomicEventNotif implements EventNotif {
     
     @Override
     public String toString() {
-        return "EconomicEventNotif [" + id + "]@" + Integer.toHexString(System.identityHashCode(this));
+        return "EconomicEventNotif [" + id + "]";
     }
 
 

@@ -123,7 +123,7 @@ public class CurtailmentEventNotif implements EventNotif {
     
     @Override
     public String toString() {
-        return "CurtailmentEventNotif [" + id + "]@" + Integer.toHexString(System.identityHashCode(this));
+        return "CurtailmentEventNotif [" + id + "]";
     }
 
 
