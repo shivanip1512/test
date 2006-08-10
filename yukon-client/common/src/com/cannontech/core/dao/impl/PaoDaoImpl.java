@@ -189,7 +189,7 @@ public final class PaoDaoImpl implements PaoDao {
 
             List lPaos = databaseCache.getAllUnusedCCDevices();
 
-            LiteYukonPAObject retVal[] = (LiteYukonPAObject[]) lPaos.toArray(new LiteYukonPAObject[lPaos.size() + 1]);
+            LiteYukonPAObject retVal[] = (LiteYukonPAObject[]) lPaos.toArray(new LiteYukonPAObject[lPaos.size()]);
 
             return retVal;
         }
