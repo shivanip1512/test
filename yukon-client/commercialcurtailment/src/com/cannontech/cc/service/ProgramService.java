@@ -14,11 +14,13 @@ import org.apache.commons.lang.builder.CompareToBuilder;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.cc.dao.AvailableProgramGroupDao;
+import com.cannontech.cc.dao.BaseEventDao;
 import com.cannontech.cc.dao.GroupDao;
 import com.cannontech.cc.dao.ProgramDao;
 import com.cannontech.cc.dao.ProgramParameterDao;
 import com.cannontech.cc.dao.ProgramTypeDao;
 import com.cannontech.cc.model.AvailableProgramGroup;
+import com.cannontech.cc.model.BaseEvent;
 import com.cannontech.cc.model.Group;
 import com.cannontech.cc.model.Program;
 import com.cannontech.cc.model.ProgramParameter;
@@ -33,6 +35,7 @@ public class ProgramService {
     private GroupDao groupDao;
     private AvailableProgramGroupDao availableProgramGroupDao;
     private ProgramParameterDao programParameterDao;
+    private BaseEventDao baseEventDao;
     private EnergyCompanyDao energyCompanyDao;
    
     public ProgramService() {
@@ -106,6 +109,12 @@ public class ProgramService {
 
     public void setProgramTypeDao(ProgramTypeDao programTypeDao) {
         this.programTypeDao = programTypeDao;
+    }
+    
+    public boolean isEventsExistForProgram(Program program) {
+        List<BaseEvent> allForProgram = baseEventDao.getAllForProgram(program);
+        boolean result = !allForProgram.isEmpty();
+        return result;
     }
 
     @Transactional
@@ -216,6 +225,10 @@ public class ProgramService {
         this.programParameterDao = programParameterDao;
     }
 
+    public void setBaseEventDao(BaseEventDao baseEventDao) {
+        this.baseEventDao = baseEventDao;
+    }
+    
     public void setEnergyCompanyDao(EnergyCompanyDao energyCompanyDao) {
         this.energyCompanyDao = energyCompanyDao;
     }
