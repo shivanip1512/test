@@ -134,7 +134,7 @@ public class HECO_SettlementModelBase extends ReportModelBase
 	{
 		//Reset all objects, new data being collected!
 		getData().clear();
-		setData(null);
+        getDataObjects().clear();
 		settlementCustomerMap = null;	//dump old data
 		customerIDS = null;	//dump old data
 		custDemandLevels = null;
@@ -891,7 +891,7 @@ public class HECO_SettlementModelBase extends ReportModelBase
 		for ( int i = 0; i < getCustomerIDS().length; i++)
 		{
 			SettlementCustomer settleCust = getSettlementCustomer(getCustomerIDS()[i]);;
-			cdi += settleCust.getControlledDemandIncentive().doubleValue();
+			cdi = settleCust.getControlledDemandIncentive().doubleValue();
 			controlledDemandIncentive[i] = new Double(cdi);
 		}
 	}
