@@ -820,4 +820,11 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 		this.userID = userID;
 	}
 
+    public static int getAdjustedStartOffset(int offset, int width){
+        
+        int x = (int)((offset)/ 732);
+        if(offset + width > (732 *(x+1)))
+            offset = ((x+1) * 732);
+        return offset;
+    }
 }
