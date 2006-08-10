@@ -33,6 +33,7 @@ public class ProgramDetailBean {
     private List<ProgramParameter> programParameters;
     private List<Group> assignedGroups;
     private ArrayList<Group> unassignedGroups;
+    private boolean programDeletable;
     
     public StrategyFactory getStrategyFactory() {
         return strategyFactory;
@@ -85,6 +86,12 @@ public class ProgramDetailBean {
 
         StrategyBase strategy = getStrategyFactory().getStrategy(getProgram());
         programParameters = strategy.getParameters(getProgram());
+        
+        programDeletable = !programService.isEventsExistForProgram(getProgram());
+    }
+    
+    public Boolean getProgramDeletable() {
+        return programDeletable;
     }
     
     public void setProgram(Program program) {
