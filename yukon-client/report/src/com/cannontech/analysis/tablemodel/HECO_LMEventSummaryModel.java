@@ -292,13 +292,14 @@ public class HECO_LMEventSummaryModel extends HECO_SettlementModelBase
 				columnProperties[2] = new ColumnProperties(offset+=50, 1, 50, null);
 				columnProperties[3] = new ColumnProperties(offset+=50, 1, 50, null);
 				columnProperties[4] = new ColumnProperties(offset+=50, 1, 50, null);
-				
+
+                offset += 50;   //update to current position.
 				for (int i = 0; i < getCustomerIDS().length; i++)
 				{
-					if( i == 0)
-						columnProperties[NUMBER_COLUMNS + i] = new ColumnProperties(offset+=50, 1, 75, null);
-					else
-						columnProperties[NUMBER_COLUMNS + i] = new ColumnProperties(offset+=75, 1, 75, null);
+                    int width = 75;
+                    offset = getAdjustedStartOffset(offset, width);
+                    columnProperties[NUMBER_COLUMNS + i] = new ColumnProperties(offset, 1, width, null);
+                    offset += width;
 				}
 		}
 		return columnProperties;
