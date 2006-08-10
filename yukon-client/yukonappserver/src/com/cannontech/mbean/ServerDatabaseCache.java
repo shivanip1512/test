@@ -1431,11 +1431,12 @@ private synchronized LiteBase handleContactChange( int changeType, int id )
     }
     case DBChangeMsg.CHANGE_TYPE_UPDATE:
     {
+        allContactsMap.remove(id);
         LiteContact lc = getAContactByContactID(id);
         lBase = lc;
         
         //better wipe the user to contact mappings in case a contact changed that was mapped
-        releaseUserContactMap();
+        //releaseUserContactMap();
         
         break;
     }
@@ -1448,12 +1449,14 @@ private synchronized LiteBase handleContactChange( int changeType, int id )
         }		
         
         allContactsMap.remove( new Integer(id) );
-        for (int i=0;i<allContacts.size();i++)
-        {
-            if ( ((LiteContact)allContacts.get(i)).getLiteID() == id )
+        if (allContacts != null) {
+            for (int i=0;i<allContacts.size();i++)
             {
-                lBase = (LiteBase)allContacts.remove(i);
-                break;
+                if ( ((LiteContact)allContacts.get(i)).getLiteID() == id )
+                {
+                    lBase = (LiteBase)allContacts.remove(i);
+                    break;
+                }
             }
         }
         
