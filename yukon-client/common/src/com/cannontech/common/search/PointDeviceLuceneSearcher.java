@@ -124,8 +124,7 @@ public class PointDeviceLuceneSearcher implements PointDeviceSearcher {
                 throw new RuntimeException("Can't process iterator", e);
             }
             SearchResult<UltraLightPoint> result = new SearchResult<UltraLightPoint>();
-            result.setHitCount(hits.length());
-            result.setBounds(start, count);
+            result.setBounds(start, count, hits.length());
             result.setResultList(disconnectedCollection);
             return result;
         } finally {

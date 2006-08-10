@@ -15,28 +15,40 @@ import com.cannontech.common.search.PointDeviceCriteria;
 import com.cannontech.common.search.PointDeviceSearcher;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.search.UltraLightPoint;
-import com.cannontech.common.search.criteria.KWCriteria;
 import com.cannontech.database.data.point.PointTypes;
 
 public class PointPickerController extends MultiActionController {
     private PointDeviceSearcher pointDeviceSearcher;
-    private PointDeviceCriteria kWCriteria;
 
     public PointPickerController() {
         super();
-        kWCriteria = new KWCriteria();
     }
     
     public ModelAndView initial(HttpServletRequest request, HttpServletResponse response) {
         ModelAndView mav = new ModelAndView("inner");
         int currentPointId = RequestUtils.getIntParameter(request, "currentPointId", PointTypes.INVALID_POINT);
+        PointDeviceCriteria criteria = getCriteria(request);
         int start = getStartParameter(request);
         int count = getCountParameter(request);
-        SearchResult<UltraLightPoint> hits = pointDeviceSearcher.sameDevicePoints(currentPointId, kWCriteria, start, count);
+        SearchResult<UltraLightPoint> hits = pointDeviceSearcher.sameDevicePoints(currentPointId, criteria, start, count);
         processHitList(mav, hits);
         mav.addObject("showAll", false);
         
         return mav;
+    }
+
+    private PointDeviceCriteria getCriteria(HttpServletRequest request) {
+        String criteriaString = RequestUtils.getStringParameter(request, "criteria", "");
+        PointDeviceCriteria criteria = null;
+        if (StringUtils.isNotBlank(criteriaString)) {
+            try {
+                Class criteriaClass = getClass().getClassLoader().loadClass(criteriaString);
+                criteria = (PointDeviceCriteria) criteriaClass.newInstance();
+            } catch (Exception e) {
+                // TODO: handle exception
+            }
+        }
+        return criteria;
     }
 
     private int getCountParameter(HttpServletRequest request) {
@@ -51,7 +63,8 @@ public class PointPickerController extends MultiActionController {
         ModelAndView mav = new ModelAndView("results");
         int start = getStartParameter(request);
         int count = getCountParameter(request);
-        SearchResult<UltraLightPoint> hits = pointDeviceSearcher.allPoints(kWCriteria, start, count);
+        PointDeviceCriteria criteria = getCriteria(request);
+        SearchResult<UltraLightPoint> hits = pointDeviceSearcher.allPoints(criteria, start, count);
         processHitList(mav, hits);
         mav.addObject("showAll", true);
         
@@ -63,12 +76,13 @@ public class PointPickerController extends MultiActionController {
         String queryString = RequestUtils.getStringParameter(request, "ss", "");
         int start = getStartParameter(request);
         int count = getCountParameter(request);
+        PointDeviceCriteria criteria = getCriteria(request);
         boolean blank = StringUtils.isBlank(queryString);
         SearchResult<UltraLightPoint> hits;
         if (blank) {
-            hits = pointDeviceSearcher.allPoints(kWCriteria, start, count);
+            hits = pointDeviceSearcher.allPoints(criteria, start, count);
         } else {
-            hits = pointDeviceSearcher.search(queryString, kWCriteria, start , count);
+            hits = pointDeviceSearcher.search(queryString, criteria, start , count);
         }
         processHitList(mav, hits);
         mav.addObject("showAll", false);

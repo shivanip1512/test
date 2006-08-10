@@ -8,6 +8,8 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import com.cannontech.database.data.point.PointUnits;
+
 public class PointDeviceLuceneIndexer {
 
     protected File indexLocation;
@@ -31,7 +33,11 @@ public class PointDeviceLuceneIndexer {
         Document doc = new Document();
         String pointName = rs.getString("pointname");
         String paoName = rs.getString("paoname");
-        String uomid = Integer.toString(rs.getInt("uomid"));
+        int uomidInt = rs.getInt("uomid");
+        if (rs.wasNull()) {
+            uomidInt = PointUnits.UOMID_INVALID;
+        }
+        String uomid = Integer.toString(uomidInt);
         String pointid = Integer.toString(rs.getInt("pointid"));
         String deviceid = Integer.toString(rs.getInt("paobjectid"));
         String all = pointName + " " + paoName + " " + pointid + " " + deviceid;

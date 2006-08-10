@@ -26,9 +26,10 @@ public class SearchResult<T> {
      * @param start O-based index from which to start
      * @param count number of items the caller wanted back
      */
-    public void setBounds(int start, int count) {
+    public void setBounds(int start, int count, int hitCount) {
+        this.hitCount = hitCount;
         startIndex = start;
-        endIndex = startIndex + count;
+        endIndex = Math.min(startIndex + count,hitCount);
     }
 
     public boolean isNextNeeded() {
