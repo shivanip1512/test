@@ -78,7 +78,8 @@
 
 <div>
 <h:commandButton action="#{sProgramDetail.save}" value="Save"/>
-<h:commandButton action="#{sProgramDetail.delete}" value="Delete"/>
+<h:commandButton action="#{sProgramDetail.delete}" value="Delete" 
+  rendered="#{sProgramDetail.programDeletable}" />
 <h:commandButton action="#{sProgramDetail.cancel}" value="Cancel"/>
 </div>
 
