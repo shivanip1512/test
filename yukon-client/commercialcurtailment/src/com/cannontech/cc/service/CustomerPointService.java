@@ -1,5 +1,7 @@
 package com.cannontech.cc.service;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -27,33 +29,34 @@ public class CustomerPointService {
     public CustomerPointService() {
         super();
     }
-
-    public Map<CICustomerPointType, Double> getPointValueCache(CICustomerStub customer) {
-        Map<CICustomerPointType, Double> pointValueCache = new TreeMap<CICustomerPointType, Double>();
+    
+    public Map<CICustomerPointType, BigDecimal> getPointValueCache(CICustomerStub customer) {
+        Map<CICustomerPointType, BigDecimal> pointValueCache = new TreeMap<CICustomerPointType, BigDecimal>();
         Set<CICustomerPointType> pointTypeList = pointTypeLookup.getApplicablePoints(customer.getLite());
         for (CICustomerPointType pointType : pointTypeList) {
             try {
                 LitePoint point = pointTypeHelper.getPoint(customer, pointType);
                 double pointValue = pointAccess.getPointValue(point);
-                pointValueCache.put(pointType, pointValue);
+                BigDecimal dbvalue = new BigDecimal(pointValue, new MathContext(10));
+                pointValueCache.put(pointType, dbvalue);
             } catch (NoPointException e) {
                 // then it doesn't belong in the cache!
             } catch (PointDataException e) {
                 // I'm not sure this is the best idea, bascially the calling code
                 // expects there to be something in this map for every type that
                 // exists on the customer, so we might as well put something here.
-                pointValueCache.put(pointType, 0.0);
+                pointValueCache.put(pointType, BigDecimal.ZERO);
             }
         }
         return pointValueCache;
     }
     
-    public void savePointValues(CICustomerStub customer, Map<CICustomerPointType, Double> pointValueCache) {
-        for (Map.Entry<CICustomerPointType, Double> entry : pointValueCache.entrySet()) {
+    public void savePointValues(CICustomerStub customer, Map<CICustomerPointType, BigDecimal> pointValueCache) {
+        for (Map.Entry<CICustomerPointType, BigDecimal> entry : pointValueCache.entrySet()) {
             try {
                 LitePoint point = pointTypeHelper.getPoint(customer, entry.getKey());
-                Double value = entry.getValue();
-                pointAccess.setPointValue(point, value);
+                BigDecimal value = entry.getValue();
+                pointAccess.setPointValue(point, value.doubleValue());
             } catch (NoPointException e) {
                 // if points are to be created on save, this would be
                 // the place to do it
