@@ -7,6 +7,7 @@ import org.apache.commons.lang.BooleanUtils;
 
 import com.cannontech.clientutils.tags.AlarmUtils;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.*;
 import com.cannontech.database.data.notification.NotifType;
 import com.cannontech.database.data.point.PointTypes;
@@ -49,7 +50,10 @@ public class AlarmMessageHandler extends NotifHandler {
         notif.addData("rawvalue", Double.toString(msg.value));
         notif.addData("pointtype", PointTypes.getType(point.getPointType()));
         int pAObjectId = point.getPaobjectID();
-        notif.addData("paoname", DaoFactory.getPaoDao().getYukonPAOName(pAObjectId));
+        PaoDao paoDao = DaoFactory.getPaoDao();
+        LiteYukonPAObject liteYukonPAO = paoDao.getLiteYukonPAO(pAObjectId);
+        notif.addData("paoname", liteYukonPAO.getPaoName());
+        notif.addData("paodescription", liteYukonPAO.getPaoDescription());
         
         notif.addData("abnormal", BooleanUtils.toStringTrueFalse(msg.abnormal));
         notif.addData("acknowledged", BooleanUtils.toStringTrueFalse(msg.acknowledged));
