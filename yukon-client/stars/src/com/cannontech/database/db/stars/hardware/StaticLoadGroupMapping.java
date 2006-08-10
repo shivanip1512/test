@@ -95,6 +95,39 @@ public static List<StaticLoadGroupMapping> getAllLoadGroupsForApplianceCat(int a
     return groups;
 }
 
+public static StaticLoadGroupMapping getAStaticLoadGroupMapping(int appCategoryID, String zip, int consumptionTypeID, int switchTypeID)
+{
+    List<StaticLoadGroupMapping> groups = new ArrayList<StaticLoadGroupMapping>();
+    
+    SqlStatement stmt = new SqlStatement("Select distinct slg.LoadGroupID, slg.ApplianceCategoryID, slg.ZipCode, slg.ConsumptionTypeID, slg.SwitchTypeID from " + TABLE_NAME 
+                                         + " where ApplianceCategoryID = " + appCategoryID + " and ZipCode = '" + zip + "'and consumptionTypeID = " + consumptionTypeID  
+                                         + "' and switchTypeID = " + switchTypeID, CtiUtilities.getDatabaseAlias());
+    
+    try
+    {
+        stmt.execute();
+        
+        if( stmt.getRowCount() > 0 )
+        {
+            StaticLoadGroupMapping group = new StaticLoadGroupMapping();
+            group.setLoadGroupID(new Integer(stmt.getRow(0)[0].toString()));
+            group.setApplianceCategoryID(new Integer(stmt.getRow(0)[1].toString()));
+            group.setZipCode(stmt.getRow(0)[2].toString());
+            group.setConsumptionTypeID(new Integer(stmt.getRow(0)[3].toString()));
+            group.setSwitchTypeID(new Integer(stmt.getRow(0)[4].toString()));
+            group.setLoadGroupName(stmt.getRow(0)[5].toString());
+                
+            return group;
+        }
+    }
+    catch( Exception e )
+    {
+        e.printStackTrace();
+    }
+    
+    return null;
+}
+
 public static List<StaticLoadGroupMapping> getAllStaticLoadGroups()
 {
     List<StaticLoadGroupMapping> groups = new ArrayList<StaticLoadGroupMapping>();

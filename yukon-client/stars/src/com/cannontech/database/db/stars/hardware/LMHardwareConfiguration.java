@@ -1,5 +1,9 @@
 package com.cannontech.database.db.stars.hardware;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.db.DBPersistent;
@@ -61,25 +65,23 @@ public class LMHardwareConfiguration extends DBPersistent {
         return null;
     }
 
-    public static LMHardwareConfiguration[] getAllLMHardwareConfiguration(Integer inventoryID) {
+    public static LMHardwareConfiguration getLMHardwareConfigurationFromInvenID(Integer inventoryID) {
         String sql = "SELECT * FROM " + TABLE_NAME + " WHERE InventoryID = " + inventoryID;
         SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
         
         try {
-        	stmt.execute();
-        	
-        	LMHardwareConfiguration[] configs = new LMHardwareConfiguration[ stmt.getRowCount() ];
-            for (int i = 0; i < configs.length; i++) {
-            	Object[] row = stmt.getRow(i);
-                configs[i] = new LMHardwareConfiguration();
-                
-                configs[i].setInventoryID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
-                configs[i].setApplianceID( new Integer(((java.math.BigDecimal) row[1]).intValue()) );
-                configs[i].setAddressingGroupID( new Integer(((java.math.BigDecimal) row[2]).intValue()) );
-				configs[i].setLoadNumber( new Integer(((java.math.BigDecimal) row[3]).intValue()) );
-            }
+            stmt.execute();
             
-            return configs;
+            if (stmt.getRowCount() > 0) {
+                LMHardwareConfiguration config = new LMHardwareConfiguration();
+                
+                config.setInventoryID( new Integer(((java.math.BigDecimal) stmt.getRow(0)[0]).intValue()) );
+                config.setApplianceID( new Integer(((java.math.BigDecimal) stmt.getRow(0)[1]).intValue()) );
+                config.setAddressingGroupID( new Integer(((java.math.BigDecimal) stmt.getRow(0)[2]).intValue()) );
+                config.setLoadNumber( new Integer(((java.math.BigDecimal) stmt.getRow(0)[3]).intValue()) );
+                
+                return config;
+            }
         }
         catch (Exception e) {
             com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
@@ -115,6 +117,37 @@ public class LMHardwareConfiguration extends DBPersistent {
         
 		return null;
 	}
+    
+    public static HashMap<Integer, LMHardwareConfiguration> getAllLMHardwareConfigurationsWithoutLoadGroups(int energyCompanyID) {
+        String sql = "SELECT cfg.* FROM " + TABLE_NAME + " cfg, ECToInventoryMapping map " +
+                "WHERE map.EnergyCompanyID = " + energyCompanyID + " AND map.InventoryID = cfg.InventoryID"
+                + " AND cfg.AddressingGroupID = 0";
+        SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
+        
+        try {
+            stmt.execute();
+            
+            HashMap<Integer, LMHardwareConfiguration> configs = new HashMap<Integer, LMHardwareConfiguration>(stmt.getRowCount());
+            for (int i = 0; i < configs.size(); i++) {
+                Object[] row = stmt.getRow(i);
+                LMHardwareConfiguration config = new LMHardwareConfiguration();
+                
+                config.setInventoryID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
+                config.setApplianceID( new Integer(((java.math.BigDecimal) row[1]).intValue()) );
+                config.setAddressingGroupID( new Integer(((java.math.BigDecimal) row[2]).intValue()) );
+                config.setLoadNumber( new Integer(((java.math.BigDecimal) row[3]).intValue()) );
+                
+                configs.put(config.getInventoryID(), config);
+            }
+            
+            return configs;
+        }
+        catch (Exception e) {
+            com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+        }
+        
+        return null;
+    }
 
     public static void deleteLMHardwareConfiguration(Integer applianceID) {
         String sql = "DELETE FROM " + TABLE_NAME + " WHERE ApplianceID=" + applianceID;

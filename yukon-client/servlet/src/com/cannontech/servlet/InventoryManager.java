@@ -52,6 +52,7 @@ import com.cannontech.stars.util.SwitchCommandQueue;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.util.task.AddSNRangeTask;
 import com.cannontech.stars.util.task.AddShipmentSNRangeTask;
+import com.cannontech.stars.util.task.AdjustStaticLoadGroupMappingsTask;
 import com.cannontech.stars.util.task.ConfigSNRangeTask;
 import com.cannontech.stars.util.task.DeleteSNRangeTask;
 import com.cannontech.stars.util.task.ManipulateInventoryTask;
@@ -216,6 +217,8 @@ public class InventoryManager extends HttpServlet {
             configureRedirect( user, req, session );
         else if (action.equalsIgnoreCase("ConfigureResultSet"))
             configureResults( user, req, session );
+        else if (action.startsWith("StaticLoadGroupMap"))
+            resetStaticLoadGroupMappings(user, req, session);
         /**
          * Purchasing...this should go in its own servlet sometime soon.
          */
@@ -1867,8 +1870,53 @@ public class InventoryManager extends HttpServlet {
             session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "No inventory results are available to configure.");
             redirect = req.getContextPath() + "/operator/Hardware/Inventory.jsp";
         }
+    }
+    
+    private void resetStaticLoadGroupMappings(StarsYukonUser user, HttpServletRequest req, HttpSession session) 
+    {
+        LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
+        boolean resetAll = true;
+        boolean sendConfig = true;
+        action = req.getParameter( "action" );
+        if(action.startsWith("StaticLoadGroupMapSetDefaults"))
+            resetAll = false;
+        if(action.endsWith("NoConfig"))
+            sendConfig = false;
+        
+        TimeConsumingTask task = new AdjustStaticLoadGroupMappingsTask( energyCompany, resetAll, sendConfig, req );
+        long id = ProgressChecker.addTask( task );
+        
+        // Wait 5 seconds for the task to finish (or error out), if not, then go to the progress page
+        for (int i = 0; i < 5; i++) 
+        {
+            try
+            {
+                Thread.sleep(1000);
+            }
+            catch (InterruptedException e) {}
             
+            task = ProgressChecker.getTask(id);
+            String redir = (String) session.getAttribute( ServletUtils.ATT_REDIRECT );
             
+            if (task.getStatus() == AddSNRangeTask.STATUS_FINISHED) 
+            {
+                session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, task.getProgressMsg());
+                ProgressChecker.removeTask( id );
+                if (redir != null) redirect = redir;
+            }
+            
+            if (task.getStatus() == AddSNRangeTask.STATUS_ERROR) {
+                session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, task.getErrorMsg());
+                ProgressChecker.removeTask( id );
+                redirect = referer;
+                return;
+            }
+        }
+        referer = req.getContextPath() + "/operator/Hardware/PowerUserStaticLoadGroupReset.jsp";
+        redirect = req.getContextPath() + "/operator/Hardware/PowerUserStaticLoadGroupReset.jsp";
+        session.setAttribute(ServletUtils.ATT_REDIRECT, redirect);
+        session.setAttribute(ServletUtils.ATT_REFERRER, referer);
+        redirect = req.getContextPath() + "/operator/Admin/Progress.jsp?id=" + id;
     }
     
     private void handlePurchasePlanChange(StarsYukonUser user, HttpServletRequest req, HttpSession session) 
