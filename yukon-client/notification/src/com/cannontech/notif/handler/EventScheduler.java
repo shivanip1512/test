@@ -42,9 +42,13 @@ public abstract class EventScheduler {
     protected void doScheduledNotifs() {
         List<? extends EventNotif> notifsPending;
         synchronized (this) {
+            CTILogger.debug("Starting doScheduledNotifs for " + getClass().getSimpleName());
             notifsPending = getScheduledNotifs();
+            
+            CTILogger.debug("Found " + notifsPending.size() + " for " + getClass().getSimpleName());
         
             for (EventNotif notif : notifsPending) {
+                CTILogger.debug("Starting " + notif + " processing for " + notif.getCustomer().getCompanyName());
                 try {
                     notif.setState(NotificationState.PENDING);
                     updateNotif(notif);
@@ -60,6 +64,7 @@ public abstract class EventScheduler {
                     notif.setState(NotificationState.FAILED);
                     updateNotif(notif);
                 }
+                CTILogger.debug("Finished " + notif + " processing for " + notif.getCustomer().getCompanyName());
             }
         }
     }
