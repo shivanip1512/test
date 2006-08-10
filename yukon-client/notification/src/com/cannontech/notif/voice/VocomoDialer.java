@@ -2,6 +2,7 @@ package com.cannontech.notif.voice;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.net.ConnectException;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.notif.voice.callstates.*;
@@ -56,6 +57,9 @@ public class VocomoDialer extends Dialer {
                 // through, great; otherwise, it will just timeout.
                 break;
             }
+        } catch (ConnectException e) {
+            CTILogger.warn("Network error trying to make call " + call, e);
+            call.changeState(new Retry());
         } catch (IOException e) {
             CTILogger.error("Unable to complete call " + call, e);
             call.changeState(new UnknownError(e));
