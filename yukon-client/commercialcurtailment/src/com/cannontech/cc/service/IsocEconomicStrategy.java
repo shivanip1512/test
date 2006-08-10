@@ -52,7 +52,8 @@ public class IsocEconomicStrategy extends BaseEconomicStrategy {
             Date startTime = event.getStartTime();
             calendar.setTime(startTime);
             if (calendar.get(Calendar.YEAR) == propossedYear
-                && calendar.get(Calendar.DAY_OF_YEAR) == propossedDay) {
+                && calendar.get(Calendar.DAY_OF_YEAR) == propossedDay
+                && isocCommonStrategy.doEventsOverlap(myBuilder.getEvent(), event)) {
                 String msg = "already in an economic event (" + event.getDisplayName() + ") that day";
                 vCustomer.addExclusion(VerifiedCustomer.Status.EXCLUDE, msg);
                 break;
