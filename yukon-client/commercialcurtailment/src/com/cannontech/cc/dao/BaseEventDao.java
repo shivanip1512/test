@@ -10,6 +10,7 @@ import java.util.TreeSet;
 
 import com.cannontech.cc.model.BaseEvent;
 import com.cannontech.cc.model.CICustomerStub;
+import com.cannontech.cc.model.Program;
 import com.cannontech.common.util.predicate.Predicate;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 
@@ -74,7 +75,14 @@ public class BaseEventDao implements CommonEventOperations {
         });
     }
     
-    
+    public List<BaseEvent> getAllForProgram(Program program) {
+        List<BaseEvent> allEvents = new LinkedList<BaseEvent>();
+        for (CommonEventOperations dao : childDaos) {
+            List<? extends BaseEvent> events = dao.getAllForProgram(program);
+            allEvents.addAll(events);
+        }
+        return allEvents;
+    }
 
     
     /**
