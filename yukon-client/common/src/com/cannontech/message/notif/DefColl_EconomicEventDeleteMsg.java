@@ -46,6 +46,8 @@ public class DefColl_EconomicEventDeleteMsg extends DefineCollectableMessage {
         EconomicEventDeleteMsg msg = (EconomicEventDeleteMsg) obj;
 
         msg.economicEventId = vstr.extractInt();
+        msg.deleteStart = vstr.extractInt() == 1;
+        msg.deleteStop = vstr.extractInt() == 1;
     }
 
     public void saveGuts(Object obj, VirtualOutputStream vstr,
@@ -54,6 +56,8 @@ public class DefColl_EconomicEventDeleteMsg extends DefineCollectableMessage {
         EconomicEventDeleteMsg msg = (EconomicEventDeleteMsg) obj;
 
         vstr.insertInt(msg.economicEventId);
+        vstr.insertInt(msg.deleteStart ? 1 : 0);
+        vstr.insertInt(msg.deleteStop ? 1 : 0);
     }
 
 }
