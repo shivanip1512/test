@@ -1,5 +1,6 @@
 package com.cannontech.web.cc;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +22,7 @@ public class CustomerDetailBean {
     private CommercialCurtailmentBean commercialCurtailmentBean;
     private CustomerPointService customerService;
     private DataModel pointsModel;
-    private Map<CICustomerPointType, Double> pointValueCache = new TreeMap<CICustomerPointType, Double>();
+    private Map<CICustomerPointType, BigDecimal> pointValueCache = new TreeMap<CICustomerPointType, BigDecimal>();
     private List<CICustomerPointType> pointTypeList;
 
     public CustomerDetailBean() {
@@ -57,7 +58,7 @@ public class CustomerDetailBean {
     public String createPoint() {
         CICustomerPointType pointType = (CICustomerPointType) pointsModel.getRowData();
         customerService.createPoint(getCustomer(), pointType);
-        pointValueCache.put(pointType, 0.0);
+        pointValueCache.put(pointType, BigDecimal.ZERO);
         return null;
     }
     
@@ -113,11 +114,11 @@ public class CustomerDetailBean {
         return customerService;
     }
 
-    public Map<CICustomerPointType, Double> getPointValueCache() {
+    public Map<CICustomerPointType, BigDecimal> getPointValueCache() {
         return pointValueCache;
     }
 
-    public void setPointValueCache(Map<CICustomerPointType, Double> pointValueCache) {
+    public void setPointValueCache(Map<CICustomerPointType, BigDecimal> pointValueCache) {
         this.pointValueCache = pointValueCache;
     }
 
