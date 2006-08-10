@@ -27,7 +27,9 @@ public class CurtailmentEventMessageHandler extends MessageHandler {
             CurtailmentEventDeleteMsg reqPayload = (CurtailmentEventDeleteMsg) reqMsg.getPayload();
             Integer curtailmentEventId = reqPayload.curtailmentEventId;
             CurtailmentEvent event = curtailmentEventDao.getForId(curtailmentEventId);
-            boolean success = _scheduler.deleteEventNotification(event);
+            boolean success = _scheduler.deleteEventNotification(event, 
+                                                                 reqPayload.deleteStart, 
+                                                                 reqPayload.deleteStop);
             CollectableBoolean respPayload = new CollectableBoolean(success);
             ServerResponseMsg responseMsg = reqMsg.createResponseMsg();
             responseMsg.setPayload(respPayload);

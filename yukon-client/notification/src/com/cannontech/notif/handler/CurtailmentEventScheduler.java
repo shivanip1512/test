@@ -20,19 +20,23 @@ public class CurtailmentEventScheduler extends EventScheduler {
         super(helper);
     }
     
-    public boolean deleteEventNotification(CurtailmentEvent event) {
-        boolean startCancelled = attemptDeleteNotification(event, NotificationReason.STARTING);
-        boolean stopCancelled = false;
-        if (startCancelled) {
+    public boolean deleteEventNotification(CurtailmentEvent event, boolean deleteStart, boolean deleteStop) {
+        boolean startCancelled = true;
+        if (deleteStart) {
+            startCancelled = attemptDeleteNotification(event, NotificationReason.STARTING);
+        }
+        boolean stopCancelled = true;
+        if (deleteStop && startCancelled) {
             stopCancelled = attemptDeleteNotification(event, NotificationReason.STOPPING);
         }
         boolean success = startCancelled && stopCancelled;
         if (!success) {
-            CTILogger.error("Potential error while deleting curtailment notifications (startCancelled="
+            CTILogger.error("Potential error while deleting eonomic notifications (startCancelled="
                             + startCancelled + ", stopCancelled=" + stopCancelled + ")");
         }
         return success;
     }
+    
 
     /**
      * Deletes all pending notifs for an event.
@@ -45,7 +49,7 @@ public class CurtailmentEventScheduler extends EventScheduler {
        // this should be optimized within the dao
        List<CurtailmentEventNotif> forEvent = curtailmentEventNotifDao.getForEventAndReason(event, reason);
        boolean missedOne = false;
-       //TODO this loop should be changed to check if it could delete all and the
+       //TODO this loop should be changed to check if it could delete all and then
        // go through and delete, it probably doesn't make a big difference, though
        for (CurtailmentEventNotif notif : forEvent) {
            if (notif.getState().equals(NotificationState.SCHEDULED)) {
