@@ -245,7 +245,7 @@ public abstract class BaseNotificationStrategy extends StrategyBase {
             throw new RuntimeException("Event can't be deleted right now by this user");
         }
         boolean success = getNotificationProxy()
-            .attemptDeleteCurtailmentNotification(event.getId());
+            .attemptDeleteCurtailmentNotification(event.getId(), true);
 
         if (success) {
             transactionTemplate.execute(new TransactionCallbackWithoutResult() {
@@ -265,6 +265,8 @@ public abstract class BaseNotificationStrategy extends StrategyBase {
         if (!canEventBeCancelled(event, user)) {
             throw new RuntimeException("Event can't be cancelled right now by this user");
         }
+        boolean success = 
+            getNotificationProxy().attemptDeleteCurtailmentNotification(event.getId(), false);
         getNotificationProxy().sendCurtailmentNotification(event.getId(), CurtailmentEventAction.CANCELING);
 
         event.setState(CurtailmentEventState.CANCELLED);
