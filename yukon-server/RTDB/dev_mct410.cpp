@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.79 $
-* DATE         :  $Date: 2006/08/10 15:36:34 $
+* REVISION     :  $Revision: 1.80 $
+* DATE         :  $Date: 2006/08/10 17:04:30 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1233,13 +1233,13 @@ INT CtiDeviceMCT410::executePutConfig( CtiRequestMsg              *pReq,
         long   pulses_forward,
                pulses_reverse;
 
-        CtiPointBase *tmpPoint = getDevicePointOffsetTypeEqual(1, PulseAccumulatorPointType);
+        shared_ptr<CtiPointNumeric> tmpPoint = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(1, PulseAccumulatorPointType));
 
         if( tmpPoint )
         {
             //  adjust for the multiplier, if the point exists
-            pulses_forward = (long)(reading_forward / ((CtiPointNumeric *)tmpPoint)->getMultiplier());
-            pulses_reverse = (long)(reading_reverse / ((CtiPointNumeric *)tmpPoint)->getMultiplier());
+            pulses_forward = (long)(reading_forward / tmpPoint->getMultiplier());
+            pulses_reverse = (long)(reading_reverse / tmpPoint->getMultiplier());
         }
         else
         {
