@@ -1,7 +1,6 @@
 package com.cannontech.web.cc.methods;
 
 import java.math.BigDecimal;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -23,6 +22,7 @@ import com.cannontech.cc.service.BaseEconomicStrategy;
 import com.cannontech.cc.service.EconomicService;
 import com.cannontech.cc.service.ProgramService;
 import com.cannontech.cc.service.StrategyFactory;
+import com.cannontech.cc.service.enums.NotificationStatus;
 import com.cannontech.cc.service.exception.EventModificationException;
 import com.cannontech.web.cc.CommercialCurtailmentBean;
 import com.cannontech.web.util.JSFUtil;
@@ -153,8 +153,18 @@ public class DetailEconomicBean implements BaseDetailBean {
     public String getCustomerNotifForRow() {
         DataModel participantModel = getParticipantModel();
         EconomicEventParticipant participant = (EconomicEventParticipant) participantModel.getRowData();
-        float percent = strategy.getNotificationSuccessRate(participant);
-        return NumberFormat.getPercentInstance().format(percent);
+        NotificationStatus status = strategy.getNotificationSuccessStatus(participant);
+        switch (status) {
+        case MIXED:
+            return "/WebConfig/yukon/Icons/icon_alert.gif";
+        case NO_FAILURES:
+            return "/WebConfig/yukon/Icons/icon_accept.gif";
+        case NO_SUCCESS:
+            return "/WebConfig/yukon/Icons/action_stop.gif";
+        case PENDING:
+            return "/WebConfig/yukon/Icons/icon_clock.gif";
+        }
+        return "/WebConfig/yukon/Icons/icon_info.gif";
     }
     
     public String switchRevision() {
