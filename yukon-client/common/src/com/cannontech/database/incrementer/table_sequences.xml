@@ -35,5 +35,11 @@
       <sequence name="eventid">
         <table name="EventBase" identitycolumn="EVENTID" initsequence="true"/>
       </sequence>
+      <sequence name="configurationid">
+        <table name="DCConfiguration" identitycolumn="CONFIGID" initsequence="true"/>
+      </sequence>
+      <sequence name="categoryid">
+        <table name="DCCategory" identitycolumn="CATEGORYID" initsequence="true"/>
+      </sequence>
   </sequencetable>
 </sequencetables>

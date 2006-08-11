@@ -370,7 +370,7 @@ public abstract class PropertyPanel extends com.cannontech.common.gui.util.DataI
 	 * Creation date: (6/8/2001 4:25:20 PM)
 	 * @param newOriginalObjectToEdit java.lang.Object
 	 */
-	private void setOriginalObjectToEdit(java.lang.Object newOriginalObjectToEdit) {
+	protected void setOriginalObjectToEdit(java.lang.Object newOriginalObjectToEdit) {
 		originalObjectToEdit = newOriginalObjectToEdit;
 	}
 	/**

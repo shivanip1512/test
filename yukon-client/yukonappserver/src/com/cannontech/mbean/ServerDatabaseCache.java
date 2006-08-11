@@ -14,17 +14,25 @@ import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.cache.CacheDBChangeListener;
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.cache.DBChangeLiteListener;
+import com.cannontech.database.cache.functions.DeviceConfigurationFuncs;
+import com.cannontech.database.cache.functions.DeviceConfigurationFuncsImpl;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
+import com.cannontech.database.data.device.configuration.Category;
+import com.cannontech.database.data.device.configuration.DeviceConfiguration;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteCommand;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteCustomer;
+import com.cannontech.database.data.lite.LiteDeviceConfiguration;
+import com.cannontech.database.data.lite.LiteDeviceConfigurationCategory;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
+import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteSettlementConfig;
 import com.cannontech.database.data.lite.LiteStateGroup;
+import com.cannontech.database.data.lite.LiteTOUSchedule;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonRole;
@@ -125,7 +133,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	
 	private ArrayList allSeasonSchedules = null;
 	private ArrayList allGears = null;
-	private ArrayList allTOUSchedules = null;
+	private ArrayList <LiteTOUSchedule> allTOUSchedules = null;
 	private ArrayList allTOUDays = null;
 	
 	private ArrayList allYukonUsers = null;
@@ -518,14 +526,14 @@ public synchronized java.util.List getAllSeasonSchedules()
 	}
 }
 
-public synchronized java.util.List getAllTOUSchedules()
+public synchronized java.util.List <LiteTOUSchedule> getAllTOUSchedules()
 {
 
 	if (allTOUSchedules != null)
 		return allTOUSchedules;
 	else
 	{
-		allTOUSchedules = new ArrayList();
+		allTOUSchedules = new ArrayList<LiteTOUSchedule>();
 		TOUScheduleLoader touLoader = new TOUScheduleLoader(allTOUSchedules, databaseAlias);
 		touLoader.run();
 		return allTOUSchedules;
@@ -1603,7 +1611,15 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg)
 	}
 	else if( database == DBChangeMsg.CHANGE_CONFIG_DB )
 	{
-		retLBase = handleConfigChange( dbType, id );
+        if(dbCategory == DeviceConfiguration.DB_CHANGE_CATEGORY){
+            if(objectType.equals(DeviceConfiguration.DB_CHANGE_OBJECT_TYPE)){
+                retLBase = handleDeviceConfigChange(dbType, id);
+            } else if(objectType.equals(Category.DB_CHANGE_OBJECT_TYPE)){
+                retLBase = handleDeviceConfigCategoryChange(dbType, id);
+            }
+        } else{
+            retLBase = handleConfigChange( dbType, id );
+        }
 	}
 	else if( database == DBChangeMsg.CHANGE_TAG_DB )
 	{
@@ -2164,6 +2180,24 @@ private synchronized LiteBase handleCommandChange( int changeType, int id )
 	return lBase;
 }
 
+
+private synchronized LiteBase handleDeviceConfigCategoryChange( int changeType, int id )
+{
+    return new LiteDeviceConfigurationCategory(id, "Device Configuation Category");
+}
+
+private synchronized LiteBase handleDeviceConfigChange( int changeType, int id )
+{
+    
+    LiteDeviceConfiguration configuration = new LiteDeviceConfiguration(id, "Device Configuation");
+    
+    switch (changeType) {
+        case DBChangeMsg.CHANGE_TYPE_ADD:
+            return LiteFactory.createLite(LiteFactory.convertLiteToDBPersAndRetrieve(configuration));
+        default:
+            return new LiteDeviceConfiguration(id, "Device Configuation");
+        }
+}
 
 private synchronized LiteBase handleConfigChange( int changeType, int id )
 {

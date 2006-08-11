@@ -80,6 +80,9 @@ public final class ModelFactory
 	
 	public static final int RECEIVERS = 58;
     public static final int SYSTEM_DEVICE = 59;
+
+    public static final int DEVICE_CONFIGURATION = 60;
+    public static final int DEVICE_CONFIGURATION_CATEGORY = 61;
 	
 	//The above is an enumeration of indices into
 	//the following array
@@ -144,7 +147,9 @@ public final class ModelFactory
 		CBCOrderByTreeModel.class,
 		BillingGroupModel.class,
 		ReceiverTreeModel.class,
-        SystemDeviceModel.class
+        SystemDeviceModel.class,
+/* 60*/ DeviceConfigurationTreeModel.class,         
+        DeviceConfigurationCategoryTreeModel.class         
 	};
 	
 //	The above is an enumeration of indices into
@@ -210,7 +215,9 @@ public final class ModelFactory
 		"CapBank Ordering",
 		"Billing Group",
 		"Receivers",
-        "System Points"
+        "System Points",
+        "Device Configuration",
+        "Device Configuration Category"
 	};	
 
 /**

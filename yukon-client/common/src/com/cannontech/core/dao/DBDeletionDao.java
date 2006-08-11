@@ -23,6 +23,8 @@ public interface DBDeletionDao {
     public static final int SEASON_SCHEDULE = 16;
     public static final int TOU_TYPE = 17;
     public static final int ROUTE_TYPE = 18;
+    public static final int DEVICE_CONFIGURATION = 19;
+    public static final int DEVICE_CONFIGURATION_CATEGORY = 20;
 
     //the return types of each possible delete
     public static final byte STATUS_ALLOW = 1;

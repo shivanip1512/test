@@ -10,7 +10,7 @@ import com.cannontech.common.gui.util.DataInputPanel;
 
 public abstract class WizardPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.cannontech.common.gui.util.DataInputPanelListener, java.awt.event.ActionListener {
 	//10 should be good enough...?
-	private static final int MAX_PANELS = 10;
+	private static final int MAX_PANELS = 20;
 	private DataInputPanel[] inputPanels  = new DataInputPanel[MAX_PANELS];
 	public int currentPanel = -1;
 	private WizardButtonPanel buttonPanel;

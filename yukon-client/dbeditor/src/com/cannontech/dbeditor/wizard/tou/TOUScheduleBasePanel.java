@@ -58,6 +58,8 @@ public class TOUScheduleBasePanel extends DataInputPanel {
 	private TOUDay currentlySelected = null;
 	private boolean isNewSched = false;
 	private boolean healthyAction = true;
+    
+    private TOUSchedule sched = null;
 	
 	String[] daFourRates = new String[4];
 	HashMap touDays = new HashMap(4);
@@ -365,72 +367,71 @@ public class TOUScheduleBasePanel extends DataInputPanel {
         getJTableMadTOUDisease().setFocusable(false);
 		
 	}
-	/* (non-Javadoc)
-	 * @see com.cannontech.common.gui.util.DataInputPanel#getValue(java.lang.Object)
-	 */
-	public Object getValue(Object o) 
-	{
-		//make sure cells get saved even though they might be currently being edited
-		if( getJTableMadTOUDisease().isEditing() )
-			getJTableMadTOUDisease().getCellEditor().stopCellEditing();
-	
-		TOUSchedule sched = (TOUSchedule)o;
-	
-		if(sched == null)
-			sched = new TOUSchedule();
-		
-		sched.setScheduleName(getJTextFieldScheduleName().getText());
-		
-		sched.getTOUSchedule().setDefaultRate(getJComboBoxDefaultRate().getSelectedItem().toString());
-		
-		Vector newDayMappings = new Vector(8);
-		HashMap markedDays = new HashMap();
-		//go through all the weekly combos and get the selected days
-		for(int w = 1; w < theWeekCombos.length; w++)
-		{
-			TOUDayMapping mapDay = new TOUDayMapping();
-			
-			mapDay.setDayID(((TOUDay)theWeekCombos[w].getSelectedItem()).getDayID());
-			markedDays.put(mapDay.getDayID(), (TOUDay)theWeekCombos[w].getSelectedItem());
-			mapDay.setDayOffset(new Integer(w));
-			mapDay.setScheduleID(sched.getScheduleID());
-			
-			newDayMappings.addElement(mapDay);
-		}
-		
-		sched.setTOUDayMappingVector(newDayMappings);
-		
-		//Deal with the individual days
-		Vector tempDays = new Vector(4);
-		tempDays.addAll(markedDays.values());
-		java.util.Collections.sort(tempDays);
-				
-		for(int j = 0; j < tempDays.size(); j++)
-		{
-			TOUDay touDay = (TOUDay)tempDays.elementAt(j);
-			
-			try
-			{
-				TOUDay decoyDay = new TOUDay();
-				decoyDay.setDayID(touDay.getDayID());
-				Transaction t;
-				t = Transaction.createTransaction(Transaction.RETRIEVE, decoyDay);
-				t.execute();
-				//doesn't currently exist
-				if(decoyDay.getDayName() == null)
-					t = Transaction.createTransaction(Transaction.INSERT, touDay);
-				else
-					t = Transaction.createTransaction(Transaction.UPDATE, touDay);
-				t.execute();
-				
-			}
-			catch (com.cannontech.database.TransactionException e)
-			{
-				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-			}
-		}
-		return sched;
-	}
+    /*
+     * (non-Javadoc)
+     * @see com.cannontech.common.gui.util.DataInputPanel#getValue(java.lang.Object)
+     */
+    public Object getValue(Object o) {
+        // make sure cells get saved even though they might be currently being
+        // edited
+        if (getJTableMadTOUDisease().isEditing())
+            getJTableMadTOUDisease().getCellEditor().stopCellEditing();
+
+        if(this.sched == null){
+            this.sched = (TOUSchedule) o;
+        }
+
+        if (this.sched == null)
+            this.sched = new TOUSchedule();
+
+        this.sched.setScheduleName(getJTextFieldScheduleName().getText());
+
+        this.sched.getTOUSchedule().setDefaultRate(getJComboBoxDefaultRate().getSelectedItem()
+                                                                       .toString());
+
+        Vector newDayMappings = new Vector(8);
+        HashMap markedDays = new HashMap();
+        // go through all the weekly combos and get the selected days
+        for (int w = 1; w < theWeekCombos.length; w++) {
+            TOUDayMapping mapDay = new TOUDayMapping();
+
+            mapDay.setDayID(((TOUDay) theWeekCombos[w].getSelectedItem()).getDayID());
+            markedDays.put(mapDay.getDayID(), (TOUDay) theWeekCombos[w].getSelectedItem());
+            mapDay.setDayOffset(new Integer(w));
+            mapDay.setScheduleID(this.sched.getScheduleID());
+
+            newDayMappings.addElement(mapDay);
+        }
+
+        this.sched.setTOUDayMappingVector(newDayMappings);
+
+        // Deal with the individual days
+        Vector tempDays = new Vector(4);
+        tempDays.addAll(markedDays.values());
+        java.util.Collections.sort(tempDays);
+
+        for (int j = 0; j < tempDays.size(); j++) {
+            TOUDay touDay = (TOUDay) tempDays.elementAt(j);
+
+            try {
+                TOUDay decoyDay = new TOUDay();
+                decoyDay.setDayID(touDay.getDayID());
+                Transaction t;
+                t = Transaction.createTransaction(Transaction.RETRIEVE, decoyDay);
+                t.execute();
+                // doesn't currently exist
+                if (decoyDay.getDayName() == null)
+                    t = Transaction.createTransaction(Transaction.INSERT, touDay);
+                else
+                    t = Transaction.createTransaction(Transaction.UPDATE, touDay);
+                t.execute();
+
+            } catch (com.cannontech.database.TransactionException e) {
+                com.cannontech.clientutils.CTILogger.error(e.getMessage(), e);
+            }
+        }
+        return this.sched;
+    }
 
 	/* (non-Javadoc)
 	 * @see com.cannontech.common.gui.util.DataInputPanel#setValue(java.lang.Object)

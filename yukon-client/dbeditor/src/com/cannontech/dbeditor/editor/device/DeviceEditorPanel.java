@@ -3,6 +3,8 @@ package com.cannontech.dbeditor.editor.device;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.dbeditor.DatabaseEditor;
+import com.cannontech.dbeditor.editor.device.configuration.DeviceConfigurationComboPanel;
 import com.cannontech.roles.application.DBEditorRole;
 
 /**
@@ -365,6 +367,11 @@ public void setValue(Object val) {
 
  	}
 
+    // Add the device configuration tab if this user can see device configuration
+    if(DatabaseEditor.showDeviceConfiguration()){
+     	panels.addElement( new DeviceConfigurationComboPanel() );
+     	tabs.addElement( "Device Configuration" );
+    }
 	this.inputPanels = new DataInputPanel[panels.size()];
 	panels.copyInto( this.inputPanels );
 

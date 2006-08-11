@@ -9,6 +9,7 @@ import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteCustomer;
+import com.cannontech.database.data.lite.LiteTOUSchedule;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -55,7 +56,7 @@ public interface IDatabaseCache
 	public java.util.List getAllLMScenarioProgs();
 	public java.util.List getAllLMPAOExclusions();
 	public java.util.List getAllSeasonSchedules();
-	public java.util.List getAllTOUSchedules();
+	public java.util.List <LiteTOUSchedule> getAllTOUSchedules();
 	public java.util.List getAllTOUDays();
 
 	public java.util.List getAllSystemPoints();

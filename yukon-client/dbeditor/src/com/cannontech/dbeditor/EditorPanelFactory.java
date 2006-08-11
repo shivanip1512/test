@@ -9,10 +9,14 @@ package com.cannontech.dbeditor;
 
 import com.cannontech.common.editor.EditorPanel;
 import com.cannontech.common.editor.PropertyPanel;
+import com.cannontech.database.data.device.configuration.Category;
+import com.cannontech.database.data.device.configuration.DeviceConfiguration;
 import com.cannontech.database.data.device.lm.LMScenario;
 import com.cannontech.database.data.season.SeasonSchedule;
 import com.cannontech.database.data.tou.TOUSchedule;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.dbeditor.editor.device.configuration.CategoryPropertyPanel;
+import com.cannontech.dbeditor.editor.device.configuration.DeviceConfigurationPropertyPanel;
 import com.cannontech.dbeditor.editor.season.SeasonEditorPanel;
 import com.cannontech.dbeditor.editor.tou.TOUEditorPanel;
 
@@ -102,7 +106,13 @@ public final class EditorPanelFactory
 		SeasonEditorPanel.class},
 		
 	{TOUSchedule.class,
-		TOUEditorPanel.class}
+		TOUEditorPanel.class},
+        
+    {DeviceConfiguration.class,
+        DeviceConfigurationPropertyPanel.class},
+		
+	{Category.class,
+	    CategoryPropertyPanel.class}
 	
    	//Remove the Schedule editor because of dependency issues
    	//{com.cannontech.message.macs.message.Schedule.class,

@@ -51,6 +51,8 @@ import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.DatabaseTypes;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
+import com.cannontech.database.data.device.configuration.Category;
+import com.cannontech.database.data.device.configuration.DeviceConfiguration;
 import com.cannontech.database.data.device.lm.LMScenario;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteFactory;
@@ -58,6 +60,7 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.route.RouteBase;
+import com.cannontech.database.data.tou.TOUSchedule;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.model.DBTreeModel;
 import com.cannontech.database.model.DBTreeNode;
@@ -66,6 +69,7 @@ import com.cannontech.database.model.ModelFactory;
 import com.cannontech.dbeditor.defines.CommonDefines;
 import com.cannontech.dbeditor.editor.defaults.DefaultRoutes;
 import com.cannontech.dbeditor.editor.defaults.DefaultRoutesDialog;
+import com.cannontech.dbeditor.editor.device.configuration.DeviceConfigurationWizardPanel;
 import com.cannontech.dbeditor.editor.regenerate.RegenerateDialog;
 import com.cannontech.dbeditor.editor.regenerate.RegenerateRoute;
 import com.cannontech.dbeditor.menu.CoreCreateMenu;
@@ -102,7 +106,7 @@ public class DatabaseEditor
 		com.cannontech.database.cache.DBChangeLiteListener 
 {
    //all editor frame sizes
-   private static final Dimension EDITOR_FRAME_SIZE = new Dimension(435, 500);
+   public static final Dimension EDITOR_FRAME_SIZE = new Dimension(435, 500);
    public static final URL DBEDITOR_GIF = DatabaseEditor.class.getResource("/dbEditorIcon.gif");
    
 	//gui elements of the app
@@ -151,7 +155,8 @@ public class DatabaseEditor
 			new Integer(ModelFactory.ROUTE),
 			new Integer(ModelFactory.RTU),
 			new Integer(ModelFactory.STATEGROUP),
-			new Integer(ModelFactory.TRANSMITTER)
+			new Integer(ModelFactory.TRANSMITTER),
+            new Integer(ModelFactory.DEVICE_CONFIGURATION)
 						
 		};
 	private static final Integer[] LM_MODELS =
@@ -198,6 +203,7 @@ public class DatabaseEditor
 			new Integer(ModelFactory.BASELINE),
 			new Integer(ModelFactory.CICUSTOMER),
 			new Integer(ModelFactory.CONTACT),
+            new Integer(ModelFactory.DEVICE_CONFIGURATION_CATEGORY),
 			new Integer(ModelFactory.HOLIDAY_SCHEDULE),
 			new Integer(ModelFactory.LOGINS),
 			new Integer(ModelFactory.LOGIN_GROUPS),
@@ -237,11 +243,17 @@ public class DatabaseEditor
 	private boolean activateBilling;
 	private static boolean isSuperuser = false;
 	private boolean accessOfLoginNotAllowed = false;
+    
+    private static boolean showDeviceConfiguration = false;
+    
+    private static DatabaseEditor editor = null;
+    
 /**
  * DatabaseEditor constructor comment.
  */
 public DatabaseEditor() {
 	super();
+    this.editor = this;
 }
 /**
  * This method was created in VisualAge.
@@ -636,7 +648,10 @@ private void displayAWizardPanel(JMenuItem item)
 	else if (item == coreCreateMenu.config2WayMenuItem)
 	{
 		showWizardPanel(new com.cannontech.dbeditor.wizard.config.ConfigWizardPanel());
-	}
+        
+	} else if (item == coreCreateMenu.deviceConfigurationMenuItem){
+	    showWizardPanel(new DeviceConfigurationWizardPanel());
+    }
 	
 	else if (item == lmCreateMenu.lmGroupMenuItem)
 	{
@@ -1058,6 +1073,10 @@ private void executeCopyButton_ActionPerformed(ActionEvent event)
 		{
 			showCopyWizardPanel( new com.cannontech.dbeditor.wizard.copy.point.PointCopyWizardPanel((com.cannontech.database.data.point.PointBase)toCopy) );
 		}
+		else if( toCopy instanceof DeviceConfiguration )
+		{
+		    showCopyWizardPanel( new DeviceConfigurationWizardPanel((DeviceConfiguration) LiteFactory.convertLiteToDBPersAndRetrieve((LiteBase) node.getUserObject())) );
+		}
 		else
 			JOptionPane.showMessageDialog(
 				getParentFrame(),
@@ -1263,8 +1282,8 @@ private void executeEditButton_ActionPerformed(ActionEvent event)
 	         PropertyPanel panel = EditorPanelFactory.createEditorPanel( userObject );
 	         							//userObject.getEditorPanel(); //This call takes the most time
 
-	         panel.setValue(userObject);
 	         panel.addPropertyPanelListener(this);
+	         panel.setValue(userObject);
 
 	         JTreeEditorFrame frame = getAvailableEditorFrame();
 	         frame.setOwnerNode( nodes[i] ); //set the editors ownerNode
@@ -2440,7 +2459,12 @@ private void readConfigParameters()
 	if( !showSystem )
 		viewMenu.remove( viewMenu.systemRadioButtonMenuItem );
 		
-
+    // Remove the create device configuration menu item if this user cannot see
+    // device configuation
+        if (!DatabaseEditor.showDeviceConfiguration) {
+            coreCreateMenu.remove(coreCreateMenu.deviceConfigurationMenuItem);
+        }
+    
 }
 /**
  * This method was created in VisualAge.
@@ -2668,6 +2692,7 @@ public void selectionPerformed(WizardPanelEvent event)
 
 	boolean objTypeChange = false;
 	boolean successfullInsertion = false;
+    boolean selectInTree = true;
 
 	if (event.getID() == WizardPanelEvent.FINISH_SELECTION)
 	{
@@ -2687,7 +2712,13 @@ public void selectionPerformed(WizardPanelEvent event)
 			//p.getValue(null) may throw a CancelInsertException
 			newItem = (com.cannontech.database.db.DBPersistent) p.getValue(null);
 
-			//try to insert tih object into the DB
+            // Hack - Don't try to select new Categories or TOUSchedules 
+            // created in the device config UI
+            selectInTree = ((newItem instanceof Category && currentDatabase == DatabaseTypes.SYSTEM_DB)) 
+                    && (newItem instanceof TOUSchedule && 
+                            currentDatabase == DatabaseTypes.SYSTEM_DB);
+            
+			//try to insert the object into the DB
 			successfullInsertion = insertDBPersistent( newItem );
 	
 
@@ -2695,7 +2726,7 @@ public void selectionPerformed(WizardPanelEvent event)
 			//getTreeViewPanel().refresh();
 
 			//Bring the editor up for the newly created Object
-			if (successfullInsertion)
+			if (successfullInsertion && selectInTree)
 			{
 				getTreeViewPanel().selectObject(newItem);
 			}
@@ -2721,7 +2752,7 @@ public void selectionPerformed(WizardPanelEvent event)
 
 		for (int i = 0; i < frames.length; i++)
 		{
-			if (frames[i].getContentPane() == p)
+			if (frames[i].getContentPane() == p) 
 			{
 				//Found a panel so kill the frame
 				this.desktopPane.remove(frames[i]);
@@ -2733,7 +2764,7 @@ public void selectionPerformed(WizardPanelEvent event)
 	}
 	
 
-	if(successfullInsertion || objTypeChange) {
+	if((successfullInsertion || objTypeChange) && selectInTree) {
 		 showEditorSelectedObject();
 	}
 
@@ -2803,12 +2834,29 @@ public void setDatabase(int whichDatabase)
 		System.err.println("com.cannontech.dbeditor.DatabaseEditor:  Unable to switch to database " + whichDatabase );
 	}
 
-	DBTreeModel[] newModels = new DBTreeModel[models.length];
-	for( int i = 0; i < newModels.length; i++ )
+    // Check to see if device configuration items should be shown in the DBEditor
+    long enableDeviceConfig = Long.parseLong(ClientSession.getInstance().
+                                                 getRolePropertyValue(DBEditorRole.OPTIONAL_PRODUCT_DEV, "0"),
+                                             16);
+    DatabaseEditor.showDeviceConfiguration = (enableDeviceConfig & ClientRights.ENABLE_DEVICE_CONFIGURATION) > 0; 
+
+    int length = (DatabaseEditor.showDeviceConfiguration) ? models.length : models.length - 1;
+
+    boolean deviceConfigFound = false;
+	DBTreeModel[] newModels = new DBTreeModel[length];
+	for( int i = 0; i < models.length; i++ )
 	{
-		newModels[i] = ModelFactory.create( models[i].intValue() );
+        // Don't add device configuration or device configuration category to the
+        // sort by if the user cannot see them
+        if (((models[i].intValue() == ModelFactory.DEVICE_CONFIGURATION) || (models[i].intValue() == ModelFactory.DEVICE_CONFIGURATION_CATEGORY)) 
+                && !DatabaseEditor.showDeviceConfiguration) {
+                deviceConfigFound = true;
+                continue;
+            }
+        
+		newModels[(deviceConfigFound) ? i - 1 : i] = ModelFactory.create(models[i].intValue());
 	}
-	
+    
 	getTreeViewPanel().setTreeModels(newModels);
 	if( models == CORE_MODELS )
 		getTreeViewPanel().setSelectedSortByIndex( 1 ); //device is the default
@@ -3127,4 +3175,12 @@ public void windowIconified(WindowEvent event) {
  */
 public void windowOpened(WindowEvent event) {
 }
+
+    public static DatabaseEditor getInstance(){
+        return editor;
+    }
+    
+    public static boolean showDeviceConfiguration(){
+        return DatabaseEditor.showDeviceConfiguration;
+    }
 }

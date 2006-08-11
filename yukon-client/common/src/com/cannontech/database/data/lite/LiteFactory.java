@@ -9,6 +9,8 @@ import com.cannontech.database.data.customer.CICustomerBase;
 import com.cannontech.database.data.customer.Customer;
 import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.device.DeviceBase;
+import com.cannontech.database.data.device.configuration.Category;
+import com.cannontech.database.data.device.configuration.DeviceConfiguration;
 import com.cannontech.database.data.notification.NotificationGroup;
 import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.db.DBPersistent;
@@ -240,7 +242,16 @@ public final static com.cannontech.database.db.DBPersistent createDBPersistent(L
 			((SettlementConfig)returnObject).setYukonDefID(new Integer(((LiteSettlementConfig)liteObject).getYukonDefID()));
 			((SettlementConfig)returnObject).setDescription(((LiteSettlementConfig)liteObject).getDescription());
 			((SettlementConfig)returnObject).setEntryID(new Integer(((LiteSettlementConfig)liteObject).getEntryID()));			
-			break;			
+			break;
+        case LiteTypes.DEVICE_CONFIGURATION:
+            returnObject = new DeviceConfiguration(liteObject.getLiteID());
+            ((DeviceConfiguration)returnObject).setName(((LiteDeviceConfiguration)liteObject).getName());
+            break;
+            
+        case LiteTypes.DEVICE_CONFIGURATION_CATEGORY:
+            returnObject = new Category(liteObject.getLiteID());
+            ((Category)returnObject).setName(((LiteDeviceConfigurationCategory)liteObject).getName());
+            break;
 		default:
 			returnObject = null;
 			break;
@@ -472,7 +483,17 @@ public final static LiteBase createLite(com.cannontech.database.db.DBPersistent 
 			 ((SettlementConfig)val).getDescription(), 
 			 ((SettlementConfig)val).getEntryID().intValue(),
 			 ((SettlementConfig)val).getRefEntryID().intValue());
-	}
+	} else if (val instanceof DeviceConfiguration){
+        
+        returnLite = new LiteDeviceConfiguration(((DeviceConfiguration)val).getId(), 
+                                                 ((DeviceConfiguration)val).getName()); 
+        
+    } else if (val instanceof Category){
+        
+        returnLite = new LiteDeviceConfigurationCategory(((Category)val).getId(), 
+                                                 ((Category)val).getName()); 
+        
+    }
 
 	return returnLite;
 }
