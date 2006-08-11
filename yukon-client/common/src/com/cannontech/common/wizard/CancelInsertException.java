@@ -15,7 +15,7 @@ public class CancelInsertException extends RuntimeException {
  * CancelInsertException constructor comment.
  */
 public CancelInsertException() {
-	this("Insertion of an item was caceled");
+	this("Insertion of an item was cancelled");
 }
 /**
  * CancelInsertException constructor comment.
