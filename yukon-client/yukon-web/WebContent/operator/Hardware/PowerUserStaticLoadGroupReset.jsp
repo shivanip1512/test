@@ -1,5 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
+<%@ page import="com.cannontech.stars.web.bean.InventoryBean" %>
+
 <jsp:useBean id="configBean" class="com.cannontech.stars.web.bean.ConfigBean" scope="page"/>
 <jsp:useBean id="resultSetBean" class="com.cannontech.stars.web.bean.InventoryBean" scope="session"/>
 <jsp:setProperty name="resultSetBean" property="energyCompanyID" value="<%= user.getEnergyCompanyID() %>"/>
@@ -71,6 +73,12 @@
             </table>
             <br>
             <br>
+            <div align="center">
+                <span class="ErrorMsg">**The actions on this page have the potential to seize maximum resources of this system until completion.</span>
+                <span class="ErrorMsg">  It may cause visible slowness or even lack of functionality for any users logged in.</span>
+                <span class="ErrorMsg">  It is recommended that these actions only be performed during non-business hours.</span>
+            </div>
+            <br>
             <br>
 	    	<div align="center">
 				<c:choose>
@@ -92,15 +100,10 @@
 						<c:when test="${configBean.writeToFileAllowed && configBean.hasResetPermission}"> 
 						 	<td> 
 			                  <div align="center"> 
-		                        	<input type="submit" name="Reset" value="Reset Now">
+		                        	<input type="submit" name="Reset" value="Reset All Now">
 		                      </div>
                               <div align="center"> 
                                     <input type="button" name="ResetJustSave" value="Reset and Save Only (No Config Sent)" onclick="resetAllNoConfig(this.form)">
-                              </div>
-                              <div align="center">
-                                  <span class="ErrorMsg">**This action has the potential to seize maximum resources of this system until completion.</span>
-                                  <span class="ErrorMsg">  It may cause visible slowness or even lack of functionality for any users logged in.</span>
-                                  <span class="ErrorMsg">  It is recommended that this action only be taken during non-business hours.</span>
                               </div>
 		                    </td> 
 	                    </c:when>
