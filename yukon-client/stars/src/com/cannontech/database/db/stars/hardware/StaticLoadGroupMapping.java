@@ -64,7 +64,7 @@ public static List<StaticLoadGroupMapping> getAllLoadGroupsForApplianceCat(int a
      *TODO
      *find out if we need to use programID here; it would need to be added to the table 
      */
-    SqlStatement stmt = new SqlStatement("Select distinct slg.LoadGroupID, slg.ApplianceCategoryID, slg.ZipCode, slg.ConsumptionTypeID, slg.SwitchTypeID, yp.PAOName from " + TABLE_NAME 
+    SqlStatement stmt = new SqlStatement("Select distinct slg.LoadGroupID, yp.PAOName from " + TABLE_NAME 
                                          + " slg, YukonPAObject yp where ApplianceCategoryID = " + appCategoryID + " and yp.paobjectID = slg.loadGroupID", CtiUtilities.getDatabaseAlias());
     
     try
@@ -77,11 +77,14 @@ public static List<StaticLoadGroupMapping> getAllLoadGroupsForApplianceCat(int a
             {
                 StaticLoadGroupMapping group = new StaticLoadGroupMapping();
                 group.setLoadGroupID(new Integer(stmt.getRow(i)[0].toString()));
-                group.setApplianceCategoryID(new Integer(stmt.getRow(i)[1].toString()));
+                /*Including the other fields was nullifying the usefulness of the "distinct" call in the query
+                 * and I'm trying to avoid an additional query overall.  We only actually need ID and name for
+                 * this method since it is used only to populate pulldowns on the relevant JSPs.
+                 * group.setApplianceCategoryID(new Integer(stmt.getRow(i)[1].toString()));
                 group.setZipCode(stmt.getRow(i)[2].toString());
                 group.setConsumptionTypeID(new Integer(stmt.getRow(i)[3].toString()));
-                group.setSwitchTypeID(new Integer(stmt.getRow(i)[4].toString()));
-                group.setLoadGroupName(stmt.getRow(i)[5].toString());
+                group.setSwitchTypeID(new Integer(stmt.getRow(i)[4].toString()));*/
+                group.setLoadGroupName(stmt.getRow(i)[1].toString());
                 
                 groups.add(group);
             }
