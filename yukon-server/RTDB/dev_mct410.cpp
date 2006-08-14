@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.80 $
-* DATE         :  $Date: 2006/08/10 17:04:30 $
+* REVISION     :  $Revision: 1.81 $
+* DATE         :  $Date: 2006/08/14 20:25:46 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2796,7 +2796,7 @@ INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
 
                 pPoint = getDevicePointOffsetTypeEqual( 1 + i, PulseAccumulatorPointType );
 
-                pointTime -= pointTime.seconds() % 300;
+                pointTime -= pointTime.seconds() % 60;
             }
             else if( InMessage->Sequence == Cti::Protocol::Emetcon::GetValue_FrozenKWH )
             {
@@ -2816,8 +2816,8 @@ INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
 
                     if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp) )
                     {
-                        pointTime  = CtiTime(getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp));
-                        pointTime -= pointTime.seconds() % 300;
+                        pointTime  = CtiTime(getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp) + rwEpoch);
+                        pointTime -= pointTime.seconds() % 60;
                     }
                     else
                     {
@@ -2826,7 +2826,7 @@ INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
                             dout << CtiTime() << " **** Checkpoint - device \"" << getName() << "\" does not have a freeze timestamp for KWH timestamp, defaulting to current time **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
 
-                        pointTime -= pointTime.seconds() % 300;
+                        pointTime -= pointTime.seconds() % 60;
                     }
 
                     freeze_info_string = " @ " + pointTime.asString();
