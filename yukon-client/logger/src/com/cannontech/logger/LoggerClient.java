@@ -8,6 +8,7 @@ package com.cannontech.logger;
  */
 import java.util.Enumeration;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.CommonUtils;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlStatement;
@@ -115,8 +116,10 @@ private Object[] getDeviceNameAndPointName( long id )
 	{
 		values[0] = statement.getRow(0)[0]; // assign device name
 	}
-	catch ( NullPointerException ex )
+	catch ( Exception ex )
 	{
+        CTILogger.error("No device name found for point id " + id);
+        ex.printStackTrace(System.out);
 		values[0] = "NO DEVICE NAME FOUND";
 	}
 
@@ -124,12 +127,13 @@ private Object[] getDeviceNameAndPointName( long id )
 	{	
 		values[1] = statement.getRow(0)[1]; // assign point name
 	}	
-	catch ( NullPointerException ex )
+	catch ( Exception ex )
 	{
+        CTILogger.error("No point name found for point id " + id);
+        ex.printStackTrace(System.out);
 		values[1] = "NO POINT NAME FOUND";
 	}
 
-	
 	return values;
 }
 /**
