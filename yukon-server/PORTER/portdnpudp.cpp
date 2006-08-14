@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2006/05/11 19:04:04 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2006/08/14 18:29:29 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -904,26 +904,29 @@ void sendResults( dr_id_map::value_type element )
 
     if( dr && dr->device )
     {
-        //  we may be done with this transaction, but do we have anyone to send it back to?
-        if( dr->device->isTransactionComplete() && !dr->work.outbound.empty() )
+        if( dr->device->isTransactionComplete() )
         {
-            if( dr->work.outbound.front() )
+            dr->device->sendDispatchResults(VanGoghConnection);
+
+            //  we may be done with this transaction, but do we have anyone to send it back to?
+            if( !dr->work.outbound.empty() )
             {
-                dr->device->sendDispatchResults(VanGoghConnection);
+                if( dr->work.outbound.front() )
+                {
+                    im.EventCode = dr->work.status;
 
-                im.EventCode = dr->work.status;
+                    OutEchoToIN(dr->work.outbound.front(), &im);
 
-                OutEchoToIN(dr->work.outbound.front(), &im);
+                    dr->device->sendCommResult(&im);
 
-                dr->device->sendCommResult(&im);
+                    //  This method may delete the om!
+                    ReturnResultMessage(dr->work.status, &im, dr->work.outbound.front());
 
-                //  This method may delete the om!
-                ReturnResultMessage(dr->work.status, &im, dr->work.outbound.front());
+                    delete dr->work.outbound.front();
+                }
 
-                delete dr->work.outbound.front();
+                dr->work.outbound.pop();
             }
-
-            dr->work.outbound.pop();
         }
     }
     else if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
