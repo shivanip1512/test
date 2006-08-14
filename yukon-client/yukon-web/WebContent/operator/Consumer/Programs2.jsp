@@ -1,4 +1,6 @@
+<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
 <%@ include file="include/StarsHeader.jsp" %>
+<jsp:useBean id="configBean" class="com.cannontech.stars.web.bean.ConfigBean" scope="page"/>
 <%
 	boolean inWizard = request.getParameter("Wizard") != null;
 	if (!inWizard && accountInfo == null) {
@@ -184,10 +186,31 @@ function prepareSubmit(form) {
                   <tr> 
                     <input type="hidden" name="ProgID" value="<%= suProg.getProgramID() %>">
 					<input type="hidden" name="AppCatID" value="<%= suProg.getApplianceCategoryID() %>">
+                    <input type="hidden" name="groupID" value="<%= program.getGroupID() %>">
                     <input type="hidden" name="InvIDs" value="">
                     <input type="hidden" name="LoadNos" value="">
                     <td width="25%" class="TableCell"><%= ServletUtils.getProgramDisplayNames(enrProg)[0] %></td>
-<% if (!useHardwareAddressing) { %>
+<% if (!useHardwareAddressing || configBean.isWriteToFileAllowed()) { %>
+                    <% if (configBean.isWriteToFileAllowed()) 
+                    {   
+                    pageContext.setAttribute("groupID", groupID);
+                    pageContext.setAttribute("appCatID",program.getProgramID());
+                %>
+                    <c:set target="${configBean}" property="currentApplianceCategoryID" value="${appCategoryID}" />
+                    <td width="25%" class="TableCell"> 
+                       <select id="GroupID" name="GroupID" onchange="setContentChanged(true)">
+                          <option value="0" selected> <c:out value="(none)"/> </option>
+                          <c:forEach var="group" items="${configBean.currentStaticGroups}">
+                                <c:if test="${group.loadGroupID == groupID}">
+                                    <option value='<c:out value="${group.loadGroupID}"/>' selected> <c:out value="${group.loadGroupName}"/> </option>
+                                </c:if>  
+                                <c:if test="${group.loadGroupID != groupID}">
+                                    <option value='<c:out value="${group.loadGroupID}"/>'> <c:out value="${group.loadGroupName}"/> </option>
+                                </c:if> 
+                          </c:forEach>
+                       </select>
+                    </td>
+                    <% } else { %>
                     <td width="25%" class="TableCell"> 
                       <select name="GroupID">
                         <%
@@ -197,7 +220,7 @@ function prepareSubmit(form) {
 %>
                         <option value="<%= group.getEntryID() %>" <%= selected %>><%= group.getContent() %></option>
                         <%
-		}
+		}}
 %>
                       </select>
                     </td>
