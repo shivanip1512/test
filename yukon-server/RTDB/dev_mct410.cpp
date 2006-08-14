@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.81 $
-* DATE         :  $Date: 2006/08/14 20:25:46 $
+* REVISION     :  $Revision: 1.82 $
+* DATE         :  $Date: 2006/08/14 22:04:12 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2722,6 +2722,11 @@ INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** Accumulator Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    if( InMessage->Sequence == Emetcon::Scan_Accum )
+    {
+        setScanFlag(ScanRateAccum, false);
     }
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
