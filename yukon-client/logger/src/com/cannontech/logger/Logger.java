@@ -330,16 +330,16 @@ private void initialize()
 
 	setLoggerParameters();
 
-	if( printMode.equalsIgnoreCase(MODE_PRINTER) )
-	{
-		createNewPrinterTools();
-	}
-	else if( printMode.equalsIgnoreCase(MODE_SCREEN) )
-	{
-		titleText = BLANK_SPACE + "\r\n" 
-						+ headerText + "\r\n" 
-						+ HEADER_LINE;
-	}
+//	if( printMode.equalsIgnoreCase(MODE_PRINTER) )
+//	{
+//		createNewPrinterTools();
+//	}
+//	else if( printMode.equalsIgnoreCase(MODE_SCREEN) )
+//	{
+//		titleText = BLANK_SPACE + "\r\n" 
+//						+ headerText + "\r\n" 
+//						+ HEADER_LINE;
+//	}
 }
 
 /**
@@ -475,6 +475,7 @@ private void printToPageLayout(String line, long classification)
         lineCount++;
     } catch (Exception e) {
         System.out.println("Error printing directly to LPT");
+        e.printStackTrace(System.out);
     }
     
 //	setLineColor( classification );
