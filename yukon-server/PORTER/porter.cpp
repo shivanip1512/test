@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.99 $
-* DATE         :  $Date: 2006/07/10 15:47:36 $
+* REVISION     :  $Revision: 1.100 $
+* DATE         :  $Date: 2006/08/15 17:54:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -212,6 +212,7 @@ extern void KickerThread (void *);
 extern void DispatchMsgHandlerThread(VOID *Arg);
 extern HCTIQUEUE* QueueHandle(LONG pid);
 void commFail(CtiDeviceSPtr &Device);
+bool addCommResult(long deviceID, bool wasFailure, bool retryGtZero);
 
 DLLIMPORT extern BOOL PorterQuit;
 
@@ -2359,6 +2360,25 @@ static int MyAllocHook(int nAllocType, void *pvData,
     if(pfnOldCrtAllocHook != NULL)
         pfnOldCrtAllocHook(nAllocType, pvData, nSize, nBlockUse, lRequest, szFileName, nLine);
     return TRUE; // allow the memory operation to proceed
+}
+
+bool addCommResult(long deviceID, bool wasFailure, bool retryGtZero)
+{
+    bool retVal = false;
+    bool isCommFail = !wasFailure; //This is inverted for some reason
+
+    CtiDeviceSPtr device = DeviceManager.getEqual(deviceID);
+
+    if( device )
+    {
+        if( device->adjustCommCounts(isCommFail, retryGtZero) )
+        {
+            commFail(device);
+        }
+        retVal = true;
+    }
+
+    return retVal;
 }
 
 void commFail(CtiDeviceSPtr &Device)

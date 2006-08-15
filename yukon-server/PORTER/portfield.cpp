@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.190 $
-* DATE         :  $Date: 2006/07/25 22:10:28 $
+* REVISION     :  $Revision: 1.191 $
+* DATE         :  $Date: 2006/08/15 17:54:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -136,6 +136,7 @@ extern void applyPortQueuePurge(const long unusedid, CtiPortSPtr ptPort, void *u
 extern void DisplayTraceList( CtiPortSPtr Port, list< CtiMessage* > &traceList, bool consume);
 extern HCTIQUEUE* QueueHandle(LONG pid);
 extern void commFail(CtiDeviceSPtr &Device);
+extern bool addCommResult(long deviceID, bool wasFailure, bool retryGtZero);
 
 bool isTimedOut( const CtiTime &start_time, const unsigned int &duration_seconds);
 bool deviceCanSurviveThisStatus(INT status);
@@ -3088,6 +3089,8 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                     CommResult = status;
                 }
 
+                addCommResult(InMessage->TargetID, CommResult != NORMAL, OutMessage->Retry > 0);
+
                 break;
             }
         case TYPE_LCU415:
@@ -4398,7 +4401,8 @@ bool processCommResult(INT CommResult, LONG DeviceID, LONG TargetID, bool RetryG
         status = true;
     }
 
-    if(TargetID != 0 && TargetID != DeviceID)
+    USHORT deviceType = Device->getType();
+    if(TargetID != 0 && TargetID != DeviceID && deviceType != TYPE_CCU700 && deviceType != TYPE_CCU710 && deviceType != TYPE_CCU711 )
     {
         // In this case, we need to account for the fail on the target device too..
         CtiDeviceSPtr pTarget = DeviceManager.getEqual( TargetID );

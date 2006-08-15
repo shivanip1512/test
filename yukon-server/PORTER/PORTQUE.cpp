@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.50 $
-* DATE         :  $Date: 2006/06/02 20:05:57 $
+* REVISION     :  $Revision: 1.51 $
+* DATE         :  $Date: 2006/08/15 17:54:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -80,6 +80,7 @@ using namespace std;
 
 extern CtiPortManager   PortManager;
 extern HCTIQUEUE*       QueueHandle(LONG pid);
+extern bool addCommResult(long deviceID, bool wasFailure, bool retryGtZero);
 
 static ULONG MAX_CCU_QUEUE_TIME = 1800;
 USHORT QueSequence = {0x8000};
@@ -967,6 +968,9 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
                     }
                 }
 
+                //We had a comm error and need to report it.
+                addCommResult(ResultMessage.TargetID, (ResultMessage.EventCode & 0x3fff) != NORMAL, false);
+
                 statisticsNewCompletion( ResultMessage.Port, ResultMessage.DeviceID, ResultMessage.TargetID, ResultMessage.EventCode & 0x3fff, ResultMessage.MessageFlags );
             }
             else
@@ -1813,6 +1817,9 @@ DeQueue (INMESS *InMessage)
                         {
                             ResultMessage.Buffer.DSt.Address = pInfo->QueTable[i].Address;
                         }
+
+                        //We had a comm error and need to report it.
+                        addCommResult(ResultMessage.TargetID, (ResultMessage.EventCode & 0x3fff) != NORMAL, false);
 
                         statisticsNewCompletion( ResultMessage.Port, InMessage->DeviceID, ResultMessage.TargetID, ResultMessage.EventCode & 0x3fff, ResultMessage.MessageFlags );
                         /* Now send it back */
