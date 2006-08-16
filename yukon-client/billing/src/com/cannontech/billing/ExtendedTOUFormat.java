@@ -187,18 +187,30 @@ public class ExtendedTOUFormat extends FileFormatBase {
 
         case 101: // Rate A KWh
             record.setOnPeakReadingKWh(reading);
+            record.setReadingCode(ExtendedTOURecord.ELECTRIC_CODE);
+            record.setTimeTotalForRate(timestamp);
+            record.setDateTotalForRate(timestamp);
             break;
 
         case 121: // Rate B KWh
             record.setOffPeakReadingKWh(reading);
+            record.setReadingCode(ExtendedTOURecord.ELECTRIC_CODE);
+            record.setTimeTotalForRate(timestamp);
+            record.setDateTotalForRate(timestamp);
             break;
 
         case 141: // Rate C KWh
             record.setRateCReadingKWh(reading);
+            record.setReadingCode(ExtendedTOURecord.ELECTRIC_CODE);
+            record.setTimeTotalForRate(timestamp);
+            record.setDateTotalForRate(timestamp);
             break;
 
         case 161: // Rate D KWh
             record.setRateDReadingKWh(reading);
+            record.setReadingCode(ExtendedTOURecord.ELECTRIC_CODE);
+            record.setTimeTotalForRate(timestamp);
+            record.setDateTotalForRate(timestamp);
             break;
 
         case 11: // KW

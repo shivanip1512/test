@@ -4,7 +4,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 
 /**
- * Billing record for simple TOU
+ * Billing record for extended TOU
  */
 public class ExtendedTOURecord extends SimpleTOURecord {
 
@@ -34,7 +34,7 @@ public class ExtendedTOURecord extends SimpleTOURecord {
     }
 
     /**
-     * Converts data in a SimpleTOU format to a formatted StringBuffer for
+     * Converts data in a ExtendedTOU format to a formatted StringBuffer for
      * stream use.
      * @return String
      */
@@ -179,6 +179,18 @@ public class ExtendedTOURecord extends SimpleTOURecord {
 
     public void setReadingCode(String readingCode) {
         this.readingCode = readingCode;
+    }
+
+    public void setTimeTotalForRate(Timestamp timestamp) {
+        if (this.getTimeTotal() == null) {
+            this.setTimeTotal(timestamp);
+        }
+    }
+
+    public void setDateTotalForRate(Timestamp timestamp) {
+        if (this.getDateTotal() == null) {
+            this.setDateTotal(timestamp);
+        }
     }
 
 }
