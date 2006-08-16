@@ -106,7 +106,7 @@
 <%
 	}
 	else if (liteInv == null) {
-		if (starsInv.getLMHardware() != null) {
+		if (starsInv == null || starsInv.getLMHardware() != null) {
 %>
                 <p class="MainText">The serial number was not found in the inventory.<%=buttonHTML%>
 <%
