@@ -82,7 +82,7 @@ private:
 
     static CtiCapController* _instance;
     RWThread _substationBusThread;
-    RWThread _ccEventMsgThread;
+    //RWThread _ccEventMsgThread;
 
     CtiConnection* _pilConnection;
     CtiConnection* _dispatchConnection;

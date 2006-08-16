@@ -141,7 +141,6 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     BOOL getMultiMonitorFlag() const;
     BOOL getWaitForReCloseDelayFlag() const;
     BOOL getWaitToFinishRegularControlFlag() const;
-    int getMultiBusCurrentState() const;
 
     CtiFeeder_vec& getCCFeeders();
     void deleteCCFeeder(long feederId);
@@ -217,12 +216,12 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setMultiMonitorFlag(BOOL flag);
     CtiCCSubstationBus& setWaitForReCloseDelayFlag(BOOL flag);
     CtiCCSubstationBus& setWaitToFinishRegularControlFlag(BOOL flag);
-    CtiCCSubstationBus& setMultiBusCurrentState(int state);
     CtiCCSubstationBus& setAllAltSubValues(DOUBLE volt, DOUBLE var, DOUBLE watt);
 
     BOOL isPastMaxConfirmTime(const CtiTime& currentDateTime);
     LONG getLastFeederControlledSendRetries() const;
     void analyzeMultiVoltBus(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
+    void analyzeMultiVoltBus1(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
     BOOL performActionMultiPointBus(const CtiTime& currentDateTime);
     BOOL isVarCheckNeeded(const CtiTime& currentDateTime);
     BOOL isConfirmCheckNeeded();
@@ -252,6 +251,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     BOOL isBusAnalysisNeeded(const CtiTime& currentDateTime);
     BOOL isMultiVoltBusAnalysisNeeded(const CtiTime& currentDateTime);
     BOOL areAllMonitorPointsInVoltageRange(CtiCCMonitorPoint* oorPoint);
+    CtiCCCapBank* getMonitorPointParentBankAndFeeder(CtiCCMonitorPoint* point, CtiCCFeeder* feed);
     BOOL voltControlBankSelectProcess(CtiCCMonitorPoint* point, CtiMultiMsg_vec &pointChanges, CtiMultiMsg_vec &ccEvents, CtiMultiMsg_vec &pilMessages);
     BOOL areOtherMonitorPointResponsesOk(LONG mPointID, CtiCCCapBank* potentialCap, int action);
 
@@ -418,7 +418,6 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     LONG _capBankToVerifyInactivityTime;
 
 
-    int _currentMultiBusState;
     DOUBLE _altSubVoltVal;
     DOUBLE _altSubVarVal;
     DOUBLE _altSubWattVal;
@@ -429,8 +428,9 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     BOOL _dirty;
 
     void restore(RWDBReader& rdr);
-
     string doubleToString(DOUBLE doubleVal);
+
+
     std::list <long> _pointIds;
     //vector <long> _multipleMonitorPoints;
     std::vector <CtiCCMonitorPointPtr> _multipleMonitorPoints;

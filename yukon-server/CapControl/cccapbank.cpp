@@ -828,7 +828,7 @@ BOOL CtiCCCapBank::updateVerificationState(void)
     case 1:
         {
             setPreviousVerificationControlStatus(getControlStatus());
-            if ( stringContainsIgnoreCase(getControlDeviceType(),"CBC 70") &&
+            if ( stringContainsIgnoreCase(getControlDeviceType(),"CBC 701") &&
                   _USE_FLIP_FLAG == TRUE &&
                   (getControlStatus() == OpenFail || getControlStatus() == CloseFail) )
             {  
@@ -845,7 +845,7 @@ BOOL CtiCCCapBank::updateVerificationState(void)
         }
     case 2:
         {
-            if (!stringContainsIgnoreCase(getControlDeviceType(),"CBC 70") && 
+            if (!stringContainsIgnoreCase(getControlDeviceType(),"CBC 701") && 
                 _USE_FLIP_FLAG == TRUE)
             {
 
@@ -921,7 +921,7 @@ BOOL CtiCCCapBank::updateVerificationState(void)
             if (getControlStatus() == OpenFail ||
                 getControlStatus() == CloseFail ) 
             {
-                if (!stringContainsIgnoreCase(getControlDeviceType(),"CBC 70") && 
+                if (!stringContainsIgnoreCase(getControlDeviceType(),"CBC 701") && 
                     _USE_FLIP_FLAG == TRUE)
                 {
                     ctrlIdx = 5; 
@@ -1013,9 +1013,25 @@ CtiCCCapBank& CtiCCCapBank::updatePointResponseDeltas(CtiCCMonitorPoint* point)
 
         if (point->getPointId() == pResponse->getPointId())
         {
-            LONG nInAvg = (point->getNInAvg()!=0?point->getNInAvg():1);
+            if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
             {
-                pResponse->setDelta( ( (pResponse->getDelta()*(nInAvg -1)) + 
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " MULTIVOLT: Bank ID: " <<getPAOName()<<" Point ID: "<<pResponse->getPointId()<<" preOpValue: "<<pResponse->getPreOpValue() <<" currentValue: "<<point->getValue()<< endl;
+            }
+
+            //if (pResponse->getDelta() != 0) 
+            DOUBLE nInAvg = (point->getNInAvg()!=0?point->getNInAvg():1);
+            DOUBLE fabsy = fabs(pResponse->getPreOpValue() - point->getValue());  
+            DOUBLE delta = ( (pResponse->getDelta()*(nInAvg -1)) + 
+                                  fabs(pResponse->getPreOpValue() - point->getValue()) ) / 
+                                  nInAvg;
+            if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " MULTIVOLT: Bank ID: " <<getPAOName()<<" Point ID: "<<pResponse->getPointId()<<" fabs: "<<fabsy <<" delta: "<<delta<< endl;
+            }
+            {
+                pResponse->setDelta( ( (pResponse->getDelta()*(nInAvg -1.0)) + 
                                   fabs(pResponse->getPreOpValue() - point->getValue()) ) / 
                                   nInAvg);
             }

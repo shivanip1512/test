@@ -131,6 +131,7 @@ public:
 
     void reloadCapBankFromDatabase(long capBankId, map< long, CtiCCCapBankPtr > *paobject_capbank_map,
                                    map< long, CtiCCFeederPtr > *paobject_feeder_map,
+                                   map< long, CtiCCSubstationBusPtr > *paobject_subbus_map,
                                    multimap< long, CtiCCCapBankPtr > *pointid_capbank_map,
                                    map< long, long> *capbank_subbus_map,
                                    map< long, long> *capbank_feeder_map,
