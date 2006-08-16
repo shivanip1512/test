@@ -73,11 +73,18 @@
             </table>
             <br>
             <br>
-            <div align="center">
-                <span class="ErrorMsg">**The actions on this page have the potential to seize maximum resources of this system until completion.</span>
-                <span class="ErrorMsg">  It may cause visible slowness or even lack of functionality for any users logged in.</span>
-                <span class="ErrorMsg">  It is recommended that these actions only be performed during non-business hours.</span>
-            </div>
+            <c:choose>
+                <c:when test="${configBean.writeToFileAllowed && configBean.hasResetPermission}"> 
+                    <div align="center">
+                        <span class="ErrorMsg">**The actions on this page have the potential to seize maximum resources of this system until completion.</span>
+                        <span class="ErrorMsg">  It may cause visible slowness or even lack of functionality for any users logged in.</span>
+                        <span class="ErrorMsg">  It is recommended that these actions only be performed during non-business hours.</span>
+                    </div>
+                </c:when>
+                <c:otherwise>   
+                    
+                </c:otherwise>
+            </c:choose>
             <br>
             <br>
 	    	<div align="center">
