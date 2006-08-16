@@ -10,10 +10,14 @@ import javax.xml.soap.SOAPMessage;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.StarsDatabaseCache;
+import com.cannontech.database.data.lite.LiteCICustomer;
+import com.cannontech.database.data.lite.LiteCustomer;
+import com.cannontech.database.data.lite.stars.LiteAddress;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteLMCustomerEvent;
 import com.cannontech.database.data.lite.stars.LiteLMThermostatSchedule;
@@ -26,6 +30,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.stars.hardware.LMThermostatSeason;
+import com.cannontech.database.db.stars.hardware.StaticLoadGroupMapping;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ServletUtils;
@@ -405,39 +410,107 @@ public class CreateLMHardwareAction implements ActionBase {
 				if (liteInv instanceof LiteStarsLMHardware) {
 					LiteStarsLMHardware liteHw = (LiteStarsLMHardware) liteInv;
 					
-					for (int i = 0; i < createHw.getLMHardware().getStarsLMHardwareConfigCount(); i++) {
-						StarsLMHardwareConfig starsConfig = createHw.getLMHardware().getStarsLMHardwareConfig(i);
-						if (starsConfig.getGroupID() == 0) continue;
-            			
-						com.cannontech.database.db.stars.hardware.LMHardwareConfiguration config =
-								new com.cannontech.database.db.stars.hardware.LMHardwareConfiguration();
-						config.setInventoryID( invDB.getInventoryID() );
-						config.setApplianceID( new Integer(starsConfig.getApplianceID()) );
-						config.setAddressingGroupID( new Integer(starsConfig.getGroupID()) );
-						config.setLoadNumber( new Integer(starsConfig.getLoadNumber()) );
-						
-						config = (com.cannontech.database.db.stars.hardware.LMHardwareConfiguration)
-								Transaction.createTransaction( Transaction.INSERT, config ).execute();
-            			
-						for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
-							LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(j);
-							if (liteApp.getApplianceID() == starsConfig.getApplianceID()) {
-								liteApp.setInventoryID( liteHw.getInventoryID() );
-								liteApp.setAddressingGroupID( config.getAddressingGroupID().intValue() );
-								liteApp.setLoadNumber( config.getLoadNumber().intValue() );
-            					
-								for (int k = 0; k < liteAcctInfo.getPrograms().size(); k++) {
-									LiteStarsLMProgram liteProg = (LiteStarsLMProgram) liteAcctInfo.getPrograms().get(k);
-									if (liteProg.getProgramID() == liteApp.getProgramID()) {
-										liteProg.setGroupID( config.getAddressingGroupID().intValue() );
-										break;
-									}
-								}
-								break;
-							}
-						}
-					}
-				}
+                        //TODO Add auto assignment here
+                    
+					if(VersionTools.staticLoadGroupMappingExists())
+                    {
+                        com.cannontech.database.db.stars.hardware.LMHardwareConfiguration config =
+                            new com.cannontech.database.db.stars.hardware.LMHardwareConfiguration();
+                        int appID = 0;
+                        int appCatID = 0;
+                        LiteStarsAppliance keeperApp = null;
+                        if(createHw.getLMHardware().getStarsLMHardwareConfigCount() < 1) {
+                            for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
+                                LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(j);
+                                if(liteApp.getInventoryID() < 1) {
+                                    appID = liteApp.getApplianceID();
+                                    appCatID = liteApp.getApplianceCategoryID();
+                                    keeperApp = liteApp;
+                                    /*
+                                     * Let's keep looping so we get the most recently created appliance since we are sort of 
+                                     * guessing anyway.  Newer should be safer.
+                                     */
+                                }
+                            }
+                        }
+                        else {
+                            for (int i = 0; i < createHw.getLMHardware().getStarsLMHardwareConfigCount(); i++) {
+                                StarsLMHardwareConfig starsConfig = createHw.getLMHardware().getStarsLMHardwareConfig(i);                                
+                                for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
+                                    LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(j);
+                                    if (liteApp.getApplianceID() == starsConfig.getApplianceID() && liteApp.getAccountID() == liteAcctInfo.getAccountID()) {
+                                        appID = liteApp.getApplianceID();
+                                        appCatID = liteApp.getApplianceCategoryID();
+                                        keeperApp = liteApp;
+                                    }
+                                }
+                            }
+                        }
+
+                        //get zipCode
+                        String zip = energyCompany.getAddress(liteAcctInfo.getAccountSite().getStreetAddressID()).getZipCode();
+                        //get ConsumptionType
+                        LiteCustomer cust = liteAcctInfo.getCustomer();
+                        Integer consumptionType = -1;
+                        if(cust instanceof LiteCICustomer)
+                            consumptionType = ((LiteCICustomer)cust).getCICustType();
+                        StaticLoadGroupMapping mapping = StaticLoadGroupMapping.getAStaticLoadGroupMapping(appCatID, zip, consumptionType, createHw.getDeviceType().getEntryID());
+                        if(mapping == null) {
+                            CTILogger.error("A static mapping could not be determined for serial number " + liteHw.getManufacturerSerialNumber() 
+                                + ".  ApplianceCategoryID=" + appCatID + ", ZipCode=" + zip + ", ConsumptionTypeID=" 
+                                + consumptionType + ",SwitchTypeID=" + createHw.getDeviceType().getEntryID());
+                        }
+                        else {
+                            /*
+                             * All this to set a load group ID.
+                             */
+                            config.setApplianceID(appID);
+                            config.setInventoryID(createHw.getInventoryID());
+                            config.setAddressingGroupID(mapping.getLoadGroupID());
+                            config = (com.cannontech.database.db.stars.hardware.LMHardwareConfiguration)
+                            Transaction.createTransaction( Transaction.INSERT, config ).execute();
+                            if(keeperApp != null) {
+                                keeperApp.setAddressingGroupID(config.getAddressingGroupID());
+                                keeperApp.setInventoryID(config.getInventoryID());
+                                keeperApp.setLoadNumber(config.getLoadNumber());
+                            }
+                        }
+                    }
+                    else {
+                        for (int i = 0; i < createHw.getLMHardware().getStarsLMHardwareConfigCount(); i++) {
+                            StarsLMHardwareConfig starsConfig = createHw.getLMHardware().getStarsLMHardwareConfig(i);
+    						if (starsConfig.getGroupID() == 0) continue;
+                			
+    						com.cannontech.database.db.stars.hardware.LMHardwareConfiguration config =
+    								new com.cannontech.database.db.stars.hardware.LMHardwareConfiguration();
+    						config.setInventoryID( invDB.getInventoryID() );
+    						config.setApplianceID( new Integer(starsConfig.getApplianceID()) );
+    						config.setAddressingGroupID( new Integer(starsConfig.getGroupID()) );
+    						config.setLoadNumber( new Integer(starsConfig.getLoadNumber()) );
+    						
+    						config = (com.cannontech.database.db.stars.hardware.LMHardwareConfiguration)
+    								Transaction.createTransaction( Transaction.INSERT, config ).execute();
+                			
+    						for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
+    							LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(j);
+    							if (liteApp.getApplianceID() == starsConfig.getApplianceID()) {
+    								liteApp.setInventoryID( liteHw.getInventoryID() );
+    								liteApp.setAddressingGroupID( config.getAddressingGroupID().intValue() );
+    								liteApp.setLoadNumber( config.getLoadNumber().intValue() );
+                					
+    								for (int k = 0; k < liteAcctInfo.getPrograms().size(); k++) {
+    									LiteStarsLMProgram liteProg = (LiteStarsLMProgram) liteAcctInfo.getPrograms().get(k);
+    									if (liteProg.getProgramID() == liteApp.getProgramID()) {
+    										liteProg.setGroupID( config.getAddressingGroupID().intValue() );
+    										break;
+    									}
+    								}
+    								break;
+    							}
+    						}
+    					}
+                    }
+    			}
 				
 				int hwEventEntryID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE ).getEntryID();
 				int installActID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_INSTALL ).getEntryID();
