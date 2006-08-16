@@ -308,7 +308,7 @@ public synchronized java.util.List getAllCapControlSubBuses()
  * Creation date: (3/14/00 3:19:19 PM)
  */
 public synchronized List getAllContacts() {
-    if ( allContacts != null ) {
+    if( allContacts != null && allContactsMap != null && allContactNotifsMap != null) {
         return allContacts;
     } else {
         allContacts = new ArrayList();        
