@@ -118,17 +118,15 @@ public class LMHardwareConfiguration extends DBPersistent {
 		return null;
 	}
     
-    public static HashMap<Integer, LMHardwareConfiguration> getAllLMHardwareConfigurationsWithoutLoadGroups(int energyCompanyID) {
-        String sql = "SELECT cfg.* FROM " + TABLE_NAME + " cfg, ECToInventoryMapping map " +
-                "WHERE map.EnergyCompanyID = " + energyCompanyID + " AND map.InventoryID = cfg.InventoryID"
-                + " AND cfg.AddressingGroupID = 0";
+    public static HashMap<Integer, LMHardwareConfiguration> getAllLMHardwareConfigurationsWithoutLoadGroups() {
+        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE AddressingGroupID = 0";
         SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
         
         try {
             stmt.execute();
             
             HashMap<Integer, LMHardwareConfiguration> configs = new HashMap<Integer, LMHardwareConfiguration>(stmt.getRowCount());
-            for (int i = 0; i < configs.size(); i++) {
+            for (int i = 0; i < stmt.getRowCount(); i++) {
                 Object[] row = stmt.getRow(i);
                 LMHardwareConfiguration config = new LMHardwareConfiguration();
                 
