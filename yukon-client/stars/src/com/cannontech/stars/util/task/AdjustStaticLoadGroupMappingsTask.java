@@ -81,7 +81,9 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
 	 * @see com.cannontech.stars.util.task.TimeConsumingTask#getProgressMsg()
 	 */
 	public String getProgressMsg() {
-		if (fullReset) {
+		if(numToBeConfigured == 0)
+            return "Mapping task is sorting static mappings and inventory items";
+	    else if (fullReset) {
 			if (status == STATUS_FINISHED && numFailure == 0) {
 				return numSuccess + " switches have been mapped successfully to addressing groups.";
 			}
@@ -129,20 +131,22 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
 				&& energyCompany.getChildren().size() > 0;
 		hwsToAdjust = new ArrayList();
         
+        if(!fullReset)
+            existingsConfigs = LMHardwareConfiguration.getAllLMHardwareConfigurationsWithoutLoadGroups();
+        
 		if (!searchMembers) {
 			List<LiteInventoryBase> hwsFromEC = energyCompany.loadAllInventory(true);
             /*
              * If not a full reset, we will want to only look for those with an addressing group ID of zero
              */
-            if(!fullReset)
-                existingsConfigs = LMHardwareConfiguration.getAllLMHardwareConfigurationsWithoutLoadGroups(energyCompany.getEnergyCompanyID());
-			for (int j = 0; j < hwsToAdjust.size(); j++) {
+			for (int j = 0; j < hwsFromEC.size(); j++) {
 				if (!hwsToAdjust.contains( hwsFromEC.get(j) ) && hwsFromEC.get(j) instanceof LiteStarsLMHardware) {
                     if(!fullReset)
-                    {
+                    { 
                         LMHardwareConfiguration config = existingsConfigs.get(hwsFromEC.get(j).getInventoryID());
-                        if(config != null)
+                        if(config != null) {
                             hwsToAdjust.add( hwsFromEC.get(j) );
+                        }
                     }
                     else
                         hwsToAdjust.add( hwsFromEC.get(j) );
@@ -156,23 +160,23 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
 			for (int j = 0; j < descendants.size(); j++) {
 				LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(j);
                 List<LiteInventoryBase> hwsFromEC = company.loadAllInventory(true);
-                /*
+                /*  
                  * If not a full reset, we will want to only look for those with an addressing group ID of zero
                  */
-                if(!fullReset)
-                    existingsConfigs = LMHardwareConfiguration.getAllLMHardwareConfigurationsWithoutLoadGroups(energyCompany.getEnergyCompanyID());
-                for (int i = 0; i < hwsToAdjust.size(); i++) {
-                    if (!hwsToAdjust.contains( hwsFromEC.get(i) ) && hwsFromEC.get(i) instanceof LiteStarsLMHardware) {
+                for (int i = 0; i < hwsFromEC.size(); i++) {
+                    if (!hwsToAdjust.contains( hwsFromEC.get(j) ) && hwsFromEC.get(j) instanceof LiteStarsLMHardware) {
                         if(!fullReset)
-                        {
-                            LMHardwareConfiguration config = existingsConfigs.get(hwsFromEC.get(i).getInventoryID());
-                            if(config != null)
-                                hwsToAdjust.add( hwsFromEC.get(i) );
+                        { 
+                            LMHardwareConfiguration config = existingsConfigs.get(hwsFromEC.get(j).getInventoryID());
+                            if(config != null) {
+                                hwsToAdjust.add( hwsFromEC.get(j) );
+                            }
                         }
                         else
-                            hwsToAdjust.add( hwsFromEC.get(i) );
+                            hwsToAdjust.add( hwsFromEC.get(j) );
                     }
                 }
+                System.out.println("DONE with sort for " + company.getName());
 			}
 		}
 		
@@ -183,6 +187,7 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
 			return;
 		}
 		
+        existingsConfigs = null;
 		/*TODO: shouldn't need to support hardware addressing, but make sure 
 		 *User has specified a new configuration
 		 *StarsLMConfiguration hwConfig = null;
@@ -208,6 +213,14 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
             //get the current Configuration
             com.cannontech.database.db.stars.hardware.LMHardwareConfiguration configDB = com.cannontech.database.db.stars.hardware.LMHardwareConfiguration.getLMHardwareConfigurationFromInvenID(liteHw.getInventoryID());
             
+            if(configDB == null) {
+                configurationSet.add( hwsToAdjust.get(i) );
+                numFailure++;
+                failureInfo.add("An LMHardwareConfiguration entry for switch " + liteHw.getManufacturerSerialNumber() 
+                                + " could not be found.  It is likely this switch has not been added to an account.");
+                continue;
+            }
+                
             LiteStarsCustAccountInformation liteAcctInfo = 
                 energyCompany.getCustAccountInformation( liteHw.getAccountID(), true );
             //get zipCode
@@ -224,13 +237,21 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
                 if(liteAcctInfo.getAppliances().get(j).getApplianceID() == configDB.getApplianceID().intValue())
                     applianceCatID = liteAcctInfo.getAppliances().get(j).getApplianceCategoryID();
             }
+            if(applianceCatID == -1) {
+                configurationSet.add( hwsToAdjust.get(i) );
+                numFailure++;
+                failureInfo.add("An appliance could not be detected for serial number " + liteHw.getManufacturerSerialNumber() 
+                                + ".  It is likely that this switch is not assigned to an account, or no appliance was created on that account.");
+                continue;
+            }
+            
             //get SwitchTypeID 
             Integer devType = liteHw.getLmHardwareTypeID();
             StaticLoadGroupMapping groupMapping = StaticLoadGroupMapping.getAStaticLoadGroupMapping(applianceCatID, zip, consumptionType, devType);
             if(groupMapping == null) {
                 configurationSet.add( hwsToAdjust.get(i) );
                 numFailure++;
-                failureInfo.add("A static mapping could not be appropriate for serial number " + liteHw.getManufacturerSerialNumber() 
+                failureInfo.add("A static mapping could not be determined for serial number " + liteHw.getManufacturerSerialNumber() 
                                 + ".  ApplianceCategoryID=" + applianceCatID + ", ZipCode=" + zip + ", ConsumptionTypeID=" 
                                 + consumptionType + ",SwitchTypeID=" + devType);
                 continue;
