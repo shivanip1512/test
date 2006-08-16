@@ -579,15 +579,17 @@ public final class YukonCRSIntegrator
 	               	if( lmHardwares.size() > 0)
 	               	{
 	               		YukonListEntry devStateEntry = null;
+                        int availableYukDefID = -1;
 	               		YukonSelectionList invDevStateList = liteStarsEnergyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS);
 		               	for (int i = 0; i < invDevStateList.getYukonListEntries().size(); i++)
 		        		{
 		        			if( ((YukonListEntry)invDevStateList.getYukonListEntries().get(i)).getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL )
 		        			{
 		        				devStateEntry = (YukonListEntry)invDevStateList.getYukonListEntries().get(i);
-		        				break;
 		        			}
-		        			
+		        			if( ((YukonListEntry)invDevStateList.getYukonListEntries().get(i)).getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL) {
+                                availableYukDefID = ((YukonListEntry)invDevStateList.getYukonListEntries().get(i)).getYukonDefID();
+                            }
 		        		}
 		               	for (int i = 0; i < lmHardwares.size(); i++)
 		               	{
@@ -600,11 +602,13 @@ public final class YukonCRSIntegrator
 		               			lmHardwareBase = (com.cannontech.database.data.stars.hardware.LMHardwareBase)Transaction.createTransaction(Transaction.RETRIEVE, lmHardwareBase).execute();
 		               			
 				       			//Update the lmHardwareBase data object
-				       			lmHardwareBase.getInventoryBase().setCurrentStateID(new Integer(devStateEntry.getEntryID()));
+                                int currentState = lmHardwareBase.getInventoryBase().getCurrentStateID();
+                                if(currentState == availableYukDefID) {
+                                    lmHardwareBase.getInventoryBase().setCurrentStateID(new Integer(devStateEntry.getEntryID()));
+                                }
 				       			lmHardwareBase = (com.cannontech.database.data.stars.hardware.LMHardwareBase)Transaction.createTransaction(Transaction.UPDATE, lmHardwareBase).execute();
                                 LiteInventoryBase liteHardInvBase = liteStarsEnergyCompany.getInventory(lmHardwares.get(i).getInventoryID().intValue(), true);
                                 liteHardInvBase.setCurrentStateID(lmHardwareBase.getInventoryBase().getCurrentStateID().intValue());
-
 				       			
 				       			//Log the inventory (lmHardwarebase) state change.
 				       			EventUtils.logSTARSEvent(liteYukonUser.getUserID(), EventUtils.EVENT_CATEGORY_INVENTORY, lmHardwareBase.getInventoryBase().getCurrentStateID().intValue(), lmHardwareBase.getInventoryBase().getInventoryID().intValue());
