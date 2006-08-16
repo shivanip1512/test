@@ -1689,7 +1689,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
             if (!(liteInv instanceof LiteStarsLMHardware)) continue;
             
             LiteStarsLMHardware liteHw = (LiteStarsLMHardware) liteInv;
-            if (DaoFactory.getYukonListDao().getYukonListEntry( liteHw.getLmHardwareTypeID() ).getEntryID() == devTypeEntryID
+            if ((devTypeEntryID == -1 || DaoFactory.getYukonListDao().getYukonListEntry( liteHw.getLmHardwareTypeID() ).getEntryID() == devTypeEntryID)
                 && liteHw.getManufacturerSerialNumber().equalsIgnoreCase( serialNo ))
             {
                 return new Pair(liteHw, this);
@@ -1703,7 +1703,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
                 if (hardwares == null) return null;
                 
                 for (int i = 0; i < hardwares.length; i++) {
-                    if (DaoFactory.getYukonListDao().getYukonListEntry( hardwares[i].getLMHardwareTypeID().intValue() ).getEntryID() == devTypeEntryID) {
+                    if (devTypeEntryID == -1 || DaoFactory.getYukonListDao().getYukonListEntry( hardwares[i].getLMHardwareTypeID().intValue() ).getEntryID() == devTypeEntryID) {
                         com.cannontech.database.data.stars.hardware.LMHardwareBase hw =
                                 new com.cannontech.database.data.stars.hardware.LMHardwareBase();
                         hw.setInventoryID( hardwares[i].getInventoryID() );
@@ -1763,6 +1763,11 @@ public class LiteStarsEnergyCompany extends LiteBase {
         return null;
     }
     
+    public LiteStarsLMHardware searchUsingOnlySerialNum(String serialNo) throws ObjectInOtherEnergyCompanyException {
+        Pair p = searchForLMHardware( -1, serialNo, this );
+        if (p != null) return (LiteStarsLMHardware)p.getFirst();
+        return null;
+    }
     /**
      * @return Pair(LiteInventoryBase, LiteStarsEnergyCompany)
      */

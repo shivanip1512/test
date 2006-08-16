@@ -524,13 +524,19 @@ public class InventoryManager extends HttpServlet {
 		
 		boolean invChecking = DaoFactory.getAuthDao().checkRoleProperty(user.getYukonUser(), ConsumerInfoRole.INVENTORY_CHECKING);
 		
-		int devTypeID = Integer.parseInt( req.getParameter("DeviceType") );
+        /*
+         * TODO: We will need a new way to find MCTs now that we removed the device type pulldown for Xcel
+         */
+		String devType = req.getParameter("DeviceType");
+        int devTypeID = 1;
+        if(devType != null) 
+            devTypeID = Integer.parseInt( req.getParameter("DeviceType") );
 		String serialNo = req.getParameter("SerialNo");
 		String deviceName = req.getParameter("DeviceName");
 		
 		int categoryID = InventoryUtils.getInventoryCategoryID( devTypeID, energyCompany );
 		
-		if (invChecking) {
+		if (invChecking && categoryID > 0) {
 			// Save the request parameters
 			StarsInventory starsInv = (StarsInventory) StarsFactory.newStarsInv(StarsInventory.class);
 			starsInv.setDeviceType( (DeviceType)StarsFactory.newStarsCustListEntry(
@@ -553,14 +559,18 @@ public class InventoryManager extends HttpServlet {
 		LiteInventoryBase liteInv = null;
 		
 		try {
-			if (InventoryUtils.isLMHardware( categoryID )) {
+			if (categoryID > 0 && InventoryUtils.isLMHardware( categoryID )) {
 				liteInv = energyCompany.searchForLMHardware( devTypeID, serialNo );
 				session.setAttribute( InventoryManagerUtil.INVENTORY_TO_CHECK, liteInv );
 			}
-			else {
+			else if (categoryID > 0) {
 				liteInv = energyCompany.searchForDevice( categoryID, deviceName );
 				session.setAttribute( InventoryManagerUtil.INVENTORY_TO_CHECK, liteInv );
 			}
+            else {
+                liteInv = energyCompany.searchUsingOnlySerialNum(serialNo);
+                session.setAttribute( InventoryManagerUtil.INVENTORY_TO_CHECK, liteInv );
+            }
 		}
 		catch (ObjectInOtherEnergyCompanyException e) {
 			if (action.equalsIgnoreCase("CreateLMHardware") ||
