@@ -360,6 +360,16 @@ BOOL CtiCCCapBank::getVerificationDoneFlag() const
     return _verificationDoneFlag;
 }
 
+BOOL CtiCCCapBank::getRetryOpenFailedFlag() const
+{
+    return _retryOpenFailedFlag;
+}
+
+BOOL CtiCCCapBank::getRetryCloseFailedFlag() const
+{
+    return _retryCloseFailedFlag;
+}
+
 /*---------------------------------------------------------------------------
     getVCtrlIndex
     
@@ -810,6 +820,40 @@ CtiCCCapBank& CtiCCCapBank::setVerificationDoneFlag(BOOL verificationDoneFlag)
 
     return *this;
 }
+/*---------------------------------------------------------------------------
+    setRetryOpenFailedFlag
+    
+    Sets the retry failed flag, b4 if a capbank has been tried after a failed state..
+---------------------------------------------------------------------------*/
+CtiCCCapBank& CtiCCCapBank::setRetryOpenFailedFlag(BOOL retryOpenFailedFlag)
+{
+
+    if (_retryOpenFailedFlag != retryOpenFailedFlag)
+    {
+        _dirty = TRUE;
+    }
+    _retryOpenFailedFlag = retryOpenFailedFlag;
+
+    return *this;
+}
+/*---------------------------------------------------------------------------
+    setRetryCloseFailedFlag
+    
+    Sets the retry failed flag, b4 if a capbank has been tried after a failed state..
+---------------------------------------------------------------------------*/
+CtiCCCapBank& CtiCCCapBank::setRetryCloseFailedFlag(BOOL retryCloseFailedFlag)
+{
+
+    if (_retryCloseFailedFlag != retryCloseFailedFlag)
+    {
+        _dirty = TRUE;
+    }
+    _retryCloseFailedFlag = retryCloseFailedFlag;
+
+    return *this;
+}
+
+
 
 
 
@@ -1347,6 +1391,11 @@ CtiCCCapBank& CtiCCCapBank::operator=(const CtiCCCapBank& right)
         _prevVerificationControlStatus = right._prevVerificationControlStatus;
         _vCtrlIndex = right._vCtrlIndex;
         _additionalFlags = right._additionalFlags;
+        _verificationFlag = right._verificationFlag;          
+        _performingVerificationFlag = right._performingVerificationFlag;
+        _verificationDoneFlag = right._verificationDoneFlag;      
+        _retryOpenFailedFlag = right._retryOpenFailedFlag;
+        _retryCloseFailedFlag = right._retryCloseFailedFlag;           
 
     }
     return *this;
@@ -1422,6 +1471,8 @@ void CtiCCCapBank::restore(RWDBReader& rdr)
     setPreviousVerificationControlStatus(CtiCCCapBank::Open);
     setVCtrlIndex(-1);
     setVerificationFlag(FALSE);
+    setRetryOpenFailedFlag(FALSE);
+    setRetryCloseFailedFlag(FALSE);
     _additionalFlags = string("NNNNNNNNNNNNNNNNNNNN");
     setCurrentDailyOperations(0);
     
@@ -1455,6 +1506,8 @@ void CtiCCCapBank::setDynamicData(RWDBReader& rdr)
     _verificationFlag = (_additionalFlags[0]=='y'?TRUE:FALSE);
     _performingVerificationFlag = (_additionalFlags[1]=='y'?TRUE:FALSE);
     _verificationDoneFlag = (_additionalFlags[2]=='y'?TRUE:FALSE);
+    _retryOpenFailedFlag = (_additionalFlags[3]=='y'?TRUE:FALSE);
+    _retryCloseFailedFlag = (_additionalFlags[3]=='y'?TRUE:FALSE);
 
     rdr["currentdailyoperations"] >> _currentdailyoperations;
 
@@ -1538,7 +1591,11 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTim
             addFlags[0] = (_verificationFlag?'Y':'N');
             addFlags[1] = (_performingVerificationFlag?'Y':'N');
             addFlags[2] = (_verificationDoneFlag?'Y':'N');
-            _additionalFlags = string(char2string(*addFlags) + char2string(*(addFlags+1)) + char2string(*(addFlags+2)) + string(17, *(addFlags + 3)));
+            addFlags[3] = (_retryOpenFailedFlag?'Y':'N');
+            addFlags[3] = (_retryCloseFailedFlag?'Y':'N');
+            _additionalFlags = string(char2string(*addFlags) + char2string(*(addFlags+1)) + 
+                                      char2string(*(addFlags+2)) + char2string(*(addFlags+3)) +
+                                      char2string(*(addFlags+4)) +string(15, *(addFlags + 5)));
 
             RWDBUpdater updater = dynamicCCCapBankTable.updater();
 

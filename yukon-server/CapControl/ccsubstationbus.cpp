@@ -1246,7 +1246,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::figureNextCheckTime()
             }
             else
             {
-                if (getPostOperationMonitorPointScanFlag()) 
+                if (getPostOperationMonitorPointScanFlag() || getPreOperationMonitorPointScanFlag()) 
                 {
                     LONG tempsum = currenttime.seconds() + (_SCAN_WAIT_EXPIRE * 60);
                     _nextchecktime = CtiTime(CtiTime(tempsum));
@@ -3237,8 +3237,18 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                    }
                    else
                    {
-                       CtiLockGuard<CtiLogger> logger_guard(dout);
-                       dout << CtiTime() << " - Last Cap Bank controlled not in pending status in: " << __FILE__ << " at: " << __LINE__ << endl;
+                       {
+                           CtiLockGuard<CtiLogger> logger_guard(dout);
+                           dout << CtiTime() << " - Last Cap Bank controlled not in pending status in: " << __FILE__ << " at: " << __LINE__ << endl;
+                       }
+                       if (currentCapBank->getControlStatus() == CtiCCCapBank::OpenFail) 
+                       {
+                           text = "OpenFail";
+                       }
+                       else if (currentCapBank->getControlStatus() == CtiCCCapBank::CloseFail) 
+                       {
+                           text = "CloseFail";
+                       }
                        returnBoolean = FALSE;
                       // break;
                    }

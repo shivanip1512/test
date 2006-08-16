@@ -39,7 +39,9 @@ enum CtiCCEventType_t
     capControlEnableVerification,
     capControlDisableVerification,
     capControlVerificationCommandSent,
-    capControlSwitchOverUpdate
+    capControlSwitchOverUpdate,
+    capControlEnableOvUv,
+    capControlDisableOvUv
 };
 
 
@@ -91,7 +93,9 @@ public:
         DISABLE_OVUV,//18
         DELETE_ITEM, //19
         CONFIRM_SUB, //20
-        CONFIRM_AREA //21
+        CONFIRM_AREA, //21
+        ENABLE_AREA,  //22
+        DISABLE_AREA  //23
        // DISABLE_SUBSTATION_BUS_VERIFICATION//20
     };
 

@@ -79,6 +79,8 @@ public:
     BOOL getVerificationFlag() const;
     BOOL getPerformingVerificationFlag() const;
     BOOL getVerificationDoneFlag() const;
+    BOOL getRetryOpenFailedFlag() const;
+    BOOL getRetryCloseFailedFlag() const;
 
     int  getVCtrlIndex() const;
     int getAssumedOrigVerificationState() const;
@@ -124,6 +126,8 @@ public:
     CtiCCCapBank& setVerificationFlag(BOOL verificationFlag);
     CtiCCCapBank& setPerformingVerificationFlag(BOOL performingVerificationFlag);
     CtiCCCapBank& setVerificationDoneFlag(BOOL verificationDoneFlag);
+    CtiCCCapBank& setRetryOpenFailedFlag(BOOL retryOpenFailedFlag);
+    CtiCCCapBank& setRetryCloseFailedFlag(BOOL retryCloseFailedFlag);
 
     CtiCCCapBank& setVCtrlIndex(int vCtrlIndex);
     CtiCCCapBank& setAssumedOrigVerificationState(int assumedOrigCapBankPos);
@@ -224,6 +228,8 @@ private:
     BOOL _verificationFlag;
     BOOL _performingVerificationFlag;
     BOOL _verificationDoneFlag;
+    BOOL _retryOpenFailedFlag;
+    BOOL _retryCloseFailedFlag;
     CtiCCTwoWayPoints *_twoWayPoints;
 
     

@@ -82,6 +82,8 @@ private:
     void DeleteItem();
     void ConfirmSub();
     void ConfirmArea();
+    void EnableArea();
+    void DisableArea();
 
     CtiCCCommand* _command;
 };

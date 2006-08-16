@@ -1501,6 +1501,24 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution)
                 break;
             }
         }
+        if (returnCapBank == NULL) 
+        {
+            for(int i=0;i<_cccapbanks.size();i++)
+            {
+                CtiCCCapBank* currentCapBank = (CtiCCCapBank*)_cccapbanks[i];
+
+                if( !currentCapBank->getRetryCloseFailedFlag() && !currentCapBank->getDisableFlag() && !currentCapBank->getControlInhibitFlag() &&
+                    !stringCompareIgnoreCase(currentCapBank->getOperationalState(), CtiCCCapBank::SwitchedOperationalState) &&
+                    (currentCapBank->getControlStatus() == CtiCCCapBank::CloseFail || 
+                     currentCapBank->getControlStatus() == CtiCCCapBank::OpenFail) )
+                {
+                    returnCapBank = currentCapBank;
+                    currentCapBank->setRetryCloseFailedFlag(TRUE);
+                    break;
+                }
+            }
+        } 
+
     }
     else if( kvarSolution > 0.0 )
     {
@@ -1542,11 +1560,26 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution)
                 break;
             }
         }
-    }
-    else
-    {
-    }
+        if (returnCapBank == NULL) 
+        {
+            for(int i=_cccapbanks.size(); i>=0; i++)
+            {
+                CtiCCCapBank* currentCapBank = (CtiCCCapBank*)_cccapbanks[i];
 
+                if( !currentCapBank->getRetryOpenFailedFlag() && !currentCapBank->getDisableFlag() && !currentCapBank->getControlInhibitFlag() &&
+                    !stringCompareIgnoreCase(currentCapBank->getOperationalState(), CtiCCCapBank::SwitchedOperationalState) &&
+                    (currentCapBank->getControlStatus() == CtiCCCapBank::OpenFail ||
+                    currentCapBank->getControlStatus() == CtiCCCapBank::CloseFail) )
+                {
+                    returnCapBank = currentCapBank;
+                    currentCapBank->setRetryOpenFailedFlag(TRUE);
+                    break;
+                }
+            }
+        }  
+
+    }
+    
     return returnCapBank;
 }
 
@@ -2379,6 +2412,14 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                 returnBoolean = FALSE;
             }
 
+            if ( (currentCapBank->getRetryOpenFailedFlag() || currentCapBank->getRetryCloseFailedFlag() )  && 
+                (currentCapBank->getControlStatus() != CtiCCCapBank::CloseFail && currentCapBank->getControlStatus() != CtiCCCapBank::OpenFail)) 
+            {
+                currentCapBank->setRetryOpenFailedFlag(FALSE);
+                currentCapBank->setRetryCloseFailedFlag(FALSE);
+            }
+
+
             if( currentCapBank->getStatusPointId() > 0 )
             {
                 if( text.length() > 0 )
@@ -2671,8 +2712,18 @@ BOOL CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
            }
            else
            {
-               CtiLockGuard<CtiLogger> logger_guard(dout);
-               dout << CtiTime() << " - Last Cap Bank controlled not in pending status in: " << __FILE__ << " at: " << __LINE__ << endl;
+               {
+                   CtiLockGuard<CtiLogger> logger_guard(dout);
+                   dout << CtiTime() << " - Last Cap Bank controlled not in pending status in: " << __FILE__ << " at: " << __LINE__ << endl;
+               }
+               if (currentCapBank->getControlStatus() == CtiCCCapBank::OpenFail) 
+               {
+                   text = "OpenFail";
+               }
+               else if (currentCapBank->getControlStatus() == CtiCCCapBank::CloseFail) 
+               {
+                   text = "CloseFail";
+               }
                returnBoolean = FALSE;
               // break;
            }
