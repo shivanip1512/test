@@ -1,6 +1,8 @@
 <%@ include file="include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.web.navigation.CtiNavObject" %>
 <%@ page import="com.cannontech.core.dao.NotFoundException" %>
+<%@ page import="com.cannontech.stars.util.ServletUtils" %>
+<jsp:useBean id="configBean" class="com.cannontech.stars.web.bean.ConfigBean" scope="page"/>
 <%
 	String action = request.getParameter("action");
 	String referer = (String) session.getAttribute(ServletUtils.ATT_REFERRER);
@@ -13,13 +15,25 @@
 	int deviceType = 0;
 	String serialNo = "";
 	String deviceName = "";
-	
+	boolean needAppliance = false;
+    
 	if (action != null) {
 		if (action.equalsIgnoreCase("New")) {
 			// Came from the nav link
 			session.removeAttribute(InventoryManagerUtil.STARS_INVENTORY_TEMP);
 			referer = request.getContextPath() + "/operator/Consumer/CreateHardware.jsp";
 			if (request.getParameter("Wizard") != null) referer += "?Wizard=true";
+            if(configBean.isWriteToFileAllowed()) {
+                for(int i = 0; i < accountInfo.getStarsAppliances().getStarsApplianceCount(); i++) {
+                    if(accountInfo.getStarsAppliances().getStarsAppliance(i).getInventoryID() < 1) {
+                        needAppliance = false;
+                        session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "");          
+                        break;
+                    }
+                    session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Create an appliance before adding a new switch."); 
+                    needAppliance = true;
+                }
+            }
 		}
 		else if (action != null && action.equalsIgnoreCase("Change")) {
 			StarsInventory inventory = null;
@@ -95,7 +109,15 @@
 
 <script language="JavaScript">
 function validate(form) {
-	if (document.getElementById("HardwareDiv").style.display == "") {
+	<% if(needAppliance) { %>
+        if (confirm("There is NOT an unassigned appliance on this account available for a new switch.  Do you wish to be redirected to the appliance page to create one?  (An appliance is REQUIRED for automatic addressing group assignment.)")) {
+            form.action.value = "";
+            form.REDIRECT.value = "<%= request.getContextPath() %>/operator/Consumer/CreateAppliances.jsp";
+            form.submit();
+            return true;
+            }                    
+    <% } %> 
+    if (document.getElementById("HardwareDiv").style.display == "") {
 		if (form.SerialNo.value == "") {
 			alert("Serial # cannot be empty!");
 			return false;
@@ -112,11 +134,19 @@ function validate(form) {
 }
 
 function selectInventory(form) {
-	<%  if(((ArrayList)session.getAttribute(ServletUtil.FILTER_INVEN_LIST)) == null || ((ArrayList)session.getAttribute(ServletUtil.FILTER_INVEN_LIST)).size() < 1) 
+	<% if(needAppliance) { %>
+        if (confirm("There is NOT an unassigned appliance on this account available for a new switch.  Do you wish to be redirected to the appliance page to create one?  (An appliance is REQUIRED for automatic addressing group assignment.)")) {
+            form.action.value = "";
+            form.REDIRECT.value = "<%= request.getContextPath() %>/operator/Consumer/CreateAppliances.jsp";
+            form.submit(); 
+            return;    
+        }      
+    <% } %>    
+    <%  if(((ArrayList)session.getAttribute(ServletUtil.FILTER_INVEN_LIST)) == null || ((ArrayList)session.getAttribute(ServletUtil.FILTER_INVEN_LIST)).size() < 1) 
         { %>
        		form.attributes["action"].value = "SelectInvFilter.jsp";
     <%  }
-    	else
+    	else 
     	{
     %>
 		form.attributes["action"].value = "SelectInv.jsp";
@@ -129,30 +159,13 @@ function selectMCT(form) {
 	form.submit();
 }
 
-function changeDeviceType(type) {
-<% if (devTypeMCT != null) { %>
-	if (type == <%= devTypeMCT.getEntryID() %>) {
-		document.getElementById("HardwareDiv").style.display = "none";
-		document.getElementById("DeviceDiv").style.display = "";
-	}
-	else {
-		document.getElementById("DeviceDiv").style.display = "none";
-		document.getElementById("HardwareDiv").style.display = "";
-	}
-<% } %>
-}
-
-function init() {
-	changeDeviceType(document.MForm.DeviceType.value);
-}
-
 function confirmCancel() {
 	if (confirm("Are you sure you want to quit from this wizard and discard all changes you've been made?"))
 		location.href = "../Operations.jsp";
 }
 </script>
 </head>
-<body class="Background" leftmargin="0" topmargin="0" onload="init()">
+<body class="Background" leftmargin="0" topmargin="0">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr> 
     <td> 
@@ -267,6 +280,8 @@ else if (devTypeMCT != null && meterBase != null && meterBase.compareTo(com.cann
                       <table width="300" border="1" cellspacing="0" cellpadding="2" bgcolor="#CCCCCC" height="100">
                         <tr> 
                           <td> 
+                            <!-- GOING TO LEAVE THIS IN FOR NOW SINCE THIS KIND OF RUSH TAKE OUT USUALLY GETS REVERSED IN THE FUTURE 
+                                WILL NEED TO PUT JAVASCRIPT METHODS BACK IF WE GO BACK TO OLD MCT METHODS
                             <table width="100%" border="0" cellspacing="0" cellpadding="3" class="MainText" bgcolor="#CCCCCC">
                               <tr> 
                                 <td align="right" width="30%">Device Type: </td>
@@ -285,13 +300,17 @@ else if (devTypeMCT != null && meterBase != null && meterBase.compareTo(com.cann
                                   </select>
                                 </td>
                               </tr>
-                            </table>
+                            </table>-->
 							<div id="HardwareDiv">
                             <table width="100%" border="0" cellspacing="0" cellpadding="3" class="MainText" bgcolor="#CCCCCC">
                               <tr> 
-                                <td align="right" width="30%">Serial #: </td>
-                                <td width="70%"> 
-                                  <input type="text" name="SerialNo" maxlength="30" size="24" value="<%= serialNo %>">
+                                <td align="right" width="20%">
+                                    Serial #: 
+                                </td> 
+                                <td align="left" width="80%"> 
+                                  <div align="left">
+                                      <input type="text" name="SerialNo" maxlength="60" size="24" value="<%= serialNo %>">
+                                  </div>
                                 </td>
                               </tr>
                             </table>
