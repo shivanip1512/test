@@ -6,8 +6,6 @@
 <cti:standardPage title="CapControl Wizard" module="capcontrol">
 
 
-    <x:saveState id="paoDeleteForm" value="#{paoDeleteForm}" />
-
     <x:panelLayout id="page" styleClass="pageLayout" headerClass="pageHeader"
             navigationClass="pageNavigation" bodyClass="pageBody"
             footerClass="pageFooter" >

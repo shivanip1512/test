@@ -33,7 +33,6 @@
 %>
 
 
-    <x:saveState id="ptEditorForm" value="#{ptEditorForm}" />
 
     <x:panelLayout id="page" styleClass="pageLayout" headerClass="pageHeader"
             navigationClass="pageNavigation" bodyClass="pageBody"

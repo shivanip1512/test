@@ -6,7 +6,6 @@
 <cti:standardPage title="CapControl Wizard" module="capcontrol">
 
     
-    <x:saveState id="pointDeleteForm" value="#{pointDeleteForm}" />
 
     <x:panelLayout id="page" styleClass="pageLayout" headerClass="pageHeader"
             navigationClass="pageNavigation" bodyClass="pageBody"

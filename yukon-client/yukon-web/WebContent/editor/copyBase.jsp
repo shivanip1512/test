@@ -25,7 +25,6 @@
     }
 %>
 
-    <x:saveState id="copyDBForm" value="#{cbcCopyForm}" />
 
     <x:panelLayout id="page" styleClass="pageLayout" headerClass="pageHeader"
             navigationClass="pageNavigation" bodyClass="pageBody"
