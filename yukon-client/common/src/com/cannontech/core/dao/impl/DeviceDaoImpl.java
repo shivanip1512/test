@@ -1,22 +1,12 @@
 package com.cannontech.core.dao.impl;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
-import org.springframework.jdbc.core.JdbcOperations;
-
-import com.cannontech.common.cache.PointChangeCache;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
-import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOGroups;
-import com.cannontech.database.data.point.CBCPointTimestampParams;
-import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**
@@ -28,9 +18,7 @@ public final class DeviceDaoImpl implements DeviceDao {
     
     private PaoDao paoDao;
     private IDatabaseCache databaseCache;
-    private JdbcOperations jdbcOps;   
-    private DynamicDataSource dynamicDataSource;
-    
+        
 /**
  * PointFuncs constructor comment.
  */
@@ -149,13 +137,5 @@ public void setDatabaseCache(IDatabaseCache databaseCache) {
 }
 public void setPaoDao(PaoDao paoDao) {
     this.paoDao = paoDao;
-}
- 
-public void setJdbcOps(JdbcOperations jdbcOps) {
-    this.jdbcOps = jdbcOps;
-}
-
-public void setDynamicDataSource(DynamicDataSource dynamicDataSource) {
-    this.dynamicDataSource = dynamicDataSource;
 }
 }
