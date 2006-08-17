@@ -1697,6 +1697,13 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg)
 	{
 		//Do nothing, there is no default cache for workOrders/serviceRequests, but please do not release all cache!
 	}	
+    
+    else if ( database == DBChangeMsg.CHANGE_PAO_SCHEDULE_DB)
+    {
+        
+        //Do nothing for now...
+    } 
+
 	else  //BAD IDEA to let it all go, lets just tell everyone it wasn't handled instead!
 	{
 		CTILogger.error(" ***** Unhandled DBChangeMessage!  Category: " + dbCategory);
