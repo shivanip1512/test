@@ -17,6 +17,7 @@ import javax.servlet.http.HttpSession;
 import com.cannontech.cbc.web.CBCCommandExec;
 import com.cannontech.cbc.web.CBCWebUtils;
 import com.cannontech.cbc.web.CapControlCache;
+import com.cannontech.cbc.web.OneLineSubs;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.WebUpdatedDAO;
 import com.cannontech.common.constants.LoginController;
@@ -41,6 +42,8 @@ public class CBCServlet extends HttpServlet
 	// Key used to store instances of this in the servlet context, this is the same
 	//   as the application scope on JSP pages
 	public static final String CBC_CACHE_STR = "capControlCache";
+	//start this up every time with web server
+	public static final String CBC_ONE_LINE = "oneLineSubs";
 
 	//insures only 1 set of these Strings for the servlet
 	private CBCCommandExec cbcExecutor = null;
@@ -61,8 +64,22 @@ public void destroy()
 {
 	// Removing any application scope varaibles
 	getServletContext().removeAttribute(CBC_CACHE_STR);
-
+	
+	//stop one line service first
+	OneLineSubs oneLine = (OneLineSubs)getServletContext().getAttribute(CBC_ONE_LINE);
+	oneLine.stop();
+	getServletContext().removeAttribute(CBC_ONE_LINE);
 	super.destroy();
+}
+
+private OneLineSubs getOneLineSubs () {
+	OneLineSubs oneLine = (OneLineSubs)getServletContext().getAttribute(CBC_ONE_LINE);
+	if (oneLine == null) {
+		oneLine = new OneLineSubs();
+		getServletContext().setAttribute(CBC_ONE_LINE, oneLine);
+		
+	}
+	return (OneLineSubs)getServletContext().getAttribute(CBC_ONE_LINE);
 }
 
 /**
@@ -97,7 +114,11 @@ public void init(javax.servlet.ServletConfig config) throws javax.servlet.Servle
 
 	// Call the getters to init our objects in the context
 	getCapControlCache();
-}
+	
+	//start one line service
+	OneLineSubs oneLine = getOneLineSubs();
+	oneLine.start();
+}	
 
 
 /**

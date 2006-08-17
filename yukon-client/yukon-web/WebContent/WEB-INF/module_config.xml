@@ -117,7 +117,7 @@
           </option>
           <option name="One-Line">
 	        <requireFalseProperty value="capcontrol.CBCSettingsRole.HIDE_ONELINE"/>
-            <script>showConfirmWin(this)</script>
+            <script>showOneLine()</script>
           </option>
           <option name="Recent Controls">
             <script>showRecentCmds('tabledata.jsp?type=RC')</script>
@@ -193,5 +193,6 @@
   </module>
   
    <module name="blank">
+    <skin name="standard"/>
   </module>
 </mainmenu>

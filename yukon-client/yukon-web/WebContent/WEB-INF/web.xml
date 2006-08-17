@@ -134,10 +134,6 @@
     </filter-mapping>
     
     <filter-mapping>
-        <filter-name>htmlFilter</filter-name>
-        <url-pattern>/capcontrol/oneline/*</url-pattern>
-    </filter-mapping>
-    <filter-mapping>
         <filter-name>audioFilter</filter-name>
         <url-pattern>/capcontrol/*</url-pattern>
     </filter-mapping>               

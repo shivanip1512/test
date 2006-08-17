@@ -1,5 +1,6 @@
 package com.cannontech.cbc.web;
 
+import com.cannontech.cbc.web.CCOneLineGenerator;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.esub.Drawing;
@@ -31,8 +32,10 @@ public class OneLineSubs implements MessageListener
 		super();
         
         // /yukon/server/web/webapps/yukon/capcontrol
-        dirBase = CtiUtilities.getYukonBase() + "/head/yukon-web/WebContent/capcontrol/oneline";
+        //dirBase = CtiUtilities.getYukonBase() + "/head/yukon-web/WebContent/capcontrol/oneline";
         //dirBase = CtiUtilities.getYukonBase() + "/server/web/webapps/yukon/capcontrol/oneline";
+		dirBase = CtiUtilities.getYukonBase();
+		dirBase = "C:/Workspace/yukon-web/WebContent/capcontrol/oneline";
         
         CTILogger.debug(" Oneline generation output: " + dirBase);
 	}
@@ -109,14 +112,20 @@ public class OneLineSubs implements MessageListener
 
     public void start()
     {
-        try
+        CTILogger.info("Starting CBC One-Line ....");
+    	try
         {
         	getConnection().addMessageListener( this );
         	getConnection().connect( 15000 );
 
         	getConnection().executeCommand( 0, CBCCommand.REQUEST_ALL_SUBS );
+        	CTILogger.info("CBC One-Line successfully started...");
         }
-        catch( Exception e ) {}
+        catch( Exception e ) {
+         	
+        	CTILogger.info("CBC One-Line could not be started: " +  e.getMessage());
+            
+        }
     }
     
     
@@ -125,12 +134,16 @@ public class OneLineSubs implements MessageListener
      */
     public void stop()
     {
-        try
+        CTILogger.info("Stopping CBC One-Line ....");
+    	try
         {
         	getConnection().removeMessageListener( this );
         	getConnection().disconnect();
+        	CTILogger.info("CBC One-Line successfully stoped.");
         }
-        catch( Exception e ) {}
+        catch( Exception e ) {
+        	CTILogger.info("CBC One-Line could not be stopped: " +  e.getMessage());        	
+        }
     }
     
     public boolean isRunning()
