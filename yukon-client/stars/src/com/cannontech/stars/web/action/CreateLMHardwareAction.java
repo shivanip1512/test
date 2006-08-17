@@ -449,6 +449,8 @@ public class CreateLMHardwareAction implements ActionBase {
 
                         //get zipCode
                         String zip = energyCompany.getAddress(liteAcctInfo.getAccountSite().getStreetAddressID()).getZipCode();
+                        if(zip.length() > 5)
+                            zip = zip.substring(0, 5);
                         //get ConsumptionType
                         LiteCustomer cust = liteAcctInfo.getCustomer();
                         Integer consumptionType = -1;
