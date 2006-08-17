@@ -1,5 +1,14 @@
 package com.cannontech.database.db.device;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
+
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.RowMapper;
+
+import com.cannontech.database.JdbcTemplateHelper;
+
 /**
  * This type was created in VisualAge.
  */
@@ -140,6 +149,19 @@ public static DeviceScanRate[] getDeviceScanRates(Integer deviceID, java.sql.Con
 	
 	return retVal;
 
+}
+
+public static List getAllDeviceIDs () {
+    String sqlStmt = "SELECT DEVICEID FROM " + TABLE_NAME;   
+    JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();   
+    List retList = yukonTemplate.query(sqlStmt, new RowMapper () {
+			public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
+				Integer deviceID = null;
+				deviceID = new Integer ( rs.getInt(1) );
+				return deviceID;
+			}
+    });
+    return retList;
 }
 
 /**

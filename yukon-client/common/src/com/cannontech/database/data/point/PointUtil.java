@@ -404,6 +404,19 @@ public class PointUtil {
         }
     }
 
+/** used for cap control
+ * used to determine which point types (Analog, DemandAccum, Status, PulseAccum, e.g) sub/feeder setup 
+ * need to be scanable 
+ * @param pointType
+ * @return true if point type is scanable
+ */
+	public static boolean isScanablePointType(int pointType) {
+		for (int i = 0; i < PointTypes.SCANABLE_POINT_TYPES.length; i++) {
+			if (PointTypes.SCANABLE_POINT_TYPES[i] == pointType)
+				return true;
+		}
+		return false;
+	}
     
         
         

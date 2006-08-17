@@ -74,6 +74,8 @@ public final class PointTypes implements IPointOffsets, TypeBase
 	public static final int CONTROLTYPE_SBO_LATCH = 43 + TypeBase.POINT_OFFSET;
 	public static final int CONTROLTYPE_SBO_PULSE = 44 + TypeBase.POINT_OFFSET;
 	
+	public static final int[] SCANABLE_POINT_TYPES = {PULSE_ACCUMULATOR_POINT, DEMAND_ACCUMULATOR_POINT};
+	
 	
 	//All the strings associated with points and the database
 	private static final String[] pointStrings = 
