@@ -2,12 +2,15 @@ package com.cannontech.database.data.point;
 
 import java.util.Date;
 
+import com.cannontech.yukon.cbc.CBCUtils;
+
 
 public class CBCPointTimestampParams {
 private Integer pointId = new Integer (0);
 private String pointName = "";
-private Double value = new Double (0.0);
-private Date timestamp = new Date();
+private String value = "";
+//new Double (0.0);
+private Date timestamp = null;
 
 	public CBCPointTimestampParams() {
 		super();
@@ -37,11 +40,11 @@ private Date timestamp = new Date();
 		return pointName;
 	}
 
-	public Double getValue() {
+	public String getValue() {
 		return value;
 	}
 
-	public void setValue(Double value) {
+	public void setValue(String value) {
 		this.value = value;
 	}
 
