@@ -97,6 +97,12 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     DOUBLE getOffPeakLag() const;
     DOUBLE getPeakLead() const;
     DOUBLE getOffPeakLead() const;
+
+    DOUBLE getPeakVARLag() const;
+    DOUBLE getOffPeakVARLag() const;
+    DOUBLE getPeakVARLead() const;
+    DOUBLE getOffPeakVARLead() const;
+
     LONG getPeakStartTime() const;
     LONG getPeakStopTime() const;
     LONG getCurrentVarLoadPointId() const;
@@ -133,6 +139,8 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     DOUBLE getKVARSolution() const;
     DOUBLE getEstimatedPowerFactorValue() const;
     LONG getCurrentVarPointQuality() const;
+    LONG getCurrentWattPointQuality() const;
+    LONG getCurrentVoltPointQuality() const;
     BOOL getWaiveControlFlag() const;
     const string& getParentControlUnits() const;
     const string& getParentName() const;
@@ -172,6 +180,12 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiCCFeeder& setOffPeakLag(DOUBLE offpeak);
     CtiCCFeeder& setPeakLead(DOUBLE peak);
     CtiCCFeeder& setOffPeakLead(DOUBLE offpeak);
+
+    CtiCCFeeder& setPeakVARLag(DOUBLE peak);
+    CtiCCFeeder& setOffPeakVARLag(DOUBLE offpeak);
+    CtiCCFeeder& setPeakVARLead(DOUBLE peak);
+    CtiCCFeeder& setOffPeakVARLead(DOUBLE offpeak);
+    
     CtiCCFeeder& setPeakStartTime(LONG starttime);
     CtiCCFeeder& setPeakStopTime(LONG stoptime);
     CtiCCFeeder& setCurrentVarLoadPointId(LONG currentvarid);
@@ -209,6 +223,8 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiCCFeeder& setKVARSolution(DOUBLE solution);
     CtiCCFeeder& setEstimatedPowerFactorValue(DOUBLE epfval);
     CtiCCFeeder& setCurrentVarPointQuality(LONG cvpq);
+    CtiCCFeeder& setCurrentWattPointQuality(LONG cwpq);
+    CtiCCFeeder& setCurrentVoltPointQuality(LONG cvpq);
     CtiCCFeeder& setWaiveControlFlag(BOOL waive);
     CtiCCFeeder& setParentControlUnits(const string& parentControlUnits);
     CtiCCFeeder& setParentName(const string& parentName);
@@ -337,6 +353,11 @@ private:
     DOUBLE _offpklag;
     DOUBLE _peaklead;
     DOUBLE _offpklead;
+
+    DOUBLE _peakVARlag;  
+    DOUBLE _offpkVARlag; 
+    DOUBLE _peakVARlead; 
+    DOUBLE _offpkVARlead;
     
     LONG _displayorder;
     BOOL _newpointdatareceivedflag;
@@ -357,6 +378,8 @@ private:
     DOUBLE _kvarsolution;
     DOUBLE _estimatedpowerfactorvalue;
     LONG _currentvarpointquality;
+    LONG _currentwattpointquality;
+    LONG _currentvoltpointquality;
     BOOL _waivecontrolflag;
 
     string _parentControlUnits;

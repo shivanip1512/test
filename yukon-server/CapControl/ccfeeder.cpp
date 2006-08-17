@@ -243,6 +243,47 @@ DOUBLE CtiCCFeeder::getOffPeakLead() const
 {
     return _offpklead;
 }
+
+/*---------------------------------------------------------------------------
+    getPeakLag
+
+    Returns the peak lag level of the feeder
+---------------------------------------------------------------------------*/
+DOUBLE CtiCCFeeder::getPeakVARLag() const
+{
+    return _peakVARlag;
+}
+
+/*---------------------------------------------------------------------------
+    getOffPeakLag
+
+    Returns the off peak lag level of the feeder
+---------------------------------------------------------------------------*/
+DOUBLE CtiCCFeeder::getOffPeakVARLag() const
+{
+    return _offpkVARlag;
+}
+/*---------------------------------------------------------------------------
+    getPeakVARLead
+
+    Returns the peak lead level of the feeder
+---------------------------------------------------------------------------*/
+DOUBLE CtiCCFeeder::getPeakVARLead() const
+{
+    return _peakVARlead;
+}
+
+/*---------------------------------------------------------------------------
+    getOffPeakVARLead
+
+    Returns the off peak lead level of the feeder
+---------------------------------------------------------------------------*/
+DOUBLE CtiCCFeeder::getOffPeakVARLead() const
+{
+    return _offpkVARlead;
+}
+
+
 /*---------------------------------------------------------------------------
     getPeakStartTime
 
@@ -597,6 +638,26 @@ LONG CtiCCFeeder::getCurrentVarPointQuality() const
 }
 
 /*---------------------------------------------------------------------------
+    getCurrentWattPointQuality
+
+    Returns the CurrentWattPointQuality of the feeder
+---------------------------------------------------------------------------*/
+LONG CtiCCFeeder::getCurrentWattPointQuality() const
+{
+    return _currentwattpointquality;
+}
+
+/*---------------------------------------------------------------------------
+    getCurrentVoltPointQuality
+
+    Returns the CurrentVoltPointQuality of the feeder
+---------------------------------------------------------------------------*/
+LONG CtiCCFeeder::getCurrentVoltPointQuality() const
+{
+    return _currentvoltpointquality;
+}
+
+/*---------------------------------------------------------------------------
     getWaiveControlFlag
 
     Returns the WaiveControlFlag of the feeder
@@ -933,6 +994,49 @@ CtiCCFeeder& CtiCCFeeder::setPeakLead(DOUBLE peak)
 CtiCCFeeder& CtiCCFeeder::setOffPeakLead(DOUBLE offpeak)
 {
     _offpklead = offpeak;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setPeakVARLag
+
+    Sets the peak lag level of the feeder
+---------------------------------------------------------------------------*/
+CtiCCFeeder& CtiCCFeeder::setPeakVARLag(DOUBLE peak)
+{
+    _peakVARlag = peak;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setOffPeakVARLag
+    
+    Sets the off peak lag level of the feeder
+---------------------------------------------------------------------------*/
+CtiCCFeeder& CtiCCFeeder::setOffPeakVARLag(DOUBLE offpeak)
+{
+    _offpkVARlag = offpeak;
+    return *this;
+}
+/*---------------------------------------------------------------------------
+    setPeakVARLead
+
+    Sets the peak lead level of the feeder
+---------------------------------------------------------------------------*/
+CtiCCFeeder& CtiCCFeeder::setPeakVARLead(DOUBLE peak)
+{
+    _peakVARlead = peak;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setOffPeakVARLead
+
+    Sets the off peak lead level of the feeder
+---------------------------------------------------------------------------*/
+CtiCCFeeder& CtiCCFeeder::setOffPeakVARLead(DOUBLE offpeak)
+{
+    _offpkVARlead = offpeak;
     return *this;
 }
 
@@ -1337,6 +1441,44 @@ CtiCCFeeder& CtiCCFeeder::setCurrentVarPointQuality(LONG cvpq)
         _dirty = TRUE;
     }
     _currentvarpointquality = cvpq;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setCurrentWattPointQuality
+
+    Sets the CurrentWattPointQuality in the feeder
+---------------------------------------------------------------------------*/
+CtiCCFeeder& CtiCCFeeder::setCurrentWattPointQuality(LONG cwpq)
+{
+    if( _currentwattpointquality != cwpq )
+    {
+        /*{
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }*/
+        _dirty = TRUE;
+    }
+    _currentwattpointquality = cwpq;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setCurrentVoltPointQuality
+
+    Sets the CurrentVoltPointQuality in the feeder
+---------------------------------------------------------------------------*/
+CtiCCFeeder& CtiCCFeeder::setCurrentVoltPointQuality(LONG cvpq)
+{
+    if( _currentvoltpointquality != cvpq )
+    {
+        /*{
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }*/
+        _dirty = TRUE;
+    }
+    _currentvoltpointquality = cvpq;
     return *this;
 }
 
@@ -1999,7 +2141,8 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
 
     if( !getDisableFlag() &&
         !getWaiveControlFlag() &&
-        ( !_IGNORE_NOT_NORMAL_FLAG || getCurrentVarPointQuality() == NormalQuality ) &&
+        ( !_IGNORE_NOT_NORMAL_FLAG || ( getCurrentVarPointQuality() == NormalQuality &&
+            getCurrentWattPointQuality() == NormalQuality && getCurrentVoltPointQuality() == NormalQuality ) ) &&
         ( currentDateTime.seconds() >= getLastOperationTime().seconds() + getControlDelayTime() ) )
     {
         if( !stringCompareIgnoreCase(feederControlUnits, CtiCCSubstationBus::KVARControlUnits) ||
@@ -4363,7 +4506,9 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime
             << dynamicCCFeederTable["currentvoltpointvalue"].assign( _currentvoltloadpointvalue )
             << dynamicCCFeederTable["eventseq"].assign( _eventSeq )
             << dynamicCCFeederTable["currverifycbid"].assign(_currentVerificationCapBankId)
-            << dynamicCCFeederTable["currverifycborigstate"].assign(_currentCapBankToVerifyAssumedOrigState);
+            << dynamicCCFeederTable["currverifycborigstate"].assign(_currentCapBankToVerifyAssumedOrigState)
+            << dynamicCCFeederTable["currentwattpointquality"].assign(_currentwattpointquality)
+            << dynamicCCFeederTable["currentvoltpointquality"].assign(_currentvoltpointquality);
 
             /*{
                 CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -4424,7 +4569,9 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime
             << _currentvoltloadpointvalue
             << _eventSeq
             << _currentVerificationCapBankId
-            << _currentCapBankToVerifyAssumedOrigState;
+            << _currentCapBankToVerifyAssumedOrigState
+            << _currentwattpointquality
+            << _currentvoltpointquality;
 
 
             if( _CC_DEBUG & CC_DEBUG_DATABASE )
@@ -4744,6 +4891,10 @@ void CtiCCFeeder::restore(RWDBReader& rdr)
     setOffPeakLag(0);
     setPeakLead(0);
     setOffPeakLead(0);
+    setPeakVARLag(0);
+    setOffPeakVARLag(0);
+    setPeakVARLead(0);
+    setOffPeakVARLead(0);
     setPeakStartTime(0);
     setPeakStopTime(0);
     setControlInterval(0);
@@ -4790,8 +4941,9 @@ void CtiCCFeeder::restore(RWDBReader& rdr)
     setEventSequence(0);
     setCurrentVerificationCapBankId(-1);
     setCurrentVerificationCapBankState(0);
-    
-    
+    _currentwattpointquality = NormalQuality;
+    _currentvoltpointquality = NormalQuality;
+
     _insertDynamicDataFlag = TRUE;
 
 
@@ -4828,6 +4980,10 @@ void CtiCCFeeder::setStrategyValues(CtiCCStrategyPtr strategy)
     _offpklag = strategy->getOffPeakLag();       
     _peaklead = strategy->getPeakLead();
     _offpklead = strategy->getOffPeakLead();       
+    _peakVARlag = strategy->getPeakVARLag();
+    _offpkVARlag = strategy->getOffPeakVARLag();       
+    _peakVARlead = strategy->getPeakVARLead();
+    _offpkVARlead = strategy->getOffPeakVARLead();       
     _peakstarttime = strategy->getPeakStartTime();           
     _peakstoptime = strategy->getPeakStopTime();
     _controlinterval = strategy->getControlInterval();       
@@ -4882,6 +5038,8 @@ void CtiCCFeeder::setDynamicData(RWDBReader& rdr)
     rdr["eventSeq"] >> _eventSeq;
     rdr["currverifycbid"] >> _currentVerificationCapBankId;
     rdr["currverifycborigstate"] >> _currentCapBankToVerifyAssumedOrigState;
+    rdr["currentwattpointquality"] >> _currentwattpointquality;
+    rdr["currentvoltpointquality"] >> _currentvoltpointquality;
     
     _insertDynamicDataFlag = FALSE;
     _dirty = false;

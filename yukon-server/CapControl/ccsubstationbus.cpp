@@ -244,7 +244,44 @@ DOUBLE CtiCCSubstationBus::getOffPeakLead() const
 }
 
 
+/*---------------------------------------------------------------------------
+    getPeakVARLag
 
+    Returns the peak VAR lag level of the substation
+---------------------------------------------------------------------------*/
+DOUBLE CtiCCSubstationBus::getPeakVARLag() const
+{
+    return _peakVARlag;
+}
+
+/*---------------------------------------------------------------------------
+    getOffPeakVARLag
+
+    Returns the off peak VAR lag level of the substation
+---------------------------------------------------------------------------*/
+DOUBLE CtiCCSubstationBus::getOffPeakVARLag() const
+{
+    return _offpkVARlag;
+}
+/*---------------------------------------------------------------------------
+    getPeakVARLead
+
+    Returns the peak VAR lead level of the substation
+---------------------------------------------------------------------------*/
+DOUBLE CtiCCSubstationBus::getPeakVARLead() const
+{
+    return _peakVARlead;
+}
+
+/*---------------------------------------------------------------------------
+    getOffPeakVARLead
+
+    Returns the off peak VAR lead level of the substation
+---------------------------------------------------------------------------*/
+DOUBLE CtiCCSubstationBus::getOffPeakVARLead() const
+{
+    return _offpkVARlead;
+}
 
 /*---------------------------------------------------------------------------
     getPeakStartTime
@@ -668,6 +705,24 @@ LONG CtiCCSubstationBus::getCurrentVarPointQuality() const
 {
     return _currentvarpointquality;
 }
+/*---------------------------------------------------------------------------
+    getCurrentWattPointQuality
+
+    Returns the CurrentWattPointQuality of the substation
+---------------------------------------------------------------------------*/
+LONG CtiCCSubstationBus::getCurrentWattPointQuality() const
+{
+    return _currentwattpointquality;
+}
+/*---------------------------------------------------------------------------
+    getCurrentVoltPointQuality
+
+    Returns the CurrentVoltPointQuality of the substation
+---------------------------------------------------------------------------*/
+LONG CtiCCSubstationBus::getCurrentVoltPointQuality() const
+{
+    return _currentvoltpointquality;
+}
 
 /*---------------------------------------------------------------------------
     getWaiveControlFlag
@@ -988,6 +1043,49 @@ CtiCCSubstationBus& CtiCCSubstationBus::setPeakLead(DOUBLE peak)
 CtiCCSubstationBus& CtiCCSubstationBus::setOffPeakLead(DOUBLE offpeak)
 {
     _offpklead = offpeak;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setPeakVARLag
+
+    Sets the peak VAR lag level of the substation
+---------------------------------------------------------------------------*/
+CtiCCSubstationBus& CtiCCSubstationBus::setPeakVARLag(DOUBLE peak)
+{
+    _peakVARlag = peak;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setOffPeakVARLag
+
+    Sets the off peak VAR lag level of the substation
+---------------------------------------------------------------------------*/
+CtiCCSubstationBus& CtiCCSubstationBus::setOffPeakVARLag(DOUBLE offpeak)
+{
+    _offpkVARlag = offpeak;
+    return *this;
+}
+/*---------------------------------------------------------------------------
+    setPeakVARLead
+
+    Sets the peak VAR lead level of the substation
+---------------------------------------------------------------------------*/
+CtiCCSubstationBus& CtiCCSubstationBus::setPeakVARLead(DOUBLE peak)
+{
+    _peakVARlead = peak;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setOffPeakVARLead
+
+    Sets the off peak VAR lead level of the substation
+---------------------------------------------------------------------------*/
+CtiCCSubstationBus& CtiCCSubstationBus::setOffPeakVARLead(DOUBLE offpeak)
+{
+    _offpkVARlead = offpeak;
     return *this;
 }
 
@@ -1626,6 +1724,46 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVarPointQuality(LONG cvpq)
     return *this;
 }
 
+
+/*---------------------------------------------------------------------------
+    setCurrentWattPointQuality
+
+    Sets the CurrentWattPointQuality in the substation
+---------------------------------------------------------------------------*/
+CtiCCSubstationBus& CtiCCSubstationBus::setCurrentWattPointQuality(LONG cwpq)
+{
+    if( _currentwattpointquality != cwpq )
+    {
+        /*{
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }*/
+        _dirty = TRUE;
+    }
+    _currentwattpointquality = cwpq;
+    return *this;
+}
+
+
+/*---------------------------------------------------------------------------
+    setCurrentVoltPointQuality
+
+    Sets the CurrentVoltPointQuality in the substation
+---------------------------------------------------------------------------*/
+CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVoltPointQuality(LONG cvpq)
+{
+    if( _currentvoltpointquality != cvpq )
+    {
+        /*{
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }*/
+        _dirty = TRUE;
+    }
+    _currentvoltpointquality = cvpq;
+    return *this;
+}
+
 /*---------------------------------------------------------------------------
     setWaiveControlFlag
 
@@ -1839,14 +1977,11 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
                 for(LONG i=0;i<_ccfeeders.size();i++)
                 {
                     CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders[i];
-                    //currentFeeder->setPeakTimeFlag(isPeakTime(currentDateTime));
                     if( !currentFeeder->getDisableFlag() && !currentFeeder->getRecentlyControlledFlag() &&
                         (getControlInterval()!=0 ||
                          currentFeeder->getNewPointDataReceivedFlag() ||
                          currentFeeder->getControlInterval() != 0) )
                     {
-                        //figureCurrentSetPoint(currentDateTime);//this is just to set the Peak Time Flag
-                        //if( currentFeeder->checkForAndProvideNeededIndividualControl(currentDateTime, pointChanges, ccEvents, pilMessages, getPeakTimeFlag(), getDecimalPlaces(), getControlUnits()) )
                         if( currentFeeder->checkForAndProvideNeededIndividualControl(currentDateTime, pointChanges, ccEvents, pilMessages, currentFeeder->getPeakTimeFlag(), getDecimalPlaces(), getControlUnits()) )
                         {
                             setLastOperationTime(currentDateTime);
@@ -1854,10 +1989,8 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
                             setCurrentDailyOperations(getCurrentDailyOperations() + 1);
                         }
                         setBusUpdatedFlag(TRUE);
-                        //currentFeeder->setNewPointDataReceivedFlag(FALSE);
                     }
                 }
-                //setNewPointDataReceivedFlag(FALSE);
             }
             else if( stringCompareIgnoreCase(_controlmethod,CtiCCSubstationBus::ManualOnlyControlMethod) )//intentionally left the ! off
             {
@@ -1866,14 +1999,11 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
                 DOUBLE setPoint = (lagLevel + leadLevel)/2;
                 setKVARSolution(calculateKVARSolution(_controlunits,setPoint,getCurrentVarLoadPointValue(),getCurrentWattLoadPointValue()));
 
-                /*for(LONG i=0;i<_ccfeeders.size();i++)
-                {
-                    CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders[i];
-                    currentFeeder->setPeakTimeFlag(isPeakTime(currentDateTime));
-                }*/
-
+                
                 if( !_IGNORE_NOT_NORMAL_FLAG ||
-                    getCurrentVarPointQuality() == NormalQuality )
+                    ( getCurrentVarPointQuality() == NormalQuality &&
+                      getCurrentWattPointQuality() == NormalQuality && 
+                      getCurrentVoltPointQuality() == NormalQuality ) )
                 {
                     if( !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::KVARControlUnits) )
                     {
@@ -4417,8 +4547,7 @@ BOOL CtiCCSubstationBus::isVerificationAlreadyControlled()
                             CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[j];
                             if( currentCapBank->getPAOId() == getCurrentVerificationCapBankId() )
                             {
-                                if( currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending ||
-                                    currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
+                                if( currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending )
                                 {
                                     DOUBLE change = newCalcValue - oldCalcValue;
                                     DOUBLE ratio = fabs(change/currentCapBank->getBankSize());
@@ -4430,16 +4559,12 @@ BOOL CtiCCSubstationBus::isVerificationAlreadyControlled()
                                     {
                                         returnBoolean = FALSE;
                                     }
+                                    foundCap = TRUE;
                                 }
-                                else if (currentFeeder->getPorterRetFailFlag())
-                                {
-                                    currentFeeder->setPorterRetFailFlag(false);
-                                    returnBoolean =  TRUE;
-                                }
-                                /*else if( currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
+                                else if( currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
                                 {
                                     DOUBLE change = oldCalcValue - newCalcValue;
-                                    DOUBLE ratio = change/currentCapBank->getBankSize();
+                                    DOUBLE ratio = fabs(change/currentCapBank->getBankSize());
                                     if( ratio >= getMinConfirmPercent()*.01 )
                                     {
                                         returnBoolean = TRUE;
@@ -4448,7 +4573,14 @@ BOOL CtiCCSubstationBus::isVerificationAlreadyControlled()
                                     {
                                         returnBoolean = FALSE;
                                     }
-                                }  */
+                                    foundCap = TRUE;
+                                }
+
+                                else if (currentFeeder->getPorterRetFailFlag())
+                                {
+                                    currentFeeder->setPorterRetFailFlag(false);
+                                    returnBoolean =  TRUE;
+                                }
                                 else
                                 {
                                     CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -4884,8 +5016,9 @@ void CtiCCSubstationBus::dumpDynamicData(RWDBConnection& conn, CtiTime& currentD
             << dynamicCCSubstationBusTable["currentvoltpointvalue"].assign( _currentvoltloadpointvalue )
             << dynamicCCSubstationBusTable["switchPointStatus"].assign( _switchOverStatus )
             << dynamicCCSubstationBusTable["altSubControlValue"].assign( _altSubControlValue )
-            << dynamicCCSubstationBusTable["eventSeq"].assign( _eventSeq );
-
+            << dynamicCCSubstationBusTable["eventSeq"].assign( _eventSeq )
+            << dynamicCCSubstationBusTable["currentwattpointquality"].assign( _currentwattpointquality )
+            << dynamicCCSubstationBusTable["currentvoltpointquality"].assign( _currentvoltpointquality );
              
             /*{
                 CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -4951,7 +5084,9 @@ void CtiCCSubstationBus::dumpDynamicData(RWDBConnection& conn, CtiTime& currentD
             << _currentvoltloadpointvalue
             << _switchOverStatus  
             << _altSubControlValue
-            << _eventSeq;
+            << _eventSeq
+            << _currentwattpointquality
+            << _currentvoltpointquality;
 
             if( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
@@ -6121,6 +6256,10 @@ CtiCCCapBank* CtiCCSubstationBus::getMonitorPointParentBankAndFeeder(CtiCCMonito
     return NULL;
 }
 
+BOOL CtiCCSubstationBus::analyzeBusForVarImprovement(CtiCCMonitorPoint* point, CtiMultiMsg_vec &pointChanges, CtiMultiMsg_vec &ccEvents, CtiMultiMsg_vec &pilMessages)
+{
+    return FALSE;
+}
 
 
 BOOL CtiCCSubstationBus::voltControlBankSelectProcess(CtiCCMonitorPoint* point, CtiMultiMsg_vec &pointChanges, CtiMultiMsg_vec &ccEvents, CtiMultiMsg_vec &pilMessages)
@@ -6409,6 +6548,7 @@ BOOL CtiCCSubstationBus::voltControlBankSelectProcess(CtiCCMonitorPoint* point, 
                 pointChanges.push_back(new CtiPointDataMsg(getEstimatedVarLoadPointId(),getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType));
             }           
             setOperationSentWaitFlag(TRUE);
+      
             retVal = TRUE;
        }
     }
@@ -6845,6 +6985,10 @@ CtiCCSubstationBus& CtiCCSubstationBus::operator=(const CtiCCSubstationBus& righ
         _offpklag = right._offpklag;
         _peaklead = right._peaklead;
         _offpklead = right._offpklead;
+        _peakVARlag = right._peakVARlag;
+        _offpkVARlag = right._offpkVARlag;
+        _peakVARlead = right._peakVARlead;
+        _offpkVARlead = right._offpkVARlead;
         _decimalplaces = right._decimalplaces;
         _nextchecktime = right._nextchecktime;
         _newpointdatareceivedflag = right._newpointdatareceivedflag;
@@ -6866,6 +7010,8 @@ CtiCCSubstationBus& CtiCCSubstationBus::operator=(const CtiCCSubstationBus& righ
         _kvarsolution = right._kvarsolution;
         _estimatedpowerfactorvalue = right._estimatedpowerfactorvalue;
         _currentvarpointquality = right._currentvarpointquality;
+        _currentwattpointquality = right._currentwattpointquality;
+        _currentvoltpointquality = right._currentvoltpointquality;
         _waivecontrolflag = right._waivecontrolflag;
         _additionalFlags = right._additionalFlags;
         _currentVerificationCapBankId = right._currentVerificationCapBankId; 
@@ -6984,6 +7130,10 @@ void CtiCCSubstationBus::restore(RWDBReader& rdr)
     setOffPeakLag(0);
     setPeakLead(0);
     setOffPeakLead(0);
+    setPeakVARLag(0);
+    setOffPeakVARLag(0);
+    setPeakVARLead(0);
+    setOffPeakVARLead(0);
     setPeakStartTime(0);
     setPeakStopTime(0);
     setControlInterval(0);
@@ -7075,6 +7225,10 @@ void CtiCCSubstationBus::setStrategyValues(CtiCCStrategyPtr strategy)
     _offpklag = strategy->getOffPeakLag();                
     _peaklead = strategy->getPeakLead();                      
     _offpklead = strategy->getOffPeakLead();                
+    _peakVARlag = strategy->getPeakVARLag();                      
+    _offpkVARlag = strategy->getOffPeakVARLag();                
+    _peakVARlead = strategy->getPeakVARLead();                      
+    _offpkVARlead = strategy->getOffPeakVARLead();                
     _peakstarttime = strategy->getPeakStartTime();                    
     _peakstoptime = strategy->getPeakStopTime();                      
     _controlinterval = strategy->getControlInterval();                
@@ -7154,6 +7308,8 @@ void CtiCCSubstationBus::setDynamicData(RWDBReader& rdr)
         _switchOverStatus = (tempBoolString=="y"?TRUE:FALSE);
         rdr["altSubControlValue"] >> _altSubControlValue;
         rdr["eventSeq"] >> _eventSeq;
+        rdr["currentwattpointquality"] >> _currentwattpointquality;
+        rdr["currentvoltpointquality"] >> _currentvoltpointquality;
 
         _altSubVoltVal = _currentvoltloadpointvalue;
         _altSubVarVal = _currentvarloadpointvalue; 

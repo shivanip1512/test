@@ -2404,23 +2404,27 @@ bool CtiCCSubstationBusStore::UpdateBusVerificationFlagsInDB(CtiCCSubstationBus*
         CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
         RWDBConnection conn = getConnection();
 
-        RWDBTable dynamicSubBusTable = getDatabase().table("dynamicccsubstationbus");
-        RWDBUpdater updater = dynamicSubBusTable.updater();
+        if (conn.isValid()) 
+        {
+            RWDBTable dynamicSubBusTable = getDatabase().table("dynamicccsubstationbus");
+            RWDBUpdater updater = dynamicSubBusTable.updater();
 
-        updater.where( dynamicSubBusTable["paobjectid"] == bus->getPAOId() );
+            updater.where( dynamicSubBusTable["paobjectid"] == bus->getPAOId() );
 
-        updater << dynamicSubBusTable["verificationflag"].assign( (bus->getVerificationFlag()?"Y":"N") );
+            updater << dynamicSubBusTable["verificationflag"].assign( (bus->getVerificationFlag()?"Y":"N") );
 
-        updater.execute( conn );
+            updater.execute( conn );
 
-        CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(bus->getPAOId(), ChangePAODb,
+            CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(bus->getPAOId(), ChangePAODb,
                                                       bus->getPAOCategory(), bus->getPAOType(),
                                                       ChangeTypeUpdate);
-        dbChange->setSource(CAP_CONTROL_DBCHANGE_MSG_SOURCE);
-        CtiCapController::getInstance()->sendMessageToDispatch(dbChange);
+            dbChange->setSource(CAP_CONTROL_DBCHANGE_MSG_SOURCE);
+            CtiCapController::getInstance()->sendMessageToDispatch(dbChange);
 
-        return updater.status().isValid();
+            return updater.status().isValid();
+        }
     }
+    return false;
 }
 
                                                             
@@ -2437,7 +2441,6 @@ bool CtiCCSubstationBusStore::UpdateBusDisableFlagInDB(CtiCCSubstationBus* bus)
     {
         CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
         RWDBConnection conn = getConnection();
-
         if (conn.isValid()) 
         {
             RWDBTable yukonPAObjectTable = getDatabase().table("yukonpaobject");
@@ -2602,6 +2605,7 @@ bool CtiCCSubstationBusStore::UpdateFeederBankListInDB(CtiCCFeeder* feeder)
 
         if (conn.isValid()) 
         {
+        
             RWDBTable ccFeederBankListTable = getDatabase().table("ccfeederbanklist");
             RWDBDeleter deleter = ccFeederBankListTable.deleter();
 
@@ -3097,7 +3101,9 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                         << dynamicCCSubstationBusTable["currentvoltpointvalue"]
                         << dynamicCCSubstationBusTable["switchPointStatus"]
                         << dynamicCCSubstationBusTable["altSubControlValue"]
-                        << dynamicCCSubstationBusTable["eventSeq"];
+                        << dynamicCCSubstationBusTable["eventSeq"]
+                        << dynamicCCSubstationBusTable["currentwattpointquality"]
+                        << dynamicCCSubstationBusTable["currentvoltpointquality"];
 
                         selector.from(capControlSubstationBusTable);
                         selector.from(dynamicCCSubstationBusTable);
@@ -3587,7 +3593,9 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId, map< long,
                     << dynamicCCFeederTable["currentvoltpointvalue"]
                     << dynamicCCFeederTable["eventSeq"]
                     << dynamicCCFeederTable["currverifycbid"]
-                    << dynamicCCFeederTable["currverifycborigstate"];
+                    << dynamicCCFeederTable["currverifycborigstate"]
+                    << dynamicCCFeederTable["currentwattpointquality"]
+                    << dynamicCCFeederTable["currentvoltpointquality"];
 
                     selector.from(dynamicCCFeederTable);
                     selector.from(capControlFeederTable);

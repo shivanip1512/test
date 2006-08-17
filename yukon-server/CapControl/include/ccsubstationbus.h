@@ -81,6 +81,10 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     DOUBLE getOffPeakLag() const;
     DOUBLE getPeakLead() const;
     DOUBLE getOffPeakLead() const;
+    DOUBLE getPeakVARLag() const;
+    DOUBLE getOffPeakVARLag() const;
+    DOUBLE getPeakVARLead() const;
+    DOUBLE getOffPeakVARLead() const;
     LONG getPeakStartTime() const;
     LONG getPeakStopTime() const;
     LONG getCurrentVarLoadPointId() const;
@@ -119,6 +123,8 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     DOUBLE getKVARSolution() const;
     DOUBLE getEstimatedPowerFactorValue() const;
     LONG getCurrentVarPointQuality() const;
+    LONG getCurrentWattPointQuality() const;
+    LONG getCurrentVoltPointQuality() const;
     BOOL getWaiveControlFlag() const;
     BOOL getVerificationFlag() const;
     BOOL getPerformingVerificationFlag() const;
@@ -162,6 +168,10 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setOffPeakLag(DOUBLE offpeak);
     CtiCCSubstationBus& setPeakLead(DOUBLE peak);
     CtiCCSubstationBus& setOffPeakLead(DOUBLE offpeak);
+    CtiCCSubstationBus& setPeakVARLag(DOUBLE peak);
+    CtiCCSubstationBus& setOffPeakVARLag(DOUBLE offpeak);
+    CtiCCSubstationBus& setPeakVARLead(DOUBLE peak);
+    CtiCCSubstationBus& setOffPeakVARLead(DOUBLE offpeak);
     CtiCCSubstationBus& setPeakStartTime(LONG starttime);
     CtiCCSubstationBus& setPeakStopTime(LONG stoptime);
     CtiCCSubstationBus& setCurrentVarLoadPointId(LONG currentvarid);
@@ -201,6 +211,8 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setKVARSolution(DOUBLE solution);
     CtiCCSubstationBus& setEstimatedPowerFactorValue(DOUBLE epfval);
     CtiCCSubstationBus& setCurrentVarPointQuality(LONG cvpq);
+    CtiCCSubstationBus& setCurrentWattPointQuality(LONG cwpq);
+    CtiCCSubstationBus& setCurrentVoltPointQuality(LONG cvpq);
     CtiCCSubstationBus& setWaiveControlFlag(BOOL waive);
     CtiCCSubstationBus& setOverlappingVerificationFlag( BOOL overlapFlag);
     CtiCCSubstationBus& setPreOperationMonitorPointScanFlag( BOOL flag);
@@ -254,6 +266,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCCapBank* getMonitorPointParentBankAndFeeder(CtiCCMonitorPoint* point, CtiCCFeeder* feed);
     BOOL voltControlBankSelectProcess(CtiCCMonitorPoint* point, CtiMultiMsg_vec &pointChanges, CtiMultiMsg_vec &ccEvents, CtiMultiMsg_vec &pilMessages);
     BOOL areOtherMonitorPointResponsesOk(LONG mPointID, CtiCCCapBank* potentialCap, int action);
+    BOOL analyzeBusForVarImprovement(CtiCCMonitorPoint* point, CtiMultiMsg_vec &pointChanges, CtiMultiMsg_vec &ccEvents, CtiMultiMsg_vec &pilMessages);
 
     BOOL isBusPerformingVerification();
     BOOL isBusReadyToStartVerification();
@@ -373,6 +386,10 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
       DOUBLE _offpklag;
       DOUBLE _peaklead;
       DOUBLE _offpklead;
+      DOUBLE _peakVARlag;
+      DOUBLE _offpkVARlag;
+      DOUBLE _peakVARlead;
+      DOUBLE _offpkVARlead;
 
     LONG _decimalplaces;
     CtiTime _nextchecktime;
@@ -395,6 +412,8 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     DOUBLE _kvarsolution;
     DOUBLE _estimatedpowerfactorvalue;
     LONG _currentvarpointquality;
+    LONG _currentwattpointquality;
+    LONG _currentvoltpointquality;
     BOOL _waivecontrolflag;
 
     string _additionalFlags;
