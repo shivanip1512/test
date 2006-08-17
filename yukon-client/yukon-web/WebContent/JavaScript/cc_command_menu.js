@@ -344,7 +344,7 @@ function executeFeederCommand (paoId, command, cmd_name) {
 
 function executeCapBankCommand (paoId, command, is_manual_state, cmd_name, cmd_div_name) {
 	var unique_id = 'cmdDiv'+paoId;
-	var cmdDiv;
+	var cmdDiv = document.getElementById (unique_id);
 	var RESET_OP_CNT = 12;
 	if (is_manual_state) {
 		new Ajax.Request ('/servlet/CBCServlet', 
@@ -370,7 +370,7 @@ function executeCapBankCommand (paoId, command, is_manual_state, cmd_name, cmd_d
 			cmdDiv = document.getElementById (unique_id);
 		}
 	}
-	cmdDiv.style.display = 'none';
+        cmdDiv.style.display = 'none';
 }
 
 function execute_CapBankMoveBack (paoId, command, redirect) {
