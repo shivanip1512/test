@@ -426,4 +426,16 @@ public class CBCSelectionLists {
         return pSubtypes;
     }
 
+	public  SelectItem[] getTypeList701X() {
+		return typeList701X;
+	}
+
+	public  SelectItem[] getTypeList702X() {
+		return typeList702X;
+	}
+	
+	public SelectItem[] getTimeInterval() {
+
+		return TIME_INTERVAL;
+	}
 }
