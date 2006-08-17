@@ -164,7 +164,7 @@ public class CBControllerEditor {
     /**
      * @param deviceCBC
      */
-    private void setPaoCBC(YukonPAObject deviceCBC) {
+    public void setPaoCBC(YukonPAObject deviceCBC) {
         this.deviceCBC = deviceCBC;
     }
 
