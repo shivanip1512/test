@@ -182,11 +182,12 @@ function prepareSubmit(form) {
 				break;
 			}
 		}
+        
+        int groupID = program.getGroupID();
 %>
                   <tr> 
                     <input type="hidden" name="ProgID" value="<%= suProg.getProgramID() %>">
 					<input type="hidden" name="AppCatID" value="<%= suProg.getApplianceCategoryID() %>">
-                    <input type="hidden" name="groupID" value="<%= program.getGroupID() %>">
                     <input type="hidden" name="InvIDs" value="">
                     <input type="hidden" name="LoadNos" value="">
                     <td width="25%" class="TableCell"><%= ServletUtils.getProgramDisplayNames(enrProg)[0] %></td>
