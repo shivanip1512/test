@@ -50,6 +50,7 @@ List movedCaps = new ArrayList(10);
        <table id=movedCBHeaderTable width="100%" border="0" cellspacing="0" cellpadding="0">
          <tr class="columnHeader lAlign">
          <td>Recent Feeder</td>
+         <td>Original Feeder </td>
          <td>Cap Bank</td>
          </tr>
        </table>
@@ -73,6 +74,7 @@ for( int i = 0; i < movedCaps.size(); i++ )
 										<%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(cap, CBCDisplay.CB_PARENT_COLUMN)%>
 						</a>					
 					</td>
+					<td><%=DaoFactory.getPaoDao().getYukonPAOName( cap.getOrigFeederID() )%></td>
 					<td><%=cap.getCcName()%></td>
 				</tr>
 				
