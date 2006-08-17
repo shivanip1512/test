@@ -21,6 +21,7 @@ import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.esub.util.Util;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.yukon.conns.ConnPool;
 
 /**
  * Replays historical point data from a binary file created with PointChangeRecorder
@@ -89,7 +90,7 @@ public class PointChangePlayer2 {
 			msg.setTags(0x00008000);
 			
 		CTILogger.info("id: " + msg.getId() + " val: " + msg.getValue() + " timestamp: " + msg.getPointDataTimeStamp() + " lp: " + lpFlag);
-		Util.getConnToDispatch().write(msg);
+		ConnPool.getInstance().getDefDispatchConn().write(msg);
 	}
 	
 	private static void sleepUntil(long ts) {

@@ -8,6 +8,7 @@ package com.cannontech.esub.editor;
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.geom.Point2D;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -24,6 +25,8 @@ import com.cannontech.esub.element.FunctionElement;
 import com.cannontech.esub.util.Util;
 import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.util.Command;
+import com.cannontech.yukon.IServerConnection;
+import com.cannontech.yukon.conns.ConnPool;
 import com.loox.jloox.LxAbstractAction;
 import com.loox.jloox.LxComponent;
 import com.loox.jloox.LxGraph;
@@ -175,22 +178,23 @@ class EditorActions {
 			true) {
 		public void processAction(ActionEvent evt) {
 			int r = editor.saveOption();
-			if (r != JOptionPane.CANCEL_OPTION) {
-				try {	
-				ClientConnection conn = Util.getConnToDispatch();
+			if (r != JOptionPane.CANCEL_OPTION) {			
+                // Ugly cast.  We want to call disconnect though so that our shutdown message gets
+                // written out.
+				ClientConnection conn = (ClientConnection) ConnPool.getInstance().getDefDispatchConn();
 				if ( conn != null && conn.isValid() ) {  // free up Dispatchs resources		
 					Command comm = new Command();
 					comm.setPriority(15);				
 					comm.setOperation( Command.CLIENT_APP_SHUTDOWN );
-
 					conn.write( comm );
-					conn.disconnect();
+                    try {
+                        conn.disconnect();
+                    } catch (IOException e) {
+                        // Too bad
+                        e.printStackTrace();
+                    }
 				}
-				}
-				catch ( java.io.IOException e ) {
-					CTILogger.error( e.getMessage(), e );
-				}
-
+			
 				System.exit(0);
 			}
 		}

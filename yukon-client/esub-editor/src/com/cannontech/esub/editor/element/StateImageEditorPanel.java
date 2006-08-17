@@ -42,8 +42,8 @@ import com.cannontech.database.db.DBPersistent;
 import com.cannontech.dbeditor.wizard.state.YukonImagePanel;
 import com.cannontech.esub.element.FunctionElement;
 import com.cannontech.esub.element.StateImage;
-import com.cannontech.esub.util.Util;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.yukon.conns.ConnPool;
 
 /**
  * Creation date: (1/14/2002 3:37:58 PM)
@@ -1213,7 +1213,7 @@ public void actionPerformed(ActionEvent e)
                         {
                             //handle the DBChangeMsg locally
                             LiteBase lBase = DefaultDatabaseCache.getInstance().handleDBChangeMessage(dbChange[i]);
-                            Util.getConnToDispatch().write(dbChange[i]);
+                            ConnPool.getInstance().getDefDispatchConn().write(dbChange[i]);
                         }
                     }   
                 }
@@ -1230,7 +1230,7 @@ public void actionPerformed(ActionEvent e)
                         {
                             //handle the DBChangeMsg locally
                             LiteBase lBase = DefaultDatabaseCache.getInstance().handleDBChangeMessage(dbChange[i]);
-                            Util.getConnToDispatch().write(dbChange[i]);
+                            ConnPool.getInstance().getDefDispatchConn().write(dbChange[i]);
                         }
                     }   
                 }

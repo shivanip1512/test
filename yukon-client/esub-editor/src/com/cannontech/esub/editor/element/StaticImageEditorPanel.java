@@ -15,8 +15,8 @@ import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.dbeditor.wizard.state.YukonImagePanel;
 import com.cannontech.esub.element.StaticImage;
-import com.cannontech.esub.util.Util;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.yukon.conns.ConnPool;
 
 /**
  * Creation date: (1/22/2002 10:23:18 AM)
@@ -261,7 +261,7 @@ public class StaticImageEditorPanel extends DataInputPanel {
 										//handle the DBChangeMsg locally
 										com.cannontech.database.data.lite.LiteBase lBase = 
 											com.cannontech.database.cache.DefaultDatabaseCache.getInstance().handleDBChangeMessage(dbChange[i]);
-										Util.getConnToDispatch().write(dbChange[i]);
+                                        ConnPool.getInstance().getDefDispatchConn().write(dbChange[i]);
 									}
 								}	
 							}
@@ -280,7 +280,7 @@ public class StaticImageEditorPanel extends DataInputPanel {
 										//handle the DBChangeMsg locally
 										com.cannontech.database.data.lite.LiteBase lBase = 
 											com.cannontech.database.cache.DefaultDatabaseCache.getInstance().handleDBChangeMessage(dbChange[i]);
-										Util.getConnToDispatch().write(dbChange[i]);
+                                        ConnPool.getInstance().getDefDispatchConn().write(dbChange[i]);
 									}
 								}	
 							}
