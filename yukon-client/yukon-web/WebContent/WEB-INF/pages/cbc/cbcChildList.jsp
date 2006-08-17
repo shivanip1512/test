@@ -1,28 +1,12 @@
-<%@ page pageEncoding="UTF-8" import="java.util.*"%>
-<%@ page import="org.ajaxanywhere.*"%>
+
 <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h" %>
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %>
 <%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x" %>
 <%@ taglib uri="http://ajaxanywhere.sourceforge.net" prefix="aa" %>
-<%
 
-    if (AAUtils.isAjaxRequest(request)){
-        AAUtils.addZonesToRefresh(request, "feeders");
-    }
-%>
-<f:verbatim>
-<script type="text/JavaScript" src="../../../JavaScript/aa.js"></script>
-<script>
-	ajaxAnywhere.getZonesToReload = function(url, submitButton) {
-		
-		if ( $("aazone.feeders") )
-			return "feeders";
 
-	}
-</script>
-</f:verbatim>	
 <f:subview id="childList" rendered="#{capControlForm.visibleTabs['CBCSubstation'] || capControlForm.visibleTabs['CBCFeeder']}" >
-	<aa:zoneJSF id="feeders">
+
     <f:subview id="paoSubBus" rendered="#{capControlForm.visibleTabs['CBCSubstation']}" >
 	    <f:verbatim><br/><br/><fieldset><legend>Feeder Assignment</legend></f:verbatim>
 	    <f:verbatim><br/></f:verbatim>
@@ -125,7 +109,7 @@
 	                   <f:facet name="header">
 	                      <x:outputText value="Assigned Feeders"/>
 	                   </f:facet>
-	                   <x:outputText value="#{dbCache.allPAOsMap[feeder.feederID]}" />
+	                   <x:outputText value="#{databaseCache.allPAOsMap[feeder.feederID]}" />
 	               </h:column>
 	
 	               <h:column>
@@ -250,7 +234,7 @@
 	                   <f:facet name="header">
 	                      <x:outputText value="Assigned CapBanks"/>
 	                   </f:facet>
-	                   <x:outputText value="#{dbCache.allPAOsMap[capBank.deviceID]}" />
+	                   <x:outputText value="#{databaseCache.allPAOsMap[capBank.deviceID]}" />
 	               </h:column>
 	
 	               <h:column>
@@ -272,5 +256,4 @@
     </f:subview>
     
 
-</aa:zoneJSF>
 </f:subview>

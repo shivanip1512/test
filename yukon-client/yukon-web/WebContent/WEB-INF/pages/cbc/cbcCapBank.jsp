@@ -1,43 +1,28 @@
-<%@ page pageEncoding="UTF-8" import="java.util.*"%>
-<%@ page import="org.ajaxanywhere.*"%>
 <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h" %>
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %>
 <%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x" %>
 <%@ page import="com.cannontech.web.editor.point.PointForm" %>
-<%@ page import="com.cannontech.web.editor.CapControlForm" %>
+
 <%@ page import="com.cannontech.web.util.*" %>
-<%@ taglib uri="http://ajaxanywhere.sourceforge.net" prefix="aa" %>
+<%@ page import="com.cannontech.web.editor.CapControlForm" %>
+<%@ page import="com.cannontech.database.data.capcontrol.CapBankController" %>
+<%@ page import="com.cannontech.database.data.capcontrol.CapBankController702x" %>
+
+<%@ page import="com.cannontech.database.db.DBPersistent" %>
+<%@ page import="com.cannontech.servlet.nav.DBEditorTypes" %>
+
 <%
 
-    if (AAUtils.isAjaxRequest(request)){
-        AAUtils.addZonesToRefresh(request, "capBankEditor");
-    }
-%>
-<f:verbatim>
-<script type="text/JavaScript" src="../../../JavaScript/aa.js"></script>
-<script>
-	ajaxAnywhere.getZonesToReload = function(url, submitButton) {
-		
-		if ( $("aazone.capBankEditor") ) {
-			return "capBankEditor";
-		}
-		
-	}
-	
 
-			
-</script>
-</f:verbatim>
-<%
-
-PointForm ptEditorForm =
-    (PointForm)JSFParamUtil.getJSFVar( "ptEditorForm" );
-
-
+    
+CapControlForm capControlForm = (CapControlForm)JSFParamUtil.getJSFVar( "capControlForm" );
+  String itemid = JSFParamUtil.getJSFReqParam("itemid");
+  if (itemid != null)
+    capControlForm.initItem(Integer.parseInt(itemid), DBEditorTypes.EDITOR_CAPCONTROL);
 %>
 
 <f:subview id="cbcCapBank" rendered="#{capControlForm.visibleTabs['CBCCapBank']}" >
-<aa:zoneJSF id = "capBankEditor">
+
 <f:verbatim>
 
 <script type="text/javascript">
@@ -129,15 +114,14 @@ addSmartScrolling('capbankHiden', 'capbankDiv', null, null);
 			
 
             <f:verbatim><br/><br/></f:verbatim>
-            
+
             <x:div id="capbankDiv" forceId="true" styleClass="scrollSmall" rendered="#{capControlForm.bankControlPtVisible}" >
 						
 			
             <x:outputLabel for="cntrlPoint" value="Control Device/Point: " title="Point used for monitoring the control (Only displays points that are not yet used by CapBanks)" styleClass="medStaticLabel"/>
-            <x:outputText id="cntrlPoint" rendered="#{capControlForm.PAOBase.capBank.controlPointID != 0}"
-                value="#{dbCache.allPAOsMap[dbCache.allPointsMap[capControlForm.PAOBase.capBank.controlPointID].paobjectID].paoName}
-                / #{dbCache.allPointsMap[capControlForm.PAOBase.capBank.controlPointID].pointName}" styleClass="medLabel"/>
-            <x:outputText id="cntrlPoint_none" rendered="#{capControlForm.PAOBase.capBank.controlPointID == 0}"
+            <x:outputText id="cntrlPoint" rendered="#{capBankEditor.capBank.capBank.controlPointID != 0}"
+                value="#{capBankEditor.ctlPaoName} / #{capBankEditor.ctlPointName}" styleClass="medLabel"/>
+            <x:outputText id="cntrlPoint_none" rendered="#{capBankEditor.capBank.capBank.controlPointID == 0}"
                 value="(none)" styleClass="medLabel"/>
 
             <x:tree2 id="capBankPoints" value="#{capControlForm.capBankPoints}" var="node"
@@ -170,9 +154,9 @@ addSmartScrolling('capbankHiden', 'capbankDiv', null, null);
                 <f:facet name="points">
                     <x:panelGroup>
                         <x:graphicImage value="/editor/images/blue_check.gif" height="14" width="14" hspace="2"
-                            rendered="#{capControlForm.PAOBase.capBank.controlPointID == node.identifier}" />
+                            rendered="#{capBankEditor.capBank.capBank.controlPointID == node.identifier}" />
                         <x:commandLink id="pointNode" value="#{node.description}"
-                            actionListener="#{capControlForm.capBankTeeClick}" >
+                            actionListener="#{capBankEditor.capBankTeeClick}" >
                             <f:param name="ptID" value="#{node.identifier}"/>
                         </x:commandLink>                
     
@@ -182,6 +166,7 @@ addSmartScrolling('capbankHiden', 'capbankDiv', null, null);
             </x:tree2>
             
             </x:div>
+
           
             
             <x:commandLink id="capBankPoint_setNone" title="Do not use a control point" styleClass="medStaticLabel"
@@ -214,7 +199,7 @@ addSmartScrolling('capbankHiden', 'capbankDiv', null, null);
              <x:dataList forceId="true" id="CapBankPointsList" var="item" value="#{capControlForm.capBankPointList}" layout="unorderedList" styleClass="listWithNoBullets">                    
                <x:panelGroup>
                 <f:verbatim>&nbsp;&nbsp;&nbsp;</f:verbatim>
-                  <x:commandLink id="ptLink" value="#{item.pointName}" actionListener="#{capControlForm.capBankPointClick}">
+                  <x:commandLink id="ptLink" value="#{item.pointName}" actionListener="#{capControlForm.capBankPointClick}" >
                      <f:param name="ptID" value="#{item.liteID}" />
                   </x:commandLink>
                </x:panelGroup>
@@ -226,56 +211,56 @@ addSmartScrolling('capbankHiden', 'capbankDiv', null, null);
                         <f:verbatim><br/></f:verbatim> 
                          
                          <x:outputText value="CBC Controller: " title="Click on the link to edit the CBC"/>
-                            <x:commandLink rendered="#{dbCache.allPointsMap[capControlForm.PAOBase.capBank.controlPointID].paobjectID != 0}" id="CBCEditor" value="#{dbCache.allPAOsMap[dbCache.allPointsMap[capControlForm.PAOBase.capBank.controlPointID].paobjectID].paoName}"
-                           actionListener="#{ptEditorForm.paoClick}" title="Click on the link to edit the CBC" >
+                            <x:commandLink rendered="#{capBankEditor.ctlPaoID != 0}" id="CBCEditor" value="#{capBankEditor.ctlPaoName}"
+                           actionListener="#{capControlForm.paoClick}" title="Click on the link to edit the CBC" >
                                
-                                <f:param name="paoID" value="#{dbCache.allPointsMap[capControlForm.PAOBase.capBank.controlPointID].paobjectID}"/>
+                                <f:param name="paoID" value="#{capBankEditor.ctlPaoID}"/>
                             </x:commandLink>
-                            <x:outputText styleClass="medStaticLabel" value="No Controller Selected" rendered="#{dbCache.allPointsMap[capControlForm.PAOBase.capBank.controlPointID].paobjectID == 0}"/> 
+                            <x:outputText styleClass="medStaticLabel" value="No Controller Selected" rendered="#{capBankEditor.ctlPaoID == 0}"/> 
 						
             <f:verbatim><br/></f:verbatim>
-            <x:panelGroup id="oneWayCBC" rendered="#{capControlForm.CBControllerEditor.oneWay}">
+            <x:panelGroup id="oneWayCBC" rendered="#{capBankEditor.oneWayController}">
                 <f:verbatim><br/></f:verbatim>
-                <x:outputLabel for="cntrlSerNum" value="Serial Number: " title="Serial number of the controller device" rendered="#{capControlForm.PAOBase.capBank.controlPointID != 0}"/>
-                <x:inputText id="cntrlSerNumEd" styleClass="staticLabel" disabled="true" rendered="#{capControlForm.PAOBase.capBank.controlPointID != 0}"
-                        value="#{capControlForm.CBControllerEditor.paoCBC.deviceCBC.serialNumber}" maxlength="9" size="9">
+                <x:outputLabel for="cntrlSerNum" value="Serial Number: " title="Serial number of the controller device" rendered="#{capBankEditor.capBank.capBank.controlPointID != 0}"/>
+                <x:inputText id="cntrlSerNumEd" styleClass="staticLabel" disabled="true" rendered="#{capBankEditor.capBank.capBank.controlPointID != 0}"
+                        value="#{capBankEditor.controller.deviceCBC.serialNumber}" maxlength="9" size="9">
                     <f:validateLongRange minimum="0" maximum="9999999999" />
                 </x:inputText>
 
                 <f:verbatim><br/></f:verbatim>
-                <x:outputLabel for="cntrlRoute" value="Control Route: " title="Communication route the conroller uses" rendered="#{capControlForm.PAOBase.capBank.controlPointID != 0}"/>
-                <x:selectOneMenu id="cntrlRoute" value="#{capControlForm.CBControllerEditor.paoCBC.deviceCBC.routeID}" disabled="true" rendered="#{capControlForm.PAOBase.capBank.controlPointID != 0}">
+                <x:outputLabel for="cntrlRoute" value="Control Route: " title="Communication route the conroller uses" rendered="#{capBankEditor.capBank.capBank.controlPointID != 0}"/>
+                <x:selectOneMenu id="cntrlRoute" value="#{capBankEditor.controller.deviceCBC.routeID}" disabled="true" rendered="#{capBankEditor.capBank.capBank.controlPointID != 0}">
                     <f:selectItem itemLabel="(none)" itemValue="0"/>
                     <f:selectItems value="#{selLists.routes}"/>
                 </x:selectOneMenu>
             </x:panelGroup>
 
 
-            <x:panelGroup id="twoWayCBC" rendered="#{capControlForm.CBControllerEditor.twoWay}" >
+            <x:panelGroup id="twoWayCBC" rendered="#{capBankEditor.twoWayController}" >
                 <f:verbatim><br/></f:verbatim>
                 <x:outputLabel for="cntrlSerNum2" value="Serial Number: " title="Serial number of the controller device" />
                 <x:inputText id="cntrlSerNumEd2" styleClass="staticLabel" disabled="true"
-                        value="#{capControlForm.CBControllerEditor.paoCBC.serialNumber}" >
+                        value="#{capBankEditor.controller.deviceCBC.serialNumber}" >
                     <f:validateLongRange minimum="0" maximum="9999999999" />
                 </x:inputText>
                 
                 <f:verbatim><br/></f:verbatim>
                 <x:outputLabel for="cntrlMast" value="Master Address: " title="Integer address of the controller device in the field" />
                 <x:inputText id="cntrlMast" styleClass="staticLabel" disabled="true"
-                        value="#{capControlForm.CBControllerEditor.paoCBC.deviceAddress.masterAddress}" >
+                        value="#{capBankEditor.controller.deviceAddress.masterAddress}" >
                     <f:validateLongRange minimum="0" maximum="9999999999" />
                 </x:inputText>
 
                 <f:verbatim><br/></f:verbatim>
                 <x:outputLabel for="cntrlMSlav" value="Slave Address: " title="Integer address of the controller device in the field" />
                 <x:inputText id="cntrlMSlav" styleClass="staticLabel" disabled="true"
-                        value="#{capControlForm.CBControllerEditor.paoCBC.deviceAddress.slaveAddress}" >
+                        value="#{capBankEditor.controller.deviceAddress.slaveAddress}" >
                     <f:validateLongRange minimum="0" maximum="9999999999" />
                 </x:inputText>
 
                 <f:verbatim><br/></f:verbatim>
                 <x:outputLabel for="cntrlComChann" value="Comm. Channel: " title="Communication channel the conroller uses" />
-                <x:selectOneMenu id="cntrlComChann" value="#{capControlForm.CBControllerEditor.paoCBC.deviceDirectCommSettings.portID}" disabled="true">
+                <x:selectOneMenu id="cntrlComChann" value="#{capBankEditor.controller.deviceDirectCommSettings.portID}" disabled="true">
                     <f:selectItem itemLabel="(none)" itemValue="0"/>
                     <f:selectItems value="#{selLists.commChannels}"/>
                 </x:selectOneMenu>
@@ -283,7 +268,7 @@ addSmartScrolling('capbankHiden', 'capbankDiv', null, null);
                 <f:verbatim><br/></f:verbatim>
                 <x:outputLabel for="cntrlCommW" value="Post Comm. Wait: " title="How long to wait after communications" />
                 <x:inputText id="cntrlCommW" styleClass="staticLabel" disabled="true"
-                        value="#{capControlForm.CBControllerEditor.paoCBC.deviceAddress.postCommWait}" >
+                        value="#{capBankEditor.controller.deviceAddress.postCommWait}" >
                     <f:validateLongRange minimum="0" maximum="99999" />
                 </x:inputText>
 
@@ -292,34 +277,32 @@ addSmartScrolling('capbankHiden', 'capbankDiv', null, null);
                     <x:column>
                   
                     <f:verbatim><br/></f:verbatim>
-                    <x:selectBooleanCheckbox id="scanIntegrityChk" onclick="submit();"
-                            valueChangeListener="#{capControlForm.showScanRate}"
-                            value="#{capControlForm.CBControllerEditor.editingIntegrity}"
+                    <x:selectBooleanCheckbox id="scanIntegrityChk" value="#{capBankEditor.editingIntegrity}"
                             immediate="true" disabled="true"/>
                     <x:outputLabel for="scanIntegrityChk" value="Class 0,1,2,3 Scan" title="Integrity scan type" />
                     <f:verbatim><br/></f:verbatim>
                     <x:outputLabel for="integrityInterval" value="Interval: " title="How often this scan should occur"
-                            rendered="#{not empty capControlForm.CBControllerEditor.paoCBC.deviceScanRateMap['Integrity']}" />
+                            rendered="#{not empty capBankEditor.controller.deviceScanRateMap['Integrity']}" />
                     <x:selectOneMenu id="integrityInterval"
-                            rendered="#{not empty capControlForm.CBControllerEditor.paoCBC.deviceScanRateMap['Integrity']}"
-                            value="#{capControlForm.CBControllerEditor.paoCBC.deviceScanRateMap['Integrity'].intervalRate}" 
+                            rendered="#{not empty capBankEditor.controller.deviceScanRateMap['Integrity']}"
+                            value="#{capBankEditor.controller.deviceScanRateMap['Integrity'].intervalRate}" 
                             disabled="true">
-                        <f:selectItems value="#{capControlForm.timeInterval}"/>
+                        <f:selectItems value="#{selLists.timeInterval}"/>
                     </x:selectOneMenu>
                     <f:verbatim><br/></f:verbatim>
                     <x:outputLabel for="integrityAltInterval" value="Alt. Interval: " title="An alternate scan rate that can be less or more than the primary scan rate"
-                            rendered="#{not empty capControlForm.CBControllerEditor.paoCBC.deviceScanRateMap['Integrity']}" />
+                            rendered="#{not empty capBankEditor.controller.deviceScanRateMap['Integrity']}" />
                     <x:selectOneMenu id="integrityAltInterval" disabled="true"
-                            rendered="#{not empty capControlForm.CBControllerEditor.paoCBC.deviceScanRateMap['Integrity']}"
-                            value="#{capControlForm.CBControllerEditor.paoCBC.deviceScanRateMap['Integrity'].alternateRate}" >
-                        <f:selectItems value="#{capControlForm.timeInterval}"/>
+                            rendered="#{not empty capBankEditor.controller.deviceScanRateMap['Integrity']}"
+                            value="#{capBankEditor.controller.deviceScanRateMap['Integrity'].alternateRate}" >
+                        <f:selectItems value="#{selLists.timeInterval}"/>
                     </x:selectOneMenu>
                     <f:verbatim><br/></f:verbatim>
                     <x:outputLabel for="integrityGrp" value="Scan Group: " title="A way to group scans into a common collection"
-                            rendered="#{not empty capControlForm.CBControllerEditor.paoCBC.deviceScanRateMap['Integrity']}" />
+                            rendered="#{not empty capBankEditor.controller.deviceScanRateMap['Integrity']}" />
                     <x:selectOneMenu id="integrityGrp" disabled="true"
-                            rendered="#{not empty capControlForm.CBControllerEditor.paoCBC.deviceScanRateMap['Integrity']}"
-                            value="#{capControlForm.CBControllerEditor.paoCBC.deviceScanRateMap['Integrity'].scanGroup}" >
+                            rendered="#{not empty capBankEditor.controller.deviceScanRateMap['Integrity']}"
+                            value="#{capBankEditor.controller.deviceScanRateMap['Integrity'].scanGroup}" >
                         <f:selectItem itemLabel="Default" itemValue="0" />
                         <f:selectItem itemLabel="First" itemValue="1" />
                         <f:selectItem itemLabel="Second" itemValue="2" />
@@ -329,33 +312,32 @@ addSmartScrolling('capbankHiden', 'capbankDiv', null, null);
 
                     <x:column>
                     <f:verbatim><br/></f:verbatim>
-                    <x:selectBooleanCheckbox id="scanExceptionChk" onclick="submit();"
-                            valueChangeListener="#{capControlForm.showScanRate}"
-                            value="#{capControlForm.CBControllerEditor.editingException}"
+                    <x:selectBooleanCheckbox id="scanExceptionChk" 
+                            value="#{capBankEditor.editingException}"
                             immediate="true" disabled="true"/>
                     <x:outputLabel for="scanExceptionChk" value="Class 1,2,3 Scan" title="Exception scan type" />
                     <f:verbatim><br/></f:verbatim>
                     <x:outputLabel for="exceptionInterval" value="Interval: " title="How often this scan should occur"
-                            rendered="#{not empty capControlForm.CBControllerEditor.paoCBC.deviceScanRateMap['Exception']}" />
+                            rendered="#{not empty capBankEditor.controller.deviceScanRateMap['Exception']}" />
                     <x:selectOneMenu id="exceptionInterval" disabled="true"
-                            rendered="#{not empty capControlForm.CBControllerEditor.paoCBC.deviceScanRateMap['Exception']}"
-                            value="#{capControlForm.CBControllerEditor.paoCBC.deviceScanRateMap['Exception'].intervalRate}" >
-                        <f:selectItems value="#{capControlForm.timeInterval}"/>
+                            rendered="#{not empty capBankEditor.controller.deviceScanRateMap['Exception']}"
+                            value="#{capBankEditor.controller.deviceScanRateMap['Exception'].intervalRate}" >
+                        <f:selectItems value="#{selLists.timeInterval}"/>
                     </x:selectOneMenu>
                     <f:verbatim><br/></f:verbatim>
                     <x:outputLabel for="exceptionAltInterval" value="Alt. Interval: " title="An alternate scan rate that can be less or more than the primary scan rate"
-                            rendered="#{not empty capControlForm.CBControllerEditor.paoCBC.deviceScanRateMap['Exception']}" />
+                            rendered="#{not empty capBankEditor.controller.deviceScanRateMap['Exception']}" />
                     <x:selectOneMenu id="exceptionAltInterval" disabled="true"
-                            rendered="#{not empty capControlForm.CBControllerEditor.paoCBC.deviceScanRateMap['Exception']}"
-                            value="#{capControlForm.CBControllerEditor.paoCBC.deviceScanRateMap['Exception'].alternateRate}" >
-                        <f:selectItems value="#{capControlForm.timeInterval}"/>
+                            rendered="#{not empty capBankEditor.controller.deviceScanRateMap['Exception']}"
+                            value="#{capBankEditor.controller.deviceScanRateMap['Exception'].alternateRate}" >
+                        <f:selectItems value="#{selLists.timeInterval}"/>
                     </x:selectOneMenu>
                     <f:verbatim><br/></f:verbatim>
                     <x:outputLabel for="exceptionGrp" value="Scan Group: " title="A way to group scans into a common collection"
-                            rendered="#{not empty capControlForm.CBControllerEditor.paoCBC.deviceScanRateMap['Exception']}" />
+                            rendered="#{not empty capBankEditor.controller.deviceScanRateMap['Exception']}" />
                     <x:selectOneMenu id="exceptionGrp" disabled="true"
-                            rendered="#{not empty capControlForm.CBControllerEditor.paoCBC.deviceScanRateMap['Exception']}"
-                            value="#{capControlForm.CBControllerEditor.paoCBC.deviceScanRateMap['Exception'].scanGroup}" >
+                            rendered="#{not empty capBankEditor.controller.deviceScanRateMap['Exception']}"
+                            value="#{capBankEditor.controller.deviceScanRateMap['Exception'].scanGroup}" >
                         <f:selectItem itemLabel="Default" itemValue="0" />
                         <f:selectItem itemLabel="First" itemValue="1" />
                         <f:selectItem itemLabel="Second" itemValue="2" />
@@ -365,7 +347,7 @@ addSmartScrolling('capbankHiden', 'capbankDiv', null, null);
                 </x:panelGrid>
 
             </x:panelGroup>
-            <
+            
        <f:verbatim></fieldset></f:verbatim>
        
      
@@ -376,5 +358,5 @@ addSmartScrolling('capbankHiden', 'capbankDiv', null, null);
     </x:panelGrid>
         
     <x:inputHidden id="capbankHiden" forceId="true" value="#{capControlForm.offsetMap['capbankHiden']}"/>
-</aa:zoneJSF>
+
 </f:subview>

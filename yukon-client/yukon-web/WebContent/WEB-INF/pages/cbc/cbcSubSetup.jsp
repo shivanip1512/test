@@ -1,33 +1,11 @@
 
-<%@ page pageEncoding="UTF-8" import="java.util.*"%>
-<%@ page import="org.ajaxanywhere.*"%>
+
 <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h"%>
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f"%>
 <%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x"%>
-<%@ taglib uri="http://ajaxanywhere.sourceforge.net" prefix="aa" %>
-<%
-
-    if (AAUtils.isAjaxRequest(request)){
-        AAUtils.addZonesToRefresh(request, "varPointList;wattPointList;voltPointList");
-    }
-%>
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
+<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c"%>
 <f:verbatim>
-<script type="text/JavaScript" src="../../../JavaScript/aa.js"></script>
-<script>
-	ajaxAnywhere.getZonesToReload = function(url, submitButton) {
-		
-		if ( $("aazone.varPointList") )
-			return "varPointList";
-		if ( $("aazone.wattPointList") )
-			return "wattPointList";
-		if ( $("aazone.voltPointList") )
-			return "voltPointList";
-	}
-	
-    ajaxAnywhere.formName = "editorForm";
-   	ajaxAnywhere.substituteFormSubmitFunction();
-   	ajaxAnywhere.substituteSubmitButtonsBehavior(true);
-</script>
     <script type="text/javascript">
         addSmartScrolling('VARscrollOffsetTop', 'VARscrollable_div', null, null);
         addSmartScrolling('WATTscrollOffsetTop', 'WATTscrollable_div', null, null);
@@ -73,8 +51,7 @@
 				</f:verbatim>
 				<x:outputLabel for="subVarPoint" value="Selected Point: " title="Data point used for the current kVAR value" styleClass="medStaticLabel" />
 				<x:outputText id="subVarPoint" rendered="#{capControlForm.PAOBase.capControlSubstationBus.currentVarLoadPointID != 0}"
-					value="#{dbCache.allPAOsMap[dbCache.allPointsMap[capControlForm.PAOBase.capControlSubstationBus.currentVarLoadPointID].paobjectID].paoName}
-        	/ #{dbCache.allPointsMap[capControlForm.PAOBase.capControlSubstationBus.currentVarLoadPointID].pointName}"
+					value="#{capControlForm.paoNameMap[capControlForm.PAOBase.capControlSubstationBus.currentVarLoadPointID]} / #{capControlForm.pointNameMap[capControlForm.PAOBase.capControlSubstationBus.currentVarLoadPointID]}"
 					styleClass="medLabel" />
 				<x:outputText id="subVarPoint_none" rendered="#{capControlForm.PAOBase.capControlSubstationBus.currentVarLoadPointID == 0}" value="(none)" styleClass="medLabel" />
 
@@ -82,40 +59,16 @@
 
 				<x:div forceId="true" id="VARscrollable_div" styleClass="scrollSmall">
 
-				<aa:zoneJSF id="varPointList" >
-					<x:tree2 id="subVarPaoListTree" value="#{capControlForm.varTreeData}" var="node" showRootNode="false" varNodeToggler="t" preserveToggle="true" clientSideToggle="false">
+				
+                <x:inputText id="var_point" forceId="true" value="0"/>               
+                
+                <f:verbatim>
+                    <br/>
+                </f:verbatim>
+                <h:outputLink value="javascript:pointPicker_showPicker('var_point','com.cannontech.common.search.criteria.CCVarCriteria')" >
+                    <h:outputText value="Select point..."/>
+                </h:outputLink>
 
-						<f:facet name="root">
-							<x:panelGroup>
-								<x:outputText id="rootLink" value="#{node.description}" />
-							</x:panelGroup>
-						</f:facet>
-
-
-						<f:facet name="paos">
-							<x:panelGroup>
-								<x:outputText id="paChCnt" value="#{node.description} (#{node.childCount})" rendered="#{!empty node.children}" />
-							</x:panelGroup>
-						</f:facet>
-						
-						<f:facet name="sublevels">
-							<x:panelGroup>
-								<x:outputText id="subLvlCnt" value="#{node.description} (#{node.childCount})" rendered="#{!empty node.children}" />
-							</x:panelGroup>
-						</f:facet>
-
-						<f:facet name="points">
-							<x:panelGroup>
-								<x:graphicImage value="/editor/images/blue_check.gif" height="14" width="14" hspace="2" rendered="#{capControlForm.PAOBase.capControlSubstationBus.currentVarLoadPointID == node.identifier}" />
-
-								<x:commandLink id="ptLink" value="#{node.description}" actionListener="#{capControlForm.varPtTeeClick}">
-									<f:param name="ptID" value="#{node.identifier}" />
-								</x:commandLink>
-							</x:panelGroup>
-						</f:facet>
-
-					</x:tree2>
-				</aa:zoneJSF>
 			</x:div>
 
 
@@ -140,47 +93,22 @@
 				</f:verbatim>
 				<x:outputLabel for="subWattPoint" value="Selected Point: " title="Data point used for the current WATT value" styleClass="medStaticLabel" />
 				<x:outputText id="subWattPoint" rendered="#{capControlForm.PAOBase.capControlSubstationBus.currentWattLoadPointID != 0}" styleClass="medStaticLabel"
-					value="#{dbCache.allPAOsMap[dbCache.allPointsMap[capControlForm.PAOBase.capControlSubstationBus.currentWattLoadPointID].paobjectID].paoName}
-        	/ #{dbCache.allPointsMap[capControlForm.PAOBase.capControlSubstationBus.currentWattLoadPointID].pointName}"
-					styleClass="medLabel" />
+					value="#{capControlForm.paoNameMap[capControlForm.PAOBase.capControlSubstationBus.currentWattLoadPointID ]}/ #{capControlForm.pointNameMap[capControlForm.PAOBase.capControlSubstationBus.currentWattLoadPointID ]}"
+					/>
 				<x:outputText id="subWattPoint_none" rendered="#{capControlForm.PAOBase.capControlSubstationBus.currentWattLoadPointID == 0}" value="(none)" styleClass="medLabel" />
 
 				<x:div forceId="true" id="WATTscrollable_div" styleClass="scrollSmall">
-					<aa:zoneJSF id="wattPointList" >
-					<x:tree2 id="subWattListTree" value="#{capControlForm.wattTreeData}" var="node" showRootNode="false" varNodeToggler="t" preserveToggle="true" clientSideToggle="false">
-
-						<f:facet name="root">
-							<x:panelGroup>
-								<x:outputText id="wRootLink" value="#{node.description}" />
-							</x:panelGroup>
-						</f:facet>
-
-						<f:facet name="paos">
-							<x:panelGroup>
-								<x:outputText id="wPAChCnt" value="#{node.description} (#{node.childCount})" rendered="#{!empty node.children}" />
-							</x:panelGroup>
-						</f:facet>
-						
-						<f:facet name="sublevels">
-							<x:panelGroup>
-								<x:outputText id="subLvlCnt" value="#{node.description} (#{node.childCount})" rendered="#{!empty node.children}" />
-							</x:panelGroup>
-						</f:facet>
-
-						<f:facet name="points">
-							<x:panelGroup>
-								<x:graphicImage value="/editor/images/blue_check.gif" height="14" width="14" hspace="2" rendered="#{capControlForm.PAOBase.capControlSubstationBus.currentWattLoadPointID == node.identifier}" />
-								<x:commandLink id="wPtLink" value="#{node.description}" actionListener="#{capControlForm.wattPtTeeClick}">
-									<f:param name="ptID" value="#{node.identifier}" />
-								</x:commandLink>
-
-							</x:panelGroup>
-						</f:facet>
-
-					</x:tree2>
-					</aa:zoneJSF>
-				</x:div>
-				<x:inputHidden forceId="true" id="VARscrollOffsetTop" value="#{capControlForm.offsetMap['VARscrollOffsetTop']}" />
+                <x:inputText id="watt_point" forceId="true" value="0"/>               
+                
+                <f:verbatim>
+                    <br/>
+                </f:verbatim>
+				<h:outputLink value="javascript:pointPicker_showPicker('watt_point','com.cannontech.common.search.criteria.CCWattCriteria')" >
+                    <h:outputText value="Select point..."/>
+                </h:outputLink>
+                </x:div>
+               
+                <x:inputHidden forceId="true" id="VARscrollOffsetTop" value="#{capControlForm.offsetMap['VARscrollOffsetTop']}" />
 				<x:inputHidden forceId="true" id="WATTscrollOffsetTop" value="#{capControlForm.offsetMap['WATTscrollOffsetTop']}" />
 				<x:inputHidden forceId="true" id="VOLTscrollOffsetTop" value="#{capControlForm.offsetMap['VOLTscrollOffsetTop']}" />
 
@@ -205,48 +133,22 @@
 						</legend>
 				</f:verbatim>
 				<x:outputLabel for="subVoltPoint" value="Selected Point: " title="Data point used for the current Volt value" styleClass="medStaticLabel" />
-				<x:outputText id="subVoltPoint" rendered="#{capControlForm.PAOBase.capControlSubstationBus.currentVoltLoadPointID != 0}" styleClass="medStaticLabel"
-					value="#{dbCache.allPAOsMap[dbCache.allPointsMap[capControlForm.PAOBase.capControlSubstationBus.currentVoltLoadPointID].paobjectID].paoName}
-        	/ #{dbCache.allPointsMap[capControlForm.PAOBase.capControlSubstationBus.currentVoltLoadPointID].pointName}"
+				<x:outputText id="subVoltPoint" rendered="#{capControlForm.PAOBase.capControlSubstationBus.currentVoltLoadPointID != 0}"
+					value="#{capControlForm.paoNameMap[capControlForm.PAOBase.capControlSubstationBus.currentVoltLoadPointID]}/ #{capControlForm.pointNameMap[capControlForm.PAOBase.capControlSubstationBus.currentVoltLoadPointID]}"
 					styleClass="medLabel" />
 				<x:outputText id="subVoltPoint_none" rendered="#{capControlForm.PAOBase.capControlSubstationBus.currentVoltLoadPointID == 0}" value="(none)" styleClass="medLabel" />
 
 				<x:div forceId="true" id="VOLTscrollable_div" styleClass="scrollSmall">
-					<aa:zoneJSF id="voltPointList" >
-					<x:tree2 id="subVoltPaoListTree" value="#{capControlForm.voltTreeData}" var="node" showRootNode="false" varNodeToggler="t" preserveToggle="true" clientSideToggle="false">
 
-						<f:facet name="root">
-							<x:panelGroup>
-								<x:outputText id="vltRootLink" value="#{node.description}" />
-							</x:panelGroup>
-						</f:facet>
+                <x:inputText id="volt_point" forceId="true" value="0"/>               
+                
+                <f:verbatim>
+                    <br/>
+                </f:verbatim>
+                <h:outputLink value="javascript:pointPicker_showPicker('volt_point','com.cannontech.common.search.criteria.CCVoltCriteria')" >
+                    <h:outputText value="Select point..."/>
+                </h:outputLink>
 
-						<f:facet name="paos">
-							<x:panelGroup>
-								<x:outputText id="vltChCnt" value="#{node.description} (#{node.childCount})" rendered="#{!empty node.children}" />
-							</x:panelGroup>
-						</f:facet>
-						
-						<f:facet name="sublevels">
-							<x:panelGroup>
-								<x:outputText id="subLvlCnt" value="#{node.description} (#{node.childCount})" rendered="#{!empty node.children}" />
-							</x:panelGroup>
-						</f:facet>
-						
-
-						<f:facet name="points">
-							<x:panelGroup>
-								<x:graphicImage value="/editor/images/blue_check.gif" height="14" width="14" hspace="2" rendered="#{capControlForm.PAOBase.capControlSubstationBus.currentVoltLoadPointID == node.identifier}" />
-								<x:commandLink id="ptLink" value="#{node.description}" actionListener="#{capControlForm.voltPtTeeClick}">
-									<f:param name="ptID" value="#{node.identifier}" />
-
-								</x:commandLink>
-
-							</x:panelGroup>
-						</f:facet>
-
-					</x:tree2>
-					</aa:zoneJSF>
 				</x:div>
 				<x:commandLink id="subVoltPoint_setNone" title="Do not use a point for the Volt value" styleClass="medStaticLabel" value="No Volt Point" actionListener="#{capControlForm.voltPtTeeClick}">
 					<f:param name="ptID" value="0" />

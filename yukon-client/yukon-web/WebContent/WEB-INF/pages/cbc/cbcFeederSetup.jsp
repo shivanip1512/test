@@ -1,5 +1,4 @@
-<%@ page pageEncoding="UTF-8" import="java.util.*"%>
-<%@ page import="org.ajaxanywhere.*"%>
+
 <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h" %>
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %>
 <%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x" %>
@@ -28,8 +27,7 @@
 	    <f:verbatim><br/><br/><fieldset><legend>VAR Point Setup</legend></f:verbatim>
 		<x:outputLabel for="varPoint" value="Selected Point: " title="Data point used for the current kVAR value" styleClass="medStaticLabel" />
         <x:outputText id="varPoint" rendered="#{capControlForm.PAOBase.capControlFeeder.currentVarLoadPointID != 0}"
-        	value="#{dbCache.allPAOsMap[dbCache.allPointsMap[capControlForm.PAOBase.capControlFeeder.currentVarLoadPointID].paobjectID].paoName}
-        	/ #{dbCache.allPointsMap[capControlForm.PAOBase.capControlFeeder.currentVarLoadPointID].pointName}" styleClass="medLabel"/>
+        	value="#{capControlForm.paoNameMap[capControlForm.PAOBase.capControlFeeder.currentVarLoadPointID ]} / #{capControlForm.pointNameMap[capControlForm.PAOBase.capControlFeeder.currentVarLoadPointID ]}" styleClass="medLabel"/>
         <x:outputText id="varPoint_none" rendered="#{capControlForm.PAOBase.capControlFeeder.currentVarLoadPointID == 0}"
         	value="(none)" styleClass="medLabel"/>
 
@@ -82,8 +80,7 @@
 	    <f:verbatim><br/><br/><fieldset><legend>Watt Point Setup</legend></f:verbatim>
 		<x:outputLabel for="wattPoint" value="Selected Point: " title="Data point used for the current WATT value" styleClass="medStaticLabel"/>
         <x:outputText id="wattPoint" rendered="#{capControlForm.PAOBase.capControlFeeder.currentWattLoadPointID != 0}" styleClass="medStaticLabel"
-        	value="#{dbCache.allPAOsMap[dbCache.allPointsMap[capControlForm.PAOBase.capControlFeeder.currentWattLoadPointID].paobjectID].paoName}
-        	/ #{dbCache.allPointsMap[capControlForm.PAOBase.capControlFeeder.currentWattLoadPointID].pointName}" styleClass="medLabel"/>
+        	value="#{capControlForm.paoNameMap[capControlForm.PAOBase.capControlFeeder.currentWattLoadPointID ]}/ #{capControlForm.pointNameMap[capControlForm.PAOBase.capControlFeeder.currentWattLoadPointID ]}" styleClass="medLabel"/>
         <x:outputText id="wattPoint_none" rendered="#{capControlForm.PAOBase.capControlFeeder.currentWattLoadPointID == 0}"
         	value="(none)" styleClass="medLabel"/>
 
@@ -133,8 +130,8 @@
 	    <f:verbatim><br/><br/><fieldset><legend>Volt Point Setup</legend></f:verbatim>
 		<x:outputLabel for="voltPoint" value="Selected Point: " title="Data point used for the current Volt value" styleClass="medStaticLabel"/>
         <x:outputText id="voltPoint" rendered="#{capControlForm.PAOBase.capControlFeeder.currentVoltLoadPointID != 0}" styleClass="medStaticLabel"
-        	value="#{dbCache.allPAOsMap[dbCache.allPointsMap[capControlForm.PAOBase.capControlFeeder.currentVoltLoadPointID].paobjectID].paoName}
-        	/ #{dbCache.allPointsMap[capControlForm.PAOBase.capControlFeeder.currentVoltLoadPointID].pointName}" styleClass="medLabel"/>
+        	value="#{capControlForm.paoNameMap[capControlForm.PAOBase.capControlFeeder.currentVoltLoadPointID ]}
+        	/ #{capControlForm.pointNameMap[capControlForm.PAOBase.capControlFeeder.currentVoltLoadPointID ]}" styleClass="medLabel"/>
         <x:outputText id="voltPoint_none" rendered="#{capControlForm.PAOBase.capControlFeeder.currentVoltLoadPointID == 0}"
         	value="(none)" styleClass="medLabel"/>
 

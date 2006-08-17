@@ -1,41 +1,31 @@
 <%@ page pageEncoding="UTF-8" import="java.util.*"%>
-<%@ page import="org.ajaxanywhere.*"%>
+
 <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h" %>
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %>
 <%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x" %>
-<%@ taglib uri="http://ajaxanywhere.sourceforge.net" prefix="aa" %>
-
 <%@ page import="com.cannontech.web.editor.CapControlForm" %>
 <%@ page import="com.cannontech.web.editor.CapBankEditorForm" %>
 <%@ page import="com.cannontech.web.util.JSFParamUtil" %>
-<%
 
-    if (AAUtils.isAjaxRequest(request)){
-        AAUtils.addZonesToRefresh(request, "capBankAdv");
-    }
-%>
-<f:verbatim>
-<script type="text/JavaScript" src="../../../JavaScript/aa.js"></script>
-<script>
-	ajaxAnywhere.getZonesToReload = function(url, submitButton) {
-		
-		if ( $("aazone.capBankAdv") )
-			return "capBankAdv";
-	}
-	 ajaxAnywhere.formName = "editorForm";
-   	 ajaxAnywhere.substituteFormSubmitFunction();
-     ajaxAnywhere.substituteSubmitButtonsBehavior(true);
-</script>
-</f:verbatim>	
 <%
 CapControlForm capControlForm =  (CapControlForm)JSFParamUtil.getJSFVar("capControlForm");
 CapBankEditorForm editor =  (CapBankEditorForm)JSFParamUtil.getJSFVar("capBankEditor");
 editor.init(capControlForm.getPAOBase());
 %>
-<aa:zoneJSF id="capBankAdv">
-<x:saveState value="#{capBankEditor}"/>
- 
+
+
+<f:verbatim>
+<script type="text/javascript" >
+function checkAdaptiveCount(el) {
+if (el.value <= 0) {
+ var message = "Adaptive Count value must  be greater then 0";
+ alert ( message );
+ }
+}
+</script>
+</f:verbatim>
  <f:subview id="paoCapBank" rendered="#{capControlForm.visibleTabs['CBCCapBank']}" >
+
 	    <f:verbatim><br/><br/><fieldset><legend>Point Assignment</legend></f:verbatim>
 	    <f:verbatim><br/></f:verbatim>
 	    <h:panelGrid id="cbBody" columns="2" styleClass="gridLayout"
@@ -186,7 +176,7 @@ editor.init(capControlForm.getPAOBase());
 			                   <x:outputText value="Initiate scan on unsolicited: " /> 
 			                   <x:selectBooleanCheckbox id="scanable1"  value="#{point.initScan}" onclick="submit();" />
 			                   <x:outputText value = "Adaptive Count: " />
-			                   <x:inputText value="#{point.NINAvg}" />			                   								  
+			                   <x:inputText value="#{point.NINAvg}" onchange="checkAdaptiveCount(this);"/>			                   								  
 			               </h:column>		               
 			
 			          </h:dataTable>     
@@ -196,4 +186,3 @@ editor.init(capControlForm.getPAOBase());
   			<f:verbatim></fieldset></f:verbatim>
 
     </f:subview>
-    </aa:zoneJSF>

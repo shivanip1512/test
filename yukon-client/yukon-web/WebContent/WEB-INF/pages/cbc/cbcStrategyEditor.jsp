@@ -1,28 +1,11 @@
-<%@ page pageEncoding="UTF-8" import="java.util.*"%>
-<%@ page import="org.ajaxanywhere.*"%>
+
 <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h" %>
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %>
 <%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x" %>
-<%@ taglib uri="http://ajaxanywhere.sourceforge.net" prefix="aa" %>
-<%
 
-    if (AAUtils.isAjaxRequest(request)){
-        AAUtils.addZonesToRefresh(request, "strategy");
-    }
-%>
-<f:verbatim>
-<script type="text/JavaScript" src="../../../JavaScript/aa.js"></script>
-<script>
-	ajaxAnywhere.getZonesToReload = function(url, submitButton) {
-		
-		if ( $("aazone.strategy"))
-			return "strategy";
-	}
-	</script>
-</f:verbatim>
 
 <f:subview id="cbcStrategy" rendered="#{capControlForm.visibleTabs['CBCSubstation'] || capControlForm.visibleTabs['CBCFeeder']}" >
-	<aa:zoneJSF id="strategy" >
+
     <f:subview id="paoSubBus" rendered="#{capControlForm.visibleTabs['CBCSubstation']}" >
 		<f:verbatim><br/></f:verbatim>
 		
@@ -224,5 +207,5 @@
 	
 	</h:panelGrid>
 		
-</aa:zoneJSF>
+
 </f:subview>
