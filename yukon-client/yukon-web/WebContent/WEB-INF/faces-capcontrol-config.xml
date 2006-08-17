@@ -13,6 +13,7 @@
         <managed-bean-name>dbCache</managed-bean-name>
         <managed-bean-class>com.cannontech.database.cache.DefaultDatabaseCache</managed-bean-class>
         <managed-bean-scope>application</managed-bean-scope>
+        
     </managed-bean>
 
     <managed-bean>
@@ -25,45 +26,47 @@
 
     
     <!-- Database specific (DBPersistent) managed beans -->
-    <managed-bean>
-        <managed-bean-name>ptEditorForm</managed-bean-name>
-        <managed-bean-class>com.cannontech.web.editor.point.PointForm</managed-bean-class>
-        <managed-bean-scope>request</managed-bean-scope>
-    </managed-bean>
-
+   
+    
     <managed-bean>
         <managed-bean-name>capControlForm</managed-bean-name>
         <managed-bean-class>com.cannontech.web.editor.CapControlForm</managed-bean-class>
-        <managed-bean-scope>request</managed-bean-scope>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+    
+     <managed-bean>
+        <managed-bean-name>ptEditorForm</managed-bean-name>
+        <managed-bean-class>com.cannontech.web.editor.point.PointForm</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
     
     <managed-bean>
         <managed-bean-name>capBankEditor</managed-bean-name>
         <managed-bean-class>com.cannontech.web.editor.CapBankEditorForm</managed-bean-class>
-        <managed-bean-scope>request</managed-bean-scope>
+        <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
 
     <managed-bean>
         <managed-bean-name>paoDeleteForm</managed-bean-name>
         <managed-bean-class>com.cannontech.web.delete.DeleteFormPAO</managed-bean-class>
-        <managed-bean-scope>request</managed-bean-scope>
+        <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
 
     <managed-bean>
         <managed-bean-name>pointDeleteForm</managed-bean-name>
         <managed-bean-class>com.cannontech.web.delete.DeleteFormPoint</managed-bean-class>
-        <managed-bean-scope>request</managed-bean-scope>
+        <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
 
     <managed-bean>
         <managed-bean-name>paoScheduleForm</managed-bean-name>
         <managed-bean-class>com.cannontech.web.editor.PAOScheduleForm</managed-bean-class>
-        <managed-bean-scope>request</managed-bean-scope>
+        <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
     <managed-bean>
         <managed-bean-name>cbcCopyForm</managed-bean-name>
         <managed-bean-class>com.cannontech.web.copy.DBCopyForm</managed-bean-class>
-        <managed-bean-scope>request</managed-bean-scope>
+        <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
     
     

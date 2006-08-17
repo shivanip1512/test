@@ -15,7 +15,7 @@
 
 		<f:verbatim><br/></f:verbatim>
 		<x:outputLabel for="Parent" value="Parent: "/>
-        <x:outputText  id = "Parent" value="#{dbCache.allPAOsMap[ptEditorForm.pointBase.point.paoID]} (id: #{ptEditorForm.pointBase.point.paoID})" styleClass="staticLabel"/>
+        <x:outputText  id = "Parent" value="#{databaseCache.allPAOsMap[ptEditorForm.pointBase.point.paoID]} (id: #{ptEditorForm.pointBase.point.paoID})" styleClass="staticLabel"/>
 		<f:verbatim><br/><br/></f:verbatim>
 		<x:outputLabel for="Point_Name" value="Point Name: "/>
 		<x:inputText id="Point_Name" value="#{ptEditorForm.pointBase.point.pointName}" required="true" maxlength="60"

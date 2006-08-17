@@ -47,7 +47,7 @@
 		            styleClass="fullTable" headerClass="scrollerTableHeader"
 		            footerClass="scrollerTableHeader"
 		            rowClasses="tableRow,altTableRow" 
-	                preserveDataModel="true" >
+	                >
 	        <h:column>
 	            <f:facet name="header">
 	                <x:outputText value="Condition" />
