@@ -153,24 +153,5 @@ public void setJdbcOps(JdbcOperations jdbcOps) {
     this.jdbcOps = jdbcOps;
 }
 
-public List getCBCPointTimeStamps (Integer cbcID) {
-    List pointList = new ArrayList (10);
-    PointChangeCache pointCache = PointChangeCache.getPointChangeCache();
-    List points = DaoFactory.getPointDao().getLitePointsByPaObjectId(cbcID.intValue());
-    for (Iterator iter = points.iterator(); iter.hasNext();) {
-        LitePoint point = (LitePoint) iter.next();
-        CBCPointTimestampParams pointTimestamp = new CBCPointTimestampParams();
-        PointData pointData = ((PointData)pointCache.getValue(point.getLiteID()));
-        if (point != null && pointData != null) {
-            pointTimestamp.setPointId(new Integer (point.getLiteID()));
-            pointTimestamp.setPointName(point.getPointName());
-            pointTimestamp.setValue(new Double ( pointData.getValue() ) );
-            pointTimestamp.setTimestamp(pointData.getPointDataTimeStamp());
-        
-        }
-            pointList.add(pointTimestamp);
-    }
-    return pointList;
-    }
 
 }
