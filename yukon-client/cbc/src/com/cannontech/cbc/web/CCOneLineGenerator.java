@@ -50,7 +50,7 @@ class CCOneLineGenerator
 		graph.add(staticImage1);
 
 		StaticImage staticImage2 = new StaticImage();
-		staticImage2.setYukonImage("YukonLogoBlackBackground.gif");
+		staticImage2.setYukonImage("YukonLogoWhite.gif");
 		staticImage2.setX(872.0);
 		staticImage2.setY(20.0);
 		graph.add(staticImage2);
