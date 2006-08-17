@@ -56,9 +56,11 @@ public class PointLimitEntry
 
 
 		if( isChecked.booleanValue() ) {
+			PointLimit pointLimit = new PointLimit();
+			pointLimit.setLimitNumber(limitNum);
 			getScalarPoint().getPointLimitsMap().put(
 				limitNum,
-				new PointLimit() ); //use the default constructor since no values are set
+				pointLimit ); //use the default constructor since no values are set
 		}
 		else {
 			getScalarPoint().getPointLimitsMap().remove( limitNum );
