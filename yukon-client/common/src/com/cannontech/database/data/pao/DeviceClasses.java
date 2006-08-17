@@ -35,7 +35,7 @@ public final class DeviceClasses
    public static final Integer[] CORE_DEVICE_CLASSES = 
    {
 		CARRIER, IED, METER,
-		RTU, TRANSMITTER, VIRTUAL, PAOGroups.CAT_CAPCONTROL
+		RTU, TRANSMITTER, VIRTUAL
    };
  
 /**
