@@ -8,7 +8,7 @@
   </bean>
   <bean id="alarmDao" class="com.cannontech.core.dao.impl.AlarmDaoImpl" >
   	<property name="pointDao" ref="pointDao"/>
-  	<property name="pointChangeCache" ref="pointChangeCache"/>
+  	<property name="dynamicDataSource" ref="dynamicDataSource"/>
   </bean>  
   <bean id="authDao" class="com.cannontech.core.dao.impl.AuthDaoImpl" >
   	<property name="roleDao" ref="roleDao" />
@@ -74,7 +74,7 @@
     <property name="databaseCache" ref="databaseCache"/>        	
   </bean>
    <bean id="simplePointAccessDao" class="com.cannontech.core.dao.impl.SimplePointAccessDaoImpl" >
-  	<property name="pointChangeCache" ref="pointChangeCache"/>   
+    <property name="dynamicDataSource" ref="dynamicDataSource"/>
   </bean>
   <bean id="stateDao" class="com.cannontech.core.dao.impl.StateDaoImpl" >
     <property name="databaseCache" ref="databaseCache"/>      
@@ -119,10 +119,6 @@
   		<ref bean="connectionPool"/>
      </constructor-arg>
   </bean>
-   <bean id="pointChangeCache" 
-   		 class="com.cannontech.common.cache.PointChangeCache">
-		<property name="roleDao" ref="roleDao"/>
-   </bean>
    
    <bean id="connectionPool" class="com.cannontech.yukon.conns.ConnPool">
 		<property name="roleDao" ref="roleDao"/>

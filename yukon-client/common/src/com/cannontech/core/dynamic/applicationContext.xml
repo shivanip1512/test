@@ -3,16 +3,24 @@
 
 <beans>
 	<description>
-		Defines dynamic data service related beans
+		Defines dynamic data service related beans - use these to get real time Yukon point data
 	</description>
-	 <bean id="asyncDynamicDataSource" class="com.cannontech.dynamic.impl.AsyncDynamiDataSourceImpl">
+	 <bean id="asyncDynamicDataSource" class="com.cannontech.core.dynamic.impl.AsyncDynamicDataSourceImpl">
 		<property name="dispatchConnection" ref="dispatchConnection"/>
-		<property name="serverRequest" ref="serverRequest"/>
+		<property name="dispatchProxy" ref="dispatchProxy"/>
 		<property name="databaseCache" ref="databaseCache"/>
 	 </bean>
-	 <bean id="dynamicDataSoruce" class="com.cannontech.dynamic.impl.DynamicDataSource">
-	 	<property name="asyncDynamicDataSource" ref="asyncDynamicDataSource"/>
-	 	<property name="dispatchConnection" ref="dispatchConnection"/>
+	 <bean id="dynamicDataSource" class="com.cannontech.core.dynamic.impl.DynamicDataSourceImpl">
+	 	<property name="dynamicDataCache" ref="dynamicDataCache"/>
+	 	<property name="dispatchProxy" ref="dispatchProxy"/>
+	 	<property name="pointDao" ref="pointDao"/>
 	 </bean>	 
 	 <bean id="serverRequest" class="com.cannontech.message.util.ServerRequestImpl" singleton="false"/>
+	 <bean id="dynamicDataCache" class="com.cannontech.core.dynamic.impl.DynamicDataCache">
+	 	<property name="dispatchConnection" ref="dispatchConnection"/>
+	 </bean>
+	 <bean id="dispatchProxy" class="com.cannontech.core.dynamic.impl.DispatchProxy">
+	 	<property name="dispatchConnection" ref="dispatchConnection"/>
+	 	<property name="serverRequest" ref="serverRequest"/>
+	 </bean>
 </beans>

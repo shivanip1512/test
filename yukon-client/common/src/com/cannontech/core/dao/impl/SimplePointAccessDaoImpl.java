@@ -1,15 +1,15 @@
 package com.cannontech.core.dao.impl;
 
-import com.cannontech.common.cache.PointChangeCache;
 import com.cannontech.common.exception.PointDataException;
 import com.cannontech.core.dao.SimplePointAccessDao;
+import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointQualities;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.message.dispatch.message.PointData;
 
 public class SimplePointAccessDaoImpl implements SimplePointAccessDao {
-    private PointChangeCache pointChangeCache;
+    private DynamicDataSource dynamicDataSource;
 
     public SimplePointAccessDaoImpl() {
     }
@@ -18,7 +18,7 @@ public class SimplePointAccessDaoImpl implements SimplePointAccessDao {
      * @see com.cannontech.core.dao.SimplePointAccessDao#getPointValue(com.cannontech.database.data.lite.LitePoint)
      */
     public double getPointValue(LitePoint point) throws PointDataException {
-        PointData pointData = pointChangeCache.getValue(point.getPointID());
+        PointData pointData = dynamicDataSource.getPointData(point.getPointID());
         //Validate.notNull(pointData, "No PointData in cache for pointId " + point.getPointID());
         if (pointData != null) {
             return pointData.getValue();
@@ -36,10 +36,10 @@ public class SimplePointAccessDaoImpl implements SimplePointAccessDao {
         pointData.setValue(value);
         pointData.setType(PointTypes.ANALOG_POINT);
         pointData.setQuality(PointQualities.NORMAL_QUALITY);
-        pointChangeCache.putValue(pointData);
+        dynamicDataSource.putValue(pointData);
     }
-
-    public void setPointChangeCache(PointChangeCache pointChangeCache) {
-        this.pointChangeCache = pointChangeCache;
-    }    
+    
+    public void setDynamicDataSource(DynamicDataSource dynamicDataSource) {
+        this.dynamicDataSource = dynamicDataSource;
+    }
 }

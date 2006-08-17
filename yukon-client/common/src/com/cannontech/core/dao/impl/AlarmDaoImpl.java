@@ -3,10 +3,11 @@ package com.cannontech.core.dao.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.cannontech.common.cache.PointChangeCache;
 import com.cannontech.core.dao.AlarmDao;
 import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.message.dispatch.message.Signal;
 
 /**
  * Provides access to real time alarming information.
@@ -16,13 +17,13 @@ import com.cannontech.database.data.lite.LitePoint;
 public final class AlarmDaoImpl implements AlarmDao {
     
     private PointDao pointDao;
-    private PointChangeCache pointChangeCache;
+    private DynamicDataSource dynamicDataSource;
 
     /* (non-Javadoc)
      * @see com.cannontech.core.dao.AlarmDao#getSignalsForPoint(int)
      */
 	public List getSignalsForPoint(int pointId) {
-		return pointChangeCache.getSignals(pointId);
+        return new ArrayList<Signal>(dynamicDataSource.getSignals(pointId));
 	}
 	
 	/* (non-Javadoc)
@@ -31,7 +32,7 @@ public final class AlarmDaoImpl implements AlarmDao {
 	public List getSignalsForPoints(int[] pointIds) {
 		List sigList = new ArrayList();
 		for (int i = 0; i < pointIds.length; i++) {
-			List sl = pointChangeCache.getSignals(pointIds[i]);
+			List sl = getSignalsForPoint(pointIds[i]);
 			sigList.addAll(sl);
 		}
 		return sigList;
@@ -44,7 +45,7 @@ public final class AlarmDaoImpl implements AlarmDao {
 		List paoSignals = new ArrayList();
 		List<LitePoint> points = pointDao.getLitePointsByPaObjectId(paoId);
 		for (LitePoint point : points) {
-			List signals = pointChangeCache.getSignals(point.getPointID());
+			List signals = getSignalsForPoint(point.getPointID());
 			paoSignals.addAll(signals);
 		}
 		return paoSignals;
@@ -60,7 +61,7 @@ public final class AlarmDaoImpl implements AlarmDao {
 			int paoId = paoIds[i];
             List<LitePoint> points = pointDao.getLitePointsByPaObjectId(paoId);
 			for (LitePoint point : points) {
-				List signals = pointChangeCache.getSignals(point.getPointID());
+				List signals = getSignalsForPoint(point.getPointID());
 				paoSignals.addAll(signals);
 			}
 		}
@@ -71,7 +72,7 @@ public final class AlarmDaoImpl implements AlarmDao {
      * @see com.cannontech.core.dao.AlarmDao#getSignalsForAlarmCategory(int)
      */
 	public List getSignalsForAlarmCategory(int acId) {
-		return pointChangeCache.getSignalsForCategory(acId);
+        return new ArrayList<Signal>(dynamicDataSource.getSignalsByCategory(acId));
 	}
 	
 	/* (non-Javadoc)
@@ -80,14 +81,14 @@ public final class AlarmDaoImpl implements AlarmDao {
 	public List getSignalsForAlarmCategories(int[] acIds) {
 		List acSignals = new ArrayList();
 		for (int i = 0; i < acIds.length; i++) {
-			List signals = pointChangeCache.getSignalsForCategory(acIds[i]);
+			List signals = new ArrayList<Signal>(dynamicDataSource.getSignalsByCategory(acIds[i]));
 			acSignals.addAll(signals);
 		}
 		return acSignals;
 	}
-    
-    public void setPointChangeCache(PointChangeCache pointChangeCache) {
-        this.pointChangeCache = pointChangeCache;
+
+    public void setDynamicDataSource(DynamicDataSource dynamicDataSource) {
+        this.dynamicDataSource = dynamicDataSource;
     }
 
     public void setPointDao(PointDao pointDao) {

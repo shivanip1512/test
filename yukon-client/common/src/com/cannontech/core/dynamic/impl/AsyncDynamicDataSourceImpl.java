@@ -1,6 +1,5 @@
 package com.cannontech.core.dynamic.impl;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -11,26 +10,28 @@ import java.util.Set;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointDataListener;
 import com.cannontech.core.dynamic.SignalListener;
-import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.cache.DBChangeLiteListener;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.dispatch.message.PointData;
-import com.cannontech.message.dispatch.message.PointRegistration;
 import com.cannontech.message.dispatch.message.Signal;
 import com.cannontech.message.server.ServerResponseMsg;
-import com.cannontech.message.util.Command;
+import com.cannontech.message.util.ConnStateChange;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
-import com.cannontech.message.util.ServerRequest;
 import com.cannontech.yukon.IDatabaseCache;
 import com.cannontech.yukon.IServerConnection;
 
+/**
+ * Implementation of AsyncDynamicDataSource
+ * @author alauinger
+ */
 public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, MessageListener  {
     
+    private DispatchProxy dispatchProxy;
     private IServerConnection dispatchConnection;
-    private ServerRequest serverRequest;
     private IDatabaseCache databaseCache;
     
     private Map<Integer, LinkedHashSet<PointDataListener>> pointIdPointDataListeners =
@@ -55,7 +56,7 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
 
         //First register with dispatch point ids as necessary
         //If it throws then we won't have changed any of our state
-        registerForPointIds(pointIds);
+        dispatchProxy.registerForPointIds(pointIds);
         
         //Associate the point ids with the listener
         // and associate the listener with each of the points ids
@@ -89,9 +90,7 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
         }
         if(listenerPointIds.size() == 0) {
             pointDataListenerPointIds.remove(l);
-        }       
-        //Finally unregister with dispatch
-        unregisterForPointIds(pointIds);
+        }               
     }
 
     public void unRegisterForPointData(PointDataListener l) {
@@ -103,7 +102,7 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
 
         //First register with dispatch point ids as necessary
         //If it throws then we won't have changed any of our state
-        registerForPointIds(pointIds);
+        dispatchProxy.registerForPointIds(pointIds);
         
         //Associate the point ids with the listener
         // and associate the listener with each of the points ids
@@ -138,9 +137,7 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
         }
         if(listenerPointIds.size() == 0) {
             signalListenerPointIds.remove(l);
-        }       
-        //Finally unregister with dispatch
-        unregisterForPointIds(pointIds);
+        }               
     }
 
     public void unRegisterForSignals(SignalListener l) {
@@ -163,9 +160,13 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
     public void removeDBChangeLiteListener(DBChangeLiteListener l) {
         dbChangeLiteListeners.remove(l);
     }
-    
+        
     public void messageReceived(MessageEvent e) {
         Object o = e.getMessage();
+        handleIncoming(o);        
+    }
+
+    public void handleIncoming(Object o) {
         if(o instanceof PointData) {
             handlePointData((PointData)o);
         }
@@ -175,8 +176,23 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
         else if(o instanceof DBChangeMsg) {
             handleDBChange((DBChangeMsg)o);
         }
+        else if(o instanceof ServerResponseMsg) {
+            handleIncoming(((ServerResponseMsg)o).getPayload());
+        }
+        else if(o instanceof Multi) {
+            Multi multi = (Multi) o;
+            for(Object obj : multi.getVector()) {
+                handleIncoming(obj);
+            }
+        }
+        else if(o instanceof ConnStateChange) {
+            ConnStateChange csc = (ConnStateChange) o;
+            if(csc.isConnected()) {
+               reRegisterForEverything(); 
+            }
+        }
     }
-
+    
     public void handlePointData(PointData pointData) {
         Set<PointDataListener> listeners = pointIdPointDataListeners.get(pointData.getId());
         for (PointDataListener listener : listeners) {
@@ -201,6 +217,23 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
             listener.handleDBChangeMsg(dbChange, lite);
         }
     }
+    /**
+     * Reregister with dispatch for every point id
+     * a listener is listening for.
+     * Useful for when the connection goes down then up again
+     */
+    private void reRegisterForEverything() {
+        int numIds = pointIdPointDataListeners.size()+pointIdSignalListeners.size();
+        Set<Integer> pointIdsToRegisterFor = new HashSet<Integer>((int)(numIds/0.75f)+1);
+        pointIdsToRegisterFor.addAll(pointIdPointDataListeners.keySet());
+        pointIdsToRegisterFor.addAll(pointIdSignalListeners.keySet());
+
+        dispatchProxy.registerForPointIds(pointIdsToRegisterFor);
+    }
+    
+    public void setDispatchProxy(DispatchProxy dispatchProxy) {
+        this.dispatchProxy = dispatchProxy;
+    }
     
     public void setDispatchConnection(IServerConnection dispatchConnection) {
         // Should we unregister with the old connection?? might leak otherwise?
@@ -210,85 +243,15 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
         this.dispatchConnection = dispatchConnection;
         this.dispatchConnection.addMessageListener(this);
     }
-    
-    public void setServerRequest(ServerRequest serverRequest) {
-        this.serverRequest = serverRequest;
-    }
-    
+
     public void setDatabaseCache(IDatabaseCache databaseCache) {
         this.databaseCache = databaseCache;
-    }
-    
-    /**
-     * Given a set of point ids, return a sub set of those point ids that
-     * we are currently not registered with dispatch for.
-     * @param pointIds
-     * @return
-     */
-    private Set<Integer> findUnregisteredPointIds(Set<Integer> pointIds) {
-        Set<Integer> unregisteredPointIds = new HashSet<Integer>();
-        for (Integer id : pointIds) {
-            Set<PointDataListener> pdl = pointIdPointDataListeners.get(id);
-            Set<SignalListener> sl = pointIdSignalListeners.get(id);
-            if(pdl == null && sl == null) {
-                unregisteredPointIds.add(id);
-            }
-        }
-        return unregisteredPointIds;
-    }
-        
-    private Set<Integer> findRegisteredPointIds(Set<Integer> pointIds) {
-        Set<Integer> registeredPointIds = new HashSet<Integer>();
-        for(Integer id : pointIds) {
-            Set<PointDataListener> pdl = pointIdPointDataListeners.get(id);
-            Set<SignalListener> sl = pointIdSignalListeners.get(id);
-            if(pdl != null || sl != null) {
-                registeredPointIds.add(id);
-            }
-        }
-        return registeredPointIds;
-    }
-    
-    private void registerForPointIds(Set<Integer> pointIds) throws DynamicDataAccessException {
-        
-        pointIds = findUnregisteredPointIds(pointIds);
-        
-        if(pointIds.size() > 0) {
-            // Add these points to the current registration and then make a request for their current values
-            PointRegistration pReg = new PointRegistration();
-            pReg.setRegFlags(PointRegistration.REG_ADD_POINTS);
-            pReg.setPointIds(pointIds);
-            dispatchConnection.write(pReg);
-            
-            Command cmd = new Command();
-            cmd.setOperation(Command.POINT_DATA_REQUEST);
-            cmd.setOpArgList(new ArrayList<Integer>(pointIds));
-            ServerResponseMsg resp = serverRequest.makeServerRequest(dispatchConnection, cmd);
-            if(resp.getStatus() == ServerResponseMsg.STATUS_ERROR) {
-                throw new DynamicDataAccessException(resp.getStatusStr());
-            }
-        }
-    }
-    
-    /**
-     * Unregister these points with dispatch so we stop getting point data messages.
-     * @param dispatchConnection
-     * @param pointIds
-     */
-    private void unregisterForPointIds(Set<Integer> pointIds) 
-        throws DynamicDataAccessException {
-        pointIds = findUnregisteredPointIds(pointIds);
-        
-        PointRegistration pReg = new PointRegistration();
-        pReg.setRegFlags(PointRegistration.REG_REMOVE_POINTS);
-        pReg.setPointIds(pointIds);
-        dispatchConnection.write(pReg);
     }
     
     public Set<Integer> getPointIds(PointDataListener l) {
         Set<Integer> ids = pointDataListenerPointIds.get(l);
         if(ids == null) {
-            return Collections.EMPTY_SET;
+            return Collections.emptySet();
         }        
         return ids;
     }
@@ -296,7 +259,7 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
     public Set<Integer> getPointIds(SignalListener l) {
         Set<Integer> ids = signalListenerPointIds.get(l);
         if(ids == null) {
-            return Collections.EMPTY_SET;
+            return Collections.emptySet();
         }
         return ids;
     }
@@ -304,7 +267,7 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
     public Set<PointDataListener> getPointDataListeners(int pointId) {
         Set<PointDataListener> listeners = pointIdPointDataListeners.get(pointId);
         if(listeners == null) {
-            return Collections.EMPTY_SET;
+            return Collections.emptySet();
         }
         return listeners;
     }
@@ -312,9 +275,8 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
     public Set<SignalListener> getSignalListeners(int pointId) {
         Set<SignalListener> listeners = pointIdSignalListeners.get(pointId);
         if(listeners == null) {
-            return Collections.EMPTY_SET;
+            return Collections.emptySet();
         }
         return listeners;
-    }
-    
+    }    
 }

@@ -5,8 +5,9 @@ import java.util.List;
 import java.util.TimerTask;
 
 import com.cannontech.clientutils.tags.TagUtils;
-import com.cannontech.common.cache.PointChangeCache;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dynamic.DynamicDataSource;
+import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
@@ -19,6 +20,7 @@ import com.cannontech.esub.element.StateImage;
 import com.cannontech.esub.model.PointAlarmTableModel;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.Signal;
+import com.cannontech.spring.YukonSpringHook;
 import com.loox.jloox.LxComponent;
 import com.loox.jloox.LxView;
 
@@ -61,7 +63,7 @@ public class DrawingUpdater extends TimerTask {
 				// keep track if we changed anything
 				boolean change = false; 
 								
-				PointChangeCache pcc = PointChangeCache.getPointChangeCache();
+                DynamicDataSource dynamicDataSource = (DynamicDataSource) YukonSpringHook.getBean("dynamicDataSource");
 
 				LxComponent[] comp = drawing.getLxGraph().getComponents();
 				if (comp != null) {
@@ -85,7 +87,10 @@ public class DrawingUpdater extends TimerTask {
 							LitePoint lp = si.getPoint();
 			
 							if( lp != null ) {
-								PointData pData = pcc.getValue(lp.getPointID());
+								PointData pData = null;
+
+                                pData = dynamicDataSource.getPointData(lp.getPointID());
+
 								if( pData != null ) {
 									LiteState ls = DaoFactory.getStateDao().getLiteState(lp.getStateGroupID(), (int) pData.getValue());
 									if( ls != null ) {

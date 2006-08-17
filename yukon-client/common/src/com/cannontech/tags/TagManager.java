@@ -19,7 +19,6 @@ import java.util.Random;
 import java.util.Set;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.cache.PointChangeCache;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.db.point.TAGLog;
@@ -29,6 +28,7 @@ import com.cannontech.message.dispatch.message.TagMsg;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
+import com.cannontech.yukon.conns.ConnPool;
 
 /**
  * TagManager handles tag manipulation
@@ -281,7 +281,7 @@ public class TagManager implements MessageListener {
 	private synchronized ClientConnection getDispatchConn()
 	{
 		if( _dispatchConn == null )
-			return PointChangeCache.getPointChangeCache().getDispatchConnection();
+			return (ClientConnection) ConnPool.getInstance().getDefDispatchConn();
 		else
 			return _dispatchConn;
 	}
@@ -294,7 +294,7 @@ public class TagManager implements MessageListener {
 	{
 		if( conn == null )
 			throw new IllegalArgumentException("Need a non null connection for the constructor");
-
+        
 		_dispatchConn = conn;
 		_dispatchConn.addMessageListener(this);
 		_dispatchConn.write( _dispatchConn.getRegistrationMsg() );

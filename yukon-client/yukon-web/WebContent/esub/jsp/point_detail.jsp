@@ -8,7 +8,8 @@
 <%@ page import="com.cannontech.database.data.lite.LiteTag" %>
 <%@ page import="com.cannontech.database.data.lite.LiteUnitMeasure" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
-<%@ page import="com.cannontech.common.cache.PointChangeCache" %>
+<%@ page import="com.cannontech.core.dynamic.DynamicDataSource" %>
+<%@ page import="com.cannontech.spring.YukonSpringHook" %>
 <%@ page import="com.cannontech.database.data.point.PointTypes" %>
 <%@ page import="com.cannontech.util.ServletUtil" %>
 <%@ page import="com.cannontech.esub.util.UpdateUtil" %>
@@ -29,7 +30,8 @@
 	LitePoint lPoint = DaoFactory.getPointDao().getLitePoint(pointID);	
 	String pointName = lPoint.getPointName();
 	int pointOffset = lPoint.getPointOffset();
-	double currentValue = PointChangeCache.getPointChangeCache().getValue(pointID).getValue();	
+	DynamicDataSource dds = (DynamicDataSource) YukonSpringHook.getBean("dynamicDataSource");
+	double currentValue = dds.getPointData(pointID).getValue();
 	
 	// Build a formatter so we can present the value with the correct decimal places    
     DecimalFormat valueFormatter = new DecimalFormat();
@@ -37,7 +39,9 @@
 	String uOfM = null; 
 	String currentState = null;
 	if(PointTypes.STATUS_POINT == lPoint.getPointType()) {
-		currentState = PointChangeCache.getPointChangeCache().getCurrentState(pointID).getStateText();
+		LiteState[] ls = DaoFactory.getStateDao().getLiteStates(lPoint.getStateGroupID());
+		LiteState lState = ls[(int)dds.getPointData(pointID).getValue()];
+		currentState = lState.getStateText();
 	} 
 	else { // analog
 		LiteUnitMeasure lUOfM = DaoFactory.getUnitMeasureDao().getLiteUnitMeasureByPointID(pointID);

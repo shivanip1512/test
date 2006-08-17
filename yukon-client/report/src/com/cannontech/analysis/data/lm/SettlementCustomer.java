@@ -16,9 +16,9 @@ import java.util.GregorianCalendar;
 import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.cache.PointChangeCache;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
@@ -28,6 +28,7 @@ import com.cannontech.database.db.company.SettlementConfig;
 import com.cannontech.database.db.customer.CICustomerPointData;
 import com.cannontech.database.db.point.RawPointHistory;
 import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.util.SettlementConfigFuncs;
 
 /**
@@ -95,7 +96,9 @@ public class SettlementCustomer
 	private static Double retrieveCICustomerPointData(int pointID, Date startDate, Date stopDate )
 	{
 		Double returnVal = null;
-		PointData pointData = PointChangeCache.getPointChangeCache().getValue(pointID);
+
+        DynamicDataSource dds = (DynamicDataSource) YukonSpringHook.getBean("dynamicDataSource");
+        PointData pointData = dds.getPointData(pointID);
 		if (pointData != null)
         {
             if( pointData.getPointDataTimeStamp().after(startDate) &&           //after the startDate

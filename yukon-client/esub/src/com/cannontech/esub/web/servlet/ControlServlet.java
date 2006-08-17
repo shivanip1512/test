@@ -5,7 +5,6 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -17,10 +16,10 @@ import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.esub.util.UpdateUtil;
-import com.cannontech.esub.util.Util;
-import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.util.Command;
 import com.cannontech.roles.operator.EsubDrawingsRole;
+import com.cannontech.yukon.IServerConnection;
+import com.cannontech.yukon.conns.ConnPool;
 
 /**
  * Send out a control command.  Requires com.cannontech.roles.operator.EsubDrawingsRole.CONTROL
@@ -105,7 +104,7 @@ public class ControlServlet extends HttpServlet {
 		cmd.setOpArgList( opArgList );
 		cmd.setTimeStamp( new java.util.Date() );
 		
-		ClientConnection conn = Util.getConnToDispatch();
+        IServerConnection conn = ConnPool.getInstance().getDefDispatchConn();
 		if(!conn.isValid()) {
 			CTILogger.info("Control request received but discarded, connection with dispatch is invalid");
 			out.write("error");
@@ -115,13 +114,4 @@ public class ControlServlet extends HttpServlet {
 		conn.write(cmd);
 		CTILogger.info("Control request sent, deviceid: " + deviceID + " pointid: " + pointID + " rawstate: " + rawstate);
 	}
-	/* 
-	 * @see javax.servlet.Servlet#init(javax.servlet.ServletConfig)
-	 */
-	public void init(ServletConfig arg0) throws ServletException {
-		//make sure dispatch connection is init'd
-		Util.getConnToDispatch();		
-		super.init(arg0);
-	}
-
 }

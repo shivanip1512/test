@@ -26,9 +26,9 @@ import org.apache.axis.message.SOAPHeaderElement;
 import org.apache.xml.utils.IntVector;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.cache.PointChangeCache;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.cache.DBChangeLiteListener;
 import com.cannontech.database.cache.DefaultDatabaseCache;
@@ -63,6 +63,7 @@ import com.cannontech.multispeak.event.MultispeakEvent;
 import com.cannontech.multispeak.event.ODEvent;
 import com.cannontech.roles.YukonGroupRoleDefs;
 import com.cannontech.roles.yukon.MultispeakRole;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 import com.cannontech.yukon.IServerConnection;
 import com.cannontech.yukon.conns.ConnPool;
@@ -200,7 +201,8 @@ public class Multispeak implements MessageListener, DBChangeLiteListener {
             for (LitePoint lp : litePoints) {
 				if( lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT && lp.getPointOffset() == 1)	//kW
 				{
-					PointData pointData = PointChangeCache.getPointChangeCache().getValue(lp.getPointID());
+                    DynamicDataSource dds = (DynamicDataSource) YukonSpringHook.getBean("dynamicDataSource");
+                    PointData pointData = dds.getPointData(lp.getPointID());
 					if( pointData != null)
 					{
 						meterRead.setKW(new Float(pointData.getValue()));
@@ -211,7 +213,8 @@ public class Multispeak implements MessageListener, DBChangeLiteListener {
 				}
 				else if ( lp.getPointType() == PointTypes.PULSE_ACCUMULATOR_POINT && lp.getPointOffset() == 1)	//kWh
 				{
-					PointData pointData = PointChangeCache.getPointChangeCache().getValue(lp.getPointID());
+                    DynamicDataSource dds = (DynamicDataSource) YukonSpringHook.getBean("dynamicDataSource");
+                    PointData pointData = dds.getPointData(lp.getPointID());                    
 					if( pointData != null)
 					{
 						meterRead.setPosKWh(new BigInteger(String.valueOf(new Double(pointData.getValue()).intValue())));

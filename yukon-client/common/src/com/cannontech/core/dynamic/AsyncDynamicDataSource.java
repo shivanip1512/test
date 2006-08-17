@@ -1,13 +1,12 @@
 package com.cannontech.core.dynamic;
 
-import java.util.List;
 import java.util.Set;
 
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.cache.DBChangeLiteListener;
 
 /**
- * DynamicDataManager provides a method to receive dynamic point, signal/alarm, 
+ * AsyncDynamicDataSource provides a method to receive dynamic point, signal/alarm, 
  * and database change data asynchronously.  
  * @author alauinger
  *

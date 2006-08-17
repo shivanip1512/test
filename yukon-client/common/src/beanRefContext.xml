@@ -10,7 +10,8 @@
          <value>com/cannontech/core/dao/applicationContext.xml</value>
          <value>com/cannontech/hibernate/hibernateContext.xml</value>
          <value>com/cannontech/cc/applicationContext.xml</value>
-         <value>com/cannontech/cbc/applicationContext.xml</value>
+         <value>com/cannontech/core/dynamic/applicationContext.xml</value>
+		 <value>com/cannontech/cbc/applicationContext.xml</value>
        </list>
      </constructor-arg>
    </bean>
@@ -21,7 +22,7 @@
      <constructor-arg>
        <list>
          <value>com/cannontech/core/dao/applicationContext.xml</value>
-         <value>com/cannontech/cbc/applicationContext.xml</value>
+         <value>com/cannontech/core/dynamic/applicationContext.xml</value>
          <value>com/cannontech/cbc/applicationContext.xml</value>
        </list>
      </constructor-arg>

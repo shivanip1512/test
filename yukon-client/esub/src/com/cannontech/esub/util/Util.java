@@ -24,7 +24,6 @@ import com.cannontech.database.db.activity.ActivityLog;
 import com.cannontech.esub.Drawing;
 import com.cannontech.esub.element.DynamicGraphElement;
 import com.cannontech.message.dispatch.ClientConnection;
-import com.cannontech.roles.yukon.SystemRole;
 import com.loox.jloox.LxGraph;
 import com.loox.jloox.LxRotatable;
 
@@ -300,52 +299,6 @@ public class Util {
 		}
 	}
 	
-	public static synchronized com
-		.cannontech
-		.message
-		.dispatch
-		.ClientConnection getConnToDispatch() {
-		if (dispatchConnection == null) {
-
-			String host;
-			int port;
-
-			try {
-				host = DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.DISPATCH_MACHINE );
-
-				port = Integer.parseInt(
-							DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.DISPATCH_PORT ) );
-
-			} catch (Exception e) {
-				com.cannontech.clientutils.CTILogger.error(e.getMessage(), e);
-				return null;
-			}
-
-			dispatchConnection = new com.cannontech.message.dispatch.ClientConnection();
-			com.cannontech.message.dispatch.message.Registration reg =
-				new com.cannontech.message.dispatch.message.Registration();
-			reg.setAppName(
-				"Esubstation Editor @" + com.cannontech.common.util.CtiUtilities.getUserName());
-			reg.setAppIsUnique(0);
-			reg.setAppKnownPort(0);
-			reg.setAppExpirationDelay(300); // 5 minutes should be OK
-
-			//conn.addObserver(this);
-			dispatchConnection.setHost(host);
-			dispatchConnection.setPort(port);
-			dispatchConnection.setAutoReconnect(true);
-			dispatchConnection.setRegistrationMsg(reg);
-			
-			try {
-				dispatchConnection.connectWithoutWait();
-			} catch (Exception e) {
-				com.cannontech.clientutils.CTILogger.error(e.getMessage(), e);
-			}
-		}
-		
-		return dispatchConnection;
-	}
-
 	public static String stripArgument(String fn) {
 		return ( fn == null || fn.length() < 3 ? null :
 					fn.substring( fn.indexOf('(')+1, fn.indexOf(')')));

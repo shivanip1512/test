@@ -1,6 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <%@ page import="com.cannontech.core.dao.DaoFactory" %>
-<%@ page import="com.cannontech.common.cache.PointChangeCache" %>
+<%@ page import="com.cannontech.core.dynamic.DynamicDataSource" %>
+<%@ page import="com.cannontech.spring.YukonSpringHook" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject" %>
 <%@ page import="com.cannontech.database.data.lite.LitePoint" %>
 <%@ page import="com.cannontech.database.data.lite.LiteState" %>
@@ -45,7 +46,8 @@
 	LitePoint lPoint = DaoFactory.getPointDao().getLitePoint(pointID);
 	LiteYukonPAObject lDevice = DaoFactory.getPaoDao().getLiteYukonPAO(lPoint.getPaobjectID());	
 	LiteState[] ls = DaoFactory.getStateDao().getLiteStates(lPoint.getStateGroupID());
-	LiteState lState = PointChangeCache.getPointChangeCache().getCurrentState(pointID);	
+	DynamicDataSource dds = (DynamicDataSource) YukonSpringHook.getBean("dynamicDataSource");
+	LiteState lState = ls[(int)dds.getPointData(pointID).getValue()];
 	String controlDenyMsg = null;
 	
 	if(!UpdateUtil.isControllable(pointID)) {

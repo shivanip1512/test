@@ -177,7 +177,7 @@ public final class PointDaoImpl implements PointDao {
      * @see com.cannontech.core.dao.PointDao#getPointName(int)
      */
 	public String getPointName(int pointId) {
-        LitePoint p = getLitePoint(pointId);
+	    LitePoint p = getLitePoint(pointId);
         return p.getPointName();
 	}
 
@@ -195,7 +195,9 @@ public final class PointDaoImpl implements PointDao {
 			}
 		}	
 		
-		return null;
+    
+        throw new NotFoundException("PointLimit for point with id " + pointID + "cannot be found.");
+
 	}
 
 	/* (non-Javadoc)
@@ -204,9 +206,13 @@ public final class PointDaoImpl implements PointDao {
 	public LitePointUnit getPointUnit(int pointID) {
         String sql = 
             "SELECT POINTID,UOMID,DECIMALPLACES FROM POINTUNIT WHERE POINTID=?";
+      try {  
         LitePointUnit lpu = (LitePointUnit) 
             jdbcOps.queryForObject(sql, new Object[] { pointID }, litePointUnitRowMapper);
         return lpu;
+     } catch (IncorrectResultSizeDataAccessException e) {
+         throw new NotFoundException("Pointunit for point with id " + pointID + " cannot be found.");
+     }
 	}
 	
 	/* (non-Javadoc)

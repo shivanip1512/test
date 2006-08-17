@@ -30,6 +30,7 @@ public class Command extends com.cannontech.message.util.Message
     public static final int PORTER_CONSOLE_INPUT = 180; //vector (token, operation)
 	public static final int RESET_CNTRL_HOURS = 190; //Resets the Seasonal control history hours to zero
     public static final int POINT_DATA_REQUEST = 200; // List of point ids to be report if knowne
+    public static final int ALARM_CATEGORY_REQUEST = 210; // List of category ids - point ids in these alarm categories will be reported
 	
 	private static final int LAST_COMMAND = 10000; //Make this big
 

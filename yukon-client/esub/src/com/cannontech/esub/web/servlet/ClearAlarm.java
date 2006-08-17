@@ -10,15 +10,17 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.cannontech.common.cache.PointChangeCache;
 import com.cannontech.common.constants.LoginController;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.esub.util.Util;
 import com.cannontech.message.dispatch.message.Signal;
 import com.cannontech.message.util.Command;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.yukon.conns.ConnPool;
 
 /**
  * Clears an alarm off a list of device ids, point ids, and alarm category ids
@@ -60,7 +62,7 @@ public class ClearAlarm extends HttpServlet {
 		for(int i = 0; i < alarmCategoryIds.length; i++) {
 			ackAlarmCategory(alarmCategoryIds[i], cmd);
 		}
-		Util.getConnToDispatch().write(cmd);
+        ConnPool.getInstance().getDefDispatchConn().write(cmd);
 }
 	
 
@@ -83,8 +85,8 @@ public class ClearAlarm extends HttpServlet {
 	 * @param cmd
 	 */
 	private void ackPoint(int pointId, Command cmd) {
-		PointChangeCache pcc = PointChangeCache.getPointChangeCache();		
-		List sigList = pcc.getSignals(pointId);
+        DynamicDataSource dds = (DynamicDataSource) YukonSpringHook.getBean("dynamicDataSource");
+		List sigList = new ArrayList<Signal>(dds.getSignals(pointId));
 		ackSignals(sigList, cmd);
 	}
 	
@@ -95,8 +97,8 @@ public class ClearAlarm extends HttpServlet {
 	 * @param cmd
 	 */
 	private void ackAlarmCategory(int alarmCategoryId, Command cmd) {
-		PointChangeCache pcc = PointChangeCache.getPointChangeCache();		
-		List sigList = pcc.getSignalsForCategory(alarmCategoryId);		
+        DynamicDataSource dds = (DynamicDataSource) YukonSpringHook.getBean("dynamicDataSource");
+		List<Signal> sigList = new ArrayList<Signal>(dds.getSignalsByCategory(alarmCategoryId));		
 		ackSignals(sigList, cmd);
 	}
 	

@@ -24,6 +24,7 @@ import com.cannontech.esub.util.Util;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.operator.EsubDrawingsRole;
 import com.cannontech.yukon.IDatabaseCache;
+import com.cannontech.yukon.conns.ConnPool;
 
 /**
  * Update a point attribute in the database.
@@ -124,7 +125,7 @@ public class UpdateAttribute extends HttpServlet {
 			cache.handleDBChangeMessage(msg[i]);			
 		
 			//send out the change
-			Util.getConnToDispatch().write(msg[i]);
+			ConnPool.getInstance().getDefDispatchConn().write(msg[i]);
 		}			
 	}
 }

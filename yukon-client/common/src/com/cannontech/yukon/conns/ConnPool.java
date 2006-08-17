@@ -7,6 +7,8 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.RoleDao;
 import com.cannontech.message.dispatch.ClientConnection;
+import com.cannontech.message.dispatch.message.Multi;
+import com.cannontech.message.dispatch.message.PointRegistration;
 import com.cannontech.message.dispatch.message.Registration;
 import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.spring.YukonSpringHook;
@@ -127,7 +129,7 @@ public class ConnPool
 	private IServerConnection createDispatchConn()
 	{		
 		ClientConnection connToDispatch = new ClientConnection();
-
+		
 		Registration reg = new Registration();
          /*
          * App name will be value of cti.app.name environment variable
@@ -136,7 +138,7 @@ public class ConnPool
 		reg.setAppIsUnique(0);
 		reg.setAppKnownPort(0);
 		reg.setAppExpirationDelay(300); // 5 minutes should be OK
-	
+	        
 		connToDispatch.setAutoReconnect(true);
 		connToDispatch.setRegistrationMsg(reg);
 		
@@ -152,7 +154,7 @@ public class ConnPool
 
 		//check our master Map of existing connections
 		ClientConnection connToDispatch =
-			(ClientConnection)getAllConns().get(DISPATCH_CONN);
+            (ClientConnection)getAllConns().get(DISPATCH_CONN);
 
 		if( connToDispatch == null ) {
 			String defaultHost = "127.0.0.1";
@@ -167,20 +169,8 @@ public class ConnPool
 			}
 	
 			connToDispatch = (ClientConnection)createDispatchConn();
-			Registration reg = new Registration();
-             /*
-             * App name will be value of cti.app.name environment variable
-             */
-            reg.setAppName(CtiUtilities.getApplicationName());
-			reg.setAppIsUnique(0);
-			reg.setAppKnownPort(0);
-			reg.setAppExpirationDelay(300); // 5 minutes should be OK
-	
-			connToDispatch.setHost(defaultHost);
-			connToDispatch.setPort(defaultPort);
-			connToDispatch.setAutoReconnect(true);
-			connToDispatch.setRegistrationMsg(reg);
-	
+            connToDispatch.setHost(defaultHost);
+            connToDispatch.setPort(defaultPort);
 			try 
 			{
 				CTILogger.info("Attempting Dispatch connection to " + connToDispatch.getHost() + ":" + connToDispatch.getPort());

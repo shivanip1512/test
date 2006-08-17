@@ -13,12 +13,12 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Vector;
-
+ 
 import org.apache.axis.MessageContext;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.cache.PointChangeCache;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LitePoint;
@@ -29,6 +29,7 @@ import com.cannontech.multispeak.client.Multispeak;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.YukonMultispeakMsgHeader;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 
 public class MR_EASoap_BindingImpl implements com.cannontech.multispeak.MR_EASoap_PortType{
@@ -150,7 +151,8 @@ public class MR_EASoap_BindingImpl implements com.cannontech.multispeak.MR_EASoa
             for (LitePoint lp : litePoints) {
 				if( lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT && lp.getPointOffset() == 1)	//kW
 				{
-					PointData pointData = PointChangeCache.getPointChangeCache().getValue(lp.getPointID());
+                    DynamicDataSource dds = (DynamicDataSource) YukonSpringHook.getBean("dynamicDataSource");
+					PointData pointData = dds.getPointData(lp.getPointID());
 					if( pointData != null)
 					{
 						mr.setKW(new Float(pointData.getValue()));
@@ -161,7 +163,8 @@ public class MR_EASoap_BindingImpl implements com.cannontech.multispeak.MR_EASoa
 				}
 				else if ( lp.getPointType() == PointTypes.PULSE_ACCUMULATOR_POINT && lp.getPointOffset() == 1)	//kWh
 				{
-					PointData pointData = PointChangeCache.getPointChangeCache().getValue(lp.getPointID());
+                    DynamicDataSource dds = (DynamicDataSource) YukonSpringHook.getBean("dynamicDataSource");
+                    PointData pointData = dds.getPointData(lp.getPointID());                    
 					if( pointData != null)
 					{
 						mr.setPosKWh(new BigInteger(String.valueOf(new Double(pointData.getValue()).intValue())));

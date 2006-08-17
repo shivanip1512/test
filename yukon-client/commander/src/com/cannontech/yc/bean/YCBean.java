@@ -20,9 +20,9 @@ import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.cache.PointChangeCache;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteRawPointHistory;
@@ -36,6 +36,7 @@ import com.cannontech.message.porter.message.Return;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.yc.gui.YC;
 
@@ -450,7 +451,8 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 	public PointData getPointDataReg(int deviceID, int pointOffset, int pointType)
 	{
 		int pointID_ = DaoFactory.getPointDao().getPointIDByDeviceID_Offset_PointType(deviceID, pointOffset, pointType);
-        PointData pointData = PointChangeCache.getPointChangeCache().getValue(pointID_);
+        DynamicDataSource dds = (DynamicDataSource) YukonSpringHook.getBean("dynamicDataSource");
+        PointData pointData = dds.getPointData(pointID_);
         return pointData;		
 	}
 	
@@ -694,7 +696,8 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 				energyPtToPrevTSMapToValueMap.put(new Integer(pointID_), tsToValMap);
 		}
         //Always add the most recent one from PointChangeCache.  If it already exists, it will simply be overwritten
-        PointData pointData = PointChangeCache.getPointChangeCache().getValue((long)pointID_);
+        DynamicDataSource dds = (DynamicDataSource) YukonSpringHook.getBean("dynamicDataSource");
+        PointData pointData = dds.getPointData(pointID_);
         if (pointData != null)
         {
             TreeMap tsToValMap = (TreeMap)energyPtToPrevTSMapToValueMap.get(new Integer(pointID_));
