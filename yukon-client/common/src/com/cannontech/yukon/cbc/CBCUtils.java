@@ -1,9 +1,21 @@
 package com.cannontech.yukon.cbc;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Comparator;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.List;
+
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.data.device.TwoWayDevice;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -22,7 +34,8 @@ public final class CBCUtils
 	public static final int TEMP_MOVE_REFRESH = 1000;
 	//responsible for how to render data for CBC displays
 	public static final CBCDisplay CBC_DISPLAY = new CBCDisplay();
-
+	
+	
 
 	public static final Comparator SUB_AREA_COMPARATOR = new Comparator()
 	{
@@ -208,5 +221,41 @@ public final class CBCUtils
     	else	
     		return false;
     }
+
+
+	//default date for DB is 1990-01-01 00:00:00.000
+	public static Date getDefaultStartTime() {
+		Calendar cal = new GregorianCalendar (1990, Calendar.JANUARY, 1, 0, 0,0);
+		return cal.getTime();
+	}
+	
+	/**
+	 * @param paoID
+	 * @return CapControlStrategy for Paobject. If no strategy exists returns a strategy with
+	 * stratID = 0, stratName = "(none)" 
+	 */
+	public static SubSnapshotParams getSubSnapshot (int subID) {
+		if (subID >= CtiUtilities.NONE_ZERO_ID) {
+			
+	        String sqlStmt = "SELECT SubstationbusID, " +
+	        				 "ControlUnits, ControlMethod FROM CapControlSubstationBus, " +  
+	        				 "CapControlStrategy WHERE CapControlSubstationBus.StrategyID = CapControlStrategy.StrategyID " +
+	        				 "AND SubStationBusID = ?";
+	        
+	        JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();            
+	        
+	        return (SubSnapshotParams)yukonTemplate.queryForObject(sqlStmt, new Integer[] { new Integer (subID)}, new RowMapper () {
+	        	public Object mapRow (ResultSet rs, int rowNum) throws SQLException {
+	        		SubSnapshotParams snapParam = new SubSnapshotParams();
+	        		snapParam.setBusID (rs.getInt(1));
+	        		snapParam.setAlgorithm( (rs.getString(2)) );
+	        		snapParam.setControlMethod(rs.getString(3));
+	        		return snapParam;
+	        	}
+	        	
+	        });
+		}		
+		return new SubSnapshotParams();
+	}
 
 }

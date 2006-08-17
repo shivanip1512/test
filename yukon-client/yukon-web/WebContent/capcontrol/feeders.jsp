@@ -2,9 +2,10 @@
 <cti:standardPage title="Feeders" module="capcontrol">
 <%@include file="cbc_inc.jspf"%>
 <%@ page import="com.cannontech.common.constants.LoginController" %>
+<%@ page import="com.cannontech.core.dao.DaoFactory" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject" %>
 <%@ page import="com.cannontech.yukon.cbc.CBCUtils" %>
-<%@ page import="com.cannontech.core.dao.DaoFactory" %>
+<%@ page import="com.cannontech.yukon.cbc.SubSnapshotParams" %>
 
 <jsp:useBean id="capControlCache"
     class="com.cannontech.cbc.web.CapControlCache"
@@ -43,7 +44,6 @@
  								callBack();
  								});
    
-   var GB_IMG_DIR = "../editor/css/greybox/";
    GreyBox.preloadGreyBoxImages();
    
    function onGreyBoxClose () {
@@ -72,13 +72,17 @@ String css = "tableCell";
 if( subBus != null ) {
 %>
 				<tr class="altTableCell">
-					<td><input type="checkbox" name="cti_chkbxSubs" value="<%=subBus.getCcId()%>" />
-					<%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_NAME_COLUMN)%>
+					<td id="anc_<%=subBus.getCcId()%>"><input type="checkbox" name="cti_chkbxSubs" value="<%=subBus.getCcId()%>"/>
+					<%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_NAME_COLUMN)%> 
 					<% if( subBus.getVerificationFlag().booleanValue() ) { %>
 						<span class="popupImg"
 							onmouseover="statusMsg(this, 'This SubBus is currently being<br>used in a Verification schedule');" >
 						(v)</span>
-					<% } %>
+					<% } %>				
+					<input type="image" id="showSnap"
+						src="images/nav-plus.gif"
+						onclick="showRowElems( 'subSnapShot', toggleImg('showSnap') ); return false;"/>
+								
 					</td>
 					
 					<td>
@@ -121,6 +125,44 @@ if( subBus != null ) {
 					</td>
 				</tr>
 <% } %>
+
+		<a id="subSnapShot">
+		<%
+		SubSnapshotParams snap =  CBCUtils.getSubSnapshot(subBus.getCcId().intValue());
+		int varPoint = subBus.getCurrentVarLoadPointID().intValue();
+		int wattPoint = subBus.getCurrentWattLoadPointID().intValue();
+		int voltPoint = subBus.getCurrentVoltLoadPointID().intValue();
+		%>
+		        <tr class="tableCell" style="display: none;">
+		        <td>
+		        <b><u>Substation Info</u></b>
+		        </td>	
+		        <tr>
+		        <tr class="tableCell" style="display: none;">
+		        <td><font  class="lIndent">Area:<%=subBus.getCcArea()%></font></td>
+				</tr>
+		        <tr class="tableCell" style="display: none;">
+		        <td><b><font  class="lIndent">Control Method: <%=snap.getControlMethod()%> (<%=snap.getAlgorithm()%>)</font></b></td>
+				</tr>
+		        <tr class="tableCell" style="display: none;">
+		     	<%String vrPoint = "(none)";
+		        if (varPoint != 0) vrPoint = DaoFactory.getPointDao().getPointName(varPoint);%>
+		        <td><b><font  class="lIndent">Var Point: <%=vrPoint%></font></b></td>
+				</tr>
+			    <tr class="tableCell" style="display: none;">
+		      	<%String wPoint = "(none)";
+		        if (wattPoint != 0) wPoint = DaoFactory.getPointDao().getPointName(wattPoint);%>
+		        
+		        <td><b><font  class="lIndent">Watt Point: <%=wPoint%></font></b></td>
+				</tr>
+			    <tr class="tableCell" style="display: none;">
+		        <%String vPoint = "(none)";
+		        if (voltPoint != 0) vPoint = DaoFactory.getPointDao().getPointName(voltPoint);%>
+		        <td><b><font  class="lIndent">Volt Point: <%=vPoint%>
+		        </font></b></td>
+				</tr>
+			</a>
+
 
 			</table>
 		</cti:titledContainer>
@@ -354,6 +396,7 @@ for( int i = 0; i < capBanks.length; i++ )
 					</td>
 				</tr>
 				<% } %>
+				
 				
 			</table>
 		</div>
