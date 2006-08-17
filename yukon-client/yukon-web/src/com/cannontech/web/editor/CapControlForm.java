@@ -13,8 +13,6 @@ import java.util.Set;
 import java.util.Vector;
 
 import javax.faces.application.FacesMessage;
-import javax.faces.component.UIComponent;
-import javax.faces.component.UIInput;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ValueChangeEvent;
@@ -29,6 +27,7 @@ import org.apache.myfaces.custom.tree2.TreeNode;
 import org.apache.myfaces.custom.tree2.TreeNodeBase;
 import org.apache.myfaces.custom.tree2.TreeStateBase;
 
+import com.cannontech.cbc.dao.CBCDaoFactory;
 import com.cannontech.cbc.point.CBCPointFactory;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.StringUtils;
@@ -60,6 +59,7 @@ import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.capcontrol.CCFeederBankList;
 import com.cannontech.database.db.capcontrol.CCFeederSubAssignment;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
+import com.cannontech.database.db.capcontrol.CapControlSubstationBus;
 import com.cannontech.database.db.device.DeviceScanRate;
 import com.cannontech.database.db.pao.PAOSchedule;
 import com.cannontech.database.db.pao.PAOScheduleAssign;
@@ -80,13 +80,17 @@ import com.cannontech.web.util.CBCSelectionLists;
 import com.cannontech.web.util.JSFParamUtil;
 import com.cannontech.web.util.JSFTreeUtils;
 import com.cannontech.web.wizard.CBCWizardModel;
+import com.cannontech.yukon.cbc.CBCUtils;
 
 /**
  * @author ryan
  * 
  */
-public class CapControlForm extends DBEditorForm {
-	private String paoDescLabel = "Description";
+public class CapControlForm extends DBEditorForm{
+	/**
+     * 
+     */
+    private String paoDescLabel = "Description";
 
 	private String childLabel = "Children";
 
@@ -149,6 +153,11 @@ public class CapControlForm extends DBEditorForm {
     private TreeNode voltTreeData = null;
     
     private SelectItem[] controlMethods = null;
+    
+    private Map paoNameMap = new HashMap();
+ 
+    private Map pointNameMap = new HashMap();
+
     
     
 	/**
@@ -263,8 +272,8 @@ public class CapControlForm extends DBEditorForm {
 
 		if (varTreeData == null){
 			varTreeData = new TreeNodeBase("root", "Var Points", false);
-			Integer [] types = { PointTypes.ANALOG_POINT, PointTypes.CALCULATED_POINT};
-            List<LitePoint> points = DaoFactory.getPointDao().getLitePointsBy(types, PointUnits.CAP_CONTROL_VAR_UOMIDS,null,null,null);
+			Integer [] types = { PointTypes.ANALOG_POINT, PointTypes.CALCULATED_POINT, PointTypes.DEMAND_ACCUMULATOR_POINT, PointTypes.PULSE_ACCUMULATOR_POINT};
+			List points = DaoFactory.getPointDao().getLitePointsBy(types, PointUnits.CAP_CONTROL_VAR_UOMIDS, null,null,null);
 			JSFTreeUtils.createPAOTreeFromPointList (points, varTreeData, JSFParamUtil.getYukonUser());
 		}	
 		return varTreeData;
@@ -277,8 +286,8 @@ public class CapControlForm extends DBEditorForm {
 	public TreeNode getWattTreeData() {
 		if (wattTreeData == null){
 			wattTreeData =  new TreeNodeBase("root", "Watt Points", false);
-			Integer [] types = { PointTypes.ANALOG_POINT, PointTypes.CALCULATED_POINT};
-            List<LitePoint> points = DaoFactory.getPointDao().getLitePointsBy(types, PointUnits.CAP_CONTROL_WATTS_UOMIDS,null,null,null);            
+            Integer [] types = { PointTypes.ANALOG_POINT, PointTypes.CALCULATED_POINT, PointTypes.DEMAND_ACCUMULATOR_POINT, PointTypes.PULSE_ACCUMULATOR_POINT};
+            List points = DaoFactory.getPointDao().getLitePointsBy(types, PointUnits.CAP_CONTROL_WATTS_UOMIDS, null,null,null);
 			JSFTreeUtils.createPAOTreeFromPointList (points, wattTreeData, JSFParamUtil.getYukonUser());
 		}	
 		return wattTreeData;
@@ -292,8 +301,8 @@ public class CapControlForm extends DBEditorForm {
 	public TreeNode getVoltTreeData() {
 		if (voltTreeData == null){
 			voltTreeData = new TreeNodeBase("root", "Volt Points", false);
-			Integer [] types = { PointTypes.ANALOG_POINT, PointTypes.CALCULATED_POINT};
-            List<LitePoint> points = DaoFactory.getPointDao().getLitePointsBy(types, PointUnits.CAP_CONTROL_VOLTS_UOMIDS,null,null,null);                        
+			Integer [] types = { PointTypes.ANALOG_POINT, PointTypes.CALCULATED_POINT, PointTypes.DEMAND_ACCUMULATOR_POINT, PointTypes.PULSE_ACCUMULATOR_POINT};
+			List points = DaoFactory.getPointDao().getLitePointsBy(types, PointUnits.CAP_CONTROL_VOLTS_UOMIDS, null,null,null);
 			JSFTreeUtils.createPAOTreeFromPointList (points, voltTreeData, JSFParamUtil.getYukonUser());
 		}	
 		return voltTreeData;
@@ -312,8 +321,7 @@ public class CapControlForm extends DBEditorForm {
 	private LiteYukonPAObject[] getAllUnusedCCPAOs() {
 
 		if (unusedCCPAOs == null)
-			unusedCCPAOs = DaoFactory.getPaoDao()
-					.getAllUnusedCCPAOs(((CapBank) getDbPersistent())
+			unusedCCPAOs = DaoFactory.getPaoDao().getAllUnusedCCPAOs(((CapBank) getDbPersistent())
 							.getCapBank().getControlDeviceID());
 
 		return unusedCCPAOs;
@@ -330,11 +338,17 @@ public class CapControlForm extends DBEditorForm {
 		if (!(getDbPersistent() instanceof CapBank))
 			return rootNode;
 
-		LiteYukonPAObject[] lPaos = getAllUnusedCCPAOs();
+		LiteYukonPAObject[] tempArr = getAllUnusedCCPAOs();
 		// LiteYukonPAObject[] lPaos = PAOFuncs.getAllUnusedCCPAOs(
 		// ((CapBank)getDbPersistent()).getCapBank().getControlDeviceID() );
-
-		Vector typeList = new Vector(32);
+		List tempList = new ArrayList ();
+        for (int i = 0; i < tempArr.length; i++) {
+            LiteYukonPAObject object = tempArr[i];
+            if (object != null) 
+                tempList.add(object);
+        }
+        LiteYukonPAObject[] lPaos = (LiteYukonPAObject[])tempList.toArray(new LiteYukonPAObject[tempList.size()]);
+        Vector typeList = new Vector(32);
 		Arrays.sort(lPaos, LiteComparators.litePaoTypeComparator);
 
 		int currType = Integer.MIN_VALUE;
@@ -362,13 +376,14 @@ public class CapControlForm extends DBEditorForm {
 					"paos", lPaos[i].getPaoName(), String.valueOf(lPaos[i]
 							.getYukonID()), false);
 
-            List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(lPaos[i].getYukonID());
-            for (LitePoint point : points) {
+			List lPoints = DaoFactory.getPointDao().getLitePointsByPaObjectId(lPaos[i].getYukonID());
+			for (int j = 0; j < lPoints.size(); j++) {
+
 				// status points are only allowed in this list
-				if (point.getPointType() == PointTypes.STATUS_POINT)
+				if ( ((LitePoint)lPoints.get(j)).getPointType() == PointTypes.STATUS_POINT)
 					paoNodes[i].getChildren().add(
-							new TreeNodeBase("points", point
-									.getPointName(), String.valueOf(point
+							new TreeNodeBase("points", ((LitePoint) lPoints.get(j))
+									.getPointName(), String.valueOf(((LitePoint) lPoints.get(j))
 									.getPointID()), true));
 			}
 
@@ -503,30 +518,6 @@ public class CapControlForm extends DBEditorForm {
 					.setCurrentWattLoadPointID(new Integer(val));
 	}
 
-	/**
-	 * Event fired when the the CapBank control point selection has changed
-	 */
-	public void capBankTeeClick(ActionEvent ae) {
-
-		String val = (String) FacesContext.getCurrentInstance()
-				.getExternalContext().getRequestParameterMap().get("ptID");
-		if (val == null)
-			return;
-
-		if (getDbPersistent() instanceof CapBank) {
-
-			com.cannontech.database.db.capcontrol.CapBank capBank = ((CapBank) getDbPersistent()).getCapBank();
-            capBank.setControlPointID(new Integer(val));
-			int controlPointId = capBank.getControlPointID().intValue();
-            LitePoint litePoint = DaoFactory.getPointDao().getLitePoint(controlPointId);
-			if (litePoint != null) {
-	            int paoId = litePoint.getPaobjectID();
-	            Integer ctlPointid = new Integer(paoId);	            
-	            capBank.setControlDeviceID(ctlPointid);
-				cbControllerEditor = new CBControllerEditor(ctlPointid.intValue());
-			}				
-		}
-	}
 
 	/**
 	 * Event fired when the Volt Point selection has changed
@@ -597,6 +588,13 @@ public class CapControlForm extends DBEditorForm {
 		if (getDbPersistent() instanceof YukonPAObject) {
 			itemID = ((YukonPAObject) getDbPersistent()).getPAObjectID()
 					.intValue();
+           if (getDbPersistent() instanceof CapBankController || getDbPersistent() instanceof CapBankController702x) {
+               setEditingController( true );
+           }
+           else
+           {
+               setEditingController(false);
+           }
             
 			initPanels(PAOGroups.getPAOType(((YukonPAObject) getDbPersistent())
 					.getPAOCategory(), ((YukonPAObject) getDbPersistent())
@@ -668,8 +666,8 @@ public class CapControlForm extends DBEditorForm {
 	 */
 	private void resetCBCEditor() {
 		//setCBControllerEditor(null);
-        getCBControllerEditor().retrieveDB();        
         setEditingController(false);
+        getCBControllerEditor().retrieveDB();        
         getCBControllerEditor().resetSerialNumber();
         
 	}
@@ -769,14 +767,6 @@ public class CapControlForm extends DBEditorForm {
 	// return (YukonPAObject)getDbPersistent();
 	// }
 	public DBPersistent getPAOBase() {
-		if (isEditingController())
-        {
-		    if (getDbPersistent() instanceof CapBankController702x || getDbPersistent() instanceof CapBankController701x) 
-            {
-		        return getCBControllerEditor().getPaoCBC();
-            }
-                
-        }
         
             return getDbPersistent();
         
@@ -875,7 +865,7 @@ public class CapControlForm extends DBEditorForm {
     			}
             }
 			
-            if (isDualSubBusEdited()) {
+            if (isDualSubBusEdited() &&  ( getDbPersistent() instanceof CapControlSubBus) ) {
 
                 if (!checkIfDualBusHasValidPoint() && getEnableDualBus().booleanValue()) {
                     // save the old value
@@ -1156,12 +1146,8 @@ public class CapControlForm extends DBEditorForm {
 	   
 		if (cbControllerEditor == null) {
             int paoId = itemID;			
-            if (getDbPersistent() instanceof CapBank) {
-				com.cannontech.database.db.capcontrol.CapBank capBank = ((CapBank) getDbPersistent()).getCapBank();             
-                paoId = capBank.getControlDeviceID().intValue();                		
-                }            
             if ((getDbPersistent() instanceof CapBankController702x) ||
-            (getDbPersistent() instanceof CapBankController)){
+            		(getDbPersistent() instanceof CapBankController)){
                 setEditingController(true);
                 }            
            cbControllerEditor = new CBControllerEditor(paoId);
@@ -1752,7 +1738,7 @@ public class CapControlForm extends DBEditorForm {
 		
 		if (subBusList == null) {
 			//subBusList = PAOFuncs.getAllCapControlSubBuses();			
-			subBusList = DaoFactory.getPaoDao().getAllSubsForUser (JSFParamUtil.getYukonUser());
+			subBusList = CBCDaoFactory.getCBCDao().getAllSubsForUser (JSFParamUtil.getYukonUser());
 		}
 		return (LiteYukonPAObject[]) subBusList
 				.toArray(new LiteYukonPAObject[subBusList.size()]);
@@ -1963,9 +1949,8 @@ public class CapControlForm extends DBEditorForm {
     }
     
     public LitePoint[] getCapBankPointList() {
-        int paoId = ((YukonPAObject)getDbPersistent()).getPAObjectID();
-        List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(paoId);
-        return points.toArray(new LitePoint[points.size()]);
+        List temp = DaoFactory.getPointDao().getLitePointsByPaObjectId(((YukonPAObject)getDbPersistent()).getPAObjectID().intValue());
+        return (LitePoint[])temp.toArray(new LitePoint [temp.size()]);        
     }
     
     public void capBankPointClick (ActionEvent ae){
@@ -2023,5 +2008,101 @@ public class CapControlForm extends DBEditorForm {
 	return controlMethods;
 	
 	}
-		
+    
+    
+        public Map getPointNameMap () {
+            int varPoint = getControlPoint (PointUnits.UOMID_KVAR);
+            int voltPoint = getControlPoint (PointUnits.UOMID_KVOLTS);
+            int wattPoint = getControlPoint (PointUnits.UOMID_KW);
+            pointNameMap.put(varPoint, DaoFactory.getPointDao().getPointName(varPoint));
+            pointNameMap.put(wattPoint, DaoFactory.getPointDao().getPointName(wattPoint));            
+            pointNameMap.put(voltPoint, DaoFactory.getPointDao().getPointName(voltPoint));
+            return pointNameMap;
+         }
+         
+
+        public void setPointNameMap (Map m) {
+             pointNameMap = (HashMap) m;
+         }
+
+    public Map getPaoNameMap () {
+        int varPoint = getControlPoint (PointUnits.UOMID_KVAR);
+        int wattPoint = getControlPoint(PointUnits.UOMID_KW);
+        int voltPoint = getControlPoint(PointUnits.UOMID_KVOLTS);
+        paoNameMap.put(varPoint, DaoFactory.getPaoDao().getYukonPAOName(DaoFactory.getPointDao().getLitePoint(varPoint).getPaobjectID()));
+        paoNameMap.put(wattPoint, DaoFactory.getPaoDao().getYukonPAOName(DaoFactory.getPointDao().getLitePoint(wattPoint).getPaobjectID()));
+        paoNameMap.put(voltPoint, DaoFactory.getPaoDao().getYukonPAOName(DaoFactory.getPointDao().getLitePoint(voltPoint).getPaobjectID()));
+        return paoNameMap;
+     }
+     
+     public void setPaoNameMap (Map m) {
+         paoNameMap = (HashMap) m;
+     }
+    
+
+
+
+
+    private int getControlPoint(int uomid) {
+        int pointID = 0;
+        if (getPAOBase() instanceof CapControlSubBus) {
+            CapControlSubstationBus sub = ((CapControlSubBus) getPAOBase()).getCapControlSubstationBus();
+            switch (uomid) {
+                case PointUnits.UOMID_KVAR:
+                    pointID = sub.getCurrentVarLoadPointID();
+                    break;                        
+                case PointUnits.UOMID_KW:
+                    pointID = sub.getCurrentWattLoadPointID();
+                    break;
+                case PointUnits.UOMID_KVOLTS: 
+                    pointID = sub.getCurrentVoltLoadPointID();
+                    break;
+            }
+        }
+        if (getPAOBase() instanceof CapControlFeeder) {
+            com.cannontech.database.db.capcontrol.CapControlFeeder feeder = ((CapControlFeeder) getPAOBase()).getCapControlFeeder();
+            switch (uomid) {
+                case PointUnits.UOMID_KVAR:
+                    pointID = feeder.getCurrentVarLoadPointID();
+                    break;                        
+                case PointUnits.UOMID_KW:
+                    pointID = feeder.getCurrentWattLoadPointID();
+                    break;
+                case PointUnits.UOMID_KVOLTS: 
+                    pointID = feeder.getCurrentVoltLoadPointID();
+                    break;
+            }
+        }
+        return pointID;
+    }
+
+
+    public void paoClick(ActionEvent ae){
+        FacesMessage fm = new FacesMessage();
+        try {
+            //go to the next page
+            String path = "/editor/cbcBase.jsf";
+            String itemId = (String) FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap()
+            .get("paoID");
+            String type = "" + DBEditorTypes.EDITOR_CAPCONTROL;
+            String query = "?type=" + type + "&" + "itemid=" + itemId;
+            String location = path + query;                                       
+            //bookmark the current page
+            HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
+            CBCNavigationUtil.bookmarkLocation(location,session);
+            FacesContext.getCurrentInstance().getExternalContext().redirect(location);            
+            FacesContext.getCurrentInstance().responseComplete();            
+        } 
+
+        catch (IOException e) {
+            fm.setDetail("ERROR - Couldn't redirect. PointForm:paoClick. " + e.getMessage());
+        } catch (Exception e) {
+            //code to handle null session
+        }
+        finally{
+            if(fm.getDetail() != null) {
+                FacesContext.getCurrentInstance().addMessage("pao_click", fm);
+            }
+        }
+    }
 }
