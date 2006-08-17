@@ -140,7 +140,7 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
              * If not a full reset, we will want to only look for those with an addressing group ID of zero
              */
 			for (int j = 0; j < hwsFromEC.size(); j++) {
-				if (!hwsToAdjust.contains( hwsFromEC.get(j) ) && hwsFromEC.get(j) instanceof LiteStarsLMHardware) {
+				if (hwsFromEC.get(j) instanceof LiteStarsLMHardware) {
                     if(!fullReset)
                     { 
                         LMHardwareConfiguration config = existingsConfigs.get(hwsFromEC.get(j).getInventoryID());
@@ -157,14 +157,14 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
          */
 		else {
 			ArrayList descendants = ECUtils.getAllDescendants( energyCompany );
-			for (int j = 0; j < descendants.size(); j++) {
-				LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(j);
+			for (int i = 0; i < descendants.size(); i++) {
+				LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
                 List<LiteInventoryBase> hwsFromEC = company.loadAllInventory(true);
                 /*  
                  * If not a full reset, we will want to only look for those with an addressing group ID of zero
                  */
-                for (int i = 0; i < hwsFromEC.size(); i++) {
-                    if (!hwsToAdjust.contains( hwsFromEC.get(j) ) && hwsFromEC.get(j) instanceof LiteStarsLMHardware) {
+                for (int j = 0; j < hwsFromEC.size(); j++) {
+                    if (hwsFromEC.get(j) instanceof LiteStarsLMHardware) {
                         if(!fullReset)
                         { 
                             LMHardwareConfiguration config = existingsConfigs.get(hwsFromEC.get(j).getInventoryID());
@@ -176,7 +176,6 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
                             hwsToAdjust.add( hwsFromEC.get(j) );
                     }
                 }
-                System.out.println("DONE with sort for " + company.getName());
 			}
 		}
 		
@@ -226,6 +225,8 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
             //get zipCode
             LiteAddress address = energyCompany.getAddress(liteAcctInfo.getAccountSite().getStreetAddressID());
             String zip = address.getZipCode();
+            if(zip.length() > 5)
+                zip = zip.substring(0, 5);
             //get ConsumptionType
             LiteCustomer cust = liteAcctInfo.getCustomer();
             Integer consumptionType = -1;
