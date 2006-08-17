@@ -4,34 +4,21 @@
 <%@ page import="com.cannontech.web.editor.*" %>
 <%@ page import="com.cannontech.database.cache.DefaultDatabaseCache" %>
 
-<%@ page pageEncoding="UTF-8" import="java.util.*"%>
-<%@ page import="org.ajaxanywhere.*"%>
+
 <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h"%>
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f"%>
 <%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib uri="http://ajaxanywhere.sourceforge.net" prefix="aa" %>
-<%
+<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c"%>
 
-    if (AAUtils.isAjaxRequest(request)){
-        AAUtils.addZonesToRefresh(request, "facesMessage");
-    }
-%>
 
 <f:view>
-<f:verbatim>
-<script type="text/JavaScript" src="../JavaScript/aa.js"></script>
-<script>
-	ajaxAnywhere.getZonesToReload = function(url, submitButton) {
-	if ( $("aazone.facesMessage") )
-			return "facesMessage";
-	}
-	
-	</script>
-	</f:verbatim>
+
 <cti:standardPage title="CapControl Wizard" module="capcontrol">
+<cti:includeScript link="/JavaScript/pointPicker.js"/>
 <cti:includeScript link="/JavaScript/scrollDiv.js"/>
 <cti:includeScript link="/capcontrol/js/cbc_funcs.js"/>
+<cti:includeCss link="/WebConfig/yukon/styles/pointPicker.css"/>
 <%
     //****
     // Entry point file for all operations that edit a PAObject
@@ -55,7 +42,7 @@ addLockButtonForButtonGroup("buttons");
 
 </script>
 </f:verbatim>
-    <x:saveState id="capControlForm" value="#{capControlForm}" />
+
 
 
     <x:panelLayout id="page" styleClass="pageLayout" headerClass="pageHeader"
@@ -69,10 +56,10 @@ addLockButtonForButtonGroup("buttons");
             <x:outputText styleClass="editorHeader" value="#{capControlForm.editorTitle} Editor:" /> 
             <x:outputText styleClass="bigFont" value="#{capControlForm.paoName}"/>
             <f:verbatim><br/></f:verbatim>
-            <aa:zoneJSF id="facesMessage">
+
             <x:messages id="messageList" showSummary="true" showDetail="true"
                     styleClass="smallResults" errorClass="errorResults" layout="table"/>
-			</aa:zoneJSF>	
+
 
 
             <h:panelGrid id="body" columns="1" styleClass="pageBody">
