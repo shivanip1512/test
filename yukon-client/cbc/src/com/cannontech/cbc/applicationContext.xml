@@ -6,5 +6,7 @@
     <property name="pointDao" ref="pointDao" />
     <property name="paoDao" ref="paoDao" />
     <property name="authDao" ref="authDao" />
+    <property name="stateDao" ref="stateDao" />
+    <property name="dynamicDataSource" ref="dynamicDataSource" />
  </bean>
 </beans>

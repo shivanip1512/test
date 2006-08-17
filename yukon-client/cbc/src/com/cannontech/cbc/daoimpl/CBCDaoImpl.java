@@ -5,11 +5,14 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.cannontech.cbc.dao.CBCDao;
-import com.cannontech.common.cache.PointChangeCache;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.dao.StateDao;
+import com.cannontech.core.dynamic.DynamicDataSource;
+import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.CBCPointTimestampParams;
@@ -21,6 +24,9 @@ public class CBCDaoImpl  implements CBCDao{
     private PointDao pointDao;
     private PaoDao paoDao;
     private AuthDao authDao;
+    private StateDao stateDao;
+    private DynamicDataSource dynamicDataSource;
+    
     public CBCDaoImpl() {
         super();
     }
@@ -32,7 +38,6 @@ public class CBCDaoImpl  implements CBCDao{
      */
     public List getCBCPointTimeStamps (Integer cbcID) {
         List pointList = new ArrayList (10);
-        PointChangeCache pointCache = PointChangeCache.getPointChangeCache();
         
         List points = pointDao.getLitePointsByPaObjectId(cbcID.intValue());
         for (int i = 0; i < points.size(); i++) {       
@@ -44,13 +49,19 @@ public class CBCDaoImpl  implements CBCDao{
             }
             //wait for the point data to initialize
             PointData pointData = new PointData();
-            if (pointCache.getValue(point.getLiteID()) != null )
-                pointData = ((PointData)pointCache.getValue(point.getLiteID()));
+            try {
+                pointData = dynamicDataSource.getPointData(point.getLiteID());
+            }
+            catch(DynamicDataAccessException ddae) {
+                // Should this code really just use a default pointdata if one couldn't
+                // be found for this point id??
+            }
             
             if ( pointData.getType() == PointTypes.STATUS_POINT )
             {
-                
-                pointTimestamp.setValue (pointCache.getState(point.getLiteID(), pointData.getValue()));
+                LiteState currentState = stateDao.getLiteState(point.getStateGroupID(), (int) pointData.getValue());
+                String stateText = currentState.getStateText();
+                pointTimestamp.setValue(stateText);
             }
             else 
             {
@@ -81,23 +92,23 @@ public class CBCDaoImpl  implements CBCDao{
         return subList;
     }
 
-
-
     public void setAuthDao(AuthDao authDao) {
         this.authDao = authDao;
     }
-
-
 
     public void setPaoDao(PaoDao paoDao) {
         this.paoDao = paoDao;
     }
 
-
-
     public void setPointDao(PointDao pointDao) {
         this.pointDao = pointDao;
     }
-
-
+    
+    public void setStateDao(StateDao stateDao) {
+        this.stateDao = stateDao;
+    }
+    
+    public void setDynamicDataSource(DynamicDataSource dynamicDataSource) {
+        this.dynamicDataSource = dynamicDataSource;
+    }
 }
