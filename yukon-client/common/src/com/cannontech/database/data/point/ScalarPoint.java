@@ -196,8 +196,11 @@ public void update() throws java.sql.SQLException {
 	PointLimit.deletePointLimits( getPoint().getPointID(), getDbConnection() );
 	
 	Iterator it = getPointLimitsMap().values().iterator();
-	while( it.hasNext() )
-		((PointLimit)it.next()).add();
+	while( it.hasNext() ) {
+		PointLimit pointLimit = ((PointLimit)it.next());
+		pointLimit.setPointID(getPoint().getPointID());
+		pointLimit.add();
+	}
 }
 
 }
