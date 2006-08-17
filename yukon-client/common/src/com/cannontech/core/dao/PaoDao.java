@@ -80,5 +80,5 @@ public interface PaoDao {
     public int countLiteYukonPaoByName(String name, boolean partialMatch);
     public List<LiteYukonPAObject> getLiteYukonPaoByName(String name, boolean partialMatch);
     
-    public  List getAllSubsForUser (LiteYukonUser user);
+
 }

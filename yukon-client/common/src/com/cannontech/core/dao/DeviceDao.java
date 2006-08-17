@@ -67,5 +67,5 @@ public interface DeviceDao {
     public List getDevicesByDeviceAddress(Integer masterAddress,
             Integer slaveAddress);
 
-    public  List getCBCPointTimeStamps (Integer cbcID);
+
 }

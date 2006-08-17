@@ -87,8 +87,5 @@ public class PaoDaoIntTest extends TestCase {
         assertTrue("Matched a device that can't possibly be in the database", paos.size() == 0);
     }
 
-    public void testGetAllSubsForUser() {
-        LiteYukonUser u = new LiteYukonUser(-2); //yukon user
-        paoDao.getAllSubsForUser(u);
-    }
+
 }
