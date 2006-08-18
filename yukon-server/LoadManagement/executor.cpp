@@ -1582,13 +1582,13 @@ void CtiLMManualControlRequestExecutor::StopCurtailmentProgram(CtiLMProgramCurta
  */
 void CtiLMManualControlRequestExecutor::CoerceStartStopTime(CtiLMProgramBase* program, CtiTime& start, CtiTime& stop)
 {
-    
+    CtiTime beginningOfDay(0,0,0);//This creates a time of today, at 0:00:00.00
     {
         CtiLockGuard<CtiLogger> dout_guard(dout);
         dout << CtiTime() << " - before coerce start: " << start.asString() << " stop: " << stop.asString() << endl;
     }
-    LONG startSecondsFromBeginningOfDay = (start.hour() * 3600) + (start.minute() * 60) + start.second();
-    LONG stopSecondsFromBeginningOfDay = (stop.hour() * 3600) + (stop.minute() * 60) + start.second();
+    LONG startSecondsFromBeginningOfDay = start.seconds() - beginningOfDay.seconds();
+    LONG stopSecondsFromBeginningOfDay = stop.seconds() - beginningOfDay.seconds();
     
     std::vector<CtiLMProgramControlWindow*>& control_windows = program->getLMProgramControlWindows();
     if(control_windows.size() == 0)

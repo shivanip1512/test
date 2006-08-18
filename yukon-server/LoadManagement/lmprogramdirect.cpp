@@ -1095,8 +1095,14 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(ULONG secondsFrom1901, CtiMul
                             }
 
                             CtiLMGroupConstraintChecker con_checker(*this, currentLMGroup, secondsFrom1901);
+                            long oldShedTime = shedTime;
                             if(getConstraintOverride() || con_checker.checkControl(shedTime, true))
                             {
+                                if(refreshCountDownType == CtiLMProgramDirectGear::FixedCountMethodOptionType && shedTime != oldShedTime)
+                                {
+                                    shedTime = oldShedTime;
+                                }
+
                                 CtiRequestMsg* requestMsg = currentLMGroup->createTimeRefreshRequestMsg(refreshRate, shedTime, defaultLMStartPriority);
                                 startGroupControl(currentLMGroup, requestMsg, multiPilMsg);
 
