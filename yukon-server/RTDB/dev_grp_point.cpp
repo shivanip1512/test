@@ -8,11 +8,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2006/04/05 16:22:18 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2006/08/18 21:28:14 $
 *
 * HISTORY      :
 * $Log: dev_grp_point.cpp,v $
+* Revision 1.3  2006/08/18 21:28:14  mfisher
+* Control start string was sent for both starting and stopping control
+*
 * Revision 1.2  2006/04/05 16:22:18  cplender
 * Initial Revision
 *
@@ -179,7 +182,7 @@ INT CtiDeviceGroupPoint::generateRequest(CtiRequestMsg *pReq, CtiCommandParser &
             dout << CtiTime() << " **** CONTROL STOP!! Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") " << _loadGroup.getControlStopString() << endl;
         }
         pReq->setDeviceId( _loadGroup.getControlDevice() );
-        pReq->setCommandString( _loadGroup.getControlStartString().c_str() + string(" select pointid " + CtiNumStr(_loadGroup.getControlPoint())));
+        pReq->setCommandString( _loadGroup.getControlStopString().c_str() + string(" select pointid " + CtiNumStr(_loadGroup.getControlPoint())));
         pReq->setMessagePriority( MAXPRIORITY - 1 );    // Make it sing!
     }
 
