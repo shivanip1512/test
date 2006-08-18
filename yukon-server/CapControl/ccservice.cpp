@@ -29,6 +29,7 @@ BOOL _USE_FLIP_FLAG;
 ULONG _POINT_AGE;
 ULONG _SCAN_WAIT_EXPIRE;
 BOOL _ALLOW_PARALLEL_TRUING;
+BOOL _RETRY_FAILED_BANKS;
 ULONG _DB_RELOAD_WAIT;
 
 CtiDate gInvalidCtiDate = CtiTime(1990,1,1);
@@ -283,6 +284,25 @@ void CtiCCService::Init()
     {
         std::transform(str.begin(), str.end(), str.begin(), ::tolower);
         _ALLOW_PARALLEL_TRUING = (str=="true"?TRUE:FALSE);
+        if ( _CC_DEBUG & CC_DEBUG_STANDARD)
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - " << var << ":  " << str << endl;
+        }
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+    }
+
+    _RETRY_FAILED_BANKS = FALSE;
+
+    strcpy(var, "CAP_CONTROL_RETRY_FAILED_BANKS");
+    if ( !(str = gConfigParms.getValueAsString(var)).empty() )
+    {
+        std::transform(str.begin(), str.end(), str.begin(), ::tolower);
+        _RETRY_FAILED_BANKS = (str=="true"?TRUE:FALSE);
         if ( _CC_DEBUG & CC_DEBUG_STANDARD)
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);

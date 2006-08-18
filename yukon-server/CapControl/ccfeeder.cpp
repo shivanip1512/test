@@ -37,6 +37,7 @@ extern ULONG _SEND_TRIES;
 extern BOOL _USE_FLIP_FLAG;
 extern ULONG _POINT_AGE;
 extern ULONG _SCAN_WAIT_EXPIRE;
+extern BOOL _RETRY_FAILED_BANKS;
 
 RWDEFINE_COLLECTABLE( CtiCCFeeder, CTICCFEEDER_ID )
 
@@ -1643,7 +1644,7 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution)
                 break;
             }
         }
-        if (returnCapBank == NULL) 
+        if (returnCapBank == NULL && _RETRY_FAILED_BANKS) 
         {
             for(int i=0;i<_cccapbanks.size();i++)
             {
@@ -1702,7 +1703,7 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution)
                 break;
             }
         }
-        if (returnCapBank == NULL) 
+        if (returnCapBank == NULL && _RETRY_FAILED_BANKS) 
         {
             for(int i=_cccapbanks.size(); i>=0; i++)
             {
