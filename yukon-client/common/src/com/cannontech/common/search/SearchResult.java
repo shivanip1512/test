@@ -8,6 +8,7 @@ public class SearchResult<T> {
     private int startIndex;  //inclusive, 0-based
     private int endIndex;  //exclusive, 0-based
     private List<T> resultList;
+    private int previousStartIndex;
     
     public static <T> SearchResult<T> emptyResult() {
         List<T> empty = Collections.emptyList();
@@ -30,6 +31,7 @@ public class SearchResult<T> {
         this.hitCount = hitCount;
         startIndex = start;
         endIndex = Math.min(startIndex + count,hitCount);
+        previousStartIndex = Math.max(0, startIndex - count);
     }
 
     public boolean isNextNeeded() {
@@ -93,6 +95,14 @@ public class SearchResult<T> {
      */
     public int getResultCount() {
         return endIndex - startIndex;
+    }
+    
+    /**
+     * The "startIndex" for the previous "resultCount" hits.
+     * @return
+     */
+    public int getPreviousStartIndex() {
+        return previousStartIndex;
     }
 
 
