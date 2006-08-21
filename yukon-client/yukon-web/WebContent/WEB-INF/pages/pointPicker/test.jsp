@@ -4,7 +4,8 @@
 
 <h2>This should show all points</h2>
 <input id="blah" type="hidden" value="0"> 
-<cti:pointPicker pointIdField="blah" constraint="">Select point...</cti:pointPicker><br>
+<span id="deviceNameSpan">POINT NAME</span> / <span id="pointNameSpan">POINT NAME</span>
+<cti:pointPicker pointIdField="blah" constraint="" pointNameElement="pointNameSpan" paoNameElement="deviceNameSpan">Select point...</cti:pointPicker><br>
 
 <hr>
  some other content 
