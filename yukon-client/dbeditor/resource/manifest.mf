@@ -14,6 +14,5 @@ Class-Path:
  classes12.jar 
  jtds.jar 
  SqlServer.jar 
- cbc.jar 
  ../log/ 
  ../export/

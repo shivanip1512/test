@@ -23,7 +23,6 @@
        <list>
          <value>com/cannontech/core/dao/applicationContext.xml</value>
          <value>com/cannontech/core/dynamic/applicationContext.xml</value>
-         <value>com/cannontech/cbc/applicationContext.xml</value>
        </list>
      </constructor-arg>
    </bean>
