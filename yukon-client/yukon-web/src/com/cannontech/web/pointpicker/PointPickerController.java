@@ -26,6 +26,12 @@ public class PointPickerController extends MultiActionController {
     
     public ModelAndView initial(HttpServletRequest request, HttpServletResponse response) {
         ModelAndView mav = new ModelAndView("inner");
+        
+        return mav;
+    }
+    
+    public ModelAndView sameDevice(HttpServletRequest request, HttpServletResponse response) {
+        ModelAndView mav = new ModelAndView("results");
         int currentPointId = RequestUtils.getIntParameter(request, "currentPointId", PointTypes.INVALID_POINT);
         PointDeviceCriteria criteria = getCriteria(request);
         int start = getStartParameter(request);
@@ -98,7 +104,7 @@ public class PointPickerController extends MultiActionController {
         mav.addObject("resultCount", hits.getResultCount());
         mav.addObject("startIndex", hits.getStartIndex());
         mav.addObject("endIndex", hits.getEndIndex());
-        mav.addObject("previousIndex", Math.max(0, hits.getStartIndex() - hits.getResultCount() ));
+        mav.addObject("previousIndex", hits.getPreviousStartIndex());
         mav.addObject("nextIndex", hits.getEndIndex());
     }
     
