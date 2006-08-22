@@ -13,11 +13,6 @@
     <t:outputLabel value="Last Name:"/>
     <t:inputText value="#{thisContact.contact.contLastName}"/>
 
-    <t:outputLabel value="Username:" title="UserId: #{sCustomerProfile.userLookup[thisContact].yukonUser.userID}"/>
-    <t:inputText value="#{sCustomerProfile.userLookup[thisContact].yukonUser.username}"/>
-
-    <t:outputLabel value="New Password:"/>
-    <t:inputSecret value="#{sCustomerProfile.userLookup[thisContact].yukonUser.password}"/>
   </t:panelGrid>
   <t:panelGroup>
   <t:dataTable value="#{thisContact.contactNotifVect}" var="thisNotif">
@@ -28,6 +23,14 @@
     </t:column>
     <t:column>
       <t:inputText value="#{thisNotif.notification}" size="45"/>
+    </t:column>
+    <t:column>
+      <t:commandButton action="#{sCustomerProfile.deleteNotification}" 
+        image="/WebConfig/yukon/Icons/clearbits/close.gif"
+        styleClass="cssicon">
+        <t:updateActionListener value="#{thisNotif}" property="#{sCustomerProfile.selectedNotification}"/>
+        <t:updateActionListener value="#{thisContact}" property="#{sCustomerProfile.selectedContact}"/>
+      </t:commandButton>
     </t:column>
   </t:dataTable> 
   <t:commandButton value="Add Notification" action="#{sCustomerProfile.addNotification}"> 
