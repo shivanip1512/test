@@ -25,10 +25,6 @@
     </context-param>
 
     <filter>
-        <filter-name>AjaxAnywhere</filter-name>
-        <filter-class>org.ajaxanywhere.AAFilter</filter-class>
-    </filter>
-    <filter>
         <filter-name>timerFilter</filter-name>
         <filter-class>com.cannontech.esub.web.filter.TimerFilter</filter-class>
     </filter>
@@ -69,14 +65,6 @@
         <filter-name>extensionsFilter</filter-name>
         <filter-class>org.apache.myfaces.component.html.util.ExtensionsFilter</filter-class>
     </filter>
-	<filter-mapping>
-        <filter-name>AjaxAnywhere</filter-name>
-        <url-pattern>*.jsf</url-pattern>
-    </filter-mapping>
-    <filter-mapping>
-        <filter-name>AjaxAnywhere</filter-name>
-        <url-pattern>*.do</url-pattern> <!-- default Struts mapping -->
-    </filter-mapping>
 
 
     
@@ -548,9 +536,5 @@
         <taglib-uri>http://java.sun.com/jstl/core</taglib-uri>
         <taglib-location>/WEB-INF/tld/c.tld</taglib-location>
     </taglib>
-	<taglib>
-		<taglib-uri>http://ajaxanywhere.sourceforge.net</taglib-uri>
-		<taglib-location>/WEB-INF/tld/ajaxanywhere.tld</taglib-location>
-	</taglib>
 
 </web-app>

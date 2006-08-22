@@ -93,13 +93,4 @@
         </navigation-case>
     </navigation-rule>
     
-<component>
-    <component-type>org.ajaxanywhere.ZoneUIComponent</component-type>
-    <component-class>org.ajaxanywhere.jsf.ZoneUIComponent</component-class>
-    <property>
-        <property-name>name</property-name>
-        <property-class>java.lang.String</property-class>
-    </property>
-
-  </component>
 </faces-config>
