@@ -16,15 +16,15 @@
 *
 * Description: returns the name of the Interface.  This set by the
 *              implementing class.
-* 
+*
 *************************************************************************
 */
 
 
 // constructors
-CtiFDRSocketLayer::CtiFDRSocketLayer(string & interfaceName, 
+CtiFDRSocketLayer::CtiFDRSocketLayer(string & interfaceName,
                                      FDRConnectionType aType,
-                                     CtiFDRSocketInterface *aParent):    
+                                     CtiFDRSocketInterface *aParent):
     iName (interfaceName),
     iParent (aParent),
     iLinkStatusID (0),
@@ -37,7 +37,7 @@ CtiFDRSocketLayer::CtiFDRSocketLayer(string & interfaceName,
 
 }
 
-CtiFDRSocketLayer::CtiFDRSocketLayer(string & interfaceName, 
+CtiFDRSocketLayer::CtiFDRSocketLayer(string & interfaceName,
                                      CtiFDRServerConnection *aInBoundConnection,
                                      FDRConnectionType aType,
                                      CtiFDRSocketInterface *aParent) :
@@ -56,11 +56,11 @@ CtiFDRSocketLayer::CtiFDRSocketLayer(string & interfaceName,
 
 
 // constructor of a single connection using one socket
-CtiFDRSocketLayer::CtiFDRSocketLayer(string & interfaceName, 
+CtiFDRSocketLayer::CtiFDRSocketLayer(string & interfaceName,
                                      SOCKET aInBound,
                                      SOCKET aOutBound,
                                      FDRConnectionType aType,
-                                     CtiFDRSocketInterface *aParent):    
+                                     CtiFDRSocketInterface *aParent):
     iName (interfaceName),
     iParent (aParent),
     iLinkStatusID (0),
@@ -98,7 +98,7 @@ CtiFDRSocketLayer::CtiFDRSocketLayer(string & interfaceName,
 
 
 CtiFDRSocketLayer::~CtiFDRSocketLayer( )
-{   
+{
     // stops all threads in this object
     stop();
 
@@ -113,26 +113,26 @@ CtiFDRSocketLayer::~CtiFDRSocketLayer( )
         delete iOutBoundConnection;
         iOutBoundConnection = NULL;
     }
-} 
+}
 
 
 BOOL CtiFDRSocketLayer::operator==( const CtiFDRSocketLayer &other ) const
-{   
+{
     return( (
              getName() ==        other.getName()          &&
 //             getPortNumber() ==  other.getPortNumber()    &&
-             getConnectionType() == other.getConnectionType() 
-             ) 
+             getConnectionType() == other.getConnectionType()
+             )
             );
 }
 
 long CtiFDRSocketLayer::getLinkStatusID( void ) const
-{   
+{
     return iLinkStatusID;
 }
-        
+
 CtiFDRSocketLayer &  CtiFDRSocketLayer::setLinkStatusID(const long aPointID)
-{   
+{
     iLinkStatusID = aPointID;
     return *this;
 }
@@ -172,7 +172,7 @@ CtiFDRSocketLayer& CtiFDRSocketLayer::setConnectionType (CtiFDRSocketLayer::FDRC
 }
 
 int CtiFDRSocketLayer::getLinkTimeout( void ) const
-{   
+{
     return iParent->getLinkTimeout();
 }
 
@@ -212,9 +212,9 @@ void CtiFDRSocketLayer::sendLinkState (int aState)
     if (getLinkStatusID() != 0)
     {
         CtiPointDataMsg     *pData;
-        pData = new CtiPointDataMsg(getLinkStatusID(), 
-                                    aState, 
-                                    NormalQuality, 
+        pData = new CtiPointDataMsg(getLinkStatusID(),
+                                    aState,
+                                    NormalQuality,
                                     StatusPointType);
         iParent->sendMessageToDispatch (pData);
     }
@@ -292,11 +292,11 @@ CtiFDRSocketLayer& CtiFDRSocketLayer::setName (string aName)
   return *this;
 }
 
-int CtiFDRSocketLayer::init () 
+int CtiFDRSocketLayer::init ()
 {
     int retVal = NORMAL;
 
-    iThreadConnectionStatus = rwMakeThreadFunction(*this, 
+    iThreadConnectionStatus = rwMakeThreadFunction(*this,
                                           &CtiFDRSocketLayer::threadFunctionConnectionStatus);
 
     if (iConnectionType == Client_Multiple)
@@ -350,7 +350,7 @@ int CtiFDRSocketLayer::init ()
 }
 
 
-int CtiFDRSocketLayer::run () 
+int CtiFDRSocketLayer::run ()
 {
     iThreadConnectionStatus.start();
 
@@ -380,10 +380,10 @@ int CtiFDRSocketLayer::run ()
     return NORMAL;
 }
 
-int CtiFDRSocketLayer::stop () 
+int CtiFDRSocketLayer::stop ()
 {
     SetEvent (iSemaphore);
-    iThreadConnectionStatus.requestCancellation();    
+    iThreadConnectionStatus.requestCancellation();
 
     if (iInBoundConnection != NULL)
     {
@@ -397,7 +397,7 @@ int CtiFDRSocketLayer::stop ()
     return NORMAL;
 }
 
-int CtiFDRSocketLayer::closeAndFailConnection() 
+int CtiFDRSocketLayer::closeAndFailConnection()
 {
     int retVal=NORMAL;
 
@@ -411,7 +411,7 @@ int CtiFDRSocketLayer::closeAndFailConnection()
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " Closed and failed Inbound connection " << getName() << endl;
-            } 
+            }
         }
     }
 
@@ -435,7 +435,7 @@ INT CtiFDRSocketLayer::write (CHAR *aBuffer, int aPriority)
 
     if (iOutBoundConnection->getQueueHandle() != NULL)
     {
-        // Ship it to the TCP/IP interface thread 
+        // Ship it to the TCP/IP interface thread
         if (WriteQueue (iOutBoundConnection->getQueueHandle(),
                         0,
                         iParent->getMessageSize(aBuffer),
@@ -466,6 +466,7 @@ void CtiFDRSocketLayer::threadFunctionConnectionStatus( void )
     int   failedStatus = 0;
     DWORD semRet;
     CtiTime logTime;
+    CtiTime validTime;      // This is the time of the last valid SetEvent.
 
 
     try
@@ -485,7 +486,7 @@ void CtiFDRSocketLayer::threadFunctionConnectionStatus( void )
 
                 ResetEvent (iSemaphore);
 
-                semRet = WaitForSingleObject(iSemaphore, 5000L);
+                semRet = WaitForSingleObject(iSemaphore, gConfigParms.getValueAsULong("FDR_ACS_LINK_LOOP_DELAY", 15000L) );
 
                 // returns an error 1 for a timeout, error or otherwise
                 if(semRet == WAIT_TIMEOUT)
@@ -493,7 +494,7 @@ void CtiFDRSocketLayer::threadFunctionConnectionStatus( void )
                     pSelf.serviceCancellation( );
 
                     /**********************
-                    * because we want to be able to cancel this thread, 
+                    * because we want to be able to cancel this thread,
                     * we are checking the time out more often
                     * still only fail the connection when the set timeout occurs
                     *********************
@@ -501,7 +502,7 @@ void CtiFDRSocketLayer::threadFunctionConnectionStatus( void )
                     ***********************
                     */
 
-                    if ((loopCnt*5) < getLinkTimeout())
+                    if ((loopCnt*gConfigParms.getValueAsULong("FDR_ACS_LINK_LOOP_DELAY", 15000L)) < (getLinkTimeout() * 1000))
                     {
                         loopCnt++;
                     }
@@ -512,7 +513,7 @@ void CtiFDRSocketLayer::threadFunctionConnectionStatus( void )
 //                        if(iParent->getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
                         {
                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                           dout << CtiTime() << " Link to " << getName() << " timed out " << endl;
+                           dout << CtiTime() << " Link to " << getName() << " timed out.  Last message at " << validTime << endl;
                         }
 
                         closeAndFailConnection();
@@ -530,13 +531,13 @@ void CtiFDRSocketLayer::threadFunctionConnectionStatus( void )
                     * our connections must have failed
                     ********************
                     */
-                    if (getInBoundConnectionStatus() == CtiFDRSocketConnection::Failed || 
+                    if (getInBoundConnectionStatus() == CtiFDRSocketConnection::Failed ||
                         getOutBoundConnectionStatus() == CtiFDRSocketConnection::Failed)
                     {
                         // this will do cleanup work on connections
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Failing " << getName() << endl;
+                            dout << CtiTime() << " Failing " << getName() << ".  Last message at " << validTime << endl;
                         }
 
                         logTime =CtiTime().now();
@@ -544,6 +545,7 @@ void CtiFDRSocketLayer::threadFunctionConnectionStatus( void )
                     }
                     else
                     {
+                        validTime = CtiTime().now();
                         if ((logTime.seconds()+120) <= CtiTime::now().seconds())
                         {
                             {
@@ -586,7 +588,7 @@ void CtiFDRSocketLayer::threadFunctionConnectionStatus( void )
     }
 }
 
-int CtiFDRSocketLayer::initializeClientConnection () 
+int CtiFDRSocketLayer::initializeClientConnection ()
 {
     int retVal=NORMAL;
 
@@ -594,8 +596,8 @@ int CtiFDRSocketLayer::initializeClientConnection ()
     if (iInBoundConnection != NULL)
     {
         /*****************************
-        * if we are a single socket connection, in and out are the same socket 
-        * therefore, we don't want to initialize the outbound socket 
+        * if we are a single socket connection, in and out are the same socket
+        * therefore, we don't want to initialize the outbound socket
         ******************************
         */
         if (iOutBoundConnection == NULL)
@@ -651,7 +653,7 @@ CHAR *CtiFDRSocketLayer::buildForeignSystemHeartbeatMsg ()
     return iParent->buildForeignSystemHeartbeatMsg();
 }
 
-ULONG CtiFDRSocketLayer::getDebugLevel() 
+ULONG CtiFDRSocketLayer::getDebugLevel()
 {
     return iParent->getDebugLevel();
 }
