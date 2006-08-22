@@ -180,8 +180,8 @@ public class CustomerPointTypeHelper {
         this.pointTypeLookup = pointTypeLookup;
     }
 
-    public void setCustomerDao(CustomerStubDao customerDao) {
-        this.customerStubDao = customerDao;
+    public void setCustomerStubDao(CustomerStubDao customerStubDao) {
+        this.customerStubDao = customerStubDao;
     }
 
     public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {

@@ -46,11 +46,11 @@ public class CustomerEventService {
     
     // dependency injection getters/setters
 
-    public CustomerStubDao getCustomerDao() {
+    public CustomerStubDao getCustomerStubDao() {
         return customerStubDao;
     }
 
-    public void setCustomerDao(CustomerStubDao customerDao) {
+    public void setCustomerStubDao(CustomerStubDao customerDao) {
         this.customerStubDao = customerDao;
     }
 
@@ -65,7 +65,11 @@ public class CustomerEventService {
     public void setCustomerDao(CustomerDao customerDao) {
         this.customerDao = customerDao;
     }
-
+    
+    public CustomerDao getCustomerDao() {
+        return customerDao;
+    }
+    
     public void setEventService(EventService eventService) {
         this.eventService = eventService;
     }

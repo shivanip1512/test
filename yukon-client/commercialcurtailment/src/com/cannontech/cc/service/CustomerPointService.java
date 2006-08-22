@@ -21,7 +21,7 @@ import com.cannontech.support.CustomerPointTypeLookup;
 import com.cannontech.support.NoPointException;
 
 public class CustomerPointService {
-    private CustomerStubDao customerDao;
+    private CustomerStubDao customerStubDao;
     private CustomerPointTypeLookup pointTypeLookup;
     private CustomerPointTypeHelper pointTypeHelper;
     private SimplePointAccessDao pointAccess;
@@ -29,7 +29,7 @@ public class CustomerPointService {
     public CustomerPointService() {
         super();
     }
-    
+
     public Map<CICustomerPointType, BigDecimal> getPointValueCache(CICustomerStub customer) {
         Map<CICustomerPointType, BigDecimal> pointValueCache = new TreeMap<CICustomerPointType, BigDecimal>();
         Set<CICustomerPointType> pointTypeList = pointTypeLookup.getApplicablePoints(customer.getLite());
@@ -82,17 +82,17 @@ public class CustomerPointService {
     }
     
     public List<CICustomerStub> getCustomers(LiteEnergyCompany energyCompany) {
-        List<CICustomerStub> customersForEC = customerDao.getCustomersForEC(energyCompany.getEnergyCompanyID());
+        List<CICustomerStub> customersForEC = customerStubDao.getCustomersForEC(energyCompany.getEnergyCompanyID());
         Collections.sort(customersForEC);
         return customersForEC;
     }
     
-    public void setCustomerDao(CustomerStubDao customerDao) {
-        this.customerDao = customerDao;
+    public void setCustomerStubDao(CustomerStubDao customerStubDao) {
+        this.customerStubDao = customerStubDao;
     }
 
     public CICustomerStub getCustomer(int customerId) {
-        return customerDao.getForId(customerId);
+        return customerStubDao.getForId(customerId);
     }
 
     public void setPointAccess(SimplePointAccessDao pointAccess) {

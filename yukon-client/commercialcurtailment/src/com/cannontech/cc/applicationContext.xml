@@ -3,11 +3,13 @@
 
 <beans>
 
-  <bean id="programService" class="com.cannontech.cc.service.ProgramService" singleton="false" autowire="byType" />
+  <bean id="programService" class="com.cannontech.cc.service.ProgramService" singleton="true" autowire="byType" />
   <bean id="groupService" class="com.cannontech.cc.service.GroupService" singleton="false" autowire="byType" />
   <bean id="eventService" class="com.cannontech.cc.service.EventService" singleton="false" autowire="byType" />
   <bean id="customerPointService" class="com.cannontech.cc.service.CustomerPointService" autowire="byType" dependency-check="objects"/>
-  <bean id="customerEventService" class="com.cannontech.cc.service.CustomerEventService" autowire="byType" dependency-check="objects" />
+  <bean id="customerEventService" class="com.cannontech.cc.service.CustomerEventService" autowire="byType" dependency-check="objects">
+    <property name="customerDao" ref="customerDao"/>
+  </bean>
   <bean id="economicService" class="com.cannontech.cc.service.EconomicService" autowire="byType" />
   <bean id="strategyFactory" class="com.cannontech.cc.service.StrategyFactory" autowire="byType" />
   <bean id="notificationService" class="com.cannontech.cc.service.NotificationService" autowire="byType"/>
@@ -134,7 +136,7 @@
   
   
   <bean id="customerPointTypeHelper" class="com.cannontech.support.CustomerPointTypeHelper">
-      <property name="customerDao" ref="customerStubDao" />
+      <property name="customerStubDao" ref="customerStubDao" />
       <property name="pointTypeLookup" ref="customerPointTypeLookup" />
   </bean>
 </beans>
