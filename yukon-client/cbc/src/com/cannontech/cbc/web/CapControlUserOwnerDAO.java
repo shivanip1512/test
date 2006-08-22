@@ -1,6 +1,7 @@
 package com.cannontech.cbc.web;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import com.cannontech.core.dao.DaoFactory;
@@ -122,6 +123,10 @@ public class CapControlUserOwnerDAO implements CapControlDAO {
 	public boolean isSubBus(int id) {
 		return _ccDao.isSubBus(id);
 	}
+    
+    public HashMap getAreaStateMap() {
+        return _ccDao.getAreaStateMap();
+    }
 
 
 

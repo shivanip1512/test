@@ -1,5 +1,6 @@
 package com.cannontech.cbc.web;
 
+import java.util.HashMap;
 import java.util.List;
 
 import com.cannontech.database.data.lite.LiteState;
@@ -144,4 +145,5 @@ public interface CapControlDAO {
 
 	public abstract String getParentNames(int id);
 
+    public HashMap getAreaStateMap();
 }

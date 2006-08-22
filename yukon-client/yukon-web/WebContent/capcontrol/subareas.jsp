@@ -9,6 +9,9 @@
 	<%
 	LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);	
 	CapControlUserOwnerDAO userOwner = new CapControlUserOwnerDAO (capControlCache, user);
+    String nd = "\"return nd();\"";
+    String popupEvent = DaoFactory.getAuthDao().getRolePropertyValue(user, WebClientRole.POPUP_APPEAR_STYLE);
+    if (popupEvent == null) popupEvent = "onmouseover"; 
 	%>
 <jsp:setProperty name="CtiNavObject" property="moduleExitPage" value="<%=request.getRequestURL().toString()%>"/>
 
@@ -28,6 +31,7 @@
             <table id="areaHeaderTable" width="100%" border="0" cellspacing="0" cellpadding="0">
               <tr class="columnHeader lAlign">				
 				<td>Area Name</td>
+                <td>State</td>
                 <td>Setup</td>
                 <td>Closed kVARS</td>
                 <td>Tripped kVARS</td>
@@ -56,6 +60,7 @@
 								CBCUtils.calcAvgPF(areaBuses), true);
 			String estPF = CBCDisplay.getPowerFactorText(
 								CBCUtils.calcAvgEstPF(areaBuses), true);
+            String areaState = ((Boolean)(userOwner.getAreaStateMap().get(areaStr)))?"ENABLED":"DISABLED";
 %>
 	        <tr class="<%=css%>">
 				<td>				
@@ -65,6 +70,22 @@
 				<a href="#" class="<%=css%>" onclick="postMany('areaForm', '<%=CBCSessionInfo.STR_CBC_AREA%>', '<%=areaStr%>')">
 				<%=areaStr%></a>
 				</td>
+                <td>
+                <!--Create  popup menu html-->               
+                <div id = "serverMessage<%=i%>" style="display:none" > </div>
+                
+                <input id="cmd_area_<%=areaBuses[0].getCcId()%>" type="hidden" name = "cmd_dyn" value= "" />
+                <a id="area_state_<%=i%>" name="area_state" 
+                    style="<%=css%>"
+                    href="javascript:void(0);"
+                    <%= popupEvent %> ="return overlib(
+                        $F('cmd_area_<%=areaBuses[0].getCcId()%>'),
+                        STICKY, WIDTH,210, HEIGHT,170, OFFSETX,-15,OFFSETY,-15,
+                        MOUSEOFF, FULLHTML);"
+                    onmouseout= <%=nd%> >
+                <%=areaState%>
+                </a>
+                </td>
 				<td><%=areaBuses.length%> Substation(s)</td>
 				<td><%=totalVars%></td>
 				<td><%=availVars%></td>
@@ -98,6 +119,39 @@
 			</form>
 <script type="text/javascript">
 Event.observe(window, 'load', function() { new CtiNonScrollTable('areaTable','areaHeaderTable');});
+Event.observe(window, 'load', function () {
+    getServerData();     
+});
+
+function getServerData() {
+var els = document.getElementsByName('area_state');
+for (var i=0; i < els.length; i++) {
+     new Ajax.PeriodicalUpdater("serverMessage"+i, '/servlet/CBCServlet', 
+                                {method:'post', asynchronous:true, parameters:'areaIndex='+i, frequency:5, onSuccess: updateAreaMenu});
+     
+
+}
+
+}
+
+
+function updateAreaMenu (resp) {
+var msgs = resp.responseText.split(':');
+var areaname = msgs[0];
+var areaindex = msgs[1];
+var sub0ID = msgs[2];
+var areastate = msgs[3];
+//update state
+document.getElementById ('area_state_' + areaindex).innerHTML = areastate;
+//update menu
+if (areastate == 'ENABLED')
+    document.getElementById('cmd_area_' + sub0ID).value = generate_SubAreaMenu(sub0ID,areaname, 0);
+if (areastate == 'DISABLED')
+    document.getElementById('cmd_area_' + sub0ID).value = generate_SubAreaMenu(sub0ID,areaname, 1);
+}
+
+
+
 </script>
       </cti:titledContainer>
 </cti:standardPage>

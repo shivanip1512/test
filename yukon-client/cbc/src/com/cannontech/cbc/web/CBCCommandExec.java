@@ -31,8 +31,14 @@ public class CBCCommandExec
 		cbcCache = _cbcCache;
 		userName = _userName;
 	}
+    
+    public boolean execute_SubAreaCmd (int _cmdID, int _paoID) {
+        CBCCommand cmd = new CBCCommand (_cmdID, _paoID);    
+        cbcCache.getConnection().write(cmd);
+        return true;
+    }
 
-	public boolean execute_SubCmd( int _cmdID, int _paoID )
+    public boolean execute_SubCmd( int _cmdID, int _paoID )
 	{
 		if( _cmdID == CBCCommand.CONFIRM_CLOSE 
 			 || _cmdID == CBCCommand.CONFIRM_OPEN )

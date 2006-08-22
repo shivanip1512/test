@@ -34,6 +34,10 @@ public class CBCCommand extends com.cannontech.yukon.cbc.CBCMessage
 	public static final int DELETE_ITEM = 19;
 	public static final int CONFIRM_SUB = 20;
 
+    public static final int CONFIRM_AREA = 21;
+    public static final int ENABLE_AREA = 22;
+    public static final int DISABLE_AREA = 23;
+
 
 	//server does not use these commands
 	public static final int CMD_MANUAL_ENTRY = 30;
@@ -69,7 +73,11 @@ public class CBCCommand extends com.cannontech.yukon.cbc.CBCMessage
 		"ENABLE OV/UV",
 		"DISABLE OV/UV",
 		"DELETE ITEM", //19
-		"CONFIRM SUB","","","","",
+		"CONFIRM SUB",
+        "CONFIRM AREA", //21
+        "ENABLE AREA", //22
+        "DISABLE AREA", //23
+        "",
 		"","","","","",
 
 

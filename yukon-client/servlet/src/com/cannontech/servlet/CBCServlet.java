@@ -6,6 +6,7 @@ package com.cannontech.servlet;
  *
  * @author: ryan
  */ 
+import java.io.IOException;
 import java.io.Writer;
 import java.util.Date;
 
@@ -54,7 +55,7 @@ public class CBCServlet extends HttpServlet
 	public static final String TYPE_SUB = "SUB_TYPE";
 	public static final String TYPE_FEEDER = "FEEDER_TYPE";
 	public static final String TYPE_CAPBANK = "CAPBANK_TYPE";
-
+    public static final String TYPE_AREA = "AREA_TYPE";
 
 /**
  * Removes any resources used by this servlet
@@ -75,7 +76,7 @@ public void destroy()
 private OneLineSubs getOneLineSubs () {
 	OneLineSubs oneLine = (OneLineSubs)getServletContext().getAttribute(CBC_ONE_LINE);
 	if (oneLine == null) {
-		oneLine = new OneLineSubs();
+    	oneLine = new OneLineSubs();
 		getServletContext().setAttribute(CBC_ONE_LINE, oneLine);
 		
 	}
@@ -102,7 +103,7 @@ private CapControlCache getCapControlCache()
 }
 
 /**
- * Makes a connection to CBC Sercer and stores a reference to this in
+ * Makes a connection to CBC Server and stores a reference to this in
  * the servlet context.
  * Creation date: (3/21/2001 11:35:57 AM)
  * @param config javax.servlet.ServletConfig
@@ -114,9 +115,10 @@ public void init(javax.servlet.ServletConfig config) throws javax.servlet.Servle
 
 	// Call the getters to init our objects in the context
 	getCapControlCache();
-	
 	//start one line service
 	OneLineSubs oneLine = getOneLineSubs();
+    String absPath = config.getServletContext().getRealPath(CBCWebUtils.ONE_LINE_DIR);
+    oneLine.setDirBase(absPath);    
 	oneLine.start();
 }	
 
@@ -144,13 +146,19 @@ public void doPost(HttpServletRequest req, HttpServletResponse resp) throws java
 
 	//handle any commands that a client may want to send to the CBC server
 	String redirectURL = ParamUtil.getString( req, "redirectURL", null );
-
+    Integer areaIndex = ParamUtil.getInteger(req, "areaIndex", -1);
 	//be sure we have a valid user and that user has the rights to control
 	if( user != null && CBCWebUtils.hasControlRights(session) ) {
 		
 		try {
-			//send the command with the id, type, paoid
-			executeCommand( req, user.getUsername() );
+			
+            Writer writer = resp.getWriter();
+            if (areaIndex != -1) {
+                updateSubAreaMenu(areaIndex, writer);
+            }
+            else
+                //send the command with the id, type, paoid
+                executeCommand( req, user.getUsername() );
 		}
 		catch( Exception e ) {
 			CTILogger.warn( "Servlet request was attempted but failed for the following reason:", e );
@@ -159,15 +167,25 @@ public void doPost(HttpServletRequest req, HttpServletResponse resp) throws java
 	else
 		CTILogger.warn( "CBC Command servlet was hit, but NO action was taken" );
 	
-
+/*
 	try {
 		Thread.sleep(CBCUtils.TEMP_MOVE_REFRESH);
 	} catch (InterruptedException e) {
 		CTILogger.warn("CBCServlet was interupted - doPost");
-	}
+	}*/
 	//always forward the client to the specified URL if present
 	if( redirectURL != null )
 		resp.sendRedirect( resp.encodeRedirectURL(req.getContextPath() + redirectURL) );
+}
+
+private void updateSubAreaMenu(Integer areaIndex, Writer writer) throws IOException {
+    String area = (String) getCapControlCache().getAreaNames().get(areaIndex);
+    Boolean state = (Boolean) getCapControlCache().getAreaStateMap().get(area);
+    Integer sub0ID = getCapControlCache().getSubsByArea(area)[0].getCcId();
+    String msg = area + ":" + areaIndex + ":" + sub0ID + ":";
+    msg += (state)?"ENABLED":"DISABLED";
+    writer.write (msg);
+    writer.flush();
 }
 
 /**
@@ -197,8 +215,8 @@ public void doGet(HttpServletRequest req, HttpServletResponse resp) throws javax
                 CTILogger.debug("servlet nav to: " + redirectURL );
 			}
 			else {
-				//by default, treat this as a XML request
-				Writer writer = resp.getWriter();
+                Writer writer = resp.getWriter();
+                //by default, treat this as a XML request
 				writer.write( createXMLResponse(req, resp) );
 				writer.flush();
 			}
@@ -476,7 +494,8 @@ private synchronized void executeCommand( HttpServletRequest req, String userNam
 	// the cache.
 	cbcExecutor = new CBCCommandExec( getCapControlCache(), userName );
 		
-	//send the command with the id, type, paoid
+
+    //send the command with the id, type, paoid
 	if( CBCServlet.TYPE_SUB.equals(controlType) )
 		cbcExecutor.execute_SubCmd( cmdID, paoID );
 	
@@ -485,6 +504,10 @@ private synchronized void executeCommand( HttpServletRequest req, String userNam
 
 	if( CBCServlet.TYPE_CAPBANK.equals(controlType) )
 		cbcExecutor.execute_CapBankCmd( cmdID, paoID, optParams );
+	
+    if ( CBCServlet.TYPE_AREA.equals (controlType) ) 
+        cbcExecutor.execute_SubAreaCmd(cmdID, paoID);
+
 }
 
 }

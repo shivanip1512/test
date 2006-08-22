@@ -19,7 +19,8 @@ function updateCommandMenu(result) {
         	var sub_type = temp[3];
     
         	var opts;
- 			if (id == xmlID) {
+            
+            if (id == xmlID) {
  				//sub command is unique in that it requires additional params to be extracted from the result
  				if (type == 'sub')
  					{
@@ -201,6 +202,35 @@ function generate_CB_Move_Back (id, name, red) {
  return html;			  
 }
 
+//function to generate the cap bank move back menu
+function generate_SubAreaMenu (id, name, enable) {
+     //start and end of div html
+     var div_start_tag = "<HTML><BODY><div id='area" + id + "' ";
+     var div_end_tag = " </div></BODY></HTML>";
+     //css for the div
+     div_start_tag += " style='background:white; height:1cm; width:1cm; border:1px solid black;'>";
+     //init return variable
+     var html = div_start_tag;
+     //generate the table
+     var table_footer = "</table>";
+     var table_body = "<table >";
+         
+     table_body += "<tr><td class='top'>" + name + "</td></tr>"
+     table_body += add_AJAX_Function('area', id, 21, 'Confirm_Area');
+     if (enable == 1)
+        table_body += add_AJAX_Function('area', id, 22, 'Enable_Area');
+     else
+        table_body += add_AJAX_Function('area', id, 23, 'Disable_Area');
+     
+     table_body+= table_footer;
+     //append table to the div
+     html += table_body;
+     //append end tag to the div
+     html += div_end_tag;
+ 
+ return html;             
+}
+
 //function to generate cap bank menu
 function generateCapBankMenu (id, state, opts) {
  var ALL_CAP_CMDS = {
@@ -307,7 +337,9 @@ switch (type) {
   		ajax_func +=    "'execute_CapBankMoveBack (" + 	pao_id + "," + cmd_id + "); '";
 		
     break;
-
+ case 'area':
+    ajax_func += "'execute_SubAreaCommand (" + pao_id + "," + cmd_id + "); '";
+    break;
 }
 	
 ajax_func += ">"+ cmd_name+"</a>";
@@ -393,6 +425,20 @@ function execute_CapBankMoveBack (paoId, command, redirect) {
 	
 		
 } 
+
+function execute_SubAreaCommand (pao_id, cmd_id) {
+    new Ajax.Request('/servlet/CBCServlet', 
+    { method:'post', 
+      parameters:'paoID='+ pao_id +'&cmdID=' + cmd_id + '&controlType=AREA_TYPE',
+        onSuccess: function () { display_status(cmd_name, "Message sent successfully", "green"); },
+        onFailure: function () { display_status('Move Bank', "Command failed", "red"); },
+    asynchronous:true
+    });
+    var cmdDiv = document.getElementById ('area' + pao_id);
+    cmdDiv.style.display = 'none';
+
+
+}
 
 
 ///////////////////////////////////////////////
