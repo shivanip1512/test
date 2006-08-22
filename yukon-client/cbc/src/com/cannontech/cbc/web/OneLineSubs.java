@@ -30,15 +30,9 @@ public class OneLineSubs implements MessageListener
 	public OneLineSubs()
 	{
 		super();
+        setDirBase(CtiUtilities.getYukonBase() + CBCWebUtils.ONE_LINE_DIR);
         
-        // /yukon/server/web/webapps/yukon/capcontrol
-        //dirBase = CtiUtilities.getYukonBase() + "/head/yukon-web/WebContent/capcontrol/oneline";
-        //dirBase = CtiUtilities.getYukonBase() + "/server/web/webapps/yukon/capcontrol/oneline";
-		dirBase = CtiUtilities.getYukonBase();
-		dirBase = "C:/Workspace/yukon-web/WebContent/capcontrol/oneline";
-        
-        CTILogger.debug(" Oneline generation output: " + dirBase);
-	}
+    }
 
 
 
@@ -156,6 +150,13 @@ public class OneLineSubs implements MessageListener
     	//creates our own connection
     	return (CBCClientConnection)ConnPool.getInstance().getConn(
     					"ONELINE_CAPCONTROL");
+    }
+
+
+
+    public void setDirBase(String dirBase) {
+        this.dirBase = dirBase;
+        CTILogger.debug(" Oneline generation output: " + dirBase);
     }
     
 }
