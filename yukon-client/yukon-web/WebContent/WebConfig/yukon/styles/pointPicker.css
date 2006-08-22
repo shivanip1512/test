@@ -12,25 +12,46 @@ pointPicker_commandLinks {
     font-size: 80%;
 }
 
-#pointPicker_resultArea {
+#pointPicker_resultAreaFixed {
     height: 349px;
 }
 
 #pointPicker_popup {
-  position: absolute;
-  background: white;
-  opacity: .93;
-  left: 120px;
-  right: 120px;
-  top: 30px;
-  width: 500px;
-  height: 390px;
-  border: 3px ridge #696;
-  padding: 10px;
-  z-index: 100;
-  }
+    position: absolute;
+    background: white;
+    opacity: .93;
+    left: 120px;
+    right: 120px;
+    top: 30px;
+    width: 500px;
+    height: 390px;
+    border: 3px ridge #696;
+    padding: 10px;
+    z-index: 100;
+}
 
 table.pointPickerResultTable tr.pointPicker_currentPointRow {
     background: yellow;
 }
+
+table#pointPicker_navTable {
+    width: 100%;
+}
+
+table#pointPicker_navTable td.left {
+    text-align: left;
+    width: 60px;
+}
+table#pointPicker_navTable td.center {
+    text-align: center;
+}
+table#pointPicker_navTable td.right {
+    text-align: right;
+    width: 60px;
+}
+
+.pointPicker_selectedLink {
+    background-color: yellow;
+}
+
   
