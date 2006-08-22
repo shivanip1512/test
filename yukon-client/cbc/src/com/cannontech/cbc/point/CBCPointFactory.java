@@ -3,7 +3,12 @@ package com.cannontech.cbc.point;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PointDao;
+import com.cannontech.database.data.capcontrol.CapControlFeeder;
+import com.cannontech.database.data.capcontrol.CapControlSubBus;
 import com.cannontech.database.data.multi.MultiDBPersistent;
+import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.data.point.AccumPointParams;
@@ -27,7 +32,15 @@ import com.cannontech.database.db.state.StateGroupUtils;
 
 public class CBCPointFactory{
     
-    private static final PointParams[] POINT_PROTOTYPES = {
+    
+    private static final PointParams[] PAO_POINT_PARAMS = {
+      new AnalogPointParams(1.0, 1, "Estimated Var Load", PointUnits.UOMID_VARS),
+      new AnalogPointParams(1.0, 1, "Daily Operations", PointUnits.UOMID_OPS),
+      new AnalogPointParams(1.0, 1, "Power Factor", PointUnits.UOMID_PF),
+      new AnalogPointParams(1.0, 1, "Estimated Power Factor", PointUnits.UOMID_PF),
+    };
+    
+    private static final PointParams[] CBC_POINT_PROTOTYPES = {
        new StatusPointParams(1,"Capacitor bank state", PointTypes.CONTROLTYPE_NORMAL),
        new StatusPointParams(2,"Re-close Blocked"),
        new StatusPointParams(3,"Control Mode"),
@@ -99,8 +112,8 @@ public class CBCPointFactory{
     private static List createPoints(Integer paoId) {
 
         List pointList = new ArrayList();
-        for (int i = 0; i < POINT_PROTOTYPES.length; i++) {
-            PointParams array_element = POINT_PROTOTYPES[i];
+        for (int i = 0; i < CBC_POINT_PROTOTYPES.length; i++) {
+            PointParams array_element = CBC_POINT_PROTOTYPES[i];
             PointBase point = PointFactory.createPoint(array_element.getType());
 			switch (array_element.getType()) {
             case PointTypes.STATUS_POINT:            	
@@ -155,5 +168,36 @@ public class CBCPointFactory{
         return pointList;
 
     }
-    
+
+    public static SmartMultiDBPersistent createPointsForPAO(DBPersistent dbObj)   {
+        SmartMultiDBPersistent retSmart = new SmartMultiDBPersistent();
+
+      if ((dbObj instanceof CapControlSubBus) || (dbObj instanceof CapControlFeeder))
+        {
+          for (int i = 0; i < PAO_POINT_PARAMS.length; i++) {
+            AnalogPointParams params = (AnalogPointParams) PAO_POINT_PARAMS[i];
+            Integer paoID = new Integer (0);
+            
+            if (dbObj instanceof CapControlSubBus) {
+                CapControlSubBus bus = (CapControlSubBus) dbObj;
+                paoID = bus.getPAObjectID();
+            }
+            if (dbObj instanceof CapControlFeeder) {
+                CapControlFeeder feeder = (CapControlFeeder) dbObj;
+                paoID = feeder.getPAObjectID();
+            }
+            
+            PointDao pointDAO = DaoFactory.getPointDao();
+                        PointBase analogPoint = 
+                            PointFactory.createAnalogPoint(params.getName(),
+                                                           paoID,
+                                                           pointDAO.getNextPointId(),
+                                                           params.getOffset(),
+                                                           params.getUofm()
+                                                           );
+            retSmart.addDBPersistent( analogPoint );
+          }  
+        }
+        return retSmart;
+    }  
 }

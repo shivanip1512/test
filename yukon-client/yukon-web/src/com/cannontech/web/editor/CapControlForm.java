@@ -48,8 +48,10 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.MultiDBPersistent;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
+import com.cannontech.database.data.pao.CapControlTypes;
 import com.cannontech.database.data.pao.PAOFactory;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.data.pao.TypeBase;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointTypes;
@@ -916,18 +918,23 @@ public class CapControlForm extends DBEditorForm{
 	/**
 	 * Creates extra points or any other supporting object for the given parent
 	 * based on the paoType
+	 * @param dbObj 
 	 * @throws PAODoesntHaveNameException 
 	 */
 	private void createPostItems(int paoType, int parentID,
-			final FacesMessage facesMsg) throws TransactionException {
-
+			final FacesMessage facesMsg, DBPersistent dbObj) throws TransactionException {
+        SmartMultiDBPersistent smartMulti = new SmartMultiDBPersistent();
 		// store the objects we add to the DB
 		CBCDBObjCreator cbObjCreator = new CBCDBObjCreator(getWizData());
 
-		SmartMultiDBPersistent smartMulti = cbObjCreator.createChildItems(
-				paoType, new Integer(parentID));
-        
-  
+        if  (paoType == CapControlTypes.CAP_CONTROL_FEEDER || paoType == CapControlTypes.CAP_CONTROL_SUBBUS) {
+            smartMulti = CBCPointFactory.createPointsForPAO(dbObj);
+        }
+        else {
+            smartMulti = cbObjCreator.createChildItems(
+    				paoType, new Integer(parentID));
+        }
+		
 
 		addDBObject(smartMulti, facesMsg);
         
@@ -947,10 +954,12 @@ public class CapControlForm extends DBEditorForm{
 
 		// store the objects we add to the DB
 		CBCDBObjCreator cbObjCreator = new CBCDBObjCreator(getWizData());
+        SmartMultiDBPersistent smartMulti = new SmartMultiDBPersistent();
+		//work around for a when pao is a sub bus. need when creating points
 
-		SmartMultiDBPersistent smartMulti = cbObjCreator
-				.createParentItems(paoType);
-
+        if (paoType != PAOGroups.INVALID) {
+                smartMulti = cbObjCreator.createParentItems(paoType);
+            }
 		//make sure we are inserting the right object
 		try {			
 			Validate.notNull(smartMulti.getOwnerDBPersistent());
@@ -1051,7 +1060,7 @@ public class CapControlForm extends DBEditorForm{
 			}
 
 			// creates any extra db objects if need be
-			createPostItems(paoType, itemID, facesMsg);
+			createPostItems(paoType, itemID, facesMsg, dbObj);
             
             
      
