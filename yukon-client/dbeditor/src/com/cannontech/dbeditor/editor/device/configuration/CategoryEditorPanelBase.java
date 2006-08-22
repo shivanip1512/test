@@ -422,7 +422,7 @@ public class CategoryEditorPanelBase extends DataInputPanel {
             // Create and initialize the internal frame
             JInternalFrame frame = new JInternalFrame("Category editor", true, true, true, true);
             frame.setContentPane(this.panel);
-            frame.pack();
+            frame.setSize(DatabaseEditor.EDITOR_FRAME_SIZE);
             frame.setVisible(true);
 
             JDesktopPane pane = CtiUtilities.getDesktopPane(((JButton) e.getSource()));

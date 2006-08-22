@@ -153,7 +153,6 @@ public class CategoryInputPanel extends DataInputPanel implements DataInputPanel
             return false;
         } else if (this.categoryName != null && this.categoryName.getText().equals("")) {
             this.setErrorString("Category Name is a required field.");
-            this.categoryName.requestFocus();
             return false;
         } else if (this.itemPanel != null && !this.itemPanel.isInputValid()) {
             this.setErrorString(this.itemPanel.getErrorString());
