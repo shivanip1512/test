@@ -1,7 +1,9 @@
 package com.cannontech.web.customer;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.faces.model.SelectItem;
 
@@ -25,9 +27,10 @@ public class CustomerProfileBean {
     private ContactNotification selectedNotification;
     private CustomerDao customerDao;
     private DBPersistentDao dbPersistentDao;
+    private boolean needsInitialization = true;
     
     final private SelectItem[] notificationSelections = 
-        JSFUtil.convertSelectionList(YukonSelectionListDefs.YUK_LIST_ID_CONTACT_TYPE);;
+        JSFUtil.convertSelectionList(YukonSelectionListDefs.YUK_LIST_ID_CONTACT_TYPE);
 
     public LiteYukonUser getYukonUser() {
         return yukonUser;
@@ -35,10 +38,16 @@ public class CustomerProfileBean {
 
     public void setYukonUser(LiteYukonUser yukonUser) {
         this.yukonUser = yukonUser;
-        initialize();
+    }
+    
+    private synchronized void initialize() {
+        if (needsInitialization) {
+            doInitialize();
+            needsInitialization = false;
+        }
     }
 
-    private void initialize() {
+    private void doInitialize() {
         LiteCICustomer liteCustomer = customerDao.getCustomerForUser(this.yukonUser);
         Customer customer = (Customer) dbPersistentDao.retrieveDBPersistent(liteCustomer);
         thisCustomer = customer;
@@ -70,7 +79,7 @@ public class CustomerProfileBean {
         dbPersistentDao.performDBChange(thisCustomer, Transaction.UPDATE);
         
         //re-initialize
-        initialize();
+        needsInitialization = true;
         return null;
     }
     
@@ -101,18 +110,22 @@ public class CustomerProfileBean {
     }
     
     public List<Contact> getAdditionalContactList() {
+        initialize();
         return additionalContactList;
     }
 
     public Contact getPrimaryContact() {
+        initialize();
         return primaryContact;
     }
 
     public Customer getThisCustomer() {
+        initialize();
         return thisCustomer;
     }
 
     public Contact getSelectedContact() {
+        initialize();
         return selectedContact;
     }
 
@@ -121,10 +134,12 @@ public class CustomerProfileBean {
     }
 
     public SelectItem[] getNotificationSelections() {
+        initialize();
         return notificationSelections;
     }
 
     public ContactNotification getSelectedNotification() {
+        initialize();
         return selectedNotification;
     }
 
@@ -147,5 +162,8 @@ public class CustomerProfileBean {
     public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
         this.dbPersistentDao = dbPersistentDao;
     }
+    
+
+    
 
 }
