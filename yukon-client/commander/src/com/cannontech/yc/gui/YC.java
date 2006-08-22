@@ -163,6 +163,7 @@ public class YC extends Observable implements MessageListener
 			super();
 			type = type_;
 			text = message_;
+            text = text.replaceAll("\n", "<BR>");
 			status = status_;
 			isUnderline = underline_;
 		}
