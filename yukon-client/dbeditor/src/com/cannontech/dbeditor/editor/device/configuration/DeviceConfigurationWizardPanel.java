@@ -66,8 +66,10 @@ public class DeviceConfigurationWizardPanel extends WizardPanel {
             DeviceConfigurationFuncs funcs = new DeviceConfigurationFuncsImpl();
             Integer typeId = (Integer) currentInputPanel.getValue(null);
 
-            this.config.setType(funcs.loadConfigType(typeId));
-            this.initializeCategoryList(this.config.getTypeId());
+            if (this.config.getType() == null || !typeId.equals(this.config.getTypeId())) {
+                this.config.setType(funcs.loadConfigType(typeId));
+                this.initializeCategoryList(this.config.getTypeId());
+            }
 
             DeviceConfigurationBaseEditorPanel panel = new DeviceConfigurationBaseEditorPanel();
             panel.setValue(this.config);
