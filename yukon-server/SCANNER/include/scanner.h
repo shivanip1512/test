@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/INCLUDE/scanner.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/12/20 17:20:45 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2006/08/23 17:08:51 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -25,9 +25,6 @@
 
 #define NEVER_SCAN_TIME         0xFFFFFFFF
 #define TARDY_TIME_DELAY        3600L
-
-#define PRIORITY_STATUS    9
-#define PRIORITY_VALUE     10
 
 /* Prototypes from SCANNER.C */
 VOID ResultThread (PVOID);
