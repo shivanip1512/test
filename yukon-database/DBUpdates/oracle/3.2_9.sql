@@ -18,6 +18,8 @@ alter table PointUnit modify DecimalDigits NUMBER not null;
 /* @error ignore */
 alter table DynamicPointAlarming drop constraint FKf_DynPtAl_SysL;
 
+alter table DeviceMeterGroup modify CollectionGroup VARCHAR2(50) not null;
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */

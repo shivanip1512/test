@@ -4095,7 +4095,7 @@ go
 /*==============================================================*/
 create table DEVICEMETERGROUP (
    DEVICEID             numeric              not null,
-   CollectionGroup      varchar(20)          not null,
+   CollectionGroup      varchar(50)          not null,
    TestCollectionGroup  varchar(20)          not null,
    METERNUMBER          varchar(15)          not null,
    BillingGroup         varchar(20)          not null

@@ -1934,7 +1934,7 @@ alter table DEVICEMCTIEDPORT
 /*==============================================================*/
 create table DEVICEMETERGROUP  (
    DEVICEID             NUMBER                          not null,
-   CollectionGroup      VARCHAR2(20)                    not null,
+   CollectionGroup      VARCHAR2(50)                    not null,
    TestCollectionGroup  VARCHAR2(20)                    not null,
    METERNUMBER          VARCHAR2(15)                    not null,
    BillingGroup         VARCHAR2(20)                    not null
