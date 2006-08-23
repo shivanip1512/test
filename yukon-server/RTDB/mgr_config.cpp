@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/mgr_config.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2006/08/08 13:36:09 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2006/08/23 15:07:12 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -306,6 +306,8 @@ CtiConfigDeviceSPtr CtiConfigManager::getDeviceConfigFromID(long configID)
 
 void CtiConfigManager::processDBUpdate(LONG identifier, string category, string objectType, int updateType)
 {
+    CtiToLower(category);
+    CtiToLower(objectType);
     if( category == "config" && identifier != 0 )
     {
         if( objectType == "config" )
@@ -359,7 +361,6 @@ void CtiConfigManager::processDBUpdate(LONG identifier, string category, string 
         }
         else if( objectType == "category" )
         {
-            //oddly, I dont care about adds or removals because both are taken care of in other ways.
             if( updateType == ChangeTypeUpdate )
             {
                 //Load the new data
@@ -381,6 +382,15 @@ void CtiConfigManager::processDBUpdate(LONG identifier, string category, string 
                 
                 //Since it is more efficient, we will just send out all of the device configs again
                 updateDeviceConfigs();
+            }
+            else if( updateType == ChangeTypeDelete )
+            {
+                removeFromMaps(0,identifier);
+                _typeConfig.remove(identifier);
+            }
+            else if( updateType == ChangeTypeAdd )
+            {
+                loadCategories(identifier);
             }
         }
     }
@@ -671,8 +681,8 @@ void CtiConfigManager::removeFromMaps(long configID, long categoryID)
         ConfigTypeToDeviceMap::iterator configIter;
 
         //First erase all the entries in the category map
-        ConfigTypeToDeviceMap::iterator categoryIter = _categoryToConfig.find(configID);
-        if( categoryIter != _configToCategory.end() )
+        ConfigTypeToDeviceMap::iterator categoryIter = _categoryToConfig.find(categoryID);
+        if( categoryIter != _categoryToConfig.end() )
         {
             std::set<long>::iterator setIter = categoryIter->second.begin();
             for( ; setIter != categoryIter->second.end(); setIter++ )
@@ -680,11 +690,11 @@ void CtiConfigManager::removeFromMaps(long configID, long categoryID)
                 configIter = _configToCategory.find(*setIter);
                 if( configIter != _configToCategory.end() )
                 {
-                    configIter->second.erase(configID);
+                    configIter->second.erase(categoryID);
                 }
             }
 
-            _categoryToConfig.erase(configID);
+            _categoryToConfig.erase(categoryID);
         }
     }
 }
