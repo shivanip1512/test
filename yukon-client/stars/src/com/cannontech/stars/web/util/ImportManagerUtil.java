@@ -140,6 +140,7 @@ public class ImportManagerUtil {
 	public static final String CUSTOMER_FILE_PATH = "CUSTOMER_FILE_PATH";
 	public static final String CUSTOMER_ACCOUNT_MAP = "CUSTOMER_ACCOUNT_MAP";
 	public static final String HW_CONFIG_APP_MAP = "HW_CONFIG_APP_MAP";
+    public static final String SEASONAL_LOAD_OPTION = "SEASONAL LOAD";
 	
 	// Customer account fields
 	public static int acct_idx = 0;
@@ -203,6 +204,7 @@ public class ImportManagerUtil {
 	public static final int IDX_R1_STATUS = inv_idx++;
 	public static final int IDX_R2_STATUS = inv_idx++;
 	public static final int IDX_R3_STATUS = inv_idx++;
+    public static final int IDX_OPTION_PARAMS = inv_idx++;
     public static final int NUM_INV_FIELDS = inv_idx;
 	
 	// Appliance fields

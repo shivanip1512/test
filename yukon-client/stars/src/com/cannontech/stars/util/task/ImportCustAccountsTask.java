@@ -94,7 +94,8 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 		"ADDR_GROUP",
 		"APP_TYPE",
 		"APP_KW",
-        "APP_RELAY_NUM"
+        "APP_RELAY_NUM",
+        "OPTION_PARAMS"
 	};
 	
 	// Column indices of the generic customer info file
@@ -139,15 +140,17 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 	private static final int COL_APP_TYPE = hw_col++;
 	private static final int COL_APP_KW = hw_col++;
     private static final int COL_APP_RELAY_NUMBER = hw_col++;
+    private static final int COL_OPTION_PARAMS = hw_col++;
     
 	LiteStarsEnergyCompany energyCompany = null;
 	FileItem custFile = null;
 	FileItem hwFile = null;
 	String email = null;
 	boolean preScan = false;
+    boolean insertSpecified = false;
+    boolean seasonalLoad = false;
     int userID = UserUtils.USER_DEFAULT_ID;
     boolean firstFinishedPass = true;
-    ArrayList existingSULMPrograms;
     
 	PrintWriter importLog = null;
 	String position = null;
@@ -308,6 +311,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 					if (custFields[ImportManagerUtil.IDX_ACCOUNT_NO].trim().length() == 0)
 						throw new WebClientException( "Account # cannot be empty" );
 					
+					insertSpecified = custFields[ImportManagerUtil.IDX_ACCOUNT_ACTION].equalsIgnoreCase("INSERT");
                     /*
                      * Some customers use rotation digits on the end of account numbers.
                      * EXAMPLE: if a customer changed at account 123456, the whole account number
@@ -451,6 +455,14 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 						hwFields[ImportManagerUtil.IDX_LINE_NUM] = String.valueOf(lineNo);
 						setHardwareFields( hwFields, columns, hwColIdx );
 						
+						/*
+                         * Need to check for seasonal load option (same relay, different app, same switch, different prog
+						 */
+                        if(hwFields[ImportManagerUtil.IDX_OPTION_PARAMS].trim().length() > 0)
+                        {
+                            seasonalLoad = hwFields[ImportManagerUtil.IDX_OPTION_PARAMS].equalsIgnoreCase(ImportManagerUtil.SEASONAL_LOAD_OPTION);
+                        }
+                        
 						if (custFields[ImportManagerUtil.IDX_ACCOUNT_ACTION].equalsIgnoreCase("REMOVE")
 							|| hwFields[ImportManagerUtil.IDX_SERIAL_NO].trim().length() == 0)
 						{
@@ -465,6 +477,8 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 						if (hwFields[ImportManagerUtil.IDX_DEVICE_TYPE].trim().length() == 0)
 							throw new WebClientException("Device type cannot be empty");
 						
+                        insertSpecified = hwFields[ImportManagerUtil.IDX_HARDWARE_ACTION].equalsIgnoreCase("INSERT");
+                        
 						YukonSelectionList devTypeList = energyCompany.getYukonSelectionList( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE );
 						YukonListEntry deviceType = DaoFactory.getYukonListDao().getYukonListEntry( devTypeList, hwFields[ImportManagerUtil.IDX_DEVICE_TYPE] );
 						if (deviceType == null)
@@ -608,6 +622,14 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 						custFields = (String[]) custFieldsMap.get( hwFields[ImportManagerUtil.IDX_ACCOUNT_ID] );
 					LiteStarsCustAccountInformation liteAcctInfo = null;
 					
+                    /*
+                     * Need to check for seasonal load option (same relay, different app, same switch, different prog
+                     */
+                    if(hwFields[ImportManagerUtil.IDX_OPTION_PARAMS].trim().length() > 0)
+                    {
+                        seasonalLoad = hwFields[ImportManagerUtil.IDX_OPTION_PARAMS].equalsIgnoreCase(ImportManagerUtil.SEASONAL_LOAD_OPTION);
+                    }
+                    
 					if (custFields != null) {
 						if (custFields[ImportManagerUtil.IDX_ACCOUNT_ACTION].equals("REMOVE")) {
 							if (hwFields[ImportManagerUtil.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE")) {
@@ -649,8 +671,13 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 					}
 					
 					if (!preScan) {
-						LiteInventoryBase liteInv = importHardware( hwFields, liteAcctInfo, energyCompany );
-						
+                        LiteInventoryBase liteInv;
+                        try {
+                            liteInv = importHardware( hwFields, liteAcctInfo, energyCompany );                            
+                        }
+						catch (WebClientException e) {
+						    continue;
+                        }
 						if (hwFields[ImportManagerUtil.IDX_PROGRAM_NAME].trim().length() > 0
 							&& !hwFields[ImportManagerUtil.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE"))
 						{
@@ -935,6 +962,8 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 			fields[ImportManagerUtil.IDX_PROGRAM_NAME] = columns[ colIdx[COL_PROGRAM_NAME] ];
 		if (colIdx[COL_ADDR_GROUP] >= 0 && colIdx[COL_ADDR_GROUP] < columns.length)
 			fields[ImportManagerUtil.IDX_ADDR_GROUP] = columns[ colIdx[COL_ADDR_GROUP] ];
+        if (colIdx[COL_OPTION_PARAMS] >= 0 && colIdx[COL_OPTION_PARAMS] < columns.length)
+            fields[ImportManagerUtil.IDX_OPTION_PARAMS] = columns[ colIdx[COL_OPTION_PARAMS] ];
 	}
 	
 	private void setApplianceFields(String[] fields, String[] columns, int[] colIdx) {
@@ -1012,7 +1041,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 			liteInv = ImportManagerUtil.insertLMHardware( hwFields, liteAcctInfo, energyCompany, true, problem );
 			numHwAdded++;
 		}
-		else {
+		else if (!insertSpecified) {
 			liteInv = ImportManagerUtil.updateLMHardware( hwFields, liteInv, liteAcctInfo, energyCompany, problem );
 			numHwUpdated++;
 		}
@@ -1045,7 +1074,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 				liteAcctInfo = ImportManagerUtil.newCustomerAccount( custFields, energyCompany, false, problem );
 				numAcctAdded++;
 			}
-			else {
+			else if (!insertSpecified) {
 				ImportManagerUtil.updateCustomerAccount( custFields, liteAcctInfo, energyCompany, problem );
 				numAcctUpdated++;
 			}
@@ -1079,7 +1108,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
                     return;
                  }
                  
-                 if(liteApp.getLoadNumber() == relay)
+                 if(liteApp.getLoadNumber() == relay && !seasonalLoad)
                  {
                      relayNotFound = false;
                  }
@@ -1095,8 +1124,10 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
          * the same switch, then we will want to update that specific appliance
          * and enrollment.  If it doesn't exist on any app for this switch, then we know that it
          * should be a new separate app and enrollment while maintaining the old enrollment.
+         *--We only add a new enrollment and appliance on the same relay when the seasonal load
+         *flag is set.
          */
-        if(relayNotFound && relay > -1)
+        if((relayNotFound && relay > -1) || seasonalLoad)
         {
             int[] newEnrollment = programs[0];
             programs = new int[currentProgramIDs.size() + 1][];
