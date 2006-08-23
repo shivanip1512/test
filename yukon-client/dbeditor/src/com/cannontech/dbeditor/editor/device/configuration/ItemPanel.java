@@ -16,6 +16,7 @@ import javax.swing.JLabel;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.ToolTipManager;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 
@@ -145,7 +146,6 @@ public class ItemPanel extends DataInputPanel {
 
             if (item.isRequired() && (this.getFieldValue(item).equals(""))) {
                 this.setErrorString(item.getName() + " is a required field.");
-                this.itemValueMap.get(item).requestFocus();
                 return false;
             }
         }
@@ -228,6 +228,11 @@ public class ItemPanel extends DataInputPanel {
         border.setTitleFont(DeviceConfigurationPropertyPanel.TITLE_FONT);
         this.setBorder(border);
         this.itemValueMap = new HashMap<Item, JComponent>();
+
+        // Set the the dismiss delay to 60000 so that tool tips will be
+        // displayed for 60 seconds
+        ToolTipManager manager = ToolTipManager.sharedInstance();
+        manager.setDismissDelay(60000);
     }
 
     /**
