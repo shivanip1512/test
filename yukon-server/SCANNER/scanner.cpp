@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.59 $
-* DATE         :  $Date: 2006/04/24 20:47:30 $
+* REVISION     :  $Revision: 1.60 $
+* DATE         :  $Date: 2006/08/23 17:17:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -384,13 +384,6 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
     {
         for(i = 1; i < argc; i++)
         {
-            if(!(stricmp (argv[i], "/L")))
-            {
-                PrintLogEvent = FALSE;
-                LogFlag = FALSE;
-                continue;
-            }
-
             if(!(stricmp (argv[i], "/NQ")))
             {
                 CCUNoQueue = TRUE;
@@ -1169,38 +1162,6 @@ void InitScannerGlobals(void)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " Scanner DEBUGLEVEL " << hex << ScannerDebugLevel << dec << endl;
-        }
-    }
-
-    if(gConfigParms.isOpt("SCANNER_STATUS_PRIORITY"))
-    {
-        string Temp = gConfigParms.getValueAsString("SCANNER_STATUS_PRIORITY");
-        DLCStatusPriority = atoi (Temp.c_str());
-
-        if(DLCStatusPriority < 1 || DLCStatusPriority > MAXPRIORITY)
-        {
-            /* invalid alternat priority set back to normal value */
-            DLCStatusPriority = PRIORITY_STATUS;
-        }
-        else
-        {
-            printf ("Using %d as alternate DLC queue priority for Status points.\n", DLCStatusPriority);
-        }
-    }
-
-    if(gConfigParms.isOpt("SCANNER_VALUE_PRIORITY"))
-    {
-        string Temp = gConfigParms.getValueAsString("SCANNER_VALUE_PRIORITY");
-        DLCValuePriority = atoi (Temp.c_str());
-
-        if(DLCValuePriority < 1 || DLCValuePriority > MAXPRIORITY)
-        {
-            /* invalid alternate priority set back to normal value */
-            DLCValuePriority = PRIORITY_VALUE;
-        }
-        else
-        {
-            printf ("Using %d as alternate DLC queue priority for Analog/PA points.\n", DLCValuePriority);
         }
     }
 
