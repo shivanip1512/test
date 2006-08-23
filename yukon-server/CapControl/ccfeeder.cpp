@@ -5071,7 +5071,7 @@ void CtiCCFeeder::deleteCCCapBank(long capBankId)
         CtiCCCapBank *capBank = *itr;
         if (capBank->getPAOId() == capBankId)
         {
-            delete capBank;
+            //delete capBank;
             itr = getCCCapBanks().erase(itr);
             break;
         }else

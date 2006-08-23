@@ -536,12 +536,12 @@ void CtiCCMonitorPoint::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDa
                 dout << CtiTime() << " - Inserted Monitor Point into dynamicCCMonitorBankHistoryTable: " << endl;
             }
             RWDBInserter inserter = dynamicCCMonitorBankHistoryTable.inserter();
-            LONG tempTime = _timeStamp.seconds();
+            //LONG tempTime = toRWDBDT((CtiTime)_timeStamp);
 
-            inserter << _pointId
-            << _bankId
+            inserter << _bankId
+            <<  _pointId
             << _value
-            << tempTime
+            << toRWDBDT((CtiTime)_timeStamp)
             << (_scanInProgress?'Y':'N');
 
             if( _CC_DEBUG & CC_DEBUG_DATABASE )

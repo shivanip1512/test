@@ -130,10 +130,10 @@ void CtiCCCommandExecutor::Execute()
         ConfirmArea();
         break;
     case CtiCCCommand::ENABLE_AREA:
-        ConfirmArea();
+        EnableArea();
         break;
     case CtiCCCommand::DISABLE_AREA:
-        ConfirmArea();
+        DisableArea();
         break;
 
     
@@ -3156,7 +3156,7 @@ void CtiCCMultiMsgExecutor::Execute()
 {
     CtiCCExecutorFactory f;
     CtiMultiMsg_vec& messages = _multiMsg->getData();
-    while(messages.size( )>=0)
+    while(messages.size( )>0)
     {
         CtiMessage* message = (CtiMessage*)(messages.back());
         messages.pop_back();

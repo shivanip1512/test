@@ -546,6 +546,15 @@ void CtiCCSubstationBusStore::reset()
                                                   &temp_capbank_feeder_map, &temp_feeder_subbus_map, &temp_cbc_capbank_map );
                         }
 
+                        /************************************************************
+                        ********    Loading Monitor Points                   ********
+                        ************************************************************/
+                        {
+                            reloadMonitorPointsFromDatabase(0, &temp_paobject_capbank_map, &temp_paobject_feeder_map, &temp_paobject_subbus_map,
+                                                  &temp_point_capbank_map);
+                        }
+
+
                     }
                     else
                     {
@@ -3521,7 +3530,7 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId, map< long,
                     RWDBReader rdr = selector.reader(conn);
                     RWDBNullIndicator isNull;
                     long capbankid, feedid, controlorder;
-                    
+
                     while ( rdr() )
                     {
                         rdr["deviceid"] >> capbankid;
@@ -3530,6 +3539,18 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId, map< long,
                         reloadCapBankFromDatabase(capbankid, &_paobject_capbank_map, &_paobject_feeder_map, &_paobject_subbus_map,
                                                   &_pointid_capbank_map, &_capbank_subbus_map,
                                                   &_capbank_feeder_map, &_feeder_subbus_map, &_cbc_capbank_map );
+                    }
+
+                    CtiCCFeederPtr currentFeeder = paobject_feeder_map->find(feederId)->second;
+                    if (currentFeeder != NULL) 
+                    {
+                        CtiCCCapBank_SVector& capBanks = currentFeeder->getCCCapBanks();
+                        for (int i = 0; i < capBanks.size(); i++) 
+                        { 
+                            CtiCCCapBankPtr bank = (CtiCCCapBankPtr)capBanks[i];
+                             
+                            reloadMonitorPointsFromDatabase(bank->getPAOId(), &_paobject_capbank_map, &_paobject_feeder_map, &_paobject_subbus_map, &_pointid_capbank_map);
+                        }
                     }
                 }
                 {
@@ -4189,6 +4210,49 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
                     }
                 }
 
+            }
+        }
+
+        //_reregisterforpoints = TRUE;
+
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
+}
+
+
+void CtiCCSubstationBusStore::reloadMonitorPointsFromDatabase(long capBankId, map< long, CtiCCCapBankPtr > *paobject_capbank_map,
+                                                        map< long, CtiCCFeederPtr > *paobject_feeder_map,
+                                                        map< long, CtiCCSubstationBusPtr > *paobject_subbus_map,
+                                                        multimap< long, CtiCCCapBankPtr > *pointid_capbank_map)
+{
+    try
+    {
+
+        long monPointId = 0;
+
+            CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+            RWDBConnection conn = getConnection();
+            {
+
+                if ( conn.isValid() )
+                {   
+
+                    CtiTime currentDateTime;
+                    RWDBDatabase db = getDatabase();
+                    //RWDBTable yukonPAObjectTable = db.table("yukonpaobject");
+                    //RWDBTable pointTable = db.table("point");
+                   // RWDBTable deviceTable = db.table("device");
+                    //RWDBTable capBankTable = db.table("capbank");
+                   // RWDBTable dynamicCCCapBankTable = db.table("dynamiccccapbank");
+                   // RWDBTable ccFeederBankListTable = db.table("ccfeederbanklist");
+                    RWDBTable ccMonitorBankListTable = db.table("ccmonitorbanklist");
+                    RWDBTable dynamicCCMonitorBankHistoryTable = db.table("dynamicccmonitorbankhistory");
+                    RWDBTable dynamicCCMonitorPointResponseTable = db.table("dynamicccmonitorpointresponse");
+
                 {
                     //LOADING OF MONITOR POINTS.
                     RWDBSelector selector = db.selector();
@@ -4202,6 +4266,10 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
                     selector.from(ccMonitorBankListTable);
                     //selector.from(capBankTable);
 
+                    if (capBankId > 0) 
+                    {
+                        selector.where(capBankId == ccMonitorBankListTable["bankid"]);
+                    }
                     if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -4213,28 +4281,23 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
                     CtiCCPointResponsePtr currentPointResponse = NULL;
                     while ( rdr() )
                     {
+
+                        long currentCapBankId;
+                        long currentPointId;
+                        rdr["bankid"] >> currentCapBankId;
+                        rdr["pointid"] >> currentPointId;
+
                         currentMonPoint = new CtiCCMonitorPoint(rdr);
                         if (capBankId > 0) 
                         {
-                            monPointId = currentMonPoint->getPointId();
+                            monPointId = currentPointId;
                         }
-                        //currentPointResponse = new CtiCCPointResponse(rdr);
+
                         CtiCCCapBankPtr currentCCCapBank = paobject_capbank_map->find(currentMonPoint->getBankId())->second;
                         if (currentCCCapBank != NULL) 
                         {
-                            if (capBankId > 0) 
-                            {
-                                if (currentCCCapBank->getPAOId() == capBankId) 
-                                {
-                                    currentCCCapBank->getMonitorPoint().push_back(currentMonPoint);
-                                    pointid_capbank_map->insert(make_pair(currentMonPoint->getPointId(),currentCCCapBank));
-                                }
-                            }
-                            else
-                            {
-                                currentCCCapBank->getMonitorPoint().push_back(currentMonPoint);
-                                pointid_capbank_map->insert(make_pair(currentMonPoint->getPointId(),currentCCCapBank));
-                            }
+                            currentCCCapBank->getMonitorPoint().push_back(currentMonPoint);
+                            pointid_capbank_map->insert(make_pair(currentMonPoint->getPointId(),currentCCCapBank));
 
                             if (paobject_feeder_map->find(currentCCCapBank->getParentId()) != paobject_feeder_map->end())
                             {
@@ -4247,7 +4310,6 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
                                         CtiCCSubstationBusPtr currentSubstationBus = paobject_subbus_map->find(currentCCFeeder->getParentId())->second;
                                         if (currentSubstationBus != NULL) 
                                         {
-
                                             CtiFeeder_vec& feeds = currentSubstationBus->getCCFeeders();
 
                                             for (LONG aa = 0; aa < feeds.size(); aa++) 
@@ -4257,25 +4319,12 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
                                                 for (LONG a = 0; a < banks.size(); a++) 
                                                 {
                                                     CtiCCCapBank* bank = (CtiCCCapBank*)banks[a];
-                                                    if (capBankId > 0) 
-                                                    {
-                                                        if (bank->getPAOId() == capBankId) 
-                                                        {
-                                                            currentPointResponse = new CtiCCPointResponse(rdr);
-                                                            currentPointResponse->setBankId(bank->getPAOId());
-                                                            currentPointResponse->setPointId(currentMonPoint->getPointId());
+                                                    
+                                                    currentPointResponse = new CtiCCPointResponse(rdr);
+                                                    currentPointResponse->setBankId(bank->getPAOId());
+                                                    currentPointResponse->setPointId(currentMonPoint->getPointId());                                        
                                               
-                                                            bank->getPointResponse().push_back(currentPointResponse);
-                                                        }
-                                                    }
-                                                    else
-                                                    {
-                                                        currentPointResponse = new CtiCCPointResponse(rdr);
-                                                        currentPointResponse->setBankId(bank->getPAOId());
-                                                        currentPointResponse->setPointId(currentMonPoint->getPointId());                                        
-                                              
-                                                        bank->getPointResponse().push_back(currentPointResponse);
-                                                    }
+                                                    bank->getPointResponse().push_back(currentPointResponse);
                                                     {
                                                         CtiLockGuard<CtiLogger> logger_guard(dout);
                                                         dout << CtiTime() << " currentPointResponse bankId: "<<bank->getPAOId()<<" pointId: "<<currentMonPoint->getPointId() << endl;
@@ -4290,25 +4339,12 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
                                         for (LONG a = 0; a < banks.size(); a++) 
                                         {
                                             CtiCCCapBank* bank = (CtiCCCapBank*)banks[a];
-                                            if (capBankId > 0) 
-                                            {
-                                                if (bank->getPAOId() == capBankId) 
-                                                {
-                                                    currentPointResponse = new CtiCCPointResponse(rdr);
-                                                    currentPointResponse->setBankId(bank->getPAOId());
-                                                    currentPointResponse->setPointId(currentMonPoint->getPointId());
+                                            currentPointResponse = new CtiCCPointResponse(rdr);
+                                            currentPointResponse->setBankId(bank->getPAOId());
+                                            currentPointResponse->setPointId(currentMonPoint->getPointId());                                        
 
-                                                    bank->getPointResponse().push_back(currentPointResponse);
-                                                }
-                                            }
-                                            else
-                                            {
-                                                currentPointResponse = new CtiCCPointResponse(rdr);
-                                                currentPointResponse->setBankId(bank->getPAOId());
-                                                currentPointResponse->setPointId(currentMonPoint->getPointId());                                        
-
-                                                bank->getPointResponse().push_back(currentPointResponse);
-                                            }
+                                            bank->getPointResponse().push_back(currentPointResponse);
+                                            
                                             {
                                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                                 dout << CtiTime() << " currentPointResponse bankId: "<<bank->getPAOId()<<" pointId: "<<currentMonPoint->getPointId() << endl;
@@ -4318,6 +4354,7 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
                                 }
                             }
                         }
+                        
                     }
                 }
                 {
@@ -4331,9 +4368,13 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
                     
                     selector.from(dynamicCCMonitorBankHistoryTable);
                     //selector.from(capBankTable);
+                    // 
+                    if (capBankId > 0) 
+                    {
+                        selector.where(dynamicCCMonitorBankHistoryTable["bankid"] == capBankId ||
+                                       dynamicCCMonitorBankHistoryTable["pointid"] == monPointId);
+                    }
 
-                    if (capBankId > 0)
-                        selector.where(dynamicCCMonitorBankHistoryTable["bankid"] == capBankId );
                     if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -4374,9 +4415,12 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
                     
                     selector.from(dynamicCCMonitorPointResponseTable);
 
-                    if (capBankId > 0)
-                        selector.where(dynamicCCMonitorPointResponseTable["bankid"] == capBankId || 
-                                      dynamicCCMonitorPointResponseTable["pointid"] == monPointId);
+                    if (capBankId > 0) 
+                    {
+                        selector.where( dynamicCCMonitorPointResponseTable["bankid"] == capBankId ||
+                                        dynamicCCMonitorPointResponseTable["pointid"] == monPointId);
+                    }
+
                     if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -4396,23 +4440,24 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
                         rdr["pointid"] >> currentPointId;
                         CtiCCCapBankPtr currentCCCapBank = paobject_capbank_map->find(currentCapBankId)->second;
                         vector <CtiCCPointResponsePtr>& ptResponses = currentCCCapBank->getPointResponse();
-                        LONG numResponses = ptResponses.size();
-                        for (int i = 0; i < numResponses; i++)
+
+                       // if (ptResponses != NULL) 
                         {
-                            currentPointResponse = (CtiCCPointResponsePtr)ptResponses[i];
-                            if (currentPointResponse->getPointId() == currentPointId)
+                            LONG numResponses = ptResponses.size();
+                            for (int i = 0; i < numResponses; i++)
                             {
-                                currentPointResponse->setDynamicData(rdr);
-                                break;
+                                currentPointResponse = (CtiCCPointResponsePtr)ptResponses[i];
+                                if (currentPointResponse->getPointId() == currentPointId)
+                                {
+                                    currentPointResponse->setDynamicData(rdr);
+                                    break;
+                                }
                             }
                         }
                     }
                 }
             }
         }
-
-        //_reregisterforpoints = TRUE;
-
     }
     catch(...)
     {
@@ -4420,6 +4465,7 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 }
+
 
 void CtiCCSubstationBusStore::reloadCapBankStatesFromDatabase()
 {
@@ -5064,6 +5110,9 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                             reloadCapBankFromDatabase(reloadTemp.objectId, &_paobject_capbank_map, &_paobject_feeder_map,
                                                       &_paobject_subbus_map, &_pointid_capbank_map, &_capbank_subbus_map,
                                                       &_capbank_feeder_map, &_feeder_subbus_map, &_cbc_capbank_map );
+                            reloadMonitorPointsFromDatabase(reloadTemp.objectId, &_paobject_capbank_map, &_paobject_feeder_map,
+                                                      &_paobject_subbus_map, &_pointid_capbank_map);
+
                             if(isCapBankOrphan(reloadTemp.objectId) )
                                removeFromOrphanList(reloadTemp.objectId);
 

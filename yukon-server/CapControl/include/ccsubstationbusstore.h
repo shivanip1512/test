@@ -137,6 +137,10 @@ public:
                                    map< long, long> *capbank_feeder_map,
                                    map< long, long> *feeder_subbus_map,
                                    map< long, long> *cbc_capbank_map);
+    void reloadMonitorPointsFromDatabase(long capBankId, map< long, CtiCCCapBankPtr > *paobject_capbank_map,
+                                   map< long, CtiCCFeederPtr > *paobject_feeder_map,
+                                   map< long, CtiCCSubstationBusPtr > *paobject_subbus_map,
+                                   multimap< long, CtiCCCapBankPtr > *pointid_capbank_map);
     void reloadFeederFromDatabase(long feederId, map< long, CtiCCStrategyPtr > *strategy_map, 
                                   map< long, CtiCCFeederPtr > *paobject_feeder_map,
                                   map< long, CtiCCSubstationBusPtr > *paobject_subbus_map,

@@ -4585,7 +4585,7 @@ BOOL CtiCCSubstationBus::isVerificationAlreadyControlled()
                                 {
                                     CtiLockGuard<CtiLogger> logger_guard(dout);
                                     dout << CtiTime() << " - Last Verification Cap Bank: "<<getCurrentVerificationCapBankId()<<" controlled not in pending status in: " << __FILE__ << " at: " << __LINE__ << endl;
-                                    returnBoolean = FALSE;
+                                    returnBoolean = TRUE;
                                 }
                                 foundCap = TRUE;
                                 break;
@@ -7339,17 +7339,18 @@ string CtiCCSubstationBus::doubleToString(DOUBLE doubleVal)
 void CtiCCSubstationBus::deleteCCFeeder(long feederId)
 {
     CtiFeeder_vec& ccFeeders = getCCFeeders();
-    for (LONG j = 0; j < ccFeeders.size(); j++)
+    CtiFeeder_vec::iterator itr = ccFeeders.begin();
+    while(itr != ccFeeders.end())
     {
-        CtiCCFeeder *feeder = (CtiCCFeeder*)ccFeeders.at(j);
+        CtiCCFeeder *feeder = *itr;
         if (feeder->getPAOId() == feederId)
         {
-            CtiFeeder_vec& ccF = getCCFeeders();
-            ccF.erase( ccF.begin()+j, ccF.begin()+j+1 );
+            itr = getCCFeeders().erase(itr);
             break;
-        }
-
+        }else
+            ++itr;
     }
+    
     return;
 }
 
