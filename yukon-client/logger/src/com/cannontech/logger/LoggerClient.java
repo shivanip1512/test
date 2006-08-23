@@ -157,36 +157,36 @@ public void receivedDBChangMsg( DBChangeMsg msg )
  * @param mpc com.cannontech.message.dispatch.message.Multi
  */
 public void receivedPointData( PointData point ) 
-{	
-/*	com.cannontech.clientutils.CTILogger.info("POINTDATA RECEIVED -- PointID = " + point.getId() );
-	com.cannontech.clientutils.CTILogger.info("					  	Value = " + point.getValue() );
-	com.cannontech.clientutils.CTILogger.info("					   Forced = " + point.getForced() );
-	com.cannontech.clientutils.CTILogger.info("					  	Limit = " + point.getLimit() );
-	com.cannontech.clientutils.CTILogger.info("					   Offset = " + point.getOffset() );
-	com.cannontech.clientutils.CTILogger.info("					 Priority = " + point.getPriority() );
-	com.cannontech.clientutils.CTILogger.info("					  Quality = " + point.getQuality() );
-	com.cannontech.clientutils.CTILogger.info("					  	  Sig = " + ((point.getSig()==null) ? "null" : "NOT NULL") );
-	com.cannontech.clientutils.CTILogger.info("					      Str = " + point.getStr() );
-	com.cannontech.clientutils.CTILogger.info("					  	 Tags = " + point.getTags() );
-	com.cannontech.clientutils.CTILogger.info("					  	 Time = " + point.getTime() );
-	com.cannontech.clientutils.CTILogger.info("					TimeStamp = " + point.getTimeStamp() );
-	com.cannontech.clientutils.CTILogger.info("					  	Type  = " + point.getType() );
+{   
+/*  com.cannontech.clientutils.CTILogger.info("POINTDATA RECEIVED -- PointID = " + point.getId() );
+    com.cannontech.clientutils.CTILogger.info("                     Value = " + point.getValue() );
+    com.cannontech.clientutils.CTILogger.info("                    Forced = " + point.getForced() );
+    com.cannontech.clientutils.CTILogger.info("                     Limit = " + point.getLimit() );
+    com.cannontech.clientutils.CTILogger.info("                    Offset = " + point.getOffset() );
+    com.cannontech.clientutils.CTILogger.info("                  Priority = " + point.getPriority() );
+    com.cannontech.clientutils.CTILogger.info("                   Quality = " + point.getQuality() );
+    com.cannontech.clientutils.CTILogger.info("                       Sig = " + ((point.getSig()==null) ? "null" : "NOT NULL") );
+    com.cannontech.clientutils.CTILogger.info("                       Str = " + point.getStr() );
+    com.cannontech.clientutils.CTILogger.info("                      Tags = " + point.getTags() );
+    com.cannontech.clientutils.CTILogger.info("                      Time = " + point.getTime() );
+    com.cannontech.clientutils.CTILogger.info("                 TimeStamp = " + point.getTimeStamp() );
+    com.cannontech.clientutils.CTILogger.info("                     Type  = " + point.getType() );
 */
-	//receivedSignal( point.getSig() );
+    //receivedSignal( point.getSig() );
 
-	Object[] names = getDeviceNameAndPointName( point.getId() );		
-	
-	outStream.printTextLine(
-		CommonUtils.formatDate( point.getPointDataTimeStamp() ) + " " +
-		CommonUtils.formatString( names[0].toString(), Logger.DEVICENAME_LENGTH ) + " " +
-		CommonUtils.formatString( names[1].toString(), Logger.POINTNAME_LENGTH ),
-		0l );
-    
-    outStream.printTextLine(
-            "                     " +
-            CommonUtils.formatString( determinePointValue( point ), Logger.DESCRIPTION_LENGTH ) + " " +
-            CommonUtils.formatString( com.cannontech.database.data.point.PointTypes.getType(point.getType()), Logger.TYPE_LENGTH ),
-            0l );
+//  Object[] names = getDeviceNameAndPointName( point.getId() );        
+//  
+//  outStream.printTextLine(
+//      CommonUtils.formatDate( point.getPointDataTimeStamp() ) + " " +
+//      CommonUtils.formatString( names[0].toString(), Logger.DEVICENAME_LENGTH ) + " " +
+//      CommonUtils.formatString( names[1].toString(), Logger.POINTNAME_LENGTH ),
+//      0l );
+//    
+//    outStream.printTextLine(
+//            "                     " +
+//            CommonUtils.formatString( determinePointValue( point ), Logger.DESCRIPTION_LENGTH ) + " " +
+//            CommonUtils.formatString( com.cannontech.database.data.point.PointTypes.getType(point.getType()), Logger.TYPE_LENGTH ),
+//            0l );
 }
 /**
  * Insert the method's description here.
@@ -195,36 +195,39 @@ public void receivedPointData( PointData point )
  */
 public void receivedSignal( Signal point ) 
 {
-/*	com.cannontech.clientutils.CTILogger.info("SIGNAL RECEIVED for ptID = "+ point.getId() );
-	com.cannontech.clientutils.CTILogger.info(" 	  	  classification = "+ point.getClassification());
-	com.cannontech.clientutils.CTILogger.info(" 	  	  		  Action = "+ point.getAction());
-	com.cannontech.clientutils.CTILogger.info(" 	  	  			Flag = "+ point.getFlag());
-	com.cannontech.clientutils.CTILogger.info(" 	  	  		 LogType = "+ point.getLogType());
-	com.cannontech.clientutils.CTILogger.info(" 	  	  		Priority = "+ point.getPriority());
-	com.cannontech.clientutils.CTILogger.info(" 	  	  			 SOE = "+ point.getSoeTag());
-	com.cannontech.clientutils.CTILogger.info(" 	  	  			 Str = "+ point.getStr());
-	com.cannontech.clientutils.CTILogger.info(" 	  	  	   TimeStamp = "+ point.getTimeStamp());
-	com.cannontech.clientutils.CTILogger.info(" 	  	  			User = "+ point.getUser());
+/*  com.cannontech.clientutils.CTILogger.info("SIGNAL RECEIVED for ptID = "+ point.getId() );
+    com.cannontech.clientutils.CTILogger.info("           classification = "+ point.getClassification());
+    com.cannontech.clientutils.CTILogger.info("                   Action = "+ point.getAction());
+    com.cannontech.clientutils.CTILogger.info("                     Flag = "+ point.getFlag());
+    com.cannontech.clientutils.CTILogger.info("                  LogType = "+ point.getLogType());
+    com.cannontech.clientutils.CTILogger.info("                 Priority = "+ point.getPriority());
+    com.cannontech.clientutils.CTILogger.info("                      SOE = "+ point.getSoeTag());
+    com.cannontech.clientutils.CTILogger.info("                      Str = "+ point.getStr());
+    com.cannontech.clientutils.CTILogger.info("                TimeStamp = "+ point.getTimeStamp());
+    com.cannontech.clientutils.CTILogger.info("                     User = "+ point.getUser());
 */
 
-	Object[] names = getDeviceNameAndPointName( point.getPointID() );		
-	
-	// make sure we have a device name and point name
-	if( names[0] != null && names[1] != null )
-	{
-		outStream.printTextLine(
-			CommonUtils.formatString( CommonUtils.formatDate( point.getTimeStamp() ), Logger.TIMESTAMP_LENGTH ) + " " +
-			CommonUtils.formatString( names[0].toString(), Logger.DEVICENAME_LENGTH ) + " " +
-			CommonUtils.formatString( names[1].toString(), Logger.POINTNAME_LENGTH ),
-			point.getCategoryID() );
+    if((point.getTags() & Signal.MASK_ANY_ALARM) != 0) 
+    {
+        Object[] names = getDeviceNameAndPointName( point.getPointID() );       
         
-        outStream.printTextLine(
-                "                     " +
-                CommonUtils.formatString( point.getDescription(), Logger.DESCRIPTION_LENGTH ) + " " +
-                CommonUtils.formatString( point.getAction(), Logger.ACTION_LENGTH ),
+        // make sure we have a device name and point name
+        if( names[0] != null && names[1] != null )
+        {
+            outStream.printTextLine(
+                CommonUtils.formatString( CommonUtils.formatDate( point.getTimeStamp() ), Logger.TIMESTAMP_LENGTH ) + " " +
+                CommonUtils.formatString( names[0].toString(), Logger.DEVICENAME_LENGTH ) + " " +
+                CommonUtils.formatString( names[1].toString(), Logger.POINTNAME_LENGTH ),
                 point.getCategoryID() );
-        
-	}
-		
+            
+            outStream.printTextLine(
+                    "                     " +
+                    CommonUtils.formatString( point.getDescription(), Logger.DESCRIPTION_LENGTH ) + " " +
+                    CommonUtils.formatString( point.getAction(), Logger.ACTION_LENGTH ),
+                    point.getCategoryID() );
+            
+        }
+    }
 }
 }
+
