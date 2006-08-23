@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/DSM2.H-arc  $
-* REVISION     :  $Revision: 1.36 $
-* DATE         :  $Date: 2006/07/27 18:38:17 $
+* REVISION     :  $Revision: 1.37 $
+* DATE         :  $Date: 2006/08/23 16:03:37 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -458,38 +458,39 @@ IM_EX_CTIBASE ULONG OutMessageCount();
 
 #pragma pack(push, message_packing, 1)
 
-typedef union
+union BYTEUSHORT
 {
     UCHAR    ch[2];
     USHORT   sh;
-} BYTEUSHORT;
+};
 
-typedef union
+union BYTEULONG
 {
     UCHAR    ch[4];
     ULONG    ul;
-} BYTEULONG;
+};
 
 
 /* Structure defintions */
-typedef enum {
+enum  CtiSyncType_t
+{
   CtiEventType = 0,
   CtiMutexType
+};
 
-} CtiSyncType_t;
-
-typedef struct {
+struct CtiSyncDefStruct
+{
    CtiSyncType_t  type;
    BOOL           manualReset;
    BOOL           initState;
    CHAR *         syncObjName;
-} CtiSyncDefStruct;
+};
 
 /*
  *  DLCROUTE is the route used to "exit" the CCU on the powerline,
  *  not to be confused by our other 72 uses of the word route
  */
-typedef struct
+struct DLCROUTE
 {
   USHORT Amp;       // From Route and Transmitter Data.
   USHORT Feeder;
@@ -497,9 +498,9 @@ typedef struct
   USHORT RepFixed;
   USHORT RepVar;
 
-} DLCROUTE;
+};
 
-typedef struct _ASTRUCT
+struct ASTRUCT
 {
   // USHORT Priority;
   // USHORT Retry;
@@ -512,9 +513,9 @@ typedef struct _ASTRUCT
    USHORT Group;     // Addressing must be zero through 63
    USHORT Time;      // From the request
    USHORT Function;  // Which relay or zero for a zero. From the group record etc..
-} ASTRUCT;
+};
 
-typedef struct _BSTRUCT
+struct BSTRUCT
 {
    // USHORT Priority;
    // USHORT Retry;
@@ -535,9 +536,9 @@ typedef struct _BSTRUCT
    BYTE   Message[36];
    USHORT IO;                 // Input or Outout? In its basic form this is a 2 bit indicator of Cti::Protocol::Emetcon::IO_Write, ::IO_Read, ::IO_Function_Write, ::IO_Function_Read
                               //    At other times additional bits are attached and stuffed in B_Word (primarily ARM bits?)
-} BSTRUCT;
+};
 
-typedef struct
+struct FPPCCST
 {
    BYTE PRE[1];         /* * or - depending on recipient */
    BYTE UID[3];
@@ -548,9 +549,9 @@ typedef struct
    BYTE GRP[4];
    BYTE VALUE[6];
    BYTE POST[1];        /* * or - depending on recipient */
-} FPPCCST;
+};
 
-typedef struct _FPSTRUCT
+struct FPSTRUCT
 {
    USHORT   Function;
    USHORT   Length;
@@ -560,9 +561,9 @@ typedef struct _FPSTRUCT
       BYTE     Message[36];
       FPPCCST  PCC;
    } u;
-} FPSTRUCT;
+};
 
-typedef struct DSTRUCT
+struct DSTRUCT
 {
    //USHORT   Sequence;
    //LONG     DeviceID;
@@ -577,9 +578,9 @@ typedef struct DSTRUCT
    USHORT   Alarm;
    USHORT   TSync;
    USHORT   DSTFlag;
-} DSTRUCT;
+};
 
-typedef struct _ESTRUCT
+struct ESTRUCT
 {
    //USHORT Sequence;
    //CHAR DeviceName[STANDNAMLEN];
@@ -590,10 +591,10 @@ typedef struct _ESTRUCT
    ULONG    Address;
    USHORT   Power;
    USHORT   Alarm;
-} ESTRUCT;
+};
 
 /* Structure used for ripple */
-typedef struct _RSTRUCT
+struct RSTRUCT
 {
    // USHORT Port;
    // USHORT Remote;
@@ -601,11 +602,11 @@ typedef struct _RSTRUCT
    // USHORT Retry;
 
    BYTE Message[7];
-} RSTRUCT;
+};
 
 
 /* Structure used for REMS 100 */
-typedef struct _REMSSTRUCT
+struct REMSSTRUCT
 {
    //USHORT Port;
    //USHORT Remote;
@@ -614,17 +615,17 @@ typedef struct _REMSSTRUCT
    USHORT AddressHigh;
    USHORT AddressLow;
    USHORT Function;
-} REMSSTRUCT;
+};
 
 /* Structures used for VERSACOM */
-typedef struct _VRELAY
+struct VRELAY
 {
    USHORT ControlType;    /* 0 = Cycling, 1 = Discrete */
    USHORT Relay[3];       /* 0 = Relay Not Affected, !0 = Relay Affected */
    USHORT TimeCode;       /* Versacom time code */
-} VRELAY;
+};
 
-typedef struct _VERELAY
+struct VERELAY
 {
    USHORT ControlType;
    USHORT CycleType;
@@ -635,30 +636,30 @@ typedef struct _VERELAY
    USHORT Window;
    USHORT Count;
    ULONG  DelayUntil;
-} VERELAY;
+};
 
-typedef struct _VDATA
+struct VDATA
 {
    INT      DataLength;
    BYTE     Data[30];
    USHORT   DataType;
-} VDATA;
+};
 
-typedef struct _VCONFIG
+struct VCONFIG
 {
    USHORT ConfigType;
    BYTE Data[6];
-} VCONFIG;
+};
 
-typedef struct
+struct VESERVICE
 {
    BOOL     Cancel;     // If set, this command cancels a prior TOOS command
    BOOL     LED_Off;    // If set, the LEDs are off during the TOOS.
    USHORT   TOOS_Time;  // TOOS time in half seconds.
 
-} VESERVICE;
+};
 
-typedef struct _VSTRUCT
+struct VSTRUCT
 {
    INT      Retry;
 
@@ -694,28 +695,28 @@ typedef struct _VSTRUCT
 
    CHAR   Action[30];                         // Added 041400 CGP for logging purposes
 
-} VSTRUCT;
+};
 
-typedef struct _CSTRUCT
+struct CSTRUCT
 {
    // LONG        DeviceID;                     // 083199 CGP
    // LONG        PointID;                      // 083199 CGP
    FLOAT Value;
-} CSTRUCT;
+};
 
 
-typedef struct _TAPSTRUCT
+struct TAPSTRUCT
 {
    // CHAR CapCode[STANDNAMLEN];
    CHAR Message[256];
    ULONG Length;
-} TAPSTRUCT;
+};
 
 /*
  * The Dialup structures
  */
 
-typedef struct
+struct DIALUPREQUEST
 {
    /* Elements from BSTRUCT */
    // LONG        PortID;                       // 083199 CGP
@@ -737,25 +738,25 @@ typedef struct
 
    ULONG       Time;                        /* Porter fills */
    USHORT      DSTFlag;
-} DIALUPREQUEST;
+};
 
-typedef struct
+struct DIALUPSTRUCT
 {
    DIALUPREQUEST     Request;
 
    FLOAT             FResponse[100];
    USHORT            IResponse[100];
    BYTE              SResponse[36];
-} DIALUPSTRUCT;
+};
 
-typedef struct
+struct DIALUPREPLY
 {
    DIALUPREQUEST ReqSt;                    /* The original Request made somewhere */
    BYTE          Status;                   /* Device Status Byte */
    BYTE          AckNak;                   /* Last device response to comms */
    USHORT        CompFlag;                 /* Indicates progress through the various commands */
    BYTE          Message[2048];            /* Data is in here */
-} DIALUPREPLY;
+};
 
 /*----------------------------------------------------------------------------*
  * Any and all byte sensitive boundaries should be protected within the
@@ -764,7 +765,7 @@ typedef struct
  *----------------------------------------------------------------------------*/
 
 #define COMMAND_STR_SIZE 255
-typedef struct
+struct PIL_ECHO               // Data echo'ed through porter fro the PIL.
 {
    INT      BuildIt;          // 022801 CGP If !FALSE porter will analyze the CommandStr and make his own assumptions.
 
@@ -778,29 +779,29 @@ typedef struct
    LONG     UserID;           // User ID
    ULONG    CheckSum;         // 071300 CGP CheckSum generated by getUniqueIdentifier() used to match "like-connected" devices in the porter queues
 
-} PIL_ECHO;                   // Data echo'ed through porter fro the PIL.
+};
 
 // 061903 Added to support the gateway product.
-typedef struct
+struct GWSTRUCT
 {
     INT Type;
     INT Length;
     BYTE MsgData[256];
 
-} GWSTRUCT;
+};
 
-typedef struct
+struct GWRESPONSESTRUCT
 {
     INT Type;               // Type of response
     INT Data[10];
     DOUBLE FPData[10];
     BYTE MsgData[2048];
 
-} GWRESPONSESTRUCT;
+};
 
 #define MAX_SA_MSG_SIZE 256
 
-typedef struct
+struct CtiSAData
 {
     BYTE _buffer[MAX_SA_MSG_SIZE];      // This MUST be first in the struct.
     int _bufferLen;                     // This is the valid size of the prepared _buffer
@@ -831,10 +832,7 @@ typedef struct
     int _repeats;                       // Number of _cycleTimes to repeat the operation (DCU205)
     int _sTime;                         // swTimeout as needed by the protocol
     int _cTime;                         // cycleTime needed by the protocol
-
-
-
-} CtiSAData;
+};
 
 /* queing  structures used by protected mode */
 typedef class CtiOutMessage
