@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanglob.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/12/20 17:20:45 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2006/08/23 17:15:26 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,12 +28,8 @@ using namespace std;
 #include "dlldefs.h"
 #include "utility.h"
 
-IM_EX_SCANSUP USHORT      LogFlag                 = {TRUE};
-IM_EX_SCANSUP USHORT      DAS08Present            = {FALSE};
 IM_EX_SCANSUP USHORT      CCUNoQueue              = {FALSE};
 IM_EX_SCANSUP USHORT      SuspendLoadProfile      = {FALSE};
-IM_EX_SCANSUP USHORT      DLCStatusPriority       = 9;// CGP 12/22/00 {PRIORITY_STATUS};
-IM_EX_SCANSUP USHORT      DLCValuePriority        = 10; // CGP {PRIORITY_VALUE};
 
 IM_EX_SCANSUP HANDLE      hScannerSyncs[S_MAX_MUTEX];
 
