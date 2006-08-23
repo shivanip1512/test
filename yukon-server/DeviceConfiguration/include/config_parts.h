@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/config_type_mct_addressing.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2006/08/08 13:36:10 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2006/08/23 15:07:24 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -411,7 +411,7 @@ long ConfigurationPart<T>::getLongValueFromKey(T enumKey)
 
     if(!tempStr.empty())
     {
-        tempLong = strtol(tempStr.data(),NULL,16);
+        tempLong = strtol(tempStr.data(),NULL,0);
     }
 
     return tempLong;
