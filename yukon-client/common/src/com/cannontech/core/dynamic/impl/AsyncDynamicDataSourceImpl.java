@@ -77,25 +77,29 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
     }
 
     public void unRegisterForPointData(PointDataListener l, Set<Integer> pointIds) {
-        Set<Integer> listenerPointIds = pointDataListenerPointIds.get(l);        
-        for (Integer id : pointIds) {
-            Set<PointDataListener> listeners = pointIdPointDataListeners.get(id);
-            if(listeners != null) {
-                listeners.remove(l);
-                if(listeners.size() == 0) {
-                    pointIdPointDataListeners.remove(id);
+        Set<Integer> listenerPointIds = pointDataListenerPointIds.get(l); 
+            if(listenerPointIds != null) {
+            for (Integer id : pointIds) {
+                Set<PointDataListener> listeners = pointIdPointDataListeners.get(id);
+                if(listeners != null) {
+                    listeners.remove(l);
+                    if(listeners.size() == 0) {
+                        pointIdPointDataListeners.remove(id);
+                    }
                 }
+                listenerPointIds.remove(id);
             }
-            listenerPointIds.remove(id);
+            if(listenerPointIds.size() == 0) {
+                pointDataListenerPointIds.remove(l);
+            }               
         }
-        if(listenerPointIds.size() == 0) {
-            pointDataListenerPointIds.remove(l);
-        }               
     }
 
     public void unRegisterForPointData(PointDataListener l) {
         Set<Integer> pointIds = new HashSet<Integer>(pointDataListenerPointIds.get(l));
-        unRegisterForPointData(l, pointIds);
+        if(pointIds != null) {
+            unRegisterForPointData(l, pointIds);
+        }
     }
 
     public void registerForSignals(SignalListener l, Set<Integer> pointIds) {
@@ -124,25 +128,29 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
     }
 
     public void unRegisterForSignals(SignalListener l, Set<Integer> pointIds) {
-        Set<Integer> listenerPointIds = signalListenerPointIds.get(l);        
-        for (Integer id : pointIds) {
-            Set<SignalListener> listeners = pointIdSignalListeners.get(id);
-            if(listeners != null) {
-                listeners.remove(l);
-                if(listeners.size() == 0) {
-                    pointIdSignalListeners.remove(id);
+        Set<Integer> listenerPointIds = signalListenerPointIds.get(l);
+        if(listenerPointIds != null) {
+            for (Integer id : pointIds) {
+                Set<SignalListener> listeners = pointIdSignalListeners.get(id);
+                if(listeners != null) {
+                    listeners.remove(l);
+                    if(listeners.size() == 0) {
+                        pointIdSignalListeners.remove(id);
+                    }
                 }
+                listenerPointIds.remove(id);
             }
-            listenerPointIds.remove(id);
+            if(listenerPointIds.size() == 0) {
+                signalListenerPointIds.remove(l);
+            }          
         }
-        if(listenerPointIds.size() == 0) {
-            signalListenerPointIds.remove(l);
-        }               
     }
 
     public void unRegisterForSignals(SignalListener l) {
         Set<Integer> pointIds = new HashSet<Integer>(signalListenerPointIds.get(l));
-        unRegisterForSignals(l, pointIds);
+        if(pointIds != null) {
+            unRegisterForSignals(l, pointIds);
+        }
     }
 
     public void addDBChangeListener(DBChangeListener l) {
@@ -195,15 +203,19 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
     
     public void handlePointData(PointData pointData) {
         Set<PointDataListener> listeners = pointIdPointDataListeners.get(pointData.getId());
-        for (PointDataListener listener : listeners) {
-            listener.pointDataReceived(pointData);
+        if(listeners != null) {
+            for (PointDataListener listener : listeners) {
+                listener.pointDataReceived(pointData);
+            }
         }
     }
     
     public void handleSignal(Signal signal) {
         Set<SignalListener> listeners = pointIdSignalListeners.get(signal.getPointID());
-        for (SignalListener listener : listeners) {
-            listener.signalReceived(signal);
+        if(listeners != null) {                   
+            for (SignalListener listener : listeners) {
+                listener.signalReceived(signal);
+            }
         }
     }
     
