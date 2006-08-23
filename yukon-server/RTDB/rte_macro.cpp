@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_macro.cpp-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2006/02/27 23:58:31 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2006/08/23 22:14:12 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -101,8 +101,10 @@ INT CtiRouteMacro::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, 
 
     try
     {
+        bool ignore2WayBehavior = parse.getCommandStr().contains(" allroutes", CtiString::ignoreCase); // If specified, all routes in the macro will get the command.
+
         CtiLockGuard< CtiMutex > listguard(getRouteListMux());
-        if( (OutMessage->EventCode & RESULT) &&  onebasedoffset > 0 )       // If this is a two way request we want to walk the routelist.  Otherwise send on all subroutes.
+        if( !ignore2WayBehavior && (OutMessage->EventCode & RESULT) &&  onebasedoffset > 0 )       // If this is a two way request we want to walk the routelist.  Otherwise send on all subroutes.
         {
             if( offset < RoutePtrList.length())
             {
