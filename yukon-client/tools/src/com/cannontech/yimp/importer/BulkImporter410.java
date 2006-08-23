@@ -297,7 +297,7 @@ public void runImport(Vector imps)
 			badEntry = true;
 			errorMsg.append("improper name length; ");			
 		}
-		else if(name.indexOf('/') != -1 || name.indexOf(',') != -1 || name.indexOf('/') != -1 || name.indexOf('/') != -1)
+		else if(name.indexOf(',') != -1)
 		{
 			CTILogger.info("Import entry with address " + address + " has a name that uses invalid characters.");
 			logger = ImportFuncs.writeToImportLog(logger, 'F', "Import entry with address " + address + " has a name that uses invalid characters.", "", "");
