@@ -2714,7 +2714,7 @@ public void selectionPerformed(WizardPanelEvent event)
 
             // Hack - Don't try to select new Categories or TOUSchedules 
             // created in the device config UI
-            selectInTree = !(newItem instanceof TOUSchedule)
+            selectInTree = !(newItem instanceof TOUSchedule || newItem instanceof Category)
                         || (newItem instanceof TOUSchedule && currentDatabase == DatabaseTypes.SYSTEM_DB);
             
 			//try to insert the object into the DB
