@@ -3,6 +3,10 @@
 /******************************************/
 alter table DeviceMeterGroup alter column CollectionGroup varchar(50) not null;
 go
+alter table DeviceMeterGroup alter column TestCollectionGroup varchar(50) not null;
+go
+alter table DeviceMeterGroup alter column BillingGroup varchar(50) not null;
+go
 
 delete MSPInterface where vendorid = 1 and interface = 'CB_MR';
 delete MSPInterface where vendorid = 1 and interface = 'EA_MR';
