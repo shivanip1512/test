@@ -39,7 +39,7 @@ function pointPicker_showPicker(destPointIdFieldId, criteria, extraMapping) {
     bodyElem.appendChild(newDivElem);
     
     var url = '/pointPicker/initial';
-    new Ajax.Updater('pointPickerContainer', url, {'method': 'get', 'onComplete': onPickerShown});
+    new Ajax.Updater('pointPickerContainer', url, {'method': 'get', 'onComplete': onPickerShown, 'onFailure': pointPicker_ajaxError});
     pointPicker_destPointIdFieldId = destPointIdFieldId;
 }
 
@@ -65,6 +65,15 @@ var onComplete = function(transport, json) {
         pointPicker_inSearch = false;
         $('pointPicker_indicator').style.visibility = 'hidden';
     }
+}
+
+function pointPicker_ajaxError(transport, json) {
+    pointPicker_inSearch = false;
+    $('pointPicker_indicator').style.visibility = 'hidden';
+    $("pointPicker_results").innerHTML = "";
+    errorHolder = document.createElement("div");
+    errorHolder.innerHTML = transport.responseText;
+    $("pointPicker_results").appendChild(errorHolder);
 }
 
 function pointPicker_doKeyUp() {
@@ -93,7 +102,7 @@ function pointPicker_doPartialSearch(start) {
     url += '&currentPointId=' + $(pointPicker_destPointIdFieldId).value;
     url += '&criteria=' + pointPicker_criteria;
     url += '&start=' + start;
-    new Ajax.Request(url, {'method': 'get', 'onComplete': onComplete});
+    new Ajax.Request(url, {'method': 'get', 'onComplete': onComplete, 'onFailure': pointPicker_ajaxError});
 }
 
 function pointPicker_doSameDeviceSearch(start) {
@@ -105,7 +114,7 @@ function pointPicker_doSameDeviceSearch(start) {
     url += 'currentPointId=' + $(pointPicker_destPointIdFieldId).value;
     url += '&criteria=' + pointPicker_criteria;
     url += '&start=' + start;
-    new Ajax.Request(url, {'method': 'get', 'onComplete': onComplete});
+    new Ajax.Request(url, {'method': 'get', 'onComplete': onComplete, 'onFailure': pointPicker_ajaxError});
 }
 
 function pointPicker_selectThisPoint(hit) {
