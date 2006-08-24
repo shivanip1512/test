@@ -10,12 +10,14 @@ import java.util.GregorianCalendar;
 import javax.servlet.http.HttpServletRequest;
 
 import com.cannontech.analysis.ColumnProperties;
+import com.cannontech.analysis.data.device.MeterAndPointData;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.lite.LiteRawPointHistory;
+//import com.cannontech.database.data.lite.LiteRawPointHistory;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.CTIPointQuailtyException;
 import com.cannontech.database.data.point.PointQualities;
 import com.cannontech.database.data.point.PointTypes;
@@ -152,10 +154,18 @@ public class PointDataIntervalModel extends ReportModelBase
 			cal.setTimeInMillis(ts.getTime());
 			int quality = rset.getInt(3);
 			double value = rset.getDouble(4);
+            String pointName = rset.getString(5);
+            String paoName = rset.getString(6);
+            int paobjectID = rset.getInt(7);
 					
-			//NOTE *** We are using -1 as the changeID since we want to collect distinct pao, point, timestamp, value values from RPH, changeid is NOT used in this report but LiteRawPointHistory constructor requires it
-			LiteRawPointHistory rph = new LiteRawPointHistory(-1, pointID, cal.getTimeInMillis(), quality, value);
-			getData().add(rph);	
+			//Using only a partially loaded lPao because that is all the information this report cares about.  Maybe a bad decision?!
+            LiteYukonPAObject lPao = new LiteYukonPAObject(paobjectID);
+            lPao.setPaoName(paoName);
+            MeterAndPointData mpData = new MeterAndPointData(new Integer(paobjectID), new Integer(pointID), pointName, 
+                                                             cal.getTime(), new Double(value), new Integer(quality));
+            mpData.setLitePaobject(lPao);
+//			LiteRawPointHistory rph = new LiteRawPointHistory(-1, pointID, cal.getTimeInMillis(), quality, value);
+			getData().add(mpData);	
 		}
 		catch(java.sql.SQLException e)
 		{
@@ -169,7 +179,7 @@ public class PointDataIntervalModel extends ReportModelBase
 	 */
 	public StringBuffer buildSQLStatement()
 	{
-		StringBuffer sql = new StringBuffer	("SELECT DISTINCT RPH.POINTID, RPH.TIMESTAMP, RPH.QUALITY, RPH.VALUE, P.POINTNAME, PAO.PAOBJECTID " + 
+		StringBuffer sql = new StringBuffer	("SELECT DISTINCT RPH.POINTID, RPH.TIMESTAMP, RPH.QUALITY, RPH.VALUE, P.POINTNAME, PAO.PAONAME, PAO.PAOBJECTID " + 
 			" FROM RAWPOINTHISTORY RPH, POINT P, YUKONPAOBJECT PAO ");
 			
 			if( getBillingGroups() != null && getBillingGroups().length > 0 ) //NO BILLING Group, we must want other devices too!
@@ -298,33 +308,30 @@ public class PointDataIntervalModel extends ReportModelBase
 	 */
 	public Object getAttribute(int columnIndex, Object o)
 	{
-		if ( o instanceof LiteRawPointHistory)
+		if ( o instanceof MeterAndPointData)
 		{
-			LiteRawPointHistory rph = ((LiteRawPointHistory)o);
-			LitePoint lp = DaoFactory.getPointDao().getLitePoint(rph.getPointID()); 
+            MeterAndPointData mpData = (MeterAndPointData)o;
 			switch( columnIndex)
 			{
 				case PAO_NAME_COLUMN:
-					return DaoFactory.getPaoDao().getYukonPAOName(lp.getPaobjectID());
+					return mpData.getLitePaobject().getPaoName();
 		
 				case POINT_NAME_COLUMN:
-					return lp.getPointName();
+					return mpData.getPointName();
 	
 				case DATE_COLUMN:
-					return new Date(rph.getTimeStamp());
+                case TIME_COLUMN:
+					return mpData.getTimeStamp();
 	
-				case TIME_COLUMN:
-					return new Date(rph.getTimeStamp());
-				
 				case VALUE_COLUMN:
-					return new Double(rph.getValue());
+					return mpData.getValue();
 				
 				case QUALITY_COLUMN:
 				{
 					String qual = null;
 					try
 					{
-						qual = PointQualities.getQuality(rph.getQuality());
+						qual = PointQualities.getQuality(mpData.getQuality().intValue());
 					}
 					catch (CTIPointQuailtyException e){
 					}
