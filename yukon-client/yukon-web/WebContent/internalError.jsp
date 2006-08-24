@@ -5,6 +5,7 @@
 <%@page import="java.io.StringWriter"%>
 <%@page import="org.apache.commons.lang.exception.ExceptionUtils"%>
 <%@page import="org.apache.commons.lang.ObjectUtils"%>
+<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
 <%@page isErrorPage="true" %>
 
 <%
@@ -40,9 +41,9 @@ p.write(
 <head>
 <title>Yukon Error Page</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link rel="stylesheet" href="/WebConfig/yukon/CannonStyle.css" type="text/css">
+<link rel="stylesheet" href="<c:url value="/WebConfig/yukon/CannonStyle.css"/>" type="text/css">
 
-<script type="text/javascript" src="/JavaScript/prototype.js"></script>
+<script type="text/javascript" src="<c:url value="/JavaScript/prototype.js"/>"></script>
 <script type="text/javascript">
 <!--
 function showElem( chkBox ) {
