@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.27 $
-*    DATE         :  $Date: 2006/06/07 22:34:04 $
+*    REVISION     :  $Revision: 1.28 $
+*    DATE         :  $Date: 2006/08/24 14:44:16 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -19,6 +19,10 @@
 *    ---------------------------------------------------
 *    History:
       $Log: fdrlodestarimport.cpp,v $
+      Revision 1.28  2006/08/24 14:44:16  jrichter
+      BUG FIX:
+      -initialize *fptr = NULL, set attemptCounter = 0 on each full loop.
+
       Revision 1.27  2006/06/07 22:34:04  tspar
       _snprintf  adding .c_str() to all strings. Not having this does not cause compiler errors, but does cause runtime errors. Also tweaks and fixes to FDR due to some differences in STL / RW
 
@@ -607,7 +611,7 @@ void CtiFDR_LodeStarImportBase::threadFunctionReadFromFile( void )
     CHAR fileName[200];
     CHAR fileNameAndPath[250];
     WIN32_FIND_DATA* fileData = new WIN32_FIND_DATA();
-    FILE* fptr;
+    FILE* fptr = NULL;
     char workBuffer[1500];  // not real sure how long each line possibly is
     int attemptCounter=0;
     RWDBStatus          listStatus;
@@ -628,7 +632,7 @@ void CtiFDR_LodeStarImportBase::threadFunctionReadFromFile( void )
                      try
                      {
 
-
+                        attemptCounter = 0;
                         HANDLE hSearch;
                         string t1 = getFileInfoList()[fileIndex].getLodeStarDrivePath();
                         string t2 = getFileInfoList()[fileIndex].getLodeStarFileName();
