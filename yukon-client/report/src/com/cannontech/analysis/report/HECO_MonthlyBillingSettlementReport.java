@@ -19,6 +19,7 @@ import org.jfree.report.elementfactory.StaticShapeElementFactory;
 import org.jfree.report.elementfactory.TextFieldElementFactory;
 import org.jfree.report.modules.gui.base.PreviewDialog;
 
+import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.ReportFactory;
 import com.cannontech.analysis.tablemodel.HECO_MonthlyBillingSettlementModel;
 
@@ -172,11 +173,8 @@ public class HECO_MonthlyBillingSettlementReport extends YukonReportBase
 		{
 			java.awt.print.Paper reportPaper = new java.awt.print.Paper();
 			//Adjust the imagable width in the case of the columns being too large for one page.
-			int totalWidth = 0;
-			for (int i = 0; i < getModel().getColumnProperties().length; i++)
-			{
-				totalWidth += getModel().getColumnProperties(i).getWidth();
-			}
+            ColumnProperties prop = getModel().getColumnProperties(getModel().getColumnProperties().length -1);
+            int totalWidth = (int) (prop.getPositionX() + prop.getWidth());
 
 			int numPagesWide = (totalWidth/732) + 1;
 			

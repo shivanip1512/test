@@ -1,6 +1,7 @@
 package com.cannontech.analysis.report;
 
 import java.awt.BasicStroke;
+import java.awt.print.PageFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
@@ -12,6 +13,7 @@ import org.jfree.report.GroupList;
 import org.jfree.report.ItemBand;
 import org.jfree.report.JFreeReport;
 import org.jfree.report.JFreeReportBoot;
+import org.jfree.report.SimplePageDefinition;
 import org.jfree.report.elementfactory.LabelElementFactory;
 import org.jfree.report.elementfactory.StaticShapeElementFactory;
 import org.jfree.report.elementfactory.TextFieldElementFactory;
@@ -19,6 +21,7 @@ import org.jfree.report.function.ExpressionCollection;
 import org.jfree.report.function.FunctionInitializeException;
 import org.jfree.report.modules.gui.base.PreviewDialog;
 
+import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.ReportFactory;
 import com.cannontech.analysis.jfreereport.BoldFormatFunction;
 import com.cannontech.analysis.tablemodel.HECO_LMEventSummaryModel;
@@ -172,5 +175,28 @@ public class HECO_LMEventSummaryReport extends YukonReportBase
 		boldItem.setElement(getModel().getColumnName(HECO_LMEventSummaryModel.START_TIME_COLUMN) + ReportFactory.NAME_ELEMENT);
 		expressions.add(boldItem);
 		return expressions;
-	}	
+	}
+
+    /* (non-Javadoc)
+     * @see com.cannontech.analysis.report.YukonReportBase#getPageDefinition()
+     */
+    public SimplePageDefinition getPageDefinition()
+    {
+        if( pageDefinition == null)
+        {
+            java.awt.print.Paper reportPaper = new java.awt.print.Paper();
+            //Adjust the imagable width in the case of the columns being too large for one page.
+            ColumnProperties prop = getModel().getColumnProperties(getModel().getColumnProperties().length -1);
+            int totalWidth = (int) (prop.getPositionX() + prop.getWidth());
+
+            int numPagesWide = (totalWidth/732) + 1;
+            
+            reportPaper.setImageableArea(30, 30, 552, 732); //8.5 x 11 -> 612w 792h
+            PageFormat pageFormat = new java.awt.print.PageFormat();
+            pageFormat.setOrientation(getPageOrientation());
+            pageFormat.setPaper(reportPaper);
+            pageDefinition = new SimplePageDefinition(pageFormat, numPagesWide, 1);
+        }
+        return pageDefinition;
+    }    
 }
