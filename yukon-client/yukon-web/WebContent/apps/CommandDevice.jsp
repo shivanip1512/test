@@ -35,7 +35,9 @@
 	}
 
 	//get the liteYukonPao using the deviceID
-	LiteYukonPAObject liteYukonPao = DaoFactory.getPaoDao().getLiteYukonPAO(deviceID);
+	LiteYukonPAObject liteYukonPao = null;
+    if (deviceID >= 0)
+        liteYukonPao = DaoFactory.getPaoDao().getLiteYukonPAO(deviceID);
 	
 	boolean manual = false;
 	if( request.getParameter("manual") != null)
