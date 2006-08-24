@@ -266,7 +266,7 @@ function enableDates(value)
         <tr>
           <td width="6" background="../WebConfig/yukon/Side_left.gif">&nbsp;</td>
           <td>
-            <table width="100%" border="1" cellspacing="0" cellpadding="0" bordercolor="#FFFFFF" align="center">
+            <table width="100%" border="0" cellspacing="2" cellpadding="0" bordercolor="#FFFFFF" align="center">
               <tr>
 				<td class="columnHeader">Reports</td>
                 <td class="columnHeader">&nbsp;</td>
@@ -290,7 +290,7 @@ function enableDates(value)
 	              <table width="100%" border="0" cellspacing="0" cellpadding="0">
 	                <%if ( REPORT_BEAN.getGroupType() >= 0)
 					  {
-						int [] rptTypes = REPORT_BEAN.getReportTypes();
+                        int [] rptTypes = REPORT_BEAN.getReportTypes();
 						for (int i = 0; i < rptTypes.length; i++){%>
 				    	<tr>
 						  <td class="main">
@@ -298,7 +298,12 @@ function enableDates(value)
 						  </td>
 						</tr>
 					    <%}
-					  }%>
+					  } else {%>
+					    <tr>
+						  <td class="main">&nbsp;
+						  </td>
+						</tr>
+					  <%}%>
 				  </table>
 				</td>
                 <td bgcolor="EEEEEE" class="main">&nbsp;</td>
@@ -373,7 +378,7 @@ function enableDates(value)
 	              <table width="100%" border="0" cellspacing="0" cellpadding="0">
 				    <tr>
 					  <td class="main">
-						<input type="radio" name="ext" value="pdf" checked=true>PDF<BR>
+						<input type="radio" name="ext" value="pdf" checked>PDF<BR>
   						<input type="radio" name="ext" value="csv">CSV
 					  </td>
 					  <td class="main">
@@ -384,10 +389,7 @@ function enableDates(value)
 				</td>
               </tr>
               <tr> 
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
+                <td colspan="7">&nbsp;</td>
               </tr>
             </table>
           </td>
