@@ -1,5 +1,7 @@
 package com.cannontech.analysis.tablemodel;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
@@ -895,4 +897,35 @@ public class HECO_SettlementModelBase extends ReportModelBase
 			controlledDemandIncentive[i] = new Double(cdi);
 		}
 	}
+    
+    @Override
+    public void buildByteStream(OutputStream out) throws IOException
+    {
+        //Write column headers
+        for (int r = 0; r < getColumnCount(); r++) 
+        {
+            if( r != 0 )
+                out.write(getFieldSeparator().getBytes());
+                    
+            out.write(getColumnName(r).getBytes());
+        }
+        out.write(LINE_SEPARATOR.getBytes());
+        
+        //Write data
+        for (int r = 0; r < getRowCount(); r++) 
+        {
+            for (int c = 0; c < getColumnCount(); c++) 
+            { 
+                if (c != 0) 
+                    out.write(getFieldSeparator().getBytes()); 
+                
+                String str = String.valueOf(getValueAt(r,c));
+                //Remove irregular characters to ensure better csv format
+                str = str.replaceAll("\r\n", "");
+                str = str.replaceAll(",", ";");
+                out.write(str.getBytes());
+            } 
+            out.write(LINE_SEPARATOR.getBytes());
+        } 
+    }
 }

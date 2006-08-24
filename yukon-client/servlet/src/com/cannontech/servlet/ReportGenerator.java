@@ -22,6 +22,8 @@ package com.cannontech.servlet;
  * @author: Stacey Nebben
  */
 
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.util.TimeZone;
 
 import javax.servlet.ServletException;
@@ -220,20 +222,18 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
 					if( !noCache )
 						session.setAttribute(reportKey + "Report", report);
 				}
-				
 				final ServletOutputStream out = resp.getOutputStream();
-				
+//				ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
+//                BufferedOutputStream buffOut = new BufferedOutputStream(byteOut);
+                ReportFuncs.outputYukonReport( report, ext, out);
+//                out.write(byteOut.toByteArray());
+                
 				if (!ext.equalsIgnoreCase("png")) {
 					if (ext.equalsIgnoreCase("pdf")) {
 						resp.setContentType("application/pdf");
 						resp.addHeader("Content-Type", "application/pdf");
 					}
-					/*else if (ext.equalsIgnoreCase("jpg")) {
-						resp.setContentType("image/jpeg");
-					}*/
-					
-					ReportFuncs.outputYukonReport( report, ext, out );
-//					out.flush();
+//                    resp.setContentLength(byteOut.size());
 					return;
 				}
 //				else {

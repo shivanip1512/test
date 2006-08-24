@@ -1,5 +1,7 @@
 package com.cannontech.analysis.tablemodel;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -11,6 +13,9 @@ import java.util.TimeZone;
 import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
+
+import org.jfree.report.modules.output.csv.CSVQuoter;
+import org.jfree.report.modules.output.table.csv.CSVReportUtil;
 
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.Reportable;
@@ -323,7 +328,7 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 //	}
 
 	/**
-	 * Override this method to build an html table for a model's "options".
+	 * Override this method to ` an html table for a model's "options".
 	 * @return
 	 */
 	public String getHTMLOptionsTable()
@@ -765,37 +770,35 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 		return format.format(hour) + ":" + format.format(min) + ":" + format.format(sec);
 	}
 	
-	public byte[] buildByteStream()
+	public void buildByteStream(OutputStream out) throws IOException
 	{
-		String outString = "";
-		//Write column headers
-		for (int r = 0; r < getColumnCount(); r++) 
-		{
-			if( r != 0 )
-				outString += getFieldSeparator();
-					
-			outString += getColumnName(r);
-		}
-		outString += LINE_SEPARATOR;
-		
-		//Write data
-		for (int r = 0; r < getRowCount(); r++) 
-		{
-			for (int c = 0; c < getColumnCount(); c++) 
-			{ 
-				if (c != 0) 
-					outString += getFieldSeparator(); 
-				
-				String str = String.valueOf(getValueAt(r,c));
-				//Remove irregular characters to ensure better csv format
-				str = str.replaceAll("\r\n", "");
-				str = str.replaceAll(",", ";");
-				outString += str;
-			} 
-			outString += LINE_SEPARATOR;
-		} 
-		return outString.getBytes();
-	}
+        CSVQuoter quoter = new CSVQuoter(","); 
+
+        //Write column headers
+        for (int r = 0; r < getColumnCount(); r++) 
+        {
+            if( r != 0 )
+                out.write(new String(",").getBytes());
+                
+            out.write(getColumnName(r).getBytes());
+        }
+        out.write(new String("\r\n").getBytes());
+        
+        //Write data
+        for (int r = 0; r < getRowCount(); r++) 
+        {
+            for (int c = 0; c < getColumnCount(); c++) 
+            { 
+                if (c != 0) 
+                { 
+                    out.write(new String(",").getBytes()); 
+                } 
+                String rawValue = String.valueOf (getValueAt(r,c)); 
+                out.write(quoter.doQuoting(rawValue).getBytes()); 
+            } 
+            out.write(new String("\r\n").getBytes());
+        } 
+  	}
 	/**
 	 * @return
 	 */

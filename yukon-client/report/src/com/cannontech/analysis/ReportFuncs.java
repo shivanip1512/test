@@ -8,12 +8,12 @@ package com.cannontech.analysis;
 
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.io.OutputStream;
 
 import org.jfree.report.JFreeReport;
 import org.jfree.report.PageDefinition;
-import org.jfree.report.modules.output.pageable.base.PageableReportProcessor;
-import org.jfree.report.modules.output.pageable.pdf.PDFOutputTarget;
+import org.jfree.report.modules.output.pageable.pdf.PDFReportUtil;
 
 import com.cannontech.analysis.report.CapBankReport;
 import com.cannontech.analysis.report.CapControlCurrentStatusReport;
@@ -80,6 +80,7 @@ import com.cannontech.analysis.tablemodel.StarsLMSummaryModel;
 import com.cannontech.analysis.tablemodel.StatisticModel;
 import com.cannontech.analysis.tablemodel.SystemLogModel;
 import com.cannontech.analysis.tablemodel.WorkOrderModel;
+import com.cannontech.clientutils.CTILogger;
 import com.keypoint.PngEncoder;
 
 /**
@@ -166,59 +167,13 @@ public class ReportFuncs
 	    return returnVal;
 	}
 	
-	public static void outputYukonReport(JFreeReport report, String ext, OutputStream out)
-		throws Exception
+	public static void outputYukonReport(JFreeReport report, String ext, OutputStream out) throws IOException
 	{
 		if (ext.equalsIgnoreCase("pdf"))
-		{
-		    final PDFOutputTarget target = new PDFOutputTarget(out);
-			
-			target.setProperty(PDFOutputTarget.TITLE, "Title");
-			target.setProperty(PDFOutputTarget.AUTHOR, "Author");
-			
-			final PageableReportProcessor processor = new PageableReportProcessor(report);
-			processor.setOutputTarget(target);
-			target.open();
-			processor.processReport();
-			target.close();
-		}
-		else if (ext.equalsIgnoreCase("png"))
-		{
-			throw new Exception("The 'png' format is not supported by the outputYukonReport() method.");
-		}
-		else if (ext.equalsIgnoreCase("csv"))
-		{
-			out.write(((ReportModelBase)report.getData()).buildByteStream());
-/*			CSVQuoter quoter = new CSVQuoter(","); 
-		
-			//Write column headers
-			for (int r = 0; r < report.getData().getColumnCount(); r++) 
-			{
-				if( r != 0 )
-					out.write(new String(",").getBytes());
-					
-				out.write(report.getData().getColumnName(r).getBytes());
-			}
-			out.write(new String("\r\n").getBytes());
-			
-			//Write data
-			for (int r = 0; r < report.getData().getRowCount(); r++) 
-			{
-				for (int c = 0; c < report.getData().getColumnCount(); c++) 
-				{ 
-					if (c != 0) 
-					{ 
-						out.write(new String(",").getBytes()); 
-					} 
-					String rawValue = String.valueOf (report.getData().getValueAt(r,c)); 
-					out.write(quoter.doQuoting(rawValue).getBytes()); 
-				} 
-				out.write(new String("\r\n").getBytes());
-			}*/ 
-		}
-		/*else if (ext.equalsIgnoreCase("jpeg"))
-		{
-		}*/
+            PDFReportUtil.createPDF(report, out);
+
+        else if (ext.equalsIgnoreCase("csv"))
+		    ((ReportModelBase)report.getData()).buildByteStream(out);
 	}
 	
 	/**

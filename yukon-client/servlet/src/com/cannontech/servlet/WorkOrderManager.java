@@ -188,7 +188,7 @@ public class WorkOrderManager extends HttpServlet {
     				ReportFuncs.outputYukonReport( report, ext, out );
     			}
     			else if( ext.equalsIgnoreCase("csv")){
-    				out.write(((ReportModelBase)report.getData()).buildByteStream());
+                    ReportFuncs.outputYukonReport( report, ext, out);
     				out.flush();
     			}
 			} catch (Exception e) {
