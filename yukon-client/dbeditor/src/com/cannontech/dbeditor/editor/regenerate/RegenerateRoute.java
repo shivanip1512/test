@@ -14,6 +14,7 @@ import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.route.CarrierRoute;
 import com.cannontech.database.db.route.RepeaterRoute;
 import com.cannontech.yukon.IDatabaseCache;
+import com.cannontech.core.dao.DaoFactory;
 public class RegenerateRoute
 {
 	public static final int LARGE_VALID_FIXED = 31;
@@ -122,166 +123,195 @@ public class RegenerateRoute
 		}
 		return total;
 	}
-	/**
-	 * This method recalculates the fixed and variable bits for carrier routes.
-	 * If 'all' is true it recalculates for all of the routes.
-	 * If 'newRoute' is not null, then it recalculates just for that new route that is passed in.
-	 * If 'existingRoute is true, it recalculates only for the existing route.  This is used when editing
-	 * an existing route.  The algorithm attempts to use the existing fixed bit.
-	 * Creation date: (5/28/2002 12:57:11 PM)
-	 */
-	public static final Vector resetRptSettings(java.util.Vector routes, boolean all, DBPersistent newRoute, boolean existingRoute)
-	{
-		//holds the used fixed bits, is null if no routes are using it, is -1 if two
-		//routes are already using this fixed bit
-		java.util.ArrayList usedFixedBits = new java.util.ArrayList(LARGE_VALID_FIXED + 1);
-		
-		//holds the value of the variable bit of the first CCU route that uses the fixed bit
-		//the fixed bit is used as the index 
-		java.util.ArrayList varBits = new java.util.ArrayList(LARGE_VALID_FIXED + 1);
-		
-		DBPersistent rt;
-		Integer CcuFixedBits;
-		Integer CcuVariableBits;
-		String reset;
-		String userLock;
-		Vector changingRoutes = new Vector();
-		
-		//set fixed bits that have not been used to null in the array. Each index in 
-		//the array represents the fixed bit  
-		for (int i = 0; i < LARGE_VALID_FIXED + 1; i++)
-		{
-			usedFixedBits.add(i, null);
-			varBits.add(i, null);
-		}
-		//setting up array to know which fixed bits have already been used
-		//the value in the array gives the number of repeaters associated with that particular
-		//fixed bit
-		for (int i = 0; i < routes.size(); i++)
-		{
-			rt = (DBPersistent) routes.get(i);
-			if (newRoute == null || !existingRoute || (existingRoute && ((RouteBase) rt).getPAObjectID().intValue() != ((RouteBase) newRoute).getRouteID().intValue()))
-			{
-				CcuFixedBits = ((CCURoute) rt).getCarrierRoute().getCcuFixBits();
-				CcuVariableBits = ((CCURoute) rt).getCarrierRoute().getCcuVariableBits();
-				reset = ((CCURoute) rt).getCarrierRoute().getResetRptSettings();
-				userLock = ((CCURoute) rt).getCarrierRoute().getUserLocked();
-				if (userLock.equals("Y") || (userLock.equals("N") && reset.equals("N") && !all))
-				{
-					if (userLock.equals("Y"))
-					{
-						usedFixedBits.set(CcuFixedBits.intValue(), new Integer(-1)); //-1 if user locked to prevent other route from using this fixed bit
-					}
-					else if (usedFixedBits.get(CcuFixedBits.intValue()) == null)
-					{
-						usedFixedBits.set(CcuFixedBits.intValue(), new Integer(((CCURoute) rt).getRepeaterVector().size()));
-						varBits.set(CcuFixedBits.intValue(), ((CarrierRoute) ((CCURoute) rt).getCarrierRoute()).getCcuVariableBits());
-					}
-					else
-					{
-						usedFixedBits.set(CcuFixedBits.intValue(), new Integer(-1));
-					}
-				}
-				else
-				{
-					if (newRoute == null)
-						changingRoutes.add(rt);
-				}
-			}
-		}
-		//if we are only setting a new route or an existing route it will be the only route changed
-		if (newRoute != null)
-			changingRoutes.add(newRoute);
-		
-		//now use the next available fixed bit for each route that needs to be
-		//recalculated
-		CCURoute ccu;
-		int nextFixedBit = SMALL_VALID_FIXED;
-		int variable1 = SMALL_VALID_VARIABLE;
-		int variable2 = SMALL_VALID_VARIABLE;
-		int numRepeat = 0;
-		Vector repeatVector = null;
-		if (newRoute != null)
-		{
-			nextFixedBit = ((CCURoute) newRoute).getCarrierRoute().getCcuFixBits().intValue();
-			repeatVector = ((CCURoute) newRoute).getRepeaterVector();
-			if (usedFixedBits.get(nextFixedBit) != null)
-			{
-				numRepeat = ((Integer) usedFixedBits.get(nextFixedBit)).intValue();
-			}
-		}
-		if ((newRoute != null && existingRoute) // if it's an existing route try to reuse the orginal fixed bit
-			&& repeatVector.size() + numRepeat <= LARGE_VALID_VARIABLE
-			&& nextFixedBit != LARGE_VALID_FIXED
-			&& ((CCURoute) newRoute).getCarrierRoute().getUserLocked().equalsIgnoreCase("N"))
-		{
-			variable1 = ((CCURoute) newRoute).getCarrierRoute().getCcuVariableBits().intValue();
-			variable2 = SMALL_VALID_VARIABLE;
-			if (variable1 > 0)
-			{
-				variable1 = RegenerateRoute.LARGE_VALID_VARIABLE - ((CCURoute) newRoute).getRepeaterVector().size();
-				variable2 = variable1 + 1;
-			}
-			else
-			{
-				variable2++;
-			}
-			for (int i = 0; i < ((CCURoute) newRoute).getRepeaterVector().size(); i++)
-			{
-				if (i + 1 >= ((CCURoute) newRoute).getRepeaterVector().size())
-				{
-					variable2 = RegenerateRoute.LARGE_VALID_VARIABLE;
-				}
-				((RepeaterRoute) ((CCURoute) newRoute).getRepeaterVector().get(i)).setVariableBits(new Integer(variable2));
-				variable2++;
-			}
-			((CCURoute) newRoute).getCarrierRoute().setCcuVariableBits(new Integer(variable1));
-		}
-		else //if the route is a new route then a new fixed bit is assigned
-		{
-			for (int k = 0; k < changingRoutes.size(); k++)
-			{
-				ccu = ((CCURoute) changingRoutes.get(k));
-				repeatVector = ccu.getRepeaterVector();
-				nextFixedBit = getNextFixedBit(usedFixedBits, repeatVector.size());
-				if (nextFixedBit == LARGE_VALID_FIXED)
-				{
-					variable1 = LARGE_VALID_VARIABLE;
-					variable2 = LARGE_VALID_VARIABLE;
-				}
-				else if (usedFixedBits.get(nextFixedBit) == null)
-				{
-					variable1 = LARGE_VALID_VARIABLE - repeatVector.size();
-					variable2 = variable1 + 1;
-				}
-				else
-				{
-					if (((Integer) varBits.get(nextFixedBit)).intValue() == SMALL_VALID_VARIABLE)
-						variable1 = LARGE_VALID_VARIABLE - repeatVector.size();
-					else
-						variable1 = SMALL_VALID_VARIABLE;
-					variable2 = variable1 + 1;
-				}
-				ccu.getCarrierRoute().setCcuFixBits(new Integer(nextFixedBit));
-				ccu.getCarrierRoute().setCcuVariableBits(new Integer(variable1));
-				for (int j = 0; j < repeatVector.size(); j++)
-				{
-					com.cannontech.database.db.route.RepeaterRoute rpt = ((com.cannontech.database.db.route.RepeaterRoute) repeatVector.get(j));
-					if (j + 1 == repeatVector.size() || nextFixedBit == LARGE_VALID_FIXED)
-						variable2 = LARGE_VALID_VARIABLE;
-					rpt.setVariableBits(new Integer(variable2));
-					variable2++;
-				}
-				if (usedFixedBits.get(nextFixedBit) == null)
-					usedFixedBits.set(nextFixedBit, new Integer(repeatVector.size()));
-				else
-					usedFixedBits.set(nextFixedBit, new Integer(-1));
-				varBits.set(nextFixedBit, ((CarrierRoute) ccu.getCarrierRoute()).getCcuVariableBits());
-				ccu.getCarrierRoute().setResetRptSettings("N");
-			}
-		}
-		return changingRoutes; //returns the routes whose settings have changed
-	}
+    /**
+     * This method recalculates the fixed and variable bits for carrier routes.
+     * If 'all' is true it recalculates for all of the routes.
+     * If 'newRoute' is not null, then it recalculates just for that new route that is passed in.
+     * If 'existingRoute is true, it recalculates only for the existing route.  This is used when editing
+     * an existing route.  The algorithm attempts to use the existing fixed bit.
+     * Creation date: (5/28/2002 12:57:11 PM)
+     */
+    public static final Vector resetRptSettings(java.util.Vector routes, boolean all, DBPersistent newRoute, boolean existingRoute)
+    {
+
+        // Indexed by CCUFixedBit, VariableBit.  Set to 0 if no routes have a claim.
+        int[][] usedBitMatrix = new int[LARGE_VALID_FIXED][LARGE_VALID_VARIABLE];
+        for (int i=0; i < LARGE_VALID_FIXED; i++) {
+            for (int j=0; j < LARGE_VALID_VARIABLE; j++) {
+                usedBitMatrix[i][j] = -1;
+            }
+        }
+
+        DBPersistent rt;
+        Integer PaobjectId;
+        Integer CcuFixedBits;
+        Integer CcuVariableBits;
+        String reset;
+        String userLock;
+        Vector changingRoutes = new Vector();  // Vector of routes that are to be modified.
+
+        //setting up matrix to know which fixed bits have already been used
+        for (int i = 0; i < routes.size(); i++)
+        {
+            rt = (DBPersistent) routes.get(i);
+
+            if (newRoute == null || !existingRoute || (existingRoute && ((RouteBase) rt).getPAObjectID().intValue() != ((RouteBase) newRoute).getRouteID().intValue())) {
+                // Each route takes one or more slots in the matrix.  The CcuFixBits define the first offset, CcuVariableBits defines the first
+                // slot in the matrix consumed by this route.  If there is only one repeater that is it, if more then more slots are used.
+
+                CcuFixedBits = ((CCURoute) rt).getCarrierRoute().getCcuFixBits();               // The fixed bit value for this route.
+                CcuVariableBits = ((CCURoute) rt).getCarrierRoute().getCcuVariableBits();       // The first variable bit used by this route is stored here
+                reset = ((CCURoute) rt).getCarrierRoute().getResetRptSettings();                // Did the user request a reset on this route?
+                userLock = ((CCURoute) rt).getCarrierRoute().getUserLocked();                   // Did the user forbid a reset on this route?
+                PaobjectId = ((CCURoute) rt).getPAObjectID();
+
+
+                // if locked, or (if not locked and not reset and not all).
+                if (userLock.equals("Y") || (userLock.equals("N") && reset.equals("N") && !all)) {
+                    // Mark each slot in the matrix as belonging to this route.
+
+                    // First mark the CCU Variable bits
+                    usedBitMatrix[CcuFixedBits.intValue()][CcuVariableBits.intValue()] = PaobjectId.intValue();
+
+                    // Now mark out the repeater variable bits.  The last repeater is always a 7 and does not mark the matrix.
+                    Vector rptVector = ((CCURoute) rt).getRepeaterVector();
+                    for (int j=0; j < rptVector.size()-1; j++ ) {
+                        com.cannontech.database.db.route.RepeaterRoute rpt = ((com.cannontech.database.db.route.RepeaterRoute) rptVector.get(j));
+                        usedBitMatrix[CcuFixedBits.intValue()][rpt.getVariableBits().intValue()] = PaobjectId.intValue();
+                    }
+                } else {
+
+                    if (newRoute == null)  // This must be the "all" case down here...  Add the route to the list if it is not locked and set for reset, or all is set.
+                        changingRoutes.add(rt);
+                }
+
+            }
+        }
+
+        //if we are only setting a new route or adjusting an existing route it will be the only route changed.
+        if (newRoute != null)
+                changingRoutes.add(newRoute);
+
+        // matrix is marked for all routes which are NOT moving.  The changingRoutes vector contains all the routes that are expected to move.
+        // An enhancement could be made here if the changing routes were ordered by the number of repeaters.  Best fit probably has the largest
+        // repeater count being inserted first... A later improvement?
+
+        CCURoute ccu;
+        int newCcuFixedBit = SMALL_VALID_FIXED;         // This is the first available fixed-bit slot that will fit my needs (if fail 31)
+        int newCcuVariableBits = SMALL_VALID_VARIABLE;  // This if the first available var-bit offset that will fit my needs (if fail 7)
+        int newRptVariableBits;                         // Used only for clarity.
+        Vector repeatVector = null;
+
+        //holds the used fixed bits, is null if no routes are using it, is -1 if two
+        //routes are already using this fixed bit
+        java.util.ArrayList usedFixedBits = new java.util.ArrayList(LARGE_VALID_FIXED + 1);
+
+        //holds the value of the variable bit of the first CCU route that uses the fixed bit
+        //the fixed bit is used as the index
+        java.util.ArrayList varBits = new java.util.ArrayList(LARGE_VALID_FIXED + 1);
+
+
+        for (int k = 0; k < changingRoutes.size(); k++) {
+
+            ccu = ((CCURoute) changingRoutes.get(k));
+            repeatVector = ccu.getRepeaterVector();
+            int numRpts = repeatVector.size();
+            int row = LARGE_VALID_FIXED;
+            newCcuVariableBits = LARGE_VALID_VARIABLE;
+
+            // An offset must be found with a run longer than numRpts.
+            int offset;     // Start of the open slot.
+            int run;        // Length of the open slot.
+
+            if ( ccu.getCarrierRoute().getUserLocked().equals("Y") ) {      // This route would prefer to stay where it is.
+                boolean itfits = true;
+                int fixbit = ccu.getCarrierRoute().getCcuFixBits().intValue();
+                int varbit = ccu.getCarrierRoute().getCcuVariableBits().intValue();
+
+                if (usedBitMatrix[fixbit][varbit] != -1) {
+                    itfits = false;
+                } else {
+                    for (int q = 0; q < numRpts-1; q++) {
+                        com.cannontech.database.db.route.RepeaterRoute rpt = ((com.cannontech.database.db.route.RepeaterRoute) repeatVector.get(q));
+                        if (usedBitMatrix[fixbit][rpt.getVariableBits().intValue()] != -1) {
+                            itfits = false;
+                            break;
+                        }
+                    }
+                }
+
+                if (itfits) {
+                    row = fixbit;
+                    newCcuVariableBits = varbit;
+                }
+            } else {
+                // Go find out where the route should be placed.
+                // This block could be a method
+                // ##################################
+                for (int fixed = 0; fixed < LARGE_VALID_FIXED; fixed++) {
+                    offset = -1;
+                    run = 0;
+                    for (int variable = 0; variable < LARGE_VALID_VARIABLE; variable++) {
+
+                        if (offset == -1 && usedBitMatrix[fixed][variable] == -1) {
+                            offset = variable;
+                            run = 1;
+                        } else if (offset != -1) {
+                            if (usedBitMatrix[fixed][variable] == -1) {
+                                run++;  // The run of unused slots beginning at offset continues...
+                            } else { // Any previously found offset and run are not sufficient for numRpts (If they were, the break below would have popped us out of the loops)
+                                offset = -1;
+                                run = 0;
+                            }
+                        }
+                        if (run >= numRpts) break;
+                    }
+                    if (run >= numRpts) {
+                        // Got it!
+                        row = fixed;
+                        newCcuVariableBits = offset;
+                        break; // The outer for loop.
+                    }
+                }
+            }
+
+            newCcuFixedBit = row;
+            // return newCcuFixedBit, newCcuVariableBits.
+            // #####################################
+
+            if (newCcuFixedBit != LARGE_VALID_FIXED) {
+                ccu.getCarrierRoute().setCcuFixBits(new Integer(newCcuFixedBit));
+                ccu.getCarrierRoute().setCcuVariableBits(new Integer(newCcuVariableBits));
+                newRptVariableBits = newCcuVariableBits;
+
+                for (int j = 0; j < repeatVector.size(); j++) {
+                    com.cannontech.database.db.route.RepeaterRoute rpt = ((com.cannontech.database.db.route.RepeaterRoute) repeatVector.get(j));
+                    if (newRptVariableBits + 1 <= LARGE_VALID_VARIABLE) newRptVariableBits++;
+                    if (j+1 == repeatVector.size()) newRptVariableBits = LARGE_VALID_VARIABLE;  // Last rpt is always LARGE_VALID_VARIABLE!
+                    rpt.setVariableBits(new Integer(newRptVariableBits));
+                }
+
+                // Mark the matrix as being owned by this paoid.
+                for (int q = newCcuVariableBits; q < newCcuVariableBits + repeatVector.size(); q++) {
+                    if (newCcuFixedBit < LARGE_VALID_FIXED && q < LARGE_VALID_VARIABLE) {
+                        int nextAvailableID = 0;
+                        if(ccu.getPAObjectID() == null)
+                        {
+                            nextAvailableID = DaoFactory.getPaoDao().getNextPaoId();
+                            ccu.setRouteID(new Integer(nextAvailableID));
+                        }
+                        usedBitMatrix[newCcuFixedBit][q] = ccu.getPAObjectID().intValue();
+                    }
+                }
+
+            }
+
+            ccu.getCarrierRoute().setResetRptSettings("N");
+        }
+
+        return changingRoutes; //returns the routes whose settings have changed
+    }
+
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (6/3/2002 1:47:36 PM)
