@@ -121,7 +121,9 @@ public class StandardXYItemRenderer_MinMax extends StandardXYItemRenderer
 
 		if( this.plotMinMaxValues)
 		{  
-			if (minMaxValues != null && (y1 == minMaxValues[series].getMaximumValue() || y1 == minMaxValues[series].getMinimumValue()))
+			if (minMaxValues != null && minMaxValues[series]!= null && 
+                    (y1 == minMaxValues[series].getMaximumValue() || 
+                     y1 == minMaxValues[series].getMinimumValue()))
 			{
 				Shape shape = getItemShape(series, item);
 				if (orientation == PlotOrientation.HORIZONTAL) {
