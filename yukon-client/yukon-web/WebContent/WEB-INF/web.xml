@@ -272,6 +272,12 @@
         <description>Allows a user to configure Yukon specific settings.</description>
         <servlet-class>com.cannontech.servlet.SetupServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>MultispeakServlet</servlet-name>
+        <display-name>MultispeakServlet</display-name>
+        <description>Allows a user to setup and implemnent Multispeak interfaces.</description>
+        <servlet-class>com.cannontech.servlet.MultispeakServlet</servlet-class>
+    </servlet>    
     <!-- STARS specific configs -->
     <servlet>
         <servlet-name>SOAPClient</servlet-name>
