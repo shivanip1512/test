@@ -292,10 +292,10 @@ public class HECO_LMEventSummaryModel extends HECO_SettlementModelBase
 				columnProperties[2] = new ColumnProperties(offset+=50, 1, 50, null);
 				columnProperties[3] = new ColumnProperties(offset+=50, 1, 50, null);
 				columnProperties[4] = new ColumnProperties(offset+=50, 1, 50, null);
-
+				
                 offset += 50;   //update to current position.
-				for (int i = 0; i < getCustomerIDS().length; i++)
-				{
+                for (int i = 0; i < getCustomerIDS().length; i++)
+                {
                     int width = 75;
                     offset = getAdjustedStartOffset(offset, width);
                     columnProperties[NUMBER_COLUMNS + i] = new ColumnProperties(offset, 1, width, null);

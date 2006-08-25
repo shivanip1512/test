@@ -280,11 +280,10 @@ public class HECO_MonthlyBillingSettlementModel extends HECO_SettlementModelBase
 		{
 			int offset = 0;
 			columnProperties = new ColumnProperties[NUMBER_COLUMNS + getCustomerIDS().length];
-			//posX, posY, width, height, numberFormatString
+            //posX, posY, width, height, numberFormatString
 
-			columnProperties[0] = new ColumnProperties(offset, 1, 150, null);
-			columnProperties[1] = new ColumnProperties(offset+=150, 1, 75, null);
-			
+            columnProperties[0] = new ColumnProperties(offset, 1, 150, null);
+            columnProperties[1] = new ColumnProperties(offset+=150, 1, 75, null);
             offset += 75;   //update to current position.
             
             int width = 75;

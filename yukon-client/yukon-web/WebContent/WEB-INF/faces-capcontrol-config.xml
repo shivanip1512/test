@@ -13,7 +13,6 @@
         <managed-bean-name>dbCache</managed-bean-name>
         <managed-bean-class>com.cannontech.database.cache.DefaultDatabaseCache</managed-bean-class>
         <managed-bean-scope>application</managed-bean-scope>
-        
     </managed-bean>
 
     <managed-bean>
@@ -26,8 +25,6 @@
 
     
     <!-- Database specific (DBPersistent) managed beans -->
-   
-    
     <managed-bean>
         <managed-bean-name>capControlForm</managed-bean-name>
         <managed-bean-class>com.cannontech.web.editor.CapControlForm</managed-bean-class>
