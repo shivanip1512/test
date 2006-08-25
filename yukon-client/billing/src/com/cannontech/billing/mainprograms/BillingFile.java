@@ -6,9 +6,13 @@ package com.cannontech.billing.mainprograms;
  * @author: 
  */
 import java.io.IOException;
+import java.util.List;
 
+import com.cannontech.billing.BillingDao;
 import com.cannontech.billing.FileFormatBase;
 import com.cannontech.billing.FileFormatTypes;
+import com.cannontech.billing.device.base.BillableDevice;
+import com.cannontech.billing.format.BillingFormatter;
 import com.cannontech.database.db.device.DeviceMeterGroup;
 
 public class BillingFile extends java.util.Observable implements Runnable
@@ -16,6 +20,8 @@ public class BillingFile extends java.util.Observable implements Runnable
 	private BillingFileDefaults billingDefaults = null;
 	private FileFormatBase fileFormatBase = null;
 	private java.util.Vector allBillGroupsVector = null;
+    
+    private BillingFormatter billingFormatter = null;
 	
 	private String dbAlias = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
 
@@ -152,7 +158,7 @@ public class BillingFile extends java.util.Observable implements Runnable
 	 */
 	public java.util.Vector retrieveAllBillGroupsVector()
 	{
-		java.util.Vector billGroupVector = new java.util.Vector();
+		java.util.Vector<String> billGroupVector = new java.util.Vector<String>();
 			
 		java.sql.Statement stmt = null;
 		java.sql.Connection conn = null;
@@ -201,42 +207,83 @@ public class BillingFile extends java.util.Observable implements Runnable
 	 */
 	public void run() 
 	{
-		if( fileFormatBase != null )
+		if (billingFormatter != null) {
+
+            com.cannontech.clientutils.CTILogger.info("Valid entries are for meter data where: ");
+            com.cannontech.clientutils.CTILogger.info("  DEMAND readings > "
+                    + getBillingDefaults().getDemandStartDate() + " AND <= "
+                    + getBillingDefaults().getEndDate());
+            com.cannontech.clientutils.CTILogger.info("  ENERGY readings > "
+                    + getBillingDefaults().getEnergyStartDate() + " AND <= "
+                    + getBillingDefaults().getEndDate());
+
+            boolean success = false;
+            List<BillableDevice> deviceList = null;
+
+            if (!getBillingDefaults().getBillGroup().isEmpty()) {
+
+                deviceList = BillingDao.retrieveBillingData(getBillingDefaults());
+
+                success = deviceList.size() > 0;
+            }
+            try {
+                if (success) {
+                    try {
+                        billingFormatter.writeBillingFile(getBillingDefaults(), deviceList);
+                    } catch (IllegalArgumentException e) {
+                        setChanged();
+                        notify(e.getMessage());
+
+                    }
+                } else {
+                    setChanged();
+                    notify("Unsuccessfull database query");
+                }
+
+                setChanged();
+                notify("Successfully created the file : " + fileFormatBase.getOutputFileName()
+                        + "\n" + deviceList.size() + " Valid Readings Reported.");
+            } catch (java.io.IOException ioe) {
+                setChanged();
+                notify("Unsuccessfull reading of file : " + fileFormatBase.getOutputFileName());
+                ioe.printStackTrace();
+            }
+        } else if( fileFormatBase != null )
 		{
-			fileFormatBase.setBillingDefaults(getBillingDefaults());
-	
-			com.cannontech.clientutils.CTILogger.info("Valid entries are for meter data where: ");
-			com.cannontech.clientutils.CTILogger.info("  DEMAND readings > " + getBillingDefaults().getDemandStartDate() + " AND <= " + getBillingDefaults().getEndDate());
-			com.cannontech.clientutils.CTILogger.info("  ENERGY readings > " + getBillingDefaults().getEnergyStartDate() + " AND <= " + getBillingDefaults().getEndDate());
-	
-			boolean success = false;
-			
-			if (getBillingDefaults().getBillGroup().isEmpty())
-				success = false;
-			else
-				success = fileFormatBase.retrieveBillingData(com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
-	
-			try
-			{
-				if( success )
-				{
-					fileFormatBase.writeToFile();
-				}
-				else				
-				{
-					setChanged();
-					notify("Unsuccessfull database query" );
-				}
-	
-				setChanged();
-				notify("Successfully created the file : " + fileFormatBase.getOutputFileName() + "\n" + fileFormatBase.getRecordCount() + " Valid Readings Reported.");
-			}
-			catch(java.io.IOException ioe)
-			{
-				setChanged();
-				notify("Unsuccessfull reading of file : " + fileFormatBase.getOutputFileName() );
-				ioe.printStackTrace();
-			}
+		    fileFormatBase.setBillingDefaults(getBillingDefaults());
+		    
+		    com.cannontech.clientutils.CTILogger.info("Valid entries are for meter data where: ");
+		    com.cannontech.clientutils.CTILogger.info("  DEMAND readings > " + getBillingDefaults().getDemandStartDate() + " AND <= " + getBillingDefaults().getEndDate());
+		    com.cannontech.clientutils.CTILogger.info("  ENERGY readings > " + getBillingDefaults().getEnergyStartDate() + " AND <= " + getBillingDefaults().getEndDate());
+		    
+		    boolean success = false;
+		    
+		    if (getBillingDefaults().getBillGroup().isEmpty())
+		        success = false;
+		    else
+		        success = fileFormatBase.retrieveBillingData(com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
+		    
+		    try
+		    {
+		        if( success )
+		        {
+		            fileFormatBase.writeToFile();
+		        }
+		        else				
+		        {
+		            setChanged();
+		            notify("Unsuccessfull database query" );
+		        }
+		        
+		        setChanged();
+		        notify("Successfully created the file : " + fileFormatBase.getOutputFileName() + "\n" + fileFormatBase.getRecordCount() + " Valid Readings Reported.");
+		    }
+		    catch(java.io.IOException ioe)
+		    {
+		        setChanged();
+		        notify("Unsuccessfull reading of file : " + fileFormatBase.getOutputFileName() );
+		        ioe.printStackTrace();
+		    }
 		}
 	}
 
@@ -351,4 +398,14 @@ public class BillingFile extends java.util.Observable implements Runnable
 		this.fileFormatBase = fileFormatBase;
 		this.fileFormatBase.setBillingDefaults(getBillingDefaults());
 	}
+
+    public BillingFormatter getBillingFormatter() {
+        return billingFormatter;
+    }
+
+    public void setBillingFormatter(BillingFormatter billingFormatter) {
+        this.billingFormatter = billingFormatter;
+    }
+    
+    
 }

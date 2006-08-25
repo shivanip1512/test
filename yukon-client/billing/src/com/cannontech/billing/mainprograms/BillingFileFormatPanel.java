@@ -10,6 +10,7 @@ import javax.swing.JOptionPane;
 import com.cannontech.billing.FileFormatBase;
 import com.cannontech.billing.FileFormatFactory;
 import com.cannontech.billing.FileFormatTypes;
+import com.cannontech.billing.format.BillingFormatterFactory;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.database.db.device.DeviceMeterGroup;
 import com.cannontech.roles.yukon.BillingRole;
@@ -75,7 +76,10 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 	else if( event.getSource() == getGenerateFileToggleButton())
 	{
 		setFileFormatBase( FileFormatFactory.createFileFormat(getBillingDefaults().getFormatID() ));
-		generateFile();
+        
+        getBillingFile().setBillingFormatter(BillingFormatterFactory.createFileFormat(getBillingDefaults().getFormatID()));
+		
+        generateFile();
 		getBillingDefaults().writeDefaultsFile();
 		repaint();
 	}
@@ -193,7 +197,7 @@ private void generateFile()
 		
 	setBillingDefaults(defaults);
 
-	if( getFileFormatBase() != null )
+	if( getFileFormatBase() != null || getBillingFile().getBillingFormatter() != null)
 	{
 		getBillingFile().addObserver( this );
 
