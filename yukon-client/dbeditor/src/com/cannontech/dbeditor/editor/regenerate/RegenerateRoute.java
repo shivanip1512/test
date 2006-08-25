@@ -2,7 +2,7 @@ package com.cannontech.dbeditor.editor.regenerate;
 /**
  * @author rneuharth
  * Jun 27, 2002 at 9:10:34 AM
- * 
+ *
  * A undefined generated comment
  */
 import java.util.List;
@@ -17,112 +17,112 @@ import com.cannontech.yukon.IDatabaseCache;
 import com.cannontech.core.dao.DaoFactory;
 public class RegenerateRoute
 {
-	public static final int LARGE_VALID_FIXED = 31;
-	public static final int SMALL_VALID_FIXED = 0;
-	public static final int LARGE_VALID_VARIABLE = 7;
-	public static final int SMALL_VALID_VARIABLE = 0;
-	/**
-	 * Constructor for RegenerateRoute.
-	 */
-	public RegenerateRoute()
-	{
-		super();
-	}
-	/**
-	* This method returns a vector of carrier routes that have repeaters associated with them
-	* Uses the cache to retrieve all of the routes
-	* Creation date: (5/28/2002 10:26:44 AM)
-	*/
-	public static final java.util.Vector getAllCarrierRoutes()
-	{
-		Vector realRoutes = new Vector();
-		List routes;
-		IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-		synchronized (cache)
-		{
-			routes = cache.getAllRoutes();
-			DBPersistent rt = null;
-			//retrieves the repeater vector for each CCU route
-			try
-			{
-				for (int i = 0; i < routes.size(); i++)
-				{
-					rt = com.cannontech.database.data.lite.LiteFactory.createDBPersistent((com.cannontech.database.data.lite.LiteBase) routes.get(i));
-					if (rt instanceof CCURoute)
-					{
-						rt = com.cannontech.database.Transaction.createTransaction(com.cannontech.database.Transaction.RETRIEVE, rt).execute();
-						if (((CCURoute) rt).getRepeaterVector().size() > 0)
-							realRoutes.add(rt);
-					}
-				}
-				return realRoutes; //returns routes that have repeaters
-			}
-			catch (com.cannontech.database.TransactionException t)
-			{
-				com.cannontech.clientutils.CTILogger.error( t.getMessage(), t );
-				return null;
-			}
-		}
-	}
-	/**
-	 * Returns the next available fixed bit
-	 * Creation date: (5/28/2002 4:56:35 PM)
-	 */
-	public static final int getNextFixedBit(java.util.ArrayList rpts, int numRpts)
-	{
-		//first check to see if there exists and unused fixed bit
-		for (int i = 0; i < LARGE_VALID_FIXED; i++)
-		{
-			if (rpts.get(i) == null)
-				return i;
-		}
-		//if gets here all fixed bits have been used then we find a fixed bit that only has
-		//one other route using it 
-		for (int i = 0; i < LARGE_VALID_FIXED; i++)
-		{
-			if (((Integer) rpts.get(i)).intValue() == -1)
-				continue;
-			else
-			{
-				if (LARGE_VALID_VARIABLE - ((Integer) rpts.get(i)).intValue() >= numRpts && ((Integer) rpts.get(i)).intValue() >= 0)
-					return i;
-				else
-					continue;
-			}
-		}
-		return LARGE_VALID_FIXED;
-	}
-	/**
-	 * Insert the method's description here.
-	 * Creation date: (5/28/2002 10:52:29 AM)
-	 * @param args java.lang.String[]
-	 */
-	public static void main(String[] args)
-	{
-		java.util.Vector routes;
-		routes = getAllCarrierRoutes();
-		resetRptSettings(routes, false, null, false);
-	}
-	/**
-	 * Insert the method's description here.
-	 * Creation date: (5/31/2002 10:49:57 AM)
-	 */
-	public static final int numCarrierRoutesReset(java.util.Vector routes)
-	{
-		String userLocked;
-		String reset;
-		int total = 0;
-		for (int i = 0; i < routes.size(); i++)
-		{
-			userLocked = ((CCURoute) routes.get(i)).getCarrierRoute().getUserLocked();
-			reset = ((CCURoute) routes.get(i)).getCarrierRoute().getResetRptSettings();
-			if (userLocked.equals("Y"))
-				continue;
-			else if (reset.equals("Y"))
-				total++;
-		}
-		return total;
-	}
+        public static final int LARGE_VALID_FIXED = 31;
+        public static final int SMALL_VALID_FIXED = 0;
+        public static final int LARGE_VALID_VARIABLE = 7;
+        public static final int SMALL_VALID_VARIABLE = 0;
+        /**
+         * Constructor for RegenerateRoute.
+         */
+        public RegenerateRoute()
+        {
+                super();
+        }
+        /**
+        * This method returns a vector of carrier routes that have repeaters associated with them
+        * Uses the cache to retrieve all of the routes
+        * Creation date: (5/28/2002 10:26:44 AM)
+        */
+        public static final java.util.Vector getAllCarrierRoutes()
+        {
+                Vector realRoutes = new Vector();
+                List routes;
+                IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+                synchronized (cache)
+                {
+                        routes = cache.getAllRoutes();
+                        DBPersistent rt = null;
+                        //retrieves the repeater vector for each CCU route
+                        try
+                        {
+                                for (int i = 0; i < routes.size(); i++)
+                                {
+                                        rt = com.cannontech.database.data.lite.LiteFactory.createDBPersistent((com.cannontech.database.data.lite.LiteBase) routes.get(i));
+                                        if (rt instanceof CCURoute)
+                                        {
+                                                rt = com.cannontech.database.Transaction.createTransaction(com.cannontech.database.Transaction.RETRIEVE, rt).execute();
+                                                if (((CCURoute) rt).getRepeaterVector().size() > 0)
+                                                        realRoutes.add(rt);
+                                        }
+                                }
+                                return realRoutes; //returns routes that have repeaters
+                        }
+                        catch (com.cannontech.database.TransactionException t)
+                        {
+                                com.cannontech.clientutils.CTILogger.error( t.getMessage(), t );
+                                return null;
+                        }
+                }
+        }
+        /**
+         * Returns the next available fixed bit
+         * Creation date: (5/28/2002 4:56:35 PM)
+         */
+        public static final int getNextFixedBit(java.util.ArrayList rpts, int numRpts)
+        {
+                //first check to see if there exists and unused fixed bit
+                for (int i = 0; i < LARGE_VALID_FIXED; i++)
+                {
+                        if (rpts.get(i) == null)
+                                return i;
+                }
+                //if gets here all fixed bits have been used then we find a fixed bit that only has
+                //one other route using it
+                for (int i = 0; i < LARGE_VALID_FIXED; i++)
+                {
+                        if (((Integer) rpts.get(i)).intValue() == -1)
+                                continue;
+                        else
+                        {
+                                if (LARGE_VALID_VARIABLE - ((Integer) rpts.get(i)).intValue() >= numRpts && ((Integer) rpts.get(i)).intValue() >= 0)
+                                        return i;
+                                else
+                                        continue;
+                        }
+                }
+                return LARGE_VALID_FIXED;
+        }
+        /**
+         * Insert the method's description here.
+         * Creation date: (5/28/2002 10:52:29 AM)
+         * @param args java.lang.String[]
+         */
+        public static void main(String[] args)
+        {
+                java.util.Vector routes;
+                routes = getAllCarrierRoutes();
+                resetRptSettings(routes, false, null, false);
+        }
+        /**
+         * Insert the method's description here.
+         * Creation date: (5/31/2002 10:49:57 AM)
+         */
+        public static final int numCarrierRoutesReset(java.util.Vector routes)
+        {
+                String userLocked;
+                String reset;
+                int total = 0;
+                for (int i = 0; i < routes.size(); i++)
+                {
+                        userLocked = ((CCURoute) routes.get(i)).getCarrierRoute().getUserLocked();
+                        reset = ((CCURoute) routes.get(i)).getCarrierRoute().getResetRptSettings();
+                        if (userLocked.equals("Y"))
+                                continue;
+                        else if (reset.equals("Y"))
+                                total++;
+                }
+                return total;
+        }
     /**
      * This method recalculates the fixed and variable bits for carrier routes.
      * If 'all' is true it recalculates for all of the routes.
@@ -282,9 +282,9 @@ public class RegenerateRoute
             // return newCcuFixedBit, newCcuVariableBits.
             // #####################################
 
+            ccu.getCarrierRoute().setCcuFixBits(new Integer(newCcuFixedBit));
+            ccu.getCarrierRoute().setCcuVariableBits(new Integer(newCcuVariableBits));
             if (newCcuFixedBit != LARGE_VALID_FIXED) {
-                ccu.getCarrierRoute().setCcuFixBits(new Integer(newCcuFixedBit));
-                ccu.getCarrierRoute().setCcuVariableBits(new Integer(newCcuVariableBits));
                 newRptVariableBits = newCcuVariableBits;
 
                 for (int j = 0; j < repeatVector.size(); j++) {
@@ -315,26 +315,26 @@ public class RegenerateRoute
         return changingRoutes; //returns the routes whose settings have changed
     }
 
-	/**
-	 * Insert the method's description here.
-	 * Creation date: (6/3/2002 1:47:36 PM)
-	 * @param routes java.util.Vector
-	 */
-	public final static void updateRouteRoles(Vector routes)
-	{
-		try
-		{
-			for (int i = 0; i < routes.size(); i++)
-			{
-            routes.set( i, 
-				com.cannontech.database.Transaction.createTransaction(
-                  com.cannontech.database.Transaction.UPDATE, 
+        /**
+         * Insert the method's description here.
+         * Creation date: (6/3/2002 1:47:36 PM)
+         * @param routes java.util.Vector
+         */
+        public final static void updateRouteRoles(Vector routes)
+        {
+                try
+                {
+                        for (int i = 0; i < routes.size(); i++)
+                        {
+            routes.set( i,
+                                com.cannontech.database.Transaction.createTransaction(
+                  com.cannontech.database.Transaction.UPDATE,
                   ((DBPersistent) routes.get(i)) ).execute() );
-			}
-		}
-		catch (com.cannontech.database.TransactionException t)
-		{
-			com.cannontech.clientutils.CTILogger.error( t.getMessage(), t );
-		}
-	}
+                        }
+                }
+                catch (com.cannontech.database.TransactionException t)
+                {
+                        com.cannontech.clientutils.CTILogger.error( t.getMessage(), t );
+                }
+        }
 }
