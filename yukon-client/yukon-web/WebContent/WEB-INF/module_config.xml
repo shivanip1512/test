@@ -191,7 +191,12 @@
   <module name="stars">
     <skin name="purple"/>
   </module>
-  
+    
+  <module name="multispeak">
+    <skin name="standard"/>
+    <css file="setupStyle.css"/>
+  </module>
+      
    <module name="blank">
     <skin name="standard"/>
   </module>
