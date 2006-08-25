@@ -90,17 +90,11 @@ public class BillingDao {
                 + "     AND rph.timestamp = irph.date                                   "
                 + "     AND ypo.paobjectid = p.paobjectid                               "
                 + "     AND dmg.deviceid = ypo.paobjectid                               "
-//                        "   AND rph.timestamp > '2005-11-29 10:02:00.000'" + 
-//                        "   AND rph.timestamp < '2005-11-29 10:10:00.000'"
-//                + "     AND dmg.meternumber = '02722063'                               "
                 + getDeviceMeterGroupWhereClause(defaults)
                 + " ORDER BY                                                            "
                 + "     dmg.meternumber,                                                "
                 + "     dmg.deviceid,                                                   "
-//                 + " ypo.paoname, "
                 + "     p.pointoffset,                                                  "
-//                 + " dcs.address, "
-//                 + " p.pointid, "
                 + "     rph.timestamp DESC                                              ";
 
         Connection con = null;
