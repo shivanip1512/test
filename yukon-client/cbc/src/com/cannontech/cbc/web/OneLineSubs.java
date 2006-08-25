@@ -146,12 +146,9 @@ public class OneLineSubs implements MessageListener
     
     private CBCClientConnection getConnection()
     {
-    	//creates our own connection
-    	return (CBCClientConnection)ConnPool.getInstance().getConn(
-    					"ONELINE_CAPCONTROL");
+        //creates our own connection
+        return (CBCClientConnection)ConnPool.getInstance().getDefCapControlConn();
     }
-
-
 
     public void setDirBase(String dirBase) {
         this.dirBase = dirBase;
