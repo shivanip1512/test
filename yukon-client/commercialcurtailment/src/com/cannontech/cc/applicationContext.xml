@@ -138,5 +138,6 @@
   <bean id="customerPointTypeHelper" class="com.cannontech.support.CustomerPointTypeHelper">
       <property name="customerStubDao" ref="customerStubDao" />
       <property name="pointTypeLookup" ref="customerPointTypeLookup" />
+      <property name="pointDao" ref="pointDao" />
   </bean>
 </beans>
