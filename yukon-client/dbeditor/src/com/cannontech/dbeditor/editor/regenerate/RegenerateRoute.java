@@ -244,7 +244,10 @@ public class RegenerateRoute
                     row = fixbit;
                     newCcuVariableBits = varbit;
                 }
-            } else {
+            } else if (numRpts == 0) {
+                row = LARGE_VALID_FIXED;
+                newCcuVariableBits = LARGE_VALID_VARIABLE;
+            }else {
                 // Go find out where the route should be placed.
                 // This block could be a method
                 // ##################################
