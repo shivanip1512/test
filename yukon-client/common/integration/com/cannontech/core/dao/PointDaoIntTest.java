@@ -4,10 +4,8 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.lite.LitePointLimit;
-import com.cannontech.database.data.lite.LitePointUnit;
+import com.cannontech.database.data.lite.LiteRawPointHistory;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.point.PointTypes;
@@ -82,8 +80,8 @@ public class PointDaoIntTest extends TestCase {
         int id = pointDao.getPointIDByDeviceID_Offset_PointType(0, 0, PointTypes.SYSTEM_POINT);
     }
  
-    public void testRetrieveCICustomerPointData() {
-        Double d = pointDao.retrieveCICustomerPointData(0);
+    public void testGetPointData() {
+        List<LiteRawPointHistory> lrphList = pointDao.getPointData(0,null,null);
     }
 
     public void testGetCapBankMonitorPoints() { 

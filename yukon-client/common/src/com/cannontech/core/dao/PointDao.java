@@ -1,11 +1,13 @@
 package com.cannontech.core.dao;
 
+import java.util.Date;
 import java.util.List;
 
 import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LitePointLimit;
 import com.cannontech.database.data.lite.LitePointUnit;
+import com.cannontech.database.data.lite.LiteRawPointHistory;
 import com.cannontech.database.data.lite.LiteStateGroup;
 
 public interface PointDao {
@@ -103,12 +105,12 @@ public interface PointDao {
             int pointOffset, int pointType);
 
     /**
-     * Queries Rawpointhistory for the most recent entry for pointID.
-     * Use this function in when PointChangeCache does not give you the most recent PointData.
+     * Queries Rawpointhistory for the entries for pointID between startDate and stopDate.
+     * If either of the dates are null, the timestamp query is open on that end. 
      * @param pointID
      * @return
      */
-    public Double retrieveCICustomerPointData(int pointID);
+    public List<LiteRawPointHistory> getPointData(int pointID, Date startDate, Date stopDate);
 
     public List getCapBankMonitorPoints(CapBank capBank);
 

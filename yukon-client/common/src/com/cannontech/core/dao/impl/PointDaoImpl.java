@@ -1,11 +1,10 @@
 package com.cannontech.core.dao.impl;
 
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -17,11 +16,11 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LitePointLimit;
 import com.cannontech.database.data.lite.LitePointUnit;
+import com.cannontech.database.data.lite.LiteRawPointHistory;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.PAOGroups;
@@ -65,7 +64,13 @@ public final class PointDaoImpl implements PointDao {
             return createLitePointUnit(rs);
         };
     };
-    
+
+    private static final RowMapper litePointHistoryRowMapper = new RowMapper() {
+        public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
+            return createLitePointHistory(rs);
+        };
+    };
+
     private IDatabaseCache databaseCache;
     private JdbcOperations jdbcOps;
     private NextValueHelper nextValueHelper;
@@ -236,55 +241,41 @@ public final class PointDaoImpl implements PointDao {
 		return PointTypes.SYS_PID_SYSTEM; //not found
 	}
 	/* (non-Javadoc)
-     * @see com.cannontech.core.dao.PointDao#retrieveCICustomerPointData(int)
+     * @see com.cannontech.core.dao.PointDao#retrievePointData(int)
      */
-	public Double retrieveCICustomerPointData(int pointID)
+	public List<LiteRawPointHistory> getPointData(int pointID, Date startDate, Date stopDate)
 	{
-		Double data = new Double(0);
-		String sqlString = "SELECT TIMESTAMP, VALUE FROM " + RawPointHistory.TABLE_NAME +
-			" WHERE POINTID = " + pointID + 
-			" ORDER BY TIMESTAMP DESC ";
+        try {
+            int numArgs = 1;
+            String sqlString = "SELECT CHANGEID, POINTID, TIMESTAMP, QUALITY, VALUE " + 
+                               " FROM " + RawPointHistory.TABLE_NAME +
+                               " WHERE POINTID = ? ";
+                               if (startDate != null){
+                                   sqlString += " AND TIMESTAMP > ? ";
+                                   numArgs++;
+                               }
+                               if (stopDate != null){
+                                   sqlString += " AND TIMESTAMP <= ? ";
+                                   numArgs++;
+                               }
+                               sqlString += " ORDER BY TIMESTAMP";
+            int index = 0;                   
+            Object[] args = new Object[numArgs];
+            args[index++] = pointID;
+            if( startDate != null)
+                args[index++] = startDate;
+            if( stopDate != null)
+                args[index++] = stopDate;
+            CTILogger.info("Retrieve PointDate for ID: " + pointID + 
+                           "  - START DATE > " + (startDate != null ? startDate:"---") +
+                           "  -  STOP DATE <= " + (stopDate!= null ? stopDate:"---") );
+            List<LiteRawPointHistory> lrphList = jdbcOps.query(sqlString, args, litePointHistoryRowMapper);
+            return lrphList;
+        } catch (IncorrectResultSizeDataAccessException e) {
+            throw new NotFoundException("No pointdata retrieved for pointID: " + pointID);
+        }
+    }
 
-		Connection conn = null;
-		Statement stmt = null;
-		ResultSet rset = null;
-		try
-		{
-			conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-			stmt = conn.createStatement();
-			rset = stmt.executeQuery(sqlString);
-
-			while (rset.next())
-			{
-				Timestamp ts = rset.getTimestamp(1);
-				double value = rset.getDouble(2);
-
-				data = new Double(value);
-				break;
-			}
-		}
-		catch (java.sql.SQLException e)
-		{
-			CTILogger.error( e.getMessage(), e );
-		}
-		finally
-		{
-			try
-			{
-				if (rset != null)
-					rset.close();
-				if (stmt != null)
-					stmt.close();
-				if (conn != null)
-					conn.close();
-			}
-			catch (java.sql.SQLException e)
-			{
-				CTILogger.error( e.getMessage(), e );
-			}
-		}
-		return data;
-	}
 	/* (non-Javadoc)
      * @see com.cannontech.core.dao.PointDao#getCapBankMonitorPoints(com.cannontech.database.data.capcontrol.CapBank)
      */
@@ -369,6 +360,17 @@ public final class PointDaoImpl implements PointDao {
             new com.cannontech.database.data.lite.LitePointUnit( pointID, uomID, decimalPlaces);
         return lpu;
     }
-    
+
+    private static LiteRawPointHistory createLitePointHistory(ResultSet rset) throws SQLException {
+        int changeID = rset.getInt(1);
+        int pointID = rset.getInt(2);
+        Timestamp ts = rset.getTimestamp(3);
+        int quality = rset.getInt(4);
+        double value = rset.getDouble(5);
+        
+        LiteRawPointHistory lrph =
+            new LiteRawPointHistory( changeID, pointID, ts.getTime(), quality, value);
+        return lrph;
+    }
 
 }
