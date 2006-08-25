@@ -56,14 +56,19 @@ public class ErrorHelperFilter  implements Filter {
 		if (resp instanceof HttpServletResponse) {
 			HttpServletResponse httpResp = (HttpServletResponse)resp;
 			if (httpResp.isCommitted()) {
-				throw new RuntimeException("Can't output AJAX exception, already committed");
+				throw new RuntimeException("Can't output AJAX exception, already committed",t);
 			}
+			httpResp.reset();
 			httpResp.resetBuffer();
 			httpResp.setStatus(500);
-			httpResp.getWriter().print(t.getMessage());
+			try {
+				httpResp.getWriter().print(t.getMessage());
+			} catch (IllegalStateException e) {
+				throw new RuntimeException("Can't output AJAX exception, OutputStream already opened",t);
+			}
 			return;
 		}
-		throw new RuntimeException("Can't output AJAX exception, not HttpServletResponse");
+		throw new RuntimeException("Can't output AJAX exception, not HttpServletResponse",t);
 	}
 	
 	private boolean isAjaxRequest(ServletRequest req) {
