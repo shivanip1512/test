@@ -625,11 +625,18 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                         else
                         {
                             // Only a time refresh dynamic shed time refresh type should have its shed times adjusted based on constraints
-                            bool adjust_shed_time = (CtiLMProgramDirectGear::DynamicShedTimeMethodOptionType == refreshCountDownType);
+                            bool adjust_shed_time = (CtiLMProgramDirectGear::DynamicShedTimeMethodOptionType == refreshCountDownType ||
+                                                     CtiLMProgramDirectGear::FixedCountMethodOptionType == refreshCountDownType);
 
                             CtiLMGroupConstraintChecker con_checker(*this, currentLMGroup, secondsFrom1901);
+                            int oldShedTime = shedTime;
                             if(getConstraintOverride() || con_checker.checkControl(shedTime, adjust_shed_time))
                             {
+                                if(refreshCountDownType == CtiLMProgramDirectGear::FixedCountMethodOptionType && shedTime != oldShedTime)
+                                {
+                                    shedTime = oldShedTime;
+                                }
+
                                 groups_taken++;
                                 CtiRequestMsg* requestMsg = currentLMGroup->createTimeRefreshRequestMsg(refreshRate, shedTime, defaultLMStartPriority);
                                 startGroupControl(currentLMGroup, requestMsg, multiPilMsg);
@@ -2299,8 +2306,13 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(ULONG secondsFrom19
                             }
                         }
                         CtiLMGroupConstraintChecker con_checker(*this, currentLMGroup, secondsFrom1901);
+                        int oldShedTime = shedTime;
                         if(getConstraintOverride() || con_checker.checkControl(shedTime, true))
                         {
+                            if(refreshCountDownType == CtiLMProgramDirectGear::FixedCountMethodOptionType && shedTime != oldShedTime)
+                            {
+                                shedTime = oldShedTime;
+                            }
                             CtiRequestMsg* requestMsg = currentLMGroup->createTimeRefreshRequestMsg(refreshRate, shedTime, defaultLMStartPriority);
                             refreshGroupControl(currentLMGroup, requestMsg, multiPilMsg);
 
@@ -2400,8 +2412,13 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(ULONG secondsFrom19
                             }
                         }
                         CtiLMGroupConstraintChecker con_checker(*this, currentLMGroup, secondsFrom1901);
+                        int oldShedTime = shedTime;
                         if(getConstraintOverride() || con_checker.checkControl(shedTime, true))
                         {
+                            if(refreshCountDownType == CtiLMProgramDirectGear::FixedCountMethodOptionType && shedTime != oldShedTime)
+                            {
+                                shedTime = oldShedTime;
+                            }
                             groups_taken++;
                             CtiRequestMsg* requestMsg = currentLMGroup->createTimeRefreshRequestMsg(refreshRate, shedTime, defaultLMStartPriority);
                             startGroupControl(currentLMGroup, requestMsg, multiPilMsg);
@@ -3109,8 +3126,14 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                     } //end countdownmethod
 
                     CtiLMGroupConstraintChecker con_checker(*this, lm_group, secondsFrom1901);
+                    int oldShedTime = shed_time;
                     if(getConstraintOverride() || con_checker.checkControl(shed_time, true)) //adjust duration should follow fixed shed time?
                     {
+                        if(refresh_count_down_type == CtiLMProgramDirectGear::FixedCountMethodOptionType && shed_time != oldShedTime)
+                        {
+                            shed_time = oldShedTime;
+                        }
+
                         CtiRequestMsg* requestMsg = lm_group->createTimeRefreshRequestMsg(refresh_rate, shed_time, defaultLMRefreshPriority);
                         // If this group is inactive then we must be starting control...?
                         // This is important so that max control duration type constraints work -
