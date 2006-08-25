@@ -1,6 +1,5 @@
 package com.cannontech.database.data.point;
 
-
 import com.cannontech.database.data.lite.LitePoint;
 /**
  * POJO for monitor point that wraps around LitePoint instance

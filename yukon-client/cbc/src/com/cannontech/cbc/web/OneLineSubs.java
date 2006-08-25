@@ -29,10 +29,9 @@ public class OneLineSubs implements MessageListener
 	 */
 	public OneLineSubs()
 	{
-		super();
+		super();        
         setDirBase(CtiUtilities.getYukonBase() + CBCWebUtils.ONE_LINE_DIR);
-        
-    }
+	}
 
 
 
