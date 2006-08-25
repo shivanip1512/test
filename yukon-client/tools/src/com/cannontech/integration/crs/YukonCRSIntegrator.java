@@ -579,7 +579,7 @@ public final class YukonCRSIntegrator
 	               	if( lmHardwares.size() > 0)
 	               	{
 	               		YukonListEntry devStateEntry = null;
-                        int availableYukDefID = -1;
+                        int availableEntryID = -1;
 	               		YukonSelectionList invDevStateList = liteStarsEnergyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS);
 		               	for (int i = 0; i < invDevStateList.getYukonListEntries().size(); i++)
 		        		{
@@ -588,7 +588,7 @@ public final class YukonCRSIntegrator
 		        				devStateEntry = (YukonListEntry)invDevStateList.getYukonListEntries().get(i);
 		        			}
 		        			if( ((YukonListEntry)invDevStateList.getYukonListEntries().get(i)).getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL) {
-                                availableYukDefID = ((YukonListEntry)invDevStateList.getYukonListEntries().get(i)).getYukonDefID();
+                                availableEntryID = ((YukonListEntry)invDevStateList.getYukonListEntries().get(i)).getEntryID();
                             }
 		        		}
 		               	for (int i = 0; i < lmHardwares.size(); i++)
@@ -600,10 +600,10 @@ public final class YukonCRSIntegrator
 		               			lmHardwareBase.setInventoryID(hardware.getInventoryID());
 		               			lmHardwareBase.setLMHardwareBase(hardware);
 		               			lmHardwareBase = (com.cannontech.database.data.stars.hardware.LMHardwareBase)Transaction.createTransaction(Transaction.RETRIEVE, lmHardwareBase).execute();
-		               			
+		               			 
 				       			//Update the lmHardwareBase data object
                                 int currentState = lmHardwareBase.getInventoryBase().getCurrentStateID();
-                                if(currentState == availableYukDefID) {
+                                if(currentState == availableEntryID) {
                                     lmHardwareBase.getInventoryBase().setCurrentStateID(new Integer(devStateEntry.getEntryID()));
                                 }
 				       			lmHardwareBase = (com.cannontech.database.data.stars.hardware.LMHardwareBase)Transaction.createTransaction(Transaction.UPDATE, lmHardwareBase).execute();
