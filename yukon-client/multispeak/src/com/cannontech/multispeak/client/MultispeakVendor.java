@@ -7,9 +7,15 @@
 package com.cannontech.multispeak.client;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.util.Pair;
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.data.lite.LiteBase;
+import com.cannontech.multispeak.db.MultispeakInterface;
+import com.cannontech.multispeak.service.Meter;
+import com.cannontech.multispeak.service.Nameplate;
 
 /**
  * @author stacey
@@ -19,37 +25,35 @@ import com.cannontech.common.util.Pair;
  */
 public class MultispeakVendor
 {
-	public static final int COMPANY_NAME_INDEX = 0;
-	public static final int USERNAME_INDEX = 1;
-	public static final int PASSWORD_INDEX = 2;
-	public static final int UNIQUE_KEY_INDEX = 3;
-	public static final int URL_INDEX = 4;
-	public static final int FIRST_ENDPOINT_INDEX = 5;
-	//The serviceEndpoints are the indexes greater than URL_INDEX values
-	
-	private int rolePropertyID = 0;
+    public static final String CANNON_MSP_COMPANYNAME = "Cannon ";
+    
+	private Integer vendorID = null;
 	private String companyName = CtiUtilities.STRING_NONE;
 	private String userName = CtiUtilities.STRING_NONE;
 	private String password = CtiUtilities.STRING_NONE;
 	//Valid values are meternumber | devicename
 	private String uniqueKey = "meternumber";
-	private String url = "";
+    private int timeout = 0;
+	private String url = "http://127.0.0.1:8080/soap/";    //some default url string for formatting example
 	
-	private HashMap serviceToEndpointMap = null;
+	private List<MultispeakInterface> mspInterfaces = null;
 	
-	/**
-	 * 
-	 */
-	public MultispeakVendor(int rolePropID, String companyName_, String userName_, String password_, String uniqueKey_, String url_)
-	{
-		super();
-		rolePropertyID = rolePropID; 
-		companyName = companyName_;
-		userName = userName_;
-		password = password_;
-		uniqueKey = uniqueKey_;
-		url = url_;
-	}
+	public MultispeakVendor()
+    {
+        super();
+    }
+
+    public MultispeakVendor(Integer vendorID, String companyName, String userName, String password, String uniqueKey, int timeout, String url)
+    {
+        super();
+        this.vendorID = vendorID;
+        this.companyName = companyName;
+        this.userName = userName;
+        this.password = password;
+        this.uniqueKey = uniqueKey;
+        this.timeout = timeout;
+        this.url = url;
+    }
 
 	/**
 	 * @return
@@ -59,16 +63,40 @@ public class MultispeakVendor
 		return companyName;
 	}
 
+
+    /**
+     * @return Returns the mspInterfaces.
+     */
+    public List<MultispeakInterface> getMspInterfaces()
+    {
+        if( mspInterfaces == null)
+            
+            mspInterfaces = MultispeakFuncs.getMultispeakDao().getMultispeakInterfaces(getVendorID().intValue());
+        return mspInterfaces;
+    }
+
+    /**
+     * @param mspInterfaces The mspInterfaces to set.
+     */
+    public void setMspInterfaces(List<MultispeakInterface> mspInterfaces)
+    {
+        this.mspInterfaces = mspInterfaces;
+    }
+
+    
 	/**
 	 * @return
 	 */
-	public HashMap getServiceToEndpointMap()
+	@SuppressWarnings("unchecked")
+    public Map<String, MultispeakInterface> getMspInterfaceMap()
 	{
-		if( serviceToEndpointMap == null)
-			serviceToEndpointMap = new HashMap(4);
-		
-		return serviceToEndpointMap;
+        Map<String, MultispeakInterface> mspInterfaceMap = new HashMap<String, MultispeakInterface>();
+        for (MultispeakInterface mspInterface : getMspInterfaces())
+            mspInterfaceMap.put(mspInterface.getMspInterface(), mspInterface);
+
+        return mspInterfaceMap;
 	}
+    
 
 	/**
 	 * @return
@@ -111,14 +139,6 @@ public class MultispeakVendor
 	}
 
 	/**
-	 * @param map
-	 */
-	public void setServiceToEndpointMap(HashMap map)
-	{
-		serviceToEndpointMap = map;
-	}
-
-	/**
 	 * @param string
 	 */
 	public void setPassword(String string)
@@ -152,36 +172,67 @@ public class MultispeakVendor
 	/**
 	 * @return
 	 */
-	public int getRolePropertyID()
+	public Integer getVendorID()
 	{
-		return rolePropertyID;
+		return vendorID;
 	}
 
 	/**
 	 * @param i
 	 */
-	public void setRolePropertyID(int i)
+	public void setVendorID(Integer i)
 	{
-		rolePropertyID = i;
+		vendorID = i;
 	}
+    
+    /*public String getMeterObjectID(int deviceID)
+    {
+        if( getUniqueKey().toLowerCase().startsWith("device") || getUniqueKey().toLowerCase().startsWith("pao"))
+            return DaoFactory.getPaoDao().getLiteYukonPAO(deviceID).getPaoName();
+        else //if(key.toLowerCase().startsWith("meternum"))
+            return DaoFactory.getDeviceDao().getLiteDeviceMeterNumber(deviceID).getMeterNumber();
+    }*/
+    /*public LiteBase getMeterObjectID(int deviceID)
+    {
+        if( getUniqueKey().toLowerCase().startsWith("device") || getUniqueKey().toLowerCase().startsWith("pao"))
+            return DaoFactory.getPaoDao().getLiteYukonPAO(deviceID);
+        else //if(key.toLowerCase().startsWith("meternum"))
+            return DaoFactory.getDeviceDao().getLiteDeviceMeterNumber(deviceID);
+    }
+    
+    public LiteBase getMeterObject(String meterNumber)
+    {
+        if( getUniqueKey().toLowerCase().startsWith("device") || getUniqueKey().toLowerCase().startsWith("pao"))
+            return DaoFactory.getPaoDao().getLiteYukonPaoByName(meterNumber, false).get(0);
+        else //if(key.toLowerCase().startsWith("meternum"))
+            return DaoFactory.getDeviceDao().getLiteDeviceMeterNumber(0);
+    }
+    
+    public Meter getMeter(int deviceID)
+    {
+        String objectID = getMeterObjectID(deviceID);
+        return MultispeakFuncs.createMeter(objectID);
+    }
 
-	public static String createRolePropertyValue(String companyName, String username, String password, String uniqueKey, String url, Pair[] serviceEndpoints)
-	{
-		String returnStr = "";
-		returnStr += companyName + ",";
-		returnStr += username + ",";
-		returnStr += password + ",";
-		returnStr += uniqueKey + ",";
-		returnStr += url + ",";
+    public Nameplate getNameplate(int deviceID)
+    {
+        String objectID = getMeterObjectID(deviceID);
+        return MultispeakFuncs.getNameplate(objectID);
+    }*/
 
-		if( serviceEndpoints.length > 0)
-		{		
-			returnStr += serviceEndpoints[0].getFirst() + "=" +serviceEndpoints[0].getSecond();
-			
-			for(int i = 1; i < serviceEndpoints.length; i++)
-				returnStr += "," + serviceEndpoints[i].getFirst() + "=" +serviceEndpoints[i].getSecond();
-		}
+    /**
+     * @return Returns the timeout.
+     */
+    public int getTimeout()
+    {
+        return timeout;
+    }
 
-		return returnStr;
-	}
+    /**
+     * @param timeout The timeout to set.
+     */
+    public void setTimeout(int timeout)
+    {
+        this.timeout = timeout;
+    }
 }

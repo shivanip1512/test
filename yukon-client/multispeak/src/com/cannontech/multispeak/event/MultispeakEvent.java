@@ -8,6 +8,8 @@ package com.cannontech.multispeak.event;
 
 import java.util.Observable;
 
+import com.cannontech.multispeak.client.MultispeakVendor;
+
 /**
  * @author stacey
  *
@@ -17,19 +19,28 @@ import java.util.Observable;
 public class MultispeakEvent extends Observable{
     
 	/** The unique vendor name who initiated the event */
-	private String vendorName = "";
+	private MultispeakVendor mspVendor = null;
 	/** The unique messageID for all of the commands sent to pil */
 	private long pilMessageID = -1;
+    /** The number of commander messages this event is waiting for **/
+    private int returnMessages = 0;
 
 	/**
 	 * 
 	 */
-	public MultispeakEvent(String vendorName_, long pilMessageID_) {
-		super();
-		vendorName = vendorName_;
-		pilMessageID = pilMessageID_;
+	public MultispeakEvent(MultispeakVendor mspVendor_, long pilMessageID_) {
+		this(mspVendor_, pilMessageID_, 1);
 	}
 
+    /**
+     * 
+     */
+    public MultispeakEvent(MultispeakVendor mspVendor_, long pilMessageID_, int returnMessages_) {
+        super();
+        mspVendor = mspVendor_;
+        pilMessageID = pilMessageID_;
+        returnMessages = returnMessages_; 
+    }
 	/**
 	 * @return
 	 */
@@ -44,19 +55,39 @@ public class MultispeakEvent extends Observable{
 		pilMessageID = long1;
 	}
 
-	/**
-	 * @return
-	 */
-	public String getVendorName()
-	{
-		return vendorName;
-	}
+    /**
+     * @return Returns the mspVendor.
+     */
+    public MultispeakVendor getMspVendor()
+    {
+        return mspVendor;
+    }
 
-	/**
-	 * @param string
-	 */
-	public void setVendorName(String string)
-	{
-		vendorName = string;
-	}
+    /**
+     * @param mspVendor The mspVendor to set.
+     */
+    public void setMspVendor(MultispeakVendor mspVendor)
+    {
+        this.mspVendor = mspVendor;
+    }
+    /**
+     * @return Returns the returnMessages.
+     */
+    public int getReturnMessages()
+    {
+        return returnMessages;
+    }
+    /**
+     * @param returnMessages The returnMessages to set.
+     */
+    public void setReturnMessages(int returnMessages)
+    {
+        this.returnMessages = returnMessages;
+    }
+    
+    public void messageReceived() {
+        if( getReturnMessages() > 0)
+            returnMessages--;
+    }
+
 }

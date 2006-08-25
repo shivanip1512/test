@@ -6,7 +6,8 @@
  */
 package com.cannontech.multispeak.event;
 
-import com.cannontech.multispeak.OutageDetectionEvent;
+import com.cannontech.multispeak.client.MultispeakVendor;
+import com.cannontech.multispeak.service.OutageDetectionEvent;
 
 /**
  * @author stacey
@@ -22,12 +23,11 @@ public class ODEvent extends MultispeakEvent{
 	 * @param vendorName_
 	 * @param pilMessageID_
 	 */
-	public ODEvent(String vendorName_, long pilMessageID_)//, int meterCount_)
+	public ODEvent(MultispeakVendor mspVendor_, long pilMessageID_)//, int meterCount_)
 	{
-		super(vendorName_, pilMessageID_);
+		super(mspVendor_, pilMessageID_);
 	}
 
-	
     /**
      * @return
      */

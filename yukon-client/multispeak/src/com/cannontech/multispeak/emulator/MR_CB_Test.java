@@ -7,17 +7,24 @@
 package com.cannontech.multispeak.emulator;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.List;
 
 import org.apache.axis.client.Service;
 import org.apache.axis.message.SOAPHeaderElement;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.multispeak.ArrayOfErrorObject;
-import com.cannontech.multispeak.ArrayOfMeter;
-import com.cannontech.multispeak.ErrorObject;
-import com.cannontech.multispeak.MR_CBSoap_BindingStub;
-import com.cannontech.multispeak.Meter;
-import com.cannontech.multispeak.MeterRead;
+import com.cannontech.multispeak.service.ArrayOfErrorObject;
+import com.cannontech.multispeak.service.ArrayOfMeter;
+import com.cannontech.multispeak.service.ArrayOfMeterRead;
+import com.cannontech.multispeak.service.ErrorObject;
+import com.cannontech.multispeak.service.MR_CBSoap_BindingStub;
+import com.cannontech.multispeak.service.Meter;
+import com.cannontech.multispeak.service.MeterRead;
+import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.YukonMultispeakMsgHeader;
 
 /**
@@ -31,18 +38,21 @@ public class MR_CB_Test {
 	public static void main(String [] args)
 	{
 		try {
-			String endpointURL = "http://localhost:8080/3_1/soap/MR_CBSoap";
-			endpointURL = "http://10.100.10.25:80/soap/MR_CBSoap";
+			String endpointURL = "http://localhost:8080/head/soap/MR_CBSoap";
+//			endpointURL = "http://10.100.10.25:80/soap/MR_CBSoap";
 		  	MR_CBSoap_BindingStub instance = new MR_CBSoap_BindingStub(new URL(endpointURL), new Service());
 			
-			SOAPHeaderElement header = new SOAPHeaderElement("http://www.multispeak.org", "MultiSpeakMsgHeader", new YukonMultispeakMsgHeader());
+            YukonMultispeakMsgHeader msgHeader =new YukonMultispeakMsgHeader();
+            msgHeader.setCompany("milsoft");
+            
+			SOAPHeaderElement header = new SOAPHeaderElement("http://www.multispeak.org", "MultiSpeakMsgHeader", msgHeader);
 			instance.setHeader(header);
 
-			int todo = 0;	//0=meterRead, 1=getAMRSupportedMeters, 2=pingURL
+			int todo = 3;	//0=meterRead, 1=getAMRSupportedMeters, 2=pingURL, 3=getReadingsByMeterNo
 			
 			if (todo==0)
 			{
-			    MeterRead mr = instance.getLatestReadingByMeterNo("1010156108");	//1068048 whe
+			    MeterRead mr = instance.getLatestReadingByMeterNo("101015610");	//1068048 whe, 1010156108 sn_head/amr_demo
 				if( mr != null)
 				{
 				    CTILogger.info("MeterRead received: " + ( mr.getReadingDate() != null?mr.getReadingDate().getTime():null) + " : " +mr.getPosKWh());
@@ -55,7 +65,9 @@ public class MR_CB_Test {
 			}
 			else if( todo == 1)
 			{
-				ArrayOfMeter meters = new ArrayOfMeter();
+                List<Meter>meters = MultispeakFuncs.getMultispeakDao().getAMRSupportedMeters("0", "meternumber");
+                System.out.println(meters.size());
+/*				ArrayOfMeter meters = new ArrayOfMeter();
 				meters = instance.getAMRSupportedMeters("10224712");//new String ("MCT - Annandale Broadcast"));
 				if (meters != null && meters.getMeter().length > 0)
 				{
@@ -67,7 +79,7 @@ public class MR_CB_Test {
 	//					String obj = strings.getString(i);
 	//					System.out.println("Method" + i + ": " + obj);
 					}
-				}
+				}*/
 			}
 			else if (todo == 2)
 			{
@@ -79,6 +91,26 @@ public class MR_CB_Test {
 						ErrorObject obj = objects.getErrorObject(i);
 						System.out.println("Ping" + i + ": " + obj.getErrorString());
 					}
+				}
+			}
+			else if( todo == 3)
+			{
+				GregorianCalendar cal = new GregorianCalendar();
+				cal.set(Calendar.MONTH, Calendar.JULY);
+				cal.set(Calendar.YEAR, 2006);
+				cal.set(Calendar.DAY_OF_MONTH, 1);
+				cal.set(Calendar.HOUR_OF_DAY, 1);
+				cal.set(Calendar.MINUTE, 0);
+				cal.set(Calendar.SECOND, 0);
+				cal.set(Calendar.MILLISECOND, 0);
+
+				GregorianCalendar endCal = (GregorianCalendar)cal.clone();
+				endCal.add(Calendar.MONTH, 2);
+				ArrayOfMeterRead amr = instance.getReadingsByMeterNo("01071861", cal, endCal);	//1068048 whe, 1010156108 sn_head/amr_demo
+				if( amr != null)
+				{
+					CTILogger.info("MeterRead received: " + amr.getMeterRead().length + " : " );
+//									CTILogger.info("MeterRead Error String: " + mr.getErrorString());
 				}
 			}
 		} catch (Exception e) {

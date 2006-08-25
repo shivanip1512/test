@@ -7,7 +7,9 @@
 package com.cannontech.multispeak.event;
 
 
-import com.cannontech.multispeak.MeterRead;
+import com.cannontech.multispeak.client.MultispeakVendor;
+import com.cannontech.multispeak.data.ReadableDevice;
+
 
 /**
  * @author stacey
@@ -17,19 +19,36 @@ import com.cannontech.multispeak.MeterRead;
  */
 public class MeterReadEvent extends MultispeakEvent{
 
-    private MeterRead meterRead = null;
-	/**
-	 * 
-	 */
-	public MeterReadEvent(String vendorName_, long pilMessageID_) {
-		super(vendorName_, pilMessageID_);
-	}
-    public MeterRead getMeterRead()
-    {
-        return meterRead;
+    private ReadableDevice device = null;
+
+    /**
+     * @param mspVendor_
+     * @param pilMessageID_
+     * @param returnMessages_
+     */
+    public MeterReadEvent(MultispeakVendor mspVendor_, long pilMessageID_, int returnMessages_) {
+        super(mspVendor_, pilMessageID_, returnMessages_);
     }
-    public void setMeterRead(MeterRead meterRead)
+    
+	/**
+	 * @param mspVendor_
+	 * @param pilMessageID_
+	 */
+	public MeterReadEvent(MultispeakVendor mspVendor_, long pilMessageID_) {
+		this(mspVendor_, pilMessageID_, 1);
+	}
+    /**
+     * @return Returns the device.
+     */
+    public ReadableDevice getDevice()
     {
-        this.meterRead = meterRead;
+        return device;
+    }
+    /**
+     * @param device The device to set.
+     */
+    public void setDevice(ReadableDevice device)
+    {
+        this.device = device;
     }
 }

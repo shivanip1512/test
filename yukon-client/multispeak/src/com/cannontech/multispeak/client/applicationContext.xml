@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <bean id="mrCb" class="com.cannontech.multispeak.service.impl.MR_CBImpl">
+    <property name="multispeakDao" ref="multispeakDao"/>
+  </bean>
+    <bean id="cdCb" class="com.cannontech.multispeak.service.impl.CD_CBImpl">
+    <property name="multispeakDao" ref="multispeakDao"/>
+  </bean>
+    <bean id="mrEa" class="com.cannontech.multispeak.service.impl.MR_EAImpl">
+    <property name="multispeakDao" ref="multispeakDao"/>
+  </bean>
+    <bean id="mrOa" class="com.cannontech.multispeak.service.impl.MR_OAImpl">
+    <property name="multispeakDao" ref="multispeakDao"/>
+  </bean>
+    <bean id="odOa" class="com.cannontech.multispeak.service.impl.OD_OAImpl">
+    <property name="multispeakDao" ref="multispeakDao"/>
+  </bean>
+  
+  <bean id="multispeakDao" class="com.cannontech.multispeak.dao.impl.MultispeakDaoImpl">
+    <property name="jdbcOps" ref="jdbcTemplate"/> 
+    <property name="transactionTemplate" ref="transactionTemplate"/> 
+    <property name="databaseCache" ref="databaseCache"/>   
+    <property name="nextValueHelper" ref="nextValueHelper"/>  
+  </bean>
+  
+    <bean id="mspRawPointHistoryDao" class="com.cannontech.multispeak.dao.impl.RawPointHistoryDaoImpl">
+    <property name="jdbcOps" ref="jdbcTemplate"/> 
+    <property name="transactionTemplate" ref="transactionTemplate"/> 
+    <property name="databaseCache" ref="databaseCache"/>   
+    <property name="nextValueHelper" ref="nextValueHelper"/>  
+  </bean>
+  
+</beans>

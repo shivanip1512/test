@@ -11,13 +11,13 @@ import java.util.GregorianCalendar;
 
 import org.apache.axis.message.SOAPHeaderElement;
 
-import com.cannontech.multispeak.ArrayOfErrorObject;
-import com.cannontech.multispeak.ArrayOfString;
-import com.cannontech.multispeak.ErrorObject;
-import com.cannontech.multispeak.OD_OA;
-import com.cannontech.multispeak.OD_OALocator;
-import com.cannontech.multispeak.OD_OASoap_BindingStub;
-import com.cannontech.multispeak.OD_OASoap_PortType;
+import com.cannontech.multispeak.service.ArrayOfErrorObject;
+import com.cannontech.multispeak.service.ArrayOfString;
+import com.cannontech.multispeak.service.ErrorObject;
+import com.cannontech.multispeak.service.OD_OA;
+import com.cannontech.multispeak.service.OD_OALocator;
+import com.cannontech.multispeak.service.OD_OASoap_BindingStub;
+import com.cannontech.multispeak.service.OD_OASoap_PortType;
 import com.cannontech.multispeak.client.YukonMultispeakMsgHeader;
 
 
@@ -30,32 +30,29 @@ import com.cannontech.multispeak.client.YukonMultispeakMsgHeader;
 public class OD_OA_Test {
 
 	private OD_OASoap_PortType port = null;
-	private String endpointURL = "http://localhost:8080/3_1/services/OD_OASoap";
-	private SOAPHeaderElement header = new SOAPHeaderElement("http://www.multispeak.org", "MultiSpeakMsgHeader", new YukonMultispeakMsgHeader());
+	private String endpointURL = "http://10.100.10.25/soap/OD_OASoap";
+	private SOAPHeaderElement header;
 	
 	public static void main(String [] args)
 	{
 		OD_OA_Test test = new OD_OA_Test();
-
+		YukonMultispeakMsgHeader testHeader = new YukonMultispeakMsgHeader();
+		testHeader.setCompany("milsoft");
+		test.header = new SOAPHeaderElement("http://www.multispeak.org", "MultiSpeakMsgHeader", testHeader);
 		try {
 			if( args != null && args.length > 0)
 			{
 				test.endpointURL = args[0]; 
 			}
 			String[] mn = new String[3];
-			mn[0] = "101015611";
-			mn[1] = "101015610";
-			mn[2] = "1010156107";
+			mn[0] = "86200262";
+			mn[1] = "86200263";
+			mn[2] = "86200264";
 			if( args.length > 2)	// comma separated list of meter numbers
 			{
 				String m = args[2];
 				mn  = m.split(",");
 			}
-			
-				
-//			test.endpointURL = "http://localhost:8080/3_1/services/OD_OASoap";
-//			test.endpointURL = "http://localhost:90/3_1/services/OD_OASoap";
-//			test.endpointURL = "http://65.201.119.107:80/soap/OA_ODSoap";
 			
 			OD_OA service = new OD_OALocator();
 			((OD_OALocator)service).setOD_OASoapEndpointAddress(test.endpointURL);
@@ -74,7 +71,7 @@ public class OD_OA_Test {
 					test.pingURLTest();
 			}
 			else	//if all else fails, ping!
-				test.pingURLTest();
+				test.initiateOutageDetectionTest(mn);
 
 						
 		} catch (Exception e) {
