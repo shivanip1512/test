@@ -934,12 +934,12 @@ public class YukonSwitchCommandAction implements ActionBase {
         if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_VERSACOM) 
         {
             commFile = new File(ecDir, ServerUtils.VERSACOM_FILE);
-            cmd = "1," + liteHw.getManufacturerSerialNumber() + ",OUT";
+            cmd = "1," + liteHw.getManufacturerSerialNumber() + "," + loadGroupName;
         }
         else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_EXPRESSCOM) 
         {
             commFile = new File(ecDir, ServerUtils.EXPRESSCOM_FILE);
-            cmd = "1," + liteHw.getManufacturerSerialNumber() + ",OUT";
+            cmd = "1," + liteHw.getManufacturerSerialNumber() + "," + loadGroupName;
         }
         else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA205) 
         {
