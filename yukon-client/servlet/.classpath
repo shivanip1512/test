@@ -33,5 +33,7 @@
 	<classpathentry kind="src" path="/tools"/>
 	<classpathentry kind="lib" path="/third-party/saaj.jar"/>
 	<classpathentry kind="src" path="/multispeak"/>
+	<classpathentry sourcepath="C:/axis1_2/src" kind="lib" path="/third-party/axis.jar"/>
+	<classpathentry kind="lib" path="/third-party/jaxrpc.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
