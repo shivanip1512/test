@@ -14,6 +14,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.model.ModelFactory;
 
 /**
  * Created on Dec 15, 2003
@@ -69,6 +70,9 @@ public class CapControlNewActivityModel extends ReportModelBase
 	public CapControlNewActivityModel(Date start_, Date stop_)
 	{
 		super(start_, stop_);
+        setFilterModelTypes(new int[]{
+                ModelFactory.CAPCONTROLSTRATEGY}
+            );
 	}	
 	/**
 	 * Add MissedMeter objects to data, retrieved from rset.
@@ -116,8 +120,16 @@ public class CapControlNewActivityModel extends ReportModelBase
 		    " AND FEED.FEEDERID = BANK.FEEDERID " +
 		    " AND BANK.DEVICEID = CB.DEVICEID "+
 		    " AND SUB.FEEDERID = FEED.FEEDERID "+
-		    " AND DATETIME > ? AND DATETIME <= ? " +
-		    " ORDER BY SUB.SUBSTATIONBUSID, FEED.FEEDERID ");
+		    " AND DATETIME > ? AND DATETIME <= ? ");
+        if (getPaoIDs() != null && getPaoIDs().length > 0)
+        {
+            sql.append(" AND SUB.SUBSTATIONBUSID IN ( " + getPaoIDs()[0] +" ");
+            for (int i = 1; i < getPaoIDs().length; i++)
+                sql.append(" , " + getPaoIDs()[i]);
+                    
+            sql.append(")");
+        }
+            sql.append(" ORDER BY SUB.SUBSTATIONBUSID, FEED.FEEDERID ");
 		
 		if (getOrderBy() == ORDER_BY_CAP_BANK_NAME)
 			sql.append(", CB.DEVICEID, CB.CONTROLDEVICEID, DATETIME " );
