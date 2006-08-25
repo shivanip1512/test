@@ -115,7 +115,7 @@
 		}
 	}
 
-	IMACSConnection conn = (IMACSConnection)(ConnPool.getInstance().getConn(ConnPool.MACS_CONN));
+	IMACSConnection conn = (IMACSConnection)(ConnPool.getInstance().getDefMacsConn());
 
 	if( conn != null )
 	{

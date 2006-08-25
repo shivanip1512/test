@@ -297,7 +297,7 @@ private boolean executeCheckPorterConnection()
         
         //get his own porter connection
         ClientConnection portConn = 
-            (ClientConnection)ConnPool.getInstance().getConn("rat_porter");
+            (ClientConnection)ConnPool.getInstance().getDefPorterConn();
 
         portConn.setHost( getYukonHost() );
         portConn.setPort( PORTER_PORT );
