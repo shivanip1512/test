@@ -117,7 +117,7 @@ function vendorChanged(vendor)
           <a id="mspMethods<c:out value="${mspPossibleInterface}"/>" href='JavaScript:;' style='cursor:default' class="Link4" name="getMethods">Methods</a>
       </td>
       <c:if test="${status.first}">
-      <td rowspan='<%=MultispeakFuncs.MSP_INTERFACE_ARRAY.length%>'>
+      <td rowspan='<%=MultispeakDefines.MSP_INTERFACE_ARRAY.length%>'>
         <textarea name="Results" readonly wrap="VIRTUAL" style='color:<c:out value="${sessionScope.resultColor}"/>'><c:out value="${sessionScope.MSP_RESULT_MSG}"/></textarea>
       </td>
       </c:if>          
