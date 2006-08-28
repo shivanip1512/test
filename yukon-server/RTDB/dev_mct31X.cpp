@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct31X.cpp-arc  $
-* REVISION     :  $Revision: 1.55 $
-* DATE         :  $Date: 2006/07/25 22:16:19 $
+* REVISION     :  $Revision: 1.56 $
+* DATE         :  $Date: 2006/08/28 16:54:33 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2005,7 +2005,10 @@ INT CtiDeviceMCT31X::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
     CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg *pData     = NULL;
 
-    setScanFlag(ScanRateAccum, false);  //resetScanFlag(ScanPending);
+    if( InMessage->Sequence == Emetcon::Scan_Accum )
+    {
+        setScanFlag(ScanRateAccum, false);
+    }
 
     if( getMCTDebugLevel(MCTDebug_Scanrates) )
     {

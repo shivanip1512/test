@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct2XX.cpp-arc  $
-* REVISION     :  $Revision: 1.34 $
-* DATE         :  $Date: 2006/07/25 22:16:19 $
+* REVISION     :  $Revision: 1.35 $
+* DATE         :  $Date: 2006/08/28 16:54:33 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -181,7 +181,10 @@ INT CtiDeviceMCT2XX::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
     INT ErrReturn =  InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
-    setScanFlag(ScanRateAccum, false);
+    if( InMessage->Sequence == Emetcon::Scan_Accum )
+    {
+        setScanFlag(ScanRateAccum, false);
+    }
 
     if( getMCTDebugLevel(MCTDebug_Scanrates) )
     {

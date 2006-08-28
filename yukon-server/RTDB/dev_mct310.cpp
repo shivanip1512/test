@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.52 $
-* DATE         :  $Date: 2006/07/25 22:11:44 $
+* REVISION     :  $Revision: 1.53 $
+* DATE         :  $Date: 2006/08/28 16:54:33 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -769,7 +769,10 @@ INT CtiDeviceMCT310::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
     ULONG RecentValue = 0;
     USHORT TempDevType;
 
-    setScanFlag(ScanRateAccum, false);
+    if( InMessage->Sequence == Emetcon::Scan_Accum )
+    {
+        setScanFlag(ScanRateAccum, false);
+    }
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {

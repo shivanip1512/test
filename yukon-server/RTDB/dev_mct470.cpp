@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.53 $
-* DATE         :  $Date: 2006/08/08 13:37:05 $
+* REVISION     :  $Revision: 1.54 $
+* DATE         :  $Date: 2006/08/28 16:54:33 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1745,7 +1745,7 @@ INT CtiDeviceMCT470::executeGetConfig( CtiRequestMsg         *pReq,
                 OutMessage->Sequence  = function;         // Helps us figure it out later!
                 OutMessage->Retry     = 2;
                 OutMessage->Request.RouteID   = getRouteID();
-    
+
                 strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
                 outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
                 incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
@@ -2754,6 +2754,10 @@ INT CtiDeviceMCT470::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
     resetScanFlag(ScanFreezePending);
     resetScanFlag(ScanFreezeFailed);
 
+    if( InMessage->Sequence == Emetcon::Scan_Accum )
+    {
+        setScanFlag(ScanRateAccum, false);
+    }
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
@@ -3327,7 +3331,7 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                         pi.value = boost::static_pointer_cast<CtiPointNumeric>(tempPoint)->computeValueForUOM(pi.value);
 
                         point_string = getName() + " / " + tempPoint->getName() + " = " + CtiNumStr(pi.value, boost::static_pointer_cast<CtiPointNumeric>(tempPoint)->getPointUnits().getDecimalPlaces());
-        
+
                         ReturnMsg->PointData().push_back(makePointDataMsg(tempPoint, pi, point_string));
                     }
                     else
@@ -3346,7 +3350,7 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                         pi.value = boost::static_pointer_cast<CtiPointNumeric>(tempPoint)->computeValueForUOM(pi.value);
 
                         point_string = getName() + " / " + tempPoint->getName() + " = " + CtiNumStr(pi.value, boost::static_pointer_cast<CtiPointNumeric>(tempPoint)->getPointUnits().getDecimalPlaces());
-        
+
                         ReturnMsg->PointData().push_back(makePointDataMsg(tempPoint, pi, point_string));
                     }
                     else
@@ -3366,7 +3370,7 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                         if( !status && (tempPoint = getDevicePointOffsetTypeEqual(MCT470_PointOffset_DNPStatus_PrecannedStart+byte*8+bit, StatusPointType)))
                         {
                             point_string = getName() + " / " + tempPoint->getName() + " = " + CtiNumStr(pi.value);
-        
+
                             ReturnMsg->PointData().push_back(makePointDataMsg(tempPoint, pi, point_string));
                         }
                     }
@@ -3640,7 +3644,7 @@ INT CtiDeviceMCT470::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, lis
                     }
                 }
                 resultString += "For this read, the MCT point in the 470 was: " + CtiNumStr(mctPoint) + ". DNP points are real DNP point id's (0 based).\n";
-                
+
                 break;
             }
 
@@ -4081,7 +4085,7 @@ void CtiDeviceMCT470::decodeDNPRealTimeRead(BYTE *buffer, int readNumber, string
     if( buffer != NULL && ReturnMsg != NULL)
     {
         bool errorFlagSet = (buffer[0] & 0x01) ? true : false;
-    
+
         if( errorFlagSet )
         {
             resultString += "Error flag was set, points will not be updated \n";
@@ -4098,7 +4102,7 @@ void CtiDeviceMCT470::decodeDNPRealTimeRead(BYTE *buffer, int readNumber, string
             {
                 pi.value = (buffer[0] >> (i+1)) & 0x01;
                 point_string = getName() + " / " + tempPoint->getName() + " = " + CtiNumStr(pi.value);
-        
+
                 ReturnMsg->PointData().push_back(makePointDataMsg(tempPoint, pi, point_string));
             }
             else
@@ -4113,7 +4117,7 @@ void CtiDeviceMCT470::decodeDNPRealTimeRead(BYTE *buffer, int readNumber, string
             {
                 pi.value = (buffer[1] >> i) & 0x01;
                 point_string = getName() + " / " + tempPoint->getName() + " = " + CtiNumStr(pi.value);
-        
+
                 ReturnMsg->PointData().push_back(makePointDataMsg(tempPoint, pi, point_string));
             }
             else
@@ -4122,7 +4126,7 @@ void CtiDeviceMCT470::decodeDNPRealTimeRead(BYTE *buffer, int readNumber, string
             }
         }
 
-        
+
         for( i = 0; i < 3; i++ )
         {
             pi = getData(buffer+2*(i+1), 2, ValueType_Raw);
@@ -4156,7 +4160,7 @@ void CtiDeviceMCT470::decodeDNPRealTimeRead(BYTE *buffer, int readNumber, string
                 resultString += getName() + " / Pulse Accumulator point " + CtiNumStr(counteroffset+i) + " = " + CtiNumStr(pi.value) + "\n";
             }
         }
-        
+
     }
 }
 
@@ -4196,7 +4200,7 @@ void CtiDeviceMCT470::getBytesFromString(string &values, BYTE* buffer, int buffL
                 {
                     buffer[i*bytesPerValue + a] = 0;
                 }
-                
+
             }
         }
     }
