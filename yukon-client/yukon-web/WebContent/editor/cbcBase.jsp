@@ -16,6 +16,7 @@
 
 <cti:standardPage title="CapControl Wizard" module="capcontrol">
 <cti:includeScript link="/JavaScript/pointPicker.js"/>
+<cti:includeScript link="/JavaScript/tableCreation.js"/>
 <cti:includeScript link="/JavaScript/scrollDiv.js"/>
 <cti:includeScript link="/capcontrol/js/cbc_funcs.js"/>
 <cti:includeCss link="/WebConfig/yukon/styles/pointPicker.css"/>

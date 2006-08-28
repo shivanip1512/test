@@ -2,15 +2,19 @@
 <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h" %>
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %>
 <%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x" %>
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
+<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c"%>
+
 
 
 <f:subview id="feederSetup" rendered="#{capControlForm.visibleTabs['CBCFeeder']}" >
     <f:subview id="paoFeeder" rendered="#{capControlForm.visibleTabs['CBCFeeder']}" >    
     <f:verbatim>
     <script type="text/javascript">
-        addSmartScrolling('feederVarHiden', 'feederVarDiv', null, null);
-        addSmartScrolling('feederWattHiden', 'feederWattDiv', null,null);
-        addSmartScrolling('feederVoltHiden', 'feederVoltDiv', null,null);
+        formatSelectedPoint ('feederVarDiv');
+        formatSelectedPoint ('feederWattDiv');
+        formatSelectedPoint ('feederVoltDiv');
+
     </script>
 
 
@@ -19,164 +23,160 @@
     
 		<h:column>
 	    <f:verbatim><br/><br/><fieldset><legend>Feeder Info</legend></f:verbatim>    
-		<x:outputLabel for="fdrMapLocID" value="Map Location ID: " title="Mapping code/string used for third-party systems" />
-		<x:inputText id="fdrMapLocID" value="#{capControlForm.PAOBase.capControlFeeder.mapLocationID}" required="true" maxlength="64" />
+		<x:outputLabel for="fdrMapLocID" value="Map Location ID: " 
+        title="Mapping code/string used for third-party systems" />
+		<x:inputText id="fdrMapLocID" value="#{capControlForm.PAOBase.capControlFeeder.mapLocationID}" 
+        required="true" maxlength="64" />
 		<f:verbatim></fieldset></f:verbatim>
 
 
-	    <f:verbatim><br/><br/><fieldset><legend>VAR Point Setup</legend></f:verbatim>
-		<x:outputLabel for="varPoint" value="Selected Point: " title="Data point used for the current kVAR value" styleClass="medStaticLabel" />
-        <x:outputText id="varPoint" rendered="#{capControlForm.PAOBase.capControlFeeder.currentVarLoadPointID != 0}"
-        	value="#{capControlForm.paoNameMap[capControlForm.PAOBase.capControlFeeder.currentVarLoadPointID ]} / #{capControlForm.pointNameMap[capControlForm.PAOBase.capControlFeeder.currentVarLoadPointID ]}" styleClass="medLabel"/>
-        <x:outputText id="varPoint_none" rendered="#{capControlForm.PAOBase.capControlFeeder.currentVarLoadPointID == 0}"
-        	value="(none)" styleClass="medLabel"/>
+            <f:verbatim>
+                    <br />
+                    <br />
+                    <fieldset>
+                        <legend>
+                            Feeder Points
+                        </legend>
+                        <br/>
+                </f:verbatim>
+<x:dataList id="subPoints"
+    var="point"
+    value="#{capControlForm.dataModel.paoPoints}"
+    layout="unorderedList" 
+    styleClass="listWithNoBullets" >
+       <x:commandLink  value="#{point.pointName}"  actionListener="#{capControlForm.dataModel.goToPointEditor}">
+       <f:param name = "ptID" value="#{point.pointID}"/> 
+       </x:commandLink>
+</x:dataList>
 
+    <f:verbatim>
+                        <br/>
+    </f:verbatim>
 
-    	<x:div forceId="true" id="feederVarDiv" styleClass="scrollSmall">
-		<x:tree2 id="varPaoListTree" value="#{capControlForm.varTreeData}" var="node"
-				showRootNode="false" varNodeToggler="t"
-				preserveToggle="true" clientSideToggle="false" >
-		
-	        <f:facet name="root">
-	        	<x:panelGroup>
-					<x:outputText id="fdrRootLink" value="#{node.description}" />
-	        	</x:panelGroup>
-	        </f:facet>
+                    <f:verbatim>
+                    </fieldset>
 
-	        <f:facet name="paos">
-				<x:panelGroup>
-					<x:outputText id="paChCnt" value="#{node.description} (#{node.childCount})" rendered="#{!empty node.children}"/>
-	        	</x:panelGroup>
-	        </f:facet>
-			<f:facet name="sublevels">
-				<x:panelGroup>
-					<x:outputText id="subLvlCnt" value="#{node.description} (#{node.childCount})" rendered="#{!empty node.children}" />
-				</x:panelGroup>
-			</f:facet>
-			<f:facet name="points">
-				<x:panelGroup>
-                  	<x:graphicImage value="/editor/images/blue_check.gif" height="14" width="14" hspace="2"
-                  		rendered="#{capControlForm.PAOBase.capControlFeeder.currentVarLoadPointID == node.identifier}" />
-		            <x:commandLink id="ptLink" value="#{node.description}"
-						actionListener="#{capControlForm.varPtTeeClick}">
-			            <f:param name="ptID" value="#{node.identifier}"/>
-		            </x:commandLink>	            
-
-				</x:panelGroup>
-	        </f:facet>
-			
-		</x:tree2>
-		</x:div>
-		
-        <x:commandLink id="varPoint_setNone" title="Do not use a point for the VAR value"
-        			value="No VAR Point" actionListener="#{capControlForm.varPtTeeClick}" styleClass="medStaticLabel" >
-            <f:param name="ptID" value="0"/>
-        </x:commandLink>
-
-		<f:verbatim></fieldset></f:verbatim>
+                    </f:verbatim>
 		</h:column>
 		
 		<h:column>
-	    <f:verbatim><br/><br/><fieldset><legend>Watt Point Setup</legend></f:verbatim>
-		<x:outputLabel for="wattPoint" value="Selected Point: " title="Data point used for the current WATT value" styleClass="medStaticLabel"/>
-        <x:outputText id="wattPoint" rendered="#{capControlForm.PAOBase.capControlFeeder.currentWattLoadPointID != 0}" styleClass="medStaticLabel"
-        	value="#{capControlForm.paoNameMap[capControlForm.PAOBase.capControlFeeder.currentWattLoadPointID ]}/ #{capControlForm.pointNameMap[capControlForm.PAOBase.capControlFeeder.currentWattLoadPointID ]}" styleClass="medLabel"/>
-        <x:outputText id="wattPoint_none" rendered="#{capControlForm.PAOBase.capControlFeeder.currentWattLoadPointID == 0}"
-        	value="(none)" styleClass="medLabel"/>
 
-    	<x:div forceId="true" id="feederWattDiv" styleClass="scrollSmall">
-		<x:tree2 id="paoWattListTree" value="#{capControlForm.wattTreeData}" var="node"
-				showRootNode="false" varNodeToggler="t"
-				preserveToggle="true" clientSideToggle="false" >
-		
-	        <f:facet name="root">
-	        	<x:panelGroup>
-					<x:outputText id="fdrwRootLink" value="#{node.description}" />
-	        	</x:panelGroup>
-	        </f:facet>
+            <f:verbatim>
+                    <br />
+                    <br />
+                    <fieldset>
+                        <legend>
+                            VAR Point Setup
+                        </legend>
+                </f:verbatim>
 
-	        <f:facet name="paos">
-				<x:panelGroup>
-					<x:outputText id="wPAChCnt" value="#{node.description} (#{node.childCount})" rendered="#{!empty node.children}"/>
-	        	</x:panelGroup>
-	        </f:facet>
-			<f:facet name="sublevels">
-				<x:panelGroup>
-					<x:outputText id="subLvlCnt" value="#{node.description} (#{node.childCount})" rendered="#{!empty node.children}" />
-				</x:panelGroup>
-			</f:facet>	        
-			<f:facet name="points">
-				<x:panelGroup>
-                  	<x:graphicImage value="/editor/images/blue_check.gif" height="14" width="14" hspace="2"
-                  		rendered="#{capControlForm.PAOBase.capControlFeeder.currentWattLoadPointID == node.identifier}" />
-		            <x:commandLink id="wPtLink" value="#{node.description}"
-						actionListener="#{capControlForm.wattPtTeeClick}">
-			            <f:param name="ptID" value="#{node.identifier}"/>
-		            </x:commandLink>	            
-
-				</x:panelGroup>
-	        </f:facet>
-
-		</x:tree2>
-		</x:div>
-        <x:commandLink id="wattPoint_setNone" title="Do not use a point for the Watt value" styleClass="medStaticLabel"
-        			value="No Watt Point" actionListener="#{capControlForm.wattPtTeeClick}">
-            <f:param name="ptID" value="0"/>
-        </x:commandLink>
-		
-		<f:verbatim></fieldset></f:verbatim>
+                 <x:div id="feederVarDiv" forceId="true">
+                 <x:inputHidden id="var_point" forceId="true" 
+                 value="#{capControlForm.PAOBase.capControlFeeder.currentVarLoadPointID }" />      
+                 <x:outputLabel for="feederVarDevice" value="Selected Point: " 
+                 title="Data Point used for the current VAR value" styleClass="medStaticLabel"/>
+                 <x:outputText id="feederVarDevice" forceId="true" 
+                 value="#{capControlForm.paoNameMap[capControlForm.PAOBase.capControlFeeder.currentVarLoadPointID]}"/> 
+                 <x:outputText id="feederVarPoint" forceId="true" 
+                 value="#{capControlForm.pointNameMap[capControlForm.PAOBase.capControlFeeder.currentVarLoadPointID]}" /> 
+                <f:verbatim>
+                    <br/>
+                </f:verbatim>
+                    <h:outputLink  value="javascript:pointPicker_showPicker('var_point','com.cannontech.common.search.criteria.CCVarCriteria','pointName:feederVarPoint;deviceName:feederVarDevice')" >
+                       <h:outputText value="Select point..."/>
+                    </h:outputLink>
+                </x:div>
+                <f:verbatim>
+                    <br/>
+                </f:verbatim>
+                 <x:commandLink id="varPoint_setNone" title="Do not use a point for the VAR value" 
+                 styleClass="medStaticLabel"
+                    value="No Var Point" actionListener="#{capControlForm.varPtTeeClick}">
+                        <f:param name="ptID" value="0"/>
+                  </x:commandLink>
+                
+                <f:verbatim>
+                    </fieldset>
+                </f:verbatim>
 
 
-	    <f:verbatim><br/><br/><fieldset><legend>Volt Point Setup</legend></f:verbatim>
-		<x:outputLabel for="voltPoint" value="Selected Point: " title="Data point used for the current Volt value" styleClass="medStaticLabel"/>
-        <x:outputText id="voltPoint" rendered="#{capControlForm.PAOBase.capControlFeeder.currentVoltLoadPointID != 0}" styleClass="medStaticLabel"
-        	value="#{capControlForm.paoNameMap[capControlForm.PAOBase.capControlFeeder.currentVoltLoadPointID ]}
-        	/ #{capControlForm.pointNameMap[capControlForm.PAOBase.capControlFeeder.currentVoltLoadPointID ]}" styleClass="medLabel"/>
-        <x:outputText id="voltPoint_none" rendered="#{capControlForm.PAOBase.capControlFeeder.currentVoltLoadPointID == 0}"
-        	value="(none)" styleClass="medLabel"/>
+            <f:verbatim>
+                    <br />
+                    <br />
+                    <fieldset>
+                        <legend>
+                            WATT Point Setup
+                        </legend>
+                </f:verbatim>
 
-    	<x:div forceId="true" id="feederVoltDiv" styleClass="scrollSmall">
-		<x:tree2 id="voltPaoListTree" value="#{capControlForm.voltTreeData}" var="node"
-				showRootNode="false" varNodeToggler="t"
-				preserveToggle="true" clientSideToggle="false" >
+                 <x:div id="feederWattDiv" forceId="true">
+                 <x:inputHidden id="watt_point" forceId="true" 
+                 value="#{capControlForm.PAOBase.capControlFeeder.currentWattLoadPointID }" />      
+                 <x:outputLabel for="feederWattDevice" value="Selected Point: " 
+                 title="Data Point used for the current WATT value" 
+                 styleClass="medStaticLabel"/>
+                 <x:outputText id="feederWattDevice" forceId="true" 
+                 value="#{capControlForm.paoNameMap[capControlForm.PAOBase.capControlFeeder.currentWattLoadPointID]}"/> 
+                 <x:outputText id="feederWattPoint" forceId="true" 
+                 value="#{capControlForm.pointNameMap[capControlForm.PAOBase.capControlFeeder.currentWattLoadPointID]}" /> 
+                <f:verbatim>
+                    <br/>
+                </f:verbatim>
+                    <h:outputLink  value="javascript:pointPicker_showPicker('watt_point','com.cannontech.common.search.criteria.CCWattCriteria','pointName:feederWattPoint;deviceName:feederWattDevice')" >
+                       <h:outputText value="Select point..."/>
+                    </h:outputLink>
+                </x:div>
+                <f:verbatim>
+                    <br/>
+                </f:verbatim>
+                 <x:commandLink id="wattPoint_setNone" title="Do not use a point for the WATT value" 
+                 styleClass="medStaticLabel"
+                    value="No WATT Point" actionListener="#{capControlForm.wattPtTeeClick}">
+                        <f:param name="ptID" value="0"/>
+                  </x:commandLink>
+                
+                <f:verbatim>
+                    </fieldset>
+                </f:verbatim>
 
-	        <f:facet name="root">
-	        	<x:panelGroup>
-					<x:outputText id="fdrvltRootLink" value="#{node.description}" />
-	        	</x:panelGroup>
-	        </f:facet>
 
-	        <f:facet name="paos">
-				<x:panelGroup>
-					<x:outputText id="vltChCnt" value="#{node.description} (#{node.childCount})" rendered="#{!empty node.children}"/>
-	        	</x:panelGroup>
-	        </f:facet>
-			<f:facet name="sublevels">
-				<x:panelGroup>
-					<x:outputText id="subLvlCnt" value="#{node.description} (#{node.childCount})" rendered="#{!empty node.children}" />
-				</x:panelGroup>
-			</f:facet>
 
-			<f:facet name="points">
-				<x:panelGroup>
-                  	<x:graphicImage value="blue_check.gif" height="14" width="14" hspace="2"
-                  		rendered="#{capControlForm.PAOBase.capControlFeeder.currentVoltLoadPointID == node.identifier}" />
-		            <x:commandLink id="ptLink" value="#{node.description}"
-						actionListener="#{capControlForm.voltPtTeeClick}">
-			            <f:param name="ptID" value="#{node.identifier}"/>
-		            </x:commandLink>	            
+            <f:verbatim>
+                    <br />
+                    <br />
+                    <fieldset>
+                        <legend>
+                            VOLT Point Setup
+                        </legend>
+                </f:verbatim>
 
-				</x:panelGroup>
-	        </f:facet>
-
-		</x:tree2>
-		</x:div>
-        <x:commandLink id="voltPoint_setNone" title="Do not use a point for the Volt value" styleClass="medStaticLabel"
-        			value="No Volt Point" actionListener="#{capControlForm.voltPtTeeClick}" >
-            <f:param name="ptID" value="0"/>
-        </x:commandLink>
-		
-		<f:verbatim></fieldset></f:verbatim>
+                 <x:div id="feederVoltDiv" forceId="true">
+                 <x:inputHidden id="volt_point" forceId="true" value="#{capControlForm.PAOBase.capControlFeeder.currentVoltLoadPointID }" />      
+                 <x:outputLabel for="feederVoltDevice" value="Selected Point: " 
+                 title="Data Point used for the current VOLT value" styleClass="medStaticLabel"/>
+                 <x:outputText id="feederVoltDevice" forceId="true" 
+                 value="#{capControlForm.paoNameMap[capControlForm.PAOBase.capControlFeeder.currentVoltLoadPointID]}"/> 
+                 <x:outputText id="feederVoltPoint" forceId="true" 
+                 value="#{capControlForm.pointNameMap[capControlForm.PAOBase.capControlFeeder.currentVoltLoadPointID]}" /> 
+                <f:verbatim>
+                    <br/>
+                </f:verbatim>
+                    <h:outputLink  value="javascript:pointPicker_showPicker('volt_point','com.cannontech.common.search.criteria.CCVoltCriteria','pointName:feederVoltPoint;deviceName:feederVoltDevice')" >
+                       <h:outputText value="Select point..."/>
+                    </h:outputLink>
+                </x:div>
+                <f:verbatim>
+                    <br/>
+                </f:verbatim>
+                 <x:commandLink id="voltPoint_setNone" title="Do not use a point for the VOLT value" 
+                 styleClass="medStaticLabel"
+                    value="No VOLT Point" actionListener="#{capControlForm.voltPtTeeClick}">
+                        <f:param name="ptID" value="0"/>
+                  </x:commandLink>
+                
+                <f:verbatim>
+                    </fieldset>
+                </f:verbatim>
 
 		</h:column>
 		
@@ -184,9 +184,5 @@
 
 		
     </f:subview>
-    
-	<x:inputHidden id="feederVarHiden" forceId="true" value="#{capControlForm.offsetMap['feederVarHiden']}" />
-	<x:inputHidden id="feederWattHiden" forceId="true" value="#{capControlForm.offsetMap['feederWattHiden']}" />
-	<x:inputHidden id="feederVoltHiden" forceId="true" value="#{capControlForm.offsetMap['feederVoltHiden']}" />
 
 </f:subview>

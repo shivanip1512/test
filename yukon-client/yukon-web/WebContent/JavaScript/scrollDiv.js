@@ -32,6 +32,25 @@ function addSmartScrolling(hidden_id, div_id, indx_id, comp_id){
 	});
 }
 
-
-
-
+function formatSelectedPoint (d) {
+Event.observe (window, 'load', function () {
+	point           = $(d).getElementsByTagName('input')[0];
+	devSpan         = $(d).getElementsByTagName('span')[0];
+	pointSpan       = $(d).getElementsByTagName('span')[1];
+	var pickerLink  = $(d).getElementsByTagName('a')[0];
+	var slash = document.createElement ('span');
+	slash.innerText = '/';
+	$(pointSpan).insertAdjacentElement("BeforeBegin", slash);
+	if ($(point).value == 0) {
+	    $(devSpan).innerHTML = "(none)";
+	    $(pointSpan).innerHTML = "";
+	    slash.style.display = 'none';
+	    }
+	if ($(point).value != 0) {
+	    slash.style.display = 'inline';
+	    }
+	  Event.observe (pickerLink, 'click', function () {
+	        slash.style.display = 'inline';
+	  });    
+    });
+}

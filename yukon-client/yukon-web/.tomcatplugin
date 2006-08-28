@@ -67,6 +67,7 @@
         <webClassPathEntry>/third-party/jloox30.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/jradius-client.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/jruntags.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/json-lib-0.7.1.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/jta.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/jtds.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/led.jar</webClassPathEntry>
