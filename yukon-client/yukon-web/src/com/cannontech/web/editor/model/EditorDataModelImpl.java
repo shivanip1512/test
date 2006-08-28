@@ -1,0 +1,43 @@
+package com.cannontech.web.editor.model;
+
+import java.util.List;
+
+import javax.faces.application.FacesMessage;
+import javax.faces.event.ActionEvent;
+
+import com.cannontech.cbc.dao.CBCDaoFactory;
+import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.pao.YukonPAObject;
+import com.cannontech.database.db.DBPersistent;
+import com.cannontech.web.util.JSFParamUtil;
+
+public class EditorDataModelImpl implements EditorDataModel {
+  
+    private DBPersistent dbObj = null;
+
+    private final FacesMessage fm = new FacesMessage();
+    
+    public EditorDataModelImpl(DBPersistent dbPersistent) {
+        super();
+        dbObj = dbPersistent;
+
+    }
+
+    /**
+     * method will redirect to the util function that takes in the id of the point parent 
+     * and ptID parameter from the Faces request
+     * @param ae
+     */
+    public  void goToPointEditor (ActionEvent ae) {
+        JSFParamUtil.goToPointEditor(((YukonPAObject)dbObj).getPAObjectID(), fm);
+    }
+    
+    public List <LitePoint> getPaoPoints () {
+        return CBCDaoFactory.getCBCDao().getPaoPoints(((YukonPAObject)dbObj) );
+    }
+
+
+    public void updateDataModel() {
+        
+    }
+}
