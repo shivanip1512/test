@@ -132,8 +132,7 @@ public class PointDataIntervalModel extends ReportModelBase
 		setOrderBy(orderBy_);
 		setSortOrder(sortOrder_);
 		setFilterModelTypes(new int[]{
-//				ModelFactory.MCT,
-//				ModelFactory.METER,
+				ModelFactory.METER,
     			ModelFactory.COLLECTIONGROUP, 
     			ModelFactory.TESTCOLLECTIONGROUP, 
     			ModelFactory.BILLING_GROUP,

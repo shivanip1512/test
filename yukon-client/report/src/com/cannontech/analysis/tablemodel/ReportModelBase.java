@@ -9,16 +9,17 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.StringTokenizer;
 import java.util.TimeZone;
 import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.jfree.report.modules.output.csv.CSVQuoter;
-import org.jfree.report.modules.output.table.csv.CSVReportUtil;
 
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.Reportable;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
@@ -415,23 +416,41 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 		{
 			for(int i = 0; i < getFilterModelTypes().length; i++)
 			{
-				html += "      <div id='Div"+ ModelFactory.getModelString(getFilterModelTypes()[i]) +"' style='display:"+(i==0?"true":"none")+"'>" + LINE_SEPARATOR;
-				html += "        <select name='" + ATT_FILTER_MODEL_VALUES+ "' size='10' multiple style='width:350px;'>" + LINE_SEPARATOR;
-				List objects = getObjectsByModelType(getFilterModelTypes()[i]);
-				if (objects != null)
-				{
-					for (int j = 0; j < objects.size(); j++)
-					{
-					    if( objects.get(j) instanceof String)
-					        html += "          <option value='" + objects.get(j).toString()+ "'>" + objects.get(j).toString() + "</option>" + LINE_SEPARATOR;
-					    else if (objects.get(j) instanceof LiteYukonPAObject)
-					        html += "          <option value='" + ((LiteYukonPAObject)objects.get(j)).getYukonID() + "'>" + ((LiteYukonPAObject)objects.get(j)).getPaoName() + "</option>" + LINE_SEPARATOR;
-						else if (objects.get(j) instanceof LiteDeviceMeterNumber)
-							html += "          <option value='" + ((LiteDeviceMeterNumber)objects.get(j)).getDeviceID() + "'>" + ((LiteDeviceMeterNumber)objects.get(j)).getMeterNumber() + "</option>" + LINE_SEPARATOR;
-					}
-				}
+                if( getFilterModelTypes()[i] == ModelFactory.MCT || getFilterModelTypes()[i] == ModelFactory.METER ){
+                    html += "      <div id='Div"+ ModelFactory.getModelString(getFilterModelTypes()[i]) +"' style='display:"+(i==0?"true":"none")+"'>" + LINE_SEPARATOR;
+                    html += " ";
+                    html += "        <input type='text' name='" + ATT_FILTER_MODEL_VALUES+ "' style='width:500px;'/>" + LINE_SEPARATOR;
+                    html += "      " + LINE_SEPARATOR;
+                    html += "<BR><span class='NavText'>* Enter a comma separated list of Meter Number(s).</span><br></div>" + LINE_SEPARATOR;                    
+                }
+                else {
+    				html += "      <div id='Div"+ ModelFactory.getModelString(getFilterModelTypes()[i]) +"' style='display:"+(i==0?"true":"none")+"'>" + LINE_SEPARATOR;
+    				html += "        <select name='" + ATT_FILTER_MODEL_VALUES+ "' size='10' multiple style='width:350px;'>" + LINE_SEPARATOR;
+    				List objects = getObjectsByModelType(getFilterModelTypes()[i]);
+    				if (objects != null)
+    				{
+    					for (int j = 0; j < objects.size(); j++)
+    					{
+    					    if( objects.get(j) instanceof String)
+    					        html += "          <option value='" + objects.get(j).toString()+ "'>" + objects.get(j).toString() + "</option>" + LINE_SEPARATOR;
+    					    else if (objects.get(j) instanceof LiteYukonPAObject)
+    					        html += "          <option value='" + ((LiteYukonPAObject)objects.get(j)).getYukonID() + "'>" + ((LiteYukonPAObject)objects.get(j)).getPaoName() + "</option>" + LINE_SEPARATOR;
+    						else if (objects.get(j) instanceof LiteDeviceMeterNumber)
+    							html += "          <option value='" + ((LiteDeviceMeterNumber)objects.get(j)).getDeviceID() + "'>" + ((LiteDeviceMeterNumber)objects.get(j)).getMeterNumber() + "</option>" + LINE_SEPARATOR;
+    					}
+    				}
 				html += "        </select>" + LINE_SEPARATOR;
+                html += "<BR><span class='NavText'>* Hold &ltCTRL&gt key down to select multiple values</span><br>" + LINE_SEPARATOR;
+                html += "<span class='NavText'>* Hold &ltShift&gt key down to select range of values</span>" + LINE_SEPARATOR;
+                html += "      <div id='DivSelectAll' style='display:true'>" + LINE_SEPARATOR;
+                html += "        <input type='checkbox' name='selectAll' value='selectAll' onclick='selectAllFilter(this.checked, document.reportForm.filterValues);'>Select All" + LINE_SEPARATOR;
+                html += "      </div>" + LINE_SEPARATOR;
+                html += "      <div id='DivSelectNone' style='display:true'>" + LINE_SEPARATOR;         
+                html += "        <input type='button' value='Unselect All' onclick='selectNoneFilter(document.reportForm.filterValues);'/>";
+                html += "      </div>" + LINE_SEPARATOR;                
 				html += "      </div>" + LINE_SEPARATOR;
+                }
+
 			}
 		}
 		html += "    </td>" + LINE_SEPARATOR;
@@ -440,15 +459,7 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 		html += "    <td class='main' height='10' style='padding-left:5; padding-top:5'>" + LINE_SEPARATOR;
 		if( getFilterModelTypes() != null)
 		{
-			html += "<span class='NavText'>* Hold &ltCTRL&gt key down to select multiple values</span><br>" + LINE_SEPARATOR;
-			html += "<span class='NavText'>* Hold &ltShift&gt key down to select range of values</span>" + LINE_SEPARATOR;
-			html += "      <div id='DivSelectAll' style='display:true'>" + LINE_SEPARATOR;
-			html += "        <input type='checkbox' name='selectAll' value='selectAll' onclick='selectAllFilter(this.checked, document.reportForm.filterValues);'>Select All" + LINE_SEPARATOR;
-			html += "      </div>" + LINE_SEPARATOR;
-			html += "      <div id='DivSelectNone' style='display:true'>" + LINE_SEPARATOR;			
-			html += "        <input type='button' value='Unselect All' onclick='selectNoneFilter(document.reportForm.filterValues);'/>";
-			html += "      </div>" + LINE_SEPARATOR;
-			    
+			
 		}
 		html += "    </td>" + LINE_SEPARATOR;
 		html += "  </tr>" + LINE_SEPARATOR;
@@ -499,6 +510,27 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 				//Unload paoIDs
 				setPaoIDs(null);
 			}
+            else if( getFilterModelType() == ModelFactory.MCT ||
+                    getFilterModelType() == ModelFactory.METER) {
+             
+                String filterValueList = req.getParameter(ATT_FILTER_MODEL_VALUES).trim();
+                StringTokenizer st = new StringTokenizer(filterValueList, ",\t\n\r\f");
+                int[] idsArray = new int[st.countTokens()];
+                int i = 0;
+                while (st.hasMoreTokens()) {
+                    String meterNumber = st.nextToken().trim();
+                    LiteYukonPAObject lPao = DaoFactory.getDeviceDao().getLiteYukonPaobjectByMeterNumber(meterNumber);
+                    if( lPao != null) {
+                        idsArray[i++] = lPao.getYukonID();
+                    }
+                }
+                if( idsArray.length > 0 )
+                    setPaoIDs(idsArray);
+                else
+                    setPaoIDs(null);
+                
+            }
+                        
 			else	//Load PaobjectID int values
 			{
 				String[] paramArray = req.getParameterValues(ATT_FILTER_MODEL_VALUES);
@@ -613,10 +645,6 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 	            return cache.getAllLMGroups();
 	        case ModelFactory.DEVICE:
 	            return cache.getAllDevices();
-	        case ModelFactory.MCT:
-	            return cache.getAllMCTs();
-			case ModelFactory.DEVICE_METERNUMBER:
-				return cache.getAllDeviceMeterGroups();
 	        case ModelFactory.COLLECTIONGROUP:
 	            return cache.getAllDMG_CollectionGroups();
 	        case ModelFactory.TESTCOLLECTIONGROUP:
@@ -674,24 +702,6 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 				}
 				return rtus; 
 			}
-			case ModelFactory.METER:
-			{
-				List allPaos = cache.getAllYukonPAObjects();
-				List meters = null;
-				if( allPaos != null)
-				{
-					meters = new ArrayList();
-					for (int i = 0; i < allPaos.size(); i++)
-					{
-						LiteYukonPAObject lPao = (LiteYukonPAObject)allPaos.get(i);
-						if( DeviceTypesFuncs.isMCT(lPao.getType())
-							|| DeviceTypesFuncs.isMeter(lPao.getType()))
-						meters.add(lPao);
-					}
-				}
-				return meters; 
-			}
-			
 			case ModelFactory.CAPCONTROLSTRATEGY:
 			    return cache.getAllCapControlSubBuses();
 			default:

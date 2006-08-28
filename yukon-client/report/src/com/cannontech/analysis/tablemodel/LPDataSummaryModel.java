@@ -32,8 +32,7 @@ public class LPDataSummaryModel extends PointDataSummaryModel
 	{
 		super(start_, stop_);
 		setFilterModelTypes(new int[]{ 
-//				ModelFactory.MCT,
-//		        ModelFactory.METER,
+		        ModelFactory.METER,
     			ModelFactory.COLLECTIONGROUP, 
     			ModelFactory.TESTCOLLECTIONGROUP, 
     			ModelFactory.BILLING_GROUP}
