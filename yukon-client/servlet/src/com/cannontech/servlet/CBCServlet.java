@@ -143,38 +143,35 @@ public void doPost(HttpServletRequest req, HttpServletResponse resp) throws java
 {
 	HttpSession session = req.getSession( false );
 	LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);
+    String redirectURL = ParamUtil.getString( req, "redirectURL", null );
 
-	//handle any commands that a client may want to send to the CBC server
-	String redirectURL = ParamUtil.getString( req, "redirectURL", null );
-    Integer areaIndex = ParamUtil.getInteger(req, "areaIndex", -1);
-	//be sure we have a valid user and that user has the rights to control
-	if( user != null && CBCWebUtils.hasControlRights(session) ) {
-		
-		try {
-			
-            Writer writer = resp.getWriter();
-            if (areaIndex != -1) {
-                updateSubAreaMenu(areaIndex, writer);
-            }
-            else
-                //send the command with the id, type, paoid
-                executeCommand( req, user.getUsername() );
-		}
-		catch( Exception e ) {
-			CTILogger.warn( "Servlet request was attempted but failed for the following reason:", e );
-		}
-	}
-	else
-		CTILogger.warn( "CBC Command servlet was hit, but NO action was taken" );
-	
-/*
-	try {
-		Thread.sleep(CBCUtils.TEMP_MOVE_REFRESH);
-	} catch (InterruptedException e) {
-		CTILogger.warn("CBCServlet was interupted - doPost");
-	}*/
-	//always forward the client to the specified URL if present
-	if( redirectURL != null )
+    if (session != null) {
+    	//handle any commands that a client may want to send to the CBC server
+        Integer areaIndex = ParamUtil.getInteger(req, "areaIndex", -1);
+    	//be sure we have a valid user and that user has the rights to control
+    	if( user != null && CBCWebUtils.hasControlRights(session) ) {
+    		
+    		try {
+    			
+                Writer writer = resp.getWriter();
+                if (areaIndex != -1) {
+                    updateSubAreaMenu(areaIndex, writer);
+                }
+                else
+                    //send the command with the id, type, paoid
+                    executeCommand( req, user.getUsername() );
+    		}
+    		catch( Exception e ) {
+    			CTILogger.warn( "Servlet request was attempted but failed for the following reason:", e );
+    		}
+    	}
+    	else
+    		CTILogger.warn( "CBC Command servlet was hit, but NO action was taken" );
+    	
+
+    }
+    //always forward the client to the specified URL if present
+    if( redirectURL != null )
 		resp.sendRedirect( resp.encodeRedirectURL(req.getContextPath() + redirectURL) );
 }
 
