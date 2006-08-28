@@ -24,7 +24,7 @@
     <cti:crumbLink url="subareas.jsp" title="SubBus Areas"/>
 </cti:breadCrumbs>
 
-    <cti:titledContainer title="Substation Bus Areas">
+    <cti:titledContainer title="Substation Bus Areas" id="last_titled_container">
           
 		<form id="areaForm" action="subs.jsp" method="post">
 			<input type="hidden" name="<%=CBCSessionInfo.STR_CBC_AREA%>" />
@@ -154,4 +154,5 @@ if (areastate == 'DISABLED')
 
 </script>
       </cti:titledContainer>
+        <div id="cmd_msg_div" style="display: none;" />
 </cti:standardPage>

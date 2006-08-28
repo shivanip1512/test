@@ -338,7 +338,8 @@ switch (type) {
 		
     break;
  case 'area':
-    ajax_func += "'execute_SubAreaCommand (" + pao_id + "," + cmd_id + "); '";
+ 
+    ajax_func += "'execute_SubAreaCommand (" + pao_id + "," + cmd_id + "," + str_cmd + "); '";
     break;
 }
 	
@@ -426,12 +427,12 @@ function execute_CapBankMoveBack (paoId, command, redirect) {
 		
 } 
 
-function execute_SubAreaCommand (pao_id, cmd_id) {
+function execute_SubAreaCommand (pao_id, cmd_id, cmd_name) {
     new Ajax.Request('/servlet/CBCServlet', 
     { method:'post', 
       parameters:'paoID='+ pao_id +'&cmdID=' + cmd_id + '&controlType=AREA_TYPE',
         onSuccess: function () { display_status(cmd_name, "Message sent successfully", "green"); },
-        onFailure: function () { display_status('Move Bank', "Command failed", "red"); },
+        onFailure: function () { display_status(cmd_name, "Command failed", "red"); },
     asynchronous:true
     });
     var cmdDiv = document.getElementById ('area' + pao_id);
