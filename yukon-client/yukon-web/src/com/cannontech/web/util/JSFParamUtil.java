@@ -1,5 +1,8 @@
 package com.cannontech.web.util;
 
+import java.io.IOException;
+
+import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
@@ -8,6 +11,8 @@ import javax.servlet.http.HttpSession;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.LoginController;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.pao.YukonPAObject;
+import com.cannontech.servlet.nav.CBCNavigationUtil;
 
 /**
  * @author ryan
@@ -107,5 +112,30 @@ public class JSFParamUtil
 		}
 		else 
 			return (LiteYukonUser)session.getAttribute(LoginController.YUKON_USER);
-	} 
+	}
+    
+    public static void goToPointEditor (Integer parentID, final FacesMessage fm) {
+        try {
+            //make sure the point form will have the pao id
+            //of the cbc 
+            String red = "pointBase.jsf?parentId=" + parentID.toString() + "&itemid=";
+            String val = getJSFReqParam("ptID");
+            String location = red + val;
+            //bookmark the current page
+            HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
+            CBCNavigationUtil.bookmarkLocation(location, session);
+            FacesContext.getCurrentInstance().getExternalContext().redirect(location);
+            FacesContext.getCurrentInstance().responseComplete();
+        } 
+        catch (IOException e) {
+            fm.setDetail("ERROR - Couldn't redirect. CBControllerEditor:pointClick. " + e.getMessage());
+        } catch (Exception e) {
+            //add some code to handle null session exception
+        }
+        finally{
+            if(fm.getDetail() != null) {
+                FacesContext.getCurrentInstance().addMessage("point_click", fm);
+            }
+        }
+    }    
 }

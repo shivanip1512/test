@@ -15,6 +15,7 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.data.point.CBCPointTimestampParams;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.message.dispatch.message.PointData;
@@ -110,5 +111,11 @@ public class CBCDaoImpl  implements CBCDao{
     
     public void setDynamicDataSource(DynamicDataSource dynamicDataSource) {
         this.dynamicDataSource = dynamicDataSource;
+    }
+
+
+
+    public List<LitePoint> getPaoPoints(YukonPAObject pao) {
+        return  pointDao.getLitePointsByPaObjectId(pao.getPAObjectID());
     }
 }

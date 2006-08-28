@@ -36,7 +36,6 @@ import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.capcontrol.CCYukonPAOFactory;
 import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.capcontrol.CapBankController;
-import com.cannontech.database.data.capcontrol.CapBankController701x;
 import com.cannontech.database.data.capcontrol.CapBankController702x;
 import com.cannontech.database.data.capcontrol.CapControlFeeder;
 import com.cannontech.database.data.capcontrol.CapControlSubBus;
@@ -51,7 +50,6 @@ import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.pao.CapControlTypes;
 import com.cannontech.database.data.pao.PAOFactory;
 import com.cannontech.database.data.pao.PAOGroups;
-import com.cannontech.database.data.pao.TypeBase;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointTypes;
@@ -69,6 +67,8 @@ import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
 import com.cannontech.servlet.nav.DBEditorTypes;
 import com.cannontech.web.db.CBCDBObjCreator;
+import com.cannontech.web.editor.model.EditorDataModel;
+import com.cannontech.web.editor.model.EditorDataModelImpl;
 import com.cannontech.web.editor.point.PointLists;
 import com.cannontech.web.exceptions.AltBusNeedsSwitchPointException;
 import com.cannontech.web.exceptions.CBCExceptionMessages;
@@ -82,7 +82,6 @@ import com.cannontech.web.util.CBCSelectionLists;
 import com.cannontech.web.util.JSFParamUtil;
 import com.cannontech.web.util.JSFTreeUtils;
 import com.cannontech.web.wizard.CBCWizardModel;
-import com.cannontech.yukon.cbc.CBCUtils;
 
 /**
  * @author ryan
@@ -159,6 +158,8 @@ public class CapControlForm extends DBEditorForm{
     private Map paoNameMap = new HashMap();
  
     private Map pointNameMap = new HashMap();
+
+    private EditorDataModel dataModel = null;
 
     
     
@@ -597,8 +598,8 @@ public class CapControlForm extends DBEditorForm{
            {
                setEditingController(false);
            }
-            
-			initPanels(PAOGroups.getPAOType(((YukonPAObject) getDbPersistent())
+           initDataModel(getDbPersistent());
+           initPanels(PAOGroups.getPAOType(((YukonPAObject) getDbPersistent())
 					.getPAOCategory(), ((YukonPAObject) getDbPersistent())
 					.getPAOType()));
 
@@ -619,7 +620,15 @@ public class CapControlForm extends DBEditorForm{
 		initEditorPanels();
 	}
 
-	/**
+    //initiatiates data model for our specific object
+	private void initDataModel(DBPersistent dbPersistent) {
+            if ((dbPersistent instanceof CapControlSubBus) 
+                    || (dbPersistent instanceof CapControlFeeder))
+                dataModel = new EditorDataModelImpl (dbPersistent);
+    }
+
+
+    /**
 	 * Reset any data structures and allow the parent to do its thing
 	 * 
 	 */
@@ -866,22 +875,23 @@ public class CapControlForm extends DBEditorForm{
     						(ICapBankController)getDbPersistent()));
     			}
             }
-			
-            if (isDualSubBusEdited() &&  ( getDbPersistent() instanceof CapControlSubBus) ) {
-
-                if (!checkIfDualBusHasValidPoint() && getEnableDualBus().booleanValue()) {
-                    // save the old value
-                    // reset the model bean to the old value
-                    if (getOldSubBus() != null) {
-                        ((CapControlSubBus) getDbPersistent()).getCapControlSubstationBus()
-                                                              .setAltSubPAOId(getOldSubBus());
-                        setOldSubBus(null);
+			if ( getDbPersistent() instanceof CapControlSubBus) {
+                if (isDualSubBusEdited()) {
+    
+                    if (!checkIfDualBusHasValidPoint() && getEnableDualBus().booleanValue()) {
+                        // save the old value
+                        // reset the model bean to the old value
+                        if (getOldSubBus() != null) {
+                            ((CapControlSubBus) getDbPersistent()).getCapControlSubstationBus()
+                                                                  .setAltSubPAOId(getOldSubBus());
+                            setOldSubBus(null);
+                        }
+                        // inform the user they need to have a point picked
+                        throw new AltBusNeedsSwitchPointException();
                     }
-                    // inform the user they need to have a point picked
-                    throw new AltBusNeedsSwitchPointException();
                 }
             }
-            
+                
             updateDBObject(getDbPersistent(), facesMsg);
             
 		} catch (TransactionException te) {
@@ -893,6 +903,9 @@ public class CapControlForm extends DBEditorForm{
 					facesMsg);
 		}
 	}
+
+
+
 
     private boolean checkIfDualBusHasValidPoint() {
         // Integer altSubPAOId;
@@ -933,6 +946,7 @@ public class CapControlForm extends DBEditorForm{
         else {
             smartMulti = cbObjCreator.createChildItems(
     				paoType, new Integer(parentID));
+            
         }
 		
 
@@ -2113,5 +2127,19 @@ public class CapControlForm extends DBEditorForm{
                 FacesContext.getCurrentInstance().addMessage("pao_click", fm);
             }
         }
+    }
+
+
+    public EditorDataModel getDataModel() {
+       if (dataModel == null) {
+        if (getDbPersistent() != null)
+           initDataModel(getDbPersistent());
+       }
+        return dataModel;
+    }
+
+
+    public void setDataModel(EditorDataModel dataModel) {
+        this.dataModel = dataModel;
     }
 }

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.db.point.Point;
 
 /**
  * This type was created in VisualAge.
@@ -62,7 +63,11 @@ public void delete() throws java.sql.SQLException
 	//Delete from all dynamic SubBus cap control tables here
 	delete("DynamicCCSubstationBus", "SubstationBusID", getCapControlPAOID() );
 	
-	getCapControlSubstationBus().delete();
+    //delete all the points that belog to this sub
+	//there should be a constraint on pointid in point table
+    delete(Point.TABLE_NAME, Point.SETTER_COLUMNS[2], getCapControlPAOID());
+	
+    getCapControlSubstationBus().delete();
 
 	super.delete();
 }

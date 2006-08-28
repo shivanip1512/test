@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.db.point.Point;
 
 /**
  * This type was created in VisualAge.
@@ -68,7 +69,8 @@ public void delete() throws java.sql.SQLException
 	//Delete from all dynamic Feeder cap control tables here
 	delete("DynamicCCFeeder", "FeederID", getCapControlPAOID() );
 
-	
+    delete(Point.TABLE_NAME, Point.SETTER_COLUMNS[2], getCapControlPAOID());
+
 	getCapControlFeeder().delete();
 
 	super.delete();
