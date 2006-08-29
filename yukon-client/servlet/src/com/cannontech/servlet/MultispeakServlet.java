@@ -122,6 +122,7 @@ public class MultispeakServlet extends HttpServlet
         }
         else if( action.equalsIgnoreCase("Delete")) {
             deleteMultispeakInterface(session, mspVendor);
+            mspBean.setSelectedCompanyName("Cannon");   //set to default
         }        
         else if( action.equalsIgnoreCase("pingURL")) {
             pingURL(session, mspService, serviceURL);
