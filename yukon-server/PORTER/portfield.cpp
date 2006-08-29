@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.192 $
-* DATE         :  $Date: 2006/08/29 16:13:59 $
+* REVISION     :  $Revision: 1.193 $
+* DATE         :  $Date: 2006/08/29 21:20:37 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1031,7 +1031,7 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &D
                 {
                     if(OutMessage->EventCode & BWORD)
                     {
-                        if( OutMessage->Buffer.BSt.Address == CtiDeviceMCT410::UniversalAddress )
+                        if( OutMessage->Buffer.BSt.Address == CtiDeviceMCT4xx::UniversalAddress )
                         {
                             LoadMCT400BTimeMessage(OutMessage);
                         }
@@ -1120,7 +1120,7 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &D
                 /* check if we need to load the time into a time sync */
                 if(OutMessage->EventCode & TSYNC)
                 {
-                    if( OutMessage->Buffer.BSt.Address == CtiDeviceMCT410::UniversalAddress )
+                    if( OutMessage->Buffer.BSt.Address == CtiDeviceMCT4xx::UniversalAddress )
                     {
                         LoadMCT400BTimeMessage(OutMessage);
                     }
