@@ -3,7 +3,7 @@
 
 <beans>
 
-  <bean id="hibernateSessionFactory" class="com.cannontech.hibernate.LateLoadSessionFactoryBean">
+  <bean id="hibernateSessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
    <property name="dataSource" ref="yukonDataSource"/>
    <property name="annotatedClasses">
      <list>
