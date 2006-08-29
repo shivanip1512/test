@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.92 $
-* DATE         :  $Date: 2006/08/08 13:36:09 $
+* REVISION     :  $Revision: 1.93 $
+* DATE         :  $Date: 2006/08/29 22:33:49 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -835,6 +835,7 @@ INT CtiDeviceMCT::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
 
         case Emetcon::GetConfig_Time:
         case Emetcon::GetConfig_TSync:
+        case Emetcon::GetConfig_Holiday:
         case Emetcon::GetConfig_Raw:
         case Emetcon::GetConfig_DemandInterval:
         case Emetcon::GetConfig_LoadProfileInterval:
@@ -935,7 +936,7 @@ INT CtiDeviceMCT::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
     return status;
 }
 
-//  Note that the outmessage may/will be modified on exit!
+//Note that the outmessage may/will be modified on exit!
 bool CtiDeviceMCT::recordMessageRead(OUTMESS *OutMessage)
 {
     bool message_inserted = false;
@@ -1571,7 +1572,7 @@ INT CtiDeviceMCT::executeGetValue( CtiRequestMsg              *pReq,
         }
         else if( getType() == TYPEMCT410 )
         {
-            channels = CtiDeviceMCT410::MCT410_ChannelCount;
+            channels = CtiDeviceMCT410::ChannelCount;
         }
 
         for( int i = channels; i > 1; i-- )
@@ -2119,7 +2120,7 @@ INT CtiDeviceMCT::executeGetConfig(CtiRequestMsg                  *pReq,
     }
     else if(parse.isKeyValid("multiplier"))
     {
-        if( getType() != TYPEMCT470 && parse.isKeyValid("multchannel") )
+        if( parse.isKeyValid("multchannel") )
         {
             switch( parse.getiValue("multchannel") )
             {
@@ -2136,19 +2137,6 @@ INT CtiDeviceMCT::executeGetConfig(CtiRequestMsg                  *pReq,
         }
 
         found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
-
-        if( getType() == TYPEMCT470 && parse.isKeyValid("multchannel") )
-        {
-            if( parse.getiValue("multchannel") >= 1 &&
-                parse.getiValue("multchannel") <= CtiDeviceMCT470::MCT470_ChannelCount )
-            {
-                OutMessage->Buffer.BSt.Function += (parse.getiValue("multchannel") - 1) * CtiDeviceMCT470::MCT470_Memory_ChannelOffset;
-            }
-            else
-            {
-                found = false;
-            }
-        }
     }
     else if(parse.isKeyValid("interval"))
     {
@@ -2809,141 +2797,44 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
     {
         unsigned long multbytes;
 
-        if( getType() == TYPEMCT470 )
+        multbytes  = (unsigned long)(parse.getdValue("multiplier") * 100.0);
+
+        if( multbytes == 100 )
         {
-            double multiplier = parse.getdValue("multiplier");
-            int numerator, denominator;
-
-            function = Emetcon::PutConfig_Multiplier;
-            found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
-
-            if( found )
+            multbytes = 1000;  //  change it into the "pulses" value
+        }
+        else if( multbytes >= 1000 )
+        {
+            if( errRet )
             {
-                //  this is broken - you can't accumulate 50,000 pulses before acknowledging 40,000 pulses
-                //    so this is a faulty algorithm
-
-                /*
-
-                If Mp is greater than Kh, then the accumulator will accrue the difference, Mp - Kh, whenever a pulse is received.
-                If Mp = Kh + 1, then the accumulator will be able to hold Kh - 1 as a maximum before the pulse is moved to the reading.
-                However, on that next pulse, the meter will add Mp to Kh - 1, so the maximum in the accumulator can be stated as:
-
-                Mp + Kh - 1
-
-                The maximum range of the accumulator is:
-
-                65535
-
-                So the relationship between Mp and Kh can at most be:
-
-                Mp + Kh - 1 = 65535
-                Mp + Kh     = 65536
-
-                So I choose to fix the upper bound for the denominator at 10,000 and allow the numerator to range from 1-50,000.
-
-
-                   Mp    Kh
-                     1/10000 =     0.0001
-                     9/10000 =     0.0009
-                    99/10000 =     0.0099
-                   999/10000 =     0.0999
-                  9999/10000 =     0.9999
-                 49999/10000 =     4.9999
-                 49999/ 1000 =    49.999
-                 49999/  100 =   499.99
-                 49999/   10 =  4999.9
-                 49999/    1 = 49999.
-
-                */
-
-
-                if( multiplier > 50000 )
-                {
-                    temp = "Multiplier too large - must be less than 50000";
-                    errRet->setResultString( temp );
-                    errRet->setStatus(NoMethod);
-                    retList.push_back( errRet );
-                    errRet = NULL;
-                }
-                else if( multiplier < 0.0001 )
-                {
-                    temp = "Multiplier too small - must be at least 0.0001";
-                    errRet->setResultString( temp );
-                    errRet->setStatus(NoMethod);
-                    retList.push_back( errRet );
-                    errRet = NULL;
-                }
-
-                denominator = 10000;
-
-                //  ex:  multiplier = 4.097, denominator = 10000
-                //         result = 40,970 <--  suitable numerator
-                //       multiplier = 689,   denominator = 10000
-                //         result = 6,890,000  <--  unsuitable numerator, divide denominator by 10
-                //       multiplier = 689,   denominator =  1000
-                //         result = 689,000    <--  unsuitable numerator, divide denominator by 10
-                //       multiplier = 689,   denominator =   100
-                //         result = 68,900     <--  unsuitable numerator, divide denominator by 10
-                //       multiplier = 689,   denominator =    10
-                //         result = 6,890      <--  suitable numerator
-
-                while( (multiplier * denominator) > 50000 )
-                {
-                    denominator /= 10;
-                }
-
-                numerator = (int)(multiplier * denominator);
-
-                OutMessage->Buffer.BSt.Message[0] = (numerator   >> 8) & 0xff;
-                OutMessage->Buffer.BSt.Message[1] =  numerator         & 0xff;
-
-                OutMessage->Buffer.BSt.Message[2] = (denominator >> 8) & 0xff;
-                OutMessage->Buffer.BSt.Message[3] =  denominator       & 0xff;
-
-                OutMessage->Buffer.BSt.Function += (parse.getiValue("multoffset") - 1) * CtiDeviceMCT470::MCT470_Memory_ChannelOffset;
+                temp = "Multiplier too large - must be less than 10";
+                errRet->setResultString(temp);
+                errRet->setStatus(NoMethod);
+                retList.push_back(errRet);
+                errRet = NULL;
             }
         }
-        else
+
+        OutMessage->Buffer.BSt.Message[0] = (multbytes >> 8) & 0xFF;  //  bits 15-8
+        OutMessage->Buffer.BSt.Message[1] =  multbytes       & 0xFF;  //  bits  7-0
+
+        switch( parse.getiValue("multoffset") )
         {
-            multbytes  = (unsigned long)(parse.getdValue("multiplier") * 100.0);
+            default:
+            case 1:
+                function = Emetcon::PutConfig_Multiplier;
+                found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+                break;
 
-            if( multbytes == 100 )
-            {
-                multbytes = 1000;  //  change it into the "pulses" value
-            }
-            else if( multbytes >= 1000 )
-            {
-                if( errRet )
-                {
-                    temp = "Multiplier too large - must be less than 10";
-                    errRet->setResultString( temp );
-                    errRet->setStatus(NoMethod);
-                    retList.push_back( errRet );
-                    errRet = NULL;
-                }
-            }
+            case 2:
+                function = Emetcon::PutConfig_Multiplier2;
+                found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+                break;
 
-            OutMessage->Buffer.BSt.Message[0] = (multbytes >> 8) & 0xFF;  //  bits 15-8
-            OutMessage->Buffer.BSt.Message[1] =  multbytes       & 0xFF;  //  bits  7-0
-
-            switch( parse.getiValue("multoffset") )
-            {
-                default:
-                case 1:
-                    function = Emetcon::PutConfig_Multiplier;
-                    found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
-                    break;
-
-                case 2:
-                    function = Emetcon::PutConfig_Multiplier2;
-                    found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
-                    break;
-
-                case 3:
-                    function = Emetcon::PutConfig_Multiplier3;
-                    found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
-                    break;
-            }
+            case 3:
+                function = Emetcon::PutConfig_Multiplier3;
+                found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+                break;
         }
     }
     else if(parse.isKeyValid("rawloc"))
@@ -3596,21 +3487,21 @@ INT CtiDeviceMCT::decodeGetStatusDisconnect(INMESS *InMessage, CtiTime &TimeNow,
             {
                 switch( DSt->Message[0] & 0x03 )
                 {
-                    case CtiDeviceMCT410::MCT410_RawStatus_Connected:
+                    case CtiDeviceMCT410::RawStatus_Connected:
                     {
-                        Value = CtiDeviceMCT410::MCT410_StateGroup_Connected;                   defaultStateName = "Connected";                 break;
+                        Value = CtiDeviceMCT410::StateGroup_Connected;                   defaultStateName = "Connected";                 break;
                     }
-                    case CtiDeviceMCT410::MCT410_RawStatus_ConnectArmed:
+                    case CtiDeviceMCT410::RawStatus_ConnectArmed:
                     {
-                        Value = CtiDeviceMCT410::MCT410_StateGroup_ConnectArmed;                defaultStateName = "Connect armed";             break;
+                        Value = CtiDeviceMCT410::StateGroup_ConnectArmed;                defaultStateName = "Connect armed";             break;
                     }
-                    case CtiDeviceMCT410::MCT410_RawStatus_DisconnectedUnconfirmed:
+                    case CtiDeviceMCT410::RawStatus_DisconnectedUnconfirmed:
                     {
-                        Value = CtiDeviceMCT410::MCT410_StateGroup_DisconnectedUnconfirmed;     defaultStateName = "Unconfirmed disconnected";  break;
+                        Value = CtiDeviceMCT410::StateGroup_DisconnectedUnconfirmed;     defaultStateName = "Unconfirmed disconnected";  break;
                     }
-                    case CtiDeviceMCT410::MCT410_RawStatus_DisconnectedConfirmed:
+                    case CtiDeviceMCT410::RawStatus_DisconnectedConfirmed:
                     {
-                        Value = CtiDeviceMCT410::MCT410_StateGroup_DisconnectedConfirmed;       defaultStateName = "Confirmed disconnected";    break;
+                        Value = CtiDeviceMCT410::StateGroup_DisconnectedConfirmed;       defaultStateName = "Confirmed disconnected";    break;
                     }
                     default:
                     {
