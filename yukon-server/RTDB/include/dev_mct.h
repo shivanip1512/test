@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct.h-arc  $
-* REVISION     :  $Revision: 1.45 $
-* DATE         :  $Date: 2006/07/25 22:12:50 $
+* REVISION     :  $Revision: 1.46 $
+* DATE         :  $Date: 2006/08/29 16:11:25 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -148,7 +148,7 @@ protected:
         Memory_TimePos                   = 0x46,
         Memory_TimeLen                   =    3,
         Memory_TSyncPos                  = 0x49,
-        Memory_TSyncLen                  =    3, //  5,  <-- !!  don't send the extra 2 bytes - this fools Porter into letting it through unscathed
+        Memory_TSyncLen                  =    5,
 
         Command_Open             = 0x41,
         Command_Close            = 0x42,
@@ -191,6 +191,7 @@ public:
     enum
     {
         //  for dev_mctbroadcast...  maybe he should be a friend someday
+        //  also, these may need ARMS if they're going to a 200-series MCT
         Command_FreezeOne = 0x51,
         Command_FreezeTwo = 0x52,
 
