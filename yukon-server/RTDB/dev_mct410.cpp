@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.82 $
-* DATE         :  $Date: 2006/08/14 22:04:12 $
+* REVISION     :  $Revision: 1.83 $
+* DATE         :  $Date: 2006/08/29 22:31:34 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -65,7 +65,7 @@ CtiDeviceMCT410::CtiDeviceMCT410( ) :
     _llpPeakInterest.period  = 0;
     _llpPeakInterest.time    = 0;
 
-    for( int i = 0; i < MCT4XX_LPChannels; i++ )
+    for( int i = 0; i < LPChannels; i++ )
     {
         //  initialize them to 0
         _lp_info[i].archived_reading = 0;
@@ -477,7 +477,7 @@ CtiDeviceMCT410::CommandSet CtiDeviceMCT410::initCommandStore()
     cs.insert(CommandStore(Emetcon::GetConfig_Disconnect,       Emetcon::IO_Function_Read,  FuncRead_DisconnectConfigPos,   FuncRead_DisconnectConfigLen));
     cs.insert(CommandStore(Emetcon::PutConfig_Disconnect,       Emetcon::IO_Function_Write, FuncWrite_DisconnectConfigPos,  FuncWrite_DisconnectConfigLen));
     cs.insert(CommandStore(Emetcon::PutConfig_Raw,              Emetcon::IO_Write,          0,                              0));  //  filled in later
-    cs.insert(CommandStore(Emetcon::PutConfig_TSync,            Emetcon::IO_Function_Write, MCT4XX_FuncWrite_TSyncPos,      MCT4XX_FuncWrite_TSyncLen));
+    cs.insert(CommandStore(Emetcon::PutConfig_TSync,            Emetcon::IO_Function_Write, FuncWrite_TSyncPos,      FuncWrite_TSyncLen));
     cs.insert(CommandStore(Emetcon::GetConfig_TSync,            Emetcon::IO_Read,           Memory_LastTSyncPos,            Memory_LastTSyncLen));
     cs.insert(CommandStore(Emetcon::GetConfig_Time,             Emetcon::IO_Read,           Memory_TimeZoneOffsetPos,       Memory_TimeZoneOffsetLen +
                                                                                                                             Memory_RTCLen));
@@ -485,12 +485,12 @@ CtiDeviceMCT410::CommandSet CtiDeviceMCT410::initCommandStore()
     cs.insert(CommandStore(Emetcon::PutConfig_Intervals,        Emetcon::IO_Function_Write, FuncWrite_IntervalsPos,         FuncWrite_IntervalsLen));
     cs.insert(CommandStore(Emetcon::GetConfig_Intervals,        Emetcon::IO_Read,           Memory_IntervalsPos,            Memory_IntervalsLen));
     cs.insert(CommandStore(Emetcon::GetValue_PFCount,           Emetcon::IO_Read,           Memory_PowerfailCountPos,       Memory_PowerfailCountLen));
-    cs.insert(CommandStore(Emetcon::PutValue_ResetPFCount,      Emetcon::IO_Write,          MCT4XX_Command_PowerfailReset,  0));
-    cs.insert(CommandStore(Emetcon::PutStatus_Reset,            Emetcon::IO_Write,          MCT4XX_Command_Reset,           0));
+    cs.insert(CommandStore(Emetcon::PutValue_ResetPFCount,      Emetcon::IO_Write,          Command_PowerfailReset,  0));
+    cs.insert(CommandStore(Emetcon::PutStatus_Reset,            Emetcon::IO_Write,          Command_Reset,           0));
     cs.insert(CommandStore(Emetcon::PutStatus_FreezeOne,        Emetcon::IO_Write,          Command_FreezeOne,              0));
     cs.insert(CommandStore(Emetcon::PutStatus_FreezeTwo,        Emetcon::IO_Write,          Command_FreezeTwo,              0));
-    cs.insert(CommandStore(Emetcon::PutStatus_FreezeVoltageOne, Emetcon::IO_Write,          MCT4XX_Command_FreezeVoltageOne, 0));
-    cs.insert(CommandStore(Emetcon::PutStatus_FreezeVoltageTwo, Emetcon::IO_Write,          MCT4XX_Command_FreezeVoltageTwo, 0));
+    cs.insert(CommandStore(Emetcon::PutStatus_FreezeVoltageOne, Emetcon::IO_Write,          Command_FreezeVoltageOne, 0));
+    cs.insert(CommandStore(Emetcon::PutStatus_FreezeVoltageTwo, Emetcon::IO_Write,          Command_FreezeVoltageTwo, 0));
 
     //******************************** Config Related starts here *************************
     cs.insert(CommandStore(Emetcon::PutConfig_Addressing,       Emetcon::IO_Write,          Memory_AddressingPos,           Memory_AddressingLen));
@@ -571,7 +571,7 @@ ULONG CtiDeviceMCT410::calcNextLPScanTime( void )
     }
     else
     {
-        for( int i = 0; i < MCT4XX_LPChannels; i++ )
+        for( int i = 0; i < LPChannels; i++ )
         {
             interval_len = getLoadProfileInterval(i);
             block_len    = interval_len * 6;
@@ -698,7 +698,7 @@ INT CtiDeviceMCT410::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS
     }
     else
     {
-        for( int i = 0; i < MCT4XX_LPChannels; i++ )
+        for( int i = 0; i < LPChannels; i++ )
         {
             interval_len = getLoadProfileInterval(i);
             block_len    = interval_len * 6;
@@ -712,11 +712,11 @@ INT CtiDeviceMCT410::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS
                     _lp_info[i].current_request  = _lp_info[i].archived_reading;
 
                     //  make sure we only ask for what the function reads can access
-                    if( (Now.seconds() - _lp_info[i].current_request) >= (unsigned long)(MCT4XX_LPRecentBlocks * block_len) )
+                    if( (Now.seconds() - _lp_info[i].current_request) >= (unsigned long)(LPRecentBlocks * block_len) )
                     {
                         //  go back as far as we can
                         _lp_info[i].current_request  = Now.seconds();
-                        _lp_info[i].current_request -= MCT4XX_LPRecentBlocks * block_len;
+                        _lp_info[i].current_request -= LPRecentBlocks * block_len;
                     }
 
                     if( getMCTDebugLevel(MCTDebug_LoadProfile) )
@@ -725,7 +725,7 @@ INT CtiDeviceMCT410::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS
                         dout << CtiTime() << " **** Checkpoint - LP variable check for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         dout << "Now.seconds() = " << Now.seconds() << endl;
                         dout << "_lp_info[" << i << "].archived_reading = " << _lp_info[i].archived_reading << endl;
-                        dout << "MCT4XX_LPRecentBlocks * block_len = " << MCT4XX_LPRecentBlocks * block_len << endl;
+                        dout << "MCT4XX_LPRecentBlocks * block_len = " << LPRecentBlocks * block_len << endl;
                         dout << "_lp_info[" << i << "].current_request = " << _lp_info[i].current_request << endl;
                     }
 
@@ -789,7 +789,7 @@ bool CtiDeviceMCT410::calcLPRequestLocation( const CtiCommandParser &parse, OUTM
     block   = parse.getiValue("scan_loadprofile_block",   0);
     channel = parse.getiValue("scan_loadprofile_channel", 0);
 
-    if( block && channel && block <= MCT4XX_LPRecentBlocks && channel <= MCT4XX_LPChannels )
+    if( block && channel && block <= LPRecentBlocks && channel <= LPChannels )
     {
         channel--;
         block--;    //  adjust to be a zero-based offset
@@ -1649,7 +1649,7 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
                     lp_status_string += "Last request failed at interval: " + CtiTime(_llpInterest.time + _llpInterest.offset + interval_len).asString() + "\n";
                 }
 
-                if( _llpInterest.time_end > (MCT4XX_DawnOfTime + rwEpoch) )
+                if( _llpInterest.time_end > (DawnOfTime + rwEpoch) )
                 {
                     lp_status_string += "Last request end time: " + CtiTime(_llpInterest.time_end).asString() + "\n";
                 }
@@ -1687,9 +1687,9 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
             request_channel = parse.getiValue("lp_channel");
 
             if( request_channel >  0 &&
-                request_channel <= MCT4XX_LPChannels )
+                request_channel <= LPChannels )
             {
-                    interval_len = getLoadProfileInterval(request_channel);
+                interval_len = getLoadProfileInterval(request_channel);
 
                 block_len = 6 * interval_len;
 
@@ -1876,20 +1876,20 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
 
                         function = Emetcon::GetValue_LoadProfile;
 
-                            if( strstr(OutMessage->Request.CommandStr, " background") )
-                            {
-                                CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
+                        if( strstr(OutMessage->Request.CommandStr, " background") )
+                        {
+                            CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
 
-                                ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
-                                ReturnMsg->setConnectionHandle(OutMessage->Request.Connection);
-                                ReturnMsg->setResultString(getName() + " / Load profile request submitted for background processing - use \"getvalue lp status\" to check progress");
+                            ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
+                            ReturnMsg->setConnectionHandle(OutMessage->Request.Connection);
+                            ReturnMsg->setResultString(getName() + " / Load profile request submitted for background processing - use \"getvalue lp status\" to check progress");
 
-                                retMsgHandler( OutMessage->Request.CommandStr, NoError, ReturnMsg, vgList, retList, true );
+                            retMsgHandler( OutMessage->Request.CommandStr, NoError, ReturnMsg, vgList, retList, true );
 
-                                OutMessage->Priority = 8;
-                                //  make sure the OM doesn't report back to Commander
-                                OutMessage->Request.Connection = 0;
-                            }
+                            OutMessage->Priority = 8;
+                            //  make sure the OM doesn't report back to Commander
+                            OutMessage->Request.Connection = 0;
+                        }
 
                         nRet = NoError;
                     }
@@ -1897,8 +1897,8 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
                 else if( !cmd.compare("peak") )
                 {
                     //  !!!  FIXME: this will not allow reporting on any load profile interval size smaller than 1 hour  !!!
-                    if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec)         == MCT410_Sspec &&
-                        (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) >= MCT410_SspecRev_NewLLP_Min ||
+                    if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec)         == Sspec &&
+                        (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) >= SspecRev_NewLLP_Min ||
                          getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) == 253) )  //  Chef's Special for JSW
                     {
                         function = Emetcon::GetValue_LoadProfilePeakReport;
@@ -1913,9 +1913,9 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
                             ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
                             ReturnMsg->setResultString(string(getName()
                                                               + " / Load profile reporting currently only supported for SSPEC "
-                                                              + CtiNumStr(MCT410_Sspec).toString().c_str()
+                                                              + CtiNumStr(Sspec).toString().c_str()
                                                               + " revision "
-                                                              + (char)('A' + MCT410_SspecRev_NewLLP_Min - 1)
+                                                              + (char)('A' + SspecRev_NewLLP_Min - 1)
                                                               + " and up"));
 
                             retMsgHandler( OutMessage->Request.CommandStr, NoMethod, ReturnMsg, vgList, retList, true );
@@ -2410,16 +2410,16 @@ int CtiDeviceMCT410::executePutConfigDisconnect(CtiRequestMsg *pReq,CtiCommandPa
             cycleConnectMinutes = config->getLongValueFromKey(CyclingConnectMinutes);
             long revision = getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision);
 
-            if( revision >= MCT410_SspecRev_Disconnect_Min && revision < MCT410_SspecRev_Disconnect_Cycle
+            if( revision >= SspecRev_Disconnect_Min && revision < SspecRev_Disconnect_Cycle
                 && (cycleDisconnectMinutes | cycleConnectMinutes) != 0
                 && (cycleDisconnectMinutes | cycleConnectMinutes) != numeric_limits<long>::min() )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - Cycle Requires revision > " << (string)CtiNumStr(MCT410_SspecRev_Disconnect_Cycle-1) << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - Cycle Requires revision > " << (string)CtiNumStr(SspecRev_Disconnect_Cycle-1) << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << CtiTime() << " Device: " << getName() << " Revision: " << (string)CtiNumStr(revision) << endl;
             }
 
-            if( revision >= MCT410_SspecRev_Disconnect_Cycle
+            if( revision >= SspecRev_Disconnect_Cycle
                 && (cycleDisconnectMinutes == numeric_limits<long>::min() || cycleConnectMinutes == numeric_limits<long>::min()) )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -2432,10 +2432,10 @@ int CtiDeviceMCT410::executePutConfigDisconnect(CtiRequestMsg *pReq,CtiCommandPa
                 dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 nRet = NoConfigData;
             }
-            else if( revision > 0 && revision < MCT410_SspecRev_Disconnect_Min )
+            else if( revision > 0 && revision < SspecRev_Disconnect_Min )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - Disconnect Requires revision > " << (string)CtiNumStr(MCT410_SspecRev_Disconnect_Min-1) << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - Disconnect Requires revision > " << (string)CtiNumStr(SspecRev_Disconnect_Min-1) << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << CtiTime() << " Device: " << getName() << " Revision: " << (string)CtiNumStr(revision) << endl;
                 nRet = FNI;
             }
@@ -2462,7 +2462,7 @@ int CtiDeviceMCT410::executePutConfigDisconnect(CtiRequestMsg *pReq,CtiCommandPa
                     outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
                     OutMessage->Buffer.BSt.Function   = FuncRead_DisconnectConfigPos;
-                    OutMessage->Buffer.BSt.Length     = revision >= MCT410_SspecRev_Disconnect_Cycle ? FuncRead_DisconnectConfigLen + 2 : FuncRead_DisconnectConfigLen;
+                    OutMessage->Buffer.BSt.Length     = revision >= SspecRev_Disconnect_Cycle ? FuncRead_DisconnectConfigLen + 2 : FuncRead_DisconnectConfigLen;
                     OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Read;
                     OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
                     outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
@@ -2788,7 +2788,7 @@ INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
             }
         }
 
-        for( int i = 0; i < MCT410_ChannelCount; i++ )
+        for( int i = 0; i < ChannelCount; i++ )
         {
             int offset = (i * 3);
 
@@ -2984,7 +2984,7 @@ INT CtiDeviceMCT410::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, l
 
         pi = getData(DSt->Message + 2, 2, ValueType_Voltage);
 
-        if( pPoint = getDevicePointOffsetTypeEqual( MCT410_PointOffset_Voltage, DemandAccumulatorPointType ) )
+        if( pPoint = getDevicePointOffsetTypeEqual( PointOffset_Voltage, DemandAccumulatorPointType ) )
         {
             CtiTime pointTime;
 
@@ -3097,13 +3097,13 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
 
     if( parse.getFlags() & (CMD_FLAG_GV_RATEMASK ^ CMD_FLAG_GV_RATET) )
     {
-        pointoffset += MCT410_PointOffset_TOUBase;
+        pointoffset += PointOffset_TOUBase;
 
         //  need to add smarts for multiple channels when applicable
         if(      parse.getFlags() & CMD_FLAG_GV_RATEA )  pointoffset += 0; //  no increment for rate A
-        else if( parse.getFlags() & CMD_FLAG_GV_RATEB )  pointoffset += MCT4XX_PointOffset_RateOffset * 1;
-        else if( parse.getFlags() & CMD_FLAG_GV_RATEC )  pointoffset += MCT4XX_PointOffset_RateOffset * 2;
-        else if( parse.getFlags() & CMD_FLAG_GV_RATED )  pointoffset += MCT4XX_PointOffset_RateOffset * 3;
+        else if( parse.getFlags() & CMD_FLAG_GV_RATEB )  pointoffset += PointOffset_RateOffset * 1;
+        else if( parse.getFlags() & CMD_FLAG_GV_RATEC )  pointoffset += PointOffset_RateOffset * 2;
+        else if( parse.getFlags() & CMD_FLAG_GV_RATED )  pointoffset += PointOffset_RateOffset * 3;
     }
 
     if(      parse.getFlags() & CMD_FLAG_GV_RATEA )  key_peak_timestamp = CtiTableDynamicPaoInfo::Key_FrozenRateAPeakTimestamp;
@@ -3199,7 +3199,7 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
                     {
                         //  success - allow normal processing
 
-                        kw_point  = getDevicePointOffsetTypeEqual(pointoffset + MCT4XX_PointOffset_PeakOffset, DemandAccumulatorPointType);
+                        kw_point  = getDevicePointOffsetTypeEqual(pointoffset + PointOffset_PeakOffset, DemandAccumulatorPointType);
 
                         kwh_point = getDevicePointOffsetTypeEqual(pointoffset, PulseAccumulatorPointType );
 
@@ -3268,7 +3268,7 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
         {
             //  just a normal peak read, no freeze-related work needed
 
-            kw_point = getDevicePointOffsetTypeEqual(pointoffset + MCT4XX_PointOffset_PeakOffset, DemandAccumulatorPointType);
+            kw_point = getDevicePointOffsetTypeEqual(pointoffset + PointOffset_PeakOffset, DemandAccumulatorPointType);
 
             kwh_point = getDevicePointOffsetTypeEqual( pointoffset, PulseAccumulatorPointType );
 
@@ -3282,8 +3282,8 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
             //  if it's a TOU read and the MCT isn't at least at MCT410_SspecRev_TOUPeak_Min, we omit the data
             if( parse.getFlags() & (CMD_FLAG_GV_RATEMASK ^ CMD_FLAG_GV_RATET) )
             {
-                if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec) != MCT410_Sspec ||
-                    getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) < MCT410_SspecRev_TOUPeak_Min )
+                if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec) != Sspec ||
+                    getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) < SspecRev_TOUPeak_Min )
                 {
                     kw_valid = false;
                 }
@@ -3374,14 +3374,14 @@ INT CtiDeviceMCT410::decodeGetValueVoltage( INMESS *InMessage, CtiTime &TimeNow,
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
         max_volt_info  = getData(DSt->Message, 2, ValueType_Voltage);
-        maxPointOffset = MCT410_PointOffset_MaxVoltage;
+        maxPointOffset = PointOffset_MaxVoltage;
 
         pi = getData(DSt->Message + 2, 4, ValueType_Raw);
         maxTime = CtiTime((unsigned long)pi.value);
 
 
         min_volt_info  = getData(DSt->Message + 6, 2, ValueType_Voltage);
-        minPointOffset = MCT410_PointOffset_MinVoltage;
+        minPointOffset = PointOffset_MinVoltage;
 
         pi = getData(DSt->Message + 8, 4, ValueType_Raw);
         minTime = CtiTime((unsigned long)pi.value);
@@ -3506,7 +3506,7 @@ INT CtiDeviceMCT410::decodeGetValueOutage( INMESS *InMessage, CtiTime &TimeNow, 
 
                 outageTime = CtiTime(timestamp);
 
-                if( timestamp > MCT4XX_DawnOfTime )
+                if( timestamp > DawnOfTime )
                 {
                     timeString = outageTime.asString();
                 }
@@ -3517,9 +3517,9 @@ INT CtiDeviceMCT410::decodeGetValueOutage( INMESS *InMessage, CtiTime &TimeNow, 
 
                 pointString = getName() + " / Outage " + CtiNumStr(outagenum + i) + " : " + timeString + " for ";
 
-                if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec)         == MCT410_Sspec &&
-                    getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) >= MCT410_SspecRev_NewOutage_Min &&
-                    getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) <= MCT410_SspecRev_NewOutage_Max )
+                if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec)         == Sspec &&
+                    getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) >= SspecRev_NewOutage_Min &&
+                    getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) <= SspecRev_NewOutage_Max )
                 {
                     if( duration == 0x8000 )
                     {
@@ -3596,7 +3596,7 @@ INT CtiDeviceMCT410::decodeGetValueOutage( INMESS *InMessage, CtiTime &TimeNow, 
                         pointString += "." + CtiNumStr(millis).zpad(3);
                     }
 
-                    if( pPoint = getDevicePointOffsetTypeEqual(MCT410_PointOffset_Analog_Outage, AnalogPointType) )
+                    if( pPoint = getDevicePointOffsetTypeEqual(PointOffset_Analog_Outage, AnalogPointType) )
                     {
                         value  = cycles;
                         value /= 60.0;
@@ -4114,67 +4114,6 @@ INT CtiDeviceMCT410::decodeGetConfigTOU(INMESS *InMessage, CtiTime &TimeNow, lis
 }
 
 
-INT CtiDeviceMCT410::decodeGetConfigTime(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
-{
-    INT status = NORMAL;
-
-    INT ErrReturn  = InMessage->EventCode & 0x3fff;
-    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
-
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
-    {
-        // No error occured, we must do a real decode!
-
-        CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-        string resultString;
-        unsigned long time;
-        char timezone_offset;
-        CtiTime tmpTime;
-
-        if( InMessage->Sequence == Emetcon::GetConfig_Time )
-        {
-            timezone_offset = InMessage->Buffer.DSt.Message[0];
-
-            time = InMessage->Buffer.DSt.Message[1] << 24 |
-                   InMessage->Buffer.DSt.Message[2] << 16 |
-                   InMessage->Buffer.DSt.Message[3] <<  8 |
-                   InMessage->Buffer.DSt.Message[4];
-
-            tmpTime = CtiTime(time + rwEpoch);
-
-            resultString  = getName() + " / Current Time: " + tmpTime.asString() + "\n";
-            resultString += getName() + " / Timezone Offset: " + CtiNumStr(((float)timezone_offset) / 4.0, 2) + " hours";
-        }
-        else if( InMessage->Sequence == Emetcon::GetConfig_TSync )
-        {
-            time = InMessage->Buffer.DSt.Message[0] << 24 |
-                   InMessage->Buffer.DSt.Message[1] << 16 |
-                   InMessage->Buffer.DSt.Message[2] <<  8 |
-                   InMessage->Buffer.DSt.Message[3];
-
-            tmpTime = CtiTime(time);
-
-            resultString = getName() + " / Time Last Synced at: " + tmpTime.asString();
-        }
-
-        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-            return MEMORY;
-        }
-
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-        ReturnMsg->setResultString(resultString);
-
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
-    }
-
-    return status;
-}
-
-
 INT CtiDeviceMCT410::decodeGetConfigCentron(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
@@ -4263,10 +4202,10 @@ INT CtiDeviceMCT410::decodeGetConfigDisconnect(INMESS *InMessage, CtiTime &TimeN
 
         switch( DSt->Message[0] & 0x03 )
         {
-            case MCT410_RawStatus_Connected:                resultStr += "connected\n";                 break;
-            case MCT410_RawStatus_ConnectArmed:             resultStr += "connect armed\n";             break;
-            case MCT410_RawStatus_DisconnectedUnconfirmed:  resultStr += "unconfirmed disconnected\n";  break;
-            case MCT410_RawStatus_DisconnectedConfirmed:    resultStr += "confirmed disconnected\n";    break;
+            case RawStatus_Connected:                resultStr += "connected\n";                 break;
+            case RawStatus_ConnectArmed:             resultStr += "connect armed\n";             break;
+            case RawStatus_DisconnectedUnconfirmed:  resultStr += "unconfirmed disconnected\n";  break;
+            case RawStatus_DisconnectedConfirmed:    resultStr += "confirmed disconnected\n";    break;
         }
 
         if( DSt->Message[1] & 0x02 )
