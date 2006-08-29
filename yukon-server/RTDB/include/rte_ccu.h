@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/rte_ccu.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2006/02/27 23:58:33 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2006/08/29 19:20:24 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -50,7 +50,6 @@ public:
    virtual void DumpData();
 
    CtiRepeaterList_t &getRepeaterList();
-   CtiRepeaterList_t  getRepeaterList() const;
 
    virtual INT        getStages() const;
 
@@ -75,8 +74,7 @@ public:
                                        list< CtiMessage* >  &retList,
                                        list< OUTMESS* >      &outList);
 
-   INT         assembleDLCRequest(CtiRequestMsg             *pReq,
-                                  CtiCommandParser          &parse,
+   INT         assembleDLCRequest(CtiCommandParser          &parse,
                                   OUTMESS                   *OutMessage,
                                   list< CtiMessage* > &vgList,
                                   list< CtiMessage* > &retList,
@@ -85,10 +83,6 @@ public:
    virtual INT  getBus() const;
    virtual INT  getCCUFixBits() const;
    virtual INT  getCCUVarBits() const;
-
-   CtiTableCarrierRoute    getCarrier() const;
-   CtiTableCarrierRoute   &getCarrier();
-   CtiRouteCCU            &setCarrier( const CtiTableCarrierRoute& aCarrier);
 
    virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
    virtual void DecodeDatabaseReader(RWDBReader &rdr);

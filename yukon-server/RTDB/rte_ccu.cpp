@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_ccu.cpp-arc  $
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2006/06/23 17:45:07 $
+* REVISION     :  $Revision: 1.34 $
+* DATE         :  $Date: 2006/08/29 19:20:24 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -39,9 +39,9 @@
 #include "cparms.h"
 
 #define MAX_EXPRESSCOM_IN_EMETCON_LENGTH 18
+
 static INT NoQueingVersacom = gConfigParms.getValueAsInt("VERSACOM_CCU_NOQUEUE", FALSE);
 static INT NoQueingExpresscom = gConfigParms.getValueAsInt("EXPRESSCOM_CCU_NOQUEUE", FALSE);
-static INT NoQueingDLC;
 
 INT CtiRouteCCU::ExecuteRequest(CtiRequestMsg                  *pReq,
                                 CtiCommandParser               &parse,
@@ -69,7 +69,7 @@ INT CtiRouteCCU::ExecuteRequest(CtiRequestMsg                  *pReq,
             }
             else if(OutMessage->EventCode & AWORD || OutMessage->EventCode & BWORD)
             {
-                status = assembleDLCRequest(pReq, parse, OutMessage, vgList, retList, outList);
+                status = assembleDLCRequest(parse, OutMessage, vgList, retList, outList);
             }
             else if(parse.getiValue("type") == ProtocolExpresscomType)
             {
@@ -301,8 +301,7 @@ INT CtiRouteCCU::assembleVersacomRequest(CtiRequestMsg                  *pReq,
     return status;
 }
 
-INT CtiRouteCCU::assembleDLCRequest(CtiRequestMsg                  *pReq,
-                                    CtiCommandParser               &parse,
+INT CtiRouteCCU::assembleDLCRequest(CtiCommandParser               &parse,
                                     OUTMESS                        *OutMessage,
                                     list< CtiMessage* >      &vgList,
                                     list< CtiMessage* >      &retList,
@@ -313,18 +312,17 @@ INT CtiRouteCCU::assembleDLCRequest(CtiRequestMsg                  *pReq,
     bool           xmore = true;
     string      resultString;
     CtiDeviceCCU  *trxDev;
+    OUTMESS       *om = 0;
 
 
     OutMessage->DeviceID = _transmitterDevice->getID();         // This is the route transmitter device, not the causal device.
     OutMessage->Port     = _transmitterDevice->getPortID();
     OutMessage->Remote   = _transmitterDevice->getAddress();    // This is the DLC address if the CCU.
 
-    Cti::Protocol::Emetcon prot(OutMessage->Buffer.BSt.DeviceType, _transmitterDevice->getType());
+    Cti::Protocol::Emetcon prot;
 
     if(OutMessage->EventCode & BWORD)
     {
-        prot.setSSpec(OutMessage->Buffer.BSt.SSpec);
-
         /* Load up the hunks of the B structure that we know/need */
         OutMessage->Buffer.BSt.Port                = _transmitterDevice->getPortID();
         OutMessage->Buffer.BSt.Remote              = _transmitterDevice->getAddress();
@@ -336,15 +334,21 @@ INT CtiRouteCCU::assembleDLCRequest(CtiRequestMsg                  *pReq,
 
         if( OutMessage->MessageFlags & MessageFlag_AddSilence )
         {
-            OutMessage->Buffer.BSt.DlcRoute.Stages += 2;
+            OutMessage->MessageFlags ^= MessageFlag_AddSilence;
+
+            if( _transmitterDevice->getType() != TYPE_CCU700 &&
+                _transmitterDevice->getType() != TYPE_CCU710 )
+            {
+                //  doesn't work on a 710
+                OutMessage->Buffer.BSt.DlcRoute.Stages += 2;
+            }
         }
 
-        status = prot.parseRequest(parse, *OutMessage);                     // Determin the stuff be need based upon the command.
+        status = prot.buildBWordMessages(*OutMessage, om);
     }
     else if(OutMessage->EventCode & AWORD)
     {
         /* Load up the hunks of the A structure that we know/need */
-        // 3/17/02 MSKF // OutMessage->EventCode |= DTRAN;                                         // Make sure not queued!
         OutMessage->Buffer.ASt.Port = _transmitterDevice->getPortID();
         OutMessage->Buffer.ASt.Remote = _transmitterDevice->getAddress();
 
@@ -352,25 +356,23 @@ INT CtiRouteCCU::assembleDLCRequest(CtiRequestMsg                  *pReq,
         OutMessage->Buffer.ASt.DlcRoute.RepVar     = Carrier.getCCUVarBits();
         OutMessage->Buffer.ASt.DlcRoute.RepFixed   = Carrier.getCCUFixBits();
 
-        status = prot.parseRequest(parse, *OutMessage);                     // Determine the stuff be need based upon the command.
+        // Add these two items to the list for control accounting!
+        parse.setValue("control_interval", prot.calculateControlInterval(parse.getiValue("shed", 0)));
+        parse.setValue("control_reduction", 100 );
+
+        status = prot.buildAWordMessages(*OutMessage, om);
     }
 
-
-    if( prot.size() > 0 )
+    if( status )
     {
-        resultString = CtiNumStr(prot.size()) + " Emetcon DLC commands sent on route " + getName();
+        xmore = false;
+        resultString = "Emetcon DLC command failed with error " + CtiNumStr(status) + " on route " + getName();
     }
     else
     {
-        xmore = false;
-        resultString = "Emetcon DLC commands failed with error " + CtiNumStr(status) + string(" on route ") + getName();
-    }
+        resultString = "Emetcon DLC command sent on route " + getName();
 
-    while( prot.size() > 0 )
-    {
-        OUTMESS *NewOutMessage = prot.popOutMessage();
-
-        if(NewOutMessage != NULL)
+        if(om != NULL)
         {
             /* Things are now ready to go */
             switch( _transmitterDevice->getType() )
@@ -378,32 +380,21 @@ INT CtiRouteCCU::assembleDLCRequest(CtiRequestMsg                  *pReq,
                 case TYPE_CCU700:
                 case TYPE_CCU710:
                     {
-                        NewOutMessage->EventCode &= ~QUEUED;
-                        NewOutMessage->EventCode |= (DTRAN | BWORD);
+                        om->EventCode &= ~QUEUED;
+                        om->EventCode |= (DTRAN | BWORD);
 
                         /***** FALL THROUGH ** FALL THROUGH *****/
                     }
                 case TYPE_CCU711:
                     {
-                        /* check if queing is allowed */
-                        if(NoQueingDLC)
-                        {
-                            NewOutMessage->EventCode &= ~QUEUED;
-                            NewOutMessage->EventCode |= (DTRAN  | BWORD);
-                        }
-                        else
-                        {
-                            // 3/17/02 MSKF //NewOutMessage->EventCode |= BWORD;
-                        }
-
-                        if(NewOutMessage->EventCode & DTRAN)
+                        if(om->EventCode & DTRAN)
                         {
                             /* load the IDLC specific stuff for DTRAN */
-                            NewOutMessage->Source                = 0;
-                            NewOutMessage->Destination           = DEST_DLC;
-                            NewOutMessage->Command               = CMND_DTRAN;
+                            om->Source                = 0;
+                            om->Destination           = DEST_DLC;
+                            om->Command               = CMND_DTRAN;
 
-                            if(NewOutMessage->InLength <= 0)
+                            if(om->InLength <= 0)
                             {
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -411,22 +402,22 @@ INT CtiRouteCCU::assembleDLCRequest(CtiRequestMsg                  *pReq,
                                     dout << " 062101 CGP CHECK CHECK CHECK " << endl;
                                 }
 
-                                NewOutMessage->InLength              = 2;
+                                om->InLength              = 2;
                             }
 
-                            NewOutMessage->Buffer.OutMessage[6]  = (UCHAR)NewOutMessage->InLength;
-                            NewOutMessage->EventCode             &= ~RCONT;
+                            om->Buffer.OutMessage[6]  = (UCHAR)om->InLength;
+                            om->EventCode             &= ~RCONT;
                         }
                         else
                         {
-                            /* Load up the B word stuff */
-                            NewOutMessage->Buffer.BSt = OutMessage->Buffer.BSt;
+                            //  Restore the B word information so the CCU can use it
+                            om->Buffer.BSt = OutMessage->Buffer.BSt;
                         }
                         break;
                     }
             }
 
-            outList.push_back(NewOutMessage);
+            outList.push_back(om);
         }
     }
 
@@ -807,8 +798,8 @@ CtiRouteCCU& CtiRouteCCU::operator=(const CtiRouteCCU& aRef)
     if(this != &aRef)
     {
         Inherited::operator=(aRef);
-        Carrier = aRef.getCarrier();
-        RepeaterList = aRef.getRepeaterList();
+        Carrier = aRef.Carrier;
+        RepeaterList = aRef.RepeaterList;
     }
     return *this;
 }
@@ -824,10 +815,6 @@ void CtiRouteCCU::DumpData()
 }
 
 CtiRouteCCU::CtiRepeaterList_t&     CtiRouteCCU::getRepeaterList()
-{
-    return RepeaterList;
-}
-CtiRouteCCU::CtiRepeaterList_t      CtiRouteCCU::getRepeaterList() const
 {
     return RepeaterList;
 }
@@ -847,20 +834,6 @@ INT    CtiRouteCCU::getCCUFixBits() const
 INT    CtiRouteCCU::getCCUVarBits() const
 {
     return Carrier.getCCUVarBits();
-}
-
-CtiTableCarrierRoute    CtiRouteCCU::getCarrier() const
-{
-    return Carrier;
-}
-CtiTableCarrierRoute&   CtiRouteCCU::getCarrier()
-{
-    return Carrier;
-}
-CtiRouteCCU&            CtiRouteCCU::setCarrier( const CtiTableCarrierRoute& aCarrier)
-{
-    Carrier = aCarrier;
-    return *this;
 }
 
 void CtiRouteCCU::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
