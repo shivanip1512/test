@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dlcbase.cpp-arc  $
-* REVISION     :  $Revision: 1.36 $
-* DATE         :  $Date: 2006/07/31 20:27:19 $
+* REVISION     :  $Revision: 1.37 $
+* DATE         :  $Date: 2006/08/29 16:06:18 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -422,26 +422,36 @@ int CtiDeviceDLCBase::executeOnDLCRoute( CtiRequestMsg              *pReq,
                 }
             }
 
-            //  this should eventually be implemented to do some sort of if/switch on the ARM flags, instead of having
-            //    multiple if/else statements
-            /*while( pOut->Buffer.BSt.IO & (Q_ARML | Q_ARMC | Q_ARMS) )
-            {*/
-                //  send an ARMC for commands that require it...  also, make sure we won't generate an infinite loop
-                if( (pOut->Buffer.BSt.IO & Q_ARMC) && !parse.isKeyValid("armc") )
+            //  Only one ARM flag should be used at once
+            if( pOut->Buffer.BSt.IO & (Q_ARML | Q_ARMC | Q_ARMS) )
+            {
+                string arm_name;
+                int arm;
+
+                switch( pOut->Buffer.BSt.IO & (Q_ARML | Q_ARMC | Q_ARMS) )
                 {
-                    pOut->Buffer.BSt.IO &= ~Q_ARMC;
+                    case Q_ARML:    arm = Q_ARML;   arm_name = "arml";  break;
+                    case Q_ARMC:    arm = Q_ARMC;   arm_name = "armc";  break;
+                    case Q_ARMS:    arm = Q_ARMS;   arm_name = "arms";  break;
+                    default:        arm = 0;
+                }
+
+                if( arm && !parse.isKeyValid(arm_name.c_str()) )
+                {
+                    //  for safety, I'll just unset them all at once
+                    pOut->Buffer.BSt.IO &= Q_ARML | Q_ARMC | Q_ARMS;
 
                     CtiRequestMsg *arm_req = CTIDBG_new CtiRequestMsg(*pReq);
 
                     if( arm_req )
                     {
+                        string arm_command = "putconfig emetcon " + arm_name;
+
+                        arm_req->setCommandString(arm_command.c_str());
+
                         if( parse.isKeyValid("noqueue") )
                         {
-                            arm_req->setCommandString("putconfig emetcon armc noqueue");
-                        }
-                        else
-                        {
-                            arm_req->setCommandString("putconfig emetcon armc");
+                            arm_req->setCommandString(arm_req->CommandString() + " noqueue");
                         }
 
                         arm_req->setMessagePriority(pReq->getMessagePriority());
@@ -452,47 +462,14 @@ int CtiDeviceDLCBase::executeOnDLCRoute( CtiRequestMsg              *pReq,
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint - error sending ARMC to device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << CtiTime() << " **** Checkpoint - error sending ARM to device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             }
                         }
 
                         delete arm_req;
                     }
                 }
-                if( (pOut->Buffer.BSt.IO & Q_ARML) && !parse.isKeyValid("arml") )
-                {
-                    pOut->Buffer.BSt.IO &= ~Q_ARML;
-
-                    CtiRequestMsg *arm_req = CTIDBG_new CtiRequestMsg(*pReq);
-
-                    if( arm_req )
-                    {
-                        if( parse.isKeyValid("noqueue") )
-                        {
-                            arm_req->setCommandString("putconfig emetcon arml noqueue");
-                        }
-                        else
-                        {
-                            arm_req->setCommandString("putconfig emetcon arml");
-                        }
-
-                        arm_req->setMessagePriority(pReq->getMessagePriority());
-                        arm_req->setConnectionHandle(0);
-
-                        CtiCommandParser arm_parse(arm_req->CommandString());
-
-                        if( CtiDeviceBase::ExecuteRequest(arm_req, arm_parse, vgList, retList, outList, pOut) )
-                        {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint - error sending ARML to device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
-                        }
-
-                        delete arm_req;
-                    }
-                }
-            /*}*/
+            }
 
             /*
              *  Form up the reply here since the ExecuteRequest funciton will consume the
