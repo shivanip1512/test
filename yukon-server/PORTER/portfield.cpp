@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.191 $
-* DATE         :  $Date: 2006/08/15 17:54:57 $
+* REVISION     :  $Revision: 1.192 $
+* DATE         :  $Date: 2006/08/29 16:13:59 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -117,6 +117,7 @@
 
 #include "port_base.h"
 #include "prot_711.h"
+#include "prot_emetcon.h"
 #include "statistics.h"
 #include "trx_info.h"
 #include "trx_711.h"
@@ -3048,7 +3049,7 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                     InMessage->InLength = OutMessage->InLength;
 
                     if( (OutMessage->EventCode     & BWORD) &&
-                        (OutMessage->Buffer.BSt.IO & READ ) )
+                        (OutMessage->Buffer.BSt.IO & Cti::Protocol::Emetcon::IO_Read ) )
                     {
                         DSTRUCT        DSt;
 
