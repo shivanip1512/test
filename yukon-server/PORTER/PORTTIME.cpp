@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTTIME.cpp-arc  $
-* REVISION     :  $Revision: 1.40 $
-* DATE         :  $Date: 2006/03/21 21:41:49 $
+* REVISION     :  $Revision: 1.41 $
+* DATE         :  $Date: 2006/08/29 22:17:19 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -231,7 +231,7 @@ static void apply710TimeSync(const long unusedid, CtiDeviceSPtr RemoteRecord, vo
 
                         OutMessage->Buffer.BSt.Port                = RemoteRecord->getPortID();
                         OutMessage->Buffer.BSt.Remote              = RemoteRecord->getAddress();
-                        OutMessage->Buffer.BSt.Address             = CtiDeviceDLCBase::DLC_BroadcastAddress;
+                        OutMessage->Buffer.BSt.Address             = CtiDeviceDLCBase::BroadcastAddress;
                         OutMessage->Buffer.BSt.DlcRoute.Amp        = ((CtiDeviceIDLC *)(RemoteRecord.get()))->getIDLC().getAmp();
                         OutMessage->Buffer.BSt.DlcRoute.Feeder     = RouteRecord->getBus();
                         OutMessage->Buffer.BSt.DlcRoute.RepVar     = variable;
@@ -553,7 +553,7 @@ static void applyMCT400TimeSync(const long key, CtiRouteSPtr pRoute, void* d)
                 OutMessage->Buffer.BSt.DlcRoute.Stages   = 0;  //  pRoute->getStages();  //  apparently nonzero causes it to timeout on the 710 - ???
 
                 //  this is key - this, and the TSYNC flag, are what get the time loaded into the message
-                OutMessage->Buffer.BSt.Address = CtiDeviceMCT410::UniversalAddress;
+                OutMessage->Buffer.BSt.Address = CtiDeviceMCT4xx::UniversalAddress;
 
                 if(PortManager.writeQueue(OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
                 {
@@ -844,9 +844,9 @@ LoadMCT400BTimeMessage (OUTMESS *OutMessage)
 
 
     /* Load the time sync parts of the message into the local B word structure */
-    MyOutMessage.Buffer.BSt.Address  = CtiDeviceMCT410::UniversalAddress;
-    MyOutMessage.Buffer.BSt.Function = CtiDeviceMCT410::MCT4XX_FuncWrite_TSyncPos;
-    MyOutMessage.Buffer.BSt.Length   = CtiDeviceMCT410::MCT4XX_FuncWrite_TSyncLen;
+    MyOutMessage.Buffer.BSt.Address  = CtiDeviceMCT4xx::UniversalAddress;
+    MyOutMessage.Buffer.BSt.Function = CtiDeviceMCT4xx::FuncWrite_TSyncPos;
+    MyOutMessage.Buffer.BSt.Length   = CtiDeviceMCT4xx::FuncWrite_TSyncLen;
     MyOutMessage.Buffer.BSt.IO       = Cti::Protocol::Emetcon::IO_Function_Write;
 
     MyOutMessage.Buffer.BSt.Message[0] = 0xff;  //  global SPID
