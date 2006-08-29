@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.54 $
-* DATE         :  $Date: 2006/08/28 16:54:33 $
+* REVISION     :  $Revision: 1.55 $
+* DATE         :  $Date: 2006/08/29 22:28:07 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -108,7 +108,7 @@ CtiDeviceMCT470::CommandSet CtiDeviceMCT470::initCommandStore( )
     cs.insert(CommandStore(Emetcon::GetConfig_Model,            Emetcon::IO_Read,           MCT470_Memory_ModelPos,     MCT470_Memory_ModelLen));
     cs.insert(CommandStore(Emetcon::GetConfig_Multiplier,       Emetcon::IO_Read,           MCT470_Memory_ChannelMultiplierPos, MCT470_Memory_ChannelMultiplierLen));
     cs.insert(CommandStore(Emetcon::PutConfig_Multiplier,       Emetcon::IO_Write,          MCT470_Memory_ChannelMultiplierPos, MCT470_Memory_ChannelMultiplierLen));
-    cs.insert(CommandStore(Emetcon::PutConfig_TSync,            Emetcon::IO_Function_Write, MCT4XX_FuncWrite_TSyncPos,          MCT4XX_FuncWrite_TSyncLen));
+    cs.insert(CommandStore(Emetcon::PutConfig_TSync,            Emetcon::IO_Function_Write, FuncWrite_TSyncPos,          FuncWrite_TSyncLen));
     cs.insert(CommandStore(Emetcon::GetConfig_Time,             Emetcon::IO_Read,           MCT470_Memory_TimeZoneOffsetPos,    MCT470_Memory_TimeZoneOffsetLen +
                                                                                                                                 MCT470_Memory_RTCLen));
     cs.insert(CommandStore(Emetcon::GetConfig_TSync,            Emetcon::IO_Read,           MCT470_Memory_LastTSyncPos,         MCT470_Memory_LastTSyncLen));
@@ -770,7 +770,7 @@ ULONG CtiDeviceMCT470::calcNextLPScanTime( void )
     {
         int demand_rate, block_size;
 
-        for( int i = 0; i < MCT4XX_LPChannels; i++ )
+        for( int i = 0; i < LPChannels; i++ )
         {
             demand_rate = getLoadProfileInterval(i);
             block_size  = demand_rate * 6;
@@ -898,7 +898,7 @@ long CtiDeviceMCT470::getLoadProfileInterval( unsigned channel )
     long retval = -1;
     string config;
 
-    if( channel < MCT4XX_LPChannels )
+    if( channel < LPChannels )
     {
         if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileConfig, config) )
         {
@@ -1030,7 +1030,7 @@ INT CtiDeviceMCT470::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS
     }
     else
     {
-        for( int i = 0; i < MCT4XX_LPChannels; i++ )
+        for( int i = 0; i < LPChannels; i++ )
         {
             demand_rate = getLoadProfileInterval(i);
             block_size  = demand_rate * 6;
@@ -1052,11 +1052,11 @@ INT CtiDeviceMCT470::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS
                     _lp_info[i].current_request  = _lp_info[i].archived_reading;
 
                     //  make sure we only ask for what the function reads can access
-                    if( (Now.seconds() - _lp_info[i].current_request) >= (unsigned long)(MCT4XX_LPRecentBlocks * block_size) )
+                    if( (Now.seconds() - _lp_info[i].current_request) >= (unsigned long)(LPRecentBlocks * block_size) )
                     {
                         //  go back as far as we can
                         _lp_info[i].current_request  = Now.seconds();
-                        _lp_info[i].current_request -= MCT4XX_LPRecentBlocks * block_size;
+                        _lp_info[i].current_request -= LPRecentBlocks * block_size;
                     }
 
                     if( getMCTDebugLevel(MCTDebug_LoadProfile) )
@@ -1065,7 +1065,7 @@ INT CtiDeviceMCT470::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS
                         dout << CtiTime() << " **** Checkpoint - LP variable check for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         dout << "Now.seconds() = " << Now.seconds() << endl;
                         dout << "_lp_info[" << i << "].archived_reading = " << _lp_info[i].archived_reading << endl;
-                        dout << "MCT4XX_LPRecentBlocks * block_size = " << MCT4XX_LPRecentBlocks * block_size << endl;
+                        dout << "MCT4XX_LPRecentBlocks * block_size = " << LPRecentBlocks * block_size << endl;
                         dout << "_lp_info[" << i << "].current_request = " << _lp_info[i].current_request << endl;
                     }
 
@@ -1121,7 +1121,7 @@ bool CtiDeviceMCT470::calcLPRequestLocation( const CtiCommandParser &parse, OUTM
     block   = parse.getiValue("scan_loadprofile_block",   0);
     channel = parse.getiValue("scan_loadprofile_channel", 0);
 
-    if( block && channel && block <= MCT4XX_LPRecentBlocks && channel <= MCT4XX_LPChannels )
+    if( block && channel && block <= LPRecentBlocks && channel <= LPChannels )
     {
         channel--;
         block--;    //  adjust to be a zero-based offset
@@ -1160,8 +1160,8 @@ INT CtiDeviceMCT470::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
     int ioType, location;
     if( restoreMessageRead(InMessage, ioType, location) )
     {
-
         int foundAddress, foundLength = 0;
+
         CtiTableDynamicPaoInfo::Keys foundKey = CtiTableDynamicPaoInfo::Key_Invalid;
 
          //ioType and location were set by the function.
@@ -1189,7 +1189,7 @@ INT CtiDeviceMCT470::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
                     foundKey = CtiTableDynamicPaoInfo::Key_Invalid;
                 }
 
-            }while( foundKey != CtiTableDynamicPaoInfo::Key_Invalid );
+            } while( foundKey != CtiTableDynamicPaoInfo::Key_Invalid );
         }
         else if( ioType == Emetcon::IO_Function_Read )
         {
@@ -1241,12 +1241,6 @@ INT CtiDeviceMCT470::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
             break;
         }
 
-        case Emetcon::GetValue_Outage:
-        {
-            status = decodeGetValueOutage(InMessage, TimeNow, vgList, retList, outList);
-            break;
-        }
-
         case Emetcon::GetValue_IED:
         case Emetcon::GetValue_IEDDemand:
         {
@@ -1292,12 +1286,6 @@ INT CtiDeviceMCT470::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
             break;
         }
 
-        case Emetcon::GetConfig_Disconnect:
-        {
-            status = decodeGetConfigDisconnect(InMessage, TimeNow, vgList, retList, outList);
-            break;
-        }
-
         case Emetcon::GetConfig_Intervals:
         {
             status = decodeGetConfigIntervals(InMessage, TimeNow, vgList, retList, outList);
@@ -1319,8 +1307,7 @@ INT CtiDeviceMCT470::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
         case (Emetcon::GetConfig_Time):
         case (Emetcon::GetConfig_TSync):
         {
-            //  ooo, but it works
-            status = CtiDeviceMCT410::decodeGetConfigTime(InMessage, TimeNow, vgList, retList, outList);
+            status = decodeGetConfigTime(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
@@ -1658,7 +1645,7 @@ INT CtiDeviceMCT470::executeScan(CtiRequestMsg      *pReq,
             }
             else
             {
-                nRet = NoMethod;
+                nRet = NoConfigData;
             }
 
             if( OutMessage )
@@ -1666,6 +1653,7 @@ INT CtiDeviceMCT470::executeScan(CtiRequestMsg      *pReq,
                 delete OutMessage;
                 OutMessage = NULL;
             }
+
             break;
         }
         default:
@@ -1714,7 +1702,25 @@ INT CtiDeviceMCT470::executeGetConfig( CtiRequestMsg         *pReq,
 
     }
 */
-    if( parse.isKeyValid("ied") )
+    if(parse.isKeyValid("multiplier"))
+    {
+        function = Emetcon::GetConfig_Multiplier;
+        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+
+        if( parse.isKeyValid("multchannel") )
+        {
+            if( parse.getiValue("multchannel") >= 1 &&
+                parse.getiValue("multchannel") <= MCT470_ChannelCount )
+            {
+                OutMessage->Buffer.BSt.Function += (parse.getiValue("multchannel") - 1) * MCT470_Memory_ChannelOffset;
+            }
+            else
+            {
+                found = false;
+            }
+        }
+    }
+    else if( parse.isKeyValid("ied") )
     {
         //  ACH:  add a dynamic info check to ensure that we're reading from Precanned Table 1
         if(parse.isKeyValid("time"))
@@ -1782,6 +1788,148 @@ INT CtiDeviceMCT470::executeGetConfig( CtiRequestMsg         *pReq,
 
     return nRet;
 }
+
+
+INT CtiDeviceMCT470::executePutConfig( CtiRequestMsg         *pReq,
+                                       CtiCommandParser      &parse,
+                                       OUTMESS              *&OutMessage,
+                                       list< CtiMessage* >   &vgList,
+                                       list< CtiMessage* >   &retList,
+                                       list< OUTMESS* >      &outList )
+{
+    INT nRet = NoMethod;
+
+    bool found = false;
+    int function;
+
+    CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ),
+                                                   CtiString(OutMessage->Request.CommandStr),
+                                                   CtiString(),
+                                                   nRet,
+                                                   OutMessage->Request.RouteID,
+                                                   OutMessage->Request.MacroOffset,
+                                                   OutMessage->Request.Attempt,
+                                                   OutMessage->Request.TrxID,
+                                                   OutMessage->Request.UserID,
+                                                   OutMessage->Request.SOE,
+                                                   CtiMultiMsg_vec( ));
+
+    if(parse.isKeyValid("multiplier"))
+    {
+        unsigned long multbytes;
+        double multiplier = parse.getdValue("multiplier");
+        int numerator, denominator;
+
+        function = Emetcon::PutConfig_Multiplier;
+        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+
+        if( found )
+        {
+            /*
+
+            If Mp is greater than Kh, then the accumulator will accrue the difference, Mp - Kh, whenever a pulse is received.
+            If Mp = Kh + 1, then the accumulator will be able to hold Kh - 1 as a maximum before the pulse is moved to the reading.
+            However, on that next pulse, the meter will add Mp to Kh - 1, so the maximum in the accumulator can be stated as:
+
+            Mp + Kh - 1
+
+            The maximum range of the accumulator is:
+
+            65535
+
+            So the relationship between Mp and Kh can at most be:
+
+            Mp + Kh - 1 = 65535
+            Mp + Kh     = 65536
+
+            So I choose to fix the upper bound for the denominator at 10,000 and allow the numerator to range from 1-50,000.
+
+
+               Mp    Kh
+                 1/10000 =     0.0001
+                 9/10000 =     0.0009
+                99/10000 =     0.0099
+               999/10000 =     0.0999
+              9999/10000 =     0.9999
+             49999/10000 =     4.9999
+             49999/ 1000 =    49.999
+             49999/  100 =   499.99
+             49999/   10 =  4999.9
+             49999/    1 = 49999.
+
+            */
+
+
+            if( multiplier > 50000 )
+            {
+                errRet->setResultString("Multiplier too large - must be less than 50000");
+                errRet->setStatus(NoMethod);
+                retList.push_back( errRet );
+                errRet = NULL;
+            }
+            if( multiplier < 0.0001 )
+            {
+                errRet->setResultString("Multiplier too small - must be at least 0.0001");
+                errRet->setStatus(NoMethod);
+                retList.push_back( errRet );
+                errRet = NULL;
+            }
+
+            denominator = 10000;
+
+            //  ex:  multiplier = 4.097, denominator = 10000
+            //         result = 40,970 <--  suitable numerator
+            //       multiplier = 689,   denominator = 10000
+            //         result = 6,890,000  <--  unsuitable numerator, divide denominator by 10
+            //       multiplier = 689,   denominator =  1000
+            //         result = 689,000    <--  unsuitable numerator, divide denominator by 10
+            //       multiplier = 689,   denominator =   100
+            //         result = 68,900     <--  unsuitable numerator, divide denominator by 10
+            //       multiplier = 689,   denominator =    10
+            //         result = 6,890      <--  suitable numerator
+
+            while( (multiplier * denominator) > 50000 )
+            {
+                denominator /= 10;
+            }
+
+            numerator = (int)(multiplier * denominator);
+
+            OutMessage->Buffer.BSt.Message[0] = (numerator   >> 8) & 0xff;
+            OutMessage->Buffer.BSt.Message[1] =  numerator         & 0xff;
+
+            OutMessage->Buffer.BSt.Message[2] = (denominator >> 8) & 0xff;
+            OutMessage->Buffer.BSt.Message[3] =  denominator       & 0xff;
+
+            OutMessage->Buffer.BSt.Function += (parse.getiValue("multoffset") - 1) * CtiDeviceMCT470::MCT470_Memory_ChannelOffset;
+        }
+    }
+    else
+    {
+        nRet = Inherited::executePutConfig(pReq, parse, OutMessage, vgList, retList, outList);
+    }
+
+    if( found )
+    {
+        // Load all the other stuff that is needed
+        //  FIXME:  most of this is taken care of in propagateRequest - we could probably trim a lot of this out
+        OutMessage->DeviceID  = getID();
+        OutMessage->TargetID  = getID();
+        OutMessage->Port      = getPortID();
+        OutMessage->Remote    = getAddress();
+        OutMessage->TimeOut   = 2;
+        OutMessage->Sequence  = function;         // Helps us figure it out later!
+        OutMessage->Retry     = 2;
+
+        OutMessage->Request.RouteID   = getRouteID();
+        strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
+
+        nRet = NoError;
+    }
+
+    return nRet;
+}
+
 
 
 INT CtiDeviceMCT470::executePutValue( CtiRequestMsg         *pReq,
@@ -3001,7 +3149,7 @@ INT CtiDeviceMCT470::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
             base_offset = 1;
         }
 
-        point_offset = base_offset + MCT4XX_PointOffset_PeakOffset;
+        point_offset = base_offset + PointOffset_PeakOffset;
 
         pi      = getData(DSt->Message + 0, 2, ValueType_KW);
         pi_time = getData(DSt->Message + 2, 4, ValueType_Raw);
@@ -3020,7 +3168,7 @@ INT CtiDeviceMCT470::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
             pi.value = boost::static_pointer_cast<CtiPointNumeric>(pPoint)->computeValueForUOM(pi.value);
 
             pointString  = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(pi.value, boost::static_pointer_cast<CtiPointNumeric>(pPoint)->getPointUnits().getDecimalPlaces());
-            if( pi_time.value > MCT4XX_DawnOfTime )
+            if( pi_time.value > DawnOfTime )
             {
                 pointString += " @ " + pointTime.asString();
             }
@@ -3057,7 +3205,7 @@ INT CtiDeviceMCT470::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
             pi.value = boost::static_pointer_cast<CtiPointNumeric>(pPoint)->computeValueForUOM(pi.value);
 
             pointString  = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(pi.value, boost::static_pointer_cast<CtiPointNumeric>(pPoint)->getPointUnits().getDecimalPlaces());
-            if( pi_time.value > MCT4XX_DawnOfTime )
+            if( pi_time.value > DawnOfTime )
             {
                 pointString += " @ " + pointTime.asString();
             }
@@ -3601,6 +3749,36 @@ INT CtiDeviceMCT470::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, lis
                 _iedTime = ied_time;
 
                 resultString += getName() + " / current time: " + ied_time.asString() + "\n";
+
+                /*
+
+                Byte 4 for the Alpha is the current TOU rate
+
+                Byte 4 for the S4 contains:
+                0..2
+                Binary
+                0 for rate bin A
+                1 for rate bin B
+                2 for rate bin C
+                3 for rate bin D
+                4 for rate bin E (RX Only)
+                3
+                Binary
+                Frequency of line voltage
+                0 for 60Hz, 1 for 50Hz
+                (used for DX and RX 3.00 and greater;
+                not used in RX prior to 3.00)
+                4..5
+                Binary
+                Active season,
+                0 for season 1
+                1 for season 2
+                2 for season 3
+                3 for season 4
+                6 Binary Active holiday type
+                Zero if type 1, one if type 2
+
+                */
 
                 /*
                 resultString = getName() + " / phase A: " + (DSt->Message[] & 0x02)?"present":"not present" + "\n";
