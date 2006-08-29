@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_emetcon.h-arc  $
-* REVISION     :  $Revision: 1.34 $
-* DATE         :  $Date: 2006/08/08 13:36:10 $
+* REVISION     :  $Revision: 1.35 $
+* DATE         :  $Date: 2006/08/29 19:22:03 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,7 +20,6 @@
 
 
 #include <utility>
-#include <list>
 
 #include <rw/tpslist.h>
 
@@ -29,11 +28,6 @@
 #include "cmdparse.h"
 
 
-#define PRIORITY_VALUE           10
-#define PRIORITY_STATUS          9
-#define PRIORITY_STATUS_FORCED   13
-
-using std::list;
 namespace Cti       {
 namespace Protocol  {
 
@@ -43,60 +37,27 @@ private:
 
 protected:
 
-    INT  _sspec;                      // SSpec of the attached MCT
-    INT  _deviceType;
-    INT  _transmitterType;
-    INT  _ied;                        // What ied type is attached?
-    INT  _last;
-    BOOL _double;                    // Double the sent messages (protocol operation, sends twice)
-
-    list< OUTMESS* >  _out;
+    bool _double;                    // Double the sent messages (protocol operation, sends twice)
 
 public:
 
-    Emetcon(INT devType, INT transmitterType);
+    Emetcon();
     Emetcon(const Emetcon& aRef);
     virtual ~Emetcon();
 
     Emetcon& operator=(const Emetcon& aRef);
 
-    INT size() const;
-
-    INT advanceAndPrime(const OUTMESS &OutTemp);
-    INT primeOut(const OUTMESS &OutTemplate);
-
     /*-------------------------------------------------------------------------*
      * This method MUST be called prior to any command building method.
      *-------------------------------------------------------------------------*/
-    Emetcon& setTransmitterType(INT type);
-    INT      getTransmitterType() const;
+    Emetcon& setDouble(bool dbl);
+    bool     getDouble() const;
 
-    Emetcon& setDeviceType(INT type);
-    INT      getDeviceType() const;
+    static int determineDWordCount     (int length);
+    static int calculateControlInterval(int interval);
 
-    Emetcon& setSSpec(INT spec);
-    INT      getSSpec() const;
-
-    Emetcon& setIED(INT ied);
-    INT      getIED() const;
-
-    Emetcon& setDouble(BOOL dbl);
-    BOOL     getDouble() const;
-
-    INT parseRequest(CtiCommandParser  &parse, OUTMESS &aOut);
-    INT assembleCommand(CtiCommandParser  &parse, OUTMESS &aOutTemplate);
-
-    static INT determineDWordCount(INT Length);
-
-    OUTMESS*  getOutMessage(INT pos) const;
-    OUTMESS*& getOutMessage(INT pos);
-    OUTMESS* popOutMessage();
-
-    INT buildMessages(CtiCommandParser  &parse, const OUTMESS &aOutTemplate);
-    INT buildAWordMessages(CtiCommandParser  &parse, const OUTMESS &aOutTemplate);
-    INT buildBWordMessages(CtiCommandParser  &parse, const OUTMESS &aOutTemplate);
-
-    int getControlInterval(CtiCommandParser &parse) const;
+    INT buildAWordMessages(const OUTMESS &out_template, OUTMESS *&out_result);
+    INT buildBWordMessages(const OUTMESS &out_template, OUTMESS *&out_result);
 
     enum IO_Bits
     {

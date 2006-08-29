@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/prot_emetcon.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2006/02/24 00:19:10 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2006/08/29 19:22:03 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -30,37 +30,21 @@ namespace Cti      {
 namespace Protocol {
 
 
-Emetcon::Emetcon(INT devType, INT transmitterType) :
-    _ied(0),
-    _last(0),
-    _deviceType(devType),
-    _transmitterType(transmitterType),
+Emetcon::Emetcon() :
     _double(FALSE)
 {
 }
 
 
 Emetcon::Emetcon(const Emetcon& aRef)  :
-    _ied(0),
-    _last(0),
     _double(FALSE)
 {
-    delete_list(_out);
-    _out.clear();
     *this = aRef;
 }
 
 
 Emetcon::~Emetcon()
 {
-    delete_list(_out);
-    _out.clear();
-}
-
-
-INT Emetcon::size() const
-{
-    return _out.size();
 }
 
 
@@ -68,346 +52,133 @@ Emetcon& Emetcon::operator=(const Emetcon& aRef)
 {
     if(this != &aRef)
     {
-        delete_list(_out);
-        _out.clear();
-        
-        for( int i = 0; i < aRef.size(); i++ )
-        {
-            _ied = getIED();
-            
-            OUTMESS *Out = CTIDBG_new OUTMESS( aRef.getOutMessage(i) );
-            if(Out != NULL)
-            {
-                _out.push_back( Out );
-            }
-        }
-
-        _sspec = aRef.getSSpec();
-        _transmitterType  = aRef.getTransmitterType();
     }
     return *this;
 }
 
 
-Emetcon& Emetcon::setDouble(BOOL dbl)
+Emetcon& Emetcon::setDouble(bool dbl)
 {
    _double = dbl;
    return *this;
 }
 
 
-BOOL Emetcon::getDouble() const
+bool Emetcon::getDouble() const
 {
    return _double;
 }
 
 
-INT Emetcon::primeOut(const OUTMESS &OutTemplate)
+INT Emetcon::buildAWordMessages(const OUTMESS &out_template, OUTMESS *&out_result)
 {
    INT status = NORMAL;
 
-   OUTMESS *Out = CTIDBG_new OUTMESS(OutTemplate);
+   out_result = CTIDBG_new OUTMESS(out_template);
 
-   if(Out != NULL)
-   {
-      _out.push_back( Out );
-      _last = _out.size() - 1;
-   }
-   else
-   {
-      status = MEMORY;
-   }
+   // Use the template's ASt since Buffer.OutMessage & Buffer.ASt are members of a union.
+   APreamble(out_result->Buffer.OutMessage + PREIDLEN,     out_template.Buffer.ASt);
+   A_Word   (out_result->Buffer.OutMessage + PREIDLEN + 3, out_template.Buffer.ASt);
+
+   /* calculate an approximate timeout */
+   out_result->TimeOut = TIMEOUT + out_template.Buffer.ASt.DlcRoute.Stages;
+
+   /* Calculate the message lengths */
+   out_result->OutLength = AWORDLEN + PREAMLEN + 3;
+   out_result->InLength = 2;
 
    return status;
 }
 
-
-INT Emetcon::advanceAndPrime(const OUTMESS &OutTemp)
+INT Emetcon::buildBWordMessages(const OUTMESS &out_template, OUTMESS *&out_result)
 {
-   return primeOut(OutTemp);
-}
+   INT status = NORMAL;
 
+   out_result = CTIDBG_new OUTMESS(out_template);
 
-INT Emetcon::parseRequest(CtiCommandParser  &parse, OUTMESS &aOutTemplate)
-{
-    INT status = NORMAL;
+   //  this is both the IO_Read and IO_Function_Read case
+   if( out_template.Buffer.BSt.IO & Emetcon::IO_Read )
+   {
+       //  build preamble message.  Note that wordCount is zero for a read!
+       BPreamble(out_result->Buffer.OutMessage + PREIDLEN, out_template.Buffer.BSt, 0);
 
-    switch( parse.getCommand() )
-    {
-        case LoopbackRequest:
-        case ScanRequest:
-        case GetValueRequest:
-        case ControlRequest:
-        case GetStatusRequest:
-        case GetConfigRequest:
-        case PutValueRequest:
-        case PutConfigRequest:
-        case PutStatusRequest:
-        {
-            assembleCommand(parse, aOutTemplate);
-            break;
-        }
+       int wordsExpected = determineDWordCount(out_result->Buffer.BSt.Length);
 
-        default:
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "Unsupported command on EMETCON route. Command = " << parse.getCommand() << endl;
-            }
+       out_result->InLength = 3 + wordsExpected * (DWORDLEN + 1);  // InLength is based upon the read request/function requested.
+       out_result->OutLength = PREAMLEN + BWORDLEN + 3;            // OutLength is fixed (only the B read request)
 
-            status = NoMethod;
+       //  The timeout must include time for the repeaters to transmit the result words
+       out_result->TimeOut = TIMEOUT + out_template.Buffer.BSt.DlcRoute.Stages * (wordsExpected + 1);
 
-            break;
-        }
+       B_Word(out_result->Buffer.OutMessage + PREIDLEN + PREAMLEN, out_template.Buffer.BSt, wordsExpected, getDouble());
+   }
+   else
+   {
+       int wordsToWrite = 0;
+
+       if(out_template.Buffer.BSt.Length > 0)
+       {
+           // Nail the CWORDS into the correct location in the current message.
+           C_Words(out_result->Buffer.OutMessage+PREIDLEN+PREAMLEN+BWORDLEN,
+                   (unsigned char *)out_template.Buffer.BSt.Message,
+                   out_template.Buffer.BSt.Length,
+                   &wordsToWrite);
+       }
+
+       //  build preamble message - wordsToWrite represents the number of outbound cwords
+       BPreamble(out_result->Buffer.OutMessage + PREIDLEN, out_template.Buffer.BSt, wordsToWrite);
+
+       out_result->TimeOut = TIMEOUT + out_template.Buffer.BSt.DlcRoute.Stages * (wordsToWrite + 1);
+
+       //  calculate message lengths
+       out_result->OutLength = PREAMLEN + BWORDLEN + wordsToWrite * CWORDLEN + 3;
+       out_result->InLength = 2;
+
+       //  build the b word
+       B_Word(out_result->Buffer.OutMessage + PREIDLEN + PREAMLEN, out_template.Buffer.BSt, wordsToWrite, getDouble());
     }
+
+    /* load the IDLC specific stuff for DTRAN */
+    out_result->Source                = 0;
+    out_result->Destination           = DEST_DLC;
+    out_result->Command               = CMND_DTRAN;
+    out_result->Buffer.OutMessage[6]  = (UCHAR)out_template.InLength;
+    out_result->EventCode             &= ~RCONT;
 
     return status;
 }
 
 
-INT Emetcon::assembleCommand(CtiCommandParser  &parse, OUTMESS &aOutTemplate)
+int Emetcon::determineDWordCount(int length)
 {
-   INT status = NORMAL;
+   int count = 0;
 
-   status = primeOut(aOutTemplate);                   // Copy and add to the list.
-
-   if(status == NORMAL)
+   if( length > 0 && length <= 13 )
    {
-      _out.back()->EventCode |= BWORD;          // Make sure we know the basics
-
-      status = buildMessages(parse, aOutTemplate);
-   }
-
-   return status;
-}
-
-INT Emetcon::buildMessages(CtiCommandParser  &parse, const OUTMESS &aOutTemplate)
-{
-   INT status = NORMAL;
-
-   OUTMESS *curOutMessage= _out.back();                 // Grab a pointer to the current OUTMESS
-
-   if(curOutMessage->EventCode & AWORD)
-   {
-      // Add these two items to the list for control accounting!
-      parse.setValue("control_interval", getControlInterval(parse));
-      parse.setValue("control_reduction", 100 );
-
-      curOutMessage->EventCode &= ~BWORD;  //  maybe we just shouldn't set it above in assembleCommand... ?
-      status = buildAWordMessages(parse, aOutTemplate);
-   }
-   else if(curOutMessage->EventCode & BWORD)
-   {
-      status = buildBWordMessages(parse, aOutTemplate);
-   }
-
-   return status;
-}
-
-INT Emetcon::buildAWordMessages(CtiCommandParser  &parse, const OUTMESS &aOutTemplate)
-{
-   INT status = NORMAL;
-
-   OUTMESS *curOutMessage= _out.back();                 // Grab a pointer to the current OUTMESS
-
-   // Use the template's ASt since Buffer.OutMessage & Buffer.ASt are members of a union.
-   APreamble(curOutMessage->Buffer.OutMessage + PREIDLEN, aOutTemplate.Buffer.ASt);
-   A_Word(curOutMessage->Buffer.OutMessage + PREIDLEN + 3, aOutTemplate.Buffer.ASt);
-
-   /* calculate an approximate timeout */
-   curOutMessage->TimeOut = TIMEOUT + aOutTemplate.Buffer.ASt.DlcRoute.Stages;
-
-   /* Calculate the message lengths */
-   curOutMessage->OutLength = AWORDLEN + PREAMLEN + 3;
-   curOutMessage->InLength = 2;
-
-   return status;
-}
-
-INT Emetcon::buildBWordMessages(CtiCommandParser  &parse, const OUTMESS &aOutTemplate)
-{
-   INT status = NORMAL;
-
-   INT wordCount = 0;
-
-   OUTMESS *curOutMessage= _out.back();                 // Grab a pointer to the current OUTMESS
-
-   if( aOutTemplate.Buffer.BSt.IO & Emetcon::IO_Read )
-   {
-      /* build preamble message.  At this point wordCount represents the number of outbound cwords (it is zero for a read!) */
-
-      BPreamble (curOutMessage->Buffer.OutMessage + PREIDLEN, aOutTemplate.Buffer.BSt, wordCount);
-
-      // We need to determine the Number of Words (DWORDS) we expect from the DLC device.
-      // That is done based upon the BSt.Length, and is needed by the B_Word call.
-
-      wordCount = determineDWordCount(curOutMessage->Buffer.BSt.Length);
-      curOutMessage->InLength = 3 + wordCount * (DWORDLEN + 1);                     // InLength is based upon the read request/function requested.
-      curOutMessage->OutLength = PREAMLEN + BWORDLEN + 3;                           // OutLength is fixed (only the B read request)
-      // 20020611 CGP Hep the repeaters? // curOutMessage->TimeOut = TIMEOUT + aOutTemplate.Buffer.BSt.DlcRoute.Stages;   // Therefore trx time is too
-      curOutMessage->TimeOut = TIMEOUT + aOutTemplate.Buffer.BSt.DlcRoute.Stages * (wordCount + 1);   // Therefore trx time is too
-
-      /*  build the b word
-       *
-       *  At this point wordCount represents the number of dwords expected.
-       */
-
-      B_Word (curOutMessage->Buffer.OutMessage + PREIDLEN + PREAMLEN, aOutTemplate.Buffer.BSt, wordCount, getDouble());
+       //  1 to  3 bytes = 1 word needed
+       //  4 to  8 bytes = 2 words needed
+       //  9 to 13 bytes = 3 words needed
+       count = (length + 6) / 5;
    }
    else
    {
-      if(aOutTemplate.Buffer.BSt.Length > 0)
-      {
-         // Nail the CWORDS into the correct location in the current message.
-         C_Words (curOutMessage->Buffer.OutMessage+PREIDLEN+PREAMLEN+BWORDLEN,
-                  (unsigned char *)aOutTemplate.Buffer.BSt.Message,
-                  aOutTemplate.Buffer.BSt.Length,
-                  &wordCount);
-      }
-
-      /* build preamble message
-       *
-       *  At this point wordCount represents the number of outbound cwords (it is zero for a function write!)
-       */
-
-      BPreamble (curOutMessage->Buffer.OutMessage + PREIDLEN, aOutTemplate.Buffer.BSt, wordCount);
-      curOutMessage->TimeOut = TIMEOUT + aOutTemplate.Buffer.BSt.DlcRoute.Stages * (wordCount + 1);
-
-      /* calculate message lengths */
-      curOutMessage->OutLength = PREAMLEN + BWORDLEN + wordCount * CWORDLEN + 3;
-      curOutMessage->InLength = 2;
-
-      /*  build the b word
-       *
-       *  At this point wordCount represents:
-       *   IO_Read  / IO_Function_Read:  the number of dwords expected.
-       *   IO_Write / IO_Function_Write: the number of cwords being sent out to the field.
-       */
-
-      B_Word (curOutMessage->Buffer.OutMessage + PREIDLEN + PREAMLEN, aOutTemplate.Buffer.BSt, wordCount, getDouble());
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** Checkpoint - invalid length (" << length << ") in Cti::Protocol::Emetcon::determineDWordCount() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
    }
 
-   /* load the IDLC specific stuff for DTRAN */
-   curOutMessage->Source                = 0;
-   curOutMessage->Destination           = DEST_DLC;
-   curOutMessage->Command               = CMND_DTRAN;
-   curOutMessage->Buffer.OutMessage[6]  = (UCHAR)aOutTemplate.InLength;
-   curOutMessage->EventCode             &= ~RCONT;
-
-   return status;
+   return count;
 }
 
-
-INT Emetcon::determineDWordCount(INT Length)
-{
-   INT cnt = 0;
-
-   /* calculate number of d words to ask for */
-   if(Length > 0 && Length <= 3)
-      cnt = 1;
-   else if(Length > 3 && Length <= 8)
-      cnt = 2;
-   else if(Length > 8 && Length <= 13)
-      cnt = 3;
-
-   return cnt;
-}
-
-OUTMESS* Emetcon::getOutMessage(INT pos) const
-{
-    std::list< OUTMESS* >::const_iterator itr = _out.begin();
-    for( int i = 0; i<pos;i++)
-        ++itr;
-    return *itr;
-}
-OUTMESS*& Emetcon::getOutMessage(INT pos)
-{
-    std::list< OUTMESS* >::iterator itr = _out.begin();
-    for( int i = 0; i<pos;i++)
-        ++itr;
-    return *itr;
-}
-
-OUTMESS* Emetcon::popOutMessage()
-{
-   OUTMESS *ptr = _out.front(); _out.pop_front();
-   _last = _out.size() - 1;
-
-   return ptr;
-}
-
-
-Emetcon& Emetcon::setTransmitterType(INT type)
-{
-   _transmitterType = type;
-   return *this;
-}
-INT Emetcon::getTransmitterType() const
-{
-   return _transmitterType;
-}
-
-Emetcon& Emetcon::setSSpec(INT spec)
-{
-   _sspec = spec;
-   return *this;
-}
-INT Emetcon::getSSpec() const
-{
-   return _sspec;
-}
-
-Emetcon& Emetcon::setIED(INT ied)
-{
-   _ied = ied;
-   return *this;
-}
-INT Emetcon::getIED() const
-{
-   return _ied;
-}
-
-Emetcon& Emetcon::setDeviceType(INT type)
-{
-   _deviceType = type;
-   return *this;
-}
-INT Emetcon::getDeviceType() const
-{
-   return _deviceType;
-}
-
-int Emetcon::getControlInterval(CtiCommandParser &parse) const
+int Emetcon::calculateControlInterval(int interval)
 {
     int nRet = 0;
-    int Seconds = parse.getiValue("shed", 0);
 
-    if(Seconds < 5)
-    {
-        // This must be a restore
-        nRet = 0;
-    }
-    else if(Seconds < 451)
-    {
-        nRet = 450;
-    }
-    else if(Seconds < 901)
-    {
-        nRet = 900;
-    }
-    else if(Seconds < 1801)
-    {
-        nRet = 1800;
-    }
-    else if(Seconds < 3601)
-    {
-        nRet = 3600;
-    }
-    else
-    {
-        nRet = 3600;
-    }
+    if     (interval <    5)    nRet =    0;   // This must be a restore
+    else if(interval <  451)    nRet =  450;
+    else if(interval <  901)    nRet =  900;
+    else if(interval < 1801)    nRet = 1800;
+    else if(interval < 3601)    nRet = 3600;
+    else                        nRet = 3600;
 
     return nRet;
 }
