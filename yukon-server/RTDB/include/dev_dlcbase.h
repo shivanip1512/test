@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_dlcbase.h-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2006/07/06 20:08:31 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2006/08/29 16:07:28 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -58,6 +58,13 @@ protected:
     enum
     {
         LPBlockEvacuationTime    = 300
+    };
+
+    enum ArmFlags
+    {
+        Q_ARML = 0x0020,
+        Q_ARMS = 0x0040,
+        Q_ARMC = 0x0080,
     };
 
     unsigned int getLPRetryRate( unsigned int interval );
