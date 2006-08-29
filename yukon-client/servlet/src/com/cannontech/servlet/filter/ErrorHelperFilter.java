@@ -9,6 +9,7 @@ import java.util.Set;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -16,12 +17,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 
 import com.cannontech.clientutils.CTILogger;
 
 public class ErrorHelperFilter  implements Filter {
 
-	public void init(FilterConfig arg0) throws ServletException {
+	private ServletContext servletContext;
+
+    public void init(FilterConfig arg0) throws ServletException {
+        servletContext = arg0.getServletContext();
 	}
 	
 	private String getRequestInfo(ServletRequest req) {
@@ -84,26 +89,38 @@ public class ErrorHelperFilter  implements Filter {
 
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 		CTILogger.debug("Starting request handling: " + getRequestInfo(request));
+        
+        // first check if our server came up okay
+        Object attribute = servletContext.getAttribute("com.cannontech.SERVLET_STARTUP_ERROR");
+        if (attribute instanceof Throwable) {
+            Throwable startupException = (Throwable) attribute;
+            Throwable rootCause = ExceptionUtils.getRootCause(startupException);
+            response.getWriter().println("Fatal startup error (usually database related): " + rootCause.getMessage());
+            return;
+        }
 		try {
 			chain.doFilter(request, response);
 		} catch (Error e) {
-			CTILogger.error("Servlet error filter caught an Error processing: " + getRequestInfo(request), e);
+			Throwable rc = ExceptionUtils.getRootCause(e);
+            CTILogger.error("Servlet error filter caught an Error processing: " + getRequestInfo(request), rc);
 			if (isAjaxRequest(request)) {
-				handleAjaxErrorResponse(response, e);
+				handleAjaxErrorResponse(response, rc);
 			} else {
 				throw e;
 			}
 		} catch (RuntimeException re) {
-			CTILogger.error("Servlet error filter caught a RuntimeException processing: " + getRequestInfo(request), re);
+		    Throwable rc = ExceptionUtils.getRootCause(re);
+			CTILogger.error("Servlet error filter caught a RuntimeException processing: " + getRequestInfo(request), rc);
 			if (isAjaxRequest(request)) {
-				handleAjaxErrorResponse(response, re);
+				handleAjaxErrorResponse(response, rc);
 			} else {
 				throw re;
 			}
 		} catch (Throwable t) {
-			CTILogger.error("Servlet error filter caught a Throwable processing: " + getRequestInfo(request), t);
+		    Throwable rc = ExceptionUtils.getRootCause(t);
+			CTILogger.error("Servlet error filter caught a Throwable processing: " + getRequestInfo(request), rc);
 			if (isAjaxRequest(request)) {
-				handleAjaxErrorResponse(response, t);
+				handleAjaxErrorResponse(response, rc);
 			} else {
 				throw new ServletException(t);
 			}
