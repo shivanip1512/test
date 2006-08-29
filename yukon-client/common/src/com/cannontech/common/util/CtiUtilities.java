@@ -760,6 +760,12 @@ public final static String getYukonBase()
 	{
 		return yukonBase;
 	}
+    
+    // Next try to use the environment variable that is now available (thanks Sun)
+    String envYukonBase = System.getenv("YUKON_BASE");
+    if (envYukonBase != null) {
+        return envYukonBase;
+    }
 	
 	//That failed, so...
 	//Are we running inside tomcat? assume we live in yukon/server/web then
