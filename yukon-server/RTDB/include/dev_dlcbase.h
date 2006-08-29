@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_dlcbase.h-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2006/08/29 16:07:28 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2006/08/29 22:18:22 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -120,7 +120,7 @@ public:
 
     enum
     {
-        DLC_BroadcastAddress = 0x3fffff
+        BroadcastAddress = 0x3fffff
     };
 
     typedef CtiDeviceSingle Inherited;
