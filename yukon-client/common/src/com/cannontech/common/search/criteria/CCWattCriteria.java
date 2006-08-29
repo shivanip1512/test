@@ -1,15 +1,24 @@
 package com.cannontech.common.search.criteria;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.lucene.search.BooleanClause;
+
 import com.cannontech.database.data.point.PointUnits;
 
 public class CCWattCriteria extends PointDeviceCriteriaAdapter {
-    Integer[] unitOfMeasureIds = PointUnits.CAP_CONTROL_WATTS_UOMIDS;
+    private static final Integer[] UNITS = PointUnits.CAP_CONTROL_WATTS_UOMIDS;
+
     public CCWattCriteria() {
         super();
-    }
-    
-    public Integer[] getUnitOfMeasureIds() {
-        return unitOfMeasureIds;
+        //create all the rules for this criteria
+        List c = new ArrayList<String>();
+        for (int i = 0; i < UNITS.length; i++) {
+            c.add( Integer.toString( UNITS [i]) );
+        }
+        CriteriaRule r1 = new CriteriaRule (c, BooleanClause.Occur.SHOULD);
+        rulesMap .put("uomid", r1);
     }
 
 }

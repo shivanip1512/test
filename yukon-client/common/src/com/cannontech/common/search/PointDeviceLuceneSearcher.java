@@ -3,7 +3,10 @@ package com.cannontech.common.search;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.lang.StringUtils;
@@ -18,8 +21,10 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.BooleanClause.Occur;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.search.criteria.CriteriaRule;
 
 public class PointDeviceLuceneSearcher implements PointDeviceSearcher {
     
@@ -73,15 +78,22 @@ public class PointDeviceLuceneSearcher implements PointDeviceSearcher {
         if (criteria == null) {
             return originalQuery;
         }
-        BooleanQuery unitOfMeasureQuery = new BooleanQuery(false);
-        unitOfMeasureQuery.setMinimumNumberShouldMatch(1);
-        for (int unitOfMeansure : criteria.getUnitOfMeasureIds()) {
-            Query q = new TermQuery(new Term("uomid", Integer.toString(unitOfMeansure)));
-            unitOfMeasureQuery.add(q, BooleanClause.Occur.SHOULD);
-        }
+        BooleanQuery criteriaQuery = new BooleanQuery(false);
+        criteriaQuery.setMinimumNumberShouldMatch(1);
+        Map rulesMap = criteria.getRulesMap();
+        
+        for (Iterator iter = rulesMap.keySet().iterator(); iter.hasNext();) {
+            String termName = (String) iter.next();
+            CriteriaRule r = (CriteriaRule) rulesMap.get(termName);
+            for(String singleCriteria : r.getCriteria()) {
+                Query q = new TermQuery(new Term(termName, singleCriteria));
+                criteriaQuery.add(q, r.getRule());
+            }
+        }   
+        
         BooleanQuery finalQuery = new BooleanQuery(false);
         finalQuery.add(originalQuery, BooleanClause.Occur.MUST);
-        finalQuery.add(unitOfMeasureQuery, BooleanClause.Occur.MUST);
+        finalQuery.add(criteriaQuery, BooleanClause.Occur.MUST);
         return finalQuery;
     }
     
