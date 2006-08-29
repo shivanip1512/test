@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.53 $
-* DATE         :  $Date: 2006/08/28 16:54:33 $
+* REVISION     :  $Revision: 1.54 $
+* DATE         :  $Date: 2006/08/29 22:30:12 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -129,8 +129,8 @@ CtiDeviceMCT310::CommandSet CtiDeviceMCT310::initCommandStore( )
     cs.insert(CommandStore(Emetcon::PutStatus_PeakOn,               Emetcon::IO_Write,          MCT3XX_FunctionPeakOn,          0));
     cs.insert(CommandStore(Emetcon::PutStatus_PeakOff,              Emetcon::IO_Write,          MCT3XX_FunctionPeakOff,         0));
 
-    cs.insert(CommandStore(Emetcon::PutStatus_FreezeOne,            Emetcon::IO_Write,          Command_FreezeOne,              0));
-    cs.insert(CommandStore(Emetcon::PutStatus_FreezeTwo,            Emetcon::IO_Write,          Command_FreezeTwo,              0));
+    cs.insert(CommandStore(Emetcon::PutStatus_FreezeOne,            Emetcon::IO_Write | Q_ARMS, Command_FreezeOne,              0));
+    cs.insert(CommandStore(Emetcon::PutStatus_FreezeTwo,            Emetcon::IO_Write | Q_ARMS, Command_FreezeTwo,              0));
 
     //  only valid for sspec 1007 (and above?)
     cs.insert(CommandStore(Emetcon::Scan_Integrity,                 Emetcon::IO_Read,           MCT310_DemandPos,               MCT310_DemandLen));
