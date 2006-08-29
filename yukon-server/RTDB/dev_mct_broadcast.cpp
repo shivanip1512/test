@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2006/07/25 22:13:30 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2006/08/29 22:25:34 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -284,7 +284,7 @@ INT CtiDeviceMCTBroadcast::executePutStatus(CtiRequestMsg                  *pReq
             //  this is a little tricky - watch as we carefully swap it out...
             MCT400OutMessage->Buffer.BSt.Message[1] = MCT400OutMessage->Buffer.BSt.Function;
             //  ...  right before we stomp over the original location
-            MCT400OutMessage->Buffer.BSt.Function   = CtiDeviceMCT410::MCT4XX_FuncWrite_Command;
+            MCT400OutMessage->Buffer.BSt.Function   = CtiDeviceMCT4xx::FuncWrite_Command;
 
             if( stringContainsIgnoreCase(parse.getCommandStr()," all") )
             {
@@ -340,7 +340,7 @@ INT CtiDeviceMCTBroadcast::executePutValue(CtiRequestMsg                  *pReq,
         {
             if( command_string.find(" 400")!=string::npos )
             {
-                OutMessage->Buffer.BSt.Function = CtiDeviceMCT410::MCT4XX_Command_PowerfailReset;
+                OutMessage->Buffer.BSt.Function = CtiDeviceMCT4xx::Command_PowerfailReset;
                 OutMessage->Buffer.BSt.Length = 0;
                 OutMessage->Buffer.BSt.IO = Emetcon::IO_Write;
 
@@ -439,13 +439,14 @@ CtiDeviceMCTBroadcast::CommandSet CtiDeviceMCTBroadcast::initCommandStore()
 
     cs.insert(CommandStore(Emetcon::PutStatus_Reset,            Emetcon::IO_Function_Write, MCTBCAST_ResetPF, MCTBCAST_ResetPFLen));
 
-    cs.insert(CommandStore(Emetcon::PutStatus_FreezeOne,        Emetcon::IO_Function_Write, CtiDeviceMCT::Command_FreezeOne, 0));
-    cs.insert(CommandStore(Emetcon::PutStatus_FreezeTwo,        Emetcon::IO_Function_Write, CtiDeviceMCT::Command_FreezeTwo, 0));
+    //  Do these need an ARMS for the 200- and 300-series meters?
+    cs.insert(CommandStore(Emetcon::PutStatus_FreezeOne,        Emetcon::IO_Write, CtiDeviceMCT::Command_FreezeOne, 0));
+    cs.insert(CommandStore(Emetcon::PutStatus_FreezeTwo,        Emetcon::IO_Write, CtiDeviceMCT::Command_FreezeTwo, 0));
 
     cs.insert(CommandStore(Emetcon::PutValue_IEDReset,          Emetcon::IO_Function_Write, 0, 0));
 
-    cs.insert(CommandStore(Emetcon::PutStatus_FreezeVoltageOne, Emetcon::IO_Write, CtiDeviceMCT410::MCT4XX_Command_FreezeVoltageOne, 0));
-    cs.insert(CommandStore(Emetcon::PutStatus_FreezeVoltageTwo, Emetcon::IO_Write, CtiDeviceMCT410::MCT4XX_Command_FreezeVoltageTwo, 0));
+    cs.insert(CommandStore(Emetcon::PutStatus_FreezeVoltageOne, Emetcon::IO_Write, CtiDeviceMCT4xx::Command_FreezeVoltageOne, 0));
+    cs.insert(CommandStore(Emetcon::PutStatus_FreezeVoltageTwo, Emetcon::IO_Write, CtiDeviceMCT4xx::Command_FreezeVoltageTwo, 0));
 
     return cs;
 }
