@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct210.cpp-arc  $
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2006/07/06 20:11:48 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2006/08/29 22:29:37 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -63,20 +63,20 @@ CtiDeviceMCT210::CommandSet CtiDeviceMCT210::initCommandStore()
     CommandSet cs;
 
     //  MCT 210 commands
-    cs.insert(CommandStore(Emetcon::GetValue_Default,       Emetcon::IO_Read,           MCT210_MReadPos,    MCT210_MReadLen));
-    cs.insert(CommandStore(Emetcon::Scan_Accum,             Emetcon::IO_Read,           MCT210_MReadPos,    MCT210_MReadLen));
+    cs.insert(CommandStore(Emetcon::GetValue_Default,       Emetcon::IO_Read,  MCT210_MReadPos,    MCT210_MReadLen));
+    cs.insert(CommandStore(Emetcon::Scan_Accum,             Emetcon::IO_Read,  MCT210_MReadPos,    MCT210_MReadLen));
 
-    cs.insert(CommandStore(Emetcon::PutValue_KYZ,           Emetcon::IO_Write | Q_ARMC, MCT210_PutMReadPos, MCT210_PutMReadLen));
+    cs.insert(CommandStore(Emetcon::PutValue_KYZ,           Emetcon::IO_Write, MCT210_PutMReadPos, MCT210_PutMReadLen));
 
-    cs.insert(CommandStore(Emetcon::GetValue_Demand,        Emetcon::IO_Read,           MCT210_DemandPos,   MCT210_DemandLen));
-    cs.insert(CommandStore(Emetcon::Scan_Integrity,         Emetcon::IO_Read,           MCT210_DemandPos,   MCT210_DemandLen));
-    cs.insert(CommandStore(Emetcon::GetStatus_Disconnect,   Emetcon::IO_Read,           MCT210_StatusPos,   MCT210_StatusLen));
-    cs.insert(CommandStore(Emetcon::GetStatus_Internal,     Emetcon::IO_Read,           MCT210_GenStatPos,  MCT210_GenStatLen));
+    cs.insert(CommandStore(Emetcon::GetValue_Demand,        Emetcon::IO_Read,  MCT210_DemandPos,   MCT210_DemandLen));
+    cs.insert(CommandStore(Emetcon::Scan_Integrity,         Emetcon::IO_Read,  MCT210_DemandPos,   MCT210_DemandLen));
+    cs.insert(CommandStore(Emetcon::GetStatus_Disconnect,   Emetcon::IO_Read,  MCT210_StatusPos,   MCT210_StatusLen));
+    cs.insert(CommandStore(Emetcon::GetStatus_Internal,     Emetcon::IO_Read,  MCT210_GenStatPos,  MCT210_GenStatLen));
 
-    cs.insert(CommandStore(Emetcon::PutStatus_Reset,        Emetcon::IO_Write | Q_ARMC, MCT210_ResetPos,    MCT210_ResetLen));
+    cs.insert(CommandStore(Emetcon::PutStatus_Reset,        Emetcon::IO_Write, MCT210_ResetPos,    MCT210_ResetLen));
 
-    cs.insert(CommandStore(Emetcon::GetConfig_Multiplier,   Emetcon::IO_Read,           MCT210_MultPos,     MCT210_MultLen));
-    cs.insert(CommandStore(Emetcon::PutConfig_Multiplier,   Emetcon::IO_Write | Q_ARMC, MCT210_MultPos,     MCT210_MultLen));
+    cs.insert(CommandStore(Emetcon::GetConfig_Multiplier,   Emetcon::IO_Read,  MCT210_MultPos,     MCT210_MultLen));
+    cs.insert(CommandStore(Emetcon::PutConfig_Multiplier,   Emetcon::IO_Write, MCT210_MultPos,     MCT210_MultLen));
 
     return cs;
 }
@@ -93,6 +93,11 @@ bool CtiDeviceMCT210::getOperation( const UINT &cmd, USHORT &function, USHORT &l
         function = itr->function;
         length   = itr->length;
         io       = itr->io;
+
+        if( io == Emetcon::IO_Write )
+        {
+            io |= Q_ARMC;
+        }
 
         found = true;
     }

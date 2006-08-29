@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct2XX.cpp-arc  $
-* REVISION     :  $Revision: 1.35 $
-* DATE         :  $Date: 2006/08/28 16:54:33 $
+* REVISION     :  $Revision: 1.36 $
+* DATE         :  $Date: 2006/08/29 22:29:38 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -57,28 +57,28 @@ CtiDeviceMCT2XX::CommandSet CtiDeviceMCT2XX::initCommandStore()
 {
     CommandSet cs;
 
-    cs.insert(CommandStore(Emetcon::PutConfig_Raw,          Emetcon::IO_Write | Q_ARMC, 0, 0));  //  this will be filled in by executePutConfig
+    cs.insert(CommandStore(Emetcon::PutConfig_Raw,          Emetcon::IO_Write, 0, -1));  //  this will be filled in by executePutConfig
 
     //  MCT 2xx common commands
-    cs.insert(CommandStore(Emetcon::GetValue_PFCount,       Emetcon::IO_Read,           MCT2XX_PFCountPos,  MCT2XX_PFCountLen));
+    cs.insert(CommandStore(Emetcon::GetValue_PFCount,       Emetcon::IO_Read,  MCT2XX_PFCountPos,  MCT2XX_PFCountLen));
 
-    cs.insert(CommandStore(Emetcon::PutValue_ResetPFCount,  Emetcon::IO_Write | Q_ARMC, MCT2XX_PFCountPos,  MCT2XX_PFCountLen));
+    cs.insert(CommandStore(Emetcon::PutValue_ResetPFCount,  Emetcon::IO_Write, MCT2XX_PFCountPos,  MCT2XX_PFCountLen));
 
-    cs.insert(CommandStore(Emetcon::GetStatus_Internal,     Emetcon::IO_Read,           MCT2XX_GenStatPos,  MCT2XX_GenStatLen));
+    cs.insert(CommandStore(Emetcon::GetStatus_Internal,     Emetcon::IO_Read,  MCT2XX_GenStatPos,  MCT2XX_GenStatLen));
 
-    cs.insert(CommandStore(Emetcon::PutStatus_Reset,        Emetcon::IO_Write | Q_ARMC, MCT2XX_ResetPos,    MCT2XX_ResetLen));
+    cs.insert(CommandStore(Emetcon::PutStatus_Reset,        Emetcon::IO_Write, MCT2XX_ResetPos,    MCT2XX_ResetLen));
 
-    cs.insert(CommandStore(Emetcon::GetConfig_Multiplier,   Emetcon::IO_Read,           MCT2XX_MultPos,     MCT2XX_MultLen));
+    cs.insert(CommandStore(Emetcon::GetConfig_Multiplier,   Emetcon::IO_Read,  MCT2XX_MultPos,     MCT2XX_MultLen));
 
-    cs.insert(CommandStore(Emetcon::PutConfig_Multiplier,   Emetcon::IO_Write | Q_ARMC, MCT2XX_MultPos,     MCT2XX_MultLen));
+    cs.insert(CommandStore(Emetcon::PutConfig_Multiplier,   Emetcon::IO_Write, MCT2XX_MultPos,     MCT2XX_MultLen));
 
-    cs.insert(CommandStore(Emetcon::GetConfig_Options,      Emetcon::IO_Read,           MCT2XX_OptionPos,   MCT2XX_OptionLen));
+    cs.insert(CommandStore(Emetcon::GetConfig_Options,      Emetcon::IO_Read,  MCT2XX_OptionPos,   MCT2XX_OptionLen));
 
-    cs.insert(CommandStore(Emetcon::GetConfig_Time,         Emetcon::IO_Read,           MCT2XX_TimePos,     MCT2XX_TimeLen));
+    cs.insert(CommandStore(Emetcon::GetConfig_Time,         Emetcon::IO_Read,  MCT2XX_TimePos,     MCT2XX_TimeLen));
 
-    cs.insert(CommandStore(Emetcon::PutConfig_TSync,        Emetcon::IO_Write | Q_ARMC, Memory_TSyncPos,    Memory_TSyncLen));
+    cs.insert(CommandStore(Emetcon::PutConfig_TSync,        Emetcon::IO_Write, Memory_TSyncPos,    Memory_TSyncLen));
 
-    cs.insert(CommandStore(Emetcon::PutConfig_UniqueAddr,   Emetcon::IO_Write | Q_ARMC, MCT2XX_UniqAddrPos, MCT2XX_UniqAddrLen));
+    cs.insert(CommandStore(Emetcon::PutConfig_UniqueAddr,   Emetcon::IO_Write, MCT2XX_UniqAddrPos, MCT2XX_UniqAddrLen));
 
     return cs;
 }
@@ -100,6 +100,11 @@ bool CtiDeviceMCT2XX::getOperation( const UINT &cmd, USHORT &function, USHORT &l
         function = itr->function;             // Copy over the found function!
         length   = itr->length;              // Copy over the found length!
         io       = itr->io;                              // Copy over the found io indicator!
+
+        if( io == Emetcon::IO_Write && length )
+        {
+            io |= Q_ARMC;
+        }
 
         found = true;
     }

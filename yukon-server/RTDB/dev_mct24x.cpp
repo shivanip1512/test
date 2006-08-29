@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct2XX.cpp-arc  $
-* REVISION     :  $Revision: 1.40 $
-* DATE         :  $Date: 2006/07/25 22:16:19 $
+* REVISION     :  $Revision: 1.41 $
+* DATE         :  $Date: 2006/08/29 22:29:37 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -63,16 +63,16 @@ CtiDeviceMCT24X::CommandSet CtiDeviceMCT24X::initCommandStore()
     CommandSet cs;
 
     cs.insert(CommandStore(Emetcon::GetConfig_GroupAddress,           Emetcon::IO_Read,           MCT2XX_GroupAddrPos,            MCT2XX_GroupAddrLen));
-    cs.insert(CommandStore(Emetcon::PutConfig_GroupAddr_GoldSilver,   Emetcon::IO_Write | Q_ARMC, MCT2XX_GroupAddrGoldSilverPos,  MCT2XX_GroupAddrGoldSilverLen));
-    cs.insert(CommandStore(Emetcon::PutConfig_GroupAddr_Bronze,       Emetcon::IO_Write | Q_ARMC, MCT2XX_GroupAddrBronzePos,      MCT2XX_GroupAddrBronzeLen));
-    cs.insert(CommandStore(Emetcon::PutConfig_GroupAddr_Lead,         Emetcon::IO_Write | Q_ARMC, MCT2XX_GroupAddrLeadPos,        MCT2XX_GroupAddrLeadLen));
+    cs.insert(CommandStore(Emetcon::PutConfig_GroupAddr_GoldSilver,   Emetcon::IO_Write,          MCT2XX_GroupAddrGoldSilverPos,  MCT2XX_GroupAddrGoldSilverLen));
+    cs.insert(CommandStore(Emetcon::PutConfig_GroupAddr_Bronze,       Emetcon::IO_Write,          MCT2XX_GroupAddrBronzePos,      MCT2XX_GroupAddrBronzeLen));
+    cs.insert(CommandStore(Emetcon::PutConfig_GroupAddr_Lead,         Emetcon::IO_Write,          MCT2XX_GroupAddrLeadPos,        MCT2XX_GroupAddrLeadLen));
 
     cs.insert(CommandStore(Emetcon::Scan_General,                     Emetcon::IO_Read,           MCT24X_StatusPos,               MCT24X_StatusLen));
 
     cs.insert(CommandStore(Emetcon::Scan_Accum,                       Emetcon::IO_Function_Read,  MCT24X_MReadPos,                MCT24X_MReadLen));
     cs.insert(CommandStore(Emetcon::GetValue_Default,                 Emetcon::IO_Function_Read,  MCT24X_MReadPos,                MCT24X_MReadLen));
 
-    cs.insert(CommandStore(Emetcon::PutValue_KYZ,                     Emetcon::IO_Write | Q_ARMC, MCT24X_PutMReadPos,             MCT24X_PutMReadLen));
+    cs.insert(CommandStore(Emetcon::PutValue_KYZ,                     Emetcon::IO_Write,          MCT24X_PutMReadPos,             MCT24X_PutMReadLen));
 
     cs.insert(CommandStore(Emetcon::Scan_Integrity,                   Emetcon::IO_Read,           MCT24X_DemandPos,               MCT24X_DemandLen));
     cs.insert(CommandStore(Emetcon::GetValue_Demand,                  Emetcon::IO_Read,           MCT24X_DemandPos,               MCT24X_DemandLen));
@@ -83,7 +83,7 @@ CtiDeviceMCT24X::CommandSet CtiDeviceMCT24X::initCommandStore()
     cs.insert(CommandStore(Emetcon::GetStatus_LoadProfile,            Emetcon::IO_Read,           MCT24X_LPStatusPos,             MCT24X_LPStatusLen));
 
     cs.insert(CommandStore(Emetcon::GetConfig_DemandInterval,         Emetcon::IO_Read,           MCT24X_DemandIntervalPos,       MCT24X_DemandIntervalLen));
-    cs.insert(CommandStore(Emetcon::PutConfig_DemandInterval,         Emetcon::IO_Write | Q_ARMC, MCT24X_DemandIntervalPos,       MCT24X_DemandIntervalLen));
+    cs.insert(CommandStore(Emetcon::PutConfig_DemandInterval,         Emetcon::IO_Write,          MCT24X_DemandIntervalPos,       MCT24X_DemandIntervalLen));
 
     cs.insert(CommandStore(Emetcon::GetConfig_LoadProfileInterval,    Emetcon::IO_Read,           MCT24X_LPIntervalPos,           MCT24X_LPIntervalLen));
     cs.insert(CommandStore(Emetcon::PutConfig_LoadProfileInterval,    Emetcon::IO_Write,          Command_LPInt,                  0));
@@ -105,6 +105,12 @@ bool CtiDeviceMCT24X::getOperation( const UINT &cmd, USHORT &function, USHORT &l
         io       = itr->io;         // Copy over the found io indicator
 
         found = true;
+
+        //  LP Interval write doesn't need Q_ARMC
+        if( io == Emetcon::IO_Write && length )
+        {
+            io |= Q_ARMC;
+        }
 
         //  special case for the 250's status scan
         if( getType() == TYPEMCT250 && (cmd == Emetcon::Scan_General || cmd == Emetcon::GetStatus_External) )

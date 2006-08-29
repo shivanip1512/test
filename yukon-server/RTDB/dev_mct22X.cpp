@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct22X.cpp-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2006/07/06 20:11:48 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2006/08/29 22:29:37 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -52,15 +52,15 @@ CtiDeviceMCT22X::CommandSet CtiDeviceMCT22X::initCommandStore()
 {
    CommandSet cs;
 
-   cs.insert(CommandStore(Emetcon::GetConfig_GroupAddress,          Emetcon::IO_Read,           MCT2XX_GroupAddrPos,            MCT2XX_GroupAddrLen));
-   cs.insert(CommandStore(Emetcon::PutConfig_GroupAddr_GoldSilver,  Emetcon::IO_Write | Q_ARMC, MCT2XX_GroupAddrGoldSilverPos,  MCT2XX_GroupAddrGoldSilverLen));
-   cs.insert(CommandStore(Emetcon::PutConfig_GroupAddr_Bronze,      Emetcon::IO_Write | Q_ARMC, MCT2XX_GroupAddrBronzePos,      MCT2XX_GroupAddrBronzeLen));
-   cs.insert(CommandStore(Emetcon::PutConfig_GroupAddr_Lead,        Emetcon::IO_Write | Q_ARMC, MCT2XX_GroupAddrLeadPos,        MCT2XX_GroupAddrLeadLen));
+   cs.insert(CommandStore(Emetcon::GetConfig_GroupAddress,          Emetcon::IO_Read,  MCT2XX_GroupAddrPos,            MCT2XX_GroupAddrLen));
+   cs.insert(CommandStore(Emetcon::PutConfig_GroupAddr_GoldSilver,  Emetcon::IO_Write, MCT2XX_GroupAddrGoldSilverPos,  MCT2XX_GroupAddrGoldSilverLen));
+   cs.insert(CommandStore(Emetcon::PutConfig_GroupAddr_Bronze,      Emetcon::IO_Write, MCT2XX_GroupAddrBronzePos,      MCT2XX_GroupAddrBronzeLen));
+   cs.insert(CommandStore(Emetcon::PutConfig_GroupAddr_Lead,        Emetcon::IO_Write, MCT2XX_GroupAddrLeadPos,        MCT2XX_GroupAddrLeadLen));
 
    cs.insert(CommandStore(Emetcon::GetValue_Default,    Emetcon::IO_Read,   MCT22X_MReadPos,    MCT22X_MReadLen));
    cs.insert(CommandStore(Emetcon::Scan_Accum,          Emetcon::IO_Read,   MCT22X_MReadPos,    MCT22X_MReadLen));
 
-//  this meter requires you to subtract the current and previous meter readings to get a 5-minute demand value
+   //  this meter requires you to subtract the current and previous meter readings to get a 5-minute demand value
    cs.insert(CommandStore(Emetcon::GetValue_Demand,     Emetcon::IO_Read,   MCT22X_DemandPos,   MCT22X_DemandLen));
    cs.insert(CommandStore(Emetcon::Scan_Integrity,      Emetcon::IO_Read,   MCT22X_DemandPos,   MCT22X_DemandLen));
 
@@ -79,6 +79,11 @@ bool CtiDeviceMCT22X::getOperation( const UINT &cmd, USHORT &function, USHORT &l
       function = itr->function;     // Copy over the found function
       length   = itr->length;       // Copy over the found length
       io       = itr->io;           // Copy over the found io indicator
+
+      if( io == Emetcon::IO_Write )
+      {
+          io |= Q_ARMC;
+      }
 
       found = true;
    }
