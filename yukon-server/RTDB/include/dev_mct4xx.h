@@ -1,20 +1,3 @@
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_mct4xx
-*
-* Class:  CtiDeviceMCT4xx
-* Date:   10/5/2005
-*
-* Author: Jess M. Otteson
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct4xx.h-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2006/08/08 13:36:10 $
-*
-* Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #ifndef __DEV_MCT4XX_H__
 #define __DEV_MCT4XX_H__
 #pragma warning( disable : 4786)
@@ -67,22 +50,46 @@ protected:
 
     static const QualityMap _errorQualities;
 
+    enum Memory
+    {
+        Memory_ConfigurationPos   = 0x03,
+        Memory_ConfigurationLen   =    1,
+
+        Memory_TOUDailySched1Pos  = 0x52,
+        Memory_TOUDailySched1Len  =    7,
+
+        Memory_TOUDailySched2Pos  = 0x59,
+        Memory_TOUDailySched2Len  =    7,
+
+        Memory_TOUDailySched3Pos  = 0x60,
+        Memory_TOUDailySched3Len  =    7,
+
+        Memory_TOUDailySched4Pos  = 0x67,
+        Memory_TOUDailySched4Len  =    7,
+    };
+
     enum Functions
     {
+        FuncWrite_LLPStoragePos      = 0x04,
+        FuncWrite_LLPStorageLen      =    5,
+
         FuncWrite_LLPInterestPos     = 0x05,
         FuncWrite_LLPInterestLen     =    6,
+
+        FuncRead_LLPStatusPos        = 0x9d,
+        FuncRead_LLPStatusLen        =    8,
     };
 
     enum
     {
-        MCT4XX_LPChannels       =    4,
-        MCT4XX_LPRecentBlocks   =   16,
+        LPChannels       =    4,
+        LPRecentBlocks   =   16,
 
-        MCT4XX_DawnOfTime       = 0x386d4380,  //  jan 1, 2000, in UTC seconds
+        DawnOfTime       = 0x386d4380,  //  jan 1, 2000, in UTC seconds
 
-        MCT4XX_PointOffset_RateOffset  = 20,   //  gets added for rate B, C, D
+        PointOffset_RateOffset  = 20,   //  gets added for rate B, C, D
 
-        MCT4XX_PointOffset_PeakOffset  = 10,
+        PointOffset_PeakOffset  = 10,
     };
 
     struct lp_info_t
@@ -90,7 +97,7 @@ protected:
         unsigned long archived_reading;
         unsigned long current_request;
         unsigned long current_schedule;
-    } _lp_info[MCT4XX_LPChannels];
+    } _lp_info[LPChannels];
 
     struct llp_interest_t
     {
@@ -150,6 +157,7 @@ protected:
     virtual int executePutConfigCentron           (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS * > &outList);
     virtual int executePutConfigDNP               (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS * > &outList);
 
+    INT decodeGetConfigTime      (INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList);
     INT decodePutConfig          (INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList);
     INT decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList);
     INT decodeScanLoadProfile    (INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList);
@@ -184,16 +192,16 @@ public:
     {
         UniversalAddress = 4194012,
 
-        MCT4XX_Command_FreezeVoltageOne = 0x59,
-        MCT4XX_Command_FreezeVoltageTwo = 0x5A,
+        Command_FreezeVoltageOne = 0x59,
+        Command_FreezeVoltageTwo = 0x5A,
 
-        MCT4XX_Command_PowerfailReset   = 0x89,
-        MCT4XX_Command_Reset            = 0x8A,
+        Command_PowerfailReset   = 0x89,
+        Command_Reset            = 0x8A,
 
-        MCT4XX_FuncWrite_Command        = 0x00,
+        FuncWrite_Command        = 0x00,
 
-        MCT4XX_FuncWrite_TSyncPos       = 0xf0,
-        MCT4XX_FuncWrite_TSyncLen       =    6
+        FuncWrite_TSyncPos       = 0xf0,
+        FuncWrite_TSyncLen       =    6
     };
 
     INT ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList);
