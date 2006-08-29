@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2006/08/08 13:36:09 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2006/08/29 22:26:38 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -374,7 +374,7 @@ INT CtiDeviceMCT4xx::executeGetValue(CtiRequestMsg *pReq, CtiCommandParser &pars
                     lp_status_string += "Last request failed at interval: " + CtiTime(_llpInterest.time + _llpInterest.offset + interval_len).asString() + "\n";
                 }
 
-                if( _llpInterest.time_end > (MCT4XX_DawnOfTime + rwEpoch) )
+                if( _llpInterest.time_end > (DawnOfTime + rwEpoch) )
                 {
                     lp_status_string += "Last request end time: " + CtiTime(_llpInterest.time_end).asString() + "\n";
                 }
@@ -412,7 +412,7 @@ INT CtiDeviceMCT4xx::executeGetValue(CtiRequestMsg *pReq, CtiCommandParser &pars
             request_channel = parse.getiValue("lp_channel");
 
             if( request_channel >  0 &&
-                request_channel <= MCT4XX_LPChannels )
+                request_channel <= LPChannels )
             {
                 request_channel--;
 
@@ -1491,6 +1491,67 @@ int CtiDeviceMCT4xx::executePutConfigLongLoadProfile(CtiRequestMsg *pReq,CtiComm
 
 
     return nRet;
+}
+
+
+INT CtiDeviceMCT4xx::decodeGetConfigTime(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList)
+{
+    INT status = NORMAL;
+
+    INT ErrReturn  = InMessage->EventCode & 0x3fff;
+    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    {
+        // No error occured, we must do a real decode!
+
+        CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+        CtiString resultString;
+        unsigned long time;
+        char timezone_offset;
+        CtiTime tmpTime;
+
+        if( InMessage->Sequence == Emetcon::GetConfig_Time )
+        {
+            timezone_offset = InMessage->Buffer.DSt.Message[0];
+
+            time = InMessage->Buffer.DSt.Message[1] << 24 |
+                   InMessage->Buffer.DSt.Message[2] << 16 |
+                   InMessage->Buffer.DSt.Message[3] <<  8 |
+                   InMessage->Buffer.DSt.Message[4];
+
+            tmpTime = CtiTime(time + rwEpoch);
+
+            resultString  = getName() + " / Current Time: " + tmpTime.asString() + "\n";
+            resultString += getName() + " / Timezone Offset: " + CtiNumStr(((float)timezone_offset) / 4.0, 2) + " hours";
+        }
+        else if( InMessage->Sequence == Emetcon::GetConfig_TSync )
+        {
+            time = InMessage->Buffer.DSt.Message[0] << 24 |
+                   InMessage->Buffer.DSt.Message[1] << 16 |
+                   InMessage->Buffer.DSt.Message[2] <<  8 |
+                   InMessage->Buffer.DSt.Message[3];
+
+            tmpTime = CtiTime(time + rwEpoch);
+
+            resultString = getName() + " / Time Last Synced at: " + tmpTime.asString();
+        }
+
+        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+            return MEMORY;
+        }
+
+        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+        ReturnMsg->setResultString(resultString);
+
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    }
+
+    return status;
 }
 
 
