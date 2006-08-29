@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT410.h-arc  $
-* REVISION     :  $Revision: 1.39 $
-* DATE         :  $Date: 2006/08/10 15:27:10 $
+* REVISION     :  $Revision: 1.40 $
+* DATE         :  $Date: 2006/08/29 22:23:21 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,7 +19,6 @@
 #pragma warning( disable : 4786)
 
 
-#include "dev_mct.h"
 #include "dev_mct4xx.h"
 #include <map>
 
@@ -58,9 +57,6 @@ protected:
 
         Memory_OptionsPos         = 0x02,
         Memory_OptionsLen         =    1,
-
-        Memory_ConfigurationPos   = 0x03,
-        Memory_ConfigurationLen   =    1,
 
         Memory_StatusPos          = 0x05,
         Memory_StatusLen          =    5,
@@ -155,18 +151,6 @@ protected:
         Memory_TOUDayTablePos     = 0x50,
         Memory_TOUDayTableLen     =    2,
 
-        Memory_TOUDailySched1Pos  = 0x52,
-        Memory_TOUDailySched1Len  =    7,
-
-        Memory_TOUDailySched2Pos  = 0x59,
-        Memory_TOUDailySched2Len  =    7,
-
-        Memory_TOUDailySched3Pos  = 0x60,
-        Memory_TOUDailySched3Len  =    7,
-
-        Memory_TOUDailySched4Pos  = 0x67,
-        Memory_TOUDailySched4Len  =    7,
-
         Memory_DefaultTOURatePos  = 0x6e,
         Memory_DefaultTOURateLen  =    1,
 
@@ -214,9 +198,6 @@ protected:
         FuncRead_TOULen              =    9,
         FuncRead_TOUFrozenOffset     =    4,
 
-        FuncRead_LLPStatusPos        = 0x9d,
-        FuncRead_LLPStatusLen        =    8,
-
         FuncRead_LLPPeakDayPos       = 0xa0,
         FuncRead_LLPPeakHourPos      = 0xa1,
         FuncRead_LLPPeakIntervalPos  = 0xa2,
@@ -244,9 +225,6 @@ protected:
         FuncWrite_IntervalsPos       = 0x03,
         FuncWrite_IntervalsLen       =    4,
 
-        FuncWrite_LLPStoragePos      = 0x04,
-        FuncWrite_LLPStorageLen      =    5,
-
         FuncWrite_LLPPeakInterestPos = 0x06,
         FuncWrite_LLPPeakInterestLen =    7,
 
@@ -269,25 +247,13 @@ protected:
 
     enum PointOffsets
     {
-        MCT410_PointOffset_Voltage       =    4,
-        MCT410_PointOffset_MaxVoltage    =   14,
-        MCT410_PointOffset_MinVoltage    =   15,
+        PointOffset_Voltage       =    4,
+        PointOffset_MaxVoltage    =   14,
+        PointOffset_MinVoltage    =   15,
 
-        MCT410_PointOffset_Analog_Outage =  100,
+        PointOffset_Analog_Outage =  100,
 
-        MCT410_PointOffset_TOUBase       =  100,  //  this is okay because TOU only has peak and frozen demand - it must start at 111 anyway
-    };
-
-    enum SspecInformation
-    {
-        MCT410_Sspec = 1029,
-
-        MCT410_SspecRev_NewLLP_Min       =    8,
-        MCT410_SspecRev_TOUPeak_Min      =   13,
-        MCT410_SspecRev_NewOutage_Min    =    8,
-        MCT410_SspecRev_NewOutage_Max    =   30,
-        MCT410_SspecRev_Disconnect_Min   =    8,
-        MCT410_SspecRev_Disconnect_Cycle =   12,
+        PointOffset_TOUBase       =  100,  //  this is okay because TOU only has peak and frozen demand - it must start at 111 anyway
     };
 
     enum ChannelIdentifiers
@@ -329,7 +295,6 @@ protected:
     INT decodeGetStatusInternal             ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetStatusLoadProfile          ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetConfigTOU                  ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
-    INT decodeGetConfigTime                 ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetConfigCentron              ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetConfigIntervals            ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetConfigModel                ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
@@ -339,23 +304,35 @@ public:
 
     enum
     {
-        MCT410_ChannelCount = 3,
+        ChannelCount = 3,
+    };
+
+    enum SspecInformation
+    {
+        Sspec = 1029,
+
+        SspecRev_NewLLP_Min       =    8,
+        SspecRev_TOUPeak_Min      =   13,
+        SspecRev_NewOutage_Min    =    8,
+        SspecRev_NewOutage_Max    =   30,
+        SspecRev_Disconnect_Min   =    8,
+        SspecRev_Disconnect_Cycle =   12,
     };
 
     enum Disconnect_Raw
     {
-        MCT410_RawStatus_Connected               = 0x00,
-        MCT410_RawStatus_ConnectArmed            = 0x01,
-        MCT410_RawStatus_DisconnectedUnconfirmed = 0x02,
-        MCT410_RawStatus_DisconnectedConfirmed   = 0x03
+        RawStatus_Connected               = 0x00,
+        RawStatus_ConnectArmed            = 0x01,
+        RawStatus_DisconnectedUnconfirmed = 0x02,
+        RawStatus_DisconnectedConfirmed   = 0x03
     };
 
     enum Disconnect_StateGroup
     {
-        MCT410_StateGroup_DisconnectedConfirmed   = 0,
-        MCT410_StateGroup_Connected               = 1,
-        MCT410_StateGroup_DisconnectedUnconfirmed = 2,
-        MCT410_StateGroup_ConnectArmed            = 3
+        StateGroup_DisconnectedConfirmed   = 0,
+        StateGroup_Connected               = 1,
+        StateGroup_DisconnectedUnconfirmed = 2,
+        StateGroup_ConnectArmed            = 3
     };
 
     CtiDeviceMCT410( );
@@ -373,4 +350,5 @@ public:
     virtual bool  calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage );
 
 };
+
 #endif // #ifndef __DEV_MCT410_H__
