@@ -1,4 +1,3 @@
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   dev_grp_point
@@ -8,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2006/08/18 21:28:14 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2006/08/29 19:08:31 $
 *
 * HISTORY      :
 * $Log: dev_grp_point.cpp,v $
+* Revision 1.4  2006/08/29 19:08:31  mfisher
+* removed blank line in front of comment header so diffs work properly
+*
 * Revision 1.3  2006/08/18 21:28:14  mfisher
 * Control start string was sent for both starting and stopping control
 *
