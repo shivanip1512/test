@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.51 $
-* DATE         :  $Date: 2006/08/15 17:54:57 $
+* REVISION     :  $Revision: 1.52 $
+* DATE         :  $Date: 2006/08/29 16:14:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -75,6 +75,7 @@
 #include "guard.h"
 #include "trx_711.h"
 #include "dev_ccu.h"
+#include "prot_emetcon.h"
 
 using namespace std;
 
@@ -1495,83 +1496,57 @@ BuildLGrpQ (CtiDeviceSPtr Dev)
                 OutMessage->Buffer.OutMessage[Offset++] = (UCHAR)MyOutMessage->Buffer.BSt.DlcRoute.Stages;
 
                 /* Load the number of functions that will be involved */
-                if(MyOutMessage->Buffer.BSt.IO & READ)
+                if(MyOutMessage->Buffer.BSt.IO & Cti::Protocol::Emetcon::IO_Read)
                 {
-                    /* we are going to ignore the arm request */
+                    //  we are going to ignore the arm request
                     OutMessage->Buffer.OutMessage[Offset++] = 1;
 
-                    /* Select B word, single transmit, & read */
+                    //  Select B word, single transmit, & read
                     if(Double)
                         OutMessage->Buffer.OutMessage[Offset++] = 0xa8;
                     else
                         OutMessage->Buffer.OutMessage[Offset++] = 0x88;
 
-                    /* Select the type of read */
+                    //  Select the type of read
                     if(MyOutMessage->Buffer.BSt.IO & 0x02)
                         OutMessage->Buffer.OutMessage[Offset - 1] |= 0x10;
 
                     OutMessage->Buffer.OutMessage[Offset++] = 0;
 
-                    /* select the Remote */
+                    //  select the Remote
                     OutMessage->Buffer.OutMessage[Offset++] = (UCHAR)MyOutMessage->Buffer.BSt.Function;
 
-                    /* Select the number of bytes to read */
+                    //  Select the number of bytes to read
                     OutMessage->Buffer.OutMessage[Offset++] = (UCHAR)MyOutMessage->Buffer.BSt.Length;
-                    /* Save the number of bytes to be read */
+                    //  Save the number of bytes to be read
                     pInfo->QueTable[QueTabEnt].Length = MyOutMessage->Buffer.BSt.Length;
                 }
-                else  /* this has to be a write or function so check if arm needed */
+                else
                 {
-                    //  ARMC/ARML aren't actually handled here any more, they're handled right at
-                    //    dev_dlcbase - Q_ARMC/Q_ARML should never be set at this level.
-                    //  all ARM commands should be handled by dev_dlcbase, so that they're always
-                    //    sent regardless of queued/nonqueued...  ARMS is the only one left now (2004-oct-22)
-                    if(MyOutMessage->Buffer.BSt.IO & (Q_ARML | Q_ARMC | Q_ARMS))
-                        OutMessage->Buffer.OutMessage[Offset++] = 2;
-                    else
-                        OutMessage->Buffer.OutMessage[Offset++] = 1;
+                    //  NFUNC set to 1...  perhaps get smarter about combining ARM commands into a single write?
+                    //  This is how things used to be, but to unify the queuing code with DTRAN, they're now two seperate submissions.
+                    //    This isn't ideal, but it works.
+                    OutMessage->Buffer.OutMessage[Offset++] = 1;
 
-                    if(MyOutMessage->Buffer.BSt.IO & (Q_ARML | Q_ARMC | Q_ARMS))
-                    {
-                        /* Select B word, single transmit, & write */
-                        if(Double)
-                            OutMessage->Buffer.OutMessage[Offset++] = 0xa0;
-                        else
-                            OutMessage->Buffer.OutMessage[Offset++] = 0x80;
-                        OutMessage->Buffer.OutMessage[Offset++] = 0;
+                    //  Select B word, single transmit & write
+                    OutMessage->Buffer.OutMessage[Offset++] = 0x80;
 
-                        /* select the function */
-                        if(MyOutMessage->Buffer.BSt.IO & Q_ARML)
-                            OutMessage->Buffer.OutMessage[Offset++] = ARML;
-                        else if(MyOutMessage->Buffer.BSt.IO & Q_ARMS)
-                            OutMessage->Buffer.OutMessage[Offset++] = ARMS;
-                        else
-                            OutMessage->Buffer.OutMessage[Offset++] = ARMC;
-
-                        /* this is a function so zero length */
-                        OutMessage->Buffer.OutMessage[Offset++] = 0;
-                    }
-
-                    /* Now load the real reason we came here */
-                    /* Select B word, single transmit & write */
                     if(Double)
-                        OutMessage->Buffer.OutMessage[Offset++] = 0xa0;
-                    else
-                        OutMessage->Buffer.OutMessage[Offset++] = 0x80;
+                        OutMessage->Buffer.OutMessage[Offset - 1] |= 0x20;
 
-                    /* Select the type of write */
+                    //  If it's a function write
                     if(MyOutMessage->Buffer.BSt.IO & 0x02)
                         OutMessage->Buffer.OutMessage[Offset - 1] |= 0x10;
 
                     OutMessage->Buffer.OutMessage[Offset++] = 0;
 
-                    /* select the address / function */
+                    //  select the address / function
                     OutMessage->Buffer.OutMessage[Offset++] = (UCHAR)MyOutMessage->Buffer.BSt.Function;
 
-                    /* select the length of the write */
+                    //  select the length of the write
                     OutMessage->Buffer.OutMessage[Offset++] = (UCHAR)MyOutMessage->Buffer.BSt.Length;
 
-                    /* if this is a write copy message to buffer */
+                    //  if this is a write copy message to buffer
                     if(MyOutMessage->Buffer.BSt.Length)
                     {
                         for(j = 0; j < MyOutMessage->Buffer.BSt.Length; j++)
@@ -1581,10 +1556,10 @@ BuildLGrpQ (CtiDeviceSPtr Dev)
                     pInfo->QueTable[QueTabEnt].Length = 0;
                 }
 
-                /* we are done with the request message */
+                //  we are done with the request message
                 delete (MyOutMessage);
 
-                /* Now load the setl length for this guy */
+                //  Now load the setl length for this guy
                 OutMessage->Buffer.OutMessage[SETLPos] = Offset - SETLPos;
             }
 

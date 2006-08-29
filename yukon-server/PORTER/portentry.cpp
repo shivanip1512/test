@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.40 $
-* DATE         :  $Date: 2006/04/17 19:30:10 $
+* REVISION     :  $Revision: 1.41 $
+* DATE         :  $Date: 2006/08/29 16:12:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -116,7 +116,6 @@ INT ValidateEmetconMessage(OUTMESS *&OutMessage);
 INT CCU711Message(OUTMESS *&OutMessage, CtiDeviceSPtr Dev);
 INT VersacomMessage(OUTMESS *&OutMessage);
 INT ValidateEncodedFlags(OUTMESS *&OutMessage, INT devicetype);
-INT BuildMessage( OUTMESS *&OutMessage, OUTMESS *&SendOutMessage );
 INT QueueBookkeeping(OUTMESS *&SendOutMessage);
 INT ExecuteGoodRemote(OUTMESS *&OutMessage);
 INT GenerateCompleteRequest(list< OUTMESS* > &outList, OUTMESS *&OutTemplate);
@@ -1133,22 +1132,6 @@ INT CCU711Message(OUTMESS *&OutMessage, CtiDeviceSPtr Dev)
             return BADCCU;
         }
 
-        /* Check if we need to set one of the arms */
-        if(!(OutMessage->Buffer.BSt.IO & 0x01) && !(OutMessage->Buffer.BSt.Length))
-        {
-            switch(OutMessage->Buffer.BSt.Function)
-            {
-            case 0x41:
-            case 0x42:
-                OutMessage->Buffer.BSt.IO |= Q_ARML;
-                break;
-
-            case 0x51:
-            case 0x52:
-                OutMessage->Buffer.BSt.IO |= Q_ARMS;
-            }
-        }
-
         if(OutMessage->Sequence == Cti::Protocol::Emetcon::Scan_LoadProfile)
         {
             if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
@@ -1249,172 +1232,6 @@ INT ValidateEncodedFlags(OUTMESS *&OutMessage, INT devicetype)
     return status;
 }
 
-/*----------------------------------------------------------------------------*
- * This function builds an OutMessage based upon device type and EventCode
- * settings.  I _believe_ this functino will slowly go out of use in the
- * non-BASIC era we have just entered, however, it will remain here as an
- * example of what once was.
- *
- * Note that OutMessage is GONE following this function's successful completion
- *----------------------------------------------------------------------------*/
-INT BuildMessage( OUTMESS *&OutMessage, OUTMESS *&SendOutMessage )
-{
-    INT status = NORMAL;
-    OUTMESS    *ArmOutMessage;
-    OUTMESS    PeekMessage;
-
-    INT wordCount = 0;
-
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-    /* Make sure we decode it on the return */
-    SendOutMessage->EventCode |= DTRAN;
-
-    if(OutMessage->EventCode & AWORD)
-    {
-        /* build preamble message */
-        APreamble (SendOutMessage->Buffer.OutMessage + PREIDLEN, OutMessage->Buffer.ASt);
-
-        /* build the A word */
-        A_Word (SendOutMessage->Buffer.OutMessage + PREIDLEN + 3, OutMessage->Buffer.ASt);
-
-        /* calculate an approximate timeout */
-        SendOutMessage->TimeOut = TIMEOUT + OutMessage->Buffer.ASt.DlcRoute.Stages;
-
-        /* Calculate the message lengths */
-        SendOutMessage->OutLength = AWORDLEN + PREAMLEN + 3;
-        SendOutMessage->InLength = 2;
-    }
-    else if(OutMessage->EventCode & BWORD)
-    {
-        if(OutMessage->Buffer.BSt.IO & 0x01)
-        {
-            /* calculate number of d words to ask for */
-            wordCount = Cti::Protocol::Emetcon::determineDWordCount(OutMessage->Buffer.BSt.Length);
-            /* calculate message lengths */
-            SendOutMessage->InLength = 3 + wordCount * (DWORDLEN + 1);
-        }
-        else
-        {
-            /* determine if write or function and build appropriate words */
-            if(OutMessage->Buffer.BSt.Length == 0)
-            {  /* function */
-
-               /* Check if we need to generate an arm command first */
-                switch(OutMessage->Buffer.BSt.Function)
-                {
-                case 0x41:
-                case 0x42:
-                case 0x51:
-                case 0x52:
-                    /* We need to generate the appropriate arm command */
-                    if((ArmOutMessage = CTIDBG_new OUTMESS) == NULL)
-                    {
-                        printf ("Error Allocating Memory\n");
-                        return(MEMORY);
-                    }
-
-                    *ArmOutMessage = *OutMessage;
-
-                    /* Make sure we decode it on the return */
-                    ArmOutMessage->EventCode |= DTRAN;
-
-                    PeekMessage = *ArmOutMessage;
-
-                    /* Load up an Arm */
-                    PeekMessage.Buffer.BSt.IO = 0;
-                    PeekMessage.Buffer.BSt.Length = 0;
-
-                    switch(OutMessage->Buffer.BSt.Function)
-                    {
-                    case 0x41:
-                    case 0x42:
-                        PeekMessage.Buffer.BSt.Function = ARML;
-                        break;
-
-                    case 0x51:
-                    case 0x52:
-                        PeekMessage.Buffer.BSt.Function = ARMS;
-                        break;
-                    }
-
-                    ArmOutMessage->InLength = 2;
-
-                    /* build the b word */
-                    B_Word (ArmOutMessage->Buffer.OutMessage + PREIDLEN + PREAMLEN, PeekMessage.Buffer.BSt, wordCount);
-
-                    ArmOutMessage->TimeOut = TIMEOUT + PeekMessage.Buffer.BSt.DlcRoute.Stages;
-                    ArmOutMessage->OutLength = PREAMLEN + BWORDLEN + 3;
-
-                    /* build preamble message */
-                    BPreamble (ArmOutMessage->Buffer.OutMessage + PREIDLEN, PeekMessage.Buffer.BSt, wordCount);
-
-                    /* copy the return names */
-
-                    /* load the IDLC specific stuff for DTRAN */
-                    ArmOutMessage->Source = 0;
-                    ArmOutMessage->Destination = DEST_DLC;
-                    ArmOutMessage->Command = CMND_DTRAN;
-                    ArmOutMessage->Buffer.OutMessage[6] = (UCHAR)ArmOutMessage->InLength;
-                    ArmOutMessage->EventCode &= ~RCONT;
-
-                    QueueBookkeeping(ArmOutMessage);
-
-                    /* transfer the message to the appropriate port queue */
-                    if(PortManager.writeQueue (ArmOutMessage->Port, ArmOutMessage->EventCode, sizeof (*ArmOutMessage), (char *) ArmOutMessage, ArmOutMessage->Priority))
-                    {
-                        printf("Error Writing to Queue for Port %2hd\n", ArmOutMessage->Port);
-                        SendError (ArmOutMessage, QUEUE_WRITE);
-                    }
-                }
-            }
-            else
-            {
-                /* write */
-                C_Words (SendOutMessage->Buffer.OutMessage+PREIDLEN+PREAMLEN+BWORDLEN,
-                         OutMessage->Buffer.BSt.Message,
-                         OutMessage->Buffer.BSt.Length,
-                         &wordCount);
-            }
-
-            /* calculate message lengths */
-            SendOutMessage->InLength = 2;
-        }
-
-        /* build the b word */
-        B_Word (SendOutMessage->Buffer.OutMessage + PREIDLEN + PREAMLEN, OutMessage->Buffer.BSt, wordCount);
-
-        SendOutMessage->TimeOut = TIMEOUT + OutMessage->Buffer.BSt.DlcRoute.Stages * (wordCount + 1);
-
-        if(OutMessage->Buffer.BSt.IO & Cti::Protocol::Emetcon::IO_Read)
-        {
-            SendOutMessage->OutLength = PREAMLEN + BWORDLEN + 3;
-        }
-        else
-        {
-            SendOutMessage->OutLength = PREAMLEN + BWORDLEN + wordCount * CWORDLEN + 3;
-        }
-
-        /* build preamble message */
-        BPreamble (SendOutMessage->Buffer.OutMessage + PREIDLEN, OutMessage->Buffer.BSt, wordCount);
-
-        /* copy the return names */
-    }
-
-    /* load the IDLC specific stuff for DTRAN */
-    SendOutMessage->Source                 = 0;
-    SendOutMessage->Destination            = DEST_DLC;
-    SendOutMessage->Command                = CMND_DTRAN;
-    SendOutMessage->Buffer.OutMessage[6]   = (UCHAR)SendOutMessage->InLength;
-    SendOutMessage->EventCode              &= ~RCONT;
-
-    delete(OutMessage);
-    OutMessage = NULL;
-
-    return status;
-}
 
 INT QueueBookkeeping(OUTMESS *&SendOutMessage)
 {
