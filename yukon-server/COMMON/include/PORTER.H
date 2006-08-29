@@ -245,15 +245,6 @@ struct REMOTEPERF
 
 #define COMMANDMASK     ~(COMMANDCODE | WAIT | RESULT | QUEUED | ACTIN)
 
-#define ARML            0x60
-#define ARMS            0x61
-#define ARMC            0x62
-#define WRITE           0x0000
-#define READ            0x0001
-#define Q_ARML          0x0020
-#define Q_ARMS          0x0040
-#define Q_ARMC          0x0080
-
 /* Defines used for TCP/IP Interfaces */
 #define TCP_SES92       1
 #define TCP_CCU710      2
