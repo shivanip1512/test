@@ -9,6 +9,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.model.CBCOrderByTreeModel;
+import com.cannontech.database.model.ModelFactory;
 
 /**
  * Created on Dec 15, 2003
@@ -61,6 +62,10 @@ public class CapBankListModel extends ReportModelBase
 	public CapBankListModel()
 	{
 		super();
+        setFilterModelTypes(new int[]{
+                ModelFactory.CAPCONTROLSTRATEGY
+                }
+            );
 	}	
 		
 	/**
@@ -108,6 +113,15 @@ public class CapBankListModel extends ReportModelBase
 			"(yukonpaobject ysub join ccfeedersubassignment subl on ysub.paobjectid = subl.substationbusid) " +
 			"on subl.feederid = fdrl.feederid" );
 			
+        if (getPaoIDs() != null && getPaoIDs().length > 0)
+        {
+            sql.append(" WHERE SUB1.SUBSTATIONBUSID IN ( " + getPaoIDs()[0] +" ");
+            for (int i = 1; i < getPaoIDs().length; i++)
+                sql.append(" , " + getPaoIDs()[i]);
+                    
+            sql.append(")");
+        }
+        
 		if( CBCOrderByTreeModel.ORDER_TYPE_STRINGS[1].equals(getOrderBy()) )
 			sql.append(" order by yfdr.paoname" );	
 		else if( CBCOrderByTreeModel.ORDER_TYPE_STRINGS[2].equals(getOrderBy()) )
