@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_route.cpp-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2006/07/19 19:00:45 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2006/08/29 19:23:44 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -433,7 +433,7 @@ CtiRouteManager::ptr_type CtiRouteManager::getEqualByName( string &rname )
     ptr_type p;
     string tmpName;
     std::transform(rname.begin(), rname.end(), rname.begin(), tolower);
-    
+
 
     spiterator itr;
 
@@ -529,7 +529,7 @@ bool CtiRouteManager::buildRoleVector( long id, CtiRequestMsg& Req, list< CtiMes
             if( ccuroute->getRepeaterList().entries() > 0 )
             {
                 // This CCURoute has repeater entries.
-                if(ccuroute->getCarrier().getCCUVarBits() == 7)
+                if(ccuroute->getCCUVarBits() == 7)
                 {
                     string resStr = "*** WARNING *** " + ccuroute->getName() + " Has CCU variable bits set to 7 AND has repeaters. ";
                     {
@@ -570,14 +570,14 @@ bool CtiRouteManager::buildRoleVector( long id, CtiRequestMsg& Req, list< CtiMes
                                 if(i == 0)
                                 {
                                     // Use the route to build up the Role object
-                                    role.setOutBits( ccuroute->getCarrier().getCCUVarBits() );
+                                    role.setOutBits( ccuroute->getCCUVarBits() );
                                 }
                                 else
                                 {
                                     // Use the previous repeater to build up the role object.
                                     role.setOutBits( ccuroute->getRepeaterList()[i-1].getVarBit() );
                                 }
-                                role.setFixBits(ccuroute->getCarrier().getCCUFixBits());
+                                role.setFixBits(ccuroute->getCCUFixBits());
                                 role.setInBits(ccuroute->getRepeaterList()[i].getVarBit());
 
                                 if(ccuroute->getRepeaterList()[i].getVarBit() == 7)
