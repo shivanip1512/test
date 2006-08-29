@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT470.h-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2006/08/08 13:37:05 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2006/08/29 22:22:20 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,11 +19,10 @@
 #pragma warning( disable : 4786)
 
 
-#include "dev_mct.h"
-#include "dev_mct410.h"
+#include "dev_mct4xx.h"
 #include <map>
 
-class IM_EX_DEVDB CtiDeviceMCT470 : public CtiDeviceMCT410
+class IM_EX_DEVDB CtiDeviceMCT470 : public CtiDeviceMCT4xx
 {
 private:
 
@@ -275,13 +274,13 @@ protected:
         MCT470_Memory_ModelLen             =    5,
 
         //  lengths are different for these
-        MCT470_Memory_StatusPos            = CtiDeviceMCT410::Memory_StatusPos,
+        MCT470_Memory_StatusPos            = 0x03, // CtiDeviceMCT410::Memory_StatusPos,
         MCT470_Memory_StatusLen            =    3,
 
-        MCT470_FuncWrite_ConfigAlarmMaskPos = CtiDeviceMCT410::FuncWrite_ConfigAlarmMaskPos,
+        MCT470_FuncWrite_ConfigAlarmMaskPos = 0x01, // CtiDeviceMCT410::FuncWrite_ConfigAlarmMaskPos,
         MCT470_FuncWrite_ConfigAlarmMaskLen =   3,
 
-        MCT470_FuncWrite_IntervalsPos      = CtiDeviceMCT410::FuncWrite_IntervalsPos,
+        MCT470_FuncWrite_IntervalsPos      = 0x03, // CtiDeviceMCT410::FuncWrite_IntervalsPos,
         MCT470_FuncWrite_IntervalsLen      =    3,
 
         MCT470_FuncWrite_RelaysPos         = 0x08,
@@ -366,6 +365,7 @@ protected:
     virtual INT executeGetValue (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS* >&outList);
     virtual INT executePutValue (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS* >&outList);
     virtual INT executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS* >&outList);
+    virtual INT executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS* >&outList);
 
     CtiDeviceMCT4xx::ConfigPartsList getPartsList();
 
@@ -385,16 +385,13 @@ protected:
     INT decodeGetStatusInternal    ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetStatusLoadProfile ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetStatusDNP         ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
-    INT decodeGetConfigTime        ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetConfigIntervals   ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetConfigChannelSetup( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetConfigModel       ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
 
-public:
-
     enum
     {
-        MCT470_ChannelCount  = 4,
+        MCT470_Memory_ChannelOffset = 0x1a,
 
         MCT470_MaxIEDReadAge = 600,  //  in seconds
 
@@ -403,27 +400,35 @@ public:
 
         MCT470_Sspec        = 1030,
         MCT470_SspecRevMin  =    5,  //  rev e
-        MCT470_SspecRevMax  =   15,  //  rev o is max for now
+        MCT470_SspecRevMax  =   20,  //  rev t is max for now
 
         MCT470_SspecRev_IEDZeroWriteMin = 13,
-
-        MCT470_Memory_ChannelOffset = 0x1a,
+        MCT470_SspecRev_IEDErrorPadding = 14,
 
         MCT470_FuncRead_ChannelSetupPos = 0x20,
         MCT470_FuncRead_ChannelSetupLen =    7,
-
-        MCT470_FuncRead_LPStatusCh1Ch2Pos = 0x97,
-        MCT470_FuncRead_LPStatusCh3Ch4Pos = 0x9c,
-        MCT470_FuncRead_LPStatusLen       =   11,
-
-        MCT470_FuncWrite_IEDCommand            = 0xd0,
-        MCT470_FuncWrite_IEDCommandLen         =    4,
 
         MCT470_FuncWrite_IEDCommandData        = 0xd1,
         MCT470_FuncWrite_IEDCommandDataBaseLen =    5,
 
         MCT470_FuncWrite_CurrentReading        = 0xd5,
         MCT470_FuncWrite_CurrentReadingLen     =    5,
+    };
+
+public:
+
+    enum
+    {
+        MCT470_ChannelCount  = 4,
+
+        //  These should be private - and there should be an MCT470::executeGetStatus()
+        MCT470_FuncRead_LPStatusCh1Ch2Pos = 0x97,
+        MCT470_FuncRead_LPStatusCh3Ch4Pos = 0x9c,
+        MCT470_FuncRead_LPStatusLen       =   11,
+
+        //  ditto
+        MCT470_FuncWrite_IEDCommand            = 0xd0,
+        MCT470_FuncWrite_IEDCommandLen         =    4,
     };
 
     CtiDeviceMCT470( );
