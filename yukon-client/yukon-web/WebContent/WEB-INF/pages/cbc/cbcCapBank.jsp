@@ -26,8 +26,7 @@ CapControlForm capControlForm = (CapControlForm)JSFParamUtil.getJSFVar( "capCont
 <f:verbatim>
 
 <script type="text/javascript">
-
-addSmartScrolling('capbankHiden', 'capbankDiv', null, null);
+formatSelectedPoint ('cbcPointDiv');
 
 </script>
 
@@ -113,69 +112,38 @@ addSmartScrolling('capbankHiden', 'capbankDiv', null, null);
             </x:selectOneMenu>
 			
 
-            <f:verbatim><br/><br/></f:verbatim>
+                      <f:verbatim>
+                    <br />
+                    <br />
+                </f:verbatim>
 
-            <x:div id="capbankDiv" forceId="true" styleClass="scrollSmall" rendered="#{capControlForm.bankControlPtVisible}" >
-						
-			
-            <x:outputLabel for="cntrlPoint" value="Control Device/Point: " title="Point used for monitoring the control (Only displays points that are not yet used by CapBanks)" styleClass="medStaticLabel"/>
-            <x:outputText id="cntrlPoint" rendered="#{capBankEditor.capBank.capBank.controlPointID != 0}"
-                value="#{capBankEditor.ctlPaoName} / #{capBankEditor.ctlPointName}" styleClass="medLabel"/>
-            <x:outputText id="cntrlPoint_none" rendered="#{capBankEditor.capBank.capBank.controlPointID == 0}"
-                value="(none)" styleClass="medLabel"/>
+                 <x:div id="cbcPointDiv" forceId="true">
+                 <x:inputHidden id="cbc_point" forceId="true" 
+                 value="#{capBankEditor.capBank.capBank.controlPointID }" valueChangeListener="#{capBankEditor.ctlPointChanged}"/>      
+                 <x:outputLabel for="cntrlPoint" value="Control Device/Point: " 
+                 title="Point used for monitoring the control (Only displays points that are not yet used by CapBanks)" 
+                 styleClass="medStaticLabel"/>
+                 <x:outputText id="cbcDevice" forceId="true" 
+                 value="#{capBankEditor.ctlPaoName}" /> 
+                 <x:outputText id="ctlPoint" forceId="true" 
+                 value="#{capBankEditor.ctlPointName}" /> 
+                <f:verbatim>
+                    <br/>
+                </f:verbatim>
+                    <h:outputLink  value="javascript:pointPicker_showPicker('cbc_point','com.cannontech.common.search.criteria.CBCControlPointCriteria','pointName:ctlPoint;deviceName:cbcDevice')" >
+                       <h:outputText value="Select point..."/>
+                    </h:outputLink>
+                </x:div>
+                <f:verbatim>
+                    <br/>
+                </f:verbatim>
+                 <x:commandLink id="cbcPoint_setNone" title="Do not use a point to control cap bank" 
+                 styleClass="medStaticLabel"
+                    value="No Control Point" actionListener="#{capBankEditor.capBankTeeClick}">
+                        <f:param name="ptID" value="0"/>
+                  </x:commandLink>
+                
 
-            <x:tree2 id="capBankPoints" value="#{capControlForm.capBankPoints}" var="node"
-                    showRootNode="false" varNodeToggler="t"
-                    preserveToggle="true" clientSideToggle="false" >
-                <f:facet name="root">
-                    <x:panelGroup>
-                        <x:commandLink id="paoRoot" action="#{t.toggleExpanded}" value="#{node.description}"/>
-                    </x:panelGroup>
-                </f:facet>
-    
-                <f:facet name="paoTypes">
-                    <x:panelGroup>
-                        <x:outputText id="paoTypeNodeCnt" value="#{node.description} (#{node.childCount})" rendered="#{!empty node.children}"/>
-                    </x:panelGroup>
-                </f:facet>
-
-                <f:facet name="paos">
-                    <x:panelGroup>
-                        <x:outputText id="paoNodeCnt" value="#{node.description} (#{node.childCount})" rendered="#{!empty node.children}"/>
-                    </x:panelGroup>
-                </f:facet>
-                                  								
-				<f:facet name="sublevels">
-					<x:panelGroup >
-						<x:outputText id="subLvlCnt" value="#{node.description} (#{node.childCount})" rendered="#{!empty node.children}" />
-					</x:panelGroup>
-				</f:facet>
-                    
-                <f:facet name="points">
-                    <x:panelGroup>
-                        <x:graphicImage value="/editor/images/blue_check.gif" height="14" width="14" hspace="2"
-                            rendered="#{capBankEditor.capBank.capBank.controlPointID == node.identifier}" />
-                        <x:commandLink id="pointNode" value="#{node.description}"
-                            actionListener="#{capBankEditor.capBankTeeClick}" >
-                            <f:param name="ptID" value="#{node.identifier}"/>
-                        </x:commandLink>                
-    
-                    </x:panelGroup>
-                </f:facet>
-    
-            </x:tree2>
-            
-            </x:div>
-
-          
-            
-            <x:commandLink id="capBankPoint_setNone" title="Do not use a control point" styleClass="medStaticLabel"
-                        rendered="#{capControlForm.bankControlPtVisible}"
-                        value="No Control Point" actionListener="#{capControlForm.capBankTeeClick}">
-                <f:param name="ptID" value="0"/>
-            </x:commandLink>
-            
-            <f:verbatim></fieldset></f:verbatim>
         </x:column>
         <x:column>
         

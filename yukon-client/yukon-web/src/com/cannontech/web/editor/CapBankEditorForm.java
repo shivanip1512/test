@@ -12,6 +12,7 @@ import java.util.Map;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
+import javax.faces.event.ValueChangeEvent;
 
 import org.springframework.jdbc.core.JdbcOperations;
 
@@ -462,4 +463,25 @@ private List unassignedPoints = null;
             return capBank.getCapBank().getControlPointID();
         }
 
+    public void ctlPointChanged (ValueChangeEvent vce) {
+        Integer val = (Integer)vce.getNewValue();
+        if (val == null)
+            return;
+        if (getDbPersistent() instanceof CapBank) {             
+            capBank.getCapBank().setControlPointID(new Integer(val));
+            int controlPointId = capBank.getCapBank().getControlPointID().intValue();
+            LitePoint litePoint = DaoFactory.getPointDao().getLitePoint(controlPointId);
+            if (litePoint != null) {
+                int paoId = litePoint.getPaobjectID();
+                Integer ctlPointid = new Integer(paoId);                
+                capBank.getCapBank().setControlDeviceID(ctlPointid);
+            }               
+        }   
+        resetController(capBank);
+        if (controller instanceof CapBankController)
+            handleMonitorPointsForController(capBank.getCapBank().getControlDeviceID().intValue());
+        else
+            resetAdvancedTab();
+
+    }    
 }

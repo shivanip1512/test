@@ -1,16 +1,24 @@
 package com.cannontech.common.search.criteria;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.lucene.search.BooleanClause;
+
 import com.cannontech.database.data.point.PointUnits;
 
 public class KWCriteria extends PointDeviceCriteriaAdapter {
-    Integer[] unitOfMeasureIds = new Integer[] {PointUnits.UOMID_KW};
+    private static final Integer[] UNITS =  {PointUnits.UOMID_KW};
+
     public KWCriteria() {
         super();
-        
-    }
-    
-    public Integer[] getUnitOfMeasureIds() {
-        return unitOfMeasureIds;
+        //create all the rules for this criteria
+        List c = new ArrayList<String>();
+        for (int i = 0; i < UNITS.length; i++) {
+            c.add( Integer.toString( UNITS [i]) );
+        }
+        CriteriaRule r1 = new CriteriaRule (c, BooleanClause.Occur.SHOULD);
+        rulesMap .put("uomid", r1);
     }
 
 }

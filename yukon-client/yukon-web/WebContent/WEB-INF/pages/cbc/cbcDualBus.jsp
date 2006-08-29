@@ -7,7 +7,6 @@
 <script type="text/javascript">
 
 addSmartScrolling('currentAltSubDivOffset', 'AltSubBusScrollableDiv', 'selectedSubBus', 'AltSubBusList');
-addSmartScrolling('currentTwoWayPointDivOffset', 'TwoWayPointScrollableDiv', 'selectedSwitchPoint','editorForm:altDualBusSetup:altDualBus:TwoWayPointsPaoListTree');
 
 
 </script>
@@ -60,57 +59,41 @@ addSmartScrolling('currentTwoWayPointDivOffset', 'TwoWayPointScrollableDiv', 'se
 			</x:panelGroup>
 			<x:panelGroup>
 
-				<h:outputText styleClass="tableHeader" value="Selected Disable or Switch Point:" />
-				<x:commandLink actionListener="#{capControlForm.selectedTwoWayPointClick}" rendered="#{capControlForm.switchPointEnabled}">
-				<h:outputText value="#{capControlForm.selectedTwoWayPointsFormatString}" rendered="#{capControlForm.switchPointEnabled}"/>
-				</x:commandLink>
-				<h:outputText styleClass="medLabel" value="(none)" rendered="#{!capControlForm.switchPointEnabled}"/>
 
-				<f:verbatim>
-					<br />
-					<fieldset>
-						<legend>
-							Switch Point
-						</legend>
-				</f:verbatim>
-				<x:div forceId="true" id="TwoWayPointScrollableDiv" styleClass="scrollSmallWidthSet">
+           <f:verbatim>
+                    <br />
+                    <fieldset>
+                        <legend>
+                        Switch Point
+                        </legend>
+                </f:verbatim>
 
-					<x:tree2 binding="#{capControlForm.dualBusSwitchPointTree}" id="TwoWayPointsPaoListTree" value="#{capControlForm.switchPointList}" var="node" showRootNode="false" varNodeToggler="t" preserveToggle="true" clientSideToggle="false">
-
-						<f:facet name="root">
-							<x:panelGroup>
-								<x:outputText id="rootLink" value="#{node.description}" />
-							</x:panelGroup>
-						</f:facet>
-						<f:facet name="paos">
-							<x:panelGroup>
-								<x:outputText id="paChCnt" value="#{node.description} (#{node.childCount})" rendered="#{!empty node.children}" />
-							</x:panelGroup>
-						</f:facet>
-						<f:facet name="sublevels">
-							<x:panelGroup>
-								<x:outputText id="subLvlCnt" value="#{node.description} (#{node.childCount})" rendered="#{!empty node.children}" />
-							</x:panelGroup>
-						</f:facet>						
-						<f:facet name="points">
-							<x:panelGroup>
-								<x:graphicImage value="/editor/images/blue_check.gif" height="14" width="14" hspace="2" rendered="#{capControlForm.PAOBase.capControlSubstationBus.switchPointID == node.identifier}" />
-
-								<x:commandLink  id="ptLink" value="#{node.description}" actionListener="#{capControlForm.twoWayPtsTeeClick}">
-									<f:param name="ptID" value="#{node.identifier}" />
-								</x:commandLink>
-							</x:panelGroup>
-						</f:facet>
-					</x:tree2>
-
-				</x:div>
-				
-				<x:commandLink id="switchPoint_set_none" title="Do not use a switch point" value="No Switch Point" actionListener="#{capControlForm.twoWayPtsTeeClick}" styleClass="medStaticLabel">
-					<f:param name="ptID" value="0" />
-				</x:commandLink>
-				<f:verbatim>
-					</fieldset>
-				</f:verbatim>
+                 <x:div id="switchPointDiv" forceId="true">
+                 <x:inputHidden id="switch_point" forceId="true" 
+                 value="#{capControlForm.PAOBase.capControlSubstationBus.switchPointID}" />      
+                 <x:outputLabel for="switchPointName" value="Selected Point: " 
+                 title="Data Point used for the current VAR value" styleClass="medStaticLabel"/>
+                 <x:outputText id="switchPointName" forceId="true" 
+                 value="#{capControlForm.pointNameMap[capControlForm.PAOBase.capControlSubstationBus.switchPointID]}" /> 
+                <f:verbatim>
+                    <br/>
+                </f:verbatim>
+                    <h:outputLink  value="javascript:pointPicker_showPicker('switch_point','com.cannontech.common.search.criteria.CCTwoStatePointCriteria','pointName:switchPointName')" >
+                       <h:outputText value="Select point..."/>
+                    </h:outputLink>
+                </x:div>
+                <f:verbatim>
+                    <br/>
+                </f:verbatim>
+                 <x:commandLink id="switchPoint_setNone" title="Do not a switch point" 
+                 styleClass="medStaticLabel"
+                    value="No Switch Point" actionListener="#{capControlForm.twoWayPtsTeeClick}">
+                        <f:param name="ptID" value="0"/>
+                  </x:commandLink>
+                
+                <f:verbatim>
+                    </fieldset>
+                </f:verbatim>
 			</x:panelGroup>
 
 
@@ -120,8 +103,6 @@ addSmartScrolling('currentTwoWayPointDivOffset', 'TwoWayPointScrollableDiv', 'se
 	</f:subview>
 
 	<x:inputHidden forceId="true" id="selectedSubBus" value="#{capControlForm.offsetMap['selectedSubBus']}" />
-	<x:inputHidden forceId="true" id="selectedSwitchPoint" value="#{capControlForm.offsetMap['selectedSwitchPoint']}"/>
-	<x:inputHidden forceId="true" id="currentTwoWayPointDivOffset" value="#{capControlForm.offsetMap['currentTwoWayPointDivOffset']}" />
 	<x:inputHidden forceId="true" id="currentAltSubDivOffset" value="#{capControlForm.offsetMap['currentAltSubDivOffset']}" />
 
 </f:subview>

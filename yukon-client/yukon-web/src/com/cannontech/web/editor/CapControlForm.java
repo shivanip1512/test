@@ -2037,9 +2037,18 @@ public class CapControlForm extends DBEditorForm{
             int varPoint = getControlPoint (PointUnits.UOMID_KVAR);
             int voltPoint = getControlPoint (PointUnits.UOMID_KVOLTS);
             int wattPoint = getControlPoint (PointUnits.UOMID_KW);
+            int switchPointID = PointTypes.SYS_PID_SYSTEM;
+            pointNameMap.put(switchPointID, "(none)");
+            if (getDbPersistent() instanceof CapControlSubBus) {
+                CapControlSubBus sub = (CapControlSubBus) getDbPersistent();
+                CapControlSubstationBus subBus = sub.getCapControlSubstationBus();
+                switchPointID = subBus.getSwitchPointID();
+            }
             pointNameMap.put(varPoint, DaoFactory.getPointDao().getPointName(varPoint));
             pointNameMap.put(wattPoint, DaoFactory.getPointDao().getPointName(wattPoint));            
             pointNameMap.put(voltPoint, DaoFactory.getPointDao().getPointName(voltPoint));
+            if (switchPointID != PointTypes.SYS_PID_SYSTEM)
+                pointNameMap.put(switchPointID, DaoFactory.getPointDao().getPointName(switchPointID));
             return pointNameMap;
          }
          
