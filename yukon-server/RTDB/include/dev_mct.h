@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct.h-arc  $
-* REVISION     :  $Revision: 1.46 $
-* DATE         :  $Date: 2006/08/29 16:11:25 $
+* REVISION     :  $Revision: 1.47 $
+* DATE         :  $Date: 2006/08/30 20:49:51 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -101,8 +101,16 @@ protected:
 
     typedef set<MessageReadData> MessageReadDataSet_t;
 
-    struct DynamicPaoAddressing
+    class DynamicPaoAddressing
     {
+    public:
+        DynamicPaoAddressing(int addr, int len, CtiTableDynamicPaoInfo::Keys k ) :
+            address(addr),
+            length(len),
+            key(k)
+        {
+        }
+
         int address, length;
         CtiTableDynamicPaoInfo::Keys key;
 
