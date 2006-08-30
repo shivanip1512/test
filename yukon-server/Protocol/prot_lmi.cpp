@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.53 $
-* DATE         :  $Date: 2006/05/11 15:35:47 $
+* REVISION     :  $Revision: 1.54 $
+* DATE         :  $Date: 2006/08/30 15:34:59 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1009,7 +1009,11 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
                                     }
                                     else
                                     {
-                                        _command = Command_ClearQueuedCodes;
+                                        //  GRE says to keep the codes if we don't have any to send...
+                                        //_command = Command_ClearQueuedCodes;
+
+                                        //  so we're done
+                                        _transaction_complete = true;
                                     }
                                 }
                                 else
@@ -1249,7 +1253,11 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
                 }
                 else
                 {
-                    _command = Command_ClearQueuedCodes;
+                    //  GRE says to keep the codes if we don't have any to send...
+                    //_command = Command_ClearQueuedCodes;
+
+                    //  so we're done
+                    _transaction_complete = true;
                 }
             }
             else if( _command == Command_QueueCodes )
