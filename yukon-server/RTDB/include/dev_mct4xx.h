@@ -1,3 +1,19 @@
+/*-----------------------------------------------------------------------------*
+*
+* File:   dev_mct4xx
+*
+* Class:  CtiDeviceMCT4xx
+* Date:   10/5/2005
+*
+* Author: Jess M. Otteson
+*
+* PVCS KEYWORDS:
+* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct4xx.h-arc  $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2006/08/30 20:27:22 $
+*
+* Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
+*-----------------------------------------------------------------------------*/
 #ifndef __DEV_MCT4XX_H__
 #define __DEV_MCT4XX_H__
 #pragma warning( disable : 4786)
@@ -34,16 +50,17 @@ protected:
         ValueType_LoadProfile_KW,
         ValueType_Accumulator,
         ValueType_FrozenAccumulator,
-        ValueType_Raw
+        ValueType_IED,
+        ValueType_Raw,
     };
 
     enum ErrorClasses
     {
-        EC_MeterReading    = 0x0001,
-        EC_DemandReading   = 0x0002,
-        EC_TOUDemand       = 0x0004,
-        EC_TOUFrozenDemand = 0x0008,
-        EC_LoadProfile     = 0x0010
+        EC_MeterReading    = 1 << 0,
+        EC_DemandReading   = 1 << 1,
+        EC_TOUDemand       = 1 << 2,
+        EC_TOUFrozenDemand = 1 << 3,
+        EC_LoadProfile     = 1 << 4,
     };
 
     typedef map<unsigned long, pair<PointQuality_t, int> > QualityMap;  //  the int will hold ErrorClasses OR'd together
