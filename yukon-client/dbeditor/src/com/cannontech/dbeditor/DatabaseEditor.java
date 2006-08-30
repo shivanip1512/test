@@ -2839,7 +2839,8 @@ public void setDatabase(int whichDatabase)
                                              16);
     DatabaseEditor.showDeviceConfiguration = (enableDeviceConfig & ClientRights.ENABLE_DEVICE_CONFIGURATION) > 0; 
 
-    int length = (DatabaseEditor.showDeviceConfiguration) ? models.length : models.length - 1;
+    int length = (DatabaseEditor.showDeviceConfiguration || models == LM_MODELS)
+                ? models.length : models.length - 1;
 
     boolean deviceConfigFound = false;
 	DBTreeModel[] newModels = new DBTreeModel[length];
