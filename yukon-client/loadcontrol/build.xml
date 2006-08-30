@@ -19,7 +19,11 @@
      	</javac>
 
        <jar jarfile="${yukon.lib}/loadcontrol.jar"
-            basedir="build/" />       
+            basedir="build/">       
+           <fileset dir="src">
+               <include name="**/*.xml"/>
+           </fileset>
+       </jar>
    </target>
 
 	<target name="install" depends="build">

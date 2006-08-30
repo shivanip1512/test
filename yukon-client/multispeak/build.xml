@@ -20,6 +20,9 @@
      	</javac>
 
 		<jar jarfile="${yukon.lib}/multispeak.jar" basedir="build/" manifest="resource/manifest.mf">
+            <fileset dir="src">
+                <include name="**/*.xml"/>
+            </fileset>
 		</jar>
 	</target>
 
