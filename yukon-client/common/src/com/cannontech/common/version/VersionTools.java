@@ -1,9 +1,15 @@
 package com.cannontech.common.version;
 
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.JdbcTemplate;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.db.version.CTIDatabase;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * Insert the type's description here.
@@ -131,10 +137,10 @@ public synchronized static CTIDatabase getDatabaseVersion()
  */
 public static boolean starsExists()
 {
-	//case sensitive in Oracle (very important)
-    if(starsExists == null)
-	//this is not a save check by itself anymore
-        starsExists = new Boolean(VersionTools.tableExists("APPLIANCECATEGORY"));
+    if(starsExists == null) {
+        starsExists = VersionTools.tableExists("APPLIANCECATEGORY");
+    }
+
     return starsExists;
 }
 
@@ -170,47 +176,23 @@ public static void main ( String[] args )
 }
 
 /**
- * Insert the method's description here.
+ * Tests whether the given table exists
  * Creation date: (6/25/2001 9:18:30 AM)
  * @return java.lang.String
  */
 private final static boolean tableExists( String tableName_ )
 {
-	java.sql.Connection conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-	java.sql.PreparedStatement stat = null;
-	java.sql.ResultSet rs = null;
-	boolean retVal = false;
-	
-	try
-	{
-/*      
-		ResultSet rs = getDbConnection().getMetaData().getColumns(
-								null, 
-								null, 
-								tableName.toUpperCase(), 
-								"%" );
-*/
-        rs = conn.getMetaData().getTables( 
-							null, null, tableName_.toUpperCase(), null );
-
-		if( rs.next() )
-			retVal = true;
-	}
-	catch( java.sql.SQLException e )
-	{}
-	finally
-	{
-		try
-		{
-			if( rs != null ) rs.close();				
-			if( stat != null ) stat.close();				
-			if( conn != null ) conn.close();
-		}
-		catch( java.sql.SQLException e )
-		{}
-	}
-
-	return retVal;
+    // A previous version used meta data but it didn't work with oracle!
+    try {
+        JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
+        int num = (Integer) jdbcOps.queryForObject("select count(*) from " + tableName_, Integer.class);
+        return true;
+    } 
+    catch(DataAccessException dae) {
+        // fine, guess it didn't exist
+    }
+    
+    return false;
 }
 
 /**
