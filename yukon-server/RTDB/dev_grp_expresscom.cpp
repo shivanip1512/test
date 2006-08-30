@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2006/02/27 23:58:30 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2006/08/30 20:21:26 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -294,7 +294,7 @@ string CtiDeviceGroupExpresscom::getPutConfigAssignment(UINT modifier)
      *
      *  The command modifier "
      */
-    bool forcefullconfig = (modifier & CtiDeviceBase::PutconfigAssignForce);
+    bool forcefullconfig = (modifier & CtiDeviceBase::PutConfigAssignForce);
 
     string assign = string("xcom assign");
 
