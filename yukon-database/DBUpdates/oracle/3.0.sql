@@ -153,8 +153,7 @@ delete from yukonrole where roleid=-303;
 
 delete from YukonUserRole where userid=-1;
 
-update YukonRoleProperty set keyname='lc_reduction_col', defaultvalue='true', description='Tells TDC to show the LoadControl reduction column or not' where rolepropertyid=-10110;
-
+insert into YukonRoleProperty values(-10111,-101,'lc_reduction_col','true','Tells TDC to show the LoadControl reduction column or not');
 
 /* Database Editor */
 insert into YukonUserRole values(100,-1,-100,-10000,'(none)');

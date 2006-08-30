@@ -84,6 +84,10 @@ insert into AlarmCategory values(99,'Category 99',1);
 insert into AlarmCategory values(100,'Category 100',1);
 go
 
+update yukonuserrole set value='true' where userroleid=-1011;
+update yukonuserrole set value='(none)' where userroleid=-1012;
+go
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */

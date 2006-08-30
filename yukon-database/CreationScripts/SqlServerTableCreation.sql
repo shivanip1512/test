@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     8/3/2006 12:03:27 PM                         */
+/* Created on:     8/28/2006 10:20:10 AM                        */
 /*==============================================================*/
 
 
@@ -1108,6 +1108,14 @@ if exists (select 1
            where  id = object_id('DCDeviceConfiguration')
             and   type = 'U')
    drop table DCDeviceConfiguration
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DCDeviceConfigurationType')
+            and   type = 'U')
+   drop table DCDeviceConfigurationType
 go
 
 
@@ -2505,7 +2513,6 @@ insert into AlarmCategory values(9,'Category 8',1);
 insert into AlarmCategory values(10,'Category 9',1);
 insert into AlarmCategory values(11,'Category 10',1);
 
-
 insert into AlarmCategory values(12,'Category 11',1);
 insert into AlarmCategory values(13,'Category 12',1);
 insert into AlarmCategory values(14,'Category 13',1);
@@ -2527,6 +2534,75 @@ insert into AlarmCategory values(29,'Category 28',1);
 insert into AlarmCategory values(30,'Category 29',1);
 insert into AlarmCategory values(31,'Category 30',1);
 insert into AlarmCategory values(32,'Category 31',1);
+
+insert into AlarmCategory values(33,'Category 33',1);
+insert into AlarmCategory values(34,'Category 34',1);
+insert into AlarmCategory values(35,'Category 35',1);
+insert into AlarmCategory values(36,'Category 36',1);
+insert into AlarmCategory values(37,'Category 37',1);
+insert into AlarmCategory values(38,'Category 38',1);
+insert into AlarmCategory values(39,'Category 39',1);
+insert into AlarmCategory values(40,'Category 40',1);
+insert into AlarmCategory values(41,'Category 41',1);
+insert into AlarmCategory values(42,'Category 42',1);
+insert into AlarmCategory values(43,'Category 43',1);
+insert into AlarmCategory values(44,'Category 44',1);
+insert into AlarmCategory values(45,'Category 45',1);
+insert into AlarmCategory values(46,'Category 46',1);
+insert into AlarmCategory values(47,'Category 47',1);
+insert into AlarmCategory values(48,'Category 48',1);
+insert into AlarmCategory values(49,'Category 49',1);
+insert into AlarmCategory values(50,'Category 50',1);
+insert into AlarmCategory values(51,'Category 51',1);
+insert into AlarmCategory values(52,'Category 52',1);
+insert into AlarmCategory values(53,'Category 53',1);
+insert into AlarmCategory values(54,'Category 54',1);
+insert into AlarmCategory values(55,'Category 55',1);
+insert into AlarmCategory values(56,'Category 56',1);
+insert into AlarmCategory values(57,'Category 57',1);
+insert into AlarmCategory values(58,'Category 58',1);
+insert into AlarmCategory values(59,'Category 59',1);
+insert into AlarmCategory values(60,'Category 60',1);
+insert into AlarmCategory values(61,'Category 61',1);
+insert into AlarmCategory values(62,'Category 62',1);
+insert into AlarmCategory values(63,'Category 63',1);
+insert into AlarmCategory values(64,'Category 64',1);
+insert into AlarmCategory values(65,'Category 65',1);
+insert into AlarmCategory values(66,'Category 66',1);
+insert into AlarmCategory values(67,'Category 67',1);
+insert into AlarmCategory values(68,'Category 68',1);
+insert into AlarmCategory values(69,'Category 69',1);
+insert into AlarmCategory values(70,'Category 70',1);
+insert into AlarmCategory values(71,'Category 71',1);
+insert into AlarmCategory values(72,'Category 72',1);
+insert into AlarmCategory values(73,'Category 73',1);
+insert into AlarmCategory values(74,'Category 74',1);
+insert into AlarmCategory values(75,'Category 75',1);
+insert into AlarmCategory values(76,'Category 76',1);
+insert into AlarmCategory values(77,'Category 77',1);
+insert into AlarmCategory values(78,'Category 78',1);
+insert into AlarmCategory values(79,'Category 79',1);
+insert into AlarmCategory values(80,'Category 80',1);
+insert into AlarmCategory values(81,'Category 81',1);
+insert into AlarmCategory values(82,'Category 82',1);
+insert into AlarmCategory values(83,'Category 83',1);
+insert into AlarmCategory values(84,'Category 84',1);
+insert into AlarmCategory values(85,'Category 85',1);
+insert into AlarmCategory values(86,'Category 86',1);
+insert into AlarmCategory values(87,'Category 87',1);
+insert into AlarmCategory values(88,'Category 88',1);
+insert into AlarmCategory values(89,'Category 89',1);
+insert into AlarmCategory values(90,'Category 90',1);
+insert into AlarmCategory values(91,'Category 91',1);
+insert into AlarmCategory values(92,'Category 92',1);
+insert into AlarmCategory values(93,'Category 93',1);
+insert into AlarmCategory values(94,'Category 94',1);
+insert into AlarmCategory values(95,'Category 95',1);
+insert into AlarmCategory values(96,'Category 96',1);
+insert into AlarmCategory values(97,'Category 97',1);
+insert into AlarmCategory values(98,'Category 98',1);
+insert into AlarmCategory values(99,'Category 99',1);
+insert into AlarmCategory values(100,'Category 100',1);
 alter table AlarmCategory
    add constraint PK_ALARMCATEGORYID primary key  (AlarmCategoryID)
 go
@@ -3841,7 +3917,10 @@ go
 /*==============================================================*/
 create table DCCategoryType (
    CategoryTypeID       numeric              not null,
-   Name                 varchar(40)          not null
+   Name                 varchar(40)          not null,
+   CategoryGroup        varchar(40)          not null,
+   Level                varchar(40)          not null,
+   Description          varchar(320)         not null
 )
 go
 
@@ -3902,7 +3981,8 @@ go
 /*==============================================================*/
 create table DCConfigurationType (
    ConfigTypeID         numeric              not null,
-   Name                 varchar(40)          not null
+   Name                 varchar(40)          not null,
+   DESCRIPTION          varchar(320)         not null
 )
 go
 
@@ -3928,11 +4008,27 @@ go
 
 
 /*==============================================================*/
+/* Table: DCDeviceConfigurationType                             */
+/*==============================================================*/
+create table DCDeviceConfigurationType (
+   ConfigTypeID         numeric              not null,
+   DeviceType           varchar(30)          not null
+)
+go
+
+
+alter table DCDeviceConfigurationType
+   add constraint PK_DCDEVICECONFIGURATIONTYPE primary key  (ConfigTypeID, DeviceType)
+go
+
+
+/*==============================================================*/
 /* Table: DCItemType                                            */
 /*==============================================================*/
 create table DCItemType (
    ItemTypeID           numeric              not null,
    Name                 varchar(40)          not null,
+   ValidationType       varchar(40)          null,
    Required             char(1)              not null,
    MinLength            numeric              not null,
    MaxLengh             numeric              not null,
@@ -4096,7 +4192,7 @@ go
 create table DEVICEMETERGROUP (
    DEVICEID             numeric              not null,
    CollectionGroup      varchar(50)          not null,
-   TestCollectionGroup  varchar(20)          not null,
+   TestCollectionGroup  varchar(50)          not null,
    METERNUMBER          varchar(15)          not null,
    BillingGroup         varchar(20)          not null
 )
@@ -5384,7 +5480,8 @@ create table DynamicCCFeeder (
    EventSeq             numeric              not null,
    CurrVerifyCBId       numeric              not null,
    CurrVerifyCBOrigState numeric              not null,
-   MultiVoltControlState numeric              not null
+   CurrentWattPointQuality numeric              not null,
+   CurrentVoltPointQuality numeric              not null
 )
 go
 
@@ -5419,7 +5516,7 @@ create table DynamicCCMonitorPointResponse (
    BankID               numeric              not null,
    PointID              numeric              not null,
    PreOpValue           float                not null,
-   Delta                numeric              not null
+   Delta                float                not null
 )
 go
 
@@ -5464,7 +5561,8 @@ create table DynamicCCSubstationBus (
    SwitchPointStatus    char(1)              not null,
    AltSubControlValue   float                not null,
    EventSeq             numeric              not null,
-   MultiVoltControlState numeric              not null
+   CurrentWattPointQuality numeric              not null,
+   CurrentVoltPointQuality numeric              not null
 )
 go
 
@@ -7114,14 +7212,13 @@ create table MSPInterface (
 go
 
 
-insert into MSPInterface values (1, 'CB_MR', 'CB_MRSoap');
+
 insert into MSPInterface values (1, 'MR_CB', 'MR_CBSoap');
-insert into MSPInterface values (1, 'EA_MR', 'EA_MRSoap');
 insert into MSPInterface values (1, 'MR_EA', 'MR_EASoap');
-insert into MSPInterface values (1, 'OA_OD', 'OA_ODSoap');
 insert into MSPInterface values (1, 'OD_OA', 'OD_OASoap');
-insert into MSPInterface values (1, 'CB_CD', 'CB_CDSoap');
 insert into MSPInterface values (1, 'CD_CB', 'CD_CBSoap');
+
+
 alter table MSPInterface
    add constraint PK_MSPINTERFACE primary key  (VendorID, Interface, Endpoint)
 go
@@ -10538,8 +10635,8 @@ insert into YukonUserRole values (-1006, -100, -108, -10806, '(none)');
 insert into YukonUserRole values (-1007, -100, -108, -10811, '(none)');
 
 insert into YukonUserRole values (-1010, -100, -200, -20000, '(none)');
-insert into YukonUserRole values (-1011, -100, -200, -20001, '(none)');
-insert into YukonUserRole values (-1012, -100, -200, -20002, 'true');
+insert into YukonUserRole values (-1011, -100, -200, -20001, 'true');
+insert into YukonUserRole values (-1012, -100, -200, -20002, '(none)');
 insert into YukonUserRole values (-1013, -100, -200, -20003, '(none)');
 insert into YukonUserRole values (-1014, -100, -200, -20004, '(none)');
 insert into YukonUserRole values (-1015, -100, -200, -20005, '(none)');
@@ -11179,6 +11276,18 @@ alter table DCCategoryItem
 go
 
 
+alter table DCCategoryItemType
+   add constraint FK_DCCATITEMTYPE_DCCATTYPE foreign key (CategoryTypeID)
+      references DCCategoryType (CategoryTypeID)
+go
+
+
+alter table DCCategoryItemType
+   add constraint FK_DCITEMTY_DCCATITEMTY foreign key (ItemTypeID)
+      references DCItemType (ItemTypeID)
+go
+
+
 alter table DCConfiguration
    add constraint FK_DCCONFIG_DCCONFIGTYPE foreign key (ConfigTypeID)
       references DCConfigurationType (ConfigTypeID)
@@ -11197,6 +11306,18 @@ alter table DCConfigurationCategory
 go
 
 
+alter table DCConfigurationCategoryType
+   add constraint FK_DCCATTYPE_DCCFGCATTYPE foreign key (CategoryTypeID)
+      references DCCategoryType (CategoryTypeID)
+go
+
+
+alter table DCConfigurationCategoryType
+   add constraint FK_DCCFGTYPE_DCCFGCATTYPE foreign key (ConfigTypeID)
+      references DCConfigurationType (ConfigTypeID)
+go
+
+
 alter table DCDeviceConfiguration
    add constraint FK_DCDEVCONFIG_DCCONFIG foreign key (ConfigID)
       references DCConfiguration (ConfigID)
@@ -11206,6 +11327,12 @@ go
 alter table DCDeviceConfiguration
    add constraint FK_DCDEVCONFIG_YKPAO foreign key (DeviceID)
       references YukonPAObject (PAObjectID)
+go
+
+
+alter table DCDeviceConfigurationType
+   add constraint FK_DCCFGTYPE_DCCFGDVCFGTYPE foreign key (ConfigTypeID)
+      references DCConfigurationType (ConfigTypeID)
 go
 
 
