@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base.h-arc  $
-* REVISION     :  $Revision: 1.55 $
-* DATE         :  $Date: 2006/04/25 19:08:33 $
+* REVISION     :  $Revision: 1.56 $
+* DATE         :  $Date: 2006/08/30 20:20:42 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -61,6 +61,8 @@ class Interface;
 
 using namespace Cti;  //  in preparation for moving devices to their own namespace
 
+using CtiTableDynamicPaoInfo::Keys;  //  Allows us to refer to the keys by Key::keyname
+
 
 /*
  *  This is a class used as a base for all others.... currently he branches
@@ -71,11 +73,10 @@ class IM_EX_DEVDB CtiDeviceBase : public CtiTblPAO, public RWMonitor< RWRecursiv
 {
 public:
 
-    typedef enum
+    enum PutConfigModifiers
     {
-        PutconfigAssignForce = 0x00000001
-
-    } CtiPutconfigModifiers;
+        PutConfigAssignForce = 0x00000001
+    };
 
 private:
 
@@ -93,15 +94,15 @@ protected:
     CtiCounter          _processed;
     CtiCounter          _orphaned;
 
-    INT                  _commFailCount;          // Consecutive failures to this device.
-    INT                  _attemptCount;           // Cumulative. Attempts to communicate with the device
-    INT                  _attemptFailCount;       // Cumulative. Failed with no retries
-    INT                  _attemptRetryCount;      // Cumulative. Failed, but retries remain
-    INT                  _attemptSuccessCount;    // Cumulative. Comms successful.
+    INT                  _commFailCount;          //  Consecutive failures to this device.
+    INT                  _attemptCount;           //  Cumulative. Attempts to communicate with the device
+    INT                  _attemptFailCount;       //  Cumulative. Failed with no retries
+    INT                  _attemptRetryCount;      //  Cumulative. Failed, but retries remain
+    INT                  _attemptSuccessCount;    //  Cumulative. Comms successful.
 
 
-    CtiPointManager      *_pointMgr;              // Manages points associated with this Device (Device owned memory)
-    CtiRouteManager      *_routeMgr;              // Helps me find my Route.  (Memory managed elsewhere)
+    CtiPointManager      *_pointMgr;              //  Manages points associated with this Device (Device owned memory)
+    CtiRouteManager      *_routeMgr;              //  Helps me find my Route.  (Memory managed elsewhere)
 
     union
     {
@@ -112,11 +113,11 @@ protected:
         };
     };
 
-    bool _singleDevice;                           // This should be one for any device not a group.
-    CtiTableDeviceBase _deviceBase;               // This guy used to give us a LOT of members by being our parent!
+    bool _singleDevice;                           //  This should be one for any device not a group.
+    CtiTableDeviceBase _deviceBase;               //  This guy used to give us a LOT of members by being our parent!
 
-    set<CtiTableDynamicPaoInfo> _paoInfo;         // This is a list of miscellaneous data that is dynamically generated
-                                                  //   by Porter, Scanner, or whomever
+    set<CtiTableDynamicPaoInfo> _paoInfo;         //  This is a list of miscellaneous data that is dynamically generated
+                                                  //    by Porter, Scanner, or whomever
 public:
 
     typedef CtiTblPAO Inherited;
@@ -221,16 +222,16 @@ public:
 
     INT checkForInhibitedDevice(list< CtiMessage* > &retList, const OUTMESS *&OutMessage);
 
-    INT getCommFailCount() const;
-    CtiDeviceBase& setCommFailCount(const INT i);
-    INT getAttemptCount() const;
-    CtiDeviceBase& setAttemptCount(const INT i);
-    INT getAttemptFailCount() const;
-    CtiDeviceBase& setAttemptFailCount(const INT i);
-    INT getAttemptRetryCount() const;
-    CtiDeviceBase& setAttemptRetryCount(const INT i);
-    INT getAttemptSuccessCount() const;
-    CtiDeviceBase& setAttemptSuccessCount(const INT i);
+    INT             getCommFailCount() const;
+    CtiDeviceBase&  setCommFailCount(const INT i);
+    INT             getAttemptCount() const;
+    CtiDeviceBase&  setAttemptCount(const INT i);
+    INT             getAttemptFailCount() const;
+    CtiDeviceBase&  setAttemptFailCount(const INT i);
+    INT             getAttemptRetryCount() const;
+    CtiDeviceBase&  setAttemptRetryCount(const INT i);
+    INT             getAttemptSuccessCount() const;
+    CtiDeviceBase&  setAttemptSuccessCount(const INT i);
 
     INT executeScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
     bool loadDevicePoints();
@@ -247,20 +248,20 @@ public:
     bool isGroup() const;
 
 
-    bool hasDynamicInfo(CtiTableDynamicPaoInfo::Keys k);
+    bool hasDynamicInfo(Keys k);
     bool setDynamicInfo(const CtiTableDynamicPaoInfo &paoinfo);
-    bool setDynamicInfo(CtiTableDynamicPaoInfo::Keys k, const string        &value);
-    bool setDynamicInfo(CtiTableDynamicPaoInfo::Keys k, const int           &value);
-    bool setDynamicInfo(CtiTableDynamicPaoInfo::Keys k, const long          &value);
-    bool setDynamicInfo(CtiTableDynamicPaoInfo::Keys k, const unsigned long &value);
-    bool setDynamicInfo(CtiTableDynamicPaoInfo::Keys k, const double        &value);
-    bool getDynamicInfo(CtiTableDynamicPaoInfo::Keys k, string        &destination) const;
-    bool getDynamicInfo(CtiTableDynamicPaoInfo::Keys k, int           &destination) const;
-    bool getDynamicInfo(CtiTableDynamicPaoInfo::Keys k, long          &destination) const;
-    bool getDynamicInfo(CtiTableDynamicPaoInfo::Keys k, unsigned long &destination) const;
-    bool getDynamicInfo(CtiTableDynamicPaoInfo::Keys k, double        &destination) const;
+    bool setDynamicInfo(Keys k, const string        &value);
+    bool setDynamicInfo(Keys k, const int           &value);
+    bool setDynamicInfo(Keys k, const long          &value);
+    bool setDynamicInfo(Keys k, const unsigned long &value);
+    bool setDynamicInfo(Keys k, const double        &value);
+    bool getDynamicInfo(Keys k, string        &destination) const;
+    bool getDynamicInfo(Keys k, int           &destination) const;
+    bool getDynamicInfo(Keys k, long          &destination) const;
+    bool getDynamicInfo(Keys k, unsigned long &destination) const;
+    bool getDynamicInfo(Keys k, double        &destination) const;
     //  note - this returns the value as a long for convenience - the name may need to be changed to prevent confusion if it arises
-    long getDynamicInfo(CtiTableDynamicPaoInfo::Keys k) const;
+    long getDynamicInfo(Keys k) const;
 
     bool getDirtyInfo(vector<CtiTableDynamicPaoInfo *> &dirty_info);
 
@@ -281,11 +282,11 @@ public:
     virtual ULONG selectInitialMacroRouteOffset(LONG routeid) const;
 
     bool isTAP() const;
-    virtual bool isDialup() const;
+    virtual bool isDialup()   const;
     virtual INT getBaudRate() const;
-    virtual INT getBits() const;
+    virtual INT getBits()     const;
     virtual INT getStopBits() const;
-    virtual INT getParity() const;
+    virtual INT getParity()   const;
 
     virtual INT getProtocolWrap() const;
 
@@ -344,59 +345,53 @@ public:
 
 typedef CtiDeviceBase CtiDevice;
 
-inline bool CtiDeviceBase::isDialup() const { return false; }
+inline bool   CtiDeviceBase::isDialup() const               { return false; }
 inline string CtiDeviceBase::getDescription(const CtiCommandParser & parse) const    { return getName();}
-inline bool CtiDeviceBase::isMeter() const               { return false;}
-inline LONG CtiDeviceBase::getPortID() const             { return -1;}
-inline LONG CtiDeviceBase::getAddress() const            { return -1;}
-inline LONG CtiDeviceBase::getMasterAddress() const      { return -1;}
-inline INT  CtiDeviceBase::getPostDelay() const          { return 0;}
-inline string CtiDeviceBase::getPassword() const      { return string();}
-inline string CtiDeviceBase::getPhoneNumber() const   { return string();}
-inline LONG CtiDeviceBase::getRouteID() const            { return -1;}
-inline LONG CtiDeviceBase::getDemandInterval() const     { return LONG_MAX;}
-inline Protocol::Interface *CtiDeviceBase::getProtocol() { return NULL;}
-inline void CtiDeviceBase::invalidateScanRates()         { return;}
-inline void CtiDeviceBase::deleteNonUpdatedScanRates()   { return;}
+inline bool   CtiDeviceBase::isMeter() const                { return false;}
+inline LONG   CtiDeviceBase::getPortID() const              { return -1;}
+inline LONG   CtiDeviceBase::getAddress() const             { return -1;}
+inline LONG   CtiDeviceBase::getMasterAddress() const       { return -1;}
+inline INT    CtiDeviceBase::getPostDelay() const           { return 0;}
+inline string CtiDeviceBase::getPassword() const            { return string();}
+inline string CtiDeviceBase::getPhoneNumber() const         { return string();}
+inline LONG   CtiDeviceBase::getRouteID() const             { return -1;}
+inline LONG   CtiDeviceBase::getDemandInterval() const      { return LONG_MAX;}
+inline Protocol::Interface *CtiDeviceBase::getProtocol()    { return NULL;}
+inline void   CtiDeviceBase::invalidateScanRates()          { }
+inline void   CtiDeviceBase::deleteNonUpdatedScanRates()    { }
 inline string CtiDeviceBase::getMeterGroupName() const           { return string();}
 inline string CtiDeviceBase::getAlternateMeterGroupName() const  { return string();}
 inline string CtiDeviceBase::getBillingGroupName() const         { return string();}
 
-inline INT CtiDeviceBase::getCommFailCount() const       { LockGuard guard(monitor()); return _commFailCount;}
-inline INT CtiDeviceBase::getAttemptCount() const        { LockGuard guard(monitor()); return _attemptCount;}
-inline INT CtiDeviceBase::getAttemptFailCount() const    { LockGuard guard(monitor()); return _attemptFailCount;}
-inline INT CtiDeviceBase::getAttemptRetryCount() const   { LockGuard guard(monitor()); return _attemptRetryCount;}
-inline INT CtiDeviceBase::getAttemptSuccessCount() const { LockGuard guard(monitor()); return _attemptSuccessCount;}
-inline bool CtiDeviceBase::getControlInhibit() const     { LockGuard guard(monitor()); return _deviceBase.getControlInhibit(); }
+inline INT  CtiDeviceBase::getCommFailCount() const         { LockGuard guard(monitor()); return _commFailCount;}
+inline INT  CtiDeviceBase::getAttemptCount() const          { LockGuard guard(monitor()); return _attemptCount;}
+inline INT  CtiDeviceBase::getAttemptFailCount() const      { LockGuard guard(monitor()); return _attemptFailCount;}
+inline INT  CtiDeviceBase::getAttemptRetryCount() const     { LockGuard guard(monitor()); return _attemptRetryCount;}
+inline INT  CtiDeviceBase::getAttemptSuccessCount() const   { LockGuard guard(monitor()); return _attemptSuccessCount;}
+inline bool CtiDeviceBase::getControlInhibit() const        { LockGuard guard(monitor()); return _deviceBase.getControlInhibit(); }
 inline CtiDeviceBase& CtiDeviceBase::setControlInhibit(const bool b) { LockGuard guard(monitor()); _deviceBase.setControlInhibit(b); return *this; }
-inline bool CtiDeviceBase::isSingle() const              { LockGuard guard(monitor()); return _singleDevice; }
+inline bool CtiDeviceBase::isSingle() const                 { LockGuard guard(monitor()); return _singleDevice; }
 
-inline int CtiDeviceBase::getCurrentTrxID() const        { LockGuard gd(monitor()); return(_currTrxID);}
-inline int CtiDeviceBase::getResponsesOnTrxID() const    { LockGuard gd(monitor()); return(_responsesOnTrxID);}
-inline ULONG CtiDeviceBase::selectInitialMacroRouteOffset(LONG routeid = 0) const   { return 0; }
-inline INT CtiDeviceBase::getBaudRate() const { return 0; }
-inline INT CtiDeviceBase::getBits() const { return 8; }
-inline INT CtiDeviceBase::getStopBits() const { return ONESTOPBIT; }
-inline INT CtiDeviceBase::getParity() const { return NOPARITY; }
-inline INT CtiDeviceBase::getProtocolWrap() const { return ProtocolWrapNone; }
-inline bool CtiDeviceBase::isExecutionProhibitedByInternalLogic() const { return false;}
-inline INT CtiDeviceBase::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt) { return NORMAL; }
-inline bool CtiDeviceBase::hasQueuedWork() const { return false; }
-inline INT CtiDeviceBase::queuedWorkCount() const { return 0; }
-inline bool CtiDeviceBase::hasPreloadWork() const { return false; }
-inline CtiTime CtiDeviceBase::getPreloadEndTime() const { return CtiTime(); }
-inline LONG CtiDeviceBase::getPreloadBytes() const { return 0; }
-inline LONG CtiDeviceBase::getCycleTime() const { return 0; }
-inline LONG CtiDeviceBase::getCycleOffset() const { return 0; }
-inline bool CtiDeviceBase::operator<(const CtiDeviceBase& rhs) const { return getID() < rhs.getID(); }
+inline int     CtiDeviceBase::getCurrentTrxID() const         { LockGuard gd(monitor()); return(_currTrxID);}
+inline int     CtiDeviceBase::getResponsesOnTrxID() const     { LockGuard gd(monitor()); return(_responsesOnTrxID);}
+inline ULONG   CtiDeviceBase::selectInitialMacroRouteOffset(LONG routeid = 0) const   { return 0; }
+inline INT     CtiDeviceBase::getBaudRate() const             { return 0; }
+inline INT     CtiDeviceBase::getBits() const                 { return 8; }
+inline INT     CtiDeviceBase::getStopBits() const             { return ONESTOPBIT; }
+inline INT     CtiDeviceBase::getParity() const               { return NOPARITY; }
+inline INT     CtiDeviceBase::getProtocolWrap() const         { return ProtocolWrapNone; }
+inline bool    CtiDeviceBase::isExecutionProhibitedByInternalLogic() const { return false;}
+inline INT     CtiDeviceBase::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt) { return NORMAL; }
+inline bool    CtiDeviceBase::hasQueuedWork() const           { return false; }
+inline INT     CtiDeviceBase::queuedWorkCount() const         { return 0; }
+inline bool    CtiDeviceBase::hasPreloadWork() const          { return false; }
+inline CtiTime CtiDeviceBase::getPreloadEndTime() const     { return CtiTime(); }
+inline LONG    CtiDeviceBase::getPreloadBytes() const         { return 0; }
+inline LONG    CtiDeviceBase::getCycleTime() const            { return 0; }
+inline LONG    CtiDeviceBase::getCycleOffset() const          { return 0; }
+inline bool    CtiDeviceBase::operator<(const CtiDeviceBase& rhs) const { return getID() < rhs.getID(); }
 
 
-
-#if VSLICK_TAG_WORKAROUND
-typedef CtiDeviceBase * CtiDeviceSPtr;
-#else
 typedef shared_ptr< CtiDeviceBase > CtiDeviceSPtr;
-#endif
-
 
 #endif // #ifndef __DEV_BASE_H__
