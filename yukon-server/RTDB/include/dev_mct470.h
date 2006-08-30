@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT470.h-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2006/08/29 22:22:20 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2006/08/30 21:01:23 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -29,7 +29,7 @@ private:
     static const CommandSet _commandStore;
     static CommandSet initCommandStore();
 
-    static const DynamicPaoAddressing_t _dynPaoAddressing;
+    static const DynamicPaoAddressing_t         _dynPaoAddressing;
     static const DynamicPaoFunctionAddressing_t _dynPaoFuncAddressing;
 
     static CtiDeviceMCT4xx::ConfigPartsList initConfigParts();
@@ -38,51 +38,54 @@ private:
     CtiTableDeviceMCTIEDPort _iedPort;
     CtiTime                  _iedTime;
 
+    enum DNP_MCT_Offsets
+    {
+        MCT470_DNP_MCTPoint_RealTimeBinary       =   0,
+        MCT470_DNP_MCTPoint_PreCannedBinary      =  30,
+        MCT470_DNP_MCTPoint_RealTimeAnalog       =  43,
+        MCT470_DNP_MCTPoint_PreCannedAnalog      =  49,
+        MCT470_DNP_MCTPoint_RealTimeAccumulator  = 114,
+        MCT470_DNP_MCTPoint_PreCannedAccumulator = 118,
+    };
+
     enum IED_PointOffsets
     {
-        MCT470_PointOffset_TotalKWH    =  1,
-        MCT470_PointOffset_TOU_KWBase  =  2,
-        MCT470_PointOffset_TotalKW     = 10,
-        MCT470_PointOffset_TotalKMH    = 11,
-        MCT470_PointOffset_TOU_KMBase  = 12,
-        MCT470_PointOffset_TotalKM     = 20,
+        PointOffset_TotalKWH    =  1,
+        PointOffset_TOU_KWBase  =  2,
+        PointOffset_TotalKW     = 10,
+        PointOffset_TotalKMH    = 11,
+        PointOffset_TOU_KMBase  = 12,
+        PointOffset_TotalKM     = 20,
 
-        MCT470_PointOffset_VoltsPhaseA = 41,
-        MCT470_PointOffset_VoltsPhaseB = 42,
-        MCT470_PointOffset_VoltsPhaseC = 43,
+        PointOffset_VoltsPhaseA = 41,
+        PointOffset_VoltsPhaseB = 42,
+        PointOffset_VoltsPhaseC = 43,
 
-        MCT470_DNP_MCTPoint_RealTimeBinary = 0,
-        MCT470_DNP_MCTPoint_PreCannedBinary = 30,
-        MCT470_DNP_MCTPoint_RealTimeAnalog = 43,
-        MCT470_DNP_MCTPoint_PreCannedAnalog = 49,
-        MCT470_DNP_MCTPoint_RealTimeAccumulator = 114,
-        MCT470_DNP_MCTPoint_PreCannedAccumulator = 118,
-
-        MCT470_PointOffset_DNPStatus_RealTime1 = 501,
-        MCT470_PointOffset_DNPStatus_RealTime2 = 516,
-        MCT470_PointOffset_DNPStatus_PrecannedStart = 531,
-        MCT470_PointOffset_DNPAnalog_RealTime1 = 501,
-        MCT470_PointOffset_DNPAnalog_RealTime2 = 504,
-        MCT470_PointOffset_DNPAnalog_Precanned1 = 506,
-        MCT470_PointOffset_DNPAnalog_Precanned2 = 512,
-        MCT470_PointOffset_DNPAnalog_Precanned3 = 518,
-        MCT470_PointOffset_DNPAnalog_Precanned4 = 524,
-        MCT470_PointOffset_DNPAnalog_Precanned5 = 530,
-        MCT470_PointOffset_DNPAnalog_Precanned6 = 536,
-        MCT470_PointOffset_DNPAnalog_Precanned7 = 542,
-        MCT470_PointOffset_DNPAnalog_Precanned8 = 548,
-        MCT470_PointOffset_DNPAnalog_Precanned9 = 654,
-        MCT470_PointOffset_DNPAnalog_Precanned10 = 660,
-        MCT470_PointOffset_DNPCounter_RealTime1 = 501,
-        MCT470_PointOffset_DNPCounter_RealTime2 = 504,
-        MCT470_PointOffset_DNPCounter_Precanned1 = 506,
-        MCT470_PointOffset_DNPCounter_Precanned2 = 512,
-        MCT470_PointOffset_DNPCounter_Precanned3 = 518,
-        MCT470_PointOffset_DNPCounter_Precanned4 = 524,
-        MCT470_PointOffset_DNPCounter_Precanned5 = 530,
-        MCT470_PointOffset_DNPCounter_Precanned6 = 536,
-        MCT470_PointOffset_DNPCounter_Precanned7 = 542,
-        MCT470_PointOffset_DNPCounter_Precanned8 = 548,
+        PointOffset_DNPStatus_RealTime1   = 501,
+        PointOffset_DNPStatus_RealTime2   = 516,
+        PointOffset_DNPStatus_PrecannedStart = 531,
+        PointOffset_DNPAnalog_RealTime1   = 501,
+        PointOffset_DNPAnalog_RealTime2   = 504,
+        PointOffset_DNPAnalog_Precanned1  = 506,
+        PointOffset_DNPAnalog_Precanned2  = 512,
+        PointOffset_DNPAnalog_Precanned3  = 518,
+        PointOffset_DNPAnalog_Precanned4  = 524,
+        PointOffset_DNPAnalog_Precanned5  = 530,
+        PointOffset_DNPAnalog_Precanned6  = 536,
+        PointOffset_DNPAnalog_Precanned7  = 542,
+        PointOffset_DNPAnalog_Precanned8  = 548,
+        PointOffset_DNPAnalog_Precanned9  = 654,
+        PointOffset_DNPAnalog_Precanned10 = 660,
+        PointOffset_DNPCounter_RealTime1  = 501,
+        PointOffset_DNPCounter_RealTime2  = 504,
+        PointOffset_DNPCounter_Precanned1 = 506,
+        PointOffset_DNPCounter_Precanned2 = 512,
+        PointOffset_DNPCounter_Precanned3 = 518,
+        PointOffset_DNPCounter_Precanned4 = 524,
+        PointOffset_DNPCounter_Precanned5 = 530,
+        PointOffset_DNPCounter_Precanned6 = 536,
+        PointOffset_DNPCounter_Precanned7 = 542,
+        PointOffset_DNPCounter_Precanned8 = 548,
     };
 
     enum IED_Types
@@ -103,7 +106,7 @@ private:
 
     void decodeDNPRealTimeRead(BYTE *buffer, int readNumber, string &resultString, CtiReturnMsg *ReturnMsg);
     void getBytesFromString(string &values, BYTE* buffer, int buffLen, int &numValues, int fillCount, int bytesPerValue);
-    int sendDNPConfigMessages(int startMCTID,  list< OUTMESS >   &outList, OUTMESS *&OutMessage, string &dataA, string &dataB, CtiTableDynamicPaoInfo::Keys key, bool force);
+    int sendDNPConfigMessages(int startMCTID,  list< OUTMESS * > &outList, OUTMESS *&OutMessage, string &dataA, string &dataB, CtiTableDynamicPaoInfo::Keys key, bool force);
     string resolveDNPStatus(int status);
 
     //  this probably won't be used... ?
@@ -361,21 +364,21 @@ protected:
 
     virtual INT ModelDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
 
-    virtual INT executeScan     (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS* >&outList);
-    virtual INT executeGetValue (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS* >&outList);
-    virtual INT executePutValue (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS* >&outList);
-    virtual INT executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS* >&outList);
-    virtual INT executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS* >&outList);
+    virtual INT executeScan     (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
+    virtual INT executeGetValue (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
+    virtual INT executePutValue (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
+    virtual INT executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
+    virtual INT executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
 
     CtiDeviceMCT4xx::ConfigPartsList getPartsList();
 
-    int executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList);
-    int executePutConfigRelays(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList);
-    int executePutConfigPrecannedTable(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList);
-    int executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList);
-    int executePutConfigDisconnect(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList);
-    int executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList);
-    int executePutConfigDNP(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage >&vgList,list< CtiMessage >&retList,list< OUTMESS >   &outList);
+    int executePutConfigLoadProfileChannel(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
+    int executePutConfigRelays            (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
+    int executePutConfigPrecannedTable    (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
+    int executePutConfigDemandLP          (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
+    int executePutConfigDisconnect        (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
+    int executePutConfigOptions           (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
+    int executePutConfigDNP               (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
 
     INT decodeGetValueKWH          ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetValueDemand       ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
