@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct4xx.h-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2006/08/30 20:27:22 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2006/08/31 13:53:56 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -93,8 +93,16 @@ protected:
         FuncWrite_LLPInterestPos     = 0x05,
         FuncWrite_LLPInterestLen     =    6,
 
+        FuncWrite_LLPPeakInterestPos = 0x06,
+        FuncWrite_LLPPeakInterestLen =    7,
+
         FuncRead_LLPStatusPos        = 0x9d,
         FuncRead_LLPStatusLen        =    8,
+
+        FuncRead_LLPPeakDayPos       = 0xa0,
+        FuncRead_LLPPeakHourPos      = 0xa1,
+        FuncRead_LLPPeakIntervalPos  = 0xa2,
+        FuncRead_LLPPeakLen          =   13,
     };
 
     enum
