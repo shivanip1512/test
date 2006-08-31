@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dlcbase.cpp-arc  $
-* REVISION     :  $Revision: 1.37 $
-* DATE         :  $Date: 2006/08/29 16:06:18 $
+* REVISION     :  $Revision: 1.38 $
+* DATE         :  $Date: 2006/08/31 13:11:55 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -433,13 +433,19 @@ int CtiDeviceDLCBase::executeOnDLCRoute( CtiRequestMsg              *pReq,
                     case Q_ARML:    arm = Q_ARML;   arm_name = "arml";  break;
                     case Q_ARMC:    arm = Q_ARMC;   arm_name = "armc";  break;
                     case Q_ARMS:    arm = Q_ARMS;   arm_name = "arms";  break;
-                    default:        arm = 0;
+                    default:
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** Checkpoint - multiple ARM flags set in command \"" << pOut->Request.CommandStr << "\" sent to device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                    //  if multiple ARM flags are used, none will be sent
+                    arm = 0;
                 }
 
                 if( arm && !parse.isKeyValid(arm_name.c_str()) )
                 {
                     //  for safety, I'll just unset them all at once
-                    pOut->Buffer.BSt.IO &= Q_ARML | Q_ARMC | Q_ARMS;
+                    pOut->Buffer.BSt.IO &= ~(Q_ARML | Q_ARMC | Q_ARMS);
 
                     CtiRequestMsg *arm_req = CTIDBG_new CtiRequestMsg(*pReq);
 
