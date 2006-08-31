@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.56 $
-* DATE         :  $Date: 2006/08/31 14:28:38 $
+* REVISION     :  $Revision: 1.57 $
+* DATE         :  $Date: 2006/08/31 18:03:04 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -235,8 +235,6 @@ bool CtiDeviceMCT470::getOperation( const UINT &cmd, USHORT &function, USHORT &l
 CtiDeviceMCT::DynamicPaoAddressing_t CtiDeviceMCT470::initDynPaoAddressing()
 {
     DynamicPaoAddressing_t addressSet;
-
-    using CtiTableDynamicPaoInfo::Keys;
 
     addressSet.insert(DynamicPaoAddressing(MCT470_Memory_SSpecPos,                  MCT470_Memory_SSpecLen,                 Keys::Key_MCT_SSpec));
     addressSet.insert(DynamicPaoAddressing(MCT470_Memory_RevisionPos,               MCT470_Memory_RevisionPos,              Keys::Key_MCT_SSpecRevision));
@@ -3509,6 +3507,9 @@ INT CtiDeviceMCT470::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, lis
 
                 resultString += getName() + " / current time: " + ied_time.asString() + "\n";
 
+                resultString += getName() + " / current TOU rate: " + string('A' + (DSt->Message[4] & 0x07) - 1, 1) + "\n";
+
+                //  as soon as we know what type of IED this is, we can do all of the fancy IED-specific stuff
                 /*
 
                 Byte 4 for the Alpha is the current TOU rate
