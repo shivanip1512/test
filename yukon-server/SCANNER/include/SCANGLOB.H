@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/INCLUDE/SCANGLOB.H-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2006/08/31 17:43:32 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2006/08/31 23:18:59 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -42,6 +42,6 @@
 // IM_EX_SCANSUP extern HMTX        LockSem;
 IM_EX_SCANSUP extern HANDLE      hScannerSyncs[];
 
-IM_EX_SCANSUP extern USHORT      SuspendLoadProfile;
-IM_EX_SCANSUP extern USHORT      CCUNoQueue;
+IM_EX_SCANSUP extern bool SuspendLoadProfile;
+IM_EX_SCANSUP extern bool CCUQueue;
 

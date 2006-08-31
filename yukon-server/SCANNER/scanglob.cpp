@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanglob.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2006/08/23 17:15:26 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2006/08/31 23:18:59 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,7 +20,6 @@
 #include <iostream>
 using namespace std;
 
-
 #include "os2_2w32.h"
 #include "scanner.h"
 #include "dsm2.h"
@@ -28,8 +27,8 @@ using namespace std;
 #include "dlldefs.h"
 #include "utility.h"
 
-IM_EX_SCANSUP USHORT      CCUNoQueue              = {FALSE};
-IM_EX_SCANSUP USHORT      SuspendLoadProfile      = {FALSE};
+IM_EX_SCANSUP bool CCUQueue           = true;
+IM_EX_SCANSUP bool SuspendLoadProfile = false;
 
 IM_EX_SCANSUP HANDLE      hScannerSyncs[S_MAX_MUTEX];
 
