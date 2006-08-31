@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2006/08/29 22:26:38 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2006/08/31 14:40:47 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,13 +19,16 @@
 #include <rw\re.h>
 #undef mask_                // Stupid RogueWave re.h
 
-#include "dev_mct4xx.h"
 #include <boost/regex.hpp>
+#include <limits>
+
+#include "dev_mct4xx.h"
+#include "dev_mct470.h"  //  for sspec information
+#include "dev_mct410.h"  //  for sspec information
+
 #include "ctistring.h"
 #include "ctidate.h"
 #include "numstr.h"
-
-using namespace::std;
 
 using Cti::Protocol::Emetcon;
 
@@ -76,6 +79,8 @@ CtiDeviceMCT4xx &CtiDeviceMCT4xx::operator=(const CtiDeviceMCT4xx &aRef)
 CtiDeviceMCT4xx::QualityMap CtiDeviceMCT4xx::initErrorQualities( void )
 {
     QualityMap m;
+
+    using std::make_pair;
 
     //  Meter Communications Problem
     m.insert(make_pair(0xFFFFFFFF, make_pair(InvalidQuality, 0)));
@@ -620,28 +625,25 @@ INT CtiDeviceMCT4xx::executeGetValue(CtiRequestMsg *pReq, CtiCommandParser &pars
                         nRet = NoError;
                     }
                 }
-                /*FIX FIX //  gotta move this...
                 else if( !cmd.compare("peak") )
                 {
-                    //  !!!  FIXME: this will not allow reporting on any load profile interval size smaller than 1 hour  !!!
-                    if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec)         == MCT410_Sspec &&
-                        (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) >= MCT410_SspecRev_NewLLP_Min ||
-                         getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) == 253) )  //  Chef's Special for JSW
-                    {
-                        function = Emetcon::GetValue_LoadProfilePeakReport;
-                        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
-                    }
-                    else
+                    if( getDynamicInfo(Keys::Key_MCT_SSpec) == CtiDeviceMCT410::Sspec
+                        && getDynamicInfo(Keys::Key_MCT_SSpecRevision) < CtiDeviceMCT410::SspecRev_NewLLP_Min )
                     {
                         CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
 
                         if( ReturnMsg )
                         {
                             ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
-                            ReturnMsg->setResultString(getName() + " / Load profile reporting currently only supported for SSPEC " + CtiNumStr(MCT410_Sspec) + " revision " + CtiString((char)('A' + MCT410_SspecRev_NewLLP_Min - 1)) + " and up");
+                            ReturnMsg->setResultString(getName() + " / Load profile reporting for MCT 410 only supported for SSPECs " + CtiNumStr(CtiDeviceMCT410::Sspec) + " revision " + string((char)('A' + CtiDeviceMCT410::SspecRev_NewLLP_Min - 1), 1) + " and up");
 
                             retMsgHandler( OutMessage->Request.CommandStr, NoMethod, ReturnMsg, vgList, retList, true );
                         }
+                    }
+                    else
+                    {
+                        function = Emetcon::GetValue_LoadProfilePeakReport;
+                        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
                     }
 
                     if( found )
@@ -667,7 +669,7 @@ INT CtiDeviceMCT4xx::executeGetValue(CtiRequestMsg *pReq, CtiCommandParser &pars
                         {
                             //  add on a day - this is the end of the interval, not the beginning,
                             //    so we need to start at midnight of the following day...  minus one second
-                            request_time  = CtiTime(RWDate(day, month, year)).seconds() + 86400 - 1;
+                            request_time  = CtiTime(CtiDate(day, month, year)).seconds() + 86400 - 1;
 
                             if( request_time    != _llpPeakInterest.time    ||
                                 request_channel != _llpPeakInterest.channel ||
@@ -689,7 +691,7 @@ INT CtiDeviceMCT4xx::executeGetValue(CtiRequestMsg *pReq, CtiCommandParser &pars
                                     interest_om->Buffer.BSt.Function = FuncWrite_LLPPeakInterestPos;
                                     interest_om->Buffer.BSt.IO       = Emetcon::IO_Function_Write;
                                     interest_om->Buffer.BSt.Length   = FuncWrite_LLPPeakInterestLen;
-                                    interest_om->MessageFlags |= MSGFLG_EXPECT_MORE;
+                                    interest_om->MessageFlags |= MessageFlag_ExpectMore;
 
                                     unsigned long utc_time = request_time - rwEpoch;
 
@@ -707,9 +709,9 @@ INT CtiDeviceMCT4xx::executeGetValue(CtiRequestMsg *pReq, CtiCommandParser &pars
                                     //  add a bit of a delay so the 410 can calculate...
                                     //    this delay may need to be increased by other means, depending
                                     //    on how long the larger peak report calculations take
-                                    interest_om->MessageFlags |= MSGFLG_ADD_SILENCE;
+                                    interest_om->MessageFlags |= MessageFlag_AddSilence;
 
-                                    outList.append(interest_om);
+                                    outList.push_back(interest_om);
                                     interest_om = 0;
                                 }
                                 else
@@ -731,7 +733,6 @@ INT CtiDeviceMCT4xx::executeGetValue(CtiRequestMsg *pReq, CtiCommandParser &pars
                         }
                     }
                 }
-                */
             }
             else
             {
@@ -941,66 +942,21 @@ int CtiDeviceMCT4xx::executePutConfigSingle(CtiRequestMsg         *pReq,
     string installValue = parse.getsValue("installvalue");
 
     int nRet = NORMAL;
-    if( installValue == PutConfigPart_tou )
-    {
-        nRet = executePutConfigTOU(pReq,parse,OutMessage,vgList,retList,outList);
-    }
-    else if( installValue == PutConfigPart_dst )
-    {
-        nRet = executePutConfigDst(pReq,parse,OutMessage,vgList,retList,outList);
-    }
-    else if( installValue == PutConfigPart_vthreshold )
-    {
-        nRet = executePutConfigVThreshold(pReq,parse,OutMessage,vgList,retList,outList);
-    }
-    else if( installValue == PutConfigPart_demand_lp )
-    {
-        nRet = executePutConfigDemandLP(pReq,parse,OutMessage,vgList,retList,outList);
-    }
-    else if( installValue == PutConfigPart_options )
-    {
-        nRet = executePutConfigOptions(pReq,parse,OutMessage,vgList,retList,outList);
-    }
-    else if( installValue == PutConfigPart_addressing )
-    {
-        nRet = executePutConfigAddressing(pReq,parse,OutMessage,vgList,retList,outList);
-    }
-    else if( installValue == PutConfigPart_disconnect )
-    {
-        nRet = executePutConfigDisconnect(pReq,parse,OutMessage,vgList,retList,outList);
-    }
-    else if( installValue == PutConfigPart_holiday )
-    {
-        nRet = executePutConfigHoliday(pReq,parse,OutMessage,vgList,retList,outList);
-    }
-    else if( installValue == PutConfigPart_usage )
-    {
-        nRet = executePutConfigUsage(pReq,parse,OutMessage,vgList,retList,outList);
-    }
-    else if( installValue == PutConfigPart_llp )
-    {
-        nRet = executePutConfigLongLoadProfile(pReq,parse,OutMessage,vgList,retList,outList);
-    }
-    else if( installValue == PutConfigPart_lpchannel )
-    {
-        nRet = executePutConfigLoadProfileChannel(pReq,parse,OutMessage,vgList,retList,outList);
-    }
-    else if( installValue == PutConfigPart_relays )
-    {
-        nRet = executePutConfigRelays(pReq,parse,OutMessage,vgList,retList,outList);
-    }
-    else if( installValue == PutConfigPart_precanned_table )
-    {
-        nRet = executePutConfigPrecannedTable(pReq,parse,OutMessage,vgList,retList,outList);
-    }
-    else if( installValue == PutConfigPart_centron )
-    {
-        nRet = executePutConfigCentron(pReq,parse,OutMessage,vgList,retList,outList);
-    }
-    else if( installValue == PutConfigPart_dnp )
-    {
-        nRet = executePutConfigDNP(pReq,parse,OutMessage,vgList,retList,outList);
-    }
+    if(      installValue == PutConfigPart_tou )              nRet = executePutConfigTOU               (pReq,parse,OutMessage,vgList,retList,outList);
+    else if( installValue == PutConfigPart_dst )              nRet = executePutConfigDst               (pReq,parse,OutMessage,vgList,retList,outList);
+    else if( installValue == PutConfigPart_vthreshold )       nRet = executePutConfigVThreshold        (pReq,parse,OutMessage,vgList,retList,outList);
+    else if( installValue == PutConfigPart_demand_lp )        nRet = executePutConfigDemandLP          (pReq,parse,OutMessage,vgList,retList,outList);
+    else if( installValue == PutConfigPart_options )          nRet = executePutConfigOptions           (pReq,parse,OutMessage,vgList,retList,outList);
+    else if( installValue == PutConfigPart_addressing )       nRet = executePutConfigAddressing        (pReq,parse,OutMessage,vgList,retList,outList);
+    else if( installValue == PutConfigPart_disconnect )       nRet = executePutConfigDisconnect        (pReq,parse,OutMessage,vgList,retList,outList);
+    else if( installValue == PutConfigPart_holiday )          nRet = executePutConfigHoliday           (pReq,parse,OutMessage,vgList,retList,outList);
+    else if( installValue == PutConfigPart_usage )            nRet = executePutConfigUsage             (pReq,parse,OutMessage,vgList,retList,outList);
+    else if( installValue == PutConfigPart_llp )              nRet = executePutConfigLongLoadProfile   (pReq,parse,OutMessage,vgList,retList,outList);
+    else if( installValue == PutConfigPart_lpchannel )        nRet = executePutConfigLoadProfileChannel(pReq,parse,OutMessage,vgList,retList,outList);
+    else if( installValue == PutConfigPart_relays )           nRet = executePutConfigRelays            (pReq,parse,OutMessage,vgList,retList,outList);
+    else if( installValue == PutConfigPart_precanned_table )  nRet = executePutConfigPrecannedTable    (pReq,parse,OutMessage,vgList,retList,outList);
+    else if( installValue == PutConfigPart_centron )          nRet = executePutConfigCentron           (pReq,parse,OutMessage,vgList,retList,outList);
+    else if( installValue == PutConfigPart_dnp )              nRet = executePutConfigDNP               (pReq,parse,OutMessage,vgList,retList,outList);
     else
     {   //Not sure if this is correct, this could just return NoMethod. This is here
         //just in case anyone wants to use a putconfig install  for anything but configs.
@@ -1182,7 +1138,7 @@ int CtiDeviceMCT4xx::executePutConfigTOU               (CtiRequestMsg *pReq, Cti
 int CtiDeviceMCT4xx::executePutConfigDisconnect        (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList)    {   return NoMethod;    }
 
 
-int CtiDeviceMCT4xx::executePutConfigAddressing(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList)
+int CtiDeviceMCT4xx::executePutConfigAddressing(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS* > &outList)
 {
     int nRet = NORMAL;
     long value;
@@ -1429,7 +1385,7 @@ int CtiDeviceMCT4xx::executePutConfigLongLoadProfile(CtiRequestMsg *pReq,CtiComm
             channel4 = config->getLongValueFromKey(Channel4Length);
             spid = CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_AddressServiceProviderID);
 
-            if( spid == numeric_limits<long>::min() )
+            if( spid == std::numeric_limits<long>::min() )
             {
                 //We dont have it in dynamic pao info yet, we will get it from the config tables
                 BaseSPtr addressTempBasePtr = deviceConfig->getConfigFromType(ConfigTypeMCTAddressing);
@@ -1448,8 +1404,11 @@ int CtiDeviceMCT4xx::executePutConfigLongLoadProfile(CtiRequestMsg *pReq,CtiComm
                 nRet = NoConfigData;
             }
             else
-            if(channel1 == numeric_limits<long>::min() || channel3 == numeric_limits<long>::min() || channel2 == numeric_limits<long>::min()
-               || channel4 == numeric_limits<long>::min() || spid == numeric_limits<long>::min())
+            if(spid == std::numeric_limits<long>::min()
+               || channel1 == std::numeric_limits<long>::min()
+               || channel2 == std::numeric_limits<long>::min()
+               || channel3 == std::numeric_limits<long>::min()
+               || channel4 == std::numeric_limits<long>::min())
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -1457,7 +1416,8 @@ int CtiDeviceMCT4xx::executePutConfigLongLoadProfile(CtiRequestMsg *pReq,CtiComm
             }
             else
             {
-                if(parse.isKeyValid("force") || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPChannel1Len) != channel1
+                if(parse.isKeyValid("force")
+                   || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPChannel1Len) != channel1
                    || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPChannel2Len) != channel2
                    || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPChannel3Len) != channel3
                    || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPChannel4Len) != channel4 )
@@ -1465,11 +1425,11 @@ int CtiDeviceMCT4xx::executePutConfigLongLoadProfile(CtiRequestMsg *pReq,CtiComm
                     OutMessage->Buffer.BSt.Function   = function;
                     OutMessage->Buffer.BSt.Length     = length;
                     OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Write;
-                    OutMessage->Buffer.BSt.Message[0] = (spid);
-                    OutMessage->Buffer.BSt.Message[1] = (channel1);
-                    OutMessage->Buffer.BSt.Message[2] = (channel2);
-                    OutMessage->Buffer.BSt.Message[3] = (channel3);
-                    OutMessage->Buffer.BSt.Message[4] = (channel4);
+                    OutMessage->Buffer.BSt.Message[0] = spid;
+                    OutMessage->Buffer.BSt.Message[1] = channel1;
+                    OutMessage->Buffer.BSt.Message[2] = channel2;
+                    OutMessage->Buffer.BSt.Message[3] = channel3;
+                    OutMessage->Buffer.BSt.Message[4] = channel4;
 
                     outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
