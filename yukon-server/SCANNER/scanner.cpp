@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.60 $
-* DATE         :  $Date: 2006/08/23 17:17:40 $
+* REVISION     :  $Revision: 1.61 $
+* DATE         :  $Date: 2006/08/31 17:43:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -841,7 +841,7 @@ VOID ResultThread (VOID *Arg)
 
             pBase = (CtiDeviceSPtr )ScannerDeviceManager.getEqual(id);
 
-            if(ScannerDebugLevel & SCANNER_DEBUG_INREPLYS)
+            if(ScannerDebugLevel & SCANNER_DEBUG_INREPLIES)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " InMessage from " << pBase->getName() << " " << FormatError(InMessage->EventCode & 0x3fff) << endl;
