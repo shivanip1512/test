@@ -78,18 +78,7 @@ public class PointDeviceLuceneSearcher implements PointDeviceSearcher {
         if (criteria == null) {
             return originalQuery;
         }
-        BooleanQuery criteriaQuery = new BooleanQuery(false);
-        criteriaQuery.setMinimumNumberShouldMatch(1);
-        Map rulesMap = criteria.getRulesMap();
-        
-        for (Iterator iter = rulesMap.keySet().iterator(); iter.hasNext();) {
-            String termName = (String) iter.next();
-            CriteriaRule r = (CriteriaRule) rulesMap.get(termName);
-            for(String singleCriteria : r.getCriteria()) {
-                Query q = new TermQuery(new Term(termName, singleCriteria));
-                criteriaQuery.add(q, r.getRule());
-            }
-        }   
+        Query criteriaQuery = criteria.getCriteria();
         
         BooleanQuery finalQuery = new BooleanQuery(false);
         finalQuery.add(originalQuery, BooleanClause.Occur.MUST);

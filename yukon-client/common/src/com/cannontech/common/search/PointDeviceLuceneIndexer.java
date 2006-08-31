@@ -46,7 +46,7 @@ public class PointDeviceLuceneIndexer {
         String deviceid = Integer.toString(rs.getInt("paobjectid"));
         String stateGroupID = Integer.toString(stateGrpID);
         String all = pointName + " " + paoName + " " + pointid + " " + deviceid;
-        doc.add(new Field("point", pointName, Field.Store.YES, Field.Index.UN_TOKENIZED));
+        doc.add(new Field("point", pointName, Field.Store.YES, Field.Index.TOKENIZED));
         doc.add(new Field("device", paoName, Field.Store.YES, Field.Index.TOKENIZED));
         doc.add(new Field("all", all, Field.Store.YES, Field.Index.TOKENIZED));
         
