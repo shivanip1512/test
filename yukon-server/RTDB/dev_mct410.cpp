@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.83 $
-* DATE         :  $Date: 2006/08/29 22:31:34 $
+* REVISION     :  $Revision: 1.84 $
+* DATE         :  $Date: 2006/08/31 14:31:12 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -102,172 +102,51 @@ void CtiDeviceMCT410::setDisconnectAddress( unsigned long address )
 CtiDeviceMCT::DynamicPaoAddressing_t CtiDeviceMCT410::initDynPaoAddressing()
 {
     DynamicPaoAddressing_t addressSet;
-    DynamicPaoAddressing   addressData;
 
-    addressData.address = Memory_SSpecPos;
-    addressData.length = Memory_SSpecLen;
-    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_SSpec;
-    addressSet.insert(addressData);
+    addressSet.insert(DynamicPaoAddressing(Memory_SSpecPos,                 Memory_SSpecLen,                Keys::Key_MCT_SSpec));
+    addressSet.insert(DynamicPaoAddressing(Memory_RevisionPos,              Memory_RevisionLen,             Keys::Key_MCT_SSpecRevision));
 
-    addressData.address = Memory_RevisionPos;
-    addressData.length = Memory_RevisionLen;
-    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision;
-    addressSet.insert(addressData);
+    addressSet.insert(DynamicPaoAddressing(Memory_OptionsPos,               Memory_OptionsLen,              Keys::Key_MCT_Options));
+    addressSet.insert(DynamicPaoAddressing(Memory_ConfigurationPos,         Memory_ConfigurationLen,        Keys::Key_MCT_Configuration));
 
-    addressData.address = Memory_OptionsPos;
-    addressData.length = Memory_OptionsLen;
-    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_Options;
-    addressSet.insert(addressData);
+    addressSet.insert(DynamicPaoAddressing(Memory_EventFlagsMask1Pos,       Memory_EventFlagsMask1Len,      Keys::Key_MCT_EventFlagsMask1));
+    addressSet.insert(DynamicPaoAddressing(Memory_EventFlagsMask2Pos,       Memory_EventFlagsMask2Len,      Keys::Key_MCT_EventFlagsMask2));
+    addressSet.insert(DynamicPaoAddressing(Memory_MeterAlarmMaskPos,        Memory_MeterAlarmMaskLen,       Keys::Key_MCT_MeterAlarmMask));
 
-    addressData.address = Memory_ConfigurationPos;
-    addressData.length = Memory_ConfigurationLen;
-    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_Configuration;
-    addressSet.insert(addressData);
+    addressSet.insert(DynamicPaoAddressing(Memory_BronzeAddressPos,         Memory_BronzeAddressLen,        Keys::Key_MCT_AddressBronze));
+    addressSet.insert(DynamicPaoAddressing(Memory_LeadAddressPos,           Memory_LeadAddressLen,          Keys::Key_MCT_AddressLead));
+    addressSet.insert(DynamicPaoAddressing(Memory_CollectionAddressPos,     Memory_CollectionAddressLen,    Keys::Key_MCT_AddressCollection));
+    addressSet.insert(DynamicPaoAddressing(Memory_SPIDAddressPos,           Memory_SPIDAddressLen,          Keys::Key_MCT_AddressServiceProviderID));
 
-    addressData.address = Memory_EventFlagsMask1Pos;
-    addressData.length = Memory_EventFlagsMask1Len;
-    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask1;
-    addressSet.insert(addressData);
+    addressSet.insert(DynamicPaoAddressing(Memory_DemandIntervalPos,        Memory_DemandIntervalLen,       Keys::Key_MCT_DemandInterval));
+    addressSet.insert(DynamicPaoAddressing(Memory_LoadProfileIntervalPos,   Memory_LoadProfileIntervalLen,  Keys::Key_MCT_LoadProfileInterval));
+    addressSet.insert(DynamicPaoAddressing(Memory_VoltageDemandIntervalPos, Memory_VoltageDemandIntervalLen, Keys::Key_MCT_VoltageDemandInterval));
+    addressSet.insert(DynamicPaoAddressing(Memory_VoltageLPIntervalPos,     Memory_VoltageLPIntervalLen,    Keys::Key_MCT_VoltageLPInterval));
 
-    addressData.address = Memory_EventFlagsMask2Pos;
-    addressData.length = Memory_EventFlagsMask2Len;
-    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask2;
-    addressSet.insert(addressData);
+    addressSet.insert(DynamicPaoAddressing(Memory_OverVThresholdPos,        Memory_OverVThresholdLen,       Keys::Key_MCT_OverVoltageThreshold));
+    addressSet.insert(DynamicPaoAddressing(Memory_UnderVThresholdPos,       Memory_UnderVThresholdLen,      Keys::Key_MCT_UnderVoltageThreshold));
 
-    addressData.address = Memory_MeterAlarmMaskPos;
-    addressData.length = Memory_MeterAlarmMaskLen;
-    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_MeterAlarmMask;
-    addressSet.insert(addressData);
+    addressSet.insert(DynamicPaoAddressing(Memory_OutageCyclesPos,          Memory_OutageCyclesLen,         Keys::Key_MCT_OutageCycles));
 
-    addressData.address = Memory_BronzeAddressPos;
-    addressData.length = Memory_BronzeAddressLen;
-    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_AddressBronze;
-    addressSet.insert(addressData);
+    addressSet.insert(DynamicPaoAddressing(Memory_TimeAdjustTolPos,         Memory_TimeAdjustTolLen,        Keys::Key_MCT_TimeAdjustTolerance));
 
-    addressData.address = Memory_LeadAddressPos;
-    addressData.length = Memory_LeadAddressLen;
-    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_AddressLead;
-    addressSet.insert(addressData);
+    addressSet.insert(DynamicPaoAddressing(Memory_DSTBeginPos,              Memory_DSTBeginLen,             Keys::Key_MCT_DSTStartTime));
+    addressSet.insert(DynamicPaoAddressing(Memory_DSTEndPos,                Memory_DSTEndLen,               Keys::Key_MCT_DSTEndTime));
+    addressSet.insert(DynamicPaoAddressing(Memory_TimeZoneOffsetPos,        Memory_TimeZoneOffsetLen,       Keys::Key_MCT_TimeZoneOffset));
 
-    addressData.address = Memory_CollectionAddressPos;
-    addressData.length = Memory_CollectionAddressLen;
-    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_AddressCollection;
-    addressSet.insert(addressData);
+    addressSet.insert(DynamicPaoAddressing(Memory_TOUDayTablePos,           Memory_TOUDayTableLen,          Keys::Key_MCT_DayTable));
+    addressSet.insert(DynamicPaoAddressing(Memory_TOUDailySched1Pos,        Memory_TOUDailySched1Len,       Keys::Key_MCT_DaySchedule1));
+    addressSet.insert(DynamicPaoAddressing(Memory_TOUDailySched2Pos,        Memory_TOUDailySched2Len,       Keys::Key_MCT_DaySchedule2));
+    addressSet.insert(DynamicPaoAddressing(Memory_TOUDailySched3Pos,        Memory_TOUDailySched3Len,       Keys::Key_MCT_DaySchedule3));
+    addressSet.insert(DynamicPaoAddressing(Memory_TOUDailySched4Pos,        Memory_TOUDailySched4Len,       Keys::Key_MCT_DaySchedule4));
+    addressSet.insert(DynamicPaoAddressing(Memory_DefaultTOURatePos,        Memory_DefaultTOURateLen,       Keys::Key_MCT_DefaultTOURate));
 
-    addressData.address = Memory_SPIDAddressPos;
-    addressData.length = Memory_SPIDAddressLen;
-    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_AddressServiceProviderID;
-    addressSet.insert(addressData);
+    addressSet.insert(DynamicPaoAddressing(Memory_Holiday1Pos,              Memory_Holiday1Len,             Keys::Key_MCT_Holiday1));
+    addressSet.insert(DynamicPaoAddressing(Memory_Holiday2Pos,              Memory_Holiday2Len,             Keys::Key_MCT_Holiday2));
+    addressSet.insert(DynamicPaoAddressing(Memory_Holiday3Pos,              Memory_Holiday3Len,             Keys::Key_MCT_Holiday3));
 
-    addressData.address = Memory_DemandIntervalPos;
-    addressData.length = Memory_DemandIntervalLen;
-    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_DemandInterval;
-    addressSet.insert(addressData);
-
-    addressData.address = Memory_LoadProfileIntervalPos;
-    addressData.length = Memory_LoadProfileIntervalLen;
-    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval;
-    addressSet.insert(addressData);
-
-    addressData.address = Memory_VoltageDemandIntervalPos;
-    addressData.length = Memory_VoltageDemandIntervalLen;
-    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_VoltageDemandInterval;
-    addressSet.insert(addressData);
-
-    addressData.address = Memory_VoltageLPIntervalPos;
-    addressData.length = Memory_VoltageLPIntervalLen;
-    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_VoltageLPInterval;
-    addressSet.insert(addressData);
-
-    addressData.address = Memory_OverVThresholdPos;
-    addressData.length = Memory_OverVThresholdLen;
-    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_OverVoltageThreshold;
-    addressSet.insert(addressData);
-
-    addressData.address = Memory_UnderVThresholdPos;
-    addressData.length = Memory_UnderVThresholdLen;
-    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_UnderVoltageThreshold;
-    addressSet.insert(addressData);
-
-    addressData.address = Memory_OutageCyclesPos;
-    addressData.length = Memory_OutageCyclesLen;
-    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_OutageCycles;
-    addressSet.insert(addressData);
-
-    addressData.address = Memory_TimeAdjustTolPos;
-    addressData.length = Memory_TimeAdjustTolLen;
-    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_TimeAdjustTolerance;
-    addressSet.insert(addressData);
-
-    addressData.address = Memory_DSTBeginPos;
-    addressData.length = Memory_DSTBeginLen;
-    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_DSTStartTime,
-    addressSet.insert(addressData);
-
-    addressData.address = Memory_DSTEndPos;
-    addressData.length = Memory_DSTEndLen;
-    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_DSTEndTime;
-    addressSet.insert(addressData);
-
-    addressData.address = Memory_TimeZoneOffsetPos;
-    addressData.length = Memory_TimeZoneOffsetLen;
-    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_TimeZoneOffset;
-    addressSet.insert(addressData);
-
-    addressData.address = Memory_TOUDayTablePos;
-    addressData.length = Memory_TOUDayTableLen;
-    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_DayTable;
-    addressSet.insert(addressData);
-
-    addressData.address = Memory_TOUDailySched1Pos;
-    addressData.length = Memory_TOUDailySched1Len;
-    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_DaySchedule1;
-    addressSet.insert(addressData);
-
-    addressData.address = Memory_TOUDailySched2Pos;
-    addressData.length = Memory_TOUDailySched2Len;
-    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_DaySchedule2;
-    addressSet.insert(addressData);
-
-    addressData.address = Memory_TOUDailySched3Pos;
-    addressData.length = Memory_TOUDailySched3Len;
-    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_DaySchedule3;
-    addressSet.insert(addressData);
-
-    addressData.address = Memory_TOUDailySched4Pos;
-    addressData.length = Memory_TOUDailySched4Len;
-    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_DaySchedule4;
-    addressSet.insert(addressData);
-
-    addressData.address = Memory_DefaultTOURatePos;
-    addressData.length = Memory_DefaultTOURateLen;
-    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_DefaultTOURate;
-    addressSet.insert(addressData);
-
-    addressData.address = Memory_Holiday1Pos;
-    addressData.length = Memory_Holiday1Len;
-    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_Holiday1;
-    addressSet.insert(addressData);
-
-    addressData.address = Memory_Holiday2Pos;
-    addressData.length = Memory_Holiday2Len;
-    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_Holiday2;
-    addressSet.insert(addressData);
-
-    addressData.address = Memory_Holiday3Pos;
-    addressData.length = Memory_Holiday3Len;
-    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_Holiday3;
-    addressSet.insert(addressData);
-
-    addressData.address = Memory_CentronParametersPos;
-    addressData.length = Memory_CentronParametersLen;
-    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_CentronParameters;
-    addressSet.insert(addressData);
-
-    addressData.address = Memory_CentronMultiplierPos;
-    addressData.length = Memory_CentronMultiplierLen;
-    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_CentronRatio;
-    addressSet.insert(addressData);
+    addressSet.insert(DynamicPaoAddressing(Memory_CentronParametersPos,     Memory_CentronParametersLen,    Keys::Key_MCT_CentronParameters));
+    addressSet.insert(DynamicPaoAddressing(Memory_CentronMultiplierPos,     Memory_CentronMultiplierLen,    Keys::Key_MCT_CentronRatio));
 
     return addressSet;
 }
@@ -275,75 +154,32 @@ CtiDeviceMCT::DynamicPaoAddressing_t CtiDeviceMCT410::initDynPaoAddressing()
 CtiDeviceMCT::DynamicPaoFunctionAddressing_t CtiDeviceMCT410::initDynPaoFuncAddressing()
 {
     DynamicPaoAddressing_t addressSet;
-    DynamicPaoAddressing   addressData;
     DynamicPaoFunctionAddressing_t functionSet;
 
     // FuncRead_TOUDaySchedulePos
-    addressData.address = 0;
-    addressData.length = 2;
-    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_DayTable;
-    addressSet.insert(addressData);
-
-    addressData.address = 2;
-    addressData.length = 1;
-    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_DefaultTOURate;
-    addressSet.insert(addressData);
-
-    addressData.address = 10;
-    addressData.length = 1;
-    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_TimeZoneOffset;
-    addressSet.insert(addressData);
+    addressSet.insert(DynamicPaoAddressing( 0, 2, Keys::Key_MCT_DayTable));
+    addressSet.insert(DynamicPaoAddressing( 2, 1, Keys::Key_MCT_DefaultTOURate));
+    addressSet.insert(DynamicPaoAddressing(10, 1, Keys::Key_MCT_TimeZoneOffset));
 
     functionSet.insert(DynamicPaoFunctionAddressing_t::value_type(FuncRead_TOUDaySchedulePos,addressSet));
 
     addressSet.clear();
 
     // FuncRead_LLPStatusPos
-    addressData.address = 4;
-    addressData.length = 1;
-    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_LLPChannel1Len;
-    addressSet.insert(addressData);
-
-    addressData.address = 5;
-    addressData.length = 1;
-    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_LLPChannel2Len;
-    addressSet.insert(addressData);
-
-    addressData.address = 6;
-    addressData.length = 1;
-    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_LLPChannel3Len;
-    addressSet.insert(addressData);
-
-    addressData.address = 7;
-    addressData.length = 1;
-    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_LLPChannel4Len;
-    addressSet.insert(addressData);
+    addressSet.insert(DynamicPaoAddressing( 4, 1, Keys::Key_MCT_LLPChannel1Len));
+    addressSet.insert(DynamicPaoAddressing( 5, 1, Keys::Key_MCT_LLPChannel2Len));
+    addressSet.insert(DynamicPaoAddressing( 6, 1, Keys::Key_MCT_LLPChannel3Len));
+    addressSet.insert(DynamicPaoAddressing( 7, 1, Keys::Key_MCT_LLPChannel4Len));
 
     functionSet.insert(DynamicPaoFunctionAddressing_t::value_type(FuncRead_LLPStatusPos,addressSet));
 
     addressSet.clear();
 
     // FuncRead_DisconnectConfigPos
-    addressData.address = 5;
-    addressData.length = 2;
-    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_DemandThreshold;
-    addressSet.insert(addressData);
-
-    addressData.address = 7;
-    addressData.length = 1;
-    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_ConnectDelay;
-    addressSet.insert(addressData);
-
-    addressData.address = 9;
-    addressData.length = 1;
-    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_DisconnectMinutes;
-    addressSet.insert(addressData);
-
-    addressData.address = 10;
-    addressData.length = 1;
-    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_ConnectMinutes;
-    addressSet.insert(addressData);
-
+    addressSet.insert(DynamicPaoAddressing( 5, 2, Keys::Key_MCT_DemandThreshold));
+    addressSet.insert(DynamicPaoAddressing( 7, 1, Keys::Key_MCT_ConnectDelay));
+    addressSet.insert(DynamicPaoAddressing( 9, 1, Keys::Key_MCT_DisconnectMinutes));
+    addressSet.insert(DynamicPaoAddressing(10, 1, Keys::Key_MCT_ConnectMinutes));
 
     functionSet.insert(DynamicPaoFunctionAddressing_t::value_type(FuncRead_DisconnectConfigPos,addressSet));
 
@@ -355,34 +191,32 @@ void CtiDeviceMCT410::getDynamicPaoAddressing(int address, int &foundAddress, in
 {
     foundAddress = 0;
     foundLength = 0;
-    foundKey = CtiTableDynamicPaoInfo::Key_Invalid;//If nothing happens, this is what we want.
+    foundKey = Keys::Key_Invalid;//If nothing happens, this is what we want.
 
-    DynamicPaoAddressing tempDynAddr;
-    tempDynAddr.address = address;
+    DynamicPaoAddressing tempDynAddr(address, 0, Keys::Key_Invalid);
 
     DynamicPaoAddressing_t::const_iterator iter;
     if((iter = _dynPaoAddressing.find(tempDynAddr)) != _dynPaoAddressing.end())
     {
         foundAddress = iter->address;
-        foundLength = iter->length;
-        foundKey = iter->key;
+        foundLength  = iter->length;
+        foundKey     = iter->key;
     }
     else if((iter = _dynPaoAddressing.upper_bound(tempDynAddr)) != _dynPaoAddressing.end())
     {
         foundAddress = iter->address;
-        foundLength = iter->length;
-        foundKey = iter->key;
+        foundLength  = iter->length;
+        foundKey     = iter->key;
     }
 }
 
 void CtiDeviceMCT410::getDynamicPaoFunctionAddressing(int function, int address, int &foundAddress, int &foundLength, CtiTableDynamicPaoInfo::Keys &foundKey)
 {
     foundAddress = 0;
-    foundLength = 0;
-    foundKey = CtiTableDynamicPaoInfo::Key_Invalid;//If nothing happens, this is what we want.
+    foundLength  = 0;
+    foundKey     = Keys::Key_Invalid;//If nothing happens, this is what we want.
 
-    DynamicPaoAddressing tempDynAddr;
-    tempDynAddr.address = address;
+    DynamicPaoAddressing tempDynAddr(address, 0, Keys::Key_Invalid);
 
     DynamicPaoFunctionAddressing_t::const_iterator funcIter;
     if((funcIter = _dynPaoFuncAddressing.find(function)) != _dynPaoFuncAddressing.end())
@@ -391,14 +225,14 @@ void CtiDeviceMCT410::getDynamicPaoFunctionAddressing(int function, int address,
         if((addressIter = funcIter->second.find(tempDynAddr)) != funcIter->second.end())
         {
             foundAddress = addressIter->address;
-            foundLength = addressIter->length;
-            foundKey = addressIter->key;
+            foundLength  = addressIter->length;
+            foundKey     = addressIter->key;
         }
         else if((addressIter = funcIter->second.upper_bound(tempDynAddr)) != funcIter->second.end())
         {
             foundAddress = addressIter->address;
-            foundLength = addressIter->length;
-            foundKey = addressIter->key;
+            foundLength  = addressIter->length;
+            foundKey     = addressIter->key;
         }
     }
 }
@@ -742,7 +576,7 @@ INT CtiDeviceMCT410::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS
                              descriptor.c_str(),
                              sizeof(tmpOutMess->Request.CommandStr) - ::strlen(tmpOutMess->Request.CommandStr));
 
-                    if( getDebugLevel() & DEBUGLEVEL_LUDICROUS  );
+                    if( getMCTDebugLevel(MCTDebug_LoadProfile) )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " **** Checkpoint - command string check for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -753,7 +587,7 @@ INT CtiDeviceMCT410::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS
                 }
                 else
                 {
-                    if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                    if( getMCTDebugLevel(MCTDebug_LoadProfile) )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " **** Checkpoint - LP scan too early for device \"" << getName() << "\", aborted **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -778,7 +612,7 @@ bool CtiDeviceMCT410::calcLPRequestLocation( const CtiCommandParser &parse, OUTM
     bool retVal = false;
     int  address, block, channel;
 
-    if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+    if( getMCTDebugLevel(MCTDebug_LoadProfile) )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** Checkpoint - LP parse value check **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -805,6 +639,7 @@ bool CtiDeviceMCT410::calcLPRequestLocation( const CtiCommandParser &parse, OUTM
     }
     else
     {
+        if( getMCTDebugLevel(MCTDebug_LoadProfile) )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** Checkpoint - Improperly formed LP request discarded for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;;
@@ -1614,414 +1449,6 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
         OutMessage->Buffer.BSt.Function = 0x2a;
         OutMessage->Buffer.BSt.Length   = 1;
         OutMessage->Buffer.BSt.IO       = Emetcon::IO_Read;
-    }
-    else if( parse.isKeyValid("lp_command") )  //  load profile
-    {
-        unsigned long request_time, relative_time;
-
-        int request_channel;
-        int year, month, day, hour, minute;
-        int interval_len, block_len;
-
-        string cmd = parse.getsValue("lp_command");
-
-        if( !cmd.compare("status") )
-        {
-            CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
-
-            ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
-
-            string lp_status_string;
-            lp_status_string += getName() + " / Load profile request status:\n";
-
-            interval_len = getLoadProfileInterval(_llpInterest.channel);
-
-            if( _llpInterest.time_end > (_llpInterest.time + _llpInterest.offset + (interval_len * 6) + interval_len) )
-            {
-                lp_status_string += "Current interval: " + CtiTime(_llpInterest.time + _llpInterest.offset + interval_len).asString() + "\n";
-                lp_status_string += "Ending interval:  " + CtiTime(_llpInterest.time_end).asString() + "\n";
-            }
-            else
-            {
-                lp_status_string += "No active load profile requests for this device\n";
-                if( _llpInterest.failed )
-                {
-                    lp_status_string += "Last request failed at interval: " + CtiTime(_llpInterest.time + _llpInterest.offset + interval_len).asString() + "\n";
-                }
-
-                if( _llpInterest.time_end > (DawnOfTime + rwEpoch) )
-                {
-                    lp_status_string += "Last request end time: " + CtiTime(_llpInterest.time_end).asString() + "\n";
-                }
-            }
-
-            ReturnMsg->setResultString(lp_status_string.c_str());
-
-            retMsgHandler( OutMessage->Request.CommandStr, NoError, ReturnMsg, vgList, retList, true );
-
-            delete OutMessage;
-            OutMessage = 0;
-            found = false;
-            nRet  = NoError;
-        }
-        else if( !cmd.compare("cancel") )
-        {
-            //  reset it, that way it'll end immediately
-            _llpInterest.time_end = 0;
-
-            CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
-
-            ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
-
-            ReturnMsg->setResultString(getName() + " / Load profile request cancelled\n");
-
-            retMsgHandler( OutMessage->Request.CommandStr, NoError, ReturnMsg, vgList, retList, true );
-
-            delete OutMessage;
-            OutMessage = 0;
-            found = false;
-            nRet  = NoError;
-        }
-        else
-        {
-            request_channel = parse.getiValue("lp_channel");
-
-            if( request_channel >  0 &&
-                request_channel <= LPChannels )
-            {
-                interval_len = getLoadProfileInterval(request_channel);
-
-                block_len = 6 * interval_len;
-
-                //  grab the beginning date
-                CtiTokenizer date_tok(parse.getsValue("lp_date_start"));
-                month = atoi(date_tok("-/").data());
-                day   = atoi(date_tok("-/").data());
-                year  = atoi(date_tok("-/").data());
-                //  note that this code assumes that the current century is 20xx - this will need to change in 2100
-                if( year < 100 )    year += 2000;
-
-                if( !cmd.compare("lp") )
-                {
-                    CtiTime time_start, time_end;
-
-                    function = Emetcon::GetValue_LoadProfile;
-                    found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
-
-                    //  grab the beginning time, if available
-                    if( parse.isKeyValid("lp_time_start") )
-                    {
-                        CtiTokenizer time_start_tok(parse.getsValue("lp_time_start"));
-                        hour   = atoi(time_start_tok(":").data());
-                        minute = atoi(time_start_tok(":").data());
-                    }
-                    else
-                    {
-                        //  otherwise, default to midnight
-                        hour   = 0;
-                        minute = 0;
-                    }
-
-                    time_start = CtiTime(CtiDate(day, month, year), hour, minute);
-
-                    //  grab the end date, if available
-                    if( parse.isKeyValid("lp_date_end") )
-                    {
-                        CtiTokenizer date_end_tok(parse.getsValue("lp_date_end"));
-
-                        month = atoi(date_end_tok("-/").data());
-                        day   = atoi(date_end_tok("-/").data());
-                        year  = atoi(date_end_tok("-/").data());
-                        //  note that this code assumes that the current century is 20xx - this will need to change in 2100
-                        if( year < 100 )    year += 2000;
-
-                        //  grab the end time, if available
-                        if( parse.isKeyValid("lp_time_end") )
-                        {
-                            CtiTokenizer time_end_tok(parse.getsValue("lp_time_end"));
-
-                            hour   = atoi(time_end_tok(":").data());
-                            minute = atoi(time_end_tok(":").data());
-
-                            time_end  = CtiTime(CtiDate(day, month, year), hour, minute);
-                        }
-                        else
-                        {
-                            //  otherwise, default to the end of the day
-                            time_end  = CtiTime(CtiDate(day, month, year));
-                            time_end += 86400;  //  end of the day/beginning of the next day
-                        }
-                    }
-                    else
-                    {
-                        //  otherwise default to the end of the block
-                        time_end  = time_start;
-
-                        if( parse.isKeyValid("lp_time_start") )
-                        {
-                            //  did they want a specific time?
-                            time_end += block_len;
-                        }
-                        else
-                        {
-                            //  no time specified, they must've wanted a whole day
-                            time_end += 86400;
-                        }
-                    }
-
-                    if( !time_start.isValid() || !time_end.isValid() || (time_start >= time_end) )
-                    {
-                        CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
-
-                        ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
-
-                        found = false;
-                        nRet  = BADPARAM;
-
-                        string time_error_string = getName() + " / Invalid date/time for LP request (" + parse.getsValue("lp_date_start");
-
-                        if( parse.isKeyValid("lp_time_start") )
-                        {
-                            time_error_string += " @ " + parse.getsValue("lp_time_start");
-                        }
-
-                        if( parse.isKeyValid("lp_date_end") )
-                        {
-                            time_error_string += " - ";
-
-                            time_error_string += parse.getsValue("lp_date_end");
-
-                            if( parse.isKeyValid("lp_time_end") )
-                            {
-                                time_error_string += " @ " + parse.getsValue("lp_time_end");
-                            }
-                        }
-
-                        time_error_string += ")";
-
-                        ReturnMsg->setResultString(time_error_string);
-
-                        retMsgHandler( OutMessage->Request.CommandStr, NoMethod, ReturnMsg, vgList, retList, true );
-                    }
-                    else
-                    {
-                        //  FIXME:  we must replicate this functionality in the decode portion - right now, _llpInterest.offset
-                        //            is being overwritten, resulting in faulty decodes
-                        request_time  = time_start.seconds();
-                        request_time -= request_time % interval_len;
-                        request_time -= interval_len;  //  we report interval-ending, yet request interval-beginning...  so back that thing up
-
-                        _llpInterest.time_end = time_end.seconds();
-
-                        //  this is the number of seconds from the current pointer
-                        relative_time = request_time - _llpInterest.time;
-
-                        if( (request_channel == _llpInterest.channel) &&  //  correct channel
-                            (relative_time < (16 * block_len))        &&  //  within 16 blocks
-                            !(relative_time % block_len) )                //  aligned
-                        {
-                            //  it's aligned (and close enough) to the block we're pointing at
-                            function  = 0x40;
-                            function += relative_time / block_len;
-
-                            _llpInterest.offset = relative_time;
-                        }
-                        else
-                        {
-                            //  just read the first block - it'll be the one we're pointing at
-                            function  = 0x40;
-
-                            //  we need to set it to the requested interval
-                            CtiOutMessage *interest_om = new CtiOutMessage(*OutMessage);
-
-                            if( interest_om )
-                            {
-                                _llpInterest.time    = request_time;
-                                _llpInterest.offset  = 0;
-                                _llpInterest.channel = request_channel;
-
-                                interest_om->Sequence = Emetcon::PutConfig_LoadProfileInterest;
-
-                                interest_om->Buffer.BSt.Function  = FuncWrite_LLPInterestPos;
-                                interest_om->Buffer.BSt.IO        = Emetcon::IO_Function_Write;
-                                interest_om->Buffer.BSt.Length    = FuncWrite_LLPInterestLen;
-                                interest_om->MessageFlags        |= MessageFlag_ExpectMore;
-
-                                unsigned long utc_time = request_time;
-
-                                interest_om->Buffer.BSt.Message[0] = gMCT400SeriesSPID;
-
-                                interest_om->Buffer.BSt.Message[1] = request_channel  & 0x000000ff;
-
-                                interest_om->Buffer.BSt.Message[2] = (utc_time >> 24) & 0x000000ff;
-                                interest_om->Buffer.BSt.Message[3] = (utc_time >> 16) & 0x000000ff;
-                                interest_om->Buffer.BSt.Message[4] = (utc_time >>  8) & 0x000000ff;
-                                interest_om->Buffer.BSt.Message[5] = (utc_time)       & 0x000000ff;
-
-                                outList.push_back(interest_om);
-                                interest_om = 0;
-                            }
-                            else
-                            {
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " **** Checkpoint - unable to create outmessage, cannot set interval **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                }
-                            }
-                        }
-
-                        OutMessage->Buffer.BSt.Function = function;
-                        OutMessage->Buffer.BSt.IO       = Emetcon::IO_Function_Read;
-                        OutMessage->Buffer.BSt.Length   = 13;
-
-                        function = Emetcon::GetValue_LoadProfile;
-
-                        if( strstr(OutMessage->Request.CommandStr, " background") )
-                        {
-                            CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
-
-                            ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
-                            ReturnMsg->setConnectionHandle(OutMessage->Request.Connection);
-                            ReturnMsg->setResultString(getName() + " / Load profile request submitted for background processing - use \"getvalue lp status\" to check progress");
-
-                            retMsgHandler( OutMessage->Request.CommandStr, NoError, ReturnMsg, vgList, retList, true );
-
-                            OutMessage->Priority = 8;
-                            //  make sure the OM doesn't report back to Commander
-                            OutMessage->Request.Connection = 0;
-                        }
-
-                        nRet = NoError;
-                    }
-                }
-                else if( !cmd.compare("peak") )
-                {
-                    //  !!!  FIXME: this will not allow reporting on any load profile interval size smaller than 1 hour  !!!
-                    if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec)         == Sspec &&
-                        (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) >= SspecRev_NewLLP_Min ||
-                         getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) == 253) )  //  Chef's Special for JSW
-                    {
-                        function = Emetcon::GetValue_LoadProfilePeakReport;
-                        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
-                    }
-                    else
-                    {
-                        CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
-
-                        if( ReturnMsg )
-                        {
-                            ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
-                            ReturnMsg->setResultString(string(getName()
-                                                              + " / Load profile reporting currently only supported for SSPEC "
-                                                              + CtiNumStr(Sspec).toString().c_str()
-                                                              + " revision "
-                                                              + (char)('A' + SspecRev_NewLLP_Min - 1)
-                                                              + " and up"));
-
-                            retMsgHandler( OutMessage->Request.CommandStr, NoMethod, ReturnMsg, vgList, retList, true );
-                        }
-                    }
-
-                    if( found )
-                    {
-                        int lp_peak_command = -1;
-                        string lp_peaktype = parse.getsValue("lp_peaktype");
-                        int request_range  = parse.getiValue("lp_range");  //  add safeguards to check that we're not >30 days... ?
-
-                        if( !lp_peaktype.compare("day") )
-                        {
-                            lp_peak_command = FuncRead_LLPPeakDayPos;
-                        }
-                        else if( !lp_peaktype.compare("hour") )
-                        {
-                            lp_peak_command = FuncRead_LLPPeakHourPos;
-                        }
-                        else if( !lp_peaktype.compare("interval") )
-                        {
-                            lp_peak_command = FuncRead_LLPPeakIntervalPos;
-                        }
-
-                        if( lp_peak_command > 0 )
-                        {
-                            //  add on a day - this is the end of the interval, not the beginning,
-                            //    so we need to start at midnight of the following day...  minus one second
-                            request_time  = CtiTime(CtiDate(day + 1, month, year)).seconds() - 1;
-
-                            if( request_time    != _llpPeakInterest.time    ||
-                                request_channel != _llpPeakInterest.channel ||
-                                request_range   != _llpPeakInterest.period )
-                            {
-                                //  we need to set it to the requested interval
-                                CtiOutMessage *interest_om = new CtiOutMessage(*OutMessage);
-
-                                if( interest_om )
-                                {
-                                    _llpPeakInterest.time    = request_time;
-                                    _llpPeakInterest.channel = request_channel;
-                                    _llpPeakInterest.period  = request_range;
-
-                                    interest_om->Priority = OutMessage->Priority + 1;  //  just make sure this goes out first
-                                    interest_om->Sequence = Emetcon::PutConfig_LoadProfileReportPeriod;
-                                    interest_om->Request.Connection = 0;
-
-                                    interest_om->Buffer.BSt.Function  = FuncWrite_LLPPeakInterestPos;
-                                    interest_om->Buffer.BSt.IO        = Emetcon::IO_Function_Write;
-                                    interest_om->Buffer.BSt.Length    = FuncWrite_LLPPeakInterestLen;
-                                    interest_om->MessageFlags        |= MessageFlag_ExpectMore;
-
-                                    unsigned long utc_time = request_time;
-
-                                    interest_om->Buffer.BSt.Message[0] = gMCT400SeriesSPID;
-
-                                    interest_om->Buffer.BSt.Message[1] = request_channel  & 0x000000ff;
-
-                                    interest_om->Buffer.BSt.Message[2] = (utc_time >> 24) & 0x000000ff;
-                                    interest_om->Buffer.BSt.Message[3] = (utc_time >> 16) & 0x000000ff;
-                                    interest_om->Buffer.BSt.Message[4] = (utc_time >>  8) & 0x000000ff;
-                                    interest_om->Buffer.BSt.Message[5] = (utc_time)       & 0x000000ff;
-
-                                    interest_om->Buffer.BSt.Message[6] = request_range    & 0x000000ff;
-
-                                    //  add a bit of a delay so the 410 can calculate...
-                                    //    this delay may need to be increased by other means, depending
-                                    //    on how long the larger peak report calculations take
-                                    interest_om->MessageFlags |= MessageFlag_AddSilence;
-
-                                    outList.push_back(interest_om);
-                                    interest_om = 0;
-                                }
-                                else
-                                {
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << CtiTime() << " **** Checkpoint - unable to create outmessage, cannot set interval **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                    }
-                                }
-                            }
-
-                            _llpPeakInterest.command = lp_peak_command;
-
-                            OutMessage->Buffer.BSt.Function = lp_peak_command;
-                            OutMessage->Buffer.BSt.IO       = Emetcon::IO_Function_Read;
-                            OutMessage->Buffer.BSt.Length   = 13;
-
-                            nRet = NoError;
-                        }
-                    }
-                }
-            }
-            else
-            {
-                if( errRet )
-                {
-                    string temp = "Bad channel specification - Acceptable values:  1-4";
-                    errRet->setResultString( temp );
-                    errRet->setStatus(NoMethod);
-                    retList.push_back( errRet );
-                    errRet = NULL;
-                }
-            }
-        }
     }
     else if( parse.isKeyValid("outage") )  //  outages
     {
