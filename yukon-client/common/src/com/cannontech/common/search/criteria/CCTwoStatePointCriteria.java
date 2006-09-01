@@ -16,7 +16,7 @@ public class CCTwoStatePointCriteria extends PointDeviceCriteriaHelper {
         //b
         addCriteria("pointtype", "CalcStatus", BooleanClause.Occur.MUST_NOT);
         //c
-        addCriteria("point", "BANK STATUS", BooleanClause.Occur.MUST_NOT);
+        addCriteria("pointName", "BANK STATUS", BooleanClause.Occur.MUST_NOT);
     }
 
 
