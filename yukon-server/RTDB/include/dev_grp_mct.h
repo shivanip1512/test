@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2006/02/27 23:58:32 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2006/09/01 18:45:45 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -30,17 +30,21 @@ private:
 
 protected:
 
-    enum
+    enum Commands
     {
-        MCTGroup_Restore       = 0x00,
-        MCTGroup_Shed_Base_07m = 0x00,
-        MCTGroup_Shed_Base_15m = 0x10,
-        MCTGroup_Shed_Base_30m = 0x20,
-        MCTGroup_Shed_Base_60m = 0x30,
+        Command_Restore  = 0x00,
 
-        MCTGroup_BronzeAddr_Base    = 4190208,
-        MCTGroup_LeadLoadAddr_Base  = 4182016,
-        MCTGroup_LeadMeterAddr_Base = 4186112
+        Command_Shed_07m = 0x00,
+        Command_Shed_15m = 0x10,
+        Command_Shed_30m = 0x20,
+        Command_Shed_60m = 0x30,
+    };
+
+    enum BaseAddresses
+    {
+        BaseAddress_LeadLoad  = 4182016,  //  3FD000
+        BaseAddress_LeadMeter = 4186112,  //  3FE000
+        BaseAddress_Bronze    = 4190208,  //  3FF000
     };
 
     typedef CtiDeviceGroupBase Inherited;

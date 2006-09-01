@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2006/04/19 20:44:46 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2006/09/01 18:45:45 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -84,43 +84,35 @@ void CtiDeviceGroupMCT::DecodeDatabaseReader( RWDBReader &rdr )
 
 LONG CtiDeviceGroupMCT::getAddress() const
 {
+    using CtiTableLMGroupMCT::AddressLevels;
+
     int address = 0;
 
     switch( _lmGroupMCT.getAddressLevel() )
     {
-        case CtiTableLMGroupMCT::Addr_Bronze:
+        case AddressLevels::Addr_Bronze:
         {
-            address  = MCTGroup_BronzeAddr_Base;
-            address += _lmGroupMCT.getAddress();
+            address = BaseAddress_Bronze + _lmGroupMCT.getAddress();
 
             break;
         }
 
-        case CtiTableLMGroupMCT::Addr_Lead:
+        case AddressLevels::Addr_Lead:
         {
-            address  = MCTGroup_LeadLoadAddr_Base;
-            address += _lmGroupMCT.getAddress();
+            address = BaseAddress_LeadLoad + _lmGroupMCT.getAddress();
 
             break;
         }
 
-        case CtiTableLMGroupMCT::Addr_Unique:
+        case AddressLevels::Addr_Unique:
         {
-            CtiDeviceBase *tmpDevice;
+            address = _lmGroupMCT.getMCTUniqueAddress();
 
-            if( _lmGroupMCT.getMCTUniqueAddress() )
+            if( !address )
             {
-                address = _lmGroupMCT.getMCTUniqueAddress();
-            }
-            else
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime( ) << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << "MCT Load Group \"" << getName() << "\" has unique address 0, aborting command" << endl;
-                }
-
-                address = 0;
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime( ) << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << "MCT Load Group \"" << getName() << "\" has unique address 0, aborting command" << endl;
             }
 
             break;
@@ -128,13 +120,9 @@ LONG CtiDeviceGroupMCT::getAddress() const
 
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime( ) << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "Unknown/bad address level specifier in calcMCTLMGroupAddress() for MCT loadgroup \"" << getName() << "\"" << endl;
-            }
-
-            address = 0;
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime( ) << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << "Unknown/bad address level specifier (" << _lmGroupMCT.getAddressLevel() << ") in CtiDeviceGroupMCT::getAddress() for MCT loadgroup \"" << getName() << "\"" << endl;
         }
     }
 
@@ -244,7 +232,7 @@ INT CtiDeviceGroupMCT::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &pa
                  */
                 if(parse.getActionItems().size())
                 {
-                    for(std::list< string >::iterator itr = parse.getActionItems().begin(); 
+                    for(std::list< string >::iterator itr = parse.getActionItems().begin();
                          itr != parse.getActionItems().end();
                          ++itr )
                     {
@@ -331,40 +319,24 @@ INT CtiDeviceGroupMCT::executeControl( CtiRequestMsg *pReq, CtiCommandParser &pa
     {
         if( parse.isKeyValid("shed") )
         {
-            int shed_function_base   = 0,
-                shed_function_relays = 0,
-                shed_function,
+            int shed_function,
                 shed_duration;
 
             shed_duration = parse.getiValue("shed");
 
             if( shed_duration > 0 )
             {
-                if( shed_duration <= 450 )
-                {
-                    shed_function_base = MCTGroup_Shed_Base_07m;
-                }
-                else if( shed_duration <= 900 )
-                {
-                    shed_function_base = MCTGroup_Shed_Base_15m;
-                }
-                else if( shed_duration <= 1800 )
-                {
-                    shed_function_base = MCTGroup_Shed_Base_30m;
-                }
-                else
-                {
-                    shed_function_base = MCTGroup_Shed_Base_60m;
-                }
+                if(      shed_duration <=  450 )    shed_function = Command_Shed_07m;
+                else if( shed_duration <=  900 )    shed_function = Command_Shed_15m;
+                else if( shed_duration <= 1800 )    shed_function = Command_Shed_30m;
+                else                                shed_function = Command_Shed_60m;
 
                 //  this will obviously need to be changed if we ever need to control more than 4 relays
-                if( (shed_function_relays = (_lmGroupMCT.getRelays() & 0x0f)) != 0 )
+                if( _lmGroupMCT.getRelays() & 0x0f )
                 {
-                    shed_function = shed_function_base | (shed_function_relays & 0x0f);
-
                     function = Emetcon::Control_Shed;
 
-                    OutMessage->Buffer.BSt.Function = shed_function;
+                    OutMessage->Buffer.BSt.Function = shed_function | (_lmGroupMCT.getRelays() & 0x0f);
                     OutMessage->Buffer.BSt.Length   = 0;
                     OutMessage->Buffer.BSt.IO       = Emetcon::IO_Write;
 
@@ -375,7 +347,7 @@ INT CtiDeviceGroupMCT::executeControl( CtiRequestMsg *pReq, CtiCommandParser &pa
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime( ) << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "No relays selected for control in MCT load group \"" << getName() << "\", cannot shed" << endl;
+                        dout << "No relays selected for control (" << _lmGroupMCT.getRelays() << ") in MCT load group \"" << getName() << "\", cannot shed" << endl;
                     }
                 }
             }
@@ -385,20 +357,19 @@ INT CtiDeviceGroupMCT::executeControl( CtiRequestMsg *pReq, CtiCommandParser &pa
     {
         function = Emetcon::Control_Restore;
 
-        OutMessage->Buffer.BSt.Function = MCTGroup_Restore;
+        OutMessage->Buffer.BSt.Function = Command_Restore;
         OutMessage->Buffer.BSt.Length   = 0;
         OutMessage->Buffer.BSt.IO       = Emetcon::IO_Write;
 
         found = true;
     }
+
+//  no latching support yet
 /*
     else if(parse.getFlags() & CMD_FLAG_CTL_OPEN)
-    {
-    }
     else if(parse.getFlags() & CMD_FLAG_CTL_CLOSE)
-    {
-    }
 */
+
     //  check that we found a function and that we have an address to send it to
     if( !found )
     {
