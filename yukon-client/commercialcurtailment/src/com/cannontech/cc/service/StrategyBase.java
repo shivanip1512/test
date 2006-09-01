@@ -97,7 +97,7 @@ public abstract class StrategyBase {
     protected abstract 
     void 
     verifyCustomer(EventBuilderBase builder, 
-                   VerifiedCustomer vCustoemr);
+                   VerifiedCustomer vCustomer);
 
     public List<ProgramParameter> getParameters(Program program) {
         List<ProgramParameter> result = new LinkedList<ProgramParameter>();
