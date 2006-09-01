@@ -86,7 +86,6 @@ public class CustomerPointTypeHelper {
     
     public Set<String> getSatisfiedPointGroups(CICustomerStub customer) {
         Set<String> result = new TreeSet<String>();
-        Set<CICustomerPointType> currentPoints = customer.getPointData().keySet();
         Collection<String> typeGroups = pointTypeLookup.getPointTypeGroups(customer.getLite());
         for (String typeGroup : typeGroups) {
             if (isPointGroupSatisfied(customer, typeGroup)) {
