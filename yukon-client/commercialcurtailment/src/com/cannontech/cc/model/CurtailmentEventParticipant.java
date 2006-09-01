@@ -90,7 +90,7 @@ public class CurtailmentEventParticipant {
     
     @Override
     public String toString() {
-        return "CurtailmentEventParticipant [" + id + "]@" + Integer.toHexString(System.identityHashCode(this));
+        return "CurtailmentEventParticipant [" + id + "]";
     }
 
 
