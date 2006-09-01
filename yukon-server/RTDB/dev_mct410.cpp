@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.84 $
-* DATE         :  $Date: 2006/08/31 14:31:12 $
+* REVISION     :  $Revision: 1.85 $
+* DATE         :  $Date: 2006/09/01 18:47:30 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -103,8 +103,8 @@ CtiDeviceMCT::DynamicPaoAddressing_t CtiDeviceMCT410::initDynPaoAddressing()
 {
     DynamicPaoAddressing_t addressSet;
 
-    addressSet.insert(DynamicPaoAddressing(Memory_SSpecPos,                 Memory_SSpecLen,                Keys::Key_MCT_SSpec));
-    addressSet.insert(DynamicPaoAddressing(Memory_RevisionPos,              Memory_RevisionLen,             Keys::Key_MCT_SSpecRevision));
+//    addressSet.insert(DynamicPaoAddressing(Memory_SSpecPos,                 Memory_SSpecLen,                Keys::Key_MCT_SSpec));
+//    addressSet.insert(DynamicPaoAddressing(Memory_RevisionPos,              Memory_RevisionLen,             Keys::Key_MCT_SSpecRevision));
 
     addressSet.insert(DynamicPaoAddressing(Memory_OptionsPos,               Memory_OptionsLen,              Keys::Key_MCT_Options));
     addressSet.insert(DynamicPaoAddressing(Memory_ConfigurationPos,         Memory_ConfigurationLen,        Keys::Key_MCT_Configuration));

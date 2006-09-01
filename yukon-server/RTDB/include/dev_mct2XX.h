@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct2XX.h-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2006/07/06 20:11:48 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2006/09/01 18:44:54 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -39,8 +39,8 @@ protected:
     {
         MCT2XX_PFCountPos = 0x20,
         MCT2XX_PFCountLen =    2,
-        MCT2XX_TimePos    = 0x46,
-        MCT2XX_TimeLen    =    3,
+        Memory_TimePos    = 0x46,
+        Memory_TimeLen    =    3,
 
         MCT2XX_MultPos    = 0x90,
         MCT2XX_MultLen    =    2,

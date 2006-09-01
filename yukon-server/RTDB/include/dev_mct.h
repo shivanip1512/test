@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct.h-arc  $
-* REVISION     :  $Revision: 1.47 $
-* DATE         :  $Date: 2006/08/30 20:49:51 $
+* REVISION     :  $Revision: 1.48 $
+* DATE         :  $Date: 2006/09/01 18:44:54 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -26,12 +26,6 @@
 
 class IM_EX_DEVDB CtiDeviceMCT : public CtiDeviceCarrier
 {
-public:
-    enum
-    {
-        MCTConfig_ChannelCount = 4
-    };
-
 private:
 
     static const CommandSet _commandStore;
@@ -40,6 +34,11 @@ private:
     CtiTime _lastReadDataPurgeTime;
 
 protected:
+
+    enum
+    {
+        MCTConfig_ChannelCount = 4
+    };
 
     virtual bool getOperation( const UINT &cmdType, USHORT &function, USHORT &length, USHORT &io );
 
@@ -148,16 +147,15 @@ protected:
 
     enum Memory
     {
-        Memory_ModelPos                  = 0x00,
-        Memory_ModelLen                  =    8,
-        Memory_SspecPos                  = 0x00,
-        Memory_SspecLen                  =    5,
+        Memory_ModelPos          = 0x00,
+        Memory_ModelLen          =    8,
 
-        Memory_TimePos                   = 0x46,
-        Memory_TimeLen                   =    3,
-        Memory_TSyncPos                  = 0x49,
-        Memory_TSyncLen                  =    5,
+        Memory_TSyncPos          = 0x49,
+        Memory_TSyncLen          =    5,
+    };
 
+    enum Commands
+    {
         Command_Open             = 0x41,
         Command_Close            = 0x42,
 
@@ -171,12 +169,11 @@ protected:
 
         Command_LPInt            = 0x70,
 
-        Command_Restore          = 0x00,
-        Shed_Base_07m            = 0x00,
-        Shed_Base_15m            = 0x10,
-        Shed_Base_30m            = 0x20,
-        Shed_Base_60m            = 0x30,
-
+        Command_Restore     = 0x00,
+        Command_Shed_07m    = 0x00,
+        Command_Shed_15m    = 0x10,
+        Command_Shed_30m    = 0x20,
+        Command_Shed_60m    = 0x30,
     };
 
     enum Miscellaneous

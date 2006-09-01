@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.54 $
-* DATE         :  $Date: 2006/08/29 22:30:12 $
+* REVISION     :  $Revision: 1.55 $
+* DATE         :  $Date: 2006/09/01 18:47:30 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -113,8 +113,8 @@ CtiDeviceMCT310::CommandSet CtiDeviceMCT310::initCommandStore( )
     cs.insert(CommandStore(Emetcon::PutConfig_OnOffPeak,            Emetcon::IO_Write,          MCT3XX_MinMaxPeakConfigPos,     1));
     cs.insert(CommandStore(Emetcon::PutConfig_MinMax,               Emetcon::IO_Write,          MCT3XX_MinMaxPeakConfigPos,     1));
 
-    cs.insert(CommandStore(Emetcon::Scan_Accum,                     Emetcon::IO_Function_Read,  MCT3XX_FuncReadMReadPos,        MCT3XX_FuncReadMReadLen));
-    cs.insert(CommandStore(Emetcon::GetValue_Default,               Emetcon::IO_Function_Read,  MCT3XX_FuncReadMReadPos,        MCT3XX_FuncReadMReadLen));
+    cs.insert(CommandStore(Emetcon::Scan_Accum,                     Emetcon::IO_Function_Read,  FuncRead_MReadPos,        FuncRead_MReadLen));
+    cs.insert(CommandStore(Emetcon::GetValue_Default,               Emetcon::IO_Function_Read,  FuncRead_MReadPos,        FuncRead_MReadLen));
 
 //  ACH add frozen support for 310
 //  cs.insert(CommandStore(Emetcon::GetValue_FrozenKWH,             Emetcon::IO_Function_Read,  MCT3XX_FuncReadFrozenPos, MCT3XX_FuncReadFrozenLen);
@@ -126,29 +126,29 @@ CtiDeviceMCT310::CommandSet CtiDeviceMCT310::initCommandStore( )
     cs.insert(CommandStore(Emetcon::GetValue_PFCount,               Emetcon::IO_Read,           MCT3XX_PFCountPos,              MCT3XX_PFCountLen));
     cs.insert(CommandStore(Emetcon::PutValue_ResetPFCount,          Emetcon::IO_Write,          MCT3XX_PFCountPos,              MCT3XX_PFCountLen));
 
-    cs.insert(CommandStore(Emetcon::PutStatus_PeakOn,               Emetcon::IO_Write,          MCT3XX_FunctionPeakOn,          0));
-    cs.insert(CommandStore(Emetcon::PutStatus_PeakOff,              Emetcon::IO_Write,          MCT3XX_FunctionPeakOff,         0));
+    cs.insert(CommandStore(Emetcon::PutStatus_PeakOn,               Emetcon::IO_Write,          Command_PeakOn,          0));
+    cs.insert(CommandStore(Emetcon::PutStatus_PeakOff,              Emetcon::IO_Write,          Command_PeakOff,         0));
 
     cs.insert(CommandStore(Emetcon::PutStatus_FreezeOne,            Emetcon::IO_Write | Q_ARMS, Command_FreezeOne,              0));
     cs.insert(CommandStore(Emetcon::PutStatus_FreezeTwo,            Emetcon::IO_Write | Q_ARMS, Command_FreezeTwo,              0));
 
     //  only valid for sspec 1007 (and above?)
-    cs.insert(CommandStore(Emetcon::Scan_Integrity,                 Emetcon::IO_Read,           MCT310_DemandPos,               MCT310_DemandLen));
+    cs.insert(CommandStore(Emetcon::Scan_Integrity,                 Emetcon::IO_Read,           Memory_DemandPos,               Memory_DemandLen));
 
     //  310 specific commands
     //  310 cannot do a FR0x92 (MCT31X_FuncReadDemand) and can only collect 1 demand reading!
-    cs.insert(CommandStore(Emetcon::Scan_Integrity,                 Emetcon::IO_Read,           MCT310_DemandPos,               MCT310_DemandLen));
-    cs.insert(CommandStore(Emetcon::GetValue_Demand,                Emetcon::IO_Read,           MCT310_DemandPos,               MCT310_DemandLen));
+    cs.insert(CommandStore(Emetcon::Scan_Integrity,                 Emetcon::IO_Read,           Memory_DemandPos,               Memory_DemandLen));
+    cs.insert(CommandStore(Emetcon::GetValue_Demand,                Emetcon::IO_Read,           Memory_DemandPos,               Memory_DemandLen));
 
     cs.insert(CommandStore(Emetcon::PutValue_KYZ,                   Emetcon::IO_Write,          MCT3XX_PutMRead1Pos,            MCT3XX_PutMReadLen));
 
-    cs.insert(CommandStore(Emetcon::GetValue_PeakDemand,            Emetcon::IO_Function_Read,  MCT3XX_FuncReadMinMaxDemandPos, 4));
-    cs.insert(CommandStore(Emetcon::GetValue_FrozenPeakDemand,      Emetcon::IO_Function_Read,  MCT3XX_FuncReadFrozenDemandPos, 4));
+    cs.insert(CommandStore(Emetcon::GetValue_PeakDemand,            Emetcon::IO_Function_Read,  FuncRead_MinMaxDemandPos, 4));
+    cs.insert(CommandStore(Emetcon::GetValue_FrozenPeakDemand,      Emetcon::IO_Function_Read,  FuncRead_FrozenDemandPos, 4));
 
     //  only valid for 310IL, this case handled in getOperation
     cs.insert(CommandStore(Emetcon::Scan_LoadProfile,               Emetcon::IO_Function_Read,  0,  0));
 
-    cs.insert(CommandStore(Emetcon::GetStatus_Disconnect,           Emetcon::IO_Read,           MCT310_StatusPos,               MCT310_StatusLen));
+    cs.insert(CommandStore(Emetcon::GetStatus_Disconnect,           Emetcon::IO_Read,           Memory_StatusPos,               Memory_StatusLen));
     cs.insert(CommandStore(Emetcon::GetStatus_LoadProfile,          Emetcon::IO_Read,           MCT3XX_LPStatusPos,             MCT3XX_LPStatusLen));
 
     cs.insert(CommandStore(Emetcon::Control_Latch,                  Emetcon::IO_Write | Q_ARML, Command_Latch,                  0));

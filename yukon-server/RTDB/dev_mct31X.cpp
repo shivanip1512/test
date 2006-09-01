@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct31X.cpp-arc  $
-* REVISION     :  $Revision: 1.56 $
-* DATE         :  $Date: 2006/08/28 16:54:33 $
+* REVISION     :  $Revision: 1.57 $
+* DATE         :  $Date: 2006/09/01 18:47:30 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -84,8 +84,8 @@ CtiDeviceMCT31X::CommandSet CtiDeviceMCT31X::initCommandStore( )
 
     cs.insert(CommandStore(Emetcon::Scan_LoadProfile,           Emetcon::IO_Function_Read,  0,                          0));
 
-    cs.insert(CommandStore(Emetcon::GetValue_PeakDemand,        Emetcon::IO_Function_Read,  MCT3XX_FuncReadMinMaxDemandPos, 12));
-    cs.insert(CommandStore(Emetcon::GetValue_FrozenPeakDemand,  Emetcon::IO_Function_Read,  MCT3XX_FuncReadFrozenDemandPos, 12));
+    cs.insert(CommandStore(Emetcon::GetValue_PeakDemand,        Emetcon::IO_Function_Read,  FuncRead_MinMaxDemandPos, 12));
+    cs.insert(CommandStore(Emetcon::GetValue_FrozenPeakDemand,  Emetcon::IO_Function_Read,  FuncRead_FrozenDemandPos, 12));
 
     //  add the 2 other channels for 318s
     cs.insert(CommandStore(Emetcon::PutValue_KYZ2,              Emetcon::IO_Write,          MCT3XX_PutMRead2Pos,        MCT3XX_PutMReadLen));

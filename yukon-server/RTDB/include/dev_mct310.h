@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct310.h-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2006/07/25 22:11:44 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2006/09/01 18:44:54 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -32,26 +32,13 @@ protected:
 
     virtual bool getOperation( const UINT &cmd,  USHORT &function, USHORT &length, USHORT &io );
 
-    enum
+    enum Memory
     {
-        MCT310_DemandPos = 0x2c,
-        MCT310_DemandLen =    2,
+        Memory_DemandPos = 0x2c,
+        Memory_DemandLen =    2,
 
-        MCT310_StatusPos = 0x05,
-        MCT310_StatusLen =    2
-    };
-
-    enum
-    {
-        MCT3XX_FuncReadMReadPos        = 0x90,  //  144
-        MCT3XX_FuncReadMReadLen        =    9,  //  Variable based on point count... Max of 9.
-        MCT3XX_FuncReadFrozenPos       = 0x91,  //  145
-        MCT3XX_FuncReadFrozenLen       =    9,  //  Variable based on point count... Max of 9.
-
-        MCT3XX_FuncReadMinMaxDemandPos = 0x93,
-        MCT3XX_FuncReadMinMaxDemandLen =   12,  //  Variable based on point count
-        MCT3XX_FuncReadFrozenDemandPos = 0x94,
-        MCT3XX_FuncReadFrozenDemandLen =   12,  //  Variable based on point count
+        Memory_StatusPos = 0x05,
+        Memory_StatusLen =    2,
 
         MCT3XX_PutMRead1Pos            = 0x20,
         MCT3XX_PutMRead2Pos            = 0x32,
@@ -86,13 +73,23 @@ protected:
         MCT3XX_GenStatLen              =    9,
 
         MCT3XX_MinMaxPeakConfigPos     = 0x03,
+    };
 
-        MCT3XX_FunctionPeakOff         = 0x59,
-        MCT3XX_FunctionPeakOn          = 0x5a,
+    enum Functions
+    {
+        FuncRead_MReadPos        = 0x90,
+        FuncRead_MReadLen        =    9,
+        FuncRead_FrozenPos       = 0x91,
+        FuncRead_FrozenLen       =    9,
 
-        MCT3XX_FreezeOne               = 0x51,
-        MCT3XX_FreezeTwo               = 0x52,
-        MCT3XX_FreezeLen               =    0
+        FuncRead_MinMaxDemandPos = 0x93,
+        FuncRead_FrozenDemandPos = 0x94,
+    };
+
+    enum Commands
+    {
+        Command_PeakOff          = 0x59,
+        Command_PeakOn           = 0x5a,
     };
 
     enum

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT410.h-arc  $
-* REVISION     :  $Revision: 1.41 $
-* DATE         :  $Date: 2006/08/31 14:05:32 $
+* REVISION     :  $Revision: 1.42 $
+* DATE         :  $Date: 2006/09/01 18:44:54 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -47,27 +47,21 @@ protected:
         Command_Disconnect       = 0x4d
     };
 
-    enum MemoryLocations
+    enum MemoryMap
     {
-        Memory_SSpecPos           = 0x00,
-        Memory_SSpecLen           =    1,
+        Memory_RevisionPos          = 0x01,
+        Memory_RevisionLen          =    1,
 
-        Memory_RevisionPos        = 0x01,
-        Memory_RevisionLen        =    1,
+        Memory_StatusPos            = 0x05,
+        Memory_StatusLen            =    5,
 
-        Memory_OptionsPos         = 0x02,
-        Memory_OptionsLen         =    1,
+        Memory_EventFlagsMask1Pos   = 0x0a,
+        Memory_EventFlagsMask1Len   =    1,
 
-        Memory_StatusPos          = 0x05,
-        Memory_StatusLen          =    5,
+        Memory_EventFlagsMask2Pos   = 0x0b,
+        Memory_EventFlagsMask2Len   =    1,
 
-        Memory_EventFlagsMask1Pos = 0x0A,
-        Memory_EventFlagsMask1Len =    1,
-
-        Memory_EventFlagsMask2Pos = 0x0B,
-        Memory_EventFlagsMask2Len =    1,
-
-        Memory_MeterAlarmMaskPos    = 0x0C,
+        Memory_MeterAlarmMaskPos    = 0x0c,
         Memory_MeterAlarmMaskLen    =    2,
 
         Memory_CentronParametersPos = 0x0f,
@@ -76,38 +70,38 @@ protected:
         Memory_CentronMultiplierPos = 0x19,
         Memory_CentronMultiplierLen =    1,
 
-        Memory_AddressingPos      = 0x13,
-        Memory_AddressingLen      =    6,
+        Memory_AddressingPos        = 0x13,
+        Memory_AddressingLen        =    6,
 
-        Memory_BronzeAddressPos   = 0x13,
-        Memory_BronzeAddressLen   =    1,
+        Memory_BronzeAddressPos     = 0x13,
+        Memory_BronzeAddressLen     =    1,
 
-        Memory_LeadAddressPos     = 0x14,
-        Memory_LeadAddressLen     =    2,
+        Memory_LeadAddressPos       = 0x14,
+        Memory_LeadAddressLen       =    2,
 
         Memory_CollectionAddressPos = 0x16,
         Memory_CollectionAddressLen =    2,
 
-        Memory_SPIDAddressPos     = 0x18,
-        Memory_SPIDAddressLen     =    1,
+        Memory_SPIDAddressPos       = 0x18,
+        Memory_SPIDAddressLen       =    1,
 
-        Memory_AlarmsPos          = 0x15,
-        Memory_AlarmsLen          =    2,
+        Memory_AlarmsPos            = 0x15,
+        Memory_AlarmsLen            =    2,
 
-        Memory_IntervalsPos       = 0x1a,
-        Memory_IntervalsLen       =    4,
+        Memory_IntervalsPos         = 0x1a,
+        Memory_IntervalsLen         =    4,
 
-        Memory_DemandIntervalPos  = 0x1a,
-        Memory_DemandIntervalLen  =    1,
+        Memory_DemandIntervalPos    = 0x1a,
+        Memory_DemandIntervalLen    =    1,
 
         Memory_LoadProfileIntervalPos   = 0x1b,
         Memory_LoadProfileIntervalLen   =    1,
 
-        Memory_VoltageDemandIntervalPos = 0x1C,
+        Memory_VoltageDemandIntervalPos = 0x1c,
         Memory_VoltageDemandIntervalLen =    1,
 
-        Memory_VoltageLPIntervalPos = 0x1D,
-        Memory_VoltageLPIntervalLen =    1,
+        Memory_VoltageLPIntervalPos     = 0x1d,
+        Memory_VoltageLPIntervalLen     =    1,
 
         Memory_OverVThresholdPos  = 0x1e,
         Memory_OverVThresholdLen  =    2,
@@ -162,7 +156,6 @@ protected:
 
         Memory_Holiday3Pos        = 0xd8,
         Memory_Holiday3Len        =    4,
-
     };
 
     enum Functions
@@ -170,7 +163,6 @@ protected:
         FuncRead_OutagePos        = 0x10,
         FuncRead_OutageLen        =   13,
 
-        FuncRead_MReadPos         = 0x90,
         FuncRead_MReadLen         =    9,
 
         FuncRead_FrozenMReadPos   = 0x91,
@@ -198,7 +190,7 @@ protected:
         FuncRead_TOULen              =    9,
         FuncRead_TOUFrozenOffset     =    4,
 
-        FuncRead_TOUDaySchedulePos   = 0xAD,
+        FuncRead_TOUDaySchedulePos   = 0xad,
         FuncRead_TOUDayScheduleLen   =   11,
 
         FuncRead_TOUStatusPos           = 0xad,
@@ -234,7 +226,6 @@ protected:
 
         FuncWrite_DisconnectConfigPos  = 0xfe,
         FuncWrite_DisconnectConfigLen  =    8,
-
     };
 
     enum PointOffsets

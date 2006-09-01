@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.57 $
-* DATE         :  $Date: 2006/08/31 18:03:04 $
+* REVISION     :  $Revision: 1.58 $
+* DATE         :  $Date: 2006/09/01 18:47:30 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -93,9 +93,9 @@ CtiDeviceMCT470::CommandSet CtiDeviceMCT470::initCommandStore( )
 {
     CommandSet cs;
 
-    cs.insert(CommandStore(Emetcon::Command_Loop,               Emetcon::IO_Read,           Memory_ModelPos,                    1));
-    cs.insert(CommandStore(Emetcon::Scan_Accum,                 Emetcon::IO_Function_Read,  MCT470_FuncRead_MReadPos,           MCT470_FuncRead_MReadLen));
-    cs.insert(CommandStore(Emetcon::GetValue_Default,           Emetcon::IO_Function_Read,  MCT470_FuncRead_MReadPos,           MCT470_FuncRead_MReadLen));
+    cs.insert(CommandStore(Emetcon::Command_Loop,               Emetcon::IO_Read,           Memory_ModelPos,             1));
+    cs.insert(CommandStore(Emetcon::Scan_Accum,                 Emetcon::IO_Function_Read,  FuncRead_MReadPos,           FuncRead_MReadLen));
+    cs.insert(CommandStore(Emetcon::GetValue_Default,           Emetcon::IO_Function_Read,  FuncRead_MReadPos,           FuncRead_MReadLen));
     cs.insert(CommandStore(Emetcon::Scan_Integrity,             Emetcon::IO_Function_Read,  MCT470_FuncRead_DemandPos,          MCT470_FuncRead_DemandLen));
     cs.insert(CommandStore(Emetcon::GetValue_Demand,            Emetcon::IO_Function_Read,  MCT470_FuncRead_DemandPos,          MCT470_FuncRead_DemandLen));
     cs.insert(CommandStore(Emetcon::Scan_LoadProfile,           Emetcon::IO_Function_Read,  0,                                  0));
@@ -236,9 +236,13 @@ CtiDeviceMCT::DynamicPaoAddressing_t CtiDeviceMCT470::initDynPaoAddressing()
 {
     DynamicPaoAddressing_t addressSet;
 
-    addressSet.insert(DynamicPaoAddressing(MCT470_Memory_SSpecPos,                  MCT470_Memory_SSpecLen,                 Keys::Key_MCT_SSpec));
-    addressSet.insert(DynamicPaoAddressing(MCT470_Memory_RevisionPos,               MCT470_Memory_RevisionPos,              Keys::Key_MCT_SSpecRevision));
-    addressSet.insert(DynamicPaoAddressing(MCT470_Memory_OptionsPos,                MCT470_Memory_OptionsPos,               Keys::Key_MCT_Options));
+//  The SSPEC is set in decodeGetConfigModel().
+//    This code assumes that the values are contiguous, which the SSPEC is not.
+/*
+    addressSet.insert(DynamicPaoAddressing(Memory_SSpecPos,                  Memory_SSpecLen,                 Keys::Key_MCT_SSpec));
+    addressSet.insert(DynamicPaoAddressing(Memory_RevisionPos,               Memory_RevisionLen,              Keys::Key_MCT_SSpecRevision));
+*/
+    addressSet.insert(DynamicPaoAddressing(Memory_OptionsPos,                Memory_OptionsLen,               Keys::Key_MCT_Options));
     addressSet.insert(DynamicPaoAddressing(MCT470_Memory_ConfigurationPos,          MCT470_Memory_ConfigurationLen,         Keys::Key_MCT_Configuration));
     addressSet.insert(DynamicPaoAddressing(MCT470_Memory_EventFlagsMask1Pos,        MCT470_Memory_EventFlagsMask1Len,       Keys::Key_MCT_EventFlagsMask1));
     addressSet.insert(DynamicPaoAddressing(MCT470_Memory_EventFlagsMask2Pos,        MCT470_Memory_EventFlagsMask2Len,       Keys::Key_MCT_EventFlagsMask2));
@@ -1434,7 +1438,7 @@ INT CtiDeviceMCT470::executeGetConfig( CtiRequestMsg         *pReq,
         if( parse.isKeyValid("multchannel") )
         {
             if( parse.getiValue("multchannel") >= 1 &&
-                parse.getiValue("multchannel") <= MCT470_ChannelCount )
+                parse.getiValue("multchannel") <= ChannelCount )
             {
                 OutMessage->Buffer.BSt.Function += (parse.getiValue("multchannel") - 1) * MCT470_Memory_ChannelOffset;
             }
@@ -2646,7 +2650,7 @@ INT CtiDeviceMCT470::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
 
         //  add freeze smarts here
 
-        for( i = 0; i < MCT470_ChannelCount; i++ )
+        for( i = 0; i < ChannelCount; i++ )
         {
             pPoint = getDevicePointOffsetTypeEqual( 1 + i, PulseAccumulatorPointType );
 
@@ -3874,7 +3878,7 @@ INT CtiDeviceMCT470::decodeGetConfigChannelSetup(INMESS *InMessage, CtiTime &Tim
         result_string += getName() + " / Electronic Meter Load Profile Interval: " + CtiNumStr(DSt->Message[6]) + " seconds\n";
         setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_IEDLoadProfileInterval, (long)DSt->Message[6]);
 
-        for( int i = 0; i < MCT470_ChannelCount; i++ )
+        for( int i = 0; i < ChannelCount; i++ )
         {
             result_string += getName() + " / LP Channel " + CtiNumStr(i+1) + " config: ";
 

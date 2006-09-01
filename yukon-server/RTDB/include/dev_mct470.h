@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT470.h-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2006/08/30 21:01:23 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2006/09/01 18:44:54 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -90,15 +90,15 @@ private:
 
     enum IED_Types
     {
-        NoIEDType          = 0x00,
-        LandisGyrS4        = 0x10,
-        AlphaA1            = 0x20,
-        AlphaPowerPlus     = 0x30,
-        GeneralElectricKV  = 0x40,
-        GeneralElectricKV2 = 0x50,
-        Sentinel           = 0x60,
+        IED_None               = 0x00,
+        IED_LandisGyrS4        = 0x10,
+        IED_AlphaA1            = 0x20,
+        IED_AlphaPowerPlus     = 0x30,
+        IED_GeneralElectricKV  = 0x40,
+        IED_GeneralElectricKV2 = 0x50,
+        IED_Sentinel           = 0x60,
 
-        IED_Mask           = 0xF0
+        IED_Mask               = 0xF0,
     };
 
     long getLoadProfileInterval( unsigned channel );
@@ -129,12 +129,6 @@ protected:
     enum
     {
         //  new/changed stuff
-        MCT470_Memory_SSpecPos             = 0x00,
-        MCT470_Memory_SSpecLen             =    1,
-
-        MCT470_Memory_RevisionPos          = 0x01,
-        MCT470_Memory_RevisionLen          =    2,
-
         MCT470_Memory_OptionsPos           = 0x02,
         MCT470_Memory_OptionsLen           =    1,
 
@@ -318,8 +312,7 @@ protected:
         MCT470_FuncRead_IED_CRCPos         = 0x25,
         MCT470_FuncRead_IED_CRCLen         =   12,
 
-        MCT470_FuncRead_MReadPos           = 0x90,
-        MCT470_FuncRead_MReadLen           =   12,
+        FuncRead_MReadLen           =   12,
 
         MCT470_FuncRead_MReadFrozenPos     = 0x91,
         MCT470_FuncRead_MReadFrozenLen     =   13,
@@ -422,7 +415,7 @@ public:
 
     enum
     {
-        MCT470_ChannelCount  = 4,
+        ChannelCount  = 4,
 
         //  These should be private - and there should be an MCT470::executeGetStatus()
         MCT470_FuncRead_LPStatusCh1Ch2Pos = 0x97,

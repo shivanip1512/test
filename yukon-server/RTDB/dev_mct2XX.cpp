@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct2XX.cpp-arc  $
-* REVISION     :  $Revision: 1.36 $
-* DATE         :  $Date: 2006/08/29 22:29:38 $
+* REVISION     :  $Revision: 1.37 $
+* DATE         :  $Date: 2006/09/01 18:47:30 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -74,7 +74,7 @@ CtiDeviceMCT2XX::CommandSet CtiDeviceMCT2XX::initCommandStore()
 
     cs.insert(CommandStore(Emetcon::GetConfig_Options,      Emetcon::IO_Read,  MCT2XX_OptionPos,   MCT2XX_OptionLen));
 
-    cs.insert(CommandStore(Emetcon::GetConfig_Time,         Emetcon::IO_Read,  MCT2XX_TimePos,     MCT2XX_TimeLen));
+    cs.insert(CommandStore(Emetcon::GetConfig_Time,         Emetcon::IO_Read,  Memory_TimePos,     Memory_TimeLen));
 
     cs.insert(CommandStore(Emetcon::PutConfig_TSync,        Emetcon::IO_Write, Memory_TSyncPos,    Memory_TSyncLen));
 
