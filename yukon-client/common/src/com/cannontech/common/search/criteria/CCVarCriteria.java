@@ -12,9 +12,8 @@ public class CCVarCriteria extends PointDeviceCriteriaHelper {
         super();
         //create all the rules for this criteria
         for (int i = 0; i < UNITS.length; i++) {
-            addCriteria("uomid", i, BooleanClause.Occur.SHOULD);
+            addCriteria("uomid", UNITS[i], BooleanClause.Occur.SHOULD);
         }
     }
-
 
 }
