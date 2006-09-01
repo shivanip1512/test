@@ -6,40 +6,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.61 $
-* DATE         :  $Date: 2006/08/31 17:43:32 $
+* REVISION     :  $Revision: 1.62 $
+* DATE         :  $Date: 2006/09/01 18:50:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-
-#pragma title ( "Scanner Process" )
-#pragma subtitle ( "CTI Copyright (c) 1990-1998" )
-/*----------------------------------------------------------------------------
-    Copyright (c) 1990-2000 Cannon Technologies, Inc. All rights reserved.
-
-    Programmer:
-        William R. Ockert
-
-    FileName:
-        SCANNER.CPP
-
-    Purpose:
-        To scan various devices on the system for value and status
-
-    The following procedures are contained in this module:
-        main                    ResultThread
-        FirstScan               ReportError
-        ScannerCleanUp
-
-
-    Initial Date:
-        Unknown
-
-    Revision History:
-
-   --------------------------------------------------------------------------- */
 
 #include <windows.h>       // These next few are required for Win32
 #include <process.h>
@@ -99,7 +72,6 @@
 #include "utility.h"
 #include "dllyukon.h"
 
-// #define DEBUG2 TRUE
 #define NEXT_SCAN       0
 #define REMOTE_SCAN     1
 #define DLC_LP_SCAN     2
@@ -108,7 +80,7 @@
 
 using namespace std;
 
-static INT     SCANNER_RELOAD_RATE = 86400;
+static INT      ScannerReloadRate = 86400;
 static CtiTime  LastPorterOutTime;
 static CtiTime  LastPorterInTime;
 
@@ -141,7 +113,7 @@ extern BOOL ScannerQuit;
 
 CtiConnection     VanGoghConnection;
 ULONG             ScannerDebugLevel = 0;
-int               CCUNoQueueScans = TRUE;
+bool              CCUQueueScans = false;
 
 HANDLE hLockArray[] = {
     hScannerSyncs[S_QUIT_EVENT],
@@ -386,13 +358,13 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
         {
             if(!(stricmp (argv[i], "/NQ")))
             {
-                CCUNoQueue = TRUE;
+                CCUQueue = false;
                 continue;
             }
 
             if(!(stricmp (argv[i], "/NLP")))
             {
-                SuspendLoadProfile = TRUE;
+                SuspendLoadProfile = true;
                 continue;
             }
         }
@@ -1150,7 +1122,7 @@ void InitScannerGlobals(void)
     if(gConfigParms.isOpt("SCANNER_RELOAD_RATE"))
     {
         string Temp = gConfigParms.getValueAsString("SCANNER_RELOAD_RATE");
-        SCANNER_RELOAD_RATE = atoi (Temp.c_str());
+        ScannerReloadRate = atoi (Temp.c_str());
     }
 
     if(gConfigParms.isOpt("SCANNER_DEBUGLEVEL"))
@@ -1172,11 +1144,11 @@ void InitScannerGlobals(void)
 
         if(Temp == "true" || Temp == "yes")
         {
-            CCUNoQueue = FALSE;
+            CCUQueue = true;
         }
         else
         {
-            CCUNoQueue = TRUE;
+            CCUQueue = false;
         }
     }
 
@@ -1187,11 +1159,11 @@ void InitScannerGlobals(void)
 
         if(Temp == "true" || Temp == "yes")
         {
-            CCUNoQueueScans = FALSE;
+            CCUQueueScans = true;
         }
         else
         {
-            CCUNoQueueScans = TRUE;
+            CCUQueueScans = false;
         }
     }
 
@@ -1494,7 +1466,7 @@ void DatabaseHandlerThread(VOID *Arg)
     BOOL           bServerClosing = FALSE;
 
     CtiTime         TimeNow;
-    CtiTime         RefreshTime = nextScheduledTimeAlignedOnRate( TimeNow, SCANNER_RELOAD_RATE );
+    CtiTime         RefreshTime = nextScheduledTimeAlignedOnRate( TimeNow, ScannerReloadRate );
     ULONG          delta;
 
     {
@@ -1537,7 +1509,7 @@ void DatabaseHandlerThread(VOID *Arg)
                 // Post the wakup to ensure that the main loop re-examines the devices.
                 SetEvent(hScannerSyncs[ S_SCAN_EVENT ]);
 
-                RefreshTime = nextScheduledTimeAlignedOnRate( TimeNow, SCANNER_RELOAD_RATE );
+                RefreshTime = nextScheduledTimeAlignedOnRate( TimeNow, ScannerReloadRate );
             }
         }
     } /* End of for */
@@ -1601,10 +1573,10 @@ INT MakePorterRequests(list< OUTMESS* > &outList)
         if(PorterNexus.NexusState != CTINEXUS_STATE_NULL)
         {
             //  if queueing has been turned off
-            if( CCUNoQueue ||
-                (CCUNoQueueScans && ((OutMessage->Sequence == Cti::Protocol::Emetcon::Scan_Accum)   ||
-                                     (OutMessage->Sequence == Cti::Protocol::Emetcon::Scan_General) ||
-                                     (OutMessage->Sequence == Cti::Protocol::Emetcon::Scan_Integrity))) )
+            if( !CCUQueue ||
+                (!CCUQueueScans && ((OutMessage->Sequence == Cti::Protocol::Emetcon::Scan_Accum)   ||
+                                    (OutMessage->Sequence == Cti::Protocol::Emetcon::Scan_General) ||
+                                    (OutMessage->Sequence == Cti::Protocol::Emetcon::Scan_Integrity))) )
             {
                 string cmdStr(OutMessage->Request.CommandStr);
 
