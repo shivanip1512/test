@@ -3,10 +3,7 @@ package com.cannontech.common.search;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.lang.StringUtils;
@@ -21,10 +18,8 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.search.BooleanClause.Occur;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.search.criteria.CriteriaRule;
 
 public class PointDeviceLuceneSearcher implements PointDeviceSearcher {
     
