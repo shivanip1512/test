@@ -919,10 +919,10 @@ public class YukonSwitchCommandAction implements ActionBase {
         }
         else {
             optGroupID = LMHardwareConfiguration.getLMHardwareConfigurationFromInvenID(liteHw.getInventoryID()).getAddressingGroupID();
-            loadGroupName = DaoFactory.getPaoDao().getYukonPAOName(optGroupID); 
+            if(optGroupID > 0)
+                loadGroupName = DaoFactory.getPaoDao().getYukonPAOName(optGroupID); 
         }
             
-        
         final String fs = System.getProperty( "file.separator" );
         File ecDir = new File( ServerUtils.getFileWriteSwitchConfigDir() + fs + energyCompany.getName() );
         if (!ecDir.exists())
