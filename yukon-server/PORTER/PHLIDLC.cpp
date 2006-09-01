@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PHLIDLC.cpp-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2006/06/02 20:05:57 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2006/09/01 19:35:16 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -60,6 +60,7 @@
 #include "porter.h"
 #include "portdecl.h"
 
+#include "cparms.h"
 #include "portglob.h"
 #include "port_base.h"
 #include "dev_base.h"
