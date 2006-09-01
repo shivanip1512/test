@@ -957,17 +957,7 @@ public class YukonSwitchCommandAction implements ActionBase {
             cmd = liteHw.getManufacturerSerialNumber();
         }
         
-        if(loadGroupName != null)
-        {
-            /*if ((liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL || forceInService)
-                    && InventoryUtils.supportServiceInOut( liteHw.getLmHardwareTypeID() ))
-            {
-                // Send an in service command first
-                fileWriteEnableCommand( energyCompany, liteHw, null );
-            }*/
-            fileWriteReceiverConfigLine(commFile, cmd);
-        }
-        else
+        if(loadGroupName == null)
         {
             commFile = new File(ecDir, ServerUtils.PROBLEM_FILE);
             if(optGroupID == null)
@@ -976,6 +966,7 @@ public class YukonSwitchCommandAction implements ActionBase {
                 ": Unable to find a load group in Yukon with the specified groupID of " + optGroupID;
         }
         
+        fileWriteReceiverConfigLine(commFile, cmd);
         /*TODO Not sure if we want to leave this in since we don't know for sure that Gill has
          * run the written out commands to the switch.  Could be false advertising...
         // Add "Config" to hardware events
