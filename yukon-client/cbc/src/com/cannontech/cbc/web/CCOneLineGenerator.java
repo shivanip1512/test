@@ -33,52 +33,56 @@ class CCOneLineGenerator
     private static String DEF_CONTROLS_HOME = "../capcontrols.jsp";
 
 	private static final Font DEFAULT_FONT = new java.awt.Font("arial", java.awt.Font.BOLD, 12);
-	
+	//constants to make this masterpiece scalable
+    //all is relative to height and width
+    private static final int drawingHeight = 600;
+    private static final int drawingWidth =  800;
+    
 	public static Drawing generateSVGFileFromSubBus(SubBus subBus, String thisURL )
     {
 		Drawing d = new Drawing();
 		LxGraph graph = d.getLxGraph();
 		
 		DrawingMetaElement me = d.getMetaElement();		
-		me.setDrawingWidth(1024);
-		me.setDrawingHeight(800);
+		me.setDrawingWidth(drawingWidth);
+		me.setDrawingHeight(drawingHeight);
 
 		StaticImage staticImage1 = new StaticImage();
 		staticImage1.setYukonImage("CapControlLogo.gif");
-		staticImage1.setX(20.0);
-		staticImage1.setY(20.0);
+		staticImage1.setX( drawingWidth / 51.2);
+		staticImage1.setY( drawingHeight / 40.0);
 		graph.add(staticImage1);
 
 		StaticImage staticImage2 = new StaticImage();
 		staticImage2.setYukonImage("YukonLogoWhite.gif");
-		staticImage2.setX(872.0);
-		staticImage2.setY(20.0);
+		staticImage2.setX( drawingWidth / 1.174);
+		staticImage2.setY( drawingHeight / 40.0);
 		graph.add(staticImage2);
 
-		double halfAcross = 512.0;
-		double halfDown = 400.0;
-		double labelTextHorzOffset = 20.0;
-		double valueTextHorzOffset = labelTextHorzOffset + 70.0;
-		double labelTextVertOffset = 15.0;
-		double subLineStart = 30.0;
-		double subLineLength = 150.0;
+		double halfAcross = drawingWidth / 2;
+		double halfDown = drawingHeight / 2;
+		double labelTextHorzOffset = drawingWidth / 51.2;
+		double valueTextHorzOffset = labelTextHorzOffset + drawingWidth / 14.63;
+		double labelTextVertOffset = drawingHeight / 53.333;
+		double subLineStart = drawingHeight / 26.666;
+		double subLineLength = drawingHeight / 5.333;
 		double subLineLevel = subLineStart + subLineLength;
-		double feederHorzLineLength = 768.0;
-		double feederHorzLineStart = (1024.0 - feederHorzLineLength)/2;
+		double feederHorzLineLength = drawingWidth / 1.333;
+		double feederHorzLineStart = (drawingWidth - feederHorzLineLength)/2;
 		double feederHorzLineStop = feederHorzLineStart + feederHorzLineLength;
 		if( subBus.getCcFeeders().size() == 1 )
 		{//special case when there is only feeder off the sub.
 			feederHorzLineStop = halfAcross;
 			feederHorzLineLength = feederHorzLineStop - feederHorzLineStart  ;
 		}
-		double feederVertLineLength = 790 - subLineStart - subLineLevel;
+		double feederVertLineLength = drawingHeight / 1.013 - subLineStart - subLineLevel;
 		double feederVertLineStart = subLineLevel;
 		double feederVertLineStop = feederVertLineStart + feederVertLineLength;
 
 		//bus transformer
 		StaticImage staticImage3 = new StaticImage();
 		staticImage3.setYukonImage("TransformerBY.gif");
-		staticImage3.setCenter(halfAcross,subLineStart-10.0);
+		staticImage3.setCenter(halfAcross,subLineStart - (drawingHeight / 80));
 		graph.add(staticImage3);
 
 		//sub bus line
@@ -221,7 +225,7 @@ class CCOneLineGenerator
 
 		//label for the sub bus info like name and control method, i.e. Bus Optimized, Individual Feeder, etc.
 		double subInfoHorzPosition = feederHorzLineStart+((halfAcross-feederHorzLineStart)/2);
-		double subInfoVertOffset = 30.0;
+		double subInfoVertOffset = (drawingHeight / 26.666 );
 
 		StaticText controlMethodString = new StaticText();
 		graph.add(controlMethodString);
@@ -277,7 +281,7 @@ class CCOneLineGenerator
 			double feederPosition = (feederHorzLineStart+(feederSpacing*((double)i)));
 			LxLine currentFeederLine = new LxLine();
 			currentFeederLine.setPoint1(feederPosition,feederVertLineStart);
-			currentFeederLine.setPoint2(feederPosition,feederVertLineStop+40.0);
+			currentFeederLine.setPoint2(feederPosition,feederVertLineStop+(drawingHeight / 20));
 			currentFeederLine.setLineArrow(LxLine.ARROW_END);
 			currentFeederLine.setLineColor(Color.YELLOW);
 			graph.add(currentFeederLine);
@@ -416,12 +420,12 @@ class CCOneLineGenerator
 			//cap banks
 			Vector capBankVector =  currentFeeder.getCcCapBanks();
 
-			double capBankNameHorzOffset = 15.0;
-			double capBankNameVertOffset = 5.0;
+			double capBankNameHorzOffset = drawingWidth / 68.2666;
+			double capBankNameVertOffset = drawingHeight / 160;
 
 			if( capBankVector.size() > 1 )
 			{//make sure we don't try to divide by zero
-				double capBanksStart = feederVertLineStart+140.0;
+				double capBanksStart = feederVertLineStart+(drawingHeight / 5.7143);
 				double capBankSpacing = (feederVertLineStop-capBanksStart) / (capBankVector.size()-1);
 				for(int j=0;j<capBankVector.size();j++)
 				{
@@ -430,18 +434,18 @@ class CCOneLineGenerator
 
 					LxLine capacitorAndGroundLine = new LxLine();
 					capacitorAndGroundLine.setPoint1(feederPosition,capBankPosition);
-					capacitorAndGroundLine.setPoint2(feederPosition-30.0,capBankPosition);
+					capacitorAndGroundLine.setPoint2(feederPosition-(drawingWidth / 34.1333),capBankPosition);
 					capacitorAndGroundLine.setLineColor(Color.YELLOW);
 					graph.add(capacitorAndGroundLine);
 
 					StaticImage capacitorImage = new StaticImage();
 					capacitorImage.setYukonImage("Capacitor.gif");
-					capacitorImage.setCenter(feederPosition-30.0,capBankPosition+10.0);
+					capacitorImage.setCenter(feederPosition-(drawingWidth / 34.1333),capBankPosition + (drawingHeight / 80));
 					graph.add(capacitorImage);
 
 					StaticImage groundImage = new StaticImage();
 					groundImage.setYukonImage("Ground.gif");
-					groundImage.setCenter(feederPosition-30.0,capBankPosition+30.0);
+					groundImage.setCenter(feederPosition-(drawingWidth / 34.1333),capBankPosition + (drawingHeight / 26.6666));
 					graph.add(groundImage);
 
 					StateImage stateImage = new StateImage();
@@ -457,7 +461,7 @@ class CCOneLineGenerator
 
 					StaticText capBankNameString = new StaticText();
 					capBankNameString.setX(feederPosition+capBankNameHorzOffset);
-					capBankNameString.setY(capBankPosition-capBankNameVertOffset-10.0);
+					capBankNameString.setY(capBankPosition-capBankNameVertOffset-(drawingHeight / 80));
 					capBankNameString.setFont(DEFAULT_FONT);
 					capBankNameString.setPaint(Color.LIGHT_GRAY);
 					capBankNameString.setText(currentCapBank.getCcName());
@@ -479,18 +483,18 @@ class CCOneLineGenerator
 
 				LxLine capacitorAndGroundLine = new LxLine();
 				capacitorAndGroundLine.setPoint1(feederPosition,capBankPosition);
-				capacitorAndGroundLine.setPoint2(feederPosition-30.0,capBankPosition);
+				capacitorAndGroundLine.setPoint2(feederPosition-(drawingWidth / 34.1333),capBankPosition);
 				capacitorAndGroundLine.setLineColor(Color.YELLOW);
 				graph.add(capacitorAndGroundLine);
 
 				StaticImage capacitorImage = new StaticImage();
 				capacitorImage.setYukonImage("Capacitor.gif");
-				capacitorImage.setCenter(feederPosition-30.0,capBankPosition+10.0);
+				capacitorImage.setCenter(feederPosition-(drawingWidth / 34.1333),capBankPosition+(drawingHeight / 80));
 				graph.add(capacitorImage);
 
 				StaticImage groundImage = new StaticImage();
 				groundImage.setYukonImage("Ground.gif");
-				groundImage.setCenter(feederPosition-30.0,capBankPosition+30.0);
+				groundImage.setCenter(feederPosition-(drawingWidth / 34.1333),capBankPosition+(drawingHeight / 26.666));
 				graph.add(groundImage);
 
 				StateImage stateImage = new StateImage();
@@ -506,7 +510,7 @@ class CCOneLineGenerator
                 
 				StaticText capBankNameString = new StaticText();
 				capBankNameString.setX(feederPosition+capBankNameHorzOffset);
-				capBankNameString.setY(capBankPosition-capBankNameVertOffset-10.0);
+				capBankNameString.setY(capBankPosition-capBankNameVertOffset-(drawingHeight / 80));
 				capBankNameString.setFont(DEFAULT_FONT);
 				capBankNameString.setPaint(Color.LIGHT_GRAY);
 				capBankNameString.setText(currentCapBank.getCcName());
