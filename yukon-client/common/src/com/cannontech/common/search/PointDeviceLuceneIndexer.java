@@ -57,7 +57,8 @@ public class PointDeviceLuceneIndexer {
         doc.add(new Field ("pointtype", pointType, Field.Store.YES, Field.Index.UN_TOKENIZED));
         doc.add(new Field ("stategroupid", stateGroupID, Field.Store.YES, Field.Index.UN_TOKENIZED));
         doc.add(new Field ("paotype", paoType, Field.Store.YES, Field.Index.UN_TOKENIZED));
-        
+        doc.add(new Field("pointName", pointName, Field.Store.NO, Field.Index.UN_TOKENIZED));
+
         return doc;
     }
 
