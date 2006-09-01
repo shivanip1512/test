@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.93 $
-* DATE         :  $Date: 2006/08/29 22:33:49 $
+* REVISION     :  $Revision: 1.94 $
+* DATE         :  $Date: 2006/09/01 18:51:34 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -40,7 +40,6 @@
 #include "utility.h"
 #include "dllyukon.h"
 #include "cparms.h"
-#include "yukon.h"
 #include "ctidate.h"
 
 using std::list;
@@ -396,9 +395,11 @@ CtiDeviceMCT::CommandSet CtiDeviceMCT::initCommandStore()
     CommandSet cs;
 
     //  initialize any pan-MCT operations
-    cs.insert(CommandStore(Emetcon::GetConfig_Model,     Emetcon::IO_Read, Memory_ModelPos, Memory_ModelLen));   // Decode happens in the children please...
     cs.insert(CommandStore(Emetcon::Command_Loop,        Emetcon::IO_Read, Memory_ModelPos, 1));
-    cs.insert(CommandStore(Emetcon::PutConfig_Install,   Emetcon::IO_Read, Memory_SspecPos, Memory_SspecLen));
+
+    cs.insert(CommandStore(Emetcon::GetConfig_Model,     Emetcon::IO_Read, Memory_ModelPos, Memory_ModelLen));  //  Decode happens in the children please...
+    cs.insert(CommandStore(Emetcon::PutConfig_Install,   Emetcon::IO_Read, Memory_ModelPos, Memory_ModelLen));  //  This basically does a getconfig model so
+                                                                                                                //    we know what devicetype we're installing
 
     cs.insert(CommandStore(Emetcon::PutConfig_GroupAddrEnable,  Emetcon::IO_Write, Command_GroupAddrEnable,  0));
     cs.insert(CommandStore(Emetcon::PutConfig_GroupAddrInhibit, Emetcon::IO_Write, Command_GroupAddrInhibit, 0));
@@ -1568,7 +1569,7 @@ INT CtiDeviceMCT::executeGetValue( CtiRequestMsg              *pReq,
         }
         else if( getType() == TYPEMCT470 )
         {
-            channels = CtiDeviceMCT470::MCT470_ChannelCount;
+            channels = CtiDeviceMCT470::ChannelCount;
         }
         else if( getType() == TYPEMCT410 )
         {
@@ -2907,40 +2908,29 @@ INT CtiDeviceMCT::executeControl(CtiRequestMsg                  *pReq,
 
     if(parse.getFlags() & CMD_FLAG_CTL_SHED)
     {
-        int shed_duration, shed_function_base, shed_function, relay_mask;
+        int shed_duration, relay_mask;
 
         shed_duration = parse.getiValue("shed");
-        relay_mask    = parse.getiValue("relaymask");
+        relay_mask    = parse.getiValue("relaymask") & 0x0f;
 
         function = Emetcon::Control_Shed;
 
         if(getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO))
         {
-            if( shed_duration > 0 )
+            //  if at least one of relays a-d (1-4) are selected
+            //  this needs better error-handling - better printouts
+            if( relay_mask )
             {
-                if( shed_duration <= 450 )
+                if( shed_duration > 0 )
                 {
-                    shed_function_base = Shed_Base_07m;
-                }
-                else if( shed_duration <= 900 )
-                {
-                    shed_function_base = Shed_Base_15m;
-                }
-                else if( shed_duration <= 1800 )
-                {
-                    shed_function_base = Shed_Base_30m;
-                }
-                else
-                {
-                    shed_function_base = Shed_Base_60m;
-                }
+                    int shed_function;
 
-                //  if at least one of relays a-d (1-4) are selected
-                if( (relay_mask & 0x0f) > 0x00 )
-                {
-                    shed_function = shed_function_base | (relay_mask & 0x0f);
+                    if(      shed_duration <=  450 )    shed_function = Command_Shed_07m;
+                    else if( shed_duration <=  900 )    shed_function = Command_Shed_15m;
+                    else if( shed_duration <= 1800 )    shed_function = Command_Shed_30m;
+                    else                                shed_function = Command_Shed_60m;
 
-                    OutMessage->Buffer.BSt.Function = shed_function;
+                    OutMessage->Buffer.BSt.Function = shed_function | relay_mask;
 
                     found = true;
                 }
