@@ -100,7 +100,7 @@ public class EconomicService {
         this.economicEventParticipantDao = economicEventParticipantDao;
     }
 
-    public void setCustomerDao(CustomerStubDao customerDao) {
+    public void setCustomerStubDao(CustomerStubDao customerDao) {
         this.customerStubDao = customerDao;
     }
 
