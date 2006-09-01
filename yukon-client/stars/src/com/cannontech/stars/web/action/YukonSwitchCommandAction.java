@@ -29,6 +29,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.database.db.stars.hardware.LMHardwareConfiguration;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ServerUtils;
@@ -916,6 +917,11 @@ public class YukonSwitchCommandAction implements ActionBase {
                 CTILogger.error( e.getMessage(), e );
             }
         }
+        else {
+            optGroupID = LMHardwareConfiguration.getLMHardwareConfigurationFromInvenID(liteHw.getInventoryID()).getAddressingGroupID();
+            loadGroupName = DaoFactory.getPaoDao().getYukonPAOName(optGroupID); 
+        }
+            
         
         final String fs = System.getProperty( "file.separator" );
         File ecDir = new File( ServerUtils.getFileWriteSwitchConfigDir() + fs + energyCompany.getName() );
