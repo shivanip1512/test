@@ -117,14 +117,15 @@ public static HashMap retrieveAllCurrentPTJAdditionalMeterEntriesMap()
         		currentEntry = new CRSToSAM_PTJAdditionalMeters();
         		currentEntry.setPTJID( new Integer(stmt.getRow(i)[0].toString()));
         		currentEntry.setMeterNumber( stmt.getRow(i)[1].toString());
-                changes.add(currentEntry);
 
             	if( currentEntry.getPTJID().intValue() != lastPTJID && lastPTJID > -1)
             	{
-            		ptjToAdditionMeterMap.put(currentEntry.getPTJID(), changes);
-            		changes.clear();
+            		ptjToAdditionMeterMap.put(lastPTJID, changes);
+            		changes = new ArrayList<CRSToSAM_PTJAdditionalMeters>();
             	}
-        		lastPTJID = currentEntry.getPTJID().intValue();
+                
+                changes.add(currentEntry);
+                lastPTJID = currentEntry.getPTJID().intValue();
             }
             if( !changes.isEmpty())	//add the last one
             {
