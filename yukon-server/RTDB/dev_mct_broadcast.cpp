@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2006/08/29 22:25:34 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2006/09/01 18:48:12 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,7 +21,7 @@
 
 #include "dev_mct.h"     //  for freeze commands
 #include "dev_mct31x.h"  //  for IED scanning capability
-#include "dev_mct410.h"
+#include "dev_mct4xx.h"
 #include "ctidate.h"
 #include "ctitime.h"
 #include "rwutil.h"
