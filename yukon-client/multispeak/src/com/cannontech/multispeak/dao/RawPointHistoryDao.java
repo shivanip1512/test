@@ -18,6 +18,6 @@ public interface RawPointHistoryDao
      * @param endDate
      * @return
      */
-    public MeterRead[] retrieveMeterReads(ReadBy readBy, String readByValue, Date startDate, Date endDate);
+    public MeterRead[] retrieveMeterReads(ReadBy readBy, String readByValue, Date startDate, Date endDate, String lastReceived);
     
 }

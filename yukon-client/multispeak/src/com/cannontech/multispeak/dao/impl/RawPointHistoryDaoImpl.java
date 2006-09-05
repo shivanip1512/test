@@ -23,6 +23,7 @@ import com.cannontech.database.db.point.PointUnit;
 import com.cannontech.database.db.point.RawPointHistory;
 import com.cannontech.database.db.point.UnitMeasure;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.dao.RawPointHistoryDao;
 import com.cannontech.multispeak.data.MeterReadFactory;
 import com.cannontech.multispeak.data.ReadableDevice;
@@ -42,7 +43,8 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao
      * @param endDate
      * @return
      */
-    public MeterRead[] retrieveMeterReads(ReadBy readBy, String readByValue, Date startDate, Date endDate) {
+    public MeterRead[] retrieveMeterReads(ReadBy readBy, String readByValue, Date startDate, Date endDate, String lastReceived) {
+        Date timerStart = new Date();
         
         MeterRead[] meterReadArray = new MeterRead[0];
         String sql = "SELECT DISTINCT P.POINTID, TIMESTAMP, VALUE, P.POINTOFFSET, P.POINTTYPE, UOM.UOMID, " + 
@@ -59,8 +61,10 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao
                          sql += " AND DMG.COLLECTIONGROUP = ? ";
                      sql += " AND P.POINTID = PU.POINTID " +
                      " AND PU.UOMID = UOM.UOMID " +
-                     " AND TIMESTAMP > ? AND TIMESTAMP <= ? " +
-                     " ORDER BY PAO.PAOBJECTID, TIMESTAMP";//, P.POINTID ";
+                     " AND TIMESTAMP > ? AND TIMESTAMP <= ? ";
+                     if ( lastReceived != null && lastReceived.length() > 0)
+                         sql += " AND DMG.METERNUMBER > ? ";
+                     sql += " ORDER BY PAO.PAOBJECTID, TIMESTAMP";  //P.POINTID, 
         
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -81,12 +85,16 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao
                 pstmt.setString(1, readByValue);
                 pstmt.setTimestamp(2, new Timestamp( startDate.getTime() ));
                 pstmt.setTimestamp(3, new Timestamp( endDate.getTime() ));
+                if ( lastReceived != null && lastReceived.length() > 0)
+                    pstmt.setString(4, lastReceived);
+                
                 CTILogger.info("Data Collection Started: START DATE >= " + startDate + " - STOP DATE < " + endDate);
                 rset = pstmt.executeQuery();
 
-                int lastPointOffset = -1;
                 int lastPaoID = -1;
-                List<MeterRead> meterReadList = new ArrayList<MeterRead>();
+                int lastPointID = -1;
+                int paobjectID = 0;
+                List meterReadList = new ArrayList();
                 
                 ReadableDevice device = null;
                 while( rset.next())
@@ -104,30 +112,36 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao
                     String category = rset.getString(8);
                     int paoCategory = PAOGroups.getCategory(category);
                     int paoType = PAOGroups.getPAOType(category, type);
-                    int paobjectID = rset.getInt(9);
+                    paobjectID = rset.getInt(9);
                     String meterNumber = rset.getString(10);
                     
                     //Store any previous meter readings.
-                    if (pointOffset <= lastPointOffset || lastPaoID != paobjectID) {
-                        if( device.isPopulated())
+                    if (pointID <= lastPointID || lastPaoID != paobjectID) {
+                        if( device != null && device.isPopulated())
                             meterReadList.add(device.getMeterRead());
                         device = null;
+                        if( lastPaoID != paobjectID && meterReadList.size() >= MultispeakDefines.MAX_RETURN_RECORDS)
+                            break;
                     }
 
                     if( device == null)
                         device = MeterReadFactory.createMeterReadObject(paoCategory, paoType, meterNumber);
 
-                    device.populate( pointType, pointOffset, uomId, dateTime, value);
-                    lastPointOffset = pointOffset;
+                    device.populate( pointType, pointOffset, uomId, dateTime, new Double(value));
+                    lastPointID = pointID;
                     lastPaoID = paobjectID;
                 }
                 
                 //Add the last meterRead object
-                if( device != null && device.isPopulated())
+                if( device != null && device.isPopulated() &&   //made it all the way through and need to add last one 
+                        lastPaoID == paobjectID)  //but make sure we didn't exit from the break statement
                     meterReadList.add(device.getMeterRead());
 
                 meterReadArray = new MeterRead[meterReadList.size()];
                 meterReadList.toArray(meterReadArray);
+                
+                CTILogger.info( (new Date().getTime() - timerStart.getTime())*.001 + 
+                                                          " Secs for RPH Data for Group \"" + readByValue + "\" to be loaded" );                
             }
         }
         

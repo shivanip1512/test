@@ -145,7 +145,7 @@ public class MR_CBImpl extends MR_CBSoap_BindingImpl{
         if( ! isAMRMeter(meterNo))
             throw new AxisFault( "Meter Number (" + meterNo + "): NOT Found.");
         
-        MeterRead[] meterReads = MultispeakFuncs.getMspRawPointHistoryDao().retrieveMeterReads(ReadBy.METER_NUMBER, meterNo, startDate.getTime(), endDate.getTime());
+        MeterRead[] meterReads = MultispeakFuncs.getMspRawPointHistoryDao().retrieveMeterReads(ReadBy.METER_NUMBER, meterNo, startDate.getTime(), endDate.getTime(), null);
         ArrayOfMeterRead arrayOfMeterReads = new ArrayOfMeterRead(meterReads);
      
         return arrayOfMeterReads;
@@ -173,9 +173,12 @@ public class MR_CBImpl extends MR_CBSoap_BindingImpl{
     //TODO Handle lastReceived.
     public ArrayOfMeterRead getReadingsByBillingCycle(java.lang.String billingCycle, java.util.Calendar startDate, java.util.Calendar endDate, java.lang.String lastReceived) throws java.rmi.RemoteException {
         init();
-        MeterRead[] meterReads = MultispeakFuncs.getMspRawPointHistoryDao().retrieveMeterReads(ReadBy.COLL_GROUP, billingCycle, startDate.getTime(), endDate.getTime());
+        MeterRead[] meterReads = MultispeakFuncs.getMspRawPointHistoryDao().retrieveMeterReads(ReadBy.COLL_GROUP, billingCycle, startDate.getTime(), endDate.getTime(), lastReceived);
+        //TODO = need to get the true number of meters remaining
+        int numRemaining = (meterReads.length <= MultispeakDefines.MAX_RETURN_RECORDS ? 0:1); //at least one item remaining, bad assumption.
+        ((YukonMultispeakMsgHeader)MessageContext.getCurrentContext().getResponseMessage().getSOAPEnvelope().getHeaderByName("http://www.multispeak.org", "MultiSpeakMsgHeader").getObjectValue()).setObjectsRemaining(new BigInteger(String.valueOf(numRemaining)));
+        
         ArrayOfMeterRead arrayOfMeterReads = new ArrayOfMeterRead(meterReads);
-     
         return arrayOfMeterReads;
     }
 
