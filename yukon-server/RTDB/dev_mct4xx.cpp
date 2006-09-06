@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2006/08/31 14:40:47 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2006/09/06 14:39:08 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -49,7 +49,8 @@ const char *CtiDeviceMCT4xx::PutConfigPart_precanned_table = "precannedtable";
 const char *CtiDeviceMCT4xx::PutConfigPart_centron         = "centron";
 const char *CtiDeviceMCT4xx::PutConfigPart_dnp             = "dnp";
 
-const CtiDeviceMCT4xx::ConfigPartsList CtiDeviceMCT4xx::_config_parts   = initConfigParts();
+const CtiDeviceMCT4xx::CommandSet      CtiDeviceMCT4xx::_commandStore = CtiDeviceMCT4xx::initCommandStore();
+const CtiDeviceMCT4xx::ConfigPartsList CtiDeviceMCT4xx::_config_parts = initConfigParts();
 
 const CtiDeviceMCT4xx::QualityMap      CtiDeviceMCT4xx::_errorQualities = initErrorQualities();
 
@@ -144,6 +145,39 @@ CtiDeviceMCT4xx::ConfigPartsList CtiDeviceMCT4xx::initConfigParts()
 CtiDeviceMCT4xx::ConfigPartsList CtiDeviceMCT4xx::getPartsList()
 {
     return _config_parts;
+}
+
+
+CtiDeviceMCT4xx::CommandSet CtiDeviceMCT4xx::initCommandStore()
+{
+    CommandSet cs;
+
+    cs.insert(CommandStore(Emetcon::PutConfig_TSync, Emetcon::IO_Function_Write, FuncWrite_TSyncPos, FuncWrite_TSyncLen));
+
+    return cs;
+}
+
+
+bool CtiDeviceMCT4xx::getOperation( const UINT &cmd, USHORT &function, USHORT &length, USHORT &io )
+{
+    bool found = false;
+
+    CommandSet::const_iterator itr = _commandStore.find( CommandStore( cmd ) );
+
+    if( itr != _commandStore.end( ) )
+    {
+        function = itr->function;   //  Copy the relevant bits from the commandStore
+        length   = itr->length;     //
+        io       = itr->io;         //
+
+        found = true;
+    }
+    else    //  Look in the parent if not found in the child
+    {
+        found = Inherited::getOperation( cmd, function, length, io );
+    }
+
+    return found;
 }
 
 
