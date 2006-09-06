@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.94 $
-* DATE         :  $Date: 2006/09/01 18:51:34 $
+* REVISION     :  $Revision: 1.95 $
+* DATE         :  $Date: 2006/09/06 14:35:22 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2736,62 +2736,22 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
     }
     else if(parse.isKeyValid("timesync"))
     {
-        function = Emetcon::PutConfig_TSync;
-        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
-
-        unsigned char ticper12hr, ticper5min, ticper15sec;
-
-        if( getType() == TYPEMCT410 || getType() == TYPEMCT470 )
+        if( parse.isKeyValid("noqueue") )
         {
-            unsigned long time = NowTime.seconds();
-
-            OutMessage->Buffer.BSt.Message[0] = 0xff;  //  global SPID
-            OutMessage->Buffer.BSt.Message[1] = (time >> 24) & 0x000000ff;
-            OutMessage->Buffer.BSt.Message[2] = (time >> 16) & 0x000000ff;
-            OutMessage->Buffer.BSt.Message[3] = (time >>  8) & 0x000000ff;
-            OutMessage->Buffer.BSt.Message[4] =  time        & 0x000000ff;
-            OutMessage->Buffer.BSt.Message[5] = NowTime.isDST();
+            function = Emetcon::PutConfig_TSync;
+            found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+            //  the message is filled in by RefreshMCTTimeSync() in porttime.cpp
         }
         else
         {
-            //  compute how many of each tic type have passed
-            ticper12hr   = (NowDate.weekDay() % 7) * 2;  //  2 tics every day  (mod 7 because RW says Sunday is 7, we want it 0)
-            ticper12hr  +=  NowTime.hour() / 12;         //  1 tic every 12 hours
-
-            ticper5min   = (NowTime.hour() % 12) * 12;   //  12 tics per hour
-            ticper5min  +=  NowTime.minute() / 5;        //  1 tic every 5 minutes
-
-            ticper15sec  = (NowTime.minute() % 5) * 4;   //  4 tics per minute
-            ticper15sec +=  NowTime.second() / 15;       //  1 tic every 15 seconds
-
-
-            /*
-            //  Figure out how many 15 second intervals left in this 5 minutes
-            EmetFTime = 20 - ((TimeSt.tm_min % 5) * 60 + TimeSt.tm_sec) / 15;
-
-            //  figure out how many AM/PM's left in the week
-            Hour = TimeSt.tm_hour;
-            EmetDay = (7 - TimeSt.tm_wday) * 2;
-            if(Hour > 11)
+            if( errRet )
             {
-                EmetDay--;
-                Hour -= 12;
+                temp = "Timesync commands cannot be queued to the CCU";
+                errRet->setResultString( temp );
+                errRet->setStatus(NoMethod);
+                retList.push_back( errRet );
+                errRet = NULL;
             }
-
-            //  figure out how many 5 minute periods left in this 12 hours
-            EmetHTime = 144 - ((Hour * 12) + (TimeSt.tm_min / 5));
-            */
-
-
-            //  this seems wrong - I need to be rippling the changes down...
-            //    the beginning of the week isn't 14*12 hours + 144*5 min + 20*15 sec...
-            //    the numbers should be 13 + 143 + 20...  ?
-            //  invert the counters to be tics REMAINING, not PASSED
-            OutMessage->Buffer.BSt.Message[0] =  20 - ticper15sec;
-            OutMessage->Buffer.BSt.Message[1] = 144 - ticper5min;
-            OutMessage->Buffer.BSt.Message[2] =  14 - ticper12hr;
-            OutMessage->Buffer.BSt.Message[3] = 94;  //  DLCFreq1
-            OutMessage->Buffer.BSt.Message[4] = 37;  //  DLCFreq2
         }
     }
     else if(parse.isKeyValid("multiplier"))
