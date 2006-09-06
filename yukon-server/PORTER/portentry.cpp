@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.41 $
-* DATE         :  $Date: 2006/08/29 16:12:29 $
+* REVISION     :  $Revision: 1.42 $
+* DATE         :  $Date: 2006/09/06 14:29:37 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -90,6 +90,7 @@
 #include "prot_emetcon.h"
 #include "trx_711.h"
 #include "utility.h"
+#include "dev_mct4xx.h"
 
 using namespace std;
 
@@ -1095,12 +1096,15 @@ INT ValidateEmetconMessage(OUTMESS *&OutMessage)
 
         /* Check if this is a time sync message and force it to go DTRAN */
         /* first determine if this is a time sync */
-        if(OutMessage->Buffer.BSt.Length   == 5   &&
-           OutMessage->Buffer.BSt.Function == 73  &&
-           OutMessage->Buffer.BSt.IO       == 0)
+        if((OutMessage->Buffer.BSt.Length   == CtiDeviceMCT::Memory_TSyncLen  &&
+            OutMessage->Buffer.BSt.Function == CtiDeviceMCT::Memory_TSyncPos  &&
+            OutMessage->Buffer.BSt.IO       == Cti::Protocol::Emetcon::IO_Write)
+           || (OutMessage->Buffer.BSt.Length   == CtiDeviceMCT4xx::FuncWrite_TSyncLen  &&
+               OutMessage->Buffer.BSt.Function == CtiDeviceMCT4xx::FuncWrite_TSyncPos  &&
+               OutMessage->Buffer.BSt.IO       == Cti::Protocol::Emetcon::IO_Function_Write) )
         {
             OutMessage->EventCode |= (TSYNC | DTRAN);
-            OutMessage->EventCode &= ~QUEUED;
+            //OutMessage->EventCode &= ~QUEUED;
         }
     }
 
