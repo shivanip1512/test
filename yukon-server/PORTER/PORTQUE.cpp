@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.52 $
-* DATE         :  $Date: 2006/08/29 16:14:40 $
+* REVISION     :  $Revision: 1.53 $
+* DATE         :  $Date: 2006/09/06 12:51:13 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1570,8 +1570,8 @@ BuildLGrpQ (CtiDeviceSPtr Dev)
                 OutMessage->OutLength = Offset - PREIDLEN + 2;
 
                 /* Check the priority and do not let it be less than 11 */
-                if(OutMessage->Priority < 11)
-                    OutMessage->Priority = 11;
+                if(OutMessage->Priority < gConfigParms.getValueAsInt("PORTER_MINIMUM_CCUQUEUE_PRIORITY",11))
+                    OutMessage->Priority = gConfigParms.getValueAsInt("PORTER_MINIMUM_CCUQUEUE_PRIORITY",11);
 
                 statisticsNewRequest(OutMessage->Port, OutMessage->TrxID, OutMessage->DeviceID, OutMessage->MessageFlags);
                 if(PortManager.writeQueue (OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (VOID *) OutMessage, OutMessage->Priority))

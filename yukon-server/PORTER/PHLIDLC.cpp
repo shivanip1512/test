@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PHLIDLC.cpp-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2006/09/01 19:35:16 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2006/09/06 12:51:13 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -296,7 +296,7 @@ IDLCRColQ (CtiDeviceSPtr &Dev, INT priority)
         }
 
         /* Check the priority and do not let it be less than 11 */
-        if(OutMessage->Priority < 11) OutMessage->Priority = 11;
+        if(OutMessage->Priority < gConfigParms.getValueAsInt("PORTER_MINIMUM_CCUQUEUE_PRIORITY",11)) OutMessage->Priority = gConfigParms.getValueAsInt("PORTER_MINIMUM_CCUQUEUE_PRIORITY",11);
 
         /* Calculate the length we should get */
         if(p711Info->NCOcts < (MaxOcts - 20))        // Can I get it all in one?
