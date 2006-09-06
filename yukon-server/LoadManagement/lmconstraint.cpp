@@ -607,18 +607,30 @@ bool CtiLMGroupConstraintChecker::checkControl(LONG& control_duration, bool adju
 
 bool CtiLMGroupConstraintChecker::checkCycle(LONG& counts, ULONG period, ULONG percent, bool adjust_counts)
 {
-    // checkControl might modify control_duration, save it off
+    if( percent > 100 )
+    {
+        percent = 100;
+    }
     LONG control_duration = (period * (((double) percent/100.0)) * counts);
-    if(!checkControl(control_duration, adjust_counts))
+    LONG full_duration = period * counts;
+
+    if(!checkControl(control_duration, adjust_counts) && !checkProgramControlWindow(full_duration, adjust_counts) )
     {
         return false;
     }
     else
     {
         // checkControl might have reduced the duration - convert it back to counts
+        // Also checkProgramControlWindow can change the duration.
         if(period != 0 && percent != 0)
         {
             counts = (LONG) ::ceil((control_duration*(100.0/((double)percent))) / (double) period);
+            long tempCount = ::ceil(full_duration / (double) period);
+
+            if(tempCount < counts)
+            {
+                counts = tempCount;
+            }
         }
         else
         {
