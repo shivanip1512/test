@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct.h-arc  $
-* REVISION     :  $Revision: 1.48 $
-* DATE         :  $Date: 2006/09/01 18:44:54 $
+* REVISION     :  $Revision: 1.49 $
+* DATE         :  $Date: 2006/09/06 14:27:56 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -149,9 +149,6 @@ protected:
     {
         Memory_ModelPos          = 0x00,
         Memory_ModelLen          =    8,
-
-        Memory_TSyncPos          = 0x49,
-        Memory_TSyncLen          =    5,
     };
 
     enum Commands
@@ -203,6 +200,10 @@ public:
         //  for dev_dlcbase...  maybe he should be a friend someday
         TestAddress1  = 0x155555,
         TestAddress2  = 0x2aaaaa,
+
+        //  this is for porttime.cpp and portentry.cpp
+        Memory_TSyncPos = 0x49,
+        Memory_TSyncLen =    5,
     };
 
     typedef CtiDeviceCarrier Inherited;
