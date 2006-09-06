@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.193 $
-* DATE         :  $Date: 2006/08/29 21:20:37 $
+* REVISION     :  $Revision: 1.194 $
+* DATE         :  $Date: 2006/09/06 14:30:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -106,7 +106,7 @@
 #include "dev_schlum.h"
 #include "dev_remote.h"
 #include "dev_kv2.h"
-#include "dev_mct410.h"
+#include "dev_mct.h"  //  for the test addresses
 #include "dev_sentinel.h"
 #include "dev_mark_v.h"
 #include "msg_trace.h"
@@ -1031,14 +1031,7 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &D
                 {
                     if(OutMessage->EventCode & BWORD)
                     {
-                        if( OutMessage->Buffer.BSt.Address == CtiDeviceMCT4xx::UniversalAddress )
-                        {
-                            LoadMCT400BTimeMessage(OutMessage);
-                        }
-                        else
-                        {
-                            LoadBTimeMessage(OutMessage);
-                        }
+                        RefreshMCTTimeSync(OutMessage);
                     }
                     else
                     {
@@ -1093,7 +1086,9 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &D
         case TYPE_ILEXRTU:
             {
                 if(OutMessage->EventCode & TSYNC)
+                {
                     LoadILEXTimeMessage (OutMessage->Buffer.OutMessage + PREIDLEN, 0);
+                }
 
                 break;
             }
@@ -1110,7 +1105,9 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &D
         case TYPE_SES92RTU:
             {
                 if(OutMessage->EventCode & TSYNC)
+                {
                     LoadSES92TimeMessage (OutMessage->Buffer.OutMessage + PREIDLEN, 0);
+                }
 
                 break;
             }
@@ -1120,14 +1117,7 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &D
                 /* check if we need to load the time into a time sync */
                 if(OutMessage->EventCode & TSYNC)
                 {
-                    if( OutMessage->Buffer.BSt.Address == CtiDeviceMCT4xx::UniversalAddress )
-                    {
-                        LoadMCT400BTimeMessage(OutMessage);
-                    }
-                    else
-                    {
-                        LoadBTimeMessage(OutMessage);
-                    }
+                    RefreshMCTTimeSync(OutMessage);
                 }
 
                 break;

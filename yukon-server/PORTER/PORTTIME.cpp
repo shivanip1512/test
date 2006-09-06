@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTTIME.cpp-arc  $
-* REVISION     :  $Revision: 1.41 $
-* DATE         :  $Date: 2006/08/29 22:17:19 $
+* REVISION     :  $Revision: 1.42 $
+* DATE         :  $Date: 2006/09/06 14:31:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -82,7 +82,7 @@
 #include "mgr_device.h"
 #include "dev_base.h"
 #include "dev_ccu.h"
-#include "dev_mct410.h"
+#include "dev_mct4xx.h"
 #include "mgr_route.h"
 
 #include "logger.h"
@@ -222,21 +222,33 @@ static void apply710TimeSync(const long unusedid, CtiDeviceSPtr RemoteRecord, vo
                         OutMessage->Retry     = 0;
                         OutMessage->Sequence  = 0;
                         OutMessage->Priority  = MAXPRIORITY;
-                        OutMessage->EventCode = NOWAIT | NORESULT | DTRAN | BWORD | TSYNC;  //  we're counting on this to be caught and run through LoadBTimeMessage
+                        OutMessage->EventCode = NOWAIT | NORESULT | DTRAN | BWORD | TSYNC;
                         OutMessage->Command   = CMND_DTRAN;
                         OutMessage->InLength  = 0;
                         OutMessage->ReturnNexus = NULL;
                         OutMessage->SaveNexus   = NULL;
                         OutMessage->MessageFlags = MessageFlag_ApplyExclusionLogic;
 
-                        OutMessage->Buffer.BSt.Port                = RemoteRecord->getPortID();
-                        OutMessage->Buffer.BSt.Remote              = RemoteRecord->getAddress();
-                        OutMessage->Buffer.BSt.Address             = CtiDeviceDLCBase::BroadcastAddress;
+                        OutMessage->Buffer.BSt.Port     = RemoteRecord->getPortID();
+                        OutMessage->Buffer.BSt.Remote   = RemoteRecord->getAddress();
+                        OutMessage->Buffer.BSt.Address  = CtiDeviceDLCBase::BroadcastAddress;
+                        OutMessage->Buffer.BSt.Function = CtiDeviceMCT::Memory_TSyncPos;
+                        OutMessage->Buffer.BSt.Length   = CtiDeviceMCT::Memory_TSyncLen;
+                        OutMessage->Buffer.BSt.IO       = Cti::Protocol::Emetcon::IO_Write;
+                        //  we don't fill in the data because it's filled in by RefreshMCTTimeSync() later on
+
+                        //  this should all be filled in by the route's ExecuteRequest
                         OutMessage->Buffer.BSt.DlcRoute.Amp        = ((CtiDeviceIDLC *)(RemoteRecord.get()))->getIDLC().getAmp();
                         OutMessage->Buffer.BSt.DlcRoute.Feeder     = RouteRecord->getBus();
                         OutMessage->Buffer.BSt.DlcRoute.RepVar     = variable;
                         OutMessage->Buffer.BSt.DlcRoute.RepFixed   = fixed;
-                        OutMessage->Buffer.BSt.DlcRoute.Stages     = 0;  //getStages();                // How many repeaters on this route?
+                        //OutMessage->Buffer.BSt.DlcRoute.Stages     = RouteRecord->getStages();  //  this doesn't work for a 710
+                        OutMessage->Buffer.BSt.DlcRoute.Stages     = 0;  //  so we set it to 0 instead
+
+                        //  Ideally, use something like this instead of the above code...
+                        //RouteRecord->ExecuteRequest();
+                        //  ... but because we're not executing on the route, we have to do this manually
+                        Cti::Protocol::Emetcon::buildBWordMessage(OutMessage);
 
                         if(PortManager.writeQueue(OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
                         {
@@ -546,14 +558,27 @@ static void applyMCT400TimeSync(const long key, CtiRouteSPtr pRoute, void* d)
                 OutMessage->Buffer.BSt.Port   = RemoteRecord->getPortID();
                 OutMessage->Buffer.BSt.Remote = RemoteRecord->getAddress();
 
-                OutMessage->Buffer.BSt.DlcRoute.Amp      = amp;
-                OutMessage->Buffer.BSt.DlcRoute.RepFixed = pRoute->getCCUFixBits();
-                OutMessage->Buffer.BSt.DlcRoute.RepVar   = pRoute->getCCUVarBits();
-                OutMessage->Buffer.BSt.DlcRoute.Feeder   = pRoute->getBus();
-                OutMessage->Buffer.BSt.DlcRoute.Stages   = 0;  //  pRoute->getStages();  //  apparently nonzero causes it to timeout on the 710 - ???
 
-                //  this is key - this, and the TSYNC flag, are what get the time loaded into the message
-                OutMessage->Buffer.BSt.Address = CtiDeviceMCT4xx::UniversalAddress;
+                OutMessage->Buffer.BSt.Port    = RemoteRecord->getPortID();
+                OutMessage->Buffer.BSt.Remote  = RemoteRecord->getAddress();
+                //  this is key - this, and the TSYNC flag, are what get the 400-series time loaded into the message
+                OutMessage->Buffer.BSt.Address  = CtiDeviceMCT4xx::UniversalAddress;
+                OutMessage->Buffer.BSt.Function = CtiDeviceMCT4xx::FuncWrite_TSyncPos;
+                OutMessage->Buffer.BSt.Length   = CtiDeviceMCT4xx::FuncWrite_TSyncLen;
+                OutMessage->Buffer.BSt.IO       = Cti::Protocol::Emetcon::IO_Function_Write;
+                //  we don't fill in the data because it's filled in by RefreshMCTTimeSync() later on
+
+                OutMessage->Buffer.BSt.DlcRoute.Amp        = ((CtiDeviceIDLC *)(RemoteRecord.get()))->getIDLC().getAmp();
+                OutMessage->Buffer.BSt.DlcRoute.Feeder     = pRoute->getBus();
+                OutMessage->Buffer.BSt.DlcRoute.RepVar     = variable;
+                OutMessage->Buffer.BSt.DlcRoute.RepFixed   = fixed;
+                //OutMessage->Buffer.BSt.DlcRoute.Stages     = pRoute->getStages();  //  this doesn't work for a 710
+                OutMessage->Buffer.BSt.DlcRoute.Stages     = 0;  //  so we set it to 0 instead
+
+                //  Ideally, use something like this instead of the above code...
+                //pRoute->ExecuteRequest();
+                //  ... but because we're not executing on the route, we have to do this manually
+                Cti::Protocol::Emetcon::buildBWordMessage(OutMessage);
 
                 if(PortManager.writeQueue(OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
                 {
@@ -833,58 +858,7 @@ LoadXTimeMessage (BYTE *Message)
 }
 
 
-LoadMCT400BTimeMessage (OUTMESS *OutMessage)
-{
-    /* Save the message information */
-    OUTMESS MyOutMessage = *OutMessage;
-
-    /* get the time from the system */
-    unsigned long time   = CtiTime::now().seconds();
-    bool          is_dst = CtiTime::now().isDST();
-
-
-    /* Load the time sync parts of the message into the local B word structure */
-    MyOutMessage.Buffer.BSt.Address  = CtiDeviceMCT4xx::UniversalAddress;
-    MyOutMessage.Buffer.BSt.Function = CtiDeviceMCT4xx::FuncWrite_TSyncPos;
-    MyOutMessage.Buffer.BSt.Length   = CtiDeviceMCT4xx::FuncWrite_TSyncLen;
-    MyOutMessage.Buffer.BSt.IO       = Cti::Protocol::Emetcon::IO_Function_Write;
-
-    MyOutMessage.Buffer.BSt.Message[0] = 0xff;  //  global SPID
-    MyOutMessage.Buffer.BSt.Message[1] = (time >> 24) & 0x000000ff;
-    MyOutMessage.Buffer.BSt.Message[2] = (time >> 16) & 0x000000ff;
-    MyOutMessage.Buffer.BSt.Message[3] = (time >>  8) & 0x000000ff;
-    MyOutMessage.Buffer.BSt.Message[4] =  time        & 0x000000ff;
-    MyOutMessage.Buffer.BSt.Message[5] = is_dst;
-
-    INT wordCount;
-    /* Now build up the words in the calling structure */
-    C_Words (OutMessage->Buffer.OutMessage+PREIDLEN+PREAMLEN+BWORDLEN,
-             MyOutMessage.Buffer.BSt.Message,
-             MyOutMessage.Buffer.BSt.Length,
-             &wordCount);
-
-    /* build the b word */
-    B_Word (OutMessage->Buffer.OutMessage + PREIDLEN + PREAMLEN, MyOutMessage.Buffer.BSt, wordCount);
-
-    /* calculate message lengths */
-    OutMessage->InLength = 2;
-    // FIX FIX FIX 090199 CGP OutMessage->TimeOut = TIMEOUT + MyOutMessage.Buffer.BSt.Stages * (MyOutMessage.Buffer.BSt.NumW + 1);
-    OutMessage->OutLength = PREAMLEN + BWORDLEN + wordCount * CWORDLEN + 3;
-
-    /* build preamble message */
-    if(ZeroRemoteAddress)
-    {
-        // FIX FIX FIX 090199 CGP MyOutMessage.Buffer.BSt.Remote = 0;
-    }
-
-    BPreamble (OutMessage->Buffer.OutMessage + PREIDLEN, MyOutMessage.Buffer.BSt, wordCount);
-
-    /* That all folks */
-    return(NORMAL);
-}
-
-
-LoadBTimeMessage (OUTMESS *OutMessage)
+RefreshMCTTimeSync(OUTMESS *OutMessage)
 {
     OUTMESS MyOutMessage;
     struct timeb TimeB;
@@ -894,63 +868,104 @@ LoadBTimeMessage (OUTMESS *OutMessage)
     USHORT EmetHTime;
     USHORT EmetFTime;
 
-    /* Save the message information */
-    MyOutMessage = *OutMessage;
+    USHORT BCH;
 
-    /* get the time from the system */
-    UCTFTime (&TimeB);
+    int address   = 0,
+        wordcount = 0,
+        function  = 0,
+        io        = 0;
 
-    UCTLocoTime (TimeB.time, TimeB.dstflag, &TimeSt);
+    int length    = 0;
 
-    /* Figure out how many 15 second intervals left in this 5 minutes */
-    EmetFTime = 20 - ((TimeSt.tm_min % 5) * 60 + TimeSt.tm_sec) / 15;
 
-    /* figure out how many AM/PM's left in the week */
-    Hour = TimeSt.tm_hour;
-    EmetDay = (7 - TimeSt.tm_wday) * 2;
-    if(Hour > 11)
+    //  this is where the processed B word starts...
+    //    note that we should NEVER get an unprocessed B word through here;  only DTRAN messages, NEVER queued
+    unsigned char *b_word = OutMessage->Buffer.OutMessage + PREIDLEN + PREAMLEN;
+    unsigned char timesync_message[6];
+
+    address  |= (b_word[1] & 0x0f) << 18;
+    address  |=  b_word[2]         << 10;
+    address  |=  b_word[3]         <<  2;
+    address  |= (b_word[4] & 0xc0) >>  6;
+
+    wordcount = (b_word[4] & 0x30) >> 4;
+
+    function |= (b_word[4] & 0x0f) << 4;
+    function |= (b_word[5] & 0xf0) >> 4;
+
+    io        = (b_word[5] & 0x0c) >> 2;
+
+    if( address == CtiDeviceMCT4xx::UniversalAddress
+          || (io == Cti::Protocol::Emetcon::IO_Function_Write
+                && function  == CtiDeviceMCT4xx::FuncWrite_TSyncPos
+                && wordcount == 2) )  //  the 4xx has 6 bytes to write - two C words
     {
-        EmetDay--;
-        Hour -= 12;
+        //  this is the MCT-4xx timesync
+
+        RWTime now;
+        unsigned long time = now.seconds() - rwEpoch;
+
+        timesync_message[0] = 0xff;  //  global SPID
+        timesync_message[1] = (time >> 24) & 0x000000ff;
+        timesync_message[2] = (time >> 16) & 0x000000ff;
+        timesync_message[3] = (time >>  8) & 0x000000ff;
+        timesync_message[4] =  time        & 0x000000ff;
+        timesync_message[5] = now.isDST();
+
+        length = 6;
+
+        //OutMessage->Destination = 0;
+    }
+    else if( address == CtiDeviceDLCBase::BroadcastAddress
+               || (io == Cti::Protocol::Emetcon::IO_Write
+                     && function  == CtiDeviceMCT::Memory_TSyncPos
+                     && wordcount == 1) )  //  non-400-series MCT timesyncs have 5 bytes to write - one C word
+    {
+        //  this is the normal MCT timesync
+        UCTFTime (&TimeB);
+
+        UCTLocoTime (TimeB.time, TimeB.dstflag, &TimeSt);
+
+        //  figure out how many 15 second intervals left in this 5 minutes
+        EmetFTime = 20 - ((TimeSt.tm_min % 5) * 60 + TimeSt.tm_sec) / 15;
+
+        //  figure out how many AM/PMs left in the week
+        Hour = TimeSt.tm_hour;
+        EmetDay = (7 - TimeSt.tm_wday) * 2;
+        if(Hour > 11)
+        {
+            EmetDay--;
+            Hour -= 12;
+        }
+
+        //  figure out how many 5 minute periods left in this 12 hours
+        EmetHTime = 144 - ((Hour * 12) + (TimeSt.tm_min / 5));
+
+        timesync_message[0] = EmetFTime;
+        timesync_message[1] = EmetHTime;
+        timesync_message[2] = EmetDay;
+        timesync_message[3] = DLCFreq1;  //  these are globals based on the system frequencies
+        timesync_message[4] = DLCFreq2;  //    (12.5, 9.6, etc)
+
+        length = 5;
+
+        //OutMessage->Destination = 0;
+    }
+    else
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint - unknown timesync in RefreshMCTTimeSync() (address = " << address << ", io = " << io << ", function = " << function << ", wordcount = " << wordcount << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
     }
 
-    /* figure out how many 5 minute periods left in this 12 hours */
-    EmetHTime = 144 - ((Hour * 12) + (TimeSt.tm_min / 5));
+    //  lay it over the original message
+    int words_to_write;
+    C_Words(OutMessage->Buffer.OutMessage + PREIDLEN + PREAMLEN + BWORDLEN,
+            timesync_message,
+            length,
+            &words_to_write);
 
-    /* Load the time sycn parts of the message into the local B word structure */
-    MyOutMessage.Buffer.BSt.Message[0] = (UCHAR)EmetFTime;
-    MyOutMessage.Buffer.BSt.Message[1] = (UCHAR)EmetHTime;
-    MyOutMessage.Buffer.BSt.Message[2] = (UCHAR)EmetDay;
-    MyOutMessage.Buffer.BSt.Message[3] = (UCHAR)DLCFreq1;
-    MyOutMessage.Buffer.BSt.Message[4] = (UCHAR)DLCFreq2;
-    MyOutMessage.Buffer.BSt.Function = 73;
-    MyOutMessage.Buffer.BSt.Length = 5;
-    MyOutMessage.Buffer.BSt.IO = 0;
-
-    INT wordCount;
-    /* Now build up the words in the calling structure */
-    C_Words (OutMessage->Buffer.OutMessage+PREIDLEN+PREAMLEN+BWORDLEN,
-             MyOutMessage.Buffer.BSt.Message,
-             MyOutMessage.Buffer.BSt.Length,
-             &wordCount);
-
-    /* build the b word */
-    B_Word (OutMessage->Buffer.OutMessage + PREIDLEN + PREAMLEN, MyOutMessage.Buffer.BSt, wordCount);
-
-    /* calculate message lengths */
-    OutMessage->InLength = 2;
-    // FIX FIX FIX 090199 CGP OutMessage->TimeOut = TIMEOUT + MyOutMessage.Buffer.BSt.Stages * (MyOutMessage.Buffer.BSt.NumW + 1);
-    OutMessage->OutLength = PREAMLEN + BWORDLEN + wordCount * CWORDLEN + 3;
-
-    /* build preamble message */
-    if(ZeroRemoteAddress)
-    {
-        // FIX FIX FIX 090199 CGP MyOutMessage.Buffer.BSt.Remote = 0;
-    }
-
-    BPreamble (OutMessage->Buffer.OutMessage + PREIDLEN, MyOutMessage.Buffer.BSt, wordCount);
-
-    /* That all folks */
     return(NORMAL);
 }
 
