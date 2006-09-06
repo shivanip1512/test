@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.58 $
-* DATE         :  $Date: 2006/09/01 18:47:30 $
+* REVISION     :  $Revision: 1.59 $
+* DATE         :  $Date: 2006/09/06 14:37:59 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -38,7 +38,7 @@ using namespace Cti::Config::MCT;
 using namespace Cti::Config;
 
 const CtiDeviceMCT470::CommandSet      CtiDeviceMCT470::_commandStore = CtiDeviceMCT470::initCommandStore();
-const CtiDeviceMCT4xx::ConfigPartsList CtiDeviceMCT470::_config_parts = CtiDeviceMCT470::initConfigParts();
+const CtiDeviceMCT470::ConfigPartsList CtiDeviceMCT470::_config_parts = CtiDeviceMCT470::initConfigParts();
 
 const CtiDeviceMCT::DynamicPaoAddressing_t         CtiDeviceMCT470::_dynPaoAddressing     = CtiDeviceMCT470::initDynPaoAddressing();
 const CtiDeviceMCT::DynamicPaoFunctionAddressing_t CtiDeviceMCT470::_dynPaoFuncAddressing = CtiDeviceMCT470::initDynPaoFuncAddressing();
@@ -67,9 +67,9 @@ CtiDeviceMCT470 &CtiDeviceMCT470::operator=( const CtiDeviceMCT470 &aRef )
     return *this;
 }
 
-CtiDeviceMCT4xx::ConfigPartsList CtiDeviceMCT470::initConfigParts()
+CtiDeviceMCT470::ConfigPartsList CtiDeviceMCT470::initConfigParts()
 {
-    CtiDeviceMCT4xx::ConfigPartsList tempList;
+    CtiDeviceMCT470::ConfigPartsList tempList;
 
     tempList.push_back(CtiDeviceMCT4xx::PutConfigPart_dst);
     tempList.push_back(CtiDeviceMCT4xx::PutConfigPart_demand_lp);
@@ -84,7 +84,7 @@ CtiDeviceMCT4xx::ConfigPartsList CtiDeviceMCT470::initConfigParts()
     return tempList;
 }
 
-CtiDeviceMCT4xx::ConfigPartsList CtiDeviceMCT470::getPartsList()
+CtiDeviceMCT470::ConfigPartsList CtiDeviceMCT470::getPartsList()
 {
     return _config_parts;
 }
@@ -107,7 +107,6 @@ CtiDeviceMCT470::CommandSet CtiDeviceMCT470::initCommandStore( )
     cs.insert(CommandStore(Emetcon::GetConfig_Model,            Emetcon::IO_Read,           MCT470_Memory_ModelPos,             MCT470_Memory_ModelLen));
     cs.insert(CommandStore(Emetcon::GetConfig_Multiplier,       Emetcon::IO_Read,           MCT470_Memory_ChannelMultiplierPos, MCT470_Memory_ChannelMultiplierLen));
     cs.insert(CommandStore(Emetcon::PutConfig_Multiplier,       Emetcon::IO_Write,          MCT470_Memory_ChannelMultiplierPos, MCT470_Memory_ChannelMultiplierLen));
-    cs.insert(CommandStore(Emetcon::PutConfig_TSync,            Emetcon::IO_Function_Write, FuncWrite_TSyncPos,          FuncWrite_TSyncLen));
     cs.insert(CommandStore(Emetcon::GetConfig_Time,             Emetcon::IO_Read,           MCT470_Memory_TimeZoneOffsetPos,    MCT470_Memory_TimeZoneOffsetLen +
                                                                                                                                 MCT470_Memory_RTCLen));
     cs.insert(CommandStore(Emetcon::GetConfig_TSync,            Emetcon::IO_Read,           MCT470_Memory_LastTSyncPos,         MCT470_Memory_LastTSyncLen));

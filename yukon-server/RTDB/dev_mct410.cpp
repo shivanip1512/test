@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.85 $
-* DATE         :  $Date: 2006/09/01 18:47:30 $
+* REVISION     :  $Revision: 1.86 $
+* DATE         :  $Date: 2006/09/06 14:37:01 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -45,7 +45,7 @@ using Protocol::Emetcon;
 
 const CtiDeviceMCT410::CommandSet      CtiDeviceMCT410::_commandStore   = CtiDeviceMCT410::initCommandStore();
 
-const CtiDeviceMCT4xx::ConfigPartsList CtiDeviceMCT410::_config_parts   = CtiDeviceMCT410::initConfigParts();
+const CtiDeviceMCT410::ConfigPartsList CtiDeviceMCT410::_config_parts   = CtiDeviceMCT410::initConfigParts();
 
 const CtiDeviceMCT::DynamicPaoAddressing_t         CtiDeviceMCT410::_dynPaoAddressing     = CtiDeviceMCT410::initDynPaoAddressing();
 const CtiDeviceMCT::DynamicPaoFunctionAddressing_t CtiDeviceMCT410::_dynPaoFuncAddressing = CtiDeviceMCT410::initDynPaoFuncAddressing();
@@ -237,9 +237,9 @@ void CtiDeviceMCT410::getDynamicPaoFunctionAddressing(int function, int address,
     }
 }
 
-CtiDeviceMCT4xx::ConfigPartsList CtiDeviceMCT410::initConfigParts()
+CtiDeviceMCT410::ConfigPartsList CtiDeviceMCT410::initConfigParts()
 {
-    CtiDeviceMCT4xx::ConfigPartsList tempList;
+    CtiDeviceMCT410::ConfigPartsList tempList;
 
     tempList.push_back(CtiDeviceMCT4xx::PutConfigPart_dst);
     tempList.push_back(CtiDeviceMCT4xx::PutConfigPart_vthreshold);
@@ -257,7 +257,7 @@ CtiDeviceMCT4xx::ConfigPartsList CtiDeviceMCT410::initConfigParts()
 }
 
 
-CtiDeviceMCT4xx::ConfigPartsList CtiDeviceMCT410::getPartsList()
+CtiDeviceMCT410::ConfigPartsList CtiDeviceMCT410::getPartsList()
 {
     return _config_parts;
 }
@@ -311,7 +311,6 @@ CtiDeviceMCT410::CommandSet CtiDeviceMCT410::initCommandStore()
     cs.insert(CommandStore(Emetcon::GetConfig_Disconnect,       Emetcon::IO_Function_Read,  FuncRead_DisconnectConfigPos,   FuncRead_DisconnectConfigLen));
     cs.insert(CommandStore(Emetcon::PutConfig_Disconnect,       Emetcon::IO_Function_Write, FuncWrite_DisconnectConfigPos,  FuncWrite_DisconnectConfigLen));
     cs.insert(CommandStore(Emetcon::PutConfig_Raw,              Emetcon::IO_Write,          0,                              0));  //  filled in later
-    cs.insert(CommandStore(Emetcon::PutConfig_TSync,            Emetcon::IO_Function_Write, FuncWrite_TSyncPos,      FuncWrite_TSyncLen));
     cs.insert(CommandStore(Emetcon::GetConfig_TSync,            Emetcon::IO_Read,           Memory_LastTSyncPos,            Memory_LastTSyncLen));
     cs.insert(CommandStore(Emetcon::GetConfig_Time,             Emetcon::IO_Read,           Memory_TimeZoneOffsetPos,       Memory_TimeZoneOffsetLen +
                                                                                                                             Memory_RTCLen));
