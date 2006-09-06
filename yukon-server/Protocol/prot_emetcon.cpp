@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/prot_emetcon.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2006/08/29 19:22:03 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2006/09/06 14:33:33 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -70,11 +70,11 @@ bool Emetcon::getDouble() const
 }
 
 
-INT Emetcon::buildAWordMessages(const OUTMESS &out_template, OUTMESS *&out_result)
+int Emetcon::buildAWordMessage(OUTMESS *&out_result)
 {
    INT status = NORMAL;
 
-   out_result = CTIDBG_new OUTMESS(out_template);
+   const OUTMESS out_template = *out_result;
 
    // Use the template's ASt since Buffer.OutMessage & Buffer.ASt are members of a union.
    APreamble(out_result->Buffer.OutMessage + PREIDLEN,     out_template.Buffer.ASt);
@@ -90,11 +90,11 @@ INT Emetcon::buildAWordMessages(const OUTMESS &out_template, OUTMESS *&out_resul
    return status;
 }
 
-INT Emetcon::buildBWordMessages(const OUTMESS &out_template, OUTMESS *&out_result)
+int Emetcon::buildBWordMessage(OUTMESS *&out_result, bool double_message)
 {
    INT status = NORMAL;
 
-   out_result = CTIDBG_new OUTMESS(out_template);
+   const OUTMESS out_template = *out_result;
 
    //  this is both the IO_Read and IO_Function_Read case
    if( out_template.Buffer.BSt.IO & Emetcon::IO_Read )
@@ -110,7 +110,7 @@ INT Emetcon::buildBWordMessages(const OUTMESS &out_template, OUTMESS *&out_resul
        //  The timeout must include time for the repeaters to transmit the result words
        out_result->TimeOut = TIMEOUT + out_template.Buffer.BSt.DlcRoute.Stages * (wordsExpected + 1);
 
-       B_Word(out_result->Buffer.OutMessage + PREIDLEN + PREAMLEN, out_template.Buffer.BSt, wordsExpected, getDouble());
+       B_Word(out_result->Buffer.OutMessage + PREIDLEN + PREAMLEN, out_template.Buffer.BSt, wordsExpected, double_message);
    }
    else
    {
@@ -135,7 +135,7 @@ INT Emetcon::buildBWordMessages(const OUTMESS &out_template, OUTMESS *&out_resul
        out_result->InLength = 2;
 
        //  build the b word
-       B_Word(out_result->Buffer.OutMessage + PREIDLEN + PREAMLEN, out_template.Buffer.BSt, wordsToWrite, getDouble());
+       B_Word(out_result->Buffer.OutMessage + PREIDLEN + PREAMLEN, out_template.Buffer.BSt, wordsToWrite, double_message);
     }
 
     /* load the IDLC specific stuff for DTRAN */

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_emetcon.h-arc  $
-* REVISION     :  $Revision: 1.35 $
-* DATE         :  $Date: 2006/08/29 19:22:03 $
+* REVISION     :  $Revision: 1.36 $
+* DATE         :  $Date: 2006/09/06 14:33:33 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -56,8 +56,8 @@ public:
     static int determineDWordCount     (int length);
     static int calculateControlInterval(int interval);
 
-    INT buildAWordMessages(const OUTMESS &out_template, OUTMESS *&out_result);
-    INT buildBWordMessages(const OUTMESS &out_template, OUTMESS *&out_result);
+    static int buildAWordMessage(OUTMESS *&out_result);
+    static int buildBWordMessage(OUTMESS *&out_result, bool double_message = false);
 
     enum IO_Bits
     {
