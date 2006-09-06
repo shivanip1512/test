@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PHLIDLC.cpp-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2006/09/06 12:51:13 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2006/09/06 16:21:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -53,6 +53,7 @@
 #include <fcntl.h>
 
 #include "queues.h"
+#include "cparms.h"
 #include "dsm2.h"
 #include "dsm2err.h"
 #include "device.h"
