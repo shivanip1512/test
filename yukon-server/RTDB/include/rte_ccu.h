@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/rte_ccu.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2006/08/29 19:20:24 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2006/09/06 14:43:31 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -53,32 +53,32 @@ public:
 
    virtual INT        getStages() const;
 
-   virtual INT ExecuteRequest(CtiRequestMsg                  *pReq,
-                              CtiCommandParser               &parse,
-                              OUTMESS                        *&OutMessage,
-                              list< CtiMessage* >      &vgList,
-                              list< CtiMessage* >      &retList,
-                              list< OUTMESS* >         &outList);
+   virtual INT ExecuteRequest(CtiRequestMsg        *pReq,
+                              CtiCommandParser     &parse,
+                              OUTMESS             *&OutMessage,
+                              list< CtiMessage* >  &vgList,
+                              list< CtiMessage* >  &retList,
+                              list< OUTMESS* >     &outList);
 
-   INT         assembleVersacomRequest(CtiRequestMsg              *pReq,
-                                       CtiCommandParser           &parse,
-                                       OUTMESS                    *OutMessage,
-                                       list< CtiMessage* >  &vgList,
-                                       list< CtiMessage* >  &retList,
-                                       list< OUTMESS* >      &outList);
+   INT         assembleVersacomRequest  (CtiRequestMsg        *pReq,
+                                         CtiCommandParser     &parse,
+                                         OUTMESS              *OutMessage,
+                                         list< CtiMessage* >  &vgList,
+                                         list< CtiMessage* >  &retList,
+                                         list< OUTMESS* >     &outList);
 
-   INT         assembleExpresscomRequest(CtiRequestMsg              *pReq,
-                                       CtiCommandParser           &parse,
-                                       OUTMESS                    *OutMessage,
-                                       list< CtiMessage* >  &vgList,
-                                       list< CtiMessage* >  &retList,
-                                       list< OUTMESS* >      &outList);
+   INT         assembleExpresscomRequest(CtiRequestMsg        *pReq,
+                                         CtiCommandParser     &parse,
+                                         OUTMESS              *OutMessage,
+                                         list< CtiMessage* >  &vgList,
+                                         list< CtiMessage* >  &retList,
+                                         list< OUTMESS* >     &outList);
 
-   INT         assembleDLCRequest(CtiCommandParser          &parse,
-                                  OUTMESS                   *OutMessage,
-                                  list< CtiMessage* > &vgList,
-                                  list< CtiMessage* > &retList,
-                                  list< OUTMESS* > &outList);
+   INT         assembleDLCRequest       (CtiCommandParser     &parse,
+                                         OUTMESS             *&OutMessage,
+                                         list< CtiMessage* >  &vgList,
+                                         list< CtiMessage* >  &retList,
+                                         list< OUTMESS* >     &outList);
 
    virtual INT  getBus() const;
    virtual INT  getCCUFixBits() const;
