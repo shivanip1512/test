@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct4xx.h-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2006/09/01 18:43:12 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2006/09/06 14:42:30 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,19 +28,25 @@
 
 class IM_EX_DEVDB CtiDeviceMCT4xx : public CtiDeviceMCT
 {
-public:
+protected:
 
     typedef vector<const char *> ConfigPartsList;
 
 private:
 
-    static ConfigPartsList initConfigParts();
+    static const CommandSet _commandStore;
+    static CommandSet initCommandStore();
+
     static const ConfigPartsList _config_parts;
+    static ConfigPartsList initConfigParts();
+
     int executePutConfigSingle( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
 
     typedef CtiDeviceMCT Inherited;
 
 protected:
+
+    bool getOperation( const UINT &cmd, USHORT &function, USHORT &length, USHORT &io );
 
     enum ValueType
     {
