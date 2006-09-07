@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.59 $
-* DATE         :  $Date: 2006/09/06 14:37:59 $
+* REVISION     :  $Revision: 1.60 $
+* DATE         :  $Date: 2006/09/07 17:34:20 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1682,22 +1682,18 @@ INT CtiDeviceMCT470::executePutValue( CtiRequestMsg         *pReq,
                                                    OutMessage->Request.SOE,
                                                    CtiMultiMsg_vec( ));
 
-    if( parse.getFlags() & CMD_FLAG_PV_DIAL )
+    if( parse.isKeyValid("kyz") )
     {
         function = Emetcon::PutValue_KYZ;
         if( found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO) )
         {
-            if(parse.isKeyValid("kyz_offset") && parse.isKeyValid("dial") )
+            if(parse.isKeyValid("kyz_offset") && parse.isKeyValid("kyz_reading") )
             {
                 int    offset = parse.getiValue("kyz_offset");
-                double dial   = parse.getdValue("dial", -1.0);
+                double dial   = parse.getdValue("kyz_reading", -1.0);
 
-                if( offset >= 1 && offset <= 4 )
+                if( offset > 0 && offset <= ChannelCount )
                 {
-                    offset--;
-
-                    OutMessage->Buffer.BSt.Function += offset * MCT470_Memory_ChannelOffset;
-
                     if( dial >= 0.0 )
                     {
                         long pulses;
@@ -3869,13 +3865,13 @@ INT CtiDeviceMCT470::decodeGetConfigChannelSetup(INMESS *InMessage, CtiTime &Tim
         string result_string, dynamic_info;
 
         result_string += getName() + " / Load Profile Interval 1: " + CtiNumStr(DSt->Message[4]) + " minutes\n";
-        setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval, (long)DSt->Message[4] * 60L);
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval, (long)DSt->Message[4] * 60);
 
         result_string += getName() + " / Load Profile Interval 2: " + CtiNumStr(DSt->Message[5]) + " minutes\n";
         //  setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval, DSt->Message[5] * 60);  //  someday?
 
-        result_string += getName() + " / Electronic Meter Load Profile Interval: " + CtiNumStr(DSt->Message[6]) + " seconds\n";
-        setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_IEDLoadProfileInterval, (long)DSt->Message[6]);
+        result_string += getName() + " / Electronic Meter Load Profile Interval: " + CtiNumStr(DSt->Message[6]) + " minutes\n";
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_IEDLoadProfileInterval, (long)DSt->Message[6] * 60);
 
         for( int i = 0; i < ChannelCount; i++ )
         {
