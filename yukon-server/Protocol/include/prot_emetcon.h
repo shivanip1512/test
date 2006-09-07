@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_emetcon.h-arc  $
-* REVISION     :  $Revision: 1.36 $
-* DATE         :  $Date: 2006/09/06 14:33:33 $
+* REVISION     :  $Revision: 1.37 $
+* DATE         :  $Date: 2006/09/07 17:27:41 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -103,6 +103,7 @@ public:
         PutValue_KYZ,  //  KYZ resets are implemented as a putvalue of 0
         PutValue_KYZ2,
         PutValue_KYZ3,
+        PutValue_TOUReset,
 
         // GetStatus Commands
         GetStatus_Default,
