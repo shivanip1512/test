@@ -1169,7 +1169,7 @@ void  CtiCommandParser::doParsePutValue(const string &_CmdStr)
     {
         if(CmdStr.contains(" kyz"))
         {
-            flag |= CMD_FLAG_PV_DIAL;
+            _cmd["kyz"] = CtiParseValue(true);
 
             //  if a point offset has been specified
             if(!(token = CmdStr.match(re_kyzoffset)).empty())
@@ -1181,14 +1181,14 @@ void  CtiCommandParser::doParsePutValue(const string &_CmdStr)
 
             if(!(token = CmdStr.match(re_reading)).empty())
             {
-                _cmd["dial"]   = CtiParseValue(atof(token.match(re_floatnum).c_str()));
+                _cmd["kyz_reading"]   = CtiParseValue(atof(token.match(re_floatnum).c_str()));
             }
         }
         if(CmdStr.contains(" analog"))
         {
             if(!(token = CmdStr.match(re_analog)).empty())
             {
-                flag |= CMD_FLAG_PV_ANALOG;
+                _cmd["analog"] = CtiParseValue(true);
 
                 CtiTokenizer cmdtok(token);
 
@@ -1200,15 +1200,25 @@ void  CtiCommandParser::doParsePutValue(const string &_CmdStr)
         }
         if(CmdStr.contains(" reset"))
         {
-            flag |= CMD_FLAG_PV_RESET;
+            _cmd["reset"] = CtiParseValue(true);
+
+            if( CmdStr.contains(" tou") )
+            {
+                _cmd["tou"] = CtiParseValue(true);
+
+                if( CmdStr.contains(" zero") )
+                {
+                    _cmd["tou_zero"] = CtiParseValue(true);
+                }
+            }
         }
         if(CmdStr.contains(" ied"))
         {
-            flag |= CMD_FLAG_PV_IED;
+            _cmd["ied"] = CtiParseValue(true);
         }
         if(CmdStr.contains(" power"))
         {
-            flag |= CMD_FLAG_PV_PWR;
+            _cmd["power"] = CtiParseValue(true);
         }
 
         _cmd["flag"] = CtiParseValue( flag );
@@ -1468,7 +1478,7 @@ void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
             if(CmdStr.contains(" dnp"))
             {
                 _cmd["dnp"] = CtiParseValue("TRUE");
-                                
+
                 if(!(token = CmdStr.match(re_dnp)).empty())
                 {
                     //  was an offset specified?

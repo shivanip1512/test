@@ -51,27 +51,27 @@ protected:
 private:
 
     void    doParse(const string &Cmd);
-    void    doParseGetValue(const string &CmdStr);
-    void    doParsePutValue(const string &CmdStr);
+    void    doParseGetValue (const string &CmdStr);
+    void    doParsePutValue (const string &CmdStr);
     void    doParseGetStatus(const string &CmdStr);
     void    doParsePutStatus(const string &CmdStr);
-    void    doParseControl(const string &CmdStr);
+    void    doParseControl  (const string &CmdStr);
     void    doParseGetConfig(const string &CmdStr);
     void    doParsePutConfig(const string &CmdStr);
-    void    doParseScan(const string &CmdStr);
+    void    doParseScan     (const string &CmdStr);
 
     void    doParsePutConfigVersacom(const string &CmdStr);
-    void    doParsePutConfigEmetcon(const string &CmdStr);
+    void    doParsePutConfigEmetcon (const string &CmdStr);
     void    doParsePutStatusVersacom(const string &CmdStr);
-    void    doParsePutStatusFisherP(const string &CmdStr);
-    void    doParsePutStatusEmetcon(const string &CmdStr);
+    void    doParsePutStatusFisherP (const string &CmdStr);
+    void    doParsePutStatusEmetcon (const string &CmdStr);
     void    resolveProtocolType(const string &CmdStr);
 
-    void    doParseControlExpresscom(const string &CmdStr);
+    void    doParseControlExpresscom  (const string &CmdStr);
     void    doParsePutConfigExpresscom(const string &CmdStr);
     void    doParsePutStatusExpresscom(const string &CmdStr);
 
-    void    doParseControlSA(const string &CmdStr);
+    void    doParseControlSA  (const string &CmdStr);
     void    doParsePutConfigSA(const string &CmdStr);
 
     void    doParsePutConfigThermostatSchedule(const string &CmdStr);
@@ -110,14 +110,14 @@ public:
    bool     isTwoWay()      const;
 
 
-   UINT     getCommand() const;
-   UINT     getFlags() const;
-   UINT     getOffset() const;
-   bool     isKeyValid(const string key) const;
-   UINT     getOffset(const string key) const;
-   INT      getiValue(const string key, INT valifnotfound = INT_MIN) const;
-   DOUBLE   getdValue(const string key, DOUBLE valifnotfound = 0.0) const;
-   string getsValue(const string key) const;
+   UINT   getCommand() const;
+   UINT   getFlags()   const;
+   UINT   getOffset()  const;
+   bool   isKeyValid(const string key) const;
+   UINT   getOffset (const string key) const;
+   INT    getiValue (const string key, INT valifnotfound = INT_MIN) const;
+   DOUBLE getdValue (const string key, DOUBLE valifnotfound = 0.0) const;
+   string getsValue (const string key) const;
    CtiCommandParser& setValue(const string key, INT val);
    CtiCommandParser& setValue(const string key, DOUBLE val);
    CtiCommandParser& setValue(const string key, string val);
@@ -165,26 +165,6 @@ public:
 #define CMD_FLAG_OFFSET          0x10000000     // A specific offset is defined in the next cmd field
 */
 #define CMD_FLAG_GV_ALIASMASK    0x0000FFF0
-
-/* PutValue flags
- *    PutValue Indicator
- *    Flags Int
- *    Offset Number       (optional)
- *    Dial reading number (optional) in DOUBLE field.
- */
-#define CMD_FLAG_PV_RESET        0x00000010
-#define CMD_FLAG_PV_FREEZE       0x00000020
-#define CMD_FLAG_PV_DIAL         0x00000040     // integer value for the PI reg.
-#define CMD_FLAG_PV_ANALOG       0x00000080     // integer value for the PI reg.
-
-#define CMD_FLAG_PV_IED          0x00000100     // The write is to be from a connected ied!
-#define CMD_FLAG_PV_PWR          0x00000200     // The looking for a powerfail read/write
-/* Defined below.... be careful
-#define CMD_FLAG_OFFSET          0x10000000     // A specific offset is defined in the next cmd field
-*/
-#define CMD_FLAG_PV_ALIASMASK    0x00000FF0
-
-#define CMD_FLAG_PV_OFF          0x00010000     // A turn it off, not on.
 
 /* GetStatus flags
  *    GetStatus Indicator
@@ -246,7 +226,8 @@ public:
 #define CMD_FLAG_UPDATE          0x80000000
 
 
-typedef enum {
+enum CtiClientRequest_t
+{
    InvalidRequest = 0,
    GetValueRequest,
    PutValueRequest,
@@ -259,20 +240,6 @@ typedef enum {
    ScanRequest,
 
    MaxRequest
-
-} CtiClientRequest_t;
-
-/*
-typedef enum {
-   NumericOffset = 0,
-   KwhOffset,
-   KvarhOffset,
-   DemandOffset,
-   PeakOffset,
-
-   InvalidOffset
-
-} CtiValueAlias_t;
-*/
+};
 
 #endif // #ifndef __CMDPARSE_H__
