@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.87 $
-* DATE         :  $Date: 2006/09/07 17:31:54 $
+* REVISION     :  $Revision: 1.88 $
+* DATE         :  $Date: 2006/09/07 18:59:05 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1042,8 +1042,8 @@ INT CtiDeviceMCT410::executePutConfig( CtiRequestMsg              *pReq,
     }
     else if( parse.isKeyValid("centron_reading_forward") )
     {
-        double reading_forward = parse.getiValue("centron_reading_forward"),
-               reading_reverse = parse.getiValue("centron_reading_reverse");
+        double reading_forward = parse.getdValue("centron_reading_forward"),
+               reading_reverse = parse.getdValue("centron_reading_reverse");
 
         long   pulses_forward,
                pulses_reverse;
@@ -1053,13 +1053,13 @@ INT CtiDeviceMCT410::executePutConfig( CtiRequestMsg              *pReq,
         if( tmpPoint )
         {
             //  adjust for the multiplier, if the point exists
-            pulses_forward = (long)(reading_forward / tmpPoint->getMultiplier());
-            pulses_reverse = (long)(reading_reverse / tmpPoint->getMultiplier());
+            pulses_forward = (long)((reading_forward * 100.0) / tmpPoint->getMultiplier());
+            pulses_reverse = (long)((reading_reverse * 100.0) / tmpPoint->getMultiplier());
         }
         else
         {
-            pulses_forward = (long)reading_forward;
-            pulses_reverse = (long)reading_reverse;
+            pulses_forward = (long)(reading_forward * 1000.0);
+            pulses_reverse = (long)(reading_reverse * 1000.0);
         }
 
         OutMessage->Sequence = Cti::Protocol::Emetcon::PutValue_KYZ;
@@ -2292,7 +2292,7 @@ INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
                 {
                     if( pi.quality != InvalidQuality )
                     {
-                        resultString = getName() + " / Meter Reading = " + CtiNumStr(pi.value) + freeze_info_string + "  --  POINT UNDEFINED IN DB";
+                        resultString = getName() + " / Meter Reading = " + CtiNumStr(pi.value * 0.1) + freeze_info_string + "  --  POINT UNDEFINED IN DB";
                     }
                     else
                     {
