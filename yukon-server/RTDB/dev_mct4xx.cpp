@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2006/09/06 14:39:08 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2006/09/07 17:36:19 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -56,6 +56,25 @@ const CtiDeviceMCT4xx::QualityMap      CtiDeviceMCT4xx::_errorQualities = initEr
 
 CtiDeviceMCT4xx::CtiDeviceMCT4xx()
 {
+    _llpInterest.time     = 0;
+    _llpInterest.time_end = 0;
+    _llpInterest.channel  = 0;
+    _llpInterest.offset   = 0;
+    _llpInterest.retry    = false;
+    _llpInterest.failed   = false;
+
+    _llpPeakInterest.channel = 0;
+    _llpPeakInterest.command = 0;
+    _llpPeakInterest.period  = 0;
+    _llpPeakInterest.time    = 0;
+
+    for( int i = 0; i < LPChannels; i++ )
+    {
+        //  initialize them to 0
+        _lp_info[i].archived_reading = 0;
+        _lp_info[i].current_request  = 0;
+        _lp_info[i].current_schedule = 0;
+    }
 }
 
 CtiDeviceMCT4xx::CtiDeviceMCT4xx(const CtiDeviceMCT4xx& aRef)
@@ -153,6 +172,10 @@ CtiDeviceMCT4xx::CommandSet CtiDeviceMCT4xx::initCommandStore()
     CommandSet cs;
 
     cs.insert(CommandStore(Emetcon::PutConfig_TSync, Emetcon::IO_Function_Write, FuncWrite_TSyncPos, FuncWrite_TSyncLen));
+
+    //  This is the default TOU reset command - the command that zeroes the rates (Command_TOUResetZero) is assigned
+    //    in executePutValue() if needed
+    cs.insert(CommandStore(Emetcon::PutValue_TOUReset, Emetcon::IO_Write, Command_TOUReset, FuncWrite_TSyncLen));
 
     return cs;
 }
@@ -616,7 +639,7 @@ INT CtiDeviceMCT4xx::executeGetValue(CtiRequestMsg *pReq, CtiCommandParser &pars
 
                                 interest_om->Buffer.BSt.Message[0] = gMCT400SeriesSPID;
 
-                                interest_om->Buffer.BSt.Message[1] = request_channel  & 0x000000ff;
+                                interest_om->Buffer.BSt.Message[1] = request_channel + 1  & 0x000000ff;
 
                                 interest_om->Buffer.BSt.Message[2] = (utc_time >> 24) & 0x000000ff;
                                 interest_om->Buffer.BSt.Message[3] = (utc_time >> 16) & 0x000000ff;
@@ -949,6 +972,46 @@ INT CtiDeviceMCT4xx::executePutConfig(CtiRequestMsg         *pReq,
     else
     {
         nRet = Inherited::executePutConfig(pReq, parse, OutMessage, vgList, retList, outList);
+    }
+
+    return nRet;
+
+}
+
+INT CtiDeviceMCT4xx::executePutValue(CtiRequestMsg         *pReq,
+                                     CtiCommandParser      &parse,
+                                     OUTMESS              *&OutMessage,
+                                     list< CtiMessage * >  &vgList,
+                                     list< CtiMessage * >  &retList,
+                                     list< OUTMESS * >     &outList)
+{
+    bool  found = false;
+    INT   nRet = NoError, sRet;
+
+    if( parse.isKeyValid("reset") && parse.isKeyValid("tou") )
+    {
+        unsigned short function, length, io;
+
+        found = getOperation(Emetcon::PutValue_TOUReset, function, length, io);
+
+        if( parse.isKeyValid("tou_zero") )
+        {
+            function = Command_TOUResetZero;
+        }
+
+        OutMessage->Sequence = Emetcon::PutValue_TOUReset;
+        OutMessage->Buffer.BSt.Function   = function;
+        OutMessage->Buffer.BSt.Length     = length;
+        OutMessage->Buffer.BSt.IO         = io;
+
+        if( !found )
+        {
+            nRet = NoMethod;
+        }
+    }
+    else
+    {
+        nRet = Inherited::executePutValue(pReq, parse, OutMessage, vgList, retList, outList);
     }
 
     return nRet;
@@ -1590,7 +1653,7 @@ INT CtiDeviceMCT4xx::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeN
         interest[1] = (tmptime >> 16) & 0x000000ff;
         interest[2] = (tmptime >>  8) & 0x000000ff;
         interest[3] = (tmptime)       & 0x000000ff;
-        interest[4] = _llpInterest.channel;
+        interest[4] = _llpInterest.channel + 1;
 
         if( crc8(interest, 5) == DSt->Message[0] )
         {
@@ -1604,7 +1667,7 @@ INT CtiDeviceMCT4xx::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeN
 
             block_len    = interval_len * 6;
 
-            pPoint = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual( channel + PointOffset_LoadProfileOffset, DemandAccumulatorPointType ));
+            pPoint = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual( channel + 1 + PointOffset_LoadProfileOffset, DemandAccumulatorPointType ));
 
             for( int i = 0; i < 6; i++ )
             {
@@ -1613,7 +1676,7 @@ INT CtiDeviceMCT4xx::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeN
                 //  but we want interval *ending* times, so add on one more interval
                 timeStamp += interval_len;
 
-                pi = getLoadProfileData(channel, DSt->Message + (i * 2) + 1, 2);
+                pi = getLoadProfileData(channel + 1, DSt->Message + (i * 2) + 1, 2);
 
                 if( pPoint )
                 {
@@ -1640,11 +1703,11 @@ INT CtiDeviceMCT4xx::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeN
                 {
                     if( pi.quality != InvalidQuality )
                     {
-                        resultString += getName() + " / LP channel " + CtiNumStr(channel) + " @ " + CtiTime(timeStamp).asString() + " = " + CtiNumStr(pi.value, 0) + "\n";
+                        resultString += getName() + " / LP channel " + CtiNumStr(channel + 1) + " @ " + CtiTime(timeStamp).asString() + " = " + CtiNumStr(pi.value, 0) + "\n";
                     }
                     else
                     {
-                        resultString += getName() + " / LP channel " + CtiNumStr(channel) + " @ " + CtiTime(timeStamp).asString() + " = (invalid data)\n";
+                        resultString += getName() + " / LP channel " + CtiNumStr(channel + 1) + " @ " + CtiTime(timeStamp).asString() + " = (invalid data)\n";
                     }
                 }
             }
@@ -1656,7 +1719,7 @@ INT CtiDeviceMCT4xx::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeN
 
                 CtiString lp_request_str = "getvalue lp ";
 
-                lp_request_str += "channel " + CtiNumStr(channel) + " " + time_begin.asString() + " " + time_end.asString();
+                lp_request_str += "channel " + CtiNumStr(channel + 1) + " " + time_begin.asString() + " " + time_end.asString();
 
                 //  if it's a background message, it's queued
                 if(      strstr(InMessage->Return.CommandStr, " background") )   lp_request_str += " background";
@@ -1734,7 +1797,7 @@ INT CtiDeviceMCT4xx::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeN
 
             CtiString lp_request_str = "getvalue lp ";
 
-            lp_request_str += "channel " + CtiNumStr(_llpInterest.channel) + " " + time_begin.asString() + " " + time_end.asString();
+            lp_request_str += "channel " + CtiNumStr(_llpInterest.channel + 1) + " " + time_begin.asString() + " " + time_end.asString();
 
             //  if it's a background message, it's queued
             if(      strstr(InMessage->Return.CommandStr, " background") )   lp_request_str += " background";
@@ -1935,7 +1998,7 @@ INT CtiDeviceMCT4xx::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
 
                 CtiString lp_request_str = "getvalue lp ";
 
-                lp_request_str += "channel " + CtiNumStr(_llpInterest.channel) + " " + time_begin.asString() + " " + time_end.asString();
+                lp_request_str += "channel " + CtiNumStr(_llpInterest.channel + 1) + " " + time_begin.asString() + " " + time_end.asString();
 
                 //  if it's a background message, it's queued
                 if(      strstr(InMessage->Return.CommandStr, " background") )   lp_request_str += " background";
