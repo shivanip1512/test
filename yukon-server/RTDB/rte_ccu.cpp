@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_ccu.cpp-arc  $
-* REVISION     :  $Revision: 1.35 $
-* DATE         :  $Date: 2006/09/06 14:41:01 $
+* REVISION     :  $Revision: 1.36 $
+* DATE         :  $Date: 2006/09/07 17:37:49 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -314,6 +314,8 @@ INT CtiRouteCCU::assembleDLCRequest(CtiCommandParser     &parse,
 
     CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, string(OutMessage->Request.CommandStr), string(), status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
 
+    BSTRUCT old_bstruct;
+
     OutMessage->DeviceID = _transmitterDevice->getID();         // This is the route transmitter device, not the causal device.
     OutMessage->Port     = _transmitterDevice->getPortID();
     OutMessage->Remote   = _transmitterDevice->getAddress();    // This is the DLC address if the CCU.
@@ -342,6 +344,8 @@ INT CtiRouteCCU::assembleDLCRequest(CtiCommandParser     &parse,
                 OutMessage->Buffer.BSt.DlcRoute.Stages += 2;
             }
         }
+
+        old_bstruct = OutMessage->Buffer.BSt;
 
         status = prot.buildBWordMessage(OutMessage);
     }
@@ -408,7 +412,8 @@ INT CtiRouteCCU::assembleDLCRequest(CtiCommandParser     &parse,
                     else
                     {
                         //  Restore the B word information so the CCU can use it
-                        OutMessage->Buffer.BSt = OutMessage->Buffer.BSt;
+                        //  this seems backwards - shouldn't we just not mangle the bstruct if it's queued?
+                        OutMessage->Buffer.BSt = old_bstruct;
                     }
                     break;
                 }
