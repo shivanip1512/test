@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.51 $
-* DATE         :  $Date: 2006/06/23 15:41:13 $
+* REVISION     :  $Revision: 1.52 $
+* DATE         :  $Date: 2006/09/07 17:28:35 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -428,14 +428,23 @@ INT DNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&
         {
             int offset;
 
-            if( parse.getFlags() & CMD_FLAG_PV_ANALOG )
+            if( parse.isKeyValid("analog") )
             {
+                CtiPointSPtr point;
+
                 controlout.type = Protocol::DNPInterface::AnalogOutput;
                 controlout.control_offset = parse.getiValue("analogoffset");
 
                 controlout.aout.value     = parse.getiValue("analogvalue");
 
                 command = Protocol::DNPInterface::Command_SetAnalogOut;
+
+                point = getDevicePointOffsetTypeEqual(controlout.control_offset, AnalogOutputPointType);
+                if( point )
+                {
+                    CtiLMControlHistoryMsg *hist = CTIDBG_new CtiLMControlHistoryMsg(getID(), point->getPointID(), controlout.aout.value, CtiTime(), 0, 100);
+                    vgList.push_back(hist);
+                }
             }
 
             break;
