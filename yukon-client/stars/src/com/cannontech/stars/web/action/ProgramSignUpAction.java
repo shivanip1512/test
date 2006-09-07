@@ -86,7 +86,8 @@ public class ProgramSignUpAction implements ActionBase {
 						SULMProgram program = new SULMProgram();
 						program.setProgramID( Integer.parseInt(progIDs[i]) );
 						program.setApplianceCategoryID( Integer.parseInt(catIDs[i]) );
-                        if(req.getParameter("notOperator").compareTo("true") == 0)
+                        String notOperator = req.getParameter("notOperator");
+                        if(notOperator != null && notOperator.compareTo("true") == 0)
                         {
                             /*Going to need to do some guesswork since consumers aren't allowed
                              * to choose load groups.  At this point, we will need to require
