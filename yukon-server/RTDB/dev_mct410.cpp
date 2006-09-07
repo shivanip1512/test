@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.86 $
-* DATE         :  $Date: 2006/09/06 14:37:01 $
+* REVISION     :  $Revision: 1.87 $
+* DATE         :  $Date: 2006/09/07 17:31:54 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -53,25 +53,6 @@ const CtiDeviceMCT::DynamicPaoFunctionAddressing_t CtiDeviceMCT410::_dynPaoFuncA
 CtiDeviceMCT410::CtiDeviceMCT410( ) :
     _intervalsSent(false)  //  whee!  you're going to be gone soon, sucker!
 {
-    _llpInterest.time     = 0;
-    _llpInterest.time_end = 0;
-    _llpInterest.channel  = 0;
-    _llpInterest.offset   = 0;
-    _llpInterest.retry    = false;
-    _llpInterest.failed   = false;
-
-    _llpPeakInterest.channel = 0;
-    _llpPeakInterest.command = 0;
-    _llpPeakInterest.period  = 0;
-    _llpPeakInterest.time    = 0;
-
-    for( int i = 0; i < LPChannels; i++ )
-    {
-        //  initialize them to 0
-        _lp_info[i].archived_reading = 0;
-        _lp_info[i].current_request  = 0;
-        _lp_info[i].current_schedule = 0;
-    }
 }
 
 CtiDeviceMCT410::CtiDeviceMCT410( const CtiDeviceMCT410 &aRef )
@@ -357,8 +338,8 @@ long CtiDeviceMCT410::getLoadProfileInterval( unsigned channel )
 {
     int retval;
 
-    if( (channel + 1) == Channel_Voltage )  retval = getLoadProfile().getVoltageProfileRate();
-    else                                    retval = getLoadProfile().getLoadProfileDemandRate();
+    if(  channel == Channel_Voltage )  retval = getLoadProfile().getVoltageProfileRate();
+    else                               retval = getLoadProfile().getLoadProfileDemandRate();
 
     return retval;
 }
