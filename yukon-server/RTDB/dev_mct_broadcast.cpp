@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2006/09/01 18:48:12 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2006/09/07 17:36:52 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -334,11 +334,11 @@ INT CtiDeviceMCTBroadcast::executePutValue(CtiRequestMsg                  *pReq,
     bool found = false;
 
 
-    if(parse.getFlags() & CMD_FLAG_PV_PWR)
+    if( parse.isKeyValid("power") )
     {
-        if(parse.getFlags() & CMD_FLAG_PV_RESET)
+        if( parse.isKeyValid("reset") )
         {
-            if( command_string.find(" 400")!=string::npos )
+            if( command_string.find(" 400") != string::npos )
             {
                 OutMessage->Buffer.BSt.Function = CtiDeviceMCT4xx::Command_PowerfailReset;
                 OutMessage->Buffer.BSt.Length = 0;
@@ -348,9 +348,9 @@ INT CtiDeviceMCTBroadcast::executePutValue(CtiRequestMsg                  *pReq,
             }
         }
     }
-    else if(parse.getFlags() & CMD_FLAG_PV_IED)     //  This parse has the token "IED" in it!
+    else if( parse.isKeyValid("ied") )     //  This parse has the token "IED" in it!
     {
-        if(parse.getFlags() & CMD_FLAG_PV_RESET)
+        if( parse.isKeyValid("reset") )
         {
             int iedtype = ((CtiDeviceMCT31X *)this)->getIEDPort().getIEDType();
 
