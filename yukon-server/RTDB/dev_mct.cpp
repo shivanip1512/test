@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.95 $
-* DATE         :  $Date: 2006/09/06 14:35:22 $
+* REVISION     :  $Revision: 1.96 $
+* DATE         :  $Date: 2006/09/07 17:30:29 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -904,6 +904,7 @@ INT CtiDeviceMCT::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
         case Emetcon::PutValue_KYZ3:
         case Emetcon::PutValue_ResetPFCount:
         case Emetcon::PutValue_IEDReset:
+        case Emetcon::PutValue_TOUReset:
         {
             status = decodePutValue(InMessage, TimeNow, vgList, retList, outList);
             break;
@@ -1624,15 +1625,15 @@ INT CtiDeviceMCT::executePutValue(CtiRequestMsg                  *pReq,
     INT    nRet = NoError,
            i;
     long   rawPulses;
-    double dial;
+    double reading;
 
     INT function = -1;
 
     bool found = false;
 
-    if(parse.getFlags() & CMD_FLAG_PV_DIAL)
+    if( parse.isKeyValid("kyz") )
     {
-        switch(parse.getiValue("kyz_offset"))
+        switch( parse.getiValue("kyz_offset") )
         {
             case 1:     function = Emetcon::PutValue_KYZ;   break;
             case 2:     function = Emetcon::PutValue_KYZ2;  break;
@@ -1641,24 +1642,24 @@ INT CtiDeviceMCT::executePutValue(CtiRequestMsg                  *pReq,
 
         if( found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO) )
         {
-            if(parse.getFlags() & CMD_FLAG_PV_RESET || !parse.isKeyValid("dial"))
+            if(parse.isKeyValid("reset") || !parse.isKeyValid("kyz_reading"))
             {
-                dial = 0;
+                reading = 0;
             }
             else
             {
-                dial = parse.getdValue("dial");
+                reading = parse.getdValue("kyz_reading");
             }
 
             CtiPointSPtr tmpPoint = getDevicePointOffsetTypeEqual(parse.getiValue("kyz_offset"), PulseAccumulatorPointType);
 
             if( tmpPoint && tmpPoint->isA() == PulseAccumulatorPointType)
             {
-                rawPulses = (int)(dial / boost::static_pointer_cast<CtiPointAccumulator>(tmpPoint)->getMultiplier());
+                rawPulses = (int)(reading / boost::static_pointer_cast<CtiPointAccumulator>(tmpPoint)->getMultiplier());
             }
             else
             {
-                rawPulses = (int)dial;
+                rawPulses = (int)reading;
             }
 
 
@@ -1671,10 +1672,10 @@ INT CtiDeviceMCT::executePutValue(CtiRequestMsg                  *pReq,
             }
         }
     }
-    else if(parse.getFlags() & CMD_FLAG_PV_PWR)
+    else if( parse.isKeyValid("power") )
     {
         //  currently only know how to reset powerfail
-        if(parse.getFlags() & CMD_FLAG_PV_RESET)
+        if( parse.isKeyValid("reset") )
         {
             function = Emetcon::PutValue_ResetPFCount;
             found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
@@ -1686,10 +1687,10 @@ INT CtiDeviceMCT::executePutValue(CtiRequestMsg                  *pReq,
             }
         }
     }
-    else if(parse.getFlags() & CMD_FLAG_PV_IED)     // This parse has the token IED in it!
+    else if( parse.isKeyValid("ied") )     // This parse has the token IED in it!
     {
         //  currently only know how to reset IEDs
-        if(parse.getFlags() & CMD_FLAG_PV_RESET)
+        if( parse.isKeyValid("reset") )
         {
             int iedtype = ((CtiDeviceMCT31X *)this)->getIEDPort().getIEDType();
 
