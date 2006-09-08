@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/pt_numeric.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2006/07/20 21:46:42 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2006/09/08 20:19:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -276,46 +276,34 @@ void        CtiPointNumeric::setDataOffset(DOUBLE d)
    return;
 }
 
-bool CtiPointNumeric::limitStateCheck( const int limitOrState, double val, int &direction)
+// Takes a numeric alarm and the id of the limit and checks for exceeding the limits
+// This currently assumes that you know the limitID, if not it could be changed to call
+// GetNumericStateLimitFromHighLow
+bool CtiPointNumeric::limitStateCheck( const int alarm, const int limitID, double val, int &direction)
 {
    direction = LIMIT_IN_RANGE;          // This indicates that
-   int state = limitOrState + CtiTablePointAlarming::limit0;// restore to original value
 
-   if(getLowLimit(limitOrState) >= getHighLimit(limitOrState))
+   if(getLowLimit(limitID) >= getHighLimit(limitID))
    {
        direction = LIMIT_SETUP_ERROR;
    }
-   else if( state >= CtiTablePointAlarming::limitLow0 && state <= CtiTablePointAlarming::limitHigh1 )
+   else if( alarm >= CtiTablePointAlarming::limitLow0 && alarm <= CtiTablePointAlarming::limitHigh1 )
    {
-       switch(state)
+       switch(alarm)
        {
            case CtiTablePointAlarming::limitLow0:
-           {
-               if( val < getLowLimit(CtiTablePointAlarming::limit0-CtiTablePointAlarming::limit0) )
-               {
-                   direction = LIMIT_EXCEEDS_LO;
-               }
-               break;
-           }
            case CtiTablePointAlarming::limitLow1:
            {
-               if( val < getLowLimit(CtiTablePointAlarming::limit1-CtiTablePointAlarming::limit0) )
+               if( val < getLowLimit(limitID) )
                {
                    direction = LIMIT_EXCEEDS_LO;
                }
                break;
            }
            case CtiTablePointAlarming::limitHigh0:
-           {
-               if( val > getHighLimit(CtiTablePointAlarming::limit0-CtiTablePointAlarming::limit0) )
-               {
-                   direction = LIMIT_EXCEEDS_HI;
-               }
-               break;
-           }
            case CtiTablePointAlarming::limitHigh1:
            {
-               if( val > getHighLimit(CtiTablePointAlarming::limit1-CtiTablePointAlarming::limit0) )
+               if( val > getHighLimit(limitID) )
                {
                    direction = LIMIT_EXCEEDS_HI;
                }
@@ -325,12 +313,12 @@ bool CtiPointNumeric::limitStateCheck( const int limitOrState, double val, int &
    }
    else 
    {
-       if( val < getLowLimit(limitOrState) )
+       if( val < getLowLimit(limitID) )
        {
           // Lo limit has been breached!
           direction = LIMIT_EXCEEDS_LO;
        }
-       else if( getHighLimit(limitOrState) < val )
+       else if( getHighLimit(limitID) < val )
        {
           // Hi limit has been breached!
            direction = LIMIT_EXCEEDS_HI;
