@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.157 $
-* DATE         :  $Date: 2006/08/03 20:14:52 $
+* REVISION     :  $Revision: 1.158 $
+* DATE         :  $Date: 2006/09/08 20:20:46 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -337,6 +337,7 @@ void CtiVanGogh::VGMainThread()
         ThreadMonitor.start();
 
         _pendingOpThread.setMainQueue( &MainQueue_ );
+        _pendingOpThread.setSignalManager( &_signalManager );
         _pendingOpThread.start();
 
         _rphThread = rwMakeThreadFunction(*this, &CtiVanGogh::VGRPHWriterThread);
@@ -6388,28 +6389,28 @@ void CtiVanGogh::checkNumericLimits(int alarm, CtiPointDataMsg *pData, CtiMultiW
     string text;
 
     double  val = pData->getValue();
-    INT     statelimit = (alarm - CtiTablePointAlarming::limit0);
-    INT     highlowlimit = getNumericStateLimitFromHighLow(statelimit, alarm);
+    INT     numericAlarmOffset = (alarm - CtiTablePointAlarming::limit0); // This gives a base 0 (limit0 alarm = 0) for the alarms for later use with pending operations
+    INT     limitnumber = getNumericLimitFromHighLow(numericAlarmOffset, alarm); //Currently returns 0 or 1 for limit 0 or 1
     INT     exceeds = LIMIT_IN_RANGE;
 
     try
     {
-        if(pointNumeric->limitStateCheck(statelimit, val, exceeds))
+        if(pointNumeric->limitStateCheck(alarm, limitnumber, val, exceeds))
         {
             if(!_signalManager.isAlarmed(pointNumeric->getID(), alarm) && !pDyn->isConditionActive(alarm))
             {
-                INT duration = pointNumeric->getLimit(statelimit).getLimitDuration();
+                INT duration = pointNumeric->getLimit(limitnumber).getLimitDuration();
 
                 if(exceeds == LIMIT_EXCEEDS_LO )
                 {
                     char tstr[120];
                     if( alarm >= CtiTablePointAlarming::limitLow0 && alarm <= CtiTablePointAlarming::limitHigh1 )
                     {
-                        _snprintf(tstr, sizeof(tstr), "Low Limit %d Exceeded. %.3f < %.3f", alarm - CtiTablePointAlarming::limitLow0 + 1, val, pointNumeric->getLowLimit(highlowlimit));
+                        _snprintf(tstr, sizeof(tstr), "Low Limit %d Exceeded. %.3f < %.3f", alarm - CtiTablePointAlarming::limitLow0 + 1, val, pointNumeric->getLowLimit(limitnumber));
                     }
                     else
                     {
-                        _snprintf(tstr, sizeof(tstr), "Limit %d Exceeded Low. %.3f < %.3f", highlowlimit+1, val, pointNumeric->getLowLimit(highlowlimit));
+                        _snprintf(tstr, sizeof(tstr), "Limit %d Exceeded Low. %.3f < %.3f", limitnumber+1, val, pointNumeric->getLowLimit(limitnumber));
                     }
                     text = string(tstr);
                 }
@@ -6418,19 +6419,21 @@ void CtiVanGogh::checkNumericLimits(int alarm, CtiPointDataMsg *pData, CtiMultiW
                     char tstr[120];
                     if( alarm >= CtiTablePointAlarming::limitLow0 && alarm <= CtiTablePointAlarming::limitHigh1 )
                     {
-                        _snprintf(tstr, sizeof(tstr), "High Limit %d Exceeded. %.3f < %.3f", alarm - CtiTablePointAlarming::limitHigh0 + 1, val, pointNumeric->getLowLimit(highlowlimit));
+                        _snprintf(tstr, sizeof(tstr), "High Limit %d Exceeded. %.3f > %.3f", alarm - CtiTablePointAlarming::limitHigh0 + 1, val, pointNumeric->getHighLimit(limitnumber));
                     }
                     else
                     {
-                        _snprintf(tstr, sizeof(tstr), "Limit %d Exceeded High. %.3f > %.3f", highlowlimit+1, val, pointNumeric->getHighLimit(highlowlimit));
+                        _snprintf(tstr, sizeof(tstr), "Limit %d Exceeded High. %.3f > %.3f", limitnumber+1, val, pointNumeric->getHighLimit(limitnumber));
                     }
                     text = string(tstr);
                 }
                 else if(exceeds == LIMIT_SETUP_ERROR)
                 {
                     char tstr[120];
-                    _snprintf(tstr, sizeof(tstr), "Limit %d Invalid Setup. Is %.3f < %.3f < %.3f?", highlowlimit+1, pointNumeric->getLowLimit(highlowlimit), val, pointNumeric->getHighLimit(highlowlimit));
+                    _snprintf(tstr, sizeof(tstr), "Limit %d Invalid Setup. Is %.3f < %.3f < %.3f?", limitnumber+1, pointNumeric->getLowLimit(limitnumber), val, pointNumeric->getHighLimit(limitnumber));
                     text = string(tstr);
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint **** Invalid limit setup" << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
                 else
                 {
@@ -6453,8 +6456,8 @@ void CtiVanGogh::checkNumericLimits(int alarm, CtiPointDataMsg *pData, CtiMultiW
                 if(duration > 0)  // Am I required to hold in this state for a bit before the announcement of this condition?
                 {
                     CtiPendingPointOperations *pendingPointLimit = CTIDBG_new CtiPendingPointOperations(pointNumeric->getID());
-                    pendingPointLimit->setType(CtiPendingPointOperations::pendingLimit + statelimit);
-                    pendingPointLimit->setLimitBeingTimed( statelimit );
+                    pendingPointLimit->setType(CtiPendingPointOperations::pendingLimit + numericAlarmOffset);
+                    pendingPointLimit->setLimitBeingTimed( numericAlarmOffset );
                     pendingPointLimit->setTime( CtiTime() );
                     pendingPointLimit->setLimitDuration( duration );
                     pendingPointLimit->setSignal( pSig );
@@ -6466,7 +6469,7 @@ void CtiVanGogh::checkNumericLimits(int alarm, CtiPointDataMsg *pData, CtiMultiW
                     addToPendingSet(pendingPointLimit);
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** LIMIT Violation ****  Point: " << pointNumeric->getName() << " delayed (" << duration << ") violation. Limit " << statelimit+1 << " pending alarm." << endl;
+                        dout << CtiTime() << " **** LIMIT Violation ****  Point: " << pointNumeric->getName() << " delayed (" << duration << ") violation. Limit " << limitnumber+1 << " pending alarm." << endl;
                     }
                 }
                 else
@@ -6481,11 +6484,11 @@ void CtiVanGogh::checkNumericLimits(int alarm, CtiPointDataMsg *pData, CtiMultiW
         }
         else
         {
-            if( pointNumeric->getLowLimit(highlowlimit) != -DBL_MAX && pointNumeric->getHighLimit(highlowlimit) != DBL_MAX )    // No limits set, no limits can be exceeded!
+            if( pointNumeric->getLowLimit(limitnumber) != -DBL_MAX && pointNumeric->getHighLimit(limitnumber) != DBL_MAX )    // No limits set, no limits can be exceeded!
             {
                 // Remove any possible pending limit violator.
                 CtiPendable *pPend = CTIDBG_new CtiPendable(pData->getId(), CtiPendable::CtiPendableAction_RemoveLimit);
-                pPend->_limit = statelimit;
+                pPend->_limit = numericAlarmOffset;
                 _pendingOpThread.push( pPend );
 
                 activatePointAlarm(alarm,aWrap,pointNumeric,pDyn,false);
@@ -6510,9 +6513,9 @@ void CtiVanGogh::checkNumericLimits(int alarm, CtiPointDataMsg *pData, CtiMultiW
     }
 }
 
-INT CtiVanGogh::getNumericStateLimitFromHighLow(INT statelimit, INT alarm)
+INT CtiVanGogh::getNumericLimitFromHighLow(INT numericAlarmOffset, INT alarm)
 {
-    INT retVal = statelimit;
+    INT retVal = numericAlarmOffset;
     if( alarm >= CtiTablePointAlarming::limitLow0 && alarm <= CtiTablePointAlarming::limitHigh1 )
     {
         switch(alarm)
