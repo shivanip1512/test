@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/mgr_config.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2006/08/23 15:07:12 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2006/09/08 21:25:49 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -621,25 +621,56 @@ void CtiConfigManager::updateDeviceConfigs(long configID, long deviceID)
        
         RWDBReader rdr = selector.reader(conn);
 
-        
-        while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
+        // If we specify a device, this may be the equivalent of a "delete"
+        // If we also specified a config, we cant risk the "delete" operation,
+        // As it would be too specific and could result in a delete that was not desired
+        if( deviceID != 0 && configID == 0 )
         {
-            long devID, configID;
-    
-            rdr["configid"] >>configID;
-            rdr["deviceid"]>>devID;
-
-            CtiDeviceSPtr pDev = _devMgr->getEqual(devID);
-
-            CtiConfigDeviceSPtr tempSPtr;
-
-            if( (tempSPtr = _deviceConfig.find(configID)) && pDev )
+            if( rdr() )
             {
-                pDev->setDeviceConfig(tempSPtr);
-            }
+                long devID, configID;
     
+                rdr["configid"] >>configID;
+                rdr["deviceid"]>>devID;
+    
+                CtiDeviceSPtr pDev = _devMgr->getEqual(devID);
+    
+                CtiConfigDeviceSPtr tempSPtr;
+    
+                if( (tempSPtr = _deviceConfig.find(configID)) && pDev )
+                {
+                    pDev->setDeviceConfig(tempSPtr);
+                }    
+            }
+            else
+            {
+                CtiDeviceSPtr pDev = _devMgr->getEqual(deviceID);
+                if( pDev )
+                {
+                    pDev->setDeviceConfig(CtiConfigDeviceSPtr());
+                }  
+            }
+            
         }
-
+        else
+        {
+            while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
+            {
+                long devID, configID;
+        
+                rdr["configid"] >>configID;
+                rdr["deviceid"]>>devID;
+    
+                CtiDeviceSPtr pDev = _devMgr->getEqual(devID);
+    
+                CtiConfigDeviceSPtr tempSPtr;
+    
+                if( (tempSPtr = _deviceConfig.find(configID)) && pDev )
+                {
+                    pDev->setDeviceConfig(tempSPtr);
+                }    
+            }
+        }
     }
     stop = stop.now();
     if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
