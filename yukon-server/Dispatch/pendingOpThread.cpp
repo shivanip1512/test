@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.31 $
-* DATE         :  $Date: 2006/06/16 20:04:56 $
+* REVISION     :  $Revision: 1.32 $
+* DATE         :  $Date: 2006/09/08 20:18:05 $
 *
 * HISTORY      :
 * $Log: pendingOpThread.cpp,v $
+* Revision 1.32  2006/09/08 20:18:05  jotteson
+* Fixed a bug that would cause delayed limits to not be ack-able.
+*
 * Revision 1.31  2006/06/16 20:04:56  jotteson
 * Now modifies tags when removing a control. Can be told not to write control history if desired.
 *
@@ -178,6 +181,12 @@ CtiPendingOpThread::~CtiPendingOpThread()
 void CtiPendingOpThread::setMainQueue(CtiConnection::Que_t *pMQ)
 {
     _pMainQueue = pMQ;
+    return;
+}
+
+void CtiPendingOpThread::setSignalManager(CtiSignalManager *pSM)
+{
+    _pSignalManager = pSM;
     return;
 }
 
@@ -722,6 +731,7 @@ void CtiPendingOpThread::doPendingLimits(bool bShutdown)
                         pSig->setMessageTime( ppo.getTime() + ppo.getLimitDuration() );
                         pSig->setMessagePriority( MAXPRIORITY - 1 );
 
+                        _pSignalManager->addSignal(*pSig);
                         _pMainQueue->putQueue( pSig );
                         pSig = 0;
 

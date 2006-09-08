@@ -9,10 +9,13 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2006/06/16 20:04:56 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2006/09/08 20:18:05 $
 * HISTORY      :
 * $Log: pendingOpThread.h,v $
+* Revision 1.12  2006/09/08 20:18:05  jotteson
+* Fixed a bug that would cause delayed limits to not be ack-able.
+*
 * Revision 1.11  2006/06/16 20:04:56  jotteson
 * Now modifies tags when removing a control. Can be told not to write control history if desired.
 *
@@ -71,6 +74,7 @@ using std::pair;
 #include "queue.h"
 #include "tbl_lm_controlhist.h"
 #include "thread.h"
+#include "signalmanager.h"
 
 class CtiPendingOpThread : public CtiThread
 {
@@ -85,6 +89,7 @@ private:
     RWThreadFunction  _dbThread;
 
     CtiConnection::Que_t *_pMainQueue;    // Main queue
+    CtiSignalManager     *_pSignalManager;
 
     //  the input queue
     CtiFIFOQueue< CtiPendable > _input;
@@ -126,6 +131,7 @@ public:
     void run();
 
     void setMainQueue(CtiConnection::Que_t *pMQ);
+    void setSignalManager(CtiSignalManager *pSM);
     void processPendableQueue();
 
     void doPendingControls(bool bShutdown = false);
