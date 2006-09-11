@@ -457,10 +457,7 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 		html += "  </tr>" + LINE_SEPARATOR;
 		html += "  <tr>" + LINE_SEPARATOR;
 		html += "    <td class='main' height='10' style='padding-left:5; padding-top:5'>" + LINE_SEPARATOR;
-		if( getFilterModelTypes() != null)
-		{
-			
-		}
+		
 		html += "    </td>" + LINE_SEPARATOR;
 		html += "  </tr>" + LINE_SEPARATOR;
 		html += "</table>" + LINE_SEPARATOR;
@@ -769,16 +766,22 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 	 * @param int seconds
 	 * @return String in format hh:mm:ss
 	 */
-	protected static String convertSecondsToTimeString(int seconds)
+	protected static String convertSecondsToTimeString(double seconds)
 	{
-		DecimalFormat format = new DecimalFormat("00");
-		int hour = seconds / 3600;
-		int temp = seconds % 3600;
-		int min = temp / 60;
-		int sec = temp % 60; 
-			
-		return format.format(hour) + ":" + format.format(min) + ":" + format.format(sec);
-	}
+        DecimalFormat format = new DecimalFormat();
+        format.setMaximumFractionDigits(0);
+        format.setMinimumIntegerDigits(2);
+        DecimalFormat format2 = new DecimalFormat();
+        format2.setMaximumIntegerDigits(0);
+        format2.setMinimumFractionDigits(3);
+        
+        double hour = seconds / 3600;
+        double temp = seconds% 3600;
+        double min = temp / 60;
+        double sec = temp % 60; 
+
+        return format.format(hour) + ":" + format.format(min) + ":" + format.format(Math.floor(sec))+  format2.format(temp).toString();
+    }
 	
 	public void buildByteStream(OutputStream out) throws IOException
 	{

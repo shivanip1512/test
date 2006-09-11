@@ -320,19 +320,19 @@ public class LoadGroupModel extends ReportModelBase
 				case CONTROL_STOP_TIME_COLUMN:
 					return lmch.getStopDateTime();
 				case CONTROL_DURATION_COLUMN:
-					return convertSecondsToTimeString(lmch.getControlDuration().intValue());
+					return convertSecondsToTimeString(lmch.getControlDuration().doubleValue());
 				case ACTIVE_RESTORE_COLUMN:
 					return getActiveRestoreString(lmch.getActiveRestore());
 				case CONTROL_TYPE_COLUMN:
 					return lmch.getControlType();
 				case DAILY_CONTROL_COLUMN:
-					return convertSecondsToTimeString(lmch.getCurrentDailyTime().intValue());
+					return convertSecondsToTimeString(lmch.getCurrentDailyTime().doubleValue());
 				case MONTHLY_CONTROL_COLUMN:
-					return convertSecondsToTimeString(lmch.getCurrentMonthlyTime().intValue());
+					return convertSecondsToTimeString(lmch.getCurrentMonthlyTime().doubleValue());
 				case SEASONAL_CONTROL_COLUMN:
-					return convertSecondsToTimeString(lmch.getCurrentSeasonalTime().intValue());
+					return convertSecondsToTimeString(lmch.getCurrentSeasonalTime().doubleValue());
 				case ANNUAL_CONTROL_COLUMN:
-					return convertSecondsToTimeString(lmch.getCurrentAnnualTime().intValue());
+					return convertSecondsToTimeString(lmch.getCurrentAnnualTime().doubleValue());
 			}
 		}
 		return null;
@@ -500,18 +500,41 @@ public class LoadGroupModel extends ReportModelBase
 				setShowAllActiveRestore(false);
 		}
 	}
+    
+    /**
+     * From yukon-server\COMMON\include\yukon.h
+     * define LMAR_NEWCONTROL         "N"             // This is the first entry for any new control.
+     * #define LMAR_LOGTIMER           "L"             // This is a timed log entry.  Nothing exciting happened in this interval.
+     * #define LMAR_CONT_CONTROL       "C"             // Previous command was repeated extending the current control interval.
+     * #define LMAR_TIMED_RESTORE      "T"             // Control terminated based on time set in load group.
+     * #define LMAR_MANUAL_RESTORE     "M"             // Control terminated because of an active restore or terminate command being sent.
+     * #define LMAR_OVERRIDE_CONTROL   "O"             // Control terminated because a new command of a different nature was sent to this group.
+     * #define LMAR_CONTROLACCT_ADJUST "A"             // Control accounting was adjusted by user.
+     * #define LMAR_PERIOD_TRANSITION  "P"             // Control was active as we crossed a control history boundary.  This log denotes the last log in the previos interval.
+     * #define LMAR_DISPATCH_SHUTDOWN  "S"             // Control was active as dispatch shutdown.  This entry will be used to resume control.
+     * @param restore
+     * @return
+     */
 	public String getActiveRestoreString(String restore)
 	{
 	    if( restore.equalsIgnoreCase("M"))
-	        return "Manual";
+	        return "Control End - Restore/Terminate Command";
 	    else if (restore.equalsIgnoreCase("0"))
-	        return "Override";
+	        return "Control End - New Command Issued";
 	    else if (restore.equalsIgnoreCase("N"))
-	        return "New";
+	        return "New Control";
 	    else if (restore.equalsIgnoreCase("T"))
-	        return "Timed";
+	        return "Control End - LoadGroup Time";
 	    else if (restore.equalsIgnoreCase("A"))
-	        return "Adjust";
+	        return "Adjusted By User";
+        else if (restore.equalsIgnoreCase("C"))
+            return "Extending Conmand";
+        else if (restore.equalsIgnoreCase("L"))
+            return "Timed Log Entry";
+        else if (restore.equalsIgnoreCase("P"))
+            return "Last Log in Prev Interval";
+        else if (restore.equalsIgnoreCase("S"))
+            return "Dispatch Shutdown";
 	        
 	    return restore;
 	    

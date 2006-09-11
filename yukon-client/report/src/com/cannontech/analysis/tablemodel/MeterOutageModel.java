@@ -229,7 +229,7 @@ public class MeterOutageModel extends ReportModelBase
 				    return meterPD.getTimeStamp();
 
 				case DURATION:
-				    return convertSecondsToTimeString(meterPD.getValue().intValue());
+				    return convertSecondsToTimeString(meterPD.getValue());
 			}
 		}
 		return null;
