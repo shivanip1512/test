@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+   <bean id="loadControlConnection" class="com.cannontech.loadcontrol.LoadControlClientConnection" 
+         factory-method="getInstance" singleton="true" />
+   <bean id="loadManagementService" class="com.cannontech.loadcontrol.LoadManagementProxy" 
+         singleton="true">
+        <property name="loadControlClientConnection" ref="loadControlConnection" />
+        <property name="serverRequest" ref="serverRequest" />
+   </bean>
+<!-- 
+   <bean id="loadManagementService" class="com.cannontech.loadcontrol.LoadManagementStub" 
+         singleton="true">
+   </bean>
+-->
+
+</beans>

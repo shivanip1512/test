@@ -40,6 +40,43 @@
   </t:column>
 </t:dataTable>
 
+<h3>Assigned Programs</h3>
+<div>
+<div class="section" style="float: left;">
+<div class="sectionTitle">Active Load Control Programs:</div>
+<div class="sectionBody">
+<t:dataTable value="#{sCustomerDetail.assignedProgramList}" 
+             var="thisProgram" 
+             styleClass="horizBorders">
+  <t:column width="20">
+    <t:commandLink actionListener="#{sCustomerDetail.deleteProgram}">
+      <t:updateActionListener property="#{sCustomerDetail.selectedProgram}" value="#{thisProgram}"/>
+      <h:graphicImage value="/WebConfig/yukon/Icons/clearbits/subtract.gif" styleClass="cssicon" />
+    </t:commandLink>
+  </t:column>
+  <t:column><t:outputText value="#{thisProgram.paoName}"/></t:column>
+</t:dataTable>
+</div>
+</div>
+<div class="section" style="float: left">
+<div class="sectionTitle">Available Load Control Programs:</div>
+<div class="sectionBody">
+<t:dataTable value="#{sCustomerDetail.unassignedProgramList}" 
+             var="thisProgram" 
+             styleClass="horizBorders">
+  <t:column width="20">
+    <t:commandLink actionListener="#{sCustomerDetail.addProgram}">
+      <t:updateActionListener property="#{sCustomerDetail.selectedProgram}" value="#{thisProgram}"/>
+      <h:graphicImage value="/WebConfig/yukon/Icons/clearbits/add.gif" styleClass="cssicon" />
+    </t:commandLink>
+  </t:column>
+  <t:column><t:outputText value="#{thisProgram.paoName}"/></t:column>
+</t:dataTable>
+</div>
+</div>
+<div style="clear: both;">&nbsp;</div>
+</div>
+
 <div>
 <h:commandButton action="#{sCustomerDetail.save}" value="Save"/>
 <h:commandButton action="#{sCustomerDetail.cancel}" value="Cancel"/>

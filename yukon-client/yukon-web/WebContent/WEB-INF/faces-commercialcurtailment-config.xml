@@ -148,6 +148,10 @@
             <property-name>customerService</property-name>
             <value>#{customerPointService}</value>
         </managed-property>
+        <managed-property>
+            <property-name>customerLMProgramService</property-name>
+            <value>#{customerLMProgramService}</value>
+        </managed-property>
     </managed-bean>
 
     <managed-bean>

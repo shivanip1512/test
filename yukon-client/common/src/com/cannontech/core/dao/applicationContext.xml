@@ -53,6 +53,12 @@
   </bean>
   <bean id="lmDao" class="com.cannontech.core.dao.impl.LMDaoImpl" >
     <property name="databaseCache" ref="databaseCache"/>    
+    <property name="paoDao" ref="paoDao"/>    
+  </bean>
+  <bean id="lmDirectCustomerListDao" class="com.cannontech.core.dao.impl.LMDirectCustomerListDaoImpl" >
+    <property name="jdbcOperations" ref="jdbcTemplate"/> 
+    <property name="paoDao" ref="paoDao"/>    
+    <property name="transactionTemplate" ref="transactionTemplate"/>    
   </bean>
   <bean id="notificationGroupDao" class="com.cannontech.core.dao.impl.NotificationGroupDaoImpl" >
     <property name="databaseCache" ref="databaseCache"/>    

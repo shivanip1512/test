@@ -2,12 +2,16 @@ package com.cannontech.core.dao.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.cannontech.core.dao.LMDao;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteLMProgScenario;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**
@@ -18,6 +22,7 @@ import com.cannontech.yukon.IDatabaseCache;
 public final class LMDaoImpl implements LMDao
 {
     private IDatabaseCache databaseCache;
+    private PaoDao paoDao;
 
     /**
 	 * LMFuncs constructor comment.
@@ -76,7 +81,15 @@ public final class LMDaoImpl implements LMDao
 		return retVal;
 	}
     
+    public Set<LiteYukonPAObject> getAllLMDirectPrograms() {
+        return new HashSet<LiteYukonPAObject>(paoDao.getLiteYukonPAObjectByType(DeviceTypes.LM_DIRECT_PROGRAM));
+    }
+    
     public void setDatabaseCache(IDatabaseCache databaseCache) {
         this.databaseCache = databaseCache;
+    }
+
+    public void setPaoDao(PaoDao paoDao) {
+        this.paoDao = paoDao;
     }
 }

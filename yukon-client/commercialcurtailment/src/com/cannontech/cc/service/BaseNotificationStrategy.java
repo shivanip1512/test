@@ -218,7 +218,7 @@ public abstract class BaseNotificationStrategy extends StrategyBase {
     public void changeEvent(CurtailmentChangeBuilder builder, LiteYukonUser user) {
     }
     
-    public void adjustEvent(final CurtailmentChangeBuilder builder, final LiteYukonUser user) 
+    public CurtailmentEvent adjustEvent(final CurtailmentChangeBuilder builder, final LiteYukonUser user) 
     throws EventModificationException {
         final CurtailmentEvent event = builder.getOriginalEvent();
         transactionTemplate.execute(new TransactionCallback(){
@@ -231,12 +231,14 @@ public abstract class BaseNotificationStrategy extends StrategyBase {
                 event.setState(CurtailmentEventState.MODIFIED);
                 curtailmentEventDao.save(event);
                 
-                return null;
+                return event;
             } 
         });
         CTILogger.info(event + " modified by " + user + " new durration " + builder.getNewLength());
         
         getNotificationProxy().sendCurtailmentNotification(event.getId(), CurtailmentEventAction.ADJUSTING);
+        
+        return event;
     }
     
     @Transactional
@@ -265,8 +267,7 @@ public abstract class BaseNotificationStrategy extends StrategyBase {
         if (!canEventBeCancelled(event, user)) {
             throw new RuntimeException("Event can't be cancelled right now by this user");
         }
-        boolean success = 
-            getNotificationProxy().attemptDeleteCurtailmentNotification(event.getId(), false);
+        getNotificationProxy().attemptDeleteCurtailmentNotification(event.getId(), false);
         getNotificationProxy().sendCurtailmentNotification(event.getId(), CurtailmentEventAction.CANCELING);
 
         event.setState(CurtailmentEventState.CANCELLED);
@@ -315,8 +316,7 @@ public abstract class BaseNotificationStrategy extends StrategyBase {
         return curtailmentEventParticipantDao;
     }
 
-    public void setCurtailmentEventParticipantDao(
-                                                  CurtailmentEventParticipantDao curtailmentEventParticipantDao) {
+    public void setCurtailmentEventParticipantDao(CurtailmentEventParticipantDao curtailmentEventParticipantDao) {
         this.curtailmentEventParticipantDao = curtailmentEventParticipantDao;
     }
 

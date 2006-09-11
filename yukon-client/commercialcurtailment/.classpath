@@ -18,5 +18,6 @@
 	<classpathentry exported="true" kind="lib" path="/third-party/antlr-2.7.6rc1.jar"/>
 	<classpathentry sourcepath="Z:/java/Third-Party Sources/spring-framework-1.2.7.zip" kind="lib" path="/third-party/spring.jar"/>
 	<classpathentry kind="lib" path="/third-party/commons-collections-3.2.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/loadcontrol"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

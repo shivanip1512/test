@@ -1,0 +1,140 @@
+package com.cannontech.core.dao.impl;
+
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.PreparedStatementSetter;
+import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
+
+import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.LMDirectCustomerListDao;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.db.web.LMDirectCustomerList;
+
+public class LMDirectCustomerListDaoImpl implements LMDirectCustomerListDao {
+    private JdbcOperations jdbcOperations;
+    private TransactionTemplate transactionTemplate;
+    private PaoDao paoDao;
+    
+    public LMDirectCustomerListDaoImpl() {
+        super();
+    }
+
+    public Set<Integer> getLMProgramIdsForCustomer(Integer customerId) {
+        String programCustomerSql =
+            "SELECT ProgramID FROM " + LMDirectCustomerList.tableName + " WHERE CustomerID = ?";
+        
+        Set<Integer> result = new HashSet<Integer>();
+        
+        IntegerSetResultSetExtractor resultSetExtractor = new IntegerSetResultSetExtractor(result);
+        jdbcOperations.query(programCustomerSql, new Object[] {customerId}, resultSetExtractor);
+        return result;
+    }
+
+    public void setLMProgramIdsForCustomer(final Integer customerId, final Set<Integer> lmProgramIds) {
+        transactionTemplate.execute(new TransactionCallback() {
+            public Object doInTransaction(TransactionStatus status) {
+                Set<Integer> currentDbSet = getLMProgramIdsForCustomer(customerId);
+                // find ids that are to be removed
+                Set<Integer> toAdd = new HashSet<Integer>(lmProgramIds);
+                toAdd.removeAll(currentDbSet);
+                SqlStatementBuilder addSql = new SqlStatementBuilder();
+                addSql.append("insert into", LMDirectCustomerList.tableName, "(ProgramId, CustomerId)");
+                addSql.append("values (?, ?)");
+                for (Integer programId : toAdd) {
+                    final int finalProgramid = programId.intValue();
+                    PreparedStatementSetter pss = new PreparedStatementSetter() {
+                        public void setValues(PreparedStatement ps) throws SQLException {
+                            ps.setInt(1, finalProgramid);
+                            ps.setInt(2, customerId);
+                        }
+                    };
+                    jdbcOperations.update(addSql.toString(), pss);
+                }
+                
+                // find ids that are to be added
+                Set<Integer> toDelete = new HashSet<Integer>(currentDbSet);
+                toDelete.removeAll(lmProgramIds);
+                SqlStatementBuilder deleteSql = new SqlStatementBuilder();
+                deleteSql.append("delete from", LMDirectCustomerList.tableName);
+                deleteSql.append("where ProgramId in (", toDelete, ")");
+                deleteSql.append("and CustomerId = ", customerId);
+                jdbcOperations.execute(deleteSql.toString());
+                
+                return null;
+            }
+        });
+    }
+    
+    class IntegerSetResultSetExtractor implements ResultSetExtractor {
+        private Set<Integer> outputSet;
+
+        public IntegerSetResultSetExtractor() {
+            outputSet = new HashSet<Integer>();
+        }
+        
+        public IntegerSetResultSetExtractor(Set<Integer> outputSet) {
+            this.outputSet = outputSet;
+        }
+
+        public Object extractData(ResultSet rs) throws SQLException, DataAccessException {
+            while (rs.next()) {
+                int value = rs.getInt(1);
+                outputSet.add(value);
+            }
+            return outputSet;
+        }
+        
+    }
+
+    public Set<LiteYukonPAObject> getLMProgramPaosForCustomer(Integer customerId) {
+        Set<LiteYukonPAObject> resultSet = new HashSet<LiteYukonPAObject>();
+        Set<Integer> programIdsForCustomer = getLMProgramIdsForCustomer(customerId);
+        for (Integer integer : programIdsForCustomer) {
+            resultSet.add(paoDao.getLiteYukonPAO(integer));
+        }
+        return resultSet;
+    }
+
+    public void setLMProgramPaosForCustomer(Integer customerId, Set<LiteYukonPAObject> lmProgramPaos) {
+        HashSet<Integer> programIds = new HashSet<Integer>();
+        for (LiteYukonPAObject pao : lmProgramPaos) {
+            programIds.add(pao.getLiteID());
+        }
+        setLMProgramIdsForCustomer(customerId, programIds);
+    }
+
+    public JdbcOperations getJdbcOperations() {
+        return jdbcOperations;
+    }
+
+    public void setJdbcOperations(JdbcOperations jdbcOperations) {
+        this.jdbcOperations = jdbcOperations;
+    }
+
+    public PaoDao getPaoDao() {
+        return paoDao;
+    }
+
+    public void setPaoDao(PaoDao paoDao) {
+        this.paoDao = paoDao;
+    }
+
+    public TransactionTemplate getTransactionTemplate() {
+        return transactionTemplate;
+    }
+
+    public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
+        this.transactionTemplate = transactionTemplate;
+    }
+
+}

@@ -13,6 +13,7 @@
          <value>com/cannontech/multispeak/client/applicationContext.xml</value>
          <value>com/cannontech/core/dynamic/applicationContext.xml</value>
 		 <value>com/cannontech/cbc/applicationContext.xml</value>
+		 <value>com/cannontech/loadcontrol/applicationContext.xml</value>
        </list>
      </constructor-arg>
    </bean>
@@ -37,7 +38,8 @@
          <value>com/cannontech/hibernate/hibernateContext.xml</value>
          <value>com/cannontech/cc/applicationContext.xml</value>
          <value>com/cannontech/notif/applicationContext.xml</value>
-         <value>com/cannontech/cbc/applicationContext.xml</value>
+         <value>com/cannontech/core/dynamic/applicationContext.xml</value>
+         <value>com/cannontech/loadcontrol/applicationContext.xml</value>
        </list>
      </constructor-arg>
    </bean>
