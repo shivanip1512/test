@@ -7,6 +7,7 @@ public class DeviceMeterGroup extends com.cannontech.database.db.DBPersistent
 {
     public static final String DISCONNECTED_GROUP_PREFIX = "@_DISC_";
     public static final String USAGE_MONITORING_GROUP_PREFIX = "@_UM_";
+    public static final String INVENTORY_GROUP_PREFIX = "@_INV_";
     
 	//group types (used for billing mainly)
 	public static final int COLLECTION_GROUP = 0;

@@ -68,9 +68,11 @@ public class MR_CBImpl extends MR_CBSoap_BindingImpl{
                                          "isAMRMeter",
                                          "getAMRSupportedMeters",
                                          "getLatestReadingByMeterNo",
-                                         "getReadingsByDate",
+//                                         "getReadingsByDate",
                                          "getReadingsByMeterNo",
                                          "getReadingsByBillingCycle",
+                                         "meterRemoveNotification",
+                                         "meterAddNotification",
                                          "initiateUsageMonitoring",
                                          "cancelUsageMonitoring",
                                          "initiateDisconnectedStatus",
@@ -156,9 +158,6 @@ public class MR_CBImpl extends MR_CBSoap_BindingImpl{
         if( ! isAMRMeter(meterNo))
             throw new RemoteException( "Meter Number (" + meterNo + "): NOT Found.");
 
-        if ( ! Multispeak.getInstance().getPilConn().isValid() )    //perform this after isAMRMeter so init() is called.
-            throw new RemoteException("Connection to 'Yukon Port Control Service' is not valid.  Please contact your Yukon Administrator.");
-
         String companyName = MultispeakFuncs.getCompanyNameFromSOAPHeader();
         MultispeakVendor vendor = MultispeakFuncs.getMultispeakVendor(companyName);
 
@@ -170,7 +169,6 @@ public class MR_CBImpl extends MR_CBSoap_BindingImpl{
 
     }
 
-    //TODO Handle lastReceived.
     public ArrayOfMeterRead getReadingsByBillingCycle(java.lang.String billingCycle, java.util.Calendar startDate, java.util.Calendar endDate, java.lang.String lastReceived) throws java.rmi.RemoteException {
         init();
         MeterRead[] meterReads = MultispeakFuncs.getMspRawPointHistoryDao().retrieveMeterReads(ReadBy.COLL_GROUP, billingCycle, startDate.getTime(), endDate.getTime(), lastReceived);
@@ -254,7 +252,7 @@ public class MR_CBImpl extends MR_CBSoap_BindingImpl{
 
         String url = (vendor != null ? vendor.getUrl() : "(none)");
         if( url == null || url.equalsIgnoreCase(CtiUtilities.STRING_NONE)) {
-            throw new AxisFault("OMS vendor unknown.  Please contact Yukon administrator to set the Multispeak Vendor Role Property value in Yukon.");
+            throw new AxisFault("Vendor unknown.  Please contact Yukon administrator to setup a Multispeak Interface Vendor in Yukon.");
         }
         else if ( ! Multispeak.getInstance().getPilConn().isValid() ) {
             throw new AxisFault("Connection to 'Yukon Port Control Service' is not valid.  Please contact your Yukon Administrator.");
@@ -282,13 +280,17 @@ public class MR_CBImpl extends MR_CBSoap_BindingImpl{
     }
 
     public ArrayOfErrorObject meterRemoveNotification(ArrayOfMeter removedMeters) throws java.rmi.RemoteException {
-        init();
-        return null;
+        String companyName = MultispeakFuncs.getCompanyNameFromSOAPHeader();
+        MultispeakVendor vendor = MultispeakFuncs.getMultispeakVendor(companyName);
+        ErrorObject[] errorObject = Multispeak.getInstance().disableMeterObject(vendor, removedMeters.getMeter());
+        return new ArrayOfErrorObject(errorObject);
     }
 
     public ArrayOfErrorObject meterAddNotification(ArrayOfMeter addedMeters) throws java.rmi.RemoteException {
-        init();
-        return null;
+        String companyName = MultispeakFuncs.getCompanyNameFromSOAPHeader();
+        MultispeakVendor vendor = MultispeakFuncs.getMultispeakVendor(companyName);
+        ErrorObject[] errorObject = Multispeak.getInstance().enableMeterObject(vendor, addedMeters.getMeter());
+        return new ArrayOfErrorObject(errorObject);
     }
     private void init()
     {
