@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dlcbase.cpp-arc  $
-* REVISION     :  $Revision: 1.38 $
-* DATE         :  $Date: 2006/08/31 13:11:55 $
+* REVISION     :  $Revision: 1.39 $
+* DATE         :  $Date: 2006/09/11 16:27:24 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -163,7 +163,11 @@ INT CtiDeviceDLCBase::retMsgHandler( string commandStr, int status, CtiReturnMsg
                         tmpVGRetMsg->PointData().clear();
                     }
 
-                    tmpVGRetMsg->PointData().push_back(((CtiPointDataMsg *)(*itr))->replicateMessage());
+                    CtiPointDataMsg *newMsg = (CtiPointDataMsg *)(((CtiPointDataMsg *)*itr)->replicateMessage());
+
+                    newMsg->setTags(TAG_POINT_MUST_ARCHIVE);
+
+                    tmpVGRetMsg->PointData().push_back(newMsg);
                 }
             }
 
