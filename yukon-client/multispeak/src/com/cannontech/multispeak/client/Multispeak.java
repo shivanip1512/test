@@ -23,6 +23,7 @@ import com.cannontech.database.data.device.MCTBase;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.YukonPAObject;
+import com.cannontech.database.db.device.DeviceMeterGroup;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.porter.message.Request;
 import com.cannontech.message.porter.message.Return;
@@ -32,17 +33,26 @@ import com.cannontech.message.util.MessageListener;
 import com.cannontech.multispeak.data.MeterReadFactory;
 import com.cannontech.multispeak.data.ReadableDevice;
 import com.cannontech.multispeak.db.MultispeakInterface;
+import com.cannontech.multispeak.event.CDEvent;
+import com.cannontech.multispeak.event.CDStatusEvent;
 import com.cannontech.multispeak.event.MeterReadEvent;
 import com.cannontech.multispeak.event.MultispeakEvent;
 import com.cannontech.multispeak.event.ODEvent;
 import com.cannontech.multispeak.service.ArrayOfErrorObject;
 import com.cannontech.multispeak.service.ArrayOfMeterRead;
 import com.cannontech.multispeak.service.ArrayOfOutageDetectionEvent;
+import com.cannontech.multispeak.service.CB_CD;
+import com.cannontech.multispeak.service.CB_CDLocator;
+import com.cannontech.multispeak.service.CB_CDSoap_BindingStub;
+import com.cannontech.multispeak.service.CB_CDSoap_PortType;
 import com.cannontech.multispeak.service.CB_MR;
 import com.cannontech.multispeak.service.CB_MRLocator;
 import com.cannontech.multispeak.service.CB_MRSoap_BindingStub;
 import com.cannontech.multispeak.service.CB_MRSoap_PortType;
+import com.cannontech.multispeak.service.ConnectDisconnectEvent;
 import com.cannontech.multispeak.service.ErrorObject;
+import com.cannontech.multispeak.service.LoadActionCode;
+import com.cannontech.multispeak.service.Meter;
 import com.cannontech.multispeak.service.MeterRead;
 import com.cannontech.multispeak.service.OA_OD;
 import com.cannontech.multispeak.service.OA_ODLocator;
@@ -137,7 +147,12 @@ public class Multispeak implements MessageListener {
 //						getRequestMessageIDs().remove( new Long(returnMsg.getUserMessageID()));
 //					}
 //				}
-				CTILogger.debug("A MESSAGE: (ExpectMore=" + returnMsg.getExpectMore() + ") " + returnMsg.getDeviceID() + " - " + returnMsg.getResultString());
+                CTILogger.info("Message Received [ID:"+ returnMsg.getUserMessageID() + 
+                               " DevID:" + returnMsg.getDeviceID() + 
+                               " Command:" + returnMsg.getCommandString() +
+                               " Result:" + returnMsg.getResultString() + 
+                               " Status:" + returnMsg.getStatus() +
+                               " More:" + returnMsg.getExpectMore()+"]");
 				if( returnMsg.getExpectMore() == 0)
 				{
 					CTILogger.info("Received Message From ID:" + returnMsg.getDeviceID() + " - " + returnMsg.getResultString());
@@ -149,6 +164,8 @@ public class Multispeak implements MessageListener {
 					else if (event instanceof MeterReadEvent)
 						messageReceived_MeterReadEvent((MeterReadEvent)event, returnMsg);
 
+                    else if( event instanceof CDEvent)
+                        messageReceived_CDEvent((CDEvent)event, returnMsg);
 				}
 			}
 		}
@@ -235,6 +252,7 @@ public class Multispeak implements MessageListener {
 		loc.setObjectID(objectID);
 		loc.setMeterNo(objectID);
 		ode.setOutageLocation(loc);
+        ode.setComments(returnMsg.getResultString());
 	    
 		if( returnMsg.getStatus() == 20 || returnMsg.getStatus() == 57 || returnMsg.getStatus() == 72)
 		{	//Meter did not respond - outage assumed
@@ -266,7 +284,106 @@ public class Multispeak implements MessageListener {
 
 		getEventsMap().remove(new Long(event.getPilMessageID()));        
 	}
+    
+    private void messageReceived_CDEvent(CDEvent event, Return returnMsg)
+    {
+        String key = event.getMspVendor().getUniqueKey();
+        String objectID = MultispeakFuncs.getObjectID(key, returnMsg.getDeviceID());                        
+        
+        event.setMeterNumber(objectID);
+        event.setResultMessage(returnMsg.getResultString());
 
+        if( returnMsg.getStatus() == 0) {
+            String resultString = returnMsg.getResultString().toLowerCase();
+            if(returnMsg.getResultString().length() > 0){
+                if( returnMsg.getResultString().toLowerCase().indexOf("unconfirmed disconnected") > -1)
+                    event.setLoadActionCode(LoadActionCode.Disconnect);
+                else if( returnMsg.getResultString().toLowerCase().indexOf("confirmed disconnected") > -1)
+                    event.setLoadActionCode(LoadActionCode.Disconnect);
+                else if( returnMsg.getResultString().toLowerCase().indexOf("connected") > -1)
+                    event.setLoadActionCode(LoadActionCode.Connect);
+                else if( returnMsg.getResultString().toLowerCase().indexOf("connect armed") > -1)
+                    event.setLoadActionCode(LoadActionCode.Armed);
+                else //Some other text?
+                    event.setLoadActionCode(LoadActionCode.Unknown);
+            } else if( returnMsg.getVector().size() > 0){
+                for (int i = 0; i < returnMsg.getVector().size(); i++) {    //assuming only 1 in vector
+                    Object o = returnMsg.getVector().elementAt(i);
+                    if (o instanceof PointData)
+                    {
+                        PointData pd = (PointData) o;
+                        event.setResultMessage(pd.getStr());
+                        if ( pd.getStr().length() > 0 ){
+                            if( pd.getValue() == 0)//Confirmed Disconnected
+                                event.setLoadActionCode(LoadActionCode.Disconnect);
+                            else if( pd.getValue() == 1)//Connected
+                                event.setLoadActionCode(LoadActionCode.Connect);
+                            else if( pd.getValue() == 2)//Uncofirmed Disconnected
+                                event.setLoadActionCode(LoadActionCode.Disconnect);
+                            else if( pd.getValue() == 3)//Connect Armed
+                                event.setLoadActionCode(LoadActionCode.Armed);
+                            else
+                                event.setLoadActionCode(LoadActionCode.Unknown);
+                        }
+                    }
+                }
+                
+            }else //Communication failure of sorts
+                event.setLoadActionCode(LoadActionCode.Unknown);
+        }
+        else //Communication failure of sorts
+            event.setLoadActionCode(LoadActionCode.Unknown);
+        
+        if( !(event instanceof CDStatusEvent))
+            CDEventNotification(event);
+
+        getEventsMap().remove(new Long(event.getPilMessageID()));        
+    }
+    
+    public LoadActionCode CDMeterState(MultispeakVendor mspVendor, String meterNumber) throws RemoteException
+    {
+        LiteYukonPAObject lPao = MultispeakFuncs.getLiteYukonPaobject(mspVendor.getUniqueKey(), meterNumber);
+        long id = generateMessageID();
+        CDStatusEvent event = new CDStatusEvent(mspVendor, id);
+        
+        if (lPao != null)
+        {
+            event.setMeterNumber(meterNumber);
+            getEventsMap().put(new Long(id), event);
+            
+            Request pilRequest = null;
+            CTILogger.info("Received " + meterNumber + " for CDMeterState from " + mspVendor.getCompanyName());
+
+            pilRequest = new Request(lPao.getYukonID(), "getstatus disconnect", id);
+            pilRequest.setPriority(15);
+            getPilConn().write(pilRequest);
+
+            synchronized (event)
+            {
+                long millisTimeOut = 0; //
+                while (event.getLoadActionCode() == null && millisTimeOut < 120000)  //quit after 2 minutes
+                {
+                    try
+                    {
+                        Thread.sleep(1000);
+                        millisTimeOut += 1000;
+                    } catch (InterruptedException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+                if( millisTimeOut >= 120000) {// this broke the loop, more than likely, have to kill it sometime
+                    event.setResultMessage("Reading Timed out after 2 minutes.");
+                    if(event.getLoadActionCode() == null)
+                        event.setLoadActionCode(LoadActionCode.Unknown);
+                }
+
+            }
+      }
+
+        return event.getLoadActionCode();
+    }
+    
 	/**
 	 * Send a ping command to pil connection for each meter in meterNumbers.
 	 * @param meterNumbers
@@ -316,7 +433,7 @@ public class Multispeak implements MessageListener {
     {
         Vector errorObjects = new Vector();
         Request pilRequest = null;
-        CTILogger.info("Received " + meterNumbers.length + " Meter(s) for Outage Verification Testing from " + vendor.getCompanyName());
+        CTILogger.info("Received " + meterNumbers.length + " Meter(s) for MeterReading from " + vendor.getCompanyName());
         
         for (String meterNumber : meterNumbers) {
             LiteYukonPAObject lPao = MultispeakFuncs.getLiteYukonPaobject(vendor.getUniqueKey(), meterNumber);
@@ -352,57 +469,52 @@ public class Multispeak implements MessageListener {
         return new ErrorObject[0];
     }
     
-	/*public MeterRead MeterReadEvent(MultispeakVendor mspVendor, String meterNumber, String command) throws RemoteException
-	{
-        LiteYukonPAObject lPao = MultispeakFuncs.getLiteYukonPaobject(mspVendor.getUniqueKey(), meterNumber);
-        long id = generateMessageID();
-        MeterReadEvent event = new MeterReadEvent(mspVendor, id);
+    /**
+     * Send a ping command to pil connection for each meter in meterNumbers.
+     * @param meterNumbers
+     * @return ErrorObject [] Array of errorObjects for meters that cannot be found, etc.
+     */
+    public synchronized ErrorObject[] CDEvent(MultispeakVendor vendor, ConnectDisconnectEvent [] cdEvents) throws RemoteException
+    {
+        Vector errorObjects = new Vector();
+        Request pilRequest = null;
+        CTILogger.info("Received " + cdEvents.length + " Meter(s) for Connect/Disconnect from " + vendor.getCompanyName());
         
-        if (lPao != null)
-        {		
-            ReadableDevice device = MeterReadFactory.createMeterReadObject(lPao.getCategory(), lPao.getType(), meterNumber);
-            event.setDevice(device);
-    		getEventsMap().put(new Long(id), event);
-    		
-    		Request pilRequest = null;
-    		CTILogger.info("Received " + meterNumber + " for Meter Reading from " + mspVendor.getCompanyName());
-
-			pilRequest = new Request(lPao.getYukonID(), command, id);
-			pilRequest.setPriority(15);
-			getPilConn().write(pilRequest);
-
-            CTILogger.info(System.currentTimeMillis() + " HI");
-            try
-            {
-                wait(120000l);
-            } catch (InterruptedException e)
-            {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+        for (int i = 0; i < cdEvents.length; i++) {
+            ConnectDisconnectEvent cdEvent = cdEvents[i];
+            String meterNumber = cdEvent.getObjectID();
+            LiteYukonPAObject lPao = MultispeakFuncs.getLiteYukonPaobject(vendor.getUniqueKey(), meterNumber);
+            if (lPao == null) {
+                ErrorObject err = MultispeakFuncs.getErrorOjbect(meterNumber, "MeterNumber: " + meterNumber + " - Was NOT found in Yukon.");
+                errorObjects.add(err);
             }
-            CTILogger.info(System.currentTimeMillis() + " HI2");
-/*			synchronized (event)
-			{
-				long millisTimeOut = 0;	//
-				while (event.getMeterRead() == null && millisTimeOut < 120000)	//quit after 2 minutes
-				{
-					try
-					{
-						Thread.sleep(1000);
-						millisTimeOut += 1000;
-					} catch (InterruptedException e)
-					{
-						e.printStackTrace();
-					}
-				}
-				if( millisTimeOut >= 120000)// this broke the loop, more than likely, have to kill it sometime
-					event.getMeterRead().setErrorString("Reading Timed out after 2 minutes.");
-
-			}*/
-	/*	}
-
-		return event.getDevice().getMeterRead();
-	}*/
+            else {
+                long id = generateMessageID();      
+                CDEvent event = new CDEvent(vendor, id);
+                getEventsMap().put(new Long(id), event);
+                
+                String commandStr = "control "; //connect|disconnect
+                String loadActionCode = cdEvent.getLoadActionCode().getValue();
+                if( loadActionCode.equalsIgnoreCase(LoadActionCode._Connect))
+                    commandStr += "connect";
+                else if( loadActionCode.equalsIgnoreCase(LoadActionCode._Disconnect))
+                    commandStr += "disconnect";
+                
+                pilRequest = new Request(lPao.getYukonID(), commandStr, id);
+                pilRequest.setPriority(13); //just below Client applications
+                getPilConn().write(pilRequest);
+            }
+            
+        }
+            
+        if( !errorObjects.isEmpty())
+        {
+            ErrorObject[] errors = new ErrorObject[errorObjects.size()];
+            errorObjects.toArray(errors);
+            return errors;
+        }
+        return new ErrorObject[0];
+    }
 	
 	/**
 	 * Send an ODEventNotification to the OMS webservice containing odEvents 
@@ -490,6 +602,44 @@ public class Multispeak implements MessageListener {
             e.printStackTrace();
         }   
     }
+    
+    /**
+     * Send an CDEventNotification to the CB_CD webservice containing cdEvents 
+     * @param cdEvents
+     */
+    public void CDEventNotification(CDEvent cdEvent)
+    {
+        MultispeakVendor vendor = cdEvent.getMspVendor();
+        //TODO need to change using the getServiceToEndpointMap
+        MultispeakInterface mspInterface = (MultispeakInterface)cdEvent.getMspVendor().getMspInterfaceMap().get(MultispeakDefines.CB_CD_STR);
+        String endpointURL = "";            
+        if( mspInterface != null)
+            endpointURL = vendor.getUrl() + mspInterface.getMspEndpoint();
+
+        CTILogger.info("Sending CDStateChangedNotification ("+ endpointURL+ "): Meter Number " + cdEvent.getMeterNumber());
+        try
+        {
+            CB_CD service = new CB_CDLocator();
+            ((CB_CDLocator)service).setCB_CDSoapEndpointAddress(endpointURL);
+            
+            CB_CDSoap_PortType port = service.getCB_CDSoap();
+            
+            SOAPHeaderElement header = new SOAPHeaderElement("http://www.multispeak.org", "MultiSpeakMsgHeader", new YukonMultispeakMsgHeader());
+            ((CB_CDSoap_BindingStub)port).setHeader(header);
+            ((CB_CDSoap_BindingStub)port).setTimeout(10000);    //should respond within 10 seconds, right?
+
+            port.CDStateChangedNotification(cdEvent.getMeterNumber().toString(), cdEvent.getLoadActionCode());
+        } catch (ServiceException e)
+        {   
+            CTILogger.info("CB_CD service is not defined for company name: " + vendor.getCompanyName()+ ".  initiateConnectDisconnect cancelled.");
+            e.printStackTrace();
+        } catch (RemoteException e) {
+            
+            CTILogger.info("Could not find a target service to invoke!  targetService: " + endpointURL + " companyName: " + vendor.getCompanyName() + ".  initiateConnectDisconnect cancelled.");
+            e.printStackTrace();
+        }   
+    }
+    
 	/**
 	 * @return
 	 */
@@ -560,19 +710,77 @@ public class Multispeak implements MessageListener {
         return new ErrorObject[0];
     }
     
-    public ErrorObject[] disableMeter(MultispeakVendor mspVendor, String[] meterNos, String statusPrefix) {
+    public ErrorObject[] enableMeterObject(MultispeakVendor mspVendor, Meter[] addedMeters) {
         Vector errorObjects = new Vector();
-        for  (int i = 0; i < meterNos.length; i++){
-            String meterNo = meterNos[i];
+        for  (int i = 0; i < addedMeters.length; i++){
+            Meter addedMeter = addedMeters[i];
+            String meterNo = addedMeter.getObjectID();
             LiteYukonPAObject liteYukonPaobject = MultispeakFuncs.getLiteYukonPaobject(mspVendor.getUniqueKey(), meterNo);
-            YukonPAObject yukonPaobject = (YukonPAObject)MultispeakFuncs.getDbPersistentDao().retrieveDBPersistent(liteYukonPaobject);
-            if( !yukonPaobject.isDisabled()) {
-                yukonPaobject.setDisabled(true);
-                MultispeakFuncs.getDbPersistentDao().performDBChange(yukonPaobject, Transaction.UPDATE);
+            if( liteYukonPaobject != null) {
+                YukonPAObject yukonPaobject = (YukonPAObject)MultispeakFuncs.getDbPersistentDao().retrieveDBPersistent(liteYukonPaobject);
+                if (yukonPaobject instanceof MCTBase){
+                    boolean origDisabled = yukonPaobject.isDisabled();
+                    if( origDisabled ) {
+                        yukonPaobject.setDisabled(false);
+                        String origCollGroup = ((MCTBase)yukonPaobject).getDeviceMeterGroup().getCollectionGroup();
+                        if( origCollGroup.indexOf(DeviceMeterGroup.INVENTORY_GROUP_PREFIX ) > -1) {
+                            ((MCTBase)yukonPaobject).getDeviceMeterGroup().setCollectionGroup(origCollGroup.replaceAll(DeviceMeterGroup.INVENTORY_GROUP_PREFIX, ""));
+                        }
+                        MultispeakFuncs.getDbPersistentDao().performDBChange(yukonPaobject, Transaction.UPDATE);
+                    }
+                    else {
+                        ErrorObject err = MultispeakFuncs.getErrorOjbect(meterNo, "MeterNumber: " + meterNo + " - Is Already Active.");
+                        errorObjects.add(err);
+                    }
+                }
+            }else {
+                ErrorObject err = MultispeakFuncs.getErrorOjbect(meterNo, "MeterNumber: " + meterNo + " - Was NOT found in Yukon.");
+                errorObjects.add(err);
             }
+        }
+        if( !errorObjects.isEmpty())
+        {
+            ErrorObject[] errors = new ErrorObject[errorObjects.size()];
+            errorObjects.toArray(errors);
+            return errors;
         }
         return new ErrorObject[0];
     }
-
+    
+    public ErrorObject[] disableMeterObject(MultispeakVendor mspVendor, Meter[] addedMeters) {
+        Vector errorObjects = new Vector();
+        for  (int i = 0; i < addedMeters.length; i++){
+            Meter addedMeter = addedMeters[i];
+            String meterNo = addedMeter.getObjectID();
+            LiteYukonPAObject liteYukonPaobject = MultispeakFuncs.getLiteYukonPaobject(mspVendor.getUniqueKey(), meterNo);
+            if( liteYukonPaobject != null) {
+                YukonPAObject yukonPaobject = (YukonPAObject)MultispeakFuncs.getDbPersistentDao().retrieveDBPersistent(liteYukonPaobject);
+                if (yukonPaobject instanceof MCTBase){
+                    boolean origDisabled = yukonPaobject.isDisabled();
+                    if( !origDisabled ) {
+                        yukonPaobject.setDisabled(true);
+                        String origCollGroup = ((MCTBase)yukonPaobject).getDeviceMeterGroup().getCollectionGroup();
+                        if( origCollGroup.indexOf(DeviceMeterGroup.INVENTORY_GROUP_PREFIX ) < 0) {
+                            ((MCTBase)yukonPaobject).getDeviceMeterGroup().setCollectionGroup(DeviceMeterGroup.INVENTORY_GROUP_PREFIX + origCollGroup);
+                        }
+                        MultispeakFuncs.getDbPersistentDao().performDBChange(yukonPaobject, Transaction.UPDATE);
+                    }
+                    else {
+                        ErrorObject err = MultispeakFuncs.getErrorOjbect(meterNo, "MeterNumber: " + meterNo + " - Is Already Disabled.");
+                        errorObjects.add(err);
+                    }
+                }
+            }else {
+                ErrorObject err = MultispeakFuncs.getErrorOjbect(meterNo, "MeterNumber: " + meterNo + " - Was NOT found in Yukon.");
+                errorObjects.add(err);
+            }
+        }
+        if( !errorObjects.isEmpty())
+        {
+            ErrorObject[] errors = new ErrorObject[errorObjects.size()];
+            errorObjects.toArray(errors);
+            return errors;
+        }
+        return new ErrorObject[0];
+    }
 }
-
