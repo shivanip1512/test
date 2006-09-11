@@ -12,8 +12,8 @@
          <value>com/cannontech/cc/applicationContext.xml</value>
          <value>com/cannontech/multispeak/client/applicationContext.xml</value>
          <value>com/cannontech/core/dynamic/applicationContext.xml</value>
-		 <value>com/cannontech/cbc/applicationContext.xml</value>
-		 <value>com/cannontech/loadcontrol/applicationContext.xml</value>
+         <value>com/cannontech/cbc/applicationContext.xml</value>
+         <value>com/cannontech/loadcontrol/applicationContext.xml</value>
        </list>
      </constructor-arg>
    </bean>
