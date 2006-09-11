@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.35 $
-* DATE         :  $Date: 2006/07/18 21:00:47 $
+* REVISION     :  $Revision: 1.36 $
+* DATE         :  $Date: 2006/09/11 14:11:55 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -444,17 +444,14 @@ INT CtiProtocolExpresscom::targetReductionCycleControl(UINT loadMask, BYTE cycle
                 dout << CtiTime() << " Invalid KWH value " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
-            //Check fot kwhvalue!=0
+            //Check for kwhvalue!=0 ??
             _message.push_back( kwhValue );
 
-            //Check if this is too high
             int bytes = parse.getiValue("bytes_to_follow", 0);
-            if( bytes > ((period_minutes*cyclecount+59)/60)) //1h1m = 2 allowed, 1h = 1allowed
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Invalid number of bytes: " << bytes << " bytes, " << cyclecount << " cycles, " << period_minutes << " minutes "  << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
 
+            // We are allowing any number of bytes they desire to send. 
+            // This is due to the oddity of timing the adjustors, so it is possible to have
+            // a slightly variable number of adjustors.
             _message.push_back(bytes);
 
             for( int i=1; i<=bytes; i++ )
