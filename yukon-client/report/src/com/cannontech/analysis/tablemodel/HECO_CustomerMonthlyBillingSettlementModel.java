@@ -70,7 +70,7 @@ public class HECO_CustomerMonthlyBillingSettlementModel extends HECO_SettlementM
 	public static final String ENERGY_REDUCTION_INCENTIVE_STRING = "Energy Reduction Incentive Amount";
 	
 	public static final String EFSL_TOTAL_CHARGE_STRING = "Total Excess Firm Service Level Charge";
-	public static final String TOTAL_CIDLC_CREDITS_DEBITS_STRING = "Net Billing Charge";
+	public static final String TOTAL_CIDLC_CREDITS_DEBITS_STRING = "Net Billing Credit/Charge";
 	public static final String LOAD_CONTROL_EVENT_SUMMARY_STRING = "Load Control Event Summary";
 	public static final String TOTAL_DISPATCHED_HOURS_STRING = "Total Dispatched Control";
 	public static final String TOTAL_UF_HOURS_STRING = "Total Under Frequency Control";
