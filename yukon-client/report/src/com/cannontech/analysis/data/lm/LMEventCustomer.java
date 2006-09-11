@@ -6,6 +6,7 @@
  */
 package com.cannontech.analysis.data.lm;
 
+import java.math.BigDecimal;
 import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
@@ -140,8 +141,11 @@ public class LMEventCustomer
 				LiteRawPointHistory lRPH = (LiteRawPointHistory)getLiteRPHVector().get(i);
 				if( getCustDemandLevel() != null)
 				{
-					if ((lRPH.getValue() - getCustDemandLevel().doubleValue()) > max)
-						max = lRPH.getValue() - getCustDemandLevel().doubleValue();
+					if ((lRPH.getValue() - getCustDemandLevel().doubleValue()) > max) {
+                        BigDecimal bd = new BigDecimal(lRPH.getValue());
+					    bd = bd.setScale(0, BigDecimal.ROUND_DOWN);
+					    max = bd.doubleValue() - getCustDemandLevel().doubleValue();
+                    }
 				}
 			}
 			maxKW = new Double(max);
@@ -164,7 +168,10 @@ public class LMEventCustomer
 			{
 				if( getCustCurtailLoad() != null)
 				{
-					eriCredit = new Double(duration.doubleValue() * getCustCurtailLoad().doubleValue() * getERIRate().doubleValue());
+                    double credit = duration.doubleValue() * getCustCurtailLoad().doubleValue() * getERIRate().doubleValue();
+                    BigDecimal bd = new BigDecimal(credit);
+                    bd = bd.setScale(0, BigDecimal.ROUND_HALF_UP);
+                    eriCredit = new Double(bd.doubleValue());
 				}
 			}
 			
