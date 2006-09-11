@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.194 $
-* DATE         :  $Date: 2006/09/06 14:30:31 $
+* REVISION     :  $Revision: 1.195 $
+* DATE         :  $Date: 2006/09/11 20:48:08 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -239,6 +239,18 @@ VOID PortThread(void *pid)
         {
             PorterQuit = TRUE;
             continue;
+        }
+
+        if( Port->isInhibited() )
+        {
+            Sleep(5000L);
+            continue;
+        }
+
+        if( !Port->isValid() && !PortManager.PortGetEqual(portid) )
+        {
+            //  we've been deleted - exit the thread
+            break;
         }
 
         if( CONTINUE_LOOP == (status = ResetChannel(Port, Device)) )
