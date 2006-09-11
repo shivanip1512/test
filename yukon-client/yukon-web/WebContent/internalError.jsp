@@ -16,10 +16,11 @@ Throwable throwable = (Throwable)request.getAttribute("javax.servlet.error.excep
 // if the above returned null, this page was probably called via the JSP exception handler
 // because this page is declared as an error page, the exception object will be populated
 throwable = (Throwable)ObjectUtils.defaultIfNull(throwable, exception);
+Throwable root = ExceptionUtils.getRootCause(throwable);
 
 Object status_code = request.getAttribute("javax.servlet.error.status_code");
 status_code = ObjectUtils.defaultIfNull(status_code, "no status code");
-Object message = request.getAttribute("javax.servlet.error.message");
+Object message = root.getMessage();
 message = ObjectUtils.defaultIfNull(message, "no message");
 Object error_type = request.getAttribute("javax.servlet.error.exception_type");
 error_type = ObjectUtils.defaultIfNull(error_type, "no error type");
