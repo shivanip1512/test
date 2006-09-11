@@ -19,7 +19,9 @@ public class ListRowCallbackHandler extends AbstractRowCallbackHandler
     @Override
     public void processRow(ResultSet rs, int rowNum) throws SQLException
     {
-        objectList.add(rowMapper.mapRow(rs, rowNum));
+        Object object = rowMapper.mapRow(rs, rowNum);
+        if( object != null)
+            objectList.add(object);
     }
 
     public List getObjectList()
