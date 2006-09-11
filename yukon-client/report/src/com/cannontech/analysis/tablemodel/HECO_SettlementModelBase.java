@@ -260,12 +260,12 @@ public class HECO_SettlementModelBase extends ReportModelBase
 							{
 								SettlementCustomer settleCust = (SettlementCustomer)((Map.Entry)iter.next()).getValue();
 								if (settleCust.getPointData(CICustomerPointData.TYPE_SETTLEMENT) != null && 
-									settleCust.getPointData(CICustomerPointData.TYPE_SETTLEMENT).getPointID().intValue() == pointID)
+									settleCust.getPointData(CICustomerPointData.TYPE_SETTLEMENT).getPointID().intValue() == currentPointID)
 								{	//Found the matching pointid to customer!
 									LMEventCustomer eventCust = (LMEventCustomer)event.getLmEventCustomerMap().get(settleCust.getCustomerID());
 									if( eventCust != null)
 										eventCust.setLiteRPHVector(vectorOfLiteRPH);
-									CTILogger.info("For customer: " + eventCust.getCustomerID().intValue() + "  RPH Collected: " + vectorOfLiteRPH.size() + " Records");
+									CTILogger.info("For customer: " + eventCust.getCustomerID().intValue() + " PointID: " +currentPointID+ " RPH Collected: " + vectorOfLiteRPH.size() + " Records");
 								}
 							}
 						}
@@ -292,7 +292,7 @@ public class HECO_SettlementModelBase extends ReportModelBase
 							LMEventCustomer eventCust = (LMEventCustomer)event.getLmEventCustomerMap().get(settleCust.getCustomerID());
 							if( eventCust != null)
 								eventCust.setLiteRPHVector(vectorOfLiteRPH);
-							CTILogger.info("For customer: " + eventCust.getCustomerID().intValue() + "  RPH Collected: " + vectorOfLiteRPH.size() + " Records");
+							CTILogger.info("For customer: " + eventCust.getCustomerID().intValue() + " PointID: " +currentPointID+ "  RPH Collected: " + vectorOfLiteRPH.size() + " Records");
 						}
 					}
 				}				
