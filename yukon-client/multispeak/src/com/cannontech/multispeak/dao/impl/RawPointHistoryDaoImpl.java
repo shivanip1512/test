@@ -54,7 +54,8 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao
                      YukonPAObject.TABLE_NAME + " pao, " + DeviceMeterGroup.TABLE_NAME + " dmg " +
                      " WHERE RPH.POINTID = P.POINTID " +
                      " AND P.PAOBJECTID = PAO.PAOBJECTID " +
-                     " AND PAO.PAOBJECTID = DMG.DEVICEID ";
+                     " AND PAO.PAOBJECTID = DMG.DEVICEID " +
+                     " AND (POINTOFFSET < 101 or POINTOFFSET > 104)";   //exclude Profile data for now.
                      if( readBy == ReadBy.METER_NUMBER)
                          sql += " AND DMG.METERNUMBER = ? ";
                      else if (readBy == ReadBy.COLL_GROUP)
@@ -92,8 +93,8 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao
                 rset = pstmt.executeQuery();
 
                 int lastPaoID = -1;
-                int lastPointID = -1;
                 int paobjectID = 0;
+                Date prevDateTime = new Date();
                 List meterReadList = new ArrayList();
                 
                 ReadableDevice device = null;
@@ -116,7 +117,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao
                     String meterNumber = rset.getString(10);
                     
                     //Store any previous meter readings.
-                    if (pointID <= lastPointID || lastPaoID != paobjectID) {
+                    if (dateTime.after(prevDateTime) || lastPaoID != paobjectID) {
                         if( device != null && device.isPopulated())
                             meterReadList.add(device.getMeterRead());
                         device = null;
@@ -128,7 +129,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao
                         device = MeterReadFactory.createMeterReadObject(paoCategory, paoType, meterNumber);
 
                     device.populate( pointType, pointOffset, uomId, dateTime, new Double(value));
-                    lastPointID = pointID;
+                    prevDateTime.setTime(dateTime.getTime());
                     lastPaoID = paobjectID;
                 }
                 
