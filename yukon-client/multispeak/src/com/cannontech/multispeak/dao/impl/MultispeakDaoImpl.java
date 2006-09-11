@@ -15,7 +15,9 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.ListRowCallbackHandler;
 import com.cannontech.database.MaxRowCalbackHandlerRse;
+import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.db.device.DeviceCarrierSettings;
+import com.cannontech.database.db.device.DeviceMCT400Series;
 import com.cannontech.database.db.device.DeviceMeterGroup;
 import com.cannontech.database.db.pao.YukonPAObject;
 import com.cannontech.database.incrementer.NextValueHelper;
@@ -47,6 +49,12 @@ public final class MultispeakDaoImpl implements MultispeakDao
     private static final RowMapper mspMeterRowMapper = new RowMapper() {
         public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
             return createMspMeter(rs);
+        };
+    };
+    
+    private static final RowMapper mspCDMeterRowMapper = new RowMapper() {
+        public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
+            return createMspCDMeter(rs);
         };
     };
     
@@ -292,6 +300,33 @@ public final class MultispeakDaoImpl implements MultispeakDao
             throw new NotFoundException("No results found >= objectID " + lastReceived + ".");
         }
     }
+
+    public List getCDSupportedMeters(String lastReceived, String key) {
+        try {
+            String uniqueKey = "METERNUMBER";
+            if( key.toLowerCase().startsWith("device") || key.toLowerCase().startsWith("pao"))
+                uniqueKey = "PAONAME"; 
+
+            String sql = "SELECT " + uniqueKey + ", COLLECTIONGROUP, PAOBJECTID, ADDRESS, TYPE, DISCONNECTADDRESS " +
+                         " FROM " + DeviceMeterGroup.TABLE_NAME + " dmg, " +
+                         DeviceCarrierSettings.TABLE_NAME + " dcs, " +
+                         YukonPAObject.TABLE_NAME + " pao left outer join " + DeviceMCT400Series.TABLE_NAME + " mct on pao.paobjectid = mct.deviceid " +
+                         " WHERE DMG.DEVICEID = PAO.PAOBJECTID" + 
+                         " AND PAO.PAOBJECTID = DCS.DEVICEID " +
+                         " AND PAO.TYPE in ('" + DeviceTypes.STRING_MCT_213[0] + "', " + 
+                                           "'" + DeviceTypes.STRING_MCT_310ID[0] + "', " +
+                                           "'" + DeviceTypes.STRING_MCT_310IDL[0] + "', " +
+                                           "'" + DeviceTypes.STRING_MCT_410CL[0] + "', " +
+                                           "'" + DeviceTypes.STRING_MCT_410IL[0] + "') " +
+                         " AND " + uniqueKey + " > ? ORDER BY " + uniqueKey; 
+            List mspMeters = new ArrayList();
+            ListRowCallbackHandler lrcHandler = new ListRowCallbackHandler(mspMeters, mspCDMeterRowMapper);
+            jdbcOps.query(sql, new Object[]{lastReceived}, new MaxRowCalbackHandlerRse(lrcHandler, MultispeakDefines.MAX_RETURN_RECORDS));
+            return mspMeters;
+        } catch (IncorrectResultSizeDataAccessException e) {
+            throw new NotFoundException("No results found >= objectID " + lastReceived + ".");
+        }
+    }
     
     private static Meter createMspMeter( ResultSet rset) throws SQLException {
 
@@ -304,4 +339,21 @@ public final class MultispeakDaoImpl implements MultispeakDao
         return mspMeter;
     }
     
+    private static Meter createMspCDMeter( ResultSet rset) throws SQLException {
+
+        String objectID = rset.getString(1).trim();
+        String collectionGroup = rset.getString(2).trim();
+        int paobjectID = rset.getInt(3);
+        String address = rset.getString(4).trim();
+        String paoType = rset.getString(5).trim();
+        String discAddress = rset.getString(6);
+        
+        if( (paoType.equalsIgnoreCase(DeviceTypes.STRING_MCT_410CL[0]) ||
+            paoType.equalsIgnoreCase(DeviceTypes.STRING_MCT_410IL[0]) ) &&
+            discAddress == null)
+            return null;
+        
+        Meter mspMeter = MultispeakFuncs.createMeter(objectID, address);
+        return mspMeter;
+    }    
 }

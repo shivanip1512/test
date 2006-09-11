@@ -32,4 +32,6 @@ public interface MultispeakDao
     public void updateMultispeakVendor(final MultispeakVendor mspVendor);
     
     public List<Meter> getAMRSupportedMeters(String lastReceived, String key);
+    
+    public List getCDSupportedMeters(String lastReceived, String key);
 }
