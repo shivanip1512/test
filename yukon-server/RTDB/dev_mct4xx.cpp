@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2006/09/07 18:57:53 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2006/09/11 20:49:02 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2037,7 +2037,7 @@ INT CtiDeviceMCT4xx::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
 
         default:
         {
-            retVal = Inherited::ErrorDecode(InMessage, Now, vgList, retList, outList);
+            retVal = Inherited::ErrorDecode(InMessage, TimeNow, vgList, retList, outList);
 
             break;
         }
