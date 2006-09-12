@@ -26,6 +26,7 @@ public interface IServerConnection
 	void setAutoReconnect(boolean val);
 
 	void write(Object o);
+    public void queue(Object o);
 	void addMessageListener(MessageListener l);
 	void removeMessageListener(MessageListener l);
 

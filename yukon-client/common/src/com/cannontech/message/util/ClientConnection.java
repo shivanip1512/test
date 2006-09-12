@@ -497,14 +497,32 @@ public void setTimeToReconnect(int secs) {
 	this.timeToReconnect = secs;
 }
 /**
- * write writes an object to the output queue.
- * @param o java.lang.Object
+ * Writes an object to the output queue. If the connection is invalid,
+ * an exception will be thrown (if you want the old behavior of queing the 
+ * message, use the queue(Object) method).
+ * @param o The message to write
+ * @throws ConnectionException if the connection is not valid
  */
 public void write(Object o) {
 	synchronized(outQueue) {
+        if (!isValid()) {
+            throw new ConnectionException("Unable to write message (" + o + 
+                                          "), connection (" + this + ") is invalid.");
+        }
 		outQueue.add(o);
 		outQueue.notifyAll();
 	}
+}
+
+/**
+ * Writes an object to the output queue.
+ * @param o java.lang.Object
+ */
+public void queue(Object o) {
+    synchronized(outQueue) {
+        outQueue.add(o);
+        outQueue.notifyAll();
+    }
 }
 
 /**
