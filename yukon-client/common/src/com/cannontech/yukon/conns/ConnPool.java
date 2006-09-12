@@ -7,8 +7,6 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.RoleDao;
 import com.cannontech.message.dispatch.ClientConnection;
-import com.cannontech.message.dispatch.message.Multi;
-import com.cannontech.message.dispatch.message.PointRegistration;
 import com.cannontech.message.dispatch.message.Registration;
 import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.spring.YukonSpringHook;
@@ -63,49 +61,6 @@ public class ConnPool
 		return _allConns;
 	}
     
-
-    /**
-     * Gets a connection from the pool. If the connName is not found, then a new
-     * connection is made.
-     * 
-     */
-    public synchronized IServerConnection getConn( String connName )
-	{
-		IServerConnection conn =
-			(IServerConnection)getAllConns().get( connName );
-			
-		//we do not have a conn by that name, create one
-		if( conn == null && connName != null )
-		{
-            if( connName.toUpperCase().indexOf(PORTER_CONN) >= 0 )
-            {
-                conn = createPorterConn();
-            }
-            else if( connName.toUpperCase().indexOf(DISPATCH_CONN) >= 0 )
-            {
-                conn = createDispatchConn();
-            }
-            else if( connName.toUpperCase().indexOf(MACS_CONN) >= 0 )
-            {
-                conn = createMacsConn();
-            }
-            else if( connName.toUpperCase().indexOf(CAPCONTROL_CONN) >= 0 )
-            {
-                conn = createCapControlConn();
-            }
-            else
-            {
-                throw new IllegalArgumentException(
-                        "Unable to create connection with the given connection string: " + connName );
-            }
-
-            //add wichever conn we made into our Pool
-            getAllConns().put( connName, conn );            
-        }
-
-		return conn;
-	}
-
 
     /**
      * Creates a new Porter connection.
