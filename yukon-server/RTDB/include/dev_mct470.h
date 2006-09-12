@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT470.h-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2006/09/01 18:44:54 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2006/09/12 14:37:03 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -42,10 +42,10 @@ private:
     {
         MCT470_DNP_MCTPoint_RealTimeBinary       =   0,
         MCT470_DNP_MCTPoint_PreCannedBinary      =  30,
-        MCT470_DNP_MCTPoint_RealTimeAnalog       =  43,
-        MCT470_DNP_MCTPoint_PreCannedAnalog      =  49,
-        MCT470_DNP_MCTPoint_RealTimeAccumulator  = 114,
-        MCT470_DNP_MCTPoint_PreCannedAccumulator = 118,
+        MCT470_DNP_MCTPoint_RealTimeAnalog       =  42,
+        MCT470_DNP_MCTPoint_PreCannedAnalog      =  48,
+        MCT470_DNP_MCTPoint_RealTimeAccumulator  = 108,
+        MCT470_DNP_MCTPoint_PreCannedAccumulator = 112,
     };
 
     enum IED_PointOffsets
@@ -66,26 +66,26 @@ private:
         PointOffset_DNPStatus_PrecannedStart = 531,
         PointOffset_DNPAnalog_RealTime1   = 501,
         PointOffset_DNPAnalog_RealTime2   = 504,
-        PointOffset_DNPAnalog_Precanned1  = 506,
-        PointOffset_DNPAnalog_Precanned2  = 512,
-        PointOffset_DNPAnalog_Precanned3  = 518,
-        PointOffset_DNPAnalog_Precanned4  = 524,
-        PointOffset_DNPAnalog_Precanned5  = 530,
-        PointOffset_DNPAnalog_Precanned6  = 536,
-        PointOffset_DNPAnalog_Precanned7  = 542,
-        PointOffset_DNPAnalog_Precanned8  = 548,
-        PointOffset_DNPAnalog_Precanned9  = 654,
-        PointOffset_DNPAnalog_Precanned10 = 660,
+        PointOffset_DNPAnalog_Precanned1  = 507,
+        PointOffset_DNPAnalog_Precanned2  = 513,
+        PointOffset_DNPAnalog_Precanned3  = 519,
+        PointOffset_DNPAnalog_Precanned4  = 525,
+        PointOffset_DNPAnalog_Precanned5  = 531,
+        PointOffset_DNPAnalog_Precanned6  = 537,
+        PointOffset_DNPAnalog_Precanned7  = 543,
+        PointOffset_DNPAnalog_Precanned8  = 549,
+        PointOffset_DNPAnalog_Precanned9  = 555,
+        PointOffset_DNPAnalog_Precanned10 = 561,
         PointOffset_DNPCounter_RealTime1  = 501,
-        PointOffset_DNPCounter_RealTime2  = 504,
-        PointOffset_DNPCounter_Precanned1 = 506,
-        PointOffset_DNPCounter_Precanned2 = 512,
-        PointOffset_DNPCounter_Precanned3 = 518,
-        PointOffset_DNPCounter_Precanned4 = 524,
-        PointOffset_DNPCounter_Precanned5 = 530,
-        PointOffset_DNPCounter_Precanned6 = 536,
-        PointOffset_DNPCounter_Precanned7 = 542,
-        PointOffset_DNPCounter_Precanned8 = 548,
+        PointOffset_DNPCounter_RealTime2  = 503,
+        PointOffset_DNPCounter_Precanned1 = 505,
+        PointOffset_DNPCounter_Precanned2 = 511,
+        PointOffset_DNPCounter_Precanned3 = 517,
+        PointOffset_DNPCounter_Precanned4 = 523,
+        PointOffset_DNPCounter_Precanned5 = 529,
+        PointOffset_DNPCounter_Precanned6 = 535,
+        PointOffset_DNPCounter_Precanned7 = 541,
+        PointOffset_DNPCounter_Precanned8 = 547,
     };
 
     enum IED_Types
@@ -104,7 +104,7 @@ private:
     long getLoadProfileInterval( unsigned channel );
     long _lastConfigRequest;
 
-    void decodeDNPRealTimeRead(BYTE *buffer, int readNumber, string &resultString, CtiReturnMsg *ReturnMsg);
+    void decodeDNPRealTimeRead(BYTE *buffer, int readNumber, string &resultString, CtiReturnMsg *ReturnMsg, INMESS *InMessage);
     void getBytesFromString(string &values, BYTE* buffer, int buffLen, int &numValues, int fillCount, int bytesPerValue);
     int sendDNPConfigMessages(int startMCTID,  list< OUTMESS * > &outList, OUTMESS *&OutMessage, string &dataA, string &dataB, CtiTableDynamicPaoInfo::Keys key, bool force);
     string resolveDNPStatus(int status);

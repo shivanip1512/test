@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.60 $
-* DATE         :  $Date: 2006/09/07 17:34:20 $
+* REVISION     :  $Revision: 1.61 $
+* DATE         :  $Date: 2006/09/12 14:37:03 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2279,12 +2279,37 @@ int CtiDeviceMCT470::executePutConfigDNP(CtiRequestMsg *pReq, CtiCommandParser &
             }
             else
             {
-                int valCount = 0;
-                //FIX_ME JESS add checking of valCount, warnings, ect...
+                int tempCount, valCount = 0;
                 getBytesFromString(collectionBinarya, buffer, BufferSize, valCount, 15, 2);
+                tempCount = valCount;
+                if( tempCount == 0 )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint - Binary Collection A improperly set up **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    nRet = NoConfigData;
+                }
                 getBytesFromString(collectionBinaryb, buffer+(valCount*2), BufferSize-(valCount*2), valCount, 15-valCount, 2);
+                tempCount += valCount;
+                if( tempCount != 15 )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint - Binary Collection's improperly set up **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    nRet = NoConfigData;
+                }
                 getBytesFromString(collectionAnalog, buffer+30, BufferSize-30, valCount, 3, 2);
+                if( valCount != 3 )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint - Analog Collection improperly set up **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    nRet = NoConfigData;
+                }
                 getBytesFromString(collectionAccumulator, buffer+36, BufferSize-36, valCount, 2, 2);
+                if( valCount != 2 )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint - Accumulator Collection improperly set up **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    nRet = NoConfigData;
+                }
 
                 if( parse.isKeyValid("force")
                     || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_RealTime1CRC) != crc8(buffer, 40) )
@@ -2355,12 +2380,37 @@ int CtiDeviceMCT470::executePutConfigDNP(CtiRequestMsg *pReq, CtiCommandParser &
             }
             else
             {
-                int valCount = 0;
-                //FIX_ME JESS add checking of valCount, warnings, ect...
+                int tempCount, valCount = 0;
                 getBytesFromString(collectionBinarya, buffer, BufferSize, valCount, 15, 2);
+                tempCount = valCount;
+                if( tempCount == 0 )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint - Binary Collection A improperly set up **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    nRet = NoConfigData;
+                }
                 getBytesFromString(collectionBinaryb, buffer+(valCount*2), BufferSize-(valCount*2), valCount, 15-valCount, 2);
+                tempCount += valCount;
+                if( tempCount != 15 )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint - Binary Collection's improperly set up **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    nRet = NoConfigData;
+                }
                 getBytesFromString(collectionAnalog, buffer+30, BufferSize-30, valCount, 3, 2);
+                if( valCount != 3 )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint - Analog Collection improperly set up **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    nRet = NoConfigData;
+                }
                 getBytesFromString(collectionAccumulator, buffer+36, BufferSize-36, valCount, 2, 2);
+                if( valCount != 2 )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint - Accumulator Collection improperly set up **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    nRet = NoConfigData;
+                }
 
                 if( parse.isKeyValid("force")
                     || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_RealTime2CRC) != crc8(buffer, 40) )
@@ -2428,10 +2478,24 @@ int CtiDeviceMCT470::executePutConfigDNP(CtiRequestMsg *pReq, CtiCommandParser &
             }
             else
             {
-                int valCount = 0;
-                //FIX_ME JESS add checking of valCount, warnings, ect...
+                int tempCount, valCount = 0;
                 getBytesFromString(binaryA, buffer, BufferSize, valCount, 12, 2);
+                tempCount = valCount;
+                if( tempCount == 0 )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint - Binary CollectionA improperly set up **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    nRet = NoConfigData;
+                }
+
                 getBytesFromString(binaryB, buffer+valCount*2, BufferSize-valCount*2, valCount, 12-valCount, 2);
+                tempCount += valCount;
+                if( tempCount != 12 )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint - Binary CollectionB improperly set up **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    nRet = NoConfigData;
+                }
 
                 if( parse.isKeyValid("force")
                     || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_BinaryCRC) != crc8(buffer, 24) )
@@ -2461,32 +2525,42 @@ int CtiDeviceMCT470::executePutConfigDNP(CtiRequestMsg *pReq, CtiCommandParser &
             //***** Configure the analog first set (precanned analog 1 and 2)
             analogA = config->getValueFromKey(DNPAnalog1);
             analogB = config->getValueFromKey(DNPAnalog2);
-            sendDNPConfigMessages(AnalogStartValue, outList, OutMessage, analogA, analogB, CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC1, force);
+            nRet |= sendDNPConfigMessages(AnalogStartValue, outList, OutMessage, analogA, analogB, CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC1, force);
             analogA = config->getValueFromKey(DNPAnalog3);
             analogB = config->getValueFromKey(DNPAnalog4);
-            sendDNPConfigMessages(AnalogStartValue+12, outList, OutMessage, analogA, analogB, CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC2, force);
+            nRet |= sendDNPConfigMessages(AnalogStartValue+12, outList, OutMessage, analogA, analogB, CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC2, force);
             analogA = config->getValueFromKey(DNPAnalog5);
             analogB = config->getValueFromKey(DNPAnalog6);
-            sendDNPConfigMessages(AnalogStartValue+24, outList, OutMessage, analogA, analogB, CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC3, force);
+            nRet |= sendDNPConfigMessages(AnalogStartValue+24, outList, OutMessage, analogA, analogB, CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC3, force);
             analogA = config->getValueFromKey(DNPAnalog7);
             analogB = config->getValueFromKey(DNPAnalog8);
-            sendDNPConfigMessages(AnalogStartValue+36, outList, OutMessage, analogA, analogB, CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC4, force);
+            nRet |= sendDNPConfigMessages(AnalogStartValue+36, outList, OutMessage, analogA, analogB, CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC4, force);
             analogA = config->getValueFromKey(DNPAnalog9);
             analogB = config->getValueFromKey(DNPAnalog10);
-            sendDNPConfigMessages(AnalogStartValue+48, outList, OutMessage, analogA, analogB, CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC5, force);
+            nRet |= sendDNPConfigMessages(AnalogStartValue+48, outList, OutMessage, analogA, analogB, CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC5, force);
 
             accumulatorA = config->getValueFromKey(DNPAccumulator1);
             accumulatorB = config->getValueFromKey(DNPAccumulator2);
-            sendDNPConfigMessages(AccumulatorStartValue, outList, OutMessage, accumulatorA, accumulatorB, CtiTableDynamicPaoInfo::Key_MCT_DNP_AccumulatorCRC1, force);
+            nRet |= sendDNPConfigMessages(AccumulatorStartValue, outList, OutMessage, accumulatorA, accumulatorB, CtiTableDynamicPaoInfo::Key_MCT_DNP_AccumulatorCRC1, force);
             accumulatorA = config->getValueFromKey(DNPAccumulator3);
             accumulatorB = config->getValueFromKey(DNPAccumulator4);
-            sendDNPConfigMessages(AccumulatorStartValue+12, outList, OutMessage, accumulatorA, accumulatorB, CtiTableDynamicPaoInfo::Key_MCT_DNP_AccumulatorCRC2, force);
+            nRet |= sendDNPConfigMessages(AccumulatorStartValue+12, outList, OutMessage, accumulatorA, accumulatorB, CtiTableDynamicPaoInfo::Key_MCT_DNP_AccumulatorCRC2, force);
             accumulatorA = config->getValueFromKey(DNPAccumulator5);
             accumulatorB = config->getValueFromKey(DNPAccumulator6);
-            sendDNPConfigMessages(AccumulatorStartValue+24, outList, OutMessage, accumulatorA, accumulatorB, CtiTableDynamicPaoInfo::Key_MCT_DNP_AccumulatorCRC3, force);
+            nRet |= sendDNPConfigMessages(AccumulatorStartValue+24, outList, OutMessage, accumulatorA, accumulatorB, CtiTableDynamicPaoInfo::Key_MCT_DNP_AccumulatorCRC3, force);
             accumulatorA = config->getValueFromKey(DNPAccumulator7);
             accumulatorB = config->getValueFromKey(DNPAccumulator8);
-            sendDNPConfigMessages(AccumulatorStartValue+36, outList, OutMessage, accumulatorA, accumulatorB, CtiTableDynamicPaoInfo::Key_MCT_DNP_AccumulatorCRC4, force);
+            nRet |= sendDNPConfigMessages(AccumulatorStartValue+36, outList, OutMessage, accumulatorA, accumulatorB, CtiTableDynamicPaoInfo::Key_MCT_DNP_AccumulatorCRC4, force);
+
+            //Read out the CRC
+            strncpy(OutMessage->Request.CommandStr, "getvalue ied dnp crc", COMMAND_STR_SIZE );
+            OutMessage->Priority--;
+            OutMessage->Sequence = Emetcon::GetValue_IED;
+            OutMessage->Buffer.BSt.Function = MCT470_FuncRead_IED_CRCPos;
+            OutMessage->Buffer.BSt.Length = MCT470_FuncRead_IED_CRCLen;
+            OutMessage->Buffer.BSt.IO = Emetcon::IO_Function_Read;
+            outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+            OutMessage->Priority++;
         }
         else
             nRet = NoConfigData;
@@ -2513,11 +2587,20 @@ int CtiDeviceMCT470::sendDNPConfigMessages(int startMCTID, list< OUTMESS * > &ou
     else if( bufferSize >= 24 )
     {
         int valCount = 0;
-        //FIX_ME JESS add checking of valCount, warnings, ect...
         getBytesFromString(dataA, buffer, bufferSize, valCount, 6, 2);//16 bit, 6 entries min
+        if( valCount != 6 )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint - Collection improperly set up **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
 
         //offset by 12 as we must have 6 entries in previous table, 6 in this one.
         getBytesFromString(dataB, buffer+12, bufferSize-12, valCount, 6, 2);
+        if( valCount != 6 )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint - Collection improperly set up **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
 
         if( force
             || CtiDeviceBase::getDynamicInfo(key) != crc8(buffer, 24) )
@@ -3223,63 +3306,99 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
             int status = DSt->Message[12];//Applies only to precanned table reads.
             if( (i = parse.getiValue("collectionnumber")) != INT_MIN )
             {
-                decodeDNPRealTimeRead(DSt->Message, i, resultString, ReturnMsg);
+                decodeDNPRealTimeRead(DSt->Message, i, resultString, ReturnMsg, InMessage);
             }
             else if( (i = parse.getiValue("analognumber")) != INT_MIN )
             {
-                for( int byte = 0; byte < 6; byte++ )
+                if( status == 0 )
                 {
-                    pi = getData(DSt->Message + byte*2, 2, ValueType_Raw);
-                    if( !status && (tempPoint = getDevicePointOffsetTypeEqual(PointOffset_DNPAnalog_Precanned1+byte+(i-1)*6, AnalogPointType)))
+                    for( int byte = 0; byte < 6; byte++ )
                     {
-                        pi.value = boost::static_pointer_cast<CtiPointNumeric>(tempPoint)->computeValueForUOM(pi.value);
-
-                        point_string = getName() + " / " + tempPoint->getName() + " = " + CtiNumStr(pi.value, boost::static_pointer_cast<CtiPointNumeric>(tempPoint)->getPointUnits().getDecimalPlaces());
-
-                        ReturnMsg->PointData().push_back(makePointDataMsg(tempPoint, pi, point_string));
+                        pi = getData(DSt->Message + byte*2, 2, ValueType_Raw);
+                        if( !status && (tempPoint = getDevicePointOffsetTypeEqual(PointOffset_DNPAnalog_Precanned1+byte+(i-1)*6, AnalogPointType)))
+                        {
+                            pi.value = boost::static_pointer_cast<CtiPointNumeric>(tempPoint)->computeValueForUOM(pi.value);
+    
+                            point_string = getName() + " / " + tempPoint->getName() + " = " + CtiNumStr(pi.value, boost::static_pointer_cast<CtiPointNumeric>(tempPoint)->getPointUnits().getDecimalPlaces());
+    
+                            ReturnMsg->PointData().push_back(makePointDataMsg(tempPoint, pi, point_string));
+                        }
+                        else
+                        {
+                            resultString += getName() + " / Analog point " + CtiNumStr(PointOffset_DNPAnalog_Precanned1+byte+(i-1)*6) + " = " + CtiNumStr(pi.value) + "\n";
+                        }
                     }
-                    else
+                }
+                else
+                {
+                    resultString += "DNP status returned " + CtiNumStr(status) + ": " + resolveDNPStatus(status);
+                    for( int byte = 0; byte < 6; byte++ )
                     {
-                        resultString += getName() + " / Analog point " + CtiNumStr(PointOffset_DNPAnalog_Precanned1+byte+(i-1)*6) + " = " + CtiNumStr(pi.value) + "\n";
+                        insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_DNPAnalog_Precanned1+byte+(i-1)*6, AnalogPointType);
                     }
                 }
             }
             else if( (i = parse.getiValue("accumulatornumber")) != INT_MIN )
             {
-                for( int byte = 0; byte < 6; byte++ )
+                if( status == 0 )
                 {
-                    pi = getData(DSt->Message + byte*2, 2, ValueType_Raw);
-                    if( !status && (tempPoint = getDevicePointOffsetTypeEqual(PointOffset_DNPCounter_Precanned1+byte+(i-1)*6, PulseAccumulatorPointType)))
+                    for( int byte = 0; byte < 6; byte++ )
                     {
-                        pi.value = boost::static_pointer_cast<CtiPointNumeric>(tempPoint)->computeValueForUOM(pi.value);
-
-                        point_string = getName() + " / " + tempPoint->getName() + " = " + CtiNumStr(pi.value, boost::static_pointer_cast<CtiPointNumeric>(tempPoint)->getPointUnits().getDecimalPlaces());
-
-                        ReturnMsg->PointData().push_back(makePointDataMsg(tempPoint, pi, point_string));
+                        pi = getData(DSt->Message + byte*2, 2, ValueType_Raw);
+                        if( !status && (tempPoint = getDevicePointOffsetTypeEqual(PointOffset_DNPCounter_Precanned1+byte+(i-1)*6, PulseAccumulatorPointType)))
+                        {
+                            pi.value = boost::static_pointer_cast<CtiPointNumeric>(tempPoint)->computeValueForUOM(pi.value);
+    
+                            point_string = getName() + " / " + tempPoint->getName() + " = " + CtiNumStr(pi.value, boost::static_pointer_cast<CtiPointNumeric>(tempPoint)->getPointUnits().getDecimalPlaces());
+    
+                            ReturnMsg->PointData().push_back(makePointDataMsg(tempPoint, pi, point_string));
+                        }
+                        else
+                        {
+                            resultString += getName() + " / Pulse Accumulator point " + CtiNumStr(PointOffset_DNPCounter_Precanned1+byte+(i-1)*6) + " = " + CtiNumStr(pi.value) + "\n";
+                        }
                     }
-                    else
+                }
+                else
+                {
+                    resultString += "DNP status returned " + CtiNumStr(status) + ": " + resolveDNPStatus(status);
+                    for( int byte = 0; byte < 6; byte++ )
                     {
-                        resultString += getName() + " / Pulse Accumulator point " + CtiNumStr(PointOffset_DNPCounter_Precanned1+byte+(i-1)*6) + " = " + CtiNumStr(pi.value) + "\n";
+                        insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_DNPCounter_Precanned1+byte+(i-1)*6, AnalogPointType);
                     }
                 }
             }
             else if( (i = parse.getiValue("statusnumber")) != INT_MIN )
             {
-                pi.quality = NormalQuality;
-                for( int byte = 0; byte < 12; byte++ )
+                if( status == 0 )
                 {
-                    for( int bit = 0; bit < 8; bit++ )
+                    pi.quality = NormalQuality;
+                    for( int byte = 0; byte < 12; byte++ )
                     {
-                        pi.value = (DSt->Message[byte] >> bit) & 0x01;
-                        if( !status && (tempPoint = getDevicePointOffsetTypeEqual(PointOffset_DNPStatus_PrecannedStart+byte*8+bit, StatusPointType)))
+                        for( int bit = 0; bit < 8; bit++ )
                         {
-                            point_string = getName() + " / " + tempPoint->getName() + " = " + CtiNumStr(pi.value);
-
-                            ReturnMsg->PointData().push_back(makePointDataMsg(tempPoint, pi, point_string));
+                            pi.value = (DSt->Message[byte] >> bit) & 0x01;
+                            if( !status && (tempPoint = getDevicePointOffsetTypeEqual(PointOffset_DNPStatus_PrecannedStart+byte*8+bit, StatusPointType)))
+                            {
+                                point_string = getName() + " / " + tempPoint->getName() + " = " + CtiNumStr(pi.value);
+    
+                                ReturnMsg->PointData().push_back(makePointDataMsg(tempPoint, pi, point_string));
+                            }
+                        }
+    
+                        resultString += getName() + " / Binary Data Byte " + CtiNumStr(byte) + " = " + CtiNumStr(DSt->Message[byte]) + "\n";
+                    }
+                }
+                else
+                {
+                    resultString += "DNP status returned " + CtiNumStr(status) + ": " + resolveDNPStatus(status);
+                    for( int byte = 0; byte < 12; byte++ )
+                    {
+                        for( int bit = 0; bit < 8; bit++ )
+                        {
+                            insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_DNPStatus_PrecannedStart+byte*8+bit, StatusPointType);
                         }
                     }
-
-                    resultString += getName() + " / Binary Data Byte " + CtiNumStr(byte) + " = " + CtiNumStr(DSt->Message[byte]) + "\n";
                 }
             }
             else if( parse.isKeyValid("dnp_crc") )
@@ -4014,7 +4133,7 @@ INT CtiDeviceMCT470::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, l
 
 
 //I hate to do this, we must ensure no one ever passes a null buffer into here...
-void CtiDeviceMCT470::decodeDNPRealTimeRead(BYTE *buffer, int readNumber, string &resultString, CtiReturnMsg *ReturnMsg)
+void CtiDeviceMCT470::decodeDNPRealTimeRead(BYTE *buffer, int readNumber, string &resultString, CtiReturnMsg *ReturnMsg, INMESS *InMessage)
 {
     point_info_t   pi;
     CtiPointSPtr   tempPoint;
@@ -4035,66 +4154,94 @@ void CtiDeviceMCT470::decodeDNPRealTimeRead(BYTE *buffer, int readNumber, string
         pi = getData(buffer, 1, ValueType_Raw);//Gets pi built up properly...
         for( int i = 0; i < 7; i++ )//only 7 in the first byte
         {
-            if( !errorFlagSet && (tempPoint = getDevicePointOffsetTypeEqual(binaryoffset+i, StatusPointType)))
+            if( !errorFlagSet )
             {
-                pi.value = (buffer[0] >> (i+1)) & 0x01;
-                point_string = getName() + " / " + tempPoint->getName() + " = " + CtiNumStr(pi.value);
-
-                ReturnMsg->PointData().push_back(makePointDataMsg(tempPoint, pi, point_string));
+                if( (tempPoint = getDevicePointOffsetTypeEqual(binaryoffset+i, StatusPointType)))
+                {
+                    pi.value = (buffer[0] >> (i+1)) & 0x01;
+                    point_string = getName() + " / " + tempPoint->getName() + " = " + CtiNumStr(pi.value);
+    
+                    ReturnMsg->PointData().push_back(makePointDataMsg(tempPoint, pi, point_string));
+                }
+                else
+                {
+                    resultString += getName() + " / Status point " + CtiNumStr(binaryoffset+i) + " = " + CtiNumStr(pi.value) + "\n";
+                }
             }
             else
             {
-                resultString += getName() + " / Status point " + CtiNumStr(binaryoffset+i) + " = " + CtiNumStr(pi.value) + "\n";
+                insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, binaryoffset+i, StatusPointType);
             }
         }
 
         for( i = 0; i < 8; i++ )
         {
-            if( !errorFlagSet && (tempPoint = getDevicePointOffsetTypeEqual(binaryoffset+i+6, StatusPointType)))
+            if( !errorFlagSet )
             {
-                pi.value = (buffer[1] >> i) & 0x01;
-                point_string = getName() + " / " + tempPoint->getName() + " = " + CtiNumStr(pi.value);
-
-                ReturnMsg->PointData().push_back(makePointDataMsg(tempPoint, pi, point_string));
+                if( (tempPoint = getDevicePointOffsetTypeEqual(binaryoffset+i+7, StatusPointType)))
+                {
+                    pi.value = (buffer[1] >> i) & 0x01;
+                    point_string = getName() + " / " + tempPoint->getName() + " = " + CtiNumStr(pi.value);
+    
+                    ReturnMsg->PointData().push_back(makePointDataMsg(tempPoint, pi, point_string));
+                }
+                else
+                {
+                    resultString += getName() + " / Status point " + CtiNumStr(binaryoffset+i+7) + " = " + CtiNumStr(pi.value) + "\n";
+                }
             }
             else
             {
-                resultString += getName() + " / Status point " + CtiNumStr(binaryoffset+i+6) + " = " + CtiNumStr(pi.value) + "\n";
+                insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, binaryoffset+i+7, StatusPointType);
             }
         }
 
 
         for( i = 0; i < 3; i++ )
         {
-            pi = getData(buffer+2*(i+1), 2, ValueType_Raw);
-            if( !errorFlagSet && (tempPoint = getDevicePointOffsetTypeEqual(analogoffset+i, AnalogPointType)))
+            if( !errorFlagSet )
             {
-                pi.value = boost::static_pointer_cast<CtiPointNumeric>(tempPoint)->computeValueForUOM(pi.value);
+                pi = getData(buffer+2*(i+1), 2, ValueType_Raw);
+                if( !errorFlagSet && (tempPoint = getDevicePointOffsetTypeEqual(analogoffset+i, AnalogPointType)))
+                {
+                    pi.value = boost::static_pointer_cast<CtiPointNumeric>(tempPoint)->computeValueForUOM(pi.value);
 
-                point_string = getName() + " / " + tempPoint->getName() + " = " + CtiNumStr(pi.value);
+                    point_string = getName() + " / " + tempPoint->getName() + " = " + CtiNumStr(pi.value);
 
-                ReturnMsg->PointData().push_back(makePointDataMsg(tempPoint, pi, point_string));
+                    ReturnMsg->PointData().push_back(makePointDataMsg(tempPoint, pi, point_string));
+                }
+                else
+                {
+                    resultString += getName() + " / Analog point " + CtiNumStr(analogoffset+i) + " = " + CtiNumStr(pi.value) + "\n";
+                }
             }
             else
             {
-                resultString += getName() + " / Analog point " + CtiNumStr(analogoffset+i) + " = " + CtiNumStr(pi.value) + "\n";
+                insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, analogoffset+i, AnalogPointType);
             }
         }
 
         for( i = 0; i < 2; i++ )
         {
-            pi = getData(buffer+2*i+8, 2, ValueType_Raw);
-            if( !errorFlagSet && (tempPoint = getDevicePointOffsetTypeEqual(counteroffset+i, PulseAccumulatorPointType)))
+            if( !errorFlagSet )
             {
-                pi.value = boost::static_pointer_cast<CtiPointNumeric>(tempPoint)->computeValueForUOM(pi.value);
+                pi = getData(buffer+2*i+8, 2, ValueType_Raw);
+                if( (tempPoint = getDevicePointOffsetTypeEqual(counteroffset+i, PulseAccumulatorPointType)))
+                {
+                    pi.value = boost::static_pointer_cast<CtiPointNumeric>(tempPoint)->computeValueForUOM(pi.value);
 
-                point_string = getName() + " / " + tempPoint->getName() + " = " + CtiNumStr(pi.value);
+                    point_string = getName() + " / " + tempPoint->getName() + " = " + CtiNumStr(pi.value);
 
-                ReturnMsg->PointData().push_back(makePointDataMsg(tempPoint, pi, point_string));
+                    ReturnMsg->PointData().push_back(makePointDataMsg(tempPoint, pi, point_string));
+                }
+                else
+                {
+                    resultString += getName() + " / Pulse Accumulator point " + CtiNumStr(counteroffset+i) + " = " + CtiNumStr(pi.value) + "\n";
+                }
             }
             else
             {
-                resultString += getName() + " / Pulse Accumulator point " + CtiNumStr(counteroffset+i) + " = " + CtiNumStr(pi.value) + "\n";
+                insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, counteroffset+i, PulseAccumulatorPointType);
             }
         }
 
@@ -4108,6 +4255,7 @@ void CtiDeviceMCT470::getBytesFromString(string &values, BYTE* buffer, int buffL
     CtiString   temp;
     CtiString   token;
     int iValue;
+    numValues = 0;
 
     if( buffer != NULL )
     {
@@ -4117,8 +4265,7 @@ void CtiDeviceMCT470::getBytesFromString(string &values, BYTE* buffer, int buffL
         if(!(token = valueCopy.match(anyNum)).empty())
         {
             CtiTokenizer cmdtok(token);
-
-            numValues = 0;
+            
             while( !(temp = cmdtok()).empty() && numValues*bytesPerValue < buffLen )
             {
                 iValue = atoi(temp.data());
