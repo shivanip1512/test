@@ -3,17 +3,7 @@ package com.cannontech.dynamic;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observer;
-import java.util.Set;
-import java.util.TimerTask;
 
-import com.cannontech.message.dispatch.message.Multi;
-import com.cannontech.message.dispatch.message.PointData;
-import com.cannontech.message.dispatch.message.PointRegistration;
-import com.cannontech.message.server.ServerRequestMsg;
-import com.cannontech.message.server.ServerResponseMsg;
-import com.cannontech.message.util.Command;
-import com.cannontech.message.util.Message;
-import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
 import com.cannontech.yukon.IServerConnection;
 
@@ -22,6 +12,10 @@ public class MockDispatchConnection implements IServerConnection {
     public List<Object> messagesWritten = new ArrayList<Object>();
     
     public void write(Object o) {
+        messagesWritten.add(o);
+    }
+    
+    public void queue(Object o) {
         messagesWritten.add(o);
     }
   
