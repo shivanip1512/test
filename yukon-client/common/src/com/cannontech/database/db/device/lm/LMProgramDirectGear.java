@@ -4,8 +4,8 @@ import java.sql.Statement;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.device.lm.NoControlGear;
-+import com.cannontech.database.data.device.lm.MagnitudeCycleGear;
-+import com.cannontech.database.data.device.lm.TargetCycleGear;
+import com.cannontech.database.data.device.lm.MagnitudeCycleGear;
+import com.cannontech.database.data.device.lm.TargetCycleGear;
 import com.cannontech.database.data.device.lm.ThermostatPreOperateGear;
 import com.cannontech.database.data.device.lm.ThermostatSetbackGear;
 import com.cannontech.database.db.NestedDBPersistent;
