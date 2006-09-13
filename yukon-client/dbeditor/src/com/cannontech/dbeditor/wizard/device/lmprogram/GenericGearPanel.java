@@ -161,5 +161,5 @@ public void valueChanging(com.klg.jclass.util.value.JCValueEvent arg1) {}
 	 * Method getJComboBoxWhenChange.
 	 */
 	
-
+public void setTargetCycle(boolean truth) {}
 }

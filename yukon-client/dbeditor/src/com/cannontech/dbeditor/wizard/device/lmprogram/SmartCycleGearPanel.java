@@ -7,10 +7,14 @@ package com.cannontech.dbeditor.wizard.device.lmprogram;
  */
 import java.awt.Dimension;
 
+import javax.swing.JLabel;
+import javax.swing.JTextField;
 import javax.swing.border.EtchedBorder;
 
+import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.StringUtils;
+import com.cannontech.database.data.device.lm.TargetCycleGear;
 import com.cannontech.database.db.device.lm.LMProgramDirectGear;
  
 public class SmartCycleGearPanel extends GenericGearPanel {
@@ -45,6 +49,8 @@ public class SmartCycleGearPanel extends GenericGearPanel {
 	private javax.swing.JComboBox ivjJComboBoxSendRateDigits = null;
 	private javax.swing.JComboBox ivjJComboBoxSendRateUnits = null;
 	private javax.swing.JCheckBox jCheckBoxNoRamp = null;
+    private JLabel jLabelKWReduction = null;
+    private JTextField jTextFieldKWReduction = null;
 /**
  * SmartCycleGearPanel constructor comment.
  */
@@ -77,6 +83,15 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
 	
 	// user code begin {2}
 	// user code end
+}
+
+public void caretUpdate(javax.swing.event.CaretEvent e) {
+    // user code begin {1}
+    // user code end
+    if (e.getSource() == getJTextFieldKWReduction()) 
+        fireInputUpdate();
+    // user code begin {2}
+    // user code end
 }
 /**
  * connEtoC1:  (JComboBoxWhenChange.action.actionPerformed(java.awt.event.ActionEvent) --> DirectModifyGearPanel.jComboBoxWhenChange_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
@@ -324,6 +339,41 @@ private javax.swing.JComboBox getJComboBoxHowToStop() {
 	}
 	return ivjJComboBoxHowToStop;
 }
+
+private javax.swing.JLabel getJLabelKWReduction() {
+    if (jLabelKWReduction == null) {
+        try {
+            jLabelKWReduction = new javax.swing.JLabel();
+            jLabelKWReduction.setName("JLabelKWReduction");
+            jLabelKWReduction.setFont(new java.awt.Font("dialog", 0, 12));
+            jLabelKWReduction.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
+            jLabelKWReduction.setText("KW Reduction:");
+            jLabelKWReduction.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
+            jLabelKWReduction.setVisible(false);
+        } catch (java.lang.Throwable ivjExc) {
+            handleException(ivjExc);
+        }
+    }
+    return jLabelKWReduction;
+}
+
+private JTextField getJTextFieldKWReduction() {
+    if (jTextFieldKWReduction == null) {
+        try {
+            jTextFieldKWReduction = new javax.swing.JTextField();
+            jTextFieldKWReduction.setName("JTextFieldKWReduction");
+            jTextFieldKWReduction.setPreferredSize(new java.awt.Dimension(70, 22));
+            jTextFieldKWReduction.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
+            jTextFieldKWReduction.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
+            jTextFieldKWReduction.setDocument(new com.cannontech.common.gui.unchanging.DoubleRangeDocument(0.0, 99999.999, 3) );
+            jTextFieldKWReduction.setVisible(false);
+        } catch (java.lang.Throwable ivjExc) {
+            handleException(ivjExc);
+        }
+    }
+    return jTextFieldKWReduction;
+}
+
 /**
  * Return the JComboBoxMaxCycleCount property value.
  * @return javax.swing.JComboBox
@@ -1249,6 +1299,13 @@ public Object getValue(Object o)
 	if(getJCheckBoxNoRamp().isSelected())
 		s.setFrontRampOption("NoRamp");
 	
+    if(gear instanceof TargetCycleGear) {
+        if(getJTextFieldKWReduction().getText().length() > 0)
+            s.setKWReduction(new Double(getJTextFieldKWReduction().getText()));
+        else
+            s.setKWReduction(new Double(0.0));
+    }
+    
 	return s;
 }
 /**
@@ -1284,6 +1341,7 @@ private void initConnections() throws java.lang.Exception {
 	getJComboBoxMaxCycleCount().addActionListener(this);
 	getJTextFieldChangeTriggerOffset().addCaretListener(this);
     getJCheckBoxNoRamp().addActionListener(this);
+    getJTextFieldKWReduction().addCaretListener(this);
 
 	// user code end
 }
@@ -1317,6 +1375,8 @@ private void initialize() {
 		java.awt.GridBagConstraints constraintJComboBoxSendRateDigits = new java.awt.GridBagConstraints();
 		java.awt.GridBagConstraints constraintJComboBoxSendRateUnits = new java.awt.GridBagConstraints();
 		java.awt.GridBagConstraints constraintJCheckBoxNoRamp = new java.awt.GridBagConstraints();
+        java.awt.GridBagConstraints constraintJLabelKWReduction = new java.awt.GridBagConstraints();
+        java.awt.GridBagConstraints constraintJTextFieldKWReduction = new java.awt.GridBagConstraints();
         
 //      constraint for "(min)" label, no one knows why he is here? so we won't paint him for now.
         
@@ -1423,11 +1483,21 @@ private void initialize() {
         constraintJCSpinFieldPercentReduction.anchor = java.awt.GridBagConstraints.WEST;
 		constraintJCSpinFieldPercentReduction.gridy = 9;
 		constraintJCSpinFieldPercentReduction.gridx = 2;
+         
+        constraintJLabelKWReduction.insets = new java.awt.Insets(0,0,5,5);
+        constraintJLabelKWReduction.anchor = java.awt.GridBagConstraints.WEST;
+        constraintJLabelKWReduction.gridy = 10;
+        constraintJLabelKWReduction.gridx = 1;
+        
+        constraintJTextFieldKWReduction.insets = new java.awt.Insets(0,0,5,5);
+        constraintJTextFieldKWReduction.anchor = java.awt.GridBagConstraints.WEST;
+        constraintJTextFieldKWReduction.gridy = 10;
+        constraintJTextFieldKWReduction.gridx = 2;
         
 		constraintJPanelChangeMethod.insets = new java.awt.Insets(0,0,5,5);
         constraintJPanelChangeMethod.anchor = java.awt.GridBagConstraints.WEST;
         constraintJPanelChangeMethod.gridwidth = 3;
-		constraintJPanelChangeMethod.gridy = 10;
+		constraintJPanelChangeMethod.gridy = 11;
 		constraintJPanelChangeMethod.gridx = 1;
         
 		setLayout(new java.awt.GridBagLayout());
@@ -1451,6 +1521,8 @@ private void initialize() {
 		this.add(getJComboBoxSendRateDigits(), constraintJComboBoxSendRateDigits);
 		this.add(getJComboBoxSendRateUnits(), constraintJComboBoxSendRateUnits);
 		this.add(getJCheckBoxNoRamp(), constraintJCheckBoxNoRamp);
+        this.add(getJLabelKWReduction(), constraintJLabelKWReduction);
+        this.add(getJTextFieldKWReduction(), constraintJTextFieldKWReduction);
 		setSize(402, 430);
     } 
     catch (java.lang.Throwable ivjExc) 
@@ -1459,7 +1531,6 @@ private void initialize() {
     }
 	// user code begin {2}
 	getJComboBoxWhenChange().setSelectedItem( LMProgramDirectGear.CHANGE_NONE );
-	getJLabelSendRate().setText("Command Resend Rate:");
 	getJComboBoxSendRateDigits().setSelectedItem("1");
 	getJComboBoxSendRateUnits().setSelectedItem("hours");
 	getJComboBoxHowToStop().removeItem( StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.STOP_TIME_IN ) );		
@@ -1626,9 +1697,15 @@ public void setValue(Object o)
 	
 	if(s.getFrontRampOption().compareTo(CtiUtilities.STRING_NONE) != 0)
 		getJCheckBoxNoRamp().setSelected(true);
-		
-	
+    
+    if(gear instanceof TargetCycleGear) {
+        if(s.getKWReduction().doubleValue() == 0.0)
+            getJTextFieldKWReduction().setText("");
+        else
+            getJTextFieldKWReduction().setText(s.getKWReduction().toString());
+    }
 }
+
 public void valueChanged(com.klg.jclass.util.value.JCValueEvent arg1) 
 {
 	//fire this event for all JCSpinFields!!
@@ -1648,4 +1725,9 @@ public void valueChanged(com.klg.jclass.util.value.JCValueEvent arg1)
 		}
 		return jCheckBoxNoRamp;
 	}
+    
+    public void setTargetCycle(boolean truth) {
+        getJLabelKWReduction().setVisible(truth);
+        getJTextFieldKWReduction().setVisible(truth);
+    }
 }

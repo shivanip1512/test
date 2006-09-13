@@ -4,6 +4,8 @@ import java.sql.Statement;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.device.lm.NoControlGear;
++import com.cannontech.database.data.device.lm.MagnitudeCycleGear;
++import com.cannontech.database.data.device.lm.TargetCycleGear;
 import com.cannontech.database.data.device.lm.ThermostatPreOperateGear;
 import com.cannontech.database.data.device.lm.ThermostatSetbackGear;
 import com.cannontech.database.db.NestedDBPersistent;
@@ -44,6 +46,7 @@ public abstract class LMProgramDirectGear
     private Integer frontRampTime = new Integer(0);
     private String backRampOption = CtiUtilities.STRING_NONE;
     private Integer backRampTime = new Integer(0);
+    private Double kWReduction = new Double(0.0);
     
 	public static final String SETTER_COLUMNS[] =
    {
@@ -72,7 +75,8 @@ public abstract class LMProgramDirectGear
         "FrontRampOption",
         "FrontRampTime",
         "BackRampOption",
-        "BackRampTime"
+        "BackRampTime",
+        "KWReduction"
    };
 
 	public static final String CONSTRAINT_COLUMNS[] = { "GearID" };
@@ -104,7 +108,7 @@ public abstract class LMProgramDirectGear
 			getMethodOptionType(), getMethodOptionMax(), getGearID(), getRampInInterval(),
 			getRampInPercent(), getRampOutInterval(), getRampOutPercent(),
             getFrontRampOption(), getFrontRampTime(), getBackRampOption(),
-            getBackRampTime()
+            getBackRampTime(), getKWReduction()
 		};
 
 		add(TABLE_NAME, addValues);
@@ -137,6 +141,14 @@ public abstract class LMProgramDirectGear
 		{
 			return new com.cannontech.database.data.device.lm.TrueCycleGear();
 		}
+        else if (gearType.equalsIgnoreCase(CONTROL_MAGNITUDE_CYCLE))
+        {
+            return new MagnitudeCycleGear();
+        }
+        else if (gearType.equalsIgnoreCase(CONTROL_TARGET_CYCLE))
+        {
+            return new TargetCycleGear();
+        }
 		else if (gearType.equalsIgnoreCase(CONTROL_TIME_REFRESH))
 		{
 			return new com.cannontech.database.data.device.lm.TimeRefreshGear();
@@ -232,7 +244,7 @@ public abstract class LMProgramDirectGear
 					+ ", " + SETTER_COLUMNS[13] + ", " + SETTER_COLUMNS[14] + ", " + SETTER_COLUMNS[15]
 					+ ", " + SETTER_COLUMNS[16] + ", " + SETTER_COLUMNS[17] + ", " + SETTER_COLUMNS[18]
 					+ ", " + SETTER_COLUMNS[19] + ", " + SETTER_COLUMNS[20] + ", " + SETTER_COLUMNS[21]
-                    + ", " + SETTER_COLUMNS[22]+ " from " + TABLE_NAME +
+                    + ", " + SETTER_COLUMNS[22] + ", " + SETTER_COLUMNS[26] + " from " + TABLE_NAME +
 				" where deviceid=? order by GearNumber";
 		try
 		{
@@ -282,6 +294,10 @@ public abstract class LMProgramDirectGear
 					gear.setRampOutInterval(new Integer(rset.getInt(21)));
 					gear.setRampOutPercent(new Integer(rset.getInt(22)));
                     gear.setFrontRampOption(rset.getString(23));
+                    /*
+                     * Other ramp fields not used
+                     */
+                    gear.setKWReduction(new Double(rset.getDouble(24)));
 				}
 				
 				gearList.add(gear);
@@ -637,6 +653,10 @@ public static final Integer getDefaultGearID(Integer programID, java.sql.Connect
 			setRampOutInterval((Integer) results[20]);
 			setRampOutPercent((Integer) results[21]);
             setFrontRampOption((String) results[22]);
+            /*
+             * Other ramp fields not used
+             */
+            setKWReduction((Double) results[26]);
 		}
 		else
 			throw new Error(
@@ -854,7 +874,7 @@ public static final Integer getDefaultGearID(Integer programID, java.sql.Connect
 			getMethodOptionType(), getMethodOptionMax(), getRampInInterval(),
 			getRampInPercent(), getRampOutInterval(), getRampOutPercent(),
             getFrontRampOption(), getFrontRampTime(), getBackRampOption(),
-            getBackRampTime()
+            getBackRampTime(), getKWReduction()
 		};
 
 		Object constraintValues[] = { getGearID() };
@@ -932,5 +952,12 @@ public static final Integer getDefaultGearID(Integer programID, java.sql.Connect
 
       throw new java.sql.SQLException("Unable to retrieve the next GearID");
    }
+   
+public Double getKWReduction() {
+    return kWReduction;
+}
+public void setKWReduction(Double reduction) {
+    kWReduction = reduction;
+}
 
 }

@@ -277,6 +277,8 @@ private javax.swing.JComboBox getJComboBoxGearType() {
 			ivjJComboBoxGearType.addItem( StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.CONTROL_MASTER_CYCLE ) );
 			ivjJComboBoxGearType.addItem( StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.CONTROL_SMART_CYCLE ) );
 			ivjJComboBoxGearType.addItem( StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.CONTROL_TRUE_CYCLE ) );
+            ivjJComboBoxGearType.addItem( StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.CONTROL_MAGNITUDE_CYCLE ) );
+            ivjJComboBoxGearType.addItem( StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.CONTROL_TARGET_CYCLE ) );
 			ivjJComboBoxGearType.addItem( StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.CONTROL_LATCHING ) );
 			ivjJComboBoxGearType.addItem( StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.THERMOSTAT_SETBACK ) );
 			ivjJComboBoxGearType.addItem( StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.NO_CONTROL) );
@@ -612,11 +614,13 @@ private void setGearType(java.lang.String newGearType)
 		getJScrollPane1().setViewportView(getIvjRotationGearPanel1());
 	}
 	else if( getGearType().equalsIgnoreCase(LMProgramDirectGear.CONTROL_SMART_CYCLE)
-				 || getGearType().equalsIgnoreCase(LMProgramDirectGear.CONTROL_TRUE_CYCLE) )
+				 || getGearType().equalsIgnoreCase(LMProgramDirectGear.CONTROL_TRUE_CYCLE)
+                 || getGearType().equalsIgnoreCase(LMProgramDirectGear.CONTROL_MAGNITUDE_CYCLE)
+                 || getGearType().equalsIgnoreCase(LMProgramDirectGear.CONTROL_TARGET_CYCLE))
 	{
 		//SmartCycle
 		getJScrollPane1().setViewportView(getIvjSmartGearPanel1());
-	
+        getIvjSmartGearPanel1().setTargetCycle(getGearType().equalsIgnoreCase(LMProgramDirectGear.CONTROL_TARGET_CYCLE));
 	}
 	else if( getGearType().equalsIgnoreCase(LMProgramDirectGear.CONTROL_TIME_REFRESH) )
 	{

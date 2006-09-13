@@ -33,6 +33,8 @@ public interface IlmDefines
 	public static final String CONTROL_ROTATION = "Rotation";
 	public static final String CONTROL_LATCHING = "Latching";
 	public static final String CONTROL_TRUE_CYCLE = "TrueCycle";
+    public static final String CONTROL_MAGNITUDE_CYCLE = "MagnitudeCycle";
+    public static final String CONTROL_TARGET_CYCLE = "TargetCycle";
 	public static final String THERMOSTAT_SETBACK = "ThermostatRamping";
 	public static final String THERMOSTAT_PRE_OPERATE = "ThermostatPre-operate";
 	public static final String NO_CONTROL = "NoControl";
@@ -43,6 +45,8 @@ public interface IlmDefines
 		CONTROL_TIME_REFRESH,
 		CONTROL_SMART_CYCLE,
 		CONTROL_TRUE_CYCLE,
+        CONTROL_MAGNITUDE_CYCLE,
+        CONTROL_TARGET_CYCLE,
 		CONTROL_MASTER_CYCLE,
 		CONTROL_ROTATION,
 		CONTROL_LATCHING,
