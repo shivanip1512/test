@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2006/09/11 20:49:02 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2006/09/13 04:45:37 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -171,11 +171,13 @@ CtiDeviceMCT4xx::CommandSet CtiDeviceMCT4xx::initCommandStore()
 {
     CommandSet cs;
 
-    cs.insert(CommandStore(Emetcon::PutConfig_TSync, Emetcon::IO_Function_Write, FuncWrite_TSyncPos, FuncWrite_TSyncLen));
+    cs.insert(CommandStore(Emetcon::PutConfig_TSync,        Emetcon::IO_Function_Write, FuncWrite_TSyncPos,         FuncWrite_TSyncLen));
+
+    cs.insert(CommandStore(Emetcon::PutValue_ResetPFCount,  Emetcon::IO_Write,          Command_PowerfailReset,     0));
 
     //  This is the default TOU reset command - the command that zeroes the rates (Command_TOUResetZero) is assigned
     //    in executePutValue() if needed
-    cs.insert(CommandStore(Emetcon::PutValue_TOUReset, Emetcon::IO_Write, Command_TOUReset, FuncWrite_TSyncLen));
+    cs.insert(CommandStore(Emetcon::PutValue_TOUReset,      Emetcon::IO_Write,          Command_TOUReset,           0));
 
     return cs;
 }
