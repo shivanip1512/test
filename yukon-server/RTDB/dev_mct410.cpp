@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.89 $
-* DATE         :  $Date: 2006/09/13 04:44:57 $
+* REVISION     :  $Revision: 1.90 $
+* DATE         :  $Date: 2006/09/13 16:02:43 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -516,7 +516,7 @@ INT CtiDeviceMCT410::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS
             interval_len = getLoadProfileInterval(i);
             block_len    = interval_len * 6;
 
-            if( useScanFlags() )
+            if( useScanFlags() && getLoadProfile().isChannelValid(i) )
             {
                 if( _lp_info[i].current_schedule <= Now )
                 {
