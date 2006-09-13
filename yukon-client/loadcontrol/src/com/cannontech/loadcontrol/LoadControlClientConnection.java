@@ -49,7 +49,7 @@ public void addObserver(java.util.Observer obs)
 		cmd.setCommand( com.cannontech.loadcontrol.messages.LMCommand.RETRIEVE_ALL_CONTROL_AREAS );
 		
 		//tell the server we need all the ControlAreas sent to the new registered object
-		LoadControlClientConnection.getInstance().write( cmd );
+		LoadControlClientConnection.getInstance().queue( cmd );
 	}
 	
 }
