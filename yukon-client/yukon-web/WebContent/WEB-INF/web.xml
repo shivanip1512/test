@@ -156,7 +156,7 @@
     </listener>
 
     <listener>
-        <listener-class>com.cannontech.spring.CannonContextLoaderListener</listener-class>
+        <listener-class>com.cannontech.servlet.CannonContextLoaderListener</listener-class>
     </listener>
 
 

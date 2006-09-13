@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.cannontech.spring;
+package com.cannontech.servlet;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -24,6 +24,7 @@ import org.springframework.web.context.ContextLoader;
 import org.springframework.web.context.ContextLoaderServlet;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.servlet.filter.ErrorHelperFilter;
 
 /**
  * Bootstrap listener to start up Spring's root WebApplicationContext.
@@ -57,7 +58,7 @@ public class CannonContextLoaderListener implements ServletContextListener {
         } catch (Throwable t) {
             CTILogger.error("Unable to initialize Spring Context. Setting error flag.", t);
             ServletContext servletContext = event.getServletContext();
-            servletContext.setAttribute("com.cannontech.SERVLET_STARTUP_ERROR", t);
+            ErrorHelperFilter.recordStartupError(servletContext, t);
         }
     }
 
