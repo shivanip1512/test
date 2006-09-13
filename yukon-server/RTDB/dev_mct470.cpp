@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.61 $
-* DATE         :  $Date: 2006/09/12 14:37:03 $
+* REVISION     :  $Revision: 1.62 $
+* DATE         :  $Date: 2006/09/13 16:02:43 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -760,7 +760,7 @@ INT CtiDeviceMCT470::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS
             demand_rate = getLoadProfileInterval(i);
             block_size  = demand_rate * 6;
 
-            if( useScanFlags() )
+            if( useScanFlags() && getLoadProfile().isChannelValid(i) )
             {
                 if( _lp_info[i].current_schedule > Now )
                 {
@@ -3625,7 +3625,7 @@ INT CtiDeviceMCT470::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, lis
 
                 resultString += getName() + " / current time: " + ied_time.asString() + "\n";
 
-                resultString += getName() + " / current TOU rate: " + string('A' + (DSt->Message[4] & 0x07) - 1, 1) + "\n";
+                resultString += getName() + " / current TOU rate: " + string(1, 'A' + (DSt->Message[4] & 0x07) - 1).c_str() + "\n";
 
                 //  as soon as we know what type of IED this is, we can do all of the fancy IED-specific stuff
                 /*
