@@ -11,7 +11,7 @@
 
     <context-param>
         <param-name>parentContextKey</param-name>
-        <param-value>com.cannontech.context.main</param-value>
+        <param-value>com.cannontech.context.web</param-value>
     </context-param>
     
     <context-param>

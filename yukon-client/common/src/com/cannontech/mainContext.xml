@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+    <description>This file is for the most generic beans. Beans here should be usable (i.e. no crazy dependencies) by any application that currently exists and any that is created in the future.</description>
+
+    <bean id="yukonDataSource" class="com.cannontech.database.YukonDataSource">
+        <constructor-arg value="yukon" />
+    </bean>
+
+    <!--  
+        The following two beans will get overridden by Hibernate versions if the context loaded
+        includes the hibernateContext.xml file.
+    -->
+    <bean id="transactionTemplate" class="org.springframework.transaction.support.TransactionTemplate">
+        <property name="transactionManager" ref="transactionManager" />
+    </bean>
+
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="yukonDataSource" />
+    </bean>
+
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <property name="dataSource" ref="yukonDataSource" />
+    </bean>
+
+    <bean id="databaseCache" class="com.cannontech.mbean.ServerDatabaseCache">
+        <property name="dbChangeListener" ref="cacheDbChangeListener" />
+    </bean>
+    <bean id="cacheDbChangeListener" class="com.cannontech.database.cache.CacheDBChangeListener">
+        <constructor-arg>
+            <ref bean="connectionPool" />
+        </constructor-arg>
+    </bean>
+
+    <bean id="connectionPool" class="com.cannontech.yukon.conns.ConnPool">
+        <property name="roleDao" ref="roleDao" />
+    </bean>
+
+    <bean id="ctiSqlStatement" class="com.cannontech.ejb.SqlStatementBean" singleton="false" />
+    <bean id="dbPersistent" class="com.cannontech.ejb.DBPersistentBean" singleton="false" />
+
+    <bean id="notificationProxy" factory-bean="connectionPool" factory-method="getDefNotificationConn" singleton="false" />
+    <bean id="dispatchConnection" factory-bean="connectionPool" factory-method="getDefDispatchConn" singleton="false" />
+
+    <bean id="nextValueHelper" class="com.cannontech.database.incrementer.NextValueHelper">
+        <property name="sequenceNameLookup" ref="sequenceNameLookup" />
+    </bean>
+
+    <bean id="sequenceNameLookup" class="com.cannontech.database.incrementer.XmlIncrementer" init-method="parse">
+        <property name="dataSource" ref="yukonDataSource" />
+        <property name="configFile" value="classpath:com/cannontech/database/incrementer/table_sequences.xml" />
+    </bean>
+
+</beans>

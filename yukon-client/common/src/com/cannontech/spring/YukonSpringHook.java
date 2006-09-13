@@ -11,7 +11,7 @@ import com.cannontech.database.incrementer.NextValueHelper;
 
 public class YukonSpringHook {
 
-    private static String WEB_BEAN_FACTORY_KEY = "com.cannontech.context.main";
+    private static String WEB_BEAN_FACTORY_KEY = "com.cannontech.context.web";
     private static String CLIENT_BEAN_FACTORY_KEY = "com.cannontech.context.client";
     private static String beanFactoryKey;
     

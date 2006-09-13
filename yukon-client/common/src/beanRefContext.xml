@@ -2,18 +2,20 @@
  <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
  
  <beans>
-   <bean id="com.cannontech.context.main" 
+   <bean id="com.cannontech.context.web" 
         class="org.springframework.context.support.ClassPathXmlApplicationContext"
         lazy-init="true">
      <constructor-arg>
        <list>
+         <value>com/cannontech/mainContext.xml</value>
          <value>com/cannontech/core/dao/applicationContext.xml</value>
+         <value>com/cannontech/core/dynamic/applicationContext.xml</value>
          <value>com/cannontech/hibernate/hibernateContext.xml</value>
          <value>com/cannontech/cc/applicationContext.xml</value>
          <value>com/cannontech/multispeak/client/applicationContext.xml</value>
-         <value>com/cannontech/core/dynamic/applicationContext.xml</value>
          <value>com/cannontech/cbc/applicationContext.xml</value>
          <value>com/cannontech/loadcontrol/applicationContext.xml</value>
+         <value>com/cannontech/common/search/searchContext.xml</value>
        </list>
      </constructor-arg>
    </bean>
@@ -23,6 +25,7 @@
         lazy-init="true">
      <constructor-arg>
        <list>
+         <value>com/cannontech/mainContext.xml</value>
          <value>com/cannontech/core/dao/applicationContext.xml</value>
          <value>com/cannontech/core/dynamic/applicationContext.xml</value>
        </list>
@@ -34,11 +37,12 @@
         lazy-init="true">
      <constructor-arg>
        <list>
+         <value>com/cannontech/mainContext.xml</value>
          <value>com/cannontech/core/dao/applicationContext.xml</value>
+         <value>com/cannontech/core/dynamic/applicationContext.xml</value>
          <value>com/cannontech/hibernate/hibernateContext.xml</value>
          <value>com/cannontech/cc/applicationContext.xml</value>
          <value>com/cannontech/notif/applicationContext.xml</value>
-         <value>com/cannontech/core/dynamic/applicationContext.xml</value>
          <value>com/cannontech/loadcontrol/applicationContext.xml</value>
        </list>
      </constructor-arg>

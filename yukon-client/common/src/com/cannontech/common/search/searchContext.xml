@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+    <description>This file is for the Lucene Searching beans.</description>
+
+    <bean id="pointDeviceSearcherLucene" class="com.cannontech.common.search.PointDeviceLuceneSearcher" singleton="true" autowire="byType">
+        <property name="indexLocation" value="c:/dev/lucene" />
+    </bean>
+
+    <alias name="pointDeviceSearcherLucene" alias="pointDeviceSearcher" />
+
+    <bean id="pointDeviceSearchInitializer" class="com.cannontech.common.search.PointDeviceLuceneInitializer" singleton="true" autowire="default">
+        <property name="jdbcTemplate" ref="jdbcTemplate" />
+        <property name="indexLocation" value="c:/dev/lucene" />
+    </bean>
+</beans>
