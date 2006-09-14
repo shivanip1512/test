@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.158 $
-* DATE         :  $Date: 2006/09/08 20:20:46 $
+* REVISION     :  $Revision: 1.159 $
+* DATE         :  $Date: 2006/09/14 14:30:41 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1009,10 +1009,10 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                                 {
                                     CtiSignalMsg *pFailSig = CTIDBG_new CtiSignalMsg(pPoint->getID(), Cmd->getSOE(), devicename + " / " + pPoint->getName() + ": Commanded Control " + ResolveStateName(pPoint->getStateGroupID(), rawstate) + " Failed", getAlarmStateName( pPoint->getAlarming().getAlarmCategory(CtiTablePointAlarming::commandFailure) ), GeneralLogType, pPoint->getAlarming().getAlarmCategory(CtiTablePointAlarming::commandFailure), Cmd->getUser());
 
-                                    pFailSig->setTags((pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM));
+                                    pFailSig->setTags((pDyn->getDispatch().getTags() & ~SIGNAL_MANAGER_MASK));
                                     if(pFailSig->getSignalCategory() > SignalEvent)
                                     {
-                                        pFailSig->setTags((pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) | (pPoint->getAlarming().isAutoAcked(CtiTablePointAlarming::commandFailure) ? 0 : TAG_UNACKNOWLEDGED_ALARM));
+                                        pFailSig->setTags((pDyn->getDispatch().getTags() & ~SIGNAL_MANAGER_MASK) | (pPoint->getAlarming().isAutoAcked(CtiTablePointAlarming::commandFailure) ? 0 : TAG_UNACKNOWLEDGED_ALARM));
                                         pFailSig->setLogType(AlarmCategoryLogType);
                                     }
                                     pFailSig->setCondition(CtiTablePointAlarming::commandFailure);
@@ -1030,7 +1030,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
 
                                 CtiSignalMsg *pCRP = CTIDBG_new CtiSignalMsg(pPoint->getID(), Cmd->getSOE(), "Control " + ResolveStateName(pPoint->getStateGroupID(), rawstate) + " Sent", string(), GeneralLogType, SignalEvent, Cmd->getUser());
                                 pDyn->getDispatch().setTags( TAG_CONTROL_PENDING );
-                                pCRP->setTags(pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM);
+                                pCRP->setTags(pDyn->getDispatch().getTags() & ~SIGNAL_MANAGER_MASK);
                                 MainQueue_.putQueue( pCRP );
                                 pCRP = 0;
                                 if(pPseudoValPD) MainQueue_.putQueue( pPseudoValPD );
@@ -1721,7 +1721,7 @@ INT CtiVanGogh::archivePointDataMessage(const CtiPointDataMsg &aPD)
                         // Set the point in memory to the current value.  Archive if an archive is pending.
                         // Do not update with an older time!
                         // Unless we are in the forced condition
-                        pDyn->setPoint(aPD.getTime(), aPD.getMillis(), aPD.getValue(), aPD.getQuality(), (aPD.getTags() & ~MASK_ANY_ALARM) | _signalManager.getTagMask(aPD.getId()));
+                        pDyn->setPoint(aPD.getTime(), aPD.getMillis(), aPD.getValue(), aPD.getQuality(), (aPD.getTags() & ~SIGNAL_MANAGER_MASK) | _signalManager.getTagMask(aPD.getId()));
                         if( TempPoint->isATriggerPoint() )
                         {
                             sendPointTriggers( aPD , TempPoint );
@@ -2223,7 +2223,7 @@ INT CtiVanGogh::assembleMultiFromSignalForConnection(const CtiServer::ptr_type &
                 {
                     CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)pPoint->getDynamic();
                     // Only set non-alarm tags.  This signal must indicate if it is an alarm on entry (via checkSignalStateQuality)
-                    pSig->setTags( (pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) );
+                    pSig->setTags( (pDyn->getDispatch().getTags() & ~SIGNAL_MANAGER_MASK) );
                 }
 
                 //The tags are now set in pSig so that the effect goes beyond just this message.
@@ -2628,10 +2628,10 @@ int CtiVanGogh::processControlMessage(CtiLMControlHistoryMsg *pMsg)
 
                 CtiSignalMsg *pFailSig = CTIDBG_new CtiSignalMsg(pPoint->getID(), 0, "Control " + ResolveStateName(pPoint->getStateGroupID(), pMsg->getRawState()) + " Failed", getAlarmStateName( pPoint->getAlarming().getAlarmCategory(CtiTablePointAlarming::commandFailure) ), GeneralLogType, pPoint->getAlarming().getAlarmCategory(CtiTablePointAlarming::commandFailure), pMsg->getUser());
 
-                pFailSig->setTags((pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM));
+                pFailSig->setTags((pDyn->getDispatch().getTags() & ~SIGNAL_MANAGER_MASK));
                 if(pFailSig->getSignalCategory() > SignalEvent)
                 {
-                    pFailSig->setTags((pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) | (pPoint->getAlarming().isAutoAcked(CtiTablePointAlarming::commandFailure) ? 0 : TAG_UNACKNOWLEDGED_ALARM));
+                    pFailSig->setTags((pDyn->getDispatch().getTags() & ~SIGNAL_MANAGER_MASK) | (pPoint->getAlarming().isAutoAcked(CtiTablePointAlarming::commandFailure) ? 0 : TAG_UNACKNOWLEDGED_ALARM));
                     pFailSig->setLogType(AlarmCategoryLogType);
                 }
                 pFailSig->setCondition(CtiTablePointAlarming::commandFailure);
@@ -2834,7 +2834,7 @@ INT CtiVanGogh::postMOAUploadToConnection(CtiServer::ptr_type &CM, int flags)
 
                         // This could be replaced by an object/method which returns a multi message
                         // full of all alarms active/unacknowledged on this point.
-                        if( (pDyn->getDispatch().getTags() & MASK_ANY_ALARM) && ((const CtiVanGoghConnectionManager *)CM.get())->getAlarm() )
+                        if( (pDyn->getDispatch().getTags() & SIGNAL_MANAGER_MASK) && ((const CtiVanGoghConnectionManager *)CM.get())->getAlarm() )
                         {
                             CtiMultiMsg *pSigMulti = _signalManager.getPointSignals(TempPoint->getID());
 
@@ -2980,7 +2980,7 @@ INT CtiVanGogh::loadPendingSignals()
             sig.setSignalCategory( dynAlarm.getCategoryID() );
             sig.setText( dynAlarm.getAction() );
             sig.setAdditionalInfo( dynAlarm.getDescription() );
-            sig.setTags( dynAlarm.getTags() & MASK_ANY_ALARM );     // We only care about the alarm masks!
+            sig.setTags( dynAlarm.getTags() & SIGNAL_MANAGER_MASK );     // We only care about the alarm masks!
             sig.setCondition( dynAlarm.getAlarmCondition() );
             sig.setLogID(dynAlarm.getLogID());
             sig.setSOE(dynAlarm.getSOE());
@@ -4086,7 +4086,7 @@ INT CtiVanGogh::checkForStatusAlarms(CtiPointDataMsg *pData, CtiMultiWrapper &aW
                 if(pSig != NULL)
                 {
                     pSig->setUser(pData->getUser());
-                    pSig->setTags(pDyn->getDispatch().getTags()  & ~MASK_ANY_ALARM);
+                    pSig->setTags(pDyn->getDispatch().getTags()  & ~SIGNAL_MANAGER_MASK);
                     aWrap.getMulti()->insert( pSig );
                 }
             }
@@ -4126,7 +4126,7 @@ INT CtiVanGogh::checkForNumericAlarms(CtiPointDataMsg *pData, CtiMultiWrapper &a
                     pSig->setPointValue(pData->getValue());
                     if(pSig != NULL)
                     {
-                        pSig->setTags(pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM);
+                        pSig->setTags(pDyn->getDispatch().getTags() & ~SIGNAL_MANAGER_MASK);
                         pSig->setUser(pData->getUser());
                         aWrap.getMulti()->insert( pSig );
                         pSig = NULL;
@@ -6566,7 +6566,7 @@ void CtiVanGogh::checkStatusUCOS(int alarm, CtiPointDataMsg *pData, CtiMultiWrap
             updateDynTagsForSignalMsg(point,pSig,alarm,true);
 
             pSig->resetTags( TAG_ACTIVE_ALARM );
-            pDyn->getDispatch().resetTags( MASK_ANY_ALARM );
+            pDyn->getDispatch().resetTags( SIGNAL_MANAGER_MASK );
             pDyn->getDispatch().setTags( _signalManager.getTagMask(point->getID()) );
         }
     }
@@ -6678,7 +6678,8 @@ void CtiVanGogh::tagSignalAsAlarm( CtiPointSPtr point, CtiSignalMsg *&pSig, int 
             pSig->setSignalCategory(SignalEvent);
         }
 
-        pSig->setTags((pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) | tags);   // They are equal here!
+        tags |= TAG_CONSTRAINT_VIOLATED;
+        pSig->setTags((pDyn->getDispatch().getTags() & ~SIGNAL_MANAGER_MASK) | tags);   // They are equal here!
         pSig->setCondition(alarm);
 
         if(pData)    // If is "pushed" into the alarm condition, let's label it that way.
@@ -6703,7 +6704,7 @@ void CtiVanGogh::updateDynTagsForSignalMsg( CtiPointSPtr point, CtiSignalMsg *&p
     if(pDyn)
     {
         pDyn->setConditionActive(alarm_condition, condition_active);                      // Mark this point as in this condition if the signal says the condition IS active.
-        pDyn->getDispatch().resetTags(MASK_ANY_ALARM);
+        pDyn->getDispatch().resetTags(SIGNAL_MANAGER_MASK);
         pDyn->getDispatch().setTags(_signalManager.getTagMask(point->getID()));
     }
 }
@@ -6727,16 +6728,16 @@ void CtiVanGogh::activatePointAlarm(int alarm, CtiMultiWrapper &aWrap, CtiPointS
 
     if(pSigActive != NULL)
     {
-        pDyn->getDispatch().resetTags( MASK_ANY_ALARM );
+        pDyn->getDispatch().resetTags( SIGNAL_MANAGER_MASK );
         pDyn->getDispatch().setTags( _signalManager.getTagMask(point->getID()) );
 
-        unsigned sigtags = (pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) | TAG_REPORT_MSG_TO_ALARM_CLIENTS;
+        unsigned sigtags = (pDyn->getDispatch().getTags() & ~SIGNAL_MANAGER_MASK) | TAG_REPORT_MSG_TO_ALARM_CLIENTS;
 
         if(activate)
         {
             sigtags = TAG_REPORT_MSG_BLOCK_EXTRA_EMAIL;
         }
-        else if( !activate && ((pDyn->getDispatch().getTags() & MASK_ANY_ALARM) || !point->getAlarming().getNotifyOnClear()) )
+        else if( !activate && ((pDyn->getDispatch().getTags() & SIGNAL_MANAGER_MASK) || !point->getAlarming().getNotifyOnClear()) )
         {
             sigtags |= TAG_REPORT_MSG_BLOCK_EXTRA_EMAIL;
         }
@@ -6756,12 +6757,12 @@ void CtiVanGogh::deactivatePointAlarm(int alarm, CtiMultiWrapper &aWrap, CtiPoin
 
     if(pSigActive != NULL)
     {
-        pDyn->getDispatch().resetTags( MASK_ANY_ALARM );
+        pDyn->getDispatch().resetTags( SIGNAL_MANAGER_MASK );
         pDyn->getDispatch().setTags( _signalManager.getTagMask(point->getID()) );
 
-        unsigned sigtags = (pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) | TAG_REPORT_MSG_TO_ALARM_CLIENTS;
+        unsigned sigtags = (pDyn->getDispatch().getTags() & ~SIGNAL_MANAGER_MASK) | TAG_REPORT_MSG_TO_ALARM_CLIENTS;
 
-        if( (pDyn->getDispatch().getTags() & MASK_ANY_ALARM) || !point->getAlarming().getNotifyOnClear() )
+        if( (pDyn->getDispatch().getTags() & SIGNAL_MANAGER_MASK) || !point->getAlarming().getNotifyOnClear() )
         {
             sigtags |= TAG_REPORT_MSG_BLOCK_EXTRA_EMAIL;
         }
@@ -6782,10 +6783,10 @@ void CtiVanGogh::reactivatePointAlarm(int alarm, CtiMultiWrapper &aWrap, CtiPoin
 
     if(pSigActive != NULL)
     {
-        pDyn->getDispatch().resetTags( MASK_ANY_ALARM );
+        pDyn->getDispatch().resetTags( SIGNAL_MANAGER_MASK );
         pDyn->getDispatch().setTags( _signalManager.getTagMask(point->getID()) );
 
-        pSigActive->setTags( (pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) | TAG_REPORT_MSG_TO_ALARM_CLIENTS | TAG_REPORT_MSG_BLOCK_EXTRA_EMAIL );
+        pSigActive->setTags( (pDyn->getDispatch().getTags() & ~SIGNAL_MANAGER_MASK) | TAG_REPORT_MSG_TO_ALARM_CLIENTS | TAG_REPORT_MSG_BLOCK_EXTRA_EMAIL );
         pSigActive->setText( TrimAlarmTagText((string&)pSigActive->getText()) + AlarmTagsToString(pSigActive->getTags()) );
         pSigActive->setMessageTime( CtiTime() );
 
@@ -6828,7 +6829,7 @@ void CtiVanGogh::acknowledgeAlarmCondition( CtiPointSPtr &pPt, const CtiCommandM
             {
                 pSigNew->setUser( Cmd->getUser() );
 
-                unsigned sigtags = (pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) | TAG_REPORT_MSG_TO_ALARM_CLIENTS | TAG_REPORT_MSG_BLOCK_EXTRA_EMAIL;
+                unsigned sigtags = (pDyn->getDispatch().getTags() & ~SIGNAL_MANAGER_MASK) | TAG_REPORT_MSG_TO_ALARM_CLIENTS | TAG_REPORT_MSG_BLOCK_EXTRA_EMAIL;
 
                 bool almclear = (_signalManager.getTagMask(pPt->getPointID()) & MASK_ANY_ALARM) == 0; // true if no bits are set.
 
@@ -6848,13 +6849,13 @@ void CtiVanGogh::acknowledgeAlarmCondition( CtiPointSPtr &pPt, const CtiCommandM
                 pSigNew->setMessagePriority( 15 );   // Max this out we want it to hurry.
 
                 // Mark it if there are other alarms on the point.
-                UINT premask = pDyn->getDispatch().getTags( ) & MASK_ANY_ALARM;
+                UINT premask = pDyn->getDispatch().getTags( ) & SIGNAL_MANAGER_MASK;
                 UINT amask = _signalManager.getTagMask(pPt->getPointID());
 
                 if(premask != amask)
                 {
                     // Adjust the point tags to reflect the potentially new state of the alarm tags.
-                    pDyn->getDispatch().resetTags( MASK_ANY_ALARM );
+                    pDyn->getDispatch().resetTags( SIGNAL_MANAGER_MASK );
                     pDyn->getDispatch().setTags( amask );
 
                     CtiPointDataMsg *pTagDat = CTIDBG_new CtiPointDataMsg(pPt->getID(), pDyn->getValue(), pDyn->getQuality(), pPt->getType(), "Tags Updated", pDyn->getDispatch().getTags());
@@ -7913,10 +7914,10 @@ void CtiVanGogh::sendPendingControlRequest(const CtiPointDataMsg &aPD, CtiPointS
     {
         CtiSignalMsg *pFailSig = CTIDBG_new CtiSignalMsg(point->getID(), aPD.getSOE(), devicename + " / " + point->getName() + ": Triggered Control Failed", getAlarmStateName( point->getAlarming().getAlarmCategory(CtiTablePointAlarming::commandFailure) ), GeneralLogType, point->getAlarming().getAlarmCategory(CtiTablePointAlarming::commandFailure), aPD.getUser());
 
-        pFailSig->setTags((pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM));
+        pFailSig->setTags((pDyn->getDispatch().getTags() & ~SIGNAL_MANAGER_MASK));
         if(pFailSig->getSignalCategory() > SignalEvent)
         {
-            pFailSig->setTags((pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) | (point->getAlarming().isAutoAcked(CtiTablePointAlarming::commandFailure) ? 0 : TAG_UNACKNOWLEDGED_ALARM));
+            pFailSig->setTags((pDyn->getDispatch().getTags() & ~SIGNAL_MANAGER_MASK) | (point->getAlarming().isAutoAcked(CtiTablePointAlarming::commandFailure) ? 0 : TAG_UNACKNOWLEDGED_ALARM));
             pFailSig->setLogType(AlarmCategoryLogType);
         }
         pFailSig->setCondition(CtiTablePointAlarming::commandFailure);
@@ -7934,7 +7935,7 @@ void CtiVanGogh::sendPendingControlRequest(const CtiPointDataMsg &aPD, CtiPointS
 
     CtiSignalMsg *pCRP = CTIDBG_new CtiSignalMsg(point->getID(), aPD.getSOE(), "Triggered Control Sent", string(), GeneralLogType, SignalEvent, aPD.getUser());
     pDyn->getDispatch().setTags( TAG_CONTROL_PENDING );
-    pCRP->setTags(pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM);
+    pCRP->setTags(pDyn->getDispatch().getTags() & ~SIGNAL_MANAGER_MASK);
     MainQueue_.putQueue( pCRP );
     pCRP = 0;
     if(pPseudoValPD) MainQueue_.putQueue( pPseudoValPD );
