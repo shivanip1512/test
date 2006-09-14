@@ -10,8 +10,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2006/08/03 20:14:53 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2006/09/14 14:30:14 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -88,7 +88,8 @@ CtiSignalManager& CtiSignalManager::addSignal(const CtiSignalMsg &sig)          
 {
     try
     {
-        if( (sig.getSignalCategory() > SignalEvent && (sig.getTags() & MASK_ANY_ALARM) != 0) )
+        // Events are now allowed
+        if( (sig.getTags() & SIGNAL_MANAGER_MASK) != 0 ) 
         {
             CtiLockGuard< CtiMutex > tlg(_mux, 5000);
             while(!tlg.isAcquired())
@@ -102,7 +103,7 @@ CtiSignalManager& CtiSignalManager::addSignal(const CtiSignalMsg &sig)          
 
             if(sig.getCondition() >= 0)
             {
-                if(sig.getSignalCategory() > SignalEvent)
+                if(sig.getSignalCategory() >= SignalEvent)
                 {
                     setDirty(true);
 
@@ -170,6 +171,9 @@ CtiSignalManager& CtiSignalManager::addSignal(const CtiSignalMsg &sig)          
     return *this;
 }
 
+// This is now based on the TAG_CONSTRAINT_VIOLATED more than the TAG_ACTIVE_ALARM
+// This may not set the alarm to active even though the active parameter is true!!
+// If getSignalCategory() == SignalEvent then the alarm is active.
 CtiSignalMsg*  CtiSignalManager::setAlarmActive(long pointid, int alarm_condition, bool active)
 {
     bool didit = false;
@@ -200,20 +204,25 @@ CtiSignalMsg*  CtiSignalManager::setAlarmActive(long pointid, int alarm_conditio
 
             if(pOriginalSig)
             {
-                if( ((pOriginalSig->getTags() & TAG_ACTIVE_ALARM) != 0) != active )     // We must be changing it!
+                if( ((pOriginalSig->getTags() & TAG_CONSTRAINT_VIOLATED) != 0) != active )     // We must be changing it!
                 {
                     setDirty(true);
 
                     if(active)
                     {
-                        pOriginalSig->setTags(TAG_ACTIVE_ALARM);
+                        pOriginalSig->setTags(TAG_CONSTRAINT_VIOLATED);
+                        if( pOriginalSig->getSignalCategory() > SignalEvent)
+                        {
+                            pOriginalSig->setTags(TAG_ACTIVE_ALARM);
+                        }
                     }
                     else
                     {
+                        pOriginalSig->resetTags(TAG_CONSTRAINT_VIOLATED);
                         pOriginalSig->resetTags(TAG_ACTIVE_ALARM);
                     }
 
-                    tags = ( pOriginalSig->getTags() & MASK_ANY_ALARM );
+                    tags = ( pOriginalSig->getTags() & SIGNAL_MANAGER_MASK );
 
                     if(tags == 0)
                     {
@@ -288,7 +297,7 @@ CtiSignalMsg*  CtiSignalManager::setAlarmAcknowledged(long pointid, int alarm_co
                         pOriginalSig->setTags(TAG_UNACKNOWLEDGED_ALARM);
                     }
 
-                    tags = ( pOriginalSig->getTags() & MASK_ANY_ALARM );
+                    tags = ( pOriginalSig->getTags() & SIGNAL_MANAGER_MASK );
 
                     if(tags == 0)
                     {
@@ -390,7 +399,7 @@ UINT CtiSignalManager::getConditionTags(long pointid, int alarm_condition) const
 
             if(pOriginalSig)
             {
-                tags = (pOriginalSig->getTags() & MASK_ANY_ALARM );
+                tags = (pOriginalSig->getTags() & SIGNAL_MANAGER_MASK );
             }
         }
     }
@@ -430,9 +439,9 @@ UINT CtiSignalManager::getTagMask(long pointid) const // Returns the bitwise OR 
 
         if(pSig && key.first == pointid)
         {
-            mask |= (pSig->getTags() & MASK_ANY_ALARM);
+            mask |= (pSig->getTags() & SIGNAL_MANAGER_MASK);
 
-            if(mask == MASK_ANY_ALARM)
+            if(mask == SIGNAL_MANAGER_MASK)
             {
                 break;      // No point in looking any further.  We have ack and active already indicated for this pointid.
             }
@@ -646,7 +655,7 @@ UINT CtiSignalManager::writeDynamicSignalsToDB()
                         ptAlm.setAlarmTime( pSig->getMessageTime() );
                         ptAlm.setAction( pSig->getText() );
                         ptAlm.setDescription( pSig->getAdditionalInfo() );
-                        ptAlm.setTags( pSig->getTags() & MASK_ANY_ALARM );
+                        ptAlm.setTags( pSig->getTags() & SIGNAL_MANAGER_MASK );
                         ptAlm.setLogID( pSig->getLogID() );
 
                         ptAlm.setSOE( pSig->getSOE() );
