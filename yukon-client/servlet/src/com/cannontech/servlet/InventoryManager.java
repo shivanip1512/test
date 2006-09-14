@@ -3,6 +3,7 @@ package com.cannontech.servlet;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -523,7 +524,14 @@ public class InventoryManager extends HttpServlet {
 		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 		
 		boolean invChecking = DaoFactory.getAuthDao().checkRoleProperty(user.getYukonUser(), ConsumerInfoRole.INVENTORY_CHECKING);
-		
+        InventoryBean iBean = (InventoryBean) session.getAttribute("inventoryBean");
+        if(iBean == null)
+        {
+            session.setAttribute("inventoryBean", new InventoryBean());
+            iBean = (InventoryBean) session.getAttribute("inventoryBean");
+        }
+        iBean.setCheckInvenForAccount(false);
+        
         /*
          * TODO: We will need a new way to find MCTs now that we removed the device type pulldown for Xcel
          */
@@ -568,8 +576,19 @@ public class InventoryManager extends HttpServlet {
 				session.setAttribute( InventoryManagerUtil.INVENTORY_TO_CHECK, liteInv );
 			}
             else {
-                liteInv = energyCompany.searchUsingOnlySerialNum(serialNo);
-                session.setAttribute( InventoryManagerUtil.INVENTORY_TO_CHECK, liteInv );
+                /*
+                 * Might as well use the filter bean to look up the serial number
+                 */
+                ArrayList tempList = new ArrayList();
+                tempList.add(new FilterWrapper(String.valueOf(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_MEMBER), energyCompany.getName(), String.valueOf(energyCompany.getEnergyCompanyID())));
+                tempList.add(new FilterWrapper(String.valueOf(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SERIAL_RANGE_MIN), serialNo, serialNo));
+                tempList.add(new FilterWrapper(String.valueOf(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SERIAL_RANGE_MAX), serialNo, serialNo));
+                //session.setAttribute( ServletUtils.FILTER_INVEN_LIST, tempList );
+                iBean.setFilterByList(tempList);
+                iBean.setCheckInvenForAccount(true);
+                redirect = req.getContextPath() + "/operator/Consumer/SelectInv.jsp";
+                return;
+                
             }
 		}
 		catch (ObjectInOtherEnergyCompanyException e) {
@@ -1562,6 +1581,7 @@ public class InventoryManager extends HttpServlet {
         
         iBean.setFilterByList(filters);
         iBean.setViewResults(false);
+        iBean.setCheckInvenForAccount(false);
         iBean.setPage(1);
         session.setAttribute("inventoryBean", iBean);
         session.setAttribute( ServletUtils.FILTER_INVEN_LIST, filters );

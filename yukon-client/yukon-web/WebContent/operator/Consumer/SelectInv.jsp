@@ -62,6 +62,13 @@ function goFilter(form)
 	form.REDIRECT.value = "<%= request.getContextPath() %>/operator/Consumer/SelectInvFilter.jsp";
 	form.submit();
 }
+
+function goCheckAgain(form) 
+{
+    form.action.value = "";
+    form.REDIRECT.value = "<%= request.getContextPath() %>/operator/Consumer/SerialNumber.jsp?action=New";
+    form.submit();
+}
 </script>
 </head>
 
@@ -94,30 +101,46 @@ function goFilter(form)
 			    <input type="hidden" name="SortBy" value="<%= YukonListEntryTypes.YUK_DEF_ID_INV_SORT_BY_SERIAL_NO %>">
 				<input type="hidden" name="page" value="1">
 				<input type="hidden" name="REDIRECT" value="">
-                <table width="80%" border="1" cellspacing="0" cellpadding="3" class="TableCell">
-        			<tr> 
-            			<td class="HeaderCell" width="100%">Current Filters</td>
-          			</tr>
-          			<c:forEach var="filterEntry" items="${inventoryBean.filterByList}">
-						<tr>		
-							<td>
-								<div align="left"><c:out value="${filterEntry.filterText}"/></div>
-							<td>
-						</tr>
-					</c:forEach>
-        		</table>
-            
-            	<table width="80%" border="0" cellspacing="0" cellpadding="0">
-          			<tr>
-          				<td> 
-			               	<div align="left">
-								<input type="button" name="Filter" value="Add/Remove Filters" onClick="goFilter(this.form)">
-								<!-- <input type="button" name="ShowAll" value="Show All Inventory (Filter Free)" onClick="showAll(this.form)"> -->
-							</div>
-          					<br>
-            			</td>
-          			</tr>
-         		</table>
+                <c:choose>
+                    <c:when test="${inventoryBean.checkInvenForAccount}">
+                        <table width="80%" border="0" cellspacing="0" cellpadding="0">
+                            <tr>
+                                <td> 
+                                    <div align="left">
+                                        <input type="button" name="Return" value="Return to Check Inventory" onClick="goCheckAgain(this.form)">
+                                    </div>
+                                    <br>
+                                </td>
+                            </tr>
+                        </table>
+                    </c:when> 
+                    <c:otherwise>
+                        <table width="80%" border="1" cellspacing="0" cellpadding="3" class="TableCell">
+                        <tr> 
+                            <td class="HeaderCell" width="100%">Current Filters</td>
+                        </tr>
+                        <c:forEach var="filterEntry" items="${inventoryBean.filterByList}">
+                            <tr>        
+                                <td>
+                                    <div align="left"><c:out value="${filterEntry.filterText}"/></div>
+                                <td>
+                            </tr>
+                        </c:forEach>
+                        </table>
+                        <table width="80%" border="0" cellspacing="0" cellpadding="0">
+                            <tr>
+                                <td> 
+                                    <div align="left">
+                                        <input type="button" name="Filter" value="Add/Remove Filters" onClick="goFilter(this.form)">
+                                        <!-- <input type="button" name="ShowAll" value="Show All Inventory (Filter Free)" onClick="showAll(this.form)"> -->
+                                    </div>
+                                    <br>
+                                </td>
+                            </tr>
+                        </table>
+                    </c:otherwise> 
+                </c:choose>
+                
                 <table width="80%" border="0" cellspacing="0" cellpadding="1">
                   <tr> 
                     <td class="MainText" align="center">Check the radio button 

@@ -88,6 +88,7 @@ public class InventoryBean {
     private boolean shipmentCheck = false;
     private boolean overHardwareDisplayLimit = false;
 	private boolean differentOrigin = true;
+    private boolean checkInvenForAccount = false;
     
 	/**
 	 * Comparator of serial # and device names. Serial # is always "less than"
@@ -1031,6 +1032,9 @@ public class InventoryBean {
     
     public void setFilterByList(ArrayList newFilters)
     {
+        if(newFilters == null)
+            return;
+        
         ArrayList oldFilters = filterByList;
         filterByList = newFilters;
         boolean memberSpecified = false;
@@ -1303,5 +1307,13 @@ public class InventoryBean {
     public void setDifferentOrigin(boolean truth) 
     {
         this.differentOrigin = truth;
+    }
+
+    public boolean isCheckInvenForAccount() {
+        return checkInvenForAccount;
+    }
+
+    public void setCheckInvenForAccount(boolean checkInvenForAccount) {
+        this.checkInvenForAccount = checkInvenForAccount;
     }
 }
