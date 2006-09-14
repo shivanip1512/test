@@ -23,7 +23,8 @@ import com.cannontech.clientutils.CTILogger;
 
 public class ErrorHelperFilter  implements Filter {
 
-	private ServletContext servletContext;
+	private static final String SERVLET_STARTUP_ERROR = "com.cannontech.SERVLET_STARTUP_ERROR";
+    private ServletContext servletContext;
 
     public void init(FilterConfig arg0) throws ServletException {
         servletContext = arg0.getServletContext();
@@ -91,10 +92,14 @@ public class ErrorHelperFilter  implements Filter {
 		CTILogger.debug("Starting request handling: " + getRequestInfo(request));
         
         // first check if our server came up okay
-        Object attribute = servletContext.getAttribute("com.cannontech.SERVLET_STARTUP_ERROR");
+        Object attribute = servletContext.getAttribute(SERVLET_STARTUP_ERROR);
         if (attribute instanceof Throwable) {
             Throwable startupException = (Throwable) attribute;
-            Throwable rootCause = ExceptionUtils.getRootCause(startupException);
+            Throwable rootCause = null;
+            rootCause = ExceptionUtils.getRootCause(startupException);
+            if (rootCause == null) {
+                rootCause = startupException;
+            }
             response.getWriter().println("Fatal startup error (usually database related): " + rootCause.getMessage());
             return;
         }
@@ -130,5 +135,9 @@ public class ErrorHelperFilter  implements Filter {
 
 	public void destroy() {
 	}
+    
+    public static void recordStartupError(ServletContext servletContext, Throwable t) {
+        servletContext.setAttribute(SERVLET_STARTUP_ERROR, t);
+    }
 
 }
