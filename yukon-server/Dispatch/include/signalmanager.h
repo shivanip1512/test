@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2006/09/14 14:28:47 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2006/09/14 15:58:16 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -29,7 +29,7 @@ using std::pair;
 #include "msg_multi.h"
 #include "mutex.h"
 
-#define SIGNAL_MANAGER_MASK (MASK_ANY_ALARM|TAG_CONSTRAINT_VIOLATED)
+#define SIGNAL_MANAGER_MASK (MASK_ANY_ALARM|TAG_ACTIVE_CONDITION)
 
 class IM_EX_CTIVANGOGH CtiSignalManager
 {

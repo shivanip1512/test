@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.159 $
-* DATE         :  $Date: 2006/09/14 14:30:41 $
+* REVISION     :  $Revision: 1.160 $
+* DATE         :  $Date: 2006/09/14 15:58:16 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -6678,7 +6678,7 @@ void CtiVanGogh::tagSignalAsAlarm( CtiPointSPtr point, CtiSignalMsg *&pSig, int 
             pSig->setSignalCategory(SignalEvent);
         }
 
-        tags |= TAG_CONSTRAINT_VIOLATED;
+        tags |= TAG_ACTIVE_CONDITION;
         pSig->setTags((pDyn->getDispatch().getTags() & ~SIGNAL_MANAGER_MASK) | tags);   // They are equal here!
         pSig->setCondition(alarm);
 

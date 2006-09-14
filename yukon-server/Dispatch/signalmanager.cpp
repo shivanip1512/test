@@ -10,8 +10,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2006/09/14 14:30:14 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2006/09/14 15:58:16 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -171,7 +171,7 @@ CtiSignalManager& CtiSignalManager::addSignal(const CtiSignalMsg &sig)          
     return *this;
 }
 
-// This is now based on the TAG_CONSTRAINT_VIOLATED more than the TAG_ACTIVE_ALARM
+// This is now based on the TAG_ACTIVE_CONDITION more than the TAG_ACTIVE_ALARM
 // This may not set the alarm to active even though the active parameter is true!!
 // If getSignalCategory() == SignalEvent then the alarm is active.
 CtiSignalMsg*  CtiSignalManager::setAlarmActive(long pointid, int alarm_condition, bool active)
@@ -204,13 +204,13 @@ CtiSignalMsg*  CtiSignalManager::setAlarmActive(long pointid, int alarm_conditio
 
             if(pOriginalSig)
             {
-                if( ((pOriginalSig->getTags() & TAG_CONSTRAINT_VIOLATED) != 0) != active )     // We must be changing it!
+                if( ((pOriginalSig->getTags() & TAG_ACTIVE_CONDITION) != 0) != active )     // We must be changing it!
                 {
                     setDirty(true);
 
                     if(active)
                     {
-                        pOriginalSig->setTags(TAG_CONSTRAINT_VIOLATED);
+                        pOriginalSig->setTags(TAG_ACTIVE_CONDITION);
                         if( pOriginalSig->getSignalCategory() > SignalEvent)
                         {
                             pOriginalSig->setTags(TAG_ACTIVE_ALARM);
@@ -218,7 +218,7 @@ CtiSignalMsg*  CtiSignalManager::setAlarmActive(long pointid, int alarm_conditio
                     }
                     else
                     {
-                        pOriginalSig->resetTags(TAG_CONSTRAINT_VIOLATED);
+                        pOriginalSig->resetTags(TAG_ACTIVE_CONDITION);
                         pOriginalSig->resetTags(TAG_ACTIVE_ALARM);
                     }
 
