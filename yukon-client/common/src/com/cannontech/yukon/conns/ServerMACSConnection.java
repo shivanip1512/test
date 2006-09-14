@@ -85,7 +85,7 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
 	
 	   try
 	   {
-	  		connectWithoutWait();
+	  		connect();
 	  		sendRetrieveAllSchedules();
 		}
 		catch( java.io.IOException e )
