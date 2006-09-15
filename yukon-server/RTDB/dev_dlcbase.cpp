@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dlcbase.cpp-arc  $
-* REVISION     :  $Revision: 1.39 $
-* DATE         :  $Date: 2006/09/11 16:27:24 $
+* REVISION     :  $Revision: 1.40 $
+* DATE         :  $Date: 2006/09/15 19:08:58 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -137,43 +137,41 @@ INT CtiDeviceDLCBase::retMsgHandler( string commandStr, int status, CtiReturnMsg
         //  is there anything to send?
         if(!(retMsg->ResultString().empty()) || retMsg->PointData().size() > 0)
         {
-            //  if it's an update command, force the points to be sent...
-            //    this is cheaper than creating a parse - this is the equivalent of looking for CMD_FLAG_UPDATE
-            if( commandStr.find(" update") != string::npos )
+            //  if it's an update command, PIL will do the copying for us.  Otherwise, send the data.
+            //    This should be unified.  It's too confusing right now, what with the retList and vgList.
+            if( commandStr.find(" update") == string::npos )
             {
-                force_update = true;
-            }
+                const CtiMultiMsg_vec &subMsgs = retMsg->getData();
 
-            const CtiMultiMsg_vec &subMsgs = retMsg->getData();
-
-            CtiMultiMsg_vec::const_iterator itr;
-            //  Check for any "Must Archive" points and send them to Dispatch
-            for( itr = subMsgs.begin(); itr != subMsgs.end(); itr++ )
-            {
-                if( force_update ||
-                    (((*itr)->isA() == MSG_POINTDATA) && (((CtiPointDataMsg *)*itr)->getTags() & (TAG_POINT_MUST_ARCHIVE | TAG_POINT_LOAD_PROFILE_DATA))) )
+                CtiMultiMsg_vec::const_iterator itr;
+                //  Check for any "Must Archive" points and send them to Dispatch
+                for( itr = subMsgs.begin(); itr != subMsgs.end(); itr++ )
                 {
-                    //  only allocate this object if you need to
-                    if( tmpVGRetMsg == NULL )
+                    if( force_update ||
+                        (((*itr)->isA() == MSG_POINTDATA) && (((CtiPointDataMsg *)*itr)->getTags() & (TAG_POINT_MUST_ARCHIVE | TAG_POINT_LOAD_PROFILE_DATA))) )
                     {
-                        tmpVGRetMsg = (CtiReturnMsg *)retMsg->replicateMessage();
+                        //  only allocate this object if you need to
+                        if( tmpVGRetMsg == NULL )
+                        {
+                            tmpVGRetMsg = (CtiReturnMsg *)retMsg->replicateMessage();
 
-                        //  make sure it's empty so we only append the messages we intend to
-                        delete_vector( tmpVGRetMsg->PointData() );
-                        tmpVGRetMsg->PointData().clear();
+                            //  make sure it's empty so we only append the messages we intend to
+                            delete_vector( tmpVGRetMsg->PointData() );
+                            tmpVGRetMsg->PointData().clear();
+                        }
+
+                        CtiPointDataMsg *newMsg = (CtiPointDataMsg *)(((CtiPointDataMsg *)*itr)->replicateMessage());
+
+                        newMsg->setTags(TAG_POINT_MUST_ARCHIVE);
+
+                        tmpVGRetMsg->PointData().push_back(newMsg);
                     }
-
-                    CtiPointDataMsg *newMsg = (CtiPointDataMsg *)(((CtiPointDataMsg *)*itr)->replicateMessage());
-
-                    newMsg->setTags(TAG_POINT_MUST_ARCHIVE);
-
-                    tmpVGRetMsg->PointData().push_back(newMsg);
                 }
-            }
 
-            if( tmpVGRetMsg )
-            {
-                vgList.push_back(tmpVGRetMsg);
+                if( tmpVGRetMsg )
+                {
+                    vgList.push_back(tmpVGRetMsg);
+                }
             }
 
             retMsg->setStatus(status);
