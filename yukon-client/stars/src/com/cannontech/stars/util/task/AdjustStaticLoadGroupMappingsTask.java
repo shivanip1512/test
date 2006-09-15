@@ -206,7 +206,13 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
         String options = null;
         
 		for (int i = 0; i < hwsToAdjust.size(); i++) {
-			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) hwsToAdjust.get(i);;
+			
+            if (isCanceled) {
+                status = STATUS_CANCELED;
+                return;
+            }
+            
+            LiteStarsLMHardware liteHw = (LiteStarsLMHardware) hwsToAdjust.get(i);;
 			LiteStarsEnergyCompany company = energyCompany;
 						
             //get the current Configuration
@@ -308,11 +314,6 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
                 failureInfo.add("A static mapping could not be saved for serial number " + liteHw.getManufacturerSerialNumber() 
                                     + ".  ApplianceCategoryID=" + applianceCatID + ", ZipCode=" + zip + ", ConsumptionTypeID=" 
                                     + consumptionType + ",SwitchTypeID=" + devType);
-			}
-			
-			if (isCanceled) {
-				status = STATUS_CANCELED;
-				return;
 			}
 		}
 		
