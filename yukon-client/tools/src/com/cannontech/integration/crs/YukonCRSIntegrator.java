@@ -156,8 +156,8 @@ public final class YukonCRSIntegrator
 
                         if(switchReplacements.size() < 1)
                         {
-                            CTILogger.info("SwitchReplacement table is empty.  No new incoming SwitchReplacments.");
-                            logger = YukonToCRSFuncs.writeToImportLog(logger, 'N', "SwitchReplacment table is empty.  No new incoming SwitchReplacments.", "", "");
+                            CTILogger.info("SwitchReplacement table is empty.  No new incoming SwitchReplacements.");
+                            logger = YukonToCRSFuncs.writeToImportLog(logger, 'N', "SwitchReplacment table is empty.  No new incoming SwitchReplacements.", "", "");
                         }
                         else
                         {
