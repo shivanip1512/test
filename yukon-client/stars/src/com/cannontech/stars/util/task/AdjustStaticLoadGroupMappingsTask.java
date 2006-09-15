@@ -206,7 +206,6 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
         String options = null;
         
 		for (int i = 0; i < hwsToAdjust.size(); i++) {
-			
             if (isCanceled) {
                 status = STATUS_CANCELED;
                 return;
