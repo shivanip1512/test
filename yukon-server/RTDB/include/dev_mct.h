@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct.h-arc  $
-* REVISION     :  $Revision: 1.49 $
-* DATE         :  $Date: 2006/09/06 14:27:56 $
+* REVISION     :  $Revision: 1.50 $
+* DATE         :  $Date: 2006/09/18 17:18:23 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -153,8 +153,8 @@ protected:
 
     enum Commands
     {
-        Command_Open             = 0x41,
-        Command_Close            = 0x42,
+        Command_Disconnect       = 0x41,
+        Command_Connect          = 0x42,
 
         Command_Latch            = 0x48,
 
