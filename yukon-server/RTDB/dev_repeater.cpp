@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.36 $
-* DATE         :  $Date: 2006/07/06 20:11:48 $
+* REVISION     :  $Revision: 1.37 $
+* DATE         :  $Date: 2006/09/18 17:25:09 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -58,11 +58,11 @@ CtiDeviceRepeater900::CommandSet CtiDeviceRepeater900::initCommandStore()
 {
     CommandSet cs;
 
-    cs.insert(CommandStore(Emetcon::Scan_General,       Emetcon::IO_Read,   Rpt_ModelPos,       1));
-    cs.insert(CommandStore(Emetcon::Command_Loop,       Emetcon::IO_Read,   Rpt_ModelPos,       1));
-    cs.insert(CommandStore(Emetcon::PutConfig_Role,     Emetcon::IO_Write,  Rpt_RoleBasePos,    Rpt_RoleLen));
-    cs.insert(CommandStore(Emetcon::GetConfig_Role,     Emetcon::IO_Read,   Rpt_RoleBasePos,    Rpt_RoleLen));
-    cs.insert(CommandStore(Emetcon::GetConfig_Model,    Emetcon::IO_Read,   Rpt_ModelPos,       Rpt_ModelLen));
+    cs.insert(CommandStore(Emetcon::Scan_General,       Emetcon::IO_Read,   ModelPos,       1));
+    cs.insert(CommandStore(Emetcon::Command_Loop,       Emetcon::IO_Read,   ModelPos,       1));
+    cs.insert(CommandStore(Emetcon::PutConfig_Role,     Emetcon::IO_Write,  RoleBasePos,    RoleLen));
+    cs.insert(CommandStore(Emetcon::GetConfig_Role,     Emetcon::IO_Read,   RoleBasePos,    RoleLen));
+    cs.insert(CommandStore(Emetcon::GetConfig_Model,    Emetcon::IO_Read,   ModelPos,       ModelLen));
 
     return cs;
 }
@@ -290,7 +290,7 @@ INT CtiDeviceRepeater900::executeGetConfig(CtiRequestMsg                  *pReq,
         if( rolenum > 0 && rolenum < 24 )
         {
             rolenum -= rolenum % 6;  //  start from the closest multiple of 6
-            OutMessage->Buffer.BSt.Function += rolenum * Rpt_RoleLen;
+            OutMessage->Buffer.BSt.Function += rolenum * RoleLen;
         }
 
         //  get 6 roles
@@ -357,7 +357,7 @@ INT CtiDeviceRepeater900::executePutConfig(CtiRequestMsg          *pReq,
            //  add on offset if it's role 2-24, else default to role 1 (no offset)
            if( rolenum > 0 && rolenum < 24 )
            {
-               OutMessage->Buffer.BSt.Function += rolenum * Rpt_RoleLen;
+               OutMessage->Buffer.BSt.Function += rolenum * RoleLen;
            }
 
            Temp[0]  =  parse.getiValue("rolefixed") & 0x1F;
@@ -386,13 +386,13 @@ INT CtiDeviceRepeater900::executePutConfig(CtiRequestMsg          *pReq,
        int stagestf;
 
        int j;
-       int msgcnt = ((parse.getiValue("multi_rolecount") + 6) / 6);         // This is the number of OutMessages to send.
-       int firstrole = parse.getiValue("multi_rolenum") - 1;                // The first role to send.
-       int rolenum = parse.getiValue("multi_rolenum") - 1;                  // The first role to send.
+       int msgcnt = ((parse.getiValue("multi_rolecount") + 6) / 6);     // This is the number of OutMessages to send.
+       int firstrole = parse.getiValue("multi_rolenum") - 1;            // The first role to send.
+       int rolenum   = parse.getiValue("multi_rolenum") - 1;            // The first role to send.
 
-       string strFixed = parse.getsValue("multi_rolefixed");
+       string strFixed  = parse.getsValue("multi_rolefixed");
        string strVarOut = parse.getsValue("multi_roleout");
-       string strVarIn = parse.getsValue("multi_rolein");
+       string strVarIn  = parse.getsValue("multi_rolein");
        string strStages = parse.getsValue("multi_rolerpt");
 
        string strTemp;
@@ -423,7 +423,7 @@ INT CtiDeviceRepeater900::executePutConfig(CtiRequestMsg          *pReq,
            //  add on offset if it's role 2-24, else default to role 1 (no offset)
            if( rolenum > 0 && rolenum < 24 )
            {
-               pOutMessage->Buffer.BSt.Function += rolenum * Rpt_RoleLen;
+               pOutMessage->Buffer.BSt.Function += rolenum * RoleLen;
            }
 
            for(i = 0; i < pOutMessage->Buffer.BSt.Length; i = i + 2)       // This is the number of defined roles.
