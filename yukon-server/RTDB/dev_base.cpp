@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.59 $
-* DATE         :  $Date: 2006/04/26 22:26:51 $
+* REVISION     :  $Revision: 1.60 $
+* DATE         :  $Date: 2006/09/18 16:53:41 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -637,10 +637,6 @@ INT CtiDeviceBase::deviceMaxCommFails() const
 {
     return gDefaultCommFailCount;
 }
-
-#ifndef  COMM_FAIL_REPORT_TIME
-    #define COMM_FAIL_REPORT_TIME 300
-#endif
 
 bool CtiDeviceBase::isCommFailed() const
 {
