@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.96 $
-* DATE         :  $Date: 2006/09/07 17:30:29 $
+* REVISION     :  $Revision: 1.97 $
+* DATE         :  $Date: 2006/09/18 17:22:15 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -404,19 +404,16 @@ CtiDeviceMCT::CommandSet CtiDeviceMCT::initCommandStore()
     cs.insert(CommandStore(Emetcon::PutConfig_GroupAddrEnable,  Emetcon::IO_Write, Command_GroupAddrEnable,  0));
     cs.insert(CommandStore(Emetcon::PutConfig_GroupAddrInhibit, Emetcon::IO_Write, Command_GroupAddrInhibit, 0));
 
-    cs.insert(CommandStore(Emetcon::GetConfig_Raw,       Emetcon::IO_Read,  0,               0));  //  this will be filled in by executeGetConfig
+    cs.insert(CommandStore(Emetcon::GetConfig_Raw,       Emetcon::IO_Read,           0,                  0));  //  this will be filled in by executeGetConfig
 
-    cs.insert(CommandStore(Emetcon::Control_Shed,        Emetcon::IO_Write, 0,               0));  //  this will be filled in by executeControl
-    cs.insert(CommandStore(Emetcon::Control_Restore,     Emetcon::IO_Write, Command_Restore, 0));
+    cs.insert(CommandStore(Emetcon::Control_Shed,        Emetcon::IO_Write,          0,                  0));  //  this will be filled in by executeControl
+    cs.insert(CommandStore(Emetcon::Control_Restore,     Emetcon::IO_Write,          Command_Restore,    0));
 
-    cs.insert(CommandStore(Emetcon::Control_Close,       Emetcon::IO_Write | Q_ARML, Command_Close, 0));
-    cs.insert(CommandStore(Emetcon::Control_Open,        Emetcon::IO_Write | Q_ARML, Command_Open,  0));
+    cs.insert(CommandStore(Emetcon::Control_Connect,     Emetcon::IO_Write | Q_ARML, Command_Connect,    0));
+    cs.insert(CommandStore(Emetcon::Control_Disconnect,  Emetcon::IO_Write | Q_ARML, Command_Disconnect, 0));
 
-    cs.insert(CommandStore(Emetcon::Control_Conn,        Emetcon::IO_Write | Q_ARML, Command_Close, 0));
-    cs.insert(CommandStore(Emetcon::Control_Disc,        Emetcon::IO_Write | Q_ARML, Command_Open,  0));
-
-    cs.insert(CommandStore(Emetcon::PutConfig_ARMC,      Emetcon::IO_Write, Command_ARMC, 0));
-    cs.insert(CommandStore(Emetcon::PutConfig_ARML,      Emetcon::IO_Write, Command_ARML, 0));
+    cs.insert(CommandStore(Emetcon::PutConfig_ARMC,      Emetcon::IO_Write,          Command_ARMC,       0));
+    cs.insert(CommandStore(Emetcon::PutConfig_ARML,      Emetcon::IO_Write,          Command_ARML,       0));
 
     //  putconfig_tsync is in MCT2XX and MCT310 because the 2XX requires an ARMC
     //    also, the getconfig time location is different for 2XX and 3XX, so that's in each's base as well
@@ -824,8 +821,6 @@ INT CtiDeviceMCT::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
     switch( InMessage->Sequence )
     {
         case Emetcon::Control_Latch:
-        case Emetcon::Control_Open:
-        case Emetcon::Control_Close:
         case Emetcon::Control_Shed:
         case Emetcon::Control_Restore:
         case Emetcon::PutConfig_ARMC:
@@ -2903,36 +2898,9 @@ INT CtiDeviceMCT::executeControl(CtiRequestMsg                  *pReq,
         function = Emetcon::Control_Restore;
         found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
     }
-    else if(parse.getFlags() & CMD_FLAG_CTL_OPEN)
+    else if(parse.getFlags() & (CMD_FLAG_CTL_CONNECT | CMD_FLAG_CTL_CLOSE) )
     {
-        function = Emetcon::Control_Open;
-        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
-
-        if( getType() == TYPEMCT410 )
-        {
-            //  the 410 requires some dead time to transmit to its disconnect base
-            dead_air = true;
-
-            //  do not allow the disconnect command to be sent to a meter that has no disconnect address
-            if( !_disconnectAddress )
-            {
-                CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
-
-                if( ReturnMsg )
-                {
-                    ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
-                    ReturnMsg->setResultString(getName() + " / Disconnect command cannot be sent to an empty (zero) address");
-
-                    retMsgHandler( OutMessage->Request.CommandStr, NoMethod, ReturnMsg, vgList, retList, true );
-                }
-
-                found = false;
-            }
-        }
-    }
-    else if(parse.getFlags() & CMD_FLAG_CTL_CLOSE)
-    {
-        function = Emetcon::Control_Close;
+        function = Emetcon::Control_Connect;
         found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
 
         if( getType() == TYPEMCT410 )
@@ -2941,20 +2909,9 @@ INT CtiDeviceMCT::executeControl(CtiRequestMsg                  *pReq,
             dead_air = true;
         }
     }
-    else if(parse.getFlags() & CMD_FLAG_CTL_CONNECT)
+    else if( parse.getFlags() & (CMD_FLAG_CTL_DISCONNECT | CMD_FLAG_CTL_OPEN) )
     {
-        function = Emetcon::Control_Conn;
-        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
-
-        if( getType() == TYPEMCT410 )
-        {
-            //  the 410 requires some dead time to transmit to its disconnect base
-            dead_air = true;
-        }
-    }
-    else if(parse.getFlags() & CMD_FLAG_CTL_DISCONNECT)
-    {
-        function = Emetcon::Control_Disc;
+        function = Emetcon::Control_Disconnect;
         found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
 
         if( getType() == TYPEMCT410 )

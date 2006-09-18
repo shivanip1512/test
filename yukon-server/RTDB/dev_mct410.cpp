@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.90 $
-* DATE         :  $Date: 2006/09/13 16:02:43 $
+* REVISION     :  $Revision: 1.91 $
+* DATE         :  $Date: 2006/09/18 17:23:50 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -284,10 +284,9 @@ CtiDeviceMCT410::CommandSet CtiDeviceMCT410::initCommandStore()
     cs.insert(CommandStore(Emetcon::GetStatus_LoadProfile,          Emetcon::IO_Function_Read, FuncRead_LPStatusPos,        FuncRead_LPStatusLen));
 
     //  These need to be duplicated from DeviceMCT because the 400 doesn't need the ARML.
-    cs.insert(CommandStore(Emetcon::Control_Close,              Emetcon::IO_Write,          Command_Connect,                0));
-    cs.insert(CommandStore(Emetcon::Control_Open,               Emetcon::IO_Write,          Command_Disconnect,             0));
-    cs.insert(CommandStore(Emetcon::Control_Conn,               Emetcon::IO_Write,          Command_Connect,                0));
-    cs.insert(CommandStore(Emetcon::Control_Disc,               Emetcon::IO_Write,          Command_Disconnect,             0));
+    cs.insert(CommandStore(Emetcon::Control_Connect,            Emetcon::IO_Write,          Command_Connect,                0));
+    cs.insert(CommandStore(Emetcon::Control_Disconnect,         Emetcon::IO_Write,          Command_Disconnect,             0));
+
     cs.insert(CommandStore(Emetcon::GetStatus_Disconnect,       Emetcon::IO_Function_Read,  FuncRead_DisconnectStatusPos,   FuncRead_DisconnectStatusLen));
     cs.insert(CommandStore(Emetcon::GetConfig_Disconnect,       Emetcon::IO_Function_Read,  FuncRead_DisconnectConfigPos,   FuncRead_DisconnectConfigLen));
     cs.insert(CommandStore(Emetcon::PutConfig_Disconnect,       Emetcon::IO_Function_Write, FuncWrite_DisconnectConfigPos,  FuncWrite_DisconnectConfigLen));
@@ -809,10 +808,8 @@ INT CtiDeviceMCT410::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
             break;
         }
 
-        case (Emetcon::Control_Open):
-        case (Emetcon::Control_Close):
-        case (Emetcon::Control_Conn):
-        case (Emetcon::Control_Disc):
+        case (Emetcon::Control_Connect):
+        case (Emetcon::Control_Disconnect):
         {
             CtiReturnMsg *ReturnMsg;
 
