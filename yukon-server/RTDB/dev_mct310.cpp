@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.55 $
-* DATE         :  $Date: 2006/09/01 18:47:30 $
+* REVISION     :  $Revision: 1.56 $
+* DATE         :  $Date: 2006/09/18 17:23:09 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -661,8 +661,8 @@ INT CtiDeviceMCT310::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
             break;
         }
 
-        case (Emetcon::Control_Conn):
-        case (Emetcon::Control_Disc):
+        case (Emetcon::Control_Connect):
+        case (Emetcon::Control_Disconnect):
         {
             CtiRequestMsg newReq(getID(),
                                  "getstatus disconnect noqueue",
