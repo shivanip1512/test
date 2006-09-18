@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_emetcon.h-arc  $
-* REVISION     :  $Revision: 1.37 $
-* DATE         :  $Date: 2006/09/07 17:27:41 $
+* REVISION     :  $Revision: 1.38 $
+* DATE         :  $Date: 2006/09/18 17:26:01 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -136,7 +136,7 @@ public:
         GetConfig_Multiplier3,
         GetConfig_Multiplier4,
         GetConfig_IEDScan,
-        GetConfig_IEDPwd,
+        GetConfig_IEDPassword,
         GetConfig_IEDTime,
         GetConfig_IEDDNP,
         GetConfig_Role,  //  only for repeaters
@@ -190,21 +190,19 @@ public:
         PutConfig_TOU,  //  this may need to be removed in light of the new config install commands
 
         PutConfig_ARMC,
-        PutConfig_ARML,  //  these used to be "Control_ARML," etc - I wanted to make them consistent...
+        PutConfig_ARML,
         PutConfig_ARMS,
 
         // Control Commands
         Control_Shed,     //  for MCT Group Addressing
         Control_Restore,  //
-        Control_Close,
-        Control_Open,
-        Control_Conn,
-        Control_Disc,
+        Control_Connect,
+        Control_Disconnect,
         Control_Latch,
 
         Command_Loop,
 
-        DLCCmd_LAST                // PLACEHOLDER!!!
+        DLCCmd_LAST    // PLACEHOLDER!!!
     };
 };
 
