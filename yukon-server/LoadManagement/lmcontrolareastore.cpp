@@ -845,6 +845,7 @@ void CtiLMControlAreaStore::reset()
                                  << dynamicLMProgramDirectTable["notifyinactivetime"]
                                  << dynamicLMProgramDirectTable["startedrampingout"]
                                  << dynamicLMProgramDirectTable["constraintoverride"]
+                                 << dynamicLMProgramDirectTable["additionalinfo"]
                                  << pointTable["pointid"]
                                  << pointTable["pointoffset"]
                                  << pointTable["pointtype"];
@@ -1006,6 +1007,7 @@ void CtiLMControlAreaStore::reset()
                                  << lmProgramDirectGearTable["rampinpercent"]
                                  << lmProgramDirectGearTable["rampoutinterval"]
                                  << lmProgramDirectGearTable["rampoutpercent"]
+                                 << lmProgramDirectGearTable["kwreduction"]
 				 << lmProgramDirectGearTable["frontrampoption"]
 				 << lmProgramDirectGearTable["frontramptime"]
 				 << lmProgramDirectGearTable["backrampoption"]
