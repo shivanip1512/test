@@ -147,7 +147,6 @@ public class DeviceConfigurationFuncsImpl implements DeviceConfigurationFuncs {
     }
 
     public boolean assignConfigToDevices(int configId, List<LiteYukonPAObject> devices) {
-        this.removeConfigAssignmentForConfig(configId);
         DeviceConfigurationDao.assignConfigToDevices(configId, devices);
         return true;
     }

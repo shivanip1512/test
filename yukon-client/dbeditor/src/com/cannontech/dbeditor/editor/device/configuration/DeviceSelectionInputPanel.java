@@ -8,8 +8,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -26,6 +24,7 @@ import com.cannontech.common.device.configuration.service.DeviceConfigurationFun
 import com.cannontech.common.device.configuration.service.DeviceConfigurationFuncsImpl;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -61,8 +60,8 @@ public class DeviceSelectionInputPanel extends DataInputPanel {
         // Assigned devices should not be in the possible list
         possibleDeviceList.removeAll(assignedDeviceList);
 
-        final DeviceListModel possibleModel = new DeviceListModel();
-        final DeviceListModel deviceConfigModel = new DeviceListModel();
+        final DeviceListModel possibleModel = new DeviceListModel<YukonPAObject>();
+        final DeviceListModel deviceConfigModel = new DeviceListModel<YukonPAObject>();
 
         boolean enabled = true;
         if (possibleDeviceList.size() == 0 && assignedDeviceList.size() == 0) {
@@ -208,8 +207,8 @@ public class DeviceSelectionInputPanel extends DataInputPanel {
         private JList unassignedDeviceJList = null;
         private JList assignedDeviceJList = null;
 
-        private List<LiteYukonPAObject> assignedDeviceList = new ArrayList<LiteYukonPAObject>();
-        private List<LiteYukonPAObject> unassignedDeviceList = new ArrayList<LiteYukonPAObject>();
+        private List<LiteYukonPAObject> originalAssignedDeviceList = null;
+        private List<LiteYukonPAObject> originalUnassignedDeviceList = null;
         private Integer configId = null;
 
         /**
@@ -222,29 +221,26 @@ public class DeviceSelectionInputPanel extends DataInputPanel {
         public void initialize(Integer configId, JList assignedDeviceList,
                 JList unassignedDeviceList) {
 
+            this.configId = configId;
+
             this.assignedDeviceJList = assignedDeviceList;
             this.unassignedDeviceJList = unassignedDeviceList;
-            this.configId = configId;
+
+            this.updateOriginalDeviceLists();
         }
 
         /**
          * Method to assign a device configuration to a device
          */
         public void assignDevices() {
-            this.moveDevices(this.unassignedDeviceJList,
-                             this.unassignedDeviceList,
-                             this.assignedDeviceJList,
-                             this.assignedDeviceList);
+            this.moveDevices(this.unassignedDeviceJList, this.assignedDeviceJList);
         }
 
         /**
          * Method to unassign a device configuration from a device
          */
         public void unassignDevices() {
-            this.moveDevices(this.assignedDeviceJList,
-                             this.assignedDeviceList,
-                             this.unassignedDeviceJList,
-                             this.unassignedDeviceList);
+            this.moveDevices(this.assignedDeviceJList, this.unassignedDeviceJList);
         }
 
         @Override
@@ -265,48 +261,47 @@ public class DeviceSelectionInputPanel extends DataInputPanel {
             if (this.assignedDeviceJList != null) {
                 DeviceConfigurationFuncs funcs = new DeviceConfigurationFuncsImpl();
 
-                funcs.assignConfigToDevices(this.configId, this.assignedDeviceList);
-                funcs.removeConfigAssignmentForDevices(this.unassignedDeviceList);
+                List<LiteYukonPAObject> assignedDevices = ((DeviceListModel<LiteYukonPAObject>) this.assignedDeviceJList.getModel()).getAllValues();
+                List<LiteYukonPAObject> unassignedDevices = ((DeviceListModel<LiteYukonPAObject>) this.unassignedDeviceJList.getModel()).getAllValues();
+
+                assignedDevices.removeAll(this.originalAssignedDeviceList);
+                unassignedDevices.removeAll(this.originalUnassignedDeviceList);
+
+                funcs.assignConfigToDevices(this.configId, assignedDevices);
+                funcs.removeConfigAssignmentForDevices(unassignedDevices);
+
             }
         }
 
         public DBChangeMsg[] getDBChangeMsgs(int typeOfChange) {
 
+            List<LiteYukonPAObject> deviceChangedList = this.getChangedDevices();
+
             int index = 0;
-            DBChangeMsg[] msgs = new DBChangeMsg[this.assignedDeviceList.size()
-                    + this.unassignedDeviceList.size()];
+            DBChangeMsg[] msgs = new DBChangeMsg[deviceChangedList.size()];
 
-            // Create a dbchange msg for each device that was assigned a config
-            Iterator<LiteYukonPAObject> assignIter = this.assignedDeviceList.iterator();
-            while (assignIter.hasNext()) {
+            // Create a dbchange msg for each device that was assigned or
+            // unassigned a config
+            Iterator<LiteYukonPAObject> deviceIter = deviceChangedList.iterator();
+            while (deviceIter.hasNext()) {
 
-                LiteYukonPAObject device = assignIter.next();
+                LiteYukonPAObject device = deviceIter.next();
 
                 msgs[index++] = new DBChangeMsg(device.getLiteID(),
                                                 DBChangeMsg.CHANGE_CONFIG_DB,
                                                 DeviceConfiguration.DB_CHANGE_CATEGORY,
                                                 DeviceConfigurationComboPanel.DB_CHANGE_OBJECT_TYPE,
                                                 typeOfChange);
+
             }
 
-            // Create a dbchange msg for each device that was unassigned a
-            // config
-            Iterator<LiteYukonPAObject> unassignIter = this.unassignedDeviceList.iterator();
-            while (unassignIter.hasNext()) {
-
-                LiteYukonPAObject device = unassignIter.next();
-                msgs[index++] = new DBChangeMsg(device.getLiteID(),
-                                                DBChangeMsg.CHANGE_CONFIG_DB,
-                                                DeviceConfiguration.DB_CHANGE_CATEGORY,
-                                                DeviceConfigurationComboPanel.DB_CHANGE_OBJECT_TYPE,
-                                                typeOfChange);
-            }
+            this.updateOriginalDeviceLists();
 
             return msgs;
         }
-        
+
         @Override
-        public String toString(){
+        public String toString() {
             return "Device / Config assignment";
         }
 
@@ -317,16 +312,38 @@ public class DeviceSelectionInputPanel extends DataInputPanel {
          * @param toJList - List to move selected devices to
          */
         @SuppressWarnings("unchecked")
-        private void moveDevices(JList fromJList, List<LiteYukonPAObject> fromList, JList toJList,
-                List<LiteYukonPAObject> toList) {
+        private void moveDevices(JList fromJList, JList toJList) {
 
             Object[] selectedDevices = fromJList.getSelectedValues();
             if (selectedDevices.length > 0) {
                 ((DeviceListModel) fromJList.getModel()).removeAll(selectedDevices);
-                fromList.removeAll(Arrays.asList(selectedDevices));
                 ((DeviceListModel) toJList.getModel()).addAll(selectedDevices);
-                toList.addAll((Collection<? extends LiteYukonPAObject>) Arrays.asList(selectedDevices));
             }
+        }
+
+        /**
+         * Helper method to get a list of all devices that have been assigned or
+         * unassigned a config
+         * @return List of devices
+         */
+        private List<LiteYukonPAObject> getChangedDevices() {
+
+            List<LiteYukonPAObject> assignedDevices = ((DeviceListModel<LiteYukonPAObject>) this.assignedDeviceJList.getModel()).getAllValues();
+            List<LiteYukonPAObject> unassignedDevices = ((DeviceListModel<LiteYukonPAObject>) this.unassignedDeviceJList.getModel()).getAllValues();
+
+            assignedDevices.removeAll(this.originalAssignedDeviceList);
+            unassignedDevices.removeAll(this.originalUnassignedDeviceList);
+
+            List<LiteYukonPAObject> deviceChangedList = new ArrayList<LiteYukonPAObject>();
+            deviceChangedList.addAll(assignedDevices);
+            deviceChangedList.addAll(unassignedDevices);
+
+            return deviceChangedList;
+        }
+
+        private void updateOriginalDeviceLists() {
+            this.originalAssignedDeviceList = ((DeviceListModel<LiteYukonPAObject>) this.assignedDeviceJList.getModel()).getAllValues();
+            this.originalUnassignedDeviceList = ((DeviceListModel<LiteYukonPAObject>) this.unassignedDeviceJList.getModel()).getAllValues();
         }
     }
 
@@ -334,7 +351,7 @@ public class DeviceSelectionInputPanel extends DataInputPanel {
      * Helper class to allow add and remove of an array of objects from a
      * ListModel
      */
-    private class DeviceListModel extends DefaultListModel {
+    private class DeviceListModel<T> extends DefaultListModel {
 
         public void addAll(Object[] objects) {
 
@@ -352,12 +369,13 @@ public class DeviceSelectionInputPanel extends DataInputPanel {
             }
         }
 
-        public List<Object> getAllValues() {
+        @SuppressWarnings("unchecked")
+        public List<T> getAllValues() {
 
-            List<Object> elementList = new ArrayList<Object>();
+            List<T> elementList = new ArrayList<T>();
 
             for (int i = 0; i < this.getSize(); i++) {
-                elementList.add(this.getElementAt(i));
+                elementList.add((T) this.getElementAt(i));
             }
 
             return elementList;

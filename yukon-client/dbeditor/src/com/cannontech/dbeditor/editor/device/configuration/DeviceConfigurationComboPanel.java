@@ -206,20 +206,20 @@ public class DeviceConfigurationComboPanel extends DataInputPanel {
 
         @Override
         public void update() throws SQLException {
+
             DeviceConfigurationFuncs funcs = new DeviceConfigurationFuncsImpl();
+
+            List<LiteYukonPAObject> deviceList = new ArrayList<LiteYukonPAObject>();
+            deviceList.add((LiteYukonPAObject) LiteFactory.createLite(this.device));
 
             if (this.configId.equals(DeviceConfigurationComboPanel.NO_CONFIG_SELECTED_ID)) {
                 // If no config is selected, remove any config mapping for the
                 // device
-
-                List<LiteYukonPAObject> deviceList = new ArrayList<LiteYukonPAObject>();
-                deviceList.add((LiteYukonPAObject) LiteFactory.createLite(this.device));
                 funcs.removeConfigAssignmentForDevices(deviceList);
 
             } else if (this.device != null && this.configId != null) {
                 // Save the device / config mapping
-                funcs.save(this.device.getPAObjectID(), this.configId);
-
+                funcs.assignConfigToDevices(this.configId, deviceList);
             }
         }
 
