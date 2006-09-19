@@ -1329,6 +1329,7 @@ void CtiLMManualControlRequestExecutor::StartProgram(CtiLMProgramBase* program, 
         CtiLMProgramDirect* directProgram = (CtiLMProgramDirect*) program;
         StartDirectProgram(directProgram, controlArea, start, stop);
 
+        directProgram->setAdditionalInfo(_controlMsg->getAdditionalInfo().data());
         string text = ("Scheduled Manual Start, LM Program: ");
         text += directProgram->getPAOName();
         string additional = ("Start: ");

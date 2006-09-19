@@ -53,6 +53,7 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
     const string& getMessageSubject() const;
     const string& getMessageHeader() const;
     const string& getMessageFooter() const;
+    const string& getAdditionalInfo() const;
     LONG getTriggerOffset() const;
     LONG getTriggerRestoreOffset() const;
 	
@@ -80,6 +81,7 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
     CtiLMProgramDirect& setMessageSubject(const string& subject);
     CtiLMProgramDirect& setMessageHeader(const string& header);
     CtiLMProgramDirect& setMessageFooter(const string& footer);
+    CtiLMProgramDirect& setAdditionalInfo(const string& additional);
     CtiLMProgramDirect& setTriggerOffset(LONG trigger_offst);
     CtiLMProgramDirect& setTriggerRestoreOffset(LONG restore_offst);
     
@@ -165,6 +167,7 @@ private:
     string _message_subject;
     string _message_header;
     string _message_footer;
+    string _additionalinfo;
     LONG _trigger_offset;
     LONG _trigger_restore_offset;
 	
