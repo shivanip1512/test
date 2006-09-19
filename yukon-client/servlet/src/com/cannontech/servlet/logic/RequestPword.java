@@ -64,10 +64,19 @@ public class RequestPword
 		
 		allParams = new String[] { userName, email, fName, lName };
 
-
-		Object o = ClientSession.getInstance().getRolePropertyValue(                            
+        /*
+         * Now that we no longer return a defaultValue automatically on a getRolePropertyValue, we
+         * will get a null if the user is null.  The user SHOULD be null in this case, since nobody
+         * should be logged in.  Let's try to avoid the error.
+         */
+		Object o;
+        if(ClientSession.getInstance().getUser() == null) {
+            o = DaoFactory.getRoleDao().getGlobalPropertyValue(SystemRole.MAIL_FROM_ADDRESS);
+        }
+        else {
+            o = ClientSession.getInstance().getRolePropertyValue(                            
 							SystemRole.MAIL_FROM_ADDRESS );
-
+        }
 		if( o != null )
 			masterMail = o.toString();
 	}
