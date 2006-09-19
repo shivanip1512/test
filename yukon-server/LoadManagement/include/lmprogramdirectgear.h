@@ -59,7 +59,8 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirectGear )
     LONG getRampOutInterval() const;
     LONG getRampOutPercent() const;
     const string& getFrontRampOption() const;
-    
+    DOUBLE getKWReduction() const;
+        
     CtiLMProgramDirectGear& setPAOId(LONG paoid);
     CtiLMProgramDirectGear& setGearName(const string& name);
     CtiLMProgramDirectGear& setGearNumber(LONG gearnum);
@@ -82,6 +83,7 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirectGear )
     CtiLMProgramDirectGear& setRampInPercent(LONG inpercent);
     CtiLMProgramDirectGear& setRampOutInterval(LONG outinterval);
     CtiLMProgramDirectGear& setRampOutPercent(LONG outpercent);
+    CtiLMProgramDirectGear& setKWReduction(DOUBLE kw);
 
     CtiLMProgramDirectGear* replicate() const;
 
@@ -102,6 +104,7 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirectGear )
     static const string LatchingMethod;
     static const string TrueCycleMethod;
     static const string ThermostatRampingMethod;
+    static const string TargetCycleMethod;
     static const string NoControlMethod;
 
     //Possible method stop types
@@ -166,6 +169,7 @@ private:
     LONG _front_ramp_time;
     string _back_ramp_option;
     LONG _back_ramp_time;
+    DOUBLE _kw_reduction;
 };
 #endif
 
