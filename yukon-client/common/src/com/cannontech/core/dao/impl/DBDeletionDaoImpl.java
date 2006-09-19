@@ -1,13 +1,13 @@
 package com.cannontech.core.dao.impl;
 
+import com.cannontech.common.device.configuration.dao.CategoryDao;
+import com.cannontech.common.device.configuration.dao.DeviceConfigurationDao;
+import com.cannontech.common.device.configuration.model.Category;
+import com.cannontech.common.device.configuration.model.DeviceConfiguration;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DBDeleteResult;
 import com.cannontech.core.dao.DBDeletionDao;
-import com.cannontech.database.cache.functions.CategoryDao;
-import com.cannontech.database.cache.functions.DeviceConfigurationDao;
 import com.cannontech.database.data.config.ConfigTwoWay;
-import com.cannontech.database.data.device.configuration.Category;
-import com.cannontech.database.data.device.configuration.DeviceConfiguration;
 import com.cannontech.database.data.holiday.HolidaySchedule;
 import com.cannontech.database.data.season.SeasonSchedule;
 import com.cannontech.database.data.tou.TOUSchedule;
