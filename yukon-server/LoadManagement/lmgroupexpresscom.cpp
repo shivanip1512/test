@@ -18,8 +18,12 @@
 #include "lmid.h"
 #include "logger.h"
 #include "loadmanager.h"
+#include "ctistring.h"
+#include "ctitokenizer.h"
+#include "numstr.h"
 
 extern ULONG _LM_DEBUG;
+#define ROUNDING_SECONDS (60*58) //Round up on minute 58 or greater
 
 RWDEFINE_COLLECTABLE( CtiLMGroupExpresscom, CTILMGROUPEXPRESSCOM_ID )
 
@@ -127,6 +131,103 @@ CtiRequestMsg* CtiLMGroupExpresscom::createTrueCycleRequestMsg(LONG percent, LON
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Sending true cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+    }
+    return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
+}
+
+/*-------------------------------------------------------------------------
+    createTargetCycleRequestMsg
+
+    Creates true cycle request msg which is exactly like a smart cycle but
+    with the "truecycle" string at the end of the control string.
+--------------------------------------------------------------------------*/
+CtiRequestMsg* CtiLMGroupExpresscom::createTargetCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, bool no_ramp, int priority, DOUBLE kwh, CtiTime ctrlStartTime, const string& additionalInfo) const
+{
+    //control cycle 50 period 30 count 8 relay 1 delay 10 truecycle targetcycle 10.1 adjustments 50 60
+    char tempchar[64];
+    string controlString = "control cycle ";
+    _ltoa(percent,tempchar,10);
+    controlString += tempchar;
+    controlString += " count ";
+    _ltoa(defaultCount,tempchar,10);
+    controlString += tempchar;
+    controlString += " period ";
+    controlString += buildPeriodString(period);
+
+    if(no_ramp)
+    {
+        controlString += " noramp";
+    }
+
+    controlString += " truecycle";
+    controlString += " targetcycle ";
+    controlString += CtiNumStr(kwh, 1);
+
+    if( additionalInfo.size() > 0 )
+    {
+        int iValue[8];
+        long timeChange;
+
+        //Are we at least 59 minutes past the start time? If not we send all of the adjustment flags
+        if( (timeChange = CtiTime::now().seconds() - ctrlStartTime.seconds()) > (ROUNDING_SECONDS) )
+        {
+            int incHours = timeChange / (60*60);
+            if( timeChange - incHours*60*60 >= ROUNDING_SECONDS ) //Account for ROUNDING_SECONDS rounding errors
+            {
+                incHours ++;
+            }
+
+            int count = 0;
+            CtiString token;
+            CtiString temp;
+            CtiString str_hexnum = "(0x[0-9a-f]+)";
+            CtiString str_num = "([0-9]+)";
+            CtiString str_anynum = "(" + str_num + "|" + str_hexnum + ")";
+            CtiString tempStr = "adjustments";
+            tempStr += "( ";
+            tempStr += str_anynum;
+            tempStr += ")+";
+            CtiString CmdStr = additionalInfo.c_str();
+    
+            if(!(token = CmdStr.match(tempStr)).empty())
+            {
+                CtiTokenizer cmdtok(token);
+                cmdtok(); //go past adjustment
+                
+                while( !(temp = cmdtok()).empty() )
+                {
+                    if( count < 8 )
+                    {
+                        iValue[count] = atoi(temp.data());
+                        count++;
+                    }
+                    
+                    
+                }
+            }
+
+            if( count > incHours )//Change this once roger talks to me
+            {
+                controlString += " adjustments";
+                for( int i = incHours; i<count; i++ )
+                {
+                    controlString += " ";
+                    controlString += CtiNumStr(iValue[i]);
+                }
+            }
+            controlString += additionalInfo.c_str();
+        }
+        else
+        {
+            controlString += " ";
+            controlString += additionalInfo.c_str();
+        }
+    }
+    
+    if( _LM_DEBUG & LM_DEBUG_STANDARD )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Sending target cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
     return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }

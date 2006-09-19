@@ -853,6 +853,20 @@ CtiRequestMsg* CtiLMGroupBase::createTrueCycleRequestMsg(LONG percent, LONG peri
 }
 
 /*-------------------------------------------------------------------------
+    createTargetCycleRequestMsg
+
+    .
+--------------------------------------------------------------------------*/
+CtiRequestMsg* CtiLMGroupBase::createTargetCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, bool no_ramp, int priority, DOUBLE kwh, CtiTime originalTime, const string& additionalInfo) const
+{
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Can not Target Cycle a non-Expresscom Load Management Group, in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
+    return NULL;
+}
+
+/*-------------------------------------------------------------------------
     createTrueCycleRequestMsg
 
     .
