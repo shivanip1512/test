@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_lcu.h-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2006/03/29 22:49:49 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2006/09/19 21:43:11 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -69,6 +69,11 @@ public:
         eLCUInvalid
 
     } CtiLCUResult_t;
+
+    enum
+    {
+        LCU_POINTOFFSET_NEVERRETRY = 101
+    };
 
 protected:
 

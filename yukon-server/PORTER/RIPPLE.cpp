@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/RIPPLE.cpp-arc  $
-* REVISION     :  $Revision: 1.31 $
-* DATE         :  $Date: 2006/03/31 18:24:43 $
+* REVISION     :  $Revision: 1.32 $
+* DATE         :  $Date: 2006/09/19 21:43:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1282,6 +1282,16 @@ INT RequeueLCUCommand( CtiDeviceSPtr splcu )
                 dout << CtiTime() << " " << lcu->getName() << " has been marked as LCUNEVERRETRY" << endl;
             }
 
+            CtiPointSPtr pnt = lcu->getDevicePointOffsetTypeEqual(CtiDeviceLCU::LCU_POINTOFFSET_NEVERRETRY, StatusPointType);
+
+            if( pnt )
+            {
+                list< CtiMessage* >  lst;
+                CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg(pnt->getID(), 1);
+                lst.push_back( pData );
+                SubmitDataToDispatch( lst );
+            }
+
             // 20051011 CGP ACH.  When this occurs, we should set the pseudo status for LCU Transmit to state 1
             // The expected state names are 0/1 = Fired/Failed.
 
@@ -1305,10 +1315,19 @@ INT ReportCompletionStateToLMGroup(CtiDeviceSPtr splcu)     // f.k.a. ReturnTrxI
     UINT     TrxID = 0;
 
     CtiDeviceLCU *lcu = (CtiDeviceLCU*)splcu.get();
+    CtiPointSPtr pnt = lcu->getDevicePointOffsetTypeEqual(CtiDeviceLCU::LCU_POINTOFFSET_NEVERRETRY, StatusPointType);
 
     // this means we had a good message - retries are OK
     lcu->resetFlags( LCUNEVERRETRY );
 
+    if( pnt )
+    {
+        list< CtiMessage* >  lst;
+        CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg(pnt->getID(), 0);
+        lst.push_back( pData );
+        SubmitDataToDispatch( lst );
+    }
+    
     while( lcu->popControlledGroupInfo(LMGIDControl, TrxID) )
     {
         ProcessRippleGroupTrxID(LMGIDControl, TrxID);
