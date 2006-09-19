@@ -1,12 +1,12 @@
-package com.cannontech.database.data.device.configuration;
+package com.cannontech.common.device.configuration.model;
 
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.cannontech.common.device.configuration.dao.CategoryDao;
 import com.cannontech.common.editor.EditorPanel;
-import com.cannontech.database.cache.functions.CategoryDao;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -106,6 +106,20 @@ public class Category extends DBPersistent implements CTIDbChange, Comparable, E
     }
 
     /**
+     * Method to set all of the item's values to the default.
+     */
+    public void restoreDefaultValues() {
+
+        if (this.itemList != null) {
+            Iterator<Item> itemIter = this.itemList.iterator();
+            while (itemIter.hasNext()) {
+                Item item = itemIter.next();
+                item.restoreDefaultValue();
+            }
+        }
+    }
+
+    /**
      * Method to add an Item to the item List
      * @param item - Item to add
      */
@@ -140,6 +154,29 @@ public class Category extends DBPersistent implements CTIDbChange, Comparable, E
 
     }
 
+    /**
+     * Method to get an item from the item list by item name
+     * @param name - Name of item
+     * @return Item if found
+     */
+    public Item getItemByName(String name) {
+
+        if (itemList == null) {
+            return null;
+        }
+
+        Iterator itemIter = itemList.iterator();
+        while (itemIter.hasNext()) {
+            Item item = (Item) itemIter.next();
+            if (item.getName().equalsIgnoreCase(name)) {
+                return item;
+            }
+        }
+
+        return null;
+
+    }
+
     public DBChangeMsg[] getDBChangeMsgs(int typeOfChange) {
         DBChangeMsg[] msgs = new DBChangeMsg[1];
         msgs[0] = new DBChangeMsg(this.id,
@@ -163,6 +200,23 @@ public class Category extends DBPersistent implements CTIDbChange, Comparable, E
         }
 
         return this.name.compareTo(((Category) o).getName());
+    }
+
+    @Override
+    public Object clone() {
+
+        Category newCategory = new Category();
+        newCategory.setName(this.name);
+        newCategory.setType(this.type);
+
+        // Copy each of the items in the item list into the new category
+        Iterator<Item> itemIter = this.getItemList().iterator();
+        while (itemIter.hasNext()) {
+            Item item = itemIter.next();
+            newCategory.addItem((Item) item.clone());
+        }
+
+        return newCategory;
     }
 
 }

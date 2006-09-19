@@ -1,11 +1,11 @@
-package com.cannontech.database.data.device.configuration;
+package com.cannontech.common.device.configuration.model;
 
 /**
  * Enumeration of item value types. These value types are used to determine
  * which type of data is valid for an item value
  */
 public enum ItemValueType {
-    NONE, NUMERIC, DATE, BOOLEAN, TOU;
+    NONE, NUMERIC, DATE, BOOLEAN, LIST;
 
     /**
      * Method to get the ItemValueType based on a string type

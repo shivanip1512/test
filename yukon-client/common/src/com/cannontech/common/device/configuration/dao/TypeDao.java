@@ -1,4 +1,4 @@
-package com.cannontech.database.cache.functions;
+package com.cannontech.common.device.configuration.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -7,8 +7,8 @@ import java.util.List;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 
+import com.cannontech.common.device.configuration.model.Type;
 import com.cannontech.database.JdbcTemplateHelper;
-import com.cannontech.database.data.device.configuration.Type;
 
 /**
  * Data access object for Type. Handles all CRUD functionality
@@ -26,9 +26,8 @@ public class TypeDao {
      * Method to get a config type for a given id
      * @param id Id of config type
      * @return config type
-     * @throws SQLException
      */
-    public static Type getConfigTypeForId(Integer id) throws SQLException {
+    public static Type getConfigTypeForId(Integer id) {
 
         return getTypeForId(CONFIG_TABLE, CONFIG_COLUMN, id);
 
@@ -38,12 +37,11 @@ public class TypeDao {
      * Method to get a category type for a given id
      * @param id Id of category type
      * @return category type
-     * @throws SQLException
      */
-    public static Type getCategoryTypeForId(Integer id) throws SQLException {
+    public static Type getCategoryTypeForId(Integer id) {
         JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
-        String sql = "SELECT categorytypeid, name, categorygroup, level, description FROM "
-                + CATEGORY_TABLE + " WHERE categorytypeid = ?";
+        String sql = "SELECT categorytypeid, name, displayname, categorygroup, level, "
+                + "description FROM " + CATEGORY_TABLE + " WHERE categorytypeid = ?";
 
         return (Type) jdbcOps.queryForObject(sql, new Object[] { id }, new CategoryTypeMapper());
     }
@@ -52,15 +50,14 @@ public class TypeDao {
      * Method to get a list of compatible config types for a given device type
      * @param deviceType - Device type to get config types for
      * @return A list of config types
-     * @throws SQLException
      */
     @SuppressWarnings("unchecked")
-    public static List<Type> getConfigTypesForDevice(String deviceType) throws SQLException {
+    public static List<Type> getConfigTypesForDevice(String deviceType) {
 
         JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
-        String sql = "SELECT c." + CONFIG_COLUMN + ", c.name, c.description FROM " + CONFIG_TABLE
-                + " c, " + DEVICE_CONFIG_TABLE + " dc WHERE dc.devicetype = ? AND c."
-                + CONFIG_COLUMN + " = dc." + CONFIG_COLUMN;
+        String sql = "SELECT c." + CONFIG_COLUMN + ", c.name, c.displayname, c.description FROM "
+                + CONFIG_TABLE + " c, " + DEVICE_CONFIG_TABLE
+                + " dc WHERE dc.devicetype = ? AND c." + CONFIG_COLUMN + " = dc." + CONFIG_COLUMN;
 
         return jdbcOps.query(sql, new Object[] { deviceType }, new TypeMapper());
 
@@ -69,13 +66,13 @@ public class TypeDao {
     /**
      * Method to retrieve all config types
      * @return List of all config types
-     * @throws SQLException
      */
     @SuppressWarnings("unchecked")
-    public static List<Type> getAllConfigTypes() throws SQLException {
+    public static List<Type> getAllConfigTypes() {
 
         JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
-        String sql = "SELECT " + CONFIG_COLUMN + ", name, description FROM " + CONFIG_TABLE;
+        String sql = "SELECT " + CONFIG_COLUMN + ", name, displayname, description FROM "
+                + CONFIG_TABLE;
 
         return jdbcOps.query(sql, new TypeMapper());
     }
@@ -85,17 +82,15 @@ public class TypeDao {
      * @param configTypeId Id of config type to get all category types for
      * @return a list of all category types that are valid for the given config
      *         type
-     * @throws SQLException
      */
     @SuppressWarnings("unchecked")
-    public static List<Type> getAllCategoryTypesForConfigType(Integer configTypeId)
-            throws SQLException {
+    public static List<Type> getAllCategoryTypesForConfigType(Integer configTypeId) {
 
         JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
-        String sql = "SELECT t." + CATEGORY_COLUMN + ", t.name, t.categorygroup, t.level, "
-                + "t.description FROM " + CATEGORY_TABLE + " t, " + CONFIG_CATEGORY_TABLE
-                + " mt WHERE mt." + CONFIG_COLUMN + " = ? AND t." + CATEGORY_COLUMN + " = mt."
-                + CATEGORY_COLUMN;
+        String sql = "SELECT t." + CATEGORY_COLUMN + ", t.name, t.displayname, t.categorygroup, "
+                + "t.level, " + "t.description FROM " + CATEGORY_TABLE + " t, "
+                + CONFIG_CATEGORY_TABLE + " mt WHERE mt." + CONFIG_COLUMN + " = ? AND t."
+                + CATEGORY_COLUMN + " = mt." + CATEGORY_COLUMN;
 
         return jdbcOps.query(sql, new Object[] { configTypeId }, new CategoryTypeMapper());
     }
@@ -109,8 +104,8 @@ public class TypeDao {
      */
     private static Type getTypeForId(String table, String column, Integer id) {
         JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
-        String sql = "SELECT " + column + ", name, description FROM " + table + " WHERE " + column
-                + " = ?";
+        String sql = "SELECT " + column + ", name, displayname, description FROM " + table
+                + " WHERE " + column + " = ?";
 
         return (Type) jdbcOps.queryForObject(sql, new Object[] { id }, new TypeMapper());
     }
@@ -125,7 +120,8 @@ public class TypeDao {
             Type type = new Type();
             type.setId(rs.getInt(1));
             type.setName(rs.getString(2));
-            type.setDescription(rs.getString(3));
+            type.setDisplayName(rs.getString(3));
+            type.setDescription(rs.getString(4));
 
             return type;
         }
@@ -141,8 +137,10 @@ public class TypeDao {
             Type type = new Type();
             type.setId(rs.getInt(1));
             type.setName(rs.getString(2));
-            type.setGroup(rs.getString(3));
-            type.setLevel(rs.getString(4));
+            type.setDisplayName(rs.getString(3));
+            type.setGroup(rs.getString(4));
+            type.setLevel(rs.getString(5));
+            type.setDescription(rs.getString(6));
 
             return type;
         }

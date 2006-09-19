@@ -1,20 +1,19 @@
-package com.cannontech.database.cache.functions;
+package com.cannontech.common.device.configuration.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
 
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SqlRowSetResultSetExtractor;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 
+import com.cannontech.common.device.configuration.model.Category;
+import com.cannontech.common.device.configuration.model.Item;
+import com.cannontech.common.device.configuration.model.Type;
 import com.cannontech.database.JdbcTemplateHelper;
-import com.cannontech.database.data.device.configuration.Category;
-import com.cannontech.database.data.device.configuration.Item;
-import com.cannontech.database.data.device.configuration.Type;
 
 /**
  * Data access object for Category. Handles all CRUD functionality
@@ -27,9 +26,8 @@ public class CategoryDao {
     /**
      * Method to save a category
      * @param category The category to save
-     * @throws SQLException
      */
-    public static void save(Category category) throws SQLException {
+    public static void save(Category category) {
 
         JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
         String mainSql = null;
@@ -57,7 +55,7 @@ public class CategoryDao {
         Iterator itemIter = category.getItemList().iterator();
         while (itemIter.hasNext()) {
             Item item = (Item) itemIter.next();
-            
+
             jdbcOps.update(mappingSql, new Object[] { category.getId(), item.getId(),
                     item.getValue() });
 
@@ -67,9 +65,8 @@ public class CategoryDao {
     /**
      * Method to delete a category
      * @param category category to delete
-     * @throws SQLException
      */
-    public static void delete(Category category) throws SQLException {
+    public static void delete(Category category) {
 
         JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
 
@@ -90,9 +87,8 @@ public class CategoryDao {
      * Method to get a category for a given id
      * @param id Id of category
      * @return Fully loaded category
-     * @throws SQLException
      */
-    public static Category getForId(Integer id) throws SQLException {
+    public static Category getForId(Integer id) {
 
         JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
         String sql = "SELECT categoryid, name, categorytypeid FROM " + TABLE_NAME
@@ -106,10 +102,9 @@ public class CategoryDao {
      * Method to get a list of all categories for a given config
      * @param configId Id of config to get categories for
      * @return A list of categories
-     * @throws SQLException
      */
     @SuppressWarnings("unchecked")
-    public static List<Category> getForConfig(int configId) throws SQLException {
+    public static List<Category> getForConfig(int configId) {
         JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
         String sql = "SELECT c.categoryid, c.name, c.categorytypeid FROM " + TABLE_NAME + " c, "
                 + DeviceConfigurationDao.CATEGORY_MAP_TABLE
@@ -123,10 +118,9 @@ public class CategoryDao {
      * Method to get a list of all categories of a given type
      * @param typeId Type of categories to get
      * @return A list of categories
-     * @throws SQLException
      */
     @SuppressWarnings("unchecked")
-    public static List<Category> getForType(int typeId) throws SQLException {
+    public static List<Category> getForType(int typeId) {
         JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
         String sql = "SELECT categoryid, name, categorytypeid FROM " + TABLE_NAME
                 + " WHERE categorytypeid = ?";
@@ -147,25 +141,18 @@ public class CategoryDao {
      * Method to determine whether a category is assigned to any configurations
      * @param categoryId - Id of category in question
      * @return True if the category is assigned to any configs
-     * @throws SQLException
      */
-    public static boolean isCategoryInUse(int categoryId) throws SQLException {
+    public static boolean isCategoryInUse(int categoryId) {
 
-        try {
-            JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
-            String sql = "SELECT configid, categoryid FROM "
-                    + DeviceConfigurationDao.CATEGORY_MAP_TABLE + " WHERE categoryid = ?";
+        JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
+        String sql = "SELECT configid, categoryid FROM "
+                + DeviceConfigurationDao.CATEGORY_MAP_TABLE + " WHERE categoryid = ?";
 
-            SqlRowSet rowSet = (SqlRowSet) jdbcOps.query(sql,
-                                                         new Object[] { categoryId },
-                                                         new SqlRowSetResultSetExtractor());
+        SqlRowSet rowSet = (SqlRowSet) jdbcOps.query(sql,
+                                                     new Object[] { categoryId },
+                                                     new SqlRowSetResultSetExtractor());
 
-            return rowSet.next();
-
-        } catch (DataAccessException e) {
-            e.getCause().printStackTrace();
-            throw ((SQLException) e.getCause());
-        }
+        return rowSet.next();
 
     }
 

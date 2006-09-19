@@ -1,4 +1,4 @@
-package com.cannontech.database.data.device.configuration;
+package com.cannontech.common.device.configuration.model;
 
 import java.sql.SQLException;
 
@@ -11,6 +11,7 @@ public class Type extends DBPersistent implements Comparable {
 
     private Integer id = null;
     private String name = null;
+    private String displayName = null;
     private String description = null;
     private String group = null;
     private CategoryLevel level = null;
@@ -56,6 +57,14 @@ public class Type extends DBPersistent implements Comparable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 
     public String getDescription() {

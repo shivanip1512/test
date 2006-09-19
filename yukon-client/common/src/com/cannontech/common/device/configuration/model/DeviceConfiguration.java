@@ -1,12 +1,12 @@
-package com.cannontech.database.data.device.configuration;
+package com.cannontech.common.device.configuration.model;
 
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.cannontech.common.device.configuration.dao.DeviceConfigurationDao;
 import com.cannontech.common.editor.EditorPanel;
-import com.cannontech.database.cache.functions.DeviceConfigurationDao;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.message.dispatch.message.DBChangeMsg;

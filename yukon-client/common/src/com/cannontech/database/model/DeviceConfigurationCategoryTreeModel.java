@@ -3,10 +3,10 @@ package com.cannontech.database.model;
 import java.util.Iterator;
 import java.util.List;
 
-import com.cannontech.database.cache.functions.DeviceConfigurationFuncs;
-import com.cannontech.database.cache.functions.DeviceConfigurationFuncsImpl;
-import com.cannontech.database.data.device.configuration.Category;
-import com.cannontech.database.data.device.configuration.Type;
+import com.cannontech.common.device.configuration.model.Category;
+import com.cannontech.common.device.configuration.model.Type;
+import com.cannontech.common.device.configuration.service.DeviceConfigurationFuncs;
+import com.cannontech.common.device.configuration.service.DeviceConfigurationFuncsImpl;
 import com.cannontech.database.data.lite.LiteDeviceConfigurationCategory;
 import com.cannontech.database.data.lite.LiteTypes;
 

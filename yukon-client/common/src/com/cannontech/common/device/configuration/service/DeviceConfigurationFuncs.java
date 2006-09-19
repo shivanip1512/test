@@ -1,12 +1,12 @@
-package com.cannontech.database.cache.functions;
+package com.cannontech.common.device.configuration.service;
 
 import java.util.List;
 import java.util.Map;
 
-import com.cannontech.database.data.device.configuration.Category;
-import com.cannontech.database.data.device.configuration.DeviceConfiguration;
-import com.cannontech.database.data.device.configuration.Item;
-import com.cannontech.database.data.device.configuration.Type;
+import com.cannontech.common.device.configuration.model.Category;
+import com.cannontech.common.device.configuration.model.DeviceConfiguration;
+import com.cannontech.common.device.configuration.model.Item;
+import com.cannontech.common.device.configuration.model.Type;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 
 /**
@@ -43,6 +43,13 @@ public interface DeviceConfigurationFuncs {
      * @return True if successful
      */
     public boolean removeConfigAssignmentForDevices(List<LiteYukonPAObject> devices);
+
+    /**
+     * Method to remove configuration assignments for a given configuration.
+     * @param configId - Id of configuration to unassign all devices from
+     * @return True if successful
+     */
+    public boolean removeConfigAssignmentForConfig(int configId);
 
     /**
      * Method to get a map with key: device type string, value: list of device

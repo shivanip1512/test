@@ -2,6 +2,8 @@ package com.cannontech.database.data.lite;
 
 import java.util.GregorianCalendar;
 
+import com.cannontech.common.device.configuration.model.Category;
+import com.cannontech.common.device.configuration.model.DeviceConfiguration;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.command.DeviceTypeCommand;
@@ -9,8 +11,6 @@ import com.cannontech.database.data.customer.CICustomerBase;
 import com.cannontech.database.data.customer.Customer;
 import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.device.DeviceBase;
-import com.cannontech.database.data.device.configuration.Category;
-import com.cannontech.database.data.device.configuration.DeviceConfiguration;
 import com.cannontech.database.data.notification.NotificationGroup;
 import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.db.DBPersistent;

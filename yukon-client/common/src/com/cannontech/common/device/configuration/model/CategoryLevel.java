@@ -1,4 +1,4 @@
-package com.cannontech.database.data.device.configuration;
+package com.cannontech.common.device.configuration.model;
 
 /**
  * Enumeration of category levels. Currently these are used to determine whether

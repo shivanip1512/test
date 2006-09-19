@@ -1,4 +1,4 @@
-package com.cannontech.database.cache.functions;
+package com.cannontech.common.device.configuration.dao;
 
 import com.cannontech.spring.YukonSpringHook;
 
