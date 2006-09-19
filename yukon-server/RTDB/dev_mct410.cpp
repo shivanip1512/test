@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.91 $
-* DATE         :  $Date: 2006/09/18 17:23:50 $
+* REVISION     :  $Revision: 1.92 $
+* DATE         :  $Date: 2006/09/19 21:30:39 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -24,10 +24,13 @@
 #include "tbl_dyn_paoinfo.h"
 #include "logger.h"
 #include "mgr_point.h"
+#include "pt_status.h"
 #include "numstr.h"
 #include "porter.h"
 #include "portglob.h"
 #include "utility.h"
+#include "dllyukon.h"
+
 #include "ctidate.h"
 #include "ctitime.h"
 #include <string>
@@ -84,6 +87,7 @@ CtiDeviceMCT::DynamicPaoAddressing_t CtiDeviceMCT410::initDynPaoAddressing()
 {
     DynamicPaoAddressing_t addressSet;
 
+//  these cannot be properly decoded by the dynamicPaoAddressing code
 //    addressSet.insert(DynamicPaoAddressing(Memory_SSpecPos,                 Memory_SSpecLen,                Keys::Key_MCT_SSpec));
 //    addressSet.insert(DynamicPaoAddressing(Memory_RevisionPos,              Memory_RevisionLen,             Keys::Key_MCT_SSpecRevision));
 
@@ -3200,12 +3204,7 @@ INT CtiDeviceMCT410::decodeGetStatusInternal( INMESS *InMessage, CtiTime &TimeNo
 
         resultString  = getName() + " / Internal Status:\n";
 
-        resultString += (InMessage->Buffer.DSt.Message[0] & 0x01)?"Group addressing disabled\n":"Group addressing enabled\n";
-        resultString += (InMessage->Buffer.DSt.Message[0] & 0x04)?"DST active\n":"DST inactive\n";
-        resultString += (InMessage->Buffer.DSt.Message[0] & 0x08)?"Holiday active\n":"";
-        resultString += (InMessage->Buffer.DSt.Message[0] & 0x10)?"TOU disabled\n":"TOU enabled\n";
-        resultString += (InMessage->Buffer.DSt.Message[0] & 0x20)?"Time sync needed\n":"In time sync\n";
-
+        //  point offset 10
         resultString += (InMessage->Buffer.DSt.Message[1] & 0x01)?"Power Fail occurred\n":"";
         resultString += (InMessage->Buffer.DSt.Message[1] & 0x02)?"Under-Voltage Event\n":"";
         resultString += (InMessage->Buffer.DSt.Message[1] & 0x04)?"Over-Voltage Event\n":"";
@@ -3215,6 +3214,25 @@ INT CtiDeviceMCT410::decodeGetStatusInternal( INMESS *InMessage, CtiTime &TimeNo
         resultString += (InMessage->Buffer.DSt.Message[1] & 0x40)?"DST Change occurred\n":"";
         resultString += (InMessage->Buffer.DSt.Message[1] & 0x80)?"Tamper Flag set\n":"";
 
+        //  point offset 20
+        resultString += (InMessage->Buffer.DSt.Message[2] & 0x01)?"Zero usage stored for 24 hours\n":"";
+        resultString += (InMessage->Buffer.DSt.Message[2] & 0x02)?"Disconnect error (demand seen after disconnect)\n":"";
+        resultString += (InMessage->Buffer.DSt.Message[2] & 0x04)?"Last meter reading corrupt\n":"";
+        //  0x08 - 0x80 aren't used yet
+
+        //  starts at offset 30 - NOTE that this is byte 0
+        resultString += (InMessage->Buffer.DSt.Message[0] & 0x01)?"Group addressing disabled\n":"Group addressing enabled\n";
+        resultString += (InMessage->Buffer.DSt.Message[0] & 0x02)?"Phase detect in progress\n":"";
+        resultString += (InMessage->Buffer.DSt.Message[0] & 0x04)?"DST active\n":"DST inactive\n";
+        resultString += (InMessage->Buffer.DSt.Message[0] & 0x08)?"Holiday active\n":"";
+        resultString += (InMessage->Buffer.DSt.Message[0] & 0x10)?"TOU disabled\n":"TOU enabled\n";
+        resultString += (InMessage->Buffer.DSt.Message[0] & 0x20)?"Time sync needed\n":"In time sync\n";
+        resultString += (InMessage->Buffer.DSt.Message[0] & 0x40)?"Critical peak active\n":"";
+        //  0x80 is not used yet
+
+        //  Eventually, we should exclude the iCon-specific bits from the Centron result
+
+        //  point offset 40
         resultString += (InMessage->Buffer.DSt.Message[3] & 0x01)?"Soft kWh Error, Data OK\n":"";
         resultString += (InMessage->Buffer.DSt.Message[3] & 0x02)?"Low AC Volts\n":"";
         resultString += (InMessage->Buffer.DSt.Message[3] & 0x04)?"Current Too High\n":"";
@@ -3224,6 +3242,7 @@ INT CtiDeviceMCT410::decodeGetStatusInternal( INMESS *InMessage, CtiTime &TimeNo
         resultString += (InMessage->Buffer.DSt.Message[3] & 0x40)?"Configuration Error\n":"";
         resultString += (InMessage->Buffer.DSt.Message[3] & 0x80)?"Reverse Power\n":"";
 
+        //  point offset 50
         resultString += (InMessage->Buffer.DSt.Message[4] & 0x01)?"7759 Calibration Error\n":"";
         resultString += (InMessage->Buffer.DSt.Message[4] & 0x02)?"7759 Register Check Error\n":"";
         resultString += (InMessage->Buffer.DSt.Message[4] & 0x04)?"7759 Reset Error\n":"";
@@ -3234,6 +3253,36 @@ INT CtiDeviceMCT410::decodeGetStatusInternal( INMESS *InMessage, CtiTime &TimeNo
         resultString += (InMessage->Buffer.DSt.Message[4] & 0x80)?"7759 Bit Checksum Error\n":"";
 
         ReturnMsg->setResultString(resultString);
+
+        for( int i = 0; i < 5; i++ )
+        {
+            int offset;
+            boost::shared_ptr<CtiPointStatus> point;
+            CtiPointDataMsg *pData;
+            string pointResult;
+
+            if( i == 0 )  offset = 30;
+            if( i == 1 )  offset = 10;
+            if( i == 2 )  offset = 20;
+            if( i == 3 )  offset = 40;
+            if( i == 4 )  offset = 50;
+
+            for( int j = 0; j < 8; j++ )
+            {
+                //  Don't send the powerfail status again - it's being sent by dev_mct in ResultDecode()
+                if( (i + j != 10) && (point = boost::static_pointer_cast<CtiPointStatus>(getDevicePointOffsetTypeEqual( i + j, StatusPointType ))) )
+                {
+                    double value = (InMessage->Buffer.DSt.Message[i] >> j) & 0x01;
+
+                    pointResult = getName() + " / " + point->getName() + ": " + ResolveStateName((point)->getStateGroupID(), value);
+
+                    if( pData = CTIDBG_new CtiPointDataMsg(point->getPointID(), value, NormalQuality, StatusPointType, pointResult) )
+                    {
+                        ReturnMsg->PointData().push_back(pData);
+                    }
+                }
+            }
+        }
 
         retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
     }

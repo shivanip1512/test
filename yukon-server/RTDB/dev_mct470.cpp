@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.62 $
-* DATE         :  $Date: 2006/09/13 16:02:43 $
+* REVISION     :  $Revision: 1.63 $
+* DATE         :  $Date: 2006/09/19 21:30:39 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,6 +23,7 @@
 #include "logger.h"
 #include "mgr_point.h"
 #include "pt_accum.h"
+#include "pt_status.h"
 #include "numstr.h"
 #include "porter.h"
 #include "dllyukon.h"
@@ -3318,9 +3319,9 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                         if( !status && (tempPoint = getDevicePointOffsetTypeEqual(PointOffset_DNPAnalog_Precanned1+byte+(i-1)*6, AnalogPointType)))
                         {
                             pi.value = boost::static_pointer_cast<CtiPointNumeric>(tempPoint)->computeValueForUOM(pi.value);
-    
+
                             point_string = getName() + " / " + tempPoint->getName() + " = " + CtiNumStr(pi.value, boost::static_pointer_cast<CtiPointNumeric>(tempPoint)->getPointUnits().getDecimalPlaces());
-    
+
                             ReturnMsg->PointData().push_back(makePointDataMsg(tempPoint, pi, point_string));
                         }
                         else
@@ -3348,9 +3349,9 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                         if( !status && (tempPoint = getDevicePointOffsetTypeEqual(PointOffset_DNPCounter_Precanned1+byte+(i-1)*6, PulseAccumulatorPointType)))
                         {
                             pi.value = boost::static_pointer_cast<CtiPointNumeric>(tempPoint)->computeValueForUOM(pi.value);
-    
+
                             point_string = getName() + " / " + tempPoint->getName() + " = " + CtiNumStr(pi.value, boost::static_pointer_cast<CtiPointNumeric>(tempPoint)->getPointUnits().getDecimalPlaces());
-    
+
                             ReturnMsg->PointData().push_back(makePointDataMsg(tempPoint, pi, point_string));
                         }
                         else
@@ -3381,11 +3382,11 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                             if( !status && (tempPoint = getDevicePointOffsetTypeEqual(PointOffset_DNPStatus_PrecannedStart+byte*8+bit, StatusPointType)))
                             {
                                 point_string = getName() + " / " + tempPoint->getName() + " = " + CtiNumStr(pi.value);
-    
+
                                 ReturnMsg->PointData().push_back(makePointDataMsg(tempPoint, pi, point_string));
                             }
                         }
-    
+
                         resultString += getName() + " / Binary Data Byte " + CtiNumStr(byte) + " = " + CtiNumStr(DSt->Message[byte]) + "\n";
                     }
                 }
@@ -3750,26 +3751,63 @@ INT CtiDeviceMCT470::decodeGetStatusInternal( INMESS *InMessage, CtiTime &TimeNo
 
         resultString += getName() + " / Internal Status:\n";
 
+        //  Point offset 10
+        resultString += (InMessage->Buffer.DSt.Message[1] & 0x01)?"Power fail occurred\n":"";
+        resultString += (InMessage->Buffer.DSt.Message[1] & 0x02)?"Electronic meter communication error\n":"";
+        resultString += (InMessage->Buffer.DSt.Message[1] & 0x04)?"Stack overflow\n":"";
+        resultString += (InMessage->Buffer.DSt.Message[1] & 0x08)?"Power fail carryover\n":"";
+        resultString += (InMessage->Buffer.DSt.Message[1] & 0x10)?"RTC adjusted\n":"";
+        resultString += (InMessage->Buffer.DSt.Message[1] & 0x20)?"Holiday Event occurred\n":"";
+        resultString += (InMessage->Buffer.DSt.Message[1] & 0x40)?"DST Change occurred\n":"";
+        resultString += (InMessage->Buffer.DSt.Message[1] & 0x80)?"Negative time sync occurred\n":"";
+
+        //  Point offset 20
+        resultString += (InMessage->Buffer.DSt.Message[2] & 0x01)?"Zero usage on channel 1 for 24 hours\n":"";
+        resultString += (InMessage->Buffer.DSt.Message[2] & 0x02)?"Zero usage on channel 2 for 24 hours\n":"";
+        resultString += (InMessage->Buffer.DSt.Message[2] & 0x04)?"Zero usage on channel 3 for 24 hours\n":"";
+        resultString += (InMessage->Buffer.DSt.Message[2] & 0x08)?"Zero usage on channel 4 for 24 hours\n":"";
+        resultString += (InMessage->Buffer.DSt.Message[2] & 0x10)?"Address corruption\n":"";
+        //  0x20-0x80 aren't used yet
+
+        //  Point offset 30
         resultString += (InMessage->Buffer.DSt.Message[0] & 0x01)?"Group addressing disabled\n":"Group addressing enabled\n";
+        //  0x02 is not used yet
         resultString += (InMessage->Buffer.DSt.Message[0] & 0x04)?"DST active\n":"DST inactive\n";
         resultString += (InMessage->Buffer.DSt.Message[0] & 0x08)?"Holiday active\n":"";
         resultString += (InMessage->Buffer.DSt.Message[0] & 0x10)?"TOU disabled\n":"TOU enabled\n";
         resultString += (InMessage->Buffer.DSt.Message[0] & 0x20)?"Time sync needed\n":"In time sync\n";
         resultString += (InMessage->Buffer.DSt.Message[0] & 0x40)?"Critical peak active\n":"Critical peak inactive\n";
-
-        resultString += (InMessage->Buffer.DSt.Message[1] & 0x01)?"Power fail occurred\n":"";
-        resultString += (InMessage->Buffer.DSt.Message[1] & 0x02)?"Electronic meter communication error\n":"";
-        resultString += (InMessage->Buffer.DSt.Message[1] & 0x08)?"Power fail carryover\n":"";
-        resultString += (InMessage->Buffer.DSt.Message[1] & 0x10)?"RTC adjusted\n":"";
-        resultString += (InMessage->Buffer.DSt.Message[1] & 0x20)?"Holiday Event occurred\n":"";
-        resultString += (InMessage->Buffer.DSt.Message[1] & 0x40)?"DST Change occurred\n":"";
-
-        resultString += (InMessage->Buffer.DSt.Message[2] & 0x01)?"Zero usage on channel 1 for 24 hours\n":"";
-        resultString += (InMessage->Buffer.DSt.Message[2] & 0x02)?"Zero usage on channel 2 for 24 hours\n":"";
-        resultString += (InMessage->Buffer.DSt.Message[2] & 0x04)?"Zero usage on channel 3 for 24 hours\n":"";
-        resultString += (InMessage->Buffer.DSt.Message[2] & 0x08)?"Zero usage on channel 4 for 24 hours\n":"";
+        //  0x80 is used internally
 
         ReturnMsg->setResultString(resultString);
+
+        for( int i = 0; i < 3; i++ )
+        {
+            int offset;
+            boost::shared_ptr<CtiPointStatus> point;
+            CtiPointDataMsg *pData;
+            string pointResult;
+
+            if( i == 0 )  offset = 30;
+            if( i == 1 )  offset = 10;
+            if( i == 2 )  offset = 20;
+
+            for( int j = 0; j < 8; j++ )
+            {
+                //  Don't send the powerfail status again - it's being sent by dev_mct in ResultDecode()
+                if( (i + j != 10) && (point = boost::static_pointer_cast<CtiPointStatus>(getDevicePointOffsetTypeEqual( i + j, StatusPointType ))) )
+                {
+                    double value = (InMessage->Buffer.DSt.Message[i] >> j) & 0x01;
+
+                    pointResult = getName() + " / " + point->getName() + ": " + ResolveStateName((point)->getStateGroupID(), value);
+
+                    if( pData = CTIDBG_new CtiPointDataMsg(point->getPointID(), value, NormalQuality, StatusPointType, pointResult) )
+                    {
+                        ReturnMsg->PointData().push_back(pData);
+                    }
+                }
+            }
+        }
 
         retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
     }
@@ -4160,7 +4198,7 @@ void CtiDeviceMCT470::decodeDNPRealTimeRead(BYTE *buffer, int readNumber, string
                 {
                     pi.value = (buffer[0] >> (i+1)) & 0x01;
                     point_string = getName() + " / " + tempPoint->getName() + " = " + CtiNumStr(pi.value);
-    
+
                     ReturnMsg->PointData().push_back(makePointDataMsg(tempPoint, pi, point_string));
                 }
                 else
@@ -4182,7 +4220,7 @@ void CtiDeviceMCT470::decodeDNPRealTimeRead(BYTE *buffer, int readNumber, string
                 {
                     pi.value = (buffer[1] >> i) & 0x01;
                     point_string = getName() + " / " + tempPoint->getName() + " = " + CtiNumStr(pi.value);
-    
+
                     ReturnMsg->PointData().push_back(makePointDataMsg(tempPoint, pi, point_string));
                 }
                 else
@@ -4265,7 +4303,7 @@ void CtiDeviceMCT470::getBytesFromString(string &values, BYTE* buffer, int buffL
         if(!(token = valueCopy.match(anyNum)).empty())
         {
             CtiTokenizer cmdtok(token);
-            
+
             while( !(temp = cmdtok()).empty() && numValues*bytesPerValue < buffLen )
             {
                 iValue = atoi(temp.data());
