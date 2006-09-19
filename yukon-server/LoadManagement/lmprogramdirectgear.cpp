@@ -309,6 +309,16 @@ const string& CtiLMProgramDirectGear::getFrontRampOption() const
     return _front_ramp_option;
 }
 
+/*----------------------------------------------------------------------------
+  getKWReduction
+
+  Returns the KW reduction of the gear
+----------------------------------------------------------------------------*/
+DOUBLE CtiLMProgramDirectGear::getKWReduction() const
+{
+    return _kw_reduction;
+}
+
 /*---------------------------------------------------------------------------
     setPAOId
     
@@ -580,6 +590,18 @@ CtiLMProgramDirectGear& CtiLMProgramDirectGear::setRampOutPercent(LONG percent)
     return *this;
 }
 
+/*----------------------------------------------------------------------------
+  setKWReduction
+
+  Sets the kw reduction of the gear
+----------------------------------------------------------------------------*/
+CtiLMProgramDirectGear& CtiLMProgramDirectGear::setKWReduction(DOUBLE kw)
+{
+    _kw_reduction = kw;
+    return *this;
+}
+
+
 /*-------------------------------------------------------------------------
     restoreGuts
     
@@ -610,7 +632,8 @@ void CtiLMProgramDirectGear::restoreGuts(RWvistream& istrm)
           >> _rampininterval
           >> _rampinpercent
           >> _rampoutinterval
-          >> _rampoutpercent;
+          >> _rampoutpercent
+          >> _kw_reduction;
 }
 
 /*---------------------------------------------------------------------------
@@ -643,7 +666,8 @@ void CtiLMProgramDirectGear::saveGuts(RWvostream& ostrm ) const
           << _rampininterval
           << _rampinpercent
           << _rampoutinterval
-          << _rampoutpercent;
+          << _rampoutpercent
+          << _kw_reduction;
    
 
     return;
@@ -710,6 +734,7 @@ void CtiLMProgramDirectGear::restore(RWDBReader& rdr)
     rdr["frontramptime"] >> _front_ramp_time;
     rdr["backrampoption"] >> _back_ramp_option;
     rdr["backramptime"] >> _back_ramp_time;
+    rdr["kwreduction"] >> _kw_reduction;
 }
 
 // Static Members
@@ -722,6 +747,7 @@ const string CtiLMProgramDirectGear::RotationMethod = "Rotation";
 const string CtiLMProgramDirectGear::LatchingMethod = "Latching";
 const string CtiLMProgramDirectGear::TrueCycleMethod = "TrueCycle";
 const string CtiLMProgramDirectGear::ThermostatRampingMethod = "ThermostatRamping";
+const string CtiLMProgramDirectGear::TargetCycleMethod = "TargetCycle";
 const string CtiLMProgramDirectGear::NoControlMethod = "NoControl";
 
 //Possible method stop types
