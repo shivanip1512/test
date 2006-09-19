@@ -14,11 +14,11 @@ import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
 import javax.swing.JRadioButton;
 
+import com.cannontech.common.device.configuration.model.DeviceConfiguration;
+import com.cannontech.common.device.configuration.model.Type;
+import com.cannontech.common.device.configuration.service.DeviceConfigurationFuncs;
+import com.cannontech.common.device.configuration.service.DeviceConfigurationFuncsImpl;
 import com.cannontech.common.gui.util.DataInputPanel;
-import com.cannontech.database.cache.functions.DeviceConfigurationFuncs;
-import com.cannontech.database.cache.functions.DeviceConfigurationFuncsImpl;
-import com.cannontech.database.data.device.configuration.DeviceConfiguration;
-import com.cannontech.database.data.device.configuration.Type;
 
 /**
  * Panel class used to select which type of configuration to create

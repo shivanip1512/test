@@ -1,4 +1,4 @@
-package com.cannontech.dbeditor.editor.device.configuration;
+package com.cannontech.dbeditor.editor.device.configuration.category;
 
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
@@ -11,25 +11,23 @@ import java.util.List;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+import com.cannontech.common.device.configuration.model.Category;
+import com.cannontech.common.device.configuration.model.DeviceConfiguration;
+import com.cannontech.common.device.configuration.model.Type;
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.gui.util.DataInputPanelListener;
-import com.cannontech.database.data.device.configuration.Category;
-import com.cannontech.database.data.device.configuration.DeviceConfiguration;
-import com.cannontech.database.data.device.configuration.Type;
 
 /**
  * Panel class which shows all category types of a given category group. Each
- * category type has a CategoryEditorBasePanel to represent it.
+ * category type has a CategoryEditorPanel to represent it.
  */
 public class CategoryGroupEditorPanel extends DataInputPanel implements DataInputPanelListener {
 
-    private List<CategoryEditorPanelBase> categoryPanelList = null;
+    private List<CategoryEditorPanel> categoryPanelList = null;
     private Type categoryType = null;
-    private boolean editable;
 
-    public CategoryGroupEditorPanel(boolean editable) {
-        this.editable = editable;
+    public CategoryGroupEditorPanel() {
         this.initialize();
     }
 
@@ -37,8 +35,8 @@ public class CategoryGroupEditorPanel extends DataInputPanel implements DataInpu
     public Object getValue(Object o) {
         DeviceConfiguration config = (DeviceConfiguration) o;
 
-        CategoryEditorPanelBase panel = null;
-        Iterator<CategoryEditorPanelBase> panelIter = this.categoryPanelList.iterator();
+        CategoryEditorPanel panel = null;
+        Iterator<CategoryEditorPanel> panelIter = this.categoryPanelList.iterator();
         while (panelIter.hasNext()) {
             panel = panelIter.next();
             Category category = (Category) panel.getValue(null);
@@ -65,27 +63,24 @@ public class CategoryGroupEditorPanel extends DataInputPanel implements DataInpu
                                                                 0.0,
                                                                 GridBagConstraints.NORTHWEST,
                                                                 GridBagConstraints.HORIZONTAL,
-                                                                new Insets(0, 5, 5, 5),
+                                                                new Insets(5, 5, 5, 5),
                                                                 0,
                                                                 0);
 
         List<Category> categoryList = null;
         Iterator<List<Category>> categoryListIter = ((List<List<Category>>) o).iterator();
+        // Loop through the category list and create a CategoryEditorPanel for
+        // each
         while (categoryListIter.hasNext()) {
             categoryList = categoryListIter.next();
 
+            Type type = categoryList.get(0).getType();
+
             if (categoryList.size() > 0 && this.categoryType == null) {
-                this.categoryType = categoryList.get(0).getType();
+                this.categoryType = type;
             }
 
-            CategoryEditorPanelBase panel = null;
-
-            if ("TOU Schedule".equals(this.categoryType.getName())) {
-                panel = new TOUCategoryEditorPanel(this.editable);
-            } else {
-                panel = new CategoryEditorPanelBase(this.editable);
-            }
-
+            CategoryEditorPanel panel = CategoryPanelFactory.createEditorPanel(type);
             panel.setValue(categoryList);
             panel.addDataInputPanelListener(this);
             this.categoryPanelList.add(panel);
@@ -101,8 +96,30 @@ public class CategoryGroupEditorPanel extends DataInputPanel implements DataInpu
         }
 
         JScrollPane scrollPane = new JScrollPane(mainPanel);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(10);
         this.add(scrollPane, BorderLayout.CENTER);
 
+    }
+
+    @Override
+    public boolean isInputValid() {
+
+        if (this.categoryPanelList != null) {
+
+            Iterator<CategoryEditorPanel> panelIter = this.categoryPanelList.iterator();
+            while (panelIter.hasNext()) {
+
+                CategoryEditorPanel panel = panelIter.next();
+                if (!panel.isInputValid()) {
+                    this.setErrorString(panel.getErrorString());
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -126,7 +143,7 @@ public class CategoryGroupEditorPanel extends DataInputPanel implements DataInpu
      */
     private void initialize() {
         this.setLayout(new BorderLayout());
-        this.categoryPanelList = new ArrayList<CategoryEditorPanelBase>();
+        this.categoryPanelList = new ArrayList<CategoryEditorPanel>();
     }
 
 }

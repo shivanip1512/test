@@ -16,13 +16,13 @@ import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 
+import com.cannontech.common.device.configuration.model.DeviceConfiguration;
+import com.cannontech.common.device.configuration.model.Type;
+import com.cannontech.common.device.configuration.service.DeviceConfigurationFuncs;
+import com.cannontech.common.device.configuration.service.DeviceConfigurationFuncsImpl;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.gui.util.TitleBorder;
-import com.cannontech.database.cache.functions.DeviceConfigurationFuncs;
-import com.cannontech.database.cache.functions.DeviceConfigurationFuncsImpl;
 import com.cannontech.database.data.device.DeviceBase;
-import com.cannontech.database.data.device.configuration.DeviceConfiguration;
-import com.cannontech.database.data.device.configuration.Type;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.YukonPAObject;
@@ -31,12 +31,12 @@ import com.cannontech.database.db.DBPersistent;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 
 /**
- * Panel class which contains a label and a combo box with device
- * configurations. Used to display a combo box of device configurations valid
- * for a given device type
+ * Panel to display a list of device configurations valid for a given device
+ * type
  */
 public class DeviceConfigurationComboPanel extends DataInputPanel {
 
+    public static final String DB_CHANGE_OBJECT_TYPE = "device";
     private static final Integer NO_CONFIG_SELECTED_ID = -1;
 
     private YukonPAObject device = null;
@@ -48,7 +48,6 @@ public class DeviceConfigurationComboPanel extends DataInputPanel {
 
     @Override
     public Object getValue(Object o) {
-
         return new DeviceConfigurationDBPersistant(this.device,
                                                    ((DeviceConfiguration) deviceConfigurationCombo.getSelectedItem()).getId());
     }
@@ -188,8 +187,8 @@ public class DeviceConfigurationComboPanel extends DataInputPanel {
         private YukonPAObject device = null;
         private Integer configId = null;
 
-        public DeviceConfigurationDBPersistant(YukonPAObject deviceId, Integer configId) {
-            this.device = deviceId;
+        public DeviceConfigurationDBPersistant(YukonPAObject device, Integer configId) {
+            this.device = device;
             this.configId = configId;
         }
 
@@ -224,9 +223,21 @@ public class DeviceConfigurationComboPanel extends DataInputPanel {
             }
         }
 
+        @Override
+        public String toString() {
+            return this.device.toString();
+        }
+
         public DBChangeMsg[] getDBChangeMsgs(int typeOfChange) {
-            // TODO return the correct db change msg here
-            return new DBChangeMsg[0];
+
+            DBChangeMsg[] msgs = new DBChangeMsg[1];
+            msgs[0] = new DBChangeMsg(this.device.getPAObjectID(),
+                                      DBChangeMsg.CHANGE_CONFIG_DB,
+                                      DeviceConfiguration.DB_CHANGE_CATEGORY,
+                                      DB_CHANGE_OBJECT_TYPE,
+                                      typeOfChange);
+
+            return msgs;
         }
     }
 

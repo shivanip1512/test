@@ -8,13 +8,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.cannontech.common.device.configuration.model.Category;
+import com.cannontech.common.device.configuration.model.DeviceConfiguration;
+import com.cannontech.common.device.configuration.model.Type;
+import com.cannontech.common.device.configuration.service.DeviceConfigurationFuncs;
+import com.cannontech.common.device.configuration.service.DeviceConfigurationFuncsImpl;
 import com.cannontech.common.editor.PropertyPanel;
 import com.cannontech.common.gui.util.DataInputPanel;
-import com.cannontech.database.cache.functions.DeviceConfigurationFuncs;
-import com.cannontech.database.cache.functions.DeviceConfigurationFuncsImpl;
-import com.cannontech.database.data.device.configuration.Category;
-import com.cannontech.database.data.device.configuration.DeviceConfiguration;
-import com.cannontech.database.data.device.configuration.Type;
+import com.cannontech.dbeditor.editor.device.configuration.category.CategoryGroupEditorPanel;
 
 /**
  * Main panel for editing device configurations
@@ -123,7 +124,7 @@ public class DeviceConfigurationPropertyPanel extends PropertyPanel {
             // This will be used for the tab name
             String categoryKey = type.getGroup();
             if (categoryKey == null) {
-                categoryKey = type.getName();
+                categoryKey = type.getDisplayName();
             }
             // Get the current category list from the existing categoryMap if
             // found or add the category group / type to the map
@@ -189,7 +190,7 @@ public class DeviceConfigurationPropertyPanel extends PropertyPanel {
 
             String key = categoryGroupIter.next();
 
-            CategoryGroupEditorPanel categoryPanel = new CategoryGroupEditorPanel(false);
+            CategoryGroupEditorPanel categoryPanel = new CategoryGroupEditorPanel();
             categoryPanel.setValue(categoryMap.get(key));
             this.inputPanels.add(categoryPanel);
             this.inputPanelTabNames.add(key);

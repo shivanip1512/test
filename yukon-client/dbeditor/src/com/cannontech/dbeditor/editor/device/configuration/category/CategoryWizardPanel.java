@@ -1,4 +1,4 @@
-package com.cannontech.dbeditor.editor.device.configuration;
+package com.cannontech.dbeditor.editor.device.configuration.category;
 
 import java.awt.Dimension;
 
@@ -8,7 +8,13 @@ import com.cannontech.common.wizard.WizardPanel;
 /**
  * Wizard panel for category creation
  */
-public class CategoryWizardPanel extends WizardPanel {
+abstract public class CategoryWizardPanel extends WizardPanel {
+
+    public CategoryWizardPanel() {
+        super();
+    }
+
+    abstract protected DataInputPanel getNextInputPanel(DataInputPanel currentInputPanel);
 
     @Override
     public Dimension getActualSize() {
@@ -21,11 +27,6 @@ public class CategoryWizardPanel extends WizardPanel {
     @Override
     protected String getHeaderText() {
         return "Category Setup";
-    }
-
-    @Override
-    protected DataInputPanel getNextInputPanel(DataInputPanel currentInputPanel) {
-        return new CategoryInputPanel();
     }
 
     @Override

@@ -9,7 +9,6 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyVetoException;
 
 import javax.swing.JButton;
-import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -17,10 +16,12 @@ import javax.swing.JTextField;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.device.configuration.model.DeviceConfiguration;
+import com.cannontech.common.editor.PropertyPanel;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.gui.util.TitleBorder;
-import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.data.device.configuration.DeviceConfiguration;
+import com.cannontech.dbeditor.DatabaseEditor;
 
 /**
  * Panel which contains basic information about a device configuration
@@ -50,6 +51,7 @@ public class DeviceConfigurationBaseEditorPanel extends DataInputPanel implement
 
         final DeviceConfiguration config = (DeviceConfiguration) o;
 
+        // Add Identification panel
         this.add(this.buildIdentificationPanel(),
                  new GridBagConstraints(1,
                                         1,
@@ -64,29 +66,26 @@ public class DeviceConfigurationBaseEditorPanel extends DataInputPanel implement
                                         5));
 
         if (config.getId() != null) {
+
+            // Add assign devices button
             JButton addDeviceButton = new JButton("Assign Devices");
             addDeviceButton.addActionListener(new ActionListener() {
 
                 public void actionPerformed(ActionEvent e) {
-                    JInternalFrame frame = new JInternalFrame("Device Assignment",
-                                                              true,
-                                                              true,
-                                                              true,
-                                                              true);
+                    JInternalFrame frame = DatabaseEditor.getInstance().getAvailableEditorFrame();
 
-                    JPanel panel = new DeviceSelectionPanel(config);
+                    PropertyPanel panel = new DeviceSelectionPropertyPanel();
+                    panel.setValue(config);
+                    panel.addPropertyPanelListener(DatabaseEditor.getInstance());
 
                     frame.setContentPane(panel);
-                    frame.setSize(400, 400);
+                    frame.setSize(DatabaseEditor.EDITOR_FRAME_SIZE);
                     frame.setVisible(true);
-
-                    JDesktopPane pane = CtiUtilities.getDesktopPane(((JButton) e.getSource()));
-                    pane.add(frame);
 
                     try {
                         frame.setSelected(true);
                     } catch (PropertyVetoException e1) {
-                        e1.printStackTrace();
+                        CTILogger.error(e1.getMessage(), e1);
                     }
 
                 }
@@ -111,17 +110,17 @@ public class DeviceConfigurationBaseEditorPanel extends DataInputPanel implement
         }
     }
 
+    @Override
+    public boolean isInputValid() {
+        return !("".equals(this.name.getText()));
+    }
+
     public void caretUpdate(CaretEvent e) {
         fireInputUpdate();
     }
 
     public void actionPerformed(ActionEvent e) {
         fireInputUpdate();
-    }
-
-    @Override
-    public boolean isInputValid() {
-        return !("".equals(this.name.getText()));
     }
 
     /**
@@ -144,6 +143,7 @@ public class DeviceConfigurationBaseEditorPanel extends DataInputPanel implement
         identificationBorder.setTitleFont(DeviceConfigurationPropertyPanel.TITLE_FONT);
         identificationPanel.setBorder(identificationBorder);
 
+        // Add config name label and config name
         JLabel nameLabel = new JLabel("Config Name:");
         nameLabel.setFont(DeviceConfigurationPropertyPanel.FIELD_FONT);
         this.name = new JTextField(20);
@@ -172,6 +172,7 @@ public class DeviceConfigurationBaseEditorPanel extends DataInputPanel implement
                                                              5,
                                                              5));
 
+        // Add config type label and config type
         JLabel typeLabel = new JLabel("Config Type:");
         typeLabel.setFont(DeviceConfigurationPropertyPanel.FIELD_FONT);
         this.type = new JLabel();

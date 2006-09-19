@@ -7,16 +7,16 @@ package com.cannontech.dbeditor;
  * @author: Aaron Lauinger aka The MAN
  */
 
+import com.cannontech.common.device.configuration.model.Category;
+import com.cannontech.common.device.configuration.model.DeviceConfiguration;
 import com.cannontech.common.editor.EditorPanel;
 import com.cannontech.common.editor.PropertyPanel;
-import com.cannontech.database.data.device.configuration.Category;
-import com.cannontech.database.data.device.configuration.DeviceConfiguration;
 import com.cannontech.database.data.device.lm.LMScenario;
 import com.cannontech.database.data.season.SeasonSchedule;
 import com.cannontech.database.data.tou.TOUSchedule;
 import com.cannontech.database.db.DBPersistent;
-import com.cannontech.dbeditor.editor.device.configuration.CategoryPropertyPanel;
 import com.cannontech.dbeditor.editor.device.configuration.DeviceConfigurationPropertyPanel;
+import com.cannontech.dbeditor.editor.device.configuration.category.CategoryPropertyPanel;
 import com.cannontech.dbeditor.editor.season.SeasonEditorPanel;
 import com.cannontech.dbeditor.editor.tou.TOUEditorPanel;
 

@@ -1,12 +1,12 @@
-package com.cannontech.dbeditor.editor.device.configuration;
+package com.cannontech.dbeditor.editor.device.configuration.category;
 
 import java.awt.BorderLayout;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.cannontech.common.device.configuration.model.Category;
 import com.cannontech.common.editor.PropertyPanel;
 import com.cannontech.common.gui.util.DataInputPanel;
-import com.cannontech.database.data.device.configuration.Category;
 
 /**
  * Main panel for editing device configuration categories
@@ -16,14 +16,12 @@ public class CategoryPropertyPanel extends PropertyPanel {
     private List<DataInputPanel> inputPanels = null;
     private List<String> inputPanelTabNames = null;
 
-    public CategoryPropertyPanel() {
-        this.initialize();
-    }
-
     @Override
     public void setValue(Object val) {
 
         Category category = (Category) val;
+
+        this.initialize(category);
 
         setOriginalObjectToEdit(category);
 
@@ -71,12 +69,13 @@ public class CategoryPropertyPanel extends PropertyPanel {
     /**
      * Helper method to initialize this panel.
      */
-    private void initialize() {
+    private void initialize(Category category) {
 
-        this.inputPanels = inputPanels = new ArrayList<DataInputPanel>();
-        this.inputPanels.add(new CategoryInputPanel());
+        this.inputPanels = new ArrayList<DataInputPanel>();
         this.inputPanelTabNames = new ArrayList<String>();
         this.inputPanelTabNames.add("General");
+
+        this.inputPanels.add(CategoryPanelFactory.createInputPanel(category.getType()));
 
     }
 

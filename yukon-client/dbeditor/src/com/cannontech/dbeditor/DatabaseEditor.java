@@ -33,6 +33,8 @@ import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import com.cannontech.common.device.configuration.model.Category;
+import com.cannontech.common.device.configuration.model.DeviceConfiguration;
 import com.cannontech.common.editor.PropertyPanel;
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.util.MessagePanel;
@@ -51,8 +53,6 @@ import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.DatabaseTypes;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
-import com.cannontech.database.data.device.configuration.Category;
-import com.cannontech.database.data.device.configuration.DeviceConfiguration;
 import com.cannontech.database.data.device.lm.LMScenario;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteFactory;
@@ -1561,7 +1561,7 @@ private void generateDBChangeMsg( com.cannontech.database.db.DBPersistent object
  * Creation date: (3/13/2001 3:42:38 PM)
  * @return javax.swing.JInternalFrame
  */
-private JTreeEditorFrame getAvailableEditorFrame() 
+public JTreeEditorFrame getAvailableEditorFrame() 
 {
 	synchronized( getInternalEditorFrames() )
 	{

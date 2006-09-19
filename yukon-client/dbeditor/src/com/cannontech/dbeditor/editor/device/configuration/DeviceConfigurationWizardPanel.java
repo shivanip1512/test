@@ -5,13 +5,14 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.cannontech.common.device.configuration.model.Category;
+import com.cannontech.common.device.configuration.model.DeviceConfiguration;
+import com.cannontech.common.device.configuration.model.Type;
+import com.cannontech.common.device.configuration.service.DeviceConfigurationFuncs;
+import com.cannontech.common.device.configuration.service.DeviceConfigurationFuncsImpl;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.wizard.WizardPanel;
-import com.cannontech.database.cache.functions.DeviceConfigurationFuncs;
-import com.cannontech.database.cache.functions.DeviceConfigurationFuncsImpl;
-import com.cannontech.database.data.device.configuration.Category;
-import com.cannontech.database.data.device.configuration.DeviceConfiguration;
-import com.cannontech.database.data.device.configuration.Type;
+import com.cannontech.dbeditor.editor.device.configuration.category.CategoryGroupEditorPanel;
 
 /**
  * Wizard panel for device configuration creation
@@ -86,7 +87,7 @@ public class DeviceConfigurationWizardPanel extends WizardPanel {
                 this.config = (DeviceConfiguration) currentInputPanel.getValue(this.config);
 
                 List<Category> currentCategoryList = this.categoryTypeList.get(0);
-                CategoryGroupEditorPanel panel = new CategoryGroupEditorPanel(false);
+                CategoryGroupEditorPanel panel = new CategoryGroupEditorPanel();
                 panel.setValue(this.wrapCategoryList(currentCategoryList));
                 return panel;
 
@@ -99,7 +100,7 @@ public class DeviceConfigurationWizardPanel extends WizardPanel {
                 Integer index = this.getNextCategoryListIndex(((CategoryGroupEditorPanel) currentInputPanel).getType());
                 List<Category> categoryList = this.categoryTypeList.get(index);
 
-                CategoryGroupEditorPanel panel = new CategoryGroupEditorPanel(false);
+                CategoryGroupEditorPanel panel = new CategoryGroupEditorPanel();
                 panel.setValue(this.wrapCategoryList(categoryList));
                 return panel;
             }
