@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.63 $
-* DATE         :  $Date: 2006/09/19 21:30:39 $
+* REVISION     :  $Revision: 1.64 $
+* DATE         :  $Date: 2006/09/20 20:22:52 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -94,57 +94,57 @@ CtiDeviceMCT470::CommandSet CtiDeviceMCT470::initCommandStore( )
 {
     CommandSet cs;
 
-    cs.insert(CommandStore(Emetcon::Command_Loop,               Emetcon::IO_Read,           Memory_ModelPos,             1));
-    cs.insert(CommandStore(Emetcon::Scan_Accum,                 Emetcon::IO_Function_Read,  FuncRead_MReadPos,           FuncRead_MReadLen));
-    cs.insert(CommandStore(Emetcon::GetValue_Default,           Emetcon::IO_Function_Read,  FuncRead_MReadPos,           FuncRead_MReadLen));
-    cs.insert(CommandStore(Emetcon::Scan_Integrity,             Emetcon::IO_Function_Read,  MCT470_FuncRead_DemandPos,          MCT470_FuncRead_DemandLen));
-    cs.insert(CommandStore(Emetcon::GetValue_Demand,            Emetcon::IO_Function_Read,  MCT470_FuncRead_DemandPos,          MCT470_FuncRead_DemandLen));
-    cs.insert(CommandStore(Emetcon::Scan_LoadProfile,           Emetcon::IO_Function_Read,  0,                                  0));
-    cs.insert(CommandStore(Emetcon::GetValue_Demand,            Emetcon::IO_Function_Read,  MCT470_FuncRead_DemandPos,          MCT470_FuncRead_DemandLen));
-    cs.insert(CommandStore(Emetcon::GetValue_PeakDemand,        Emetcon::IO_Function_Read,  MCT470_FuncRead_PeakDemandBasePos,  MCT470_FuncRead_PeakDemandLen));
-    cs.insert(CommandStore(Emetcon::PutValue_KYZ,               Emetcon::IO_Write,          MCT470_FuncWrite_CurrentReading,    MCT470_FuncWrite_CurrentReadingLen));
-    cs.insert(CommandStore(Emetcon::PutConfig_Raw,              Emetcon::IO_Write,          0,                                  0));  //  filled in later
-    cs.insert(CommandStore(Emetcon::GetConfig_Raw,              Emetcon::IO_Read,           0,                                  0));  //  filled in later
-    cs.insert(CommandStore(Emetcon::GetConfig_Model,            Emetcon::IO_Read,           MCT470_Memory_ModelPos,             MCT470_Memory_ModelLen));
-    cs.insert(CommandStore(Emetcon::GetConfig_Multiplier,       Emetcon::IO_Read,           MCT470_Memory_ChannelMultiplierPos, MCT470_Memory_ChannelMultiplierLen));
-    cs.insert(CommandStore(Emetcon::PutConfig_Multiplier,       Emetcon::IO_Write,          MCT470_Memory_ChannelMultiplierPos, MCT470_Memory_ChannelMultiplierLen));
-    cs.insert(CommandStore(Emetcon::GetConfig_Time,             Emetcon::IO_Read,           MCT470_Memory_TimeZoneOffsetPos,    MCT470_Memory_TimeZoneOffsetLen +
-                                                                                                                                MCT470_Memory_RTCLen));
-    cs.insert(CommandStore(Emetcon::GetConfig_TSync,            Emetcon::IO_Read,           MCT470_Memory_LastTSyncPos,         MCT470_Memory_LastTSyncLen));
-    cs.insert(CommandStore(Emetcon::PutConfig_TimeZoneOffset,   Emetcon::IO_Write,          MCT470_Memory_TimeZoneOffsetPos,    MCT470_Memory_TimeZoneOffsetLen));
-    cs.insert(CommandStore(Emetcon::PutConfig_Intervals,        Emetcon::IO_Function_Write, MCT470_FuncWrite_IntervalsPos,      MCT470_FuncWrite_IntervalsLen));
-    cs.insert(CommandStore(Emetcon::GetConfig_Intervals,        Emetcon::IO_Read,           MCT470_Memory_IntervalsPos,         MCT470_Memory_IntervalsLen));
-    cs.insert(CommandStore(Emetcon::GetConfig_ChannelSetup,     Emetcon::IO_Function_Read,  MCT470_FuncRead_ChannelSetupPos,    MCT470_FuncRead_ChannelSetupLen));
-    cs.insert(CommandStore(Emetcon::GetValue_LoadProfile,       Emetcon::IO_Function_Read,  0,                                  0));
-    cs.insert(CommandStore(Emetcon::GetStatus_LoadProfile,      Emetcon::IO_Function_Read,  MCT470_FuncRead_LPStatusCh1Ch2Pos,  MCT470_FuncRead_LPStatusLen));
-    cs.insert(CommandStore(Emetcon::GetStatus_Internal,         Emetcon::IO_Read,           MCT470_Memory_StatusPos,            MCT470_Memory_StatusLen));
-    cs.insert(CommandStore(Emetcon::GetValue_IED,               Emetcon::IO_Function_Read,  0,  13));  //  filled in by "getvalue ied" code
-    cs.insert(CommandStore(Emetcon::GetValue_IEDDemand,         Emetcon::IO_Function_Read,  MCT470_FuncRead_IED_RealTime,       9));  //  magic number
-    cs.insert(CommandStore(Emetcon::GetStatus_IEDDNP,           Emetcon::IO_Function_Read,  MCT470_FuncRead_IED_Precanned_Last, 13));
-    cs.insert(CommandStore(Emetcon::GetConfig_IEDTime,          Emetcon::IO_Function_Read,  MCT470_FuncRead_IED_TOU_MeterStatus, 13));  //  magic number
-    cs.insert(CommandStore(Emetcon::GetConfig_IEDDNP,           Emetcon::IO_Function_Read,  MCT470_FuncRead_IED_DNPTablePos,    MCT470_FuncRead_IED_DNPTableLen));
-    cs.insert(CommandStore(Emetcon::PutValue_IEDReset,          Emetcon::IO_Function_Write, MCT470_FuncWrite_IEDCommand,        MCT470_FuncWrite_IEDCommandLen));
-    cs.insert(CommandStore(Emetcon::PutStatus_FreezeOne,        Emetcon::IO_Write,          Command_FreezeOne,                  0));
-    cs.insert(CommandStore(Emetcon::PutStatus_FreezeTwo,        Emetcon::IO_Write,          Command_FreezeTwo,                  0));
+    cs.insert(CommandStore(Emetcon::Command_Loop,               Emetcon::IO_Read,           Memory_ModelPos,               1));
+    cs.insert(CommandStore(Emetcon::Scan_Accum,                 Emetcon::IO_Function_Read,  FuncRead_MReadPos,            FuncRead_MReadLen));
+    cs.insert(CommandStore(Emetcon::GetValue_Default,           Emetcon::IO_Function_Read,  FuncRead_MReadPos,            FuncRead_MReadLen));
+    cs.insert(CommandStore(Emetcon::Scan_Integrity,             Emetcon::IO_Function_Read,  FuncRead_DemandPos,           FuncRead_DemandLen));
+    cs.insert(CommandStore(Emetcon::GetValue_Demand,            Emetcon::IO_Function_Read,  FuncRead_DemandPos,           FuncRead_DemandLen));
+    cs.insert(CommandStore(Emetcon::Scan_LoadProfile,           Emetcon::IO_Function_Read,  0,                             0));
+    cs.insert(CommandStore(Emetcon::GetValue_Demand,            Emetcon::IO_Function_Read,  FuncRead_DemandPos,           FuncRead_DemandLen));
+    cs.insert(CommandStore(Emetcon::GetValue_PeakDemand,        Emetcon::IO_Function_Read,  FuncRead_PeakDemandPos,       FuncRead_PeakDemandLen));
+    cs.insert(CommandStore(Emetcon::PutValue_KYZ,               Emetcon::IO_Write,          FuncWrite_CurrentReading,     FuncWrite_CurrentReadingLen));
+    cs.insert(CommandStore(Emetcon::PutConfig_Raw,              Emetcon::IO_Write,          0,                             0));  //  filled in later
+    cs.insert(CommandStore(Emetcon::GetConfig_Raw,              Emetcon::IO_Read,           0,                             0));  //  filled in later
+    cs.insert(CommandStore(Emetcon::GetConfig_Model,            Emetcon::IO_Read,           Memory_ModelPos,              Memory_ModelLen));
+    cs.insert(CommandStore(Emetcon::GetConfig_Multiplier,       Emetcon::IO_Read,           Memory_ChannelMultiplierPos,  Memory_ChannelMultiplierLen));
+    cs.insert(CommandStore(Emetcon::PutConfig_Multiplier,       Emetcon::IO_Write,          Memory_ChannelMultiplierPos,  Memory_ChannelMultiplierLen));
+    cs.insert(CommandStore(Emetcon::GetConfig_Time,             Emetcon::IO_Read,           Memory_TimeZoneOffsetPos,     Memory_TimeZoneOffsetLen +
+                                                                                                                          Memory_RTCLen));
+    cs.insert(CommandStore(Emetcon::GetConfig_TSync,            Emetcon::IO_Read,           Memory_LastTSyncPos,          Memory_LastTSyncLen));
+    cs.insert(CommandStore(Emetcon::PutConfig_TimeZoneOffset,   Emetcon::IO_Write,          Memory_TimeZoneOffsetPos,     Memory_TimeZoneOffsetLen));
+    cs.insert(CommandStore(Emetcon::PutConfig_Intervals,        Emetcon::IO_Function_Write, FuncWrite_IntervalsPos,       FuncWrite_IntervalsLen));
+    cs.insert(CommandStore(Emetcon::GetConfig_Intervals,        Emetcon::IO_Read,           Memory_IntervalsPos,          Memory_IntervalsLen));
+    cs.insert(CommandStore(Emetcon::GetConfig_ChannelSetup,     Emetcon::IO_Function_Read,  FuncRead_ChannelSetupPos,     FuncRead_ChannelSetupLen));
+    cs.insert(CommandStore(Emetcon::GetValue_LoadProfile,       Emetcon::IO_Function_Read,  0,                             0));
+    cs.insert(CommandStore(Emetcon::GetStatus_LoadProfile,      Emetcon::IO_Function_Read,  FuncRead_LPStatusCh1Ch2Pos,   FuncRead_LPStatusLen));
+    cs.insert(CommandStore(Emetcon::GetStatus_Internal,         Emetcon::IO_Read,           Memory_StatusPos,             Memory_StatusLen));
+    cs.insert(CommandStore(Emetcon::GetValue_IED,               Emetcon::IO_Function_Read,  0,                            13));  //  filled in by "getvalue ied" code
+    cs.insert(CommandStore(Emetcon::GetValue_IEDDemand,         Emetcon::IO_Function_Read,  FuncRead_IED_RealTime,         9));   //  magic number
+    cs.insert(CommandStore(Emetcon::GetStatus_IEDDNP,           Emetcon::IO_Function_Read,  FuncRead_IED_Precanned_Last,  13));
+    cs.insert(CommandStore(Emetcon::GetConfig_IEDTime,          Emetcon::IO_Function_Read,  FuncRead_IED_TOU_MeterStatus, 13));  //  magic number
+    cs.insert(CommandStore(Emetcon::GetConfig_IEDDNP,           Emetcon::IO_Function_Read,  FuncRead_IED_DNPTablePos,     FuncRead_IED_DNPTableLen));
+    cs.insert(CommandStore(Emetcon::PutValue_IEDReset,          Emetcon::IO_Function_Write, FuncWrite_IEDCommand,         FuncWrite_IEDCommandLen));
+    cs.insert(CommandStore(Emetcon::PutStatus_FreezeOne,        Emetcon::IO_Write,          Command_FreezeOne,             0));
+    cs.insert(CommandStore(Emetcon::PutStatus_FreezeTwo,        Emetcon::IO_Write,          Command_FreezeTwo,             0));
 
     //******************************** Config Related starts here *************************
-    cs.insert(CommandStore(Emetcon::PutConfig_Addressing,       Emetcon::IO_Write,          MCT470_Memory_AddressingPos,        MCT470_Memory_AddressingLen));
-    cs.insert(CommandStore(Emetcon::PutConfig_LongloadProfile,  Emetcon::IO_Function_Write, FuncWrite_LLPStoragePos,            FuncWrite_LLPStorageLen));
-    cs.insert(CommandStore(Emetcon::GetConfig_LongloadProfile,  Emetcon::IO_Function_Read,  FuncRead_LLPStatusPos,              FuncRead_LLPStatusLen));
-    cs.insert(CommandStore(Emetcon::PutConfig_DST,              Emetcon::IO_Write,          MCT470_Memory_DSTBeginPos,          MCT470_Memory_DSTBeginLen +
-                                                                                                                                MCT470_Memory_DSTEndLen   +
-                                                                                                                                MCT470_Memory_TimeZoneOffsetLen));
+    cs.insert(CommandStore(Emetcon::PutConfig_Addressing,       Emetcon::IO_Write,          Memory_AddressingPos,        Memory_AddressingLen));
+    cs.insert(CommandStore(Emetcon::PutConfig_LongloadProfile,  Emetcon::IO_Function_Write, FuncWrite_LLPStoragePos,     FuncWrite_LLPStorageLen));
+    cs.insert(CommandStore(Emetcon::GetConfig_LongloadProfile,  Emetcon::IO_Function_Read,  FuncRead_LLPStatusPos,       FuncRead_LLPStatusLen));
+    cs.insert(CommandStore(Emetcon::PutConfig_DST,              Emetcon::IO_Write,          Memory_DSTBeginPos,          Memory_DSTBeginLen
+                                                                                                                           + Memory_DSTEndLen
+                                                                                                                           + Memory_TimeZoneOffsetLen));
     //  used for both "putconfig install" and "putconfig holiday" commands
-    cs.insert(CommandStore(Emetcon::PutConfig_Holiday,          Emetcon::IO_Write,          MCT470_Memory_Holiday1Pos,          MCT470_Memory_Holiday1Len +
-                                                                                                                                MCT470_Memory_Holiday2Len +
-                                                                                                                                MCT470_Memory_Holiday3Len));
+    cs.insert(CommandStore(Emetcon::PutConfig_Holiday,          Emetcon::IO_Write,          Memory_Holiday1Pos,          Memory_Holiday1Len
+                                                                                                                           + Memory_Holiday2Len
+                                                                                                                           + Memory_Holiday3Len));
 
-    cs.insert(CommandStore(Emetcon::GetConfig_Holiday,          Emetcon::IO_Read,           MCT470_Memory_Holiday1Pos,          MCT470_Memory_Holiday1Len +
-                                                                                                                                MCT470_Memory_Holiday2Len +
-                                                                                                                                MCT470_Memory_Holiday3Len));
+    cs.insert(CommandStore(Emetcon::GetConfig_Holiday,          Emetcon::IO_Read,           Memory_Holiday1Pos,          Memory_Holiday1Len
+                                                                                                                           + Memory_Holiday2Len
+                                                                                                                           + Memory_Holiday3Len));
 
-    cs.insert(CommandStore(Emetcon::PutConfig_Options,          Emetcon::IO_Write,          MCT470_FuncWrite_ConfigAlarmMaskPos, MCT470_FuncWrite_ConfigAlarmMaskLen));
-    cs.insert(CommandStore(Emetcon::PutConfig_TimeAdjustTolerance, Emetcon::IO_Write,       MCT470_Memory_TimeAdjustTolPos,     MCT470_Memory_TimeAdjustTolLen));
+    cs.insert(CommandStore(Emetcon::PutConfig_Options,             Emetcon::IO_Write,       FuncWrite_ConfigAlarmMaskPos,  FuncWrite_ConfigAlarmMaskLen));
+    cs.insert(CommandStore(Emetcon::PutConfig_TimeAdjustTolerance, Emetcon::IO_Write,       Memory_TimeAdjustTolerancePos, Memory_TimeAdjustToleranceLen));
 
     //************************************ End Config Related *****************************
 
@@ -156,44 +156,44 @@ CtiDeviceMCT::DynamicPaoFunctionAddressing_t CtiDeviceMCT470::initDynPaoFuncAddr
     DynamicPaoAddressing_t addressSet;
     DynamicPaoFunctionAddressing_t functionSet;
 
-    // MCT470_FuncRead_ChannelSetupDataPos
+    // FuncRead_ChannelSetupDataPos
     addressSet.insert(DynamicPaoAddressing(0, 1, Keys::Key_MCT_LoadProfileChannelConfig1));
     addressSet.insert(DynamicPaoAddressing(1, 1, Keys::Key_MCT_LoadProfileChannelConfig2));
     addressSet.insert(DynamicPaoAddressing(2, 1, Keys::Key_MCT_LoadProfileChannelConfig3));
     addressSet.insert(DynamicPaoAddressing(3, 1, Keys::Key_MCT_LoadProfileChannelConfig4));
     addressSet.insert(DynamicPaoAddressing(4, 1, Keys::Key_MCT_LoadProfileInterval));
     addressSet.insert(DynamicPaoAddressing(5, 1, Keys::Key_MCT_LoadProfileInterval2));
-    functionSet.insert(DynamicPaoFunctionAddressing_t::value_type(MCT470_FuncRead_ChannelSetupDataPos,addressSet));
+    functionSet.insert(DynamicPaoFunctionAddressing_t::value_type(FuncRead_ChannelSetupDataPos,addressSet));
 
     addressSet.clear();
 
-    // MCT470_FuncRead_LoadProfileChannel12Pos
+    // FuncRead_LoadProfileChannel12Pos
     addressSet.insert(DynamicPaoAddressing(0, 1, Keys::Key_MCT_LoadProfileChannelConfig1));
     addressSet.insert(DynamicPaoAddressing(1, 2, Keys::Key_MCT_LoadProfileMeterRatio1));
     addressSet.insert(DynamicPaoAddressing(3, 2, Keys::Key_MCT_LoadProfileKRatio1));
     addressSet.insert(DynamicPaoAddressing(5, 1, Keys::Key_MCT_LoadProfileChannelConfig2));
     addressSet.insert(DynamicPaoAddressing(6, 2, Keys::Key_MCT_LoadProfileMeterRatio2));
     addressSet.insert(DynamicPaoAddressing(8, 2, Keys::Key_MCT_LoadProfileKRatio2));
-    functionSet.insert(DynamicPaoFunctionAddressing_t::value_type(MCT470_FuncRead_LoadProfileChannel12Pos,addressSet));
+    functionSet.insert(DynamicPaoFunctionAddressing_t::value_type(FuncRead_LoadProfileChannel12Pos,addressSet));
 
     addressSet.clear();
 
-    // MCT470_FuncRead_LoadProfileChannel34Pos
+    // FuncRead_LoadProfileChannel34Pos
     addressSet.insert(DynamicPaoAddressing(0, 1, Keys::Key_MCT_LoadProfileChannelConfig3));
     addressSet.insert(DynamicPaoAddressing(1, 2, Keys::Key_MCT_LoadProfileMeterRatio3));
     addressSet.insert(DynamicPaoAddressing(3, 2, Keys::Key_MCT_LoadProfileKRatio3));
     addressSet.insert(DynamicPaoAddressing(5, 1, Keys::Key_MCT_LoadProfileChannelConfig4));
     addressSet.insert(DynamicPaoAddressing(6, 2, Keys::Key_MCT_LoadProfileMeterRatio4));
     addressSet.insert(DynamicPaoAddressing(8, 2, Keys::Key_MCT_LoadProfileKRatio4));
-    functionSet.insert(DynamicPaoFunctionAddressing_t::value_type(MCT470_FuncRead_LoadProfileChannel34Pos,addressSet));
+    functionSet.insert(DynamicPaoFunctionAddressing_t::value_type(FuncRead_LoadProfileChannel34Pos,addressSet));
 
     addressSet.clear();
 
-    // MCT470_FuncRead_PrecannedTablePos
+    // FuncRead_PrecannedTablePos
     addressSet.insert(DynamicPaoAddressing(0, 1, Keys::Key_MCT_PrecannedTableReadInterval));
     addressSet.insert(DynamicPaoAddressing(1, 1, Keys::Key_MCT_PrecannedMeterNumber));
     addressSet.insert(DynamicPaoAddressing(2, 1, Keys::Key_MCT_PrecannedTableType));
-    functionSet.insert(DynamicPaoFunctionAddressing_t::value_type(MCT470_FuncRead_LoadProfileChannel34Pos,addressSet));
+    functionSet.insert(DynamicPaoFunctionAddressing_t::value_type(FuncRead_PrecannedTablePos,addressSet));
 
     addressSet.clear();
 
@@ -243,47 +243,46 @@ CtiDeviceMCT::DynamicPaoAddressing_t CtiDeviceMCT470::initDynPaoAddressing()
     addressSet.insert(DynamicPaoAddressing(Memory_RevisionPos,               Memory_RevisionLen,              Keys::Key_MCT_SSpecRevision));
 */
     addressSet.insert(DynamicPaoAddressing(Memory_OptionsPos,                Memory_OptionsLen,               Keys::Key_MCT_Options));
-    addressSet.insert(DynamicPaoAddressing(MCT470_Memory_ConfigurationPos,          MCT470_Memory_ConfigurationLen,         Keys::Key_MCT_Configuration));
-    addressSet.insert(DynamicPaoAddressing(MCT470_Memory_EventFlagsMask1Pos,        MCT470_Memory_EventFlagsMask1Len,       Keys::Key_MCT_EventFlagsMask1));
-    addressSet.insert(DynamicPaoAddressing(MCT470_Memory_EventFlagsMask2Pos,        MCT470_Memory_EventFlagsMask2Len,       Keys::Key_MCT_EventFlagsMask2));
-    addressSet.insert(DynamicPaoAddressing(MCT470_Memory_AddressBronzePos,          MCT470_Memory_AddressBronzePos,         Keys::Key_MCT_AddressBronze));
-    addressSet.insert(DynamicPaoAddressing(MCT470_Memory_AddressLeadPos,            MCT470_Memory_AddressLeadPos,           Keys::Key_MCT_AddressLead));
-    addressSet.insert(DynamicPaoAddressing(MCT470_Memory_AddressCollectionPos,      MCT470_Memory_AddressCollectionPos,     Keys::Key_MCT_AddressCollection));
-    addressSet.insert(DynamicPaoAddressing(MCT470_Memory_AddressSPIDPos,            MCT470_Memory_AddressSPIDPos,           Keys::Key_MCT_AddressServiceProviderID));
-    addressSet.insert(DynamicPaoAddressing(MCT470_Memory_DemandIntervalLen,         MCT470_Memory_DemandIntervalPos,        Keys::Key_MCT_DemandInterval));
-    addressSet.insert(DynamicPaoAddressing(MCT470_Memory_LoadProfileInterval1Pos,   MCT470_Memory_LoadProfileInterval1Len,  Keys::Key_MCT_LoadProfileInterval));
-    addressSet.insert(DynamicPaoAddressing(MCT470_Memory_LoadProfileInterval2Pos,   MCT470_Memory_LoadProfileInterval2Len,  Keys::Key_MCT_LoadProfileInterval2));
-    addressSet.insert(DynamicPaoAddressing(MCT470_Memory_TimeAdjustTolerancePos,    MCT470_Memory_TimeAdjustToleranceLen,   Keys::Key_MCT_TimeAdjustTolerance));
-    addressSet.insert(DynamicPaoAddressing(MCT470_Memory_DSTBeginPos,               MCT470_Memory_DSTBeginLen,              Keys::Key_MCT_DSTStartTime));
-    addressSet.insert(DynamicPaoAddressing(MCT470_Memory_DSTEndPos,                 MCT470_Memory_DSTEndLen,                Keys::Key_MCT_DSTEndTime));
-    addressSet.insert(DynamicPaoAddressing(MCT470_Memory_TimeZoneOffsetPos,         MCT470_Memory_TimeZoneOffsetLen,        Keys::Key_MCT_TimeZoneOffset));
-    addressSet.insert(DynamicPaoAddressing(MCT470_Memory_TOUDayTablePos,            MCT470_Memory_TOUDayTableLen,           Keys::Key_MCT_DayTable));
-    addressSet.insert(DynamicPaoAddressing(Memory_TOUDailySched1Pos,                Memory_TOUDailySched1Len,               Keys::Key_MCT_DaySchedule1));
-    addressSet.insert(DynamicPaoAddressing(Memory_TOUDailySched2Pos,                Memory_TOUDailySched2Len,               Keys::Key_MCT_DaySchedule2));
-    addressSet.insert(DynamicPaoAddressing(Memory_TOUDailySched3Pos,                Memory_TOUDailySched3Len,               Keys::Key_MCT_DaySchedule3));
-    addressSet.insert(DynamicPaoAddressing(Memory_TOUDailySched4Pos,                Memory_TOUDailySched4Len,               Keys::Key_MCT_DaySchedule4));
-    addressSet.insert(DynamicPaoAddressing(MCT470_Memory_TOUDefaultRatePos,         MCT470_Memory_TOUDefaultRateLen,        Keys::Key_MCT_DefaultTOURate));
-    addressSet.insert(DynamicPaoAddressing(MCT470_Memory_Holiday1Pos,               MCT470_Memory_Holiday1Len,              Keys::Key_MCT_Holiday1));
-    addressSet.insert(DynamicPaoAddressing(MCT470_Memory_Holiday2Pos,               MCT470_Memory_Holiday2Len,              Keys::Key_MCT_Holiday2));
-    addressSet.insert(DynamicPaoAddressing(MCT470_Memory_Holiday3Pos,               MCT470_Memory_Holiday3Len,              Keys::Key_MCT_Holiday3));
-    addressSet.insert(DynamicPaoAddressing(MCT470_Memory_KRatio1Pos,                MCT470_Memory_KRatio1Len,               Keys::Key_MCT_LoadProfileKRatio1));
-    addressSet.insert(DynamicPaoAddressing(MCT470_Memory_MeteringRatio1Pos,         MCT470_Memory_MeteringRatio1Len,        Keys::Key_MCT_LoadProfileMeterRatio1));
-    addressSet.insert(DynamicPaoAddressing(MCT470_Memory_ChannelConfig1Pos,         MCT470_Memory_ChannelConfig1Len,        Keys::Key_MCT_LoadProfileChannelConfig1));
-    addressSet.insert(DynamicPaoAddressing(MCT470_Memory_KRatio2Pos,                MCT470_Memory_KRatio2Len,               Keys::Key_MCT_LoadProfileKRatio2));
-    addressSet.insert(DynamicPaoAddressing(MCT470_Memory_MeteringRatio2Pos,         MCT470_Memory_MeteringRatio2Len,        Keys::Key_MCT_LoadProfileMeterRatio2));
-    addressSet.insert(DynamicPaoAddressing(MCT470_Memory_ChannelConfig2Pos,         MCT470_Memory_ChannelConfig2Len,        Keys::Key_MCT_LoadProfileChannelConfig2));
-    addressSet.insert(DynamicPaoAddressing(MCT470_Memory_KRatio3Pos,                MCT470_Memory_KRatio3Len,               Keys::Key_MCT_LoadProfileKRatio3));
-    addressSet.insert(DynamicPaoAddressing(MCT470_Memory_MeteringRatio3Pos,         MCT470_Memory_MeteringRatio3Len,        Keys::Key_MCT_LoadProfileMeterRatio3));
-    addressSet.insert(DynamicPaoAddressing(MCT470_Memory_ChannelConfig3Pos,         MCT470_Memory_ChannelConfig3Len,        Keys::Key_MCT_LoadProfileChannelConfig3));
-    addressSet.insert(DynamicPaoAddressing(MCT470_Memory_KRatio4Pos,                MCT470_Memory_KRatio4Len,               Keys::Key_MCT_LoadProfileKRatio4));
-    addressSet.insert(DynamicPaoAddressing(MCT470_Memory_MeteringRatio4Pos,         MCT470_Memory_MeteringRatio4Len,        Keys::Key_MCT_LoadProfileMeterRatio4));
-    addressSet.insert(DynamicPaoAddressing(MCT470_Memory_ChannelConfig4Pos,         MCT470_Memory_ChannelConfig4Len,        Keys::Key_MCT_LoadProfileChannelConfig4));
-    addressSet.insert(DynamicPaoAddressing(MCT470_Memory_RelayATimerPos,            MCT470_Memory_RelayATimerLen,           Keys::Key_MCT_RelayATimer));
-    addressSet.insert(DynamicPaoAddressing(MCT470_Memory_RelayBTimerPos,            MCT470_Memory_RelayBTimerLen,           Keys::Key_MCT_RelayBTimer));
-    addressSet.insert(DynamicPaoAddressing(MCT470_Memory_RelayATimerPos,            MCT470_Memory_RelayATimerLen,           Keys::Key_MCT_RelayATimer));
-    addressSet.insert(DynamicPaoAddressing(MCT470_Memory_TableReadIntervalPos,      MCT470_Memory_TableReadIntervalLen,     Keys::Key_MCT_PrecannedTableReadInterval));
-    addressSet.insert(DynamicPaoAddressing(MCT470_Memory_PrecannedMeterNumPos,      MCT470_Memory_PrecannedMeterNumLen,     Keys::Key_MCT_PrecannedMeterNumber));
-    addressSet.insert(DynamicPaoAddressing(MCT470_Memory_PrecannedTableTypePos,     MCT470_Memory_PrecannedTableTypeLen,    Keys::Key_MCT_PrecannedTableType));
+    addressSet.insert(DynamicPaoAddressing(Memory_ConfigurationPos,          Memory_ConfigurationLen,         Keys::Key_MCT_Configuration));
+    addressSet.insert(DynamicPaoAddressing(Memory_EventFlagsMask1Pos,        Memory_EventFlagsMask1Len,       Keys::Key_MCT_EventFlagsMask1));
+    addressSet.insert(DynamicPaoAddressing(Memory_EventFlagsMask2Pos,        Memory_EventFlagsMask2Len,       Keys::Key_MCT_EventFlagsMask2));
+    addressSet.insert(DynamicPaoAddressing(Memory_AddressBronzePos,          Memory_AddressBronzeLen,         Keys::Key_MCT_AddressBronze));
+    addressSet.insert(DynamicPaoAddressing(Memory_AddressLeadPos,            Memory_AddressLeadLen,           Keys::Key_MCT_AddressLead));
+    addressSet.insert(DynamicPaoAddressing(Memory_AddressCollectionPos,      Memory_AddressCollectionLen,     Keys::Key_MCT_AddressCollection));
+    addressSet.insert(DynamicPaoAddressing(Memory_AddressSPIDPos,            Memory_AddressSPIDLen,           Keys::Key_MCT_AddressServiceProviderID));
+    addressSet.insert(DynamicPaoAddressing(Memory_DemandIntervalPos,         Memory_DemandIntervalLen,        Keys::Key_MCT_DemandInterval));
+    addressSet.insert(DynamicPaoAddressing(Memory_LoadProfileInterval1Pos,   Memory_LoadProfileInterval1Len,  Keys::Key_MCT_LoadProfileInterval));
+    addressSet.insert(DynamicPaoAddressing(Memory_LoadProfileInterval2Pos,   Memory_LoadProfileInterval2Len,  Keys::Key_MCT_LoadProfileInterval2));
+    addressSet.insert(DynamicPaoAddressing(Memory_TimeAdjustTolerancePos,    Memory_TimeAdjustToleranceLen,   Keys::Key_MCT_TimeAdjustTolerance));
+    addressSet.insert(DynamicPaoAddressing(Memory_DSTBeginPos,               Memory_DSTBeginLen,              Keys::Key_MCT_DSTStartTime));
+    addressSet.insert(DynamicPaoAddressing(Memory_DSTEndPos,                 Memory_DSTEndLen,                Keys::Key_MCT_DSTEndTime));
+    addressSet.insert(DynamicPaoAddressing(Memory_TimeZoneOffsetPos,         Memory_TimeZoneOffsetLen,        Keys::Key_MCT_TimeZoneOffset));
+    addressSet.insert(DynamicPaoAddressing(Memory_TOUDayTablePos,            Memory_TOUDayTableLen,           Keys::Key_MCT_DayTable));
+    addressSet.insert(DynamicPaoAddressing(Memory_TOUDailySched1Pos,         Memory_TOUDailySched1Len,        Keys::Key_MCT_DaySchedule1));
+    addressSet.insert(DynamicPaoAddressing(Memory_TOUDailySched2Pos,         Memory_TOUDailySched2Len,        Keys::Key_MCT_DaySchedule2));
+    addressSet.insert(DynamicPaoAddressing(Memory_TOUDailySched3Pos,         Memory_TOUDailySched3Len,        Keys::Key_MCT_DaySchedule3));
+    addressSet.insert(DynamicPaoAddressing(Memory_TOUDailySched4Pos,         Memory_TOUDailySched4Len,        Keys::Key_MCT_DaySchedule4));
+    addressSet.insert(DynamicPaoAddressing(Memory_TOUDefaultRatePos,         Memory_TOUDefaultRateLen,        Keys::Key_MCT_DefaultTOURate));
+    addressSet.insert(DynamicPaoAddressing(Memory_Holiday1Pos,               Memory_Holiday1Len,              Keys::Key_MCT_Holiday1));
+    addressSet.insert(DynamicPaoAddressing(Memory_Holiday2Pos,               Memory_Holiday2Len,              Keys::Key_MCT_Holiday2));
+    addressSet.insert(DynamicPaoAddressing(Memory_Holiday3Pos,               Memory_Holiday3Len,              Keys::Key_MCT_Holiday3));
+    addressSet.insert(DynamicPaoAddressing(Memory_KRatio1Pos,                Memory_KRatio1Len,               Keys::Key_MCT_LoadProfileKRatio1));
+    addressSet.insert(DynamicPaoAddressing(Memory_MeteringRatio1Pos,         Memory_MeteringRatio1Len,        Keys::Key_MCT_LoadProfileMeterRatio1));
+    addressSet.insert(DynamicPaoAddressing(Memory_ChannelConfig1Pos,         Memory_ChannelConfig1Len,        Keys::Key_MCT_LoadProfileChannelConfig1));
+    addressSet.insert(DynamicPaoAddressing(Memory_KRatio2Pos,                Memory_KRatio2Len,               Keys::Key_MCT_LoadProfileKRatio2));
+    addressSet.insert(DynamicPaoAddressing(Memory_MeteringRatio2Pos,         Memory_MeteringRatio2Len,        Keys::Key_MCT_LoadProfileMeterRatio2));
+    addressSet.insert(DynamicPaoAddressing(Memory_ChannelConfig2Pos,         Memory_ChannelConfig2Len,        Keys::Key_MCT_LoadProfileChannelConfig2));
+    addressSet.insert(DynamicPaoAddressing(Memory_KRatio3Pos,                Memory_KRatio3Len,               Keys::Key_MCT_LoadProfileKRatio3));
+    addressSet.insert(DynamicPaoAddressing(Memory_MeteringRatio3Pos,         Memory_MeteringRatio3Len,        Keys::Key_MCT_LoadProfileMeterRatio3));
+    addressSet.insert(DynamicPaoAddressing(Memory_ChannelConfig3Pos,         Memory_ChannelConfig3Len,        Keys::Key_MCT_LoadProfileChannelConfig3));
+    addressSet.insert(DynamicPaoAddressing(Memory_KRatio4Pos,                Memory_KRatio4Len,               Keys::Key_MCT_LoadProfileKRatio4));
+    addressSet.insert(DynamicPaoAddressing(Memory_MeteringRatio4Pos,         Memory_MeteringRatio4Len,        Keys::Key_MCT_LoadProfileMeterRatio4));
+    addressSet.insert(DynamicPaoAddressing(Memory_ChannelConfig4Pos,         Memory_ChannelConfig4Len,        Keys::Key_MCT_LoadProfileChannelConfig4));
+    addressSet.insert(DynamicPaoAddressing(Memory_RelayATimerPos,            Memory_RelayATimerLen,           Keys::Key_MCT_RelayATimer));
+    addressSet.insert(DynamicPaoAddressing(Memory_RelayBTimerPos,            Memory_RelayBTimerLen,           Keys::Key_MCT_RelayBTimer));
+    addressSet.insert(DynamicPaoAddressing(Memory_TableReadIntervalPos,      Memory_TableReadIntervalLen,     Keys::Key_MCT_PrecannedTableReadInterval));
+    addressSet.insert(DynamicPaoAddressing(Memory_PrecannedMeterNumPos,      Memory_PrecannedMeterNumLen,     Keys::Key_MCT_PrecannedMeterNumber));
+    addressSet.insert(DynamicPaoAddressing(Memory_PrecannedTableTypePos,     Memory_PrecannedTableTypeLen,    Keys::Key_MCT_PrecannedTableType));
     return addressSet;
 }
 
@@ -357,7 +356,7 @@ bool CtiDeviceMCT470::isLPDynamicInfoCurrent( void )
     //  we don't use the second load profile rate yet
     //retval |= (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval2) == getLoadProfile().getVoltageProfileDemandRate());
 
-    if( retval && ((sspec == MCT470_Sspec && sspec_rev >= MCT470_SspecRevMin && sspec_rev <= MCT470_SspecRevMax)
+    if( retval && ((sspec == Sspec && sspec_rev >= SspecRevMin && sspec_rev <= SspecRevMax)
                    || sspec == MCT430A_Sspec
                    || sspec == MCT430S_Sspec) )
     {
@@ -402,9 +401,9 @@ void CtiDeviceMCT470::requestDynamicInfo(CtiTableDynamicPaoInfo::Keys key, OUTME
     else
     {
         //  the ideal case - the correct, non-development sspec
-        if( (getDynamicInfo(Keys::Key_MCT_SSpec)         == MCT470_Sspec       &&
-             getDynamicInfo(Keys::Key_MCT_SSpecRevision) >= MCT470_SspecRevMin &&
-             getDynamicInfo(Keys::Key_MCT_SSpecRevision) <= MCT470_SspecRevMax)
+        if( (getDynamicInfo(Keys::Key_MCT_SSpec)         == Sspec       &&
+             getDynamicInfo(Keys::Key_MCT_SSpecRevision) >= SspecRevMin &&
+             getDynamicInfo(Keys::Key_MCT_SSpecRevision) <= SspecRevMax)
             || getDynamicInfo(Keys::Key_MCT_SSpec) == MCT430A_Sspec
             || getDynamicInfo(Keys::Key_MCT_SSpec) == MCT430S_Sspec )
         {
@@ -705,9 +704,9 @@ INT CtiDeviceMCT470::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS
             else
             {
                 //  check if we're the IED sspec
-                if( (getDynamicInfo(Keys::Key_MCT_SSpec)         == MCT470_Sspec       &&
-                     getDynamicInfo(Keys::Key_MCT_SSpecRevision) >= MCT470_SspecRevMin &&
-                     getDynamicInfo(Keys::Key_MCT_SSpecRevision) <= MCT470_SspecRevMax)
+                if( (getDynamicInfo(Keys::Key_MCT_SSpec)         == Sspec       &&
+                     getDynamicInfo(Keys::Key_MCT_SSpecRevision) >= SspecRevMin &&
+                     getDynamicInfo(Keys::Key_MCT_SSpecRevision) <= SspecRevMax)
                     || getDynamicInfo(Keys::Key_MCT_SSpec) == MCT430A_Sspec
                     || getDynamicInfo(Keys::Key_MCT_SSpec) == MCT430S_Sspec )
                 {
@@ -1085,7 +1084,7 @@ INT CtiDeviceMCT470::executeGetValue( CtiRequestMsg        *pReq,
 
     if( parse.getFlags() & CMD_FLAG_GV_IED )  //  This parse has the token "IED" in it!
     {
-        if( getDynamicInfo(Keys::Key_MCT_SSpecRevision) < MCT470_SspecRev_IEDZeroWriteMin )
+        if( getDynamicInfo(Keys::Key_MCT_SSpecRevision) < SspecRev_IEDZeroWriteMin )
         {
             //If we need to read out the time, do so.
             function = Emetcon::GetConfig_IEDTime;
@@ -1122,13 +1121,13 @@ INT CtiDeviceMCT470::executeGetValue( CtiRequestMsg        *pReq,
                 {
                     function = Emetcon::GetValue_IED;
                     found = getOperation( function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO );
-                    OutMessage->Buffer.BSt.Function = MCT470_FuncRead_IED_RealTime;
+                    OutMessage->Buffer.BSt.Function = FuncRead_IED_RealTime;
                 }
                 else if( i == 2 )
                 {
                     function = Emetcon::GetValue_IED;
                     found = getOperation( function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO );
-                    OutMessage->Buffer.BSt.Function = MCT470_FuncRead_IED_RealTime2;
+                    OutMessage->Buffer.BSt.Function = FuncRead_IED_RealTime2;
                 }
                 else
                 {
@@ -1141,8 +1140,8 @@ INT CtiDeviceMCT470::executeGetValue( CtiRequestMsg        *pReq,
                 function = Emetcon::GetValue_IED;   //This means we have to fill in the function
                 found = getOperation( function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO );
 
-                OutMessage->Buffer.BSt.Function = MCT470_FuncRead_IED_Precanned_Base + (i-1) + MCT470_DNP_Analog_Precanned_Offset;
-                if( OutMessage->Buffer.BSt.Function >= MCT470_FuncRead_IED_Precanned_Base + MCT470_DNP_Counter_Precanned_Offset )
+                OutMessage->Buffer.BSt.Function = FuncRead_IED_Precanned_Base + (i-1) + MCT470_DNP_Analog_Precanned_Offset;
+                if( OutMessage->Buffer.BSt.Function >= FuncRead_IED_Precanned_Base + MCT470_DNP_Counter_Precanned_Offset )
                 {
                     nRet = BADRANGE;
                     found = false;
@@ -1153,7 +1152,7 @@ INT CtiDeviceMCT470::executeGetValue( CtiRequestMsg        *pReq,
                 function = Emetcon::GetValue_IED;   //This means we have to fill in the function
                 found = getOperation( function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO );
 
-                OutMessage->Buffer.BSt.Function = MCT470_FuncRead_IED_Precanned_Base + (i-1) + MCT470_DNP_Counter_Precanned_Offset;
+                OutMessage->Buffer.BSt.Function = FuncRead_IED_Precanned_Base + (i-1) + MCT470_DNP_Counter_Precanned_Offset;
                 if( i > MCT470_DNP_Counter_Precanned_Reads ) //only 8 reads possible.
                 {
                     nRet = BADRANGE;
@@ -1165,13 +1164,13 @@ INT CtiDeviceMCT470::executeGetValue( CtiRequestMsg        *pReq,
                 function = Emetcon::GetValue_IED;   //This means we have to fill in the function
                 found = getOperation( function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO );
 
-                OutMessage->Buffer.BSt.Function = MCT470_FuncRead_IED_Precanned_Base + MCT470_DNP_Status_Precanned_Offset;
+                OutMessage->Buffer.BSt.Function = FuncRead_IED_Precanned_Base + MCT470_DNP_Status_Precanned_Offset;
             }
             else if( parse.isKeyValid("dnp_crc") )
             {
                 function = Emetcon::GetValue_IED;
-                OutMessage->Buffer.BSt.Function = MCT470_FuncRead_IED_CRCPos;
-                OutMessage->Buffer.BSt.Length = MCT470_FuncRead_IED_CRCLen;
+                OutMessage->Buffer.BSt.Function = FuncRead_IED_CRCPos;
+                OutMessage->Buffer.BSt.Length   = FuncRead_IED_CRCLen;
                 OutMessage->Buffer.BSt.IO = Emetcon::IO_Function_Read;
                 found = true;
             }
@@ -1185,17 +1184,17 @@ INT CtiDeviceMCT470::executeGetValue( CtiRequestMsg        *pReq,
 
             if( parse.getFlags() & CMD_FLAG_GV_RATET )
             {
-                OutMessage->Buffer.BSt.Function = MCT470_FuncRead_IED_TOU_CurrentTotals;
+                OutMessage->Buffer.BSt.Function = FuncRead_IED_TOU_CurrentTotals;
             }
             else
             {
                 if( parse.getFlags() & CMD_FLAG_GV_KVARH || parse.getFlags() & CMD_FLAG_GV_KVAH  )
                 {
-                    OutMessage->Buffer.BSt.Function = MCT470_FuncRead_IED_TOU_CurrentKMBase;
+                    OutMessage->Buffer.BSt.Function = FuncRead_IED_TOU_CurrentKMBase;
                 }
                 else
                 {
-                    OutMessage->Buffer.BSt.Function = MCT470_FuncRead_IED_TOU_CurrentKWBase;
+                    OutMessage->Buffer.BSt.Function = FuncRead_IED_TOU_CurrentKWBase;
                 }
 
                 if(      parse.getFlags() & CMD_FLAG_GV_RATEA )  OutMessage->Buffer.BSt.Function += 0;
@@ -1206,7 +1205,7 @@ INT CtiDeviceMCT470::executeGetValue( CtiRequestMsg        *pReq,
 
             if( parse.getFlags() & CMD_FLAG_FROZEN )
             {
-                OutMessage->Buffer.BSt.Function += MCT470_FuncRead_IED_TOU_PreviousOffset;
+                OutMessage->Buffer.BSt.Function += FuncRead_IED_TOU_PreviousOffset;
             }
         }
     }
@@ -1330,7 +1329,7 @@ INT CtiDeviceMCT470::executeScan(CtiRequestMsg      *pReq,
             if( !options || (options && ( !stringCompareIgnoreCase(options->getValueFromKey(DemandMetersToScan), "all")
                           || !stringCompareIgnoreCase(options->getValueFromKey(DemandMetersToScan), "ied"))) )
             {
-                if( getDynamicInfo(Keys::Key_MCT_SSpecRevision) < MCT470_SspecRev_IEDZeroWriteMin )
+                if( getDynamicInfo(Keys::Key_MCT_SSpecRevision) < SspecRev_IEDZeroWriteMin )
                 {
                     //If we need to read out the time, do so.
                     function = Emetcon::GetConfig_IEDTime;
@@ -1440,7 +1439,7 @@ INT CtiDeviceMCT470::executeGetConfig( CtiRequestMsg         *pReq,
             if( parse.getiValue("multchannel") >= 1 &&
                 parse.getiValue("multchannel") <= ChannelCount )
             {
-                OutMessage->Buffer.BSt.Function += (parse.getiValue("multchannel") - 1) * MCT470_Memory_ChannelOffset;
+                OutMessage->Buffer.BSt.Function += (parse.getiValue("multchannel") - 1) * Memory_ChannelOffset;
             }
             else
             {
@@ -1467,7 +1466,7 @@ INT CtiDeviceMCT470::executeGetConfig( CtiRequestMsg         *pReq,
             if( parse.isKeyValid("start address") )
             {
                 function = Emetcon::PutConfig_Raw;
-                OutMessage->Buffer.BSt.Function = MCT470_FuncWrite_DNPReqTable;
+                OutMessage->Buffer.BSt.Function = FuncWrite_DNPReqTable;
                 OutMessage->Buffer.BSt.Length = 1;
                 OutMessage->Buffer.BSt.IO = Emetcon::IO_Function_Write;
                 OutMessage->Buffer.BSt.Message[0] = parse.getiValue("start address");
@@ -1628,7 +1627,7 @@ INT CtiDeviceMCT470::executePutConfig( CtiRequestMsg         *pReq,
             OutMessage->Buffer.BSt.Message[2] = (denominator >> 8) & 0xff;
             OutMessage->Buffer.BSt.Message[3] =  denominator       & 0xff;
 
-            OutMessage->Buffer.BSt.Function += (parse.getiValue("multoffset") - 1) * CtiDeviceMCT470::MCT470_Memory_ChannelOffset;
+            OutMessage->Buffer.BSt.Function += (parse.getiValue("multoffset") - 1) * Memory_ChannelOffset;
         }
     }
     else
@@ -1829,8 +1828,8 @@ int CtiDeviceMCT470::executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiC
                     || CtiDeviceBase::getDynamicInfo(Keys::Key_MCT_LoadProfileKRatio1)        != kRatio1
                     || CtiDeviceBase::getDynamicInfo(Keys::Key_MCT_LoadProfileKRatio2)        != kRatio2 )
                 {
-                    OutMessage->Buffer.BSt.Function   = MCT470_FuncWrite_LoadProfileChannelsPos;
-                    OutMessage->Buffer.BSt.Length     = MCT470_FuncWrite_LoadProfileChannelsLen;
+                    OutMessage->Buffer.BSt.Function   = FuncWrite_LoadProfileChannelsPos;
+                    OutMessage->Buffer.BSt.Length     = FuncWrite_LoadProfileChannelsLen;
                     OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Write;
                     OutMessage->Buffer.BSt.Message[0] = spid;
                     OutMessage->Buffer.BSt.Message[1] = 1;
@@ -1848,8 +1847,8 @@ int CtiDeviceMCT470::executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiC
 
                     outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
-                    OutMessage->Buffer.BSt.Function   = MCT470_FuncRead_LoadProfileChannel12Pos;
-                    OutMessage->Buffer.BSt.Length     = MCT470_FuncRead_LoadProfileChannel12Len;
+                    OutMessage->Buffer.BSt.Function   = FuncRead_LoadProfileChannel12Pos;
+                    OutMessage->Buffer.BSt.Length     = FuncRead_LoadProfileChannel12Len;
                     OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Read;
                     OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
                     outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
@@ -1884,27 +1883,27 @@ int CtiDeviceMCT470::executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiC
                     || CtiDeviceBase::getDynamicInfo(Keys::Key_MCT_LoadProfileKRatio3)        != kRatio1
                     || CtiDeviceBase::getDynamicInfo(Keys::Key_MCT_LoadProfileKRatio4)        != kRatio2 )
                 {
-                    OutMessage->Buffer.BSt.Function   = MCT470_FuncWrite_LoadProfileChannelsPos;
-                    OutMessage->Buffer.BSt.Length     = MCT470_FuncWrite_LoadProfileChannelsLen;
-                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Write;
-                    OutMessage->Buffer.BSt.Message[0] = spid;
-                    OutMessage->Buffer.BSt.Message[1] = 3;
-                    OutMessage->Buffer.BSt.Message[2] = (channel1);
-                    OutMessage->Buffer.BSt.Message[3] = (ratio1>>8);
-                    OutMessage->Buffer.BSt.Message[4] = (ratio1);
-                    OutMessage->Buffer.BSt.Message[5] = (kRatio1>>8);
-                    OutMessage->Buffer.BSt.Message[6] = (kRatio1);
-                    OutMessage->Buffer.BSt.Message[7] = 4;
-                    OutMessage->Buffer.BSt.Message[8] = (channel2);
-                    OutMessage->Buffer.BSt.Message[9] = (ratio2>>8);
-                    OutMessage->Buffer.BSt.Message[10] =(ratio2);
-                    OutMessage->Buffer.BSt.Message[11] =(kRatio2>>8);
-                    OutMessage->Buffer.BSt.Message[12] =(kRatio2);
+                    OutMessage->Buffer.BSt.Function    = FuncWrite_LoadProfileChannelsPos;
+                    OutMessage->Buffer.BSt.Length      = FuncWrite_LoadProfileChannelsLen;
+                    OutMessage->Buffer.BSt.IO          = Emetcon::IO_Function_Write;
+                    OutMessage->Buffer.BSt.Message[0]  = spid;
+                    OutMessage->Buffer.BSt.Message[1]  = 3;
+                    OutMessage->Buffer.BSt.Message[2]  = (channel1);
+                    OutMessage->Buffer.BSt.Message[3]  = (ratio1>>8);
+                    OutMessage->Buffer.BSt.Message[4]  = (ratio1);
+                    OutMessage->Buffer.BSt.Message[5]  = (kRatio1>>8);
+                    OutMessage->Buffer.BSt.Message[6]  = (kRatio1);
+                    OutMessage->Buffer.BSt.Message[7]  = 4;
+                    OutMessage->Buffer.BSt.Message[8]  = (channel2);
+                    OutMessage->Buffer.BSt.Message[9]  = (ratio2>>8);
+                    OutMessage->Buffer.BSt.Message[10] = (ratio2);
+                    OutMessage->Buffer.BSt.Message[11] = (kRatio2>>8);
+                    OutMessage->Buffer.BSt.Message[12] = (kRatio2);
 
                     outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
-                    OutMessage->Buffer.BSt.Function   = MCT470_FuncRead_LoadProfileChannel34Pos;
-                    OutMessage->Buffer.BSt.Length     = MCT470_FuncRead_LoadProfileChannel34Len;
+                    OutMessage->Buffer.BSt.Function   = FuncRead_LoadProfileChannel34Pos;
+                    OutMessage->Buffer.BSt.Length     = FuncRead_LoadProfileChannel34Len;
                     OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Read;
                     OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
                     outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
@@ -1964,8 +1963,8 @@ int CtiDeviceMCT470::executePutConfigRelays(CtiRequestMsg *pReq,CtiCommandParser
                     || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_RelayATimer) != relayATimer
                     || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_RelayBTimer) != relayBTimer )
                 {
-                    OutMessage->Buffer.BSt.Function   = MCT470_FuncWrite_RelaysPos;
-                    OutMessage->Buffer.BSt.Length     = MCT470_FuncWrite_RelaysLen;
+                    OutMessage->Buffer.BSt.Function   = FuncWrite_RelaysPos;
+                    OutMessage->Buffer.BSt.Length     = FuncWrite_RelaysLen;
                     OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Write;
                     OutMessage->Buffer.BSt.Message[0] = spid;
                     OutMessage->Buffer.BSt.Message[1] = relayATimer;
@@ -1973,8 +1972,8 @@ int CtiDeviceMCT470::executePutConfigRelays(CtiRequestMsg *pReq,CtiCommandParser
 
                     outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
-                    OutMessage->Buffer.BSt.Function   = MCT470_Memory_RelayATimerPos;
-                    OutMessage->Buffer.BSt.Length     = MCT470_Memory_RelayATimerLen + MCT470_Memory_RelayBTimerLen;
+                    OutMessage->Buffer.BSt.Function   = Memory_RelayATimerPos;
+                    OutMessage->Buffer.BSt.Length     = Memory_RelayATimerLen + Memory_RelayBTimerLen;
                     OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
                     OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
                     outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
@@ -2025,8 +2024,8 @@ int CtiDeviceMCT470::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandPars
                     || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval) != loadProfile1
                     || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval2) != loadProfile2)
                 {
-                    OutMessage->Buffer.BSt.Function   = MCT470_FuncWrite_IntervalsPos;
-                    OutMessage->Buffer.BSt.Length     = MCT470_FuncWrite_IntervalsLen;
+                    OutMessage->Buffer.BSt.Function   = FuncWrite_IntervalsPos;
+                    OutMessage->Buffer.BSt.Length     = FuncWrite_IntervalsLen;
                     OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Write;
                     OutMessage->Buffer.BSt.Message[0] = (demand);
                     OutMessage->Buffer.BSt.Message[1] = (loadProfile1);
@@ -2034,8 +2033,8 @@ int CtiDeviceMCT470::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandPars
 
                     outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
-                    OutMessage->Buffer.BSt.Function   = MCT470_Memory_IntervalsPos;
-                    OutMessage->Buffer.BSt.Length     = MCT470_Memory_IntervalsLen;
+                    OutMessage->Buffer.BSt.Function   = Memory_IntervalsPos;
+                    OutMessage->Buffer.BSt.Length     = Memory_IntervalsLen;
                     OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
                     OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
                     outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
@@ -2101,8 +2100,8 @@ int CtiDeviceMCT470::executePutConfigPrecannedTable(CtiRequestMsg *pReq,CtiComma
                     || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_PrecannedMeterNumber) != meterNumber
                     || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_PrecannedTableType) != tableType )
                 {
-                    OutMessage->Buffer.BSt.Function   = MCT470_FuncWrite_PrecannedTablePos;
-                    OutMessage->Buffer.BSt.Length     = MCT470_FuncWrite_PrecannedTableLen;
+                    OutMessage->Buffer.BSt.Function   = FuncWrite_PrecannedTablePos;
+                    OutMessage->Buffer.BSt.Length     = FuncWrite_PrecannedTableLen;
                     OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Write;
                     OutMessage->Buffer.BSt.Message[0] = spid;
                     OutMessage->Buffer.BSt.Message[1] = tableReadInterval;
@@ -2111,8 +2110,8 @@ int CtiDeviceMCT470::executePutConfigPrecannedTable(CtiRequestMsg *pReq,CtiComma
 
                     outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
-                    OutMessage->Buffer.BSt.Function   = MCT470_FuncRead_PrecannedTablePos;
-                    OutMessage->Buffer.BSt.Length     = MCT470_FuncRead_PrecannedTableLen;
+                    OutMessage->Buffer.BSt.Function   = FuncRead_PrecannedTablePos;
+                    OutMessage->Buffer.BSt.Length     = FuncRead_PrecannedTableLen;
                     OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Read;
                     OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
                     outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
@@ -2193,8 +2192,9 @@ int CtiDeviceMCT470::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParse
                     OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
                     outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
-                    OutMessage->Buffer.BSt.Function   = MCT470_Memory_EventFlagsMaskPos;
-                    OutMessage->Buffer.BSt.Length     = MCT470_Memory_EventFlagsMaskLen;
+                    OutMessage->Buffer.BSt.Function   = Memory_EventFlagsMask1Pos;
+                    OutMessage->Buffer.BSt.Length     = Memory_EventFlagsMask1Len +
+                                                        Memory_EventFlagsMask2Len;
                     outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
                     OutMessage->Priority             += 1;//return to normal
                 }
@@ -2261,17 +2261,17 @@ int CtiDeviceMCT470::executePutConfigDNP(CtiRequestMsg *pReq, CtiCommandParser &
         if( tempBasePtr && tempBasePtr->getType() == ConfigTypeMCTDNP )
         {
             BYTE buffer[BufferSize];
-            CtiString collectionBinarya, collectionBinaryb, collectionAnalog, collectionAccumulator;
+            CtiString collectionBinaryA, collectionBinaryB, collectionAnalog, collectionAccumulator;
             CtiString binaryA, binaryB, analogA, analogB, accumulatorA, accumulatorB;
 
             //***** Configure the Collection A (real time read 1) data
             MCT_DNP_SPtr config = boost::static_pointer_cast< ConfigurationPart<MCT_DNP> >(tempBasePtr);
-            collectionBinarya = config->getValueFromKey(DNPCollection1BinaryA);
-            collectionBinaryb = config->getValueFromKey(DNPCollection1BinaryB);
-            collectionAnalog = config->getValueFromKey(DNPCollection1Analog);
+            collectionBinaryA     = config->getValueFromKey(DNPCollection1BinaryA);
+            collectionBinaryB     = config->getValueFromKey(DNPCollection1BinaryB);
+            collectionAnalog      = config->getValueFromKey(DNPCollection1Analog);
             collectionAccumulator = config->getValueFromKey(DNPCollection1Accumulator);
 
-            if( collectionBinarya.empty() || collectionBinaryb.empty()
+            if( collectionBinaryA.empty() || collectionBinaryA.empty()
                 || collectionAnalog.empty() || collectionAccumulator.empty() )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -2281,7 +2281,7 @@ int CtiDeviceMCT470::executePutConfigDNP(CtiRequestMsg *pReq, CtiCommandParser &
             else
             {
                 int tempCount, valCount = 0;
-                getBytesFromString(collectionBinarya, buffer, BufferSize, valCount, 15, 2);
+                getBytesFromString(collectionBinaryA, buffer, BufferSize, valCount, 15, 2);
                 tempCount = valCount;
                 if( tempCount == 0 )
                 {
@@ -2289,12 +2289,12 @@ int CtiDeviceMCT470::executePutConfigDNP(CtiRequestMsg *pReq, CtiCommandParser &
                     dout << CtiTime() << " **** Checkpoint - Binary Collection A improperly set up **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     nRet = NoConfigData;
                 }
-                getBytesFromString(collectionBinaryb, buffer+(valCount*2), BufferSize-(valCount*2), valCount, 15-valCount, 2);
+                getBytesFromString(collectionBinaryB, buffer+(valCount*2), BufferSize-(valCount*2), valCount, 15-valCount, 2);
                 tempCount += valCount;
                 if( tempCount != 15 )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - Binary Collection's improperly set up **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint - Binary Collections improperly set up **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     nRet = NoConfigData;
                 }
                 getBytesFromString(collectionAnalog, buffer+30, BufferSize-30, valCount, 3, 2);
@@ -2315,19 +2315,19 @@ int CtiDeviceMCT470::executePutConfigDNP(CtiRequestMsg *pReq, CtiCommandParser &
                 if( parse.isKeyValid("force")
                     || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_RealTime1CRC) != crc8(buffer, 40) )
                 {
-                    OutMessage->Buffer.BSt.Function   = MCT470_FuncWrite_DNPReqTable;
-                    OutMessage->Buffer.BSt.Length     = 14;
-                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Write;
-                    OutMessage->Buffer.BSt.Message[0] = (MCT470_DNP_MCTPoint_RealTimeBinary);//This is defined in the 470 doc.
-                    OutMessage->Buffer.BSt.Message[1] = (0);//8 bit
-                    OutMessage->Buffer.BSt.Message[2] = (buffer[1]);
-                    OutMessage->Buffer.BSt.Message[3] = (buffer[3]);
-                    OutMessage->Buffer.BSt.Message[4] = (buffer[5]);
-                    OutMessage->Buffer.BSt.Message[5] = (buffer[7]);
-                    OutMessage->Buffer.BSt.Message[6] = (buffer[9]);
-                    OutMessage->Buffer.BSt.Message[7] = (buffer[11]);
-                    OutMessage->Buffer.BSt.Message[8] = (buffer[13]);
-                    OutMessage->Buffer.BSt.Message[9] = (buffer[15]);
+                    OutMessage->Buffer.BSt.Function    = FuncWrite_DNPReqTable;
+                    OutMessage->Buffer.BSt.Length      = 14;
+                    OutMessage->Buffer.BSt.IO          = Emetcon::IO_Function_Write;
+                    OutMessage->Buffer.BSt.Message[0]  = (MCT470_DNP_MCTPoint_RealTimeBinary);//This is defined in the 470 doc.
+                    OutMessage->Buffer.BSt.Message[1]  = (0);//8 bit
+                    OutMessage->Buffer.BSt.Message[2]  = (buffer[1]);
+                    OutMessage->Buffer.BSt.Message[3]  = (buffer[3]);
+                    OutMessage->Buffer.BSt.Message[4]  = (buffer[5]);
+                    OutMessage->Buffer.BSt.Message[5]  = (buffer[7]);
+                    OutMessage->Buffer.BSt.Message[6]  = (buffer[9]);
+                    OutMessage->Buffer.BSt.Message[7]  = (buffer[11]);
+                    OutMessage->Buffer.BSt.Message[8]  = (buffer[13]);
+                    OutMessage->Buffer.BSt.Message[9]  = (buffer[15]);
                     OutMessage->Buffer.BSt.Message[10] = (buffer[17]);
                     OutMessage->Buffer.BSt.Message[11] = (buffer[19]);
                     OutMessage->Buffer.BSt.Message[12] = (buffer[21]);
@@ -2335,44 +2335,44 @@ int CtiDeviceMCT470::executePutConfigDNP(CtiRequestMsg *pReq, CtiCommandParser &
 
                     outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
-                    OutMessage->Buffer.BSt.Length     = 5;
-                    OutMessage->Buffer.BSt.Message[0] = (MCT470_DNP_MCTPoint_RealTimeBinary+12);//This is defined in the 470 doc.
-                    OutMessage->Buffer.BSt.Message[1] = (0);//8 bit
-                    OutMessage->Buffer.BSt.Message[2] = (buffer[25]);
-                    OutMessage->Buffer.BSt.Message[3] = (buffer[27]);
-                    OutMessage->Buffer.BSt.Message[4] = (buffer[29]);
+                    OutMessage->Buffer.BSt.Length      = 5;
+                    OutMessage->Buffer.BSt.Message[0]  = (MCT470_DNP_MCTPoint_RealTimeBinary+12);//This is defined in the 470 doc.
+                    OutMessage->Buffer.BSt.Message[1]  = (0);//8 bit
+                    OutMessage->Buffer.BSt.Message[2]  = (buffer[25]);
+                    OutMessage->Buffer.BSt.Message[3]  = (buffer[27]);
+                    OutMessage->Buffer.BSt.Message[4]  = (buffer[29]);
 
                     outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
-                    OutMessage->Buffer.BSt.Length     = 8;
-                    OutMessage->Buffer.BSt.Message[0] = (MCT470_DNP_MCTPoint_RealTimeAnalog);//This is defined in the 470 doc.
-                    OutMessage->Buffer.BSt.Message[1] = (2);//16 bit
-                    OutMessage->Buffer.BSt.Message[2] = (buffer[31]);
-                    OutMessage->Buffer.BSt.Message[3] = (buffer[30]);
-                    OutMessage->Buffer.BSt.Message[4] = (buffer[33]);
-                    OutMessage->Buffer.BSt.Message[5] = (buffer[32]);
-                    OutMessage->Buffer.BSt.Message[6] = (buffer[35]);
-                    OutMessage->Buffer.BSt.Message[7] = (buffer[34]);
+                    OutMessage->Buffer.BSt.Length      = 8;
+                    OutMessage->Buffer.BSt.Message[0]  = (MCT470_DNP_MCTPoint_RealTimeAnalog);//This is defined in the 470 doc.
+                    OutMessage->Buffer.BSt.Message[1]  = (2);//16 bit
+                    OutMessage->Buffer.BSt.Message[2]  = (buffer[31]);
+                    OutMessage->Buffer.BSt.Message[3]  = (buffer[30]);
+                    OutMessage->Buffer.BSt.Message[4]  = (buffer[33]);
+                    OutMessage->Buffer.BSt.Message[5]  = (buffer[32]);
+                    OutMessage->Buffer.BSt.Message[6]  = (buffer[35]);
+                    OutMessage->Buffer.BSt.Message[7]  = (buffer[34]);
                     outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
-                    OutMessage->Buffer.BSt.Length     = 6;
-                    OutMessage->Buffer.BSt.Message[0] = (MCT470_DNP_MCTPoint_RealTimeAccumulator);//This is defined in the 470 doc.
-                    OutMessage->Buffer.BSt.Message[1] = (2);//16 bit
-                    OutMessage->Buffer.BSt.Message[2] = (buffer[37]);
-                    OutMessage->Buffer.BSt.Message[3] = (buffer[36]);
-                    OutMessage->Buffer.BSt.Message[4] = (buffer[39]);
-                    OutMessage->Buffer.BSt.Message[5] = (buffer[38]);
+                    OutMessage->Buffer.BSt.Length      = 6;
+                    OutMessage->Buffer.BSt.Message[0]  = (MCT470_DNP_MCTPoint_RealTimeAccumulator);//This is defined in the 470 doc.
+                    OutMessage->Buffer.BSt.Message[1]  = (2);//16 bit
+                    OutMessage->Buffer.BSt.Message[2]  = (buffer[37]);
+                    OutMessage->Buffer.BSt.Message[3]  = (buffer[36]);
+                    OutMessage->Buffer.BSt.Message[4]  = (buffer[39]);
+                    OutMessage->Buffer.BSt.Message[5]  = (buffer[38]);
                     outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
                 }
             }
 
             //***** Configure the collection B (real time read 2) data.
-            collectionBinarya = config->getValueFromKey(DNPCollection2BinaryA);
-            collectionBinaryb = config->getValueFromKey(DNPCollection2BinaryB);
-            collectionAnalog = config->getValueFromKey(DNPCollection2Analog);
+            collectionBinaryA     = config->getValueFromKey(DNPCollection2BinaryA);
+            collectionBinaryB     = config->getValueFromKey(DNPCollection2BinaryB);
+            collectionAnalog      = config->getValueFromKey(DNPCollection2Analog);
             collectionAccumulator = config->getValueFromKey(DNPCollection2Accumulator);
 
-            if( collectionBinarya.empty() || collectionBinaryb.empty()
+            if( collectionBinaryA.empty() || collectionBinaryB.empty()
                 || collectionAnalog.empty() || collectionAccumulator.empty() )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -2382,7 +2382,7 @@ int CtiDeviceMCT470::executePutConfigDNP(CtiRequestMsg *pReq, CtiCommandParser &
             else
             {
                 int tempCount, valCount = 0;
-                getBytesFromString(collectionBinarya, buffer, BufferSize, valCount, 15, 2);
+                getBytesFromString(collectionBinaryA, buffer, BufferSize, valCount, 15, 2);
                 tempCount = valCount;
                 if( tempCount == 0 )
                 {
@@ -2390,7 +2390,7 @@ int CtiDeviceMCT470::executePutConfigDNP(CtiRequestMsg *pReq, CtiCommandParser &
                     dout << CtiTime() << " **** Checkpoint - Binary Collection A improperly set up **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     nRet = NoConfigData;
                 }
-                getBytesFromString(collectionBinaryb, buffer+(valCount*2), BufferSize-(valCount*2), valCount, 15-valCount, 2);
+                getBytesFromString(collectionBinaryB, buffer+(valCount*2), BufferSize-(valCount*2), valCount, 15-valCount, 2);
                 tempCount += valCount;
                 if( tempCount != 15 )
                 {
@@ -2416,19 +2416,19 @@ int CtiDeviceMCT470::executePutConfigDNP(CtiRequestMsg *pReq, CtiCommandParser &
                 if( parse.isKeyValid("force")
                     || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_RealTime2CRC) != crc8(buffer, 40) )
                 {
-                    OutMessage->Buffer.BSt.Function   = MCT470_FuncWrite_DNPReqTable;
-                    OutMessage->Buffer.BSt.Length     = 14;
-                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Write;
-                    OutMessage->Buffer.BSt.Message[0] = (MCT470_DNP_MCTPoint_RealTimeBinary+15);//This is defined in the 470 doc.
-                    OutMessage->Buffer.BSt.Message[1] = (0);//8 bit
-                    OutMessage->Buffer.BSt.Message[2] = (buffer[1]);
-                    OutMessage->Buffer.BSt.Message[3] = (buffer[3]);
-                    OutMessage->Buffer.BSt.Message[4] = (buffer[5]);
-                    OutMessage->Buffer.BSt.Message[5] = (buffer[7]);
-                    OutMessage->Buffer.BSt.Message[6] = (buffer[9]);
-                    OutMessage->Buffer.BSt.Message[7] = (buffer[11]);
-                    OutMessage->Buffer.BSt.Message[8] = (buffer[13]);
-                    OutMessage->Buffer.BSt.Message[9] = (buffer[15]);
+                    OutMessage->Buffer.BSt.Function    = FuncWrite_DNPReqTable;
+                    OutMessage->Buffer.BSt.Length      = 14;
+                    OutMessage->Buffer.BSt.IO          = Emetcon::IO_Function_Write;
+                    OutMessage->Buffer.BSt.Message[0]  = (MCT470_DNP_MCTPoint_RealTimeBinary+15);//This is defined in the 470 doc.
+                    OutMessage->Buffer.BSt.Message[1]  = (0);//8 bit
+                    OutMessage->Buffer.BSt.Message[2]  = (buffer[1]);
+                    OutMessage->Buffer.BSt.Message[3]  = (buffer[3]);
+                    OutMessage->Buffer.BSt.Message[4]  = (buffer[5]);
+                    OutMessage->Buffer.BSt.Message[5]  = (buffer[7]);
+                    OutMessage->Buffer.BSt.Message[6]  = (buffer[9]);
+                    OutMessage->Buffer.BSt.Message[7]  = (buffer[11]);
+                    OutMessage->Buffer.BSt.Message[8]  = (buffer[13]);
+                    OutMessage->Buffer.BSt.Message[9]  = (buffer[15]);
                     OutMessage->Buffer.BSt.Message[10] = (buffer[17]);
                     OutMessage->Buffer.BSt.Message[11] = (buffer[19]);
                     OutMessage->Buffer.BSt.Message[12] = (buffer[21]);
@@ -2436,33 +2436,33 @@ int CtiDeviceMCT470::executePutConfigDNP(CtiRequestMsg *pReq, CtiCommandParser &
 
                     outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
-                    OutMessage->Buffer.BSt.Length     = 5;
-                    OutMessage->Buffer.BSt.Message[0] = (MCT470_DNP_MCTPoint_RealTimeBinary+27);//This is defined in the 470 doc.
-                    OutMessage->Buffer.BSt.Message[1] = (0);//8 bit
-                    OutMessage->Buffer.BSt.Message[2] = (buffer[25]);
-                    OutMessage->Buffer.BSt.Message[3] = (buffer[27]);
-                    OutMessage->Buffer.BSt.Message[4] = (buffer[29]);
+                    OutMessage->Buffer.BSt.Length      = 5;
+                    OutMessage->Buffer.BSt.Message[0]  = (MCT470_DNP_MCTPoint_RealTimeBinary+27);//This is defined in the 470 doc.
+                    OutMessage->Buffer.BSt.Message[1]  = (0);//8 bit
+                    OutMessage->Buffer.BSt.Message[2]  = (buffer[25]);
+                    OutMessage->Buffer.BSt.Message[3]  = (buffer[27]);
+                    OutMessage->Buffer.BSt.Message[4]  = (buffer[29]);
 
                     outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
-                    OutMessage->Buffer.BSt.Length     = 8;
-                    OutMessage->Buffer.BSt.Message[0] = (MCT470_DNP_MCTPoint_RealTimeAnalog+3);//This is defined in the 470 doc.
-                    OutMessage->Buffer.BSt.Message[1] = (2);//16 bit
-                    OutMessage->Buffer.BSt.Message[2] = (buffer[31]);
-                    OutMessage->Buffer.BSt.Message[3] = (buffer[30]);
-                    OutMessage->Buffer.BSt.Message[4] = (buffer[33]);
-                    OutMessage->Buffer.BSt.Message[5] = (buffer[32]);
-                    OutMessage->Buffer.BSt.Message[6] = (buffer[35]);
-                    OutMessage->Buffer.BSt.Message[7] = (buffer[34]);
+                    OutMessage->Buffer.BSt.Length      = 8;
+                    OutMessage->Buffer.BSt.Message[0]  = (MCT470_DNP_MCTPoint_RealTimeAnalog+3);//This is defined in the 470 doc.
+                    OutMessage->Buffer.BSt.Message[1]  = (2);//16 bit
+                    OutMessage->Buffer.BSt.Message[2]  = (buffer[31]);
+                    OutMessage->Buffer.BSt.Message[3]  = (buffer[30]);
+                    OutMessage->Buffer.BSt.Message[4]  = (buffer[33]);
+                    OutMessage->Buffer.BSt.Message[5]  = (buffer[32]);
+                    OutMessage->Buffer.BSt.Message[6]  = (buffer[35]);
+                    OutMessage->Buffer.BSt.Message[7]  = (buffer[34]);
                     outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
-                    OutMessage->Buffer.BSt.Length     = 6;
-                    OutMessage->Buffer.BSt.Message[0] = (MCT470_DNP_MCTPoint_RealTimeAccumulator+2);//This is defined in the 470 doc.
-                    OutMessage->Buffer.BSt.Message[1] = (2);//16 bit
-                    OutMessage->Buffer.BSt.Message[2] = (buffer[37]);
-                    OutMessage->Buffer.BSt.Message[3] = (buffer[36]);
-                    OutMessage->Buffer.BSt.Message[4] = (buffer[39]);
-                    OutMessage->Buffer.BSt.Message[5] = (buffer[38]);
+                    OutMessage->Buffer.BSt.Length      = 6;
+                    OutMessage->Buffer.BSt.Message[0]  = (MCT470_DNP_MCTPoint_RealTimeAccumulator+2);//This is defined in the 470 doc.
+                    OutMessage->Buffer.BSt.Message[1]  = (2);//16 bit
+                    OutMessage->Buffer.BSt.Message[2]  = (buffer[37]);
+                    OutMessage->Buffer.BSt.Message[3]  = (buffer[36]);
+                    OutMessage->Buffer.BSt.Message[4]  = (buffer[39]);
+                    OutMessage->Buffer.BSt.Message[5]  = (buffer[38]);
                     outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
                 }
             }
@@ -2501,19 +2501,19 @@ int CtiDeviceMCT470::executePutConfigDNP(CtiRequestMsg *pReq, CtiCommandParser &
                 if( parse.isKeyValid("force")
                     || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_BinaryCRC) != crc8(buffer, 24) )
                 {
-                    OutMessage->Buffer.BSt.Function   = MCT470_FuncWrite_DNPReqTable;
-                    OutMessage->Buffer.BSt.Length     = 14;
-                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Write;
-                    OutMessage->Buffer.BSt.Message[0] = (MCT470_DNP_MCTPoint_PreCannedBinary);//This is defined in the 470 doc.
-                    OutMessage->Buffer.BSt.Message[1] = (0);//8 bit
-                    OutMessage->Buffer.BSt.Message[2] = (buffer[1]);
-                    OutMessage->Buffer.BSt.Message[3] = (buffer[3]);
-                    OutMessage->Buffer.BSt.Message[4] = (buffer[5]);
-                    OutMessage->Buffer.BSt.Message[5] = (buffer[7]);
-                    OutMessage->Buffer.BSt.Message[6] = (buffer[9]);
-                    OutMessage->Buffer.BSt.Message[7] = (buffer[11]);
-                    OutMessage->Buffer.BSt.Message[8] = (buffer[13]);
-                    OutMessage->Buffer.BSt.Message[9] = (buffer[15]);
+                    OutMessage->Buffer.BSt.Function    = FuncWrite_DNPReqTable;
+                    OutMessage->Buffer.BSt.Length      = 14;
+                    OutMessage->Buffer.BSt.IO          = Emetcon::IO_Function_Write;
+                    OutMessage->Buffer.BSt.Message[0]  = (MCT470_DNP_MCTPoint_PreCannedBinary);//This is defined in the 470 doc.
+                    OutMessage->Buffer.BSt.Message[1]  = (0);//8 bit
+                    OutMessage->Buffer.BSt.Message[2]  = (buffer[1]);
+                    OutMessage->Buffer.BSt.Message[3]  = (buffer[3]);
+                    OutMessage->Buffer.BSt.Message[4]  = (buffer[5]);
+                    OutMessage->Buffer.BSt.Message[5]  = (buffer[7]);
+                    OutMessage->Buffer.BSt.Message[6]  = (buffer[9]);
+                    OutMessage->Buffer.BSt.Message[7]  = (buffer[11]);
+                    OutMessage->Buffer.BSt.Message[8]  = (buffer[13]);
+                    OutMessage->Buffer.BSt.Message[9]  = (buffer[15]);
                     OutMessage->Buffer.BSt.Message[10] = (buffer[17]);
                     OutMessage->Buffer.BSt.Message[11] = (buffer[19]);
                     OutMessage->Buffer.BSt.Message[12] = (buffer[21]);
@@ -2557,8 +2557,8 @@ int CtiDeviceMCT470::executePutConfigDNP(CtiRequestMsg *pReq, CtiCommandParser &
             strncpy(OutMessage->Request.CommandStr, "getvalue ied dnp crc", COMMAND_STR_SIZE );
             OutMessage->Priority--;
             OutMessage->Sequence = Emetcon::GetValue_IED;
-            OutMessage->Buffer.BSt.Function = MCT470_FuncRead_IED_CRCPos;
-            OutMessage->Buffer.BSt.Length = MCT470_FuncRead_IED_CRCLen;
+            OutMessage->Buffer.BSt.Function = FuncRead_IED_CRCPos;
+            OutMessage->Buffer.BSt.Length   = FuncRead_IED_CRCLen;
             OutMessage->Buffer.BSt.IO = Emetcon::IO_Function_Read;
             outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
             OutMessage->Priority++;
@@ -2618,19 +2618,19 @@ int CtiDeviceMCT470::sendDNPConfigMessages(int startMCTID, list< OUTMESS * > &ou
 
             if( canUse8Bit )
             {
-                OutMessage->Buffer.BSt.Function   = MCT470_FuncWrite_DNPReqTable;
-                OutMessage->Buffer.BSt.Length     = 14;
-                OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Write;
-                OutMessage->Buffer.BSt.Message[0] = (startMCTID);//This is defined in the 470 doc.
-                OutMessage->Buffer.BSt.Message[1] = (0);//8 bit
-                OutMessage->Buffer.BSt.Message[2] = (buffer[1]);
-                OutMessage->Buffer.BSt.Message[3] = (buffer[3]);
-                OutMessage->Buffer.BSt.Message[4] = (buffer[5]);
-                OutMessage->Buffer.BSt.Message[5] = (buffer[7]);
-                OutMessage->Buffer.BSt.Message[6] = (buffer[9]);
-                OutMessage->Buffer.BSt.Message[7] = (buffer[11]);
-                OutMessage->Buffer.BSt.Message[8] = (buffer[13]);
-                OutMessage->Buffer.BSt.Message[9] = (buffer[15]);
+                OutMessage->Buffer.BSt.Function    = FuncWrite_DNPReqTable;
+                OutMessage->Buffer.BSt.Length      = 14;
+                OutMessage->Buffer.BSt.IO          = Emetcon::IO_Function_Write;
+                OutMessage->Buffer.BSt.Message[0]  = (startMCTID);//This is defined in the 470 doc.
+                OutMessage->Buffer.BSt.Message[1]  = (0);//8 bit
+                OutMessage->Buffer.BSt.Message[2]  = (buffer[1]);
+                OutMessage->Buffer.BSt.Message[3]  = (buffer[3]);
+                OutMessage->Buffer.BSt.Message[4]  = (buffer[5]);
+                OutMessage->Buffer.BSt.Message[5]  = (buffer[7]);
+                OutMessage->Buffer.BSt.Message[6]  = (buffer[9]);
+                OutMessage->Buffer.BSt.Message[7]  = (buffer[11]);
+                OutMessage->Buffer.BSt.Message[8]  = (buffer[13]);
+                OutMessage->Buffer.BSt.Message[9]  = (buffer[15]);
                 OutMessage->Buffer.BSt.Message[10] = (buffer[17]);
                 OutMessage->Buffer.BSt.Message[11] = (buffer[19]);
                 OutMessage->Buffer.BSt.Message[12] = (buffer[21]);
@@ -2640,7 +2640,7 @@ int CtiDeviceMCT470::sendDNPConfigMessages(int startMCTID, list< OUTMESS * > &ou
             }
             else
             {
-                OutMessage->Buffer.BSt.Function   = MCT470_FuncWrite_DNPReqTable;
+                OutMessage->Buffer.BSt.Function   = FuncWrite_DNPReqTable;
                 OutMessage->Buffer.BSt.Length     = 14;
                 OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Write;
                 OutMessage->Buffer.BSt.Message[0] = (startMCTID);//This is defined in the 470 doc.
@@ -3094,7 +3094,7 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
             ied_data_end = 13;
         }
 
-        if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) >= MCT470_SspecRev_IEDErrorPadding )
+        if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) >= SspecRev_IEDErrorPadding )
         {
             for( int i = 0; i < ied_data_end; i++)
             {
@@ -3122,8 +3122,8 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
         }
 
         //  If this rev is before the SSPEC fix and the timestamp is at least 10 minutes old
-        if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) < MCT470_SspecRev_IEDZeroWriteMin
-            && (CtiTime::now().seconds() > (_iedTime.seconds() + MCT470_MaxIEDReadAge)) )
+        if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) < SspecRev_IEDZeroWriteMin
+            && (CtiTime::now().seconds() > (_iedTime.seconds() + MaxIEDReadAge)) )
         {
             dataInvalid = true;
         }
@@ -3138,8 +3138,8 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                 resultString += "Device: " + getName() + "\nData buffer is bad, retry command" ;
                 status = ALPHABUFFERERROR;
 
-                insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKW, AnalogPointType);
-                insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKM, AnalogPointType);
+                insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKW,     AnalogPointType);
+                insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKM,     AnalogPointType);
                 insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_VoltsPhaseA, AnalogPointType);
                 insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_VoltsPhaseB, AnalogPointType);
                 insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_VoltsPhaseC, AnalogPointType);

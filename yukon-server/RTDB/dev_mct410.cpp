@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.92 $
-* DATE         :  $Date: 2006/09/19 21:30:39 $
+* REVISION     :  $Revision: 1.93 $
+* DATE         :  $Date: 2006/09/20 20:22:52 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -124,7 +124,7 @@ CtiDeviceMCT::DynamicPaoAddressing_t CtiDeviceMCT410::initDynPaoAddressing()
     addressSet.insert(DynamicPaoAddressing(Memory_TOUDailySched2Pos,        Memory_TOUDailySched2Len,       Keys::Key_MCT_DaySchedule2));
     addressSet.insert(DynamicPaoAddressing(Memory_TOUDailySched3Pos,        Memory_TOUDailySched3Len,       Keys::Key_MCT_DaySchedule3));
     addressSet.insert(DynamicPaoAddressing(Memory_TOUDailySched4Pos,        Memory_TOUDailySched4Len,       Keys::Key_MCT_DaySchedule4));
-    addressSet.insert(DynamicPaoAddressing(Memory_DefaultTOURatePos,        Memory_DefaultTOURateLen,       Keys::Key_MCT_DefaultTOURate));
+    addressSet.insert(DynamicPaoAddressing(Memory_TOUDefaultRatePos,        Memory_TOUDefaultRateLen,       Keys::Key_MCT_DefaultTOURate));
 
     addressSet.insert(DynamicPaoAddressing(Memory_Holiday1Pos,              Memory_Holiday1Len,             Keys::Key_MCT_Holiday1));
     addressSet.insert(DynamicPaoAddressing(Memory_Holiday2Pos,              Memory_Holiday2Len,             Keys::Key_MCT_Holiday2));
@@ -1775,7 +1775,7 @@ int CtiDeviceMCT410::executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandParser &p
                     outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
                     OutMessage->Buffer.BSt.Function   = Memory_TOUDailySched1Pos;
-                    OutMessage->Buffer.BSt.Function   = Memory_TOUDailySched3Len + Memory_TOUDailySched4Len + Memory_DefaultTOURateLen;
+                    OutMessage->Buffer.BSt.Function   = Memory_TOUDailySched3Len + Memory_TOUDailySched4Len + Memory_TOUDefaultRateLen;
                     OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
                     OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
                     outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );

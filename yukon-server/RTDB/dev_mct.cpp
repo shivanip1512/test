@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.97 $
-* DATE         :  $Date: 2006/09/18 17:22:15 $
+* REVISION     :  $Revision: 1.98 $
+* DATE         :  $Date: 2006/09/20 20:22:52 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1745,8 +1745,8 @@ INT CtiDeviceMCT::executePutValue(CtiRequestMsg                  *pReq,
 
                 if( parse.getCommandStr().find(" alpha") != string::npos )
                 {
-                    OutMessage->Buffer.BSt.Function   = CtiDeviceMCT470::MCT470_FuncWrite_IEDCommand;
-                    OutMessage->Buffer.BSt.Length     = CtiDeviceMCT470::MCT470_FuncWrite_IEDCommandLen;
+                    OutMessage->Buffer.BSt.Function   = CtiDeviceMCT470::FuncWrite_IEDCommand;
+                    OutMessage->Buffer.BSt.Length     = CtiDeviceMCT470::FuncWrite_IEDCommandLen;
                     OutMessage->Buffer.BSt.Message[0] = 0xff;  //  SPID
                     OutMessage->Buffer.BSt.Message[1] = 3;     //  meter type: Alpha Power Plus
                     OutMessage->Buffer.BSt.Message[2] = 0;     //  meter num:  0
@@ -1754,8 +1754,8 @@ INT CtiDeviceMCT::executePutValue(CtiRequestMsg                  *pReq,
                 }
                 else if( parse.getCommandStr().find(" s4") != string::npos )
                 {
-                    OutMessage->Buffer.BSt.Function   = CtiDeviceMCT470::MCT470_FuncWrite_IEDCommand;
-                    OutMessage->Buffer.BSt.Length     = CtiDeviceMCT470::MCT470_FuncWrite_IEDCommandLen;
+                    OutMessage->Buffer.BSt.Function   = CtiDeviceMCT470::FuncWrite_IEDCommand;
+                    OutMessage->Buffer.BSt.Length     = CtiDeviceMCT470::FuncWrite_IEDCommandLen;
                     OutMessage->Buffer.BSt.Message[0] = 0xff;  //  SPID
                     OutMessage->Buffer.BSt.Message[1] = 1;     //  meter type: S4
                     OutMessage->Buffer.BSt.Message[2] = 0;     //  meter num:  0
@@ -1845,12 +1845,12 @@ INT CtiDeviceMCT::executeGetStatus(CtiRequestMsg                  *pReq,
                 if( parse.getiValue("loadprofile_offset") == 1 ||
                     parse.getiValue("loadprofile_offset") == 2 )
                 {
-                    OutMessage->Buffer.BSt.Function = CtiDeviceMCT470::MCT470_FuncRead_LPStatusCh1Ch2Pos;
+                    OutMessage->Buffer.BSt.Function = CtiDeviceMCT470::FuncRead_LPStatusCh1Ch2Pos;
                 }
                 else if( parse.getiValue("loadprofile_offset") == 3 ||
                          parse.getiValue("loadprofile_offset") == 4 )
                 {
-                    OutMessage->Buffer.BSt.Function = CtiDeviceMCT470::MCT470_FuncRead_LPStatusCh3Ch4Pos;
+                    OutMessage->Buffer.BSt.Function = CtiDeviceMCT470::FuncRead_LPStatusCh3Ch4Pos;
                 }
                 else
                 {

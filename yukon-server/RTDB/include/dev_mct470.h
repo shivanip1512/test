@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT470.h-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2006/09/12 14:37:03 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2006/09/20 20:21:04 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -126,223 +126,190 @@ protected:
 
     typedef CtiDeviceMCT4xx Inherited;
 
-    enum
+    enum MemoryMap
     {
         //  new/changed stuff
-        MCT470_Memory_OptionsPos           = 0x02,
-        MCT470_Memory_OptionsLen           =    1,
+        Memory_EventFlagsMask1Pos   = 0x08,
+        Memory_EventFlagsMask1Len   =    1,
 
-        MCT470_Memory_ConfigurationPos     = 0x03,
-        MCT470_Memory_ConfigurationLen     =    1,
+        Memory_EventFlagsMask2Pos   = 0x09,
+        Memory_EventFlagsMask2Len   =    1,
 
-        MCT470_Memory_EventFlagsMaskPos    = 0x08,
-        MCT470_Memory_EventFlagsMaskLen    =    2,
+        Memory_AddressBronzePos     = 0x0D,
+        Memory_AddressBronzeLen     =    1,
 
-        MCT470_Memory_EventFlagsMask1Pos   = 0x08,
-        MCT470_Memory_EventFlagsMask1Len   =    1,
+        Memory_AddressLeadPos       = 0x0E,
+        Memory_AddressLeadLen       =    2,
 
-        MCT470_Memory_EventFlagsMask2Pos   = 0x09,
-        MCT470_Memory_EventFlagsMask2Len   =    1,
+        Memory_AddressCollectionPos = 0x10,
+        Memory_AddressCollectionLen =    2,
 
-        MCT470_Memory_AddressBronzePos     = 0x0D,
-        MCT470_Memory_AddressBronzeLen     =    1,
+        Memory_AddressSPIDPos       = 0x12,
+        Memory_AddressSPIDLen       =    1,
 
-        MCT470_Memory_AddressLeadPos       = 0x0E,
-        MCT470_Memory_AddressLeadLen       =    2,
+        Memory_TimeAdjustTolerancePos = 0x1f,
+        Memory_TimeAdjustToleranceLen =    1,
 
-        MCT470_Memory_AddressCollectionPos = 0x10,
-        MCT470_Memory_AddressCollectionLen =    2,
+        Memory_DSTBeginPos          = 0x20,
+        Memory_DSTBeginLen          =    4,
 
-        MCT470_Memory_AddressSPIDPos       = 0x12,
-        MCT470_Memory_AddressSPIDLen       =    1,
+        Memory_DSTEndPos            = 0x24,
+        Memory_DSTEndLen            =    4,
 
-        MCT470_Memory_TimeAdjustTolerancePos = 0x1F,
-        MCT470_Memory_TimeAdjustToleranceLen =    1,
+        Memory_TimeZoneOffsetPos    = 0x28,
+        Memory_TimeZoneOffsetLen    =    1,
 
-        MCT470_Memory_DSTBeginPos          = 0x20,
-        MCT470_Memory_DSTBeginLen          =    4,
+        Memory_RTCPos               = 0x29,
+        Memory_RTCLen               =    4,
+        Memory_LastTSyncPos         = 0x2d,
+        Memory_LastTSyncLen         =    4,
 
-        MCT470_Memory_DSTEndPos            = 0x24,
-        MCT470_Memory_DSTEndLen            =    4,
+        Memory_IntervalsPos         = 0x32,
+        Memory_IntervalsLen         =    3,
 
-        MCT470_Memory_TimeZoneOffsetPos    = 0x28,
-        MCT470_Memory_TimeZoneOffsetLen    =    1,
+        Memory_DemandIntervalPos    = 0x32,
+        Memory_DemandIntervalLen    =    1,
 
-        MCT470_Memory_RTCPos               = 0x29,
-        MCT470_Memory_RTCLen               =    4,
-        MCT470_Memory_LastTSyncPos         = 0x2d,
-        MCT470_Memory_LastTSyncLen         =    4,
+        Memory_LoadProfileInterval1Pos    = 0x33,
+        Memory_LoadProfileInterval1Len    =    1,
 
-        MCT470_Memory_IntervalsPos         = 0x32,
-        MCT470_Memory_IntervalsLen         =    3,
+        Memory_LoadProfileInterval2Pos    = 0x34,
+        Memory_LoadProfileInterval2Len    =    1,
 
-        MCT470_Memory_DemandIntervalPos    = 0x32,
-        MCT470_Memory_DemandIntervalLen    =    1,
+        Memory_TableReadIntervalPos = 0x35,
+        Memory_TableReadIntervalLen =    1,
 
-        MCT470_Memory_LoadProfileInterval1Pos    = 0x33,
-        MCT470_Memory_LoadProfileInterval1Len    =    1,
+        Memory_PrecannedMeterNumPos = 0x36,
+        Memory_PrecannedMeterNumLen =    1,
 
-        MCT470_Memory_LoadProfileInterval2Pos    = 0x34,
-        MCT470_Memory_LoadProfileInterval2Len    =    1,
+        Memory_PrecannedTableTypePos = 0x37,
+        Memory_PrecannedTableTypeLen =    1,
 
-        MCT470_Memory_TableReadIntervalPos = 0x35,
-        MCT470_Memory_TableReadIntervalLen =    1,
+        Memory_RelayATimerPos       = 0x48,
+        Memory_RelayATimerLen       =    1,
 
-        MCT470_Memory_PrecannedMeterNumPos = 0x36,
-        MCT470_Memory_PrecannedMeterNumLen =    1,
+        Memory_RelayBTimerPos       = 0x49,
+        Memory_RelayBTimerLen       =    1,
 
-        MCT470_Memory_PrecannedTableTypePos = 0x37,
-        MCT470_Memory_PrecannedTableTypeLen =    1,
+        Memory_ChannelMultiplierPos = 0x88,
+        Memory_ChannelMultiplierLen =    4,
 
-        MCT470_Memory_RelayATimerPos       = 0x48,
-        MCT470_Memory_RelayATimerLen       =    1,
+        Memory_MeteringRatio1Pos    = 0x88,
+        Memory_MeteringRatio1Len    =    2,
 
-        MCT470_Memory_RelayBTimerPos       = 0x49,
-        MCT470_Memory_RelayBTimerLen       =    1,
+        Memory_KRatio1Pos           = 0x8a,
+        Memory_KRatio1Len           =    2,
 
-        MCT470_Memory_TOUDayTablePos       = 0x50,
-        MCT470_Memory_TOUDayTableLen       =    2,
+        Memory_ChannelConfig1Pos    = 0x8e,
+        Memory_ChannelConfig1Len    =    1,
 
-        MCT470_Memory_TOUDaySchedule1Pos   = 0x52,
-        MCT470_Memory_TOUDaySchedule1Len   =    7,
+        Memory_MeteringRatio2Pos    = 0xa2,
+        Memory_MeteringRatio2Len    =    2,
 
-        MCT470_Memory_TOUDaySchedule2Pos   = 0x59,
-        MCT470_Memory_TOUDaySchedule2Len   =    7,
+        Memory_KRatio2Pos           = 0xa4,
+        Memory_KRatio2Len           =    2,
 
-        MCT470_Memory_TOUDaySchedule3Pos   = 0x60,
-        MCT470_Memory_TOUDaySchedule3Len   =    7,
+        Memory_ChannelConfig2Pos    = 0xa8,
+        Memory_ChannelConfig2Len    =    1,
 
-        MCT470_Memory_TOUDaySchedule4Pos   = 0x67,
-        MCT470_Memory_TOUDaySchedule4Len   =    7,
+        Memory_MeteringRatio3Pos    = 0xbc,
+        Memory_MeteringRatio3Len    =    2,
 
-        MCT470_Memory_TOUDefaultRatePos    = 0x6E,
-        MCT470_Memory_TOUDefaultRateLen    =    1,
+        Memory_KRatio3Pos           = 0xbe,
+        Memory_KRatio3Len           =    2,
 
-        MCT470_Memory_ChannelMultiplierPos = 0x88,
-        MCT470_Memory_ChannelMultiplierLen =    4,
+        Memory_ChannelConfig3Pos    = 0xc2,
+        Memory_ChannelConfig3Len    =    1,
 
-        MCT470_Memory_MeteringRatio1Pos    = 0x88,
-        MCT470_Memory_MeteringRatio1Len    =    2,
+        Memory_MeteringRatio4Pos    = 0xd6,
+        Memory_MeteringRatio4Len    =    2,
 
-        MCT470_Memory_KRatio1Pos           = 0x8A,
-        MCT470_Memory_KRatio1Len           =    2,
+        Memory_KRatio4Pos           = 0xd8,
+        Memory_KRatio4Len           =    2,
 
-        MCT470_Memory_ChannelConfig1Pos    = 0x8E,
-        MCT470_Memory_ChannelConfig1Len    =    1,
+        Memory_ChannelConfig4Pos    = 0xdc,
+        Memory_ChannelConfig4Len    =    1,
 
-        MCT470_Memory_MeteringRatio2Pos    = 0xA2,
-        MCT470_Memory_MeteringRatio2Len    =    2,
+        Memory_Holiday1Pos          = 0xe0,
+        Memory_Holiday1Len          =    4,
 
-        MCT470_Memory_KRatio2Pos           = 0xA4,
-        MCT470_Memory_KRatio2Len           =    2,
+        Memory_Holiday2Pos          = 0xe4,
+        Memory_Holiday2Len          =    4,
 
-        MCT470_Memory_ChannelConfig2Pos    = 0xA8,
-        MCT470_Memory_ChannelConfig2Len    =    1,
+        Memory_Holiday3Pos          = 0xe8,
+        Memory_Holiday3Len          =    4,
 
-        MCT470_Memory_MeteringRatio3Pos    = 0xBC,
-        MCT470_Memory_MeteringRatio3Len    =    2,
-
-        MCT470_Memory_KRatio3Pos           = 0xBE,
-        MCT470_Memory_KRatio3Len           =    2,
-
-        MCT470_Memory_ChannelConfig3Pos    = 0xC2,
-        MCT470_Memory_ChannelConfig3Len    =    1,
-
-        MCT470_Memory_MeteringRatio4Pos    = 0xD6,
-        MCT470_Memory_MeteringRatio4Len    =    2,
-
-        MCT470_Memory_KRatio4Pos           = 0xD8,
-        MCT470_Memory_KRatio4Len           =    2,
-
-        MCT470_Memory_ChannelConfig4Pos    = 0xDC,
-        MCT470_Memory_ChannelConfig4Len    =    1,
-
-        MCT470_Memory_Holiday1Pos          = 0xE0,
-        MCT470_Memory_Holiday1Len          =    4,
-
-        MCT470_Memory_Holiday2Pos          = 0xE4,
-        MCT470_Memory_Holiday2Len          =    4,
-
-        MCT470_Memory_Holiday3Pos          = 0xE8,
-        MCT470_Memory_Holiday3Len          =    4,
-
-        //  unchanged/copied
-        MCT470_Memory_ModelPos             = 0x00,
-        MCT470_Memory_ModelLen             =    5,
+        Memory_ModelLen             =    5,
 
         //  lengths are different for these
-        MCT470_Memory_StatusPos            = 0x03, // CtiDeviceMCT410::Memory_StatusPos,
-        MCT470_Memory_StatusLen            =    3,
+        Memory_StatusPos            = 0x03, // CtiDeviceMCT410::Memory_StatusPos,
+        Memory_StatusLen            =    3,
+    };
 
-        MCT470_FuncWrite_ConfigAlarmMaskPos = 0x01, // CtiDeviceMCT410::FuncWrite_ConfigAlarmMaskPos,
-        MCT470_FuncWrite_ConfigAlarmMaskLen =   3,
+    enum Functions
+    {
+        FuncWrite_ConfigAlarmMaskLen =   3,  //  func write 0x01
 
-        MCT470_FuncWrite_IntervalsPos      = 0x03, // CtiDeviceMCT410::FuncWrite_IntervalsPos,
-        MCT470_FuncWrite_IntervalsLen      =    3,
+        FuncWrite_IntervalsPos       = 0x03, // CtiDeviceMCT410::FuncWrite_IntervalsPos,
+        FuncWrite_IntervalsLen       =    3,
 
-        MCT470_FuncWrite_RelaysPos         = 0x08,
-        MCT470_FuncWrite_RelaysLen         =    3,
+        FuncWrite_RelaysPos         = 0x08,
+        FuncWrite_RelaysLen         =    3,
 
-        MCT470_FuncWrite_LoadProfileChannelsPos = 0x07,
-        MCT470_FuncWrite_LoadProfileChannelsLen =   13,
+        FuncWrite_LoadProfileChannelsPos = 0x07,
+        FuncWrite_LoadProfileChannelsLen =   13,
 
-        MCT470_FuncWrite_PrecannedTablePos = 0xD3,
-        MCT470_FuncWrite_PrecannedTableLen =    4,
+        FuncWrite_PrecannedTablePos = 0xD3,
+        FuncWrite_PrecannedTableLen =    4,
 
-        MCT470_FuncWrite_DNPReqTable       = 0xD6,
+        FuncWrite_DNPReqTable       = 0xD6,
 
-        MCT470_Memory_AddressingPos        = 0x0D,
-        MCT470_Memory_AddressingLen        =    6,
+        Memory_AddressingPos        = 0x0D,
+        Memory_AddressingLen        =    6,
 
-        MCT470_FuncRead_ChannelSetupDataPos = 0x20,
-        MCT470_FuncRead_ChannelSetupDataLen =    7,
+        FuncRead_ChannelSetupDataPos = 0x20,
+        FuncRead_ChannelSetupDataLen =    7,
 
-        MCT470_FuncRead_LoadProfileChannel12Pos = 0x21,
-        MCT470_FuncRead_LoadProfileChannel12Len =   10,
+        FuncRead_LoadProfileChannel12Pos = 0x21,
+        FuncRead_LoadProfileChannel12Len =   10,
 
-        MCT470_FuncRead_LoadProfileChannel34Pos = 0x22,
-        MCT470_FuncRead_LoadProfileChannel34Len =   10,
+        FuncRead_LoadProfileChannel34Pos = 0x22,
+        FuncRead_LoadProfileChannel34Len =   10,
 
-        MCT470_FuncRead_PrecannedTablePos  = 0x23,
-        MCT470_FuncRead_PrecannedTableLen  =   11,
+        FuncRead_PrecannedTablePos  = 0x23,
+        FuncRead_PrecannedTableLen  =   11,
 
-        MCT470_FuncRead_IED_DNPTablePos    = 0x24,
-        MCT470_FuncRead_IED_DNPTableLen    =   13,
+        FuncRead_IED_DNPTablePos    = 0x24,
+        FuncRead_IED_DNPTableLen    =   13,
 
-        MCT470_FuncRead_IED_CRCPos         = 0x25,
-        MCT470_FuncRead_IED_CRCLen         =   12,
+        FuncRead_IED_CRCPos         = 0x25,
+        FuncRead_IED_CRCLen         =   12,
 
         FuncRead_MReadLen           =   12,
 
-        MCT470_FuncRead_MReadFrozenPos     = 0x91,
-        MCT470_FuncRead_MReadFrozenLen     =   13,
+        FuncRead_MReadFrozenPos     = 0x91,
+        FuncRead_MReadFrozenLen     =   13,
 
-        MCT470_FuncRead_DemandPos          = 0x92,
-        MCT470_FuncRead_DemandLen          =   11,
+        FuncRead_DemandLen          =   11,  //  0x92
+        FuncRead_PeakDemandLen      =   12,  //  0x93
 
-        MCT470_FuncRead_PeakDemandBasePos  = 0x93,
-        MCT470_FuncRead_PeakDemandLen      =   12,
+        FuncRead_IED_Precanned_Base     = 0xc1,
+        FuncRead_IED_Precanned_Last     = 0xd4,
+        FuncRead_IED_TOU_CurrentKWBase  = 0xc1,
+        FuncRead_IED_TOU_CurrentKMBase  = 0xc5,
+        FuncRead_IED_TOU_CurrentTotals  = 0xc9,
 
-        MCT470_Memory_TimeAdjustTolPos     = 0x1F,
-        MCT470_Memory_TimeAdjustTolLen     =    1,
+        FuncRead_IED_TOU_PreviousOffset =    9,
 
-        MCT470_FuncRead_IED_Precanned_Base     = 0xc1,
-        MCT470_FuncRead_IED_Precanned_Last     = 0xd4,
-        MCT470_FuncRead_IED_TOU_CurrentKWBase  = 0xc1,
-        MCT470_FuncRead_IED_TOU_CurrentKMBase  = 0xc5,
-        MCT470_FuncRead_IED_TOU_CurrentTotals  = 0xc9,
+        FuncRead_IED_TOU_MeterStatus    = 0xd3,
 
-        MCT470_FuncRead_IED_TOU_PreviousOffset =    9,
+        FuncRead_IED_RealTime           = 0xd5,
+        FuncRead_IED_RealTime2          = 0xda,
 
-        MCT470_FuncRead_IED_TOU_MeterStatus    = 0xd3,
-
-        MCT470_FuncRead_IED_RealTime           = 0xd5,
-        MCT470_FuncRead_IED_RealTime2          = 0xda,
-
-        MCT470_DNP_Analog_Precanned_Offset     = 1,
-        MCT470_DNP_Status_Precanned_Offset     = 0,
+        MCT470_DNP_Analog_Precanned_Offset  =  1,
+        MCT470_DNP_Status_Precanned_Offset  =  0,
         MCT470_DNP_Counter_Precanned_Offset = 11,
-        MCT470_DNP_Counter_Precanned_Reads  = 8,
+        MCT470_DNP_Counter_Precanned_Reads  =  8,
     };
 
     bool isLPDynamicInfoCurrent(void);
@@ -387,28 +354,28 @@ protected:
 
     enum
     {
-        MCT470_Memory_ChannelOffset = 0x1a,
+        Memory_ChannelOffset = 0x1a,
 
-        MCT470_MaxIEDReadAge = 600,  //  in seconds
+        MaxIEDReadAge = 600,  //  in seconds
 
         MCT430A_Sspec       = 1037,
         MCT430S_Sspec       = 1046,
 
-        MCT470_Sspec        = 1030,
-        MCT470_SspecRevMin  =    5,  //  rev e
-        MCT470_SspecRevMax  =   20,  //  rev t is max for now
+        Sspec        = 1030,
+        SspecRevMin  =    5,  //  rev e
+        SspecRevMax  =   20,  //  rev t is max for now
 
-        MCT470_SspecRev_IEDZeroWriteMin = 13,
-        MCT470_SspecRev_IEDErrorPadding = 14,
+        SspecRev_IEDZeroWriteMin = 13,
+        SspecRev_IEDErrorPadding = 14,
 
-        MCT470_FuncRead_ChannelSetupPos = 0x20,
-        MCT470_FuncRead_ChannelSetupLen =    7,
+        FuncRead_ChannelSetupPos = 0x20,
+        FuncRead_ChannelSetupLen =    7,
 
-        MCT470_FuncWrite_IEDCommandData        = 0xd1,
-        MCT470_FuncWrite_IEDCommandDataBaseLen =    5,
+        FuncWrite_IEDCommandData        = 0xd1,
+        FuncWrite_IEDCommandDataBaseLen =    5,
 
-        MCT470_FuncWrite_CurrentReading        = 0xd5,
-        MCT470_FuncWrite_CurrentReadingLen     =    5,
+        FuncWrite_CurrentReading        = 0xd5,
+        FuncWrite_CurrentReadingLen     =    5,
     };
 
 public:
@@ -418,13 +385,13 @@ public:
         ChannelCount  = 4,
 
         //  These should be private - and there should be an MCT470::executeGetStatus()
-        MCT470_FuncRead_LPStatusCh1Ch2Pos = 0x97,
-        MCT470_FuncRead_LPStatusCh3Ch4Pos = 0x9c,
-        MCT470_FuncRead_LPStatusLen       =   11,
+        FuncRead_LPStatusCh1Ch2Pos = 0x97,
+        FuncRead_LPStatusCh3Ch4Pos = 0x9c,
+        FuncRead_LPStatusLen       =   11,
 
         //  ditto
-        MCT470_FuncWrite_IEDCommand            = 0xd0,
-        MCT470_FuncWrite_IEDCommandLen         =    4,
+        FuncWrite_IEDCommand            = 0xd0,
+        FuncWrite_IEDCommandLen         =    4,
     };
 
     CtiDeviceMCT470( );

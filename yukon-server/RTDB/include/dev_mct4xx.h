@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct4xx.h-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2006/09/07 17:29:38 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2006/09/20 20:21:04 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -79,13 +79,16 @@ protected:
         Command_TOUReset     = 0x5f,
     };
 
-    enum Memory
+    enum MemoryMap
     {
         Memory_OptionsPos         = 0x02,
         Memory_OptionsLen         =    1,
 
         Memory_ConfigurationPos   = 0x03,
         Memory_ConfigurationLen   =    1,
+
+        Memory_TOUDayTablePos     = 0x50,
+        Memory_TOUDayTableLen     =    2,
 
         Memory_TOUDailySched1Pos  = 0x52,
         Memory_TOUDailySched1Len  =    7,
@@ -98,10 +101,15 @@ protected:
 
         Memory_TOUDailySched4Pos  = 0x67,
         Memory_TOUDailySched4Len  =    7,
+
+        Memory_TOUDefaultRatePos    = 0x6e,
+        Memory_TOUDefaultRateLen    =    1,
     };
 
     enum Functions
     {
+        FuncWrite_ConfigAlarmMaskPos = 0x01,
+
         FuncWrite_LLPStoragePos      = 0x04,
         FuncWrite_LLPStorageLen      =    5,
 
@@ -112,6 +120,10 @@ protected:
         FuncWrite_LLPPeakInterestLen =    7,
 
         FuncRead_MReadPos            = 0x90,
+
+        FuncRead_DemandPos           = 0x92,
+
+        FuncRead_PeakDemandPos       = 0x93,
 
         FuncRead_LLPStatusPos        = 0x9d,
         FuncRead_LLPStatusLen        =    8,
