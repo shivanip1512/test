@@ -131,5 +131,16 @@ function setAdjustments ()
         }
     }
 }
+//cancel our adjustments if the last gear selected wasn't
+//target cycle
+function isCancel () 
+{
+    config = document.getElementById('tgconfig');
+    if (config)
+    {
+	    if (config.style.display == 'none')
+	        document.getElementById('cancelPrev').value = 'true';
+	}
+}
        
 </SCRIPT> <!--end javascript for trend/view menus-->

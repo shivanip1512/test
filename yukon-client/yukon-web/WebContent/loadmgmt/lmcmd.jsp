@@ -100,11 +100,12 @@ function setStopAble( radioChk )
 <body leftmargin="0" topmargin="0" bgcolor="#FFFFFF">
 	<div align="center">
 
-	<form name="cmdForm" method="post" action="<%=request.getContextPath()%>/servlet/LCConnectionServlet" onsubmit="update();">
+	<form name="cmdForm" method="post" action="<%=request.getContextPath()%>/servlet/LCConnectionServlet" onsubmit="isCancel();update();">
 		<input type="hidden" name="cmd" value="<%= cmd %>" >
 		<input type="hidden" name="itemid" value="<%= itemid %>" >
 		<input type="hidden" name="redirectURL" value="/close.jsp" >
         <input type="hidden" name="adjustments" id="h_adjustments" value=""/>                       
+        <input type="hidden" name="cancelPrev" id="cancelPrev" value=""/>                       
     
     <div class="confMsg"><BR><%= cmdMsg.getHTMLTextMsg() %></div>
 		<BR>
@@ -142,7 +143,7 @@ function setStopAble( radioChk )
                         if (gear.getControlMethod().equals(IlmDefines.CONTROL_TARGET_CYCLE)) {
                             gearName = gear.getGearName();
                         %>
-                         <input type="hidden" name="targetcyclegear" id="tcg_<%=(i + 1)%>"/>                       
+                         <input type="hidden" name="targetcyclegear" id="tcg_<%=(i + 1)%>" />                       
                         
 <%
                         }

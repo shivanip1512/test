@@ -1689,12 +1689,28 @@ private void initialize() {
 			}
 		}
 	
-		
+		//make sure we are not setting the target adjustments
+        Object gear = getJComboBoxGear().getItemAt(getJComboBoxGear().getSelectedIndex());
+        resetForNonTargetCycleGear(gear);
+            
 		choice = OK_CHOICE;
 		exit();
 	
 		return;
 	}
+    private void resetForNonTargetCycleGear(Object gear) {
+        if (gear instanceof LMProgramDirectGear) 
+        {
+            //unless we selected target cycle disable the adjustment config
+            LMProgramDirectGear directGear = (LMProgramDirectGear) gear;
+            if (!directGear.getControlMethod().equalsIgnoreCase(IlmDefines.CONTROL_TARGET_CYCLE))
+            {
+                getGearConfigJPanel().setAdditonalInfo(null);
+            }
+        }
+        else 
+            getGearConfigJPanel().setAdditonalInfo(null);
+    }
 
 
 	/**

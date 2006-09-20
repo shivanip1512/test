@@ -256,4 +256,8 @@ public class TargetCycleConfigPanel extends JPanel implements ActionListener{
     public String getAdditionalInfo() {
            return additonalInfo;
     }
+
+    public void setAdditonalInfo(String additonalInfo) {
+        this.additonalInfo = additonalInfo;
+    }
 }

@@ -163,6 +163,7 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 	String itemid = req.getParameter("itemid");
 	String resendSyncMsgs = req.getParameter("resendSyncMsgs");
     String adjustments = ParamUtil.getString(req, "adjustments", null);
+    String cancelPrev = ParamUtil.getString(req, "cancelPrev", null);
 
     
 
@@ -176,9 +177,15 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 		try
 		{
             //if we had target cycle adjustments - save them
+            if (cancelPrev != null)
+            {
+                adjustments = null;
+            }
             if (adjustments != null)
+            {
                 setAdditionalInfoForProgram(adjustments, itemid);
-
+            }
+            
             WebCmdMsg msg = LMCmdMsgFactory.createCmdMsg( 
 					cmd, new Integer(itemid), optionalProps, getCache() );
 
@@ -237,6 +244,7 @@ private void setAdditionalInfoForProgram(String additionalInfo, String programID
 
     if (additionalInfo != null) 
     {
+        
         if ((additionalInfo.length() > baseString.length() ) && additionalInfo.startsWith(baseString))
         {
             prg.setAddtionalInfo( additionalInfo );
