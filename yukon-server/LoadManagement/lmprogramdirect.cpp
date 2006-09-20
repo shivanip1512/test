@@ -5318,21 +5318,30 @@ ULONG CtiLMProgramDirect::estimateOffTime(ULONG proposed_gear, ULONG start, ULON
 
 void CtiLMProgramDirect::startGroupControl(CtiLMGroupPtr& lm_group, CtiRequestMsg* req, CtiMultiMsg* multiPilMsg)
 {
-    lm_group->setLastControlString(req->CommandString());
-    lm_group->setLastControlSent(CtiTime());
-
-    multiPilMsg->insert( req );
-
-    if(lm_group->getGroupControlState() != CtiLMGroupBase::ActiveState)
+    if( req && multiPilMsg )
     {
-        lm_group->setControlStartTime(CtiTime());
-        lm_group->incrementDailyOps();
-        setLastControlSent(CtiTime()); //not sure about this - why only on starrt?
-        lm_group->setIsRampingOut(false);     //?
+        lm_group->setLastControlString(req->CommandString());
+        lm_group->setLastControlSent(CtiTime());
+    
+        multiPilMsg->insert( req );
+    
+        if(lm_group->getGroupControlState() != CtiLMGroupBase::ActiveState)
+        {
+            lm_group->setControlStartTime(CtiTime());
+            lm_group->incrementDailyOps();
+            setLastControlSent(CtiTime()); //not sure about this - why only on starrt?
+            lm_group->setIsRampingOut(false);     //?
+        }
+    
+        lm_group->setIsRampingIn(false);     //?
+        lm_group->setGroupControlState(CtiLMGroupBase::ActiveState);    // This should be sent from dispatch, no lies!
     }
-
-    lm_group->setIsRampingIn(false);     //?
-    lm_group->setGroupControlState(CtiLMGroupBase::ActiveState);    // This should be sent from dispatch, no lies!
+    else
+    {
+        CtiLockGuard<CtiLogger> dout_guard(dout);
+        dout << CtiTime() << " **** Checkpoint **** " << "cannot send control " << __FILE__ << "(" << __LINE__ << ")" << endl;
+    }
+    
 }
 
 
