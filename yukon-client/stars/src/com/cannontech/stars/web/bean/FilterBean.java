@@ -201,7 +201,7 @@ public class FilterBean
         if(availableCustomerTypes == null)
         {
             availableCustomerTypes = new ArrayList<Pair>();
-            YukonSelectionList ciCustTypes = DaoFactory.getYukonListDao().getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_ID_CUSTOMER_TYPE);
+            YukonSelectionList ciCustTypes = energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_CI_CUST_TYPE, true, true);
                
         	availableCustomerTypes.add(new Pair(new Integer(-1), new String("Residential")));	//we'll use -1 as Residential
         	
