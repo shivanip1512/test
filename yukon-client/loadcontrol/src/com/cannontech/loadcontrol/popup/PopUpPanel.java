@@ -66,7 +66,7 @@ public class PopUpPanel {
 			
 		d.setModal(true);
 		d.setContentPane(panel);
-		d.setSize( 350, 350 );
+		d.setSize( 350, 500 );
 		d.setLocationRelativeTo(thisPopup);
 
 		

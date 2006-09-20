@@ -14,6 +14,7 @@ import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMControlAreaTrigger;
 import com.cannontech.loadcontrol.data.LMGroupBase;
 import com.cannontech.loadcontrol.data.LMProgramBase;
+import com.cannontech.loadcontrol.data.LMProgramDirect;
 import com.cannontech.loadcontrol.data.LMScenarioWrapper;
 import com.cannontech.loadcontrol.messages.LMCommand;
 import com.cannontech.loadcontrol.messages.LMManualControlRequest;
@@ -65,6 +66,7 @@ public final class LMCmdMsgFactory
 	 * 	dblarray1 -> Double[]
 	 * 	dblarray2 -> Double[]
 	 *  constraint -> String
+     *  adjustments -> String
 	 */
 	public static synchronized WebCmdMsg createCmdMsg( 
 			String cmdStr, Integer itemid,
@@ -144,6 +146,7 @@ public final class LMCmdMsgFactory
 			dblarray1 = (Double[])optionalProps.get("dblarray1");
 			dblarray2 = (Double[])optionalProps.get("dblarray2");
 			constraint = (String)optionalProps.get("constraint");
+            
 		}			
 
 		//set the data we are operating with
@@ -451,18 +454,42 @@ public final class LMCmdMsgFactory
 				
 				//does the start now
 				if( startdate.equals(CtiUtilities.get1990GregCalendar().getTime()) )
-					cmdMsg.setGenLCMsg( prg.createStartStopNowMsg(
-								stopdate,
-								gearnum.intValue(), 
-								null, true, constID) );
-				else
-					cmdMsg.setGenLCMsg( prg.createScheduledStartMsg(
-								startdate,
-								stopdate,
-								gearnum.intValue(),
-								null, null, constID) );
-			}
-		}
+                {
+					if (prg instanceof LMProgramDirect) 
+                    {
+                        createStartStopForTargetCycle(cmdMsg, prg, constID);
+                        
+                    }
+                    else 
+                    {
+                        
+                        cmdMsg.setGenLCMsg( prg.createStartStopNowMsg(
+                                                                    stopdate,
+                                                                    gearnum.intValue(),
+                                                                    null, true, constID) );
+                                                                    
+                    }
+                
+                }
+				
+                else
+                {
+					if (prg instanceof LMProgramDirect)
+                    {
+                       createSchedStartForTargetCycle(cmdMsg, prg, constID);
+                                                                   
+                    }
+                    else
+                    {
+                        cmdMsg.setGenLCMsg( prg.createScheduledStartMsg(
+                                                                        startdate,
+                                                                        stopdate,
+                                                                        gearnum.intValue(),
+                                                                        null, null, constID) );
+                    }
+                }
+            }
+    }
 		else if( ILCCmds.PROG_STOP.equals(cmdMsg.getCmd()) )
 		{
 			cmdMsg.setHTMLTextMsg( cmdMsg.getHTMLTextMsg() +
@@ -489,6 +516,23 @@ public final class LMCmdMsgFactory
 		}
 
 	}
+
+    private static void createSchedStartForTargetCycle(final WebCmdMsg cmdMsg, LMProgramBase prg, int constID) {
+        cmdMsg.setGenLCMsg( prg.createScheduledStartMsg(
+                                                        startdate,
+                                                        stopdate,
+                                                        gearnum.intValue(),
+                                                        null, ((LMProgramDirect)prg).getAddtionalInfo(), 
+                                                        constID) );
+    }
+
+    private static void createStartStopForTargetCycle(final WebCmdMsg cmdMsg, LMProgramBase prg, int constID) {
+        cmdMsg.setGenLCMsg( prg.createStartStopNowMsg(
+                                                      stopdate,
+                                                      gearnum.intValue(), 
+                                                      ((LMProgramDirect)prg).getAddtionalInfo(), 
+                                                      true, constID) );
+    }
 
 	private static void handleGroup( final WebCmdMsg cmdMsg, final Hashtable optionalProps )
 	{
