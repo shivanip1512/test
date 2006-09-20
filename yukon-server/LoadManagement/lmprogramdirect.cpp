@@ -5198,6 +5198,11 @@ void CtiLMProgramDirect::dumpDynamicData(RWDBConnection& conn, CtiTime& currentD
     {
         if( conn.isValid() )
         {
+            string additionalInfo = getAdditionalInfo();
+            if( !additionalInfo.length() )
+            {
+                additionalInfo = " ";
+            }
             RWDBTable dynamicLMProgramDirectTable = getDatabase().table( "dynamiclmprogramdirect" );
             if( !_insertDynamicDataFlag )
             {
@@ -5212,7 +5217,7 @@ void CtiLMProgramDirect::dumpDynamicData(RWDBConnection& conn, CtiTime& currentD
                         << dynamicLMProgramDirectTable["startedrampingout"].assign(toRWDBDT(getStartedRampingOutTime()))
                         << dynamicLMProgramDirectTable["notifyinactivetime"].assign(toRWDBDT(getNotifyInactiveTime()))
                         << dynamicLMProgramDirectTable["constraintoverride"].assign( (getUpdatedFlag() ? "Y":"N") )
-                        << dynamicLMProgramDirectTable["additionalinfo"].assign(getAdditionalInfo().c_str());
+                        << dynamicLMProgramDirectTable["additionalinfo"].assign(additionalInfo.c_str());
 
                 updater.where(dynamicLMProgramDirectTable["deviceid"]==getPAOId());//will be paobjectid
 
@@ -5245,7 +5250,7 @@ void CtiLMProgramDirect::dumpDynamicData(RWDBConnection& conn, CtiTime& currentD
                          << getStartedRampingOutTime()
                          << getNotifyInactiveTime()
                          << string( ( getConstraintOverride() ? "Y": "N" ) )
-                         << getAdditionalInfo();
+                         << additionalInfo;
 
                 if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
                 {
