@@ -90,6 +90,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	Integer rampInPercent = new Integer ( (int) vstr.extractUnsignedInt() );
 	Integer rampOutInterval = new Integer( (int) vstr.extractUnsignedInt() );
 	Integer rampOutPercent = new Integer( (int) vstr.extractUnsignedInt() );
+    Double kwReduction = new Double (vstr.extractDouble());
 
 	lmProgramDirectGear.setYukonID(yukonID);
 	lmProgramDirectGear.setGearName(gearName);
@@ -113,6 +114,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	lmProgramDirectGear.setRampInPercent( rampInPercent );
 	lmProgramDirectGear.setRampOutInterval( rampOutInterval );
 	lmProgramDirectGear.setRampOutPercent( rampOutPercent );
+    lmProgramDirectGear.setKwReduction(kwReduction);
 }
 /**
  * saveGuts method comment.

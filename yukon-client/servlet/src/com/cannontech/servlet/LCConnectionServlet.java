@@ -21,10 +21,12 @@ import com.cannontech.loadcontrol.LCUtils;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMProgramBase;
+import com.cannontech.loadcontrol.data.LMProgramDirect;
 import com.cannontech.loadcontrol.gui.manualentry.ResponseProg;
 import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.roles.yukon.SystemRole;
+import com.cannontech.util.ParamUtil;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.loadcontrol.LMCmdMsgFactory;
 import com.cannontech.web.loadcontrol.LMSession;
@@ -160,22 +162,25 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 	String cmd = req.getParameter("cmd");
 	String itemid = req.getParameter("itemid");
 	String resendSyncMsgs = req.getParameter("resendSyncMsgs");
+    String adjustments = ParamUtil.getString(req, "adjustments", null);
 
     
 
-	
 	//add any optional properties here
-	optionalProps = getOptionalParams( req );
-
+	
+    optionalProps = getOptionalParams( req );
 	ResponseProg[] violatResp = null;
 
 	if( cmd != null )
 	{
 		try
 		{
-			WebCmdMsg msg = LMCmdMsgFactory.createCmdMsg( 
-					cmd, new Integer(itemid), optionalProps, getCache() );
+            //if we had target cycle adjustments - save them
+            if (adjustments != null)
+                setAdditionalInfoForProgram(adjustments, itemid);
 
+            WebCmdMsg msg = LMCmdMsgFactory.createCmdMsg( 
+					cmd, new Integer(itemid), optionalProps, getCache() );
 
 			CTILogger.info("LM_COMMAND: " + req.getServletPath() +
 				"	cmd = " + cmd +
@@ -209,7 +214,9 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 	}
 	else if( resendSyncMsgs != null )
 	{
-		resendSyncMsgs( req, (Double[])optionalProps.get("dblarray1") );
+		//String adjs = getAddtionalInfo(optionalProps, itemid);
+        //optionalProps.put("adjustments", adjs);
+        resendSyncMsgs( req, (Double[])optionalProps.get("dblarray1") );
 	}
 	else
 		CTILogger.warn( "LC Command servlet was hit, but NO command was sent" );
@@ -223,6 +230,22 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 	if( redirectURL != null )
 		resp.sendRedirect( resp.encodeRedirectURL(req.getContextPath() + redirectURL) );
 }
+private void setAdditionalInfoForProgram(String additionalInfo, String programID) 
+{
+    LMProgramDirect prg = (LMProgramDirect)getCache().getProgram(new Integer (programID) );
+    String baseString = "adjustments";
+
+    if (additionalInfo != null) 
+    {
+        if ((additionalInfo.length() > baseString.length() ) && additionalInfo.startsWith(baseString))
+        {
+            prg.setAddtionalInfo( additionalInfo );
+            
+        }
+    }
+}
+
+
 
 /**
  * Resends response messages withe the override flag set for the specified progIds.
@@ -254,7 +277,6 @@ private void resendSyncMsgs( HttpServletRequest req, Double[] progIds )
 
                 for( int j = 0; progIds != null && j < progIds.length; j++ ) {
                     int progID = progIds[j].intValue();
-                    
                     if( progID == resProgArr.getLmProgramBase().getYukonID().intValue() )
                         resProgArr.setOverride( Boolean.TRUE );
                 }
@@ -322,8 +344,8 @@ private ResponseProg[] sendSyncMsg( final WebCmdMsg cmdMsg )
         isCheckConstraints |=
             lmReqs[i].getConstraintFlag() ==
                 LMManualControlRequest.CONSTRAINTS_FLAG_CHECK;
-        
-		programResps[i] = new ResponseProg( lmReqs[i], progBase );
+        handleTargetCycleAjustments(lmReqs[i], progBase);
+        programResps[i] = new ResponseProg( lmReqs[i], progBase );
 	}
 
 				
@@ -351,6 +373,14 @@ private ResponseProg[] sendSyncMsg( final WebCmdMsg cmdMsg )
     }
     else
         return null;
+}
+private void handleTargetCycleAjustments(LMManualControlRequest lmReq, LMProgramBase progBase) {
+    if (progBase instanceof LMProgramDirect) 
+    {
+        String additionalInfo = ((LMProgramDirect)progBase).getAddtionalInfo();
+        if (additionalInfo != null)
+            lmReq.setAddditionalInfo(additionalInfo);
+    }
 }
 
 /**

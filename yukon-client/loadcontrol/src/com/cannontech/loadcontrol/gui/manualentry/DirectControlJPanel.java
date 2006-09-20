@@ -3,12 +3,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPopupMenu;
+import javax.swing.JTextField;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.gui.panel.IMultiSelectModel;
@@ -24,6 +31,8 @@ import com.cannontech.database.db.device.lm.IlmDefines;
 import com.cannontech.loadcontrol.LCUtils;
 import com.cannontech.loadcontrol.data.IGearProgram;
 import com.cannontech.loadcontrol.data.LMProgramBase;
+import com.cannontech.loadcontrol.data.LMProgramDirect;
+import com.cannontech.loadcontrol.data.LMProgramDirectGear;
 import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 import com.cannontech.roles.loadcontrol.DirectLoadcontrolRole;
 
@@ -69,15 +78,23 @@ public class DirectControlJPanel extends javax.swing.JPanel implements java.awt.
 	private Map allPrograms = null;
 	private javax.swing.JComboBox ivjJComboBoxConstraints = null;
 	private javax.swing.JLabel ivjJLabelGear1 = null;
+ 
+	/*Target Cycle Adjust*/
+    private JTextField[] ivjJTargetAdjustmentInput = null;  
+	private JLabel[] ivjJTargetAdjustmentLabel = null;
+    private javax.swing.JCheckBox ivjJCheckBoxTargetAdgust = null;
 
-	/**
+    private JButton targetAdjustButton = null;
+    private TargetCycleConfigPanel gearConfigJPanel = null;
+    
+    
+    /**
 	 * ManualChangeJPanel constructor comment.
 	 */
 	public DirectControlJPanel() {
 		super();
 		initialize();
-	}
-
+    }
 	/**
 	 * ManualChangeJPanel constructor comment.
 	 */
@@ -173,12 +190,46 @@ public class DirectControlJPanel extends javax.swing.JPanel implements java.awt.
 		
 		if( e.getSource() == getJComboBoxScenario() ) 
 			action_Scenario( e );
+        if (e.getSource() == getTargetAdjustButton())
+            launchTargetAdjConfig();
 		
 		// user code end
-	}
+    }
 
+/**
+ * method to generate configs for gear
+ *
+ */
+    private void launchTargetAdjConfig() {
+        final JDialog d = new javax.swing.JDialog( CtiUtilities.getParentFrame(this) );
+        Date start  = getStartTime();
+        Date stop = getStopTime();
+        gearConfigJPanel = new TargetCycleConfigPanel(start, stop)
+                
+                {   
+        
+                    public void exit() 
+                    {
+                        d.dispose();
+                    }
+        
+                    public void setParentWidth( int x )
+                    {
+                        d.setSize( d.getWidth() + x, d.getHeight() );
+                    }
+                };
+        d.setModal(true);
+        d.setTitle ("Target Cycle Gear Configuration");
+        d.setContentPane(gearConfigJPanel);
+        d.setSize( 350, (gearConfigJPanel.getTimeSlots() * 30) + 70 );
+        d.setLocationRelativeTo(this);
+        d.setLocation(d.getLocation().x, d.getLocation().y + 150);
+        d.show();
+        
+        d.dispose();
+    }
 
-	/**
+    /**
 	 * @param arg1 java.awt.event.ActionEvent
 	 */
 	/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -265,12 +316,49 @@ public class DirectControlJPanel extends javax.swing.JPanel implements java.awt.
 		int constID =
 			LMManualControlRequest.getConstraintID( getJComboBoxConstraints().getSelectedItem().toString() );
 
-		return LCUtils.createProgMessage(
-						isStopStartNowSelected(),
-						getMode() == MODE_STOP,
-						getStartTime(), getStopTime(),
-						program, gearNum, constID );
-	}
+		if (getMode() == MODE_STOP) 
+        {
+            return LCUtils.createProgMessage(
+                                            isStopStartNowSelected(),
+                                            getMode() == MODE_STOP,
+                                            getStartTime(), getStopTime(),
+                                            program, gearNum, constID );
+                        
+        }
+        else
+        {
+            //special case when we create a start message dro direct program, with
+            //target cycle gear
+            if (program instanceof LMProgramDirect) {
+                Vector gears = ((LMProgramDirect)program).getDirectGearVector();
+                for (Iterator iter = gears.iterator(); iter.hasNext();) {
+                    LMProgramDirectGear g = (LMProgramDirectGear) iter.next();
+                    if (g.getControlMethod().equalsIgnoreCase(IlmDefines.CONTROL_TARGET_CYCLE)) 
+                    {
+                        String additionalInfo = null;
+                        if (getGearConfigJPanel() != null)
+                        {
+                            additionalInfo = getGearConfigJPanel().getAdditionalInfo();
+                        }
+                        return LCUtils.createStartMessage(isStopStartNowSelected(),
+                                                          getStartTime(), getStopTime(),
+                                                          program, gearNum, constID, 
+                                                          additionalInfo );
+                    
+                    }
+                }
+            }
+        }
+            
+        return LCUtils.createStartMessage(
+                                       isStopStartNowSelected(),
+                                     getStartTime(), getStopTime(),
+                                       program, gearNum, constID, null );
+            
+       
+    
+    
+    }
 
 
 	/**
@@ -522,7 +610,81 @@ public class DirectControlJPanel extends javax.swing.JPanel implements java.awt.
 		return ivjJCheckBoxNeverStop;
 	}
 
+    /**
+     * Return the JCheckBoxNeverStop property value.
+     * @return javax.swing.JCheckBox
+     */
+    /* WARNING: THIS METHOD WILL BE REGENERATED. */
+    private javax.swing.JCheckBox getJCheckBoxTargetAdgust() {
+        if (ivjJCheckBoxTargetAdgust == null) {
+            try {
+                ivjJCheckBoxTargetAdgust = new javax.swing.JCheckBox();
+                ivjJCheckBoxTargetAdgust.setName("JCheckBoxTargetAdjustEn");
+                ivjJCheckBoxTargetAdgust.setToolTipText("Forces the schedule to run forever");
+                ivjJCheckBoxTargetAdgust.setMnemonic(78);
+                ivjJCheckBoxTargetAdgust.setText("Target Adjust");
+                ivjJCheckBoxTargetAdgust.setMaximumSize(new java.awt.Dimension(187, 22));
+                ivjJCheckBoxTargetAdgust.setActionCommand("Target Adjust");
+                ivjJCheckBoxTargetAdgust.setMinimumSize(new java.awt.Dimension(187, 22));
+                // user code begin {1}
+                // user code end
+            } catch (java.lang.Throwable ivjExc) {
+                // user code begin {2}
+                // user code end
+                handleException(ivjExc);
+            }
+        }
+        return ivjJCheckBoxTargetAdgust;
+    }
 
+    private JTextField[] getJTextFieldArrayTargetAdgust() {
+        if (ivjJTargetAdjustmentInput == null) {
+            try {
+                ivjJTargetAdjustmentInput = new JTextField[5];
+                for (int i = 0; i < ivjJTargetAdjustmentInput.length; i++) {
+                    JTextField adjustment = new JTextField();
+                    adjustment.setName("JCheckBoxTargetAdjust_" + i);
+                    adjustment.setToolTipText("Forces the schedule to run forever");
+                    adjustment.setMaximumSize(new java.awt.Dimension(50, 22));
+                    adjustment.setActionCommand("Target Adjust");
+                    adjustment.setMinimumSize(new java.awt.Dimension(50, 22));
+                    ivjJTargetAdjustmentInput [i] = adjustment;
+                }
+                // user code begin {1}
+                // user code end
+            } catch (java.lang.Throwable ivjExc) {
+                // user code begin {2}
+                // user code end
+                handleException(ivjExc);
+            }
+        }
+        return ivjJTargetAdjustmentInput;
+    }
+
+    private JLabel[] getJLabelArrayTargetAdgust() {
+        if (    ivjJTargetAdjustmentLabel == null) {
+            try {
+                ivjJTargetAdjustmentLabel = new JLabel[5];
+                for (int i = 0; i <    ivjJTargetAdjustmentLabel.length; i++) {
+                    JLabel adjustment = new JLabel();
+                    adjustment.setName("JCheckBoxTargetAdjust_" + i);
+                    adjustment.setToolTipText("Forces the schedule to run forever");
+                    adjustment.setMaximumSize(new java.awt.Dimension(100, 22));
+                    adjustment.setText("Adjustmet " + i);
+                    adjustment.setMinimumSize(new java.awt.Dimension(100, 22));
+                    ivjJTargetAdjustmentLabel [i] = adjustment;
+                }
+                // user code begin {1}
+                // user code end
+            } catch (java.lang.Throwable ivjExc) {
+                // user code begin {2}
+                // user code end
+                handleException(ivjExc);
+            }
+        }
+        return ivjJTargetAdjustmentLabel;
+    }
+    
 	/**
 	 * Return the JCheckBoxStartStopNow property value.
 	 * @return javax.swing.JCheckBox
@@ -615,7 +777,7 @@ public javax.swing.JComboBox getJComboBoxConstraints() {
 				ivjJComboBoxGear.setEditor(new javax.swing.plaf.metal.MetalComboBoxEditor.UIResource());
 				ivjJComboBoxGear.setRenderer(new javax.swing.plaf.basic.BasicComboBoxRenderer.UIResource());
 				// user code begin {1}
-				
+                
 				ivjJComboBoxGear.setToolTipText( "The gear or gear number the program(s) should begin control with");
 				
 				// user code end
@@ -948,7 +1110,45 @@ private javax.swing.JLabel getJLabelScenario() {
 			constraintsJLabelGear.insets = new java.awt.Insets(5, 5, 4, 1);
 			getJPanelControls().add(getJLabelGear(), constraintsJLabelGear);
 
-			java.awt.GridBagConstraints constraintsDateComboStop = new java.awt.GridBagConstraints();
+		
+            
+            /******Gear Adjustments - Elliot Khazon******/
+                    java.awt.GridBagConstraints buttonAnchor = new java.awt.GridBagConstraints();
+                    buttonAnchor.gridx = 1; buttonAnchor.gridy = 10;
+                    buttonAnchor.gridwidth = 3;
+                    buttonAnchor.anchor = java.awt.GridBagConstraints.WEST;
+                    buttonAnchor.ipadx = 3;
+                    buttonAnchor.insets = new java.awt.Insets(2, 5, 4, 6);
+/*                    JLabel[] labels = getJLabelArrayTargetAdgust();
+                    for (int i = 0; i < labels.length; i++) {
+                        JLabel label = labels[i];
+                        getJPanelControls().add (label, constraintsJLabelGearAdjustFields);    
+                        constraintsJLabelGearAdjustFields.gridy ++;
+                        
+                    }*/
+                    JButton targAdjButton = getTargetAdjustButton();
+                    getJPanelControls().add(targAdjButton, buttonAnchor);
+  /*                  
+                    java.awt.GridBagConstraints constraintsJTextGearAdjustFields = new java.awt.GridBagConstraints();
+                    constraintsJTextGearAdjustFields.gridx = 5; constraintsJTextGearAdjustFields.gridy = 10;
+                    constraintsJTextGearAdjustFields.weightx = 1.0;
+                    constraintsJTextGearAdjustFields.anchor = java.awt.GridBagConstraints.WEST;
+                    constraintsJTextGearAdjustFields.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                    constraintsJTextGearAdjustFields.ipadx = 100;
+                    constraintsJTextGearAdjustFields.insets = new java.awt.Insets(2, 2, 3, 1);
+                    JTextField[] fields = getJTextFieldArrayTargetAdgust();
+                    for (int i = 0; i < fields.length; i++) {
+                        JTextField field = fields[i];
+                        getJPanelControls().add(field, constraintsJTextGearAdjustFields);
+                        constraintsJTextGearAdjustFields.gridy ++;
+                    }
+                    
+    */
+            
+            /********************************************/
+            
+            
+            java.awt.GridBagConstraints constraintsDateComboStop = new java.awt.GridBagConstraints();
 			constraintsDateComboStop.gridx = 4; constraintsDateComboStop.gridy = 7;
 			constraintsDateComboStop.gridwidth = 2;
 			constraintsDateComboStop.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -986,7 +1186,7 @@ private javax.swing.JLabel getJLabelScenario() {
 			getJPanelControls().add(getJComboBoxScenario(), constraintsJComboBoxScenario);
 
 			java.awt.GridBagConstraints constraintsJLabelGear1 = new java.awt.GridBagConstraints();
-			constraintsJLabelGear1.gridx = 1; constraintsJLabelGear1.gridy = 9;
+			constraintsJLabelGear1.gridx = 1; constraintsJLabelGear1.gridy = 15;
 			constraintsJLabelGear1.gridwidth = 2;
 			constraintsJLabelGear1.anchor = java.awt.GridBagConstraints.WEST;
 			constraintsJLabelGear1.ipadx = 45;
@@ -994,7 +1194,7 @@ private javax.swing.JLabel getJLabelScenario() {
 			getJPanelControls().add(getJLabelGear1(), constraintsJLabelGear1);
 
 			java.awt.GridBagConstraints constraintsJComboBoxConstraints = new java.awt.GridBagConstraints();
-			constraintsJComboBoxConstraints.gridx = 3; constraintsJComboBoxConstraints.gridy = 9;
+			constraintsJComboBoxConstraints.gridx = 3; constraintsJComboBoxConstraints.gridy = 15;
 			constraintsJComboBoxConstraints.gridwidth = 3;
 			constraintsJComboBoxConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
 			constraintsJComboBoxConstraints.anchor = java.awt.GridBagConstraints.WEST;
@@ -1354,6 +1554,7 @@ private javax.swing.JLabel getJLabelScenario() {
 		getJButtonOk().addActionListener(this);
 		getJCheckBoxNeverStop().addActionListener(this);
 		getJCheckBoxStartStopNow().addActionListener(this);
+        getTargetAdjustButton().addActionListener(this);
 	}
 
 
@@ -1505,7 +1706,23 @@ private void initialize() {
 		getJTextFieldStopTime().setEnabled( !getJCheckBoxNeverStop().isSelected() );
 		getJLabelLabelStopHRMN().setEnabled( !getJCheckBoxNeverStop().isSelected() );
 		getDateComboStop().setEnabled( !getJCheckBoxNeverStop().isSelected() );
-	
+        getTargetAdjustButton().setEnabled(!getJCheckBoxNeverStop().isSelected());
+        //make sure that we disable the button permanently
+        int selectedIndex = getJComboBoxGear().getSelectedIndex();
+        Object selectedGear = getJComboBoxGear().getItemAt( selectedIndex);
+        if (selectedGear instanceof LMProgramDirectGear) {
+            if (!((LMProgramDirectGear)selectedGear).getControlMethod().equalsIgnoreCase(IlmDefines.CONTROL_TARGET_CYCLE))
+            {
+                getTargetAdjustButton().setEnabled(false);
+            }
+            
+        }
+        else 
+        {
+            getTargetAdjustButton().setEnabled(false);
+            
+        }
+        
 		if( getJCheckBoxNeverStop().isSelected() )
 			getJButtonOk().setEnabled( true );
 		
@@ -1543,14 +1760,24 @@ private void initialize() {
 
 	private void jComboBoxGear_ActionPerformed( java.awt.event.ActionEvent actionEvent )
 	{
-		if( getJComboBoxGear().getSelectedIndex() >= 0
-		    && getJComboBoxGear().getSelectedIndex() < IlmDefines.MAX_GEAR_COUNT )
+        int selectedItem = getJComboBoxGear().getSelectedIndex();
+        Object gear = getJComboBoxGear().getItemAt(selectedItem);
+        if( selectedItem >= 0
+		    && selectedItem < IlmDefines.MAX_GEAR_COUNT )
 		{
 			//add 1 to the gear selected index since gear numbers start at 1
 			getMultiSelectPrgModel().setAllGearNumbers(
 					new Integer(getJComboBoxGear().getSelectedIndex()+1) );
 		}
-		
+        if (gear instanceof LMProgramDirectGear) {
+            //unless we selected target cycle disable the adjustment config
+            LMProgramDirectGear directGear = (LMProgramDirectGear) gear;
+            if (!directGear.getControlMethod().equalsIgnoreCase(IlmDefines.CONTROL_TARGET_CYCLE))
+                getTargetAdjustButton().setEnabled(false);
+            else
+                getTargetAdjustButton().setEnabled(true);
+
+        }
 
 	}
 
@@ -1589,8 +1816,8 @@ private void initialize() {
 		
 		getJLabelScenario().setVisible( _isScenario );
 		getJComboBoxScenario().setVisible( _isScenario );
-
-		switch( mode )
+		
+        switch( mode )
 		{
 			case MODE_MULTI_SELECT_ONLY:
 				getJPanelControls().setVisible( false );
@@ -1619,10 +1846,26 @@ private void initialize() {
 				
 				getJCheckBoxNeverStop().setVisible(false);
 				getJCheckBoxStartStopNow().setText("Stop Now");
+                getTargetAdjustButton().setVisible(false);
 				break;
+           
 				
 			default:  //done for completness
-				break;
+                int selectedItem = getJComboBoxGear().getSelectedIndex();
+                Object gear = getJComboBoxGear().getItemAt(selectedItem);
+                getTargetAdjustButton().setEnabled(false);
+
+                if (gear instanceof LMProgramDirectGear)
+                {
+                    if (((LMProgramDirectGear)gear).getControlMethod()
+                    .equalsIgnoreCase(IlmDefines.CONTROL_TARGET_CYCLE))
+                        getTargetAdjustButton().setEnabled(true);
+                }
+                else
+                {
+                    getTargetAdjustButton().setVisible(false);
+                }
+                break;
 		}
 	
 	}
@@ -1729,4 +1972,33 @@ private void initialize() {
 	 * Method to override if desired 
 	 */
 	public void setParentWidth( int x ) {}
+
+    public JButton getTargetAdjustButton() {
+            if (targetAdjustButton == null) {
+                try {
+                    targetAdjustButton = new javax.swing.JButton();
+                    targetAdjustButton.setName("TargetAdjButton");
+                    targetAdjustButton.setMnemonic(79);
+                    targetAdjustButton.setMaximumSize(new java.awt.Dimension(175, 25));
+                    targetAdjustButton.setPreferredSize(new java.awt.Dimension(175, 25));
+                    targetAdjustButton.setMinimumSize(new java.awt.Dimension(175, 25));
+                    targetAdjustButton.setMargin(new java.awt.Insets(2, 14, 2, 14));
+                    // user code begin {1}
+                    targetAdjustButton.setText("Add Target Adjustments");
+
+                    // user code end
+                } catch (java.lang.Throwable ivjExc) {
+                    // user code begin {2}
+                    // user code end
+                    handleException(ivjExc);
+                }
+            }
+            return targetAdjustButton;
+        }
+    //hook into the configuration of the gear (i.e - target cycle)
+    public TargetCycleConfigPanel getGearConfigJPanel() {
+        return gearConfigJPanel;
+    }
+    
+    
 }

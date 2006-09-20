@@ -1,6 +1,8 @@
 <%@ page language="java" %>
 
 <%@ include file="js/lm_funcs.js" %>
+<%@ include file="js/configwin.js" %>
+
 
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 
@@ -36,6 +38,14 @@
 <%@ page import="com.cannontech.message.server.ServerResponseMsg" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
 <%@ page import="com.cannontech.util.ServletUtil" %>
+
+<link href="../editor/css/greybox/greybox.css" rel="stylesheet" type="text/css" media="all" /> 
+<script type="text/javascript" src="../JavaScript/GreyBox/AmiJS.js"></script>
+<script type="text/javascript" src="../JavaScript/GreyBox/greybox.js"></script>
+<script type="text/JavaScript" src="../JavaScript/prototype.js"></script>
+
+
+
 
 <jsp:useBean 
 	id="lmSession" scope="session"

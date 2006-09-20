@@ -22,11 +22,13 @@ public class LMProgramDirect extends LMProgramBase implements IGearProgram
 	private Integer triggerOffset = null;
 	private Integer triggerRestoreOffset = null;	
 	private boolean constraintOverride = false;	
+    private String addtionalInfo = null;
 	
 	/**
 	 * @return Returns the triggerOffset.
 	 */
-	public Integer getTriggerOffset() {
+	
+    public Integer getTriggerOffset() {
 		return triggerOffset;
 	}
 	/**
@@ -313,5 +315,11 @@ public void setLastGroupControlled(Integer newLastGroupControlled) {
 	public void setConstraintOverride(boolean b) {
 		constraintOverride = b;
 	}
+    public String getAddtionalInfo() {
+        return addtionalInfo;
+    }
+    public void setAddtionalInfo(String addtionalInfo) {
+        this.addtionalInfo = addtionalInfo;
+    }
 
 }

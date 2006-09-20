@@ -1,9 +1,15 @@
+<%@ page import="com.cannontech.loadcontrol.data.LMProgramDirectGear" %>
+<%@ page import="com.cannontech.database.db.device.lm.IlmDefines" %>
+<%@ page import="java.util.Date" %>
+<%@ page import="com.cannontech.util.ParamUtil" %>
 <%@ include file="lm_header.jsp" %>
 
 <%
 
 String cmd = request.getParameter("cmd");
 String itemid = request.getParameter("itemid");
+
+
 boolean isPageGood = true;
 
 if( cmd == null || itemid == null )
@@ -66,8 +72,27 @@ function setStopAble( radioChk )
 	var val = radioChk.value == "stopat" && radioChk.checked;	
 	document.cmdForm.stopdate.disabled = !val;
 	document.cmdForm.stopTime1.disabled = !val;
+    if (radioChk.value == "stopmanual" && radioChk.checked)
+    {
+        document.getElementById('tgconfig').style.display = 'none';
+    }
+    if (radioChk.value == "stopat" && radioChk.checked)
+    {
+        document.getElementById('tgconfig').style.display = 'inline';
+    
+    }
+
 }
 
+<%if (ILCCmds.PROG_START.equals(cmd)) {%>
+    Event.observe (window, 'load', function () {
+                                                dateChanged ('start');
+                                                dateChanged ('stop');
+                                                });
+    Event.observe (window, 'load', function () {showtgconfig (1)});
+    Event.observe (window, 'load', function () {GreyBox.preloadGreyBoxImages()});
+
+<%}%>
 </script>
 </head>
 
@@ -79,6 +104,8 @@ function setStopAble( radioChk )
 		<input type="hidden" name="cmd" value="<%= cmd %>" >
 		<input type="hidden" name="itemid" value="<%= itemid %>" >
 		<input type="hidden" name="redirectURL" value="/close.jsp" >
+        <input type="hidden" name="adjustments" id="h_adjustments" value=""/>                       
+    
     <div class="confMsg"><BR><%= cmdMsg.getHTMLTextMsg() %></div>
 		<BR>
 <% if ( isPageGood ) { %>
@@ -92,13 +119,35 @@ function setStopAble( radioChk )
 	<div class="TableCell"> 
 	  <div align="center">Select either Start Now or Start at and select a Data and Time:</div>
 	</div>
+
+     <input type="hidden" name="h_starttime" id="h_starttime" value=""/>                       
+     <input type="hidden" name="h_stoptime" id="h_stoptime" value=""/>                       
+    
     <table width="350" border="1" cellspacing="0" cellpadding="6" align="center" valign="top" bgcolor="#FFFFFF">
       <tr> 
         <td> 
           <table width="349" border="0" cellspacing="0" cellpadding="3" align="center">
 <%
-			if( ILCCmds.PROG_START.equals(cmd) )
+			String gearName = "";
+            if( ILCCmds.PROG_START.equals(cmd) )
 			{
+                    prg = (LMProgramBase)lcCache.getProgram( new Integer(itemid) );
+
+                    java.util.List gearList = 
+                        ( prg instanceof IGearProgram
+                            ? ((IGearProgram)prg).getDirectGearVector()
+                            : new java.util.Vector() );
+                    for (int i=0; i < gearList.size(); i++) {
+                        LMProgramDirectGear gear = (LMProgramDirectGear)gearList.get(i);
+                        if (gear.getControlMethod().equals(IlmDefines.CONTROL_TARGET_CYCLE)) {
+                            gearName = gear.getGearName();
+                        %>
+                         <input type="hidden" name="targetcyclegear" id="tcg_<%=(i + 1)%>"/>                       
+                        
+<%
+                        }
+                    }                    
+
 %>	  
             <tr valign="top"> 
               <td width="85" class="TableCell"> 
@@ -107,14 +156,8 @@ function setStopAble( radioChk )
               <td width="25">&nbsp;</td>
               <td width="36">&nbsp;</td>
               <td width="179">
-				  <select name="gearnum">
+                  <select name="gearnum" onchange="showtgconfig (this.options[this.selectedIndex].value);" >
 				<%
-					prg = (LMProgramBase)lcCache.getProgram( new Integer(itemid) );
-
-					java.util.List gearList = 
-						( prg instanceof IGearProgram
-							? ((IGearProgram)prg).getDirectGearVector()
-							: new java.util.Vector() );
 
 					if( gearList.size() <= 0 )
 						gearList = java.util.Arrays.asList(
@@ -123,14 +166,21 @@ function setStopAble( radioChk )
 					for( int i = 0; i < gearList.size(); i++ )
 					{
 				%>
-						<option value=<%= i+1 %> <%= (i == 0 ? "selected" : "") %> >
+						<option value=<%= i+1 %> <%= (i == 0 ? "selected" : "") %>  >
 							<%= gearList.get(i).toString() %>
 						</option>
 				<%	}
-				%>
-			  </select>
+               %>
+         
+              
+              </select>
 			  
 			  </td>
+              <td width="10" class="TableCell" >  
+                <a href="javascript:void(0);" 
+                 onclick="return openConfigWin('<%=gearName%>', gearnum.options[gearnum.selectedIndex].value);"
+                 name="tgconfig" id="tgconfig" > Config </a>
+              </td>
             </tr>
 
 <%
@@ -159,7 +209,9 @@ function setStopAble( radioChk )
                 <div align="right">Date: </div>
               </td>
               <td width="179"> 
-                <input type="text" name="startdate" value="<%= LCUtils.DATE_FORMATTER.format(new java.util.Date()) %>" size="8" disabled>
+                <input type="text" name="startdate" value="<%= LCUtils.DATE_FORMATTER.format(new java.util.Date()) %>" size="8" 
+                onchange="dateChanged('start');"
+                disabled>
                 <a href="javascript:openCalendar(cmdForm.startdate)"
 						onMouseOver="window.status='Start Date Calendar';return true;"
 						onMouseOut="window.status='';return true;"> 
@@ -176,7 +228,7 @@ function setStopAble( radioChk )
                   <div> 
                     <input type="text" name="startTime1"
                     	value="<%= LCUtils.TIME_FORMATTER.format(new java.util.Date()) %>"
-                    	size="5" disabled />
+                    	size="5" onchange="dateChanged('start');" disabled/>
                    	<font class="TableCell">(HH:mm)</font>
                   </div>
               </td>
@@ -209,7 +261,7 @@ function setStopAble( radioChk )
 				<%= (ILCCmds.PROG_STOP.equals(cmd) || ILCCmds.AREA_STOP_PROGS.equals(cmd) || ILCCmds.SC_STOP.equals(cmd) ? "Stop now: " : "Manual stop: ") %></b></div>
               </td>
               <td width="17"> 
-                <input type="radio" name="stopbutton" onClick="setStopAble(this)" 
+                <input id="manualstop" type="radio" name="stopbutton" onClick="setStopAble(this)" 
 				value="<%= (ILCCmds.PROG_STOP.equals(cmd) || ILCCmds.AREA_STOP_PROGS.equals(cmd) || ILCCmds.SC_STOP.equals(cmd) ? "stopnow" : "stopmanual") %>"
 				<%= (ILCCmds.PROG_STOP.equals(cmd) || ILCCmds.AREA_STOP_PROGS.equals(cmd) || ILCCmds.SC_STOP.equals(cmd) ? "checked" : "") %>>
                 <br>
@@ -236,7 +288,8 @@ function setStopAble( radioChk )
  stpDate.setTime( stpDate.getTime() + 14400000 );
 %>
                 <input type="text" name="stopdate" value="<%= LCUtils.DATE_FORMATTER.format( stpDate ) %>" size="8"
-				<%= (ILCCmds.PROG_STOP.equals(cmd) || ILCCmds.AREA_STOP_PROGS.equals(cmd) || ILCCmds.SC_STOP.equals(cmd) ? "disabled" : "") %>>
+				<%= (ILCCmds.PROG_STOP.equals(cmd) || ILCCmds.AREA_STOP_PROGS.equals(cmd) || ILCCmds.SC_STOP.equals(cmd) ? "disabled" : "") %> 
+                onchange="dateChanged('stop');">
                 <a href="javascript:openCalendar(cmdForm.stopdate)"
 						onMouseOver="window.status='Pop Calendar';return true;"
 						onMouseOut="window.status='';return true;">
@@ -251,7 +304,8 @@ function setStopAble( radioChk )
               <td width="170" height="85" >
 	              <input type="text" name="stopTime1" 
 	              		value="<%= LCUtils.TIME_FORMATTER.format( stpDate ) %>" size="5"
-						<%= (ILCCmds.PROG_STOP.equals(cmd) || ILCCmds.AREA_STOP_PROGS.equals(cmd) || ILCCmds.SC_STOP.equals(cmd) ? "disabled" : "") %> />
+						<%= (ILCCmds.PROG_STOP.equals(cmd) || ILCCmds.AREA_STOP_PROGS.equals(cmd) || ILCCmds.SC_STOP.equals(cmd) ? "disabled" : "") %> 
+                        onchange="dateChanged('stop');"/>
 	              	<font class="TableCell">(HH:mm)</font>
               </td>
             </tr>

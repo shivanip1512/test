@@ -33,6 +33,7 @@ public class LMProgramDirectGear
 	private Integer rampInPercent = null;
 	private Integer rampOutInterval = null;
 	private Integer rampOutPercent = null;
+    private Double kwReduction = null;
 	
 	// String constants that represent the various
 	// states a strategy can be in
@@ -400,5 +401,11 @@ public String toString() {
 	public void setRampOutPercent(Integer integer) {
 		rampOutPercent = integer;
 	}
+    public Double getKwReduction() {
+        return kwReduction;
+    }
+    public void setKwReduction(Double kwReduction) {
+        this.kwReduction = kwReduction;
+    }
 
 }

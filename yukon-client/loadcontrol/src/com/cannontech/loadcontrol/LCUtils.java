@@ -2,6 +2,7 @@ package com.cannontech.loadcontrol;
 
 import java.awt.Color;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -580,22 +581,32 @@ public class LCUtils
 		}
 		else
 		{
-			if( doItNow )
-				msg = program.createStartStopNowMsg(
-							stopTime,
-							(gearNum == null ? 0 : gearNum.intValue()), 
-							null, true, constraintFlag);
-			else
-				msg = program.createScheduledStartMsg( 
-							startTime, 
-							stopTime,
-							(gearNum == null ? 0 : gearNum.intValue()), 
-							null, null, constraintFlag );
+			msg = createStartMessage(doItNow, startTime, stopTime, program, 
+                                     gearNum, constraintFlag, null);
 		}
 	
 		//return the message created
 		return msg;
 	}
+
+
+    public static LMManualControlRequest createStartMessage(boolean doItNow, 
+            Date startTime, Date stopTime, LMProgramBase program, Integer gearNum, 
+            int constraintFlag, String addtionalInfo) {
+        LMManualControlRequest msg;
+        if( doItNow )
+        	msg = program.createStartStopNowMsg(
+        				stopTime,
+        				(gearNum == null ? 0 : gearNum.intValue()), 
+                        addtionalInfo, true, constraintFlag);
+        else
+        	msg = program.createScheduledStartMsg( 
+        				startTime, 
+        				stopTime,
+        				(gearNum == null ? 0 : gearNum.intValue()), 
+        				null, addtionalInfo, constraintFlag );
+        return msg;
+    }
 
 	/**
 	 *
@@ -665,8 +676,12 @@ public class LCUtils
 
 			for( int i = 0; i < responseMsgs.length; i++ )
 			{
+                LMManualControlRequest lmRequest = programResp[i].getLmRequest();
+                CTILogger.info("cmd-" + lmRequest.getCommand() + "," +
+                               "program- " + lmRequest.getYukonID() + "," +
+                               lmRequest.getAddditionalInfo());
                 responseMsgs[i] = 
-                    serverRequest.makeServerRequest(LoadControlClientConnection.getInstance(), programResp[i].getLmRequest()); 
+                    serverRequest.makeServerRequest(LoadControlClientConnection.getInstance(), lmRequest); 
 			}
 
 			//fill in our responses
@@ -705,6 +720,19 @@ public class LCUtils
 
 		return success;
 	}
+    
+    public static int getTimeSlotsForTargetCycle(Date stopTime, Date startTime) {
+        int timeSlots = -1;
+        Calendar stopCal = GregorianCalendar.getInstance();
+        stopCal.setTime(stopTime);
+        stopCal.set(Calendar.MINUTE, 0);
+        Calendar startCal = GregorianCalendar.getInstance();
+        startCal.setTime (startTime);
+        startCal.set(Calendar.MINUTE, 0);
+        
+        timeSlots = (int) ((stopCal.getTimeInMillis() - startCal.getTimeInMillis())/(60*60*1000) + 1);
+        return timeSlots;
+    }
 
 
 }
