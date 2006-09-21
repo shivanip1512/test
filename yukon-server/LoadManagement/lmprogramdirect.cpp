@@ -5201,7 +5201,7 @@ void CtiLMProgramDirect::dumpDynamicData(RWDBConnection& conn, CtiTime& currentD
             string additionalInfo = getAdditionalInfo();
             if( !additionalInfo.length() )
             {
-                additionalInfo = " ";
+                additionalInfo = "(none)";
             }
             RWDBTable dynamicLMProgramDirectTable = getDatabase().table( "dynamiclmprogramdirect" );
             if( !_insertDynamicDataFlag )
