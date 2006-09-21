@@ -17,6 +17,7 @@ import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.Transaction;
@@ -35,7 +36,9 @@ import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
+import com.cannontech.stars.util.SwitchCommandQueue;
 import com.cannontech.stars.util.WebClientException;
+import com.cannontech.stars.util.SwitchCommandQueue.SwitchCommand;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.StarsConfig;
@@ -151,18 +154,37 @@ public class YukonSwitchCommandAction implements ActionBase {
 			try {
 				LiteStarsLMHardware liteHw = null;
 				String action = null;
-				
+                SwitchCommandQueue.SwitchCommand cmd = new SwitchCommandQueue.SwitchCommand();
+                				
 				if (command.getStarsDisableService() != null) {
 					int invID = command.getStarsDisableService().getInventoryID();
 					liteHw = (LiteStarsLMHardware) energyCompany.getInventory( invID, true );
-					sendDisableCommand( energyCompany, liteHw, null );
+					if(VersionTools.staticLoadGroupMappingExists()) {
+                        cmd.setEnergyCompanyID( energyCompany.getLiteID() );
+                        cmd.setAccountID( liteHw.getAccountID() );
+                        cmd.setInventoryID( liteHw.getInventoryID() );
+                        cmd.setCommandType( SwitchCommandQueue.SWITCH_COMMAND_DISABLE );
+                        SwitchCommandQueue.getInstance().addCommand( cmd, true );
+                    }
+                    else
+                        sendDisableCommand( energyCompany, liteHw, null );
 					action = ActivityLogActions.HARDWARE_DISABLE_ACTION;
 				}
 				else if (command.getStarsEnableService() != null) {
 					int invID = command.getStarsEnableService().getInventoryID();
 					liteHw = (LiteStarsLMHardware) energyCompany.getInventory( invID, true );
-					sendEnableCommand( energyCompany, liteHw, null );
-					action = ActivityLogActions.HARDWARE_ENABLE_ACTION;
+                    if(VersionTools.staticLoadGroupMappingExists())
+                    {
+                        cmd.setEnergyCompanyID( energyCompany.getLiteID() );
+                        cmd.setAccountID( liteHw.getAccountID() );
+                        cmd.setInventoryID( liteHw.getInventoryID() );
+                        cmd.setCommandType( SwitchCommandQueue.SWITCH_COMMAND_ENABLE );
+                        SwitchCommandQueue.getInstance().addCommand( cmd, true );
+                    }
+                    else
+                        sendEnableCommand( energyCompany, liteHw, null );
+					
+                    action = ActivityLogActions.HARDWARE_ENABLE_ACTION;
 				}
 				else if (command.getStarsConfig() != null) {
 					int invID = command.getStarsConfig().getInventoryID();
@@ -222,10 +244,18 @@ public class YukonSwitchCommandAction implements ActionBase {
 			parseResponse( accountInfo, resp.getStarsInventory() );
 			
 			StarsYukonSwitchCommand command = SOAPUtil.parseSOAPMsgForOperation( reqMsg ).getStarsYukonSwitchCommand();
-			if (command.getStarsEnableService() != null)
-				session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Enable command has been sent out successfully." );
-			else if (command.getStarsDisableService() != null)
-				session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Disable command has been sent out successfully." );
+			if (command.getStarsEnableService() != null) {
+                if(VersionTools.staticLoadGroupMappingExists())
+                    session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Enable command has been saved to batch successfully." );
+                else
+                    session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Enable command has been sent out successfully." );
+            }
+			else if (command.getStarsDisableService() != null) {
+                if(VersionTools.staticLoadGroupMappingExists())
+                    session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Disable command has been saved to batch successfully." );
+                else
+                    session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Disable command has been sent out successfully." );
+            }
 			else if (command.getStarsConfig() != null)
 				session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Configuration command has been sent out successfully." );
 			
