@@ -11,6 +11,7 @@ import javax.swing.JOptionPane;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.gui.panel.CompositeJSplitPane;
 import com.cannontech.common.gui.panel.ManualChangeJPanel;
 import com.cannontech.common.gui.util.OkCancelDialog;
@@ -570,8 +571,24 @@ public void executeRefreshButton()
 {
 	LMCommand cmd = new LMCommand();
 	cmd.setCommand( LMCommand.RETRIEVE_ALL_CONTROL_AREAS );
-	
-	LoadControlClientConnection.getInstance().write( cmd );
+	LoadControlClientConnection lmconnection = getValidLMConnection();
+    lmconnection.write( cmd );
+}
+
+private LoadControlClientConnection getValidLMConnection() {
+    LoadControlClientConnection lmconnection = LoadControlClientConnection.getInstance();
+    while (!lmconnection.isValid()) {
+        try 
+        {
+            Thread.sleep(1000);
+        } 
+        catch (InterruptedException e) 
+        {
+            CTILogger.error(e);
+        }
+        lmconnection = LoadControlClientConnection.getInstance();
+    }
+    return lmconnection;
 }
 /**
  * Insert the method's description here.

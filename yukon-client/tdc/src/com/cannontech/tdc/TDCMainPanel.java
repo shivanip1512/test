@@ -4044,6 +4044,7 @@ private void formatDisplayColumns() throws Exception
 		return;
 
 
+    refreshColumnData();
 
 	javax.swing.JTable[] tables = ( isClientDisplay() 
 				? getCurrentSpecailChild().getJTables()
@@ -4053,34 +4054,38 @@ private void formatDisplayColumns() throws Exception
 	{
 		javax.swing.JTable table = tables[k];
 
-		ColumnData[][] columnData = displayData.getColumnData();
-        if (columnData.length > 0)
+        ColumnData[][] columnData = displayData.getColumnData();
+        if (columnData.length != tables.length) 
+        {
+            refreshColumnData();
+        }
+        else
         {
             for( int i = 0; i < columnData[k].length; i++ )
-    		{
-    			ColumnData singlCol = columnData[k][i];
-    
-    			for( int j = 0; j < table.getColumnCount(); j++ )
-    			{
-    				if( table.getColumnName(j).equalsIgnoreCase(singlCol.getColumnName()) )
-    				{
-    					//found the column, lets reformat its appearance
-    					TableColumn tc = table.getColumnModel().getColumn(j);
-    	
-    					tc.setWidth( singlCol.getWidth() );
-    					tc.setPreferredWidth( singlCol.getWidth() );	
-    	
-    					//make sure the table has the column index!!
-    					table.moveColumn( j, 
-    					   (singlCol.getOrdering() >= table.getColumnCount()
-    						 ? table.getColumnCount() - 1
-    						 : singlCol.getOrdering() ) );
-    	             
-    					break;
-    				}
-    				
-    			}
-    		}
+        		{
+        			ColumnData singlCol = columnData[k][i];
+        
+        			for( int j = 0; j < table.getColumnCount(); j++ )
+        			{
+        				if( table.getColumnName(j).equalsIgnoreCase(singlCol.getColumnName()) )
+        				{
+        					//found the column, lets reformat its appearance
+        					TableColumn tc = table.getColumnModel().getColumn(j);
+        	
+        					tc.setWidth( singlCol.getWidth() );
+        					tc.setPreferredWidth( singlCol.getWidth() );	
+        	
+        					//make sure the table has the column index!!
+        					table.moveColumn( j, 
+        					   (singlCol.getOrdering() >= table.getColumnCount()
+        						 ? table.getColumnCount() - 1
+        						 : singlCol.getOrdering() ) );
+        	             
+        					break;
+        				}
+        				
+        			}
+        		}
         }
 	}
 
@@ -4136,6 +4141,11 @@ private void formatDisplayColumns() throws Exception
 	}	
 
 
+}
+
+private void refreshColumnData() 
+{
+    executeRefresh_Pressed();
 }
 
 /**
