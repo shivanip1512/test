@@ -2013,6 +2013,10 @@ private void initialize() {
         }
     //hook into the configuration of the gear (i.e - target cycle)
     public TargetCycleConfigPanel getGearConfigJPanel() {
+        if (gearConfigJPanel == null)
+        {
+            gearConfigJPanel = new TargetCycleConfigPanel();
+        }
         return gearConfigJPanel;
     }
     

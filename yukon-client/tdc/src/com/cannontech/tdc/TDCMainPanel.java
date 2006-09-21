@@ -4145,6 +4145,7 @@ private void formatDisplayColumns() throws Exception
 
 private void refreshColumnData() 
 {
+    CTILogger.info("refreshColumnData called");
     executeRefresh_Pressed();
 }
 

@@ -27,7 +27,8 @@ public class TargetCycleConfigPanel extends JPanel implements ActionListener{
     private int timeSlots = -1;
     private JPanel okCancelPanel = null;
     private String additonalInfo = null;
-    private TargetCycleConfigPanel() {
+    
+    public TargetCycleConfigPanel() {
         super();
         
     }
