@@ -4037,8 +4037,10 @@ public void updateDisplayColumnData()
  */
 private void formatDisplayColumns() throws Exception
 {
-	if( getCurrentDisplay() == null
-		 || getCurrentDisplay().getDisplayData() == null )
+	Display currentDisp = getCurrentDisplay();
+    DisplayData displayData = currentDisp.getDisplayData();
+    if( currentDisp == null
+		 || displayData == null )
 		return;
 
 
@@ -4051,31 +4053,35 @@ private void formatDisplayColumns() throws Exception
 	{
 		javax.swing.JTable table = tables[k];
 
-		for( int i = 0; i < getCurrentDisplay().getDisplayData().getColumnData()[k].length; i++ )
-		{
-			ColumnData singlCol = getCurrentDisplay().getDisplayData().getColumnData()[k][i];
-
-			for( int j = 0; j < table.getColumnCount(); j++ )
-			{
-				if( table.getColumnName(j).equalsIgnoreCase(singlCol.getColumnName()) )
-				{
-					//found the column, lets reformat its appearance
-					TableColumn tc = table.getColumnModel().getColumn(j);
-	
-					tc.setWidth( singlCol.getWidth() );
-					tc.setPreferredWidth( singlCol.getWidth() );	
-	
-					//make sure the table has the column index!!
-					table.moveColumn( j, 
-					   (singlCol.getOrdering() >= table.getColumnCount()
-						 ? table.getColumnCount() - 1
-						 : singlCol.getOrdering() ) );
-	             
-					break;
-				}
-				
-			}
-		}
+		ColumnData[][] columnData = displayData.getColumnData();
+        if (columnData.length > 0)
+        {
+            for( int i = 0; i < columnData[k].length; i++ )
+    		{
+    			ColumnData singlCol = columnData[k][i];
+    
+    			for( int j = 0; j < table.getColumnCount(); j++ )
+    			{
+    				if( table.getColumnName(j).equalsIgnoreCase(singlCol.getColumnName()) )
+    				{
+    					//found the column, lets reformat its appearance
+    					TableColumn tc = table.getColumnModel().getColumn(j);
+    	
+    					tc.setWidth( singlCol.getWidth() );
+    					tc.setPreferredWidth( singlCol.getWidth() );	
+    	
+    					//make sure the table has the column index!!
+    					table.moveColumn( j, 
+    					   (singlCol.getOrdering() >= table.getColumnCount()
+    						 ? table.getColumnCount() - 1
+    						 : singlCol.getOrdering() ) );
+    	             
+    					break;
+    				}
+    				
+    			}
+    		}
+        }
 	}
 
 /*	
@@ -4118,13 +4124,13 @@ private void formatDisplayColumns() throws Exception
 		{
 			if( p.getComponent(i) instanceof CompositeJSplitPane )
 			{
-				if( getCurrentDisplay().getDisplayData().getProp0() >= 0 )
+				if( displayData.getProp0() >= 0 )
 					((CompositeJSplitPane)p.getComponent(i)).setDividerLocation(
-							getCurrentDisplay().getDisplayData().getProp0() );
+							displayData.getProp0() );
 							
-				if( getCurrentDisplay().getDisplayData().getProp1() >= 0 )
+				if( displayData.getProp1() >= 0 )
 					((CompositeJSplitPane)p.getComponent(i)).getJSplitPaneInner().setDividerLocation(
-							getCurrentDisplay().getDisplayData().getProp1() );
+							displayData.getProp1() );
 			}
 		}
 	}	
