@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2006/09/01 18:45:45 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2006/09/21 21:31:38 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -25,6 +25,8 @@
 class CtiDeviceGroupMCT : public CtiDeviceGroupBase
 {
 private:
+
+    typedef CtiDeviceGroupBase Inherited;
 
     CtiTableLMGroupMCT _lmGroupMCT;
 
@@ -46,8 +48,6 @@ protected:
         BaseAddress_LeadMeter = 4186112,  //  3FE000
         BaseAddress_Bronze    = 4190208,  //  3FF000
     };
-
-    typedef CtiDeviceGroupBase Inherited;
 
 public:
 

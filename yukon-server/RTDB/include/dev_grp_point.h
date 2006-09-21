@@ -1,4 +1,3 @@
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   dev_grp_point
@@ -9,10 +8,13 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2006/04/05 16:22:18 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2006/09/21 21:31:38 $
 * HISTORY      :
 * $Log: dev_grp_point.h,v $
+* Revision 1.3  2006/09/21 21:31:38  mfisher
+* privatized Inherited typedef
+*
 * Revision 1.2  2006/04/05 16:22:18  cplender
 * Initial Revision
 *
@@ -31,14 +33,15 @@
 
 class IM_EX_DEVDB CtiDeviceGroupPoint : public CtiDeviceGroupBase
 {
+private:
+
+    typedef CtiDeviceGroupBase Inherited;
+
 protected:
 
     CtiTablePointGroup _loadGroup;
 
-private:
-
 public:
-    typedef CtiDeviceGroupBase Inherited;
 
     CtiDeviceGroupPoint();
     CtiDeviceGroupPoint(const CtiDeviceGroupPoint& aRef);

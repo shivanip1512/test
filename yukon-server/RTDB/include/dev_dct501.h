@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_dct501.h-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2006/07/06 20:11:48 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2006/09/21 21:31:37 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -35,6 +35,8 @@ protected:
 
 private:
 
+    typedef CtiDeviceMCT24X Inherited;
+
     static const CommandSet _commandStore;
     static CommandSet initCommandStore( );
 
@@ -43,8 +45,6 @@ private:
              _nextLPTime   [DCT_LPChannels];
 
 protected:
-
-    typedef CtiDeviceMCT24X Inherited;
 
     virtual bool getOperation( const UINT &cmd,  USHORT &function, USHORT &length, USHORT &io );
 

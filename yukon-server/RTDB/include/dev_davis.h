@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2006/02/27 23:58:31 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2006/09/21 21:31:37 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -24,15 +24,15 @@
 
 class IM_EX_DEVDB CtiDeviceDavis : public CtiDeviceIED
 {
-protected:
-
 private:
+
+    typedef CtiDeviceRemote Inherited;
 
     INT generateScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority = 14);
 
-public:
+protected:
 
-   typedef CtiDeviceRemote Inherited;
+public:
 
    CtiDeviceDavis();
    CtiDeviceDavis(const CtiDeviceDavis& aRef);

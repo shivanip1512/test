@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_710.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2006/02/27 23:58:31 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2006/09/21 21:31:37 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -30,14 +30,14 @@ protected:
 
 private:
 
+    typedef CtiDeviceIDLC Inherited;
+
     enum Commands
     {
         Command_Loop = 123  //  something non-zero
     };
 
 public:
-
-    typedef CtiDeviceIDLC Inherited;
 
     CtiDeviceCCU710();
 

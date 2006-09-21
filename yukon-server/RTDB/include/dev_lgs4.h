@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_alm_nloc.h-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2006/02/27 23:58:32 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2006/09/21 21:31:38 $
 *
 * Copyright (c) 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -349,11 +349,9 @@ typedef struct
 
 class IM_EX_DEVDB CtiDeviceLandisGyrS4 : public CtiDeviceMeter
 {
-protected:
-
-
 private:
 
+    typedef CtiDeviceMeter Inherited;
 
     INT            iCommandPacket;
 
@@ -389,9 +387,9 @@ private:
         cout << __FILE__ << " copy constructor is invalid for this device" << endl;
     }
 
-public:
+protected:
 
-    typedef CtiDeviceMeter Inherited;
+public:
 
     CtiDeviceLandisGyrS4(BYTE         *dataPtr  = NULL,
                          ULONG         cnt=0):

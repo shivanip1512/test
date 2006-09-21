@@ -31,24 +31,9 @@ class SAXWctpHandler;
 
 class IM_EX_DEVDB CtiDeviceWctpTerminal  : public CtiDeviceIED
 {
-protected:
-
-   CtiTableDeviceTapPaging      _wctp;          // Use the same class as a TapPagingTerminal for now
-
-   queue< CtiVerificationBase * >  _verification_objects;
-   UINT                         _pageCount;    // Used to count the number of pages sent out (0-n)
-   CHAR                         _pagePrefix;   // Used to fake the WCTPTERM into thining it is a new message (a-d)
-   UINT                         _pageLength;
-   CHAR*                        _pageBuffer;
-   OUTMESS                      *_outMessage;
-
-   string                    _inStr;
-
-   CHAR*                        _outBuffer;     // Use our own buffer because WCTP message could be as long as 1024 bytes
-   CHAR*                        _inBuffer;
-   CHAR*                        _xmlBuffer;     // Buffer for XML message
-
 private:
+
+    typedef CtiDeviceIED Inherited;
 
     CHAR            *readLinePtr;
 
@@ -67,9 +52,24 @@ private:
 
     bool     _allowPrefix;
 
-public:
+protected:
 
-   typedef CtiDeviceIED Inherited;
+   CtiTableDeviceTapPaging      _wctp;          // Use the same class as a TapPagingTerminal for now
+
+   queue< CtiVerificationBase * >  _verification_objects;
+   UINT                         _pageCount;    // Used to count the number of pages sent out (0-n)
+   CHAR                         _pagePrefix;   // Used to fake the WCTPTERM into thining it is a new message (a-d)
+   UINT                         _pageLength;
+   CHAR*                        _pageBuffer;
+   OUTMESS                      *_outMessage;
+
+   string                    _inStr;
+
+   CHAR*                        _outBuffer;     // Use our own buffer because WCTP message could be as long as 1024 bytes
+   CHAR*                        _inBuffer;
+   CHAR*                        _xmlBuffer;     // Buffer for XML message
+
+public:
 
    CtiDeviceWctpTerminal();
    CtiDeviceWctpTeminal(const CtiDeviceWctpTerminal& aRef);

@@ -29,6 +29,8 @@ class IM_EX_DEVDB CtiDeviceION : public CtiDeviceRemote
 {
 private:
 
+    typedef CtiDeviceRemote Inherited;
+
     unsigned long _lastLPTime;
 
     int _postControlScanCount;
@@ -55,8 +57,6 @@ protected:
     };
 
 public:
-
-    typedef CtiDeviceRemote Inherited;
 
     CtiDeviceION();
     CtiDeviceION(const CtiDeviceION& aRef);

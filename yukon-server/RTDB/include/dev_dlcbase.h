@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_dlcbase.h-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2006/08/29 22:18:22 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2006/09/21 21:31:37 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -34,6 +34,8 @@ using std::set;
 class IM_EX_DEVDB CtiDeviceDLCBase : public CtiDeviceSingle
 {
 private:
+
+    typedef CtiDeviceSingle Inherited;
 
     CtiTableDeviceRoute  getDeviceRoute() const;
     CtiTableDeviceRoute &getDeviceRoute();
@@ -122,8 +124,6 @@ public:
     {
         BroadcastAddress = 0x3fffff
     };
-
-    typedef CtiDeviceSingle Inherited;
 
     CtiDeviceDLCBase();
     CtiDeviceDLCBase(const CtiDeviceDLCBase& aRef);

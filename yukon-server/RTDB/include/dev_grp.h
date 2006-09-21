@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_alm_nloc.h-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2006/04/19 20:44:46 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2006/09/21 21:31:38 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -34,18 +34,18 @@
 
 class CtiDeviceGroupBase : public CtiDeviceBase
 {
+private:
+
+    typedef CtiDeviceBase Inherited;
+
+    ULONG _lastCommandExpiration;
+
 protected:
 
     INT _isShed;
     string _lastCommand;
 
-private:
-
-    ULONG _lastCommandExpiration;
-
 public:
-
-    typedef CtiDeviceBase Inherited;
 
     CtiDeviceGroupBase()  :
         _isShed(UNCONTROLLED)
@@ -95,7 +95,7 @@ public:
         {
             int offset = 0;
             bool reducelogs = !stringCompareIgnoreCase(gConfigParms.getValueAsString("REDUCE_CONTROL_REPORTS_TO_SYSTEM_LOG"),"true");
-            for(std::list< string >::iterator itr = parse.getActionItems().begin(); 
+            for(std::list< string >::iterator itr = parse.getActionItems().begin();
                  itr != parse.getActionItems().end();
                  ++itr )
             {

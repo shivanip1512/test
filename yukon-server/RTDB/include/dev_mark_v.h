@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2006/03/23 15:29:19 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2006/09/21 21:31:38 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -38,51 +38,50 @@ class IM_EX_DEVDB CtiDeviceMarkV : public CtiDeviceMeter
 {
 private:
 
-  enum
-  {
-     Type_II         = 50
-  };
+    typedef CtiDeviceMeter Inherited;
 
-  enum
-  {
-     TOTAL_USAGE      = 1,
-     CURRENT_DEMAND,
-     PEAK_DEMAND,
-     PEAK_TIME,
-     PEAK_DATE,
-     RATEA_USAGE,
-     RATEB_USAGE,
-     RATEC_USAGE,
-     RATED_USAGE,
-     RATEA_PEAK_DEMAND,
-     RATEB_PEAK_DEMAND,
-     RATEC_PEAK_DEMAND,
-     RATED_PEAK_DEMAND,
-     RATEA_PEAK_TIME,
-     RATEB_PEAK_TIME,
-     RATEC_PEAK_TIME,
-     RATED_PEAK_TIME,
-     RATEA_PEAK_DATE,
-     RATEB_PEAK_DATE,
-     RATEC_PEAK_DATE,
-     RATED_PEAK_DATE,
-     PREVIOUS_DEMAND,
-     LOAD_PROFILE,
-     CH1_OFFSET       = 200,
-     CH2_OFFSET       = 250,
-     CH3_OFFSET       = 300,
-     CH4_OFFSET       = 350
-  };
+    enum
+    {
+        Type_II         = 50
+    };
 
+    enum
+    {
+        TOTAL_USAGE      = 1,
+        CURRENT_DEMAND,
+        PEAK_DEMAND,
+        PEAK_TIME,
+        PEAK_DATE,
+        RATEA_USAGE,
+        RATEB_USAGE,
+        RATEC_USAGE,
+        RATED_USAGE,
+        RATEA_PEAK_DEMAND,
+        RATEB_PEAK_DEMAND,
+        RATEC_PEAK_DEMAND,
+        RATED_PEAK_DEMAND,
+        RATEA_PEAK_TIME,
+        RATEB_PEAK_TIME,
+        RATEC_PEAK_TIME,
+        RATED_PEAK_TIME,
+        RATEA_PEAK_DATE,
+        RATEB_PEAK_DATE,
+        RATEC_PEAK_DATE,
+        RATED_PEAK_DATE,
+        PREVIOUS_DEMAND,
+        LOAD_PROFILE,
+        CH1_OFFSET       = 200,
+        CH2_OFFSET       = 250,
+        CH3_OFFSET       = 300,
+        CH4_OFFSET       = 350
+    };
 
-   CtiProtocolTransdata       _transdataProtocol;
-   CtiProtocolTransdata::llp  _llp;
+    CtiProtocolTransdata       _transdataProtocol;
+    CtiProtocolTransdata::llp  _llp;
 
 protected:
 
 public:
-
-   typedef CtiDeviceMeter Inherited;
 
    CtiDeviceMarkV();
 

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_single.h-arc  $
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2006/02/27 23:58:32 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2006/09/21 21:31:39 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -48,6 +48,10 @@ class CtiVerificationBase;  //  this is so boost_time.h isn't included via verif
  */
 class IM_EX_DEVDB CtiDeviceSingle : public CtiDeviceBase
 {
+private:
+
+    typedef CtiDeviceBase Inherited;
+
 public:
     enum ScanFlags
     {
@@ -132,8 +136,6 @@ private:
     CtiTime _lastExpirationCheckTime;
 
 public:
-
-    typedef CtiDeviceBase Inherited;
 
     CtiDeviceSingle();
     CtiDeviceSingle(const CtiDeviceSingle& aRef);

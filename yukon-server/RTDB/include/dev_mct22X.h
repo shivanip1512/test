@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct22X.h-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2006/07/06 20:11:48 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2006/09/21 21:31:38 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -25,10 +25,10 @@ class CtiDeviceMCT22X : public CtiDeviceMCT2XX
 {
 private:
 
-   static const CommandSet _commandStore;
-   static CommandSet initCommandStore();
+    typedef CtiDeviceMCT2XX Inherited;
 
-   typedef CtiDeviceMCT2XX Inherited;
+    static const CommandSet _commandStore;
+    static CommandSet initCommandStore();
 
 protected:
 
@@ -52,12 +52,12 @@ protected:
 
 public:
 
-   CtiDeviceMCT22X();
-   CtiDeviceMCT22X(const CtiDeviceMCT22X& aRef);
+    CtiDeviceMCT22X();
+    CtiDeviceMCT22X(const CtiDeviceMCT22X& aRef);
 
-   virtual ~CtiDeviceMCT22X();
+    virtual ~CtiDeviceMCT22X();
 
-   CtiDeviceMCT22X& operator=(const CtiDeviceMCT22X& aRef);
+    CtiDeviceMCT22X& operator=(const CtiDeviceMCT22X& aRef);
 };
 
 #endif // #ifndef __DEV_MCT22X_H__

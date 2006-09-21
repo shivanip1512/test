@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT470.h-arc  $
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2006/09/20 20:21:04 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2006/09/21 21:31:38 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -25,6 +25,8 @@
 class IM_EX_DEVDB CtiDeviceMCT470 : public CtiDeviceMCT4xx
 {
 private:
+
+    typedef CtiDeviceMCT4xx Inherited;
 
     static const CommandSet _commandStore;
     static CommandSet initCommandStore();
@@ -123,8 +125,6 @@ private:
 protected:
 
     virtual bool getOperation( const UINT &cmd,  USHORT &function, USHORT &length, USHORT &io );
-
-    typedef CtiDeviceMCT4xx Inherited;
 
     enum MemoryMap
     {
@@ -290,7 +290,10 @@ protected:
         FuncRead_MReadFrozenPos     = 0x91,
         FuncRead_MReadFrozenLen     =   13,
 
+        FuncRead_DemandPos          = 0x92,
         FuncRead_DemandLen          =   11,  //  0x92
+
+        FuncRead_PeakDemandPos      = 0x93,
         FuncRead_PeakDemandLen      =   12,  //  0x93
 
         FuncRead_IED_Precanned_Base     = 0xc1,

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_vectron.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2006/02/27 23:58:33 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2006/09/21 21:31:39 $
 *
 * Copyright (c) 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -296,9 +296,9 @@ typedef struct {
 
 class IM_EX_DEVDB CtiDeviceVectron : public CtiDeviceSchlumberger
 {
-protected:
-
 private:
+
+    typedef CtiDeviceSchlumberger Inherited;
 
     INT            iCommandPacket;
 
@@ -313,9 +313,9 @@ private:
         cout << __FILE__ << " copy constructor is invalid for this device" << endl;
     }
 
-public:
+protected:
 
-   typedef CtiDeviceSchlumberger Inherited;
+public:
 
    // default constructor that takes 2 optional parameters
    CtiDeviceVectron ( BYTE         *dataPtr  = NULL,

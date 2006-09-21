@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_alm_nloc.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2006/02/27 23:58:32 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2006/09/21 21:31:38 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -166,6 +166,8 @@ protected:
 
 private:
 
+    typedef CtiDeviceRemote Inherited;
+
    // current state of the device
    CtiMeterMachineStates_t    _currentState;
 
@@ -179,8 +181,6 @@ private:
    CtiMeterCmdStates_t        _currentCommand;
 
 public:
-
-   typedef CtiDeviceRemote Inherited;
 
    CtiDeviceIED()  :
       _currentState(StateHandshakeInitialize),

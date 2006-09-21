@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_tap.h-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2006/02/27 23:58:32 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2006/09/21 21:31:39 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -30,6 +30,19 @@
 
 class IM_EX_DEVDB CtiDeviceTapPagingTerminal  : public CtiDeviceIED
 {
+private:
+
+    typedef CtiDeviceIED Inherited;
+
+   UINT                          _idByteCount;  // How many bytes should a guy wait for after the CR (def. to 10)
+
+   bool                          _sendFiller;
+
+   CtiTime   _pacingTimeStamp;       // This is a timestamp from which we began the pacing process.
+   int      _pagesPerMinute;      // This is a count of pages since the _pacingTimeStamp.         Used with CPARM: PAGING_BATCH_SIZE
+   bool     _pacingReport;
+   bool     _allowPrefix;
+
 protected:
 
    CtiTableDeviceTapPaging       _tap;
@@ -43,20 +56,7 @@ protected:
 
    string                     _inStr;
 
-private:
-
-   UINT                          _idByteCount;  // How many bytes should a guy wait for after the CR (def. to 10)
-
-   bool                          _sendFiller;
-
-   CtiTime   _pacingTimeStamp;       // This is a timestamp from which we began the pacing process.
-   int      _pagesPerMinute;      // This is a count of pages since the _pacingTimeStamp.         Used with CPARM: PAGING_BATCH_SIZE
-   bool     _pacingReport;
-   bool     _allowPrefix;
-
 public:
-
-   typedef CtiDeviceIED Inherited;
 
    CtiDeviceTapPagingTerminal();
    CtiDeviceTapPagingTeminal(const CtiDeviceTapPagingTerminal& aRef);

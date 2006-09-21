@@ -26,6 +26,8 @@ class IM_EX_DEVDB CtiDeviceRepeater800 : public CtiDeviceRepeater900
 {
 private:
 
+    typedef CtiDeviceRepeater900 Inherited;
+
    static const CommandSet _commandStore;
    static CommandSet initCommandStore();
 
@@ -40,8 +42,6 @@ protected:
     };
 
     INT decodeGetValuePFCount(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
-
-    typedef CtiDeviceRepeater900 Inherited;
 
 public:
 

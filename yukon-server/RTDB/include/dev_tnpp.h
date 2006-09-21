@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_tnpp.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2006/02/27 23:58:33 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2006/09/21 21:31:39 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -30,6 +30,10 @@
 
 class IM_EX_DEVDB CtiDeviceTnppPagingTerminal  : public CtiDeviceRemote
 {
+private:
+
+    typedef CtiDeviceRemote Inherited;
+
 protected:
 
    queue< CtiVerificationBase * >  _verification_objects;
@@ -40,8 +44,6 @@ protected:
    ULONG                           _inCountActual;
 
 public:
-
-   typedef CtiDeviceRemote Inherited;
 
    CtiDeviceTnppPagingTerminal();
    CtiDeviceTnppPagingTerminal(const CtiDeviceTnppPagingTerminal& aRef);
@@ -136,8 +138,8 @@ static const char *_RS;
 static const char *_CAN;
 static const char *_zero_origin;
 static const char *_zero_serial;
-static const char *_type_golay;    
-static const char *_type_flex;      
+static const char *_type_golay;
+static const char *_type_flex;
 static const char *_type_pocsag;
 static const char *_type_pocsag_1200;
 static const char *_type_pocsag_2400;
@@ -149,10 +151,10 @@ static const char *_function_2;
 static const char *_function_3;
 static const char *_function_4;
 
-static const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_0;  
-static const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_2;  
-static const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_4;  
-static const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_6; 
+static const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_0;
+static const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_2;
+static const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_4;
+static const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_6;
 static const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_8;
 static const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_10;
 static const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_12;
@@ -173,7 +175,7 @@ static const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_40;
 static const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_42;
 static const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_44;
 static const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_46;
-static const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_48; 
+static const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_48;
 static const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_50;
 static const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_52;
 static const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_54;
@@ -184,6 +186,6 @@ static const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_62;
 static const int CtiDeviceTnppPagingTerminal::_a_capcode_max;
 static const int CtiDeviceTnppPagingTerminal::_a_capcode_min;
 
-};                                
-                                  
-#endif // #ifndef __DEV_TNPP_H__  
+};
+
+#endif // #ifndef __DEV_TNPP_H__

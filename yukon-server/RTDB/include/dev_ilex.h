@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_welco.h-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2006/02/27 23:58:32 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2006/09/21 21:31:38 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -56,12 +56,9 @@
 
 class IM_EX_DEVDB CtiDeviceILEX : public CtiDeviceIDLC
 {
-protected:
-
-    BYTE _freezeNumber;
-    BYTE _sequence;
-
 private:
+
+    typedef CtiDeviceIDLC Inherited;
 
     INT header(PBYTE  Header, USHORT Function, USHORT SubFunction1, USHORT SubFunction2);
 
@@ -70,9 +67,12 @@ private:
     BYTE getIlexSequenceNumber() const;
     CtiDeviceILEX& setIlexSequenceNumber(BYTE number);
 
-public:
+protected:
 
-    typedef CtiDeviceIDLC Inherited;
+    BYTE _freezeNumber;
+    BYTE _sequence;
+
+public:
 
     CtiDeviceILEX();
     CtiDeviceILEX(const CtiDeviceILEX& aRef);

@@ -139,6 +139,10 @@ typedef struct
 
 class IM_EX_DEVDB CtiDeviceAlpha : public CtiDeviceMeter
 {
+private:
+
+    typedef CtiDeviceMeter Inherited;
+
 protected:
 
     USHORT         _readClass;
@@ -173,8 +177,6 @@ protected:
 
 
 public:
-
-    typedef CtiDeviceMeter Inherited;
 
     CtiDeviceAlpha(BYTE         *dataPtr  = NULL,
                    BYTE          *lpPtr = NULL,

@@ -160,9 +160,9 @@ typedef struct
 
 class IM_EX_DEVDB CtiDeviceQuantum : public CtiDeviceSchlumberger
 {
-protected:
-
 private:
+
+    typedef CtiDeviceSchlumberger Inherited;
 
     INT   _commandPacket;
     ULONG _basePageStart;
@@ -191,10 +191,9 @@ private:
     FLOAT bcdToFloat( BYTE *toConvert, INT numBytes );
     FLOAT registerToFloat( BYTE *rawReg, QuantumConfigData_t *translated, INT programmedRegNum );
 
+protected:
 
 public:
-
-   typedef CtiDeviceSchlumberger Inherited;
 
     // default constructor that takes 2 optional parameters
     CtiDeviceQuantum( BYTE         *dataPtr  = NULL,

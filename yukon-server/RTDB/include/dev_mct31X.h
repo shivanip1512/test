@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct31X.h-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2006/07/06 20:11:48 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2006/09/21 21:31:38 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -32,6 +32,8 @@ public:
     };
 
 private:
+
+    typedef CtiDeviceMCT310 Inherited;
 
     CtiTime _lastLPTime[MCT31X_ChannelCount],
             _nextLPTime[MCT31X_ChannelCount],
@@ -109,8 +111,6 @@ public:
         MCT360_IED_VoltsPhaseC_PointOffset = 43,
         MCT360_IED_VoltsNeutralCurrent_PointOffset = 44
     };
-
-    typedef CtiDeviceMCT310 Inherited;
 
     CtiDeviceMCT31X( );
     CtiDeviceMCT31X( const CtiDeviceMCT31X &aRef );

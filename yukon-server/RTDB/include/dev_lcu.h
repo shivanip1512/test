@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_lcu.h-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2006/09/19 21:43:11 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2006/09/21 21:31:38 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -88,6 +88,8 @@ protected:
 
 private:
 
+    typedef CtiDeviceIDLC Inherited;
+
     BOOL                 _lcuStaged;
     CtiLCUType_t         _lcuType;
 
@@ -115,8 +117,6 @@ private:
     vector< pair<LONG, UINT> > _controlledGroupVector; // Vector of groupids, and TrxId for that group.  Used initially for MPC bit mashing 12/31/04 CGP
 
 public:
-
-    typedef CtiDeviceIDLC Inherited;
 
     CtiDeviceLCU(INT type = TYPE_LCU415);
     CtiDeviceLCU(const CtiDeviceLCU& aRef);

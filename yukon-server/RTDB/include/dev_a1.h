@@ -486,6 +486,8 @@ class IM_EX_DEVDB CtiDeviceAlphaA1 : public CtiDeviceAlpha
 {
 private:
 
+    typedef CtiDeviceAlpha Inherited;
+
     // only needed in the A1
     vector<int>     _sLPPulseVector;
 
@@ -504,8 +506,6 @@ protected:
 
 
 public:
-
-   typedef CtiDeviceAlpha Inherited;
 
    CtiDeviceAlphaA1(BYTE         *dataPtr  = NULL,
                   BYTE          *lpPtr = NULL,

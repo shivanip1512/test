@@ -1,8 +1,3 @@
-
-#pragma warning( disable : 4786)
-#ifndef __DEV_GRP_SA105_H__
-#define __DEV_GRP_SA105_H__
-
 /*---------------------------------------------------------------------------------*
 *
 * File:   dev_grp_sa105
@@ -14,11 +9,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2006/02/27 23:58:32 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2006/09/21 21:31:38 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
+#pragma warning( disable : 4786)
+#ifndef __DEV_GRP_SA105_H__
+#define __DEV_GRP_SA105_H__
+
 
 #include "dev_base.h"
 #include "dev_grp.h"
@@ -28,15 +27,15 @@
 
 class IM_EX_DEVDB CtiDeviceGroupSA105 : public CtiDeviceGroupBase
 {
+private:
+
+    typedef CtiDeviceGroupBase Inherited;
+
 protected:
 
     CtiTableSA205105Group _loadGroup;
 
-private:
-
 public:
-
-    typedef CtiDeviceGroupBase Inherited;
 
     CtiDeviceGroupSA105();
     CtiDeviceGroupSA105(const CtiDeviceGroupSA105& aRef);

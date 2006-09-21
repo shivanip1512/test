@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base.h-arc  $
-* REVISION     :  $Revision: 1.56 $
-* DATE         :  $Date: 2006/08/30 20:20:42 $
+* REVISION     :  $Revision: 1.57 $
+* DATE         :  $Date: 2006/09/21 21:31:37 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -80,6 +80,8 @@ public:
 
 private:
 
+    typedef CtiTblPAO Inherited;
+
     int _currTrxID;
     int _responsesOnTrxID;
     CtiTime _lastReport;
@@ -120,7 +122,6 @@ protected:
                                                   //    by Porter, Scanner, or whomever
 public:
 
-    typedef CtiTblPAO Inherited;
     typedef vector< CtiTablePaoExclusion > exclusions;
     typedef vector< pair< unsigned long, CtiTime > > prohibitions;
 

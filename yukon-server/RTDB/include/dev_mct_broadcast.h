@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2006/07/06 20:11:49 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2006/09/21 21:31:38 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -29,6 +29,8 @@ using std::set;
 class IM_EX_DEVDB CtiDeviceMCTBroadcast : public CtiDeviceDLCBase
 {
 private:
+
+    typedef CtiDeviceDLCBase Inherited;
 
     int _last_freeze;
 
@@ -50,8 +52,6 @@ protected:
     INT executePutStatus( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT executePutConfig( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT executePutValue( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
-
-    typedef CtiDeviceDLCBase Inherited;
 
 public:
 

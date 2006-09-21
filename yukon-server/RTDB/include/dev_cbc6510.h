@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_cbc.h-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2006/02/27 23:58:31 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2006/09/21 21:31:37 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -51,8 +51,6 @@ protected:
     virtual void processPoints( Protocol::Interface::pointlist_t &points );
 
 public:
-
-    typedef Device::DNP Inherited;
 
     CtiDeviceCBC6510();
     CtiDeviceCBC6510(const CtiDeviceCBC6510& aRef);

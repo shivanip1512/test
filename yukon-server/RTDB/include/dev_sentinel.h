@@ -1,8 +1,3 @@
-
-#pragma warning( disable : 4786)
-#ifndef __DEV_SENTINEL_H__
-#define __DEV_SENTINEL_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   dev_sentinel.h
@@ -14,12 +9,16 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_kv2.h-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2006/04/06 18:36:40 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2006/09/21 21:31:39 $
 *
 
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#pragma warning( disable : 4786)
+#ifndef __DEV_SENTINEL_H__
+#define __DEV_SENTINEL_H__
+
 
 #include "dev_meter.h"
 #include "dlldefs.h"

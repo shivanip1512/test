@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_cbc.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2006/02/27 23:58:31 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2006/09/21 21:31:37 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -24,16 +24,16 @@
 
 class IM_EX_DEVDB CtiDeviceCBC : public CtiDeviceBase
 {
+private:
+
+    typedef CtiDeviceBase Inherited;
+
 protected:
 
     CtiTableDeviceCBC _cbc;
     static int        _cbcTries;
 
-private:
-
-    public:
-
-    typedef CtiDeviceBase Inherited;
+public:
 
     CtiDeviceCBC();
     CtiDeviceCBC(const CtiDeviceCBC& aRef);

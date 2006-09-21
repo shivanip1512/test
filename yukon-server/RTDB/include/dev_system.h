@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_system.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2006/02/27 23:58:32 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2006/09/21 21:31:39 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -24,13 +24,13 @@
 
 class CtiDeviceSystem : public CtiDeviceBase
 {
-protected:
-
 private:
 
-public:
+    typedef CtiDeviceBase Inherited;
 
-   typedef CtiDeviceBase Inherited;
+protected:
+
+public:
 
    CtiDeviceSystem();
 

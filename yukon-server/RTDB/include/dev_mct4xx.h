@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct4xx.h-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2006/09/20 20:21:04 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2006/09/21 21:31:38 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -34,6 +34,8 @@ protected:
 
 private:
 
+    typedef CtiDeviceMCT Inherited;
+
     static const CommandSet _commandStore;
     static CommandSet initCommandStore();
 
@@ -41,8 +43,6 @@ private:
     static ConfigPartsList initConfigParts();
 
     int executePutConfigSingle( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
-
-    typedef CtiDeviceMCT Inherited;
 
 protected:
 

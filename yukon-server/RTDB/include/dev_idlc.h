@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_alm_nloc.h-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2006/01/16 19:59:34 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2006/09/21 21:31:38 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -32,16 +32,16 @@
 
 class CtiDeviceIDLC : public CtiDeviceRemote
 {
+private:
+
+    typedef CtiDeviceRemote Inherited;
+
 protected:
 
    CtiTableDeviceIDLC   _idlc;
    mutable CtiTransmitterInfo   *_trxInfo;
 
-private:
-
-   public:
-
-   typedef CtiDeviceRemote Inherited;
+public:
 
    CtiDeviceIDLC() :
    _trxInfo(NULL)

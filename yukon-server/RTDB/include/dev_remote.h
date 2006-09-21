@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_remote.h-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2006/05/25 22:25:44 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2006/09/21 21:31:39 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -31,14 +31,16 @@
 
 class IM_EX_DEVDB CtiDeviceRemote : public CtiDeviceSingle
 {
+private:
+
+    typedef CtiDeviceSingle   Inherited;
+
 protected:
 
     CtiTableDeviceDirectComm   Direct;
     CtiTableDeviceDialup       *pDialup;
 
 public:
-
-    typedef CtiDeviceSingle   Inherited;
 
     CtiDeviceRemote() :
     pDialup(NULL)

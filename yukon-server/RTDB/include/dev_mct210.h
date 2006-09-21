@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct210.h-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2006/07/06 20:11:48 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2006/09/21 21:31:38 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,6 +23,13 @@
 
 class IM_EX_DEVDB CtiDeviceMCT210 : public CtiDeviceMCT2XX
 {
+private:
+
+    typedef CtiDeviceMCT2XX Inherited;
+
+    static const CommandSet _commandStore;
+    static CommandSet initCommandStore();
+
 protected:
 
     enum
@@ -48,11 +55,6 @@ protected:
         MCT210_ResetLen    =    3
     };
 
-private:
-
-    static const CommandSet _commandStore;
-    static CommandSet initCommandStore();
-
 public:
 
     enum
@@ -60,8 +62,6 @@ public:
         MCT210_StatusConnected    = 0x80,
         MCT210_StatusDisconnected = 0x40
     };
-
-    typedef CtiDeviceMCT2XX Inherited;
 
     CtiDeviceMCT210();
     CtiDeviceMCT210(const CtiDeviceMCT210& aRef);

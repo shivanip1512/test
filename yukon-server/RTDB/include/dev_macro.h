@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2006/02/27 23:58:32 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2006/09/21 21:31:38 $
 *
 * Copyright (c) 1999-2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -31,6 +31,14 @@ using std::vector;
 
 class IM_EX_DEVDB CtiDeviceMacro : public CtiDeviceGroupBase // 2004/1/4 CGP // : public CtiDeviceBase
 {
+private:
+
+    typedef CtiDeviceGroupBase Inherited;
+
+    INT analyzeWhiteRabbits( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
+    bool coalesceRippleGroups( CtiRequestMsg *pReq, CtiCommandParser &parse, BYTE *RippleMessage );
+    bool executeOnSubGroupRoute( const CtiDeviceSPtr &pBase, set< LONG > &executedRouteSet );
+
 protected:
 
     typedef std::vector< CtiDeviceSPtr >           deviceVec_t;
@@ -40,15 +48,7 @@ protected:
 
     CtiMutex _deviceListMux;
 
-private:
-
-    INT analyzeWhiteRabbits( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
-    bool coalesceRippleGroups( CtiRequestMsg *pReq, CtiCommandParser &parse, BYTE *RippleMessage );
-    bool executeOnSubGroupRoute( const CtiDeviceSPtr &pBase, set< LONG > &executedRouteSet );
-
 public:
-
-    typedef CtiDeviceGroupBase Inherited;
 
     CtiDeviceMacro( );
     CtiDeviceMacro( const CtiDeviceMacro &aRef );

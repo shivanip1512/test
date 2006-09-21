@@ -1,4 +1,3 @@
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   dev_grp_golay
@@ -9,10 +8,13 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2006/02/27 23:58:32 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2006/09/21 21:31:38 $
 * HISTORY      :
 * $Log: dev_grp_golay.h,v $
+* Revision 1.6  2006/09/21 21:31:38  mfisher
+* privatized Inherited typedef
+*
 * Revision 1.5  2006/02/27 23:58:32  tspar
 * Phase two of RWTPtrSlist replacement.
 *
@@ -43,15 +45,15 @@
 
 class IM_EX_DEVDB CtiDeviceGroupGolay : public CtiDeviceGroupBase
 {
+private:
+
+    typedef CtiDeviceGroupBase Inherited;
+
 protected:
 
     CtiTableSASimpleGroup   _loadGroup;
 
-private:
-
 public:
-
-    typedef CtiDeviceGroupBase Inherited;
 
     CtiDeviceGroupGolay();
     CtiDeviceGroupGolay(const CtiDeviceGroupGolay& aRef);

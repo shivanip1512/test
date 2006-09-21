@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_carrier.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/12/20 17:20:29 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2006/09/21 21:31:37 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -29,14 +29,16 @@
 
 class IM_EX_DEVDB CtiDeviceCarrier : public CtiDeviceDLCBase
 {
+private:
+
+    typedef CtiDeviceDLCBase Inherited;
+
 protected:
 
    CtiTableDeviceLoadProfile  LoadProfile;
    CtiTableDeviceMeterGroup   MeterGroup;
 
 public:
-
-   typedef CtiDeviceDLCBase Inherited;
 
    CtiDeviceCarrier();
    CtiDeviceCarrier(const CtiDeviceCarrier &aRef);

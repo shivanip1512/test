@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_welco.h-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2006/02/27 23:58:33 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2006/09/21 21:31:39 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -30,15 +30,15 @@
 
 class IM_EX_DEVDB CtiDeviceWelco : public CtiDeviceIDLC
 {
-protected:
+private:
 
-   private:
+   typedef CtiDeviceIDLC Inherited;
 
    int     _deadbandsSent;
 
-public:
+protected:
 
-   typedef CtiDeviceIDLC Inherited;
+public:
 
    CtiDeviceWelco();
    CtiDeviceWelco(const CtiDeviceWelco& aRef);

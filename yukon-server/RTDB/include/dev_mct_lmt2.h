@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct_lmt2.h-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2006/07/06 20:11:49 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2006/09/21 21:31:39 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -24,6 +24,8 @@
 class CtiDeviceMCT_LMT2 : public CtiDeviceMCT22X
 {
 private:
+
+    typedef CtiDeviceMCT22X Inherited;
 
    static const CommandSet _commandStore;
    static CommandSet initCommandStore();
@@ -56,8 +58,6 @@ protected:
     INT decodeGetStatusInternal( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
 
     INT decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
-
-    typedef CtiDeviceMCT22X Inherited;
 
 public:
 

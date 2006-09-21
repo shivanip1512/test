@@ -1,8 +1,3 @@
-
-#pragma warning( disable : 4786)
-#ifndef __DEV_GRP_SA205_H__
-#define __DEV_GRP_SA205_H__
-
 /*---------------------------------------------------------------------------------*
 *
 * File:   dev_grp_sa205
@@ -14,11 +9,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2006/02/27 23:58:32 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2006/09/21 21:31:38 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
+#pragma warning( disable : 4786)
+#ifndef __DEV_GRP_SA205_H__
+#define __DEV_GRP_SA205_H__
+
 
 #include "dev_base.h"
 #include "dev_grp.h"
@@ -28,19 +27,19 @@
 
 class IM_EX_DEVDB CtiDeviceGroupSA205 : public CtiDeviceGroupBase
 {
-protected:
-
-    CtiTableSA205105Group _loadGroup;
-
 private:
+
+    typedef CtiDeviceGroupBase Inherited;
 
     int _lastSTime;     // Holds the last sent message for the restore graceful command.
     int _lastCTime;
     CtiTime _onePeriodLeft;
 
-public:
+protected:
 
-    typedef CtiDeviceGroupBase Inherited;
+    CtiTableSA205105Group _loadGroup;
+
+public:
 
     CtiDeviceGroupSA205();
     CtiDeviceGroupSA205(const CtiDeviceGroupSA205& aRef);

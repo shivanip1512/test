@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_dr87.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2006/02/27 23:58:32 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2006/09/21 21:31:37 $
 *
 * Copyright (c) 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -95,10 +95,9 @@ class CtiDR87PorterSide;  // contained in this file at bottome
 
 class IM_EX_DEVDB CtiDeviceDR87 : public CtiDeviceMeter
 {
-protected:
+private:
 
-
-    private:
+    typedef CtiDeviceMeter Inherited;
 
     INT            iRetryAttempts;
     ULONG          iTotalByteCount;
@@ -127,9 +126,9 @@ protected:
         }
     }
 
-public:
+protected:
 
-    typedef CtiDeviceMeter Inherited;
+public:
 
     CtiDeviceDR87(BYTE         *aPtr  = NULL,
                   BYTE         *lpPtr  = NULL,

@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_tap.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2006/02/27 23:58:32 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2006/09/21 21:31:39 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -29,6 +29,10 @@
 
 class IM_EX_DEVDB CtiDeviceSnppPagingTerminal  : public CtiDeviceRemote
 {
+private:
+
+    typedef CtiDeviceRemote Inherited;
+
 protected:
 
    queue< CtiVerificationBase * >  _verification_objects;
@@ -39,8 +43,6 @@ protected:
    ULONG                         _inCountActual;
 
 public:
-
-   typedef CtiDeviceRemote Inherited;
 
    CtiDeviceSnppPagingTerminal();
    CtiDeviceSnppPagingTerminal(const CtiDeviceSnppPagingTerminal& aRef);

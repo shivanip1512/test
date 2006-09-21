@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_tcu.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2006/02/27 23:58:33 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2006/09/21 21:31:39 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -31,19 +31,17 @@
 
 class IM_EX_DEVDB CtiDeviceTCU : public CtiDeviceIDLC
 {
-protected:
-
-   CtiTime              LastPointRefresh;
-
 private:
 
-   bool _sendFiller;
+    typedef CtiDeviceIDLC Inherited;
 
+    bool _sendFiller;
+
+protected:
+
+    CtiTime  LastPointRefresh;
 
 public:
-
-
-   typedef CtiDeviceIDLC Inherited;
 
    CtiDeviceTCU();
 

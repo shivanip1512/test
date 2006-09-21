@@ -1,4 +1,3 @@
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   dev_grp_sa305
@@ -9,10 +8,13 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2006/02/27 23:58:32 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2006/09/21 21:31:38 $
 * HISTORY      :
 * $Log: dev_grp_sa305.h,v $
+* Revision 1.7  2006/09/21 21:31:38  mfisher
+* privatized Inherited typedef
+*
 * Revision 1.6  2006/02/27 23:58:32  tspar
 * Phase two of RWTPtrSlist replacement.
 *
@@ -55,19 +57,15 @@ public:
         SA305_DLC_Control = 2
     } CtiSACommand_t;
 
-protected:
-
-    CtiTableSA305LoadGroup _loadGroup;
-
 private:
 
     CtiSACommand_t _lastSACommandType;
 
+protected:
+
+    CtiTableSA305LoadGroup _loadGroup;
 
 public:
-
-
-    typedef CtiDeviceGroupBase Inherited;
 
     CtiDeviceGroupSA305();
     CtiDeviceGroupSA305(const CtiDeviceGroupSA305& aRef);

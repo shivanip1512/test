@@ -1,4 +1,3 @@
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   dev_rtm
@@ -9,10 +8,13 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2006/02/27 23:58:32 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2006/09/21 21:31:39 $
 * HISTORY      :
 * $Log: dev_rtm.h,v $
+* Revision 1.8  2006/09/21 21:31:39  mfisher
+* privatized Inherited typedef
+*
 * Revision 1.7  2006/02/27 23:58:32  tspar
 * Phase two of RWTPtrSlist replacement.
 *
@@ -54,6 +56,8 @@ class IM_EX_DEVDB CtiDeviceRTM : public CtiDeviceIED
 {
 private:
 
+    typedef CtiDeviceIED Inherited;
+
     CtiOutMessage _outbound;
     unsigned char _inbound[32];
 
@@ -80,8 +84,6 @@ private:
 protected:
 
 public:
-
-    typedef CtiDeviceIED Inherited;
 
     CtiDeviceRTM();
     virtual ~CtiDeviceRTM();

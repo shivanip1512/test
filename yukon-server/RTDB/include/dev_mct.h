@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct.h-arc  $
-* REVISION     :  $Revision: 1.50 $
-* DATE         :  $Date: 2006/09/18 17:18:23 $
+* REVISION     :  $Revision: 1.51 $
+* DATE         :  $Date: 2006/09/21 21:31:38 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -27,6 +27,8 @@
 class IM_EX_DEVDB CtiDeviceMCT : public CtiDeviceCarrier
 {
 private:
+
+    typedef CtiDeviceCarrier Inherited;
 
     static const CommandSet _commandStore;
     static CommandSet initCommandStore();
@@ -205,8 +207,6 @@ public:
         Memory_TSyncPos = 0x49,
         Memory_TSyncLen =    5,
     };
-
-    typedef CtiDeviceCarrier Inherited;
 
     CtiDeviceMCT( );
     CtiDeviceMCT( const CtiDeviceMCT &aRef );

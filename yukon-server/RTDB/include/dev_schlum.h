@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_alm_nloc.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2006/02/27 23:58:32 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2006/09/21 21:31:39 $
 *
 * Copyright (c) 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -90,6 +90,10 @@ typedef struct
 
 class IM_EX_DEVDB CtiDeviceSchlumberger : public CtiDeviceMeter
 {
+private:
+
+    typedef CtiDeviceMeter Inherited;
+
 protected:
 
    SchlMeterStruct            _meterParams;
@@ -108,11 +112,7 @@ protected:
    BYTE                       *_massMemoryRequestInputs;
    BYTE                       *_loadProfileBuffer;
 
-private:
-
-   public:
-
-   typedef CtiDeviceMeter Inherited;
+public:
 
    // default constructor that takes 2 optional parameters
    CtiDeviceSchlumberger ( BYTE         *dataPtr  = NULL,

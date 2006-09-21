@@ -344,9 +344,9 @@ typedef struct _AlphaPPlusLoadProfile_t
 
 class IM_EX_DEVDB CtiDeviceAlphaPPlus : public CtiDeviceAlpha
 {
-protected:
+private:
 
-    private:
+    typedef CtiDeviceAlpha Inherited;
 
     CtiDeviceAlphaPPlus & operator=(const CtiDeviceAlphaPPlus & aRef)
     {
@@ -359,10 +359,9 @@ protected:
         cout << __FILE__ << " copy constructor is invalid for this device" << endl;
     }
 
+protected:
 
 public:
-
-    typedef CtiDeviceAlpha Inherited;
 
     CtiDeviceAlphaPPlus(BYTE         *dataPtr  = NULL,
                         BYTE          *lpPtr = NULL,

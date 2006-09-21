@@ -1,4 +1,3 @@
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   dev_rtc
@@ -9,10 +8,13 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2006/02/27 23:58:32 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2006/09/21 21:31:39 $
 * HISTORY      :
 * $Log: dev_rtc.h,v $
+* Revision 1.13  2006/09/21 21:31:39  mfisher
+* privatized Inherited typedef
+*
 * Revision 1.12  2006/02/27 23:58:32  tspar
 * Phase two of RWTPtrSlist replacement.
 *
@@ -67,6 +69,16 @@ using std::list;
 
 class IM_EX_DEVDB CtiDeviceRTC : public CtiDeviceRemote
 {
+private:
+
+    typedef CtiDeviceRemote Inherited;
+
+    LONG _millis;
+
+    static ULONG messageDuration(int groupType);
+
+    queue< CtiVerificationBase * > _verification_objects;
+
 public:
 
     typedef list< pair< CtiTime, CtiOutMessage* > > CtiRepeatCol;
@@ -80,17 +92,7 @@ protected:
     CtiTime _repeatTime;                                             // This is the time assigned to any OM placed on the list!
     CtiRepeatCol _repeatList;
 
-private:
-
-    LONG _millis;
-
-    static ULONG messageDuration(int groupType);
-
-    queue< CtiVerificationBase * > _verification_objects;
-
 public:
-
-    typedef CtiDeviceRemote Inherited;
 
     CtiDeviceRTC();
     CtiDeviceRTC(const CtiDeviceRTC& aRef);

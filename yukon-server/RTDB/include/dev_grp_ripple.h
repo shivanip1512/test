@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_grp_ripple.h-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2006/02/27 23:58:32 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2006/09/21 21:31:38 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -25,19 +25,18 @@
 
 class CtiDeviceGroupRipple : public CtiDeviceGroupBase
 {
+private:
+
+    typedef CtiDeviceGroupBase Inherited;
+
+    bool matchRippleDoubleOrders(string parentDO, string childDO) const;
+
 protected:
 
     CtiTableRippleLoadGroup _rippleTable;
     CtiMessage *_rsvp;
 
-private:
-    bool matchRippleDoubleOrders(string parentDO, string childDO) const;
-
-
 public:
-
-
-    typedef CtiDeviceGroupBase Inherited;
 
     CtiDeviceGroupRipple();
     CtiDeviceGroupRipple(const CtiDeviceGroupRipple& aRef);

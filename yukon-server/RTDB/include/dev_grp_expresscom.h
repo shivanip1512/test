@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2006/02/27 23:58:32 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2006/09/21 21:31:38 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -26,19 +26,18 @@
 
 class IM_EX_DEVDB CtiDeviceGroupExpresscom : public CtiDeviceGroupBase
 {
-protected:
-
-    CtiTableExpresscomLoadGroup     _expresscomGroup;
-
 private:
+
+    typedef CtiDeviceGroupBase Inherited;
 
     // This method makes a gripe if any addressing level or load is predefined when submitting a request to a group
     bool checkForEmptyParseAddressing( CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &retList );
 
+protected:
+
+    CtiTableExpresscomLoadGroup     _expresscomGroup;
 
 public:
-
-    typedef CtiDeviceGroupBase Inherited;
 
     CtiDeviceGroupExpresscom();
     CtiDeviceGroupExpresscom(const CtiDeviceGroupExpresscom& aRef);

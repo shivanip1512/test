@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_cbc.h-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2006/04/25 19:08:33 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2006/09/21 21:31:37 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -32,6 +32,8 @@ namespace Device    {
 class IM_EX_DEVDB DNP : public CtiDeviceRemote
 {
 private:
+
+    typedef CtiDeviceRemote Inherited;
 
     struct dnp_accumulator_pointdata
     {
@@ -87,8 +89,6 @@ protected:
     virtual void processPoints( Protocol::Interface::pointlist_t &points );
 
 public:
-
-    typedef CtiDeviceRemote Inherited;
 
     DNP();
     DNP(const DNP& aRef);

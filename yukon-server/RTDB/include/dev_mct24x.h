@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct2xx.h-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2006/07/06 20:11:48 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2006/09/21 21:31:38 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -24,6 +24,8 @@
 class IM_EX_DEVDB CtiDeviceMCT24X : public CtiDeviceMCT2XX
 {
 private:
+
+    typedef CtiDeviceMCT2XX Inherited;
 
     static const CommandSet _commandStore;
     static CommandSet initCommandStore();
@@ -64,8 +66,6 @@ protected:
     };
 
 public:
-
-    typedef CtiDeviceMCT2XX Inherited;
 
     CtiDeviceMCT24X( );
     CtiDeviceMCT24X( const CtiDeviceMCT24X &aRef );

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_cbc.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2006/02/27 23:58:32 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2006/09/21 21:31:39 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -32,6 +32,8 @@ namespace Device    {
 class IM_EX_DEVDB Modbus : public CtiDeviceRemote
 {
 private:
+
+    typedef CtiDeviceRemote Inherited;
 
     struct pseudo_info
     {
@@ -71,8 +73,6 @@ protected:
     virtual void processPoints( Protocol::Interface::pointlist_t &points );
 
 public:
-
-    typedef CtiDeviceRemote Inherited;
 
     Modbus(void);
     Modbus(const Modbus& aRef);

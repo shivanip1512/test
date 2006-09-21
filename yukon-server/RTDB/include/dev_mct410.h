@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT410.h-arc  $
-* REVISION     :  $Revision: 1.43 $
-* DATE         :  $Date: 2006/09/20 20:21:04 $
+* REVISION     :  $Revision: 1.44 $
+* DATE         :  $Date: 2006/09/21 21:31:38 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -26,6 +26,8 @@ class IM_EX_DEVDB CtiDeviceMCT410 : public CtiDeviceMCT4xx
 {
 private:
 
+    typedef CtiDeviceMCT4xx Inherited;
+
     static const CommandSet _commandStore;
     static CommandSet initCommandStore();
 
@@ -34,8 +36,6 @@ private:
 
     static const ConfigPartsList _config_parts;
     static ConfigPartsList initConfigParts();
-
-    typedef CtiDeviceMCT4xx Inherited;
 
 protected:
 

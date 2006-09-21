@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_pagerreceive.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2006/02/27 23:58:32 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2006/09/21 21:31:39 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -31,6 +31,8 @@ class CtiDevicePagingReceiver : public CtiDeviceRemote
 {
 private:
 
+    typedef CtiDeviceRemote Inherited;
+
     CtiTableDevicePagingReceiver                        _tbl;
     queue< CtiVerificationBase * >                      _verification_objects;
     static const std::vector<const char*>                    _commandVector;
@@ -48,10 +50,8 @@ protected:
     ULONG                         _inCountActual;
     int                           _capcodeCount;
 public:
-    
-    static vector<const char*> initCommandVector();
-    typedef CtiDeviceRemote Inherited;
 
+    static vector<const char*> initCommandVector();
     CtiDevicePagingReceiver();
     CtiDevicePagingReceiver(const CtiDevicePagingReceiver& aRef);
     virtual ~CtiDevicePagingReceiver();

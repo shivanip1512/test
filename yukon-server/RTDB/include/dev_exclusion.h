@@ -1,4 +1,3 @@
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   dev_exclusion
@@ -9,10 +8,13 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2006/03/24 15:58:19 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2006/09/21 21:31:37 $
 * HISTORY      :
 * $Log: dev_exclusion.h,v $
+* Revision 1.10  2006/09/21 21:31:37  mfisher
+* privatized Inherited typedef
+*
 * Revision 1.9  2006/03/24 15:58:19  cplender
 * Work on exclusion logic to unify the ripple work and make EREPC work right.  90% there.
 *
