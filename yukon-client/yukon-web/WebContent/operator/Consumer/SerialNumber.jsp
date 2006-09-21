@@ -23,7 +23,7 @@
 			session.removeAttribute(InventoryManagerUtil.STARS_INVENTORY_TEMP);
 			referer = request.getContextPath() + "/operator/Consumer/CreateHardware.jsp";
 			if (request.getParameter("Wizard") != null) referer += "?Wizard=true";
-            if(configBean.isWriteToFileAllowed()) {
+            if(configBean.isWriteToFileAllowed() && accountInfo != null) {
                 for(int i = 0; i < accountInfo.getStarsAppliances().getStarsApplianceCount(); i++) {
                     if(accountInfo.getStarsAppliances().getStarsAppliance(i).getInventoryID() < 1) {
                         needAppliance = false;
