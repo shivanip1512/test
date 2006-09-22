@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.35 $
-* DATE         :  $Date: 2006/06/26 21:11:32 $
+* REVISION     :  $Revision: 1.36 $
+* DATE         :  $Date: 2006/09/22 20:18:33 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -745,7 +745,17 @@ CtiPointDataMsg* CtiDeviceMarkV::fillPDMsg( vector<CtiTransdataData *> transVect
 
          if( timeID != 0 )
          {
-            pData->setTime( getMsgTime( timeID, dateID, transVector ));
+             CtiTime msgTime = getMsgTime( timeID, dateID, transVector );
+             if(getLastLPTime() <= msgTime && msgTime <= msgTime.now() + 86400)
+             {
+                 pData->setTime( msgTime );
+             }
+             else
+             {
+                 // This decode has popped the rails.  DO NOT ALLOW IT TO GET IN THE DB!
+                 delete pData;
+                 pData = 0;
+             }
          }
 
          pNumericPoint.reset();

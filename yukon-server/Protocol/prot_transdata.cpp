@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2005/12/20 17:19:56 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2006/09/22 20:18:34 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -110,7 +110,7 @@ bool CtiProtocolTransdata::decode( CtiXfer &xfer, int status )
 void CtiProtocolTransdata::processBillingData( BYTE *data )
 {
    _numBilling = _numBytes;
-   
+
    if( _numBilling > Billing_size )
    {
       if( getDebugLevel() & DEBUGLEVEL_ACTIVITY_INFO )
@@ -146,7 +146,7 @@ void CtiProtocolTransdata::processLPData( BYTE *data )
    else
    {
       memcpy( _lpBytes, data, _numLoadProfile );
-   
+
       _reallyDidProcessLP = true;
       _lpDone = true;
    }
@@ -162,7 +162,7 @@ int CtiProtocolTransdata::recvOutbound( OUTMESS *OutMessage )
    _application.setLastLPTime( OutMessage->Buffer.DUPReq.LP_Time );
 
    ptr = ( mkv *)OutMessage->Buffer.OutMessage;
-   
+
    if( ptr != NULL )
    {
       setCommand( ptr->command, ptr->getLP );
@@ -215,10 +215,14 @@ vector<CtiTransdataData *> CtiProtocolTransdata::resultDecode( INMESS *InMessage
    vector<CtiTransdataData *> transVector;
 
    ptr = ( unsigned char*)( InMessage->Buffer.InMessage );
+   BYTE *pEND = (BYTE*)( InMessage->Buffer.InMessage ) + sizeof(InMessage->Buffer.InMessage);   // 20060908 Don't decode beyond your DATA!
 
    lp = ( llp *)ptr;
+
+   if(_lastLPTime <= lp->lastLP && lp->lastLP <= _lastLPTime.now() + 86400)
+   {
    _lastLPTime = lp->lastLP;
-   ptr += sizeof( lp ); 
+   ptr += sizeof( lp );
 
    if( getDebugLevel() & DEBUGLEVEL_ACTIVITY_INFO )
    {
@@ -226,11 +230,11 @@ vector<CtiTransdataData *> CtiProtocolTransdata::resultDecode( INMESS *InMessage
        dout << CtiTime() << " Scanner thinks last lp time is = " << _lastLPTime << endl;
    }
 
-   while( *ptr != NULL )
-   {
+       while( *ptr != NULL && ptr < pEND )
+       {
       converted = CTIDBG_new CtiTransdataData( ptr );
 
-      // Do we need to NULL the converted ptr??? 
+      // Do we need to NULL the converted ptr???
 
       transVector.push_back( converted );
 
@@ -239,6 +243,14 @@ vector<CtiTransdataData *> CtiProtocolTransdata::resultDecode( INMESS *InMessage
          ptr = ( unsigned char*)strchr(( const char*)ptr, '\n' );
          ptr++;
       }
+   }
+   }
+   else
+   {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** WARNING **** Decode attempted to assign a last LP timestamp of " << lp->lastLP << " to the device. " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
    }
 
    //we're done with this guy
@@ -275,13 +287,13 @@ void CtiProtocolTransdata::reinitalize( void )
    _numLoadProfile = 0;
 
    _application.reinitalize();
-   
+
    _collectLP = true;
    _finished = false;
    _billingDone = false;
    _lpDone = false;
    _reallyDidProcessLP = false;
-   
+
    //could probably get away with using destroy()
    if( _storage != NULL )
    {
@@ -297,7 +309,7 @@ void CtiProtocolTransdata::reinitalize( void )
    {
       delete [] _billingBytes;
    }
-   
+
    _storage = CTIDBG_new BYTE[Storage_size];
    _lpBytes = CTIDBG_new BYTE[Loadprofile_size];
    _billingBytes = CTIDBG_new BYTE[Billing_size];
@@ -315,13 +327,13 @@ void CtiProtocolTransdata::destroy( void )
       delete [] _storage;
       _storage = NULL;
    }
-   
+
    if( _billingBytes != NULL )
    {
       delete [] _billingBytes;
       _billingBytes = NULL;
    }
-   
+
    if( _lpBytes != NULL )
    {
       delete [] _lpBytes;
@@ -388,7 +400,7 @@ int CtiProtocolTransdata::getError( void )
 
 //=====================================================================================================================
 //we want to let the device know that we did some actual work on LP so he doesn't bother to try to stick a multi
-//into dispatch if there isn't anything there 
+//into dispatch if there isn't anything there
 //=====================================================================================================================
 
 bool CtiProtocolTransdata::getDidProcess( void )
