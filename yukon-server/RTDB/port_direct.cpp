@@ -76,6 +76,8 @@ INT CtiPortDirect::openPort(INT rate, INT bits, INT parity, INT stopbits)
                         dout << CtiTime() << " Port " << getName() << " *** ERROR *** acquiring port handle on " << _localSerial.getPhysicalPort() << endl;
                     }
 
+                    Sleep(5000);
+
                     return(BADPORT);
                 }
                 else
