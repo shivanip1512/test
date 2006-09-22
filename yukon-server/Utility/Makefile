@@ -5,7 +5,7 @@ INCLPATHS+= \
 -I$(BOOST) \
 -I$(RW) \
 -I$(COMMON)\include \
- 
+
 
 
 .PATH.cpp = .
@@ -29,13 +29,24 @@ INCLPATHS+= \
 
 BASEOBJS=cid.obj
 
-all:    wpsccfgparse.exe cid.exe nextrev.exe
+all:            rid.exe wpsccfgparse.exe cid.exe nextrev.exe
 
 cid.exe:  $(BASEOBJS) Makefile
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ $(BASEOBJS) -link $(LIBS) $(RWLIBS) $(BOOSTLIBS)
+                @echo:
+               -@if not exist $(YUKONOUTPUT)\yukon md $(YUKONOUTPUT)\yukon
+               -@copy ..\$@ $(YUKONOUTPUT)\yukon
+                @echo Done building Target ..\$@
+                @%cd $(CWD)
+
+rid.exe:        rid.obj Makefile
+                @echo:
+                @echo Compiling $@
+                @%cd $(OBJ)
+                $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ rid.obj -link $(LIBS) $(RWLIBS) $(BOOSTLIBS)
                 @echo:
                -@if not exist $(YUKONOUTPUT)\yukon md $(YUKONOUTPUT)\yukon
                -@copy ..\$@ $(YUKONOUTPUT)\yukon
