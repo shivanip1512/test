@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/28/2006 10:19:19 AM                        */
+/* Created on:     9/22/2006 11:24:16 AM                        */
 /*==============================================================*/
 
 
@@ -59,6 +59,8 @@ drop index INDX_CCRTGRPCSTNOTIF_GID_CID;
 drop index INDX_CCURTPGM_PRGNM_PRGTYPEID;
 
 drop index INDX_CCURTPRGGRP_GRPID_PRGID;
+
+drop index INDX_CCURTPGM_PRGNM_PRGTYPEID;
 
 drop index INDX_CCRTPRGPRM_PGID_PMKEY;
 
@@ -196,6 +198,8 @@ drop table CCurtProgram cascade constraints;
 
 drop table CCurtProgramGroup cascade constraints;
 
+drop table CCurtProgramNotifGroup cascade constraints;
+
 drop table CCurtProgramParameter cascade constraints;
 
 drop table CCurtProgramType cascade constraints;
@@ -261,6 +265,8 @@ drop table DCDeviceConfiguration cascade constraints;
 drop table DCDeviceConfigurationType cascade constraints;
 
 drop table DCItemType cascade constraints;
+
+drop table DCItemValue cascade constraints;
 
 drop table DEVICE cascade constraints;
 
@@ -1209,6 +1215,24 @@ create unique index INDX_CCURTPRGGRP_GRPID_PRGID on CCurtProgramGroup (
 );
 
 /*==============================================================*/
+/* Table: CCurtProgramNotifGroup                                */
+/*==============================================================*/
+create table CCurtProgramNotifGroup  (
+   CCurtProgramID       NUMBER                          not null,
+   NotificationGroupID  NUMBER                          not null
+);
+
+alter table CCurtProgramNotifGroup
+   add constraint PK_CCURTPROGRAMNOTIFGROUP primary key (CCurtProgramID, NotificationGroupID);
+
+/*==============================================================*/
+/* Index: INDX_CCURTPGM_PRGNM_PRGTYPEID                         */
+/*==============================================================*/
+create index INDX_CCURTPGM_PRGNM_PRGTYPEID on CCurtProgramNotifGroup (
+   NotificationGroupID ASC
+);
+
+/*==============================================================*/
 /* Table: CCurtProgramParameter                                 */
 /*==============================================================*/
 create table CCurtProgramParameter  (
@@ -1811,9 +1835,10 @@ alter table DCCategoryItemType
 create table DCCategoryType  (
    CategoryTypeID       NUMBER                          not null,
    Name                 VARCHAR2(40)                    not null,
-   CategoryGroup        VARCHAR2(40)                    not null,
-   "Level"              VARCHAR2(40)                    not null,
-   Description          VARCHAR2(320)                   not null
+   DisplayName          VARCHAR2(40)                    not null,
+   CategoryGroup        VARCHAR2(40),
+   CategoryTypeLevel    VARCHAR2(40)                    not null,
+   Description          VARCHAR2(320)
 );
 
 alter table DCCategoryType
@@ -1859,7 +1884,8 @@ alter table DCConfigurationCategoryType
 create table DCConfigurationType  (
    ConfigTypeID         NUMBER                          not null,
    Name                 VARCHAR2(40)                    not null,
-   DESCRIPTION          VARCHAR2(320)                   not null
+   DisplayName          VARCHAR2(40)                    not null,
+   Description          VARCHAR2(320)
 );
 
 alter table DCConfigurationType
@@ -1893,15 +1919,29 @@ alter table DCDeviceConfigurationType
 create table DCItemType  (
    ItemTypeID           NUMBER                          not null,
    Name                 VARCHAR2(40)                    not null,
+   DisplayName          VARCHAR2(40)                    not null,
    ValidationType       VARCHAR2(40),
    Required             CHAR(1)                         not null,
    MinLength            NUMBER                          not null,
    MaxLengh             NUMBER                          not null,
-   Description          VARCHAR2(320)                   not null
+   DefaultValue         VARCHAR2(40),
+   Description          VARCHAR2(320)
 );
 
 alter table DCItemType
    add constraint PK_DCITEMTYPE primary key (ItemTypeID);
+
+/*==============================================================*/
+/* Table: DCItemValue                                           */
+/*==============================================================*/
+create table DCItemValue  (
+   ItemTypeID           NUMBER                          not null,
+   Value                VARCHAR2(40)                    not null,
+   ValueOrder           NUMBER                          not null
+);
+
+alter table DCItemValue
+   add constraint PK_DCITEMVALUE primary key (ItemTypeID);
 
 /*==============================================================*/
 /* Table: DEVICE                                                */
@@ -3415,7 +3455,8 @@ create table DynamicLMProgramDirect  (
    NotifyActiveTime     DATE                            not null,
    StartedRampingOut    DATE                            not null,
    NotifyInactiveTime   DATE                            not null,
-   ConstraintOverride   CHAR(1)                         not null
+   ConstraintOverride   CHAR(1)                         not null,
+   AdditionalInfo       VARCHAR2(80)                    not null
 );
 
 alter table DynamicLMProgramDirect
@@ -3650,6 +3691,8 @@ insert into FDRInterfaceOption values(10, 'Point',1,'Text','(none)');
 insert into FDRInterfaceOption values(11, 'Point', 1, 'Text', '(none)' );
 insert into FDRInterfaceOption values(11, 'Interval (sec)', 2, 'Text', '(none)' );
 insert into FDRInterfaceOption values(12, 'Point ID',1,'Text','(none)');
+insert into fdrinterfaceoption values(12,'DrivePath',2,'Text','(none)');
+insert into fdrinterfaceoption values(12,'Filename',3,'Text','(none)');
 insert into FDRInterfaceOption values(13, 'Point ID',1,'Text','(none)');
 
 insert into fdrinterfaceoption values(16, 'Customer',1,'Text','(none)');
@@ -4421,7 +4464,8 @@ create table LMProgramDirectGear  (
    FrontRampOption      VARCHAR2(80)                    not null,
    FrontRampTime        NUMBER                          not null,
    BackRampOption       VARCHAR2(80)                    not null,
-   BackRampTime         NUMBER                          not null
+   BackRampTime         NUMBER                          not null,
+   KWReduction          FLOAT                           not null
 );
 
 alter table LMProgramDirectGear
@@ -8089,6 +8133,14 @@ alter table CCurtProgramGroup
    add constraint FK_CCURTPRGGRP_CCURTPRG foreign key (CCurtProgramID)
       references CCurtProgram (CCurtProgramID);
 
+alter table CCurtProgramNotifGroup
+   add constraint FK_CCURTPNG_CCURTP foreign key (CCurtProgramID)
+      references CCurtProgram (CCurtProgramID);
+
+alter table CCurtProgramNotifGroup
+   add constraint FK_CCURTPNG_NG foreign key (NotificationGroupID)
+      references NotificationGroup (NotificationGroupID);
+
 alter table CCurtProgramParameter
    add constraint FK_CCURTPRGPARAM_CCURTPRGID foreign key (CCurtProgramID)
       references CCurtProgram (CCurtProgramID);
@@ -8268,6 +8320,10 @@ alter table DCDeviceConfiguration
 alter table DCDeviceConfigurationType
    add constraint FK_DCCFGTYPE_DCCFGDVCFGTYPE foreign key (ConfigTypeID)
       references DCConfigurationType (ConfigTypeID);
+
+alter table DCItemValue
+   add constraint FK_DCIITEMVALUE_DCITEMTYPE foreign key (ItemTypeID)
+      references DCItemType (ItemTypeID);
 
 alter table DEVICE
    add constraint FK_Dev_YukPAO foreign key (DEVICEID)

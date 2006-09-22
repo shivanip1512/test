@@ -242,4 +242,5 @@ alter table DCDeviceConfigurationType
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
 /**************************************************************/
-insert into CTIDatabase values('3.2', 'Ryan', '12-Sep-2006', 'Latest Update', 9 );
+insert into CTIDatabase values('3.2', 'DBUpdater', '12-Sep-2006', 'Latest Update', 9 );
+
