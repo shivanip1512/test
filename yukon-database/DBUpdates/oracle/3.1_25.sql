@@ -20,3 +20,4 @@ update billingfileformats set formatid = -20 where formattype = 'IVUE_BI_T65';
 /*   Automatically gets inserted from build script            */
 /**************************************************************/
 /* __YUKON_VERSION__ */
+insert into CTIDatabase values('3.1', 'DBAdmin', '21-JUNE-2006', 'Manual version insert done', 25);

@@ -14,9 +14,9 @@ alter table PointUnit modify DecimalDigits NUMBER not null;
 /* @error ignore */
 alter table DynamicPointAlarming drop constraint FKf_DynPtAl_SysL;
 
-alter table DeviceMeterGroup modify CollectionGroup VARCHAR2(50) not null;
-alter table DeviceMeterGroup modify TestCollectionGroup VARCHAR2(50) not null;
-alter table DeviceMeterGroup modify BillingGroup VARCHAR2(50) not null;
+alter table DeviceMeterGroup modify CollectionGroup VARCHAR2(50);
+alter table DeviceMeterGroup modify TestCollectionGroup VARCHAR2(50);
+alter table DeviceMeterGroup modify BillingGroup VARCHAR2(50);
 
 delete MSPInterface where vendorid = 1 and interface = 'CB_MR';
 delete MSPInterface where vendorid = 1 and interface = 'EA_MR';
@@ -25,7 +25,7 @@ delete MSPInterface where vendorid = 1 and interface = 'CB_CD';
 
 alter table dynamicccsubstationbus drop column multivoltcontrolstate;
 alter table dynamicccfeeder drop column multivoltcontrolstate;
-alter table dynamicccmonitorpointresponse modify delta float not null;
+alter table dynamicccmonitorpointresponse modify delta float;
 
 alter table dynamicccsubstationbus add currentwattpointquality number default 0 not null;
 alter table dynamicccsubstationbus add currentvoltpointquality number default 0 not null;
@@ -44,7 +44,7 @@ drop table DCCategoryType;
 drop table DCDeviceConfiguration;
 drop table DCConfiguration;
 drop table DCDeviceConfigurationType;
-drop table DCConfigurationType
+drop table DCConfigurationType;
 /*@error ignore-end */
 
 /*==============================================================*/
@@ -242,4 +242,4 @@ alter table DCDeviceConfigurationType
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
 /**************************************************************/
-/* __YUKON_VERSION__ */
+insert into CTIDatabase values('3.2', 'Ryan', '12-Sep-2006', 'Latest Update', 9 );
