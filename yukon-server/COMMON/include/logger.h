@@ -59,13 +59,6 @@
 #include "ctitime.h"
 #include "CtiPCPtrQueue.h"
 
-using std::string;
-using std::ostream;
-using std::ios_base;
-using std::strstream;
-using std::ofstream;
-using std::endl;
-using std::cout;
 
 class IM_EX_CTIBASE CtiLogger : public CtiThread
 {
@@ -90,23 +83,23 @@ public:
     CtiLogger& acquire();
     CtiLogger& release();
 
-    ostream& operator<<(ios_base& (*pf)(ios_base&));
-    ostream& operator<<(ostream& (*pf)(ostream&));
-    ostream& operator<<(const char *s);
-    ostream& operator<<(char c);
-    ostream& operator<<(bool n);
-    ostream& operator<<(short n);
-    ostream& operator<<(unsigned short n);
-    ostream& operator<<(int n);
-    ostream& operator<<(unsigned int n);
-    ostream& operator<<(long n);
-    ostream& operator<<(unsigned long n);
-    ostream& operator<<(float n);
-    ostream& operator<<(double n);
-    ostream& operator<<(long double n);
-    ostream& operator<<(void * n);
-    ostream& operator<<(const string& s);
-    ostream& operator<<(const CtiTime &r);
+    std::ostream& operator<<(std::ios_base& (*pf)(std::ios_base&));
+    std::ostream& operator<<(std::ostream& (*pf)(std::ostream&));
+    std::ostream& operator<<(const char *s);
+    std::ostream& operator<<(char c);
+    std::ostream& operator<<(bool n);
+    std::ostream& operator<<(short n);
+    std::ostream& operator<<(unsigned short n);
+    std::ostream& operator<<(int n);
+    std::ostream& operator<<(unsigned int n);
+    std::ostream& operator<<(long n);
+    std::ostream& operator<<(unsigned long n);
+    std::ostream& operator<<(float n);
+    std::ostream& operator<<(double n);
+    std::ostream& operator<<(long double n);
+    std::ostream& operator<<(void * n);
+    std::ostream& operator<<(const string& s);
+    std::ostream& operator<<(const CtiTime &r);
 
     char fill(char cfill);
     char fill() const;
@@ -126,15 +119,15 @@ private:
     volatile long _write_interval;
     volatile bool _std_out;
 
-    CtiPCPtrQueue<strstream> _queue;
+    CtiPCPtrQueue<std::strstream> _queue;
     CtiMutex _log_mux;
     CtiMutex _flush_mux;
 
-    strstream* _current_stream;
+    std::strstream* _current_stream;
 
     void doOutput();
     string scrub(const string& filename);
-    bool tryOpenOutputFile(ofstream& strm, const string& file);
+    bool tryOpenOutputFile(std::ofstream& strm, const string& file);
     string getTodaysFileName() const;
 };
 
@@ -143,6 +136,5 @@ IM_EX_CTIBASE extern CtiLogger   dout;       // Global instance
 IM_EX_CTIBASE extern CtiLogger   slog;       // Global instance. Simulator log
 IM_EX_CTIBASE extern CtiLogger   blog;       // Global instance. Simulator log
 
-#endif // #ifndef __PROCLOG_HPP__
-
+#endif // #ifndef __CTILOGGER_HPP__
 

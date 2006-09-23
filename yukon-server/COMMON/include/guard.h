@@ -34,8 +34,6 @@
 
 #include "dlldefs.h"
 
-using std::cerr;
-using std::endl;
 
 
 #pragma pack(push, LockGuardPack, 8)
@@ -48,7 +46,7 @@ public:
         #ifdef _DEBUG
         while(!(_acquired = _res.acquire(900000)))
         {
-            cerr << " guard is unable to lock resource FOR thread id: " << GetCurrentThreadId() << " resource is owned by " << _res.lastAcquiredByTID() << endl;
+            std::cerr << " guard is unable to lock resource FOR thread id: " << GetCurrentThreadId() << " resource is owned by " << _res.lastAcquiredByTID() << std::endl;
         }
         #else
         _res.acquire();
