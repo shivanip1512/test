@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_single.h-arc  $
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2006/09/21 21:31:39 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2006/09/23 13:04:28 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -67,7 +67,7 @@ public:
         ScanDataValid
     };
 
-    struct channelWithID//This is used for tracking return messages to commander based on channel and id
+    struct channelWithID  //  This is used for tracking return messages to commander based on channel and id
     {
         int channel;
         int identifier;
@@ -81,12 +81,10 @@ public:
             {
                 retval = true;
             }
-            else if( identifier == rhs.identifier )
+            else if( identifier == rhs.identifier
+                       && channel < rhs.channel )
             {
-                if( channel < rhs.channel )
-                {
-                    retval = true;
-                }
+                retval = true;
             }
 
             return retval;
