@@ -1087,6 +1087,29 @@ void  CtiCommandParser::doParseControl(const string &_CmdStr)
         {
             flag |= CMD_FLAG_UPDATE;
         }
+        if(CmdStr.contains(" gold"))
+        {
+            if(!(token = CmdStr.match("gold [0-9]")).empty())
+            {
+                CtiTokenizer tok( token );
+
+                tok();   // Get us past "gold"
+
+                _cmd["gold"] = CtiParseValue(atoi(tok().c_str()));
+            }
+        }
+        if(CmdStr.contains(" silver"))
+        {
+            if(!(token = CmdStr.match("silver [0-9][0-9]")).empty())
+            {
+                CtiTokenizer tok( token );
+
+                tok();   // Get us past "silver"
+
+                _cmd["silver"] = CtiParseValue(atoi(tok().c_str()));
+            }
+        }
+
     }
     else
     {
