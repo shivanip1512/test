@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dlldev.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2006/07/19 19:00:45 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2006/09/23 13:32:27 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -97,17 +97,18 @@ void IM_EX_DEVDB attachTransmitterDeviceToRoutes(CtiDeviceManager *DM, CtiRouteM
 
             switch(pRte->getType())
             {
-            case RouteTypeCCU:
-            case RouteTypeTCU:
-            case RouteTypeLCU:
-            case RouteTypeRepeater:
-            case RouteTypeVersacom:
-            case RouteTypeExpresscom:
-            case RouteTypeTap:
-            case RouteTypeWCTP:
-            case RouteTypeSNPP:
-            case RouteTypeRTC:
-            case RouteTypeSeriesVLMI:
+                case RouteTypeCCU:
+                case RouteTypeTCU:
+                case RouteTypeLCU:
+                case RouteTypeRepeater:
+                case RouteTypeVersacom:
+                case RouteTypeExpresscom:
+                case RouteTypeTap:
+                case RouteTypeWCTP:
+                case RouteTypeSNPP:
+                case RouteTypeRTC:
+                case RouteTypeSeriesVLMI:
+                case RouteTypeForeignPorter:
                 {
                     CtiRouteXCU  *pXCU = (CtiRouteXCU*)itr->second.get();         // Wild man, wild!  I guess that holding pRte lets this be ok...
 
@@ -129,7 +130,7 @@ void IM_EX_DEVDB attachTransmitterDeviceToRoutes(CtiDeviceManager *DM, CtiRouteM
                     }
                     break;
                 }
-            case RouteTypeMacro:
+                case RouteTypeMacro:
                 {
 
                     CtiRouteMacro *pMac = (CtiRouteMacro*)itr->second.get();         // Wild man, wild!  I guess that holding pRte lets this be ok...
@@ -154,7 +155,7 @@ void IM_EX_DEVDB attachTransmitterDeviceToRoutes(CtiDeviceManager *DM, CtiRouteM
                         }
                     }
                 }
-            default:
+                default:
                 {
                     break;
                 }
