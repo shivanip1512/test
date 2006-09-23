@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_xcu.cpp-arc  $
-* REVISION     :  $Revision: 1.58 $
-* DATE         :  $Date: 2006/06/01 17:04:11 $
+* REVISION     :  $Revision: 1.59 $
+* DATE         :  $Date: 2006/09/23 13:55:56 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -147,6 +147,20 @@ INT CtiRouteXCU::ExecuteRequest(CtiRequestMsg               *pReq,
                 else if(parse.getiValue("type") == ProtocolGolayType)
                 {
                     status = assembleSASimpleRequest(pReq, parse, OutMessage, vgList, retList, outList);
+                }
+                else if( parse.getiValue("type") == ProtocolEmetconType )
+                {
+                    if( _transmitterDevice->getType() == TYPE_FOREIGNPORTER )
+                    {
+                        OutMessage->DeviceID = _transmitterDevice->getID();
+                        OutMessage->Port     = _transmitterDevice->getPortID();
+
+                        outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
+                    }
+                    else
+                    {
+                        status = !NORMAL;
+                    }
                 }
                 else if(OutMessage->EventCode & VERSACOM)
                 {
