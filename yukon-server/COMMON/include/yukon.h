@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/yukon.h-arc  $
-* REVISION     :  $Revision: 1.55 $
-* DATE         :  $Date: 2006/07/19 19:00:45 $
+* REVISION     :  $Revision: 1.56 $
+* DATE         :  $Date: 2006/09/23 13:08:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -370,6 +370,7 @@ enum CtiRoute_t
     RouteTypeRTC,
     RouteTypeSeriesVLMI,
     RouteTypeSNPP,
+    RouteTypeForeignPorter,
 
     RouteTypeMax
 };
