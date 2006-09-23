@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.195 $
-* DATE         :  $Date: 2006/09/11 20:48:08 $
+* REVISION     :  $Revision: 1.196 $
+* DATE         :  $Date: 2006/09/23 13:28:44 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1330,9 +1330,9 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
             {
                 switch(Device->getType())
                 {
-                case TYPE_ILEXRTU:
-                case TYPE_SES92RTU:
-                case TYPE_DAVIS:
+                    case TYPE_ILEXRTU:
+                    case TYPE_SES92RTU:
+                    case TYPE_DAVIS:
                     {
                         trx.setOutBuffer(OutMessage->Buffer.OutMessage + PREIDLEN);
                         trx.setOutCount(OutMessage->OutLength);
@@ -1340,12 +1340,12 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         break;
                     }
 
-                case TYPE_LCU415:
-                case TYPE_LCU415LG:
-                case TYPE_LCU415ER:
-                case TYPE_LCUT3026:
-                case TYPE_TCU5000:
-                case TYPE_TCU5500:
+                    case TYPE_LCU415:
+                    case TYPE_LCU415LG:
+                    case TYPE_LCU415ER:
+                    case TYPE_LCUT3026:
+                    case TYPE_TCU5000:
+                    case TYPE_TCU5500:
                     {
                         PreMaster (OutMessage->Buffer.OutMessage + PREIDLEN, (USHORT) OutMessage->OutLength);
 
@@ -1355,20 +1355,21 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         break;
                     }
 
-                case TYPE_ION7330:
-                case TYPE_ION7700:
-                case TYPE_ION8300:
-                case TYPECBC6510:
-                case TYPECBC7020:
-                case TYPE_DNPRTU:
-                case TYPE_DARTRTU:
-                case TYPE_SERIESVRTU:
-                case TYPE_SERIESVLMIRTU:
-                case TYPE_RTM:
-                case TYPE_SNPP:
-                case TYPE_PAGING_RECEIVER:
-                case TYPE_TNPP:
-                case TYPE_MODBUS:
+                    case TYPE_ION7330:
+                    case TYPE_ION7700:
+                    case TYPE_ION8300:
+                    case TYPECBC6510:
+                    case TYPECBC7020:
+                    case TYPE_DNPRTU:
+                    case TYPE_DARTRTU:
+                    case TYPE_SERIESVRTU:
+                    case TYPE_SERIESVLMIRTU:
+                    case TYPE_RTM:
+                    case TYPE_SNPP:
+                    case TYPE_PAGING_RECEIVER:
+                    case TYPE_TNPP:
+                    case TYPE_MODBUS:
+                    case TYPE_FOREIGNPORTER:
                     {
                         CtiDeviceSingle *ds = static_cast<CtiDeviceSingle *>(Device.get());
                         int comm_status = NoError;
@@ -1433,8 +1434,8 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         break;
                     }
 
-                case TYPE_KV2:
-                case TYPE_ALPHA_A3:
+                    case TYPE_KV2:
+                    case TYPE_ALPHA_A3:
                     {
 
                         //extern CtiConnection VanGoghConnection;
@@ -1524,7 +1525,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                         break;
                     }
-                case TYPE_SENTINEL:
+                    case TYPE_SENTINEL:
                     {
 
                        // extern CtiConnection VanGoghConnection;
@@ -1612,7 +1613,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     }
 
 
-                case TYPE_TDMARKV:
+                    case TYPE_TDMARKV:
                     {
                         BYTE   inBuffer[5000];
                         BYTE   outBuffer[5000];     //smaller?
@@ -1702,7 +1703,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         break;
                     }
 
-                case TYPE_SIXNET:
+                    case TYPE_SIXNET:
                     {
                         CtiDeviceIED         *IED= (CtiDeviceIED*)Device.get();
                         // Copy the request into the InMessage side....
@@ -1732,7 +1733,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                         break;
                     }
-                case TYPE_WCTP:
+                    case TYPE_WCTP:
                     {
                         try
                         {
@@ -1766,7 +1767,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                         break;
                     }
-                case TYPE_TAPTERM:
+                    case TYPE_TAPTERM:
                     {
                         CtiDeviceIED *IED= (CtiDeviceIED*)Device.get();
 
@@ -1827,10 +1828,10 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                         break;
                     }
-                case TYPE_ALPHA_A1:
-                case TYPE_ALPHA_PPLUS:
-                case TYPE_DR87:
-                case TYPE_LGS4:
+                    case TYPE_ALPHA_A1:
+                    case TYPE_ALPHA_PPLUS:
+                    case TYPE_DR87:
+                    case TYPE_LGS4:
                     {
                         try
                         {
@@ -1910,9 +1911,9 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                         break;
                     }
-                case TYPE_VECTRON:
-                case TYPE_FULCRUM:
-                case TYPE_QUANTUM:
+                    case TYPE_VECTRON:
+                    case TYPE_FULCRUM:
+                    case TYPE_QUANTUM:
                     {
                         // Copy the request into the InMessage side....
                         ::memcpy(&InMessage->Buffer.DUPSt.DUPRep.ReqSt, &OutMessage->Buffer.DUPReq, sizeof(DIALUPREQUEST));
@@ -1989,7 +1990,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                         break;
                     }
-                case TYPE_WELCORTU:
+                    case TYPE_WELCORTU:
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1999,8 +2000,8 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         status = BADPORT;
                         break;
                     }
-                case TYPE_CCU700:
-                case TYPE_CCU710:
+                    case TYPE_CCU700:
+                    case TYPE_CCU710:
                     {
                         /* output the message to the remote */
                         trx.setOutBuffer(OutMessage->Buffer.OutMessage + PREIDLEN);
@@ -2008,7 +2009,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         status = Port->outMess(trx, Device, traceList);
                         break;
                     }
-                case TYPE_RTC:
+                    case TYPE_RTC:
                     {
                         queue< CtiVerificationBase * > verification_queue;
 
@@ -2028,27 +2029,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         status = Port->outMess(trx, Device, traceList);
                         break;
                     }
-/*                case TYPE_RTM:
-                    {
-                        OutMessage->InLength = 0;
-
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
-
-                        CtiDeviceRTM *rtm = (CtiDeviceRTM *)Device.get();
-
-                        rtm->prepareOutMessageForComms(OutMessage);
-
-                        // output the message to the remote
-                        trx.setOutBuffer(OutMessage->Buffer.OutMessage);
-                        trx.setOutCount(OutMessage->OutLength);
-                        status = Port->outMess(trx, Device, traceList);
-
-                        break;
-                    }*/
-                default:
+                    default:
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
