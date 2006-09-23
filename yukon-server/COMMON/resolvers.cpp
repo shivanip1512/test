@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.67 $
-* DATE         :  $Date: 2006/07/19 19:00:45 $
+* REVISION     :  $Revision: 1.68 $
+* DATE         :  $Date: 2006/09/23 13:02:34 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -75,7 +75,6 @@ INT resolveRouteType( const string& _rwsTemp)
     {
         Ret = RouteTypeSNPP;
     }
-
     else if(rwsTemp == "wctp terminal")
     {
         Ret = RouteTypeWCTP;
@@ -87,6 +86,10 @@ INT resolveRouteType( const string& _rwsTemp)
     else if(rwsTemp == "series 5 lmi")
     {
         Ret = RouteTypeSeriesVLMI;
+    }
+    else if(rwsTemp == "foreign porter")
+    {
+        Ret = RouteTypeForeignPorter;
     }
     else
     {
