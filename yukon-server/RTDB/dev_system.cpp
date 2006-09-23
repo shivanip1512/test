@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_system.cpp-arc  $
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2006/07/19 19:00:45 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2006/09/23 13:30:59 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -49,7 +49,7 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
      */
     if(parse.getActionItems().size())
     {
-        for(std::list< string >::iterator itr = parse.getActionItems().begin(); 
+        for(std::list< string >::iterator itr = parse.getActionItems().begin();
              itr != parse.getActionItems().end();
              ++itr )
         {
@@ -168,6 +168,87 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                          */
                         OutMessage->EventCode    = VERSACOM | NORESULT;
                         OutMessage->Retry        = 2;                      // Default to two tries per route!
+
+                        break;
+                    }
+                case ProtocolEmetconType:
+                    {
+                        OutMessage->TargetID = -1;
+                        OutMessage->Retry    =  2;  //  Default to two tries per route!
+
+                        int gold, silver, address = -1, time = 0, function = -1;
+
+                        gold   = parse.getiValue("gold",   -1);
+                        silver = parse.getiValue("silver", -1);
+
+                        if( gold > 0 && gold <= 4 )
+                        {
+                            //  gold is 60-63
+                            address = gold + 59;
+                        }
+                        else if( silver > 0 && silver <= 60 )
+                        {
+                            //  silver is 0-59
+                            address = silver - 1;
+                        }
+
+                        /*
+                        #define A_RESTORE       0
+                        #define A_SHED_A        1
+                        #define A_SHED_B        2
+                        #define A_SHED_C        3
+                        #define A_SHED_D        4
+                        #define A_LATCH_OPEN    5
+                        #define A_LATCH_CLOSE   6
+                        #define A_SCRAM         7
+                         */
+
+                        if( parse.getFlags() & CMD_FLAG_CTL_RESTORE )
+                        {
+                            function = A_RESTORE;
+                        }
+                        else if( parse.getFlags() & CMD_FLAG_CTL_OPEN )
+                        {
+                            function = A_LATCH_OPEN;
+                        }
+                        else if( parse.getFlags() & CMD_FLAG_CTL_CLOSE )
+                        {
+                            function = A_LATCH_CLOSE;
+                        }
+                        else if( parse.getFlags() & CMD_FLAG_CTL_SHED )
+                        {
+                            if( time = parse.getiValue("shed", 0) )
+                            {
+                                //  normal relay request
+                                switch( parse.getiValue("relaymask", 0) )
+                                {
+                                    case 0x01:  function = A_SHED_A;  break;
+                                    case 0x02:  function = A_SHED_B;  break;
+                                    case 0x04:  function = A_SHED_C;  break;
+                                    case 0x08:  function = A_SHED_D;  break;
+                                    case 0x0f:  function = A_SCRAM;   break;
+                                }
+                            }
+                            else
+                            {
+                                function = A_RESTORE;
+                            }
+                        }
+
+                        if( address >= 0 && function >= 0 )
+                        {
+                            OutMessage->Buffer.ASt.Group    = address;
+                            OutMessage->Buffer.ASt.Function = function;
+
+                            OutMessage->Buffer.ASt.Time = resolveAWordTime( time );
+
+                            OutMessage->EventCode = AWORD | ACTIN | NOWAIT | NORESULT;
+                        }
+                        else
+                        {
+                            delete OutMessage;
+                            OutMessage = 0;
+                        }
 
                         break;
                     }
@@ -326,6 +407,12 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
 
                 if(NewOMess)
                 {
+                    if( parse.getiValue("type") == ProtocolEmetconType
+                          && Route->getType() == RouteTypeVersacom )
+                    {
+                        OutMessage->EventCode |= ENCODED;    // Set this so that versacom works
+                    }
+
                     Route->ExecuteRequest(pReq, parse, NewOMess, vgList, retList, outList);
 
                     if(NewOMess)
@@ -419,6 +506,12 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                             {
                                 if( Route->isDefaultRoute() )
                                 {
+                                    if( parse.getiValue("type") == ProtocolEmetconType
+                                          && Route->getType() == RouteTypeVersacom )
+                                    {
+                                        OutMessage->EventCode |= ENCODED;    // Set this so that versacom works
+                                    }
+
                                     OUTMESS *NewOMess = CTIDBG_new OUTMESS(*OutMessage); // Construct and copy.
 
                                     if(NewOMess)
