@@ -6,17 +6,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/devicetypes.h-arc  $
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2005/12/20 17:25:49 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2006/09/23 13:03:19 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #ifndef __DEVICETYPES_H__
 #define __DEVICETYPES_H__
 #pragma warning( disable : 4786)
-
-
-#define TYPE_REMOTE                          0
 
 
 /* Definitions for Device types */
@@ -157,6 +154,7 @@
 // A system defined pseudo device. CGP 022300
 #define TYPE_SYSTEM                          3000
 #define TYPE_ENERGYPRO                       3100
+#define TYPE_FOREIGNPORTER                   3200
 
 // Port types occupy the range 6000 to 6100.  !!!!!! DO NOT USE !!!!!!
 
