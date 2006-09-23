@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_analog.h-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2006/06/16 20:06:11 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2006/09/23 13:51:17 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,8 +23,6 @@
 #include "pt_numeric.h"
 #include "tbl_pt_analog.h"
 
-using std::cout;
-using std::endl;
 
 class IM_EX_PNTDB CtiPointAnalog : public CtiPointNumeric
 {
@@ -65,7 +63,7 @@ public:
 
    virtual void DecodeDatabaseReader(RWDBReader &rdr)
    {
-      if(getDebugLevel() & DEBUGLEVEL_DATABASE) cout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+      if(getDebugLevel() & DEBUGLEVEL_DATABASE) std::cout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
 
       Inherited::DecodeDatabaseReader(rdr);
       _pointAnalog.DecodeDatabaseReader(rdr);
