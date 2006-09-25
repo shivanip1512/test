@@ -60,6 +60,10 @@
 #include "CtiPCPtrQueue.h"
 
 
+using std::endl;
+using std::cout;
+
+
 class IM_EX_CTIBASE CtiLogger : public CtiThread
 {
 public:
