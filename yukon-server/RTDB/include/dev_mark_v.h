@@ -1,8 +1,3 @@
-
-#pragma warning( disable : 4786)
-#ifndef __DEV_MARK_V_H__
-#define __DEV_MARK_V_H__
-
 /*---------------------------------------------------------------------------------*
 *
 * File:   dev_mark_v
@@ -14,11 +9,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2006/09/21 21:31:38 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2006/09/26 14:19:19 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
+#ifndef __DEV_MARK_V_H__
+#define __DEV_MARK_V_H__
+#pragma warning( disable : 4786)
 
 
 #include "prot_transdata.h"
