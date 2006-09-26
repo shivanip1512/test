@@ -5,6 +5,7 @@ package com.cannontech.clientutils;
  * Creation date: (5/9/00 3:00:34 PM)
  * @author: 
  * @Version: <version>
+ * @deprecated Only TDC should continue using this - UGLY
  */
 
 import java.util.ArrayList;
@@ -265,14 +266,15 @@ private void tryConnection()
 	
 }
 /**
- * Insert the method's description here.
+ * Write a message to dispatch if it is available
  * Creation date: (1/24/2001 1:47:59 PM)
  * @param obj java.lang.Object
  */
-public void write(Object obj) 
-{
-	if( getConnection() != null )
+public void write(Object obj) {
+    ClientConnection conn = getConnection();
+	if(conn.isValid()) { 
 		getConnection().write( obj);
+    }
 }
 
 public void addMessageListener( MessageListener ml )
