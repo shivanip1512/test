@@ -12,6 +12,7 @@ import com.cannontech.clientutils.commonutils.ModifiedDate;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.events.LCChangeEvent;
+import com.cannontech.loadcontrol.messages.LMCommand;
 import com.cannontech.loadcontrol.messages.LMControlAreaMsg;
 import com.cannontech.message.server.ServerResponseMsg;
 import com.cannontech.message.util.MessageEvent;
@@ -240,6 +241,9 @@ private synchronized void handleLMControlArea(LMControlArea controlArea)
 private void initialize() 
 {
 	addMessageListener( this );
+    LMCommand cmd = new LMCommand();
+    cmd.setCommand( LMCommand.RETRIEVE_ALL_CONTROL_AREAS );
+    setRegistrationMsg(cmd);
 }
 
 /**

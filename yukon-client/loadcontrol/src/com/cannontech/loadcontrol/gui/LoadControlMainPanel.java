@@ -569,27 +569,9 @@ public void destroy()
  */
 public void executeRefreshButton() 
 {
-	LMCommand cmd = new LMCommand();
-	cmd.setCommand( LMCommand.RETRIEVE_ALL_CONTROL_AREAS );
-	LoadControlClientConnection lmconnection = getValidLMConnection();
-    lmconnection.write( cmd );
+    LoadControlClientConnection.getInstance();
 }
 
-private LoadControlClientConnection getValidLMConnection() {
-    LoadControlClientConnection lmconnection = LoadControlClientConnection.getInstance();
-    while (!lmconnection.isValid()) {
-        try 
-        {
-            Thread.sleep(1000);
-        } 
-        catch (InterruptedException e) 
-        {
-            CTILogger.error(e);
-        }
-        lmconnection = LoadControlClientConnection.getInstance();
-    }
-    return lmconnection;
-}
 /**
  * Insert the method's description here.
  * Creation date: (8/7/00 3:41:18 PM)
