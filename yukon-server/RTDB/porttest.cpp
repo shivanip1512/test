@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/porttest.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/12/20 17:20:28 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2006/09/26 14:37:25 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,11 +18,11 @@
 #include <iostream>
 #include <exception>
 
-
 #include "dllbase.h"
 #include "mgr_port.h"
 #include "rtdb.h"
 #include "logger.h"
+using namespace std;
 
 void ApplyDump(const long key, CtiPortManager::ptr_type Port, void* d)
 {
