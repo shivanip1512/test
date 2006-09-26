@@ -1,4 +1,3 @@
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
 /*-----------------------------------------------------------------------------*
 *
 * File:   con_mgr
@@ -7,14 +6,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVER/INCLUDE/con_mgr.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2006/07/18 21:19:18 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2006/09/26 14:14:26 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-
 #ifndef __CON_MGR_H__
 #define __CON_MGR_H__
+#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
 
 #include <limits.h>
 
@@ -48,8 +47,8 @@ protected:
       ClientRegistered(FALSE),
       ClientName("DEFAULT")
    {
-      cout << "Default Constructor may break things!" << __FILE__ << " " << __LINE__ << endl;
-      cout << "**** Connection Manager!!! *****" << endl;
+      std::cout << "Default Constructor may break things!" << __FILE__ << " " << __LINE__ << endl;
+      std::cout << "**** Connection Manager!!! *****" << endl;
    }
 
 public:

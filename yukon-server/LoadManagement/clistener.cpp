@@ -1,12 +1,12 @@
 /*-----------------------------------------------------------------------------
     Filename:  clistener.cpp
-                
+
     Programmer:  Josh Wolberg
-    
+
     Description: Source file for CtiLMClientListener
-        
+
     Initial Date:  2/7/2001
-    
+
     COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2001
 -----------------------------------------------------------------------------*/
 #include "yukon.h"
@@ -27,7 +27,7 @@ CtiLMClientListener* CtiLMClientListener::_instance = NULL;
 
 /*------------------------------------------------------------------------
     getInstance
-    
+
     Returns a pointer to the singleton instance of the client listener.
 ---------------------------------------------------------------------------*/
 CtiLMClientListener* CtiLMClientListener::getInstance()
@@ -64,7 +64,7 @@ CtiLMClientListener* CtiLMClientListener::getInstance()
     Constructor
 ---------------------------------------------------------------------------*/
 CtiLMClientListener::CtiLMClientListener(LONG port) : _port(port), _doquit(FALSE), _socketListener(NULL)
-{  
+{
 }
 
 /*---------------------------------------------------------------------------
@@ -81,24 +81,24 @@ CtiLMClientListener::~CtiLMClientListener()
 
 /*---------------------------------------------------------------------------
     start
-    
+
     Starts listening at the specified socket address.
 ---------------------------------------------------------------------------*/
 void CtiLMClientListener::start()
-{   
+{
     RWThreadFunction thr_func = rwMakeThreadFunction( *this, &CtiLMClientListener::_listen );
     RWThreadFunction check_thr_func = rwMakeThreadFunction( *this, &CtiLMClientListener::_check );
-    
+
     _listenerthr = thr_func;
     _checkthr = check_thr_func;
-    
+
     thr_func.start();
     check_thr_func.start();
 }
 
 /*---------------------------------------------------------------------------
     stop
-    
+
     Stops listening at the specified socket address
 -----------------------------------------------------------------------------*/
 void CtiLMClientListener::stop()
@@ -117,7 +117,7 @@ void CtiLMClientListener::stop()
     }
     catch(RWxmsg& msg)
     {
-        cerr << msg.why() << endl;
+        std::cerr << msg.why() << endl;
     }
 }
 
@@ -134,7 +134,7 @@ void CtiLMClientListener::BroadcastMessage(CtiMessage* msg)
             CtiLockGuard<CtiLogger> dout_guard(dout);
             dout << CtiTime() << " Broadcasting message to " << _connections.size() << " clients" << endl;
         }
-        
+
         for( int i = 1; i < _connections.size(); i++ )
         {
             // replicate message makes a deep copy
@@ -165,22 +165,22 @@ void CtiLMClientListener::BroadcastMessage(CtiMessage* msg)
 
 /*---------------------------------------------------------------------------
     _listen
-    
-    Listens for connections and instantiates CtiLMConnection objects as 
+
+    Listens for connections and instantiates CtiLMConnection objects as
     necessary.  Each CtiLMConnection object is a observer of self in order
     for clients to receive notification of updates.
 ---------------------------------------------------------------------------*/
 void CtiLMClientListener::_listen()
-{  
+{
 
     try
     {
         _socketListener = new RWSocketListener( RWInetAddr( (int) _port )  );
-        /*{    
+        /*{
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime()  << " - Listening for clients..." << endl;
         }*/
-    
+
         do
         {
             try
@@ -188,10 +188,10 @@ void CtiLMClientListener::_listen()
                 {
                     RWPortal portal = (*_socketListener)();
                     CtiLMConnectionPtr conn(new CtiLMConnection(portal));
-    
+
                     {
                         RWRecursiveLock<RWMutexLock>::LockGuard guard( _connmutex );
-			conn->_weak_this_ptr = CtiLMConnectionWeakPtr(conn);
+            conn->_weak_this_ptr = CtiLMConnectionWeakPtr(conn);
                         _connections.push_back(conn);
                     }
                 }
@@ -199,7 +199,7 @@ void CtiLMClientListener::_listen()
             catch(RWSockErr& msg)
             {
                 if( msg.errorNumber() == 10004 )
-                {    
+                {
                     /*CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << "CtiLMClientListener thread interupted" << endl;*/
                     break;
@@ -228,8 +228,8 @@ void CtiLMClientListener::_listen()
             }
             rwSleep(500);
         } while ( !_doquit );
-    
-        /*{    
+
+        /*{
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime()  << " - CtiLMClientListener::_listen() - exiting" << endl;
         }*/
@@ -245,7 +245,7 @@ void CtiLMClientListener::_check()
 {
     try
     {
-        do        
+        do
         {
             try
             {
@@ -275,21 +275,21 @@ void CtiLMClientListener::_check()
             }
             rwSleep(500);
         } while ( !_doquit );
-    
-        {   
+
+        {
             RWRecursiveLock<RWMutexLock>::LockGuard guard( _connmutex );
-    
-            /*{    
+
+            /*{
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime()  << " - CtiLMClientListener::_listen() - closing " << _connections.entries() << " connections..." << endl;
             }*/
-    
+
             //Before we exit try to close all the connections
             _connections.clear();
         }
-    
-    
-        /*{    
+
+
+        /*{
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime()  << " - CtiLMClientListener::_check - exiting" << endl;
         }*/

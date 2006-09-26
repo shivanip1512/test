@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/con_mgr_vg.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2006/05/22 18:44:13 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2006/09/26 14:16:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -64,8 +64,8 @@ private:
       _blank(0),
       ClientKnownPort(-1)
    {
-      cout << "Default Constructor may break things!" << __FILE__ << " " << __LINE__ << endl;
-      cout << "**** Connection Manager!!! *****" << endl;
+      std::cout << "Default Constructor may break things!" << __FILE__ << " " << __LINE__ << endl;
+      std::cout << "**** Connection Manager!!! *****" << endl;
    }
 
 public:

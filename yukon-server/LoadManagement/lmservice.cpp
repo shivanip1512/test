@@ -71,7 +71,7 @@ void CtiLMService::RunInConsole(DWORD argc, LPTSTR* argv)
 
     //We need to catch ctrl-c so we can stop
     if (!SetConsoleCtrlHandler((PHANDLER_ROUTINE) CtrlHandler,  TRUE))
-        cerr << "Could not install console control handler" << endl;
+        std::cerr << "Could not install console control handler" << endl;
 
     Init();
     Run();
