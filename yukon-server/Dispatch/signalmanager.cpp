@@ -1,6 +1,3 @@
-#include "yukon.h"
-
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   signalmanager
@@ -10,11 +7,12 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2006/09/14 15:58:16 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2006/09/26 14:11:52 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
 
 #include "dbaccess.h"
@@ -89,7 +87,7 @@ CtiSignalManager& CtiSignalManager::addSignal(const CtiSignalMsg &sig)          
     try
     {
         // Events are now allowed
-        if( (sig.getTags() & SIGNAL_MANAGER_MASK) != 0 ) 
+        if( (sig.getTags() & SIGNAL_MANAGER_MASK) != 0 )
         {
             CtiLockGuard< CtiMutex > tlg(_mux, 5000);
             while(!tlg.isAcquired())

@@ -1,4 +1,3 @@
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   pendingOpThread
@@ -9,10 +8,13 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2006/09/08 20:18:05 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2006/09/26 14:11:52 $
 * HISTORY      :
 * $Log: pendingOpThread.h,v $
+* Revision 1.13  2006/09/26 14:11:52  mfisher
+* moved headers to the top so Slick's diff ignores them
+*
 * Revision 1.12  2006/09/08 20:18:05  jotteson
 * Fixed a bug that would cause delayed limits to not be ack-able.
 *

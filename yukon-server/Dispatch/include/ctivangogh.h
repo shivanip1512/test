@@ -1,8 +1,3 @@
-
-
-#ifndef __VANGOGH_H__
-    #pragma warning( disable : 4786)
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   ctivangogh
@@ -11,14 +6,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/ctivangogh.h-arc  $
-* REVISION     :  $Revision: 1.51 $
-* DATE         :  $Date: 2006/09/11 15:13:39 $
+* REVISION     :  $Revision: 1.52 $
+* DATE         :  $Date: 2006/09/26 14:11:52 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-
+#ifndef __VANGOGH_H__
 #define __VANGOGH_H__
-
+#pragma warning( disable : 4786)
 
 #include <functional>
 #include <iostream>
