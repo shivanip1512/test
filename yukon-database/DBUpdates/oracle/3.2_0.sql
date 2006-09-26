@@ -576,6 +576,8 @@ alter table CommandGroup
 
 
 alter table DeviceTypeCommand drop constraint PK_DEVICETYPECOMMAND;
+/* @error ignore */
+drop index PK_DEVICETYPECOMMAND;
 alter table DeviceTypeCommand add CommandGroupID NUMBER;
 update DeviceTypeCommand set CommandGroupID = -1;
 alter table DeviceTypeCommand modify CommandGroupID not null;
