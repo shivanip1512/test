@@ -202,10 +202,15 @@ void CtiCCStrategy::restore(RWDBReader &rdr)
         _offpklag = fabs(_offpklag);
         _offpklead =  -fabs(_offpklead);  
     }
-    _peakVARlag = 0;
-    _peakVARlead = 0;
-    _offpkVARlag = 0;   
-    _offpkVARlead = 0;
+    rdr["peakvarlag"] >> _peakVARlag;
+    rdr["peakvarlead"] >> _peakVARlead;
+    rdr["offpkvarlag"] >> _offpkVARlag;
+    rdr["offpkvarlead"] >> _offpkVARlead;
+    
+    _peakVARlag = fabs(_peakVARlag);    
+    _peakVARlead =  -fabs(_peakVARlead);
+    _offpkVARlag = fabs(_offpkVARlag);      
+    _offpkVARlead =  -fabs(_offpkVARlead); 
 }
 
 /*---------------------------------------------------------------------------

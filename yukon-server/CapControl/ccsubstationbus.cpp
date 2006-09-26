@@ -38,6 +38,7 @@ extern BOOL _USE_FLIP_FLAG;
 extern ULONG _POINT_AGE;
 extern ULONG _SCAN_WAIT_EXPIRE;
 extern BOOL _ALLOW_PARALLEL_TRUING;
+extern BOOL _LOG_MAPID_INFO;
 
 RWDEFINE_COLLECTABLE( CtiCCSubstationBus, CTICCSUBSTATIONBUS_ID )
 
@@ -440,6 +441,19 @@ const string& CtiCCSubstationBus::getControlUnits() const
 {
     return _controlunits;
 }
+
+
+/*---------------------------------------------------------------------------
+    getSolution
+
+    Returns the solution of the substation
+---------------------------------------------------------------------------*/
+const string& CtiCCSubstationBus::getSolution() const
+{
+    return _solution;
+}
+
+
 
 /*---------------------------------------------------------------------------
     getControlDelayTime
@@ -1277,6 +1291,19 @@ CtiCCSubstationBus& CtiCCSubstationBus::setControlUnits(const string& units)
     return *this;
 }
 
+
+/*---------------------------------------------------------------------------
+    setSolution
+
+    Sets the Solution of the substation
+---------------------------------------------------------------------------*/
+CtiCCSubstationBus& CtiCCSubstationBus::setSolution(const string& text)
+{
+    _solution = text;
+    return *this;
+}
+
+
 /*---------------------------------------------------------------------------
     setControlDelayTime
 
@@ -1931,7 +1958,14 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
         string text = string("Substation Bus Exceeded Max Daily Operations");
         string additional = string("Substation Bus: ");
         additional += getPAOName();
-        //CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,5,text,additional,GeneralLogType,SignalEvent));
+        if (_LOG_MAPID_INFO) 
+        {
+            additional += " MapID: ";
+            additional += getMapLocationId();
+            additional += " (";
+            additional += getPAODescription();
+            additional += ")";
+        }
         CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,5,text,additional,CapControlLogType,SignalAlarm0, "cap control"));
 
 
@@ -1944,9 +1978,15 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
             string text = string("Substation Bus Disabled");
             string additional = string("Bus: ");
             additional += getPAOName();
-            //CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,GeneralLogType,SignalEvent));
+            if (_LOG_MAPID_INFO) 
+            {
+                additional += " MapID: ";
+                additional += getMapLocationId();
+                additional += " (";
+                additional += getPAODescription();
+                additional += ")";            
+            }
             CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalAlarm0, "cap control"));
-            //CtiSignalMsg *pFailSig = CTIDBG_new CtiSignalMsg(pPoint->getID(), Cmd->getSOE(), devicename + " / " + pPoint->getName() + ": Commanded Control " + ResolveStateName(pPoint->getStateGroupID(), rawstate) + " Failed", getAlarmStateName( pPoint->getAlarming().getAlarmCategory(CtiTablePointAlarming::commandFailure) ), GeneralLogType, pPoint->getAlarming().getAlarmCategory(CtiTablePointAlarming::commandFailure), Cmd->getUser());
             
             keepGoing = FALSE;
         }
@@ -2466,6 +2506,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
                         DOUBLE adjustedBankKVARIncrease = (leadLevel/100.0)*((DOUBLE)capBank->getBankSize());
                         if( adjustedBankKVARIncrease <= getKVARSolution() )
                         {
+
                             string text = currentFeeder->createTextString(getControlMethod(), CtiCCCapBank::Open, getCurrentVarLoadPointValue(), getCurrentVarLoadPointValue());
                             request = currentFeeder->createIncreaseVarRequest(capBank, pointChanges, ccEvents, text);
                         }
@@ -3014,13 +3055,6 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChange
                 LONG sendRetries = getControlSendRetries();
                 LONG failPercent = getFailurePercent();
 
-                /*if (currentFeeder->getStrategyId() > 0)
-                {
-                    //minConfirmPercent = currentFeeder->getMinConfirmPercent();
-                    //maxConfirmTime = currentFeeder->getMaxConfirmTime();
-                    sendRetries = currentFeeder->getControlSendRetries();
-                    //failPercent = currentFeeder->getFailurePercent();
-                }*/
                 if( currentFeeder->isAlreadyControlled(minConfirmPercent) ||
                     currentFeeder->isPastMaxConfirmTime(CtiTime(),maxConfirmTime,sendRetries) )
                 {
@@ -3140,6 +3174,7 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
     BOOL returnBoolean = FALSE;
     BOOL foundCap = FALSE;
     BOOL foundFeeder = FALSE;
+    BOOL assumedWrongFlag = FALSE;
     char tempchar[64] = "";
     string text = "";
     string additional = "";
@@ -3195,6 +3230,7 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                                    currentCapBank->setControlStatus(CtiCCCapBank::ClosePending);
                                    //return returnBoolean;
                                    change = 0 - change;
+                                   assumedWrongFlag = TRUE;
                                }
                            }
                            DOUBLE ratio = change/currentCapBank->getBankSize();
@@ -3202,34 +3238,55 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                            {
                                if( ratio < getFailurePercent()*.01 && getFailurePercent() != 0 && getMinConfirmPercent() != 0 )
                                {
-                                   currentCapBank->setControlStatus(CtiCCCapBank::OpenFail);
+                                   if (!assumedWrongFlag)
+                                       currentCapBank->setControlStatus(CtiCCCapBank::OpenFail);
+                                   else
+                                       currentCapBank->setControlStatus(CtiCCCapBank::CloseFail);
+
                                    text = string("Var: ");
                                    text += doubleToString(newValue);
                                    text += " ( ";
                                    text += doubleToString(ratio*100.0);
-                                   text += "% change), OpenFail";
+                                   if (!assumedWrongFlag)
+                                       text += "% change), OpenFail";
+                                   else
+                                       text += "% change), CloseFail";
                                    additional = string("Feeder: ");
                                    additional += currentFeeder->getPAOName();
                                }
                                else if( getMinConfirmPercent() != 0 )
                                {
-                                   currentCapBank->setControlStatus(CtiCCCapBank::OpenQuestionable);
+                                   if (!assumedWrongFlag)
+                                       currentCapBank->setControlStatus(CtiCCCapBank::OpenQuestionable);
+                                   else
+                                       currentCapBank->setControlStatus(CtiCCCapBank::CloseQuestionable);
+
                                    text = string("Var: ");
                                    text += doubleToString(newValue);
                                    text += " ( ";
                                    text += doubleToString(ratio*100.0);
-                                   text += "% change), OpenQuestionable";
+                                   if (!assumedWrongFlag)
+                                       text += "% change), OpenQuestionable";
+                                   else
+                                       text += "% change), CloseQuestionable";
                                    additional = string("Feeder: ");
                                    additional += currentFeeder->getPAOName();
                                }
                                else
                                {
-                                   currentCapBank->setControlStatus(CtiCCCapBank::Open);
+                                   if (!assumedWrongFlag)
+                                       currentCapBank->setControlStatus(CtiCCCapBank::Open);
+                                   else
+                                       currentCapBank->setControlStatus(CtiCCCapBank::Close);
+
                                    text = string("Var: ");
                                    text += doubleToString(newValue);
                                    text += " ( ";
                                    text += doubleToString(ratio*100.0);
-                                   text += "% change), Open";
+                                   if (!assumedWrongFlag)
+                                       text += "% change), Open";
+                                   else
+                                       text += "% change), Closed";
                                    additional = string("Feeder: ");
                                    additional += currentFeeder->getPAOName();
                                    vResult = TRUE;
@@ -3237,12 +3294,18 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                            }
                            else
                            {
-                               currentCapBank->setControlStatus(CtiCCCapBank::Open);
+                               if (!assumedWrongFlag)
+                                   currentCapBank->setControlStatus(CtiCCCapBank::Open);
+                               else
+                                   currentCapBank->setControlStatus(CtiCCCapBank::Close);
                                text = string("Var: ");
                                text += doubleToString(newValue);
                                text += " ( ";
                                text += doubleToString(ratio*100.0);
-                               text += "% change), Open";
+                               if (!assumedWrongFlag)
+                                   text += "% change), Open";
+                               else
+                                   text += "% change), Closed";
                                additional = string("Feeder: ");
                                additional += currentFeeder->getPAOName();
                                vResult = TRUE;
@@ -3298,6 +3361,7 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                                    currentCapBank->setControlStatus(CtiCCCapBank::OpenPending);
                                    //return returnBoolean;
                                    change = 0 - change;
+                                   assumedWrongFlag = TRUE;
                                }
                            }
                            DOUBLE ratio = change/currentCapBank->getBankSize();
@@ -3305,34 +3369,58 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                            {
                                if( ratio < getFailurePercent()*.01 && getFailurePercent() != 0 && getMinConfirmPercent() != 0 )
                                {
-                                   currentCapBank->setControlStatus(CtiCCCapBank::CloseFail);
+                                   if (!assumedWrongFlag)
+                                       currentCapBank->setControlStatus(CtiCCCapBank::CloseFail);
+                                   else
+                                       currentCapBank->setControlStatus(CtiCCCapBank::OpenFail);
+
                                    text = string("Var: ");
                                    text += doubleToString(newValue);
                                    text += " ( ";
                                    text += doubleToString(ratio*100.0);
-                                   text += "% change), CloseFail";
+                                   if (!assumedWrongFlag)
+                                       text += "% change), CloseFail";
+                                   else
+                                       text += "% change), OpenFail";
+
                                    additional = string("Feeder: ");
                                    additional += currentFeeder->getPAOName();
                                }
                                else if( getMinConfirmPercent() != 0 )
                                {
-                                   currentCapBank->setControlStatus(CtiCCCapBank::CloseQuestionable);
+                                   if (!assumedWrongFlag)
+                                       currentCapBank->setControlStatus(CtiCCCapBank::CloseQuestionable);
+                                   else
+                                       currentCapBank->setControlStatus(CtiCCCapBank::OpenQuestionable);
+
                                    text = string("Var: ");
                                    text += doubleToString(newValue);
                                    text += " ( ";
                                    text += doubleToString(ratio*100.0);
-                                   text += "% change), CloseQuestionable";
+                                   if (!assumedWrongFlag)
+                                       text += "% change), CloseQuestionable";
+                                   else
+                                       text += "% change), OpenQuestionable";
+
                                    additional = string("Feeder: ");
                                    additional += currentFeeder->getPAOName();
                                }
                                else
                                {
-                                   currentCapBank->setControlStatus(CtiCCCapBank::Close);
+                                   if (!assumedWrongFlag)
+                                       currentCapBank->setControlStatus(CtiCCCapBank::Close);
+                                   else
+                                       currentCapBank->setControlStatus(CtiCCCapBank::Open);
+
                                    text = string("Var: ");
                                    text += doubleToString(newValue);
                                    text += " ( ";
                                    text += doubleToString(ratio*100.0);
-                                   text += "% change), Closed";
+                                   if (!assumedWrongFlag)
+                                       text += "% change), Closed";
+                                   else
+                                       text += "% change), Open";
+
                                    additional = string("Feeder: ");
                                    additional += currentFeeder->getPAOName();
                                    vResult = TRUE;
@@ -3340,12 +3428,20 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                            }
                            else
                            {
-                               currentCapBank->setControlStatus(CtiCCCapBank::Close);
+                               if (!assumedWrongFlag)
+                                   currentCapBank->setControlStatus(CtiCCCapBank::Close);
+                               else
+                                   currentCapBank->setControlStatus(CtiCCCapBank::Open);
+
                                text = string("Var: ");
                                text += doubleToString(newValue);
                                text += " ( ";
                                text += doubleToString(ratio*100.0);
-                               text += "% change), Closed";
+                               if (!assumedWrongFlag)
+                                   text += "% change), Closed";
+                               else
+                                   text += "% change), Open";
+
                                additional = string("Feeder: ");
                                additional += currentFeeder->getPAOName();
                                vResult = TRUE;
@@ -3382,12 +3478,26 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                        returnBoolean = FALSE;
                       // break;
                    }
-
+                   if ( (currentCapBank->getRetryOpenFailedFlag() || currentCapBank->getRetryCloseFailedFlag() )  && 
+                       (currentCapBank->getControlStatus() != CtiCCCapBank::CloseFail && currentCapBank->getControlStatus() != CtiCCCapBank::OpenFail)) 
+                   {
+                       currentCapBank->setRetryOpenFailedFlag(FALSE);
+                       currentCapBank->setRetryCloseFailedFlag(FALSE);
+                   }
+                   setSolution(text);
                    if( currentCapBank->getStatusPointId() > 0 )
                    {
                        if( text.length() > 0 )
                        {//if control failed or questionable, create event to be sent to dispatch
                            long tempLong = currentCapBank->getStatusPointId();
+                           if (_LOG_MAPID_INFO) 
+                           {
+                               additional += " MapID: ";
+                               additional += currentFeeder->getMapLocationId();
+                               additional += " (";
+                               additional += currentFeeder->getPAODescription();
+                               additional += ")";
+                           }
                            pointChanges.push_back(new CtiSignalMsg(tempLong,0,text,additional,CapControlLogType,SignalEvent, "cap control verification"));
                            ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(1);
                        }
@@ -6049,6 +6159,14 @@ void CtiCCSubstationBus::analyzeMultiVoltBus1(const CtiTime& currentDateTime, Ct
                             //
                     }
                 }
+                else if (!stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::MultiVoltVarControlUnits))  //check for VarImprovement flag?
+                {
+                    if (analyzeBusForVarImprovement(&outOfRangeMonitorPoint, pointChanges, ccEvents, pilMessages))
+                    {
+               
+                    }
+               
+                }
             }
             else if(currentFeeder->getRecentlyControlledFlag())//recently controlled...
             {
@@ -6171,6 +6289,15 @@ void CtiCCSubstationBus::analyzeMultiVoltBus(const CtiTime& currentDateTime, Cti
                         //
                 }
             }
+            else if (!stringCompareIgnoreCase(_controlunits, CtiCCSubstationBus::MultiVoltVarControlUnits)) 
+            {
+                if (analyzeBusForVarImprovement(&outOfRangeMonitorPoint, pointChanges, ccEvents, pilMessages))
+                {
+
+                }
+
+            }
+
         }
         else if(getRecentlyControlledFlag())//recently controlled...
         {
@@ -6256,8 +6383,300 @@ CtiCCCapBank* CtiCCSubstationBus::getMonitorPointParentBankAndFeeder(CtiCCMonito
     return NULL;
 }
 
-BOOL CtiCCSubstationBus::analyzeBusForVarImprovement(CtiCCMonitorPoint* point, CtiMultiMsg_vec &pointChanges, CtiMultiMsg_vec &ccEvents, CtiMultiMsg_vec &pilMessages)
+BOOL CtiCCSubstationBus::analyzeBusForVarImprovement(CtiCCMonitorPoint* point, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages)
 {
+
+    BOOL retVal = FALSE;
+    CtiRequestMsg* request = NULL;
+    RWDBDateTime currentDateTime;
+
+    if ( !stringCompareIgnoreCase(getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod) )
+    {
+        for (LONG i = 0; i < _ccfeeders.size();i++)
+        {
+            CtiCCFeederPtr currentFeeder = (CtiCCFeederPtr)_ccfeeders[i];
+            if (currentFeeder->getCurrentVarLoadPointId() > 0) 
+            {
+                
+                DOUBLE lagLevel = (isPeakTime(currentDateTime)?currentFeeder->getPeakVARLag():currentFeeder->getOffPeakVARLag());
+                DOUBLE leadLevel = (getPeakTimeFlag()?currentFeeder->getPeakVARLead():currentFeeder->getOffPeakVARLead());
+                if( !_IGNORE_NOT_NORMAL_FLAG || 
+                    ( currentFeeder->getCurrentVarPointQuality() == NormalQuality &&
+                      currentFeeder->getCurrentVoltPointQuality() == NormalQuality ) )
+                {
+                    if( currentFeeder->getCurrentVarLoadPointValue() > lagLevel )
+                    {
+                        //select bank to open...make sure volt points stay in range though.
+                        vector <CtiCCMonitorPointPtr>& monPoints = currentFeeder->getMultipleMonitorPoints();
+                        for (int i = 0; i < monPoints.size(); i++) 
+                        {
+                            CtiCCMonitorPointPtr pt = monPoints[i];
+                            CtiCCCapBankPtr bank = currentFeeder->getMonitorPointParentBank(pt);
+                            if (bank->getControlStatus() == CtiCCCapBank::Open ||
+                                bank->getControlStatus() == CtiCCCapBank::OpenQuestionable ) 
+                            {
+                                CtiCCPointResponse* pResponse =  bank->getPointResponse(pt);
+                                if (pResponse != NULL) 
+                                {
+                                    if ( (pt->getValue() + pResponse->getDelta() <= pt->getUpperBandwidth() && 
+                                          pt->getValue() + pResponse->getDelta() >= pt->getLowerBandwidth() ) ||
+                                          pt->getValue() + pResponse->getDelta() < pt->getUpperBandwidth() ) 
+                                    {
+                                        {
+                                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                                            dout << CtiTime() << " Attempting to Improve PF on Feeder: "<<getPAOName()<<" CapBank: "<<bank->getPAOName() << endl;
+                                        }
+                                  
+                                        if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
+                                        {
+                                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                                            dout << CtiTime() << " MULTIVOLT: MonitorPoint->bankID/pointID: "<<pt->getBankId()<<"/"<<pt->getPointId()<<" Parent CapBank: "<<bank->getPAOName() <<" selected to Close" << endl;
+                                        }
+                                        //Check other monitor point responses using this potential capbank
+                                        if (currentFeeder->areOtherMonitorPointResponsesOk(pt->getPointId(), bank, CtiCCCapBank::Close))
+                                        {
+                                            DOUBLE controlValue = (stringCompareIgnoreCase(getControlUnits(), CtiCCSubstationBus::VoltControlUnits) ? currentFeeder->getCurrentVoltLoadPointValue() : currentFeeder->getCurrentVarLoadPointValue());
+                                            string text = currentFeeder->createTextString(getControlMethod(), CtiCCCapBank::Close, controlValue, currentFeeder->getCurrentVarLoadPointValue());
+                                            request = currentFeeder->createDecreaseVarRequest(bank, pointChanges, ccEvents, text);
+                                  
+                                             currentFeeder->updatePointResponsePreOpValues(bank);
+                                        }
+                                    }
+                                }
+
+                            }
+                            if (request != NULL) 
+                            {
+                                break;
+                            }
+
+                        }
+                        
+                    }
+                    else if ( currentFeeder->getCurrentVarLoadPointValue() < leadLevel )
+                    {
+                        //select bank to open...make sure volt points stay in range though.
+                        vector <CtiCCMonitorPointPtr>& monPoints = currentFeeder->getMultipleMonitorPoints();
+                        for (int i = 0; i < monPoints.size(); i++) 
+                        {
+                            CtiCCMonitorPointPtr pt = monPoints[i];
+                            CtiCCCapBankPtr bank = currentFeeder->getMonitorPointParentBank(pt);
+                            if (bank->getControlStatus() == CtiCCCapBank::Close ||
+                                bank->getControlStatus() == CtiCCCapBank::CloseQuestionable ) 
+                            {
+                                CtiCCPointResponse* pResponse =  bank->getPointResponse(pt);
+                                if (pResponse != NULL) 
+                                {
+                                    if ( (pt->getValue() - pResponse->getDelta() <= pt->getUpperBandwidth() &&   
+                                          pt->getValue() - pResponse->getDelta() >= pt->getLowerBandwidth() ) || 
+                                          pt->getValue() - pResponse->getDelta() > pt->getLowerBandwidth() )     
+                                    {
+                                        {
+                                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                                            dout << CtiTime() << " Attempting to Improve PF on Feeder: "<<getPAOName()<<" CapBank: "<<bank->getPAOName() << endl;
+                                        }
+
+                                        if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
+                                        {
+                                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                                            dout << CtiTime() << " MULTIVOLT: MonitorPoint->bankID/pointID: "<<pt->getBankId()<<"/"<<pt->getPointId()<<" Parent CapBank: "<<bank->getPAOName() <<" selected to Open" << endl;
+                                        }
+                                        //Check other monitor point responses using this potential capbank
+                                        if (currentFeeder->areOtherMonitorPointResponsesOk(pt->getPointId(), bank, CtiCCCapBank::Open))
+                                        {
+                                            DOUBLE controlValue = (stringCompareIgnoreCase(getControlUnits(),CtiCCSubstationBus::VoltControlUnits) ? currentFeeder->getCurrentVoltLoadPointValue() : currentFeeder->getCurrentVarLoadPointValue());
+                                            string text = currentFeeder->createTextString(getControlMethod(), CtiCCCapBank::Open, controlValue, currentFeeder->getCurrentVarLoadPointValue());
+                                            request = currentFeeder->createIncreaseVarRequest(bank, pointChanges, ccEvents, text);
+
+                                             currentFeeder->updatePointResponsePreOpValues(bank);
+                                        }
+                                    }
+                                }
+
+                            }
+                            if (request != NULL) 
+                            {
+                                break;
+                            }
+
+                        }
+
+                    }
+                    else
+                    {
+                        //nothing.  var load within limits...
+                    }
+                }
+                if (request != NULL) 
+                {
+                    break;
+                }
+            }
+            else
+            {
+               if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
+               {
+                   CtiLockGuard<CtiLogger> logger_guard(dout);
+                   dout << CtiTime() << " MULTIVOLT: Var Information NOT available for Feeder: "<<currentFeeder->getPAOName() << endl;
+               }
+            }
+        }
+        if( request != NULL )
+        {
+            pilMessages.insert(request);
+            setOperationSentWaitFlag(TRUE);
+            //setLastCapBankControlledDeviceId( bestBank->getPAOId());
+            setVarValueBeforeControl(getCurrentVarLoadPointValue());
+            figureEstimatedVarLoadPointValue();
+            if( getEstimatedVarLoadPointId() > 0 )
+            {
+                pointChanges.insert(new CtiPointDataMsg(getEstimatedVarLoadPointId(),getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType));
+            }
+
+            retVal = TRUE;
+        }
+
+    }
+    else
+    {
+        if (getCurrentVarLoadPointId() > 0) 
+        {
+
+            CtiCCFeeder* parentFeeder = NULL;
+            DOUBLE lagLevel = (isPeakTime(currentDateTime)?getPeakVARLag():getOffPeakVARLag());
+            DOUBLE leadLevel = (getPeakTimeFlag()?getPeakVARLead():getOffPeakVARLead());
+            if( !_IGNORE_NOT_NORMAL_FLAG || 
+                ( getCurrentVarPointQuality() == NormalQuality &&
+                  getCurrentVoltPointQuality() == NormalQuality ) )
+            {
+                if( getCurrentVarLoadPointValue() > lagLevel )
+                {
+                    //select bank to open...make sure volt points stay in range though.
+                    vector <CtiCCMonitorPointPtr>& monPoints = getMultipleMonitorPoints();
+                    for (int i = 0; i < monPoints.size(); i++) 
+                    {
+                        CtiCCMonitorPointPtr pt = monPoints[i];
+                        CtiCCCapBankPtr bank = getMonitorPointParentBankAndFeeder(pt, parentFeeder);
+
+                        if (bank->getControlStatus() == CtiCCCapBank::Open ||
+                            bank->getControlStatus() == CtiCCCapBank::OpenQuestionable ) 
+                        {
+                            CtiCCPointResponse* pResponse =  bank->getPointResponse(pt);
+                            if (pResponse != NULL) 
+                            {
+                                if ( (pt->getValue() + pResponse->getDelta() <= pt->getUpperBandwidth() && 
+                                      pt->getValue() + pResponse->getDelta() >= pt->getLowerBandwidth() ) ||
+                                      pt->getValue() + pResponse->getDelta() < pt->getUpperBandwidth() ) 
+                                {
+                                    {
+                                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                                        dout << CtiTime() << " Attempting to Improve PF on Sub: "<<getPAOName()<<" CapBank: "<<bank->getPAOName() << endl;
+                                    }
+        
+                                    if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
+                                    {
+                                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                                        dout << CtiTime() << " MULTIVOLT: MonitorPoint->bankID/pointID: "<<pt->getBankId()<<"/"<<pt->getPointId()<<" Parent CapBank: "<<bank->getPAOName() <<" selected to Close" << endl;
+                                    }
+                                    //Check other monitor point responses using this potential capbank
+                                    if (areOtherMonitorPointResponsesOk(pt->getPointId(), bank, CtiCCCapBank::Close))
+                                    {
+                                        DOUBLE controlValue = (stringCompareIgnoreCase(getControlUnits(), CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
+                                        string text = parentFeeder->createTextString(getControlMethod(), CtiCCCapBank::Close, controlValue, getCurrentVarLoadPointValue());
+                                        request =  parentFeeder->createDecreaseVarRequest(bank, pointChanges, ccEvents, text);
+        
+                                        updatePointResponsePreOpValues(bank);
+                                    }
+                                }
+                            }
+        
+                        }
+                        if (request != NULL) 
+                        {
+                            break;
+                        }
+                    }
+                }
+                else if ( getCurrentVarLoadPointValue() < leadLevel )
+                {
+                    //select bank to open...make sure volt points stay in range though.
+                    vector <CtiCCMonitorPointPtr>& monPoints = getMultipleMonitorPoints();
+                    for (int i = 0; i < monPoints.size(); i++) 
+                    {
+                        CtiCCMonitorPointPtr pt = monPoints[i];
+                        CtiCCCapBankPtr bank = getMonitorPointParentBankAndFeeder(pt, parentFeeder);
+
+                        if (bank->getControlStatus() == CtiCCCapBank::Close ||
+                            bank->getControlStatus() == CtiCCCapBank::CloseQuestionable ) 
+                        {
+                            CtiCCPointResponse* pResponse =  bank->getPointResponse(pt);
+                            if (pResponse != NULL) 
+                            {
+                                if ( (pt->getValue() - pResponse->getDelta() <= pt->getUpperBandwidth() &&   
+                                      pt->getValue() - pResponse->getDelta() >= pt->getLowerBandwidth() ) || 
+                                      pt->getValue() - pResponse->getDelta() > pt->getLowerBandwidth() )     
+                                {
+                                    {
+                                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                                        dout << CtiTime() << " Attempting to Improve PF on Sub: "<<getPAOName()<<" CapBank: "<<bank->getPAOName() << endl;
+                                    }
+        
+                                    if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
+                                    {
+                                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                                        dout << CtiTime() << " MULTIVOLT: MonitorPoint->bankID/pointID: "<<pt->getBankId()<<"/"<<pt->getPointId()<<" Parent CapBank: "<<bank->getPAOName() <<" selected to Open" << endl;
+                                    }
+                                    //Check other monitor point responses using this potential capbank
+                                    if (areOtherMonitorPointResponsesOk(pt->getPointId(), bank, CtiCCCapBank::Open))
+                                    {
+                                        DOUBLE controlValue = (stringCompareIgnoreCase(getControlUnits(),CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
+                                        string text = parentFeeder->createTextString(getControlMethod(), CtiCCCapBank::Open, controlValue, getCurrentVarLoadPointValue());
+                                        request = parentFeeder->createDecreaseVarRequest(bank, pointChanges, ccEvents, text);
+        
+                                        updatePointResponsePreOpValues(bank);
+                                    }
+                                }
+                            }
+        
+                        }
+                        if (request != NULL) 
+                        {
+                            break;
+                        }
+        
+                    }
+        
+                }
+                else
+                {
+                    //nothing.  var load within limits...
+                }
+            }
+        }  
+        else
+        {
+           if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
+           {
+               CtiLockGuard<CtiLogger> logger_guard(dout);
+               dout << CtiTime() << " MULTIVOLT: Var Information NOT available for Sub: "<<getPAOName() << endl;
+           }
+        }
+        
+        if( request != NULL )
+        {
+            pilMessages.insert(request);
+            setOperationSentWaitFlag(TRUE);
+            //setLastCapBankControlledDeviceId( bestBank->getPAOId());
+            setVarValueBeforeControl(getCurrentVarLoadPointValue());
+            figureEstimatedVarLoadPointValue();
+            if( getEstimatedVarLoadPointId() > 0 )
+            {
+                pointChanges.insert(new CtiPointDataMsg(getEstimatedVarLoadPointId(),getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType));
+            }
+        
+            retVal = TRUE;
+        }
+    }
     return FALSE;
 }
 

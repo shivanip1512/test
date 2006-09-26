@@ -2774,8 +2774,12 @@ void CtiCCSubstationBusStore::reloadStrategyFromDataBase(long strategyId, map< l
                 << capControlStrategy["peaklag"]
                 << capControlStrategy["peaklead"]
                 << capControlStrategy["offpklag"]
-                << capControlStrategy["offpklead"] ;
-
+                << capControlStrategy["offpklead"] 
+                << capControlStrategy["peakvarlag"]  
+                << capControlStrategy["peakvarlead"] 
+                << capControlStrategy["offpkvarlag"] 
+                << capControlStrategy["offpkvarlead"];
+                
 
                 selector.from(capControlStrategy);
                 if (strategyId >= 0)
@@ -2915,6 +2919,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                         << capControlSubstationBusTable["SwitchPointID"] 
                         << capControlSubstationBusTable["DualBusEnabled"]
                         << capControlSubstationBusTable["multiMonitorControl"];
+                        
                         selector.from(yukonPAObjectTable);
                         selector.from(capControlSubstationBusTable);
                         if (subBusId > 0)

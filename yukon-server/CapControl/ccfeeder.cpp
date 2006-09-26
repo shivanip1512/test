@@ -38,6 +38,7 @@ extern BOOL _USE_FLIP_FLAG;
 extern ULONG _POINT_AGE;
 extern ULONG _SCAN_WAIT_EXPIRE;
 extern BOOL _RETRY_FAILED_BANKS;
+extern BOOL _LOG_MAPID_INFO;
 
 RWDEFINE_COLLECTABLE( CtiCCFeeder, CTICCFEEDER_ID )
 
@@ -1622,6 +1623,14 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution)
                     string text = string("CapBank Exceeded Max Daily Operations");
                     string additional = string("CapBank: ");
                     additional += getPAOName();
+                    if (_LOG_MAPID_INFO) 
+                    {
+                        additional += " MapID: ";
+                        additional += currentCapBank->getMapLocationId();
+                        additional += " (";
+                        additional += currentCapBank->getPAODescription();
+                        additional += ")";
+                    }
                     CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,5,text,additional,CapControlLogType,SignalAlarm0, "cap control"));
 
                     //we should disable feeder if the flag says so
@@ -1632,10 +1641,15 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution)
                         string text = string("CapBank Disabled");
                         string additional = string("CapBank: ");
                         additional += getPAOName();
+                        if (_LOG_MAPID_INFO) 
+                        {
+                            additional += " MapID: ";
+                            additional += currentCapBank->getMapLocationId();
+                            additional += " (";
+                            additional += currentCapBank->getPAODescription();
+                            additional += ")";
+                        }
                         CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalAlarm0, "cap control"));
-
-                        //keepGoing = FALSE;
-                        // feeder disable flag is already set, so it will return false.
                     }
                 }
 
@@ -1681,6 +1695,14 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution)
                     string text("CapBank Exceeded Max Daily Operations");
                     string additional("CapBank: ");
                     additional += getPAOName();
+                    if (_LOG_MAPID_INFO) 
+                    {
+                        additional += " MapID: ";
+                        additional += currentCapBank->getMapLocationId();
+                        additional += " (";
+                        additional += currentCapBank->getPAODescription();
+                        additional += ")";
+                    }
                     CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,5,text,additional,CapControlLogType,SignalAlarm0, "cap control"));
 
                     //we should disable feeder if the flag says so
@@ -1691,10 +1713,15 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution)
                         string text = string("CapBank Disabled");
                         string additional = string("CapBank: ");
                         additional += getPAOName();
+                        if (_LOG_MAPID_INFO) 
+                        {
+                            additional += " MapID: ";
+                            additional += currentCapBank->getMapLocationId();
+                            additional += " (";
+                            additional += currentCapBank->getPAODescription();
+                            additional += ")";
+                        }
                         CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalAlarm0, "cap control"));
-
-                        //keepGoing = FALSE;
-                        // feeder disable flag is already set, so it will return false.
                     }
                 }
 
@@ -1752,6 +1779,14 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, CtiM
             additional += getParentName();
             additional += " /Feeder: ";
             additional += getPAOName();
+            if (_LOG_MAPID_INFO) 
+            {
+                additional += " MapID: ";
+                additional += getMapLocationId();
+                additional += " (";
+                additional += getPAODescription();
+                additional += ")";
+            }
             pointChanges.push_back(new CtiSignalMsg(capBank->getStatusPointId(),0,textInfo,additional,CapControlLogType,SignalEvent, "cap control"));
             ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(1);
             pointChanges.push_back(new CtiPointDataMsg(capBank->getStatusPointId(),capBank->getControlStatus(),NormalQuality,StatusPointType, capBank->getPAOName()));
@@ -1834,12 +1869,18 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarVerificationRequest(CtiCCCapBank* c
             additional += getParentName();
             additional += " /Feeder: ";
             additional += getPAOName();
-
+            if (_LOG_MAPID_INFO) 
+            {
+                additional += " MapID: ";
+                additional += getMapLocationId();
+                additional += " (";
+                additional += getPAODescription();
+                additional += ")";
+            }
             pointChanges.push_back(new CtiSignalMsg(capBank->getStatusPointId(),0,textInfo,additional,CapControlLogType,SignalEvent, "cap control verification"));
             ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(1);
             pointChanges.push_back(new CtiPointDataMsg(capBank->getStatusPointId(),capBank->getControlStatus(),NormalQuality,StatusPointType));
             ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(2);
-
             capBank->setLastStatusChangeTime(CtiTime());
 
             //setEventSequence(getEventSequence() + 1); // should be sub's event sequence for verification...
@@ -1897,6 +1938,14 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarVerificationRequest(CtiCCCapBank* c
             additional += getParentName();
             additional += " /Feeder: ";
             additional += getPAOName();
+            if (_LOG_MAPID_INFO) 
+            {
+                additional += " MapID: ";
+                additional += getMapLocationId();
+                additional += " (";
+                additional += getPAODescription();
+                additional += ")";
+            }
             pointChanges.push_back(new CtiSignalMsg(capBank->getStatusPointId(),0,textInfo,additional,CapControlLogType,SignalEvent, "cap control verification"));
             ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(1);
             pointChanges.push_back(new CtiPointDataMsg(capBank->getStatusPointId(),capBank->getControlStatus(),NormalQuality,StatusPointType));
@@ -1960,6 +2009,14 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, CtiM
             additional += getParentName();
             additional += " /Feeder: ";
             additional += getPAOName();
+            if (_LOG_MAPID_INFO) 
+            {
+                additional += " MapID: ";
+                additional += getMapLocationId();
+                additional += " (";
+                additional += getPAODescription();
+                additional += ")";
+            }
             pointChanges.push_back(new CtiSignalMsg(capBank->getStatusPointId(),0,textInfo,additional,CapControlLogType,SignalEvent, "cap control"));
             ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(1);
             pointChanges.push_back(new CtiPointDataMsg(capBank->getStatusPointId(),capBank->getControlStatus(),NormalQuality,StatusPointType, capBank->getPAOName()));
@@ -2415,6 +2472,14 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
               additional += getParentName();
               additional += " /Feeder: ";
               additional += getPAOName();;
+              if (_LOG_MAPID_INFO) 
+              {
+                  additional += " MapID: ";
+                  additional += getMapLocationId();
+                  additional += " (";
+                  additional += getPAODescription();
+                  additional += ")";
+              }
 
     for(LONG i=0;i<_cccapbanks.size();i++)
     {
@@ -2871,12 +2936,27 @@ BOOL CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
                returnBoolean = FALSE;
               // break;
            }
+           if ( (currentCapBank->getRetryOpenFailedFlag() || currentCapBank->getRetryCloseFailedFlag() )  && 
+                (currentCapBank->getControlStatus() != CtiCCCapBank::CloseFail && currentCapBank->getControlStatus() != CtiCCCapBank::OpenFail)) 
+            {
+                currentCapBank->setRetryOpenFailedFlag(FALSE);
+                currentCapBank->setRetryCloseFailedFlag(FALSE);
+            }
+
 
            if( currentCapBank->getStatusPointId() > 0 )
            {
                if( text.length() > 0 )
                {//if control failed or questionable, create event to be sent to dispatch
                    long tempLong = currentCapBank->getStatusPointId();
+                   if (_LOG_MAPID_INFO) 
+                   {
+                       additional += " MapID: ";
+                       additional += getMapLocationId();
+                       additional += " (";
+                       additional += getPAODescription();
+                       additional += ")";
+                   }
                    pointChanges.push_back(new CtiSignalMsg(tempLong,0,text,additional,CapControlLogType,SignalEvent, "cap control verification"));
                    ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(1);
                }
@@ -3480,6 +3560,14 @@ BOOL CtiCCFeeder::attemptToResendControl(const CtiTime& currentDateTime, CtiMult
                         additional += getParentName();
                         additional += " /Feeder: ";
                         additional += getPAOName();
+                            if (_LOG_MAPID_INFO) 
+                            {
+                                additional += " MapID: ";
+                                additional += getMapLocationId();
+                                additional += " (";
+                                additional += getPAODescription();
+                                additional += ")";
+                            }
                         pointChanges.push_back(new CtiSignalMsg(currentCapBank->getStatusPointId(),0,text,additional,CapControlLogType,SignalEvent, "cap control"));
                         ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(1);
 
@@ -3508,6 +3596,14 @@ BOOL CtiCCFeeder::attemptToResendControl(const CtiTime& currentDateTime, CtiMult
                             additional += getParentName();
                             additional += " /Feeder: ";
                             additional += getPAOName();
+                            if (_LOG_MAPID_INFO) 
+                            {
+                                additional += " MapID: ";
+                                additional += getMapLocationId();
+                                additional += " (";
+                                additional += getPAODescription();
+                                additional += ")";
+                            }
                             pointChanges.push_back(new CtiSignalMsg(currentCapBank->getStatusPointId(),0,text,additional,CapControlLogType,SignalEvent, "cap control"));
                             ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(1);
 
@@ -4783,6 +4879,10 @@ CtiCCFeeder& CtiCCFeeder::operator=(const CtiCCFeeder& right)
         _offpklag = right._offpklag;
         _peaklead = right._peaklead;
         _offpklead = right._offpklead;
+        _peakVARlag = right._peakVARlag;
+        _offpkVARlag = right._offpkVARlag;
+        _peakVARlead = right._peakVARlead;
+        _offpkVARlead = right._offpkVARlead;
         _displayorder = right._displayorder;
         _newpointdatareceivedflag = right._newpointdatareceivedflag;
         _lastcurrentvarpointupdatetime = right._lastcurrentvarpointupdatetime;
@@ -4800,6 +4900,8 @@ CtiCCFeeder& CtiCCFeeder::operator=(const CtiCCFeeder& right)
         _kvarsolution = right._kvarsolution;
         _estimatedpowerfactorvalue = right._estimatedpowerfactorvalue;
         _currentvarpointquality = right._currentvarpointquality;
+        _currentwattpointquality = right._currentwattpointquality;
+        _currentvoltpointquality = right._currentvoltpointquality;
         _waivecontrolflag = right._waivecontrolflag;
         _additionalFlags = right._additionalFlags;
         _parentControlUnits = right._parentControlUnits;
@@ -4892,10 +4994,10 @@ void CtiCCFeeder::restore(RWDBReader& rdr)
     setOffPeakLag(0);
     setPeakLead(0);
     setOffPeakLead(0);
-    setPeakVARLag(0);
-    setOffPeakVARLag(0);
-    setPeakVARLead(0);
-    setOffPeakVARLead(0);
+    setPeakVARLag(300);
+    setOffPeakVARLag(300);
+    setPeakVARLead(-250);
+    setOffPeakVARLead(-251);
     setPeakStartTime(0);
     setPeakStopTime(0);
     setControlInterval(0);
@@ -5090,6 +5192,14 @@ BOOL CtiCCFeeder::checkMaxDailyOpCountExceeded()
         string text = ("Feeder Exceeded Max Daily Operations");
         string additional = ("Feeder: ");
         additional += getPAOName();
+        if (_LOG_MAPID_INFO) 
+        {
+            additional += " MapID: ";
+            additional += getMapLocationId();
+            additional += " (";
+            additional += getPAODescription();
+            additional += ")";
+        }
         CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,5,text,additional,CapControlLogType,SignalAlarm0, "cap control"));
 
         //we should disable feeder if the flag says so
@@ -5100,6 +5210,14 @@ BOOL CtiCCFeeder::checkMaxDailyOpCountExceeded()
             string text = string("Feeder Disabled");
             string additional = string("Feeder: ");
             additional += getPAOName();
+            if (_LOG_MAPID_INFO) 
+            {
+                additional += " MapID: ";
+                additional += getMapLocationId();
+                additional += " (";
+                additional += getPAODescription();
+                additional += ")";
+            }
             CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalAlarm0, "cap control"));
 
             //keepGoing = FALSE;

@@ -31,6 +31,7 @@ ULONG _SCAN_WAIT_EXPIRE;
 BOOL _ALLOW_PARALLEL_TRUING;
 BOOL _RETRY_FAILED_BANKS;
 ULONG _DB_RELOAD_WAIT;
+BOOL _LOG_MAPID_INFO;
 
 CtiDate gInvalidCtiDate = CtiTime(1990,1,1);
 CtiTime gInvalidCtiTime = CtiTime(gInvalidCtiDate,0,0,0);
@@ -261,7 +262,7 @@ void CtiCCService::Init()
 
     _SCAN_WAIT_EXPIRE = 1;  //1 minute
 
-    strcpy(var, "CAP_CONTROL_POINT_AGE");
+    strcpy(var, "CAP_CONTROL_SCAN_WAIT_EXPIRE");
     if( !(str = gConfigParms.getValueAsString(var)).empty() )
     {
         _SCAN_WAIT_EXPIRE = atoi(str.data())+1;
@@ -303,6 +304,25 @@ void CtiCCService::Init()
     {
         std::transform(str.begin(), str.end(), str.begin(), ::tolower);
         _RETRY_FAILED_BANKS = (str=="true"?TRUE:FALSE);
+        if ( _CC_DEBUG & CC_DEBUG_STANDARD)
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - " << var << ":  " << str << endl;
+        }
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+    }
+
+    _LOG_MAPID_INFO = FALSE;
+
+    strcpy(var, "CAP_CONTROL_LOG_MAPID_INFO");
+    if ( !(str = gConfigParms.getValueAsString(var)).empty() )
+    {
+        std::transform(str.begin(), str.end(), str.begin(), ::tolower);
+        _LOG_MAPID_INFO = (str=="true"?TRUE:FALSE);
         if ( _CC_DEBUG & CC_DEBUG_STANDARD)
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);

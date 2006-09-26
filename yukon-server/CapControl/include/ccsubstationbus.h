@@ -147,6 +147,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     BOOL getMultiMonitorFlag() const;
     BOOL getWaitForReCloseDelayFlag() const;
     BOOL getWaitToFinishRegularControlFlag() const;
+    const string& getSolution() const;
 
     CtiFeeder_vec& getCCFeeders();
     void deleteCCFeeder(long feederId);
@@ -229,6 +230,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setWaitForReCloseDelayFlag(BOOL flag);
     CtiCCSubstationBus& setWaitToFinishRegularControlFlag(BOOL flag);
     CtiCCSubstationBus& setAllAltSubValues(DOUBLE volt, DOUBLE var, DOUBLE watt);
+    CtiCCSubstationBus& setSolution(const string& text);
 
     BOOL isPastMaxConfirmTime(const CtiTime& currentDateTime);
     LONG getLastFeederControlledSendRetries() const;
@@ -435,6 +437,8 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     LONG _currentCapBankToVerifyAssumedOrigState;
     int _verificationStrategy;
     LONG _capBankToVerifyInactivityTime;
+
+    string _solution;  //text field to be added to messaging indicating status/thinking
 
 
     DOUBLE _altSubVoltVal;
