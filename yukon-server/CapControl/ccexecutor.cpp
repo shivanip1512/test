@@ -1561,7 +1561,7 @@ void CtiCCCommandExecutor::DisableArea()
                     CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
                    
                     CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSubstationBus->getPAOId(), 0, capControlDisable, currentSubstationBus->getEventSequence(), 1, text, _command->getUser()));
-                }Imaginary Buffer Line
+                }
             }
         }
         

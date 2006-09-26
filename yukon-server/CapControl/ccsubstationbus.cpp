@@ -6388,7 +6388,7 @@ BOOL CtiCCSubstationBus::analyzeBusForVarImprovement(CtiCCMonitorPoint* point, C
 
     BOOL retVal = FALSE;
     CtiRequestMsg* request = NULL;
-    RWDBDateTime currentDateTime;
+    CtiTime currentDateTime;
 
     if ( !stringCompareIgnoreCase(getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod) )
     {
@@ -6523,14 +6523,14 @@ BOOL CtiCCSubstationBus::analyzeBusForVarImprovement(CtiCCMonitorPoint* point, C
         }
         if( request != NULL )
         {
-            pilMessages.insert(request);
+            pilMessages.push_back(request);
             setOperationSentWaitFlag(TRUE);
             //setLastCapBankControlledDeviceId( bestBank->getPAOId());
             setVarValueBeforeControl(getCurrentVarLoadPointValue());
             figureEstimatedVarLoadPointValue();
             if( getEstimatedVarLoadPointId() > 0 )
             {
-                pointChanges.insert(new CtiPointDataMsg(getEstimatedVarLoadPointId(),getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType));
+                pointChanges.push_back(new CtiPointDataMsg(getEstimatedVarLoadPointId(),getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType));
             }
 
             retVal = TRUE;
@@ -6664,14 +6664,14 @@ BOOL CtiCCSubstationBus::analyzeBusForVarImprovement(CtiCCMonitorPoint* point, C
         
         if( request != NULL )
         {
-            pilMessages.insert(request);
+            pilMessages.push_back(request);
             setOperationSentWaitFlag(TRUE);
             //setLastCapBankControlledDeviceId( bestBank->getPAOId());
             setVarValueBeforeControl(getCurrentVarLoadPointValue());
             figureEstimatedVarLoadPointValue();
             if( getEstimatedVarLoadPointId() > 0 )
             {
-                pointChanges.insert(new CtiPointDataMsg(getEstimatedVarLoadPointId(),getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType));
+                pointChanges.push_back(new CtiPointDataMsg(getEstimatedVarLoadPointId(),getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType));
             }
         
             retVal = TRUE;
