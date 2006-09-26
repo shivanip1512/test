@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_pseudostatus.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/12/20 17:20:31 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2006/09/26 14:18:23 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -65,7 +65,11 @@ public:
       string rwsTemp;
       Inherited::DecodeDatabaseReader(rdr);          // get the base class data out!
 
-      if(getDebugLevel() & DEBUGLEVEL_DATABASE) cout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+      if(getDebugLevel() & DEBUGLEVEL_DATABASE)
+      {
+          CtiLockGuard<CtiLogger> doubt_guard(dout);
+          dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+      }
       _pointStatus.DecodeDatabaseReader(rdr);
    }
 
