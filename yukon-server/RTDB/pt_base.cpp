@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/pt_base.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2006/07/06 09:29:40 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2006/09/26 14:27:52 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -109,7 +109,10 @@ CtiTablePointAlarming& CtiPointBase::getAlarming(bool refresh)
     }
     catch( ... )
     {
-        cout << "**** MEMORY **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint - MEMORY in point \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
     }
 
     return *_alarming;

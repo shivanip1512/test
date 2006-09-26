@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_versacom.cpp-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2006/02/27 23:58:31 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2006/09/26 14:31:21 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -320,7 +320,11 @@ INT CtiRouteVersacom::assembleVersacomRequest(CtiRequestMsg                  *pR
                 /* Build MasterComm header */
                 if((status = MasterHeader (NewOutMessage->Buffer.OutMessage + PREIDLEN, NewOutMessage->Remote, MASTERSEND, Length)) != NORMAL)
                 {
-                    cout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << ") Error: " << status << endl;
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** Checkpoint - error (" << status << ") in Versacom route \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+
                     delete NewOutMessage;
                 }
                 else

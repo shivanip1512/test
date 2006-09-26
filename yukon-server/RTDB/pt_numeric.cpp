@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/pt_numeric.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2006/09/08 20:19:29 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2006/09/26 14:27:52 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -239,7 +239,10 @@ void CtiPointNumeric::set_limitValid(int i, BOOL b)
    }
    else
    {
-      cout << "Limit is out of range " << __LINE__ << endl;
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint - Limit is out of range (" << i << ") in point \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
    }
 }
 
@@ -311,7 +314,7 @@ bool CtiPointNumeric::limitStateCheck( const int alarm, const int limitID, doubl
            }
        }
    }
-   else 
+   else
    {
        if( val < getLowLimit(limitID) )
        {
