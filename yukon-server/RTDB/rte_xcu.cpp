@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_xcu.cpp-arc  $
-* REVISION     :  $Revision: 1.59 $
-* DATE         :  $Date: 2006/09/23 13:55:56 $
+* REVISION     :  $Revision: 1.60 $
+* DATE         :  $Date: 2006/09/26 14:36:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -91,7 +91,8 @@ void CtiRouteXCU::DecodeDatabaseReader(RWDBReader &rdr)
 
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
     Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
 }
