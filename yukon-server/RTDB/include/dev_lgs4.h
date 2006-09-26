@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_alm_nloc.h-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2006/09/21 21:31:38 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2006/09/26 14:20:46 $
 *
 * Copyright (c) 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -378,13 +378,20 @@ private:
 
     CtiDeviceLandisGyrS4 & operator=(const CtiDeviceLandisGyrS4 & aRef)
     {
-        cout << __FILE__ << " = operator is invalid for this device" << endl;
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint - operator=() is invalid for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
         return *this;
     }
 
     CtiDeviceLandisGyrS4 (const CtiDeviceLandisGyrS4 & aRef)
     {
-        cout << __FILE__ << " copy constructor is invalid for this device" << endl;
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint - copy constructor is invalid for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
     }
 
 protected:

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_grp_emetcon.cpp-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2006/04/19 20:44:46 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2006/09/26 14:21:59 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -111,7 +111,7 @@ INT CtiDeviceGroupEmetcon::ExecuteRequest(CtiRequestMsg                  *pReq,
                  */
                 if(parse.getActionItems().size())
                 {
-                    for(std::list< string >::iterator itr = parse.getActionItems().begin(); 
+                    for(std::list< string >::iterator itr = parse.getActionItems().begin();
                          itr != parse.getActionItems().end();
                          ++itr )
                     {
@@ -202,7 +202,12 @@ INT CtiDeviceGroupEmetcon::ExecuteRequest(CtiRequestMsg                  *pReq,
                     delete OutMessage;
                     OutMessage = NULL;
                 }
-                cout << "Unsupported command" << endl;
+
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint - Unsupported command (" << parse.getCommand() << ") in Emetcon group \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
                 break;
             }
         }
