@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_710.cpp-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2006/09/23 13:06:47 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2006/09/26 13:46:03 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -22,8 +22,6 @@
 #include "numstr.h"
 
 #include "dev_foreignporter.h"
-
-#include "dev_grp_emetcon.h"
 
 namespace Cti    {
 namespace Device {
