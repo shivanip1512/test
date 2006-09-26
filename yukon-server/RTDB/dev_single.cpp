@@ -5,8 +5,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.55 $
-* DATE         :  $Date: 2006/06/26 15:48:40 $
+* REVISION     :  $Revision: 1.56 $
+* DATE         :  $Date: 2006/09/26 14:28:47 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1540,7 +1540,8 @@ void CtiDeviceSingle::DecodeDatabaseReader(RWDBReader &rdr)
     LockGuard guard(monitor());
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
     _twoWay.DecodeDatabaseReader(rdr);
 }
@@ -1553,7 +1554,8 @@ void CtiDeviceSingle::DecodeScanRateDatabaseReader(RWDBReader &rdr)
 
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     RWDBNullIndicator isNull;

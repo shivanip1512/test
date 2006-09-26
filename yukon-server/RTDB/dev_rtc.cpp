@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.44 $
-* DATE         :  $Date: 2006/04/21 15:20:13 $
+* REVISION     :  $Revision: 1.45 $
+* DATE         :  $Date: 2006/09/26 14:28:47 $
 *
 * HISTORY      :
 * $Log: dev_rtc.cpp,v $
+* Revision 1.45  2006/09/26 14:28:47  mfisher
+* standardizing the code for the "Decoding" printout
+*
 * Revision 1.44  2006/04/21 15:20:13  mfisher
 * zero-padded the Golay address string
 *
@@ -489,7 +492,7 @@ void CtiDeviceRTC::DecodeDatabaseReader(RWDBReader &rdr)
     if( getDebugLevel() & DEBUGLEVEL_DATABASE )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << " Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 }
 

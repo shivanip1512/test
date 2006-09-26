@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_grp_ripple.cpp-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2006/04/19 20:44:46 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2006/09/26 14:21:28 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -92,7 +92,7 @@ void CtiDeviceGroupRipple::DecodeDatabaseReader(RWDBReader &rdr)
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << " Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
@@ -127,7 +127,7 @@ INT CtiDeviceGroupRipple::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &
          */
         if(parse.getActionItems().size())
         {
-            for(std::list< string >::iterator itr = parse.getActionItems().begin(); 
+            for(std::list< string >::iterator itr = parse.getActionItems().begin();
                  itr != parse.getActionItems().end();
                  ++itr )
             {
