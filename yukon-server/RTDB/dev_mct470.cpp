@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.64 $
-* DATE         :  $Date: 2006/09/20 20:22:52 $
+* REVISION     :  $Revision: 1.65 $
+* DATE         :  $Date: 2006/09/26 15:10:49 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -794,7 +794,7 @@ INT CtiDeviceMCT470::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS
                         dout << "_lp_info[" << i << "].current_request = " << _lp_info[i].current_request << endl;
                     }
 
-                    //  make sure we're aligned (note - rwEpoch is an even multiple of 86400, so no worries)
+                    //  make sure we're aligned
                     _lp_info[i].current_request -= _lp_info[i].current_request % block_size;
 
                     //  which block to grab?
@@ -2909,10 +2909,10 @@ INT CtiDeviceMCT470::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, l
 
 INT CtiDeviceMCT470::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
-    int          status = NORMAL, base_offset, point_offset;
-    point_info_t pi, pi_time;
-    string    resultString, pointString, stateName;
-    CtiTime       pointTime;
+    int           status = NORMAL, base_offset, point_offset;
+    point_info_t  pi, pi_time;
+    string        resultString, pointString, stateName;
+    unsigned long pointTime;
 
     INT ErrReturn = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt  = &InMessage->Buffer.DSt;
@@ -2963,7 +2963,7 @@ INT CtiDeviceMCT470::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
         //  turn raw pulses into a demand reading
         pi.value *= double(3600 / getDemandInterval());
 
-        pointTime = CtiTime(pi_time.value);
+        pointTime = pi_time.value;
 
         //  we can do a rudimentary frozen peak time check here with the dynamicInfo stuff - we can't
         //    do much more, since we don't get the freeze count back with the frozen demand, so we have to
@@ -2974,19 +2974,12 @@ INT CtiDeviceMCT470::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
             pi.value = boost::static_pointer_cast<CtiPointNumeric>(pPoint)->computeValueForUOM(pi.value);
 
             pointString  = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(pi.value, boost::static_pointer_cast<CtiPointNumeric>(pPoint)->getPointUnits().getDecimalPlaces());
-            if( pi_time.value > DawnOfTime )
-            {
-                pointString += " @ " + pointTime.asString();
-            }
-            else
-            {
-                pointString += " @ (invalid time)";
-            }
+            pointString += " @ " + printable_time(pointTime);
 
             if( pData = makePointDataMsg(pPoint, pi, pointString) )
             {
-                pointTime -= pointTime.seconds() % getDemandInterval();
-                pData->setTime(pointTime);
+                pointTime -= pointTime % getDemandInterval();
+                pData->setTime(CtiTime(pointTime));
 
                 ReturnMsg->PointData().push_back(pData);
                 pData = 0;  // We just put it on the list...
@@ -2994,7 +2987,7 @@ INT CtiDeviceMCT470::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
         }
         else
         {
-            resultString += getName() + " / Channel " + CtiNumStr(base_offset) + " Max Demand = " + CtiNumStr(pi.value) + " @ " + pointTime.asString() + "  --  POINT UNDEFINED IN DB\n";
+            resultString += getName() + " / Channel " + CtiNumStr(base_offset) + " Max Demand = " + CtiNumStr(pi.value) + " @ " + printable_time(pointTime) + "  --  POINT UNDEFINED IN DB\n";
         }
 
         pi      = getData(DSt->Message + 6, 2, ValueType_KW);
@@ -3003,7 +2996,7 @@ INT CtiDeviceMCT470::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
         //  turn raw pulses into a demand reading
         pi.value *= double(3600 / getDemandInterval());
 
-        pointTime = CtiTime(pi_time.value);
+        pointTime = pi_time.value;
 
         //  use the max point for the computation, if we've got it
         if( pPoint )
@@ -3011,21 +3004,15 @@ INT CtiDeviceMCT470::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
             pi.value = boost::static_pointer_cast<CtiPointNumeric>(pPoint)->computeValueForUOM(pi.value);
 
             pointString  = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(pi.value, boost::static_pointer_cast<CtiPointNumeric>(pPoint)->getPointUnits().getDecimalPlaces());
-            if( pi_time.value > DawnOfTime )
-            {
-                pointString += " @ " + pointTime.asString();
-            }
-            else
-            {
-                pointString += " @ (invalid time)";
-            }
+
+            pointString += " @ " + printable_time(pointTime);
 
             //  we don't actually send a pointdata message for the min point, so we tack the results onto the result string instead
             resultString += pointString;
         }
         else
         {
-            resultString += getName() + " / Channel " + CtiNumStr(base_offset) + " Min Demand = " + CtiNumStr(pi.value) + " @ " + pointTime.asString() + "  --  POINT UNDEFINED IN DB\n";
+            resultString += getName() + " / Channel " + CtiNumStr(base_offset) + " Min Demand = " + CtiNumStr(pi.value) + " @ " + printable_time(pointTime) + "  --  POINT UNDEFINED IN DB\n";
         }
 
         ReturnMsg->setResultString(resultString);
@@ -3472,7 +3459,7 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
             {
                 CtiPointSPtr kwh, kw;
                 point_info_t time_info;
-                CtiTime peak_time;
+                unsigned long peak_time;
 
                 if( parse.getFlags() & CMD_FLAG_GV_KVARH || parse.getFlags() & CMD_FLAG_GV_KVAH  )
                 {
@@ -3521,7 +3508,7 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
 
                 pi        = getData(DSt->Message + 5, 3, ValueType_IED);
                 time_info = getData(DSt->Message + 8, 4, ValueType_Raw);
-                peak_time = CtiTime((unsigned long)time_info.value + timezone_offset);
+                peak_time = (unsigned long)time_info.value + timezone_offset;
 
                 if(kw = getDevicePointOffsetTypeEqual(offset + rate * 2, AnalogPointType))
                 {
@@ -3530,10 +3517,10 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                     pi.value = boost::static_pointer_cast<CtiPointNumeric>(kw)->computeValueForUOM(pi.value);
 
                     point_string  = getName() + " / " + kw->getName() + " = " + CtiNumStr(pi.value, boost::static_pointer_cast<CtiPointNumeric>(kw)->getPointUnits().getDecimalPlaces());
-                    point_string += " @ " + peak_time.asString() + "\n";
+                    point_string += " @ " + printable_time(peak_time) + "\n";
 
                     peak_msg = makePointDataMsg(kw, pi, point_string);
-                    peak_msg->setTime(peak_time);
+                    peak_msg->setTime(CtiTime(peak_time));
 
                     ReturnMsg->PointData().push_back(peak_msg);
                 }
@@ -3541,7 +3528,7 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                 {
                     resultString += getName() + " / KW rate " + (char)('A' + rate) + " peak = " + CtiNumStr(pi.value);
 
-                    resultString += " @ " + peak_time.asString() + "\n";
+                    resultString += " @ " + printable_time(peak_time) + "\n";
                 }
             }
         }
@@ -3619,12 +3606,12 @@ INT CtiDeviceMCT470::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, lis
                         break;
                 }
 
-                point_info_t pi_time  = getData(DSt->Message, 4, ValueType_Raw);
-                CtiTime      ied_time = CtiTime((unsigned long)pi_time.value + timezone_offset);
+                point_info_t  pi_time  = getData(DSt->Message, 4, ValueType_Raw);
+                unsigned long ied_time = (unsigned long)pi_time.value + timezone_offset;
 
-                _iedTime = ied_time;
+                _iedTime = CtiTime(ied_time);
 
-                resultString += getName() + " / current time: " + ied_time.asString() + "\n";
+                resultString += getName() + " / current time: " + printable_time(ied_time) + "\n";
 
                 resultString += getName() + " / current TOU rate: " + string(1, 'A' + (DSt->Message[4] & 0x07) - 1).c_str() + "\n";
 
@@ -3670,9 +3657,9 @@ INT CtiDeviceMCT470::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, lis
                 resultString += getName() + " / demand reset count: " + CtiNumStr((int)pi.value) + "\n";
 
                 pi_time  = getData(DSt->Message + 7, 4, ValueType_Raw);
-                ied_time = CtiTime((unsigned long)pi_time.value + timezone_offset);
+                ied_time = (unsigned long)pi_time.value + timezone_offset;
 
-                resultString += getName() + " / time of last reset: " + ied_time.asString() + "\n";
+                resultString += getName() + " / time of last reset: " + printable_time(ied_time) + "\n";
 
                 pi = getData(DSt->Message + 11, 2, ValueType_Raw);
 
@@ -3833,8 +3820,7 @@ INT CtiDeviceMCT470::decodeGetStatusLoadProfile( INMESS *InMessage, CtiTime &Tim
         lp_channel = (parse.getiValue("loadprofile_offset") < 3)?1:3;
 
         string resultString;
-        unsigned long tmpTime;
-        CtiTime lpTime;
+        unsigned long lpTime;
 
         CtiReturnMsg     *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
         CtiPointDataMsg  *pData = NULL;
@@ -3851,28 +3837,24 @@ INT CtiDeviceMCT470::decodeGetStatusLoadProfile( INMESS *InMessage, CtiTime &Tim
 
         resultString += getName() + " / Load Profile Channel " + CtiNumStr(lp_channel) + " Status:\n";
 
-        tmpTime = DSt->Message[0] << 24 |
-                  DSt->Message[1] << 16 |
-                  DSt->Message[2] <<  8 |
-                  DSt->Message[3];
+        lpTime = DSt->Message[0] << 24 |
+                 DSt->Message[1] << 16 |
+                 DSt->Message[2] <<  8 |
+                 DSt->Message[3];
 
-        lpTime = CtiTime(tmpTime);
-
-        resultString += "Current Interval Time: " + lpTime.asString() + "\n";
+        resultString += "Current Interval Time: " + printable_time(lpTime) + "\n";
         resultString += "Current Interval Pointer: " + CtiNumStr(DSt->Message[4]) + string("\n");
 
         resultString += "\n";
 
         resultString += getName() + " / Load Profile Channel " + CtiNumStr(lp_channel + 1) + string(" Status:\n");
 
-        tmpTime = DSt->Message[5] << 24 |
-                  DSt->Message[6] << 16 |
-                  DSt->Message[7] <<  8 |
-                  DSt->Message[8];
+        lpTime = DSt->Message[5] << 24 |
+                 DSt->Message[6] << 16 |
+                 DSt->Message[7] <<  8 |
+                 DSt->Message[8];
 
-        lpTime = CtiTime(tmpTime);
-
-        resultString += "Current Interval Time: " + lpTime.asString() + "\n";
+        resultString += "Current Interval Time: " + printable_time(lpTime) + "\n";
         resultString += "Current Interval Pointer: " + CtiNumStr(DSt->Message[9]) + string("\n");
 
         resultString += "\n";
@@ -3901,7 +3883,6 @@ INT CtiDeviceMCT470::decodeGetStatusDNP( INMESS *InMessage, CtiTime &TimeNow, li
         // No error occured, we must do a real decode!
 
         CtiString resultString;
-        unsigned long tmpTime;
         CtiTime errTime;
 
         CtiReturnMsg     *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
@@ -3917,17 +3898,15 @@ INT CtiDeviceMCT470::decodeGetStatusDNP( INMESS *InMessage, CtiTime &TimeNow, li
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-        int dnpStatus =     DSt->Message[0];
-        int mctPoint =      DSt->Message[1];
-        int dnpPoint =      DSt->Message[2] << 8 |
-                            DSt->Message[3];
-        int commandStatus = DSt->Message[4];
-        tmpTime =           DSt->Message[5]  << 24 |
-                            DSt->Message[6]  << 16 |
-                            DSt->Message[7]  <<  8 |
-                            DSt->Message[8];
-
-        CtiTime      ied_time = CtiTime(tmpTime + rwEpoch);
+        int dnpStatus          = DSt->Message[0];
+        int mctPoint           = DSt->Message[1];
+        int dnpPoint           = DSt->Message[2] << 8 |
+                                 DSt->Message[3];
+        int commandStatus      = DSt->Message[4];
+        unsigned long ied_time = DSt->Message[5]  << 24 |
+                                 DSt->Message[6]  << 16 |
+                                 DSt->Message[7]  <<  8 |
+                                 DSt->Message[8];
 
         resultString += getName() + " / DNP status returned: " + resolveDNPStatus(dnpStatus) + "(" + CtiNumStr(dnpStatus) + ")" + "\n";
 
@@ -3945,7 +3924,7 @@ INT CtiDeviceMCT470::decodeGetStatusDNP( INMESS *InMessage, CtiTime &TimeNow, li
         }
         resultString += "DNP point: " + CtiNumStr(dnpPoint) + "\n";
         resultString += "Command status: " + resolveDNPStatus(commandStatus) + "(" + CtiNumStr(commandStatus) + ")" + "\n";
-        resultString += "Last Successful Read: " + ied_time.asString() + "(" + CtiNumStr(tmpTime) + ")" + "\n";
+        resultString += "Last Successful Read: " + printable_time(ied_time) + "(" + CtiNumStr(ied_time) + ")" + "\n";
 
         ReturnMsg->setResultString(resultString);
 

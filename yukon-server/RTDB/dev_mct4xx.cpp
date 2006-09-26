@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2006/09/13 04:45:37 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2006/09/26 15:10:49 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -180,6 +180,23 @@ CtiDeviceMCT4xx::CommandSet CtiDeviceMCT4xx::initCommandStore()
     cs.insert(CommandStore(Emetcon::PutValue_TOUReset,      Emetcon::IO_Write,          Command_TOUReset,           0));
 
     return cs;
+}
+
+
+string CtiDeviceMCT4xx::printable_time(unsigned long seconds)
+{
+    string retval;
+
+    if( seconds > DawnOfTime )
+    {
+        retval = CtiTime(seconds).asString();
+    }
+    else
+    {
+        retval = "[invalid time (" + CtiNumStr(seconds).hex().zpad(8) + ")]";
+    }
+
+    return retval;
 }
 
 
@@ -427,20 +444,20 @@ INT CtiDeviceMCT4xx::executeGetValue(CtiRequestMsg *pReq, CtiCommandParser &pars
 
             if( _llpInterest.time_end > (_llpInterest.time + _llpInterest.offset + (interval_len * 6) + interval_len) )
             {
-                lp_status_string += "Current interval: " + CtiTime(_llpInterest.time + _llpInterest.offset + interval_len).asString() + "\n";
-                lp_status_string += "Ending interval:  " + CtiTime(_llpInterest.time_end).asString() + "\n";
+                lp_status_string += "Current interval: " + printable_time(_llpInterest.time + _llpInterest.offset + interval_len) + "\n";
+                lp_status_string += "Ending interval:  " + printable_time(_llpInterest.time_end) + "\n";
             }
             else
             {
                 lp_status_string += "No active load profile requests for this device\n";
                 if( _llpInterest.failed )
                 {
-                    lp_status_string += "Last request failed at interval: " + CtiTime(_llpInterest.time + _llpInterest.offset + interval_len).asString() + "\n";
+                    lp_status_string += "Last request failed at interval: " + printable_time(_llpInterest.time + _llpInterest.offset + interval_len) + "\n";
                 }
 
                 if( _llpInterest.time_end > (DawnOfTime + rwEpoch) )
                 {
-                    lp_status_string += "Last request end time: " + CtiTime(_llpInterest.time_end).asString() + "\n";
+                    lp_status_string += "Last request end time: " + printable_time(_llpInterest.time_end) + "\n";
                 }
             }
 
@@ -1071,13 +1088,13 @@ int CtiDeviceMCT4xx::executePutConfigSingle(CtiRequestMsg         *pReq,
         {
             resultString = "ERROR: Invalid config data. Config name:" + installValue;
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime( ) << " Device " << getName( ) << " had no configuration for config: " << installValue << endl;
+            dout << CtiTime() << " Device " << getName() << " had no configuration for config: " << installValue << endl;
         }
         else
         {
             resultString = "ERROR: NoMethod or invalid config. Config name:" + installValue;
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime( ) << " Device " << getName( ) << " had a configuration error using config " << installValue << endl;
+            dout << CtiTime() << " Device " << getName() << " had a configuration error using config " << installValue << endl;
         }
 
         retList.push_back( CTIDBG_new CtiReturnMsg(getID( ),
@@ -1568,7 +1585,6 @@ INT CtiDeviceMCT4xx::decodeGetConfigTime(INMESS *InMessage, CtiTime &TimeNow, li
         CtiString resultString;
         unsigned long time;
         char timezone_offset;
-        CtiTime tmpTime;
 
         if( InMessage->Sequence == Emetcon::GetConfig_Time )
         {
@@ -1579,9 +1595,7 @@ INT CtiDeviceMCT4xx::decodeGetConfigTime(INMESS *InMessage, CtiTime &TimeNow, li
                    InMessage->Buffer.DSt.Message[3] <<  8 |
                    InMessage->Buffer.DSt.Message[4];
 
-            tmpTime = CtiTime(time + rwEpoch);
-
-            resultString  = getName() + " / Current Time: " + tmpTime.asString() + "\n";
+            resultString  = getName() + " / Current Time: " + printable_time(time) + "\n";
             resultString += getName() + " / Timezone Offset: " + CtiNumStr(((float)timezone_offset) / 4.0, 2) + " hours";
         }
         else if( InMessage->Sequence == Emetcon::GetConfig_TSync )
@@ -1591,9 +1605,7 @@ INT CtiDeviceMCT4xx::decodeGetConfigTime(INMESS *InMessage, CtiTime &TimeNow, li
                    InMessage->Buffer.DSt.Message[2] <<  8 |
                    InMessage->Buffer.DSt.Message[3];
 
-            tmpTime = CtiTime(time + rwEpoch);
-
-            resultString = getName() + " / Time Last Synced at: " + tmpTime.asString();
+            resultString = getName() + " / Time Last Synced at: " + printable_time(time);
         }
 
         if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
@@ -1686,7 +1698,7 @@ INT CtiDeviceMCT4xx::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeN
                     {
                         pi.value = pPoint->computeValueForUOM(pi.value);
 
-                        valReport = getName() + " / " + pPoint->getName() + " @ " + CtiTime(timeStamp).asString() + " = " + CtiNumStr(pi.value, pPoint->getPointUnits().getDecimalPlaces());
+                        valReport = getName() + " / " + pPoint->getName() + " @ " + printable_time(timeStamp) + " = " + CtiNumStr(pi.value, pPoint->getPointUnits().getDecimalPlaces());
 
                         if( pData = makePointDataMsg(pPoint, pi, valReport) )
                         {
@@ -1698,18 +1710,18 @@ INT CtiDeviceMCT4xx::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeN
                     }
                     else
                     {
-                        resultString += getName() + " / " + pPoint->getName() + " @ " + CtiTime(timeStamp).asString() + " = (invalid data)\n";
+                        resultString += getName() + " / " + pPoint->getName() + " @ " + printable_time(timeStamp) + " = (invalid data)\n";
                     }
                 }
                 else
                 {
                     if( pi.quality != InvalidQuality )
                     {
-                        resultString += getName() + " / LP channel " + CtiNumStr(channel + 1) + " @ " + CtiTime(timeStamp).asString() + " = " + CtiNumStr(pi.value, 0) + "\n";
+                        resultString += getName() + " / LP channel " + CtiNumStr(channel + 1) + " @ " + printable_time(timeStamp) + " = " + CtiNumStr(pi.value, 0) + "\n";
                     }
                     else
                     {
-                        resultString += getName() + " / LP channel " + CtiNumStr(channel + 1) + " @ " + CtiTime(timeStamp).asString() + " = (invalid data)\n";
+                        resultString += getName() + " / LP channel " + CtiNumStr(channel + 1) + " @ " + printable_time(timeStamp) + " = (invalid data)\n";
                     }
                 }
             }

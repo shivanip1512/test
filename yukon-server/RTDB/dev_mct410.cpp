@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.93 $
-* DATE         :  $Date: 2006/09/20 20:22:52 $
+* REVISION     :  $Revision: 1.94 $
+* DATE         :  $Date: 2006/09/26 15:10:49 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -545,7 +545,7 @@ INT CtiDeviceMCT410::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS
                         dout << "_lp_info[" << i << "].current_request = " << _lp_info[i].current_request << endl;
                     }
 
-                    //  make sure we're aligned (note - rwEpoch is an even multiple of 86400, so no worries)
+                    //  make sure we're aligned
                     _lp_info[i].current_request -= _lp_info[i].current_request % block_len;
 
                     //  which block to grab?
@@ -945,7 +945,7 @@ INT CtiDeviceMCT410::executePutConfig( CtiRequestMsg              *pReq,
 
                     if( holiday_date.isValid() && holiday_date > CtiDate::now() )
                     {
-                        holidays[holiday_count++] = CtiTime(holiday_date).seconds() - rwEpoch;
+                        holidays[holiday_count++] = CtiTime(holiday_date).seconds();
                     }
                 }
             }
@@ -2228,7 +2228,7 @@ INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
 
                     if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp) )
                     {
-                        pointTime  = CtiTime(getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp) + rwEpoch);
+                        pointTime  = CtiTime(getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp));
                         pointTime -= pointTime.seconds() % 60;
                     }
                     else
@@ -2451,15 +2451,15 @@ INT CtiDeviceMCT410::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, l
 
 INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
-    int          status = NORMAL,
-                 pointoffset;
-    point_info_t pi_kw,
-                 pi_kw_time,
-                 pi_kwh,
-                 pi_freezecount;
-    CtiTime       kw_time,
-                 kwh_time;
-    bool         valid_data = true;
+    int           status = NORMAL,
+                  pointoffset;
+    point_info_t  pi_kw,
+                  pi_kw_time,
+                  pi_kwh,
+                  pi_freezecount;
+    unsigned long kw_time,
+                  kwh_time;
+    bool          valid_data = true;
 
     CtiTableDynamicPaoInfo::Keys key_peak_timestamp;
 
@@ -2555,7 +2555,7 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
         //  turn raw pulses into a demand reading
         pi_kw.value *= double(3600 / getDemandInterval());
 
-        kw_time      = CtiTime(pi_kw_time.value);
+        kw_time = pi_kw_time.value;
 
         if( parse.getFlags() & CMD_FLAG_FROZEN )
         {
@@ -2598,9 +2598,9 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
                 status = NOTNORMAL;
             }
 
-            if( kw_time.seconds() >= (getDynamicInfo(key_peak_timestamp) ) )
+            if( kw_time >= (getDynamicInfo(key_peak_timestamp) ) )
             {
-                if( kw_time.seconds() <= (getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp)) )
+                if( kw_time <= (getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp)) )
                 {
                     if( pi_kwh.freeze_bit == _expected_freeze )  //  LSB indicates which freeze caused the value to be stored
                     {
@@ -2610,12 +2610,12 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
 
                         kwh_point = getDevicePointOffsetTypeEqual(pointoffset, PulseAccumulatorPointType );
 
-                        setDynamicInfo(key_peak_timestamp, kw_time.seconds());
+                        setDynamicInfo(key_peak_timestamp, kw_time);
 
                         if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp) )
                         {
-                            kwh_time  = CtiTime(getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp));
-                            kwh_time -= kwh_time.seconds() % 300;
+                            kwh_time  = getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp);
+                            kwh_time -= kwh_time % 300;
                         }
                         else
                         {
@@ -2625,7 +2625,7 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
                             }
                         }
 
-                        freeze_info_string  = " @ " + kwh_time.asString();
+                        freeze_info_string  = " @ " + printable_time(kwh_time);
 
                         _freeze_counter = pi_freezecount.value;
 
@@ -2641,7 +2641,7 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
                         }
 
                         valid_data = false;
-                        ReturnMsg->setResultString("Freeze parity check failed (" + CtiNumStr(pi_kwh.freeze_bit) + ") != (" + CtiNumStr(_expected_freeze) + "), last recorded freeze sent at " + RWTime(getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp)).asString());
+                        ReturnMsg->setResultString("Freeze parity check failed (" + CtiNumStr(pi_kwh.freeze_bit) + ") != (" + CtiNumStr(_expected_freeze) + "), last recorded freeze sent at " + CtiTime(getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp)).asString());
                         status = NOTNORMAL;
                     }
                 }
@@ -2651,10 +2651,10 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
 
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - KW peak time \"" << kw_time << "\" is before KW freeze time \"" << RWTime(getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp)) << ", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint - KW peak time \"" << CtiTime(kw_time) << "\" is before KW freeze time \"" << CtiTime(getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp)) << ", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
 
-                    ReturnMsg->setResultString("Peak time after freeze (" + kw_time.asString() + ") < (" + RWTime(getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp)).asString() + ")");
+                    ReturnMsg->setResultString("Peak time after freeze (" + printable_time(kw_time) + ") < (" + printable_time(getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp)) + ")");
                     status = NOTNORMAL;
                 }
             }
@@ -2664,10 +2664,10 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
 
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - new KW peak time \"" << kw_time << "\" is before old KW peak time \"" << RWTime(getDynamicInfo(key_peak_timestamp)) << ", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint - new KW peak time \"" << CtiTime(kw_time) << "\" is before old KW peak time \"" << CtiTime(getDynamicInfo(key_peak_timestamp)) << ", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
-                ReturnMsg->setResultString("New KW peak earlier than old KW peak (" + kw_time.asString() + ") < (" + RWTime(getDynamicInfo(key_peak_timestamp)).asString() + ")");
+                ReturnMsg->setResultString("New KW peak earlier than old KW peak (" + printable_time(kw_time) + ") < (" + printable_time(getDynamicInfo(key_peak_timestamp)) + ")");
                 status = NOTNORMAL;
             }
         }
@@ -2679,7 +2679,7 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
 
             kwh_point = getDevicePointOffsetTypeEqual( pointoffset, PulseAccumulatorPointType );
 
-            kwh_time  = CtiTime::now();
+            kwh_time  = CtiTime::now().seconds();
         }
 
         if( valid_data )  //  valid
@@ -2704,18 +2704,18 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
 
                     result_string = getName() + " / " + kw_point->getName() + " = "
                                               + CtiNumStr(pi_kw.value, boost::static_pointer_cast<CtiPointNumeric>(kw_point)->getPointUnits().getDecimalPlaces())
-                                              + " @ " + kw_time.asString();
+                                              + " @ " + printable_time(kw_time);
 
                     if( pData = makePointDataMsg(kw_point, pi_kw, result_string) )
                     {
-                        pData->setTime(kw_time);
+                        pData->setTime(CtiTime(kw_time));
                         ReturnMsg->PointData().push_back(pData);
                         pData = NULL;  // We just put it on the list...
                     }
                 }
                 else
                 {
-                    result_string = getName() + " / Peak Demand = " + CtiNumStr(pi_kw.value) + " @ " + kw_time.asString() + "  --  POINT UNDEFINED IN DB";
+                    result_string = getName() + " / Peak Demand = " + CtiNumStr(pi_kw.value) + " @ " + printable_time(kw_time) + "  --  POINT UNDEFINED IN DB";
                     ReturnMsg->setResultString(result_string);
                 }
             }
@@ -2730,8 +2730,8 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
 
                 if( pData = makePointDataMsg(kwh_point, pi_kwh, result_string) )
                 {
-                    kwh_time -= kwh_time.seconds() % getDemandInterval();
-                    pData->setTime(kwh_time);
+                    kwh_time -= kwh_time % getDemandInterval();
+                    pData->setTime(CtiTime(kwh_time));
                     ReturnMsg->PointData().push_back(pData);
                     pData = NULL;  // We just put it on the list...
                 }
