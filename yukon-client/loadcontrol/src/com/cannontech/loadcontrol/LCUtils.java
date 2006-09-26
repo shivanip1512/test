@@ -1,6 +1,7 @@
 package com.cannontech.loadcontrol;
 
 import java.awt.Color;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -261,7 +262,7 @@ public class LCUtils
 	
 	public static synchronized Object getProgramValueAt(LMProgramBase prg, int col) 
 	{
-		switch( col )
+        switch( col )
 		{
 			case ProgramTableModel.PROGRAM_NAME:
 				return prg.getYukonName() +
@@ -315,12 +316,21 @@ public class LCUtils
 					: prg.getStartPriority() );
 
 			case ProgramTableModel.REDUCTION:
-				return prg.getReductionTotal();
+                Double reductionTotal = prg.getReductionTotal();
+                return roundToOneDecPt(reductionTotal);
 				
 			default:
 				return null;
 		}
 	}
+
+
+    private static Double roundToOneDecPt(Double reductionTotal) {
+        BigDecimal bd = new BigDecimal(reductionTotal);
+        bd = bd.setScale(1,BigDecimal.ROUND_UP);
+        Double roundReduction = new Double (bd.doubleValue());
+        return roundReduction;
+    }
 
 	/**
 	 * getValueAt method comment.
