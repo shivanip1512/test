@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/12/20 17:16:06 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2006/09/26 13:53:24 $
 *
 * HISTORY      :
 * $Log: tbl_dv_rtc.cpp,v $
+* Revision 1.6  2006/09/26 13:53:24  mfisher
+* standardizing the code for the "Decoding" printout
+*
 * Revision 1.5  2005/12/20 17:16:06  tspar
 * Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 *
@@ -106,10 +109,10 @@ void CtiTableDeviceRTC::DecodeDatabaseReader(RWDBReader &rdr)
 {
     string rwsTemp;
 
+    if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        if(getDebugLevel() & DEBUGLEVEL_DATABASE)
-            dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     rdr["deviceid"]      >> _deviceID;

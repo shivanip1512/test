@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2006/01/03 20:23:37 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2006/09/26 13:53:24 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -205,15 +205,16 @@ void CtiTableDeviceMCTIEDPort::DecodeDatabaseReader(RWDBReader &rdr)
 
 
 
+    if( getDebugLevel() & DEBUGLEVEL_DATABASE )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        if( getDebugLevel() & DEBUGLEVEL_DATABASE ) dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     rdr["deviceid"]     >> _deviceID;
     rdr["connectedied"] >> temp;
     std::transform(temp.begin(), temp.end(), temp.begin(), tolower);
-    
+
 
     if( temp == "landis and gyr s4" )
         _connectedIED = LandisGyrS4;

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_2way.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/12/20 17:16:05 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2006/09/26 13:53:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -235,7 +235,8 @@ void CtiTableDevice2Way::DecodeDatabaseReader(RWDBReader &rdr)
     {
         if(getDebugLevel() & DEBUGLEVEL_DATABASE)
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout); dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
