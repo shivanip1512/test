@@ -297,7 +297,7 @@ public class TagManager implements MessageListener {
         
 		_dispatchConn = conn;
 		_dispatchConn.addMessageListener(this);
-		_dispatchConn.write( _dispatchConn.getRegistrationMsg() );
+		_dispatchConn.queue( _dispatchConn.getRegistrationMsg() );
 	}
 	
 	/**
