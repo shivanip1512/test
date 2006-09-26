@@ -21,6 +21,8 @@ import javax.swing.JComboBox;
 import javax.swing.JEditorPane;
 import javax.swing.text.BadLocationException;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.database.data.lite.LiteComparators;
@@ -764,6 +766,7 @@ public final static String getYukonBase()
     // Next try to use the environment variable that is now available (thanks Sun)
     String envYukonBase = System.getenv("YUKON_BASE");
     if (envYukonBase != null) {
+        envYukonBase = StringUtils.remove(envYukonBase, "\"");
         return envYukonBase;
     }
 	
