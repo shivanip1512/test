@@ -1,5 +1,3 @@
-#pragma warning( disable : 4786 )
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   message
@@ -8,21 +6,19 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/message.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2006/07/27 18:37:36 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2006/09/26 14:09:21 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-
-
 #ifndef __CTIMESSAGE_H__
 #define __CTIMESSAGE_H__
+#pragma warning( disable : 4786 )
 
 #include <windows.h>
 #include <iostream>
 #include <string>
 
-using std::iostream;
 using std::string;
 
 
@@ -55,12 +51,12 @@ class IM_EX_MSG CtiMessage : public RWCollectable
 {
 protected:
 
-   CtiTime      MessageTime;         // set to current during construction.
-   INT         MessagePriority;
-   int         _soe;             // An ID to group events.. Default to zero if not used
+   CtiTime  MessageTime;         // set to current during construction.
+   INT      MessagePriority;
+   int      _soe;             // An ID to group events.. Default to zero if not used
    string   _usr;
    string   _pwd;
-   int         _token;
+   int      _token;
    string   _src;
 
    /*
@@ -68,7 +64,7 @@ protected:
     *   This pointer is never worried about by this class, it is just a carrier
     *   location as the message goes through the machinery on the server....
     */
-   VOID        *ConnectionHandle;
+   VOID  *ConnectionHandle;
 
 public:
    RWDECLARE_COLLECTABLE( CtiMessage );
@@ -95,16 +91,16 @@ public:
    CtiTime getMessageTime() const;
    CtiMessage&   setMessageTime(const CtiTime &mTime);
    const string& getUser() const;
-   CtiMessage& setUser(const string& usr);
+   CtiMessage&   setUser(const string& usr);
 
    const string& getPassword() const;
-   CtiMessage& setPassword(const string& pwd);
+   CtiMessage&   setPassword(const string& pwd);
 
    int getToken() const;
    CtiMessage& setToken(const int& tok);
 
    const string& getSource() const;
-   CtiMessage& setSource(const string& src);
+   CtiMessage&   setSource(const string& src);
 
    virtual void saveGuts(RWvostream &aStream) const;
    virtual void restoreGuts(RWvistream& aStream);

@@ -15,10 +15,13 @@
  *    Copyright (C) 2005 Cannon Technologies, Inc.  All rights reserved.
  *
  *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrinterface.cpp-arc  $
- *    REVISION     :  $Revision: 1.25 $
- *    DATE         :  $Date: 2006/08/09 05:03:17 $
+ *    REVISION     :  $Revision: 1.26 $
+ *    DATE         :  $Date: 2006/09/26 14:02:48 $
  *    History:
  *     $Log: fdrinterface.cpp,v $
+ *     Revision 1.26  2006/09/26 14:02:48  mfisher
+ *     fixes for std namespace
+ *
  *     Revision 1.25  2006/08/09 05:03:17  tspar
  *     changed maps in macs to not use a pointer as a key, to fix the find() calls.
  *
@@ -205,18 +208,18 @@ long CtiFDRInterface::getClientLinkStatusID(string &aClientName)
                     string tempString1,tempString2;
                     boost::char_separator<char> sep(";");
                     Boost_char_tokenizer nextTranslate(translationPoint->getDestinationList()[x].getTranslation(), sep);
-                    Boost_char_tokenizer::iterator tok_iter = nextTranslate.begin(); 
-                    
+                    Boost_char_tokenizer::iterator tok_iter = nextTranslate.begin();
+
                     if ( tok_iter != nextTranslate.end() )
                     {
                         tempString1 = *tok_iter++;tok_iter++;
                         // this contains Interface:name of the interface
                         boost::char_separator<char> sep1(":");
                         Boost_char_tokenizer nextTempToken(tempString1, sep1);
-                        Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
+                        Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin();
 
                         // do not care about the first part
-                        
+
                         tok_iter1++;
                         tempString2 = *tok_iter1;
 
@@ -538,21 +541,21 @@ BOOL CtiFDRInterface::stop( void )
             logNow() << "Attempting to cancel threadFunctionReceiveFromDispatch" << endl;
         }
         iThreadFromDispatch.requestCancellation();
-        
+
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             logNow() << "Attempting to cancel threadFunctionSendToDispatch;" << endl;
         }
         iThreadToDispatch.requestCancellation();
-        
+
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             logNow() << "Attempting to shutdown connections" << endl;
         }
-    
+
         // this is throwing an exception sometimes, I'm cheating since its only shutdown
        iDispatchConn->ShutdownConnection();
-       
+
        iThreadDbChange.join();
        iThreadFromDispatch.join();
        iThreadToDispatch.join();
@@ -1568,8 +1571,8 @@ bool CtiFDRInterface::findTranslationNameInList(string aTranslationName,
 
 /**
  * Return the 'dout' logger and prepend the current time and the interface name.
- */ 
-ostream CtiFDRInterface::logNow() {
+ */
+std::ostream CtiFDRInterface::logNow() {
   return dout << CtiTime::now() << " FDR-" << getInterfaceName() << ": ";
 }
 

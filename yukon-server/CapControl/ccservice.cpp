@@ -89,7 +89,7 @@ void CtiCCService::RunInConsole(DWORD argc, LPTSTR* argv)
 
     //We need to catch ctrl-c so we can stop
     if (!SetConsoleCtrlHandler((PHANDLER_ROUTINE) CtrlHandler,  TRUE))
-        cerr << "Could not install console control handler" << endl;
+        std::cerr << "Could not install console control handler" << endl;
 
     Init();
     Run();
@@ -184,7 +184,7 @@ void CtiCCService::Init()
 
 
     _IGNORE_NOT_NORMAL_FLAG = FALSE;
-    
+
     strcpy(var, "CAP_CONTROL_IGNORE_NOT_NORMAL");
     if( !(str = gConfigParms.getValueAsString(var)).empty() )
     {
@@ -208,7 +208,7 @@ void CtiCCService::Init()
     if( !(str = gConfigParms.getValueAsString(var)).empty() )
     {
         _SEND_TRIES = atoi(str.c_str())+1;
-        
+
         if( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);

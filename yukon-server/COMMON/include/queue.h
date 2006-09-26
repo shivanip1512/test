@@ -19,9 +19,6 @@
 #include <boost/thread/xtime.hpp>
 
 using std::string;
-using std::cerr;
-using std::endl;
-
 
 
 // Template Queuing class
