@@ -350,13 +350,20 @@ private:
 
     CtiDeviceAlphaPPlus & operator=(const CtiDeviceAlphaPPlus & aRef)
     {
-        cout << __FILE__ << " = operator is invalid for this device" << endl;
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint - operator=() is invalid for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
         return *this;
     }
 
     CtiDeviceAlphaPPlus (const CtiDeviceAlphaPPlus & aRef)
     {
-        cout << __FILE__ << " copy constructor is invalid for this device" << endl;
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint - copy constructor is invalid for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
     }
 
 protected:
