@@ -91,7 +91,7 @@ begin
     		LaunchAppAndWait ( 'msiexec.exe', szCmdLine, WAIT );
     		Delay(5);
     	endif;
-    	szCmdLine = '/I ' + JDKINSTALLFILE + ' /qn INSTALLDIR='+TARGETDIR+'\\Runtime REBOOT=ReallySuppress';
+    	szCmdLine = '/I ' + JDKINSTALLFILE + ' /qn INSTALLDIR="'+TARGETDIR+'"\\Runtime REBOOT=ReallySuppress';
     	LaunchAppAndWait ( 'msiexec.exe', szCmdLine, WAIT );
     	SdShowMsg ( szMsgWait, FALSE );
     	ChangeDirectory(TARGETDIR);
