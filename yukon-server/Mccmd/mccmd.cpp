@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.55 $
-* DATE         :  $Date: 2006/06/15 17:52:50 $
+* REVISION     :  $Revision: 1.56 $
+* DATE         :  $Date: 2006/09/27 17:20:22 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -52,7 +52,7 @@
 #include <rw/ctoken.h>
 
 
-
+#include "ctistring.h"
 
 unsigned gMccmdDebugLevel = 0x00000000;
 
@@ -1788,8 +1788,10 @@ static long GetDeviceID(const string& name)
   return id;
 }
 
-void BuildRequestSet(Tcl_Interp* interp, string& cmd_line, RWSet& req_set)
+void BuildRequestSet(Tcl_Interp* interp, string& cmd_line_b, RWSet& req_set)
 {
+    CtiString cmd_line(cmd_line_b);
+    unsigned int * ptr;
     if( cmd_line.find("select")==string::npos )
     {
         // cmd_line doesn't specify a select string so lets append
@@ -1802,7 +1804,7 @@ void BuildRequestSet(Tcl_Interp* interp, string& cmd_line, RWSet& req_set)
     }
 
     size_t index;
-    size_t end_index = 0;
+    size_t* end_index = new size_t(0);
 
     int priority = 7;
     char* pStr = Tcl_GetVar(interp, PILRequestPriorityVariable, TCL_GLOBAL_ONLY);
@@ -1816,20 +1818,18 @@ void BuildRequestSet(Tcl_Interp* interp, string& cmd_line, RWSet& req_set)
         }
     }
 
-    if( cmd_line.find(".*select[ ]+list[ ]+", end_index) != string::npos )
+    boost::regex reg1 = ".*select[ ]+list[ ]+";
+    if( cmd_line.index(reg1, end_index) != string::npos )
     {
         int list_len;
-        Tcl_Obj* sel_str = Tcl_NewStringObj( cmd_line.c_str() + end_index, -1 );
+        Tcl_Obj* sel_str = Tcl_NewStringObj( cmd_line.c_str() + *end_index, -1 );
         Tcl_ListObjLength(interp, sel_str, &list_len );
-        //rprw
+
         boost::regex e1 = "\n";
         boost::regex e2 = "select.*";
         cmd_line = boost::regex_replace(cmd_line, e1, " ", boost::match_default | boost::format_all | boost::format_first_only);
         cmd_line = boost::regex_replace(cmd_line, e2, "", boost::match_default | boost::format_all | boost::format_first_only);
         
-        //cmd_line.replace("\n"," ");
-        //cmd_line.replace("select.*","");
-        //rprwend
 
         if( list_len > 0 )
         {
@@ -1859,7 +1859,8 @@ void BuildRequestSet(Tcl_Interp* interp, string& cmd_line, RWSet& req_set)
         Tcl_DecrRefCount(sel_str);
     }
     else //dont add quotes if it is an id
-        if( cmd_line.find(".*select[ ]+[^ ]+[ ]+id", end_index) != string::npos )
+        reg1 = ".*select[ ]+[^ ]+[ ]+id";
+        if( cmd_line.index(reg1, end_index) != string::npos )
     {
         CtiRequestMsg *msg = new CtiRequestMsg();
         msg->setDeviceId(0);
@@ -1868,11 +1869,12 @@ void BuildRequestSet(Tcl_Interp* interp, string& cmd_line, RWSet& req_set)
         req_set.insert(msg);
     }
     else
-        if( cmd_line.find(".*select[ ]+[^ ]+[ ]+", end_index) != string::npos )
+        reg1 = ".*select[ ]+[^ ]+[ ]+";
+        if( cmd_line.index(reg1, end_index) != string::npos )
     {
 
         //PIL likes to see ' around any device, group, etc
-        cmd_line.insert(end_index, "'");
+        cmd_line.insert(*end_index, "'");
         trim(cmd_line);
         cmd_line.append("'");
 
@@ -1893,6 +1895,7 @@ void BuildRequestSet(Tcl_Interp* interp, string& cmd_line, RWSet& req_set)
         msg->setMessagePriority(priority);
         req_set.insert(msg);
     }
+    delete end_index;
 }
 
 /*
