@@ -249,10 +249,12 @@ public void runImport(Vector imps)
 	Integer updateDeviceID = null;
 	int successCounter = 0;
 	Connection conn = null;
+    boolean notUpdate = true;
 	
 	for(int j = 0; j < imps.size(); j++)
 	{
-		currentEntry = (ImportData)imps.elementAt(j);
+		updateDeviceID = null;
+        currentEntry = (ImportData)imps.elementAt(j);
 	
 		//mark entry for deletion
 		((ImportData)imps.elementAt(j)).setOpCode(Transaction.DELETE);
@@ -269,14 +271,16 @@ public void runImport(Vector imps)
 		//validation
 		StringBuffer errorMsg = new StringBuffer("Failed due to: ");
 		badEntry = false;
-		updateDeviceID = null;
+		updateDeviceID = DBFuncs.getDeviceIDByAddress(address);
 		       
         if(templateName.length() < 1)
         {
-            CTILogger.info("Import entry with name " + name + " has no specified 410 template.");
-            logger = ImportFuncs.writeToImportLog(logger, 'F', "Import entry with name " + name + " has no specified 410 template.", "", "");
-            badEntry = true;
-            errorMsg.append("has no 410 template specified; "); 
+            if(updateDeviceID == null) {
+                CTILogger.info("Import entry with name " + name + " has no specified 410 template.");
+                logger = ImportFuncs.writeToImportLog(logger, 'F', "Import entry with name " + name + " has no specified 410 template.", "", "");
+                badEntry = true;
+                errorMsg.append("has no 410 template specified; "); 
+            }
         }
         else
         {
@@ -306,14 +310,14 @@ public void runImport(Vector imps)
 		}
 		else
 		{
-			updateDeviceID = DBFuncs.getDeviceIDByAddress(address);
 			if( updateDeviceID != null)
 		   	{
-				CTILogger.info("Address " + address + " is already used by a 400 series MCT in the Yukon database.  Attempting to modify device.");
+				notUpdate = false;
+                CTILogger.info("Address " + address + " is already used by a 400 series MCT in the Yukon database.  Attempting to modify device.");
 			   	logger = ImportFuncs.writeToImportLog(logger, 'F', "Address " + address + " is already used by a 400 series MCT in the Yukon database.  Attempting to modify device.", "", "");
 		   	}
 			boolean isDuplicate = DBFuncs.IsDuplicateName(name);
-			if(isDuplicate)
+			if(isDuplicate && notUpdate)
 			{
 				CTILogger.info("Name " + name + " is already used by a 400 series MCT in the Yukon database.");
 				logger = ImportFuncs.writeToImportLog(logger, 'F', "Name " + name + " is already used by a 400 series MCT in the Yukon database.", "", "");
@@ -362,21 +366,21 @@ public void runImport(Vector imps)
          * validation is desired
          */
         
-		if(meterNumber.length() < 1)
+		if(meterNumber.length() < 1 && notUpdate)
 		{
 			CTILogger.info("Import entry with name " + name + " has no meter number.");
 			logger = logger = ImportFuncs.writeToImportLog(logger, 'F', "Import entry with name " + name + " has no meter number.", "", "");
 			badEntry = true;
 			errorMsg.append("has no meter number specified; ");	
 		}
-		if(collectionGrp.length() < 1)
+		if(collectionGrp.length() < 1 && notUpdate)
 		{
 			CTILogger.info("Import entry with name " + name + " has no collection group.");
 			logger = ImportFuncs.writeToImportLog(logger, 'F', "Import entry with name " + name + " has no collection group.", "", "");
 			badEntry = true;
 			errorMsg.append("has no collection group specified; ");	
 		}
-		if(altGrp.length() < 1)
+		if(altGrp.length() < 1 && notUpdate)
 		{
 			CTILogger.info("Import entry with name " + name + " has no alternate group.");
 			logger = ImportFuncs.writeToImportLog(logger, 'F', "Import entry with name " + name + " has no alternate group.", "", "");
@@ -385,10 +389,14 @@ public void runImport(Vector imps)
 		}
 		if(routeName.length() < 1)
 		{
-			CTILogger.info("Import entry with name " + name + " has no specified route.");
-			logger = ImportFuncs.writeToImportLog(logger, 'F', "Import entry with name " + name + " has no specified route.", "", "");
-			badEntry = true;
-			errorMsg.append("has no route specified; ");	
+			if(notUpdate) {
+                CTILogger.info("Import entry with name " + name + " has no specified route.");
+    			logger = ImportFuncs.writeToImportLog(logger, 'F', "Import entry with name " + name + " has no specified route.", "", "");
+    			badEntry = true;
+    			errorMsg.append("has no route specified; ");	
+            }
+            else
+                routeID = new Integer(-12);
 		}
 		else
 		{
@@ -436,25 +444,29 @@ public void runImport(Vector imps)
 				if( !dmg.getMeterNumber().equals(meterNumber) || !dmg.getCollectionGroup().equals(collectionGrp)||
 						!dmg.getTestCollectionGroup().equals(altGrp))
 				{
-					dmg.setMeterNumber(meterNumber);
-					dmg.setCollectionGroup(collectionGrp);
-					dmg.setTestCollectionGroup(altGrp);
+					if(meterNumber.length() > 0)
+					    dmg.setMeterNumber(meterNumber);
+                    if(collectionGrp.length() > 0)
+                        dmg.setCollectionGroup(collectionGrp);
+					if(altGrp.length() > 0)
+					    dmg.setTestCollectionGroup(altGrp);
 					t = Transaction.createTransaction( Transaction.UPDATE, dmg);
 					dmg = (DeviceMeterGroup)t.execute();
 				}
         
 				//update the deviceRoutes table if the routeID has changed.
-				DeviceRoutes dr = new DeviceRoutes();
-				dr.setDeviceID(updateDeviceID);
-				t = Transaction.createTransaction(Transaction.RETRIEVE, dr);
-				dr = (DeviceRoutes)t.execute();
-				if( dr.getRouteID().intValue() != routeID.intValue())
-				{
-					dr.setRouteID(routeID);
-					t = Transaction.createTransaction(Transaction.UPDATE, dr);
-					dr = (DeviceRoutes)t.execute();
-				}
-        
+				if(routeID.intValue() != -12) {
+                    DeviceRoutes dr = new DeviceRoutes();
+    				dr.setDeviceID(updateDeviceID);
+    				t = Transaction.createTransaction(Transaction.RETRIEVE, dr);
+    				dr = (DeviceRoutes)t.execute();
+    				if( dr.getRouteID().intValue() != routeID.intValue())
+    				{
+    					dr.setRouteID(routeID);
+    					t = Transaction.createTransaction(Transaction.UPDATE, dr);
+    					dr = (DeviceRoutes)t.execute();
+    				}
+                }
 			} catch (TransactionException e)
 			{
 				// TODO Auto-generated catch block
