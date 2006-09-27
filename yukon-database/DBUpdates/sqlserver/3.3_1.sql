@@ -169,7 +169,7 @@ go
 
 
 alter table DCItemValue
-   add constraint PK_DCITEMVALUE primary key  (ItemTypeID);
+   add constraint PK_DCITEMVALUE primary key  (ItemTypeID, ValueOrder);
 go
 
 alter table DCItemValue

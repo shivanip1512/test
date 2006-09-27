@@ -142,7 +142,7 @@ create table DCItemValue (
 );
 
 alter table DCItemValue
-   add constraint PK_DCITEMVALUE primary key  (ItemTypeID);
+   add constraint PK_DCITEMVALUE primary key  (ItemTypeID, ValueOrder);
 
 alter table DCItemValue
    add constraint FK_DCIITEMVALUE_DCITEMTYPE foreign key (ItemTypeID)
