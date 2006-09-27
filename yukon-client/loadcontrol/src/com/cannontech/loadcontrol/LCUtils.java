@@ -2,6 +2,7 @@ package com.cannontech.loadcontrol;
 
 import java.awt.Color;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -325,11 +326,9 @@ public class LCUtils
 	}
 
 
-    private static Double roundToOneDecPt(Double reductionTotal) {
-        BigDecimal bd = new BigDecimal(reductionTotal);
-        bd = bd.setScale(1,BigDecimal.ROUND_UP);
-        Double roundReduction = new Double (bd.doubleValue());
-        return roundReduction;
+    private static String roundToOneDecPt(Double reductionTotal) {
+        DecimalFormat formater = new DecimalFormat ("#.#");
+        return formater.format(reductionTotal.doubleValue());
     }
 
 	/**
@@ -362,9 +361,10 @@ public class LCUtils
 				return grpVal.getStatistics();
 			
 			case GroupTableModel.REDUCTION:
-				return grpVal.getReduction();
+                Double reductionTotal = grpVal.getReduction();
+                return roundToOneDecPt(reductionTotal);
 
-			default:
+            default:
 				return null;
 		}
 
