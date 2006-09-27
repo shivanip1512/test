@@ -16,13 +16,13 @@ public class PointAnalogSettingsPanel extends com.cannontech.common.gui.util.Dat
 	private javax.swing.JLabel ivjUnitOfMeasureLabel = null;
 	private javax.swing.JComboBox ivjUnitOfMeasureComboBox = null;
 	private com.klg.jclass.field.JCSpinField ivjJCSpinFieldDecimalPlaces = null;
-    private com.klg.jclass.field.JCSpinField ivjJCSpinFieldDecimalDigits = null;
+    private com.klg.jclass.field.JCSpinField meterDialsSpinner = null;
 	private javax.swing.JLabel ivjJLabelDecimalPlaces = null;
 	private javax.swing.JTextField ivjMultiplierTextField = null;
 	private javax.swing.JLabel ivjMultiplierLabel = null;
 	private javax.swing.JLabel ivjDataOffsetLabel = null;
 	private javax.swing.JTextField ivjDataOffsetTextField = null;
-    private JLabel decimalDigitsLabel = null;
+    private JLabel meterDialsLabel = null;
     
 public PointAnalogSettingsPanel() {
 	super();
@@ -90,19 +90,15 @@ private com.klg.jclass.field.JCSpinField getJCSpinFieldDecimalPlaces() {
 	return ivjJCSpinFieldDecimalPlaces;
 }
 
-/**
- * Return the JCSpinFieldDecimalDigits property value.
- * @return com.klg.jclass.field.JCSpinField
- */
-private com.klg.jclass.field.JCSpinField getJCSpinFieldDecimalDigits() {
-    if (ivjJCSpinFieldDecimalDigits == null) {
+private com.klg.jclass.field.JCSpinField getMeterDialsSpinner() {
+    if (meterDialsSpinner == null) {
         try {
-            ivjJCSpinFieldDecimalDigits = new com.klg.jclass.field.JCSpinField();
-            ivjJCSpinFieldDecimalDigits.setName("JCSpinFieldDecimalPlaces");
-            ivjJCSpinFieldDecimalDigits.setMinimumSize(new java.awt.Dimension(40, 25));
-            ivjJCSpinFieldDecimalDigits.setPreferredSize(new java.awt.Dimension(40, 25));
+            meterDialsSpinner = new com.klg.jclass.field.JCSpinField();
+            meterDialsSpinner.setName("JCSpinFieldMeterDials");
+            meterDialsSpinner.setMinimumSize(new java.awt.Dimension(40, 25));
+            meterDialsSpinner.setPreferredSize(new java.awt.Dimension(40, 25));
             
-            ivjJCSpinFieldDecimalDigits.setDataProperties(new com.klg.jclass.field.DataProperties(
+            meterDialsSpinner.setDataProperties(new com.klg.jclass.field.DataProperties(
                 new com.klg.jclass.field.validate.JCIntegerValidator(
                     null, new Integer(0), new Integer(10), null, true, 
                     null, new Integer(1), "#,##0.###;-#,##0.###", false, false, 
@@ -114,7 +110,7 @@ private com.klg.jclass.field.JCSpinField getJCSpinFieldDecimalDigits() {
             handleException(ivjExc);
         }
     }
-    return ivjJCSpinFieldDecimalDigits;
+    return meterDialsSpinner;
 }
 
 /**
@@ -135,22 +131,18 @@ private javax.swing.JLabel getJLabelDecimalPlaces() {
 	return ivjJLabelDecimalPlaces;
 }
 
-/**
- * Return the JLabelDecimalDigits property value.
- * @return javax.swing.JLabel
- */
-private javax.swing.JLabel getJLabelDecimalDigits() {
-    if (decimalDigitsLabel == null) {
+private javax.swing.JLabel getMeterDialsLabel() {
+    if (meterDialsLabel == null) {
         try {
-            decimalDigitsLabel = new javax.swing.JLabel();
-            decimalDigitsLabel.setName("JLabelDecimalDigits");
-            decimalDigitsLabel.setFont(new java.awt.Font("dialog", 0, 14));
-            decimalDigitsLabel.setText("Decimal Digits:");
+            meterDialsLabel = new javax.swing.JLabel();
+            meterDialsLabel.setName("JLabelMeterDials");
+            meterDialsLabel.setFont(new java.awt.Font("dialog", 0, 14));
+            meterDialsLabel.setText("Meter Dials:");
        } catch (java.lang.Throwable ivjExc) {
             handleException(ivjExc);
         }
     }
-    return decimalDigitsLabel;
+    return meterDialsLabel;
 }
 
 /**
@@ -257,7 +249,7 @@ public Object getValue(Object val)
 	point.getPoint().setStateGroupID(new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_ANALOG));
 
 	point.getPointUnit().setDecimalPlaces(new Integer(((Number) getJCSpinFieldDecimalPlaces().getValue()).intValue()));
-    point.getPointUnit().setDecimalDigits(new Integer(((Number) getJCSpinFieldDecimalDigits().getValue()).intValue()));
+    point.getPointUnit().setMeterDials(new Integer(((Number) getMeterDialsSpinner().getValue()).intValue()));
 	point.getPointAnalog().setMultiplier(multiplier);
 	point.getPointAnalog().setDataOffset(dataOffset);
 	return val;
@@ -334,17 +326,17 @@ private void initialize() {
 		constraintsDataOffsetTextField.insets = new java.awt.Insets(5,5,5,5);
 		add(getDataOffsetTextField(), constraintsDataOffsetTextField);
         
-        java.awt.GridBagConstraints constraintsDecimalDigitsLabel = new java.awt.GridBagConstraints();
-        constraintsDecimalDigitsLabel.gridx = 1; constraintsDecimalDigitsLabel.gridy = 5;
-        constraintsDecimalDigitsLabel.anchor = java.awt.GridBagConstraints.WEST;
-        constraintsDecimalDigitsLabel.insets = new java.awt.Insets(5,5,5,5);
-        add(getJLabelDecimalDigits(), constraintsDecimalDigitsLabel);
+        java.awt.GridBagConstraints constraintsMeterDigitsLabel = new java.awt.GridBagConstraints();
+        constraintsMeterDigitsLabel.gridx = 1; constraintsMeterDigitsLabel.gridy = 5;
+        constraintsMeterDigitsLabel.anchor = java.awt.GridBagConstraints.WEST;
+        constraintsMeterDigitsLabel.insets = new java.awt.Insets(5,5,5,5);
+        add(getMeterDialsLabel(), constraintsMeterDigitsLabel);
 
-        java.awt.GridBagConstraints constraintsDecimalDigitsSpinner = new java.awt.GridBagConstraints();
-        constraintsDecimalDigitsSpinner.gridx = 2; constraintsDecimalDigitsSpinner.gridy = 5;
-        constraintsDecimalDigitsSpinner.anchor = java.awt.GridBagConstraints.WEST;
-        constraintsDecimalDigitsSpinner.insets = new java.awt.Insets(5,5,5,5);
-        add(getJCSpinFieldDecimalDigits(), constraintsDecimalDigitsSpinner);
+        java.awt.GridBagConstraints constraintsMeterDigitsSpinner = new java.awt.GridBagConstraints();
+        constraintsMeterDigitsSpinner.gridx = 2; constraintsMeterDigitsSpinner.gridy = 5;
+        constraintsMeterDigitsSpinner.anchor = java.awt.GridBagConstraints.WEST;
+        constraintsMeterDigitsSpinner.insets = new java.awt.Insets(5,5,5,5);
+        add(getMeterDialsSpinner(), constraintsMeterDigitsSpinner);
         
 	} catch (java.lang.Throwable ivjExc) {
 		handleException(ivjExc);
