@@ -190,11 +190,14 @@ function callBack( response)
         var url = createURLreq( elems, '/servlet/CBCServlet?method=callBack', 'id' );
         var lastUpdate = document.getElementById ('lastUpdate');
         if (lastUpdate != null)
+        {
             url += '&lastUpdate=' + lastUpdate.value;
-        else {
+        }
+        else if (elems.length > 0)
+        {
             alert('Web page is not timestamped. Values will not be updated dynamically!');
             return;
-            }
+        }
         loadXMLDoc(url);
     }
 }
@@ -261,7 +264,8 @@ function updateHTML( result)
         updateCommandMenu(result);
         
         var lastUpdate = document.getElementById('lastUpdate');
-        lastUpdate.value = new Date().getTime();
+        if (lastUpdate)
+            lastUpdate.value = new Date().getTime();
         setTimeout('callBack()', clientRefresh );
       
     }
@@ -551,27 +555,31 @@ function alignHeaders(mainTable, headerTable) {
 mytable = document.getElementById(mainTable);
 
 hdrTable =  document.getElementById(headerTable);
-hdrRow=hdrTable.getElementsByTagName('tr').item(0);
-
-for (j=0; j < mytable.getElementsByTagName('tr').length; j ++ ) {
-    var myrow = mytable.getElementsByTagName('tr').item(j);  
-     if ((myrow != null) && myrow.style.display != 'none' && hdrRow.style.display != 'none') {
-        var colNum = myrow.cells.length;
-        
-        for(i=0;i < colNum - 1; i++) {
-            var hdrCell = hdrRow.getElementsByTagName('td').item(i);
-            var myrowCell = myrow.cells[i];
-            if ((hdrCell.style.display != 'none') && (myrowCell.style.display != 'none')) {
-                maxWidth = Math.max(hdrCell.offsetWidth, myrowCell.offsetWidth);
-                hdrCell.width = maxWidth;
-                myrowCell.width = maxWidth;
-                }
-                                                                       
-            }
-    
-        }
-    }
+	if (hdrTable)
+	{
+	hdrRow=hdrTable.getElementsByTagName('tr').item(0);
+	
+		for (j=0; j < mytable.getElementsByTagName('tr').length; j ++ ) {
+		    var myrow = mytable.getElementsByTagName('tr').item(j);  
+		     if ((myrow != null) && myrow.style.display != 'none' && hdrRow.style.display != 'none') {
+		        var colNum = myrow.cells.length;
+		        
+		        for(i=0;i < colNum - 1; i++) {
+		            var hdrCell = hdrRow.getElementsByTagName('td').item(i);
+		            var myrowCell = myrow.cells[i];
+		            if ((hdrCell.style.display != 'none') && (myrowCell.style.display != 'none')) {
+		                maxWidth = Math.max(hdrCell.offsetWidth, myrowCell.offsetWidth);
+		                hdrCell.width = maxWidth;
+		                myrowCell.width = maxWidth;
+		                }
+		                                                                       
+		            }
+		    
+		        }
+		    }
+	}
 }
+
 
 function enableDisplayAll (mainTable) {
     var mytable = document.getElementById(mainTable);
@@ -589,28 +597,34 @@ function enableDisplayAll (mainTable) {
 
 
 function alignHeadersIgnoreDisplayNone (mainTable, headerTable) {
-
 mytable = document.getElementById(mainTable);
-
 hdrTable =  document.getElementById(headerTable);
-hdrRow=hdrTable.getElementsByTagName('tr').item(0);
-
-for (j=0; j < mytable.getElementsByTagName('tr').length; j ++ ) {
-    var myrow = mytable.getElementsByTagName('tr').item(j);
-    
-     if (myrow != null) {
-        var colNum = myrow.cells.length;
-    
-        for(i=0;i < colNum - 1; i++) {
-            maxWidth = Math.max(hdrRow.getElementsByTagName('td').item(i).offsetWidth, myrow.cells[i].offsetWidth);
-            hdrRow.getElementsByTagName('td').item(i).width = maxWidth;
-            myrow.cells[i].width = maxWidth;
-            if (i == 4)
-                myrow.cells[i].style.display = 'none';
-                                                                       
-            }
-    
-        }
+if (hdrTable)
+	{
+	hdrRow=hdrTable.getElementsByTagName('tr').item(0);
+		if (hdrRow)
+	    {
+			for (j=0; j < mytable.getElementsByTagName('tr').length; j ++ ) 
+            {
+			    var myrow = mytable.getElementsByTagName('tr').item(j);
+			    
+			     if (myrow != null) 
+                 {
+			        var colNum = myrow.cells.length;
+			    
+			        for(i=0;i < colNum - 1; i++) 
+                    {
+			            maxWidth = Math.max(hdrRow.getElementsByTagName('td').item(i).offsetWidth, myrow.cells[i].offsetWidth);
+			            hdrRow.getElementsByTagName('td').item(i).width = maxWidth;
+			            myrow.cells[i].width = maxWidth;
+			            if (i == 4)
+			                myrow.cells[i].style.display = 'none';
+			                                                                       
+			         }
+			    
+			      }
+			 }
+		}
     }
 }
 
