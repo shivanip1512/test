@@ -100,6 +100,7 @@ public class TDCMainPanel extends javax.swing.JPanel implements com.cannontech.t
 	private Display[] allDisplays = null;
 	/* END -Display atrributes */
 	
+    private int currentTemplateNum = 0;
 	
 	private boolean refreshPressed = false;
 	private boolean initialStart = true;
@@ -2165,7 +2166,7 @@ private void initializeParameters()
 		if( Boolean.valueOf(pf.getParameterValue("Mute", "false")).booleanValue() )
 			parentFrame.alarmToolBar_JToolBarButtonMuteAlarmsAction_actionPerformed( null );
 
-
+		currentTemplateNum = Integer.parseInt(pf.getParameterValue("TemplateNum", "1"));
 		setStartUpDisplay( pf, parentFrame );
 		
 		//TDCMainFrame.messageLog.addMessage("Parameters file found and parsed successfully", MessageBoxFrame.INFORMATION_MSG );
@@ -2220,29 +2221,31 @@ public void initializeTable()
 		for( int i = 0; i < getAllDisplays().length; i++ )
 		{
 			// add the radio buttons for the display types to the mainframe
-			if( getAllDisplays()[i].getDisplayNumber() <= Display.BEGINNING_CLIENT_DISPLAY_NUMBER )
+			Display currentDisp = getAllDisplays()[i];
+            if( currentDisp.getDisplayNumber() <= Display.BEGINNING_CLIENT_DISPLAY_NUMBER )
 			{
 				boolean enabled = true;
             
-				if( getAllDisplays()[i].getType().equalsIgnoreCase(Display.DISPLAY_TYPES[Display.CAP_CONTROL_CLIENT_TYPE_INDEX]) )
+				if( currentDisp.getType().equalsIgnoreCase(Display.DISPLAY_TYPES[Display.CAP_CONTROL_CLIENT_TYPE_INDEX]) )
 					enabled = !TDCDefines.isHiddenCapControl(TDCDefines.USER_RIGHTS);
-				else if( getAllDisplays()[i].getType().equalsIgnoreCase(Display.DISPLAY_TYPES[Display.LOAD_CONTROL_CLIENT_TYPE_INDEX]) )
+				else if( currentDisp.getType().equalsIgnoreCase(Display.DISPLAY_TYPES[Display.LOAD_CONTROL_CLIENT_TYPE_INDEX]) )
 					enabled = !TDCDefines.isHiddenLoadControl(TDCDefines.USER_RIGHTS);
-				else if( getAllDisplays()[i].getType().equalsIgnoreCase(Display.DISPLAY_TYPES[Display.SCHEDULER_CLIENT_TYPE_INDEX]) )
+				else if( currentDisp.getType().equalsIgnoreCase(Display.DISPLAY_TYPES[Display.SCHEDULER_CLIENT_TYPE_INDEX]) )
 					enabled = !TDCDefines.isHiddenMACS(TDCDefines.USER_RIGHTS);
-				else if( getAllDisplays()[i].getType().equalsIgnoreCase(Display.DISPLAY_TYPES[Display.STATIC_CLIENT_TYPE_INDEX]) )
+				else if( currentDisp.getType().equalsIgnoreCase(Display.DISPLAY_TYPES[Display.STATIC_CLIENT_TYPE_INDEX]) )
 					enabled = TDCDefines.isClientEnabled(TDCDefines.USER_RIGHTS);
 
-				addClientRadioButtons( getAllDisplays()[i].getTitle(), i, enabled );
+				addClientRadioButtons( currentDisp.getTitle(), i, enabled );
 			}
  
         
 			if( getCurrentDisplay() == null 
-				 && Display.isReadOnlyDisplay(getAllDisplays()[i].getDisplayNumber()) )
+				 && Display.isReadOnlyDisplay(currentDisp.getDisplayNumber()) )
 			{
 				// we must not have a currentDisplay set yet, set it to the EVENT VIEWER
-				setCurrentDisplay( getAllDisplays()[i] );
-				getJComboCurrentDisplay().addItem( getAllDisplays()[i] );
+                
+                setCurrentDisplay( currentDisp );
+				getJComboCurrentDisplay().addItem( currentDisp );
 			}
 			
 		}
@@ -4169,9 +4172,10 @@ public void writeAllDisplayColumnData()
 
 		for( int i = 0; i < getAllDisplays().length; i++ )
 		{
-			map.put(
+			DisplayData displayData = getAllDisplays()[i].getDisplayData();
+            map.put(
 				new Integer(getAllDisplays()[i].getDisplayNumber()),
-				getAllDisplays()[i].getDisplayData() );
+				displayData );
 		}
 		
 		o.writeObject( map );
@@ -4262,5 +4266,11 @@ private static void getBuilderData() {
 	69BA1A8D1E899F1E7A79FB4DE0E165520A2E4CCC7AB70B7EBDC47EE6D1CC9645E49D02EEDBA28D7ACF1F6F41B6D3332409834406BC64EDAF4BA5469F4B874FE754303C068514A5DFF8A952AA6E61C421B88D2C20D89A60FEAFA2A2020DEBA843CFF4018979DA0F703290830F49A2A0B82D14543346D5DE556FB1C8ED739989843B435724897AB3C5DAC906ED9BC96CA3FF8E12BF6934CCA67D1BFD5DDAA5258E6B34D929EA137C5B439533727F1B8654F83C7A23D6D27DAABBDB5CF7CDFB36386C26943FE76A21D1
 	ACBEB3A3CABDDBE431217567E9BC937009EFE06C49DCC3FE8F5CDF0C282E4BEC3542AE36334456CA62C5253D0A2C4644B71DA77CDDC843B3D95E5673C46EAB1AB27F87D0CB87885EGC8FDE1A6GG5CF3GGD0CB818294G94G88G88G7CF854AC5EGC8FDE1A6GG5CF3GG8CGGGGGGGGGGGGGGGGGE2F5E9ECE4E5F2A0E4E1F4E1D0CB8586GGGG81G81GBAGGG1BA6GGGG
 **end of data**/
+}
+public int getCurrentTemplateNum() {
+    return currentTemplateNum;
+}
+public void setCurrentTemplateNum(int currentTemplateNum) {
+    this.currentTemplateNum = currentTemplateNum;
 }
 }

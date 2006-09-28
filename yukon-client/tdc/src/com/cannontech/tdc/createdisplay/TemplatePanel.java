@@ -7,9 +7,13 @@ package com.cannontech.tdc.createdisplay;
  * @Version: <version>
  */
 import java.awt.Color;
+import java.awt.Container;
+import java.math.BigDecimal;
 import java.util.Vector;
 
 import com.cannontech.tdc.TDCMainFrame;
+import com.cannontech.tdc.TDCMainPanel;
+import com.cannontech.tdc.editdisplay.EditDisplayDialog;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
 import com.cannontech.tdc.utils.DataBaseInteraction;
 
@@ -25,6 +29,7 @@ public class TemplatePanel extends javax.swing.JPanel
 	IvjEventHandler ivjEventHandler = new IvjEventHandler();
 	private javax.swing.JTable ivjJTable = null;
 	private javax.swing.JLabel ivjJLabelCustomized = null;
+    private int selectedTemplateIndex = 1;
 	
 class IvjEventHandler implements java.awt.event.ActionListener {
 		public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -63,6 +68,7 @@ public TemplatePanel(java.awt.LayoutManager layout, boolean isDoubleBuffered) {
 public TemplatePanel(boolean isDoubleBuffered) {
 	super(isDoubleBuffered);
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (1/26/00 11:11:55 AM)
@@ -176,20 +182,23 @@ private void createCustomColumns( ColumnEditorDialog editor )
  */
 public void editInitialize( Long displayNumber ) 
 {
-	if ( getJTable().getColumnCount() > 1 )
+    String query = new String
+    ("select  d.title, d.typenum, d.width, c.name " +
+     "from displaycolumns d, columntype c where d.displaynum = ? " +
+     " and d.typenum = c.typenum order by ordering" );
+    Object[] objs = new Object[1];
+    objs[0] = displayNumber;
+    Object[][] templates = DataBaseInteraction.queryResults( query, objs );
+    if ( getJTable().getColumnCount() > 1 )
 	{
-		setCustomized();
-		removeAllColumns();
+        
+        setSelectedIndex();
+        setCustomized(); 
+        removeAllColumns();
 	}
 
-	String query = new String
-		("select  d.title, d.typenum, d.width, c.name " +
-		 "from displaycolumns d, columntype c where d.displaynum = ? " +
-		 " and d.typenum = c.typenum order by ordering" );
-	Object[] objs = new Object[1];
-	objs[0] = displayNumber;
-	Object[][] templates = DataBaseInteraction.queryResults( query, objs );
 
+	
 	if ( templates.length > 0 )
 	{
 
@@ -207,6 +216,16 @@ public void editInitialize( Long displayNumber )
 	}
 
 	return;
+}
+private void setSelectedIndex() {
+    TDCMainPanel mainPanel = getMainPanel();
+    selectedTemplateIndex = 0;
+    if (mainPanel != null)
+    {
+        int currentTemplateNum = mainPanel.getCurrentTemplateNum();
+        selectedTemplateIndex = templateNums.indexOf(new BigDecimal (currentTemplateNum));
+    }
+    getJComboBoxTemplate().setSelectedIndex(selectedTemplateIndex);
 }
 /**
  * Return the JButtonAdvanced property value.
@@ -557,6 +576,27 @@ public void jComboBoxTemplate_ActionPerformed(java.awt.event.ActionEvent actionE
 	{	
 		owner.setCursor( original );
 	}
+}
+public void saveLastTemplateNum() {
+    BigDecimal lastTemplateNum  = (BigDecimal) templateNums.get (getJComboBoxTemplate().getSelectedIndex() );
+    lastTemplateNum = (lastTemplateNum.intValue() == -1) ? new BigDecimal (0) : lastTemplateNum;
+    TDCMainPanel mainPanel = getMainPanel();
+    if (mainPanel != null)
+    {
+        mainPanel.setCurrentTemplateNum(lastTemplateNum.intValue());
+    }
+    
+}
+private TDCMainPanel getMainPanel() {
+    Container c = getTopLevelAncestor();
+    TDCMainPanel mainPanel = null;
+    if (c instanceof EditDisplayDialog) {
+        EditDisplayDialog dispDialog = (EditDisplayDialog) c;
+        TDCMainFrame mainFrame = (TDCMainFrame)dispDialog.getParent();
+        mainPanel = mainFrame.getMainPanel();
+        
+    }
+    return mainPanel;
 }
 /**
  * main entrypoint - starts the part when it is run as an application

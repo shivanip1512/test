@@ -2663,7 +2663,7 @@ private javax.swing.JSeparator getJSeparator6() {
  * @return com.cannontech.tdc.TDCMainPanel
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-protected TDCMainPanel getMainPanel() {
+public TDCMainPanel getMainPanel() {
 	if (ivjMainPanel == null) {
 		try {
 			ivjMainPanel = new com.cannontech.tdc.TDCMainPanel();
@@ -4651,7 +4651,8 @@ private void writeParameters()
 			"VGridLine",
 			"MessageLog",
 			"ToolBox",
-			"Mute"
+			"Mute",
+            "TemplateNum"
 		};
 
 		// get the current values for the params
@@ -4672,8 +4673,9 @@ private void writeParameters()
 			String.valueOf(getJCheckBoxMenuItemShowLog().getState()),
 			String.valueOf(getJCheckBoxMenuItemShowToolBar().getState()),
 
-			String.valueOf( getAlarmToolBar().getJToolBarButtonMuteAlarms().getText().equalsIgnoreCase("UnMute") )
-		};
+			String.valueOf( getAlarmToolBar().getJToolBarButtonMuteAlarms().getText().equalsIgnoreCase("UnMute") ),
+			String.valueOf( getMainPanel().getCurrentTemplateNum())
+        };
 
 		pf.updateValues( paramNames, paramValues );
 	}

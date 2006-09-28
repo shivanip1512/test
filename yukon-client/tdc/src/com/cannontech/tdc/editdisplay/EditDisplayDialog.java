@@ -724,7 +724,7 @@ public void okCancelPanel_JButtonOkAction_actionPerformed(java.util.EventObject 
 
 			insertCreatedColumns();
 			insertDataSet();
-
+			getTemplatePanel().saveLastTemplateNum();
 			TDCMainFrame.messageLog.addMessage("Display " + getTopPanel().getName() + " edited successfully", MessageBoxFrame.INFORMATION_MSG );
 
 			this.setVisible( false );
