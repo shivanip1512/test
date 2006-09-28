@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.56 $
-* DATE         :  $Date: 2006/09/27 17:20:22 $
+* REVISION     :  $Revision: 1.57 $
+* DATE         :  $Date: 2006/09/28 21:53:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -37,6 +37,7 @@
 #include "collectable.h"
 #include "pointtypes.h"
 #include "numstr.h"
+#include "ctistring.h"
 #include "mgr_holiday.h"
 #include "dsm2err.h"
 
@@ -50,9 +51,6 @@
 
 #include <rw\re.h>
 #include <rw/ctoken.h>
-
-
-#include "ctistring.h"
 
 unsigned gMccmdDebugLevel = 0x00000000;
 
@@ -76,6 +74,9 @@ CtiConnection* NotificationConnection = 0;
 
 RWThread MessageThr;
 
+// Seconds from 1970, updated every time we hear from porter
+unsigned long gLastReturnMessageReceived = 0;
+
 // Used to distinguish unique requests/responses to/from pil
 unsigned char gUserMessageID = 0;
 
@@ -90,6 +91,9 @@ void _MessageThrFunc()
 
             if( in != 0 )
             {
+                // update global message received timestamp
+                gLastReturnMessageReceived = ::time(NULL);              
+
                 boost::shared_ptr< CtiCountedPCPtrQueue<RWCollectable> > counted_ptr;
 
                 unsigned int msgid = in->UserMessageId();
@@ -171,12 +175,12 @@ void DumpReturnMessage(CtiReturnMsg& msg)
 
     while( iter != rw_set.end() )
     {
-	if((*iter)->isA() == MSG_POINTDATA)
-	{
-	    p_data = (CtiPointDataMsg*)*iter;
-	    out += "\r\n  ";
-	    out += p_data->getString();
-	}
+        if((*iter)->isA() == MSG_POINTDATA)
+        {
+            p_data = (CtiPointDataMsg*)*iter;
+            out += "\r\n  ";
+            out += p_data->getString();
+        }
         iter++;
     }
 
@@ -1462,7 +1466,7 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
         return TCL_OK;
 
     long start = ::time(NULL);
-
+    
     // Some structures to sort the responses
     PILReturnMap device_map;
     PILReturnMap good_map;
@@ -1479,9 +1483,6 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
       {
             if( msg->isA() == MSG_PCRETURN )
             {
-                // received a message, reset the timeout
-                start = ::time(NULL);
-
                 CtiReturnMsg* ret_msg = (CtiReturnMsg*) msg;
                 DumpReturnMessage(*ret_msg);
                 HandleReturnMessage(ret_msg, good_map, bad_map, device_map);
@@ -1507,10 +1508,23 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
             break;
         }
 
-        if( ::time(NULL) > start + timeout )
+        // Time out if no messages have been received from porter for any request
+        // in timeout seconds (not just the current one) - BUT make sure at least
+        // one timeout has elapsed since we started.
+        // The downside to this is if we are frequently scanning some device, macs
+        // will potentially never time anything out - this should be considered a short
+        // term fix.
+        long now = ::time(NULL);
+        if( (now > gLastReturnMessageReceived + timeout) &&
+            (now > start + timeout) )
         {
-            string info("timed out: ");
+            string info = "The following command timed out: \r\n";
             info += cmd_line;
+            info += "\r\n command was originally submitted at: ";
+            info += CtiTime(start).asString();
+            info += "\r\n nothing was received from porter in the last ";
+            info += CtiNumStr(timeout);
+            info += " seconds";
             WriteOutput(info.c_str());
             break;
         }
@@ -1818,8 +1832,11 @@ void BuildRequestSet(Tcl_Interp* interp, string& cmd_line_b, RWSet& req_set)
         }
     }
 
-    boost::regex reg1 = ".*select[ ]+list[ ]+";
-    if( cmd_line.index(reg1, end_index) != string::npos )
+    boost::regex select_list_regex = ".*select[ ]+list[ ]+";
+    boost::regex select_id_regex = ".*select[ ]+[^ ]+[ ]+id";
+    boost::regex select_regex = ".*select[ ]+[^ ]+[ ]+";
+    
+    if( cmd_line.index(select_list_regex, end_index) != string::npos )
     {
         int list_len;
         Tcl_Obj* sel_str = Tcl_NewStringObj( cmd_line.c_str() + *end_index, -1 );
@@ -1859,9 +1876,8 @@ void BuildRequestSet(Tcl_Interp* interp, string& cmd_line_b, RWSet& req_set)
         Tcl_DecrRefCount(sel_str);
     }
     else //dont add quotes if it is an id
-        reg1 = ".*select[ ]+[^ ]+[ ]+id";
-        if( cmd_line.index(reg1, end_index) != string::npos )
-    {
+    if( cmd_line.index(select_id_regex, end_index) != string::npos )
+    {   
         CtiRequestMsg *msg = new CtiRequestMsg();
         msg->setDeviceId(0);
         msg->setCommandString(cmd_line);
@@ -1869,8 +1885,7 @@ void BuildRequestSet(Tcl_Interp* interp, string& cmd_line_b, RWSet& req_set)
         req_set.insert(msg);
     }
     else
-        reg1 = ".*select[ ]+[^ ]+[ ]+";
-        if( cmd_line.index(reg1, end_index) != string::npos )
+    if( cmd_line.index(select_regex, end_index) != string::npos )
     {
 
         //PIL likes to see ' around any device, group, etc
@@ -1938,8 +1953,8 @@ int CTICreateProcess(ClientData clientData, Tcl_Interp* interp, int argc, char* 
     string cmd;
     for(int i = 1; i < argc; i++)
     {
-	cmd += argv[i];
-	cmd += " ";
+        cmd += argv[i];
+        cmd += " ";
     } 
 
     DWORD exitcode = -1;
@@ -1960,12 +1975,12 @@ int CTICreateProcess(ClientData clientData, Tcl_Interp* interp, int argc, char* 
                        dwFlags,
                        NULL, NULL, &si, &pi))
     {
-	LPVOID lpMsgBuf;
+        LPVOID lpMsgBuf;
         FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM |
-		      FORMAT_MESSAGE_IGNORE_INSERTS,NULL,GetLastError(),MAKELANGID(LANG_NEUTRAL,
-										   SUBLANG_DEFAULT),(LPTSTR)&lpMsgBuf,0,NULL);
+                      FORMAT_MESSAGE_IGNORE_INSERTS,NULL,GetLastError(),MAKELANGID(LANG_NEUTRAL,
+                                                                                   SUBLANG_DEFAULT),(LPTSTR)&lpMsgBuf,0,NULL);
         printf("Error creating job object: %s\n",(char*)lpMsgBuf);
-        LocalFree(lpMsgBuf); 	
+        LocalFree(lpMsgBuf);    
         return TCL_ERROR;
     }
     CloseHandle(pi.hThread);
