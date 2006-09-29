@@ -182,39 +182,8 @@ private void createCustomColumns( ColumnEditorDialog editor )
  */
 public void editInitialize( Long displayNumber ) 
 {
-    String query = new String
-    ("select  d.title, d.typenum, d.width, c.name " +
-     "from displaycolumns d, columntype c where d.displaynum = ? " +
-     " and d.typenum = c.typenum order by ordering" );
-    Object[] objs = new Object[1];
-    objs[0] = displayNumber;
-    Object[][] templates = DataBaseInteraction.queryResults( query, objs );
-    if ( getJTable().getColumnCount() > 1 )
-	{
-        
-        setSelectedIndex();
-        setCustomized(); 
-        removeAllColumns();
-	}
-
-
-	
-	if ( templates.length > 0 )
-	{
-
-		for( int i = 0; i < templates.length; i++ )
-		{
-			columnData.addElement( new ColumnData(
-						new Integer( i ),
-						templates[i][3],
-						templates[i][2], // width
-						templates[i][0].toString(), //title
-						templates[i][1] ) ); // typenum
-			
-			createColumn( templates[i][0].toString(), Integer.parseInt( templates[i][2].toString() ) );
-		}
-	}
-
+    setSelectedIndex();
+    setCustomized(); 
 	return;
 }
 private void setSelectedIndex() {

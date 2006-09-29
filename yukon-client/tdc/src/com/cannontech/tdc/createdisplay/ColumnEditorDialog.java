@@ -9,6 +9,7 @@ package com.cannontech.tdc.createdisplay;
 import java.util.Vector;
 
 import com.cannontech.tdc.TDCMainFrame;
+import com.cannontech.tdc.editdisplay.EditDisplayDialog;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
 import com.cannontech.tdc.utils.DataBaseInteraction;
 import com.cannontech.tdc.utils.TDCDefines;
@@ -538,12 +539,14 @@ public void okCancelPanel_JButtonOkAction_actionPerformed(java.util.EventObject 
 		int templateNum = Integer.parseInt( templateNums.elementAt( getJComboBoxTemplate().getSelectedIndex() ).toString() );
 		deletePreviouslyCreatedColumns( templateNum );
 		writeCreatedColumns( templateNum );
-		this.dispose();
-		return;
+        updateCurrentDisplay();
+        this.dispose();
+        return;
 		
 		case DISPLAY_NAME_ONLY:  // Created a Template from scratch
 		writeCreatedTemplate();
-		this.dispose();
+        updateCurrentDisplay();
+        this.dispose();
 		return;
 
 		
@@ -556,6 +559,12 @@ public void okCancelPanel_JButtonOkAction_actionPerformed(java.util.EventObject 
 	}
 	
 	return;
+}
+private void updateCurrentDisplay() {
+    TDCMainFrame mainFrame = ((TDCMainFrame)getParent());
+    EditDisplayDialog dialog = mainFrame.getEditDisplayDialog();
+    dialog.updateCurrentDisplay();
+    mainFrame.getMainPanel().executeRefresh_Pressed();
 }
 /**
  * Insert the method's description here.

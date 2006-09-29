@@ -3302,8 +3302,13 @@ public void jMenuItemCreateTemplate_ActionPerformed(java.awt.event.ActionEvent a
  */
 public void jMenuItemEdit_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
-	
-	if ( !checkDataBaseConnection() || !getMainPanel().hasUserDefinedViews() )
+    EditDisplayDialog display = getEditDisplayDialog();
+    launchEditDisplayDialog(display);
+}
+
+
+public void launchEditDisplayDialog(EditDisplayDialog display) {
+    if ( !checkDataBaseConnection() || !getMainPanel().hasUserDefinedViews() )
 		return;
 
 
@@ -3313,10 +3318,7 @@ public void jMenuItemEdit_ActionPerformed(java.awt.event.ActionEvent actionEvent
 	
 	try
 	{
-		String previousItem = getMainPanel().getJComboCurrentDisplay().getSelectedItem().toString();
 
-		EditDisplayDialog display = 
-					new EditDisplayDialog( this, previousItem );
 
 		setCursor( original );
 		display.setModal(true);
@@ -3329,7 +3331,7 @@ public void jMenuItemEdit_ActionPerformed(java.awt.event.ActionEvent actionEvent
 			if( !getJRadioButtonCustomDisplays().isSelected() )
 				getJRadioButtonCustomDisplays().doClick();
 				
-			setUpMainFrame( previousItem ); // return to the main Frame
+			setUpMainFrame( display.getDisplayName()); // return to the main Frame
 		}		
 	}
 	finally
@@ -3339,6 +3341,14 @@ public void jMenuItemEdit_ActionPerformed(java.awt.event.ActionEvent actionEvent
 	}
 
 	return;
+}
+
+
+public EditDisplayDialog getEditDisplayDialog() {
+    String previousItem = getMainPanel().getJComboCurrentDisplay().getSelectedItem().toString();
+    EditDisplayDialog display = 
+    			new EditDisplayDialog( this, previousItem );
+    return display;
 }
 
 

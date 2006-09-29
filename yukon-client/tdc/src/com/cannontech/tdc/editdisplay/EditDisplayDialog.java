@@ -713,32 +713,37 @@ public void okCancelPanel_JButtonOkAction_actionPerformed(java.util.EventObject 
 		  getBottomPanel().columnCount() > 0 )*/
 	{
 
-		Cursor original = getCursor();		
-		setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );		
-
-		try
-		{
-			updateDisplayTable();
-			
-			removeAllColumnsFromDB();
-
-			insertCreatedColumns();
-			insertDataSet();
-			getTemplatePanel().saveLastTemplateNum();
-			TDCMainFrame.messageLog.addMessage("Display " + getTopPanel().getName() + " edited successfully", MessageBoxFrame.INFORMATION_MSG );
-
-			this.setVisible( false );
-		}
-		finally
-		{	
-			setCursor( original );					
-		}
+		updateCurrentDisplay();
 	}
 	else
 		warningMsg.showMessageDialog(this, 
 			"Make sure all fields are completely filled in.", "Message Box", warningMsg.WARNING_MESSAGE);
 
 	return;
+}
+
+public void updateCurrentDisplay() {
+    Cursor original = getCursor();		
+    setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );		
+
+    try
+    {
+    	updateDisplayTable();
+    	
+    	removeAllColumnsFromDB();
+
+    	insertCreatedColumns();
+    	insertDataSet();
+    	getTemplatePanel().saveLastTemplateNum();
+    	TDCMainFrame.messageLog.addMessage("Display " + getTopPanel().getName() + " edited successfully", MessageBoxFrame.INFORMATION_MSG );
+
+    	this.setVisible( false );
+    }
+    finally
+    {	
+    	setCursor( original );					
+    }
+    return;
 }
 /**
  * Remove all the columns from the database
@@ -822,4 +827,9 @@ private static void getBuilderData() {
 	F4E1D0CB8586GGGG81G81GBAGGG4898GGGG
 **end of data**/
 }
+
+public String getDisplayName() {
+    return displayName;
+}
+
 }
