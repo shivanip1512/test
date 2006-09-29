@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.196 $
-* DATE         :  $Date: 2006/09/23 13:28:44 $
+* REVISION     :  $Revision: 1.197 $
+* DATE         :  $Date: 2006/09/29 19:00:12 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -452,7 +452,6 @@ VOID PortThread(void *pid)
 
         if(CheckAndRetryMessage(i, Port, &InMessage, OutMessage, Device) == RETRY_SUBMITTED)
         {
-            processCommResult(RETRY_SUBMITTED,did,tid,rgtz, Device);
             continue;  // It has been re-queued!
         }
         else   /* we are either successful or retried out */
@@ -460,10 +459,8 @@ VOID PortThread(void *pid)
             if((status = DoProcessInMessage(i, Port, &InMessage, OutMessage, Device)) != NORMAL)
             {
                 RequeueReportError(status, OutMessage);
-                processCommResult(i,did,tid,rgtz, Device);
                 continue;
             }
-            processCommResult(i,did,tid,rgtz, Device);
         }
 
         if((status = ReturnResultMessage(i, &InMessage, OutMessage)) != NORMAL)
@@ -854,20 +851,12 @@ INT EstablishConnection(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage
     LONG tid = OutMessage->TargetID;
     bool rgtz = OutMessage->Retry > 0;
 
-    if(status != NORMAL)
+    if(status != NORMAL || !Port->connectedTo(Device->getUniqueIdentifier()) )
     {
         /* Must call CheckAndRetry to make the re-queue happen if needed */
         if((status = CheckAndRetryMessage(status, Port, InMessage, OutMessage, Device)) == RETRY_SUBMITTED)         // This call may free OutMessages
         {
-            processCommResult(status,did,tid,rgtz, Device);
-        }
-    }
-    else if( !Port->connectedTo(Device->getUniqueIdentifier()) ) /* Check if we made the connect OK */
-    {
-        /* Must call CheckAndRetry to make the re-queue happen if needed */
-        if((status = CheckAndRetryMessage(status, Port, InMessage, OutMessage, Device)) == RETRY_SUBMITTED)         // This call may free OutMessages
-        {
-            processCommResult(status,did,tid,rgtz, Device);
+            //processCommResult(status,did,tid,rgtz, Device); This is now called by check and retry.
         }
     }
 
