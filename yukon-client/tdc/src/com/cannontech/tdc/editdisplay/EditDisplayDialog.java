@@ -521,8 +521,8 @@ private boolean initComboCurrentDisplay( String displayName )
 		// init our sub components with data
 		Long displayNumber = new Long( currentDisplayNumber );
 		getTopPanel().editInitialize( displayNumber );		
-		getTemplatePanel().editInitialize( displayNumber );
-		getAddPointsPanel().jDisplayChanged_ActionPerformed( displayNumber.longValue() );
+		getTemplatePanel().initProperties();
+        getAddPointsPanel().jDisplayChanged_ActionPerformed( displayNumber.longValue() );
 		
 		
 
