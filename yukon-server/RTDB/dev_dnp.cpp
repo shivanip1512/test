@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.52 $
-* DATE         :  $Date: 2006/09/07 17:28:35 $
+* REVISION     :  $Revision: 1.53 $
+* DATE         :  $Date: 2006/10/04 15:47:02 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1109,6 +1109,10 @@ void DNP::DecodeDatabaseReader(RWDBReader &rdr)
    if( getType() == TYPE_DARTRTU )
    {
        _dnp.setOptions(Protocol::DNPInterface::Options_DatalinkConfirm);
+   }
+   else
+   {
+       _dnp.setOptions(Protocol::DNPInterface::Options_None);
    }
 }
 
