@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.98 $
-* DATE         :  $Date: 2006/09/20 20:22:52 $
+* REVISION     :  $Revision: 1.99 $
+* DATE         :  $Date: 2006/10/04 19:11:20 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1561,7 +1561,7 @@ INT CtiDeviceMCT::executeGetValue( CtiRequestMsg              *pReq,
         if( getType() == TYPEMCT310 || getType() == TYPEMCT310ID || getType() == TYPEMCT310IDL || getType() == TYPEMCT310IL ||
             getType() == TYPEMCT318 || getType() == TYPEMCT318L  || getType() == TYPEMCT360    || getType() == TYPEMCT370 )
         {
-            channels = CtiDeviceMCT31X::MCT31X_ChannelCount;
+            channels = CtiDeviceMCT31X::ChannelCount;
         }
         else if( getType() == TYPEMCT470 )
         {
