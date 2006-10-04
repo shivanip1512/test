@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2006/01/24 20:04:57 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2006/10/04 15:49:25 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -320,7 +320,7 @@ bool ObjectBlock::addObjectIndex( const Object *object, int index )
 */
 
 
-int ObjectBlock::size( void ) const
+unsigned ObjectBlock::size( void ) const
 {
     return _objectList.size();
 }
@@ -367,9 +367,9 @@ void ObjectBlock::erase( void )
 }
 
 
-int ObjectBlock::getSerializedLen( void ) const
+unsigned ObjectBlock::getSerializedLen( void ) const
 {
-    int blockSize;
+    unsigned blockSize;
 
     blockSize = ObjectBlockMinSize;
 
@@ -413,7 +413,7 @@ int ObjectBlock::getSerializedLen( void ) const
         }
     }
 
-    for( int i = 0; i < _objectList.size(); i++ )
+    for( unsigned i = 0; i < _objectList.size(); i++ )
     {
         //  add on the index size
         if( _qualifier == ByteIndex_ByteQty || _qualifier == ByteIndex_ShortQty )
@@ -432,9 +432,9 @@ int ObjectBlock::getSerializedLen( void ) const
 }
 
 
-int ObjectBlock::serialize( unsigned char *buf ) const
+unsigned ObjectBlock::serialize( unsigned char *buf ) const
 {
-    int pos, qty;
+    unsigned pos, qty;
 
     qty = _objectList.size();
 
@@ -505,7 +505,7 @@ int ObjectBlock::serialize( unsigned char *buf ) const
         }
     }
 
-    for( int i = 0; i < _objectList.size(); i++ )
+    for( unsigned i = 0; i < _objectList.size(); i++ )
     {
         //  add on the index size
         //  ACH: maybe a switch/case someday when there are more than two indexing options...

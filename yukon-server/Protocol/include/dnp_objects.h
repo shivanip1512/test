@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2005/12/20 17:19:58 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2006/10/04 15:49:25 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -132,13 +132,13 @@ public:
     bool addObjectIndex( const Object *object, int index );
 //    void addRange( Object *objArray, int start, int stop );
 
-    int  size( void )  const;
-    bool empty( void ) const;
+    unsigned size( void )  const;
+    bool     empty( void ) const;
     object_descriptor at( unsigned index ) const;
     object_descriptor operator[]( unsigned index ) const;
 
-    int  getSerializedLen( void ) const;
-    int  serialize( unsigned char *buf ) const;
+    unsigned getSerializedLen( void ) const;
+    unsigned serialize( unsigned char *buf ) const;
 
     int  restore( const unsigned char *buf, int len );
 
