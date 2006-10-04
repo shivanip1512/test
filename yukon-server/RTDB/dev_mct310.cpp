@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.56 $
-* DATE         :  $Date: 2006/09/18 17:23:09 $
+* REVISION     :  $Revision: 1.57 $
+* DATE         :  $Date: 2006/10/04 19:12:57 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -141,9 +141,6 @@ CtiDeviceMCT310::CommandSet CtiDeviceMCT310::initCommandStore( )
     cs.insert(CommandStore(Emetcon::GetValue_Demand,                Emetcon::IO_Read,           Memory_DemandPos,               Memory_DemandLen));
 
     cs.insert(CommandStore(Emetcon::PutValue_KYZ,                   Emetcon::IO_Write,          MCT3XX_PutMRead1Pos,            MCT3XX_PutMReadLen));
-
-    cs.insert(CommandStore(Emetcon::GetValue_PeakDemand,            Emetcon::IO_Function_Read,  FuncRead_MinMaxDemandPos, 4));
-    cs.insert(CommandStore(Emetcon::GetValue_FrozenPeakDemand,      Emetcon::IO_Function_Read,  FuncRead_FrozenDemandPos, 4));
 
     //  only valid for 310IL, this case handled in getOperation
     cs.insert(CommandStore(Emetcon::Scan_LoadProfile,               Emetcon::IO_Function_Read,  0,  0));

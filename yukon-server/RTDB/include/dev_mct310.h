@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct310.h-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2006/09/21 21:31:38 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2006/10/04 19:12:57 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -83,9 +83,6 @@ protected:
         FuncRead_MReadLen        =    9,
         FuncRead_FrozenPos       = 0x91,
         FuncRead_FrozenLen       =    9,
-
-        FuncRead_MinMaxDemandPos = 0x93,
-        FuncRead_FrozenDemandPos = 0x94,
     };
 
     enum Commands
