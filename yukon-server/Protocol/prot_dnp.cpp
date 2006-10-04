@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.32 $
-* DATE         :  $Date: 2006/06/28 20:50:05 $
+* REVISION     :  $Revision: 1.33 $
+* DATE         :  $Date: 2006/10/04 15:56:19 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -31,7 +31,6 @@ namespace Protocol  {
 using namespace Cti::Protocol::DNP;
 
 DNPInterface::DNPInterface() :
-    _io_state(IOState_Uninitialized),
     _command(Command_Invalid)
 {
     setAddresses(DefaultSlaveAddress, DefaultMasterAddress);
@@ -42,7 +41,9 @@ DNPInterface::DNPInterface(const DNPInterface &aRef)
     *this = aRef;
 }
 
-DNPInterface::~DNPInterface()   {}
+DNPInterface::~DNPInterface()
+{
+}
 
 DNPInterface &DNPInterface::operator=(const DNPInterface &aRef)
 {
@@ -59,7 +60,6 @@ DNPInterface &DNPInterface::operator=(const DNPInterface &aRef)
 
 void DNPInterface::initLayers( void )
 {
-    //_app_layer.setOptions(_options);
 }
 
 

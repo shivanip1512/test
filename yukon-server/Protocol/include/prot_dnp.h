@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2006/01/24 20:00:48 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2006/10/04 15:56:19 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -64,14 +64,6 @@ private:
     {
         Retries_Default = 2
     };
-
-    enum IOState
-    {
-        IOState_Uninitialized = 0,
-        IOState_Initialized,
-        IOState_Complete,
-        IOState_Error
-    } _io_state;
 
     void initLayers( void );
 
