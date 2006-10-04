@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct31X.cpp-arc  $
-* REVISION     :  $Revision: 1.57 $
-* DATE         :  $Date: 2006/09/01 18:47:30 $
+* REVISION     :  $Revision: 1.58 $
+* DATE         :  $Date: 2006/10/04 19:14:19 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -37,7 +37,7 @@ const CtiDeviceMCT31X::CommandSet CtiDeviceMCT31X::_commandStore = CtiDeviceMCT3
 
 CtiDeviceMCT31X::CtiDeviceMCT31X( )
 {
-    for( int i = 0; i < MCT31X_ChannelCount; i++ )
+    for( int i = 0; i < ChannelCount; i++ )
     {
         _lastLPTime[i] = CtiTime(0UL);
     }
@@ -77,21 +77,21 @@ CtiDeviceMCT31X::CommandSet CtiDeviceMCT31X::initCommandStore( )
 {
     CommandSet cs;
 
-    cs.insert(CommandStore(Emetcon::Scan_General,               Emetcon::IO_Function_Read,  MCT31X_FuncReadDemandPos,   MCT31X_FuncReadStatusLen));
+    cs.insert(CommandStore(Emetcon::Scan_General,               Emetcon::IO_Function_Read,  FuncRead_DemandPos,         FuncRead_StatusLen));
 
-    cs.insert(CommandStore(Emetcon::Scan_Integrity,             Emetcon::IO_Function_Read,  MCT31X_FuncReadDemandPos,   MCT31X_FuncReadDemandLen));
-    cs.insert(CommandStore(Emetcon::GetValue_Demand,            Emetcon::IO_Function_Read,  MCT31X_FuncReadDemandPos,   MCT31X_FuncReadDemandLen));
+    cs.insert(CommandStore(Emetcon::Scan_Integrity,             Emetcon::IO_Function_Read,  FuncRead_DemandPos,         FuncRead_DemandLen));
+    cs.insert(CommandStore(Emetcon::GetValue_Demand,            Emetcon::IO_Function_Read,  FuncRead_DemandPos,         FuncRead_DemandLen));
 
     cs.insert(CommandStore(Emetcon::Scan_LoadProfile,           Emetcon::IO_Function_Read,  0,                          0));
 
-    cs.insert(CommandStore(Emetcon::GetValue_PeakDemand,        Emetcon::IO_Function_Read,  FuncRead_MinMaxDemandPos, 12));
-    cs.insert(CommandStore(Emetcon::GetValue_FrozenPeakDemand,  Emetcon::IO_Function_Read,  FuncRead_FrozenDemandPos, 12));
+    cs.insert(CommandStore(Emetcon::GetValue_PeakDemand,        Emetcon::IO_Function_Read,  FuncRead_MinMaxDemandPos,   FuncRead_MinMaxDemandLen));
+    cs.insert(CommandStore(Emetcon::GetValue_FrozenPeakDemand,  Emetcon::IO_Function_Read,  FuncRead_FrozenDemandPos,   FuncRead_FrozenDemandLen));
 
     //  add the 2 other channels for 318s
     cs.insert(CommandStore(Emetcon::PutValue_KYZ2,              Emetcon::IO_Write,          MCT3XX_PutMRead2Pos,        MCT3XX_PutMReadLen));
     cs.insert(CommandStore(Emetcon::PutValue_KYZ3,              Emetcon::IO_Write,          MCT3XX_PutMRead3Pos,        MCT3XX_PutMReadLen));
 
-    cs.insert(CommandStore(Emetcon::GetStatus_External,         Emetcon::IO_Function_Read,  MCT31X_FuncReadDemandPos,   MCT31X_FuncReadStatusLen));
+    cs.insert(CommandStore(Emetcon::GetStatus_External,         Emetcon::IO_Function_Read,  FuncRead_DemandPos,         FuncRead_StatusLen));
 
     cs.insert(CommandStore(Emetcon::GetConfig_Multiplier2,      Emetcon::IO_Read,           MCT3XX_Mult2Pos,            MCT3XX_MultLen));
     cs.insert(CommandStore(Emetcon::GetConfig_Multiplier3,      Emetcon::IO_Read,           MCT3XX_Mult3Pos,            MCT3XX_MultLen));
@@ -186,7 +186,7 @@ ULONG CtiDeviceMCT31X::calcNextLPScanTime( void )
             lpMaxBlocks = 8;
         }
 
-        for( int i = 0; i < MCT31X_ChannelCount; i++ )
+        for( int i = 0; i < ChannelCount; i++ )
         {
             CtiPointSPtr pPoint = getDevicePointOffsetTypeEqual((i+1) + PointOffset_LoadProfileOffset, DemandAccumulatorPointType);
 
@@ -292,7 +292,7 @@ INT CtiDeviceMCT31X::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS
         else
             lpMaxBlocks = 8;
 
-        for( int i = 0; i < MCT31X_ChannelCount; i++ )
+        for( int i = 0; i < ChannelCount; i++ )
         {
             if( useScanFlags() )
             {

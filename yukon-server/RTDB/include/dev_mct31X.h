@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct31X.h-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2006/09/21 21:31:38 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2006/10/04 19:14:19 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,16 +28,16 @@ public:
 
     enum
     {
-        MCT31X_ChannelCount = 3
+        ChannelCount = 3
     };
 
 private:
 
     typedef CtiDeviceMCT310 Inherited;
 
-    CtiTime _lastLPTime[MCT31X_ChannelCount],
-            _nextLPTime[MCT31X_ChannelCount],
-            _lastLPRequest[MCT31X_ChannelCount];
+    CtiTime _lastLPTime[ChannelCount],
+            _nextLPTime[ChannelCount],
+            _lastLPRequest[ChannelCount];
 
     CtiTableDeviceMCTIEDPort _iedPort;
 
@@ -52,13 +52,15 @@ protected:
 
     enum
     {
-        MCT31X_FuncReadDemandPos = 0x92,
-        MCT31X_FuncReadDemandLen =    7,
-        MCT31X_FuncReadStatusLen =    1,
+        FuncRead_DemandPos       = 0x92,
+        FuncRead_DemandLen       =    7,
+        FuncRead_StatusLen       =    1,
 
-        //  get status and 3 accumulators
-        MCT31X_FuncReadAccumPos  = 0x95,
-        MCT31X_FuncReadAccumLen  =   10,
+        FuncRead_MinMaxDemandPos = 0x93,
+        FuncRead_MinMaxDemandLen =   12,
+
+        FuncRead_FrozenDemandPos = 0x94,
+        FuncRead_FrozenDemandLen =   12,
 
         //  these addresses are only valid for the 360 and 370
         MCT360_IEDKwhPos         = 0xa2,
