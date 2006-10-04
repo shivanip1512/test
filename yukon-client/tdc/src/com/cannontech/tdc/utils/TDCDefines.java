@@ -5,6 +5,10 @@ package com.cannontech.tdc.utils;
  * @author: 
  */
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.ClientRights;
 import com.cannontech.roles.application.TDCRole;
@@ -166,6 +170,19 @@ public static boolean isClientEnabled( final long readOnlyInteger )
 {
 	return (readOnlyInteger & ClientRights.ENABLE_SERVICES) != 0;
 }
+
+public static Calendar getCalendarDate(Date stopDate) {
+    Calendar c = new GregorianCalendar();
+    c.setTime (stopDate);
+    return c;
+}
+
+public static Date getNextDay(Calendar c) {
+    c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH), (c.get(Calendar.DAY_OF_MONTH) + 1), c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE));
+    Date newStartDate = c.getTime();
+    return newStartDate;
+}
+
 
 
 }

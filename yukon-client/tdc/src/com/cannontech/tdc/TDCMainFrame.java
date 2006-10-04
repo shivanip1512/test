@@ -12,6 +12,7 @@ import java.awt.KeyboardFocusManager;
 import java.awt.event.KeyEvent;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -3570,8 +3571,9 @@ public void jMenuItemPrint_ActionPerformed(java.awt.event.ActionEvent actionEven
 	//print the gui component?? Nah, dont change this now!!
 	//new JTablePrinter( getMainPanel().getDisplayTable() ).printIt();
 
-	if( getMainPanel().getJComboCurrentDisplay().getItemCount() <= 0 ||
-		getMainPanel().getDisplayTable().getColumnCount() <= 0 )
+	TDCMainPanel mainPanel = getMainPanel();
+    if( mainPanel.getJComboCurrentDisplay().getItemCount() <= 0 ||
+		mainPanel.getDisplayTable().getColumnCount() <= 0 )
 		return;
 		
 	// printing does not work on JDK 1.2
@@ -3591,41 +3593,28 @@ public void jMenuItemPrint_ActionPerformed(java.awt.event.ActionEvent actionEven
 					this, 
 					this );
 				 
-	if( !dq.queryUser(getMainPanel().getPreviousDate(), getMainPanel().getPreviousDate()) )
+	if( !dq.queryUser(mainPanel.getPreviousDate(), mainPanel.getPreviousDate()) )
 		return;
 
 
 
 	//copy all the valid row references into the temp vector 
 	final Vector rows = new Vector(10);
-	for( int i = 0; i < getMainPanel().getDisplayTable().getModel().getRowCount(); i++ ) {
-		Vector v = new Vector(10);
+	Date stopDate = dq.getStopDate();
+    Date startDate = dq.getStartDate();
+    final TableModel tableModel = mainPanel.getDisplayTable().getModel();
+    setRowsForDateRange(rows, stopDate, startDate, mainPanel);
 
-		boolean validDate = false;
-		for( int j = 0; j < getMainPanel().getDisplayTable().getModel().getColumnCount(); j++ ) {
-			
-			Object val = getMainPanel().getDisplayTable().getModel().getValueAt( i ,j );
-			if( val instanceof Date
-				 && ((Date)val).before(dq.getStopDate())
-				 && ((Date)val).after(dq.getStartDate()) )
-			{
-				validDate = true;
-			}
-			
-			v.add( val );
-		}
-		
-		if( validDate )
-			rows.add( v );
-	}
-			
-
-
-	//did someone say "hack it"??!!
+    //did someone say "hack it"??!!
 	TableModel tempModel = new AbstractTableModel() {
 
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 1L;
+
         public int getColumnCount() { 
-        		return getMainPanel().getDisplayTable().getModel().getColumnCount(); }
+        		return tableModel.getColumnCount(); }
         		
         public int getRowCount() { 
         		return rows.size(); 
@@ -3639,14 +3628,14 @@ public void jMenuItemPrint_ActionPerformed(java.awt.event.ActionEvent actionEven
 		  }
 
         public String getColumnName(int column) {
-         	return getMainPanel().getDisplayTable().getModel().getColumnName(column);}
+         	return tableModel.getColumnName(column);}
 	};
 	
 
 	Cursor original = getCursor();
 	setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );
 	
-	int columnCount = getMainPanel().getDisplayTable().getColumnCount();
+	int columnCount = mainPanel.getDisplayTable().getColumnCount();
 	JCPageTable table = null;
 	java.awt.Font oldFont = null;
 	JCPrinter printer = null;
@@ -3688,17 +3677,17 @@ public void jMenuItemPrint_ActionPerformed(java.awt.event.ActionEvent actionEven
 
 		
 	flow.getCurrentTextStyle().setFont( new java.awt.Font(oldFont.getName(), java.awt.Font.PLAIN, 21 ) );
-	flow.print( getMainPanel().getJComboCurrentDisplay().getSelectedItem().toString() );		
+	flow.print( mainPanel.getJComboCurrentDisplay().getSelectedItem().toString() );		
 	flow.newLine();
 	flow.getCurrentTextStyle().setFont( oldFont );
-	flow.print( "Date Printed : " + getMainPanel().getJLabelDate().getText() + " " +
-					getMainPanel().getJLabelTime().getText());
+	flow.print( "Date Printed : " + mainPanel.getJLabelDate().getText() + " " +
+					mainPanel.getJLabelTime().getText());
 
 	//Print the range on the paper
 	flow.newLine();
 	flow.print( "Date Range : " + 
-		new ModifiedDate(dq.getStartDate().getTime()).toString() + "  -  " + 
-		new ModifiedDate(dq.getStopDate().getTime()).toString() );
+		new ModifiedDate(startDate.getTime()).toString() + "  -  " + 
+		new ModifiedDate(stopDate.getTime()).toString() );
 
 	
 	flow.getCurrentTextStyle().setFont( oldFont );
@@ -3718,6 +3707,53 @@ public void jMenuItemPrint_ActionPerformed(java.awt.event.ActionEvent actionEven
 
 	return;
 }
+
+
+
+
+
+private void setRowsForDateRange(final Vector rows, Date stopDate, Date startDate, TDCMainPanel mainPanel) 
+{
+     Display2WayDataAdapter tableDataModel = mainPanel.getTableDataModel();
+     if (tableDataModel != null)
+     {
+        tableDataModel.setCurrentDate(startDate);        
+        if (stopDate.after(startDate))
+        {
+            updateRows(rows, stopDate, startDate, tableDataModel);
+            Calendar c = TDCDefines.getCalendarDate(startDate);
+            Date newStartDate = TDCDefines.getNextDay(c);
+            setRowsForDateRange (rows, stopDate, newStartDate, mainPanel);
+        }
+     } 
+}
+
+
+private void updateRows(final Vector rows, Date stopDate, Date startDate, TableModel tableModel) {
+    for( int i = 0; i < tableModel.getRowCount(); i++ ) {
+    	Vector v = new Vector(10);
+   
+    	boolean validDate = false;
+    	for( int j = 0; j < tableModel.getColumnCount(); j++ ) {
+    		
+    		Object val = tableModel.getValueAt( i ,j );
+    		if( val instanceof Date
+    			 && ((Date)val).before(stopDate)
+    			 && ((Date)val).after(startDate) )
+    		{
+    			validDate = true;
+    		}
+    		
+    		v.add( val );
+    	}
+    	
+    	if( validDate )
+    		rows.add( v );
+    }
+}
+
+
+
 
 
 /**
