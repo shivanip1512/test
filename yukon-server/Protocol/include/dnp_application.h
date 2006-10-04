@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2005/12/20 17:19:58 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2006/10/04 15:46:13 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -40,7 +40,7 @@ public:
 
     enum
     {
-        BufferSize = 2048
+        BufferSize = 4096
     };
 
     typedef queue< const ObjectBlock * > object_block_queue;
@@ -103,8 +103,8 @@ private:
 
     FunctionCode _request_function;
     int _seqno;
-    int _request_buf_len,
-        _response_buf_len;
+    unsigned _request_buf_len,
+             _response_buf_len;
 
     enum ApplicationIOState
     {
