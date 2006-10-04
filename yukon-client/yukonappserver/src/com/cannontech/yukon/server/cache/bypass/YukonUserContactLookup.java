@@ -70,7 +70,7 @@ public class YukonUserContactLookup
         try
         {
             ThreeTwoOneContact = new LiteContact(contactID);
-            ThreeTwoOneContact.retrieve(CtiUtilities.YUKONDBALIAS);
+            ThreeTwoOneContact.retrieve(CtiUtilities.getDatabaseAlias());
         }
         catch( Exception e )
         {
@@ -111,7 +111,7 @@ public class YukonUserContactLookup
             for( int j = 0; j < stmt.getRowCount(); j++ )
             {
                 LiteContact newlyFound = new LiteContact(((java.math.BigDecimal) stmt.getRow(j)[0]).intValue());
-                newlyFound.retrieve(CtiUtilities.YUKONDBALIAS);
+                newlyFound.retrieve(CtiUtilities.getDatabaseAlias());
                 foundContacts[j] = newlyFound;
             }
             
@@ -157,7 +157,7 @@ public class YukonUserContactLookup
             for( int j = 0; j < stmt.getRowCount(); j++ )
             {
                 LiteContact newlyFound = new LiteContact(((java.math.BigDecimal) stmt.getRow(j)[0]).intValue());
-                newlyFound.retrieve(CtiUtilities.YUKONDBALIAS);
+                newlyFound.retrieve(CtiUtilities.getDatabaseAlias());
                 foundContacts[j] = newlyFound;
             }
             
@@ -200,7 +200,7 @@ public class YukonUserContactLookup
             for( int j = 0; j < stmt.getRowCount(); j++ )
             {
                 LiteContact newlyFound = new LiteContact(((java.math.BigDecimal) stmt.getRow(j)[0]).intValue());
-                newlyFound.retrieve(CtiUtilities.YUKONDBALIAS);
+                newlyFound.retrieve(CtiUtilities.getDatabaseAlias());
                 foundContacts[j] = newlyFound;
             }
             
@@ -226,7 +226,7 @@ public class YukonUserContactLookup
             if(stmt.getRowCount() > 0)
             {
                 LiteContact newlyFound = new LiteContact(((java.math.BigDecimal) stmt.getRow(0)[0]).intValue());
-                newlyFound.retrieve(CtiUtilities.YUKONDBALIAS);
+                newlyFound.retrieve(CtiUtilities.getDatabaseAlias());
                 return newlyFound;
             }
 

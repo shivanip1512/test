@@ -11,14 +11,19 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Vector;
 
+import org.springframework.jdbc.support.JdbcUtils;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
+
 import com.cannontech.clientutils.CTILogManager;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDBPersistent;
 
 /**
@@ -26,153 +31,124 @@ import com.cannontech.yukon.IDBPersistent;
  * jndi-name="jndi/DBPersistentBean"
  * type="Stateful" 
 **/
-public class DBPersistentBean implements IDBPersistent
-{
-	protected static final int ORACLE_FLOAT_PRECISION = SqlUtils.ORACLE_FLOAT_PRECISION;
-	
-   //public static String sqlFileName = null; 
-   //com.cannontech.common.util.CtiUtilities.getLogDirPath() + "DatabaseSQL.sql";
-
-   private java.sql.Connection dbConnection = null;   
-
-   /**
-    * @ejb:interface-method
-    * tview-type="remote" 
-   **/
-   public DBPersistent execute( int operation, DBPersistent obj ) throws TransactionException
-   {
-      return internalExecute( operation, obj );
-   }   
-
-
-   private DBPersistent internalExecute(int operation, DBPersistent object ) throws TransactionException
-   {
-      boolean autoCommit = false;
-      java.sql.Connection conn = null;
-
-      try
-      {
-         conn = object.getDbConnection();
-         
-         if( conn == null )
-            setDbConnection( PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() ) );         
-         else
-            setDbConnection( conn );
-
-
-         try {
-         com.cannontech.clientutils.CTILogger.debug( 
-         "   DB: DBPersistentBean TrX started " +
-         (operation == INSERT ? "(insert)" :
-         (operation == UPDATE ? "(update)":
-         (operation == RETRIEVE ? "(retrieve)":
-         (operation == DELETE ? "(delete)":
-         (operation == DELETE_PARTIAL? "(delete partial)":
-         (operation == ADD_PARTIAL ? "(add partial)": 
-			"(unknown)"))))))         
-         + " " + getDbConnection().hashCode() );
-         } catch( Throwable t ) {}
-         
-
-
-         autoCommit = getDbConnection().getAutoCommit();
-         
-         //only do this if the caller did not provide a DB connection on the DBPersistent
-         if( conn == null )
-             getDbConnection().setAutoCommit(false);
-
-         object.setDbConnection( getDbConnection() );
-               
-         switch( operation )
-         {
-            case INSERT:
-               object.add();
-               break;   
-   
-            case UPDATE:
-               object.update();
-               break;
-   
-            case RETRIEVE:
-               object.retrieve();
-               break;
-   
-            case DELETE:
-               object.delete();
-               break;
-   
-            case DELETE_PARTIAL:
-               object.deletePartial();
-               break;
-   
-            case ADD_PARTIAL: 
-               object.addPartial();
-               break;
-   
-            default:
-               throw new TransactionException("Unknown operation:  " + operation);
-         }
-
-         if( conn == null )
-            getDbConnection().commit();  //autocommit is still false!!
-      }
-      catch( java.sql.SQLException e )
-      {
-         TransactionException t = new TransactionException( e.getMessage() );
-         /*Only in JRE 1.4 or greater */
-         t.setStackTrace( e.getStackTrace() );
-         
-         if( conn == null )
-         {
-            //Attempt a rollback
-            try
-            {
-               getDbConnection().rollback();
-            }
-            catch( java.sql.SQLException e2 )
-            {
-               t = new TransactionException( e.getMessage() );
-               /* Only in JRE 1.4 or greater */
-               t.setStackTrace( e2.getStackTrace() );
-               throw t;
-            }
+public class DBPersistentBean implements IDBPersistent {
+    protected static final int ORACLE_FLOAT_PRECISION = SqlUtils.ORACLE_FLOAT_PRECISION;
+    
+    private java.sql.Connection dbConnection = null;   
+    
+    /**
+     * @ejb:interface-method
+     * tview-type="remote" 
+     **/
+    public DBPersistent execute( int operation, DBPersistent obj ) throws TransactionException
+    {
+        return internalExecute( operation, obj );
+    }   
+    
+    private class TemporaryException extends RuntimeException {
+        public final TransactionException e;
+        public TemporaryException(TransactionException e) {
+            this.e = e;
+        }
+        public TemporaryException(SQLException e) {
+            this.e = new TransactionException("Caught exception while processing transaction",e);
+        }
+    }
+    
+    
+    private DBPersistent internalExecute(final int operation, final DBPersistent object ) throws TransactionException
+    {
+        final boolean objectSuppliedConnection;
+        Connection conn = object.getDbConnection();
+        if (conn != null) {
+            objectSuppliedConnection = true;
+            setDbConnection(conn);
+        } else {
+            objectSuppliedConnection = false;
+        }
+        
+        int hashCode = 0;
+        try {
+            hashCode = getDbConnection().hashCode();
+        } catch( Throwable t ) {}
+        CTILogger.debug("   DB: DBPersistentBean TrX started " +
+                        (operation == INSERT ? "(insert)" :
+                            (operation == UPDATE ? "(update)":
+                                (operation == RETRIEVE ? "(retrieve)":
+                                    (operation == DELETE ? "(delete)":
+                                        (operation == DELETE_PARTIAL? "(delete partial)":
+                                            (operation == ADD_PARTIAL ? "(add partial)": 
+                                            "(unknown)"))))))         
+                                            + " " + hashCode );
+        
+        try {
+            TransactionTemplate tt = YukonSpringHook.getTransactionTemplate();
+            tt.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+            tt.execute(new TransactionCallback() {
+                public Object doInTransaction(org.springframework.transaction.TransactionStatus status) {
+                    if (getDbConnection() == null) {
+                        setDbConnection( PoolManager.getYukonConnection() );
+                    }
+                    try {
+                        object.setDbConnection( getDbConnection() );
+                        
+                        switch( operation )
+                        {
+                        case INSERT:
+                            object.add();
+                            break;   
+                            
+                        case UPDATE:
+                            object.update();
+                            break;
+                            
+                        case RETRIEVE:
+                            object.retrieve();
+                            break;
+                            
+                        case DELETE:
+                            object.delete();
+                            break;
+                            
+                        case DELETE_PARTIAL:
+                            object.deletePartial();
+                            break;
+                            
+                        case ADD_PARTIAL: 
+                            object.addPartial();
+                            break;
+                            
+                        default:
+                            throw new TemporaryException(new TransactionException("Unknown operation:  " + operation));
+                        };
+                    } catch (SQLException e) {
+                        throw new TemporaryException(e);
+                    }
+                    return null;
+                }
+            });
             
-         }
-         
-         throw t;
-      }
-      finally
-      {
-         if( conn == null )
-         {
-            try
-            {
-               if( getDbConnection() != null )
-               {                  
-                  getDbConnection().setAutoCommit(autoCommit);
-                  getDbConnection().close();
-               }
-   
+        } catch (TemporaryException te) {
+            // Yes, this is weird. Spring transactions assume
+            // that you're throwing a RuntimeException.
+            throw te.e;
+        } finally {
+            if( !objectSuppliedConnection ) {
+                JdbcUtils.closeConnection(getDbConnection());
+                
+                //DO NOT LET THE DBPERSISTENT OBJECT HOLD ONTO A REFERENCE TO THE CONNECTION
+                //IT'S JUST A BAD IDEA SINCE WE DON'T KNOW HOW THEY ARE BEING MANAGED
+                object.setDbConnection(null);
+                setDbConnection(null);
             }
-            catch( java.sql.SQLException e )
-            {
-               CTILogger.error( e.getMessage(), e );
-            }         
-            
-            //DO NOT LET THE DBPERSISTENT OBJECT HOLD ONTO A REFERENCE TO THE CONNECTION
-            //IT'S JUST A BAD IDEA SINCE WE DON'T KNOW HOW THEY ARE BEING MANAGED
-            object.setDbConnection(null);
-            setDbConnection(null);
-         }
-      }
-   
+        }
+        
       
       return object;
    }   
    
    
-   public Connection getDbConnection() throws SQLException 
-   {
+   public Connection getDbConnection() {
       return dbConnection;
    }
 	

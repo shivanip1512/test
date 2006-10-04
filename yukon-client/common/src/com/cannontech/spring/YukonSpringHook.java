@@ -26,7 +26,9 @@ public class YukonSpringHook {
     
     static ApplicationContext applicationContext;
     
-    public static ApplicationContext getContext() {
+    public synchronized static ApplicationContext getContext() {
+        // this is synchronized to ensure that non-web applications
+        // don't try to access it for the first time from multiple threads
         BeanFactoryLocator bfl = ContextSingletonBeanFactoryLocator.getInstance();
         BeanFactoryReference bfr = bfl.useBeanFactory(beanFactoryKey);
         ApplicationContext context = (ApplicationContext) bfr.getFactory();

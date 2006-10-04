@@ -9,6 +9,7 @@
 <%@ page import="com.cannontech.user.UserUtils" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
 <%@ page import="com.cannontech.clientutils.CTILogger" %>
+<%@ page import="org.springframework.jdbc.support.JdbcUtils" %>
 
 
 <script language="JavaScript">
@@ -176,7 +177,7 @@ try
 {
 	java.sql.Connection c = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
 	isValidConn = (c != null);
-	PoolManager.getInstance().freeConnection( CtiUtilities.getDatabaseAlias(), c );
+	JdbcUtils.closeConnection(c);
 }
 catch( Throwable t ) {}
 

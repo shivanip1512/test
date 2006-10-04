@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.jdbc.support.JdbcUtils;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
@@ -144,7 +146,7 @@ public class SetupServlet extends HttpServlet
 		{
 			java.sql.Connection c = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
 			isValidDBConn = (c != null);
-			PoolManager.getInstance().freeConnection( CtiUtilities.getDatabaseAlias(), c );
+            JdbcUtils.closeConnection(c);
 		}
 		catch( Throwable t ) {}
 
@@ -344,7 +346,7 @@ public class SetupServlet extends HttpServlet
 
 
 		//lets have the pool reset itself
-		PoolManager.getInstance().resetPool();					
+		//PoolManager.getInstance().resetPool();					
 	
 		return true;  //wrote the file	
 	}

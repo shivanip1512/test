@@ -123,7 +123,7 @@ public void deletePartial() throws java.sql.SQLException {
  * This method was created in VisualAge.
  * @return java.sql.Connection
  */
-public Connection getDbConnection() throws SQLException 
+public Connection getDbConnection()
 {
 	return getDB().getDbConnection();
 }

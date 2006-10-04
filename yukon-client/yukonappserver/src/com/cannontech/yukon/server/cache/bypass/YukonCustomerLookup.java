@@ -48,7 +48,7 @@ public class YukonCustomerLookup
 			{
 			    int customerID = ((java.math.BigDecimal) stmt.getRow(0)[0]).intValue();
                 int customerType = ((java.math.BigDecimal) stmt.getRow(0)[0]).intValue();
-                theCustomer = LiteFactory.createCICustomerOrLiteCustomer(CtiUtilities.YUKONDBALIAS, customerID, customerType);
+                theCustomer = LiteFactory.createCICustomerOrLiteCustomer(CtiUtilities.getDatabaseAlias(), customerID, customerType);
             }
 		}
 		catch( Exception e )
@@ -77,7 +77,7 @@ public class YukonCustomerLookup
             if( stmt.getRowCount() > 0 )
             {
                 int customerType = ((java.math.BigDecimal) stmt.getRow(0)[0]).intValue();
-                theCustomer = LiteFactory.createCICustomerOrLiteCustomer(CtiUtilities.YUKONDBALIAS, customerID, customerType);
+                theCustomer = LiteFactory.createCICustomerOrLiteCustomer(CtiUtilities.getDatabaseAlias(), customerID, customerType);
             }
         }
         catch( Exception e )

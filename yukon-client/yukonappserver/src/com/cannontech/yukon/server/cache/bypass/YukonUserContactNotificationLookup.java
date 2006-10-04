@@ -36,7 +36,7 @@ public class YukonUserContactNotificationLookup
         try
         {
             contactNotify = new LiteContactNotification(contactNotifID);
-            contactNotify.retrieve(CtiUtilities.YUKONDBALIAS);
+            contactNotify.retrieve(CtiUtilities.getDatabaseAlias());
         }
         catch( Exception e )
         {

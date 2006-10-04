@@ -1,5 +1,6 @@
 package com.cannontech.yukon;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 
 import com.cannontech.database.Transaction;
@@ -31,7 +32,7 @@ public interface IDBPersistent
 	public void update( String tableName, String setColumnName[], Object setColumnValue[], 
                      String constraintColumnName[], Object constraintColumnValue[]) throws SQLException;
                      
-   public java.sql.Connection getDbConnection() throws SQLException;
+   public Connection getDbConnection();
    public void setDbConnection(java.sql.Connection newValue);
                         
    public com.cannontech.database.db.DBPersistent

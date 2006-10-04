@@ -123,10 +123,6 @@ private void init() {
 		_listData.addElement( CtiUtilities.COPYRIGHT );
 		_listData.addElement("Version      : " + com.cannontech.common.version.VersionTools.getYUKON_VERSION() );
 	
-		String[] pools = com.cannontech.database.PoolManager.getInstance().getAllPoolsStrings();
-		for( int i = 0; i < pools.length; i++ )
-			_listData.addElement("DB Pool ("+i+")  : " + pools[i] );
-
 	    _listData.addElement("JRE Version  : " + System.getProperty("java.version") );
 
 		/* ALWAYS leave this as the last thing */

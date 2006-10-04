@@ -8,6 +8,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Properties;
 
+import javax.sql.DataSource;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
@@ -15,7 +17,6 @@ import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.YukonListDao;
-import com.cannontech.database.YukonDataSource;
 import com.cannontech.util.Validator;
 
 /**
@@ -24,7 +25,7 @@ import com.cannontech.util.Validator;
  */
 public final class YukonListDaoImpl implements YukonListEntryTypes, YukonListDao 
 {
-    private YukonDataSource yukonDataSource;
+    private DataSource dataSource;
 	private static Properties yukonListEntries = null;
 	private static Properties yukonSelectionLists = null;
 		
@@ -75,7 +76,7 @@ public final class YukonListDaoImpl implements YukonListEntryTypes, YukonListDao
 
         try
         {
-            Connection conn = yukonDataSource.getConnection();
+            Connection conn = dataSource.getConnection();
 		
             initYukonListEntries( conn );
             initYukonSelectionLists( conn );
@@ -428,8 +429,8 @@ public final class YukonListDaoImpl implements YukonListEntryTypes, YukonListDao
 		return null;
 	}
     
-    public void setYukonDataSource(YukonDataSource yukonDataSource) {
-        this.yukonDataSource = yukonDataSource;
+    public void setDataSource(DataSource dataSource) {
+        this.dataSource = dataSource;
     }
 	
 }
