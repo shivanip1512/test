@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2005/12/20 17:19:53 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2006/10/04 15:48:11 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -168,7 +168,7 @@ void Application::processInput( void )
 
 void Application::initForOutput( void )
 {
-    int pos = 0;
+    unsigned pos = 0;
 
     memset( &_request, 0, sizeof(_request) );
 
@@ -294,7 +294,7 @@ int Application::generate( CtiXfer &xfer )
 
             case Input:
             {
-                _transport.initForInput((unsigned char *)&_response);
+                _transport.initForInput((unsigned char *)&_response, BufferSize);
 
                 break;
             }
