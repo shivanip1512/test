@@ -1,5 +1,3 @@
-#pragma warning( disable : 4786)
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   dev_mark_v
@@ -10,11 +8,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.36 $
-* DATE         :  $Date: 2006/09/22 20:18:33 $
+* REVISION     :  $Revision: 1.37 $
+* DATE         :  $Date: 2006/10/04 19:13:26 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#pragma warning( disable : 4786)
+
 
 #include "yukon.h"
 #include "cparms.h"
