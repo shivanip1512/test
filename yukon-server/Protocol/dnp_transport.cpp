@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2005/12/20 17:19:54 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2006/10/04 15:50:54 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -71,7 +71,7 @@ void Transport::resetLink( void )
 }
 
 
-int Transport::initForOutput(unsigned char *buf, int len, unsigned short dstAddr, unsigned short srcAddr)
+int Transport::initForOutput(unsigned char *buf, unsigned len, unsigned short dstAddr, unsigned short srcAddr)
 {
     int retVal = NoError;
 
@@ -108,13 +108,14 @@ int Transport::initForOutput(unsigned char *buf, int len, unsigned short dstAddr
 }
 
 
-int Transport::initForInput(unsigned char *buf)
+int Transport::initForInput(unsigned char *buf, unsigned max_len)
 {
     int retVal = NoError;
 
-    _payload_in.data     = buf;
-    _payload_in.length   = 0;
-    _payload_in.received = 0;
+    _payload_in.data       = buf;
+    _payload_in.length_max = max_len;
+    _payload_in.length     = 0;
+    _payload_in.received   = 0;
 
     _ioState = Input;
 
@@ -241,9 +242,16 @@ int Transport::decode( CtiXfer &xfer, int status )
                     dataLen = _datalink.getInPayloadLength() - HeaderLen;
                     _datalink.getInPayload((unsigned char *)&_in_packet);
 
-                    memcpy(&_payload_in.data[_payload_in.received], _in_packet.data, dataLen);
-
-                    _payload_in.received += dataLen;
+                    if( _payload_in.received + dataLen < _payload_in.length_max )
+                    {
+                        memcpy(&_payload_in.data[_payload_in.received], _in_packet.data, dataLen);
+                        _payload_in.received += dataLen;
+                    }
+                    else
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** Checkpoint - (" << _payload_in.received + dataLen << ") >= (" << _payload_in.length_max << ") in Cti::Protocol::DNP::Transport::decode() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
 
                     //  ACH: verify incoming sequence numbers
 

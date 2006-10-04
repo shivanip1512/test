@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2005/12/20 17:19:58 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2006/10/04 15:50:54 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -22,9 +22,6 @@
 
 #include "dnp_datalink.h"
 #include "xfer.h"
-
-using std::endl;
-
 
 namespace Cti       {
 namespace Protocol  {
@@ -38,7 +35,7 @@ private:
     struct payload_t
     {
         unsigned char *data;
-        unsigned int   length;
+        unsigned int   length, length_max;
 
         union
         {
@@ -97,8 +94,8 @@ public:
 
     void resetLink( void );
 
-    int initForOutput( unsigned char *buf, int len, unsigned short dstAddr, unsigned short srcAddr );
-    int initForInput ( unsigned char *buf );
+    int initForOutput( unsigned char *buf, unsigned len, unsigned short dstAddr, unsigned short srcAddr );
+    int initForInput ( unsigned char *buf, unsigned len );
 
     int generate( CtiXfer &xfer );
     int decode  ( CtiXfer &xfer, int status );
