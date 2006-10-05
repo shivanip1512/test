@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/desolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.43 $
-* DATE         :  $Date: 2006/07/19 19:00:45 $
+* REVISION     :  $Revision: 1.44 $
+* DATE         :  $Date: 2006/10/05 17:00:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -166,7 +166,11 @@ string desolveDeviceType( INT aType )
     string Ret;
 
 
-   if(aType == TYPE_CCU711)
+   if(aType == TYPE_CCU721)
+   {
+      Ret = "ccu-721";
+   }
+   else if(aType == TYPE_CCU711)
    {
       Ret = "ccu-711";
    }

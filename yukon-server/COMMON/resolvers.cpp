@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.68 $
-* DATE         :  $Date: 2006/09/23 13:02:34 $
+* REVISION     :  $Revision: 1.69 $
+* DATE         :  $Date: 2006/10/05 17:00:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -298,6 +298,10 @@ INT resolveDeviceType(const string& _rwsTemp)
     if(rwsTemp == "ccu-711")
     {
         nRet = TYPE_CCU711;
+    }
+    else if(rwsTemp == "ccu-721")
+    {
+        nRet = TYPE_CCU721;
     }
     else if(rwsTemp == "ccu-710a")
     {
@@ -668,6 +672,10 @@ INT resolveDeviceType(const string& _rwsTemp)
     else if(rwsTemp == "energypro")
     {
        nRet = TYPE_ENERGYPRO;
+    }
+    else if(rwsTemp == "foreign porter")
+    {
+       nRet = TYPE_FOREIGNPORTER;
     }
     else
     {
@@ -1078,99 +1086,101 @@ bool resolveIsDeviceTypeSingle(INT Type)
 
     switch(Type)
     {
-    case TYPE_CCU711:
-    case TYPE_CCU710:
-    case TYPE_CCU700:
-    case TYPE_REPEATER800:
-    case TYPE_REPEATER900:
-    case TYPE_ILEXRTU:
-    case TYPE_WELCORTU:
-    case TYPE_SES92RTU:
-    case TYPE_DNPRTU:
-    case TYPE_DARTRTU:
-    case TYPE_SERIESVRTU:
-    case TYPE_SERIESVLMIRTU:
-    case TYPE_ION7330:
-    case TYPE_ION7700:
-    case TYPE_ION8300:
-    case TYPE_LCU415:
-    case TYPE_LCU415LG:
-    case TYPE_LCU415ER:
-    case TYPE_LCUT3026:
-    case TYPE_TAPTERM:
-    case TYPE_SNPP:
-    case TYPE_TNPP:
-    case TYPE_WCTP:
-    case TYPE_TCU5000:
-    case TYPE_TCU5500:
-    case TYPE_TDMARKV:
-    case TYPE_DAVIS:
-    case TYPE_ALPHA_A1:
-    case TYPE_ALPHA_PPLUS:
-    case TYPE_FULCRUM:
-    case TYPE_QUANTUM:
-    case TYPE_VECTRON:
-    case TYPE_LGS4:
-    case TYPE_DR87:
-    case TYPE_KV2:
-    case TYPE_ALPHA_A3:
-    case TYPE_SENTINEL:
-    case TYPE_SIXNET:
-    case TYPEDCT501:
-    case TYPEMCT210:
-    case TYPEMCT212:
-    case TYPEMCT213:
-    case TYPEMCT224:
-    case TYPEMCT226:
-    case TYPEMCT240:
-    case TYPEMCT242:
-    case TYPEMCT248:
-    case TYPEMCT250:
-    case TYPEMCT310:
-    case TYPEMCT310ID:
-    case TYPEMCT310IL:
-    case TYPEMCT310IDL:
-    case TYPEMCT318:
-    case TYPEMCT318L:
-    case TYPEMCT360:
-    case TYPEMCT370:
-    case TYPEMCT410:
-    case TYPEMCT470:
-    case TYPE_MODBUS:
-    case TYPELMT2:
-    case TYPECBC6510:
-    case TYPECBC7020:
-    case TYPE_RTC:
-    case TYPE_RTM:
-    case TYPE_PAGING_RECEIVER:
+        case TYPE_CCU721:
+        case TYPE_CCU711:
+        case TYPE_CCU710:
+        case TYPE_CCU700:
+        case TYPE_REPEATER800:
+        case TYPE_REPEATER900:
+        case TYPE_ILEXRTU:
+        case TYPE_WELCORTU:
+        case TYPE_SES92RTU:
+        case TYPE_DNPRTU:
+        case TYPE_DARTRTU:
+        case TYPE_SERIESVRTU:
+        case TYPE_SERIESVLMIRTU:
+        case TYPE_ION7330:
+        case TYPE_ION7700:
+        case TYPE_ION8300:
+        case TYPE_LCU415:
+        case TYPE_LCU415LG:
+        case TYPE_LCU415ER:
+        case TYPE_LCUT3026:
+        case TYPE_TAPTERM:
+        case TYPE_SNPP:
+        case TYPE_TNPP:
+        case TYPE_WCTP:
+        case TYPE_TCU5000:
+        case TYPE_TCU5500:
+        case TYPE_TDMARKV:
+        case TYPE_DAVIS:
+        case TYPE_ALPHA_A1:
+        case TYPE_ALPHA_PPLUS:
+        case TYPE_FULCRUM:
+        case TYPE_QUANTUM:
+        case TYPE_VECTRON:
+        case TYPE_LGS4:
+        case TYPE_DR87:
+        case TYPE_KV2:
+        case TYPE_ALPHA_A3:
+        case TYPE_SENTINEL:
+        case TYPE_SIXNET:
+        case TYPEDCT501:
+        case TYPEMCT210:
+        case TYPEMCT212:
+        case TYPEMCT213:
+        case TYPEMCT224:
+        case TYPEMCT226:
+        case TYPEMCT240:
+        case TYPEMCT242:
+        case TYPEMCT248:
+        case TYPEMCT250:
+        case TYPEMCT310:
+        case TYPEMCT310ID:
+        case TYPEMCT310IL:
+        case TYPEMCT310IDL:
+        case TYPEMCT318:
+        case TYPEMCT318L:
+        case TYPEMCT360:
+        case TYPEMCT370:
+        case TYPEMCT410:
+        case TYPEMCT470:
+        case TYPE_MODBUS:
+        case TYPELMT2:
+        case TYPECBC6510:
+        case TYPECBC7020:
+        case TYPE_RTC:
+        case TYPE_RTM:
+        case TYPE_PAGING_RECEIVER:
+        case TYPE_FOREIGNPORTER:
         {
             bRet = true;
             break;
         }
-    case TYPE_SYSTEM:
-    case TYPEVERSACOMCBC:
-    case TYPECBC7010:
-    case TYPEEXPRESSCOMCBC:
-    case TYPEFISHERPCBC:
-    case TYPE_LMGROUP_EMETCON:
-    case TYPE_LMGROUP_POINT:
-    case TYPE_LMGROUP_RIPPLE:
-    case TYPE_LMGROUP_VERSACOM:
-    case TYPE_LMGROUP_EXPRESSCOM:
-    case TYPE_LMGROUP_ENERGYPRO:
-    case TYPE_LMGROUP_MCT:
-    case TYPE_LMGROUP_GOLAY:
-    case TYPE_LMGROUP_SADIGITAL:
-    case TYPE_LMGROUP_SA105:
-    case TYPE_LMGROUP_SA205:
-    case TYPE_LMGROUP_SA305:
-    case TYPEMCTBCAST:
-    case TYPE_MACRO:
+        case TYPE_SYSTEM:
+        case TYPEVERSACOMCBC:
+        case TYPECBC7010:
+        case TYPEEXPRESSCOMCBC:
+        case TYPEFISHERPCBC:
+        case TYPE_LMGROUP_EMETCON:
+        case TYPE_LMGROUP_POINT:
+        case TYPE_LMGROUP_RIPPLE:
+        case TYPE_LMGROUP_VERSACOM:
+        case TYPE_LMGROUP_EXPRESSCOM:
+        case TYPE_LMGROUP_ENERGYPRO:
+        case TYPE_LMGROUP_MCT:
+        case TYPE_LMGROUP_GOLAY:
+        case TYPE_LMGROUP_SADIGITAL:
+        case TYPE_LMGROUP_SA105:
+        case TYPE_LMGROUP_SA205:
+        case TYPE_LMGROUP_SA305:
+        case TYPEMCTBCAST:
+        case TYPE_MACRO:
         {
             bRet = false;
             break;
         }
-    default:
+        default:
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;

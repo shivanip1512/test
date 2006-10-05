@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/slctdev.cpp-arc  $
-* REVISION     :  $Revision: 1.53 $
-* DATE         :  $Date: 2006/09/23 13:52:58 $
+* REVISION     :  $Revision: 1.54 $
+* DATE         :  $Date: 2006/10/05 16:58:08 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,6 +23,7 @@
 #include "dev_cbc.h"
 #include "dev_cbc7020.h"
 #include "dev_ccu.h"
+#include "dev_ccu721.h"
 #include "dev_welco.h"
 #include "dev_ilex.h"
 #include "dev_seriesv.h"
@@ -32,7 +33,6 @@
 #include "dev_modbus.h"
 #include "dev_schlum.h"
 #include "dev_fulcrum.h"
-#include "dev_foreignporter.h"
 #include "dev_ion.h"
 #include "dev_lcu.h"
 #include "dev_quantum.h"
@@ -81,6 +81,7 @@
 #include "dev_repeater.h"
 #include "dev_rtc.h"
 #include "dev_sixnet.h"
+#include "dev_foreignporter.h"
 #include "rte_macro.h"
 #include "rte_ccu.h"
 #include "rte_xcu.h"
@@ -138,6 +139,8 @@ DLLEXPORT CtiDeviceBase* DeviceFactory(RWDBReader &rdr)
         case TYPE_TCU5500:      NewDevice = CTIDBG_new CtiDeviceTCU;        break;
 
         case TYPE_CCU711:       NewDevice = CTIDBG_new CtiDeviceCCU;        break;
+
+        case TYPE_CCU721:       NewDevice = CTIDBG_new Device::CCU721;      break;
 
         case TYPE_CCU710:
         case TYPE_CCU700:       NewDevice = CTIDBG_new CtiDeviceCCU710;     break;
@@ -232,9 +235,21 @@ DLLEXPORT CtiDeviceBase* DeviceFactory(RWDBReader &rdr)
 
         case TYPE_LMGROUP_MCT:          NewDevice = CTIDBG_new CtiDeviceGroupMCT;           break;
 
+        case TYPE_LMGROUP_GOLAY:        NewDevice = CTIDBG_new CtiDeviceGroupGolay;         break;
+
+        case TYPE_LMGROUP_SADIGITAL:    NewDevice = CTIDBG_new CtiDeviceGroupSADigital;     break;
+
+        case TYPE_LMGROUP_SA105:        NewDevice = CTIDBG_new CtiDeviceGroupSA105;         break;
+
+        case TYPE_LMGROUP_SA205:        NewDevice = CTIDBG_new CtiDeviceGroupSA205;         break;
+
+        case TYPE_LMGROUP_SA305:        NewDevice = CTIDBG_new CtiDeviceGroupSA305;         break;
+
         case TYPE_MACRO:                NewDevice = CTIDBG_new CtiDeviceMacro;      break;
 
         case TYPE_SYSTEM:               NewDevice = CTIDBG_new CtiDeviceSystem;     break;
+
+        case TYPE_FOREIGNPORTER:        NewDevice = CTIDBG_new Device::ForeignPorter;   break;
 
         case TYPECBC6510:               NewDevice = CTIDBG_new CtiDeviceCBC6510;    break;
 
@@ -255,18 +270,6 @@ DLLEXPORT CtiDeviceBase* DeviceFactory(RWDBReader &rdr)
         case TYPE_RTC:                  NewDevice = CTIDBG_new CtiDeviceRTC;            break;
 
         case TYPE_RTM:                  NewDevice = CTIDBG_new CtiDeviceRTM;            break;
-
-        case TYPE_LMGROUP_GOLAY:        NewDevice = CTIDBG_new CtiDeviceGroupGolay;     break;
-
-        case TYPE_LMGROUP_SADIGITAL:    NewDevice = CTIDBG_new CtiDeviceGroupSADigital; break;
-
-        case TYPE_LMGROUP_SA105:        NewDevice = CTIDBG_new CtiDeviceGroupSA105;     break;
-
-        case TYPE_LMGROUP_SA205:        NewDevice = CTIDBG_new CtiDeviceGroupSA205;     break;
-
-        case TYPE_LMGROUP_SA305:        NewDevice = CTIDBG_new CtiDeviceGroupSA305;     break;
-
-        case TYPE_FOREIGNPORTER:        NewDevice = CTIDBG_new Device::ForeignPorter;   break;
 
         case TYPE_ENERGYPRO:
         {
