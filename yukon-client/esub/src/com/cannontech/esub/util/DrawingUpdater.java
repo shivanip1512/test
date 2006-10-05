@@ -8,9 +8,12 @@ import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
+import com.cannontech.core.service.PointService;
+import com.cannontech.core.service.impl.PointServiceImpl;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
+import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.esub.Drawing;
 import com.cannontech.esub.element.AlarmTextElement;
 import com.cannontech.esub.element.CurrentAlarmsTable;
@@ -63,7 +66,8 @@ public class DrawingUpdater extends TimerTask {
 				// keep track if we changed anything
 				boolean change = false; 
 								
-                DynamicDataSource dynamicDataSource = (DynamicDataSource) YukonSpringHook.getBean("dynamicDataSource");
+                PointService pointService = (PointService) YukonSpringHook.getBean("pointService");
+                DynamicDataSource dynamicDataSource = (DynamicDataSource) YukonSpringHook.getBean("dynamicDataSource"); 
 
 				LxComponent[] comp = drawing.getLxGraph().getComponents();
 				if (comp != null) {
@@ -82,26 +86,38 @@ public class DrawingUpdater extends TimerTask {
 							}
 						}
 
-						if (comp[i] instanceof StateImage) {							
+						if (comp[i] instanceof StateImage) 
+                        {							
 							StateImage si = (StateImage) comp[i];							
 							LitePoint lp = si.getPoint();
 			
-							if( lp != null ) {
-								PointData pData = null;
-
-                                pData = dynamicDataSource.getPointData(lp.getPointID());
-
-								if( pData != null ) {
-									LiteState ls = DaoFactory.getStateDao().getLiteState(lp.getStateGroupID(), (int) pData.getValue());
-									if( ls != null ) {
-										si.setCurrentState(ls);
-										si.updateImage();
-										change = true;
-									}	
-	
-								}								
+							if( lp != null ) 
+                            {
+                                if( lp.getPointType() == PointTypes.ANALOG_POINT)
+                                {
+								LiteState ls = pointService.getCurrentState(lp.getPointID());
+								if( ls != null ) 
+                                    {
+    								    si.setCurrentState(ls);
+    								    si.updateImage();
+    								    change = true;
+                                    }
+                                }else
+                                {
+                                    PointData pData = dynamicDataSource.getPointData(lp.getLiteID());
+                                    
+                                    if (pData != null) 
+                                    {
+                                        LiteState ls = DaoFactory.getStateDao().getLiteState(lp.getStateGroupID(), (int) pData.getValue()); 
+                                        if( ls != null ) 
+                                        {
+                                            si.setCurrentState(ls);
+                                            si.updateImage();
+                                            change = true;
+                                        }
+                                    }
+                                }
 							}
-							
 							si.updateImage();
 						}
 						

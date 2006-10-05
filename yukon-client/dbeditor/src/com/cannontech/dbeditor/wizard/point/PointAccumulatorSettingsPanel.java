@@ -3,7 +3,6 @@ package com.cannontech.dbeditor.wizard.point;
 import java.util.List;
 
 import javax.swing.JLabel;
-
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
 
@@ -380,8 +379,8 @@ public Object getValue(Object val)
 	point.getPointAccumulator().setMultiplier(multiplier);
 	point.getPointUnit().setUomID( new Integer(uOfMeasureID) );
 	point.getPointUnit().setDecimalPlaces(new Integer(com.cannontech.dbeditor.DatabaseEditor.getDecimalPlaces()));
-    point.getPointUnit().setMeterDials(new Integer(((Number) getMeterDialsSpinner().getValue()).intValue()));
-    point.getPoint().setStateGroupID(new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_ACCUMULATOR));
+	point.getPointUnit().setMeterDials(new Integer(((Number) getMeterDialsSpinner().getValue()).intValue()));
+	point.getPoint().setStateGroupID(new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_ANALOG));
 
 	return val;
 }

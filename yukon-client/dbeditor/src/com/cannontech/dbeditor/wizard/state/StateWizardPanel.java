@@ -1,10 +1,13 @@
 package com.cannontech.dbeditor.wizard.state;
 
+import com.cannontech.database.db.state.StateGroupUtils;
+
 /**
  * This type was created in VisualAge.
  */
 public class StateWizardPanel extends com.cannontech.common.wizard.WizardPanel {
 	private GroupStateNamePanel groupStateNamePanel;
+    private GroupTypePanel groupTypePanel;
 /**
  * RouteWizardPanel constructor comment.
  */
@@ -33,12 +36,21 @@ public GroupStateNamePanel getGroupStateNamePanel() {
 		
 	return groupStateNamePanel;
 }
+
+public GroupTypePanel getGroupTypePanel() {
+    
+    if( groupTypePanel == null )
+        groupTypePanel = new GroupTypePanel();
+        
+    return groupTypePanel;
+}
+
 /**
  * This method was created in VisualAge.
  * @return java.lang.String
  */
 protected String getHeaderText() {
-	return "State Setup";
+	return "State Group Setup";
 }
 /**
  * getNextInputPanel method comment.
@@ -47,9 +59,18 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(com.ca
 
 	if( currentInputPanel == null )
 	{
-		getGroupStateNamePanel().setFirstFocus();
+		getGroupTypePanel().setFirstFocus();
+        return getGroupTypePanel();
+	}else if (currentInputPanel == getGroupTypePanel()) 
+    {
+        getGroupStateNamePanel().setFirstFocus();
+        if(getGroupTypePanel().getGroupType() == StateGroupUtils.GROUP_TYPE_ANALOG)
+        {
+            getGroupStateNamePanel().setTypeAnalog();
+            
+        }
         return getGroupStateNamePanel();
-	}
+    }
 	else
 		throw new Error(getClass() + "::getNextInputPanel - Unable to determine next DataInputPanel");
 }

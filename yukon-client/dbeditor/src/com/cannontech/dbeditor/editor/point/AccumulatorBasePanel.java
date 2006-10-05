@@ -5,22 +5,32 @@ package com.cannontech.dbeditor.editor.point;
 
 import java.util.List;
 
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.yukon.IDatabaseCache;
+import com.klg.jclass.field.JCSpinField;
 
 public class AccumulatorBasePanel extends com.cannontech.common.gui.util.DataInputPanel implements com.klg.jclass.util.value.JCValueListener, java.awt.event.ActionListener 
 {
-	private javax.swing.JComboBox ivjUnitOfMeasureComboBox = null;
-	private javax.swing.JLabel ivjUnitOfMeasureLabel = null;
-	private javax.swing.JComboBox ivjArchiveIntervalComboBox = null;
-	private javax.swing.JLabel ivjArchiveIntervalLabel = null;
-	private javax.swing.JComboBox ivjArchiveTypeComboBox = null;
-	private javax.swing.JLabel ivjArchiveTypeLabel = null;
-	private com.klg.jclass.field.JCSpinField ivjDecimalPlacesSpinner = null;
-	private javax.swing.JLabel ivjJLabelDecimalPositions = null;
-	private javax.swing.JPanel ivjJPanelArchive = null;
+	private JComboBox unitOfMeasureComboBox = null;
+	private JLabel unitOfMeasureLabel = null;
+	private JComboBox archiveIntervalComboBox = null;
+	private JLabel archiveIntervalLabel = null;
+	private JComboBox archiveTypeComboBox = null;
+	private JLabel archiveTypeLabel = null;
+	private JCSpinField decimalPlaceSpinner = null;
+	private JLabel decimalPositionsLabel = null;
+	private JPanel archivePanel = null;
+    private JLabel stateGroupLabel = null;
+    private JComboBox stateGroupComboBox = null;
     private javax.swing.JLabel jLabelMeterDials = null;
     private com.klg.jclass.field.JCSpinField meterDialsSpinner = null;
 
@@ -175,10 +185,10 @@ private void connEtoC5(java.awt.event.ActionEvent arg1) {
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JComboBox getArchiveIntervalComboBox() {
-	if (ivjArchiveIntervalComboBox == null) {
+	if (archiveIntervalComboBox == null) {
 		try {
-			ivjArchiveIntervalComboBox = new javax.swing.JComboBox();
-			ivjArchiveIntervalComboBox.setName("ArchiveIntervalComboBox");
+			archiveIntervalComboBox = new javax.swing.JComboBox();
+			archiveIntervalComboBox.setName("ArchiveIntervalComboBox");
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -187,7 +197,7 @@ private javax.swing.JComboBox getArchiveIntervalComboBox() {
 			handleException(ivjExc);
 		}
 	}
-	return ivjArchiveIntervalComboBox;
+	return archiveIntervalComboBox;
 }
 
 
@@ -197,15 +207,15 @@ private javax.swing.JComboBox getArchiveIntervalComboBox() {
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JLabel getArchiveIntervalLabel() {
-	if (ivjArchiveIntervalLabel == null) {
+	if (archiveIntervalLabel == null) {
 		try {
-			ivjArchiveIntervalLabel = new javax.swing.JLabel();
-			ivjArchiveIntervalLabel.setName("ArchiveIntervalLabel");
-			ivjArchiveIntervalLabel.setText("Archive Interval:");
-			ivjArchiveIntervalLabel.setMaximumSize(new java.awt.Dimension(78, 16));
-			ivjArchiveIntervalLabel.setPreferredSize(new java.awt.Dimension(78, 16));
-			ivjArchiveIntervalLabel.setFont(new java.awt.Font("dialog", 0, 14));
-			ivjArchiveIntervalLabel.setMinimumSize(new java.awt.Dimension(78, 16));
+			archiveIntervalLabel = new javax.swing.JLabel();
+			archiveIntervalLabel.setName("ArchiveIntervalLabel");
+			archiveIntervalLabel.setText("Archive Interval:");
+			archiveIntervalLabel.setMaximumSize(new java.awt.Dimension(78, 16));
+			archiveIntervalLabel.setPreferredSize(new java.awt.Dimension(78, 16));
+			archiveIntervalLabel.setFont(new java.awt.Font("dialog", 0, 14));
+			archiveIntervalLabel.setMinimumSize(new java.awt.Dimension(78, 16));
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -214,7 +224,7 @@ private javax.swing.JLabel getArchiveIntervalLabel() {
 			handleException(ivjExc);
 		}
 	}
-	return ivjArchiveIntervalLabel;
+	return archiveIntervalLabel;
 }
 
 
@@ -224,10 +234,10 @@ private javax.swing.JLabel getArchiveIntervalLabel() {
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JComboBox getArchiveTypeComboBox() {
-	if (ivjArchiveTypeComboBox == null) {
+	if (archiveTypeComboBox == null) {
 		try {
-			ivjArchiveTypeComboBox = new javax.swing.JComboBox();
-			ivjArchiveTypeComboBox.setName("ArchiveTypeComboBox");
+			archiveTypeComboBox = new javax.swing.JComboBox();
+			archiveTypeComboBox.setName("ArchiveTypeComboBox");
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -236,7 +246,7 @@ private javax.swing.JComboBox getArchiveTypeComboBox() {
 			handleException(ivjExc);
 		}
 	}
-	return ivjArchiveTypeComboBox;
+	return archiveTypeComboBox;
 }
 
 
@@ -246,15 +256,15 @@ private javax.swing.JComboBox getArchiveTypeComboBox() {
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JLabel getArchiveTypeLabel() {
-	if (ivjArchiveTypeLabel == null) {
+	if (archiveTypeLabel == null) {
 		try {
-			ivjArchiveTypeLabel = new javax.swing.JLabel();
-			ivjArchiveTypeLabel.setName("ArchiveTypeLabel");
-			ivjArchiveTypeLabel.setText("Data Archive Type:");
-			ivjArchiveTypeLabel.setMaximumSize(new java.awt.Dimension(78, 16));
-			ivjArchiveTypeLabel.setPreferredSize(new java.awt.Dimension(78, 16));
-			ivjArchiveTypeLabel.setFont(new java.awt.Font("dialog", 0, 14));
-			ivjArchiveTypeLabel.setMinimumSize(new java.awt.Dimension(78, 16));
+			archiveTypeLabel = new javax.swing.JLabel();
+			archiveTypeLabel.setName("ArchiveTypeLabel");
+			archiveTypeLabel.setText("Data Archive Type:");
+			archiveTypeLabel.setMaximumSize(new java.awt.Dimension(78, 16));
+			archiveTypeLabel.setPreferredSize(new java.awt.Dimension(78, 16));
+			archiveTypeLabel.setFont(new java.awt.Font("dialog", 0, 14));
+			archiveTypeLabel.setMinimumSize(new java.awt.Dimension(78, 16));
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -263,7 +273,7 @@ private javax.swing.JLabel getArchiveTypeLabel() {
 			handleException(ivjExc);
 		}
 	}
-	return ivjArchiveTypeLabel;
+	return archiveTypeLabel;
 }
 
 
@@ -329,17 +339,17 @@ private static void getBuilderData() {
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
 private com.klg.jclass.field.JCSpinField getDecimalPlacesSpinner() {
-	if (ivjDecimalPlacesSpinner == null) {
+	if (decimalPlaceSpinner == null) {
 		try {
-			ivjDecimalPlacesSpinner = new com.klg.jclass.field.JCSpinField();
-			ivjDecimalPlacesSpinner.setName("DecimalPlacesSpinner");
-			ivjDecimalPlacesSpinner.setPreferredSize(new java.awt.Dimension(50, 22));
-			ivjDecimalPlacesSpinner.setBackground(java.awt.Color.white);
-			ivjDecimalPlacesSpinner.setMinimumSize(new java.awt.Dimension(50, 22));
+			decimalPlaceSpinner = new com.klg.jclass.field.JCSpinField();
+			decimalPlaceSpinner.setName("DecimalPlacesSpinner");
+			decimalPlaceSpinner.setPreferredSize(new java.awt.Dimension(50, 22));
+			decimalPlaceSpinner.setBackground(java.awt.Color.white);
+			decimalPlaceSpinner.setMinimumSize(new java.awt.Dimension(50, 22));
 			// user code begin {1}
-			ivjDecimalPlacesSpinner.setDataProperties(new com.klg.jclass.field.DataProperties(new com.klg.jclass.field.validate.JCIntegerValidator(null, new Integer(0), new Integer(10), null, true, null, new Integer(1), "#,##0.###;-#,##0.###", false, false, false, null, new Integer(0)), new com.klg.jclass.util.value.MutableValueModel(java.lang.Integer.class, new Integer(0)), new com.klg.jclass.field.JCInvalidInfo(true, 2, new java.awt.Color(0, 0, 0, 255), new java.awt.Color(255, 255, 255, 255))));
-			ivjDecimalPlacesSpinner.setPreferredSize(new java.awt.Dimension(30,22));
-			ivjDecimalPlacesSpinner.setMinimumSize(new java.awt.Dimension(30,22));
+			decimalPlaceSpinner.setDataProperties(new com.klg.jclass.field.DataProperties(new com.klg.jclass.field.validate.JCIntegerValidator(null, new Integer(0), new Integer(10), null, true, null, new Integer(1), "#,##0.###;-#,##0.###", false, false, false, null, new Integer(0)), new com.klg.jclass.util.value.MutableValueModel(java.lang.Integer.class, new Integer(0)), new com.klg.jclass.field.JCInvalidInfo(true, 2, new java.awt.Color(0, 0, 0, 255), new java.awt.Color(255, 255, 255, 255))));
+			decimalPlaceSpinner.setPreferredSize(new java.awt.Dimension(30,22));
+			decimalPlaceSpinner.setMinimumSize(new java.awt.Dimension(30,22));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -347,22 +357,21 @@ private com.klg.jclass.field.JCSpinField getDecimalPlacesSpinner() {
 			handleException(ivjExc);
 		}
 	}
-	return ivjDecimalPlacesSpinner;
+	return decimalPlaceSpinner;
 }
-
 
 /**
  * Return the JLabelDecimalPositons property value.
  * @return javax.swing.JLabel
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JLabel getJLabelDecimalPositions() {
-	if (ivjJLabelDecimalPositions == null) {
+private javax.swing.JLabel getDecimalPlacesLabel() {
+	if (decimalPositionsLabel == null) {
 		try {
-			ivjJLabelDecimalPositions = new javax.swing.JLabel();
-			ivjJLabelDecimalPositions.setName("JLabelDecimalPositons");
-			ivjJLabelDecimalPositions.setFont(new java.awt.Font("dialog", 0, 14));
-			ivjJLabelDecimalPositions.setText("Decimal Positions:");
+			decimalPositionsLabel = new javax.swing.JLabel();
+			decimalPositionsLabel.setName("JLabelDecimalPositons");
+			decimalPositionsLabel.setFont(new java.awt.Font("dialog", 0, 14));
+			decimalPositionsLabel.setText("Decimal Positions:");
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -371,9 +380,44 @@ private javax.swing.JLabel getJLabelDecimalPositions() {
 			handleException(ivjExc);
 		}
 	}
-	return ivjJLabelDecimalPositions;
+	return decimalPositionsLabel;
 }
 
+/**
+ * Return the stateGroupLabel property value.
+ * @return javax.swing.JLabel
+ */
+private javax.swing.JLabel getStateGroupLabel() {
+    if (stateGroupLabel == null) {
+        try {
+            stateGroupLabel= new javax.swing.JLabel();
+            stateGroupLabel.setName("StateGroupLabel");
+            stateGroupLabel.setFont(new java.awt.Font("dialog", 0, 14));
+            stateGroupLabel.setText("State Group:");
+        } catch (java.lang.Throwable ivjExc) {
+            handleException(ivjExc);
+        }
+    }
+    return stateGroupLabel;
+}
+
+/**
+ * Return the stateGroupComboBox property value.
+ * @return javax.swing.JComboBox
+ */
+private javax.swing.JComboBox getStateGroupComboBox() {
+    if (stateGroupComboBox == null) {
+        try {
+            stateGroupComboBox = new javax.swing.JComboBox();
+            stateGroupComboBox.setName("StateGroupComboBoxl");
+            stateGroupComboBox.setFont(new java.awt.Font("dialog", 0, 14));
+            
+        } catch (java.lang.Throwable ivjExc) {
+            handleException(ivjExc);
+        }
+    }
+    return stateGroupComboBox;
+}
 
 /**
  * Return the JPanelArchive property value.
@@ -381,11 +425,11 @@ private javax.swing.JLabel getJLabelDecimalPositions() {
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JPanel getJPanelArchive() {
-	if (ivjJPanelArchive == null) {
+	if (archivePanel == null) {
 		try {
-			ivjJPanelArchive = new javax.swing.JPanel();
-			ivjJPanelArchive.setName("JPanelArchive");
-			ivjJPanelArchive.setLayout(new java.awt.GridBagLayout());
+			archivePanel = new javax.swing.JPanel();
+			archivePanel.setName("JPanelArchive");
+			archivePanel.setLayout(new java.awt.GridBagLayout());
 
 			java.awt.GridBagConstraints constraintsArchiveTypeLabel = new java.awt.GridBagConstraints();
 			constraintsArchiveTypeLabel.gridx = 1; constraintsArchiveTypeLabel.gridy = 1;
@@ -424,7 +468,7 @@ private javax.swing.JPanel getJPanelArchive() {
 			ivjLocalBorder = new com.cannontech.common.gui.util.TitleBorder();
 			ivjLocalBorder.setTitleFont(new java.awt.Font("Arial", 1, 14));
 			ivjLocalBorder.setTitle("Archive");
-			ivjJPanelArchive.setBorder(ivjLocalBorder);
+			archivePanel.setBorder(ivjLocalBorder);
 			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -433,7 +477,7 @@ private javax.swing.JPanel getJPanelArchive() {
 			handleException(ivjExc);
 		}
 	}
-	return ivjJPanelArchive;
+	return archivePanel;
 }
 
 /**
@@ -442,13 +486,13 @@ private javax.swing.JPanel getJPanelArchive() {
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JComboBox getUnitOfMeasureComboBox() {
-	if (ivjUnitOfMeasureComboBox == null) {
+	if (unitOfMeasureComboBox == null) {
 		try {
-			ivjUnitOfMeasureComboBox = new javax.swing.JComboBox();
-			ivjUnitOfMeasureComboBox.setName("UnitOfMeasureComboBox");
-			ivjUnitOfMeasureComboBox.setPreferredSize(new java.awt.Dimension(126, 24));
-			ivjUnitOfMeasureComboBox.setFont(new java.awt.Font("dialog", 0, 14));
-			ivjUnitOfMeasureComboBox.setMinimumSize(new java.awt.Dimension(90, 24));
+			unitOfMeasureComboBox = new javax.swing.JComboBox();
+			unitOfMeasureComboBox.setName("UnitOfMeasureComboBox");
+			unitOfMeasureComboBox.setPreferredSize(new java.awt.Dimension(126, 24));
+			unitOfMeasureComboBox.setFont(new java.awt.Font("dialog", 0, 14));
+			unitOfMeasureComboBox.setMinimumSize(new java.awt.Dimension(90, 24));
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -457,7 +501,7 @@ private javax.swing.JComboBox getUnitOfMeasureComboBox() {
 			handleException(ivjExc);
 		}
 	}
-	return ivjUnitOfMeasureComboBox;
+	return unitOfMeasureComboBox;
 }
 
 
@@ -467,15 +511,15 @@ private javax.swing.JComboBox getUnitOfMeasureComboBox() {
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JLabel getUnitOfMeasureLabel() {
-	if (ivjUnitOfMeasureLabel == null) {
+	if (unitOfMeasureLabel == null) {
 		try {
-			ivjUnitOfMeasureLabel = new javax.swing.JLabel();
-			ivjUnitOfMeasureLabel.setName("UnitOfMeasureLabel");
-			ivjUnitOfMeasureLabel.setText("Unit of Measure:");
-			ivjUnitOfMeasureLabel.setMaximumSize(new java.awt.Dimension(103, 16));
-			ivjUnitOfMeasureLabel.setPreferredSize(new java.awt.Dimension(103, 16));
-			ivjUnitOfMeasureLabel.setFont(new java.awt.Font("dialog", 0, 14));
-			ivjUnitOfMeasureLabel.setMinimumSize(new java.awt.Dimension(103, 16));
+			unitOfMeasureLabel = new javax.swing.JLabel();
+			unitOfMeasureLabel.setName("UnitOfMeasureLabel");
+			unitOfMeasureLabel.setText("Unit of Measure:");
+			unitOfMeasureLabel.setMaximumSize(new java.awt.Dimension(103, 16));
+			unitOfMeasureLabel.setPreferredSize(new java.awt.Dimension(103, 16));
+			unitOfMeasureLabel.setFont(new java.awt.Font("dialog", 0, 14));
+			unitOfMeasureLabel.setMinimumSize(new java.awt.Dimension(103, 16));
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -484,7 +528,7 @@ private javax.swing.JLabel getUnitOfMeasureLabel() {
 			handleException(ivjExc);
 		}
 	}
-	return ivjUnitOfMeasureLabel;
+	return unitOfMeasureLabel;
 }
 
 
@@ -559,11 +603,27 @@ private void initialize() {
 		setSize(371, 177);
 		setMinimumSize(new java.awt.Dimension(0, 0));
 
+
+
+		java.awt.GridBagConstraints constraintsJLabelDecimalPositons = new java.awt.GridBagConstraints();
+		constraintsJLabelDecimalPositons.gridx = 3; constraintsJLabelDecimalPositons.gridy = 2;
+		constraintsJLabelDecimalPositons.anchor = java.awt.GridBagConstraints.WEST;
+		constraintsJLabelDecimalPositons.insets = new java.awt.Insets(5,5,5,5);
+		constraintsJLabelDecimalPositons.ipadx = 11;
+		add(getDecimalPlacesLabel(), constraintsJLabelDecimalPositons);
+
+		java.awt.GridBagConstraints constraintsDecimalPlacesSpinner = new java.awt.GridBagConstraints();
+		constraintsDecimalPlacesSpinner.gridx = 4; constraintsDecimalPlacesSpinner.gridy = 2;
+		constraintsDecimalPlacesSpinner.anchor = java.awt.GridBagConstraints.WEST;
+		constraintsDecimalPlacesSpinner.weightx = 1.0;
+		constraintsDecimalPlacesSpinner.insets = new java.awt.Insets(5,5,5,5);
+		add(getDecimalPlacesSpinner(), constraintsDecimalPlacesSpinner);
+
 		java.awt.GridBagConstraints constraintsUnitOfMeasureLabel = new java.awt.GridBagConstraints();
 		constraintsUnitOfMeasureLabel.gridx = 1; constraintsUnitOfMeasureLabel.gridy = 1;
 		constraintsUnitOfMeasureLabel.anchor = java.awt.GridBagConstraints.WEST;
 		constraintsUnitOfMeasureLabel.ipadx = 11;
-		constraintsUnitOfMeasureLabel.insets = new java.awt.Insets(6, 5, 9, 4);
+		constraintsUnitOfMeasureLabel.insets = new java.awt.Insets(5,5,5,5);
 		add(getUnitOfMeasureLabel(), constraintsUnitOfMeasureLabel);
 
 		java.awt.GridBagConstraints constraintsUnitOfMeasureComboBox = new java.awt.GridBagConstraints();
@@ -571,48 +631,48 @@ private void initialize() {
 		constraintsUnitOfMeasureComboBox.fill = java.awt.GridBagConstraints.HORIZONTAL;
 		constraintsUnitOfMeasureComboBox.anchor = java.awt.GridBagConstraints.WEST;
 		constraintsUnitOfMeasureComboBox.weightx = 1.0;
-		constraintsUnitOfMeasureComboBox.ipadx = 73;
-		constraintsUnitOfMeasureComboBox.insets = new java.awt.Insets(2, 5, 5, 80);
+        constraintsUnitOfMeasureComboBox.gridwidth = 3;
+//		constraintsUnitOfMeasureComboBox.ipadx = 73;
+		constraintsUnitOfMeasureComboBox.insets = new java.awt.Insets(5,5,5,5);
 		add(getUnitOfMeasureComboBox(), constraintsUnitOfMeasureComboBox);
         
-        java.awt.GridBagConstraints constraintsJLabelDecimalPositions = new java.awt.GridBagConstraints();
-        constraintsJLabelDecimalPositions.gridx = 1; constraintsJLabelDecimalPositions.gridy = 2;
-        constraintsJLabelDecimalPositions.anchor = java.awt.GridBagConstraints.WEST;
-        constraintsJLabelDecimalPositions.insets = new java.awt.Insets(6, 5, 9, 4);
-        constraintsJLabelDecimalPositions.ipadx = 11;
-        add(getJLabelDecimalPositions(), constraintsJLabelDecimalPositions);
-
-        java.awt.GridBagConstraints constraintsDecimalPlacesSpinner = new java.awt.GridBagConstraints();
-        constraintsDecimalPlacesSpinner.gridx = 2; constraintsDecimalPlacesSpinner.gridy = 2;
-        constraintsDecimalPlacesSpinner.anchor = java.awt.GridBagConstraints.WEST;
-        constraintsDecimalPlacesSpinner.weightx = 1.0;
-        constraintsDecimalPlacesSpinner.insets = new java.awt.Insets(2, 5, 5, 80);
-        add(getDecimalPlacesSpinner(), constraintsDecimalPlacesSpinner);
+        java.awt.GridBagConstraints constraintsStateGroupLabel = new java.awt.GridBagConstraints();
+        constraintsStateGroupLabel.gridx = 1; constraintsStateGroupLabel.gridy = 3;
+        constraintsStateGroupLabel.anchor = java.awt.GridBagConstraints.WEST;
+        constraintsStateGroupLabel.insets = new java.awt.Insets(5,5,5,5);
+        add(getStateGroupLabel(), constraintsStateGroupLabel);
+        
+        java.awt.GridBagConstraints constraintsStateGroupComboBox = new java.awt.GridBagConstraints();
+        constraintsStateGroupComboBox.gridx =2; constraintsStateGroupComboBox.gridy = 3;
+        constraintsStateGroupComboBox.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        constraintsStateGroupComboBox.anchor = java.awt.GridBagConstraints.WEST;
+        constraintsStateGroupComboBox.weightx = 1.0;
+        constraintsStateGroupComboBox.gridwidth = 3;
+        constraintsStateGroupComboBox.insets = new java.awt.Insets(5,5,5,5);
+        add(getStateGroupComboBox(), constraintsStateGroupComboBox);
         
         java.awt.GridBagConstraints constraintsJLabelMeterDials = new java.awt.GridBagConstraints();
-        constraintsJLabelMeterDials.gridx = 1; constraintsJLabelMeterDials.gridy = 3;
+        constraintsJLabelMeterDials.gridx = 1; constraintsJLabelMeterDials.gridy = 2;
         constraintsJLabelMeterDials.anchor = java.awt.GridBagConstraints.WEST;
-        constraintsJLabelMeterDials.insets = new java.awt.Insets(6, 5, 9, 4);
+        constraintsJLabelMeterDials.insets = new java.awt.Insets(5,5,5,5);
         constraintsJLabelMeterDials.ipadx = 11;
         add(getJLabelMeterDials(), constraintsJLabelMeterDials);
 
         java.awt.GridBagConstraints constraintsMeterDialsSpinner = new java.awt.GridBagConstraints();
-        constraintsMeterDialsSpinner.gridx = 2; constraintsMeterDialsSpinner.gridy = 3;
+        constraintsMeterDialsSpinner.gridx = 2; constraintsMeterDialsSpinner.gridy = 2;
         constraintsMeterDialsSpinner.anchor = java.awt.GridBagConstraints.WEST;
         constraintsMeterDialsSpinner.weightx = 1.0;
-        constraintsMeterDialsSpinner.insets = new java.awt.Insets(2, 5, 5, 80);
+        constraintsMeterDialsSpinner.insets = new java.awt.Insets(5,5,5,5);
         add(getMeterDialsSpinner(), constraintsMeterDialsSpinner);
 
 		java.awt.GridBagConstraints constraintsJPanelArchive = new java.awt.GridBagConstraints();
 		constraintsJPanelArchive.gridx = 1; constraintsJPanelArchive.gridy = 4;
-		constraintsJPanelArchive.gridwidth = 2;
+		constraintsJPanelArchive.gridwidth = 3;
 		constraintsJPanelArchive.fill = java.awt.GridBagConstraints.BOTH;
 		constraintsJPanelArchive.anchor = java.awt.GridBagConstraints.WEST;
 		constraintsJPanelArchive.weightx = 1.0;
 		constraintsJPanelArchive.weighty = 1.0;
-		constraintsJPanelArchive.ipadx = 17;
-		constraintsJPanelArchive.ipady = -1;
-		constraintsJPanelArchive.insets = new java.awt.Insets(5, 6, 14, 6);
+		constraintsJPanelArchive.insets = new java.awt.Insets(5,5,5,5);
 		add(getJPanelArchive(), constraintsJPanelArchive);
 
 		initConnections();
@@ -725,7 +785,26 @@ public void setValue(Object val)
 			break;
 		}
 	}
+    
+	//   load and set stategroups
+    int stateGroupID = point.getPoint().getStateGroupID().intValue();
+    
+    //Load all the state groups
+    IDatabaseCache cache = DefaultDatabaseCache.getInstance();
+    synchronized(cache)
+    {
+        LiteStateGroup[] allStateGroups = DaoFactory.getStateDao().getAllStateGroups();
 
+        //Load the state table combo box
+        for(int i=0;i<allStateGroups.length;i++)
+        {
+            LiteStateGroup grp = (LiteStateGroup)allStateGroups[i];
+
+           getStateGroupComboBox().addItem( grp );
+            if( grp.getStateGroupID() == stateGroupID )
+                getStateGroupComboBox().setSelectedItem( grp );
+        }
+    }
 }
 
 

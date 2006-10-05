@@ -57,10 +57,14 @@ public class Signal extends com.cannontech.message.util.Message
 	public final static int TAG_POINT_MAY_BE_EXEMPTED 		= 0x00004000;
 	public final static int TAG_ATTRIB_CONTROL_AVAILABLE 	= 0x10000000;
 	public final static int TAG_ATTRIB_PSUEDO 				= 0x20000000;
+    public final static int TAG_ACTIVE_CONDITION = 0x04000000;
 	
 	// TAGS for alarmed points (alarm states)
 	public final static int TAG_ACTIVE_ALARM					= 0x80000000; //active
 	public final static int TAG_UNACKNOWLEDGED_ALARM		= 0x40000000; //tag_unack
+    
+    // detects any signals with active conditions reguardless of alarming
+    public final static int MASK_ANY_ACTIVE_CONDITION = 0x04000000;
 
 	// masks to see if any tags are present
 	public final static int MASK_RESETTABLE_TAGS 			= 0x00030000; 

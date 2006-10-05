@@ -96,6 +96,25 @@ public static boolean isAlarmUnacked(int tags)
 }
 
 /**
+ * 
+ * returns true if there is an active condition on this tag
+ * @return boolean
+ */
+public static boolean isConditionActive(int tags) 
+{
+    try
+    {
+        checkAlarmStateValidity(tags);
+        return  (tags & Signal.TAG_ACTIVE_CONDITION) != 0;
+    }
+    catch( IllegalAlarmSateException e )
+    {
+        com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+        return false;
+    }
+}
+
+/**
  * Insert the method's description here.
  * Creation date: (8/9/00 3:35:39 PM)
  * @return boolean

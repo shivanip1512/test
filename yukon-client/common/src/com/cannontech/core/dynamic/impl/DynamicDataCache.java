@@ -1,8 +1,6 @@
 package com.cannontech.core.dynamic.impl;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.cannontech.message.dispatch.message.Multi;
@@ -45,7 +43,13 @@ class DynamicDataCache implements MessageListener {
     }
     
     Set<Signal> getSignals(int pointId) {
-        return pointSignals.get(pointId);
+        
+        Set<Signal> ret = pointSignals.get(pointId);
+        if (ret == null)
+        {
+            ret = Collections.<Signal>emptySet();
+        }
+        return ret;
     }
     
     Set<Signal> getSignalForCategory(int categoryId) {
@@ -117,8 +121,9 @@ class DynamicDataCache implements MessageListener {
         pSignals.remove(signal);
         cSignals.remove(signal);
         
-        // Only store the signal if the top two bits indicate alarm activity
-        if((signal.getTags() & Signal.MASK_ANY_ALARM) != 0) {
+        // Only store the signal if the top two bits indicate alarm activity or a conidition is active
+        if((signal.getTags() & Signal.MASK_ANY_ALARM) != 0 ||
+                (signal.getTags() & Signal.MASK_ANY_ACTIVE_CONDITION) != 0) {
             pSignals.add(signal);
             cSignals.add(signal);
         }

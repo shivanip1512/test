@@ -1,9 +1,6 @@
 package com.cannontech.core.dynamic.impl;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dynamic.DynamicDataSource;
@@ -69,7 +66,7 @@ public class DynamicDataSourceImpl implements DynamicDataSource {
 
     public Set<Signal> getSignals(int pointId) {
         Set<Signal> signals = dynamicDataCache.getSignals(pointId);
-        if(signals == null) {
+        if(signals.isEmpty()) {
             signals = dispatchProxy.getSignals(pointId);
         }
         return signals;

@@ -209,7 +209,7 @@ public static PointBase createDmdAccumPoint( String pointName, Integer paoID,
          new Integer(pointOffset) );
    
    point.getPoint().setStateGroupID( 
-      new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_ACCUMULATOR) );
+      new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_ANALOG) );
 
    //defaults - pointAccumulator   
    com.cannontech.database.db.point.PointAccumulator accumPt = 
@@ -280,7 +280,7 @@ public static PointBase createPulseAccumPoint( String pointName, Integer paoID,
          new Integer(pointOffset) );
    
    point.getPoint().setStateGroupID( 
-      new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_ACCUMULATOR) );
+      new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_ANALOG) );
 
    //defaults - pointAccumulator   
    com.cannontech.database.db.point.PointAccumulator accumPt = 
@@ -395,7 +395,7 @@ public static PointBase createCalcStatusPoint (Integer paoId, String name){
                                         new Integer (TypeBase.POINT_OFFSET) );
     
     
-    newPoint.getPoint().setStateGroupID( new Integer (StateGroupUtils.STATEGROUP_CALCULATED));
+    newPoint.getPoint().setStateGroupID( new Integer (StateGroupUtils.STATEGROUP_TWO_STATE_STATUS));
     
     //defaults pointStatus
     ((CalcStatusPoint) newPoint).setPointStatus( new PointStatus(newPoint.getPoint().getPointID()) );
@@ -417,7 +417,7 @@ public static PointBase createCalculatedPoint(Integer paoId, String name){
                                         new Integer (TypeBase.POINT_OFFSET)
                                          );
     
-    point.getPoint().setStateGroupID(new Integer (StateGroupUtils.STATEGROUP_CALCULATED));
+    point.getPoint().setStateGroupID(new Integer (StateGroupUtils.STATEGROUP_ANALOG));
     PointUnit punit = new PointUnit  (point.getPoint().getPointID(),
                                       new Integer (PointUnits.UOMID_UNDEF),
                                       new Integer(PointUnit.DEFAULT_DECIMAL_PLACES),

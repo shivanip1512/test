@@ -8,6 +8,8 @@ import java.util.List;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.yukon.IDatabaseCache;
@@ -28,6 +30,8 @@ public class CalcBasePanel extends com.cannontech.common.gui.util.DataInputPanel
 	private javax.swing.JPanel ivjJPanelArchive = null;
 	private javax.swing.JPanel ivjJPanelHolder = null;
     private javax.swing.JCheckBox ivjJCheckboxCalcQual = null;
+    private javax.swing.JLabel stateGroupLabel = null;
+    private javax.swing.JComboBox stateGroupComboBox = null;
 /**
  * Constructor
  */
@@ -284,11 +288,11 @@ private javax.swing.JLabel getArchiveTypeLabel() {
 	}
 	return ivjArchiveTypeLabel;
 }
+
 /**
  * Return the DecimalPlacesSpinner property value.
  * @return com.klg.jclass.field.JCSpinField
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private com.klg.jclass.field.JCSpinField getDecimalPlacesSpinner() {
 	if (ivjDecimalPlacesSpinner == null) {
 		try {
@@ -297,16 +301,13 @@ private com.klg.jclass.field.JCSpinField getDecimalPlacesSpinner() {
 			ivjDecimalPlacesSpinner.setPreferredSize(new java.awt.Dimension(50, 22));
 			ivjDecimalPlacesSpinner.setBackground(java.awt.Color.white);
 			ivjDecimalPlacesSpinner.setMinimumSize(new java.awt.Dimension(50, 22));
-			// user code begin {1}
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
 	return ivjDecimalPlacesSpinner;
 }
+
 /**
  * Return the JLabelDecimalPositons property value.
  * @return javax.swing.JLabel
@@ -410,8 +411,9 @@ private javax.swing.JPanel getJPanelHolder() {
 			constraintsUnitOfMeasureComboBox.fill = java.awt.GridBagConstraints.HORIZONTAL;
 			constraintsUnitOfMeasureComboBox.anchor = java.awt.GridBagConstraints.WEST;
 			constraintsUnitOfMeasureComboBox.weightx = 1.0;
-			constraintsUnitOfMeasureComboBox.ipadx = 140;
-			constraintsUnitOfMeasureComboBox.insets = new java.awt.Insets(7, 2, 1, 45);
+			//constraintsUnitOfMeasureComboBox.ipadx = 140;
+			//constraintsUnitOfMeasureComboBox.insets = new java.awt.Insets(7, 2, 1, 45);
+            constraintsUnitOfMeasureComboBox.gridwidth = 4;
 			getJPanelHolder().add(getUnitOfMeasureComboBox(), constraintsUnitOfMeasureComboBox);
 
 			java.awt.GridBagConstraints constraintsJLabelDecimalPositons = new java.awt.GridBagConstraints();
@@ -423,14 +425,24 @@ private javax.swing.JPanel getJPanelHolder() {
 			java.awt.GridBagConstraints constraintsDecimalPlacesSpinner = new java.awt.GridBagConstraints();
 			constraintsDecimalPlacesSpinner.gridx = 2; constraintsDecimalPlacesSpinner.gridy = 2;
 			constraintsDecimalPlacesSpinner.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsDecimalPlacesSpinner.ipadx = 20;
-			constraintsDecimalPlacesSpinner.insets = new java.awt.Insets(1, 3, 5, 100);
+//			constraintsDecimalPlacesSpinner.ipadx = 20;
+//			constraintsDecimalPlacesSpinner.insets = new java.awt.Insets(1, 3, 5, 100);
 			getJPanelHolder().add(getDecimalPlacesSpinner(), constraintsDecimalPlacesSpinner);
-			// user code begin {1}
-			// user code end
+            
+            java.awt.GridBagConstraints constraintsStateGroupLabel = new java.awt.GridBagConstraints();
+            constraintsStateGroupLabel.gridx = 3; constraintsStateGroupLabel.gridy = 2;
+            constraintsStateGroupLabel.anchor = java.awt.GridBagConstraints.WEST;
+            constraintsStateGroupLabel.insets = new java.awt.Insets(5,5,5,5);
+            getJPanelHolder().add(getStateGroupLabel(), constraintsStateGroupLabel);
+            
+            java.awt.GridBagConstraints constraintsStateGroupComboBox = new java.awt.GridBagConstraints();
+            constraintsStateGroupComboBox.gridx = 4; constraintsStateGroupComboBox.gridy = 2;
+            constraintsStateGroupComboBox.anchor = java.awt.GridBagConstraints.WEST;
+            constraintsStateGroupComboBox.insets = new java.awt.Insets(5,5,5,5);
+            getJPanelHolder().add(getStateGroupComboBox(), constraintsStateGroupComboBox);
+            
+            
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
@@ -572,6 +584,41 @@ private javax.swing.JLabel getUpdateTypeLabel() {
 }
 
 /**
+ * Return the stateGroupLabel property value.
+ * @return javax.swing.JLabel
+ */
+private javax.swing.JLabel getStateGroupLabel() {
+    if (stateGroupLabel == null) {
+        try {
+            stateGroupLabel = new javax.swing.JLabel();
+            stateGroupLabel.setName("StateGroupLabel");
+            stateGroupLabel.setFont(new java.awt.Font("dialog", 0, 14));
+            stateGroupLabel.setText("State Group:");
+        } catch (java.lang.Throwable ivjExc) {
+            handleException(ivjExc);
+        }
+    }
+    return stateGroupLabel;
+}
+
+/**
+ * Return the stateGroupComboBox property value.
+ * @return javax.swing.JComboBox
+ */
+private javax.swing.JComboBox getStateGroupComboBox() {
+    if (stateGroupComboBox == null) {
+        try {
+            stateGroupComboBox = new javax.swing.JComboBox();
+            stateGroupComboBox.setName("stateGroupComboBox");
+            stateGroupComboBox.setFont(new java.awt.Font("dialog", 0, 12));
+        } catch (java.lang.Throwable ivjExc) {
+            handleException(ivjExc);
+        }
+    }
+    return stateGroupComboBox;
+}
+
+/**
  * Return the Calculate Qualities property value.
  * @return javax.swing.JCheckBox
  */
@@ -628,6 +675,10 @@ public Object getValue(Object val)
 
 	calcPoint.getPointUnit().setDecimalPlaces(new Integer(((Number) getDecimalPlacesSpinner().getValue()).intValue()));
 	calcPoint.getPointUnit().setUomID( new Integer(uOfMeasureID) );
+    
+    LiteStateGroup stateGroup = (LiteStateGroup) getStateGroupComboBox().getSelectedItem();
+
+    calcPoint.getPoint().setStateGroupID( new Integer(stateGroup.getStateGroupID()) );
 
 	return calcPoint;
 }
@@ -908,6 +959,26 @@ public void setValue(Object val) {
     }else
     {
         getJCheckboxCalcQual().setSelected(false);
+    }
+    
+//  load and set stategroups
+    int stateGroupID = calcPoint.getPoint().getStateGroupID().intValue();
+    
+    //Load all the state groups
+    IDatabaseCache cache = DefaultDatabaseCache.getInstance();
+    synchronized(cache)
+    {
+        LiteStateGroup[] allStateGroups = DaoFactory.getStateDao().getAllStateGroups();
+
+        //Load the state table combo box
+        for(int i=0;i<allStateGroups.length;i++)
+        {
+            LiteStateGroup grp = (LiteStateGroup)allStateGroups[i];
+
+           getStateGroupComboBox().addItem( grp );
+            if( grp.getStateGroupID() == stateGroupID )
+                getStateGroupComboBox().setSelectedItem( grp );
+        }
     }
     
 }

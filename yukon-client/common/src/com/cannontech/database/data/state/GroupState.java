@@ -66,6 +66,12 @@ public com.cannontech.message.dispatch.message.DBChangeMsg[] getDBChangeMsgs( in
 
 	return msgs;
 }
+
+public String getGroupType() {
+        
+    return getStateGroup().getGroupType();
+}
+
 /**
  * This method was created in VisualAge.
  * @return com.cannontech.database.db.point.PointControl
@@ -191,6 +197,12 @@ public void setStateGroupID(Integer stateGroupID) {
 public void setStatesVector(java.util.Vector newValue) {
 	this.statesVector = newValue;
 }
+
+public void setGroupType(String groupType)
+{
+    getStateGroup().setGroupType(groupType);
+}
+
 /**
  * This method was created in VisualAge.
  * @return java.lang.String

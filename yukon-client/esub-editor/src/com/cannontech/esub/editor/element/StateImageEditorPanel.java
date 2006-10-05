@@ -69,6 +69,7 @@ public class StateImageEditorPanel extends DataInputPanel implements ActionListe
     private JButton editButton7;
     private JButton editButton8;
     private JButton editButton9;
+    private JButton editButton10;
     private JButton resetButton;
     private JLabel rawState0;
     private JLabel rawState1;
@@ -80,6 +81,7 @@ public class StateImageEditorPanel extends DataInputPanel implements ActionListe
     private JLabel rawState7;
     private JLabel rawState8;
     private JLabel rawState9;
+    private JLabel rawState10;
     private JLabel imageLabel0;
     private JLabel imageLabel1;
     private JLabel imageLabel2;
@@ -90,6 +92,7 @@ public class StateImageEditorPanel extends DataInputPanel implements ActionListe
     private JLabel imageLabel7;
     private JLabel imageLabel8;
     private JLabel imageLabel9;
+    private JLabel imageLabel10;
     private JLabel[] imageLabels = new JLabel[12];
     private JButton[] buttons = new JButton[12];
     private JLabel[] stateLabels = new JLabel[12];
@@ -207,65 +210,71 @@ private javax.swing.JPanel getPreviewPanel()
             getImageLabel().setHorizontalAlignment(SwingConstants.CENTER);
             previewPanel.add(getImageLabel());
             
-            getImageLabel0().setBounds(new Rectangle( 75, 75, 60, 30));
+            getImageLabel0().setBounds(new Rectangle( 85, 75, 60, 30));
             previewPanel.add(getImageLabel0());
             
-            getImageLabel1().setBounds(new Rectangle( 75, 110, 60, 30));
+            getImageLabel1().setBounds(new Rectangle( 85, 110, 60, 30));
             previewPanel.add(getImageLabel1());
             
-            getImageLabel2().setBounds(new Rectangle( 75, 145, 60, 30));
+            getImageLabel2().setBounds(new Rectangle( 85, 145, 60, 30));
             previewPanel.add(getImageLabel2());
             
-            getImageLabel3().setBounds(new Rectangle( 75, 180, 60, 30));
+            getImageLabel3().setBounds(new Rectangle( 85, 180, 60, 30));
             previewPanel.add(getImageLabel3());
             
-            getImageLabel4().setBounds(new Rectangle( 75, 215, 60, 30));
+            getImageLabel4().setBounds(new Rectangle( 85, 215, 60, 30));
             previewPanel.add(getImageLabel4());
             
-            getImageLabel5().setBounds(new Rectangle( 75, 250, 60, 30));
+            getImageLabel5().setBounds(new Rectangle( 85, 250, 60, 30));
             previewPanel.add(getImageLabel5());
             
-            getImageLabel6().setBounds(new Rectangle( 75, 285, 60, 30));
+            getImageLabel6().setBounds(new Rectangle( 85, 285, 60, 30));
             previewPanel.add(getImageLabel6());
             
-            getImageLabel7().setBounds(new Rectangle( 75, 320, 60, 30));
+            getImageLabel7().setBounds(new Rectangle( 85, 320, 60, 30));
             previewPanel.add(getImageLabel7());
             
-            getImageLabel8().setBounds(new Rectangle( 75, 355, 60, 30));
+            getImageLabel8().setBounds(new Rectangle( 85, 355, 60, 30));
             previewPanel.add(getImageLabel8());
             
-            getImageLabel9().setBounds(new Rectangle( 75, 390, 60, 30));
+            getImageLabel9().setBounds(new Rectangle( 85, 390, 60, 30));
             previewPanel.add(getImageLabel9());
             
-            getRawState0().setBounds(new Rectangle( 10, 75, 60, 30));
+            getImageLabel10().setBounds(new Rectangle( 85, 425, 60, 30));
+            previewPanel.add(getImageLabel10());
+            
+            getRawState0().setBounds(new Rectangle( 10, 75, 90, 30));
             previewPanel.add(getRawState0());
             
-            getRawState1().setBounds(new Rectangle( 10, 110, 60, 30));
+            getRawState1().setBounds(new Rectangle( 10, 110, 90, 30));
             previewPanel.add(getRawState1());
             
-            getRawState2().setBounds(new Rectangle( 10, 145, 60, 30));
+            getRawState2().setBounds(new Rectangle( 10, 145, 90, 30));
             previewPanel.add(getRawState2());
             
-            getRawState3().setBounds(new Rectangle( 10, 180, 60, 30));
+            getRawState3().setBounds(new Rectangle( 10, 180, 90, 30));
             previewPanel.add(getRawState3());
             
-            getRawState4().setBounds(new Rectangle( 10, 215, 60, 30));
+            getRawState4().setBounds(new Rectangle( 10, 215, 90, 30));
             previewPanel.add(getRawState4());
             
-            getRawState5().setBounds(new Rectangle( 10, 250, 60, 30));
+            getRawState5().setBounds(new Rectangle( 10, 250, 85, 30));
             previewPanel.add(getRawState5());
             
-            getRawState6().setBounds(new Rectangle( 10, 285, 60, 30));
+            getRawState6().setBounds(new Rectangle( 10, 285, 90, 30));
             previewPanel.add(getRawState6());
             
-            getRawState7().setBounds(new Rectangle( 10, 320, 60, 30));
+            getRawState7().setBounds(new Rectangle( 10, 320, 90, 30));
             previewPanel.add(getRawState7());
             
-            getRawState8().setBounds(new Rectangle( 10, 355, 60, 30));
+            getRawState8().setBounds(new Rectangle( 10, 355, 90, 30));
             previewPanel.add(getRawState8());
             
-            getRawState9().setBounds(new Rectangle( 10, 390, 60, 30));
+            getRawState9().setBounds(new Rectangle( 10, 390, 90, 30));
             previewPanel.add(getRawState9());
+            
+            getRawState10().setBounds(new Rectangle( 10, 425, 90, 30));
+            previewPanel.add(getRawState10());
             
             getEditButton0().setBounds(new Rectangle( 140, 75, 50, 25));
             previewPanel.add(getEditButton0());
@@ -297,7 +306,10 @@ private javax.swing.JPanel getPreviewPanel()
             getEditButton9().setBounds(new Rectangle( 140, 390, 50, 25));
             previewPanel.add(getEditButton9());
             
-            getResetButton().setBounds(new Rectangle( 60, 440, 80, 25));
+            getEditButton10().setBounds(new Rectangle( 140, 425, 50, 25));
+            previewPanel.add(getEditButton10());
+            
+            getResetButton().setBounds(new Rectangle( 60, 460, 80, 25));
             previewPanel.add(getResetButton());
                     
         } catch (java.lang.Throwable ivjExc) 
@@ -426,6 +438,7 @@ private void initialize() {
          imageLabels[7] = getImageLabel7(); 
          imageLabels[8] = getImageLabel8(); 
          imageLabels[9] = getImageLabel9(); 
+         imageLabels[10] = getImageLabel10();
 
          
          buttons[0] = getEditButton0(); 
@@ -438,6 +451,7 @@ private void initialize() {
          buttons[7] = getEditButton7();
          buttons[8] = getEditButton8();
          buttons[9] = getEditButton9();
+         buttons[10] = getEditButton10();
 
          
          getEditButton0().addActionListener(this);
@@ -450,6 +464,7 @@ private void initialize() {
          getEditButton7().addActionListener(this);
          getEditButton8().addActionListener(this);
          getEditButton9().addActionListener(this);
+         getEditButton10().addActionListener(this);
 
          
          getResetButton().addActionListener(this);
@@ -464,6 +479,7 @@ private void initialize() {
          stateLabels[7] = getRawState7();
          stateLabels[8] = getRawState8();
          stateLabels[9] = getRawState9();
+         stateLabels[10] = getRawState10();
 
         
 	} catch (java.lang.Throwable ivjExc) {
@@ -479,7 +495,8 @@ public boolean isInputValid() {
 	LitePoint pt = getPointSelectionPanel().getSelectedPoint();
 	return (pt != null && 
 			(pt.getPointType() == PointTypes.STATUS_POINT ||
-		     pt.getPointType() == PointTypes.CALCULATED_STATUS_POINT));
+		     pt.getPointType() == PointTypes.CALCULATED_STATUS_POINT ||
+             pt.getPointType() == PointTypes.ANALOG_POINT));
 }
 /**
  * main entrypoint - starts the part when it is run as an application
@@ -572,12 +589,14 @@ public void resetPreviewPanelImages(LitePoint p)
             imageLabels[rawStateNumber].setIcon(icon);
             images.add(imageLabels[rawStateNumber]);
             
+            stateLabels[i].setText(state.getStateText());
+            
             buttons[i].setVisible(true);
             imageLabels[i].setVisible(true);
             stateLabels[i].setVisible(true);
         }
         
-        for(int i = 0; i < 10; i++)
+        for(int i = 0; i < 11; i++)
         {
             
            if(!images.contains(imageLabels[i]))
@@ -589,7 +608,7 @@ public void resetPreviewPanelImages(LitePoint p)
         }
     }else
     {
-        for(int i = 0; i < 10; i++)
+        for(int i = 0; i < 11; i++)
         {
             
             buttons[i].setVisible(false);
@@ -635,13 +654,15 @@ public void setPreviewPanelImages(LitePoint p)
         imageLabels[rawStateNumber].setIcon(icon);
         images.add(imageLabels[rawStateNumber]);
         
+        stateLabels[i].setText(state.getStateText());
+        
         buttons[rawStateNumber].setVisible(true);
         imageLabels[rawStateNumber].setVisible(true);
         stateLabels[rawStateNumber].setVisible(true);
 
     }
     
-    for(int i = 0; i < 10; i++)
+    for(int i = 0; i < 11; i++)
     {
        if(!images.contains(imageLabels[i]))
        {
@@ -848,6 +869,20 @@ private javax.swing.JLabel getRawState9() {
     return rawState9;
 }
 
+private javax.swing.JLabel getRawState10() {
+    if (rawState10 == null) {
+        try {
+            rawState10 = new javax.swing.JLabel();
+            rawState10.setName("RawState10");
+            rawState10.setText("10");
+            rawState10.setHorizontalAlignment(SwingConstants.CENTER);
+        } catch (java.lang.Throwable ivjExc) {
+            handleException(ivjExc);
+        }
+    }
+    return rawState10;
+}
+
 private JButton getEditButton0()
 {
     if (editButton0 == null) {
@@ -1007,6 +1042,20 @@ private JButton getEditButton9(){
     return editButton9;
 }
 
+private JButton getEditButton10(){
+    if (editButton10 == null) {
+        try {
+            editButton10 = new JButton();
+            editButton10.setName("EditButton10");
+            editButton10.setText("Edit");
+            editButton10.setHorizontalTextPosition(SwingConstants.CENTER);
+            editButton10.setVerticalTextPosition(SwingConstants.CENTER);
+        } catch (java.lang.Throwable ivjExc) {
+            handleException(ivjExc);
+        }
+    }
+    return editButton10;
+}
 
 private JLabel getImageLabel0()
 {
@@ -1158,6 +1207,21 @@ private JLabel getImageLabel9()
     return imageLabel9;
 }
 
+private JLabel getImageLabel10()
+{
+    if (imageLabel10== null) {
+        try {
+            imageLabel10 = new JLabel();
+            imageLabel10.setName("ImageLabel10");
+            imageLabel10.setIcon(defaultIcon);
+            imageLabel10.setHorizontalAlignment(SwingConstants.CENTER);
+        } catch (java.lang.Throwable ivjExc) {
+            handleException(ivjExc);
+        }
+    }
+    return imageLabel10;
+}
+
 private JButton getResetButton()
 {
     if (resetButton == null) {
@@ -1258,7 +1322,7 @@ public void actionPerformed(ActionEvent e)
             ImageIcon icon = new javax.swing.ImageIcon(img.getImageValue());
             
             int state = 0;
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 11; i++)
             {
                 if(button == buttons[i])
                 {

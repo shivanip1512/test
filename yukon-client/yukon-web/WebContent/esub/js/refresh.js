@@ -221,13 +221,14 @@ function updateImage(node) {
 	var pointId = node.getAttribute('id');
 	if( !isNaN(pointId) ) {
 		// dattrib = 1 is value attribute, TODO: don't hardcode this?
-		url = '/servlet/DynamicTextServlet' + '?' + 'id=' + pointId + '&dattrib=1';
+		url = '/servlet/DynamicTextServlet' + '?' + 'id=' + pointId + '&dattrib=4096';
 		getURL(url, fn);		
 	}
 	
 	function fn(obj) {
 		if(obj.content) {
 			var value = obj.content;
+            //alert(value);
 			var imageName = node.getAttribute('image'+trim(value));			
 			node.setAttributeNS(xlinkNS, 'xlink:\href', imageName);
 		}

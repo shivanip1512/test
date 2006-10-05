@@ -22,12 +22,16 @@ public interface IAlarmDefs
 
 	public static final String[] OTHER_ALARM_STATES =
 	{
-		"Non-updated",
-		"Rate Of Change",
-		"Limit Set 1",
-		"Limit Set 2",
-		"High Reasonability",
-		"Low Reasonability"
+        "Non-updated",
+        "Rate Of Change",
+        "Limit Set 1",
+        "Limit Set 2",
+        "High Reasonability",
+        "Low Reasonability",
+        "Low Limit 1",
+        "Low Limit 2",
+        "High Limit 1",
+        "High Limit 2"
 	};
 	
 }

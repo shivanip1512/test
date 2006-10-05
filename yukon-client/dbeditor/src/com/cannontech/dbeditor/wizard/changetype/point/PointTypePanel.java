@@ -686,10 +686,17 @@ public Object getValue(Object val)
 			 ((com.cannontech.database.data.point.PointBase) val).getPoint().setStateGroupID(new Integer(1));
 		else if (val instanceof com.cannontech.database.data.point.AccumulatorPoint)
 			((com.cannontech.database.data.point.PointBase) val).getPoint().setStateGroupID(
-				new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_ACCUMULATOR));
+				new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_ANALOG));
 		else if (val instanceof com.cannontech.database.data.point.CalculatedPoint)
-			((com.cannontech.database.data.point.PointBase) val).getPoint().setStateGroupID(
-				new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_CALCULATED));
+        {
+			if(type == com.cannontech.database.data.point.PointTypes.CALCULATED_STATUS_POINT)
+                {
+                    ((com.cannontech.database.data.point.PointBase) val).getPoint().setStateGroupID(
+                            new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_TWO_STATE_STATUS));
+                }else
+                    ((com.cannontech.database.data.point.PointBase) val).getPoint().setStateGroupID(
+                            new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_ANALOG));
+        }
 		else if (val instanceof com.cannontech.database.data.point.AnalogPoint)
 			((com.cannontech.database.data.point.PointBase) val).getPoint().setStateGroupID(
 				new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_ANALOG));

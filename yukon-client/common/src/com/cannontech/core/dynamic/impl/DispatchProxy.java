@@ -1,12 +1,6 @@
 package com.cannontech.core.dynamic.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
+import java.util.*;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
@@ -61,7 +55,11 @@ class DispatchProxy {
      */
     Set<Signal> getSignals(int pointId) {
         Map<Integer, Set<Signal>> sigs = getSignals(CtiUtilities.asSet(pointId)); 
-        return sigs.get(pointId);
+        Set<Signal> ret = sigs.get(pointId);
+        if (ret == null) {
+            ret = Collections.emptySet();
+        }
+        return ret;
     }
     
     /**
@@ -74,6 +72,7 @@ class DispatchProxy {
         Multi m = getPointDataMulti(pointIds);
         Map<Integer, Set<Signal>> signals = 
             new HashMap<Integer, Set<Signal>>((int)(pointIds.size()/0.75f)+1);        
+        
         extractSignals(signals, m);
         return signals;
     }

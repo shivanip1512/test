@@ -26,13 +26,14 @@ public class PointAttributes {
 	public static final int STATE_TEXT = 0x000000200;
 	public static final int MULTIPLIER = 0x000000400;
 	public static final int DATA_OFFSET = 0x000000800;
+    public static final int CURRENT_STATE = 0x00001000;
 		
 	/**
 	 * Takes a fully filled in dbpersistent and attempts to set the given
 	 * attribute.  If unable will return null.
 	 * 
-	 * Currently only LOW_LIMIT, HIGH_LIMIT,LIMIT_DURATION, MULTIPLIER,
-	 * AND DATA_OFFSET are supported.
+	 * Currently only LOW_LIMIT, HIGH_LIMIT,LIMIT_DURATION, MULTIPLIER, and
+	 * DATA_OFFSET are supported.
 	 * 
 	 * @param dbObj
 	 * @param attrib
