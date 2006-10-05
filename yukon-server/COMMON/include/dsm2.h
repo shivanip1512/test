@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/DSM2.H-arc  $
-* REVISION     :  $Revision: 1.37 $
-* DATE         :  $Date: 2006/08/23 16:03:37 $
+* REVISION     :  $Revision: 1.38 $
+* DATE         :  $Date: 2006/10/05 16:57:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -350,21 +350,13 @@ IM_EX_CTIBASE ULONG OutMessageCount();
    #define DOUBLE double
 #endif
 
-/* Definitions for timing routine */
-#define T_AWORD         0
-#define T_BWORD         1
-#define T_GWORD         2
-
 /* Port Definitions */
 #define PORTMAX         120
 #define MAXPORT         (PORTMAX+1)
 #define MAXPROC         52
 
 /* Misc. definitions */
-#define MAXTHREADS      100
-#define REVERSE         1
 #define COMSIZE         132
-#define NUMBUF          10
 #define MAXIDLC         128
 #define CCUMAX_700      3
 #define CCUMAX_710      31
@@ -384,9 +376,6 @@ IM_EX_CTIBASE ULONG OutMessageCount();
 #define STAGES          3
 #define CCULOOP         8+2
 #define CCUREV          8+4
-#define OLD_CRC         0
-#define NEW_CRC         1
-#define IDLC            1
 
 
 /* A-word function definitions */
@@ -453,8 +442,6 @@ IM_EX_CTIBASE ULONG OutMessageCount();
 #define FCT_ADDRESS     0x155555L
 #define UNIV_ADDRESS    0x3fffffL
 #define RPT_UN_MIN      4190464L
-#define READ_ST         0x40
-#define READ_RE         0xff
 
 #pragma pack(push, message_packing, 1)
 
@@ -893,32 +880,34 @@ public:
 
    CtiOutMessage()
    {
-      ::memset(this, 0, sizeof(CtiOutMessage));
-      ReturnNexus = NULL;
-      SaveNexus = NULL;
+       ::memset(this, 0, sizeof(CtiOutMessage));
+       ReturnNexus = NULL;
+       SaveNexus = NULL;
 
-      HeadFrame[0] = 0x02;      // STX
-      HeadFrame[1] = 0xe0;
-      TailFrame[0] = 0xea;
-      TailFrame[1] = 0x03;      // ETX
+       HeadFrame[0] = 0x02;      // STX
+       HeadFrame[1] = 0xe0;
+       TailFrame[0] = 0xea;
+       TailFrame[1] = 0x03;      // ETX
 
-      incrementCount();
+       incrementCount();
    }
 
    CtiOutMessage(const CtiOutMessage &aRef)
    {
-      *this = aRef;
-      incrementCount();
+       *this = aRef;
+       incrementCount();
    }
 
    CtiOutMessage(const CtiOutMessage *aRef)
    {
-      *this = CtiOutMessage( *aRef );
-      incrementCount();
+       //  this is unsafe - should be fixed to check for nulls, and should also be
+       //    *this = *aRef;
+       *this = CtiOutMessage( *aRef );
+       incrementCount();
    }
    ~CtiOutMessage()
    {
-      decrementCount();
+       decrementCount();
    }
 
    CtiOutMessage& operator=(const CtiOutMessage &aRef)
