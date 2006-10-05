@@ -6,12 +6,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.84 $
-* DATE         :  $Date: 2006/08/30 20:22:03 $
+* REVISION     :  $Revision: 1.85 $
+* DATE         :  $Date: 2006/10/05 16:58:48 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
+#pragma warning( disable : 4786 )
 
 
 #include <windows.h>
