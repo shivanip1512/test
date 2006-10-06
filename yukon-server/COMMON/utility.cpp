@@ -2582,3 +2582,52 @@ void identifyCompile( int & major, int & minor, int & build)
     return;
 }
 
+CtiHighPerfTimer::CtiHighPerfTimer( string name, UINT gripeDelta, string file, UINT line ) :
+    _name(name), _gripe(gripeDelta), _file(file), _line(line) {
+
+    QueryPerformanceFrequency(&_perfFrequency);
+    QueryPerformanceCounter(&_start);
+}
+
+CtiHighPerfTimer::~CtiHighPerfTimer() {
+
+    QueryPerformanceCounter(&_stop);
+    if(_gripe && PERF_TO_MS(_stop, _start, _perfFrequency) > _gripe) {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " " << getName() << " timer: " << PERF_TO_MS(_stop, _start, _perfFrequency) << " ms" << endl;
+    }
+}
+
+CtiHighPerfTimer& CtiHighPerfTimer::reset() {
+    QueryPerformanceCounter(&_start);
+    return *this;
+}
+
+CtiHighPerfTimer& CtiHighPerfTimer::report(bool force) {
+
+    QueryPerformanceCounter(&_stop);
+    if(force || (_gripe && PERF_TO_MS(_stop, _start, _perfFrequency) > _gripe)) {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " " << getName() << " timer: " << PERF_TO_MS(_stop, _start, _perfFrequency) << " ms" << endl;
+    }
+    return *this;
+}
+
+UINT CtiHighPerfTimer::delta() {
+    QueryPerformanceCounter(&_stop);
+    return PERF_TO_MS(_stop, _start, _perfFrequency);
+}
+
+CtiHighPerfTimer& CtiHighPerfTimer::rename(string name, string file, UINT line) {
+    _name = name;
+    _file = file;
+    _line = line;
+    return *this;
+}
+
+CtiHighPerfTimer& CtiHighPerfTimer::relocate(string file, UINT line) {
+    _file = file;
+    _line = line;
+    return *this;
+}
+

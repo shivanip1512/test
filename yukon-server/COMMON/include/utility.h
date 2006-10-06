@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/utility.h-arc  $
-* REVISION     :  $Revision: 1.36 $
-* DATE         :  $Date: 2006/08/03 20:16:00 $
+* REVISION     :  $Revision: 1.37 $
+* DATE         :  $Date: 2006/10/06 16:44:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -26,6 +26,7 @@ using std::string;
 
 #include "dsm2.h"
 #include "dlldefs.h"
+#include "numstr.h"
 #include "sorted_vector.h"
 using std::vector;
 
@@ -98,6 +99,49 @@ typedef struct {
     int metrics[256];               // Ok, these are 256 metrics I want to count!
 
 } CtiQueueAnalysis_t;
+
+
+class CtiHighPerfTimer {
+
+private:
+    LARGE_INTEGER _perfFrequency;
+    LARGE_INTEGER _start;
+    LARGE_INTEGER _stop;
+    UINT _gripe;
+
+    string _name;
+
+    string _file;
+    UINT _line;
+
+    CtiHighPerfTimer(  ) : _gripe(0) {
+
+        QueryPerformanceFrequency(&_perfFrequency);
+        QueryPerformanceCounter(&_start);
+    }
+
+    string getName() const {
+        string str = _name;
+        if( !_file.empty() ) str += string(" (") + _file + string(":") + string(CtiNumStr(_line)) + string(")");
+        return str;
+    }
+
+    inline UINT PERF_TO_MS(LARGE_INTEGER b,LARGE_INTEGER a,LARGE_INTEGER p)
+    {
+        return ((UINT)((b.QuadPart - a.QuadPart) / (p.QuadPart / 1000L)));
+    }
+
+public:
+    CtiHighPerfTimer( string name, UINT gripeDelta = 0, string file = string(), UINT line = 0 );
+
+    ~CtiHighPerfTimer();
+    CtiHighPerfTimer& reset();
+    CtiHighPerfTimer& report(bool force = true);
+    UINT delta();
+    CtiHighPerfTimer& rename(string name, string file = string(""), UINT line = 0);
+    CtiHighPerfTimer& relocate(string file, UINT line);
+};
+
 
 
 IM_EX_CTIBASE string identifyProjectVersion(const CTICOMPILEINFO &Info);
