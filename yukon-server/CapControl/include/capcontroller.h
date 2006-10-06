@@ -60,7 +60,7 @@ public:
     CtiPCPtrQueue< RWCollectable > &getCCEventMsgQueueHandle();
 
     void loadControlLoopCParms();
-    
+
 private:
     
     CtiCapController();
@@ -75,6 +75,8 @@ private:
     void checkDispatch(ULONG secondsFrom1901);
     void checkPIL(ULONG secondsFrom1901);
     void registerForPoints(const CtiCCSubstationBus_vec& subBuses);
+    void updateAllPointQualities(long quality, ULONG secondsFrom1901);
+    
     void parseMessage(RWCollectable* message, ULONG secondsFrom1901);
     void pointDataMsg(long pointID, double value, unsigned quality, unsigned tags, CtiTime& timestamp, ULONG secondsFrom1901);
     void porterReturnMsg(long deviceId, const string& commandString, int status, const string& resultString, ULONG secondsFrom1901);

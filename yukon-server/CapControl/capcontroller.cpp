@@ -44,6 +44,7 @@
 #include "thread_monitor.h"
 #include "utility.h"
 
+
 #include "ccclientconn.h"
 #include "ccclientlistener.h"
 #include <rw/thr/prodcons.h>
@@ -58,6 +59,7 @@ extern ULONG _SEND_TRIES;
 extern BOOL _USE_FLIP_FLAG;
 extern BOOL _ALLOW_PARALLEL_TRUING;
 extern ULONG _DB_RELOAD_WAIT;
+extern ULONG _LINK_STATUS_TIMEOUT;
 
 //DLLEXPORT BOOL  bGCtrlC = FALSE;
 
@@ -331,6 +333,18 @@ void CtiCapController::controlLoop()
                 CtiMultiMsg_vec& pilMessages = multiPilMsg->getData();
                 CtiMultiMsg_vec& capMessages = multiCapMsg->getData();
                 CtiMultiMsg_vec& ccEvents = multiCCEventMsg->getData();
+
+                 if (store->getLinkStatusPointId() > 0 && 
+                     (store->getLinkStatusFlag() == CLOSED) &&
+                     store->getLinkDropOutTime().seconds() + (60* _LINK_STATUS_TIMEOUT) < currentDateTime.seconds()) 
+                {
+                     updateAllPointQualities(NonUpdatedQuality, secondsFrom1901);
+                     store->setLinkDropOutTime(currentDateTime);
+                     {
+                         CtiLockGuard<CtiLogger> logger_guard(dout);
+                         dout << CtiTime() << " - store->getLinkDropOutTime() " << store->getLinkDropOutTime().asString()<< endl;
+                     }
+                } 
 
                 for(LONG i=0; i < ccSubstationBuses.size();i++)
                 {
@@ -1298,6 +1312,64 @@ void CtiCapController::checkPIL(ULONG secondsFrom1901)
     while(!done);
 }
 
+
+/*---------------------------------------------------------------------------
+    registerForPoints
+
+    Registers for all points of the substations buses.
+---------------------------------------------------------------------------*/
+void CtiCapController::updateAllPointQualities(long quality, ULONG secondsFrom1901)
+{
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Updating CapControl Point Qualities to " << quality<< endl;
+    }
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(secondsFrom1901);
+
+    for(LONG i=0;i<ccSubstationBuses.size();i++)
+    {
+        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
+
+        if( currentSubstationBus->getCurrentVarLoadPointId() > 0 )
+        {
+            currentSubstationBus->setCurrentVarPointQuality(quality);
+        }
+        if( currentSubstationBus->getCurrentWattLoadPointId() > 0 )
+        {
+            currentSubstationBus->setCurrentWattPointQuality(quality);
+        }
+        if (currentSubstationBus->getCurrentVoltLoadPointId() > 0)
+        {
+            currentSubstationBus->setCurrentVoltPointQuality(quality);
+        }
+        
+        
+        CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
+
+        for(LONG j=0;j<ccFeeders.size();j++)
+        {
+            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)(ccFeeders[j]);
+
+            if( currentFeeder->getCurrentVarLoadPointId() > 0 )
+            {
+                currentFeeder->setCurrentVarPointQuality(quality);
+            }
+            if( currentFeeder->getCurrentWattLoadPointId() > 0 )
+            {
+                currentFeeder->setCurrentWattPointQuality(quality);
+            }
+            if ( currentFeeder->getCurrentVoltLoadPointId() > 0)
+            {
+                currentFeeder->setCurrentVoltPointQuality(quality);
+            }
+        }
+        currentSubstationBus->setNewPointDataReceivedFlag(TRUE);
+    }
+
+}
+
+
 /*---------------------------------------------------------------------------
     registerForPoints
 
@@ -1412,7 +1484,10 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
                 }
             }
         }
-
+        if (CtiCCSubstationBusStore::getInstance()->getLinkStatusPointId() > 0) 
+        {
+            regMsg->insert(CtiCCSubstationBusStore::getInstance()->getLinkStatusPointId());
+        }
     }
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -1436,7 +1511,6 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
     }
     regMsg = NULL;
 }
-
 /*---------------------------------------------------------------------------
     parseMessage
 
@@ -2239,6 +2313,24 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
             }
             currentCapBank++;
             capCount--;
+        }
+        if (store->getLinkStatusPointId() > 0) 
+        {
+            if (store->getLinkStatusPointId() == pointID)
+            {
+                if (store->getLinkStatusFlag() != value)
+                {
+                    store->setLinkStatusFlag(value);
+                    if (value == CLOSED) 
+                    {
+                        store->setLinkDropOutTime(timestamp);
+                    }
+                    if (value == OPENED) 
+                    {
+                        store->setReregisterForPoints(TRUE);
+                    }
+                }
+            }
         }
     }
     catch(...)

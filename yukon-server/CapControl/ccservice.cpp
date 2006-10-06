@@ -32,6 +32,7 @@ BOOL _ALLOW_PARALLEL_TRUING;
 BOOL _RETRY_FAILED_BANKS;
 ULONG _DB_RELOAD_WAIT;
 BOOL _LOG_MAPID_INFO;
+ULONG _LINK_STATUS_TIMEOUT;
 
 CtiDate gInvalidCtiDate = CtiTime(1990,1,1);
 CtiTime gInvalidCtiTime = CtiTime(gInvalidCtiDate,0,0,0);
@@ -335,6 +336,23 @@ void CtiCCService::Init()
         dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
     }
 
+    _LINK_STATUS_TIMEOUT = 5;  //1 minute
+
+    strcpy(var, "CAP_CONTROL__LINK_STATUS_TIMEOUT");
+    if( !(str = gConfigParms.getValueAsString(var)).empty() )
+    {
+        _LINK_STATUS_TIMEOUT = atoi(str.data())+1;
+        if( _CC_DEBUG & CC_DEBUG_STANDARD )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - " << var << ":  " << str << endl;
+        }
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+    }
 
 
 

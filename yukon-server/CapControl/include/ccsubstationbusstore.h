@@ -154,6 +154,7 @@ public:
     void reloadStrategyFromDataBase(long strategyId, map< long, CtiCCStrategyPtr > *strategy_map);
     void reloadCapBankStatesFromDatabase();
     void reloadGeoAreasFromDatabase();
+    void reloadClientLinkStatusPointFromDatabase();
     void locateOrphans(list<long> *orphanCaps, list<long> *orphanFeeders, map<long, CtiCCCapBankPtr> paobject_capbank_map,
                        map<long, CtiCCFeederPtr> paobject_feeder_map, map<long, long> capbank_feeder_map, map<long, long> feeder_subbus_map);
     BOOL isCapBankOrphan(long capBankId);
@@ -166,6 +167,15 @@ public:
     void clearDBReloadList();
     void setRegMask(LONG mask);
     LONG getRegMask(void);
+
+    void setLinkStatusPointId(LONG pointId);
+    LONG getLinkStatusPointId(void);
+
+    void setLinkStatusFlag(BOOL flag);
+    BOOL getLinkStatusFlag(void);
+
+    const CtiTime& getLinkDropOutTime() const;
+    void  setLinkDropOutTime(const CtiTime& dropOutTime);
 
     map <long, CtiCCSubstationBusPtr>* getPAOSubMap();
 
@@ -220,6 +230,10 @@ private:
     BOOL _wassubbusdeletedflag;
     CtiTime _lastdbreloadtime;
     CtiTime _lastindividualdbreloadtime;
+
+    LONG _linkStatusPointId;
+    BOOL _linkStatusFlag;
+    CtiTime _linkDropOutTime;
 
 
     //The singleton instance of CtiCCSubstationBusStore

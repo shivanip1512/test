@@ -14,10 +14,11 @@
 #include "yukon.h"
 
 #include <map>
-         
+
+
 #include <rw/rwfile.h>
 #include <rw/thr/thrfunc.h>
-#include <rw/collstr.h>
+//#include <rw/collstr.h>
 
 #include "ccsubstationbusstore.h"
 #include "ccstrategy.h"
@@ -37,6 +38,8 @@
 #include "capcontroller.h"
 #include "utility.h"
 #include "thread_monitor.h"
+
+#include "ctistring.h"
 #include <string>
 #include <rwutil.h>
 
@@ -45,6 +48,7 @@ extern ULONG _CC_DEBUG;
 extern ULONG _DB_RELOAD_WAIT;
 
 using namespace std;
+
 
 CtiTime timeSaver;
 
@@ -76,6 +80,10 @@ CtiCCSubstationBusStore::CtiCCSubstationBusStore() : _isvalid(FALSE), _reregiste
     _reloadList.clear();
     _orphanedCapBanks.clear();
     _orphanedFeeders.clear();
+
+    _linkStatusPointId = 0;
+    _linkStatusFlag = OPENED;
+    _linkDropOutTime = CtiTime();
    
     //Start the reset thread
     RWThreadFunction func = rwMakeThreadFunction( *this, &CtiCCSubstationBusStore::doResetThr );
@@ -574,6 +582,9 @@ void CtiCCSubstationBusStore::reset()
                        reloadGeoAreasFromDatabase();
                    }
 
+                   {
+                       reloadClientLinkStatusPointFromDatabase();
+                   }
                    /************************************************************
                     ********    Loading Orphans                         ********
                     ************************************************************/
@@ -1766,7 +1777,7 @@ void CtiCCSubstationBusStore::doResetThr()
     char var[128];
     int refreshrate = 3600;
 
-    strcpy(var, "CAP_CONTROL_REFRESH");
+    std::strcpy(var, "CAP_CONTROL_REFRESH");
     if( !(str = gConfigParms.getValueAsString(var)).empty() )
     {
         refreshrate = atoi(str.c_str());
@@ -1850,7 +1861,7 @@ void CtiCCSubstationBusStore::doAMFMThr()
     string amfm_interface = "NONE";
     ThreadMonitor.start(); 
 
-    strcpy(var, "CAP_CONTROL_AMFM_INTERFACE");
+    std::strcpy(var, "CAP_CONTROL_AMFM_INTERFACE");
     if( !(str = gConfigParms.getValueAsString(var)).empty() )
     {
         amfm_interface = str.c_str();
@@ -1875,7 +1886,7 @@ void CtiCCSubstationBusStore::doAMFMThr()
         string dbUser = "none";
         string dbPassword = "none";
 
-        strcpy(var, "CAP_CONTROL_AMFM_RELOAD_RATE");
+        std::strcpy(var, "CAP_CONTROL_AMFM_RELOAD_RATE");
         if( !(str = gConfigParms.getValueAsString(var)).empty() )
         {
             refreshrate = atoi(str.c_str());
@@ -1891,7 +1902,7 @@ void CtiCCSubstationBusStore::doAMFMThr()
             dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
         }
 
-        strcpy(var, "CAP_CONTROL_AMFM_DB_RWDBDLL");
+        std::strcpy(var, "CAP_CONTROL_AMFM_DB_RWDBDLL");
         if( !(str = gConfigParms.getValueAsString(var)).empty() )
         {
             dbDll = str.c_str();
@@ -1907,7 +1918,7 @@ void CtiCCSubstationBusStore::doAMFMThr()
             dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
         }
 
-        strcpy(var, "CAP_CONTROL_AMFM_DB_SQLSERVER");
+        std::strcpy(var, "CAP_CONTROL_AMFM_DB_SQLSERVER");
         if( !(str = gConfigParms.getValueAsString(var)).empty() )
         {
             dbName = str.c_str();
@@ -1923,7 +1934,7 @@ void CtiCCSubstationBusStore::doAMFMThr()
             dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
         }
 
-        strcpy(var, "CAP_CONTROL_AMFM_DB_USERNAME");
+        std::strcpy(var, "CAP_CONTROL_AMFM_DB_USERNAME");
         if( !(str = gConfigParms.getValueAsString(var)).empty() )
         {
             dbUser = str.c_str();
@@ -1939,7 +1950,7 @@ void CtiCCSubstationBusStore::doAMFMThr()
             dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
         }
 
-        strcpy(var, "CAP_CONTROL_AMFM_DB_PASSWORD");
+        std::strcpy(var, "CAP_CONTROL_AMFM_DB_PASSWORD");
         if( !(str = gConfigParms.getValueAsString(var)).empty() )
         {
             dbPassword = str.c_str();
@@ -3882,12 +3893,12 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
                             CtiCCCapBankPtr currentCCCapBank = paobject_capbank_map->find(deviceid)->second;
 
                             rdr["alarminhibit"] >> tempBoolString;
-                            std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
+                            std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), ::tolower);
 
                             currentCCCapBank->setAlarmInhibitFlag(tempBoolString=="y"?TRUE:FALSE);
 
                             rdr["controlinhibit"] >> tempBoolString;
-                            std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
+                            std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), ::tolower);
 
                             currentCCCapBank->setControlInhibitFlag(tempBoolString=="y"?TRUE:FALSE);
                         }
@@ -4596,6 +4607,96 @@ void CtiCCSubstationBusStore::reloadGeoAreasFromDatabase()
         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 }
+
+
+void CtiCCSubstationBusStore::reloadClientLinkStatusPointFromDatabase()
+{
+    try
+    {
+        RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+        {
+            CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+            RWDBConnection conn = getConnection();
+            {
+                if ( conn.isValid() )
+                {   
+                    /*if ( _ccLinkStatusPoint > 0 )
+                    {
+                        
+                    } */
+
+                    RWDBDatabase db = getDatabase();
+                    RWDBTable fdrTranslationTable = db.table("fdrtranslation");
+
+                    RWDBSelector selector = db.selector();
+                    selector << fdrTranslationTable["pointid"]
+                    << fdrTranslationTable["directiontype"]
+                    << fdrTranslationTable["interfacetype"]
+                    << fdrTranslationTable["destination"]
+                    << fdrTranslationTable["translation"];
+
+                    selector.from(fdrTranslationTable);
+
+                    selector.where(fdrTranslationTable["directiontype"]=="Link Status" && 
+                                   fdrTranslationTable["interfacetype"]=="SYSTEM" );
+
+
+                    if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - " << selector.asString().data() << endl;
+                    }
+
+                    RWDBReader rdr = selector.reader(conn);
+                    CtiString str;
+                    char var[128];
+                    std::strcpy(var, "FDR_INTERFACES");                    
+                    if( (str = gConfigParms.getValueAsString(var)).empty() )
+                    {
+                        str = "none";
+                    }
+
+
+                    while ( rdr() )
+                    {
+                        long pointID;
+                        string translation;
+                        rdr["pointid"] >> pointID;
+                        rdr["translation"] >> translation;
+
+                        if (stringContainsIgnoreCase(str, "fdr")) 
+                        {
+                            str = str.strip(CtiString::leading, 'f');
+                            str = str.strip(CtiString::leading, 'd');
+                            str = str.strip(CtiString::leading, 'r'); 
+                        }
+                        if (stringContainsIgnoreCase(translation, str)) 
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " FDR Link Status POINT FOUND: "<<pointID << endl;
+                            }
+                            _linkStatusPointId = pointID;
+                            _linkStatusFlag = OPENED;   
+                            break;
+                        }
+
+
+                    }
+                }
+            }
+        
+        }
+
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
+}
+
+
 
 void CtiCCSubstationBusStore::locateOrphans(list<long> *orphanCaps, list<long> *orphanFeeders, map<long, CtiCCCapBankPtr> paobject_capbank_map,
                        map<long, CtiCCFeederPtr> paobject_feeder_map, map<long, long> capbank_feeder_map, map<long, long> feeder_subbus_map)
@@ -5575,6 +5676,41 @@ map <long, CtiCCSubstationBusPtr>* CtiCCSubstationBusStore::getPAOSubMap()
 {
     return &_paobject_subbus_map;
 }
+
+
+void CtiCCSubstationBusStore::setLinkStatusPointId(LONG pointId)
+{
+    _linkStatusPointId = pointId;
+    return;
+}
+LONG CtiCCSubstationBusStore::getLinkStatusPointId(void)
+{
+    return _linkStatusPointId;
+}
+
+void CtiCCSubstationBusStore::setLinkStatusFlag(BOOL flag)
+{
+    _linkStatusFlag = flag;
+    return;
+}
+BOOL CtiCCSubstationBusStore::getLinkStatusFlag(void)
+{
+    return _linkStatusFlag;
+}
+
+
+const CtiTime& CtiCCSubstationBusStore::getLinkDropOutTime() const
+{
+    return _linkDropOutTime;
+}
+
+void CtiCCSubstationBusStore::setLinkDropOutTime(const CtiTime& dropOutTime)
+{
+    _linkDropOutTime = dropOutTime;
+    return;
+}
+
+
 
 
 /* Private Static members */

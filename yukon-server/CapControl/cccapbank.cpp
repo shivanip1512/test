@@ -1507,7 +1507,7 @@ void CtiCCCapBank::setDynamicData(RWDBReader& rdr)
     _performingVerificationFlag = (_additionalFlags[1]=='y'?TRUE:FALSE);
     _verificationDoneFlag = (_additionalFlags[2]=='y'?TRUE:FALSE);
     _retryOpenFailedFlag = (_additionalFlags[3]=='y'?TRUE:FALSE);
-    _retryCloseFailedFlag = (_additionalFlags[3]=='y'?TRUE:FALSE);
+    _retryCloseFailedFlag = (_additionalFlags[4]=='y'?TRUE:FALSE);
 
     rdr["currentdailyoperations"] >> _currentdailyoperations;
 
@@ -1592,7 +1592,7 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTim
             addFlags[1] = (_performingVerificationFlag?'Y':'N');
             addFlags[2] = (_verificationDoneFlag?'Y':'N');
             addFlags[3] = (_retryOpenFailedFlag?'Y':'N');
-            addFlags[3] = (_retryCloseFailedFlag?'Y':'N');
+            addFlags[4] = (_retryCloseFailedFlag?'Y':'N');
             _additionalFlags = string(char2string(*addFlags) + char2string(*(addFlags+1)) + 
                                       char2string(*(addFlags+2)) + char2string(*(addFlags+3)) +
                                       char2string(*(addFlags+4)) +string(15, *(addFlags + 5)));
