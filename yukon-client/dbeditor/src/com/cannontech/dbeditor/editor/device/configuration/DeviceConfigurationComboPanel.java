@@ -25,6 +25,7 @@ import com.cannontech.common.gui.util.TitleBorder;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
@@ -48,8 +49,13 @@ public class DeviceConfigurationComboPanel extends DataInputPanel {
 
     @Override
     public Object getValue(Object o) {
-        return new DeviceConfigurationDBPersistant(this.device,
-                                                   ((DeviceConfiguration) deviceConfigurationCombo.getSelectedItem()).getId());
+
+        SmartMultiDBPersistent persistant = new SmartMultiDBPersistent();
+        persistant.addOwnerDBPersistent((DBPersistent) o);
+        persistant.addDBPersistent(new DeviceConfigurationDBPersistant(this.device,
+                                                                       ((DeviceConfiguration) deviceConfigurationCombo.getSelectedItem()).getId()));
+
+        return persistant;
     }
 
     @Override
@@ -217,7 +223,7 @@ public class DeviceConfigurationComboPanel extends DataInputPanel {
                 // device
                 funcs.removeConfigAssignmentForDevices(deviceList);
 
-            } else if (this.device != null && this.configId != null) {
+            } else if (this.device != null) {
                 // Save the device / config mapping
                 funcs.assignConfigToDevices(this.configId, deviceList);
             }
@@ -233,7 +239,7 @@ public class DeviceConfigurationComboPanel extends DataInputPanel {
             DBChangeMsg[] msgs = new DBChangeMsg[1];
             msgs[0] = new DBChangeMsg(this.device.getPAObjectID(),
                                       DBChangeMsg.CHANGE_CONFIG_DB,
-                                      DeviceConfiguration.DB_CHANGE_CATEGORY,
+                                      DBChangeMsg.CAT_DEVICE_CONFIG,
                                       DB_CHANGE_OBJECT_TYPE,
                                       typeOfChange);
 

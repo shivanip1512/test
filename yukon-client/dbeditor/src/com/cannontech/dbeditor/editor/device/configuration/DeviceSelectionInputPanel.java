@@ -289,7 +289,7 @@ public class DeviceSelectionInputPanel extends DataInputPanel {
 
                 msgs[index++] = new DBChangeMsg(device.getLiteID(),
                                                 DBChangeMsg.CHANGE_CONFIG_DB,
-                                                DeviceConfiguration.DB_CHANGE_CATEGORY,
+                                                DBChangeMsg.CAT_DEVICE_CONFIG,
                                                 DeviceConfigurationComboPanel.DB_CHANGE_OBJECT_TYPE,
                                                 typeOfChange);
 

@@ -181,7 +181,7 @@ public class Category extends DBPersistent implements CTIDbChange, Comparable, E
         DBChangeMsg[] msgs = new DBChangeMsg[1];
         msgs[0] = new DBChangeMsg(this.id,
                                   DBChangeMsg.CHANGE_CONFIG_DB,
-                                  DeviceConfiguration.DB_CHANGE_CATEGORY,
+                                  DBChangeMsg.CAT_DEVICE_CONFIG,
                                   DB_CHANGE_OBJECT_TYPE,
                                   typeOfChange);
 

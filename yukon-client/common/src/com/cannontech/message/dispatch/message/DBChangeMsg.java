@@ -84,6 +84,7 @@ public class DBChangeMsg extends com.cannontech.message.util.Message
 	public static final String CAT_CBC_STRATEGY = "CBC Strategy";
 	public static final String CAT_PAO_SCHEDULE = "PAO Schedule";
 	public static final String CAT_SETTLEMENT = "Settlement";
+    public static final String CAT_DEVICE_CONFIG = "Device Config";
 	
 	// Categories used by stars
 	public static final String CAT_CUSTOMER_ACCOUNT = "CustomerAccount";

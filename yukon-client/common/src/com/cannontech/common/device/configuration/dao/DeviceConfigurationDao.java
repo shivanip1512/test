@@ -288,6 +288,10 @@ public class DeviceConfigurationDao {
      * @param devices - List of devices to assign config to
      */
     public static void assignConfigToDevices(int configId, List<LiteYukonPAObject> devices) {
+
+        // Remove any previous config assignments
+        removeConfigAssignmentForDevices(devices);
+
         JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
         String sql = "INSERT INTO " + DEVICE_MAP_TABLE + " VALUES (?,?)";
 
@@ -326,6 +330,18 @@ public class DeviceConfigurationDao {
         }
     }
 
+    /**
+     * Method to remove the config assignment for a device
+     * @param deviceId - Id of device to remove config assignment from
+     */
+    public static void removeConfigAssignmentForDevice(int deviceId) {
+        JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
+
+        String sql = "DELETE FROM " + DEVICE_MAP_TABLE + " WHERE deviceid = " + deviceId + "";
+        jdbcOps.update(sql);
+
+    }
+    
     /**
      * Method to remove config assignments for each device assigned for a given
      * config

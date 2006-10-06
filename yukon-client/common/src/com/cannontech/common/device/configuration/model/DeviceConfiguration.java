@@ -16,7 +16,6 @@ import com.cannontech.message.dispatch.message.DBChangeMsg;
  */
 public class DeviceConfiguration extends DBPersistent implements CTIDbChange, EditorPanel {
 
-    public static final String DB_CHANGE_CATEGORY = "config";
     public static final String DB_CHANGE_OBJECT_TYPE = "config";
 
     private Integer id = null;
@@ -195,7 +194,7 @@ public class DeviceConfiguration extends DBPersistent implements CTIDbChange, Ed
         DBChangeMsg[] msgs = new DBChangeMsg[1];
         msgs[0] = new DBChangeMsg(this.id,
                                   DBChangeMsg.CHANGE_CONFIG_DB,
-                                  DeviceConfiguration.DB_CHANGE_CATEGORY,
+                                  DBChangeMsg.CAT_DEVICE_CONFIG,
                                   DB_CHANGE_OBJECT_TYPE,
                                   typeOfChange);
 

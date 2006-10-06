@@ -10,8 +10,6 @@ import java.util.Map;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.configuration.model.Category;
 import com.cannontech.common.device.configuration.model.DeviceConfiguration;
-import com.cannontech.common.device.configuration.service.DeviceConfigurationFuncs;
-import com.cannontech.common.device.configuration.service.DeviceConfigurationFuncsImpl;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
 import com.cannontech.core.dao.DaoFactory;
@@ -1611,10 +1609,10 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg)
 	}
 	else if( database == DBChangeMsg.CHANGE_CONFIG_DB )
 	{
-        if(dbCategory == DeviceConfiguration.DB_CHANGE_CATEGORY){
-            if(objectType.equals(DeviceConfiguration.DB_CHANGE_OBJECT_TYPE)){
+        if(DBChangeMsg.CAT_DEVICE_CONFIG.equals(dbCategory)){
+            if(DeviceConfiguration.DB_CHANGE_OBJECT_TYPE.equals(objectType)){
                 retLBase = handleDeviceConfigChange(dbType, id);
-            } else if(objectType.equals(Category.DB_CHANGE_OBJECT_TYPE)){
+            } else if(Category.DB_CHANGE_OBJECT_TYPE.equals(objectType)){
                 retLBase = handleDeviceConfigCategoryChange(dbType, id);
             }
         } else{
