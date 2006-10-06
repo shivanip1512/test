@@ -36,7 +36,8 @@ end;
  
 export prototype YukonServiceManager_Installed();
 function YukonServiceManager_Installed()
-string szCmdLine, szPathAndFile;
+string szCmdLine, szPathAndFile, szKey, szName, szValue;
+number nSize;
 
 begin
 
@@ -44,6 +45,14 @@ begin
 szPathAndFile = TARGETDIR ^ "\\client\\bin\\wrapper.exe";
 szCmdLine = "-i appserver.conf";
 LaunchAppAndWait ( szPathAndFile, szCmdLine, WAIT );
+
+//Add this service to the YUKON GROUP so it shows up in TDC
+RegDBSetDefaultRoot ( HKEY_LOCAL_MACHINE );
+szKey = "\\SYSTEM\\CurrentControlSet\\Services\\YukonServiceMgr";
+szName = "Group";
+szValue = "YUKON GROUP";
+nSize = -1; 
+RegDBSetKeyValueEx ( szKey , szName , REGDB_STRING , szValue , nSize );
 
 end;
 
@@ -205,8 +214,8 @@ end;
  
 export prototype NotificationServer_Installed();
 function NotificationServer_Installed()
-string szCmdLine, szPathAndFile, szSrcFile, szTargetPath, time, timeHour, timeMin, date, fileFound, fileNameOnly, szFileName;
-number nvResult, check, fileLooper;
+string szCmdLine, szPathAndFile, szSrcFile, szTargetPath, time, timeHour, timeMin, date, fileFound, fileNameOnly, szFileName, szKey, szName, szValue;
+number nvResult, check, fileLooper, nSize;
 
 begin
 
@@ -254,6 +263,14 @@ endif;
 szPathAndFile = TARGETDIR ^ "\\client\\bin\\wrapper.exe";
 szCmdLine = "-i notifserver.conf";
 LaunchAppAndWait ( szPathAndFile, szCmdLine, WAIT );
+
+//Add this service to the YUKON GROUP so it shows up in TDC
+RegDBSetDefaultRoot ( HKEY_LOCAL_MACHINE );
+szKey = "\\SYSTEM\\CurrentControlSet\\Services\\YukonNotificationServer";
+szName = "Group";
+szValue = "YUKON GROUP";
+nSize = -1; 
+RegDBSetKeyValueEx ( szKey , szName , REGDB_STRING , szValue , nSize );
 
 end;
 //---------------------------------------------------------------------------

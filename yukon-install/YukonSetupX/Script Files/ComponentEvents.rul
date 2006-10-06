@@ -141,8 +141,8 @@ function Tomcat_Installed()
 STRING szCmdLine, szCmdLine2, szCmdLine3, szCmdLine4, szCmdLine5, szCmdLine6, szCmdLine7;
 string szCmdLine8, szCmdLine9, szCmdLine10, szCmdLine11, szCmdLine12, szCmdLine13;
 string szServPath, szPath, TomcatPath, JavaPath, WarPath;
-string szAppPath, szName, szKey, szEnv, szTargetFile, szSrcFile;
-number nvResult, nvType, nvSize, foundVal, dirSearch;
+string szAppPath, szName, szKey, szEnv, szTargetFile, szSrcFile, szValue;
+number nvResult, nvType, nvSize, foundVal, dirSearch, nSize;
 pointer pEnv;
         
 begin
@@ -184,7 +184,15 @@ if(nvResult = 1) then */
 LaunchAppAndWait ( szServPath ^ "tomcat.exe" , szCmdLine + szCmdLine2 + szCmdLine3, WAIT );
 	//SprintfBox (SEVERE, "DEBUG: Command Line Contents", "%s", szCmdLine + szCmdLine2 + szCmdLine3);     
 //endif;
-
+  
+//Add this service to the YUKON GROUP so it shows up in TDC
+RegDBSetDefaultRoot ( HKEY_LOCAL_MACHINE );
+szKey = "\\SYSTEM\\CurrentControlSet\\Services\\Yukon Web Applications Service";
+szName = "Group";
+szValue = "YUKON GROUP";
+nSize = -1; 
+RegDBSetKeyValueEx ( szKey , szName , REGDB_STRING , szValue , nSize );  
+  
 //start the Tomcat service
 szCmdLine = 'start "Yukon Web Applications Service"';
 LaunchAppAndWait ("net.exe" , szCmdLine, WAIT );
