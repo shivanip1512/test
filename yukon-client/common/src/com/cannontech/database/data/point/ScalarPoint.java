@@ -6,6 +6,7 @@ package com.cannontech.database.data.point;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.point.PointLimit;
 import com.cannontech.database.db.point.PointUnit;
 
@@ -119,7 +120,7 @@ public void retrieve() throws java.sql.SQLException {
 
 	try
 	{		
-		com.cannontech.database.db.point.PointLimit plArray[] = com.cannontech.database.db.point.PointLimit.getPointLimits( getPoint().getPointID(), getDbConnection().toString() );
+		com.cannontech.database.db.point.PointLimit plArray[] = com.cannontech.database.db.point.PointLimit.getPointLimits( getPoint().getPointID(), CtiUtilities.getDatabaseAlias() );
 
 		for( int i = 0; i < plArray.length; i++ )
 			getPointLimitsMap().put( plArray[i].getLimitNumber(), plArray[i] );

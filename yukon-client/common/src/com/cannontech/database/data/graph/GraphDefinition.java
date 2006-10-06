@@ -2,6 +2,7 @@ package com.cannontech.database.data.graph;
 
 import java.util.ArrayList;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.graph.GraphCustomerList;
@@ -109,7 +110,7 @@ public void retrieve() throws java.sql.SQLException
 	getGraphDefinition().setDbConnection(getDbConnection());
 	getGraphDefinition().retrieve();
 
-	Object[] gds = GraphDataSeries.getAllGraphDataSeries( getGraphDefinition().getGraphDefinitionID(), getDbConnection().toString() );
+	Object[] gds = GraphDataSeries.getAllGraphDataSeries( getGraphDefinition().getGraphDefinitionID(), CtiUtilities.getDatabaseAlias() );
 
 	for( int i = 0; i < gds.length; i++ )
 		getGraphDataSeries().add( gds[i] );

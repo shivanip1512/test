@@ -1,5 +1,7 @@
 package com.cannontech.database.db.graph;
 
+import com.cannontech.common.util.CtiUtilities;
+
 /**
  * Insert the type's description here.
  * Creation date: (12/9/99 11:36:00 AM)
@@ -68,7 +70,7 @@ public void add() throws java.sql.SQLException
 	synchronized( com.cannontech.database.db.graph.GraphDefinition.class )
 	{
 		if( getGraphDefinitionID() == null )		
-			setGraphDefinitionID( getNextID( getDbConnection().toString())  );
+			setGraphDefinitionID( getNextID( CtiUtilities.getDatabaseAlias())  );
 	}
 		
 	Object addValues[] = 
