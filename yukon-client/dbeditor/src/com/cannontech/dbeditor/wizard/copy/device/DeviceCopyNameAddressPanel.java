@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.swing.JLabel;
 
+import com.cannontech.common.wizard.CancelInsertException;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.capcontrol.CapBank;
@@ -598,7 +599,17 @@ private javax.swing.JTextField getJTextFieldPhoneNumber() {
 				 
 				if( DeviceTypesFuncs.isMCT(getDeviceType()) )
 				{
-					checkMCTAddresses( new Integer(getAddressTextField().getText()).intValue() );
+
+					try
+					{
+						
+						checkMCTAddresses( new Integer(getAddressTextField().getText()).intValue() );
+					}
+
+					catch (CancelInsertException e)
+					{	
+						throw e;
+					}
 				}
 			}
 			else if (val instanceof CapBank)

@@ -4,14 +4,23 @@ package com.cannontech.dbeditor.wizard.copy.device;
  * This type was created in VisualAge.
  */
 
+import java.util.Iterator;
+
+import javax.swing.tree.DefaultMutableTreeNode;
+
 import com.cannontech.common.gui.util.DataInputPanel;
+import com.cannontech.common.wizard.CancelInsertException;
+import com.cannontech.common.wizard.WizardPanelEvent;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.MCTBase;
 import com.cannontech.database.data.device.lm.LMGroupEmetcon;
 import com.cannontech.database.data.device.lm.LMGroupVersacom;
+import com.cannontech.database.data.lite.LiteBase;
+import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.dbeditor.DatabaseEditor;
 import com.cannontech.dbeditor.wizard.device.capcontrol.CapBankCntrlCreationPanel;
 import com.cannontech.dbeditor.wizard.device.lmgroup.LMGroupVersacomEditorPanel;
 
@@ -314,7 +323,64 @@ public RoutePanel getRoutePanel()
  */
 public Object getValue(Object o) 
 {
-	return super.getValue( getCopyObject() );
+
+	Object val = null;
+	try
+	{
+		val = super.getValue( getCopyObject() );
+	}
+	catch (CancelInsertException cie)
+	{
+		//we haven't got the copy wiz panel
+		//let the code deal with it
+		if (!cancelAndResetCopyWizPanel());
+		{
+			throw cie;
+		}
+	}
+	return val;
+}
+/**
+ * @return 
+ * 
+ */
+private boolean cancelAndResetCopyWizPanel() 
+{
+	DatabaseEditor editor = getDbEditor();
+	if (editor != null)
+	{
+        
+        setCancelled(true);
+		fireWizardPanelEvent( new WizardPanelEvent( this, WizardPanelEvent.CANCEL_SELECTION ) );
+		DefaultMutableTreeNode node = editor.getDefaultTreeNode();
+	
+		if( node != null )
+		{
+			DBPersistent toCopy = LiteFactory.createDBPersistent((LiteBase)node.getUserObject());
+			if(toCopy instanceof com.cannontech.database.data.device.DeviceBase && !(toCopy instanceof com.cannontech.database.data.device.lm.LMGroup))
+		    {
+	
+				editor.showCopyWizardPanel(toCopy);
+				return true;
+		    }
+		}
+	}
+	//we haven't got the copy wiz panel
+	return false;
+}
+/**
+ * @return
+ */
+private DatabaseEditor getDbEditor() {
+	DatabaseEditor editor = null;
+	for (Iterator iter = getListeners().iterator(); iter.hasNext();) {
+		Object listener = (Object) iter.next();
+		if (listener instanceof DatabaseEditor) 
+		{
+				editor = (DatabaseEditor) listener;
+		}
+	}
+	return editor;
 }
 /**
  * isLastInputPanel method comment.

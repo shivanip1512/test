@@ -175,7 +175,7 @@ protected abstract DataInputPanel getNextInputPanel(DataInputPanel currentInputP
 /**
  * getValue method comment.
  */
-public Object getValue(Object o) {
+public Object getValue(Object o) throws CancelInsertException{
 	
 	for( int i = 0; (i < this.inputPanels.length) && (i <= this.currentPanel); i++ )
 	{
@@ -410,5 +410,14 @@ public void setValue(Object val) {
 		}
 	}
 	
+}
+public void setCancelled(boolean cancelled) {
+	this.cancelled = cancelled;
+}
+public Vector getListeners() {
+	return listeners;
+}
+public void setInputPanels(DataInputPanel[] inputPanels) {
+	this.inputPanels = inputPanels;
 }
 }

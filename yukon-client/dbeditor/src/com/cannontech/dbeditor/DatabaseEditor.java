@@ -1051,7 +1051,7 @@ public void executeChangeTypeButton_ActionPerformed(ActionEvent event)
  */
 private void executeCopyButton_ActionPerformed(ActionEvent event)
 {
-	DefaultMutableTreeNode node = getTreeViewPanel().getSelectedNode();
+	DefaultMutableTreeNode node = getDefaultTreeNode();
 	
 	if( node != null )
 	{
@@ -1059,9 +1059,7 @@ private void executeCopyButton_ActionPerformed(ActionEvent event)
 		com.cannontech.database.db.DBPersistent toCopy = com.cannontech.database.data.lite.LiteFactory.createDBPersistent((com.cannontech.database.data.lite.LiteBase)node.getUserObject());
 		if(toCopy instanceof com.cannontech.database.data.device.DeviceBase && !(toCopy instanceof com.cannontech.database.data.device.lm.LMGroup))
         {
-			DeviceCopyWizardPanel devicePanel = new DeviceCopyWizardPanel((com.cannontech.database.data.device.DeviceBase)toCopy);
-            devicePanel.setDeviceType( toCopy );
-            showCopyWizardPanel( devicePanel );
+            showCopyWizardPanel (toCopy);
         }
 		else if(toCopy instanceof com.cannontech.database.data.device.lm.LMProgramDirect)
 			showCopyWizardPanel( new com.cannontech.dbeditor.wizard.copy.lm.LMProgramCopyWizardPanel((com.cannontech.database.data.device.lm.LMProgramBase)toCopy) );
@@ -1088,6 +1086,21 @@ private void executeCopyButton_ActionPerformed(ActionEvent event)
 				getParentFrame(),
 				"You must select something to be copied", "Copy Error", 
 				JOptionPane.INFORMATION_MESSAGE);  
+}
+/**
+ * @return
+ */
+public DefaultMutableTreeNode getDefaultTreeNode() {
+	DefaultMutableTreeNode node = getTreeViewPanel().getSelectedNode();
+	return node;
+}
+/**
+ * @param toCopy
+ */
+public void showCopyWizardPanel(com.cannontech.database.db.DBPersistent toCopy) {
+	DeviceCopyWizardPanel devicePanel = new DeviceCopyWizardPanel((com.cannontech.database.data.device.DeviceBase)toCopy);
+	devicePanel.setDeviceType( toCopy );
+	showCopyWizardPanel( devicePanel );
 }
 
 /**
