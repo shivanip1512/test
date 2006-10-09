@@ -110,7 +110,8 @@ public void advancedSetupButton_ActionPerformed(java.awt.event.ActionEvent actio
    		if(getAdvancedRepeaterSetupEditorPanel().isDataCorrect(this.objectToEdit))
    		{
    			getAdvancedRepeaterSetupEditorPanel().getValue(this.objectToEdit);
-			message = new StringBuffer("Would you like the apply the changes you made in Advanced Setup?");
+			message = new StringBuffer("Changes made in the Advanced Setup tab will immediately be downloaded to the field device.  \n" +
+                    "Click 'Yes' to save and download these changes. Click 'No' to return to the main window.");
 			int optional = javax.swing.JOptionPane.showConfirmDialog(
 							this, 
 							message,
