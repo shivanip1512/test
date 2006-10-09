@@ -5,7 +5,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.search.PointDeviceLuceneInitializer;
+import com.cannontech.common.search.index.IndexBuilder;
 import com.cannontech.spring.YukonSpringHook;
 
 public class LuceneIndexingServlet extends HttpServlet {
@@ -16,14 +16,14 @@ public class LuceneIndexingServlet extends HttpServlet {
     
     @Override
     public void init(ServletConfig arg0) throws ServletException {
-        final PointDeviceLuceneInitializer pdli = 
-            (PointDeviceLuceneInitializer) YukonSpringHook.getBean("pointDeviceSearchInitializer");
-        
+        final IndexBuilder builder = (IndexBuilder) YukonSpringHook.getBean("indexBuilder");
+
         new Thread(new Runnable() {
             public void run() {
-                pdli.createInitialIndex();
+                builder.buildAllIndexes(false);
+
                 initialIndexDone = true;
-                CTILogger.info("Point Device index has been constructed.");
+                CTILogger.info("All indexes have been constructed.");
             }
         }, "LuceneIndexer").start();
     }

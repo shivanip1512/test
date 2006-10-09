@@ -1,0 +1,55 @@
+
+function indexManager_buildIndex(indexName) {
+    var indexManager_getProgressWrapper = function () {
+        indexManager_getProgress(indexName);
+    };
+    new Ajax.Request("/index/buildIndex?index=" + indexName, {"method":"get", "onComplete":indexManager_getProgressWrapper, "onFailure":indexManager_ajaxError});
+}
+var indexManager_getProgress = function (indexName) {
+    var indexManager_updateProgressWrapper = function (transport, json) {
+        indexManager_updateProgress(transport, json, indexName);
+    };
+    new Ajax.Request("/index/percentDone?index=" + indexName, {"method":"get", "onComplete":indexManager_updateProgressWrapper, "onFailure":indexManager_ajaxError});
+};
+var indexManager_updateProgress = function (transport, json, indexName) {
+    var percentDone = json.percentDone;
+    var isBuilding = json.isBuilding;
+    var newDate = json.newDate;
+    var newVersion = json.newVersion;
+    var version = document.getElementById(indexName + "version");
+    var dateCreated = document.getElementById(indexName + "dateCreated");
+    var percentComplete = document.getElementById(indexName + "percentComplete");
+    var buildIndex = document.getElementById(indexName + "buildIndex");
+    if (isBuilding) {
+        setTimeout("indexManager_getProgress('" + indexName + "')", 1000);
+    }
+    if (isBuilding && percentDone < 100) {
+        dateCreated.innerHTML = newDate;
+        version.innerHTML = newVersion;
+        buildIndex.style.display = "none";
+        percentComplete.style.display = "";
+        indexManager_updateIndexProgressBar(indexName, percentDone);
+    } else {
+        dateCreated.innerHTML = newDate;
+        version.innerHTML = newVersion;
+        percentComplete.style.display = "none";
+        buildIndex.style.display = "";
+        document.getElementById(indexName + "progressText").innerHTML = "";
+    }
+};
+var indexManager_ajaxError = function (transport, json) {
+alert('error');
+    errorHolder = document.createElement("div");
+    errorHolder.innerHTML = transport.responseText;
+    document.getElementsByTagName("body")[0].appendChild(errorHolder);
+};
+
+function indexManager_updateIndexProgressBar(indexName, percent) {
+    progressText = document.getElementById(indexName + "progressText");
+    progressInner = document.getElementById(indexName + "progressInner");
+    if (percent > 20) {
+        progressText.innerHTML = parseInt(percent) + "%";
+    }
+    progressInner.style.width = (percent * 2) + "px";
+}
+

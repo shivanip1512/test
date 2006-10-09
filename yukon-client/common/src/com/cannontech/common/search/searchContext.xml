@@ -5,13 +5,21 @@
     <description>This file is for the Lucene Searching beans.</description>
 
     <bean id="pointDeviceSearcherLucene" class="com.cannontech.common.search.PointDeviceLuceneSearcher" singleton="true" autowire="byType">
-        <property name="indexLocation" value="c:/dev/lucene" />
+        <property name="indexManager" ref="pointDeviceIndexManager" />
     </bean>
 
     <alias name="pointDeviceSearcherLucene" alias="pointDeviceSearcher" />
 
-    <bean id="pointDeviceSearchInitializer" class="com.cannontech.common.search.PointDeviceLuceneInitializer" singleton="true" autowire="default">
+    <bean id="pointDeviceIndexManager" class="com.cannontech.common.search.index.PointDeviceIndexManager" singleton="true" autowire="default">
         <property name="jdbcTemplate" ref="jdbcTemplate" />
-        <property name="indexLocation" value="c:/dev/lucene" />
+        <property name="asyncDynamicDataSource" ref="asyncDynamicDataSource" />
+    </bean>
+
+    <bean id="indexBuilder" class="com.cannontech.common.search.index.IndexBuilder" singleton="true" autowire="default">
+        <property name="managerList">
+            <list>
+                <ref bean="pointDeviceIndexManager" />
+            </list>
+        </property>
     </bean>
 </beans>
