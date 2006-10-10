@@ -61,7 +61,7 @@ public class RateScheduleItemPanel extends DataInputPanel implements DataInputPa
 
             DailyRateSchedule schedule = this.dailyRateScheduleList.get(i - 1);
 
-            for (int j = 1; j <= NUMBER_OF_RATE_CHANGES; j++) {
+            for (int j = 0; j < NUMBER_OF_RATE_CHANGES; j++) {
 
                 String timeItemString = "Schedule" + i + "Time" + j;
                 String rateItemString = "Schedule" + i + "Rate" + j;
@@ -92,24 +92,29 @@ public class RateScheduleItemPanel extends DataInputPanel implements DataInputPa
 
                 DailyRateSchedule schedule = this.dailyRateScheduleList.get(rateSchedule - 1);
 
-                for (int change = 1; change <= NUMBER_OF_RATE_CHANGES; change++) {
+                for (int change = 0; change < NUMBER_OF_RATE_CHANGES; change++) {
 
                     String timeItemString = "Schedule" + rateSchedule + "Time" + change;
                     String rateItemString = "Schedule" + rateSchedule + "Rate" + change;
 
                     Item timeItem = this.category.getItemByName(timeItemString);
                     JSpinner spinner = schedule.getTimeSpinner(change);
-                    if (timeItem != null && spinner != null && timeItem.getValue() != null) {
-                        try {
-                            spinner.setValue(TIME_FORMAT.parse(timeItem.getValue()));
-                        } catch (ParseException e) {
-                            e.printStackTrace();
+                    if (timeItem != null) {
+                        spinner.setToolTipText(timeItem.getDescription());
+                        if (spinner != null && timeItem.getValue() != null) {
+                            try {
+                                if (!"".equals(timeItem.getValue())) {
+                                    spinner.setValue(TIME_FORMAT.parse(timeItem.getValue()));
+                                }
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
                         }
                     }
-
                     JComboBox combo = schedule.getRateCombo(change);
                     Item rateItem = this.category.getItemByName(rateItemString);
                     if (rateItem != null && combo != null) {
+                        combo.setToolTipText(rateItem.getDescription());
                         for (int i = 0; i < combo.getItemCount(); i++) {
                             String rateStr = (String) combo.getItemAt(i);
                             if (rateStr.equalsIgnoreCase(rateItem.getValue())) {
@@ -166,7 +171,11 @@ public class RateScheduleItemPanel extends DataInputPanel implements DataInputPa
                                                                  Calendar.MINUTE));
             // Only show hour and minute in the date spinner
             spinner.setEditor(new JSpinner.DateEditor(spinner, "HH:mm"));
-            spinner.setEnabled(this.enabled);
+            if (i == 0) {
+                spinner.setEnabled(false);
+            } else {
+                spinner.setEnabled(this.enabled);
+            }
             spinner.addChangeListener(new ChangeListener() {
                 public void stateChanged(ChangeEvent e) {
                     fireInputUpdate();
@@ -295,7 +304,7 @@ public class RateScheduleItemPanel extends DataInputPanel implements DataInputPa
         public String getTime(int position) {
 
             try {
-                JSpinner spinner = timeList.get(position - 1);
+                JSpinner spinner = timeList.get(position);
 
                 return TIME_FORMAT.format(spinner.getValue());
 
@@ -312,7 +321,7 @@ public class RateScheduleItemPanel extends DataInputPanel implements DataInputPa
          */
         public JSpinner getTimeSpinner(int position) {
             try {
-                return timeList.get(position - 1);
+                return timeList.get(position);
             } catch (IndexOutOfBoundsException e) {
                 return null;
             }
@@ -326,7 +335,7 @@ public class RateScheduleItemPanel extends DataInputPanel implements DataInputPa
         public String getRate(int position) {
 
             try {
-                JComboBox combo = rateList.get(position - 1);
+                JComboBox combo = rateList.get(position);
 
                 return (String) combo.getSelectedItem();
 
@@ -343,7 +352,7 @@ public class RateScheduleItemPanel extends DataInputPanel implements DataInputPa
          */
         public JComboBox getRateCombo(int position) {
             try {
-                return rateList.get(position - 1);
+                return rateList.get(position);
             } catch (IndexOutOfBoundsException e) {
                 return null;
             }
