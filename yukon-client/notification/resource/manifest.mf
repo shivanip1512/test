@@ -2,6 +2,7 @@ Manifest-Version: 1.0
 Main-Class: com.cannontech.notif.server.NotificationServer
 Class-Path: ./ 
  common.jar 
+ cbc.jar 
  commercialcurtailment.jar 
  log4j-1.2.4.jar 
  mx4j.jar 
