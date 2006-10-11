@@ -422,8 +422,20 @@ public class StarsDatabaseCache implements DBChangeLiteListener {
 			}
 		}
 		else if (msg.getDatabase() == DBChangeMsg.CHANGE_PAO_DB) {
-			LiteYukonPAObject litePao = DaoFactory.getPaoDao().getLiteYukonPAO( msg.getId() );
-			
+            LiteYukonPAObject litePao = null;
+            
+            /*
+             * Why look this up if it has just been deleted from cache?
+             *TODO: Will need to add more functionality to handle deletes and adds if STARS is tied
+             *together more firmly with Yukon in the future.  (Example might be MCT inventory contents.) 
+             */
+            if(msg.getTypeOfChange() != DBChangeMsg.CHANGE_TYPE_DELETE)
+                litePao = DaoFactory.getPaoDao().getLiteYukonPAO( msg.getId() );
+            else {
+                CTILogger.debug("DBChangeMsg for a deleted PAO: " + msg);
+                return;
+            }
+            
 			for (int i = 0; i < companies.size(); i++) {
 				LiteStarsEnergyCompany energyCompany = (LiteStarsEnergyCompany) companies.get(i);
 				
