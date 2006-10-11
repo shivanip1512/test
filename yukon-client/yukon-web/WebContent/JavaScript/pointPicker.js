@@ -72,7 +72,7 @@ function pointPicker_ajaxError(transport, json) {
     $('pointPicker_indicator').style.visibility = 'hidden';
     $("pointPicker_results").innerHTML = "";
     errorHolder = document.createElement("div");
-    errorHolder.innerHTML = transport.responseText;
+    errorHolder.innerHTML = "There was a problem searching the index: " + transport.responseText;
     $("pointPicker_results").appendChild(errorHolder);
 }
 

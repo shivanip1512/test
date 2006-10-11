@@ -12,18 +12,12 @@
             Index Name
         </th>
         <th>
-            Version
-        </th>
-        <th>
             Date Created
         </th>
         <c:forEach var="index" items="${indexList}">
             <tr>
                 <td>
                     <c:out value="${index.indexName}" />
-                </td>
-                <td>
-                    <span id="<c:out value="${index.indexName}" />version"><c:out value="${index.version}" /></span>
                 </td>
                 <td>
                     <span id="<c:out value="${index.indexName}" />dateCreated"><c:out value="${index.dateCreated}" /></span>

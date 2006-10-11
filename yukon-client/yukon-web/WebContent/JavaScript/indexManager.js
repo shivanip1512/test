@@ -15,8 +15,6 @@ var indexManager_updateProgress = function (transport, json, indexName) {
     var percentDone = json.percentDone;
     var isBuilding = json.isBuilding;
     var newDate = json.newDate;
-    var newVersion = json.newVersion;
-    var version = document.getElementById(indexName + "version");
     var dateCreated = document.getElementById(indexName + "dateCreated");
     var percentComplete = document.getElementById(indexName + "percentComplete");
     var buildIndex = document.getElementById(indexName + "buildIndex");
@@ -24,23 +22,20 @@ var indexManager_updateProgress = function (transport, json, indexName) {
         setTimeout("indexManager_getProgress('" + indexName + "')", 1000);
     }
     if (isBuilding && percentDone < 100) {
-        dateCreated.innerHTML = newDate;
-        version.innerHTML = newVersion;
+        dateCreated.innerHTML = "Building started at: " + newDate;
         buildIndex.style.display = "none";
         percentComplete.style.display = "";
         indexManager_updateIndexProgressBar(indexName, percentDone);
     } else {
         dateCreated.innerHTML = newDate;
-        version.innerHTML = newVersion;
         percentComplete.style.display = "none";
         buildIndex.style.display = "";
         document.getElementById(indexName + "progressText").innerHTML = "";
     }
 };
 var indexManager_ajaxError = function (transport, json) {
-alert('error');
     errorHolder = document.createElement("div");
-    errorHolder.innerHTML = transport.responseText;
+    errorHolder.innerHTML = "There is a problem with the index: " + transport.responseText;
     document.getElementsByTagName("body")[0].appendChild(errorHolder);
 };
 

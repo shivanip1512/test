@@ -3,6 +3,8 @@ package com.cannontech.common.search.index;
 import java.io.File;
 import java.util.Date;
 
+import org.apache.lucene.search.IndexSearcher;
+
 import com.cannontech.database.cache.DBChangeListener;
 
 /**
@@ -68,5 +70,11 @@ public interface IndexManager extends DBChangeListener {
      *            already exist or if the index version is out of date.
      */
     public void createIndex(boolean overwrite);
+
+    /**
+     * Method used to get an IndexSearcher for the index
+     * @return An index searcher
+     */
+    public IndexSearcher getIndexSearcher();
 
 }

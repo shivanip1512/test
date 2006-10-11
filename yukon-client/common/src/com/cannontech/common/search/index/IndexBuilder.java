@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.cannontech.clientutils.CTILogger;
-
 /**
  * Class which manages all of the lucene indexes in the system. This class will
  * delegate index-specific requests to the appropriate index manager.
@@ -43,26 +41,26 @@ public class IndexBuilder {
 
         final IndexManager manager = this.managerMap.get(indexName);
 
-        if (manager != null) {
-            // Cannot build the index if it is already being built
-            if (manager.isBuilding()) {
-                return;
-            }
+        synchronized (manager) {
 
-            // Set building to true before we kick off the thread.
-            manager.setBuilding(true);
-            new Thread(new Runnable() {
-                public void run() {
-
-                    manager.createIndex(overwrite);
-                    manager.setBuilding(false);
-
-                    CTILogger.info(manager.getIndexName() + " index has been built.");
+            if (manager != null) {
+                // Cannot build the index if it is already being built
+                if (manager.isBuilding()) {
+                    return;
                 }
-            }, manager.getIndexName() + "IndexBuilder").start();
 
-        } else {
-            throw new IllegalArgumentException("Invalid index name: " + indexName);
+                // Set building to true before we kick off the thread.
+                manager.setBuilding(true);
+                new Thread(new Runnable() {
+                    public void run() {
+                        manager.createIndex(overwrite);
+                        manager.setBuilding(false);
+                    }
+                }, manager.getIndexName() + "IndexBuilder").start();
+
+            } else {
+                throw new IllegalArgumentException("Invalid index name: " + indexName);
+            }
         }
 
     }

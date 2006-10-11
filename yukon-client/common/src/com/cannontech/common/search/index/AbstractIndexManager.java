@@ -26,12 +26,9 @@ import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.SqlRowSetResultSetExtractor;
-import org.springframework.jdbc.support.rowset.SqlRowSet;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 
@@ -65,7 +62,7 @@ public abstract class AbstractIndexManager implements IndexManager {
     private int recordCount = 0;
     private AtomicInteger count = new AtomicInteger(0);
 
-    private Exception createException = null;
+    private RuntimeException currentException = null;
 
     public AbstractIndexManager() {
         this.initialize();
@@ -106,6 +103,24 @@ public abstract class AbstractIndexManager implements IndexManager {
         this.count.get();
     }
 
+    public IndexSearcher getIndexSearcher() {
+
+        // Make sure there are currently no issues with the index
+        this.checkForException();
+
+        // Make sure the index is not currently being built
+        if (this.isBuilding) {
+            throw new RuntimeException("The index is currently being built. Please try again later.");
+        }
+
+        try {
+            return new IndexSearcher(this.indexLocation.getAbsolutePath());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
     public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
@@ -115,6 +130,12 @@ public abstract class AbstractIndexManager implements IndexManager {
     }
 
     /**
+     * Method to get the current version of the index
+     * @return Index version
+     */
+    abstract protected int getIndexVersion();
+
+    /**
      * Method to get the analyzer for a specific index.
      * @return Index specific analyzer
      */
@@ -122,6 +143,11 @@ public abstract class AbstractIndexManager implements IndexManager {
 
     /**
      * Method to get the query used to build documents for a specific index.
+     * <br />
+     * <br />
+     * ****NOTE: if you change the query in this method, you must increment the
+     * version number returned by getIndexVersion() for the specific index
+     * <br />
      * @return Index specific document query
      */
     abstract protected String getDocumentQuery();
@@ -130,13 +156,22 @@ public abstract class AbstractIndexManager implements IndexManager {
      * Method to get the number of records that will be in the index. This query
      * should be identical to the getDocumentQuery, the only change being this
      * query should return a count of records and not the actual records.
-     * <code>Select count(*) from .... vs Select * from ....</code>
+     * <code>Select count(*) from .... vs Select * from ....</code> <br />
+     * <br />
+     * ****NOTE: if you change the query in this method, you must increment the
+     * version number returned by getIndexVersion() for the specific index
+     * <br />
      * @return Index specific document count query
      */
     abstract protected String getDocumentCountQuery();
 
     /**
      * Method to process a result set row into a document for a specific index.
+     * <br />
+     * <br />
+     * ****NOTE: if you change the way a document is created or change the
+     * fields in the document, you must increment the version number returned by
+     * getIndexVersion() for the specific index <br />
      * @param rs - Result set to build the document from
      * @return Index specific document
      */
@@ -153,11 +188,7 @@ public abstract class AbstractIndexManager implements IndexManager {
 
     public float getPercentDone() {
 
-        if (this.createException != null) {
-            this.createException = null;
-            throw new RuntimeException("There was a problem creating the " + this.getIndexName()
-                    + " index.");
-        }
+        this.checkForException();
 
         if (this.recordCount == 0) {
             return this.recordCount;
@@ -170,7 +201,7 @@ public abstract class AbstractIndexManager implements IndexManager {
 
     }
 
-    public void createIndex(boolean overwrite) {
+    public synchronized void createIndex(boolean overwrite) {
 
         if (!overwrite) {
             boolean indexExists = true;
@@ -185,38 +216,41 @@ public abstract class AbstractIndexManager implements IndexManager {
                 return;
             }
         }
-
+        
         this.version = null;
-        this.dateCreated = null;
+        // Set the dateCreated to the time the index building started
+        this.dateCreated = new Date();
 
         // Create the index
         IndexWriter indexWriter = null;
         try {
+            CTILogger.info("Building " + this.getIndexName() + " index.");
+
             // Get a new index writer
             indexWriter = new IndexWriter(indexLocation.getAbsolutePath(), getAnalyzer(), true);
             indexWriter.setMaxBufferedDocs(MAX_BUFFERED_DOCS);
 
-            long start = System.currentTimeMillis();
+            // Get the total # of records to be written into the index
             String sql = getDocumentCountQuery();
-
-            SqlRowSet rowSet = (SqlRowSet) jdbcTemplate.query(sql,
-                                                              new SqlRowSetResultSetExtractor());
-            while (rowSet.next()) {
-                recordCount = rowSet.getInt(1);
-            }
+            recordCount = jdbcTemplate.queryForInt(sql);
 
             sql = getDocumentQuery();
 
-            RowCallbackHandler rch = new LuceneRowIndexer(indexWriter, start, count);
+            RowCallbackHandler rch = new LuceneRowIndexer(indexWriter, count);
             jdbcTemplate.query(sql, rch);
             indexWriter.optimize();
+
+            // Reset the current document count and clear any exceptions
             count.set(0);
-            long elapsed = System.currentTimeMillis() - start;
-            System.out.println(count + " in " + elapsed + "ms");
-        } catch (Exception e) {
-            CTILogger.error(e);
-            this.createException = e;
-            throw new RuntimeException(e);
+            this.currentException = null;
+            CTILogger.info(this.getIndexName() + " index has been built.");
+
+        } catch (IOException e) {
+            this.currentException = new RuntimeException(e);
+            throw this.currentException;
+        } catch (RuntimeException e) {
+            this.currentException = e;
+            throw this.currentException;
         } finally {
             isBuilding = false;
             try {
@@ -229,14 +263,15 @@ public abstract class AbstractIndexManager implements IndexManager {
         }
 
         // Create the version file
+        OutputStream oStream = null;
         try {
             versionFile.delete();
             versionFile.createNewFile();
-            OutputStream oStream = new FileOutputStream(versionFile);
+            oStream = new FileOutputStream(versionFile);
 
             Properties properties = new Properties();
 
-            String newVersion = VersionTools.getDatabaseVersion().getVersion();
+            String newVersion = String.valueOf(getIndexVersion());
             Date date = new Date();
 
             properties.setProperty(VERSION_PROPERTY, newVersion);
@@ -246,10 +281,16 @@ public abstract class AbstractIndexManager implements IndexManager {
             version = newVersion;
             dateCreated = date;
 
-        } catch (FileNotFoundException e) {
-            CTILogger.error(e);
         } catch (IOException e) {
-            CTILogger.error(e);
+            CTILogger.error("Exception creating " + this.getIndexName() + " index version file", e);
+        } finally {
+            try {
+                if (oStream != null) {
+                    oStream.close();
+                }
+            } catch (IOException e) {
+                // Do nothing - tried to close;
+            }
         }
 
     }
@@ -283,13 +324,25 @@ public abstract class AbstractIndexManager implements IndexManager {
             }
 
         } catch (IOException e) {
-            CTILogger.error(e);
+            this.currentException = new RuntimeException("There was a problem updating the "
+                    + this.getIndexName() + " index", e);
         } finally {
             try {
-                indexModifier.close();
+                if (indexModifier != null) {
+                    indexModifier.close();
+                }
             } catch (IOException e) {
-                CTILogger.error(e);
+                // Do nothing - tried to close
             }
+        }
+    }
+
+    /**
+     * Helper method to check for a current exception and throw if there is one
+     */
+    private void checkForException() {
+        if (this.currentException != null) {
+            throw this.currentException;
         }
     }
 
@@ -317,21 +370,20 @@ public abstract class AbstractIndexManager implements IndexManager {
                     CTILogger.error(e);
                 }
             }
-
         } catch (FileNotFoundException e) {
             // do nothing - no version.txt
         } catch (IOException e) {
-            CTILogger.error(e);
+            CTILogger.error("Exception reading " + this.getIndexName() + " index version file", e);
         }
     }
 
     /**
-     * Helper method to determine if the index version is the same as the yukon
-     * version
+     * Helper method to determine if the index version is the same as the index
+     * code version
      * @return True if the versions match
      */
     private boolean isCurrentVersion() {
-        return VersionTools.getDatabaseVersion().getVersion().equals(this.version);
+        return String.valueOf(this.getIndexVersion()).equals(this.version);
     }
 
     /**
@@ -341,13 +393,11 @@ public abstract class AbstractIndexManager implements IndexManager {
     private final class LuceneRowIndexer implements RowCallbackHandler {
 
         private final IndexWriter writer;
-        private final long start;
         private final AtomicInteger count;
 
-        private LuceneRowIndexer(IndexWriter writer, long start, AtomicInteger count) {
+        private LuceneRowIndexer(IndexWriter writer, AtomicInteger count) {
             super();
             this.writer = writer;
-            this.start = start;
             this.count = count;
         }
 
@@ -358,14 +408,11 @@ public abstract class AbstractIndexManager implements IndexManager {
             try {
                 writer.addDocument(doc);
             } catch (IOException e) {
-                CTILogger.error(e);
+                throw new RuntimeException("Exception adding document to " + getIndexName()
+                        + " index", e);
             }
 
-            int i = count.incrementAndGet();
-            long elapsed = System.currentTimeMillis() - start;
-            if (i % 1000 == 0) {
-                System.out.println(" completed " + i + " in " + elapsed + "ms");
-            }
+            count.incrementAndGet();
         }
     }
 

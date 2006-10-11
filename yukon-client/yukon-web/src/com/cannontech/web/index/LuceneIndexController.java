@@ -44,8 +44,6 @@ public class LuceneIndexController extends MultiActionController {
         IndexManager indexManager = this.indexBuilder.getIndexManager(index);
         mav.addObject("percentDone", indexManager.getPercentDone());
         mav.addObject("isBuilding", indexManager.isBuilding());
-        mav.addObject("newVersion", (indexManager.getVersion() == null) ? "--"
-                : indexManager.getVersion());
         mav.addObject("newDate", (indexManager.getDateCreated() == null) ? "--"
                 : indexManager.getFormattedDateCreated());
 

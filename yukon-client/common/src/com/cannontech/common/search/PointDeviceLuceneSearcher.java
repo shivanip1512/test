@@ -1,6 +1,5 @@
 package com.cannontech.common.search;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,17 +18,12 @@ import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.search.index.IndexManager;
 
 public class PointDeviceLuceneSearcher implements PointDeviceSearcher {
 
-    private static final String INDEX_BUILDING_ERROR = "This index is currently being created. Please try again later.";
-
-    private File indexLocation;
     private Analyzer analyzer = new PointDeviceSearchAnalyzer();
     private final ReentrantReadWriteLock indexLock = new ReentrantReadWriteLock();
-    private IndexSearcher indexSearcher = null;
     private IndexManager manager = null;
 
     public PointDeviceLuceneSearcher() {
@@ -37,9 +31,6 @@ public class PointDeviceLuceneSearcher implements PointDeviceSearcher {
     
     public SearchResult<UltraLightPoint> search(String queryString, PointDeviceCriteria criteria, final int start, final int count) {
         try {
-            if (isIndexBuilding()) {
-                throw new RuntimeException(INDEX_BUILDING_ERROR);
-            }
             // fix the query a little bit...
             String[] terms = queryString.split("\\s+");
             String newQueryString = StringUtils.join(terms, " ");
@@ -48,9 +39,10 @@ public class PointDeviceLuceneSearcher implements PointDeviceSearcher {
             Query query = parser.parse(newQueryString);
             Query queryWithCriteria = compileAndCombine(query, criteria);
             return doQuery(queryWithCriteria, start, count);
+        } catch (RuntimeException e){
+            throw e;
         } catch (Exception e) {
-            CTILogger.error(e);
-            throw new RuntimeException("Couldn't complete search");
+            throw new RuntimeException(e);
         }
     }
     
@@ -68,7 +60,7 @@ public class PointDeviceLuceneSearcher implements PointDeviceSearcher {
     
     private SearchResult<UltraLightPoint> doQuery(Query query, final int start, final int count) throws IOException {
         Hits hits;
-        indexSearcher = new IndexSearcher(indexLocation.getAbsolutePath());
+        IndexSearcher indexSearcher = this.manager.getIndexSearcher();
         indexLock.readLock().lock();
         try {
             hits = indexSearcher.search(query);
@@ -77,32 +69,26 @@ public class PointDeviceLuceneSearcher implements PointDeviceSearcher {
             stop = Math.min(start + count, hits.length());
             
             List<UltraLightPoint> disconnectedCollection = new ArrayList<UltraLightPoint>(count);
-            try {
-                for (int i = start; i < stop; ++i) {
-                    final Document doc = hits.doc(i);
-                    // a Document does not hold a referrence to an IndexReader so it is okay
-                    // to hold a reference to one here
-                    UltraLightPoint ultra = new UltraLightPoint() {
-                        public String getPointName() {
-                            return doc.get("point");
-                        }
-                        public String getDeviceName() {
-                            return doc.get("device");
-                        }
-                        public int getPointId() {
-                            return Integer.parseInt(doc.get("pointid"));
-                        }
-                        public int getDeviceId() {
-                            return Integer.parseInt(doc.get("deviceid"));
-                        }
-                        
-                    };
-                    disconnectedCollection.add(ultra);
+            for (int i = start; i < stop; ++i) {
+                final Document doc = hits.doc(i);
+                // a Document does not hold a referrence to an IndexReader so it is okay
+                // to hold a reference to one here
+                UltraLightPoint ultra = new UltraLightPoint() {
+                    public String getPointName() {
+                        return doc.get("point");
+                    }
+                    public String getDeviceName() {
+                        return doc.get("device");
+                    }
+                    public int getPointId() {
+                        return Integer.parseInt(doc.get("pointid"));
+                    }
+                    public int getDeviceId() {
+                        return Integer.parseInt(doc.get("deviceid"));
+                    }
                     
-                }
-            } catch (IOException e) {
-                CTILogger.error(e);
-                throw new RuntimeException("Can't process results");
+                };
+                disconnectedCollection.add(ultra);
             }
             SearchResult<UltraLightPoint> result = new SearchResult<UltraLightPoint>();
             result.setBounds(start, count, hits.length());
@@ -110,7 +96,11 @@ public class PointDeviceLuceneSearcher implements PointDeviceSearcher {
             return result;
         } finally {
             indexLock.readLock().unlock();
-            indexSearcher.close();
+            try {
+                indexSearcher.close();
+            } catch (IOException e) {
+                // do nothing - tried to close
+            }
         }
     }
     
@@ -120,13 +110,10 @@ public class PointDeviceLuceneSearcher implements PointDeviceSearcher {
     
     public SearchResult<UltraLightPoint> sameDevicePoints(int currentPointId, PointDeviceCriteria criteria, int start, int count) {
         try {
-            if (isIndexBuilding()) {
-                throw new RuntimeException(INDEX_BUILDING_ERROR);
-            }
             Hits hits;
             Query queryWithCriteria;
             TermQuery termQuery = new TermQuery(new Term("pointid", Integer.toString(currentPointId)));
-            indexSearcher = new IndexSearcher(indexLocation.getAbsolutePath());
+            IndexSearcher indexSearcher = this.manager.getIndexSearcher();
             indexLock.readLock().lock();
             try {
                 hits = indexSearcher.search(termQuery);
@@ -143,40 +130,22 @@ public class PointDeviceLuceneSearcher implements PointDeviceSearcher {
             }
             return doQuery(queryWithCriteria, start, count);
         } catch (IOException e) {
-            CTILogger.error(e);
-            throw new RuntimeException("Couldn't complete search");
+            throw new RuntimeException(e);
         }
     }
     
     public SearchResult<UltraLightPoint> allPoints(PointDeviceCriteria criteria, int i, int j) {
         Query query = new MatchAllDocsQuery();
         try {
-            if (isIndexBuilding()) {
-                throw new RuntimeException(INDEX_BUILDING_ERROR);
-            }
             Query queryWithCriteria = compileAndCombine(query, criteria);
             return doQuery(queryWithCriteria, i, j);
         } catch (IOException e) {
-            CTILogger.error(e);
-            throw new RuntimeException("Couldn't complete search");
+            throw new RuntimeException(e);
         }
     }
     
-    public File getIndexLocation() {
-        return indexLocation;
-    }
-    
-    public void setIndexLocation(File indexLocation) {
-        this.indexLocation = indexLocation;
-    }
-
     public void setIndexManager(IndexManager manager) {
         this.manager = manager;
-        this.setIndexLocation(manager.getIndexLocation());
-    }
-
-    public boolean isIndexBuilding() {
-        return this.manager.isBuilding();
     }
 
 }

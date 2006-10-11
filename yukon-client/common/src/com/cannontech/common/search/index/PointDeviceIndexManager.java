@@ -19,10 +19,12 @@ import com.cannontech.message.dispatch.message.DBChangeMsg;
  */
 public class PointDeviceIndexManager extends AbstractIndexManager {
 
-    private static final String INDEX_NAME = "pointPicker";
-
     public String getIndexName() {
-        return INDEX_NAME;
+        return "pointPicker";
+    }
+
+    protected int getIndexVersion() {
+        return 1;
     }
 
     protected Analyzer getAnalyzer() {
