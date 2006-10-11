@@ -54,7 +54,7 @@ public final class PaoDaoImpl implements PaoDao {
                                                                                litePaoRowMapper);
             return pao;
         } catch (IncorrectResultSizeDataAccessException e) {
-            throw new NotFoundException("A PAObject with id " + paoID + "cannot be found.");
+            throw new NotFoundException("A PAObject with id " + paoID + " cannot be found.");
         }
     }
 
