@@ -2579,6 +2579,7 @@ void identifyCompile( int & major, int & minor, int & build)
     major = CompileInfo.major;
     minor = CompileInfo.minor;
     build = CompileInfo.build;
+
     return;
 }
 
