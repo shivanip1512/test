@@ -1,4 +1,3 @@
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   tbl_dv_pagingreceiver
@@ -9,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dv_pagingreceiver.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2006/09/26 13:53:24 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2006/10/12 21:32:58 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -38,20 +37,18 @@ CtiTableDevicePagingReceiver::~CtiTableDevicePagingReceiver()
 
 CtiTableDevicePagingReceiver& CtiTableDevicePagingReceiver::operator=(const CtiTableDevicePagingReceiver& aRef)
 {
-
-
     if(this != &aRef)
     {
-        _frequency    = aRef.getFrequency();
-        _capcode1 = aRef.getCapcode(1);
-        _capcode2 = aRef.getCapcode(2);
-        _capcode3 = aRef.getCapcode(3);
-        _capcode4 = aRef.getCapcode(4);
-        _capcode5 = aRef.getCapcode(5);
-        _capcode6 = aRef.getCapcode(6);
-        _capcode7 = aRef.getCapcode(7);
-        _capcode8 = aRef.getCapcode(8);
-        _capcode9 = aRef.getCapcode(9);
+        _frequency = aRef.getFrequency();
+        _capcode1  = aRef.getCapcode( 1);
+        _capcode2  = aRef.getCapcode( 2);
+        _capcode3  = aRef.getCapcode( 3);
+        _capcode4  = aRef.getCapcode( 4);
+        _capcode5  = aRef.getCapcode( 5);
+        _capcode6  = aRef.getCapcode( 6);
+        _capcode7  = aRef.getCapcode( 7);
+        _capcode8  = aRef.getCapcode( 8);
+        _capcode9  = aRef.getCapcode( 9);
         _capcode10 = aRef.getCapcode(10);
         _capcode11 = aRef.getCapcode(11);
         _capcode12 = aRef.getCapcode(12);
@@ -60,12 +57,12 @@ CtiTableDevicePagingReceiver& CtiTableDevicePagingReceiver::operator=(const CtiT
         _capcode15 = aRef.getCapcode(15);
         _capcode16 = aRef.getCapcode(16);
     }
+
     return *this;
 }
 
 float CtiTableDevicePagingReceiver::getFrequency() const
 {
-
     return _frequency;
 }
 
@@ -73,38 +70,23 @@ float CtiTableDevicePagingReceiver::getCapcode(int codeNumber) const
 {
     switch(codeNumber)
     {
-        case 1:
-            return _capcode1;
-        case 2:
-            return _capcode2;
-        case 3:
-            return _capcode3;
-        case 4:
-            return _capcode4;
-        case 5:
-            return _capcode5;
-        case 6:
-            return _capcode6;
-        case 7:
-            return _capcode7;
-        case 8:
-            return _capcode8;
-        case 9:
-            return _capcode9;
-        case 10:
-            return _capcode10;
-        case 11:
-            return _capcode11;
-        case 12:
-            return _capcode12;
-        case 13:
-            return _capcode13;
-        case 14:
-            return _capcode14;
-        case 15:
-            return _capcode15;
-        case 16:
-            return _capcode16;
+        case 1:     return _capcode1;
+        case 2:     return _capcode2;
+        case 3:     return _capcode3;
+        case 4:     return _capcode4;
+        case 5:     return _capcode5;
+        case 6:     return _capcode6;
+        case 7:     return _capcode7;
+        case 8:     return _capcode8;
+        case 9:     return _capcode9;
+        case 10:    return _capcode10;
+        case 11:    return _capcode11;
+        case 12:    return _capcode12;
+        case 13:    return _capcode13;
+        case 14:    return _capcode14;
+        case 15:    return _capcode15;
+        case 16:    return _capcode16;
+
         default:
             return -1;
     }
@@ -129,25 +111,23 @@ void CtiTableDevicePagingReceiver::getSQL(RWDBDatabase &db,  RWDBTable &keyTable
 
 void CtiTableDevicePagingReceiver::DecodeDatabaseReader(RWDBReader &rdr)
 {
-
-
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    rdr["deviceid"] >> _deviceID;
+    rdr["deviceid"]  >> _deviceID;
     rdr["frequency"] >> _frequency;
-    rdr["capcode1"] >> _capcode1;
-    rdr["capcode2"] >> _capcode2;
-    rdr["capcode3"] >> _capcode3;
-    rdr["capcode4"] >> _capcode4;
-    rdr["capcode5"] >> _capcode5;
-    rdr["capcode6"] >> _capcode6;
-    rdr["capcode7"] >> _capcode7;
-    rdr["capcode8"] >> _capcode8;
-    rdr["capcode9"] >> _capcode9;
+    rdr["capcode1"]  >> _capcode1;
+    rdr["capcode2"]  >> _capcode2;
+    rdr["capcode3"]  >> _capcode3;
+    rdr["capcode4"]  >> _capcode4;
+    rdr["capcode5"]  >> _capcode5;
+    rdr["capcode6"]  >> _capcode6;
+    rdr["capcode7"]  >> _capcode7;
+    rdr["capcode8"]  >> _capcode8;
+    rdr["capcode9"]  >> _capcode9;
     rdr["capcode10"] >> _capcode10;
     rdr["capcode11"] >> _capcode11;
     rdr["capcode12"] >> _capcode12;
@@ -170,7 +150,6 @@ LONG CtiTableDevicePagingReceiver::getDeviceID() const
 
 RWDBStatus CtiTableDevicePagingReceiver::Restore()
 {
-
     char temp[32];
 
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
@@ -204,8 +183,6 @@ RWDBStatus CtiTableDevicePagingReceiver::Restore()
 
 RWDBStatus CtiTableDevicePagingReceiver::Insert()
 {
-
-
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
@@ -249,8 +226,6 @@ RWDBStatus CtiTableDevicePagingReceiver::Update()
 
 RWDBStatus CtiTableDevicePagingReceiver::Delete()
 {
-
-
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
