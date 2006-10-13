@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.36 $
-* DATE         :  $Date: 2006/09/11 14:11:55 $
+* REVISION     :  $Revision: 1.37 $
+* DATE         :  $Date: 2006/10/13 20:34:15 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -22,6 +22,7 @@
 #include "cmdparse.h"
 #include "ctidate.h"
 
+#define EXPRESSCOM_CRC_LENGTH 2
 
 #include <rw\ctoken.h>
 #include <rw\re.h>
@@ -33,6 +34,8 @@ using namespace std;
 
 CtiProtocolExpresscom::CtiProtocolExpresscom() :
 _useProtocolCRC(false),
+_CRC(0),
+_useASCII(false),
 _addressLevel(0),
 _spidAddress(0),                   // 1-65534
 _geoAddress(0),                    // 1-65534
@@ -971,6 +974,8 @@ INT CtiProtocolExpresscom::parseRequest(CtiCommandParser &parse, CtiOutMessage &
         }
     }
 
+    calcCRC(_message.begin(), _message.size());
+
     return status;
 }
 
@@ -1595,53 +1600,214 @@ void CtiProtocolExpresscom::incrementMessageCount()
     _messageCount++;
 }
 
-BYTE CtiProtocolExpresscom::getByte(int pos, int messageNum)//1 based number
+BYTE CtiProtocolExpresscom::getByte(int pos, int messageNum)// messageNum is a 1 based number
 {
+    char byte[5];
+    BYTE retVal;
     try
     {
-        if(pos<_addressLength || (messageNum == 1 && pos<_lengths.at(0)))
+        if(_useASCII)
         {
-            return _message[pos];
-        }
-        else if(_lengths.size()>=messageNum && messageNum>1 && messageNum<=_messageCount && pos>0 && pos<(_addressLength + _lengths.at(messageNum-1) - _lengths.at(messageNum-2)))
-        {
-            return _message[_lengths.at(messageNum-2) + pos - _addressLength];
+            int messageLoc = pos/2;
+            if(messageNum == 0)
+            {
+                if( messageLoc < _message.size())
+                {
+                    retVal = _message[messageLoc];
+                }
+                else
+                {
+                    if(_useProtocolCRC && pos < messageSize())
+                    {
+                        // crcPos is 0 for the first 2 crc bytes and 1 for the secondary 2.
+                        int crcPos = messageLoc-_message.size();
+                        retVal = _CRC>>(8*(1-crcPos));
+                    }
+                    else
+                    {
+                        retVal = 0;
+                    }
+                }
+            }
+            else if(messageLoc<_addressLength || (messageNum == 1 && messageLoc<_lengths.at(0)))
+            {
+                retVal = _message[messageLoc];
+            }
+            else if(_lengths.size()>=messageNum && messageNum>1 && messageNum<=_messageCount && messageLoc>0 && messageLoc<(_addressLength + _lengths.at(messageNum-1) - _lengths.at(messageNum-2)))
+            {
+                retVal = _message[_lengths.at(messageNum-2) + messageLoc - _addressLength];
+            }
+            else
+            {
+                retVal = 0;
+            }
+            sprintf(byte, "%1X", (retVal>>(4*(1-pos%2)))&0x0F);
+            retVal = byte[0];
         }
         else
         {
-            return 0;
+            if(messageNum == 0)
+            {
+                if(pos < _message.size())
+                {
+                    retVal = _message[pos];
+                }
+                else
+                {
+                    int difference = pos-_message.size();
+                    if(_useProtocolCRC && difference <= 1 )
+                    {
+                        retVal = _CRC>>(8*(1-difference));
+                    }
+                    else
+                    {
+                        retVal = 0;
+                    }
+                }
+            }
+            else if(pos<_addressLength || (messageNum == 1 && pos<_lengths.at(0)))
+            {
+                retVal = _message[pos];
+            }
+            else if(_lengths.size()>=messageNum && messageNum>1 && messageNum<=_messageCount && pos>0 && pos<(_addressLength + _lengths.at(messageNum-1) - _lengths.at(messageNum-2)))
+            {
+                retVal = _message[_lengths.at(messageNum-2) + pos - _addressLength];
+            }
+            else
+            {
+                retVal = 0;
+            }
         }
     }
     catch(...)//_lengths.at() can throw
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        return 0;
+        retVal = 0;
     }
+
+    return retVal;
 }
 
 int CtiProtocolExpresscom::messageSize(int messageNum)
 {
+    int size;
     try
     {
-
-        if(messageNum == 1)
+        if(messageNum == 0)
         {
-            return _lengths.at(0);
+            if(_useASCII)
+            {
+                size = _message.size()*2;
+                if(_useProtocolCRC)
+                {
+                    size += 2*EXPRESSCOM_CRC_LENGTH;
+                }
+            }
+            else
+            {
+                size = _message.size();
+                if(_useProtocolCRC)
+                {
+                    size += EXPRESSCOM_CRC_LENGTH;
+                }
+            }
+        }
+        else if(messageNum == 1)
+        {
+            size = _lengths.at(0);
         }
         else if(messageNum>1 && messageNum<=_messageCount && _lengths.size()>=messageNum)
         {
-            return _addressLength + _lengths.at(messageNum-1) - _lengths.at(messageNum-2);
+            size = _addressLength + _lengths.at(messageNum-1) - _lengths.at(messageNum-2);
         }
         else
         {
-            return 0;
+            size = 0;
         }
     }
     catch(...)//_lengths.at() can throw
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        return 0;
+        size = 0;
     }
+
+    return size;
 }
+
+void CtiProtocolExpresscom::setUseCRC(bool useCRC)
+{
+    _useProtocolCRC = useCRC;
+}
+
+bool CtiProtocolExpresscom::getUseCRC()
+{
+    return _useProtocolCRC;
+}
+
+void CtiProtocolExpresscom::setUseASCII(bool useASCII)
+{
+    _useASCII = useASCII;
+}
+
+bool CtiProtocolExpresscom::getUseASCII()
+{
+    return _useASCII;
+}
+
+/* here are the CRC's of each 8bit character, already generated - faster execution, more ROM */
+unsigned short CtiProtocolExpresscom::crctbl[256] = {  /* generated by crcgen.c */
+    0x0000,0x1021,0x2042,0x3063,0x4084,0x50A5,0x60C6,0x70E7,
+    0x8108,0x9129,0xA14A,0xB16B,0xC18C,0xD1AD,0xE1CE,0xF1EF,
+    0x1231,0x0210,0x3273,0x2252,0x52B5,0x4294,0x72F7,0x62D6,
+    0x9339,0x8318,0xB37B,0xA35A,0xD3BD,0xC39C,0xF3FF,0xE3DE,
+    0x2462,0x3443,0x0420,0x1401,0x64E6,0x74C7,0x44A4,0x5485,
+    0xA56A,0xB54B,0x8528,0x9509,0xE5EE,0xF5CF,0xC5AC,0xD58D,
+    0x3653,0x2672,0x1611,0x0630,0x76D7,0x66F6,0x5695,0x46B4,
+    0xB75B,0xA77A,0x9719,0x8738,0xF7DF,0xE7FE,0xD79D,0xC7BC,
+    0x48C4,0x58E5,0x6886,0x78A7,0x0840,0x1861,0x2802,0x3823,
+    0xC9CC,0xD9ED,0xE98E,0xF9AF,0x8948,0x9969,0xA90A,0xB92B,
+    0x5AF5,0x4AD4,0x7AB7,0x6A96,0x1A71,0x0A50,0x3A33,0x2A12,
+    0xDBFD,0xCBDC,0xFBBF,0xEB9E,0x9B79,0x8B58,0xBB3B,0xAB1A,
+    0x6CA6,0x7C87,0x4CE4,0x5CC5,0x2C22,0x3C03,0x0C60,0x1C41,
+    0xEDAE,0xFD8F,0xCDEC,0xDDCD,0xAD2A,0xBD0B,0x8D68,0x9D49,
+    0x7E97,0x6EB6,0x5ED5,0x4EF4,0x3E13,0x2E32,0x1E51,0x0E70,
+    0xFF9F,0xEFBE,0xDFDD,0xCFFC,0xBF1B,0xAF3A,0x9F59,0x8F78,
+    0x9188,0x81A9,0xB1CA,0xA1EB,0xD10C,0xC12D,0xF14E,0xE16F,
+    0x1080,0x00A1,0x30C2,0x20E3,0x5004,0x4025,0x7046,0x6067,
+    0x83B9,0x9398,0xA3FB,0xB3DA,0xC33D,0xD31C,0xE37F,0xF35E,
+    0x02B1,0x1290,0x22F3,0x32D2,0x4235,0x5214,0x6277,0x7256,
+    0xB5EA,0xA5CB,0x95A8,0x8589,0xF56E,0xE54F,0xD52C,0xC50D,
+    0x34E2,0x24C3,0x14A0,0x0481,0x7466,0x6447,0x5424,0x4405,
+    0xA7DB,0xB7FA,0x8799,0x97B8,0xE75F,0xF77E,0xC71D,0xD73C,
+    0x26D3,0x36F2,0x0691,0x16B0,0x6657,0x7676,0x4615,0x5634,
+    0xD94C,0xC96D,0xF90E,0xE92F,0x99C8,0x89E9,0xB98A,0xA9AB,
+    0x5844,0x4865,0x7806,0x6827,0x18C0,0x08E1,0x3882,0x28A3,
+    0xCB7D,0xDB5C,0xEB3F,0xFB1E,0x8BF9,0x9BD8,0xABBB,0xBB9A,
+    0x4A75,0x5A54,0x6A37,0x7A16,0x0AF1,0x1AD0,0x2AB3,0x3A92,
+    0xFD2E,0xED0F,0xDD6C,0xCD4D,0xBDAA,0xAD8B,0x9DE8,0x8DC9,
+    0x7C26,0x6C07,0x5C64,0x4C45,0x3CA2,0x2C83,0x1CE0,0x0CC1,
+    0xEF1F,0xFF3E,0xCF5D,0xDF7C,0xAF9B,0xBFBA,0x8FD9,0x9FF8,
+    0x6E17,0x7E36,0x4E55,0x5E74,0x2E93,0x3EB2,0x0ED1,0x1EF0
+};
+
+unsigned short CtiProtocolExpresscom::addCRC(unsigned short crc, unsigned char data) 
+{
+    crc = crc^(data);
+    crc = crctbl[(unsigned char)crc];
+    return(crc);
+}
+
+void CtiProtocolExpresscom::calcCRC(vector< BYTE >::iterator data, unsigned char len)
+{
+    _CRC = 0;
+    char byte[5];
+    vector< BYTE >::iterator start = data;
+
+    for( int i=0 ; i < len; i++, data++)
+        _CRC = addCRC(_CRC,*data);
+
+    data = start;
+}
+

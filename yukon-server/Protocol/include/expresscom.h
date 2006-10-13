@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2006/06/23 19:30:06 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2006/10/13 20:34:15 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -84,7 +84,8 @@ public:
 
 protected:
 
-    bool    _useProtocolCRC;                        // 'S'-'T' bounded message (false)  or 'U'-'V' bounded message (true).
+    bool    _useProtocolCRC;                // 'S'-'T' bounded message (false)  or 'U'-'V' bounded message (true).
+    bool    _useASCII;                      // Should data/lengths/crc be returned as ascii or binary?
 
     // Addressing Levels
     BYTE    _addressLevel;                  // Bit field indicating addressing TO BE USED.
@@ -111,6 +112,7 @@ private:
 
     vector< BYTE > _message;                // This is the baby...
     int _messageCount;
+    unsigned short _CRC;
     void incrementMessageCount();
     vector<int> _lengths;                   //Every time a message is added, this records the length of the message vector
 
@@ -200,6 +202,9 @@ private:
     INT configureGeoAddressing(CtiCommandParser &parse);
     INT configureLoadAddressing(CtiCommandParser &parse);
     INT priority(BYTE priority);
+    unsigned short addCRC(unsigned short crc, unsigned char data);
+    void calcCRC(std::vector< BYTE >::iterator data, unsigned char len);
+    static unsigned short crctbl[256];
 
 public:
 
@@ -267,13 +272,8 @@ public:
 
     INT parseRequest(CtiCommandParser &parse, CtiOutMessage &OutMessage);
 
-    BYTE getByte(int pos, int messageNum);
-    int messageSize(int messageNum);
-    inline int messageSize() const { return _message.size(); }
-    inline BYTE getByte(int pos) const
-    {
-        return _message[pos];
-    }
+    BYTE getByte(int pos, int messageNum = 0);
+    int messageSize(int messageNum = 0);
     inline INT entries() const
     {
        return _messageCount;
@@ -281,5 +281,9 @@ public:
     void dump() const;
     BYTE getStartByte() const;
     BYTE getStopByte() const;
+    void setUseCRC(bool useCRC);
+    bool getUseCRC();
+    void setUseASCII(bool useASCII);
+    bool getUseASCII();
 };
 #endif // #ifndef __EXPRESSCOM_H__
