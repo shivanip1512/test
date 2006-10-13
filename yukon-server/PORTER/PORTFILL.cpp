@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTFILL.cpp-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2006/06/01 17:04:11 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2006/10/13 20:34:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -355,28 +355,27 @@ static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid
 
                                     xcom.addAddressing(0, gsSPID);
                                     xcom.parseRequest(parse, OutMessage);
+                                    xcom.setUseASCII(true);
+                                    if( gConfigParms.isOpt("YUKON_USE_EXPRESSCOM_CRC", "true") )
+                                    {
+                                        xcom.setUseCRC(true);
+                                    }
 
                                     if(xcom.entries() > 0)
                                     {
                                         OutMessage.EventCode |= ENCODED;               // Make the OM be ignored by porter...
 
-                                        OutMessage.OutLength            = xcom.messageSize() * 2 +  2;
-                                        OutMessage.Buffer.TAPSt.Length  = xcom.messageSize() * 2 +  2;
+                                        OutMessage.OutLength            = xcom.messageSize() +  2;
+                                        OutMessage.Buffer.TAPSt.Length  = xcom.messageSize() +  2;
 
                                         /* Build the message */
                                         OutMessage.Buffer.TAPSt.Message[0] = xcom.getStartByte();
 
-                                        for(i = 0; i < xcom.messageSize() * 2; i++)
+                                        int curByte;
+                                        for(i = 0; i < xcom.messageSize(); i++)
                                         {
-                                            BYTE curByte = xcom.getByte(i / 2);
-                                            if(i % 2)
-                                            {
-                                                ::sprintf(&OutMessage.Buffer.TAPSt.Message[i + 1], "%1x", curByte & 0x0f);
-                                            }
-                                            else
-                                            {
-                                                ::sprintf(&OutMessage.Buffer.TAPSt.Message[i + 1], "%1x", (curByte >> 4) & 0x0f);
-                                            }
+                                            curByte = xcom.getByte(i);
+                                            OutMessage.Buffer.TAPSt.Message[i + 1] = curByte;
                                         }
                                         OutMessage.Buffer.TAPSt.Message[i + 1] = xcom.getStopByte();
                                         OutMessage.Buffer.TAPSt.Message[i + 2] = '\0';
@@ -514,28 +513,27 @@ static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid
 
                                     xcom.addAddressing(0, gsSPID);
                                     xcom.parseRequest(parse, OutMessage);
+                                    xcom.setUseASCII(true);
+                                    if( gConfigParms.isOpt("YUKON_USE_EXPRESSCOM_CRC", "true") )
+                                    {
+                                        xcom.setUseCRC(true);
+                                    }
 
                                     if(xcom.entries() > 0)
                                     {
                                         OutMessage.EventCode |= ENCODED;               // Make the OM be ignored by porter...
 
-                                        OutMessage.OutLength            = xcom.messageSize() * 2 +  2;
-                                        OutMessage.Buffer.TAPSt.Length  = xcom.messageSize() * 2 +  2;
+                                        OutMessage.OutLength            = xcom.messageSize() +  2;
+                                        OutMessage.Buffer.TAPSt.Length  = xcom.messageSize() +  2;
 
                                         /* Build the message */
                                         OutMessage.Buffer.TAPSt.Message[0] = xcom.getStartByte();
 
-                                        for(i = 0; i < xcom.messageSize() * 2; i++)
+                                        int curByte;
+                                        for(i = 0; i < xcom.messageSize(); i++)
                                         {
-                                            BYTE curByte = xcom.getByte(i / 2);
-                                            if(i % 2)
-                                            {
-                                                ::sprintf(&OutMessage.Buffer.TAPSt.Message[i + 1], "%1x", curByte & 0x0f);
-                                            }
-                                            else
-                                            {
-                                                ::sprintf(&OutMessage.Buffer.TAPSt.Message[i + 1], "%1x", (curByte >> 4) & 0x0f);
-                                            }
+                                            curByte = xcom.getByte(i);
+                                            OutMessage.Buffer.TAPSt.Message[i + 1] = curByte;
                                         }
                                         OutMessage.Buffer.TAPSt.Message[i + 1] = xcom.getStopByte();
                                         OutMessage.Buffer.TAPSt.Message[i + 2] = '\0';
