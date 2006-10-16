@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.95 $
-* DATE         :  $Date: 2006/10/16 15:55:59 $
+* REVISION     :  $Revision: 1.96 $
+* DATE         :  $Date: 2006/10/16 21:44:28 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3137,7 +3137,7 @@ INT CtiDeviceMCT410::decodeGetValueLoadProfilePeakReport(INMESS *InMessage, CtiT
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-        result_string  = getName() + " / Channel " + CtiNumStr(_llpPeakInterest.channel) + string(" Load Profile Report\n");
+        result_string  = getName() + " / Channel " + CtiNumStr(_llpPeakInterest.channel + 1) + string(" Load Profile Report\n");
         result_string += "Report range: " + CtiTime(_llpPeakInterest.time - (_llpPeakInterest.period * 86400)).asString() + " - " +
                                             CtiTime(_llpPeakInterest.time).asString() + "\n";
 
