@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2006/06/23 15:51:52 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2006/10/16 17:38:10 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -78,6 +78,7 @@ public:
     {
         Protocol_Golay,
         Protocol_SA205,
+        Protocol_SA305,
         Protocol_SADigital,
         Protocol_SNPP,
     };

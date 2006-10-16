@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2006/04/19 15:51:29 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2006/10/16 17:38:10 $
 *
 * HISTORY      :
 * $Log: dev_rtm.cpp,v $
+* Revision 1.20  2006/10/16 17:38:10  jotteson
+* Adding sa305 and saDigital to verification process.
+*
 * Revision 1.19  2006/04/19 15:51:29  mfisher
 * removed CtiNumStr call around 205 code reporting
 *
@@ -603,11 +606,19 @@ int CtiDeviceRTM::decode(CtiXfer &xfer,  int status)
                             {
                             case GOLAY:
                                 prot_type = CtiVerificationBase::Protocol_Golay;
-                                codestr   = sacode.code;
+                                codestr = sacode.code;
+                                break;
+                            case SADIG:
+                                prot_type = CtiVerificationBase::Protocol_SADigital;
+                                codestr = sacode.code;
                                 break;
                             case SA205:
                                 prot_type = CtiVerificationBase::Protocol_SA205;
-                                codestr   = sacode.code;
+                                codestr = CtiNumStr(sacode.code).zpad(6);
+                                break;
+                            case SA305:
+                                prot_type = CtiVerificationBase::Protocol_SA305;
+                                codestr = sacode.code;
                                 break;
                             }
 

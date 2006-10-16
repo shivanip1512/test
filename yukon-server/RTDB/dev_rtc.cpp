@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.45 $
-* DATE         :  $Date: 2006/09/26 14:28:47 $
+* REVISION     :  $Revision: 1.46 $
+* DATE         :  $Date: 2006/10/16 17:38:10 $
 *
 * HISTORY      :
 * $Log: dev_rtc.cpp,v $
+* Revision 1.46  2006/10/16 17:38:10  jotteson
+* Adding sa305 and saDigital to verification process.
+*
 * Revision 1.45  2006/09/26 14:28:47  mfisher
 * standardizing the code for the "Decoding" printout
 *
@@ -696,6 +699,7 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
            OutMessage->Buffer.SASt._commandType == PutConfigRequest)
         {
             char codestr[256];
+            string code;
             string cmdStr;
 
             switch(OutMessage->Buffer.SASt._groupType)
@@ -743,18 +747,31 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
             {
                 memcpy((void*)codestr, (void*)(OutMessage->Buffer.SASt._code305), OutMessage->Buffer.SASt._bufferLen);
                 codestr[OutMessage->Buffer.SASt._bufferLen + 1] = 0;
+                cmdStr = CtiProtocolSA3rdParty::asString(OutMessage->Buffer.SASt);
+                work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_SA305, *OutMessage, cmdStr, codestr, seconds(60));
             }
             else if( OutMessage->Buffer.SASt._code205 )
             {
-                strncpy(codestr, CtiNumStr(OutMessage->Buffer.SASt._code205).toString().c_str(), 12);
-                codestr[12] = 0;
+                code = CtiNumStr(OutMessage->Buffer.SASt._code205).zpad(6);
                 cmdStr = CtiProtocolSA3rdParty::asString(OutMessage->Buffer.SASt);
                 if( gConfigParms.getValueAsULong("DEBUGLEVEL_DEVICE", 0) == TYPE_RTC )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " " << getName() << ": " << cmdStr << endl;
                 }
-                work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_SA205, *OutMessage, cmdStr, codestr, seconds(60));
+                work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_SA205, *OutMessage, cmdStr, code, seconds(60));
+            }
+            else if( rtcOutMessage->Buffer.SASt._groupType == SADIG )
+            {
+                strncpy(codestr, rtcOutMessage->Buffer.SASt._codeSimple, 7);
+                codestr[8] = 0;
+                cmdStr = CtiProtocolSA3rdParty::asString(rtcOutMessage->Buffer.SASt);
+                if( gConfigParms.getValueAsULong("DEBUGLEVEL_DEVICE", 0) == TYPE_RTC )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " " << cmdStr << endl;
+                }
+                work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_SADigital, *rtcOutMessage, cmdStr, codestr, seconds(60));
             }
             else
             {
@@ -785,35 +802,43 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
                     {
                         memcpy((void*)codestr, (void*)(rtcOutMessage->Buffer.SASt._code305), rtcOutMessage->Buffer.SASt._bufferLen);
                         codestr[rtcOutMessage->Buffer.SASt._bufferLen + 1] = 0;
+                        cmdStr = CtiProtocolSA3rdParty::asString(OutMessage->Buffer.SASt);
+                        work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_SA305, *OutMessage, cmdStr, codestr, seconds(60));
                     }
                     else if( rtcOutMessage->Buffer.SASt._code205 )
                     {
-                        strncpy(codestr, CtiNumStr(rtcOutMessage->Buffer.SASt._code205).toString().c_str(), 12);
-                        codestr[12] = 0;
+                        code = CtiNumStr(rtcOutMessage->Buffer.SASt._code205).zpad(6);
                         cmdStr = CtiProtocolSA3rdParty::asString(rtcOutMessage->Buffer.SASt);
                         if( gConfigParms.getValueAsULong("DEBUGLEVEL_DEVICE", 0) == TYPE_RTC )
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " " << cmdStr << endl;
                         }
-                        work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_SA205, *rtcOutMessage, cmdStr, codestr, seconds(60));
+                        work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_SA205, *rtcOutMessage, cmdStr, code, seconds(60));
+                    }
+                    else if( rtcOutMessage->Buffer.SASt._groupType == SADIG )
+                    {
+                        strncpy(codestr, rtcOutMessage->Buffer.SASt._codeSimple, 7);
+                        codestr[8] = 0;
+                        cmdStr = CtiProtocolSA3rdParty::asString(rtcOutMessage->Buffer.SASt);
+                        if( gConfigParms.getValueAsULong("DEBUGLEVEL_DEVICE", 0) == TYPE_RTC )
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " " << cmdStr << endl;
+                        }
+                        work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_SADigital, *rtcOutMessage, cmdStr, codestr, seconds(60));
                     }
                     else
                     {
-                        string golay_codestr;
-                        pair< int, int > golay_code = CtiProtocolSA3rdParty::parseGolayAddress(rtcOutMessage->Buffer.SASt._codeSimple);
-
-                        golay_codestr  = CtiNumStr(golay_code.first).zpad(6);       //  base address
-                        golay_codestr += "-";
-                        golay_codestr += CtiNumStr(golay_code.second - 1);  //  make the function 0-based so it'll match the RTM's result
-
-                        cmdStr = CtiProtocolSA3rdParty::asString(rtcOutMessage->Buffer.SASt);
+                        strncpy(codestr, OutMessage->Buffer.SASt._codeSimple, 6);
+                        codestr[6] = 0;
+                        cmdStr = CtiProtocolSA3rdParty::asString(OutMessage->Buffer.SASt);
                         if( gConfigParms.getValueAsULong("DEBUGLEVEL_DEVICE", 0) == TYPE_RTC )
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " " << cmdStr << endl;
+                            dout << CtiTime() << " " << getName() << ": " << cmdStr << endl;
                         }
-                        work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_Golay, *rtcOutMessage, cmdStr, golay_codestr, seconds(60));
+                        work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_Golay, *OutMessage, cmdStr, codestr, seconds(60));
                     }
 
                     if(work) _verification_objects.push(work);
