@@ -1732,7 +1732,7 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution)
         }
         if (returnCapBank == NULL && _RETRY_FAILED_BANKS) 
         {
-            for(int i=_cccapbanks.size(); i>=0; i++)
+            for(int i=_cccapbanks.size()-1;i>=0;i--)
             {
                 CtiCCCapBank* currentCapBank = (CtiCCCapBank*)_cccapbanks[i];
 
