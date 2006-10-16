@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.99 $
-* DATE         :  $Date: 2006/10/04 19:11:20 $
+* REVISION     :  $Revision: 1.100 $
+* DATE         :  $Date: 2006/10/16 15:18:18 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3057,21 +3057,26 @@ INT CtiDeviceMCT::decodeGetValue(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
                     pfCount = (pfCount << 8) + InMessage->Buffer.DSt.Message[i];
                 }
 
-                resultStr = getName() + " / Blink Counter = " + CtiNumStr(pfCount);
-
                 if( (pPoint = getDevicePointOffsetTypeEqual( PointOffset_Accumulator_Powerfail, PulseAccumulatorPointType )) )
                 {
                     Value = boost::static_pointer_cast<CtiPointNumeric>(pPoint)->computeValueForUOM(pfCount);
 
-                    pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), (double)Value, NormalQuality, PulseAccumulatorPointType);
+                    string pointString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value,
+                                                                                             boost::static_pointer_cast<CtiPointNumeric>(pPoint)->getPointUnits().getDecimalPlaces());
+
+                    pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), (double)Value, NormalQuality, PulseAccumulatorPointType, pointString);
                     if(pData != NULL)
                     {
                         ReturnMsg->PointData().push_back(pData);
                         pData = NULL;  // We just put it on the list...
                     }
                 }
+                else
+                {
+                    resultStr = getName() + " / Blink Counter = " + CtiNumStr(pfCount);
 
-                ReturnMsg->setResultString( resultStr );
+                    ReturnMsg->setResultString( resultStr );
+                }
             }
         }
 
