@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.94 $
-* DATE         :  $Date: 2006/09/26 15:10:49 $
+* REVISION     :  $Revision: 1.95 $
+* DATE         :  $Date: 2006/10/16 15:55:59 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2986,10 +2986,20 @@ INT CtiDeviceMCT410::decodeGetValueOutage( INMESS *InMessage, CtiTime &TimeNow, 
                     seconds = cycles  / 60;
                     minutes = seconds / 60;
                     hours   = minutes / 60;
+                    days    = hours   / 24;
 
                     seconds %= 60;
                     minutes %= 60;
                     hours   %= 24;
+
+                    if( days == 1 )
+                    {
+                        pointString += CtiNumStr(days) + " day, ";
+                    }
+                    else if( days > 1 )
+                    {
+                        pointString += CtiNumStr(days) + " days, ";
+                    }
 
                     pointString += CtiNumStr(hours).zpad(2) + string(":") +
                                    CtiNumStr(minutes).zpad(2) + ":" +
