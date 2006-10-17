@@ -23,7 +23,7 @@
 #include "numstr.h"
 
 extern ULONG _LM_DEBUG;
-#define ROUNDING_SECONDS (60*58) //Round up on minute 58 or greater
+#define ROUNDING_SECONDS (60*57) //Round up on minute 58 or greater
 
 RWDEFINE_COLLECTABLE( CtiLMGroupExpresscom, CTILMGROUPEXPRESSCOM_ID )
 
@@ -143,6 +143,10 @@ CtiRequestMsg* CtiLMGroupExpresscom::createTrueCycleRequestMsg(LONG percent, LON
 --------------------------------------------------------------------------*/
 CtiRequestMsg* CtiLMGroupExpresscom::createTargetCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, bool no_ramp, int priority, DOUBLE kwh, CtiTime ctrlStartTime, const string& additionalInfo) const
 {
+    //ctrlStartTime is now on the hour.
+    ctrlStartTime = ctrlStartTime.addMinutes(-1*ctrlStartTime.minute());
+    ctrlStartTime = ctrlStartTime.addSeconds(-1*ctrlStartTime.second());
+
     //control cycle 50 period 30 count 8 relay 1 delay 10 truecycle targetcycle 10.1 adjustments 50 60
     char tempchar[64];
     string controlString = "control cycle ";
