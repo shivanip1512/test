@@ -325,7 +325,7 @@ void CtiLMCurtailCustomer::updateLMCurtailCustomerActivityTable(RWDBConnection& 
                     << lmCurtailCustomerActivityTable["nameofackperson"].assign(getNameOfAckPerson()[0])
                     << lmCurtailCustomerActivityTable["curtailmentnotes"].assign(getCurtailmentNotes()[0])
                     << lmCurtailCustomerActivityTable["currentpdl"].assign(getCustomerDemandLevel())
-                    << lmCurtailCustomerActivityTable["acklateflag"].assign(( (getAckLateFlag() ? 'Y':'N') ));
+                    << lmCurtailCustomerActivityTable["acklateflag"].assign(( (getAckLateFlag() ? "Y":"N") ));
 
             updater.where(lmCurtailCustomerActivityTable["customerid"]==getCustomerId() &&
                           lmCurtailCustomerActivityTable["curtailreferenceid"]==getCurtailReferenceId());

@@ -988,7 +988,7 @@ void CtiLMProgramBase::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDat
                 << dynamicLMProgramTable["reductiontotal"].assign( getReductionTotal() )
                 << dynamicLMProgramTable["startedcontrolling"].assign( toRWDBDT(getStartedControlling()) )
                 << dynamicLMProgramTable["lastcontrolsent"].assign( toRWDBDT(getLastControlSent()) )
-                << dynamicLMProgramTable["manualcontrolreceivedflag"].assign(( (getManualControlReceivedFlag() ? 'Y':'N') ))
+                << dynamicLMProgramTable["manualcontrolreceivedflag"].assign(( (getManualControlReceivedFlag() ? "Y":"N") ))
                 << dynamicLMProgramTable["timestamp"].assign(toRWDBDT(currentDateTime));
                 
                 updater.where(dynamicLMProgramTable["deviceid"]==getPAOId());//will be paobjectid
@@ -1015,7 +1015,7 @@ void CtiLMProgramBase::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDat
                 << getReductionTotal()
                 << getStartedControlling()
                 << getLastControlSent()
-                << ( ( getManualControlReceivedFlag() ? 'Y': 'N' ) )
+                << ( ( getManualControlReceivedFlag() ? "Y": "N" ) )
                  << currentDateTime;
 
 

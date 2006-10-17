@@ -2393,8 +2393,8 @@ void CtiLMControlArea::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDat
             RWDBUpdater updater = dynamicLMControlAreaTable.updater();
 
             updater << dynamicLMControlAreaTable["nextchecktime"].assign(toRWDBDT(getNextCheckTime()))
-            << dynamicLMControlAreaTable["newpointdatareceivedflag"].assign(( (getNewPointDataReceivedFlag() ? 'Y':'N') ))
-            << dynamicLMControlAreaTable["updatedflag"].assign(( (getUpdatedFlag() ? 'Y':'N') ))
+            << dynamicLMControlAreaTable["newpointdatareceivedflag"].assign(( (getNewPointDataReceivedFlag() ? "Y":"N") ))
+            << dynamicLMControlAreaTable["updatedflag"].assign(( (getUpdatedFlag() ? "Y":"N") ))
             << dynamicLMControlAreaTable["controlareastate"].assign( getControlAreaState() )
             << dynamicLMControlAreaTable["currentpriority"].assign( getCurrentStartPriority() )
             << dynamicLMControlAreaTable["timestamp"].assign(toRWDBDT(currentDateTime))
