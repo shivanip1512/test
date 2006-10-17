@@ -344,8 +344,11 @@ public int getSelectedDeviceType()
 public Object getValue(Object val)
 {
 	String type = (String) getJListDevices().getSelectedValue();
-	return DeviceTypesFuncs.changeType(type, val, extraObj, extra410Objs, loadProfileExists, blinkCountExists, totalKWhExists, getCurrentDevice());
-	
+    if (val == null) {
+        return new Integer( PAOGroups.getDeviceType(type) );
+    }
+    
+    return DeviceTypesFuncs.changeType(type, val, extraObj, extra410Objs, loadProfileExists, blinkCountExists, totalKWhExists, getCurrentDevice());
 }
 
 
