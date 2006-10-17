@@ -70,7 +70,7 @@ public abstract class AbstractIndexManager implements IndexManager {
     }
 
     public boolean isBuilding() {
-        return this.isBuilding || this.buildIndex;
+        return this.isBuilding;
     }
 
     public String getDateCreated() {
