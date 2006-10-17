@@ -55,6 +55,10 @@ var onComplete = function(transport, json) {
     if (oldResultArea) {
       resultHolder.removeChild(oldResultArea);
     }
+    var oldError = $("pointPicker_errorHolder");
+    if (oldError) {
+      resultHolder.removeChild(oldError);
+    }
     resultHolder.appendChild(newResultArea);
     
     var ss = escape($('pointPicker_query').value);
@@ -72,6 +76,7 @@ function pointPicker_ajaxError(transport, json) {
     $('pointPicker_indicator').style.visibility = 'hidden';
     $("pointPicker_results").innerHTML = "";
     errorHolder = document.createElement("div");
+    errorHolder.id = "pointPicker_errorHolder";
     errorHolder.innerHTML = "There was a problem searching the index: " + transport.responseText;
     $("pointPicker_results").appendChild(errorHolder);
 }

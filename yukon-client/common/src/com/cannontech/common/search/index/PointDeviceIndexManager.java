@@ -96,23 +96,27 @@ public class PointDeviceIndexManager extends AbstractIndexManager {
         return doc;
     }
 
-    protected void processDBChange(int id, int database, String category, String type) {
+    protected IndexUpdateInfo processDBChange(int id, int database, String category, String type) {
         if (database == DBChangeMsg.CHANGE_PAO_DB && "DEVICE".equalsIgnoreCase(category)) {
             // Device change msg
-            this.processDeviceChange(id);
+            return this.processDeviceChange(id);
         } else if (database == DBChangeMsg.CHANGE_POINT_DB
                 && DBChangeMsg.CAT_POINT.equals(category)) {
             // Point change msg
-            this.processPointChange(id);
+            return this.processPointChange(id);
         }
+
+        // Return null if no update is to be done
+        return null;
     }
 
     /**
      * Helper method to process a device change
      * @param deviceId - Id of changed device
+     * @return Index update info for the device change
      */
     @SuppressWarnings("unchecked")
-    private void processDeviceChange(int deviceId) {
+    private IndexUpdateInfo processDeviceChange(int deviceId) {
 
         Term term = new Term("deviceid", Integer.toString(deviceId));
         List<Document> docList = new ArrayList<Document>();
@@ -123,16 +127,17 @@ public class PointDeviceIndexManager extends AbstractIndexManager {
         docList = this.jdbcTemplate.query(sql.toString(),
                                           new Object[] { deviceId },
                                           new DocumentMapper());
-        this.updateIndex(docList, term);
+        return new IndexUpdateInfo(docList, term);
 
     }
 
     /**
      * Helper method to process a point change
      * @param pointId - Id of changed point
+     * @return Index update info for the point change
      */
     @SuppressWarnings("unchecked")
-    private void processPointChange(int pointId) {
+    private IndexUpdateInfo processPointChange(int pointId) {
 
         Term term = new Term("pointid", Integer.toString(pointId));
         List<Document> docList = new ArrayList<Document>();
@@ -143,8 +148,7 @@ public class PointDeviceIndexManager extends AbstractIndexManager {
         docList = this.jdbcTemplate.query(sql.toString(),
                                           new Object[] { pointId },
                                           new DocumentMapper());
-        this.updateIndex(docList, term);
-
+        return new IndexUpdateInfo(docList, term);
     }
 
 }

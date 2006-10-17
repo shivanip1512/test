@@ -14,6 +14,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.lucene.analysis.Analyzer;
@@ -33,10 +34,11 @@ import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 
 /**
- * Abstract class which manages index creation and update.
+ * Abstract class which manages index building and updating.
  */
 public abstract class AbstractIndexManager implements IndexManager {
 
+    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
     private static final String VERSION_PROPERTY = "version";
     private static final String DATE_CREATED_PROPERTY = "created";
 
@@ -46,41 +48,32 @@ public abstract class AbstractIndexManager implements IndexManager {
     // future because of memory restrictions and/or speed requirements.
     private static final int MAX_BUFFERED_DOCS = 1000;
 
-    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
-
     protected JdbcOperations jdbcTemplate = null;
 
     // All indexes will be written to: {yukon home}/cache/{index name}/index
     private File indexLocation = null;
     private File versionFile = null;
-
     private String version = null;
     private Date dateCreated = null;
-
-    private boolean isBuilding = false;
-
     private int recordCount = 0;
     private AtomicInteger count = new AtomicInteger(0);
 
+    private boolean overwrite = false;
+    private boolean isBuilding = false;
+    private boolean buildIndex = false;
+    private LinkedBlockingQueue<IndexUpdateInfo> updateQueue = new LinkedBlockingQueue<IndexUpdateInfo>();
     private RuntimeException currentException = null;
+    private Thread managerThread;
 
     public AbstractIndexManager() {
         this.initialize();
     }
 
     public boolean isBuilding() {
-        return this.isBuilding;
+        return this.isBuilding || this.buildIndex;
     }
 
-    public void setBuilding(boolean isBuilding) {
-        this.isBuilding = isBuilding;
-    }
-
-    public Date getDateCreated() {
-        return this.dateCreated;
-    }
-
-    public String getFormattedDateCreated() {
+    public String getDateCreated() {
         if (this.dateCreated == null) {
             return null;
         }
@@ -91,16 +84,20 @@ public abstract class AbstractIndexManager implements IndexManager {
         return this.version;
     }
 
-    public File getIndexLocation() {
-        return this.indexLocation;
-    }
-
     public int getRecordCount() {
         return this.recordCount;
     }
 
     public void getCurrentRecord() {
         this.count.get();
+    }
+
+    public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
+    public void setAsyncDynamicDataSource(AsyncDynamicDataSource dataSource) {
+        dataSource.addDBChangeListener(this);
     }
 
     public IndexSearcher getIndexSearcher() {
@@ -119,14 +116,6 @@ public abstract class AbstractIndexManager implements IndexManager {
             throw new RuntimeException(e);
         }
 
-    }
-
-    public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
-    public void setAsyncDynamicDataSource(AsyncDynamicDataSource dataSource) {
-        dataSource.addDBChangeListener(this);
     }
 
     /**
@@ -183,8 +172,11 @@ public abstract class AbstractIndexManager implements IndexManager {
      * @param database - Database of the db change msg
      * @param category - Category of the db change msg
      * @param type - Type of the db change msg object
+     * @return Index update info for the dbchange or null if the change should
+     *         not be processed for this index
      */
-    abstract protected void processDBChange(int id, int database, String category, String type);
+    abstract protected IndexUpdateInfo processDBChange(int id, int database, String category,
+            String type);
 
     public float getPercentDone() {
 
@@ -201,7 +193,135 @@ public abstract class AbstractIndexManager implements IndexManager {
 
     }
 
-    public synchronized void createIndex(boolean overwrite) {
+    public void dbChangeReceived(DBChangeMsg dbChange) {
+
+        try {
+            IndexUpdateInfo info = this.processDBChange(dbChange.getId(),
+                                                        dbChange.getDatabase(),
+                                                        dbChange.getCategory(),
+                                                        dbChange.getObjectType());
+
+            if (info != null) {
+                this.updateQueue.add(info);
+            }
+        } catch (RuntimeException e) {
+            this.currentException = e;
+        }
+
+    }
+
+    public synchronized void buildIndex(boolean overwrite) {
+
+        if (!this.isBuilding() && !this.managerThread.isInterrupted()) {
+            this.overwrite = overwrite;
+            this.buildIndex = true;
+            this.currentException = null;
+            this.managerThread.interrupt();
+        }
+
+    }
+
+    /**
+     * Helper method to initialize the index manager
+     */
+    private void initialize() {
+
+        this.indexLocation = new File(CtiUtilities.getYukonBase() + "/cache/" + this.getIndexName()
+                + "/index");
+
+        // Read in the information from the version file (if it exists)
+        this.versionFile = new File(this.indexLocation, "version.txt");
+        try {
+            InputStream iStream = new FileInputStream(this.versionFile);
+            Properties properties = new Properties();
+            properties.load(iStream);
+
+            this.version = properties.getProperty(VERSION_PROPERTY);
+            String dateString = properties.getProperty(DATE_CREATED_PROPERTY);
+            if (dateString != null) {
+                try {
+                    this.dateCreated = DATE_FORMAT.parse(dateString);
+                } catch (ParseException e) {
+                    CTILogger.error(e);
+                }
+            }
+        } catch (FileNotFoundException e) {
+            // do nothing - no version.txt
+        } catch (IOException e) {
+            CTILogger.error("Exception reading " + this.getIndexName() + " index version file", e);
+        }
+
+        // Start the index manager thread
+        managerThread = new Thread(new Runnable() {
+            public void run() {
+                processUpdates();
+            }
+        }, getIndexName() + "IndexManager");
+
+        managerThread.start();
+
+    }
+
+    /**
+     * Helper method to process updates to the index
+     */
+    private void processUpdates() {
+
+        // Loop forever - updating the index
+        while (true) {
+            try {
+                IndexUpdateInfo info = this.updateQueue.take();
+
+                IndexModifier indexModifier = null;
+                try {
+                    indexModifier = new IndexModifier(this.indexLocation, this.getAnalyzer(), false);
+                    indexModifier.deleteDocuments(info.getDeleteTerm());
+
+                    List<Document> docList = info.getDocList();
+                    if (docList.size() != 0) {
+                        for (Document doc : docList) {
+                            indexModifier.addDocument(doc);
+                        }
+                    }
+
+                } catch (IOException e) {
+                    this.currentException = new RuntimeException("There was a problem updating the "
+                                                                         + this.getIndexName()
+                                                                         + " index",
+                                                                 e);
+                    CTILogger.error("", this.currentException);
+                } finally {
+                    try {
+                        if (indexModifier != null) {
+                            indexModifier.close();
+                        }
+                    } catch (IOException e) {
+                        // Do nothing - tried to close
+                    }
+                }
+
+            } catch (InterruptedException e) {
+
+                if (this.buildIndex && !this.isBuilding()) {
+                    // Build the index
+                    this.buildIndex = false;
+                    this.isBuilding = true;
+                    this.processBuild();
+                    this.isBuilding = false;
+
+                } else {
+                    // Interrupted for a reason other than a rebuild - stop
+                    // updating
+                    break;
+                }
+            }
+        }
+    }
+
+    /**
+     * Helper method to build the index
+     */
+    private void processBuild() {
 
         if (!overwrite) {
             boolean indexExists = true;
@@ -216,7 +336,7 @@ public abstract class AbstractIndexManager implements IndexManager {
                 return;
             }
         }
-        
+
         this.version = null;
         // Set the dateCreated to the time the index building started
         this.dateCreated = new Date();
@@ -242,8 +362,9 @@ public abstract class AbstractIndexManager implements IndexManager {
 
             // Reset the current document count and clear any exceptions
             count.set(0);
-            this.currentException = null;
+
             CTILogger.info(this.getIndexName() + " index has been built.");
+            this.currentException = null;
 
         } catch (IOException e) {
             this.currentException = new RuntimeException(e);
@@ -252,7 +373,6 @@ public abstract class AbstractIndexManager implements IndexManager {
             this.currentException = e;
             throw this.currentException;
         } finally {
-            isBuilding = false;
             try {
                 if (indexWriter != null) {
                     indexWriter.close();
@@ -295,85 +415,12 @@ public abstract class AbstractIndexManager implements IndexManager {
 
     }
 
-    public void dbChangeReceived(DBChangeMsg dbChange) {
-
-        this.processDBChange(dbChange.getId(),
-                             dbChange.getDatabase(),
-                             dbChange.getCategory(),
-                             dbChange.getObjectType());
-
-    }
-
-    /**
-     * Method to update the index
-     * @param docs - List of documents to be written into the index
-     * @param term - Term to be used to remove any outdated documents from the
-     *            index before inserting new documents
-     */
-    protected void updateIndex(List<Document> docs, Term term) {
-
-        IndexModifier indexModifier = null;
-        try {
-            indexModifier = new IndexModifier(this.indexLocation, this.getAnalyzer(), false);
-            indexModifier.deleteDocuments(term);
-
-            if (docs.size() != 0) {
-                for (Document doc : docs) {
-                    indexModifier.addDocument(doc);
-                }
-            }
-
-        } catch (IOException e) {
-            this.currentException = new RuntimeException("There was a problem updating the "
-                    + this.getIndexName() + " index", e);
-        } finally {
-            try {
-                if (indexModifier != null) {
-                    indexModifier.close();
-                }
-            } catch (IOException e) {
-                // Do nothing - tried to close
-            }
-        }
-    }
-
     /**
      * Helper method to check for a current exception and throw if there is one
      */
     private void checkForException() {
         if (this.currentException != null) {
             throw this.currentException;
-        }
-    }
-
-    /**
-     * Helper method to initialize the index manager
-     */
-    private void initialize() {
-
-        this.indexLocation = new File(CtiUtilities.getYukonBase() + "/cache/" + this.getIndexName()
-                + "/index");
-
-        // Read in the information from the version file (if it exists)
-        this.versionFile = new File(this.indexLocation, "version.txt");
-        try {
-            InputStream iStream = new FileInputStream(this.versionFile);
-            Properties properties = new Properties();
-            properties.load(iStream);
-
-            this.version = properties.getProperty(VERSION_PROPERTY);
-            String dateString = properties.getProperty(DATE_CREATED_PROPERTY);
-            if (dateString != null) {
-                try {
-                    this.dateCreated = DATE_FORMAT.parse(dateString);
-                } catch (ParseException e) {
-                    CTILogger.error(e);
-                }
-            }
-        } catch (FileNotFoundException e) {
-            // do nothing - no version.txt
-        } catch (IOException e) {
-            CTILogger.error("Exception reading " + this.getIndexName() + " index version file", e);
         }
     }
 
@@ -424,6 +471,41 @@ public abstract class AbstractIndexManager implements IndexManager {
         public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
             return createDocument(rs);
         }
+    }
+
+    /**
+     * Helper class which contains information for an index update
+     */
+    protected class IndexUpdateInfo {
+        private List<Document> docList = null;
+        private Term deleteTerm = null;
+
+        /**
+         * @param docs - List of documents to be written into the index
+         * @param term - Term to be used to remove any outdated documents from
+         *            the index before inserting new documents
+         */
+        public IndexUpdateInfo(List<Document> docList, Term deleteTerm) {
+            this.docList = docList;
+            this.deleteTerm = deleteTerm;
+        }
+
+        public Term getDeleteTerm() {
+            return deleteTerm;
+        }
+
+        public void setDeleteTerm(Term deleteTerm) {
+            this.deleteTerm = deleteTerm;
+        }
+
+        public List<Document> getDocList() {
+            return docList;
+        }
+
+        public void setDocList(List<Document> docList) {
+            this.docList = docList;
+        }
+
     }
 
 }

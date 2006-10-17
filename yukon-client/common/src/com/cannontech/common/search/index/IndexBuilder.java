@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Class which manages all of the lucene indexes in the system. This class will
- * delegate index-specific requests to the appropriate index manager.
+ * Class which manages building of all of the lucene indexes in the system. This
+ * class will delegate index-specific requests to the appropriate index manager.
  */
 public class IndexBuilder {
 
@@ -41,26 +41,10 @@ public class IndexBuilder {
 
         final IndexManager manager = this.managerMap.get(indexName);
 
-        synchronized (manager) {
-
-            if (manager != null) {
-                // Cannot build the index if it is already being built
-                if (manager.isBuilding()) {
-                    return;
-                }
-
-                // Set building to true before we kick off the thread.
-                manager.setBuilding(true);
-                new Thread(new Runnable() {
-                    public void run() {
-                        manager.createIndex(overwrite);
-                        manager.setBuilding(false);
-                    }
-                }, manager.getIndexName() + "IndexBuilder").start();
-
-            } else {
-                throw new IllegalArgumentException("Invalid index name: " + indexName);
-            }
+        if (manager != null) {
+            manager.buildIndex(overwrite);
+        } else {
+            throw new IllegalArgumentException("Invalid index name: " + indexName);
         }
 
     }
