@@ -6,12 +6,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.161 $
-* DATE         :  $Date: 2006/09/26 14:11:52 $
+* REVISION     :  $Revision: 1.162 $
+* DATE         :  $Date: 2006/10/17 19:41:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
+#pragma warning( disable : 4786 )
 
 
 #include <windows.h>
