@@ -232,7 +232,6 @@ struct REMOTEPERF
 #define STAGE           0x0200
 #define VERSACOM        0x0400
 #define TSYNC           0x0800
-#define REMS            0x1000   // This can never be used now.... CGP Corey.
 #define FISHERPIERCE    0x1000
 #define ENCODED         0x4000
 #define DECODED         0x4000
