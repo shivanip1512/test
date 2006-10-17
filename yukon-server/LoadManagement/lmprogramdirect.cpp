@@ -1123,7 +1123,11 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
         }
     }
 
-    if(!found_active_group)
+    if(getProgramState() == CtiLMProgramBase::NonControllingState)
+    {
+        setProgramState(CtiLMProgramBase::ActiveState);
+    }
+    else if(!found_active_group)
     {
         setProgramState(CtiLMGroupBase::InactiveState);
     }
