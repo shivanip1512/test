@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTTIME.cpp-arc  $
-* REVISION     :  $Revision: 1.42 $
-* DATE         :  $Date: 2006/09/06 14:31:40 $
+* REVISION     :  $Revision: 1.43 $
+* DATE         :  $Date: 2006/10/18 19:19:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -239,7 +239,7 @@ static void apply710TimeSync(const long unusedid, CtiDeviceSPtr RemoteRecord, vo
 
                         //  this should all be filled in by the route's ExecuteRequest
                         OutMessage->Buffer.BSt.DlcRoute.Amp        = ((CtiDeviceIDLC *)(RemoteRecord.get()))->getIDLC().getAmp();
-                        OutMessage->Buffer.BSt.DlcRoute.Feeder     = RouteRecord->getBus();
+                        OutMessage->Buffer.BSt.DlcRoute.Bus        = RouteRecord->getBus();
                         OutMessage->Buffer.BSt.DlcRoute.RepVar     = variable;
                         OutMessage->Buffer.BSt.DlcRoute.RepFixed   = fixed;
                         //OutMessage->Buffer.BSt.DlcRoute.Stages     = RouteRecord->getStages();  //  this doesn't work for a 710
@@ -569,7 +569,7 @@ static void applyMCT400TimeSync(const long key, CtiRouteSPtr pRoute, void* d)
                 //  we don't fill in the data because it's filled in by RefreshMCTTimeSync() later on
 
                 OutMessage->Buffer.BSt.DlcRoute.Amp        = ((CtiDeviceIDLC *)(RemoteRecord.get()))->getIDLC().getAmp();
-                OutMessage->Buffer.BSt.DlcRoute.Feeder     = pRoute->getBus();
+                OutMessage->Buffer.BSt.DlcRoute.Bus        = pRoute->getBus();
                 OutMessage->Buffer.BSt.DlcRoute.RepVar     = variable;
                 OutMessage->Buffer.BSt.DlcRoute.RepFixed   = fixed;
                 //OutMessage->Buffer.BSt.DlcRoute.Stages     = pRoute->getStages();  //  this doesn't work for a 710
@@ -960,7 +960,7 @@ RefreshMCTTimeSync(OUTMESS *OutMessage)
     }
 
     //  lay it over the original message
-    int words_to_write;
+    unsigned words_to_write;
     C_Words(OutMessage->Buffer.OutMessage + PREIDLEN + PREAMLEN + BWORDLEN,
             timesync_message,
             length,

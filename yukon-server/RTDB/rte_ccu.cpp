@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_ccu.cpp-arc  $
-* REVISION     :  $Revision: 1.37 $
-* DATE         :  $Date: 2006/09/23 13:54:17 $
+* REVISION     :  $Revision: 1.38 $
+* DATE         :  $Date: 2006/10/18 19:18:25 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -106,7 +106,7 @@ INT CtiRouteCCU::assembleVersacomRequest(CtiRequestMsg                  *pReq,
     BSTRUCT        BSt;
     VSTRUCT        VSt;
 
-    INT cwordCount = 0;
+    unsigned cwordCount = 0;
 
     /*
      * Addressing variables SHALL have been assigned at an earlier level!
@@ -138,7 +138,7 @@ INT CtiRouteCCU::assembleVersacomRequest(CtiRequestMsg                  *pReq,
     BSt.Port                = _transmitterDevice->getPortID();
     BSt.Remote              = _transmitterDevice->getAddress();
     BSt.DlcRoute.Amp        = ((CtiDeviceCCU *)(_transmitterDevice.get()))->getIDLC().getAmp();
-    BSt.DlcRoute.Feeder     = Carrier.getBus();
+    BSt.DlcRoute.Bus        = Carrier.getBus();
     BSt.DlcRoute.RepVar     = Carrier.getCCUVarBits();
     BSt.DlcRoute.RepFixed   = Carrier.getCCUFixBits();
     BSt.DlcRoute.Stages     = getStages();                // How many repeaters on this route?
@@ -329,7 +329,7 @@ INT CtiRouteCCU::assembleDLCRequest(CtiCommandParser     &parse,
         OutMessage->Buffer.BSt.Port                = _transmitterDevice->getPortID();
         OutMessage->Buffer.BSt.Remote              = _transmitterDevice->getAddress();
         OutMessage->Buffer.BSt.DlcRoute.Amp        = ((CtiDeviceIDLC *)(_transmitterDevice.get()))->getIDLC().getAmp();
-        OutMessage->Buffer.BSt.DlcRoute.Feeder     = Carrier.getBus();
+        OutMessage->Buffer.BSt.DlcRoute.Bus        = Carrier.getBus();
         OutMessage->Buffer.BSt.DlcRoute.RepVar     = Carrier.getCCUVarBits();
         OutMessage->Buffer.BSt.DlcRoute.RepFixed   = Carrier.getCCUFixBits();
         OutMessage->Buffer.BSt.DlcRoute.Stages     = getStages();                // How many repeaters on this route?
@@ -356,7 +356,7 @@ INT CtiRouteCCU::assembleDLCRequest(CtiCommandParser     &parse,
         OutMessage->Buffer.ASt.Port = _transmitterDevice->getPortID();
         OutMessage->Buffer.ASt.Remote = _transmitterDevice->getAddress();
 
-        OutMessage->Buffer.ASt.DlcRoute.Feeder     = Carrier.getBus();
+        OutMessage->Buffer.ASt.DlcRoute.Bus        = Carrier.getBus();
         OutMessage->Buffer.ASt.DlcRoute.RepVar     = Carrier.getCCUVarBits();
         OutMessage->Buffer.ASt.DlcRoute.RepFixed   = Carrier.getCCUFixBits();
 
@@ -463,7 +463,7 @@ INT CtiRouteCCU::assembleExpresscomRequest(CtiRequestMsg                  *pReq,
     BSTRUCT        BSt;
     VSTRUCT        VSt;
 
-    INT cwordCount = 0;
+    unsigned cwordCount = 0;
 
     /*
      * Addressing variables SHALL have been assigned at an earlier level!
@@ -493,7 +493,7 @@ INT CtiRouteCCU::assembleExpresscomRequest(CtiRequestMsg                  *pReq,
     BSt.Port                = _transmitterDevice->getPortID();
     BSt.Remote              = _transmitterDevice->getAddress();
     BSt.DlcRoute.Amp        = ((CtiDeviceCCU *)(_transmitterDevice.get()))->getIDLC().getAmp();
-    BSt.DlcRoute.Feeder     = Carrier.getBus();
+    BSt.DlcRoute.Bus        = Carrier.getBus();
     BSt.DlcRoute.RepVar     = Carrier.getCCUVarBits();
     BSt.DlcRoute.RepFixed   = Carrier.getCCUFixBits();
     BSt.DlcRoute.Stages     = getStages();                // How many repeaters on this route?
