@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.42 $
-* DATE         :  $Date: 2006/09/06 14:29:37 $
+* REVISION     :  $Revision: 1.43 $
+* DATE         :  $Date: 2006/10/18 19:14:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -112,7 +112,6 @@ INT RemotePort(OUTMESS *&OutMessage);
 INT PorterControlCode(OUTMESS *&OutMessage);
 INT ValidateRemote(OUTMESS *&OutMessage);
 INT ValidatePort(OUTMESS *&OutMessage);
-INT CommandCode(OUTMESS *&OutMessage, CtiDeviceSPtr Dev);
 INT ValidateEmetconMessage(OUTMESS *&OutMessage);
 INT CCU711Message(OUTMESS *&OutMessage, CtiDeviceSPtr Dev);
 INT VersacomMessage(OUTMESS *&OutMessage);
@@ -959,122 +958,6 @@ INT ValidatePort(OUTMESS *&OutMessage)
     return status;
 }
 
-INT CommandCode(OUTMESS *&OutMessage, CtiDeviceSPtr Dev)
-{
-    INT status = NORMAL;
-
-    switch(OutMessage->EventCode & COMMANDMASK)
-    {
-    case LOOPBACKCOMMAND:
-        {
-            /* Decide what to put in message based on remote type */
-            switch(Dev->getType())
-            {
-            case TYPE_CCU700:
-            case TYPE_CCU710:
-                /* Build a loopback preamble */
-                LPreamble (OutMessage->Buffer.OutMessage + PREIDLEN, OutMessage->Remote);
-
-                OutMessage->OutLength   = 3 + 3;   /* n't Ask */
-                OutMessage->InLength    = 4;
-                OutMessage->TimeOut     = 2;
-                OutMessage->EventCode   = ENCODED | RESULT | NOWAIT;
-
-                break;
-
-            case TYPE_CCU711:
-                /* Build an IDLC loopback request */
-                OutMessage->EventCode   = RESULT | RCONT | ENCODED | NOWAIT;
-                OutMessage->TimeOut     = 2;
-                OutMessage->OutLength   = 3;
-                OutMessage->InLength    = 0;
-                OutMessage->Source      = 0;
-                OutMessage->Destination = DEST_BASE;
-                OutMessage->Command     = CMND_ACTIN;
-
-                OutMessage->Buffer.OutMessage[PREIDL] = NO_OP;
-
-                break;
-
-            case TYPE_ILEXRTU:
-                /* Build an Ilex RTU loopback (Time) request */
-                ILEXHeader (OutMessage->Buffer.OutMessage + PREIDLEN,
-                            OutMessage->Remote,
-                            ILEXTIMESYNC,
-                            TIMESYNC1,
-                            TIMESYNC2);
-
-                /* set the timesync function */
-                OutMessage->Buffer.OutMessage[PREIDLEN + 2] = ILEXGETTIME;
-
-                OutMessage->TimeOut = 2;
-                OutMessage->OutLength = ILEXTIMELENGTH;
-                OutMessage->InLength = -1;
-                OutMessage->EventCode = ENCODED | RESULT | NOWAIT;
-
-                break;
-
-            case TYPE_LCU415:
-            case TYPE_LCU415LG:
-            case TYPE_LCU415ER:
-            case TYPE_TCU5000:
-            case TYPE_TCU5500:
-                /* Build a mastercom loopback request */
-                MasterHeader (OutMessage->Buffer.OutMessage + PREIDLEN,
-                              OutMessage->Remote,
-                              MASTERLOOPBACK,
-                              0);
-
-                OutMessage->TimeOut = 2;
-                OutMessage->OutLength = MASTERLENGTH + 1;
-
-                OutMessage->Buffer.OutMessage[PREIDLEN + 4] = 0xfa;
-
-                OutMessage->InLength = -1;
-                OutMessage->EventCode = ENCODED | RESULT | NOWAIT;
-
-                break;
-
-            case TYPE_WELCORTU:
-            case TYPE_VTU:
-
-                OutMessage->TimeOut     = 2;
-                OutMessage->OutLength   = 0;
-                OutMessage->InLength    = -1;
-                OutMessage->EventCode   = ENCODED | RESULT | NOWAIT;
-                OutMessage->Buffer.OutMessage[PREIDL - 1] = 63;
-                OutMessage->Buffer.OutMessage[PREIDL] = 0;
-
-                break;
-
-            default:
-                SendError (OutMessage, BADTYPE);
-                return BADTYPE;
-            }
-
-            break;
-        }
-    case ANALOGLOOP:
-        /* generate message if the appropriate port does not exist */
-        if(QueueHandle(OutMessage->Port) == NULL)
-        {
-            SendError (OutMessage, BADTYPE);
-            return BADTYPE;
-        }
-
-        /* Dispatch this message to the port */
-        if(PortManager.writeQueue (OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
-        {
-            printf("Error Writing to Queue for Port %2hd\n", OutMessage->Port);
-            SendError (OutMessage, QUEUE_WRITE);
-        }
-
-        return NORMAL;
-    }
-
-    return status;
-}
-
 /*----------------------------------------------------------------------------*
  * This function verifies that the emetcon message is properly framed to be sent
  * under the current operating conditions.
@@ -1197,7 +1080,6 @@ INT CCU711Message(OUTMESS *&OutMessage, CtiDeviceSPtr Dev)
             return BADCCU;
         }
 
-
         /* Go ahead and send block to the appropriate ACTIN queue */
         if(WriteQueue (p711Info->ActinQueueHandle, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
         {
@@ -1279,7 +1161,6 @@ INT ExecuteGoodRemote(OUTMESS *&OutMessage)
                                   ENCODED     |
                                   RIPPLE      |
                                   /*VERSACOM    |*/  //  Versacom messages can be queued now
-                                  REMS        |
                                   FISHERPIERCE)))
     {
         status = CCU711Message(OutMessage, pDev);
