@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/utility.h-arc  $
-* REVISION     :  $Revision: 1.37 $
-* DATE         :  $Date: 2006/10/06 16:44:11 $
+* REVISION     :  $Revision: 1.38 $
+* DATE         :  $Date: 2006/10/18 16:52:47 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -24,11 +24,14 @@ using std::string;
 
 #include "ctitime.h"
 
-#include "dsm2.h"
 #include "dlldefs.h"
 #include "numstr.h"
 #include "sorted_vector.h"
 using std::vector;
+
+class INMESS;
+class CtiOutMessage;
+class CtiMutex;
 
 
 IM_EX_CTIBASE LONG GetMaxLMControl(long pao);
@@ -58,22 +61,24 @@ IM_EX_CTIBASE BOOL searchFuncForOutMessageUniqueID(void *pId, void* d);
 IM_EX_CTIBASE void applyPortQueueOutMessageReport(void *ptr, void* d);
 IM_EX_CTIBASE double limitValue(double input, double min, double max);
 
-typedef struct
+struct CTICOMPILEINFO
 {
    char *proj;
    int major;
    int minor;
    int build;
    char *date;
-} CTICOMPILEINFO;
+};
 
-typedef struct {
+struct CTICOMPONENTINFO
+{
    char *fname;
    double rev;
    char *date;
-} CTICOMPONENTINFO;
+};
 
-typedef struct {
+struct CtiQueueAnalysis_t
+{
 
 // #define NOWAIT          0x0000
 // #define NORESULT        0x0000
@@ -97,8 +102,7 @@ typedef struct {
 
     int priority_count[16];         // Count of elements at the respective priority 1-15.
     int metrics[256];               // Ok, these are 256 metrics I want to count!
-
-} CtiQueueAnalysis_t;
+};
 
 
 class CtiHighPerfTimer {
