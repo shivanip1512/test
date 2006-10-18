@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_emetcon.h-arc  $
-* REVISION     :  $Revision: 1.38 $
-* DATE         :  $Date: 2006/09/18 17:26:01 $
+* REVISION     :  $Revision: 1.39 $
+* DATE         :  $Date: 2006/10/18 19:17:22 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -53,7 +53,7 @@ public:
     Emetcon& setDouble(bool dbl);
     bool     getDouble() const;
 
-    static int determineDWordCount     (int length);
+    static unsigned determineDWordCount(unsigned length);
     static int calculateControlInterval(int interval);
 
     static int buildAWordMessage(OUTMESS *&out_result);

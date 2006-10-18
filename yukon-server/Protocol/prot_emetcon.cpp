@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/prot_emetcon.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2006/09/06 14:33:33 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2006/10/18 19:17:22 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -102,7 +102,7 @@ int Emetcon::buildBWordMessage(OUTMESS *&out_result, bool double_message)
        //  build preamble message.  Note that wordCount is zero for a read!
        BPreamble(out_result->Buffer.OutMessage + PREIDLEN, out_template.Buffer.BSt, 0);
 
-       int wordsExpected = determineDWordCount(out_result->Buffer.BSt.Length);
+       unsigned wordsExpected = determineDWordCount(out_result->Buffer.BSt.Length);
 
        out_result->InLength = 3 + wordsExpected * (DWORDLEN + 1);  // InLength is based upon the read request/function requested.
        out_result->OutLength = PREAMLEN + BWORDLEN + 3;            // OutLength is fixed (only the B read request)
@@ -114,7 +114,7 @@ int Emetcon::buildBWordMessage(OUTMESS *&out_result, bool double_message)
    }
    else
    {
-       int wordsToWrite = 0;
+       unsigned wordsToWrite = 0;
 
        if(out_template.Buffer.BSt.Length > 0)
        {
@@ -149,24 +149,24 @@ int Emetcon::buildBWordMessage(OUTMESS *&out_result, bool double_message)
 }
 
 
-int Emetcon::determineDWordCount(int length)
+unsigned Emetcon::determineDWordCount(unsigned length)
 {
-   int count = 0;
+    unsigned count = 0;
 
-   if( length > 0 && length <= 13 )
-   {
-       //  1 to  3 bytes = 1 word needed
-       //  4 to  8 bytes = 2 words needed
-       //  9 to 13 bytes = 3 words needed
-       count = (length + 6) / 5;
-   }
-   else
-   {
+    if( length && length <= 13 )
+    {
+        //  1 to  3 bytes = 1 word needed
+        //  4 to  8 bytes = 2 words needed
+        //  9 to 13 bytes = 3 words needed
+        count = (length + 6) / 5;
+    }
+    else
+    {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** Checkpoint - invalid length (" << length << ") in Cti::Protocol::Emetcon::determineDWordCount() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-   }
+    }
 
-   return count;
+    return count;
 }
 
 int Emetcon::calculateControlInterval(int interval)
