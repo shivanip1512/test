@@ -76,7 +76,7 @@ INT IM_EX_CTIBASE A_Word (PBYTE AWord, const ASTRUCT &ASt, BOOL Double)      /* 
 
 /* Routine to create a "B" type word */
 
-INT IM_EX_CTIBASE B_Word (PBYTE BWord, const BSTRUCT &BSt, INT wordCount, BOOL Double) /* B word structure */
+INT IM_EX_CTIBASE B_Word (PBYTE BWord, const BSTRUCT &BSt, unsigned wordCount, BOOL Double) /* B word structure */
 
 {
    USHORT BCH;
@@ -87,11 +87,11 @@ INT IM_EX_CTIBASE B_Word (PBYTE BWord, const BSTRUCT &BSt, INT wordCount, BOOL D
    else
       BWord[0] = 0xa0 | BSt.DlcRoute.RepVar << 1 | BSt.DlcRoute.RepFixed >> 4;
 
-   BWord[1] = (UCHAR)(BSt.DlcRoute.RepFixed << 4 | BSt.Address >> 18);
-   BWord[2] = (UCHAR)(BSt.Address >> 10);
-   BWord[3] = (UCHAR)(BSt.Address >> 2);
-   BWord[4] = (UCHAR)(BSt.Address << 6 | wordCount << 4 | BSt.Function >> 4);
-   BWord[5] = (UCHAR)(BSt.Function << 4);
+   BWord[1]  = (UCHAR)(BSt.DlcRoute.RepFixed << 4 | BSt.Address >> 18);
+   BWord[2]  = (UCHAR)(BSt.Address  >> 10);
+   BWord[3]  = (UCHAR)(BSt.Address  >> 2);
+   BWord[4]  = (UCHAR)(BSt.Address  << 6 | wordCount << 4 | BSt.Function >> 4);
+   BWord[5]  = (UCHAR)(BSt.Function << 4);
    BWord[5] |= (UCHAR)((BSt.IO) << 2);
 
    /* calculate BCH and place it in message */
@@ -142,9 +142,9 @@ INT IM_EX_CTIBASE C_Word (PBYTE CWord,                        /* result */
 INT IM_EX_CTIBASE C_Words (PBYTE CWords,             /* results */
                            const PBYTE Message,      /* Message to be converted */
                            USHORT Length,            /* Length of Message */
-                           INT *Num)                 /* number of c words generated */
+                           unsigned *Num)                 /* number of c words generated */
 {
-   INT i;
+   unsigned i;
 
    /* loop building full size c words till not enough data */
    for(i = 0; i < Length / 5; ++i)
@@ -454,10 +454,10 @@ INT IM_EX_CTIBASE APreamble (PBYTE Pre, const ASTRUCT &ASt)             /* A wor
     }
 
     /* load the feeder/funtion */
-    if(ASt.DlcRoute.Feeder < 8)
-        Pre[0] |= 0x04 | ASt.DlcRoute.Feeder << 3;
+    if(ASt.DlcRoute.Bus < 8)
+        Pre[0] |= 0x04 | ASt.DlcRoute.Bus << 3;
     else
-        Pre[0] |= (ASt.DlcRoute.Feeder - 8) << 3;
+        Pre[0] |= (ASt.DlcRoute.Bus - 8) << 3;
 
     //  load the amp (either 0 or 1)
     if(ASt.DlcRoute.Amp)
@@ -499,10 +499,10 @@ INT IM_EX_CTIBASE BPreamble (PBYTE Pre, const BSTRUCT &BSt, INT wordsToFollow)  
     }
 
     //  load the feeder/funtion
-    if(BSt.DlcRoute.Feeder < 8)
-        Pre[0] |= 0x04 | BSt.DlcRoute.Feeder << 3;
+    if(BSt.DlcRoute.Bus < 8)
+        Pre[0] |= 0x04 | BSt.DlcRoute.Bus << 3;
     else
-        Pre[0] |= (BSt.DlcRoute.Feeder - 8) << 3;
+        Pre[0] |= (BSt.DlcRoute.Bus - 8) << 3;
 
     //  load the amp (either 0 or 1)
     if(BSt.DlcRoute.Amp)
