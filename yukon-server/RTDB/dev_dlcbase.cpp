@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dlcbase.cpp-arc  $
-* REVISION     :  $Revision: 1.40 $
-* DATE         :  $Date: 2006/09/15 19:08:58 $
+* REVISION     :  $Revision: 1.41 $
+* DATE         :  $Date: 2006/10/18 19:20:58 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -404,8 +404,6 @@ int CtiDeviceDLCBase::executeOnDLCRoute( CtiRequestMsg              *pReq,
             }
 
             pOut->Buffer.BSt.Address      = getAddress();            // The DLC address of the device
-            pOut->Buffer.BSt.DeviceType   = getType();
-            pOut->Buffer.BSt.SSpec        = 0;  // 2003-08-22 mskf - implement this at the dev_mct level if necessary - getSSpec();
 
             /*
              * OK, these are the items we are about to set out to perform..  Any additional signals will

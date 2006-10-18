@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2006/09/01 18:45:45 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2006/10/18 19:20:58 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -223,8 +223,6 @@ INT CtiDeviceGroupMCT::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &pa
                 }
 
                 pOut->Buffer.BSt.Address      = getAddress();            // The DLC address of the MCT.
-                pOut->Buffer.BSt.DeviceType   = getType();
-                pOut->Buffer.BSt.SSpec        = 0;  //  ACH FIX what-huh?
 
                 /*
                  * OK, these are the items we are about to set out to perform..  Any additional signals will
