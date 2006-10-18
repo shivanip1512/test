@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/DSM2.H-arc  $
-* REVISION     :  $Revision: 1.38 $
-* DATE         :  $Date: 2006/10/05 16:57:24 $
+* REVISION     :  $Revision: 1.39 $
+* DATE         :  $Date: 2006/10/18 16:12:15 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -356,30 +356,17 @@ IM_EX_CTIBASE ULONG OutMessageCount();
 #define MAXPROC         52
 
 /* Misc. definitions */
-#define COMSIZE         132
 #define MAXIDLC         128
 #define CCUMAX_700      3
 #define CCUMAX_710      31
 #define CCUMAX_711      99
 #define CCUGLOBAL       127
 #define RTUGLOBAL       126
-#define TRACE_ON        1
-#define TRACE_OFF       0
-#define DELAY_ABORT     -1
-#define NOMORE          -1
 #define TIMEOUT         5
-#define CORNTIMEOUT     20
 #define PREAMLEN        3
-#define REP_FIXED       0
-#define REP_VAR         1
-#define PORT_NUM        2
-#define STAGES          3
-#define CCULOOP         8+2
-#define CCUREV          8+4
 
 
 /* A-word function definitions */
-
 #define AWORDLEN        4
 #define A_RESTORE       0
 #define A_SHED_A        1
@@ -392,36 +379,11 @@ IM_EX_CTIBASE ULONG OutMessageCount();
 
 /* B-word function definitions */
 #define BWORDLEN        7
-#define B_RESTORE       0
-#define B_MASK_A        0x01
-#define B_MASK_B        0x02
-#define B_MASK_C        0x04
-#define B_MASK_D        0x08
-#define B_SCRAM         0x0f
-#define B_GETSTATUS     0X3E
-#define B_GETLOAD       0x35
-#define B_GETARM        0x30
-#define B_GETADD        0x28
-#define B_GETREV        0x00
-#define METER           1
-#define PI_1            2
-#define PI_2            3
-#define PI_3            4
-#define ANALOG1         5
-#define ANALOG2         6
-#define ANALOG3         7
-#define ANALOG4         8
-#define BATT            0x1f
-#define B_UNI           0x22
 #define CWORDLEN        7
 #define DWORDLEN        7
-#define RESET_GN        0x50
-#define RESET_OV        0x57
-#define RESET_TA        0x58
 
 
 /* Time definitions */
-
 #define TIME_7_5        0
 #define TIME_15         1
 #define TIME_30         2
@@ -480,18 +442,14 @@ struct CtiSyncDefStruct
 struct DLCROUTE
 {
   USHORT Amp;       // From Route and Transmitter Data.
-  USHORT Feeder;
+  USHORT Bus;
   USHORT Stages;
   USHORT RepFixed;
   USHORT RepVar;
-
 };
 
 struct ASTRUCT
 {
-  // USHORT Priority;
-  // USHORT Retry;
-
    USHORT   Port;
    USHORT   Remote;
 
@@ -504,10 +462,6 @@ struct ASTRUCT
 
 struct BSTRUCT
 {
-   // USHORT Priority;
-   // USHORT Retry;
-   // USHORT Sequence;
-
    USHORT   Port;             // This is the port the remote transmitter device is connected to.
    USHORT   Remote;           // This is the DeviceID of the transmitter device (CCU etc)
 
@@ -515,8 +469,6 @@ struct BSTRUCT
 
    // DLC Identifications
    ULONG  Address;            // This is the DLC address of the DLC device
-   INT    SSpec;              // S-Spec of the device.
-   INT    DeviceType;         // devicetypes.h devicetype of the mct.
 
    USHORT Function;           // Indicates the desired operation on the DLC device
    USHORT Length;             // This is the byte count expected from the DLC device based upon the request.
@@ -552,10 +504,6 @@ struct FPSTRUCT
 
 struct DSTRUCT
 {
-   //USHORT   Sequence;
-   //LONG     DeviceID;
-   //LONG     PointID;
-
    ULONG    Time;
    USHORT   Length;
    BYTE     Message[36];
@@ -569,10 +517,6 @@ struct DSTRUCT
 
 struct ESTRUCT
 {
-   //USHORT Sequence;
-   //CHAR DeviceName[STANDNAMLEN];
-   //CHAR PointName[STANDNAMLEN];
-
    BYTE     Message[36];
    USHORT   RepVar;
    ULONG    Address;
@@ -583,11 +527,6 @@ struct ESTRUCT
 /* Structure used for ripple */
 struct RSTRUCT
 {
-   // USHORT Port;
-   // USHORT Remote;
-   // USHORT Priority;
-   // USHORT Retry;
-
    BYTE Message[7];
 };
 
@@ -595,10 +534,6 @@ struct RSTRUCT
 /* Structure used for REMS 100 */
 struct REMSSTRUCT
 {
-   //USHORT Port;
-   //USHORT Remote;
-   //USHORT Priority;
-   //USHORT Retry;
    USHORT AddressHigh;
    USHORT AddressLow;
    USHORT Function;
@@ -835,7 +770,7 @@ public:
 
    INT                Retry;                        // Instructions to porter!
    INT                Priority;
-   INT                TimeOut;
+   INT                TimeOut;                      //  Timeout for inbound data, in seconds
 
    INT                Port;
    INT                Remote;
@@ -986,7 +921,7 @@ namespace std
 };
 
 
-typedef class CTIINMESS
+class INMESS
 {
 public:
 
@@ -1029,18 +964,15 @@ public:
 
 public:
 
-    CTIINMESS()
+    INMESS()
     {
-       ::memset(this, 0, sizeof(CTIINMESS));
+       ::memset(this, 0, sizeof(INMESS));
     }
 
-} INMESS;
+};
 
 #define PEXEC_DEVID        -1;
 #define PORTERSU_DEVID     -2;
-#define PORTPIPE_DEVID     -3;
-#define PORTPORT_DEVID     -4;
-#define SCANNER_DEVID      -5;
 
 
 /* Definitions for the statistics system */
@@ -1118,61 +1050,61 @@ int            IM_EX_CTIBASE RollOverPlotData (PCHAR, PCHAR);
 #define RETURN_THREAD_STACK_SIZE 8192
 
 /* Prototypes from PEXEC.C */
-void           IM_EX_CTIBASE resetOutMess(OUTMESS*);
+void  IM_EX_CTIBASE resetOutMess(OUTMESS*);
 
-int            IM_EX_CTIBASE xIOInit (PCHAR);
-int            IM_EX_CTIBASE PortPipeInit (USHORT);
-void           IM_EX_CTIBASE PortPipeCleanup (ULONG Reason);
+int   IM_EX_CTIBASE xIOInit (PCHAR);
+int   IM_EX_CTIBASE PortPipeInit (USHORT);
+void  IM_EX_CTIBASE PortPipeCleanup (ULONG Reason);
 
-int            IM_EX_CTIBASE nrexec (RSTRUCT *);
-int            IM_EX_CTIBASE nvexec (VSTRUCT *);
-int            IM_EX_CTIBASE naexec (ASTRUCT *);
-int            IM_EX_CTIBASE nb1exec (BSTRUCT *);
-int            IM_EX_CTIBASE nb2exec (BSTRUCT *, DSTRUCT *);
-int            IM_EX_CTIBASE nb2execsq (BSTRUCT *);
-int            IM_EX_CTIBASE nb2execs (BSTRUCT *);
-int            IM_EX_CTIBASE nd2execs (DIALUPSTRUCT *DUPOst);
-int            IM_EX_CTIBASE nd2execr (DSTRUCT *DSt, DIALUPSTRUCT *DUPst);
-int            IM_EX_CTIBASE nd1execx (DIALUPSTRUCT *);
-int            IM_EX_CTIBASE QueueFunctionRead (BSTRUCT *, USHORT CCUQFlag);
-int            IM_EX_CTIBASE QueueFunctionWrite (BSTRUCT *);
-int            IM_EX_CTIBASE nb2execr (DSTRUCT *);
-int            IM_EX_CTIBASE nb2query (VOID);
-VOID           IM_EX_CTIBASE ReturnThread (PVOID);
-INT            IM_EX_CTIBASE LoopBack (USHORT, USHORT);
-int            IM_EX_CTIBASE CCUReset (USHORT, USHORT);
-int            IM_EX_CTIBASE SwitchControl (CSTRUCT *);
-int            IM_EX_CTIBASE LCULockOutset (USHORT, USHORT);
-int            IM_EX_CTIBASE LCULockOutReset (USHORT, USHORT);
-int            IM_EX_CTIBASE DecodeDialupData(INMESS *InMessage, DIALUPSTRUCT *DUPst);
+int   IM_EX_CTIBASE nrexec (RSTRUCT *);
+int   IM_EX_CTIBASE nvexec (VSTRUCT *);
+int   IM_EX_CTIBASE naexec (ASTRUCT *);
+int   IM_EX_CTIBASE nb1exec (BSTRUCT *);
+int   IM_EX_CTIBASE nb2exec (BSTRUCT *, DSTRUCT *);
+int   IM_EX_CTIBASE nb2execsq (BSTRUCT *);
+int   IM_EX_CTIBASE nb2execs (BSTRUCT *);
+int   IM_EX_CTIBASE nd2execs (DIALUPSTRUCT *DUPOst);
+int   IM_EX_CTIBASE nd2execr (DSTRUCT *DSt, DIALUPSTRUCT *DUPst);
+int   IM_EX_CTIBASE nd1execx (DIALUPSTRUCT *);
+int   IM_EX_CTIBASE QueueFunctionRead (BSTRUCT *, USHORT CCUQFlag);
+int   IM_EX_CTIBASE QueueFunctionWrite (BSTRUCT *);
+int   IM_EX_CTIBASE nb2execr (DSTRUCT *);
+int   IM_EX_CTIBASE nb2query (VOID);
+VOID  IM_EX_CTIBASE ReturnThread (PVOID);
+INT   IM_EX_CTIBASE LoopBack (USHORT, USHORT);
+int   IM_EX_CTIBASE CCUReset (USHORT, USHORT);
+int   IM_EX_CTIBASE SwitchControl (CSTRUCT *);
+int   IM_EX_CTIBASE LCULockOutset (USHORT, USHORT);
+int   IM_EX_CTIBASE LCULockOutReset (USHORT, USHORT);
+int   IM_EX_CTIBASE DecodeDialupData(INMESS *InMessage, DIALUPSTRUCT *DUPst);
 
 /* Prototypes from PSUP.C */
-int            IM_EX_CTIBASE Float2CharFormat (FLOAT, PCHAR, USHORT, USHORT);
-int            IM_EX_CTIBASE Long2CharFormat (LONG, PCHAR, USHORT);
-int            IM_EX_CTIBASE Short2CharFormat (SHORT, PCHAR, USHORT);
+int   IM_EX_CTIBASE Float2CharFormat (FLOAT, PCHAR, USHORT, USHORT);
+int   IM_EX_CTIBASE Long2CharFormat (LONG, PCHAR, USHORT);
+int   IM_EX_CTIBASE Short2CharFormat (SHORT, PCHAR, USHORT);
 
 /* Prototypes for WORDS.C */
-int            IM_EX_CTIBASE A_Word (PBYTE, const ASTRUCT &, BOOL Double = FALSE);
-int            IM_EX_CTIBASE B_Word (PBYTE, const BSTRUCT &, INT wordCount, BOOL Double = FALSE);
-int            IM_EX_CTIBASE C_Word (PBYTE, const PBYTE, USHORT);
-int            IM_EX_CTIBASE C_Words (PBYTE, const PBYTE, USHORT, INT*);
-int            IM_EX_CTIBASE D1_Word (PBYTE, PBYTE, PUSHORT, PULONG, PUSHORT, PUSHORT);
-int            IM_EX_CTIBASE D23_Word(PBYTE, PBYTE, PUSHORT, PUSHORT);
-int            IM_EX_CTIBASE D_Words (PBYTE, USHORT, USHORT, DSTRUCT *);
-int            IM_EX_CTIBASE E_Word (PBYTE, ESTRUCT *);
-int            IM_EX_CTIBASE BCHCheck (PBYTE);
-int            IM_EX_CTIBASE PadTst (PBYTE, USHORT, USHORT);
-int            IM_EX_CTIBASE NackTst (BYTE, PUSHORT, USHORT);
-int            IM_EX_CTIBASE APreamble (PBYTE, const ASTRUCT &);
-int            IM_EX_CTIBASE BPreamble (PBYTE, const BSTRUCT &, INT wordsToFollow);
-int            IM_EX_CTIBASE LPreamble (PBYTE, USHORT);
-int            IM_EX_CTIBASE G_Word (PBYTE, const BSTRUCT &, INT dwordCount, BOOL Double = FALSE);
-int            IM_EX_CTIBASE H_Word (PBYTE, PBYTE, USHORT);
-int            IM_EX_CTIBASE I1_Word (PBYTE, PBYTE, PUSHORT, PULONG, PUSHORT, PUSHORT);
-int            IM_EX_CTIBASE I23_Word (PBYTE, PBYTE, PUSHORT, PUSHORT);
-int            IM_EX_CTIBASE I_Words (PBYTE, USHORT, USHORT, DSTRUCT *);
-int            IM_EX_CTIBASE J_Word (PBYTE, ESTRUCT *);
-int            IM_EX_CTIBASE I_BCHCheck (PBYTE);
+int   IM_EX_CTIBASE A_Word (PBYTE, const ASTRUCT &, BOOL Double = FALSE);
+int   IM_EX_CTIBASE B_Word (PBYTE, const BSTRUCT &, unsigned wordCount, BOOL Double = FALSE);
+int   IM_EX_CTIBASE C_Word (PBYTE, const PBYTE, USHORT);
+int   IM_EX_CTIBASE C_Words (PBYTE, const PBYTE, USHORT, unsigned *);
+int   IM_EX_CTIBASE D1_Word (PBYTE, PBYTE, PUSHORT, PULONG, PUSHORT, PUSHORT);
+int   IM_EX_CTIBASE D23_Word(PBYTE, PBYTE, PUSHORT, PUSHORT);
+int   IM_EX_CTIBASE D_Words (PBYTE, USHORT, USHORT, DSTRUCT *);
+int   IM_EX_CTIBASE E_Word (PBYTE, ESTRUCT *);
+int   IM_EX_CTIBASE BCHCheck (PBYTE);
+int   IM_EX_CTIBASE PadTst (PBYTE, USHORT, USHORT);
+int   IM_EX_CTIBASE NackTst (BYTE, PUSHORT, USHORT);
+int   IM_EX_CTIBASE APreamble (PBYTE, const ASTRUCT &);
+int   IM_EX_CTIBASE BPreamble (PBYTE, const BSTRUCT &, INT wordsToFollow);
+int   IM_EX_CTIBASE LPreamble (PBYTE, USHORT);
+int   IM_EX_CTIBASE G_Word (PBYTE, const BSTRUCT &, INT dwordCount, BOOL Double = FALSE);
+int   IM_EX_CTIBASE H_Word (PBYTE, PBYTE, USHORT);
+int   IM_EX_CTIBASE I1_Word (PBYTE, PBYTE, PUSHORT, PULONG, PUSHORT, PUSHORT);
+int   IM_EX_CTIBASE I23_Word (PBYTE, PBYTE, PUSHORT, PUSHORT);
+int   IM_EX_CTIBASE I_Words (PBYTE, USHORT, USHORT, DSTRUCT *);
+int   IM_EX_CTIBASE J_Word (PBYTE, ESTRUCT *);
+int   IM_EX_CTIBASE I_BCHCheck (PBYTE);
 
 
 #endif      // #ifndef DSM2_H
