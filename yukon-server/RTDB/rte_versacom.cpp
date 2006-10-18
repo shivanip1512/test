@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_versacom.cpp-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2006/09/26 14:31:21 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2006/10/18 19:16:27 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -143,7 +143,7 @@ INT CtiRouteVersacom::ExecuteRequest(CtiRequestMsg                  *pReq,
                         OutMessage->Buffer.ASt.DlcRoute.RepVar    = 7;                    // This is the CCU 710 info (default for Duke only)
 
                         OutMessage->Buffer.ASt.DlcRoute.Amp       = Versacom.getAmp();
-                        OutMessage->Buffer.ASt.DlcRoute.Feeder    = Versacom.getBus();
+                        OutMessage->Buffer.ASt.DlcRoute.Bus       = Versacom.getBus();
 
                         /* build preamble message */
                         ::memset(&ABuf, 0, ABUFSIZE * sizeof(BYTE));
@@ -157,7 +157,7 @@ INT CtiRouteVersacom::ExecuteRequest(CtiRequestMsg                  *pReq,
                         ::memset(&OutMessage->Buffer.VSt, 0, sizeof(VSTRUCT));
 
                         OutMessage->Buffer.VSt.DlcRoute.Amp      = Versacom.getAmp();
-                        OutMessage->Buffer.VSt.DlcRoute.Feeder   = Versacom.getBus();
+                        OutMessage->Buffer.VSt.DlcRoute.Bus      = Versacom.getBus();
                         OutMessage->Buffer.VSt.DlcRoute.RepFixed = 31;
                         OutMessage->Buffer.VSt.DlcRoute.RepVar   = 7;
 

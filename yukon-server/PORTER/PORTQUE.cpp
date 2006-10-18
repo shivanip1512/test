@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.53 $
-* DATE         :  $Date: 2006/09/06 12:51:13 $
+* REVISION     :  $Revision: 1.54 $
+* DATE         :  $Date: 2006/10/18 19:19:13 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1487,7 +1487,7 @@ BuildLGrpQ (CtiDeviceSPtr Dev)
                 OutMessage->Buffer.OutMessage[Offset++] = LOBYTE (LOUSHORT (MyOutMessage->Buffer.BSt.Address));
 
                 /* Load the bus */
-                OutMessage->Buffer.OutMessage[Offset++] = (UCHAR)MyOutMessage->Buffer.BSt.DlcRoute.Feeder;
+                OutMessage->Buffer.OutMessage[Offset++] = (UCHAR)MyOutMessage->Buffer.BSt.DlcRoute.Bus;
 
                 /* Load repeater control */
                 OutMessage->Buffer.OutMessage[Offset++] = (MyOutMessage->Buffer.BSt.DlcRoute.RepVar << 5) | (MyOutMessage->Buffer.BSt.DlcRoute.RepFixed & 0x001f);
