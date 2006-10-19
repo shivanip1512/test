@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct4xx.h-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2006/10/19 15:57:23 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2006/10/19 19:54:35 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -54,9 +54,11 @@ protected:
     enum ValueType
     {
         ValueType_Voltage,
-        ValueType_KW,
+        ValueType_Demand,
+        ValueType_TOUDemand,
+        ValueType_TOUFrozenDemand,
         ValueType_LoadProfile_Voltage,
-        ValueType_LoadProfile_KW,
+        ValueType_LoadProfile_Demand,
         ValueType_Accumulator,
         ValueType_FrozenAccumulator,
         ValueType_IED,
@@ -190,7 +192,7 @@ protected:
     } _llpPeakInterest;
 
     //  this is more extensible than a pair
-    struct point_info_t
+    struct point_info
     {
         double value;
         PointQuality_t quality;
@@ -200,13 +202,13 @@ protected:
 
     static QualityMap initErrorQualities( void );
 
-    unsigned char crc8(const unsigned char *buf, unsigned int len);
-    point_info_t  getData(unsigned char *buf, int len, ValueType vt=ValueType_KW);
+    unsigned char crc8(const unsigned char *buf, unsigned int len) const;
+    point_info getData(unsigned char *buf, int len, ValueType vt=ValueType_Demand) const;
 
-     CtiPointDataMsg *makePointDataMsg(CtiPointSPtr p, const point_info_t &pi, const string &pointString);
+    CtiPointDataMsg *makePointDataMsg(CtiPointSPtr p, const point_info &pi, const string &pointString);
 
     virtual long getLoadProfileInterval(unsigned channel) = 0;
-    virtual point_info_t getLoadProfileData(unsigned channel, unsigned char *buf, unsigned len);
+    virtual point_info getLoadProfileData(unsigned channel, unsigned char *buf, unsigned len);
 
     virtual ConfigPartsList getPartsList();
 
@@ -266,7 +268,7 @@ public:
 
     enum
     {
-        UniversalAddress = 4194012,
+        UniversalAddress = 4194012,  //  0x3FFEDC
 
         Command_FreezeVoltageOne = 0x59,
         Command_FreezeVoltageTwo = 0x5A,
