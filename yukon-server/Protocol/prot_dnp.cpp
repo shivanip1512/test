@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2006/10/04 15:56:19 $
+* REVISION     :  $Revision: 1.34 $
+* DATE         :  $Date: 2006/10/19 20:07:59 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,8 +21,11 @@
 #include "numstr.h"
 #include "prot_dnp.h"
 #include "dnp_object_class.h"
+#include "dnp_object_binaryinput.h"
 #include "dnp_object_binaryoutput.h"
+#include "dnp_object_analoginput.h"
 #include "dnp_object_analogoutput.h"
+#include "dnp_object_counter.h"
 #include "dnp_object_time.h"
 
 namespace Cti       {
@@ -31,7 +34,8 @@ namespace Protocol  {
 using namespace Cti::Protocol::DNP;
 
 DNPInterface::DNPInterface() :
-    _command(Command_Invalid)
+    _command(Command_Invalid),
+    _last_complaint(0)
 {
     setAddresses(DefaultSlaveAddress, DefaultMasterAddress);
 }
@@ -366,7 +370,18 @@ int DNPInterface::decode( CtiXfer &xfer, int status )
     }
     else if( _app_layer.isTransactionComplete() )
     {
+        string iin_descriptor;
+
+        //  these should be moved somewhere else - these are transient results, and we should keep a multi-frame counter
+        unsigned analog, analog_change, analog_output,
+                 binary, binary_change, binary_output,
+                 counter, counter_change, other;
+
         _app_layer.getObjects(_object_blocks);
+
+        _app_layer.getInternalIndications(iin_descriptor);
+
+        _string_results.push_back(CTIDBG_new string(iin_descriptor));
 
         //  does the command need any special processing, or is it just pointdata?
         switch( _command )
@@ -484,6 +499,11 @@ int DNPInterface::decode( CtiXfer &xfer, int status )
             }
         }
 
+        analog = analog_change = analog_output = 0;
+        binary = binary_change = binary_output = 0;
+        counter = counter_change = 0;
+        other = 0;
+
         //  and this is where the pointdata gets harvested
         while( !_object_blocks.empty() )
         {
@@ -525,11 +545,15 @@ int DNPInterface::decode( CtiXfer &xfer, int status )
                         s.append(".");
                         s.append(CtiNumStr((int)time->getMilliseconds()).zpad(3));
 
-                        if( (t.seconds() - TimeDifferential) > now.seconds() || (t.seconds() + TimeDifferential) < now.seconds() )
+                        if( ((_last_complaint + ComplaintInterval) < now.seconds())
+                            && ((t.seconds() - TimeDifferential) > now.seconds()
+                                || (t.seconds() + TimeDifferential) < now.seconds()) )
                         {
+                            _last_complaint = now.seconds();
+
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint - Cti::Protocol::DNPInterface::decode() - large time differential for device \"" << _name << "\" (" << t << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << CtiTime() << " **** Checkpoint - Cti::Protocol::DNPInterface::decode() - large time differential for device \"" << _name << "\" (" << t << "); will not complain again until " << CtiTime(_last_complaint + ComplaintInterval) << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             }
                         }
 
@@ -543,6 +567,36 @@ int DNPInterface::decode( CtiXfer &xfer, int status )
                 }
                 else
                 {
+                    int count = ob->size();
+
+                    switch( ob->getGroup() )
+                    {
+                        case AnalogInput::Group:              analog        += count;   break;
+                        case AnalogInputChange::Group:        analog_change += count;   break;
+                        case AnalogOutput::Group:             analog_output += count;   break;
+                        case BinaryInput::Group:              binary        += count;   break;
+                        case BinaryInputChange::Group:        binary_change += count;   break;
+                        case BinaryOutput::Group:             binary_output += count;   break;
+                        case Counter::Group:                  counter       += count;   break;
+                        case CounterEvent::Group:             counter_change += count;  break;
+
+                        case AnalogInputFrozen::Group:
+                        case AnalogInputFrozenEvent::Group:
+                        case CounterFrozen::Group:
+                        case CounterFrozenEvent::Group:
+                            //  these aren't really used, so we're counting them up seperately
+                            other += count;
+                            break;
+
+                        case Time::Group:
+                        case TimeCTO::Group:
+                        case AnalogOutputBlock::Group:
+                        case BinaryOutputControl::Group:
+                        default:
+                            //  these are all control messages and/or time messages;  they don't count in the point scheme of things
+                            break;
+                    }
+
                     ob->getPoints(_point_results, cto);
                 }
             }
