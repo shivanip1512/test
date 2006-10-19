@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2006/10/04 15:49:25 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2006/10/19 20:12:17 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -713,69 +713,22 @@ int ObjectBlock::restoreObject( const unsigned char *buf, int len, Object *&obj 
 
     switch( _group )
     {
-        case AnalogInput::Group:
-            obj = CTIDBG_new AnalogInput(_variation);
-            break;
-
-        case AnalogInputChange::Group:
-            obj = CTIDBG_new AnalogInputChange(_variation);
-            break;
-
-        case AnalogInputFrozen::Group:
-            obj = CTIDBG_new AnalogInputFrozen(_variation);
-            break;
-
-        case AnalogInputFrozenEvent::Group:
-            obj = CTIDBG_new AnalogInputFrozenEvent(_variation);
-            break;
-
-        case AnalogOutput::Group:
-            obj = CTIDBG_new AnalogOutput(_variation);
-            break;
-
-        case AnalogOutputBlock::Group:
-            obj = CTIDBG_new AnalogOutputBlock(_variation);
-            break;
-
-        case BinaryInput::Group:
-            obj = CTIDBG_new BinaryInput(_variation);
-            break;
-
-        case BinaryInputChange::Group:
-            obj = CTIDBG_new BinaryInputChange(_variation);
-            break;
-
-        case BinaryOutput::Group:
-            obj = CTIDBG_new BinaryOutput(_variation);
-            break;
-
-        case BinaryOutputControl::Group:
-            obj = CTIDBG_new BinaryOutputControl(_variation);
-            break;
-
-        case Counter::Group:
-            obj = CTIDBG_new Counter(_variation);
-            break;
-
-        case CounterEvent::Group:
-            obj = CTIDBG_new CounterEvent(_variation);
-            break;
-
-        case CounterFrozen::Group:
-            obj = CTIDBG_new CounterFrozen(_variation);
-            break;
-
-        case CounterFrozenEvent::Group:
-            obj = CTIDBG_new CounterFrozenEvent(_variation);
-            break;
-
-        case Time::Group:
-            obj = CTIDBG_new Time(_variation);
-            break;
-
-        case TimeCTO::Group:
-            obj = CTIDBG_new TimeCTO(_variation);
-            break;
+        case AnalogInput::Group:            obj = CTIDBG_new AnalogInput(_variation);               break;
+        case AnalogInputChange::Group:      obj = CTIDBG_new AnalogInputChange(_variation);         break;
+        case AnalogInputFrozen::Group:      obj = CTIDBG_new AnalogInputFrozen(_variation);         break;
+        case AnalogInputFrozenEvent::Group: obj = CTIDBG_new AnalogInputFrozenEvent(_variation);    break;
+        case AnalogOutput::Group:           obj = CTIDBG_new AnalogOutput(_variation);              break;
+        case AnalogOutputBlock::Group:      obj = CTIDBG_new AnalogOutputBlock(_variation);         break;
+        case BinaryInput::Group:            obj = CTIDBG_new BinaryInput(_variation);               break;
+        case BinaryInputChange::Group:      obj = CTIDBG_new BinaryInputChange(_variation);         break;
+        case BinaryOutput::Group:           obj = CTIDBG_new BinaryOutput(_variation);              break;
+        case BinaryOutputControl::Group:    obj = CTIDBG_new BinaryOutputControl(_variation);       break;
+        case Counter::Group:                obj = CTIDBG_new Counter(_variation);                   break;
+        case CounterEvent::Group:           obj = CTIDBG_new CounterEvent(_variation);              break;
+        case CounterFrozen::Group:          obj = CTIDBG_new CounterFrozen(_variation);             break;
+        case CounterFrozenEvent::Group:     obj = CTIDBG_new CounterFrozenEvent(_variation);        break;
+        case Time::Group:                   obj = CTIDBG_new Time(_variation);                      break;
+        case TimeCTO::Group:                obj = CTIDBG_new TimeCTO(_variation);                   break;
 
         default:
             obj = NULL;
