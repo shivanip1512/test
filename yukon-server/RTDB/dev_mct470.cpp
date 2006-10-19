@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.65 $
-* DATE         :  $Date: 2006/09/26 15:10:49 $
+* REVISION     :  $Revision: 1.66 $
+* DATE         :  $Date: 2006/10/19 15:58:54 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -203,6 +203,15 @@ CtiDeviceMCT::DynamicPaoFunctionAddressing_t CtiDeviceMCT470::initDynPaoFuncAddr
     addressSet.insert(DynamicPaoAddressing(6, 1, Keys::Key_MCT_LLPChannel3Len));
     addressSet.insert(DynamicPaoAddressing(7, 1, Keys::Key_MCT_LLPChannel4Len));
     functionSet.insert(DynamicPaoFunctionAddressing_t::value_type(FuncRead_LLPStatusPos,addressSet));
+
+    addressSet.clear();
+
+    // FuncRead_TOUDaySchedulePos
+    addressSet.insert(DynamicPaoAddressing( 0, 2, Keys::Key_MCT_DayTable));
+    addressSet.insert(DynamicPaoAddressing( 2, 1, Keys::Key_MCT_DefaultTOURate));
+    addressSet.insert(DynamicPaoAddressing(10, 1, Keys::Key_MCT_TimeZoneOffset));
+
+    functionSet.insert(DynamicPaoFunctionAddressing_t::value_type(FuncRead_TOUDaySchedulePos,addressSet));
 
     addressSet.clear();
 
