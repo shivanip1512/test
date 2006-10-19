@@ -12,6 +12,7 @@ Event.observe (window, 'load', function  () { setAdjustments();});
 
 String gName = ParamUtil.getString(request,"gearName", "");
 String gearIdx = ParamUtil.getString (request, "idx", "");
+Integer gearPeriod = ParamUtil.getInteger(request, "prd");
 
 Calendar c = GregorianCalendar.getInstance();
 c.setTime(new Date());
@@ -21,13 +22,13 @@ c.setTimeInMillis(( Date.parse(start)));
 
 Date sp = new Date(Date.parse (stop));
 Date st = new Date (Date.parse(start));
-int timeSlots = LCUtils.getTimeSlotsForTargetCycle(sp, st);
+int timeSlots = LCUtils.getTimeSlotsForTargetCycle(sp, st, gearPeriod);
 
 %>
 <html>
     <title> Gear Configuration</title>
     <body>
-        <h4 align="center" style="color: red"> <%=gName%></h4>
+        <h4 align="center" style="color: blue"> <%=gName%></h4>
         <input type="hidden" id="prg_idx" value="<%=gearIdx%>"/>
         <table id="tgctable" width="200" border="1" cellspacing="0" cellpadding="6" align="center" 
             valign="top" bgcolor="#FFFFFF">

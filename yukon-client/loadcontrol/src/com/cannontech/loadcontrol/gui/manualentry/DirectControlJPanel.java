@@ -204,10 +204,11 @@ public class DirectControlJPanel extends javax.swing.JPanel implements java.awt.
         final JDialog d = new javax.swing.JDialog( CtiUtilities.getParentFrame(this) );
         Date start  = getStartTime();
         Date stop = getStopTime();
-        gearConfigJPanel = new TargetCycleConfigPanel(start, stop)
+        LMProgramDirectGear gear = (LMProgramDirectGear)getSelectedGear();
+        Integer p = gear.getMethodPeriod();
+        gearConfigJPanel = new TargetCycleConfigPanel(start, stop, p)
                 
                 {   
-        
                     public void exit() 
                     {
                         d.dispose();
@@ -1867,14 +1868,10 @@ private void initialize() {
            
 				
 			default:  //done for completness
-                int selectedItem = getJComboBoxGear().getSelectedIndex();
-                Object gear = getJComboBoxGear().getItemAt(selectedItem);
+                Object gear = getSelectedGear();
                 getTargetAdjustButton().setEnabled(false);
-
-                if (gear instanceof LMProgramDirectGear)
+                if (isTargetCycleGear(gear))
                 {
-                    if (((LMProgramDirectGear)gear).getControlMethod()
-                    .equalsIgnoreCase(IlmDefines.CONTROL_TARGET_CYCLE))
                         getTargetAdjustButton().setEnabled(true);
                 }
                 else
@@ -1885,7 +1882,25 @@ private void initialize() {
 		}
 	
 	}
+    private Object getSelectedGear() {
+        int selectedItem = getJComboBoxGear().getSelectedIndex();
+        Object gear = getJComboBoxGear().getItemAt(selectedItem);
+        return gear;
+    }
+    
 
+    private boolean isTargetCycleGear (Object gear) {
+        if (gear instanceof LMProgramDirectGear)
+        {
+            if (((LMProgramDirectGear)gear).getControlMethod()
+            .equalsIgnoreCase(IlmDefines.CONTROL_TARGET_CYCLE))
+            {
+             return true;   
+            }
+        }
+        return false;
+    }
+    
 
 	/**
 	 * Insert the method's description here.

@@ -731,7 +731,7 @@ public class LCUtils
 		return success;
 	}
     
-    public static int getTimeSlotsForTargetCycle(Date stopTime, Date startTime) {
+    public static int getTimeSlotsForTargetCycle(Date stopTime, Date startTime, Integer period) {
         int timeSlots = -1;
         Calendar stopCal = GregorianCalendar.getInstance();
         stopCal.setTime(stopTime);
@@ -741,6 +741,15 @@ public class LCUtils
         startCal.set(Calendar.MINUTE, 0);
         
         timeSlots = (int) ((stopCal.getTimeInMillis() - startCal.getTimeInMillis())/(60*60*1000) + 1);
+        //see if we roll over on the last hour
+        Calendar tempCal = GregorianCalendar.getInstance();
+        tempCal.setTime(stopTime);
+        tempCal.add(Calendar.SECOND, period);
+        int newHr = tempCal.get(Calendar.HOUR_OF_DAY);
+        if (newHr > stopCal.get(Calendar.HOUR_OF_DAY)) {
+            timeSlots += 1;
+        }
+        
         return timeSlots;
     }
 

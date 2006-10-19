@@ -130,6 +130,7 @@ function setStopAble( radioChk )
           <table width="349" border="0" cellspacing="0" cellpadding="3" align="center">
 <%
 			String gearName = "";
+            Integer gearPeriod = new Integer (0);
             if( ILCCmds.PROG_START.equals(cmd) )
 			{
                     prg = (LMProgramBase)lcCache.getProgram( new Integer(itemid) );
@@ -142,6 +143,7 @@ function setStopAble( radioChk )
                         LMProgramDirectGear gear = (LMProgramDirectGear)gearList.get(i);
                         if (gear.getControlMethod().equals(IlmDefines.CONTROL_TARGET_CYCLE)) {
                             gearName = gear.getGearName();
+                            gearPeriod = gear.getMethodPeriod();
                         %>
                          <input type="hidden" name="targetcyclegear" id="tcg_<%=(i + 1)%>" />                       
                         
@@ -179,8 +181,8 @@ function setStopAble( radioChk )
 			  </td>
               <td width="10" class="TableCell" >  
                 <a href="javascript:void(0);" 
-                 onclick="return openConfigWin('<%=gearName%>', gearnum.options[gearnum.selectedIndex].value);"
-                 name="tgconfig" id="tgconfig" > Config </a>
+                 onclick="return openConfigWin('<%=gearName%>', gearnum.options[gearnum.selectedIndex].value, <%=gearPeriod%>);"
+                 name="tgconfig" id="tgconfig" > Scale </a>
               </td>
             </tr>
 

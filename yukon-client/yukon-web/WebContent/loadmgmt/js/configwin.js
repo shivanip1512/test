@@ -41,13 +41,14 @@ function dateChanged (t)
 }
 
                
-function openConfigWin (gear, idx) 
+function openConfigWin (gear, idx, period) 
 {
     
     var  start =  new Date();
     var stop = new Date ();
     url = 'config.jsp?gearName=' + gear + '&start=' + document.cmdForm.h_starttime.value + '&stop=' + document.cmdForm.h_stoptime.value;
     s = '&idx=' + idx;
+    s = '&prd=' + period;
     url += s;
     start.setTime (Date.parse (document.cmdForm.h_starttime.value));
     stop.setTime (Date.parse (document.cmdForm.h_stoptime.value));

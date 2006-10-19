@@ -2,12 +2,12 @@ package com.cannontech.loadcontrol.gui.manualentry;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.Hashtable;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -15,11 +15,11 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import com.cannontech.loadcontrol.LCUtils;
-import com.cannontech.loadcontrol.data.LMProgramDirectGear;
 
 public class TargetCycleConfigPanel extends JPanel implements ActionListener{
     Date startTime = null;
     Date stopTime = null;
+    private Integer period = 0;
     private JTextField[] fields = null;
     private JLabel[] labels = null;
     private JButton okButton = null;
@@ -28,16 +28,17 @@ public class TargetCycleConfigPanel extends JPanel implements ActionListener{
     private JPanel okCancelPanel = null;
     private String additonalInfo = null;
     
-    public TargetCycleConfigPanel() {
-        super();
-        
-    }
-
-    public TargetCycleConfigPanel(Date start_, Date stop_) {
+    public TargetCycleConfigPanel(Date start_, Date stop_, Integer period_) {
         super();
         startTime = start_;
         stopTime = stop_;
+        period = period_;
         initPanel();
+    }
+
+    public TargetCycleConfigPanel() {
+        super();
+        
     }
 
     private void initPanel() {
@@ -59,6 +60,12 @@ public class TargetCycleConfigPanel extends JPanel implements ActionListener{
         constraintsJTextGearAdjustLabels.anchor = java.awt.GridBagConstraints.WEST;
         constraintsJTextGearAdjustLabels.ipadx = 3;
         constraintsJTextGearAdjustLabels.insets = new java.awt.Insets(2, 5, 4, 6);
+        
+        JLabel timeFrmHdr = createHdrLabel("Time Frame");            
+        this.add (timeFrmHdr, constraintsJTextGearAdjustLabels);
+        constraintsJTextGearAdjustLabels.gridy ++;
+
+        
         JLabel[] labels = getLabels();
         for (int i = 0; i < labels.length; i++) {
             JLabel label = getLabels()[i];
@@ -76,6 +83,11 @@ public class TargetCycleConfigPanel extends JPanel implements ActionListener{
         constraintsJTextGearAdjustFields.fill = java.awt.GridBagConstraints.HORIZONTAL;
         constraintsJTextGearAdjustFields.ipadx = 10;
         constraintsJTextGearAdjustFields.insets = new java.awt.Insets(2, 2, 3, 1);
+        
+        JLabel trgtAdjHdr = createHdrLabel ("Adjustment(80%-100%)");
+        this.add (trgtAdjHdr, constraintsJTextGearAdjustFields);    
+        constraintsJTextGearAdjustFields.gridy ++;
+        
         JTextField[] fields = getInputFields();
         for (int i = 0; i < fields.length; i++) {
             JTextField field = fields[i];
@@ -98,6 +110,17 @@ public class TargetCycleConfigPanel extends JPanel implements ActionListener{
 
     }
 
+    private JLabel createHdrLabel(String text) {
+        JLabel timeFrmHdr = new JLabel();
+        timeFrmHdr.setFont(new Font (null, Font.BOLD, 12));
+        timeFrmHdr.setText(text);
+        timeFrmHdr.setToolTipText(text);
+        timeFrmHdr.setMaximumSize(new java.awt.Dimension(50, 22));
+        timeFrmHdr.setMinimumSize(new java.awt.Dimension(50, 22));
+        timeFrmHdr.setVisible(true);
+        return timeFrmHdr;
+    }
+
     private Component getOkCancelPanel() {
         if (okCancelPanel  == null) {
             okCancelPanel = new javax.swing.JPanel();
@@ -113,7 +136,7 @@ public class TargetCycleConfigPanel extends JPanel implements ActionListener{
 
     public int getTimeSlots() {
         if (timeSlots < 0 ) {
-            timeSlots = LCUtils.getTimeSlotsForTargetCycle(stopTime, startTime);
+            timeSlots = LCUtils.getTimeSlotsForTargetCycle(stopTime, startTime, period);
         }
         return timeSlots;
     }
@@ -154,7 +177,8 @@ public class TargetCycleConfigPanel extends JPanel implements ActionListener{
                     Calendar c = GregorianCalendar.getInstance();
                     c.setTime(startTime);
                     int hours = c.get(Calendar.HOUR_OF_DAY) + i;
-                    label.setText((hours)+ ":00-" +(hours + 1)+ ":00");
+                    String labelString = (hours)+ ":00-" +(hours + 1)+ ":00";
+                    label.setText(labelString);
                     label.setToolTipText("Enter the number from 80 to 120");
                     label.setMaximumSize(new java.awt.Dimension(50, 22));
                     label.setMinimumSize(new java.awt.Dimension(50, 22));
@@ -261,4 +285,13 @@ public class TargetCycleConfigPanel extends JPanel implements ActionListener{
     public void setAdditonalInfo(String additonalInfo) {
         this.additonalInfo = additonalInfo;
     }
+
+    public Integer getPeriod() {
+        return period;
+    }
+
+    public void setPeriod(Integer p) {
+        this.period = p;
+    }
+    
 }
