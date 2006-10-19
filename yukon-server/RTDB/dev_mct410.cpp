@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.96 $
-* DATE         :  $Date: 2006/10/16 21:44:28 $
+* REVISION     :  $Revision: 1.97 $
+* DATE         :  $Date: 2006/10/19 15:57:23 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -120,11 +120,6 @@ CtiDeviceMCT::DynamicPaoAddressing_t CtiDeviceMCT410::initDynPaoAddressing()
     addressSet.insert(DynamicPaoAddressing(Memory_TimeZoneOffsetPos,        Memory_TimeZoneOffsetLen,       Keys::Key_MCT_TimeZoneOffset));
 
     addressSet.insert(DynamicPaoAddressing(Memory_TOUDayTablePos,           Memory_TOUDayTableLen,          Keys::Key_MCT_DayTable));
-    addressSet.insert(DynamicPaoAddressing(Memory_TOUDailySched1Pos,        Memory_TOUDailySched1Len,       Keys::Key_MCT_DaySchedule1));
-    addressSet.insert(DynamicPaoAddressing(Memory_TOUDailySched2Pos,        Memory_TOUDailySched2Len,       Keys::Key_MCT_DaySchedule2));
-    addressSet.insert(DynamicPaoAddressing(Memory_TOUDailySched3Pos,        Memory_TOUDailySched3Len,       Keys::Key_MCT_DaySchedule3));
-    addressSet.insert(DynamicPaoAddressing(Memory_TOUDailySched4Pos,        Memory_TOUDailySched4Len,       Keys::Key_MCT_DaySchedule4));
-    addressSet.insert(DynamicPaoAddressing(Memory_TOUDefaultRatePos,        Memory_TOUDefaultRateLen,       Keys::Key_MCT_DefaultTOURate));
 
     addressSet.insert(DynamicPaoAddressing(Memory_Holiday1Pos,              Memory_Holiday1Len,             Keys::Key_MCT_Holiday1));
     addressSet.insert(DynamicPaoAddressing(Memory_Holiday2Pos,              Memory_Holiday2Len,             Keys::Key_MCT_Holiday2));
@@ -803,12 +798,6 @@ INT CtiDeviceMCT410::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
         case (Emetcon::GetConfig_TSync):
         {
             status = decodeGetConfigTime(InMessage, TimeNow, vgList, retList, outList);
-            break;
-        }
-
-        case (Emetcon::GetConfig_TOU):
-        {
-            status = decodeGetConfigTOU(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
@@ -1549,44 +1538,6 @@ INT CtiDeviceMCT410::executeGetConfig( CtiRequestMsg              *pReq,
 
         OutMessage->Sequence = Emetcon::GetConfig_CentronParameters;
     }
-    else if( parse.isKeyValid("tou") )
-    {
-        found = true;
-
-        if( parse.isKeyValid("tou_schedule") )
-        {
-            int schedulenum = parse.getiValue("tou_schedule");
-
-            if( schedulenum == 1 || schedulenum == 2 )
-            {
-                OutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule12Pos;
-                OutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule12Len;
-                OutMessage->Buffer.BSt.IO       = Emetcon::IO_Function_Read;
-            }
-            else if( schedulenum == 3 || schedulenum == 4 )
-            {
-                OutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule34Pos;
-                OutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule34Len;
-                OutMessage->Buffer.BSt.IO       = Emetcon::IO_Function_Read;
-            }
-            else
-            {
-                errRet->setResultString("invalid schedule number " + CtiNumStr(schedulenum));
-                retList.push_back(errRet);
-                errRet = 0;
-
-                found = false;
-            }
-        }
-        else
-        {
-            OutMessage->Buffer.BSt.Function = FuncRead_TOUStatusPos;
-            OutMessage->Buffer.BSt.Length   = FuncRead_TOUStatusLen;
-            OutMessage->Buffer.BSt.IO       = Emetcon::IO_Function_Read;
-        }
-
-        OutMessage->Sequence = Emetcon::GetConfig_TOU;
-    }
     else
     {
         nRet = Inherited::executeGetConfig(pReq, parse, OutMessage, vgList, retList, outList);
@@ -1683,117 +1634,6 @@ int CtiDeviceMCT410::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandPars
     return nRet;
 }
 
-int CtiDeviceMCT410::executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList)
-{
-    int nRet = NORMAL;
-
-    CtiConfigDeviceSPtr deviceConfig = getDeviceConfig();
-
-    long value;
-    if(deviceConfig)
-    {
-        BaseSPtr tempBasePtr = deviceConfig->getConfigFromType(ConfigTypeMCTTOU);
-
-        if(tempBasePtr && tempBasePtr->getType() == ConfigTypeMCTTOU)
-        {
-            long dayTable, daySchedule1, daySchedule2, daySchedule3, daySchedule4;
-
-            MCT_TOU_SPtr config = boost::static_pointer_cast< ConfigurationPart<MCT_TOU> >(tempBasePtr);
-            dayTable = config->getLongValueFromKey(DayTable);
-            daySchedule1 = config->getLongValueFromKey(DaySchedule1);
-            daySchedule2 = config->getLongValueFromKey(DaySchedule2);
-            daySchedule3 = config->getLongValueFromKey(DaySchedule3);
-            daySchedule4 = config->getLongValueFromKey(DaySchedule4);
-
-            if(dayTable == numeric_limits<long>::min() || daySchedule1 == numeric_limits<long>::min() || daySchedule2 == numeric_limits<long>::min()
-               || daySchedule3 == numeric_limits<long>::min() || daySchedule4 == numeric_limits<long>::min())
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                nRet = NoConfigData;
-            }
-            else
-            {
-                if(parse.isKeyValid("force") || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DayTable) != dayTable
-                   || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule1) != daySchedule1
-                   || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule2) != daySchedule2
-                   || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule3) != daySchedule3
-                   || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule4) != daySchedule4)
-                {
-                    OutMessage->Buffer.BSt.Function   = FuncWrite_TOUSchedule1Pos;
-                    OutMessage->Buffer.BSt.Length     = FuncWrite_TOUSchedule1Len;
-                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Write;
-                    OutMessage->Buffer.BSt.Message[0] = (dayTable>>8);
-                    OutMessage->Buffer.BSt.Message[1] = (dayTable);
-                    OutMessage->Buffer.BSt.Message[2] = (daySchedule1>>48);//Fun!
-                    OutMessage->Buffer.BSt.Message[3] = (daySchedule1>>40);
-                    OutMessage->Buffer.BSt.Message[4] = (daySchedule1>>32);
-                    OutMessage->Buffer.BSt.Message[5] = (daySchedule1>>24);
-                    OutMessage->Buffer.BSt.Message[6] = (daySchedule1>>16);
-                    OutMessage->Buffer.BSt.Message[7] = ((daySchedule1>>4)&0xF0 || (daySchedule2>>8)&0x0F);//Fun!
-                    OutMessage->Buffer.BSt.Message[8] = (daySchedule1);
-                    OutMessage->Buffer.BSt.Message[9] = (daySchedule2>>48);
-                    OutMessage->Buffer.BSt.Message[10] = (daySchedule2>>40);
-                    OutMessage->Buffer.BSt.Message[11] = (daySchedule2>>32);
-                    OutMessage->Buffer.BSt.Message[12] = (daySchedule2>>24);
-                    OutMessage->Buffer.BSt.Message[13] = (daySchedule2>>16);
-                    OutMessage->Buffer.BSt.Message[14] = (daySchedule2);
-
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-
-                    OutMessage->Buffer.BSt.Function   = Memory_TOUDayTablePos;
-                    OutMessage->Buffer.BSt.Function   = Memory_TOUDayTableLen + Memory_TOUDailySched1Len + Memory_TOUDailySched2Len;
-                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
-                    OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-                    OutMessage->Priority             += 1;//return to normal
-                }
-
-                if(parse.isKeyValid("force") || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule3) != daySchedule3
-                   || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule4) != daySchedule4)
-                {
-                    OutMessage->Buffer.BSt.Function   = FuncWrite_TOUSchedule2Pos;
-                    OutMessage->Buffer.BSt.Length     = FuncWrite_TOUSchedule2Len;
-                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Write;
-                    OutMessage->Buffer.BSt.Message[0] = (daySchedule3>>48);//Fun!
-                    OutMessage->Buffer.BSt.Message[1] = (daySchedule3>>40);
-                    OutMessage->Buffer.BSt.Message[2] = (daySchedule3>>32);
-                    OutMessage->Buffer.BSt.Message[3] = (daySchedule3>>24);
-                    OutMessage->Buffer.BSt.Message[4] = (daySchedule3>>16);
-                    OutMessage->Buffer.BSt.Message[5] = (daySchedule3>>8);
-                    OutMessage->Buffer.BSt.Message[6] = (daySchedule3);
-
-                    OutMessage->Buffer.BSt.Message[7] = (daySchedule4>>48);
-                    OutMessage->Buffer.BSt.Message[8] = (daySchedule4>>40);
-                    OutMessage->Buffer.BSt.Message[9] = (daySchedule4>>32);
-                    OutMessage->Buffer.BSt.Message[10] = (daySchedule4>>24);
-                    OutMessage->Buffer.BSt.Message[11] = (daySchedule4>>16);
-                    OutMessage->Buffer.BSt.Message[12] = (daySchedule4>>8);
-                    OutMessage->Buffer.BSt.Message[13] = (daySchedule4);
-                    OutMessage->Buffer.BSt.Message[14] = (DefaultTOURate);
-
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-
-                    OutMessage->Buffer.BSt.Function   = Memory_TOUDailySched1Pos;
-                    OutMessage->Buffer.BSt.Function   = Memory_TOUDailySched3Len + Memory_TOUDailySched4Len + Memory_TOUDefaultRateLen;
-                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
-                    OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-                    OutMessage->Priority             += 1;//return to normal
-                }
-            }
-        }
-        else
-            nRet = NoConfigData;
-    }
-    else
-        nRet = NoConfigData;
-
-    CtiLockGuard<CtiLogger> doubt_guard(dout);
-    dout << CtiTime() << " **** Checkpoint - TOU config not defined for MCT410 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-
-    return NORMAL;
-}
 
 int CtiDeviceMCT410::executePutConfigDisconnect(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList)
 {
@@ -2447,7 +2287,6 @@ INT CtiDeviceMCT410::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, l
 
     return status;
 }
-
 
 INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
@@ -3417,164 +3256,6 @@ INT CtiDeviceMCT410::decodeGetConfigIntervals(INMESS *InMessage, CtiTime &TimeNo
 
     return status;
 }
-
-
-INT CtiDeviceMCT410::decodeGetConfigTOU(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
-{
-    INT status = NORMAL;
-
-    INT ErrReturn  = InMessage->EventCode & 0x3fff;
-    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
-
-    CtiCommandParser parse(InMessage->Return.CommandStr);
-
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
-    {
-        // No error occured, we must do a real decode!
-
-        CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-        string resultString;
-        unsigned long time;
-        CtiTime tmpTime;
-
-        int schedulenum = parse.getiValue("tou_schedule");
-
-        if( schedulenum > 0 && schedulenum <= 4 )
-        {
-            schedulenum -= (schedulenum - 1) % 2;
-
-            for( int offset = 0; offset < 2; offset++ )
-            {
-                int rates, current_rate, previous_rate, byte_offset, time_offset;
-
-                resultString += getName() + " / TOU Schedule " + CtiNumStr(schedulenum + offset) + ":\n";
-
-                if( offset == 0 )
-                {
-                    rates = InMessage->Buffer.DSt.Message[5] & 0x0f << 8 | InMessage->Buffer.DSt.Message[6];
-                    byte_offset = 0;
-                }
-                else
-                {
-                    rates = InMessage->Buffer.DSt.Message[5] & 0xf0 << 4 | InMessage->Buffer.DSt.Message[12];
-                    byte_offset = 7;
-                }
-
-                current_rate = rates & 0x03;
-                resultString += "00:00: ";
-                resultString += (char)('A' + current_rate);
-                resultString += "\n";
-                rates >>= 2;
-
-                time_offset = 0;
-                previous_rate = current_rate;
-                for( int switchtime = 0; switchtime < 5; switchtime++ )
-                {
-                    int hour, minute;
-
-                    time_offset += InMessage->Buffer.DSt.Message[byte_offset + switchtime] * 300;
-
-                    hour   = time_offset / 3600;
-                    minute = (time_offset / 60) % 60;
-
-                    current_rate = rates & 0x03;
-
-                    if( (hour <= 23) && (current_rate != previous_rate) )
-                    {
-                        resultString += CtiNumStr(hour).zpad(2) + ":" + CtiNumStr(minute).zpad(2) + ": " + (char)('A' + current_rate) + "\n";
-                    }
-
-                    previous_rate = current_rate;
-
-                    rates >>= 2;
-                }
-
-                resultString += "- end of day - \n\n";
-            }
-        }
-        else
-        {
-            resultString = getName() + " / TOU Status:\n\n";
-
-            time = InMessage->Buffer.DSt.Message[6] << 24 |
-                   InMessage->Buffer.DSt.Message[7] << 16 |
-                   InMessage->Buffer.DSt.Message[8] <<  8 |
-                   InMessage->Buffer.DSt.Message[9];
-
-            resultString += "Current time: " + CtiTime(time).asString() + "\n";
-
-            int tz_offset = (char)InMessage->Buffer.DSt.Message[10] * 15;
-
-            resultString += "Time zone offset: " + CtiNumStr((float)tz_offset / 60.0, 1) + " hours ( " + CtiNumStr(tz_offset) + " minutes)\n";
-
-            if( InMessage->Buffer.DSt.Message[3] & 0x80 )
-            {
-                resultString += "Critical peak active\n";
-            }
-            if( InMessage->Buffer.DSt.Message[4] & 0x80 )
-            {
-                resultString += "Holiday active\n";
-            }
-            if( InMessage->Buffer.DSt.Message[4] & 0x40 )
-            {
-                resultString += "DST active\n";
-            }
-
-            resultString += "Current rate: " + string(1, (char)('A' + (InMessage->Buffer.DSt.Message[3] & 0x7f))) + "\n";
-
-            resultString += "Current schedule: " + CtiNumStr((int)(InMessage->Buffer.DSt.Message[4] & 0x03) + 1) + "\n";
-/*
-            resultString += "Current switch time: ";
-
-            if( InMessage->Buffer.DSt.Message[5] == 0xff )
-            {
-                resultString += "not active\n";
-            }
-            else
-            {
-                 resultString += CtiNumStr((int)InMessage->Buffer.DSt.Message[5]) + "\n";
-            }
-*/
-            resultString += "Default rate: ";
-
-            if( InMessage->Buffer.DSt.Message[2] == 0xff )
-            {
-                resultString += "No TOU active\n";
-            }
-            else
-            {
-                resultString += string(1, (char)('A' + InMessage->Buffer.DSt.Message[2])) + "\n";
-            }
-
-            resultString += "\nDay table: \n";
-
-            char *(daynames[8]) = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Holiday"};
-
-            for( int i = 0; i < 8; i++ )
-            {
-                int dayschedule = InMessage->Buffer.DSt.Message[1 - i/4] >> ((i % 4) * 2) & 0x03;
-
-                resultString += "Schedule " + CtiNumStr(dayschedule + 1) + " - " + daynames[i] + "\n";
-            }
-        }
-
-        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-            return MEMORY;
-        }
-
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-        ReturnMsg->setResultString(resultString);
-
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
-    }
-
-    return status;
-}
-
 
 INT CtiDeviceMCT410::decodeGetConfigCentron(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {

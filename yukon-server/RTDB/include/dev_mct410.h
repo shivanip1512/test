@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT410.h-arc  $
-* REVISION     :  $Revision: 1.44 $
-* DATE         :  $Date: 2006/09/21 21:31:38 $
+* REVISION     :  $Revision: 1.45 $
+* DATE         :  $Date: 2006/10/19 15:57:23 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -184,16 +184,6 @@ protected:
         FuncRead_TOULen              =    9,
         FuncRead_TOUFrozenOffset     =    4,
 
-        FuncRead_TOUDaySchedulePos   = 0xad,
-        FuncRead_TOUDayScheduleLen   =   11,
-
-        FuncRead_TOUStatusPos           = 0xad,
-        FuncRead_TOUStatusLen           =   11,
-        FuncRead_TOUSwitchSchedule12Pos = 0xae,
-        FuncRead_TOUSwitchSchedule12Len =   13,
-        FuncRead_TOUSwitchSchedule34Pos = 0xaf,
-        FuncRead_TOUSwitchSchedule34Len =   13,
-
         FuncRead_DisconnectConfigPos = 0xfe,
         FuncRead_DisconnectConfigLen =    9,
 
@@ -205,12 +195,6 @@ protected:
 
         FuncWrite_IntervalsPos       = 0x03,
         FuncWrite_IntervalsLen       =    4,
-
-        FuncWrite_TOUSchedule1Pos    = 0x30,
-        FuncWrite_TOUSchedule1Len    =   15,
-
-        FuncWrite_TOUSchedule2Pos    = 0x31,
-        FuncWrite_TOUSchedule2Len    =   15,
 
         FuncWrite_CentronReadingPos    = 0xf2,
         FuncWrite_CentronReadingLen    =    8,
@@ -258,7 +242,6 @@ protected:
     int executePutConfigDisconnect(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS * > &outList);
     int executePutConfigOptions   (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS * > &outList);
     int executePutConfigCentron   (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS * > &outList);
-    int executePutConfigTOU       (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS * > &outList);
 
     virtual INT ModelDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
 
@@ -271,7 +254,6 @@ protected:
     INT decodeGetValueLoadProfilePeakReport ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetStatusInternal             ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetStatusLoadProfile          ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
-    INT decodeGetConfigTOU                  ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetConfigCentron              ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetConfigIntervals            ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetConfigModel                ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );

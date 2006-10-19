@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct4xx.h-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2006/09/26 15:10:49 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2006/10/19 15:57:23 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -43,6 +43,7 @@ private:
     static ConfigPartsList initConfigParts();
 
     int executePutConfigSingle( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
+    void createTOUDayScheduleString(string &schedule, long (&times)[5], long (&rates)[6]);
 
 protected:
 
@@ -121,6 +122,12 @@ protected:
         FuncWrite_LLPPeakInterestPos = 0x06,
         FuncWrite_LLPPeakInterestLen =    7,
 
+        FuncWrite_TOUSchedule1Pos    = 0x30,
+        FuncWrite_TOUSchedule1Len    =   15,
+
+        FuncWrite_TOUSchedule2Pos    = 0x31,
+        FuncWrite_TOUSchedule2Len    =   15,
+
         FuncRead_MReadPos            = 0x90,
 
         FuncRead_DemandPos           = 0x92,
@@ -134,6 +141,15 @@ protected:
         FuncRead_LLPPeakHourPos      = 0xa1,
         FuncRead_LLPPeakIntervalPos  = 0xa2,
         FuncRead_LLPPeakLen          =   13,
+
+        FuncRead_TOUDaySchedulePos      = 0xad,
+        FuncRead_TOUDayScheduleLen      =   11,
+        FuncRead_TOUStatusPos           = 0xad,
+        FuncRead_TOUStatusLen           =   11,
+        FuncRead_TOUSwitchSchedule12Pos = 0xae,
+        FuncRead_TOUSwitchSchedule12Len =   13,
+        FuncRead_TOUSwitchSchedule34Pos = 0xaf,
+        FuncRead_TOUSwitchSchedule34Len =   13,
     };
 
     enum
@@ -196,6 +212,7 @@ protected:
 
     virtual INT executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS * > &outList);
     virtual INT executeGetValue (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS * > &outList);
+    virtual INT executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS * > &outList);
     virtual INT executePutValue (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS * > &outList);
 
 
@@ -219,6 +236,7 @@ protected:
     INT decodePutConfig          (INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList);
     INT decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList);
     INT decodeScanLoadProfile    (INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList);
+    INT decodeGetConfigTOU       (INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList);
 
     static const char *PutConfigPart_all;
     static const char *PutConfigPart_tou;

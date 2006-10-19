@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2006/09/26 15:10:49 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2006/10/19 15:57:23 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -849,6 +849,101 @@ INT CtiDeviceMCT4xx::executeGetValue(CtiRequestMsg *pReq, CtiCommandParser &pars
     return nRet;
 }
 
+INT CtiDeviceMCT4xx::executeGetConfig( CtiRequestMsg              *pReq,
+                                       CtiCommandParser           &parse,
+                                       OUTMESS                   *&OutMessage,
+                                       list< CtiMessage* >  &vgList,
+                                       list< CtiMessage* >  &retList,
+                                       list< OUTMESS* >     &outList )
+{
+    INT nRet = NoMethod;
+
+
+    bool found = false;
+
+    CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ),
+                                                   string(OutMessage->Request.CommandStr),
+                                                   string(),
+                                                   nRet,
+                                                   OutMessage->Request.RouteID,
+                                                   OutMessage->Request.MacroOffset,
+                                                   OutMessage->Request.Attempt,
+                                                   OutMessage->Request.TrxID,
+                                                   OutMessage->Request.UserID,
+                                                   OutMessage->Request.SOE,
+                                                   CtiMultiMsg_vec( ));
+
+
+    if( parse.isKeyValid("tou") )
+    {
+        found = true;
+
+        if( parse.isKeyValid("tou_schedule") )
+        {
+            int schedulenum = parse.getiValue("tou_schedule");
+
+            if( schedulenum == 1 || schedulenum == 2 )
+            {
+                OutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule12Pos;
+                OutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule12Len;
+                OutMessage->Buffer.BSt.IO       = Emetcon::IO_Function_Read;
+            }
+            else if( schedulenum == 3 || schedulenum == 4 )
+            {
+                OutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule34Pos;
+                OutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule34Len;
+                OutMessage->Buffer.BSt.IO       = Emetcon::IO_Function_Read;
+            }
+            else
+            {
+                errRet->setResultString("invalid schedule number " + CtiNumStr(schedulenum));
+                retList.push_back(errRet);
+                errRet = 0;
+
+                found = false;
+            }
+        }
+        else
+        {
+            OutMessage->Buffer.BSt.Function = FuncRead_TOUStatusPos;
+            OutMessage->Buffer.BSt.Length   = FuncRead_TOUStatusLen;
+            OutMessage->Buffer.BSt.IO       = Emetcon::IO_Function_Read;
+        }
+
+        OutMessage->Sequence = Emetcon::GetConfig_TOU;
+    }
+    else
+    {
+        nRet = Inherited::executeGetConfig(pReq, parse, OutMessage, vgList, retList, outList);
+    }
+
+
+    if( found )
+    {
+        // Load all the other stuff that is needed
+        //  FIXME:  most of this is taken care of in propagateRequest - we could probably trim a lot of this out
+        OutMessage->DeviceID  = getID();
+        OutMessage->TargetID  = getID();
+        OutMessage->Port      = getPortID();
+        OutMessage->Remote    = getAddress();
+        OutMessage->TimeOut   = 2;
+        OutMessage->Retry     = 2;
+
+        OutMessage->Request.RouteID   = getRouteID();
+        strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
+
+        nRet = NoError;
+    }
+
+    if( errRet )
+    {
+        delete errRet;
+        errRet = 0;
+    }
+
+    return nRet;
+}
+
 
 INT CtiDeviceMCT4xx::executePutConfig(CtiRequestMsg         *pReq,
                                       CtiCommandParser      &parse,
@@ -918,7 +1013,7 @@ INT CtiDeviceMCT4xx::executePutConfig(CtiRequestMsg         *pReq,
         else
         {
             strncpy(OutMessage->Request.CommandStr, (pReq->CommandString()).c_str(), COMMAND_STR_SIZE);
-            nRet = executePutConfigSingle(pReq, parse, OutMessage, vgList, retList, outList);
+            sRet = executePutConfigSingle(pReq, parse, OutMessage, vgList, retList, outList);
         }
         recordMultiMessageRead(outList);
         incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle(), outList.size());
@@ -1250,8 +1345,287 @@ int CtiDeviceMCT4xx::executePutConfigRelays            (CtiRequestMsg *pReq, Cti
 int CtiDeviceMCT4xx::executePutConfigPrecannedTable    (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList)    {   return NoMethod;    }
 int CtiDeviceMCT4xx::executePutConfigOptions           (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList)    {   return NoMethod;    }
 int CtiDeviceMCT4xx::executePutConfigCentron           (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList)    {   return NoMethod;    }
-int CtiDeviceMCT4xx::executePutConfigTOU               (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList)    {   return NoMethod;    }
 int CtiDeviceMCT4xx::executePutConfigDisconnect        (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList)    {   return NoMethod;    }
+
+int CtiDeviceMCT4xx::executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList)
+{
+    int nRet = NORMAL;
+
+    CtiConfigDeviceSPtr deviceConfig = getDeviceConfig();
+
+    long value, tempTime;
+    if(deviceConfig)
+    {
+        BaseSPtr tempTOUSPtr = deviceConfig->getConfigFromType(ConfigTypeMCTTOU);
+        BaseSPtr tempRateSPtr = deviceConfig->getConfigFromType(ConfigTypeMCTTOURateSchedule);
+
+        if(tempTOUSPtr && tempTOUSPtr->getType() == ConfigTypeMCTTOU && tempRateSPtr && tempRateSPtr->getType() == ConfigTypeMCTTOURateSchedule)
+        {
+            long mondaySchedule, tuesdaySchedule, wednesdaySchedule, holidaySchedule,
+                 thursdaySchedule, fridaySchedule, saturdaySchedule, sundaySchedule, dayTable,
+                 defaultTOURate;
+            long times[4][5];
+            long rates[4][6];
+            string 
+                rateStringValues[4][6], timeStringValues[4][5],
+                defaultTOURateString, daySchedule1, daySchedule2, daySchedule3, daySchedule4,
+                dynDaySchedule1, dynDaySchedule2, dynDaySchedule3, dynDaySchedule4;
+
+            MCT_TOU_SPtr touConfig = boost::static_pointer_cast< ConfigurationPart<MCT_TOU> >(tempTOUSPtr);
+            MCT_TOU_Rate_ScheduleSPtr rateConfig = boost::static_pointer_cast< ConfigurationPart<MCT_TOU_Rate_Schedule> >(tempRateSPtr);
+
+            // Unfortunatelly the arrays have a 0 offset, while the schedules times/rates are referenced with a 1 offset
+            // Also note that rate "0" is the midnight rate.
+            mondaySchedule = touConfig->getLongValueFromKey(MondaySchedule);
+            tuesdaySchedule = touConfig->getLongValueFromKey(TuesdaySchedule);
+            wednesdaySchedule = touConfig->getLongValueFromKey(WednesdaySchedule);
+            thursdaySchedule = touConfig->getLongValueFromKey(ThursdaySchedule);
+            fridaySchedule = touConfig->getLongValueFromKey(FridaySchedule);
+            saturdaySchedule = touConfig->getLongValueFromKey(SaturdaySchedule);
+            sundaySchedule = touConfig->getLongValueFromKey(SundaySchedule);
+            holidaySchedule = touConfig->getLongValueFromKey(HolidaySchedule);
+
+            //These are all string values
+            timeStringValues[0][0] = rateConfig->getValueFromKey(Schedule1Time1);
+            timeStringValues[0][1] = rateConfig->getValueFromKey(Schedule1Time2);
+            timeStringValues[0][2] = rateConfig->getValueFromKey(Schedule1Time3);
+            timeStringValues[0][3] = rateConfig->getValueFromKey(Schedule1Time4);
+            timeStringValues[0][4] = rateConfig->getValueFromKey(Schedule1Time5);
+            timeStringValues[1][0] = rateConfig->getValueFromKey(Schedule2Time1);
+            timeStringValues[1][1] = rateConfig->getValueFromKey(Schedule2Time2);
+            timeStringValues[1][2] = rateConfig->getValueFromKey(Schedule2Time3);
+            timeStringValues[1][3] = rateConfig->getValueFromKey(Schedule2Time4);
+            timeStringValues[1][4] = rateConfig->getValueFromKey(Schedule2Time5);
+            timeStringValues[2][0] = rateConfig->getValueFromKey(Schedule3Time1);
+            timeStringValues[2][1] = rateConfig->getValueFromKey(Schedule3Time2);
+            timeStringValues[2][2] = rateConfig->getValueFromKey(Schedule3Time3);
+            timeStringValues[2][3] = rateConfig->getValueFromKey(Schedule3Time4);
+            timeStringValues[2][4] = rateConfig->getValueFromKey(Schedule3Time5);
+            timeStringValues[3][0] = rateConfig->getValueFromKey(Schedule4Time1);
+            timeStringValues[3][1] = rateConfig->getValueFromKey(Schedule4Time2);
+            timeStringValues[3][2] = rateConfig->getValueFromKey(Schedule4Time3);
+            timeStringValues[3][3] = rateConfig->getValueFromKey(Schedule4Time4);
+            timeStringValues[3][4] = rateConfig->getValueFromKey(Schedule4Time5);
+
+            rateStringValues[0][0] = rateConfig->getValueFromKey(Schedule1Rate1);
+            rateStringValues[0][1] = rateConfig->getValueFromKey(Schedule1Rate2);
+            rateStringValues[0][2] = rateConfig->getValueFromKey(Schedule1Rate3);
+            rateStringValues[0][3] = rateConfig->getValueFromKey(Schedule1Rate4);
+            rateStringValues[0][4] = rateConfig->getValueFromKey(Schedule1Rate5);
+            rateStringValues[0][5] = rateConfig->getValueFromKey(Schedule1Rate0);
+            rateStringValues[1][0] = rateConfig->getValueFromKey(Schedule2Rate1);
+            rateStringValues[1][1] = rateConfig->getValueFromKey(Schedule2Rate2);
+            rateStringValues[1][2] = rateConfig->getValueFromKey(Schedule2Rate3);
+            rateStringValues[1][3] = rateConfig->getValueFromKey(Schedule2Rate4);
+            rateStringValues[1][4] = rateConfig->getValueFromKey(Schedule2Rate5);
+            rateStringValues[1][5] = rateConfig->getValueFromKey(Schedule2Rate0);
+            rateStringValues[2][0] = rateConfig->getValueFromKey(Schedule3Rate1);
+            rateStringValues[2][1] = rateConfig->getValueFromKey(Schedule3Rate2);
+            rateStringValues[2][2] = rateConfig->getValueFromKey(Schedule3Rate3);
+            rateStringValues[2][3] = rateConfig->getValueFromKey(Schedule3Rate4);
+            rateStringValues[2][4] = rateConfig->getValueFromKey(Schedule3Rate5);
+            rateStringValues[2][5] = rateConfig->getValueFromKey(Schedule3Rate0);
+            rateStringValues[3][0] = rateConfig->getValueFromKey(Schedule4Rate1);
+            rateStringValues[3][1] = rateConfig->getValueFromKey(Schedule4Rate2);
+            rateStringValues[3][2] = rateConfig->getValueFromKey(Schedule4Rate3);
+            rateStringValues[3][3] = rateConfig->getValueFromKey(Schedule4Rate4);
+            rateStringValues[3][4] = rateConfig->getValueFromKey(Schedule4Rate5);
+            rateStringValues[3][5] = rateConfig->getValueFromKey(Schedule4Rate0);
+            defaultTOURateString = touConfig->getValueFromKey(DefaultTOURate);
+
+            for( int i = 0; i < 4; i++ )
+            {
+                for( int j = 0; j < 6; j++ )
+                {
+                    if( rateStringValues[i][j].empty() )
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** Checkpoint - bad rate string stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        nRet = NoConfigData;
+                    }
+                }
+            }
+
+            for( i = 0; i < 4; i++ )
+            {
+                for( int j = 0; j < 5; j++ )
+                {
+                    if( timeStringValues[i][j].length() < 4 ) //A time needs at least 4 digits X:XX
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** Checkpoint - bad time string stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        nRet = NoConfigData;
+                    }
+                }
+            }
+
+            if( nRet != NoConfigData )
+            {
+                //Do conversions from strings to longs here.
+                for( i = 0; i < 4; i++ )
+                {
+                    for( int j = 0; j < 6; j++ )
+                    {
+                        rates[i][j] = rateStringValues[i][j][0] - 'A';
+                        if( rates[i][j] < 0 || rates[i][j] > 3 )
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " **** Checkpoint - bad rate string stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            nRet = NoConfigData;
+                        }
+                    }
+                }
+                for( i = 0; i < 4; i++ )
+                {
+                    for( int j = 0; j < 5; j++ )
+                    {
+                        // Im going to remove the :, get the remaining value, and do simple math on it. I think this
+                        // results in less error checking needed.
+                        timeStringValues[i][j].erase(timeStringValues[i][j].find(':'), 1);
+                        tempTime = strtol(timeStringValues[i][j].data(),NULL,10);
+                        times[i][j] = ((tempTime/100) * 60) + (tempTime%100);
+                    }
+                }
+                // Time is currently the actual minutes, we need the difference. Also the MCT has 5 minute resolution.
+                for( i = 0; i < 4; i++ )
+                {
+                    for( int j = 4; j > 0; j-- )
+                    {
+                        times[i][j] = times[i][j]-times[i][j-1];
+                        times[i][j] = times[i][j]/5;
+                        if( times[i][j] < 0 || times[i][j] > 255 )
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " **** Checkpoint - time sequencing **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            nRet = NoConfigData;
+                        }
+                    }
+                }
+                if( !defaultTOURateString.empty() )
+                {
+                    defaultTOURate = defaultTOURateString[0] - 'A';
+                    if( defaultTOURate < 0 || defaultTOURate > 3 )
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** Checkpoint - bad default rate **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        nRet = NoConfigData;
+                    }
+                }
+                else
+                {
+                    nRet = NoConfigData;
+                }
+            }
+
+            if( nRet == NoConfigData || 
+                mondaySchedule == std::numeric_limits<long>::min() || tuesdaySchedule == std::numeric_limits<long>::min() ||
+                fridaySchedule == std::numeric_limits<long>::min() || saturdaySchedule == std::numeric_limits<long>::min() ||
+                sundaySchedule == std::numeric_limits<long>::min() || holidaySchedule == std::numeric_limits<long>::min() ||
+                wednesdaySchedule == std::numeric_limits<long>::min() || thursdaySchedule == std::numeric_limits<long>::min() )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                nRet = NoConfigData;
+            }
+            else
+            {
+                dayTable = holidaySchedule << 14 || saturdaySchedule << 12 || fridaySchedule << 10
+                     || thursdaySchedule << 8 || wednesdaySchedule << 6 || tuesdaySchedule << 4
+                     || mondaySchedule << 2 || sundaySchedule;
+
+                
+
+                createTOUDayScheduleString(daySchedule1, times[0], rates[0]);
+                createTOUDayScheduleString(daySchedule2, times[1], rates[1]);
+                createTOUDayScheduleString(daySchedule3, times[2], rates[2]);
+                createTOUDayScheduleString(daySchedule4, times[3], rates[3]);
+                CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule1, dynDaySchedule1);
+                CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule2, dynDaySchedule2);
+                CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule3, dynDaySchedule3);
+                CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule4, dynDaySchedule4);
+
+                if(parse.isKeyValid("force") || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DayTable) != dayTable
+                   || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DefaultTOURate) != defaultTOURate
+                   || dynDaySchedule1 != daySchedule1
+                   || dynDaySchedule2 != daySchedule2
+                   || dynDaySchedule3 != daySchedule3
+                   || dynDaySchedule4 != daySchedule4)
+                {
+                    OutMessage->Buffer.BSt.Function   = FuncWrite_TOUSchedule1Pos;
+                    OutMessage->Buffer.BSt.Length     = FuncWrite_TOUSchedule1Len;
+                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Write;
+                    OutMessage->Buffer.BSt.Message[0] = (dayTable>>8);
+                    OutMessage->Buffer.BSt.Message[1] = dayTable;
+                    OutMessage->Buffer.BSt.Message[2] = times[0][0];
+                    OutMessage->Buffer.BSt.Message[3] = times[0][1];
+                    OutMessage->Buffer.BSt.Message[4] = times[0][2];
+                    OutMessage->Buffer.BSt.Message[5] = times[0][3];
+                    OutMessage->Buffer.BSt.Message[6] = times[0][4];
+                    OutMessage->Buffer.BSt.Message[7] = ( ((rates[1][4]<<6)&0xC0) | ((rates[1][3]<<4)&0x30) | ((rates[0][4]<<2)&0x0C) | (rates[0][3]&0x03) );
+                    OutMessage->Buffer.BSt.Message[8] = ( ((rates[0][2]<<6)&0xC0) | ((rates[0][1]<<4)&0x30) | ((rates[0][0]<<2)&0x0C) | (rates[0][5]&0x03) );
+                    OutMessage->Buffer.BSt.Message[9] =  times[1][0];
+                    OutMessage->Buffer.BSt.Message[10] = times[1][1];
+                    OutMessage->Buffer.BSt.Message[11] = times[1][2];
+                    OutMessage->Buffer.BSt.Message[12] = times[1][3];
+                    OutMessage->Buffer.BSt.Message[13] = times[1][4];
+                    OutMessage->Buffer.BSt.Message[14] = ( ((rates[1][2]<<6)&0xC0) | ((rates[1][1]<<4)&0x30) | ((rates[1][0]<<2)&0x0C) | (rates[1][5]&0x03) );
+
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+
+                    OutMessage->Buffer.BSt.Function   = FuncWrite_TOUSchedule2Pos;
+                    OutMessage->Buffer.BSt.Length     = FuncWrite_TOUSchedule2Len;
+                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Write;
+                    OutMessage->Buffer.BSt.Message[0] = times[2][0];
+                    OutMessage->Buffer.BSt.Message[1] = times[2][1];
+                    OutMessage->Buffer.BSt.Message[2] = times[2][2];
+                    OutMessage->Buffer.BSt.Message[3] = times[2][3];
+                    OutMessage->Buffer.BSt.Message[4] = times[2][4];
+                    OutMessage->Buffer.BSt.Message[5] = ( ((rates[2][4]<<2)&0x0C) | (rates[2][3]&0x03) );
+                    OutMessage->Buffer.BSt.Message[6] = ( ((rates[2][2]<<6)&0xC0) | ((rates[2][1]<<4)&0x30) | ((rates[2][0]<<2)&0x0C) | (rates[2][5]&0x03) );
+
+                    OutMessage->Buffer.BSt.Message[7] = times[3][0]; 
+                    OutMessage->Buffer.BSt.Message[8] = times[3][1]; 
+                    OutMessage->Buffer.BSt.Message[9] = times[3][2]; 
+                    OutMessage->Buffer.BSt.Message[10] = times[3][3]; 
+                    OutMessage->Buffer.BSt.Message[11] = times[3][4]; 
+                    OutMessage->Buffer.BSt.Message[12] = ( ((rates[3][4]<<2)&0x0C) | (rates[3][3]&0x03) );
+                    OutMessage->Buffer.BSt.Message[13] = ( ((rates[3][2]<<6)&0xC0) | ((rates[3][1]<<4)&0x30) | ((rates[3][0]<<2)&0x0C) | (rates[3][5]&0x03) );
+                    OutMessage->Buffer.BSt.Message[14] = (defaultTOURate);
+
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+
+                    // Set up the reads here
+                    OutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule12Pos;
+                    OutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule12Len;
+                    OutMessage->Buffer.BSt.IO       = Emetcon::IO_Function_Read;
+                    OUTMESS *touOutMessage = CTIDBG_new OUTMESS(*OutMessage);
+                    touOutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
+                    touOutMessage->Sequence = Emetcon::GetConfig_TOU;
+                    strncpy(touOutMessage->Request.CommandStr, "getconfig tou schedule 1", COMMAND_STR_SIZE );
+                    outList.push_back( CTIDBG_new OUTMESS(*touOutMessage) );
+
+                    touOutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule34Pos;
+                    touOutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule34Len;
+                    strncpy(touOutMessage->Request.CommandStr, "getconfig tou schedule 3", COMMAND_STR_SIZE );
+                    outList.push_back( CTIDBG_new OUTMESS(*touOutMessage) );
+
+                    touOutMessage->Buffer.BSt.Function = FuncRead_TOUStatusPos;
+                    touOutMessage->Buffer.BSt.Length   = FuncRead_TOUStatusLen;
+                    strncpy(touOutMessage->Request.CommandStr, "getconfig tou", COMMAND_STR_SIZE );
+                    outList.push_back( touOutMessage );
+                    touOutMessage = 0;
+                }
+            }
+        }
+        else
+            nRet = NoConfigData;
+    }
+    else
+        nRet = NoConfigData;
+
+
+    return nRet;
+}
 
 
 int CtiDeviceMCT4xx::executePutConfigAddressing(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS* > &outList)
@@ -1949,6 +2323,189 @@ INT CtiDeviceMCT4xx::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, 
 }
 
 
+INT CtiDeviceMCT4xx::decodeGetConfigTOU(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+{
+    INT status = NORMAL;
+
+    INT ErrReturn  = InMessage->EventCode & 0x3fff;
+    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+
+    CtiCommandParser parse(InMessage->Return.CommandStr);
+
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    {
+        // No error occured, we must do a real decode!
+
+        CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+        string resultString;
+        unsigned long time;
+        CtiTime tmpTime;
+
+        int schedulenum = parse.getiValue("tou_schedule");
+
+        if( schedulenum > 0 && schedulenum <= 4 )
+        {
+            long timeArray[2][5];
+            long rateArray[2][6];
+            schedulenum -= (schedulenum - 1) % 2;
+
+            for( int offset = 0; offset < 2; offset++ )
+            {
+                int rates, current_rate, previous_rate, byte_offset, time_offset;
+
+                resultString += getName() + " / TOU Schedule " + CtiNumStr(schedulenum + offset) + ":\n";
+
+                if( offset == 0 )
+                {
+                    rates = ((InMessage->Buffer.DSt.Message[5] & 0x0f) << 8) | InMessage->Buffer.DSt.Message[6];
+                    byte_offset = 0;
+                }
+                else
+                {
+                    rates = ((InMessage->Buffer.DSt.Message[5] & 0xf0) << 4) | InMessage->Buffer.DSt.Message[12];
+                    byte_offset = 7;
+                }
+
+                rateArray[offset][0] = (rates >> 2) & 0x03;
+                rateArray[offset][1] = (rates >> 4) & 0x03;
+                rateArray[offset][2] = (rates >> 6) & 0x03;
+                rateArray[offset][3] = (rates >> 8) & 0x03;
+                rateArray[offset][4] = (rates >> 10) & 0x03;
+                rateArray[offset][5] = (rates) & 0x03;
+
+                current_rate = rates & 0x03;
+                resultString += "00:00: ";
+                resultString += (char)('A' + current_rate);
+                resultString += "\n";
+                rates >>= 2;
+
+                time_offset = 0;
+                previous_rate = current_rate;
+                for( int switchtime = 0; switchtime < 5; switchtime++ )
+                {
+                    int hour, minute;
+
+                    time_offset += InMessage->Buffer.DSt.Message[byte_offset + switchtime] * 300;
+                    timeArray[offset][switchtime] = InMessage->Buffer.DSt.Message[byte_offset + switchtime];
+
+                    hour   = time_offset / 3600;
+                    minute = (time_offset / 60) % 60;
+
+                    current_rate = rates & 0x03;
+
+                    if( (hour <= 23) && (current_rate != previous_rate) )
+                    {
+                        resultString += CtiNumStr(hour).zpad(2) + ":" + CtiNumStr(minute).zpad(2) + ": " + (char)('A' + current_rate) + "\n";
+                    }
+
+                    previous_rate = current_rate;
+
+                    rates >>= 2;
+                }
+
+                resultString += "- end of day - \n\n";
+            }
+
+            string dayScheduleA, dayScheduleB;
+            createTOUDayScheduleString(dayScheduleA, timeArray[0], rateArray[0]);
+            createTOUDayScheduleString(dayScheduleB, timeArray[1], rateArray[1]);
+
+            if( schedulenum < 2 )
+            {
+                CtiDeviceBase::setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule1, dayScheduleA);
+                CtiDeviceBase::setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule2, dayScheduleB);
+            }
+            else
+            {
+                CtiDeviceBase::setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule3, dayScheduleA);
+                CtiDeviceBase::setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule4, dayScheduleB);
+            }
+
+        }
+        else
+        {
+            resultString = getName() + " / TOU Status:\n\n";
+
+            time = InMessage->Buffer.DSt.Message[6] << 24 |
+                   InMessage->Buffer.DSt.Message[7] << 16 |
+                   InMessage->Buffer.DSt.Message[8] <<  8 |
+                   InMessage->Buffer.DSt.Message[9];
+
+            resultString += "Current time: " + CtiTime(time).asString() + "\n";
+
+            int tz_offset = (char)InMessage->Buffer.DSt.Message[10] * 15;
+
+            resultString += "Time zone offset: " + CtiNumStr((float)tz_offset / 60.0, 1) + " hours ( " + CtiNumStr(tz_offset) + " minutes)\n";
+
+            if( InMessage->Buffer.DSt.Message[3] & 0x80 )
+            {
+                resultString += "Critical peak active\n";
+            }
+            if( InMessage->Buffer.DSt.Message[4] & 0x80 )
+            {
+                resultString += "Holiday active\n";
+            }
+            if( InMessage->Buffer.DSt.Message[4] & 0x40 )
+            {
+                resultString += "DST active\n";
+            }
+
+            resultString += "Current rate: " + string(1, (char)('A' + (InMessage->Buffer.DSt.Message[3] & 0x7f))) + "\n";
+
+            resultString += "Current schedule: " + CtiNumStr((int)(InMessage->Buffer.DSt.Message[4] & 0x03) + 1) + "\n";
+/*
+            resultString += "Current switch time: ";
+
+            if( InMessage->Buffer.DSt.Message[5] == 0xff )
+            {
+                resultString += "not active\n";
+            }
+            else
+            {
+                 resultString += CtiNumStr((int)InMessage->Buffer.DSt.Message[5]) + "\n";
+            }
+*/
+            resultString += "Default rate: ";
+
+            if( InMessage->Buffer.DSt.Message[2] == 0xff )
+            {
+                resultString += "No TOU active\n";
+            }
+            else
+            {
+                resultString += string(1, (char)('A' + InMessage->Buffer.DSt.Message[2])) + "\n";
+            }
+
+            resultString += "\nDay table: \n";
+
+            char *(daynames[8]) = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Holiday"};
+
+            for( int i = 0; i < 8; i++ )
+            {
+                int dayschedule = InMessage->Buffer.DSt.Message[1 - i/4] >> ((i % 4) * 2) & 0x03;
+
+                resultString += "Schedule " + CtiNumStr(dayschedule + 1) + " - " + daynames[i] + "\n";
+            }
+        }
+
+        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+            return MEMORY;
+        }
+
+        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+        ReturnMsg->setResultString(resultString);
+
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    }
+
+    return status;
+}
+
+
 INT CtiDeviceMCT4xx::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList)
 {
     INT status = NORMAL;
@@ -1965,6 +2522,12 @@ INT CtiDeviceMCT4xx::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
         case Emetcon::Scan_LoadProfile:
         {
             status = decodeScanLoadProfile(InMessage, TimeNow, vgList, retList, outList);
+            break;
+        }
+
+        case (Emetcon::GetConfig_TOU):
+        {
+            status = decodeGetConfigTOU(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
@@ -2058,5 +2621,20 @@ INT CtiDeviceMCT4xx::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
     }
 
     return retVal;
+}
+
+void CtiDeviceMCT4xx::createTOUDayScheduleString(string &schedule, long (&times)[5], long (&rates)[6])
+{
+    for( int i=0; i<5; i++ )
+    {
+        schedule += CtiNumStr(times[i]);
+        schedule += ', ';
+    }
+    for( i=0; i<5; i++ )
+    {
+        schedule += CtiNumStr(rates[i]);
+        schedule += ', ';
+    }
+    schedule += CtiNumStr(rates[5]);
 }
 
