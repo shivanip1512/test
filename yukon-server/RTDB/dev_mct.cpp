@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.100 $
-* DATE         :  $Date: 2006/10/16 15:18:18 $
+* REVISION     :  $Revision: 1.101 $
+* DATE         :  $Date: 2006/10/19 19:51:51 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -546,7 +546,7 @@ INT CtiDeviceMCT::GeneralScan(CtiRequestMsg *pReq,
 
     if(OutMessage != NULL)
     {
-        if( getMCTDebugLevel(MCTDebug_Scanrates) )
+        if( getMCTDebugLevel(DebugLevel_Scanrates) )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** GeneralScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -608,7 +608,7 @@ INT CtiDeviceMCT::IntegrityScan(CtiRequestMsg *pReq,
 
     if(OutMessage != NULL)
     {
-        if( getMCTDebugLevel(MCTDebug_Scanrates) )
+        if( getMCTDebugLevel(DebugLevel_Scanrates) )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** Demand/IEDScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -668,7 +668,7 @@ INT CtiDeviceMCT::AccumulatorScan(CtiRequestMsg *pReq,
 
     if(OutMessage != NULL)
     {
-        if( getMCTDebugLevel(MCTDebug_Scanrates) )
+        if( getMCTDebugLevel(DebugLevel_Scanrates) )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** AccumulatorScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -730,7 +730,7 @@ INT CtiDeviceMCT::LoadProfileScan(CtiRequestMsg *pReq,
 
     if(OutMessage != NULL)
     {
-        if( getMCTDebugLevel(MCTDebug_Scanrates) )
+        if( getMCTDebugLevel(DebugLevel_Scanrates) )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** LoadProfileScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;

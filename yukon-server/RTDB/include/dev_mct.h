@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct.h-arc  $
-* REVISION     :  $Revision: 1.51 $
-* DATE         :  $Date: 2006/09/21 21:31:38 $
+* REVISION     :  $Revision: 1.52 $
+* DATE         :  $Date: 2006/10/19 19:50:26 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -139,12 +139,12 @@ protected:
         SequenceCountEnd   = 30000
     };
 
-    enum MCTDebug
+    enum DebugLevels
     {
-        MCTDebug_Debug_Info  = 1 << 0,
-        MCTDebug_Scanrates   = 1 << 1,
-        MCTDebug_LoadProfile = 1 << 2,
-        MCTDebug_DynamicInfo = 1 << 3,
+        DebugLevel_Info        = 1 << 0,
+        DebugLevel_Scanrates   = 1 << 1,
+        DebugLevel_LoadProfile = 1 << 2,
+        DebugLevel_DynamicInfo = 1 << 3,
     };
 
     enum Memory
@@ -185,6 +185,7 @@ protected:
     enum PointOffsets
     {
         PointOffset_Status_Powerfail      =  10,
+
         PointOffset_Accumulator_Powerfail =  20,
 
         PointOffset_LoadProfileOffset     = 100,
