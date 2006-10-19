@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.31 $
-* DATE         :  $Date: 2006/10/19 15:57:23 $
+* REVISION     :  $Revision: 1.32 $
+* DATE         :  $Date: 2006/10/19 19:55:19 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -147,6 +147,7 @@ CtiDeviceMCT4xx::QualityMap CtiDeviceMCT4xx::initErrorQualities( void )
 CtiDeviceMCT4xx::ConfigPartsList CtiDeviceMCT4xx::initConfigParts()
 {
     ConfigPartsList tempList;
+
     tempList.push_back(PutConfigPart_dst);
     tempList.push_back(PutConfigPart_vthreshold);
     tempList.push_back(PutConfigPart_demand_lp);
@@ -156,7 +157,6 @@ CtiDeviceMCT4xx::ConfigPartsList CtiDeviceMCT4xx::initConfigParts()
     tempList.push_back(PutConfigPart_holiday);
     tempList.push_back(PutConfigPart_usage);
     tempList.push_back(PutConfigPart_llp);
-
 
     return tempList;
 }
@@ -223,7 +223,7 @@ bool CtiDeviceMCT4xx::getOperation( const UINT &cmd, USHORT &function, USHORT &l
 }
 
 
-unsigned char CtiDeviceMCT4xx::crc8( const unsigned char *buf, unsigned int len )
+unsigned char CtiDeviceMCT4xx::crc8( const unsigned char *buf, unsigned int len ) const
 {
     const unsigned char llpcrc_poly = 0x07;
 
@@ -278,13 +278,13 @@ unsigned char CtiDeviceMCT4xx::crc8( const unsigned char *buf, unsigned int len 
 }
 
 
-CtiDeviceMCT4xx::point_info_t CtiDeviceMCT4xx::getData( unsigned char *buf, int len, ValueType vt )
+CtiDeviceMCT4xx::point_info CtiDeviceMCT4xx::getData( unsigned char *buf, int len, ValueType vt ) const
 {
     PointQuality_t quality    = NormalQuality;
     __int64 value = 0;
     unsigned long error_code = 0xffffffff;  //  filled with 0xff because some data types are less than 32 bits
     unsigned char quality_flags, resolution;
-    point_info_t  retval;
+    point_info  retval;
 
     for( int i = 0; i < len; i++ )
     {
@@ -293,8 +293,8 @@ CtiDeviceMCT4xx::point_info_t CtiDeviceMCT4xx::getData( unsigned char *buf, int 
         value      <<= 8;
 
         //  the first byte for some value types needs to be treated specially
-        if( !i && (vt == ValueType_KW ||
-                   vt == ValueType_LoadProfile_KW) )
+        if( !i && (vt == ValueType_Demand ||
+                   vt == ValueType_LoadProfile_Demand) )
         {
             //  save these for use later
             quality_flags = buf[i] & 0xc0;
@@ -350,9 +350,9 @@ CtiDeviceMCT4xx::point_info_t CtiDeviceMCT4xx::getData( unsigned char *buf, int 
     retval.value   = value;
     retval.quality = quality;
 
-    if( vt == ValueType_KW || vt == ValueType_LoadProfile_KW )
+    if( vt == ValueType_Demand || vt == ValueType_LoadProfile_Demand )
     {
-        if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+        if( getMCTDebugLevel(DebugLevel_Info) )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** Checkpoint - demand value " << (unsigned long)value << " resolution " << (int)resolution << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -375,11 +375,11 @@ CtiDeviceMCT4xx::point_info_t CtiDeviceMCT4xx::getData( unsigned char *buf, int 
 }
 
 
-CtiDeviceMCT4xx::point_info_t CtiDeviceMCT4xx::getLoadProfileData(unsigned channel, unsigned char *buf, unsigned len)
+CtiDeviceMCT4xx::point_info CtiDeviceMCT4xx::getLoadProfileData(unsigned channel, unsigned char *buf, unsigned len)
 {
-    point_info_t pi;
+    point_info pi;
 
-    pi = getData(buf, len, ValueType_LoadProfile_KW);
+    pi = getData(buf, len, ValueType_LoadProfile_Demand);
 
     //  adjust for the demand interval
     pi.value *= 3600 / getLoadProfileInterval(channel);
@@ -389,7 +389,7 @@ CtiDeviceMCT4xx::point_info_t CtiDeviceMCT4xx::getLoadProfileData(unsigned chann
 
 
 //  eventually allow this function to construct the pointdata string as well
-CtiPointDataMsg *CtiDeviceMCT4xx::makePointDataMsg(CtiPointSPtr p, const point_info_t &pi, const string &pointString)
+CtiPointDataMsg *CtiDeviceMCT4xx::makePointDataMsg(CtiPointSPtr p, const point_info &pi, const string &pointString)
 {
     CtiPointDataMsg *pdm = 0;
 
@@ -2011,7 +2011,7 @@ INT CtiDeviceMCT4xx::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeN
     int       interval_len, block_len, function, channel,
               badData;
 
-    point_info_t  pi;
+    point_info  pi;
     unsigned long timeStamp, decode_time;
 
 
@@ -2227,7 +2227,7 @@ INT CtiDeviceMCT4xx::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, 
     string         val_report;
     int            channel, block, interval_len;
     unsigned long  timestamp, pulses;
-    point_info_t   pi;
+    point_info   pi;
 
     CtiCommandParser parse(InMessage->Return.CommandStr);
 
@@ -2235,7 +2235,7 @@ INT CtiDeviceMCT4xx::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, 
     CtiReturnMsg    *ret_msg = 0;  // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg *pdata   = 0;
 
-    if( getMCTDebugLevel(MCTDebug_Scanrates) )
+    if( getMCTDebugLevel(DebugLevel_Scanrates) )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** Load Profile Scan Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
