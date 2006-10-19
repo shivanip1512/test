@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.97 $
-* DATE         :  $Date: 2006/10/19 15:57:23 $
+* REVISION     :  $Revision: 1.98 $
+* DATE         :  $Date: 2006/10/19 19:59:24 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -243,9 +243,9 @@ CtiDeviceMCT410::ConfigPartsList CtiDeviceMCT410::getPartsList()
 }
 
 
-CtiDeviceMCT410::point_info_t CtiDeviceMCT410::getLoadProfileData(unsigned channel, unsigned char *buf, unsigned len)
+CtiDeviceMCT410::point_info CtiDeviceMCT410::getLoadProfileData(unsigned channel, unsigned char *buf, unsigned len)
 {
-    point_info_t pi;
+    point_info pi;
 
     if( channel == Channel_Voltage )
     {
@@ -253,7 +253,7 @@ CtiDeviceMCT410::point_info_t CtiDeviceMCT410::getLoadProfileData(unsigned chann
     }
     else
     {
-        pi = getData(buf, len, ValueType_LoadProfile_KW);
+        pi = getData(buf, len, ValueType_LoadProfile_Demand);
         pi.value *= 3600 / getLoadProfileInterval(channel);
     }
 
@@ -418,7 +418,7 @@ ULONG CtiDeviceMCT410::calcNextLPScanTime( void )
             planned_time -= planned_time % block_len;  //  make double sure we're block-aligned
             planned_time += LPBlockEvacuationTime;      //  add on the safeguard time
 
-            if( getMCTDebugLevel(MCTDebug_LoadProfile) )
+            if( getMCTDebugLevel(DebugLevel_LoadProfile) )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << "**** Checkpoint - lp calctime check... **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -447,7 +447,7 @@ ULONG CtiDeviceMCT410::calcNextLPScanTime( void )
                 next_time = _lp_info[i].current_schedule;
             }
 
-            if( getMCTDebugLevel(MCTDebug_LoadProfile) )
+            if( getMCTDebugLevel(DebugLevel_LoadProfile) )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << "**** Checkpoint - lp calctime check... **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -460,7 +460,7 @@ ULONG CtiDeviceMCT410::calcNextLPScanTime( void )
         }
     }
 
-    if( getMCTDebugLevel(MCTDebug_LoadProfile) )
+    if( getMCTDebugLevel(DebugLevel_LoadProfile) )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " " << getName() << "'s next Load Profile request at " << CtiTime(next_time) << endl;
@@ -530,7 +530,7 @@ INT CtiDeviceMCT410::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS
                         _lp_info[i].current_request -= LPRecentBlocks * block_len;
                     }
 
-                    if( getMCTDebugLevel(MCTDebug_LoadProfile) )
+                    if( getMCTDebugLevel(DebugLevel_LoadProfile) )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " **** Checkpoint - LP variable check for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -553,7 +553,7 @@ INT CtiDeviceMCT410::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS
                              descriptor.c_str(),
                              sizeof(tmpOutMess->Request.CommandStr) - ::strlen(tmpOutMess->Request.CommandStr));
 
-                    if( getMCTDebugLevel(MCTDebug_LoadProfile) )
+                    if( getMCTDebugLevel(DebugLevel_LoadProfile) )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " **** Checkpoint - command string check for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -564,7 +564,7 @@ INT CtiDeviceMCT410::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS
                 }
                 else
                 {
-                    if( getMCTDebugLevel(MCTDebug_LoadProfile) )
+                    if( getMCTDebugLevel(DebugLevel_LoadProfile) )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " **** Checkpoint - LP scan too early for device \"" << getName() << "\", aborted **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -589,7 +589,7 @@ bool CtiDeviceMCT410::calcLPRequestLocation( const CtiCommandParser &parse, OUTM
     bool retVal = false;
     int  address, block, channel;
 
-    if( getMCTDebugLevel(MCTDebug_LoadProfile) )
+    if( getMCTDebugLevel(DebugLevel_LoadProfile) )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** Checkpoint - LP parse value check **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -616,7 +616,7 @@ bool CtiDeviceMCT410::calcLPRequestLocation( const CtiCommandParser &parse, OUTM
     }
     else
     {
-        if( getMCTDebugLevel(MCTDebug_LoadProfile) )
+        if( getMCTDebugLevel(DebugLevel_LoadProfile) )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** Checkpoint - Improperly formed LP request discarded for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;;
@@ -1959,13 +1959,13 @@ INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
     INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
-    point_info_t pi, pi_freezecount;
+    point_info pi, pi_freezecount;
 
     CtiPointSPtr         pPoint;
     CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg      *pData = NULL;
 
-    if( getMCTDebugLevel(MCTDebug_Scanrates) )
+    if( getMCTDebugLevel(DebugLevel_Scanrates) )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** Accumulator Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -2155,7 +2155,7 @@ INT CtiDeviceMCT410::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, l
 {
     int status = NORMAL;
 
-    point_info_t pi;
+    point_info pi;
     string resultString,
               pointString;
 
@@ -2166,7 +2166,7 @@ INT CtiDeviceMCT410::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, l
     CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg *pData = NULL;
 
-    if( getMCTDebugLevel(MCTDebug_Scanrates) )
+    if( getMCTDebugLevel(DebugLevel_Scanrates) )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** Demand Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -2193,7 +2193,7 @@ INT CtiDeviceMCT410::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, l
         {
             int offset = (i > 1)?(i * 2 + 4):(0);  //  0, 6, 8
 
-            pi = getData(DSt->Message + offset, 2, ValueType_KW);
+            pi = getData(DSt->Message + offset, 2, ValueType_Demand);
 
             //  turn raw pulses into a demand reading
             pi.value *= double(3600 / getDemandInterval());
@@ -2292,7 +2292,7 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
 {
     int           status = NORMAL,
                   pointoffset;
-    point_info_t  pi_kw,
+    point_info    pi_kw,
                   pi_kw_time,
                   pi_kwh,
                   pi_freezecount;
@@ -2314,7 +2314,7 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
     CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg *pData     = NULL;
 
-    if( getMCTDebugLevel(MCTDebug_Scanrates) )
+    if( getMCTDebugLevel(DebugLevel_Scanrates) )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** TOU/Peak Demand Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -2377,13 +2377,13 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
             //  TOU memory layout
             pi_kwh         = getData(DSt->Message,     3, ValueType_Accumulator);
 
-            pi_kw          = getData(DSt->Message + 3, 2, ValueType_KW);
+            pi_kw          = getData(DSt->Message + 3, 2, ValueType_Demand);
             pi_kw_time     = getData(DSt->Message + 5, 4, ValueType_Raw);
         }
         else
         {
             //  normal peak memory layout
-            pi_kw          = getData(DSt->Message,     2, ValueType_KW);
+            pi_kw          = getData(DSt->Message,     2, ValueType_Demand);
             pi_kw_time     = getData(DSt->Message + 2, 4, ValueType_Raw);
 
             pi_kwh         = getData(DSt->Message + 6, 3, ValueType_Accumulator);
@@ -2596,7 +2596,7 @@ INT CtiDeviceMCT410::decodeGetValueVoltage( INMESS *InMessage, CtiTime &TimeNow,
     INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
-    point_info_t pi, max_volt_info, min_volt_info;
+    point_info pi, max_volt_info, min_volt_info;
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
@@ -3362,7 +3362,7 @@ INT CtiDeviceMCT410::decodeGetConfigDisconnect(INMESS *InMessage, CtiTime &TimeN
 
         resultStr += "Disconnect receiver address: " + CtiNumStr(disconnectaddress) + string("\n");
 
-        point_info_t pi = getData(DSt->Message + 5, 2);
+        point_info pi = getData(DSt->Message + 5, 2);
 
         resultStr += "Disconnect demand threshold: ";
         resultStr += pi.value?CtiNumStr(pi.value):"disabled";
