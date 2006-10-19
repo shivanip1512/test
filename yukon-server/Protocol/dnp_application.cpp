@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.31 $
-* DATE         :  $Date: 2006/10/04 15:48:11 $
+* REVISION     :  $Revision: 1.32 $
+* DATE         :  $Date: 2006/10/19 20:13:18 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -81,6 +81,8 @@ void Application::setCommand( FunctionCode fc )
     _ioState    = Output;
     _retryState = Output;
     _comm_errors = 0;
+
+    _iin.raw = 0;
 }
 
 
@@ -149,6 +151,9 @@ void Application::processInput( void )
     //  also, if need_time, do some time syncing, boieeeee
 
     int processed = 0;
+
+    //  OR'ing them all together should catch all of the interesting indications from all frames
+    _iin.raw |= _response.ind.raw;
 
     if( _response.ctrl.first )
     {
@@ -227,6 +232,28 @@ void Application::getObjects( object_block_queue &ob_queue )
 
         _in_object_blocks.pop();
     }
+}
+
+
+void Application::getInternalIndications( string &iin )
+{
+    iin = "Internal indications:\n";
+
+    if( _iin.all_stations ) iin += "Broadcast message received\n";
+    if( _iin.class_1      ) iin += "Class 1 data available\n";
+    if( _iin.class_2      ) iin += "Class 2 data available\n";
+    if( _iin.class_3      ) iin += "Class 3 data available\n";
+    if( _iin.need_time    ) iin += "Time synchronization needed\n";
+    if( _iin.local        ) iin += "Some digital output points in local mode - control disabled\n";
+    if( _iin.dev_trouble  ) iin += "Device trouble (see device spec for details)\n";
+    if( _iin.restart      ) iin += "User application restarted\n";
+
+    if( _iin.bad_function ) iin += "Function code not implemented\n";
+    if( _iin.obj_unknown  ) iin += "Requested objects unknown\n";
+    if( _iin.out_of_range ) iin += "Request parameters out of range\n";
+    if( _iin.buf_overflow ) iin += "Event buffers have overflowed\n";
+    if( _iin.already_exec ) iin += "Request already executing\n";
+    if( _iin.bad_config   ) iin += "DNP configuration is corrupt\n";
 }
 
 

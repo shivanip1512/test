@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2006/10/04 15:46:13 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2006/10/19 20:13:18 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -46,6 +46,11 @@ public:
     typedef queue< const ObjectBlock * > object_block_queue;
 
 private:
+
+    short _dstAddr, _srcAddr;
+
+#pragma pack( push, 1 )
+
     struct control_header
     {
         unsigned char seq         : 4;
@@ -55,28 +60,29 @@ private:
         unsigned char first       : 1;
     };
 
-    struct indications
+    union indications
     {
-        unsigned short all_stations : 1;
-        unsigned short class_1      : 1;
-        unsigned short class_2      : 1;
-        unsigned short class_3      : 1;
-        unsigned short need_time    : 1;
-        unsigned short local        : 1;
-        unsigned short dev_trouble  : 1;
-        unsigned short restart      : 1;
-        unsigned short bad_function : 1;
-        unsigned short obj_unknown  : 1;
-        unsigned short out_of_range : 1;
-        unsigned short buf_overflow : 1;
-        unsigned short already_exec : 1;
-        unsigned short bad_config   : 1;
-        unsigned short reserved     : 2;
+        struct
+        {
+            unsigned short all_stations : 1;
+            unsigned short class_1      : 1;
+            unsigned short class_2      : 1;
+            unsigned short class_3      : 1;
+            unsigned short need_time    : 1;
+            unsigned short local        : 1;
+            unsigned short dev_trouble  : 1;
+            unsigned short restart      : 1;
+            unsigned short bad_function : 1;
+            unsigned short obj_unknown  : 1;
+            unsigned short out_of_range : 1;
+            unsigned short buf_overflow : 1;
+            unsigned short already_exec : 1;
+            unsigned short bad_config   : 1;
+            unsigned short reserved     : 2;
+        };
+
+        unsigned short raw;
     };
-
-    short _dstAddr, _srcAddr;
-
-#pragma pack( push, 1 )
 
     struct request_t
     {
@@ -117,6 +123,8 @@ private:
     } _ioState, _retryState;
 
     int _comm_errors;
+
+    indications _iin;
 
     bool _final_frame_received;
 
@@ -173,6 +181,7 @@ public:
 
     //  post-completion processing
     void getObjects( object_block_queue &object_queue );
+    void getInternalIndications( string &iin );
 
     enum FunctionCode
     {
