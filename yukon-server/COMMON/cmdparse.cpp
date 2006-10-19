@@ -1634,8 +1634,7 @@ void  CtiCommandParser::doParsePutConfig(const string &_CmdStr)
                 }
             }
         }
-
-        if(CmdStr.contains(" tou"))
+        else if(CmdStr.contains(" tou"))
         {
             string tou_schedule;
 
