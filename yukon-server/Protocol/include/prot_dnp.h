@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2006/10/04 15:56:19 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2006/10/19 20:07:05 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -46,6 +46,7 @@ private:
     DNP::Application _app_layer;  //  be explicit to ensure Slick doesn't confuse it with anything else :rolleyes:
     unsigned short   _masterAddress, _slaveAddress;
     int              _options;
+    unsigned long    _last_complaint;
 
     Command              _command;
     vector<output_point> _command_parameters;
@@ -57,7 +58,8 @@ private:
 
     enum
     {
-        TimeDifferential = 60
+        TimeDifferential  =   60,
+        ComplaintInterval = 3600,
     };
 
     enum Retries
