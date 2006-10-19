@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.66 $
-* DATE         :  $Date: 2006/10/19 15:58:54 $
+* REVISION     :  $Revision: 1.67 $
+* DATE         :  $Date: 2006/10/19 19:57:18 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -204,6 +204,22 @@ CtiDeviceMCT::DynamicPaoFunctionAddressing_t CtiDeviceMCT470::initDynPaoFuncAddr
     addressSet.insert(DynamicPaoAddressing(7, 1, Keys::Key_MCT_LLPChannel4Len));
     functionSet.insert(DynamicPaoFunctionAddressing_t::value_type(FuncRead_LLPStatusPos,addressSet));
 
+    // FuncRead_IED_CRCPos
+    addressSet.insert(DynamicPaoAddressing( 1, 1, Keys::Key_MCT_LLPChannel1Len));
+    addressSet.insert(DynamicPaoAddressing( 2, 1, Keys::Key_MCT_LLPChannel2Len));
+    addressSet.insert(DynamicPaoAddressing( 3, 1, Keys::Key_MCT_LLPChannel3Len));
+    addressSet.insert(DynamicPaoAddressing( 4, 1, Keys::Key_MCT_LLPChannel4Len));
+    addressSet.insert(DynamicPaoAddressing( 5, 1, Keys::Key_MCT_LLPChannel4Len));
+    addressSet.insert(DynamicPaoAddressing( 6, 1, Keys::Key_MCT_LLPChannel4Len));
+    addressSet.insert(DynamicPaoAddressing( 7, 1, Keys::Key_MCT_LLPChannel4Len));
+    addressSet.insert(DynamicPaoAddressing( 8, 1, Keys::Key_MCT_LLPChannel4Len));
+    addressSet.insert(DynamicPaoAddressing( 9, 1, Keys::Key_MCT_LLPChannel4Len));
+    addressSet.insert(DynamicPaoAddressing(10, 1, Keys::Key_MCT_LLPChannel4Len));
+    addressSet.insert(DynamicPaoAddressing(11, 1, Keys::Key_MCT_LLPChannel4Len));
+    addressSet.insert(DynamicPaoAddressing(12, 1, Keys::Key_MCT_LLPChannel4Len));
+    functionSet.insert(DynamicPaoFunctionAddressing_t::value_type(FuncRead_IED_CRCPos,addressSet));
+
+
     addressSet.clear();
 
     // FuncRead_TOUDaySchedulePos
@@ -396,7 +412,7 @@ void CtiDeviceMCT470::requestDynamicInfo(CtiTableDynamicPaoInfo::Keys key, OUTME
     // Tell the porter side to complete the assembly of the message.
     OutMessage->Request.BuildIt = TRUE;
 
-    if( getMCTDebugLevel(MCTDebug_DynamicInfo) )
+    if( getMCTDebugLevel(DebugLevel_DynamicInfo) )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** Checkpoint - device \"" << getName() << "\" requesting key (" << key << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -591,7 +607,7 @@ ULONG CtiDeviceMCT470::calcNextLPScanTime( void )
         }
     }
 
-    if( getMCTDebugLevel(MCTDebug_LoadProfile) )
+    if( getMCTDebugLevel(DebugLevel_LoadProfile) )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " " << getName() << "'s next Load Profile request at " << CtiTime(next_time) << endl;
@@ -698,7 +714,7 @@ INT CtiDeviceMCT470::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS
     {
         if( _lastConfigRequest >= (Now.seconds()) )
         {
-            if( getMCTDebugLevel(MCTDebug_LoadProfile) )
+            if( getMCTDebugLevel(DebugLevel_LoadProfile) )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint - config request too soon for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -773,7 +789,7 @@ INT CtiDeviceMCT470::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS
             {
                 if( _lp_info[i].current_schedule > Now )
                 {
-                    if( getMCTDebugLevel(MCTDebug_LoadProfile) )
+                    if( getMCTDebugLevel(DebugLevel_LoadProfile) )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " **** Checkpoint - LP scan too early for device \"" << getName() << "\", aborted **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -793,7 +809,7 @@ INT CtiDeviceMCT470::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS
                         _lp_info[i].current_request -= LPRecentBlocks * block_size;
                     }
 
-                    if( getMCTDebugLevel(MCTDebug_LoadProfile) )
+                    if( getMCTDebugLevel(DebugLevel_LoadProfile) )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " **** Checkpoint - LP variable check for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -816,7 +832,7 @@ INT CtiDeviceMCT470::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS
                              descriptor.c_str(),
                              sizeof(tmpOutMess->Request.CommandStr) - ::strlen(tmpOutMess->Request.CommandStr));
 
-                    if( getMCTDebugLevel(MCTDebug_LoadProfile) )
+                    if( getMCTDebugLevel(DebugLevel_LoadProfile) )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " **** Checkpoint - command string check for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -844,7 +860,7 @@ bool CtiDeviceMCT470::calcLPRequestLocation( const CtiCommandParser &parse, OUTM
     bool retVal = false;
     int  address, block, channel;
 
-    if( getMCTDebugLevel(MCTDebug_LoadProfile) )
+    if( getMCTDebugLevel(DebugLevel_LoadProfile) )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** Checkpoint - LP parse value check **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -871,7 +887,7 @@ bool CtiDeviceMCT470::calcLPRequestLocation( const CtiCommandParser &parse, OUTM
     }
     else
     {
-        if( getMCTDebugLevel(MCTDebug_LoadProfile) )
+        if( getMCTDebugLevel(DebugLevel_LoadProfile) )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** Checkpoint - Improperly formed LP request discarded for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;;
@@ -2700,13 +2716,13 @@ INT CtiDeviceMCT470::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
     unsigned long pulses;
-    point_info_t  pi;
+    point_info  pi;
 
     CtiPointSPtr          pPoint;
     CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg      *pData = NULL;
 
-    if( getMCTDebugLevel(MCTDebug_Scanrates) )
+    if( getMCTDebugLevel(DebugLevel_Scanrates) )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** Accumulator Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -2742,7 +2758,7 @@ INT CtiDeviceMCT470::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
         {
             pPoint = getDevicePointOffsetTypeEqual( 1 + i, PulseAccumulatorPointType );
 
-            point_info_t pi = getData(DSt->Message + (i * 3), 3, ValueType_Accumulator);
+            point_info pi = getData(DSt->Message + (i * 3), 3, ValueType_Accumulator);
 
             // handle accumulator data here
             if( pPoint )
@@ -2796,9 +2812,9 @@ INT CtiDeviceMCT470::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
 
 INT CtiDeviceMCT470::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
-    int          status = NORMAL, i;
-    point_info_t pi;
-    string    resultString, pointString, stateName;
+    int        status = NORMAL, i;
+    point_info pi;
+    CtiString    resultString, pointString, stateName;
 
     INT ErrReturn = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt  = &InMessage->Buffer.DSt;
@@ -2807,7 +2823,7 @@ INT CtiDeviceMCT470::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, l
     CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg *pData = NULL;
 
-    if( getMCTDebugLevel(MCTDebug_Scanrates) )
+    if( getMCTDebugLevel(DebugLevel_Scanrates) )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** Demand Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -2866,7 +2882,7 @@ INT CtiDeviceMCT470::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, l
             }
             else
             {
-                pi = getData(DSt->Message + (i * 2) + 1, 2, ValueType_KW);
+                pi = getData(DSt->Message + (i * 2) + 1, 2, ValueType_Demand);
 
                 pPoint = getDevicePointOffsetTypeEqual(i + 1, DemandAccumulatorPointType);
 
@@ -2919,7 +2935,7 @@ INT CtiDeviceMCT470::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, l
 INT CtiDeviceMCT470::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     int           status = NORMAL, base_offset, point_offset;
-    point_info_t  pi, pi_time;
+    point_info    pi, pi_time;
     string        resultString, pointString, stateName;
     unsigned long pointTime;
 
@@ -2932,7 +2948,7 @@ INT CtiDeviceMCT470::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
     CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg *pData = NULL;
 
-    if( getMCTDebugLevel(MCTDebug_Scanrates) )
+    if( getMCTDebugLevel(DebugLevel_Scanrates) )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** Peak Demand Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -2966,7 +2982,7 @@ INT CtiDeviceMCT470::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
 
         point_offset = base_offset + PointOffset_PeakOffset;
 
-        pi      = getData(DSt->Message + 0, 2, ValueType_KW);
+        pi      = getData(DSt->Message + 0, 2, ValueType_Demand);
         pi_time = getData(DSt->Message + 2, 4, ValueType_Raw);
 
         //  turn raw pulses into a demand reading
@@ -2999,7 +3015,7 @@ INT CtiDeviceMCT470::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
             resultString += getName() + " / Channel " + CtiNumStr(base_offset) + " Max Demand = " + CtiNumStr(pi.value) + " @ " + printable_time(pointTime) + "  --  POINT UNDEFINED IN DB\n";
         }
 
-        pi      = getData(DSt->Message + 6, 2, ValueType_KW);
+        pi      = getData(DSt->Message + 6, 2, ValueType_Demand);
         pi_time = getData(DSt->Message + 8, 4, ValueType_Raw);
 
         //  turn raw pulses into a demand reading
@@ -3035,12 +3051,12 @@ INT CtiDeviceMCT470::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
 
 INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
-    int             status = NORMAL,
-                    frozen = 0,
-                    offset = 0,
-                    rate   = 0;
-    point_info_t    pi;
-    string       point_string, resultString;
+    int        status = NORMAL,
+               frozen = 0,
+               offset = 0,
+               rate   = 0;
+    point_info pi;
+    string     point_string, resultString;
 
     CtiCommandParser parse(InMessage->Return.CommandStr);
 
@@ -3050,7 +3066,7 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
     CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg *pData = NULL;
 
-    if( getMCTDebugLevel(MCTDebug_Scanrates) )
+    if( getMCTDebugLevel(DebugLevel_Scanrates) )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** IED Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -3300,14 +3316,15 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
         {
             int i = 0;
             CtiPointSPtr tempPoint;
-            int status = DSt->Message[12];//Applies only to precanned table reads.
+            int dnp_status = DSt->Message[12];  //  Applies only to precanned table reads.
+
             if( (i = parse.getiValue("collectionnumber")) != INT_MIN )
             {
                 decodeDNPRealTimeRead(DSt->Message, i, resultString, ReturnMsg, InMessage);
             }
             else if( (i = parse.getiValue("analognumber")) != INT_MIN )
             {
-                if( status == 0 )
+                if( dnp_status == 0 )
                 {
                     for( int byte = 0; byte < 6; byte++ )
                     {
@@ -3328,7 +3345,7 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                 }
                 else
                 {
-                    resultString += "DNP status returned " + CtiNumStr(status) + ": " + resolveDNPStatus(status);
+                    resultString += "DNP status returned " + CtiNumStr(dnp_status) + ": " + resolveDNPStatus(status);
                     for( int byte = 0; byte < 6; byte++ )
                     {
                         insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_DNPAnalog_Precanned1+byte+(i-1)*6, AnalogPointType);
@@ -3337,7 +3354,7 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
             }
             else if( (i = parse.getiValue("accumulatornumber")) != INT_MIN )
             {
-                if( status == 0 )
+                if( dnp_status == 0 )
                 {
                     for( int byte = 0; byte < 6; byte++ )
                     {
@@ -3358,7 +3375,7 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                 }
                 else
                 {
-                    resultString += "DNP status returned " + CtiNumStr(status) + ": " + resolveDNPStatus(status);
+                    resultString += "DNP status returned " + CtiNumStr(dnp_status) + ": " + resolveDNPStatus(dnp_status);
                     for( int byte = 0; byte < 6; byte++ )
                     {
                         insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_DNPCounter_Precanned1+byte+(i-1)*6, AnalogPointType);
@@ -3367,7 +3384,7 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
             }
             else if( (i = parse.getiValue("statusnumber")) != INT_MIN )
             {
-                if( status == 0 )
+                if( dnp_status == 0 )
                 {
                     pi.quality = NormalQuality;
                     for( int byte = 0; byte < 12; byte++ )
@@ -3388,7 +3405,7 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                 }
                 else
                 {
-                    resultString += "DNP status returned " + CtiNumStr(status) + ": " + resolveDNPStatus(status);
+                    resultString += "DNP status returned " + CtiNumStr(dnp_status) + ": " + resolveDNPStatus(dnp_status);
                     for( int byte = 0; byte < 12; byte++ )
                     {
                         for( int bit = 0; bit < 8; bit++ )
@@ -3400,40 +3417,42 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
             }
             else if( parse.isKeyValid("dnp_crc") )
             {
-                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_RealTime1CRC, InMessage->Buffer.DSt.Message[0]);
-                resultString += "CRC's Returned: " + CtiNumStr(InMessage->Buffer.DSt.Message[0]);
+                using CtiTableDynamicPaoInfo::Keys;
 
-                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_RealTime2CRC, InMessage->Buffer.DSt.Message[1]);
+                setDynamicInfo(Keys::Key_MCT_DNP_RealTime1CRC, InMessage->Buffer.DSt.Message[0]);
+                resultString += "CRCs Returned: " + CtiNumStr(InMessage->Buffer.DSt.Message[0]);
+
+                setDynamicInfo(Keys::Key_MCT_DNP_RealTime2CRC, InMessage->Buffer.DSt.Message[1]);
                 resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[1]);
 
-                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_BinaryCRC, InMessage->Buffer.DSt.Message[2]);
+                setDynamicInfo(Keys::Key_MCT_DNP_BinaryCRC, InMessage->Buffer.DSt.Message[2]);
                 resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[2]);
 
-                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC1, InMessage->Buffer.DSt.Message[3]);
+                setDynamicInfo(Keys::Key_MCT_DNP_AnalogCRC1, InMessage->Buffer.DSt.Message[3]);
                 resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[3]);
 
-                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC2, InMessage->Buffer.DSt.Message[4]);
+                setDynamicInfo(Keys::Key_MCT_DNP_AnalogCRC2, InMessage->Buffer.DSt.Message[4]);
                 resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[4]);
 
-                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC3, InMessage->Buffer.DSt.Message[5]);
+                setDynamicInfo(Keys::Key_MCT_DNP_AnalogCRC3, InMessage->Buffer.DSt.Message[5]);
                 resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[5]);
 
-                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC4, InMessage->Buffer.DSt.Message[6]);
+                setDynamicInfo(Keys::Key_MCT_DNP_AnalogCRC4, InMessage->Buffer.DSt.Message[6]);
                 resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[6]);
 
-                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC5, InMessage->Buffer.DSt.Message[7]);
+                setDynamicInfo(Keys::Key_MCT_DNP_AnalogCRC5, InMessage->Buffer.DSt.Message[7]);
                 resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[7]);
 
-                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AccumulatorCRC1, InMessage->Buffer.DSt.Message[8]);
+                setDynamicInfo(Keys::Key_MCT_DNP_AccumulatorCRC1, InMessage->Buffer.DSt.Message[8]);
                 resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[8]);
 
-                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AccumulatorCRC2, InMessage->Buffer.DSt.Message[9]);
+                setDynamicInfo(Keys::Key_MCT_DNP_AccumulatorCRC2, InMessage->Buffer.DSt.Message[9]);
                 resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[9]);
 
-                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AccumulatorCRC3, InMessage->Buffer.DSt.Message[10]);
+                setDynamicInfo(Keys::Key_MCT_DNP_AccumulatorCRC3, InMessage->Buffer.DSt.Message[10]);
                 resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[10]);
 
-                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AccumulatorCRC4, InMessage->Buffer.DSt.Message[11]);
+                setDynamicInfo(Keys::Key_MCT_DNP_AccumulatorCRC4, InMessage->Buffer.DSt.Message[11]);
                 resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[11]);
             }
         }
@@ -3467,7 +3486,7 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
             else
             {
                 CtiPointSPtr kwh, kw;
-                point_info_t time_info;
+                point_info time_info;
                 unsigned long peak_time;
 
                 if( parse.getFlags() & CMD_FLAG_GV_KVARH || parse.getFlags() & CMD_FLAG_GV_KVAH  )
@@ -3558,7 +3577,7 @@ INT CtiDeviceMCT470::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, lis
                     frozen = 0,
                     offset = 0,
                     rate   = 0;
-    point_info_t    pi;
+    point_info    pi;
     PointQuality_t  quality;
     string       point_string, resultString;
 
@@ -3570,7 +3589,7 @@ INT CtiDeviceMCT470::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, lis
     CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg      *pData = NULL;
 
-    if( getMCTDebugLevel(MCTDebug_Scanrates) )
+    if( getMCTDebugLevel(DebugLevel_Scanrates) )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** Demand Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -3615,7 +3634,7 @@ INT CtiDeviceMCT470::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, lis
                         break;
                 }
 
-                point_info_t  pi_time  = getData(DSt->Message, 4, ValueType_Raw);
+                point_info  pi_time  = getData(DSt->Message, 4, ValueType_Raw);
                 unsigned long ied_time = (unsigned long)pi_time.value + timezone_offset;
 
                 _iedTime = CtiTime(ied_time);
@@ -4056,7 +4075,7 @@ INT CtiDeviceMCT470::decodeGetConfigChannelSetup(INMESS *InMessage, CtiTime &Tim
             }
         }
 
-        if( getMCTDebugLevel(MCTDebug_DynamicInfo) )
+        if( getMCTDebugLevel(DebugLevel_DynamicInfo) )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** Checkpoint - device \"" << getName() << "\" LP config decode - \"" << dynamic_info << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -4161,8 +4180,8 @@ INT CtiDeviceMCT470::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, l
 //I hate to do this, we must ensure no one ever passes a null buffer into here...
 void CtiDeviceMCT470::decodeDNPRealTimeRead(BYTE *buffer, int readNumber, string &resultString, CtiReturnMsg *ReturnMsg, INMESS *InMessage)
 {
-    point_info_t   pi;
-    CtiPointSPtr   tempPoint;
+    point_info   pi;
+    CtiPointSPtr tempPoint;
     string point_string;
     if( buffer != NULL && ReturnMsg != NULL)
     {
@@ -4321,61 +4340,17 @@ string CtiDeviceMCT470::resolveDNPStatus(int status)
     string result;
     switch(status)
     {
-        case 0:
-        {
-            result = "Success";
-            break;
-        }
-        case 1:
-        {
-            result = "Failed Data Link Header";
-            break;
-        }
-        case 2:
-        {
-            result = "Failed Application Header";
-            break;
-        }
-        case 3:
-        {
-            result = "Failed Object Header";
-            break;
-        }
-        case 4:
-        {
-            result = "Invalid Point Configuration";
-            break;
-        }
-        case 5:
-        {
-            result = "Command Failed";
-            break;
-        }
-        case 6:
-        {
-            result = "Communications Failure";
-            break;
-        }
-        case 7:
-        {
-            result = "Application Message Length Error";
-            break;
-        }
-        case 8:
-        {
-            result = "Data Request Failed";
-            break;
-        }
-        case 9:
-        {
-            result = "Data Storage Failed";
-            break;
-        }
-        default:
-        {
-            result = "Unknown";
-            break;
-        }
+        case 0:     result = "Success";                     break;
+        case 1:     result = "Failed Data Link Header";     break;
+        case 2:     result = "Failed Application Header";   break;
+        case 3:     result = "Failed Object Header";        break;
+        case 4:     result = "Invalid Point Configuration"; break;
+        case 5:     result = "Command Failed";              break;
+        case 6:     result = "Communications Failure";      break;
+        case 7:     result = "Application Message Length Error";    break;
+        case 8:     result = "Data Request Failed";         break;
+        case 9:     result = "Data Storage Failed";         break;
+        default:    result = "Unknown";                     break;
     }
 
     return result;
