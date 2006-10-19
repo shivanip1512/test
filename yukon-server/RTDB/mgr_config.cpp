@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/mgr_config.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2006/09/08 21:25:49 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2006/10/19 15:57:54 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -101,141 +101,148 @@ string CtiConfigManager::getCategoryTableName()
 
 BaseSPtr CtiConfigManager::createConfigByType(const int type)
 {   //This function MUST set the type variable in config_base.
+    BaseSPtr tempBasePtr;
     try
     {
+        
         switch(type)
         {
             using namespace MCT;
             case ConfigTypeMCTTOU:
             {
-                BaseSPtr tempBasePtr (CTIDBG_new ConfigurationPart<MCT_TOU>());
-                return tempBasePtr;
+                tempBasePtr.reset(CTIDBG_new ConfigurationPart<MCT_TOU>());
+                break;
+            }
+            case ConfigTypeMCTTOURateSchedule:
+            {
+                tempBasePtr.reset(CTIDBG_new ConfigurationPart<MCT_TOU_Rate_Schedule>());
+                break;
             }
             case ConfigTypeMCTAddressing:
             {
-                BaseSPtr tempBasePtr (CTIDBG_new ConfigurationPart<MCTAddressing>());
-                return tempBasePtr;
+                tempBasePtr.reset(CTIDBG_new ConfigurationPart<MCTAddressing>());
+                break;
             }
             case ConfigTypeMCTOptions:
             {
-                BaseSPtr tempBasePtr (CTIDBG_new ConfigurationPart<MCTOptions>());
-                return tempBasePtr;
+                tempBasePtr.reset(CTIDBG_new ConfigurationPart<MCTOptions>());
+                break;
             }
             case ConfigTypeMCTDemandLP:
             {
-                BaseSPtr tempBasePtr (CTIDBG_new ConfigurationPart<MCTDemandLoadProfile>());
-                return tempBasePtr;
+                tempBasePtr.reset(CTIDBG_new ConfigurationPart<MCTDemandLoadProfile>());
+                break;
             }
             case ConfigTypeMCTDST:
             {
-                BaseSPtr tempBasePtr (CTIDBG_new ConfigurationPart<MCT_DST>());
-                return tempBasePtr;
+                tempBasePtr.reset(CTIDBG_new ConfigurationPart<MCT_DST>());
+                break;
             }
             case ConfigTypeMCTVThreshold:
             {
-                BaseSPtr tempBasePtr (CTIDBG_new ConfigurationPart<MCTVThreshold>());
-                return tempBasePtr;
+                tempBasePtr.reset(CTIDBG_new ConfigurationPart<MCTVThreshold>());
+                break;
             }
             case ConfigTypeMCTDisconnect:
             {
-                BaseSPtr tempBasePtr (CTIDBG_new ConfigurationPart<MCTDisconnect>());
-                return tempBasePtr;
+                tempBasePtr.reset(CTIDBG_new ConfigurationPart<MCTDisconnect>());
+                break;
             }
             case ConfigTypeMCTLongLoadProfile:
             {
-                BaseSPtr tempBasePtr (CTIDBG_new ConfigurationPart<MCTLongLoadProfile>());
-                return tempBasePtr;
+                tempBasePtr.reset(CTIDBG_new ConfigurationPart<MCTLongLoadProfile>());
+                break;
             }
             case ConfigTypeMCTHoliday:
             {
-                BaseSPtr tempBasePtr (CTIDBG_new ConfigurationPart<MCTHoliday>());
-                return tempBasePtr;
+                tempBasePtr.reset(CTIDBG_new ConfigurationPart<MCTHoliday>());
+                break;
             }
             case ConfigTypeMCTLoadProfileChannels:
             {
-                BaseSPtr tempBasePtr (CTIDBG_new ConfigurationPart<MCTLoadProfileChannels>());
-                return tempBasePtr;
+                tempBasePtr.reset(CTIDBG_new ConfigurationPart<MCTLoadProfileChannels>());
+                break;
             }
             case ConfigTypeMCTRelays:
             {
-                BaseSPtr tempBasePtr (CTIDBG_new ConfigurationPart<MCTRelays>());
-                return tempBasePtr;
+                tempBasePtr.reset(CTIDBG_new ConfigurationPart<MCTRelays>());
+                break;
             }
             case ConfigTypeMCTPrecannedTable:
             {
-                BaseSPtr tempBasePtr (CTIDBG_new ConfigurationPart<MCTPrecannedTable>());
-                return tempBasePtr;
+                tempBasePtr.reset(CTIDBG_new ConfigurationPart<MCTPrecannedTable>());
+                break;
             }
             case ConfigTypeMCTSystemOptions:
             {
-                BaseSPtr tempBasePtr (CTIDBG_new ConfigurationPart<MCTSystemOptions>());
-                return tempBasePtr;
+                tempBasePtr.reset(CTIDBG_new ConfigurationPart<MCTSystemOptions>());
+                break;
             }
             case ConfigTypeMCTCentron:
             {
-                BaseSPtr tempBasePtr (CTIDBG_new ConfigurationPart<MCTCentron>());
-                return tempBasePtr;
+                tempBasePtr.reset(CTIDBG_new ConfigurationPart<MCTCentron>());
+                break;
             }
             case ConfigTypeMCTDNP:
             {
-                BaseSPtr tempBasePtr (CTIDBG_new ConfigurationPart<MCT_DNP>());
-                return tempBasePtr;
+                tempBasePtr.reset(CTIDBG_new ConfigurationPart<MCT_DNP>());
+                break;
             }
             using namespace CBC;
             case ConfigTypeCBCVoltage:
             {
-                BaseSPtr tempBasePtr (CTIDBG_new ConfigurationPart<CBCVoltage>());
-                return tempBasePtr;
+                tempBasePtr.reset(CTIDBG_new ConfigurationPart<CBCVoltage>());
+                break;
             }
             case ConfigTypeCBCCommsLost:
             {
-                BaseSPtr tempBasePtr (CTIDBG_new ConfigurationPart<CBCCommsLost>());
-                return tempBasePtr;
+                tempBasePtr.reset(CTIDBG_new ConfigurationPart<CBCCommsLost>());
+                break;
             }
             case ConfigTypeCBCNeutralCurrent:
             {
-                BaseSPtr tempBasePtr (CTIDBG_new ConfigurationPart<CBCNeutralCurrent>());
-                return tempBasePtr;
+                tempBasePtr.reset(CTIDBG_new ConfigurationPart<CBCNeutralCurrent>());
+                break;
             }
             case ConfigTypeCBCFaultDetection:
             {
-                BaseSPtr tempBasePtr (CTIDBG_new ConfigurationPart<CBCFaultDetection>());
-                return tempBasePtr;
+                tempBasePtr.reset(CTIDBG_new ConfigurationPart<CBCFaultDetection>());
+                break;
             }
             case ConfigTypeCBCSeason1TimeAndTemp:
             {
-                BaseSPtr tempBasePtr (CTIDBG_new ConfigurationPart<CBCSeason1TimeAndTemp>());
-                return tempBasePtr;
+                tempBasePtr.reset(CTIDBG_new ConfigurationPart<CBCSeason1TimeAndTemp>());
+                break;
             }
             case ConfigTypeCBCSeason2TimeAndTemp:
             {
-                BaseSPtr tempBasePtr (CTIDBG_new ConfigurationPart<CBCSeason2TimeAndTemp>());
-                return tempBasePtr;
+                tempBasePtr.reset(CTIDBG_new ConfigurationPart<CBCSeason2TimeAndTemp>());
+                break;
             }
             case ConfigTypeCBCControlTimes:
             {
-                BaseSPtr tempBasePtr (CTIDBG_new ConfigurationPart<CBCControlTimes>());
-                return tempBasePtr;
+                tempBasePtr.reset(CTIDBG_new ConfigurationPart<CBCControlTimes>());
+                break;
             }
             case ConfigTypeCBCDataLogging:
             {
-                BaseSPtr tempBasePtr (CTIDBG_new ConfigurationPart<CBCDataLogging>());
-                return tempBasePtr;
+                tempBasePtr.reset(CTIDBG_new ConfigurationPart<CBCDataLogging>());
+                break;
             }
             case ConfigTypeCBCAddressing:
             {
-                BaseSPtr tempBasePtr (CTIDBG_new ConfigurationPart<CBCAddressing>());
-                return tempBasePtr;
+                tempBasePtr.reset(CTIDBG_new ConfigurationPart<CBCAddressing>());
+                break;
             }
             case ConfigTypeCBC_DNP:
             {
-                BaseSPtr tempBasePtr (CTIDBG_new ConfigurationPart<CBC_DNP>());
-                return tempBasePtr;
+                tempBasePtr.reset(CTIDBG_new ConfigurationPart<CBC_DNP>());
+                break;
             }
             case ConfigTypeCBC_UDP:
             {
-                BaseSPtr tempBasePtr (CTIDBG_new ConfigurationPart<CBC_UDP>());
-                return tempBasePtr;
+                tempBasePtr.reset(CTIDBG_new ConfigurationPart<CBC_UDP>());
+                break;
             }
             default:
             {
@@ -243,18 +250,16 @@ BaseSPtr CtiConfigManager::createConfigByType(const int type)
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << "*** CHECKPOINT *** " << " No constructor for config type "<<type<< " in " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
-                BaseSPtr tempBasePtr (CTIDBG_new Base());
-                return tempBasePtr;
-                break;//Im adding to code bloat!
+                break;
             }
         }
-        
+        return tempBasePtr;
     }
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << "*** CHECKPOINT *** " << " Exception thrown in " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        return  BaseSPtr();
+        return  tempBasePtr;
     }
 }
 
@@ -308,7 +313,7 @@ void CtiConfigManager::processDBUpdate(LONG identifier, string category, string 
 {
     CtiToLower(category);
     CtiToLower(objectType);
-    if( category == "config" && identifier != 0 )
+    if( category == "device config" && identifier != 0 )
     {
         if( objectType == "config" )
         {
@@ -466,7 +471,11 @@ void CtiConfigManager::loadCategories(long categoryID)
                 type = resolveConfigType(tempType);
                 if( type != ConfigTypeInvalid )
                 {
-                    _typeConfig.insert(categoryID,createConfigByType(type));//Should I remember this pointer and not do the next lookup? I dont think it is too expensive
+                    BaseSPtr config = createConfigByType(type);
+                    if( config )
+                    {
+                        _typeConfig.insert(categoryID,config);//Should I remember this pointer and not do the next lookup? I dont think it is too expensive
+                    }
                 }
             }
 
