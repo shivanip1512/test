@@ -132,8 +132,11 @@ public class CBCSelectionLists {
 		//new SelectItem(CalcComponentTypes.PFACTOR_KW_KQ_FUNCTION, CalcComponentTypes.PFACTOR_KW_KQ_FUNCTION),
 		new SelectItem(CalcComponentTypes.LABEL_MULTI_VOLT, CalcComponentTypes.LABEL_MULTI_VOLT),
 		
-		new SelectItem(CalcComponentTypes.LABEL_VOLTS, CalcComponentTypes.LABEL_VOLTS)
-	};
+		new SelectItem(CalcComponentTypes.LABEL_VOLTS, CalcComponentTypes.LABEL_VOLTS),
+        
+        new SelectItem(CalcComponentTypes.LABEL_MULTI_VOLT_VAR, CalcComponentTypes.LABEL_MULTI_VOLT_VAR),
+
+    };
 
 	private static final SelectItem[] capBankOpStates =  {
 		new SelectItem(CapBank.FIXED_OPSTATE, CapBank.FIXED_OPSTATE),

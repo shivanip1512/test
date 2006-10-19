@@ -36,7 +36,14 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 	private Double peakLead = new Double(0.0);
 	private Double offPkLag = new Double(0.0);
 	private Double offPkLead = new Double(0.0);
+    
+	private Double pkVarLag = new Double (0.0);
+	private Double pkVarLead = new Double(0.0);
+	private Double offpkVarLead = new Double(0.0);
+	private Double offpkVarLag = new Double(0.0);
 
+	private Double pkPFPoint = new Double (0.0);
+	private Double offPkPFPoint = new Double (0.0);
 
 
 	public static final String CNTRL_INDIVIDUAL_FEEDER = "IndividualFeeder";
@@ -52,7 +59,9 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 		"ControlInterval", "MinResponseTime", "MinConfirmPercent",
 		"FailurePercent", "DaysOfWeek",
 		"ControlUnits", "ControlDelayTime", "ControlSendRetries",
-		"PeakLag", "PeakLead", "OffPkLag", "OffPkLead"
+		"PeakLag", "PeakLead", "OffPkLag", "OffPkLead", 
+        "PeakVARLag", "PeakVARLead" , "OffPkVARLag", "OffPkVARLead",
+        "PeakPFSetPoint", "OffPkPFSetPoint"
 	};
 
 	public static final String CONSTRAINT_COLUMNS[] = { "StrategyID" };
@@ -78,7 +87,9 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 			getControlInterval(), getMinResponseTime(), getMinConfirmPercent(),
 			getFailurePercent(), getDaysOfWeek(), getControlUnits(),
 			getControlDelayTime(), getControlSendRetries(),
-			getPeakLag(), getPeakLead(), getOffPkLag(), getOffPkLead()
+			getPeakLag(), getPeakLead(), getOffPkLag(), getOffPkLead(),
+            getPkVarLag(), getPkVarLead(), getOffPkLag(), getOffPkLead(),
+            getPkPFPoint(), getOffPkPFPoint()
 		};
 	
 		add( TABLE_NAME, addValues );
@@ -253,7 +264,14 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 			setPeakLead( (Double) results[15] );
 			setOffPkLag( (Double) results[16] );
 			setOffPkLead( (Double) results[17] );
-		}
+			setPkVarLag( (Double) results[18] );
+			setPkVarLead( (Double) results[19] );
+            setOffpkVarLag( (Double) results[20] );
+            setOffPkLead( (Double) results[21] );
+            
+            setPkPFPoint((Double) results[22]);
+            setOffPkPFPoint((Double) results [23]);
+        }   
 		else
 			throw new Error(getClass() + " - Incorrect Number of results retrieved");
 	
@@ -379,7 +397,9 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 			getControlInterval(), getMinResponseTime(), getMinConfirmPercent(),
 			getFailurePercent(), getDaysOfWeek(), getControlUnits(),
 			getControlDelayTime(), getControlSendRetries(),
-			getPeakLag(), getPeakLead(), getOffPkLag(), getOffPkLead()
+			getPeakLag(), getPeakLead(), getOffPkLag(), getOffPkLead(),
+            getPkVarLag(), getPkVarLead(), getOffpkVarLag(), getOffpkVarLead(),
+            getPkPFPoint(), getOffPkPFPoint()
 		};
 	
 	
@@ -433,7 +453,9 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 		   "ControlInterval, MinResponseTime, MinConfirmPercent," +
 		   "FailurePercent, DaysOfWeek," +
 		   "ControlUnits, ControlDelayTime, ControlSendRetries," +
-		   "PeakLag, PeakLead, OffPkLag, OffPkLead" +
+		   "PeakLag, PeakLead, OffPkLag, OffPkLead, " + 
+           "PeakVARLag, PeakVARLead , OffPkVARLag , OffPkVARLead," + 
+           "PeakPFSetPoint, OffPkPFSetPoint" +
 		   " from " + TABLE_NAME + " order by StrategyName";
 
 		try {		
@@ -469,7 +491,15 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 					cbcStrat.setPeakLead( new Double(rset.getDouble(17)) );
 					cbcStrat.setOffPkLag( new Double(rset.getDouble(18)) );
 					cbcStrat.setOffPkLead( new Double(rset.getDouble(19)) );
-
+                    
+                    cbcStrat.setPkVarLag(new Double (rset.getDouble(20)) );
+                    cbcStrat.setPkVarLead(new Double (rset.getDouble(21)) );
+                    cbcStrat.setOffpkVarLag(new Double (rset.getDouble(22)) );
+                    cbcStrat.setOffpkVarLead(new Double (rset.getDouble(23)) );
+                    
+                    cbcStrat.setPkPFPoint(new Double (rset.getDouble(24)));
+                    cbcStrat.setOffPkPFPoint(new Double (rset.getDouble(25)));
+                    
 					vect.add( cbcStrat );				
 				}
 
@@ -654,5 +684,53 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 	public void setPeakLead(Double double1) {
 		peakLead = double1;
 	}
+
+    public Double getOffpkVarLag() {
+        return offpkVarLag;
+    }
+
+    public void setOffpkVarLag(Double d) {
+        offpkVarLag = d;
+    }
+
+    public Double getOffpkVarLead() {
+        return offpkVarLead;
+    }
+
+    public void setOffpkVarLead(Double d) {
+        offpkVarLead = d;
+    }
+
+    public Double getPkVarLag() {
+        return pkVarLag;
+    }
+
+    public void setPkVarLag(Double d) {
+        pkVarLag = d;
+    }
+
+    public Double getPkVarLead() {
+        return pkVarLead;
+    }
+
+    public void setPkVarLead(Double d) {
+        pkVarLead = d;
+    }
+
+    public Double getPkPFPoint() {
+        return pkPFPoint;
+    }
+
+    public Double getOffPkPFPoint() {
+        return offPkPFPoint;
+    }
+
+    public void setOffPkPFPoint(Double d) {
+        offPkPFPoint = d;
+    }
+
+    public void setPkPFPoint(Double d) {
+        pkPFPoint = d;
+    }
 
 }

@@ -247,5 +247,9 @@ legend, .legendLikeLabel{
     height: 50px; 
 }
 
+.padlabel {
+    padding-right: 3px;  
+}
+
  
 

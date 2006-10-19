@@ -78,6 +78,7 @@ import com.cannontech.web.exceptions.PAODoesntHaveNameException;
 import com.cannontech.web.exceptions.PortDoesntExistException;
 import com.cannontech.web.exceptions.SameMasterSlaveCombinationException;
 import com.cannontech.web.exceptions.SerialNumberExistsException;
+import com.cannontech.web.model.capcontrol.CapControlStrategyModel;
 import com.cannontech.web.util.CBCSelectionLists;
 import com.cannontech.web.util.JSFParamUtil;
 import com.cannontech.web.util.JSFTreeUtils;
@@ -160,6 +161,8 @@ public class CapControlForm extends DBEditorForm{
     private Map pointNameMap = new HashMap();
 
     private EditorDataModel dataModel = null;
+    
+    private CapControlStrategyModel currentStratModel = null;
 
     
     
@@ -266,8 +269,29 @@ public class CapControlForm extends DBEditorForm{
 
 		return stratID;
 	}
+    
+    /**
+     * Returns data model for currently selected strategy
+     * 
+     * */
+    public CapControlStrategyModel getCurrentStratModel () {
+        if (currentStratModel == null)
+        {
+            CapControlStrategy strat = (CapControlStrategy) cbcStrategiesMap.get(getCurrentStrategyID());
+            currentStratModel = new CapControlStrategyModel (strat);
+        }
+        currentStratModel.updateModel();
+        return currentStratModel;
+        
+    }
+    
 
-	/**
+    public void newStrategySelected (ValueChangeEvent vce)
+    {
+        resetCurrentStratModel();
+
+    }
+    /**
 	 * Returns all available VAR points
 	 * 
 	 */
@@ -617,8 +641,15 @@ public class CapControlForm extends DBEditorForm{
 		}
 		//restore the value of the dual bus from DB
 		resetDualBusEnabled();
-		initEditorPanels();
+        editingCBCStrategy = false;
+		resetCurrentStratModel();
+        initEditorPanels();
 	}
+
+
+    private void resetCurrentStratModel() {
+        currentStratModel = null;
+    }
 
     //initiatiates data model for our specific object
 	private void initDataModel(DBPersistent dbPersistent) {
@@ -824,20 +855,12 @@ public class CapControlForm extends DBEditorForm{
 		try {
 			// update the CBCStrategy object if we are editing it
 			if (isEditingCBCStrategy()) {
-				int stratID = CtiUtilities.NONE_ZERO_ID;
-				if (getDbPersistent() instanceof CapControlFeeder)
-					stratID = ((CapControlFeeder) getDbPersistent())
-							.getCapControlFeeder().getStrategyID().intValue();
-				else if (getDbPersistent() instanceof CapControlSubBus)
-					stratID = ((CapControlSubBus) getDbPersistent())
-							.getCapControlSubstationBus().getStrategyID()
-							.intValue();
-
-				updateDBObject((CapControlStrategy) getCbcStrategiesMap().get(
-						new Integer(stratID)), facesMsg);
-
+                CapControlStrategy currentStrategy = getCurrentStratModel().getStrategy();
+                updateDBObject(currentStrategy, facesMsg);
+                
 				// clear out the memory of any list of Strategies
-				resetStrategies();
+				resetCurrentStratModel();
+                resetStrategies();
 				setEditingCBCStrategy(false);
 			}
 

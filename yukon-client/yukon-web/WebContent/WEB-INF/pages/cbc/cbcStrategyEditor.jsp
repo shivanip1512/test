@@ -11,7 +11,8 @@
 		
 		<x:outputLabel for="Sub_Strategy_Selection" value="Selected Strategy: " title="The current control strategy we are using"/>
 		<x:selectOneMenu id="Sub_Strategy_Selection" onchange="submit();" disabled="#{capControlForm.editingCBCStrategy}"
-				value="#{capControlForm.PAOBase.capControlSubstationBus.strategyID}" >
+				value="#{capControlForm.PAOBase.capControlSubstationBus.strategyID}" 
+                valueChangeListener="#{capControlForm.newStrategySelected}">
 			<f:selectItems value="#{capControlForm.cbcStrategies}"/>
 		</x:selectOneMenu>
 		
@@ -22,7 +23,9 @@
 		<f:verbatim><br/></f:verbatim>
 		<x:outputLabel for="Feeder_Strategy_Selection" value="Selected Strategy: " title="The current control strategy we are using"/>
 		<x:selectOneMenu id="Feeder_Strategy_Selection" onchange="submit();" disabled="#{capControlForm.editingCBCStrategy}"
-				value="#{capControlForm.PAOBase.capControlFeeder.strategyID}" >
+				value="#{capControlForm.PAOBase.capControlFeeder.strategyID}" 
+                valueChangeListener="#{capControlForm.newStrategySelected}">
+                
 			<f:selectItems value="#{capControlForm.cbcStrategies}"/>
 		</x:selectOneMenu>
     </f:subview>
@@ -128,73 +131,165 @@
 		</h:column>
 
 		<h:column rendered="#{capControlForm.currentStrategyID != 0}" >
-		    <f:verbatim><fieldset><legend>Strategy Peaks</legend></f:verbatim>
+        <f:verbatim><fieldset><legend>Strategy Peaks</legend></f:verbatim>
+
 			<x:outputLabel for="Control_Algorithim" value="Control Algorithim: " title="The units and process we use to make control decisions"/>
 			<x:selectOneMenu id="Control_Algorithim" onchange="submit();" disabled="#{!capControlForm.editingCBCStrategy}"
-					value="#{capControlForm.cbcStrategiesMap[capControlForm.currentStrategyID].controlUnits}" >
+					value="#{capControlForm.cbcStrategiesMap[capControlForm.currentStrategyID].controlUnits}" 
+                    >
 				<f:selectItems value="#{selLists.cbcControlAlgorithim}"/>
 			</x:selectOneMenu>
 
+                <f:verbatim><br/></f:verbatim>
+                <x:outputLabel for="Peak_Start_Time" value="Peak Start Time: " title="Starting time for the peak time window" />
+                <x:inputText id="Peak_Start_Time" styleClass="char16Label" disabled="#{!capControlForm.editingCBCStrategy}"
+                        required="true" converter="cti_TimeConverter"
+                        value="#{capControlForm.cbcStrategiesMap[capControlForm.currentStrategyID].peakStartTime}" >
+                </x:inputText>
+                <x:outputText id="PkStartLab" value="(HH:mm)"/>
 
-			<f:verbatim><br/></f:verbatim>
-			<x:outputLabel for="Peak_Lagging" value="Peak Lagging: " title="The lagging value for peak control (upper value for the peak control window)"
-					rendered="#{!capControlForm.voltageControl}" />
-			<x:outputLabel for="Lower_Limit" value="Lower Limit: " title="The lower limit used for Voltage control (lower value for the peak control window)"
-					rendered="#{capControlForm.voltageControl}" />
-			<x:inputText id="Peak_Lagging" styleClass="char16Label" disabled="#{!capControlForm.editingCBCStrategy}" required="true"
-					value="#{capControlForm.cbcStrategiesMap[capControlForm.currentStrategyID].peakLag}" >
-					<f:validateDoubleRange minimum="-999999" maximum="999999" />
-			</x:inputText>
-	
-			<f:verbatim><br/></f:verbatim>
-			<x:outputLabel for="Peak_Leading" value="Peak Leading: " title="The leading value for peak control (lower value for the peak control window)"
-					rendered="#{!capControlForm.voltageControl}" />
-			<x:outputLabel for="Upper_Limit" value="Upper Limit: " title="The upper limit used for Voltage control (upper value for the peak control window)"
-					rendered="#{capControlForm.voltageControl}" />
-			<x:inputText id="Peak_Leading" styleClass="char16Label" disabled="#{!capControlForm.editingCBCStrategy}" required="true"
-					value="#{capControlForm.cbcStrategiesMap[capControlForm.currentStrategyID].peakLead}" >
-					<f:validateDoubleRange minimum="-999999" maximum="999999" />
-			</x:inputText>
-	
-			<f:verbatim><br/></f:verbatim>
-			<x:outputLabel for="Peak_Start_Time" value="Peak Start Time: " title="Starting time for the peak time window" />
-			<x:inputText id="Peak_Start_Time" styleClass="char16Label" disabled="#{!capControlForm.editingCBCStrategy}"
-					required="true" converter="cti_TimeConverter"
-					value="#{capControlForm.cbcStrategiesMap[capControlForm.currentStrategyID].peakStartTime}" >
-			</x:inputText>
-			<x:outputText id="PkStartLab" value="(HH:mm)"/>
-	
-			<f:verbatim><br/></f:verbatim>
-			<x:outputLabel for="Peak_Stop_Time" value="Peak Stop Time: " title="Stop time for the peak time window" />
-			<x:inputText id="Peak_Stop_Time" styleClass="char16Label" disabled="#{!capControlForm.editingCBCStrategy}"
-					required="true" converter="cti_TimeConverter"
-					value="#{capControlForm.cbcStrategiesMap[capControlForm.currentStrategyID].peakStopTime}" >
-			</x:inputText>
-			<x:outputText id="PkStopLab" value="(HH:mm)"/>
-			
-	
-			<f:verbatim><br/><br/></f:verbatim>
-			<x:outputLabel for="OffPeak_Lagging" value="Off Peak Lagging: " title="The lagging value for off peak control (upper value for the off peak control window)"
-					rendered="#{!capControlForm.voltageControl}" />
-			<x:outputLabel for="OffPeak_Lower_Limit" value="Off Peak Lower Limit: " title="The lower limit used for Voltage control during the off peak time (lower value for the off peak control window)"
-					rendered="#{capControlForm.voltageControl}" />
-			<x:inputText id="OffPeak_Lagging" styleClass="char16Label" disabled="#{!capControlForm.editingCBCStrategy}" required="true"
-					value="#{capControlForm.cbcStrategiesMap[capControlForm.currentStrategyID].offPkLag}" >
-					<f:validateDoubleRange minimum="-999999" maximum="999999" />
-			</x:inputText>
-	
-			<f:verbatim><br/></f:verbatim>
-			<x:outputLabel for="OffPeak_Leading" value="Off Peak Leading: " title="The leading value for off peak control (lower value for the off peak control window)"
-					rendered="#{!capControlForm.voltageControl}" />
-			<x:outputLabel for="OffPeak_Upper_Limit" value="Off Peak Upper Limit: " title="The upper limit used for Voltage control during the off peak time (upper value for the off peak control window)"
-					rendered="#{capControlForm.voltageControl}" />
-			<x:inputText id="OffPeak_Leading" styleClass="char16Label" disabled="#{!capControlForm.editingCBCStrategy}" required="true"
-					value="#{capControlForm.cbcStrategiesMap[capControlForm.currentStrategyID].offPkLead}" >
-					<f:validateDoubleRange minimum="-999999" maximum="999999" />
-			</x:inputText>
-			<f:verbatim></fieldset></f:verbatim>
+            <x:outputLabel for="Peak_Stop_Time" value="Peak Stop Time: " title="Stop time for the peak time window" />
+            <x:inputText id="Peak_Stop_Time" styleClass="char16Label" disabled="#{!capControlForm.editingCBCStrategy}"
+                    required="true" converter="cti_TimeConverter"
+                    value="#{capControlForm.cbcStrategiesMap[capControlForm.currentStrategyID].peakStopTime}" >
+            </x:inputText>
+            <x:outputText id="PkStopLab" value="(HH:mm)"/>
 
 
+			<f:verbatim><br/></f:verbatim>
+             <h:panelGrid id="peaks" columns="5" >
+                <h:column>
+                    <f:verbatim><br/></f:verbatim>
+                    <x:outputText value="Peak" styleClass="char16Label"
+                            />
+                    <f:verbatim><br/></f:verbatim>
+                    <x:outputText value="OffPeak" styleClass="char16Label"
+                            />
+
+                </h:column>
+                <h:column id="lower">
+                    <x:outputText value="Lower"  
+                                  title="The lower limit value for peak control (upper value for the peak control window)"/>
+                    <f:verbatim><br/></f:verbatim>
+                    <x:inputText forceId="true" id="peak_lower"  size="7"
+                                 disabled="#{!capControlForm.editingCBCStrategy
+                                 ||
+                                 capControlForm.currentStratModel.enableTable[capControlForm.currentStratModel.PEAK_LOWER]}"                                 
+                                 required="true"
+                                 value="#{capControlForm.currentStratModel.valueTable[capControlForm.currentStratModel.PEAK_LOWER]}" 
+                                 valueChangeListener="#{capControlForm.currentStratModel.dataChanged}">
+                            <f:validateDoubleRange minimum="-999999" maximum="999999" />
+                    </x:inputText>
+                    <f:verbatim><br/></f:verbatim>
+                    <x:inputText forceId="true" id="offpeak_lower" size="7" 
+                                 disabled="#{!capControlForm.editingCBCStrategy
+                                 || capControlForm.currentStratModel.enableTable[capControlForm.currentStratModel.OFFP_LOWER]}" 
+                                 required="true"
+                                 value="#{capControlForm.currentStratModel.valueTable[capControlForm.currentStratModel.OFFP_LOWER]}" 
+                                 valueChangeListener="#{capControlForm.currentStratModel.dataChanged}">
+                    <f:validateDoubleRange minimum="-999999" maximum="999999" />
+                    </x:inputText>
+                </h:column>
+                <h:column id="upper">
+                  <x:outputText value="Upper" 
+                                  title="The leading value for peak control (upper value for the peak control window)"/>
+                    <f:verbatim><br/></f:verbatim>
+                    <x:inputText forceId="true" id="peak_upper" size="7"
+                                 disabled="#{!capControlForm.editingCBCStrategy
+                                 || capControlForm.currentStratModel.enableTable[capControlForm.currentStratModel.PEAK_UPPER]}" 
+                                 required="true"
+                                    value="#{capControlForm.currentStratModel.valueTable[capControlForm.currentStratModel.PEAK_UPPER]}" 
+                                    valueChangeListener="#{capControlForm.currentStratModel.dataChanged}">
+                                    <f:validateDoubleRange minimum="-999999" maximum="999999" />
+                    </x:inputText>
+                    <f:verbatim><br/></f:verbatim>
+                    <x:inputText id="offpeak_upper" size="7" required="true"
+                                 disabled="#{!capControlForm.editingCBCStrategy
+                                 || capControlForm.currentStratModel.enableTable[capControlForm.currentStratModel.OFFP_UPPER]}" 
+                                 value="#{capControlForm.currentStratModel.valueTable[capControlForm.currentStratModel.OFFP_UPPER]}" 
+                                 valueChangeListener="#{capControlForm.currentStratModel.dataChanged}">
+                            <f:validateDoubleRange minimum="-999999" maximum="999999" />
+                    </x:inputText>
+
+                </h:column>
+
+                <h:column id="lag">
+                    <x:outputText value="Lagging"  
+                                  title="The lower limit value for peak control (upper value for the peak control window)"/>
+                    <f:verbatim><br/></f:verbatim>
+                    <x:inputText forceId="true" id="peak_lagging" size="7"
+                                 disabled="#{!capControlForm.editingCBCStrategy
+                                 || capControlForm.currentStratModel.enableTable[capControlForm.currentStratModel.PEAK_LAG]}" 
+                                 required="true"
+                                 value="#{capControlForm.currentStratModel.valueTable[capControlForm.currentStratModel.PEAK_LAG]}" 
+                                 valueChangeListener="#{capControlForm.currentStratModel.dataChanged}">
+                            <f:validateDoubleRange minimum="-999999" maximum="999999" />
+                    </x:inputText>
+                    <f:verbatim><br/></f:verbatim>
+                    <x:inputText forceId="true" id="offpeak_lagging" size="7" 
+                                 disabled="#{!capControlForm.editingCBCStrategy
+                                 || capControlForm.currentStratModel.enableTable[capControlForm.currentStratModel.OFFP_LAG]}" 
+                                 required="true"
+                                 value="#{capControlForm.currentStratModel.valueTable[capControlForm.currentStratModel.OFFP_LAG]}" 
+                                 valueChangeListener="#{capControlForm.currentStratModel.dataChanged}">
+                    <f:validateDoubleRange minimum="-999999" maximum="999999" />
+                    </x:inputText>
+                </h:column>
+                <h:column id="lead">
+                  <x:outputText value="Leading"  
+                                  title="The leading value for peak control (upper value for the peak control window)"/>
+                    <f:verbatim><br/></f:verbatim>
+                    <x:inputText forceId="true" id="peak_leading" size="7"
+                                 disabled="#{!capControlForm.editingCBCStrategy
+                                 || capControlForm.currentStratModel.enableTable[capControlForm.currentStratModel.PEAK_LEAD]}" 
+                                 required="true"
+                                    value="#{capControlForm.currentStratModel.valueTable[capControlForm.currentStratModel.PEAK_LEAD]}" 
+                                    valueChangeListener="#{capControlForm.currentStratModel.dataChanged}">
+                                    <f:validateDoubleRange minimum="-999999" maximum="999999" />
+                    </x:inputText>
+                    <f:verbatim><br/></f:verbatim>
+                    <x:inputText forceId="true" id="offpeak_leading" size="7" 
+                                 disabled="#{!capControlForm.editingCBCStrategy
+                                 || capControlForm.currentStratModel.enableTable[capControlForm.currentStratModel.OFFP_LEAD]}" 
+                                 required="true"
+                                 value="#{capControlForm.currentStratModel.valueTable[capControlForm.currentStratModel.OFFP_LEAD]}" 
+                                 valueChangeListener="#{capControlForm.currentStratModel.dataChanged}">
+                            <f:validateDoubleRange minimum="-999999" maximum="999999" />
+                    </x:inputText>
+
+
+                </h:column>
+
+                          
+         </h:panelGrid>
+         <h:panelGrid id="pf" columns="2" >
+            <h:column>
+                <f:verbatim><br/></f:verbatim>
+                <x:outputText value="Peak PF Set Pt" styleClass="padlabel"/>
+                <x:inputText forceId="true" id="peak_pf_point" size="7" 
+                                 disabled="#{!capControlForm.editingCBCStrategy
+                                 || capControlForm.currentStratModel.enableTable[capControlForm.currentStratModel.PEAK_PF_POINT]}" 
+                                 required="true"
+                                 value="#{capControlForm.currentStratModel.valueTable[capControlForm.currentStratModel.PEAK_PF_POINT]}" 
+                                 valueChangeListener="#{capControlForm.currentStratModel.dataChanged}">
+                            <f:validateDoubleRange minimum="-999999" maximum="999999" />
+                </x:inputText>
+            
+            </h:column>
+            <h:column>
+                <f:verbatim><br/></f:verbatim>
+                <x:outputText value="OffPeak PF Set Pt" styleClass="padlabel"/>
+                <x:inputText forceId="true" id="offpeak_pf_point" size="7" 
+                                 disabled="#{!capControlForm.editingCBCStrategy
+                                 || capControlForm.currentStratModel.enableTable[capControlForm.currentStratModel.OFFP_PF_POINT]}" 
+                                 required="true"
+                                 value="#{capControlForm.currentStratModel.valueTable[capControlForm.currentStratModel.OFFP_PF_POINT]}" 
+                                 valueChangeListener="#{capControlForm.currentStratModel.dataChanged}">
+                            <f:validateDoubleRange minimum="-999999" maximum="999999" />
+                </x:inputText>
+            </h:column>
+         </h:panelGrid>
+            <f:verbatim></fieldset></f:verbatim> 
 			<f:verbatim><br/></f:verbatim>
 		    <f:verbatim><fieldset><legend>Peak Operating Days</legend></f:verbatim>
 			<x:selectManyCheckbox id="Peak_Operating_Days" value="#{capControlForm.stratDaysOfWeek}"
@@ -207,5 +302,4 @@
 	
 	</h:panelGrid>
 		
-
 </f:subview>
