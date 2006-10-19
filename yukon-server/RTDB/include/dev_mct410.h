@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT410.h-arc  $
-* REVISION     :  $Revision: 1.45 $
-* DATE         :  $Date: 2006/10/19 15:57:23 $
+* REVISION     :  $Revision: 1.46 $
+* DATE         :  $Date: 2006/10/19 19:58:01 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -223,7 +223,7 @@ protected:
     };
 
     long getLoadProfileInterval(unsigned channel);
-    point_info_t getLoadProfileData(unsigned channel, unsigned char *buf, unsigned len);
+    point_info getLoadProfileData(unsigned channel, unsigned char *buf, unsigned len);
 
     bool _intervalsSent;
 
