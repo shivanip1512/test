@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/config_type_mct_addressing.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2006/08/08 13:36:09 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2006/10/19 15:56:26 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -46,28 +46,40 @@ MCTAddressing ConfigurationPart<MCTAddressing>::getResolvedKey(string key)
     }
 }
 
-MCT_TOU ConfigurationPart<MCT_TOU>::getResolvedKey(string key)//DO NOT USE ME
+MCT_TOU ConfigurationPart<MCT_TOU>::getResolvedKey(string key)
 {
     CtiToLower(key);
-    if(key == "day table")
+    if(key == "monday")
     {
-        return DayTable;
+        return MondaySchedule;
     }
-    else if(key == "day schedule 1")
+    else if(key == "tuesday")
     {
-        return DaySchedule1;
+        return TuesdaySchedule;
     }
-    else if(key == "day schedule 2")
+    else if(key == "wednesday")
     {
-        return DaySchedule2;
+        return WednesdaySchedule;
     }
-    else if(key == "day schedule 3")
+    else if(key == "thursday")
     {
-        return DaySchedule3;
+        return ThursdaySchedule;
     }
-    else if(key == "day schedule 4")
+    else if(key == "friday")
     {
-        return DaySchedule4;
+        return FridaySchedule;
+    }
+    else if(key == "saturday")
+    {
+        return SaturdaySchedule;
+    }
+    else if(key == "sunday")
+    {
+        return SundaySchedule;
+    }
+    else if(key == "holiday")
+    {
+        return HolidaySchedule;
     }
     else if(key == "default rate")
     {
@@ -77,6 +89,237 @@ MCT_TOU ConfigurationPart<MCT_TOU>::getResolvedKey(string key)//DO NOT USE ME
     {
         return MCT_TOUInvalid;
     }
+}
+
+MCT_TOU_Rate_Schedule ConfigurationPart<MCT_TOU_Rate_Schedule>::getResolvedKey(string key)
+{
+    MCT_TOU_Rate_Schedule retVal = MCT_TOU_Rate_ScheduleInvalid;
+    CtiToLower(key);
+    if(key.find("schedule")!= string::npos)
+    {
+        if(key.find("schedule1")!= string::npos)
+        {
+            if(key == "schedule1time1")
+            {
+                retVal = Schedule1Time1;
+            }
+            else if(key == "schedule1rate1")
+            {
+                retVal = Schedule1Rate1;
+            }
+            else if(key == "schedule1time2")
+            {
+                retVal = Schedule1Time2;
+            }
+            else if(key == "schedule1rate2")
+            {
+                retVal = Schedule1Rate2;
+            }
+            else if(key == "schedule1time3")
+            {
+                retVal = Schedule1Time3;
+            }
+            else if(key == "schedule1rate3")
+            {
+                retVal = Schedule1Rate3;
+            }
+            else if(key == "schedule1time4")
+            {
+                retVal = Schedule1Time4;
+            }
+            else if(key == "schedule1rate4")
+            {
+                retVal = Schedule1Rate4;
+            }
+            else if(key == "schedule1time5")
+            {
+                retVal = Schedule1Time5;
+            }
+            else if(key == "schedule1rate5")
+            {
+                retVal = Schedule1Rate5;
+            }
+            else if(key == "schedule1time6")
+            {
+                retVal = Schedule1Time6;
+            }
+            else if(key == "schedule1time0")//Midnight time, cant be configured on 410 or 470.
+            {
+                retVal = Schedule1Time0;
+            }
+            else if(key == "schedule1rate0")
+            {
+                retVal = Schedule1Rate0;
+            }
+        }
+        else if(key.find("schedule2")!= string::npos)
+        {
+            if(key == "schedule2time1")
+            {
+                retVal = Schedule2Time1;
+            }
+            else if(key == "schedule2rate1")
+            {
+                retVal = Schedule2Rate1;
+            }
+            else if(key == "schedule2time2")
+            {
+                retVal = Schedule2Time2;
+            }
+            else if(key == "schedule2rate2")
+            {
+                retVal = Schedule2Rate2;
+            }
+            else if(key == "schedule2time3")
+            {
+                retVal = Schedule2Time3;
+            }
+            else if(key == "schedule2rate3")
+            {
+                retVal = Schedule2Rate3;
+            }
+            else if(key == "schedule2time4")
+            {
+                retVal = Schedule2Time4;
+            }
+            else if(key == "schedule2rate4")
+            {
+                retVal = Schedule2Rate4;
+            }
+            else if(key == "schedule2time5")
+            {
+                retVal = Schedule2Time5;
+            }
+            else if(key == "schedule2rate5")
+            {
+                retVal = Schedule2Rate5;
+            }
+            else if(key == "schedule2time6")
+            {
+                retVal = Schedule2Time6;
+            }
+            else if(key == "schedule2time0")//Midnight time, cant be configured on 410 or 470.
+            {
+                retVal = Schedule2Time0;
+            }
+            else if(key == "schedule2rate0")
+            {
+                retVal = Schedule2Rate0;
+            }
+        }
+        else if(key.find("schedule3")!= string::npos)
+        {
+            if(key == "schedule3time1")
+            {
+                retVal = Schedule3Time1;
+            }
+            else if(key == "schedule3rate1")
+            {
+                retVal = Schedule3Rate1;
+            }
+            else if(key == "schedule3time2")
+            {
+                retVal = Schedule3Time2;
+            }
+            else if(key == "schedule3rate2")
+            {
+                retVal = Schedule3Rate2;
+            }
+            else if(key == "schedule3time3")
+            {
+                retVal = Schedule3Time3;
+            }
+            else if(key == "schedule3rate3")
+            {
+                retVal = Schedule3Rate3;
+            }
+            else if(key == "schedule3time4")
+            {
+                retVal = Schedule3Time4;
+            }
+            else if(key == "schedule3rate4")
+            {
+                retVal = Schedule3Rate4;
+            }
+            else if(key == "schedule3time5")
+            {
+                retVal = Schedule3Time5;
+            }
+            else if(key == "schedule3rate5")
+            {
+                retVal = Schedule3Rate5;
+            }
+            else if(key == "schedule3time6")
+            {
+                retVal = Schedule3Time6;
+            }
+            else if(key == "schedule3time0")//Midnight time, cant be configured on 410 or 470.
+            {
+                retVal = Schedule3Time0;
+            }
+            else if(key == "schedule3rate0")
+            {
+                retVal = Schedule3Rate0;
+            }
+        }
+        else if(key.find("schedule4")!= string::npos)
+        {
+            if(key == "schedule4time1")
+            {
+                retVal = Schedule4Time1;
+            }
+            else if(key == "schedule4rate1")
+            {
+                retVal = Schedule4Rate1;
+            }
+            else if(key == "schedule4time2")
+            {
+                retVal = Schedule4Time2;
+            }
+            else if(key == "schedule4rate2")
+            {
+                retVal = Schedule4Rate2;
+            }
+            else if(key == "schedule4time3")
+            {
+                retVal = Schedule4Time3;
+            }
+            else if(key == "schedule4rate3")
+            {
+                retVal = Schedule4Rate3;
+            }
+            else if(key == "schedule4time4")
+            {
+                retVal = Schedule4Time4;
+            }
+            else if(key == "schedule4rate4")
+            {
+                retVal = Schedule4Rate4;
+            }
+            else if(key == "schedule4time5")
+            {
+                retVal = Schedule4Time5;
+            }
+            else if(key == "schedule4rate5")
+            {
+                retVal = Schedule4Rate5;
+            }
+            else if(key == "schedule4time6")
+            {
+                retVal = Schedule4Time6;
+            }
+            else if(key == "schedule4time0")//Midnight time, cant be configured on 410 or 470.
+            {
+                retVal = Schedule4Time0;
+            }
+            else if(key == "schedule4rate0")
+            {
+                retVal = Schedule4Rate0;
+            }
+        }
+    }
+
+    return retVal;
 }
 
 MCT_DST ConfigurationPart<MCT_DST>::getResolvedKey(string key)
@@ -542,6 +785,11 @@ CtiConfig_type ConfigurationPart<MCT_DST>::getType()
 CtiConfig_type ConfigurationPart<MCT_TOU>::getType()
 {
     return ConfigTypeMCTTOU;
+}
+
+CtiConfig_type ConfigurationPart<MCT_TOU_Rate_Schedule>::getType()
+{
+    return ConfigTypeMCTTOURateSchedule;
 }
 
 CtiConfig_type ConfigurationPart<MCTDisconnect>::getType()

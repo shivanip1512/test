@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/config_resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2006/08/08 13:36:09 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2006/10/19 15:56:26 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
     *-----------------------------------------------------------------------------*/
@@ -34,6 +34,10 @@ CtiConfig_type resolveConfigType(string rwsTemp)
         if(rwsTemp == "mct tou")
         {
             Ret = ConfigTypeMCTTOU;
+        }
+        else if(rwsTemp == "mct rate schedule")
+        {
+            Ret = ConfigTypeMCTTOURateSchedule;
         }
         else if(rwsTemp == "mct addressing")
         {

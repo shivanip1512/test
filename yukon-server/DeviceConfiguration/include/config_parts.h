@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/config_type_mct_addressing.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2006/08/23 15:07:24 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2006/10/19 15:56:26 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -37,12 +37,72 @@ enum MCTAddressing
 enum MCT_TOU
 {
     MCT_TOUInvalid = 0,
-    DayTable,
-    DaySchedule1,
-    DaySchedule2,
-    DaySchedule3,
-    DaySchedule4,
+    MondaySchedule,
+    TuesdaySchedule,
+    WednesdaySchedule,
+    ThursdaySchedule,
+    FridaySchedule,
+    SaturdaySchedule,
+    SundaySchedule,
+    HolidaySchedule,
     DefaultTOURate,
+};
+
+enum MCT_TOU_Rate_Schedule
+{
+    MCT_TOU_Rate_ScheduleInvalid = 0,
+    Schedule1Time1,
+    Schedule1Rate1,
+    Schedule1Time2,
+    Schedule1Rate2,
+    Schedule1Time3,
+    Schedule1Rate3,
+    Schedule1Time4,
+    Schedule1Rate4,
+    Schedule1Time5,
+    Schedule1Rate5,
+    Schedule1Time6,
+    Schedule1Time0,
+    Schedule1Rate0,
+    Schedule2Time1,
+    Schedule2Rate1,
+    Schedule2Time2,
+    Schedule2Rate2,
+    Schedule2Time3,
+    Schedule2Rate3,
+    Schedule2Time4,
+    Schedule2Rate4,
+    Schedule2Time5,
+    Schedule2Rate5,
+    Schedule2Time6,
+    Schedule2Time0,
+    Schedule2Rate0,
+    Schedule3Time1,
+    Schedule3Rate1,
+    Schedule3Time2,
+    Schedule3Rate2,
+    Schedule3Time3,
+    Schedule3Rate3,
+    Schedule3Time4,
+    Schedule3Rate4,
+    Schedule3Time5,
+    Schedule3Rate5,
+    Schedule3Time6,
+    Schedule3Time0,
+    Schedule3Rate0,
+    Schedule4Time1,
+    Schedule4Rate1,
+    Schedule4Time2,
+    Schedule4Rate2,
+    Schedule4Time3,
+    Schedule4Rate3,
+    Schedule4Time4,
+    Schedule4Rate4,
+    Schedule4Time5,
+    Schedule4Rate5,
+    Schedule4Time6,
+    Schedule4Time0,
+    Schedule4Rate0
 };
 
 enum MCT_DST
@@ -347,6 +407,7 @@ protected:
 
 EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCT::MCTAddressing>;
 EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCT::MCT_TOU>;
+EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCT::MCT_TOU_Rate_Schedule>;
 EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCT::MCT_DST>;
 EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCT::MCTVThreshold>;
 EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCT::MCTOptions>;
@@ -448,6 +509,7 @@ bool ConfigurationPart<T>::setProtectedValueWithKey(const string &value, int key
 #ifdef VSLICK_TAG_WORKAROUND
 typedef ConfigurationPart<MCT::MCTAddressing> *          MCTAddressingSPtr;
 typedef ConfigurationPart<MCT::MCT_TOU> *                MCT_TOU_SPtr;
+typedef ConfigurationPart<MCT::MCT_TOU_Rate_Schedule> *  MCT_TOU_Rate_ScheduleSPtr;
 typedef ConfigurationPart<MCT::MCT_DST> *                MCT_DST_SPtr;
 typedef ConfigurationPart<MCT::MCTVThreshold> *          MCTVThresholdSPtr;
 typedef ConfigurationPart<MCT::MCTOptions> *             MCTOptionsSPtr;
@@ -476,6 +538,7 @@ typedef ConfigurationPart<CBC::CBC_UDP> *                CBC_UDPSPtr;
 #else
 typedef shared_ptr< ConfigurationPart<MCT::MCTAddressing> >          MCTAddressingSPtr;
 typedef shared_ptr< ConfigurationPart<MCT::MCT_TOU> >                MCT_TOU_SPtr;
+typedef shared_ptr< ConfigurationPart<MCT::MCT_TOU_Rate_Schedule> >  MCT_TOU_Rate_ScheduleSPtr;
 typedef shared_ptr< ConfigurationPart<MCT::MCT_DST> >                MCT_DST_SPtr;
 typedef shared_ptr< ConfigurationPart<MCT::MCTVThreshold> >          MCTVThresholdSPtr;
 typedef shared_ptr< ConfigurationPart<MCT::MCTOptions> >             MCTOptionsSPtr;
