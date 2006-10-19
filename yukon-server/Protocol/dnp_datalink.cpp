@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2005/12/20 17:19:53 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2006/10/19 20:15:23 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1039,9 +1039,17 @@ int Datalink::getInPayloadLength( void )
 }
 
 
-void Datalink::getInPayload( unsigned char *buf )
+bool Datalink::getInPayload( unsigned char *buf )
 {
-    memcpy(buf, _in_data, _in_data_len);
+    bool retval = false;
+
+    if( buf )
+    {
+        memcpy(buf, _in_data, _in_data_len);
+        retval = true;
+    }
+
+    return retval;
 }
 
 
