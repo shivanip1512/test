@@ -446,9 +446,13 @@ private List unassignedPoints = null;
 		}
 		
         public String getCtlPaoName () {
-            Integer controlDeviceID = capBank.getCapBank().getControlDeviceID();
-            return DaoFactory.getPaoDao().getLiteYukonPAO (controlDeviceID).getPaoName();    
-        }
+            if (capBank != null) {
+                Integer controlDeviceID = capBank.getCapBank().getControlDeviceID();
+                return DaoFactory.getPaoDao().getLiteYukonPAO (controlDeviceID).getPaoName();    
+              }
+            else
+                return "";
+         }
 		
         public String getCtlPointName () {
             int pointID = capBank.getCapBank().getControlPointID();
