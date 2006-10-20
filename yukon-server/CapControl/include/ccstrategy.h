@@ -54,6 +54,8 @@ RWDECLARE_COLLECTABLE( CtiCCStrategy )
     DOUBLE getOffPeakVARLag() const;
     DOUBLE getPeakVARLead() const;
     DOUBLE getOffPeakVARLead() const;
+    DOUBLE getPeakPFSetPoint() const;
+    DOUBLE getOffPeakPFSetPoint() const;
     LONG getPeakStartTime() const;
     LONG getPeakStopTime() const;
     LONG getControlInterval() const;
@@ -78,6 +80,8 @@ RWDECLARE_COLLECTABLE( CtiCCStrategy )
     CtiCCStrategy& setOffPeakVARLag(DOUBLE offpeak);
     CtiCCStrategy& setPeakVARLead(DOUBLE peak);
     CtiCCStrategy& setOffPeakVARLead(DOUBLE offpeak);
+    CtiCCStrategy& setPeakPFSetPoint(DOUBLE peak);
+    CtiCCStrategy& setOffPeakPFSetPoint(DOUBLE offpeak);
     CtiCCStrategy& setPeakStartTime(LONG starttime);
     CtiCCStrategy& setPeakStopTime(LONG stoptime);
     CtiCCStrategy& setControlInterval(LONG interval);
@@ -144,6 +148,9 @@ RWDECLARE_COLLECTABLE( CtiCCStrategy )
     DOUBLE _offpkVARlag;
     DOUBLE _peakVARlead;
     DOUBLE _offpkVARlead;
+    DOUBLE _peakPFSetPoint;
+    DOUBLE _offpkPFSetPoint;
+
 
     //don't stream
     BOOL _insertDynamicDataFlag;

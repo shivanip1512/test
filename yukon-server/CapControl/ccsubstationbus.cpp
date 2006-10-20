@@ -284,6 +284,29 @@ DOUBLE CtiCCSubstationBus::getOffPeakVARLead() const
     return _offpkVARlead;
 }
 
+
+/*---------------------------------------------------------------------------
+    getOffPeakPFSetPoint
+
+    Returns the off peak target Power Factor of the substation
+---------------------------------------------------------------------------*/
+DOUBLE CtiCCSubstationBus::getOffPeakPFSetPoint() const
+{
+    return _offpkpfsetpoint;
+}
+
+
+/*---------------------------------------------------------------------------
+    getPeakPFSetPoint
+
+    Returns the peak Target Power Factor of the substation
+---------------------------------------------------------------------------*/
+DOUBLE CtiCCSubstationBus::getPeakPFSetPoint() const
+{
+    return _peakpfsetpoint;
+}
+
+
 /*---------------------------------------------------------------------------
     getPeakStartTime
 
@@ -1102,6 +1125,29 @@ CtiCCSubstationBus& CtiCCSubstationBus::setOffPeakVARLead(DOUBLE offpeak)
     _offpkVARlead = offpeak;
     return *this;
 }
+
+/*---------------------------------------------------------------------------
+    setPeakPFSetPoint
+
+    Sets the peak target Power Factor of the substation
+---------------------------------------------------------------------------*/
+CtiCCSubstationBus& CtiCCSubstationBus::setPeakPFSetPoint(DOUBLE peak)
+{
+    _peakpfsetpoint = peak;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setOffPeakPFSetPoint
+
+    Sets the off peak target Power Factor of the substation
+---------------------------------------------------------------------------*/
+CtiCCSubstationBus& CtiCCSubstationBus::setOffPeakPFSetPoint(DOUBLE offpeak)
+{
+    _offpkpfsetpoint = offpeak;
+    return *this;
+}
+
 
 /*---------------------------------------------------------------------------
     setPeakStartTime
@@ -2037,6 +2083,9 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
                 DOUBLE lagLevel = (isPeakTime(currentDateTime)?_peaklag:_offpklag);
                 DOUBLE leadLevel = (getPeakTimeFlag()?_peaklead:_offpklead);
                 DOUBLE setPoint = (lagLevel + leadLevel)/2;
+                if( !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::PF_BY_KVARControlUnits) ||
+                   !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::PF_BY_KQControlUnits) )
+                    setPoint = (getPeakTimeFlag()?getPeakPFSetPoint():getOffPeakPFSetPoint());
                 setKVARSolution(calculateKVARSolution(_controlunits,setPoint,getCurrentVarLoadPointValue(),getCurrentWattLoadPointValue()));
 
                 
@@ -2143,16 +2192,20 @@ DOUBLE CtiCCSubstationBus::calculateKVARSolution(const string& controlUnits, DOU
     else if( !stringCompareIgnoreCase(controlUnits,CtiCCSubstationBus::PF_BY_KVARControlUnits) ||
              !stringCompareIgnoreCase(controlUnits,CtiCCSubstationBus::PF_BY_KQControlUnits))
     {
-        setPoint = 100;
         DOUBLE targetKVA = wattValue / (setPoint/100.0);
         DOUBLE NaNDefenseDouble = (targetKVA*targetKVA)-(wattValue*wattValue);
         DOUBLE targetKVAR = 0.0;
         if( NaNDefenseDouble > 0.0 )
         {
             targetKVAR = sqrt(NaNDefenseDouble);
+            if (setPoint < 0) 
+            {
+                targetKVAR = 0 - targetKVAR;
+            }
         }
-
+       
         returnKVARSolution = targetKVAR - varValue;
+        
     }
     else if( !stringCompareIgnoreCase(controlUnits,CtiCCSubstationBus::VoltControlUnits) )
     {

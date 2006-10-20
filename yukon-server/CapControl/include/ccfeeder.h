@@ -102,6 +102,9 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     DOUBLE getOffPeakVARLag() const;
     DOUBLE getPeakVARLead() const;
     DOUBLE getOffPeakVARLead() const;
+    DOUBLE getPeakPFSetPoint() const;
+    DOUBLE getOffPeakPFSetPoint() const;
+
 
     LONG getPeakStartTime() const;
     LONG getPeakStopTime() const;
@@ -185,7 +188,9 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiCCFeeder& setOffPeakVARLag(DOUBLE offpeak);
     CtiCCFeeder& setPeakVARLead(DOUBLE peak);
     CtiCCFeeder& setOffPeakVARLead(DOUBLE offpeak);
-    
+    CtiCCFeeder& setPeakPFSetPoint(DOUBLE peak);
+    CtiCCFeeder& setOffPeakPFSetPoint(DOUBLE offpeak);
+
     CtiCCFeeder& setPeakStartTime(LONG starttime);
     CtiCCFeeder& setPeakStopTime(LONG stoptime);
     CtiCCFeeder& setCurrentVarLoadPointId(LONG currentvarid);
@@ -358,6 +363,8 @@ private:
     DOUBLE _offpkVARlag; 
     DOUBLE _peakVARlead; 
     DOUBLE _offpkVARlead;
+    DOUBLE _peakpfsetpoint; 
+    DOUBLE _offpkpfsetpoint;
     
     LONG _displayorder;
     BOOL _newpointdatareceivedflag;

@@ -285,6 +285,27 @@ DOUBLE CtiCCFeeder::getOffPeakVARLead() const
     return _offpkVARlead;
 }
 
+/*---------------------------------------------------------------------------
+    getPeakPFSetPoint
+
+    Returns the peak target power factor of the feeder
+---------------------------------------------------------------------------*/
+DOUBLE CtiCCFeeder::getPeakPFSetPoint() const
+{
+    return _peakpfsetpoint;
+}
+
+/*---------------------------------------------------------------------------
+    getOffPeakPFSetPoint
+
+    Returns the off peak target power factor of the feeder
+---------------------------------------------------------------------------*/
+DOUBLE CtiCCFeeder::getOffPeakPFSetPoint() const
+{
+    return _offpkpfsetpoint;
+}
+
+
 
 /*---------------------------------------------------------------------------
     getPeakStartTime
@@ -1039,6 +1060,30 @@ CtiCCFeeder& CtiCCFeeder::setPeakVARLead(DOUBLE peak)
 CtiCCFeeder& CtiCCFeeder::setOffPeakVARLead(DOUBLE offpeak)
 {
     _offpkVARlead = offpeak;
+    return *this;
+}
+
+
+
+/*---------------------------------------------------------------------------
+    setPeakPFSetPoint
+
+    Sets the peak target power factor of the feeder
+---------------------------------------------------------------------------*/
+CtiCCFeeder& CtiCCFeeder::setPeakPFSetPoint(DOUBLE peak)
+{
+    _peakpfsetpoint = peak;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setOffPeakPFSetPoint
+
+    Sets the off peak target power factor of the feeder
+---------------------------------------------------------------------------*/
+CtiCCFeeder& CtiCCFeeder::setOffPeakPFSetPoint(DOUBLE offpeak)
+{
+    _offpkpfsetpoint = offpeak;
     return *this;
 }
 
@@ -2184,13 +2229,18 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
     DOUBLE lagLevel = (peakTimeFlag?getPeakLag():getOffPeakLag());
     DOUBLE leadLevel = (peakTimeFlag?getPeakLead():getOffPeakLead());
     DOUBLE setpoint = (lagLevel + leadLevel)/2;
-    setKVARSolution(CtiCCSubstationBus::calculateKVARSolution(controlUnits,setpoint,getCurrentVarLoadPointValue(),getCurrentWattLoadPointValue()));
     string feederControlUnits = controlUnits;
     //DON'T ADD !... Supposed to be !=none
     if (stringCompareIgnoreCase(_controlunits,"(none)"))
     {
         feederControlUnits = _controlunits;
     }
+    if( !stringCompareIgnoreCase(feederControlUnits, CtiCCSubstationBus::PF_BY_KVARControlUnits) ||
+       !stringCompareIgnoreCase(feederControlUnits, CtiCCSubstationBus::PF_BY_KQControlUnits) )
+        setpoint = (peakTimeFlag?getPeakPFSetPoint():getOffPeakPFSetPoint());
+
+    setKVARSolution(CtiCCSubstationBus::calculateKVARSolution(controlUnits,setpoint,getCurrentVarLoadPointValue(),getCurrentWattLoadPointValue()));
+
     //if current var load is outside of range defined by the set point plus/minus the bandwidths
     CtiRequestMsg* request = NULL;
 

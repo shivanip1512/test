@@ -139,6 +139,8 @@ CtiCCStrategy& CtiCCStrategy::operator=(const CtiCCStrategy& right)
         _peakVARlead = right._peakVARlead;
         _offpkVARlag = right._offpkVARlag;
         _offpkVARlead = right._offpkVARlead;
+        _peakPFSetPoint = right._peakPFSetPoint;
+        _offpkPFSetPoint = right._offpkPFSetPoint;
     }
     return *this;
 
@@ -211,6 +213,17 @@ void CtiCCStrategy::restore(RWDBReader &rdr)
     _peakVARlead =  -fabs(_peakVARlead);
     _offpkVARlag = fabs(_offpkVARlag);      
     _offpkVARlead =  -fabs(_offpkVARlead); 
+
+    rdr["peakpfsetpoint"] >> _peakPFSetPoint;
+    if (_peakPFSetPoint > 100) 
+    {
+        _peakPFSetPoint = -(200 - _peakPFSetPoint);
+    }
+    rdr["offpkpfsetpoint"] >> _offpkPFSetPoint;
+    if (_offpkPFSetPoint > 100) 
+    {
+        _offpkPFSetPoint = -(200 - _offpkPFSetPoint);
+    }
 }
 
 /*---------------------------------------------------------------------------
@@ -282,6 +295,16 @@ DOUBLE CtiCCStrategy::getPeakVARLead() const
 DOUBLE CtiCCStrategy::getOffPeakVARLead() const
 {
     return _offpkVARlead;
+}
+
+DOUBLE CtiCCStrategy::getPeakPFSetPoint() const
+{
+    return _peakPFSetPoint;
+}
+
+DOUBLE CtiCCStrategy::getOffPeakPFSetPoint() const
+{
+    return _offpkPFSetPoint;
 }
 
 LONG CtiCCStrategy::getPeakStartTime() const
@@ -408,6 +431,18 @@ CtiCCStrategy& CtiCCStrategy::setPeakVARLead(DOUBLE peak)
 CtiCCStrategy& CtiCCStrategy::setOffPeakVARLead(DOUBLE offpeak)
 {
     _offpkVARlead = offpeak;
+    return *this;
+}
+
+CtiCCStrategy& CtiCCStrategy::setPeakPFSetPoint(DOUBLE peak)
+{
+    _peakPFSetPoint = peak;
+    return *this;
+}
+
+CtiCCStrategy& CtiCCStrategy::setOffPeakPFSetPoint(DOUBLE offpeak)
+{
+    _offpkPFSetPoint = offpeak;
     return *this;
 }
 

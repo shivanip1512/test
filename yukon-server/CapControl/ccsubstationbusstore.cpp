@@ -2789,7 +2789,9 @@ void CtiCCSubstationBusStore::reloadStrategyFromDataBase(long strategyId, map< l
                 << capControlStrategy["peakvarlag"]  
                 << capControlStrategy["peakvarlead"] 
                 << capControlStrategy["offpkvarlag"] 
-                << capControlStrategy["offpkvarlead"];
+                << capControlStrategy["offpkvarlead"]
+                << capControlStrategy["peakpfsetpoint"] 
+                << capControlStrategy["offpkpfsetpoint"];
                 
 
                 selector.from(capControlStrategy);

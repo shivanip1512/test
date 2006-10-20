@@ -85,6 +85,8 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     DOUBLE getOffPeakVARLag() const;
     DOUBLE getPeakVARLead() const;
     DOUBLE getOffPeakVARLead() const;
+    DOUBLE getPeakPFSetPoint() const;
+    DOUBLE getOffPeakPFSetPoint() const;
     LONG getPeakStartTime() const;
     LONG getPeakStopTime() const;
     LONG getCurrentVarLoadPointId() const;
@@ -173,6 +175,8 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setOffPeakVARLag(DOUBLE offpeak);
     CtiCCSubstationBus& setPeakVARLead(DOUBLE peak);
     CtiCCSubstationBus& setOffPeakVARLead(DOUBLE offpeak);
+    CtiCCSubstationBus& setPeakPFSetPoint(DOUBLE peak);
+    CtiCCSubstationBus& setOffPeakPFSetPoint(DOUBLE offpeak);
     CtiCCSubstationBus& setPeakStartTime(LONG starttime);
     CtiCCSubstationBus& setPeakStopTime(LONG stoptime);
     CtiCCSubstationBus& setCurrentVarLoadPointId(LONG currentvarid);
@@ -392,6 +396,8 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
       DOUBLE _offpkVARlag;
       DOUBLE _peakVARlead;
       DOUBLE _offpkVARlead;
+      DOUBLE _peakpfsetpoint;
+      DOUBLE _offpkpfsetpoint;
 
     LONG _decimalplaces;
     CtiTime _nextchecktime;
