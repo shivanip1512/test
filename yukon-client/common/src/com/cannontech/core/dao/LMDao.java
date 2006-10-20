@@ -4,10 +4,13 @@ import java.util.Set;
 
 import com.cannontech.database.data.lite.LiteLMProgScenario;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.lite.LiteYukonUser;
 
 public interface LMDao {
 
     public LiteYukonPAObject[] getAllLMScenarios();
+    
+    public LiteYukonPAObject[] getAllMemberLMScenarios(LiteYukonUser user);
 
     public LiteLMProgScenario[] getLMScenarioProgs(int scenarioID);
     

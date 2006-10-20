@@ -651,6 +651,22 @@ public synchronized java.util.List getAllLMScenarios()
 	return allLMScenarios;
 }
 
+public synchronized java.util.List getAllMemberLMScenarios(LiteYukonUser yukUser) {
+    if( allLMScenarios == null ) {
+        allLMScenarios = new ArrayList( getAllYukonPAObjects().size() / 2 );
+
+        for( int i = 0; i < getAllLoadManagement().size(); i++ )  {
+            if( ((LiteYukonPAObject)getAllLoadManagement().get(i)).getType() 
+                  == PAOGroups.LM_SCENARIO && DaoFactory.getAuthDao().userHasAccessPAO(yukUser, ((LiteYukonPAObject)getAllLoadManagement().get(i)).getYukonID()))
+            allLMScenarios.add( getAllLoadManagement().get(i) );
+        }
+
+        allLMScenarios.trimToSize();        
+    }
+
+    return allLMScenarios;
+}
+
 public synchronized java.util.List getAllLMPAOExclusions()
 {
 
@@ -1695,13 +1711,6 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg)
 	{
 		//Do nothing, there is no default cache for workOrders/serviceRequests, but please do not release all cache!
 	}	
-    
-    else if ( database == DBChangeMsg.CHANGE_PAO_SCHEDULE_DB)
-    {
-        
-        //Do nothing for now...
-    } 
-
 	else  //BAD IDEA to let it all go, lets just tell everyone it wasn't handled instead!
 	{
 		CTILogger.error(" ***** Unhandled DBChangeMessage!  Category: " + dbCategory);
