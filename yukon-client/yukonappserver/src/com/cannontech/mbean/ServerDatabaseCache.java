@@ -651,22 +651,6 @@ public synchronized java.util.List getAllLMScenarios()
 	return allLMScenarios;
 }
 
-public synchronized java.util.List getAllMemberLMScenarios(LiteYukonUser yukUser) {
-    if( allLMScenarios == null ) {
-        allLMScenarios = new ArrayList( getAllYukonPAObjects().size() / 2 );
-
-        for( int i = 0; i < getAllLoadManagement().size(); i++ )  {
-            if( ((LiteYukonPAObject)getAllLoadManagement().get(i)).getType() 
-                  == PAOGroups.LM_SCENARIO && DaoFactory.getAuthDao().userHasAccessPAO(yukUser, ((LiteYukonPAObject)getAllLoadManagement().get(i)).getYukonID()))
-            allLMScenarios.add( getAllLoadManagement().get(i) );
-        }
-
-        allLMScenarios.trimToSize();        
-    }
-
-    return allLMScenarios;
-}
-
 public synchronized java.util.List getAllLMPAOExclusions()
 {
 

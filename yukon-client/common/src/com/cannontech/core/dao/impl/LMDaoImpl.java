@@ -6,12 +6,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.LMDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteLMProgScenario;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.DeviceTypes;
+import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**
@@ -55,7 +58,25 @@ public final class LMDaoImpl implements LMDao
 		return retVal;
 	}
 
-
+    public synchronized LiteYukonPAObject[] getAllMemberLMScenarios(LiteYukonUser yukUser) {
+        //Get an instance of the cache.
+        ArrayList scenarioList = new ArrayList(32);
+        synchronized(databaseCache) {
+            List lmScenarios = databaseCache.getAllLMScenarios();
+            Collections.sort( lmScenarios, LiteComparators.liteStringComparator );
+        
+            for (int i = 0; i < lmScenarios.size(); i++) {
+                LiteYukonPAObject litePao = (LiteYukonPAObject)lmScenarios.get(i);
+                if(DaoFactory.getAuthDao().userHasAccessPAO(yukUser, litePao.getYukonID()))
+                    scenarioList.add(litePao);  
+            }
+        }
+        
+        LiteYukonPAObject retVal[] = new LiteYukonPAObject[scenarioList.size()];
+        scenarioList.toArray( retVal );
+        return retVal;
+    }
+    
 	/* (non-Javadoc)
      * @see com.cannontech.core.dao.LMDao#getLMScenarioProgs(int)
      */
