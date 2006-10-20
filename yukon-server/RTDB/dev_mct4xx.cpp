@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.32 $
-* DATE         :  $Date: 2006/10/19 19:55:19 $
+* REVISION     :  $Revision: 1.33 $
+* DATE         :  $Date: 2006/10/20 15:43:35 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -744,8 +744,8 @@ INT CtiDeviceMCT4xx::executeGetValue(CtiRequestMsg *pReq, CtiCommandParser &pars
                         if( lp_peak_command > 0 )
                         {
                             //  add on a day - this is the end of the interval, not the beginning,
-                            //    so we need to start at midnight of the following day...  minus one second
-                            request_time  = CtiTime(CtiDate(day, month, year)).seconds() + 86400 - 1;
+                            //    so we need to start at midnight of the following day
+                            request_time  = CtiTime(CtiDate(day, month, year)).seconds() + 86400;
 
                             if( request_time    != _llpPeakInterest.time    ||
                                 request_channel != _llpPeakInterest.channel ||
@@ -1366,7 +1366,7 @@ int CtiDeviceMCT4xx::executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandParser &p
                  defaultTOURate;
             long times[4][5];
             long rates[4][6];
-            string 
+            string
                 rateStringValues[4][6], timeStringValues[4][5],
                 defaultTOURateString, daySchedule1, daySchedule2, daySchedule3, daySchedule4,
                 dynDaySchedule1, dynDaySchedule2, dynDaySchedule3, dynDaySchedule4;
@@ -1517,7 +1517,7 @@ int CtiDeviceMCT4xx::executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandParser &p
                 }
             }
 
-            if( nRet == NoConfigData || 
+            if( nRet == NoConfigData ||
                 mondaySchedule == std::numeric_limits<long>::min() || tuesdaySchedule == std::numeric_limits<long>::min() ||
                 fridaySchedule == std::numeric_limits<long>::min() || saturdaySchedule == std::numeric_limits<long>::min() ||
                 sundaySchedule == std::numeric_limits<long>::min() || holidaySchedule == std::numeric_limits<long>::min() ||
@@ -1533,7 +1533,7 @@ int CtiDeviceMCT4xx::executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandParser &p
                      || thursdaySchedule << 8 || wednesdaySchedule << 6 || tuesdaySchedule << 4
                      || mondaySchedule << 2 || sundaySchedule;
 
-                
+
 
                 createTOUDayScheduleString(daySchedule1, times[0], rates[0]);
                 createTOUDayScheduleString(daySchedule2, times[1], rates[1]);
@@ -1583,11 +1583,11 @@ int CtiDeviceMCT4xx::executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandParser &p
                     OutMessage->Buffer.BSt.Message[5] = ( ((rates[2][4]<<2)&0x0C) | (rates[2][3]&0x03) );
                     OutMessage->Buffer.BSt.Message[6] = ( ((rates[2][2]<<6)&0xC0) | ((rates[2][1]<<4)&0x30) | ((rates[2][0]<<2)&0x0C) | (rates[2][5]&0x03) );
 
-                    OutMessage->Buffer.BSt.Message[7] = times[3][0]; 
-                    OutMessage->Buffer.BSt.Message[8] = times[3][1]; 
-                    OutMessage->Buffer.BSt.Message[9] = times[3][2]; 
-                    OutMessage->Buffer.BSt.Message[10] = times[3][3]; 
-                    OutMessage->Buffer.BSt.Message[11] = times[3][4]; 
+                    OutMessage->Buffer.BSt.Message[7] = times[3][0];
+                    OutMessage->Buffer.BSt.Message[8] = times[3][1];
+                    OutMessage->Buffer.BSt.Message[9] = times[3][2];
+                    OutMessage->Buffer.BSt.Message[10] = times[3][3];
+                    OutMessage->Buffer.BSt.Message[11] = times[3][4];
                     OutMessage->Buffer.BSt.Message[12] = ( ((rates[3][4]<<2)&0x0C) | (rates[3][3]&0x03) );
                     OutMessage->Buffer.BSt.Message[13] = ( ((rates[3][2]<<6)&0xC0) | ((rates[3][1]<<4)&0x30) | ((rates[3][0]<<2)&0x0C) | (rates[3][5]&0x03) );
                     OutMessage->Buffer.BSt.Message[14] = (defaultTOURate);
