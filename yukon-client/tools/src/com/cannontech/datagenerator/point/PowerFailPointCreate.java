@@ -6,6 +6,7 @@ package com.cannontech.datagenerator.point;
  */
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.AccumulatorPoint;
 public class PowerFailPointCreate extends PointCreate
@@ -62,9 +63,10 @@ public class PowerFailPointCreate extends PointCreate
 		multi.setCreateNewPAOIDs( false );
 	
 		int addCount = 0;
-		int pointID = DaoFactory.getPointDao().getNextPointId();
+		PointDao pointDao = DaoFactory.getPointDao();
 		for( int i = 0; i < powerFailDevices.size(); i++)
 		{
+		    int pointID = pointDao.getNextPointId();
 			com.cannontech.database.data.lite.LiteYukonPAObject litePaobject = 
 				(com.cannontech.database.data.lite.LiteYukonPAObject)powerFailDevices.get(i);
 
@@ -110,7 +112,6 @@ public class PowerFailPointCreate extends PointCreate
 			multi.addDBPersistent( accumPoint );
 			
 			++addCount;
-			pointID++;
 		}
 	
 		boolean success = writeToSQLDatabase(multi);

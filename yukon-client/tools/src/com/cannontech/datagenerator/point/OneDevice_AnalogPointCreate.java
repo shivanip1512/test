@@ -5,6 +5,7 @@ package com.cannontech.datagenerator.point;
  * @author: 
  */
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PointDao;
 public class OneDevice_AnalogPointCreate extends PointCreate
 {
 	int deviceID = -1;
@@ -43,9 +44,10 @@ public class OneDevice_AnalogPointCreate extends PointCreate
 		multi.setCreateNewPAOIDs( false );
 	
 		int addCount = 0;
-		int pointID = DaoFactory.getPointDao().getNextPointId();
+		PointDao pointDao = DaoFactory.getPointDao();
 		for (int i = 1; i < createCount+1; i++)
 		{
+		    int pointID = pointDao.getNextPointId();
 			com.cannontech.clientutils.CTILogger.info("Adding PointId " + pointID + " to Device " + litePaobject.getPaoName());
 			String pointType = "Analog";
 			
@@ -83,7 +85,6 @@ public class OneDevice_AnalogPointCreate extends PointCreate
 			multi.addDBPersistent( analogPoint );
 			
 			++addCount;
-			pointID++;
 		}
 		boolean success = writeToSQLDatabase(multi);
 	

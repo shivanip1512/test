@@ -5,6 +5,7 @@ package com.cannontech.datagenerator.point;
  * @author: 
  */
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.MCT400SeriesBase;
 import com.cannontech.database.data.lite.LitePoint;
@@ -69,10 +70,11 @@ public class DisconnectPointCreate extends PointCreate
 		// if this is not set to false it will create its own PointIDs
 		multi.setCreateNewPAOIDs( false );
 	
+        PointDao pointDao = DaoFactory.getPointDao();
 		int addCount = 0;
-		int pointID = DaoFactory.getPointDao().getNextPointId();
 		for( int i = 0; i < disconnectDevices.size(); i++)
 		{
+		    int pointID = pointDao.getNextPointId();
 			com.cannontech.database.data.lite.LiteYukonPAObject litePaobject = 
 				(com.cannontech.database.data.lite.LiteYukonPAObject)disconnectDevices.get(i);
 
@@ -121,7 +123,6 @@ public class DisconnectPointCreate extends PointCreate
 			multi.addDBPersistent( statusPoint );
 			
 			++addCount;
-			pointID++;
 		}
 	
 		boolean success = writeToSQLDatabase(multi);

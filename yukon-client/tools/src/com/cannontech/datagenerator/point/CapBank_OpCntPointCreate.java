@@ -14,6 +14,7 @@ package com.cannontech.datagenerator.point;
  */
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.AnalogPoint;
@@ -70,10 +71,11 @@ public class CapBank_OpCntPointCreate extends PointCreate
 		// if this is not set to false it will create its own PointIDs
 		multi.setCreateNewPAOIDs( false );
 	
+        PointDao pointDao = DaoFactory.getPointDao();
 		int addCount = 0;
-		int pointID = DaoFactory.getPointDao().getNextPointId();
 		for( int i = 0; i < opCountDevices.size(); i++)
 		{
+		    int pointID = pointDao.getNextPointId();
 			com.cannontech.database.data.lite.LiteYukonPAObject litePaobject = 
 				(com.cannontech.database.data.lite.LiteYukonPAObject)opCountDevices.get(i);
 
@@ -118,7 +120,6 @@ public class CapBank_OpCntPointCreate extends PointCreate
 			multi.addDBPersistent( analogPoint );
 			
 			++addCount;
-			pointID++;
 		}
 	
 		boolean success = writeToSQLDatabase(multi);

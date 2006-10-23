@@ -68,7 +68,7 @@ public class MCT410AllPointCreate extends PointCreate
 	
 		double multiplier = 0.1;
 		int addCount = 0;
-		int pointID = DaoFactory.getPointDao().getNextPointId();
+		PointDao pointDao = DaoFactory.getPointDao();
 		for( int i = 0; i < devicesVector.size(); i++)
 		{
 			LiteYukonPAObject litePaobject = (LiteYukonPAObject)devicesVector.get(i);
@@ -77,6 +77,7 @@ public class MCT410AllPointCreate extends PointCreate
 			
 			if( createPoint.voltageLP)
 			{
+			    int pointID = pointDao.getNextPointId();
 				multi.addDBPersistent(
 				    PointFactory.createDmdAccumPoint(
 						"Voltage-LP",
@@ -86,12 +87,12 @@ public class MCT410AllPointCreate extends PointCreate
 						PointUnits.UOMID_VOLTS,
 						multiplier) );
 				CTILogger.info("Adding Voltage LP: PointId " + pointID + " to Device: " + litePaobject.getPaoName() );
-				pointID++;
 				addCount++;
 			}
 			
 			if( createPoint.peakKw)
 			{
+			    int pointID = pointDao.getNextPointId();
 				multi.addDBPersistent(
 					PointFactory.createDmdAccumPoint(
 						"Peak kW",
@@ -101,12 +102,12 @@ public class MCT410AllPointCreate extends PointCreate
 						PointUnits.UOMID_KW,
 						multiplier) );
 				CTILogger.info("Adding Peak kW: PointId " + pointID  + " to Device: " + litePaobject.getPaoName());
-				pointID++;
 				addCount++;
 			}
 
 			if( createPoint.maxVolts)
 			{
+			    int pointID = pointDao.getNextPointId();
 				multi.addDBPersistent(
 			        PointFactory.createDmdAccumPoint(
 						"Max Volts",
@@ -116,12 +117,12 @@ public class MCT410AllPointCreate extends PointCreate
 						PointUnits.UOMID_VOLTS,
 						multiplier) );
 				CTILogger.info("Adding Max Volts: PointId " + pointID + " to Device: " + litePaobject.getPaoName());
-				pointID++;
 				addCount++;
 			}
 			
 			if( createPoint.minVolts)
 			{
+			    int pointID = pointDao.getNextPointId();
 				multi.addDBPersistent(
 			        PointFactory.createDmdAccumPoint(
 						"Min Volts",
@@ -132,12 +133,12 @@ public class MCT410AllPointCreate extends PointCreate
 						multiplier) );
 		
 				CTILogger.info("Adding Min Volts: PointId " + pointID + " to Device: " + litePaobject.getPaoName());
-				pointID++;
 				addCount++;
 			}
 			
 			if( createPoint.kw)
 			{
+			    int pointID = pointDao.getNextPointId();
 			    multi.addDBPersistent(
 			        PointFactory.createDmdAccumPoint(
 						"kW",
@@ -147,12 +148,12 @@ public class MCT410AllPointCreate extends PointCreate
 						PointUnits.UOMID_KW,
 						multiplier) );
 				CTILogger.info("Adding kW: PointId " + pointID + " to Device: " + litePaobject.getPaoName());
-				pointID++;
 				addCount++;
 			}
 
 			if( createPoint.voltage)
 			{
+			    int pointID = pointDao.getNextPointId();
 				multi.addDBPersistent(
 			        PointFactory.createDmdAccumPoint(
 						"Voltage",
@@ -162,12 +163,12 @@ public class MCT410AllPointCreate extends PointCreate
 						PointUnits.UOMID_VOLTS,
 						multiplier) );
 				CTILogger.info("Adding Voltage: PointId " + pointID + " to Device ID" + litePaobject.getPaoName());
-				pointID++;
 				addCount++;
 			}
 			
 			if( createPoint.kWLP)
 			{
+			    int pointID = pointDao.getNextPointId();
 				multi.addDBPersistent(
 			        PointFactory.createDmdAccumPoint(
 					   "kW-LP",
@@ -177,11 +178,11 @@ public class MCT410AllPointCreate extends PointCreate
 					   PointUnits.UOMID_KW,
 					   multiplier) );
 				CTILogger.info("Adding kW-LP: PointId " + pointID + " to Device ID" + litePaobject.getPaoName());
-				pointID++;
 				addCount++;
 			}
 			if( createPoint.kWh)
 			{
+			    int pointID = pointDao.getNextPointId();
 				multi.addDBPersistent(
 			        PointFactory.createPulseAccumPoint(
 					   "kWh",
@@ -191,11 +192,11 @@ public class MCT410AllPointCreate extends PointCreate
 					   PointUnits.UOMID_KWH,
 					   multiplier) );
 			    CTILogger.info("Adding kWh: PointId " + pointID + " to Device ID" + litePaobject.getPaoName());
-				pointID++;
 				addCount++;
 			}
 			if( createPoint.frozenPeakDemand)
 			{
+			    int pointID = pointDao.getNextPointId();
 				multi.addDBPersistent(
 				        PointFactory.createDmdAccumPoint(
 						   "Frozen Peak Demand",
@@ -205,11 +206,11 @@ public class MCT410AllPointCreate extends PointCreate
 						   PointUnits.UOMID_KW,
 						   multiplier) );
 				    CTILogger.info("Adding Frozen Peak Demand: PointId " + pointID + " to Device ID" + litePaobject.getPaoName());
-					pointID++;
 					addCount++;
 			}
 			if( createPoint.frozenMaxVolts)
 			{
+			    int pointID = pointDao.getNextPointId();
 				multi.addDBPersistent(
 				        PointFactory.createDmdAccumPoint(
 						   "Frozen Max Volts",
@@ -219,11 +220,11 @@ public class MCT410AllPointCreate extends PointCreate
 						   PointUnits.UOMID_VOLTS,
 						   multiplier) );
 				    CTILogger.info("Adding Frozen Max Volts: PointId " + pointID + " to Device ID" + litePaobject.getPaoName());
-					pointID++;
 					addCount++;
 			}
 			if( createPoint.frozenMinVolts)
 			{
+			    int pointID = pointDao.getNextPointId();
 				multi.addDBPersistent(
 				        PointFactory.createDmdAccumPoint(
 						   "Frozen Min Volts",
@@ -233,11 +234,11 @@ public class MCT410AllPointCreate extends PointCreate
 						   PointUnits.UOMID_VOLTS,
 						   multiplier) );
 				    CTILogger.info("Adding Frozen Min Volts: PointId " + pointID + " to Device ID" + litePaobject.getPaoName());
-					pointID++;
 					addCount++;
 			}
 			if( createPoint.blinkCount)
 			{
+			    int pointID = pointDao.getNextPointId();
 			    multi.addDBPersistent(
 				        PointFactory.createPulseAccumPoint(
 						   "Blink Count",
@@ -247,7 +248,6 @@ public class MCT410AllPointCreate extends PointCreate
 						   PointUnits.UOMID_COUNTS,
 						   1.0) );
 				    CTILogger.info("Adding Blink Count: PointId " + pointID + " to Device ID" + litePaobject.getPaoName());
-					pointID++;
 					addCount++;
 			}
 		}

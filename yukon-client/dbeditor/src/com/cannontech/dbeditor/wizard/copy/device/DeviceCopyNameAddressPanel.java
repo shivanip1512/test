@@ -682,7 +682,7 @@ private javax.swing.JTextField getJTextFieldPhoneNumber() {
 					if( type.equalsIgnoreCase(com.cannontech.database.data.pao.RouteTypes.STRING_CCU) )
 					{
 						((com.cannontech.database.data.route.CCURoute) newRoute).setCarrierRoute(((com.cannontech.database.data.route.CCURoute) oldRoute).getCarrierRoute());
-						((com.cannontech.database.data.route.CCURoute) newRoute).getCarrierRoute().setRouteID(routeID);
+						((com.cannontech.database.data.route.CCURoute) newRoute).getCarrierRoute().setRouteID(newRoute.getRouteID());
 					}
 	
 					/*//put the route as the second place in our Vector
@@ -1016,7 +1016,7 @@ private javax.swing.JTextField getJTextFieldPhoneNumber() {
       }
 
 
-      getNameTextField().setText( val.getPAOName() );      
+      getNameTextField().setText( val.getPAOName() + "(copy)" );      
    }
    private void setDeviceType( int devType_ )
    {

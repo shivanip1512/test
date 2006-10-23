@@ -9,6 +9,7 @@ import java.util.List;
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.device.lm.IGroupRoute;
 import com.cannontech.database.data.device.lm.LMGroup;
 import com.cannontech.database.data.lite.LitePoint;
@@ -356,7 +357,7 @@ public Object getValue(Object o)
 	objectsToAdd.getDBPersistentVector().add(group);
 	
     List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(previousGroupID);
-	int newPointId = DaoFactory.getPointDao().getNextPointId();
+	PointDao pointDao = DaoFactory.getPointDao();
 
     for (LitePoint litePoint : points) {
 		PointBase pointBase = (PointBase) com.cannontech.database.data.lite.LiteFactory.createDBPersistent(litePoint);
@@ -370,7 +371,7 @@ public Object getValue(Object o)
 		{
 			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
-		pointBase.setPointID(newPointId++);
+		pointBase.setPointID(pointDao.getNextPointId());
 		pointBase.getPoint().setPaoID(group.getPAObjectID());
 		objectsToAdd.getDBPersistentVector().add(pointBase);
 	}	

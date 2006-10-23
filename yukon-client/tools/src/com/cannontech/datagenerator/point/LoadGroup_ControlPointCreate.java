@@ -64,7 +64,7 @@ public class LoadGroup_ControlPointCreate extends PointCreate
 		multi.setCreateNewPAOIDs( false );
 	
 		int addCount = 0;
-		int pointID = DaoFactory.getPointDao().getNextPointId();
+		PointDao pointDao = DaoFactory.getPointDao();
 		for( int i = 0; i < devicesVector.size(); i++)
 		{
 			LiteYukonPAObject litePaobject = (LiteYukonPAObject)devicesVector.get(i);
@@ -73,54 +73,55 @@ public class LoadGroup_ControlPointCreate extends PointCreate
 			
 			if( createPoint.dailyhistory)
 			{
+			    int pointID = pointDao.getNextPointId();
 				multi.addDBPersistent(PointFactory.createAnalogPoint("DAILY HISTORY", 
 						new Integer(paobjectID),
 						new Integer(pointID),
 						PointTypes.PT_OFFSET_DAILY_HISTORY,
 						PointUnits.UOMID_COUNTS));
 				CTILogger.info("Adding DAILY_HISTROY PointId " + pointID + " to Device: " + litePaobject.getPaoName() );
-				pointID++;
 				addCount++;
 			}
 			
 			if( createPoint.monthlyHistory)
 			{
+			    int pointID = pointDao.getNextPointId();
 				multi.addDBPersistent(PointFactory.createAnalogPoint("MONTHLY HISTORY", 
 						new Integer(paobjectID),
 						new Integer(pointID),
 						PointTypes.PT_OFFSET_MONTHLY_HISTORY,
 						PointUnits.UOMID_COUNTS));
 				CTILogger.info("Adding MONTHLY_HISTROY PointId " + pointID  + " to Device: " + litePaobject.getPaoName());
-				pointID++;
 				addCount++;
 			}
 
 			if( createPoint.seasonalHistory)
 			{
+			    int pointID = pointDao.getNextPointId();
 				multi.addDBPersistent(PointFactory.createAnalogPoint("SEASON HISTORY", 
 						new Integer(paobjectID),
 						new Integer(pointID),
 						PointTypes.PT_OFFSET_SEASONAL_HISTORY,
 						PointUnits.UOMID_COUNTS));
 				CTILogger.info("Adding SEASONAL_HISTROY PointId " + pointID + " to Device: " + litePaobject.getPaoName());
-				pointID++;
 				addCount++;
 			}
 			
 			if( createPoint.annualHistory)
 			{
+			    int pointID = pointDao.getNextPointId();
 				multi.addDBPersistent(PointFactory.createAnalogPoint("ANNUAL HISTORY", 
 						new Integer(paobjectID),
 						new Integer(pointID),
 						PointTypes.PT_OFFSET_ANNUAL_HISTORY,
 						PointUnits.UOMID_COUNTS));
 				CTILogger.info("Adding ANNUAL_HISTROY PointId " + pointID + " to Device: " + litePaobject.getPaoName());
-				pointID++;
 				addCount++;
 			}
 			
 			if( createPoint.controlStatus)
 			{
+			    int pointID = pointDao.getNextPointId();
 				PointBase pointBase = PointFactory.createNewPoint(new Integer(pointID),
 						PointTypes.STATUS_POINT,
 						"CONTROL STATUS",
@@ -133,19 +134,18 @@ public class LoadGroup_ControlPointCreate extends PointCreate
 				multi.addDBPersistent(pointBase);
 				CTILogger.info("Adding CONTROL_STATUS PointId " + pointID + " to Device: " + litePaobject.getPaoName());
 	
-				pointID++;
 				addCount++;
 			}
 
 			if( createPoint.controlCountdown)
 			{
+			    int pointID = pointDao.getNextPointId();
 				multi.addDBPersistent(PointFactory.createAnalogPoint("CONTROL COUNTDOWN", 
 						new Integer(((LiteYukonPAObject)devicesVector.get(i)).getLiteID()),
 						new Integer(pointID),
 						PointTypes.PT_OFFSET_CONTROL_COUNTDOWN,
 						PointUnits.UOMID_COUNTS));
 				CTILogger.info("Adding CONTROL_COUNTDOWN PointId " + pointID + " to Device ID" + devicesVector.get(i));
-				pointID++;
 				addCount++;
 			}
 		}
