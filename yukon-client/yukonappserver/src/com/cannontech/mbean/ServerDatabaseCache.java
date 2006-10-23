@@ -2752,7 +2752,11 @@ private synchronized LiteBase handleYukonPAOChange( int changeType, int id )
 	if( allYukonPAObjects == null || allPAOsMap == null)
 		return lBase;
 		
-		
+    if( id == 0) {    //A force reload of all paobjects was sent.
+        releaseAllYukonPAObjects();
+        return lBase;
+    }   
+    
 	switch(changeType)
 	{
 		case DBChangeMsg.CHANGE_TYPE_ADD:
