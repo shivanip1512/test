@@ -1632,6 +1632,10 @@ void  CtiCommandParser::doParsePutConfig(const string &_CmdStr)
                 {
                     _cmd["force"] = CtiParseValue(true);
                 }
+                else if(!(token.match("verify")).empty())
+                {
+                    _cmd["verify"] = CtiParseValue(true);
+                }
             }
         }
         else if(CmdStr.contains(" tou"))
