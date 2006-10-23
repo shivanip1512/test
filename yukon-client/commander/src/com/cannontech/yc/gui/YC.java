@@ -164,6 +164,7 @@ public class YC extends Observable implements MessageListener
 			type = type_;
 			text = message_;
             text = text.replaceAll("\n", "<BR>");
+            text = text.replaceAll("<BR><BR>", "<BR>");
 			status = status_;
 			isUnderline = underline_;
 		}
@@ -887,7 +888,8 @@ public class YC extends Observable implements MessageListener
                                 " DevID:" + returnMsg.getDeviceID() + 
                                 " Command:" + returnMsg.getCommandString() +
                                 " Result:" + returnMsg.getResultString() + 
-                                " Status:" + returnMsg.getExpectMore()+"]");
+                                " Status:" + returnMsg.getStatus() +
+                                " More:" + returnMsg.getExpectMore()+"]");
 				if( !getRequestMessageIDs().contains( new Long(returnMsg.getUserMessageID())))
 				{
 					CTILogger.info("Unknown Message: "+ returnMsg.getUserMessageID() +" Command [" + returnMsg.getCommandString()+"]");
@@ -937,8 +939,6 @@ public class YC extends Observable implements MessageListener
 				/** Add all PointData.getStr() objects to the output */
 				for (int i = 0; i < returnMsg.getVector().size(); i++)
 				{
-					if( i > 0)
-                        debugOutput += "<BR>";
 					Object o = returnMsg.getVector().elementAt(i);
 					if (o instanceof com.cannontech.message.dispatch.message.PointData)
 					{
@@ -950,7 +950,7 @@ public class YC extends Observable implements MessageListener
 							{
 								displayOutput += "\t";
 							}
-							debugOutput += pd.getStr();
+							debugOutput += pd.getStr() + "<BR>";
 						}
 					}
 				}
