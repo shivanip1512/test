@@ -195,22 +195,25 @@ public class LMEventCustomer
 	{
 		if( excessFirmServiceLevelCharge == null)
 		{
-			if( getMaxKW().doubleValue() > 0)
-			{
-				int ecID = DaoFactory.getCustomerDao().getLiteCustomer(getCustomerID().intValue()).getEnergyCompanyID();
-				Vector configs = SettlementConfigFuncs.getLiteSettlementConfigs(ecID, YukonListEntryTypes.YUK_DEF_ID_SETTLEMENT_HECO, SettlementConfig.HECO_RATE_DEMAND_CHARGE_STRING);
-				double demandCharge = 0;
-				LiteCustomer liteCust = DaoFactory.getCustomerDao().getLiteCustomer(getCustomerID().intValue());
-				for (int i = 0; i < configs.size(); i++)
-				{
-					LiteSettlementConfig lsc = (LiteSettlementConfig)configs.get(i);
-					if(lsc.getRefEntryID() == liteCust.getRateScheduleID())
-						demandCharge = Double.valueOf(lsc.getFieldValue()).doubleValue();
-				}
-							
-				excessFirmServiceLevelCharge = new Double( -(getMaxKW().doubleValue()) * 2d * demandCharge);
-			}
-			else
+            if( getNumIntervalViolations().intValue() <= getDeviationPeriods().intValue())
+            {
+    			if( getMaxKW().doubleValue() > 0)
+    			{
+    				int ecID = DaoFactory.getCustomerDao().getLiteCustomer(getCustomerID().intValue()).getEnergyCompanyID();
+    				Vector configs = SettlementConfigFuncs.getLiteSettlementConfigs(ecID, YukonListEntryTypes.YUK_DEF_ID_SETTLEMENT_HECO, SettlementConfig.HECO_RATE_DEMAND_CHARGE_STRING);
+    				double demandCharge = 0;
+    				LiteCustomer liteCust = DaoFactory.getCustomerDao().getLiteCustomer(getCustomerID().intValue());
+    				for (int i = 0; i < configs.size(); i++)
+    				{
+    					LiteSettlementConfig lsc = (LiteSettlementConfig)configs.get(i);
+    					if(lsc.getRefEntryID() == liteCust.getRateScheduleID())
+    						demandCharge = Double.valueOf(lsc.getFieldValue()).doubleValue();
+    				}
+    							
+    				excessFirmServiceLevelCharge = new Double( -(getMaxKW().doubleValue()) * 2d * demandCharge);
+    			}
+            }
+            if (excessFirmServiceLevelCharge == null)  //we were unsuccessful in loading
 			{
 				excessFirmServiceLevelCharge = new Double(0);
 				CTILogger.info("EFSL Charge defaulted to 0: Customer:" + getCustomerID().intValue() + 
