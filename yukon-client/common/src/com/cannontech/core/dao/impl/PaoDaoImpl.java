@@ -243,7 +243,7 @@ public final class PaoDaoImpl implements PaoDao {
      * @param address
      * @return ArrayList<LiteYukonPaobject>
      */
-    public static List getLiteYukonPaobjectsByAddress(int address)
+    public List getLiteYukonPaobjectsByAddress(int address)
     {
         List liteYukonPaobects = new ArrayList(); 
         try {
