@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/yukon.h-arc  $
-* REVISION     :  $Revision: 1.56 $
-* DATE         :  $Date: 2006/09/23 13:08:54 $
+* REVISION     :  $Revision: 1.57 $
+* DATE         :  $Date: 2006/10/23 18:57:50 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -228,6 +228,8 @@ enum YukonError_t
 
     // Connection Errors
     NoConfigData,
+    ConfigNotCurrent,
+    ConfigCurrent,
 
     // Control Command Info
     NoRouteGroupDevice,         // No route defined in a group device
