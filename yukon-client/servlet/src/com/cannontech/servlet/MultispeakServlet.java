@@ -264,12 +264,12 @@ public class MultispeakServlet extends HttpServlet
             instance.setHeader(header);
             objects = instance.pingURL();
         }
-        else if( service.equalsIgnoreCase(MultispeakDefines.CB_MR_STR)) {
+        else if( service.equalsIgnoreCase(MultispeakDefines.MR_CB_STR)) {
             MR_CBSoap_BindingStub instance = new MR_CBSoap_BindingStub(instanceURL, new Service());
             instance.setHeader(header);
             objects = instance.pingURL();
         }
-        else if( service.equalsIgnoreCase(MultispeakDefines.MR_CB_STR)) {
+        else if( service.equalsIgnoreCase(MultispeakDefines.CB_MR_STR)) {
             CB_MRSoap_BindingStub instance = new CB_MRSoap_BindingStub(instanceURL, new Service());
             instance.setHeader(header);
             objects = instance.pingURL();
