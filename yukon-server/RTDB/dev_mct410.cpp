@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.98 $
-* DATE         :  $Date: 2006/10/19 19:59:24 $
+* REVISION     :  $Revision: 1.99 $
+* DATE         :  $Date: 2006/10/23 15:29:00 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -334,6 +334,9 @@ CtiDeviceMCT410::CommandSet CtiDeviceMCT410::initCommandStore()
 long CtiDeviceMCT410::getLoadProfileInterval( unsigned channel )
 {
     int retval;
+
+    //  input channel is 0-based, enums are 1-based
+    channel++;
 
     if(  channel == Channel_Voltage )  retval = getLoadProfile().getVoltageProfileRate();
     else                               retval = getLoadProfile().getLoadProfileDemandRate();
