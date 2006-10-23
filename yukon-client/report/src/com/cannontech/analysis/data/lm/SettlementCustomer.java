@@ -184,7 +184,7 @@ public class SettlementCustomer
 			CICustomerPointData pointData = getPointData(CICustomerPointData.TYPE_DEMAND);
 			if (pointData != null)
 				demandLevel = retrieveCICustomerPointData(pointData.getPointID().intValue(), getStartDate(), getStopDate());
-			else 
+			if (demandLevel == null)
 				demandLevel = new Double(0);
 		}
 		return demandLevel;
