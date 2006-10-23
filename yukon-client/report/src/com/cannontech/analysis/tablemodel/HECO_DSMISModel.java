@@ -29,7 +29,7 @@ public class HECO_DSMISModel extends HECO_SettlementModelBase
 	//ROW indexes (this model displays rows instead of columns)	
 	public static final int DSM_APPLICATION_NUMBER_DATA = 0;
 	public static final int ACCOUNT_NUMBER_DATA = 1;
-	public static final int CURRENT_DATE_DATA = 2;
+	public static final int START_DATE_DATA = 2;
 	
 	public static final int CONTROLLED_DEMAND_INCENTIVE_DATA = 3;
 	public static final int CONTROLLED_DEMAND_INCENTIVE_AMOUNT_DATA = 4;
@@ -40,7 +40,7 @@ public class HECO_DSMISModel extends HECO_SettlementModelBase
 	
 	public static final String DSM_APPLICATION_NUMBER_STRING = "DSM Application Number";
 	public static final String ACCOUNT_NUMBER_STRING = "Account Number";
-	public static final String CURRENT_DATE_STRING = "Current Date";
+	public static final String START_DATE_STRING = "Start Date";
 
 	public static final String CONTROLLED_DEMAND_INCENTIVE_STRING = "CDI";
 	public static final String CONTROLLED_DEMAND_INCENTIVE_AMOUNT_STRING = "CDI Amount";
@@ -131,8 +131,8 @@ public class HECO_DSMISModel extends HECO_SettlementModelBase
 						value = " " + value;	
 					return value;
 				}
-				case CURRENT_DATE_DATA:
-					return dateFormat_yyyy.format((ServletUtil.getToday()));
+				case START_DATE_DATA:
+					return dateFormat_yyyy.format(getStartDate());
 				case CONTROLLED_DEMAND_INCENTIVE_DATA:
 					return "LC1";
 				case CONTROLLED_DEMAND_INCENTIVE_AMOUNT_DATA:
@@ -175,7 +175,7 @@ public class HECO_DSMISModel extends HECO_SettlementModelBase
 			columnNames = new String[NUMBER_COLUMNS];
 			columnNames[0] = DSM_APPLICATION_NUMBER_STRING;
 			columnNames[1] = ACCOUNT_NUMBER_STRING;
-			columnNames[2] = CURRENT_DATE_STRING;
+			columnNames[2] = START_DATE_STRING;
 			columnNames[3] = CONTROLLED_DEMAND_INCENTIVE_STRING;
 			columnNames[4] = CONTROLLED_DEMAND_INCENTIVE_AMOUNT_STRING;
 			columnNames[5] = ENERGY_REDUCTION_INCENTIVE_STRING;
