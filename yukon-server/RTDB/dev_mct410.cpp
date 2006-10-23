@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.99 $
-* DATE         :  $Date: 2006/10/23 15:29:00 $
+* REVISION     :  $Revision: 1.100 $
+* DATE         :  $Date: 2006/10/23 18:57:28 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1608,23 +1608,33 @@ int CtiDeviceMCT410::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandPars
                     || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_VoltageLPInterval)     != voltageDemand
                     || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_VoltageDemandInterval) != voltageLoadProfile )
                 {
-                    OutMessage->Buffer.BSt.Function   = FuncWrite_IntervalsPos;
-                    OutMessage->Buffer.BSt.Length     = FuncWrite_IntervalsLen;
-                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Write;
-                    OutMessage->Buffer.BSt.Message[0] = (demand);
-                    OutMessage->Buffer.BSt.Message[1] = (loadProfile);
-                    OutMessage->Buffer.BSt.Message[2] = (voltageDemand);
-                    OutMessage->Buffer.BSt.Message[3] = (voltageLoadProfile);
-
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-
-                    OutMessage->Buffer.BSt.Function   = Memory_IntervalsPos;
-                    OutMessage->Buffer.BSt.Length     = Memory_IntervalsLen;
-                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
-                    OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-                    OutMessage->Priority             += 1;//return to normal
-
+                    if( !parse.isKeyValid("verify") )
+                    {
+                        OutMessage->Buffer.BSt.Function   = FuncWrite_IntervalsPos;
+                        OutMessage->Buffer.BSt.Length     = FuncWrite_IntervalsLen;
+                        OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Write;
+                        OutMessage->Buffer.BSt.Message[0] = (demand);
+                        OutMessage->Buffer.BSt.Message[1] = (loadProfile);
+                        OutMessage->Buffer.BSt.Message[2] = (voltageDemand);
+                        OutMessage->Buffer.BSt.Message[3] = (voltageLoadProfile);
+    
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+    
+                        OutMessage->Buffer.BSt.Function   = Memory_IntervalsPos;
+                        OutMessage->Buffer.BSt.Length     = Memory_IntervalsLen;
+                        OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
+                        OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+                        OutMessage->Priority             += 1;//return to normal
+                    }
+                    else
+                    {
+                        nRet = ConfigNotCurrent;
+                    }
+                }
+                else
+                {
+                    nRet = ConfigCurrent;
                 }
             }
         }
@@ -1691,32 +1701,43 @@ int CtiDeviceMCT410::executePutConfigDisconnect(CtiRequestMsg *pReq,CtiCommandPa
             }
             else
             {
-                if(parse.isKeyValid("force")
-                   || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DemandThreshold) != threshold
-                   || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_ConnectDelay)    != delay )
+                if( parse.isKeyValid("force")
+                    || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DemandThreshold) != threshold
+                    || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_ConnectDelay)    != delay )
                 {
-                    OutMessage->Buffer.BSt.Function   = FuncWrite_DisconnectConfigPos;
-                    OutMessage->Buffer.BSt.Length     = FuncWrite_DisconnectConfigLen;
-                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Write;
-                    OutMessage->Buffer.BSt.Message[0] = (_disconnectAddress>>16);
-                    OutMessage->Buffer.BSt.Message[1] = (_disconnectAddress>>8);
-                    OutMessage->Buffer.BSt.Message[2] = (_disconnectAddress);
-                    OutMessage->Buffer.BSt.Message[3] = (threshold>>8);
-                    OutMessage->Buffer.BSt.Message[4] = (threshold);
-                    OutMessage->Buffer.BSt.Message[5] = (delay);
-                    //Seeing as these cost me nothing to send (2 c-words either way) I will always send them.
-                    //Also note, if we are of a revision with no cycle, these will simply be ignored
-                    OutMessage->Buffer.BSt.Message[6] = (cycleDisconnectMinutes == numeric_limits<long>::min() ? 0 : cycleDisconnectMinutes);
-                    OutMessage->Buffer.BSt.Message[7] = (cycleConnectMinutes == numeric_limits<long>::min() ? 0 : cycleConnectMinutes);
-
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-
-                    OutMessage->Buffer.BSt.Function   = FuncRead_DisconnectConfigPos;
-                    OutMessage->Buffer.BSt.Length     = revision >= SspecRev_Disconnect_Cycle ? FuncRead_DisconnectConfigLen + 2 : FuncRead_DisconnectConfigLen;
-                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Read;
-                    OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-                    OutMessage->Priority             += 1;//return to normal
+                    if( !parse.isKeyValid("verify") )
+                    {
+                        OutMessage->Buffer.BSt.Function   = FuncWrite_DisconnectConfigPos;
+                        OutMessage->Buffer.BSt.Length     = FuncWrite_DisconnectConfigLen;
+                        OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Write;
+                        OutMessage->Buffer.BSt.Message[0] = (_disconnectAddress>>16);
+                        OutMessage->Buffer.BSt.Message[1] = (_disconnectAddress>>8);
+                        OutMessage->Buffer.BSt.Message[2] = (_disconnectAddress);
+                        OutMessage->Buffer.BSt.Message[3] = (threshold>>8);
+                        OutMessage->Buffer.BSt.Message[4] = (threshold);
+                        OutMessage->Buffer.BSt.Message[5] = (delay);
+                        //Seeing as these cost me nothing to send (2 c-words either way) I will always send them.
+                        //Also note, if we are of a revision with no cycle, these will simply be ignored
+                        OutMessage->Buffer.BSt.Message[6] = (cycleDisconnectMinutes == numeric_limits<long>::min() ? 0 : cycleDisconnectMinutes);
+                        OutMessage->Buffer.BSt.Message[7] = (cycleConnectMinutes == numeric_limits<long>::min() ? 0 : cycleConnectMinutes);
+    
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+    
+                        OutMessage->Buffer.BSt.Function   = FuncRead_DisconnectConfigPos;
+                        OutMessage->Buffer.BSt.Length     = revision >= SspecRev_Disconnect_Cycle ? FuncRead_DisconnectConfigLen + 2 : FuncRead_DisconnectConfigLen;
+                        OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Read;
+                        OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+                        OutMessage->Priority             += 1;//return to normal
+                    }
+                    else
+                    {
+                        nRet = ConfigNotCurrent;
+                    }
+                }
+                else
+                {
+                    nRet = ConfigCurrent;
                 }
             }
         }
@@ -1773,26 +1794,37 @@ int CtiDeviceMCT410::executePutConfigCentron(CtiRequestMsg *pReq,CtiCommandParse
                    || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_CentronParameters) != parameters
                    || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_CentronRatio)      != ratio )
                 {
-                    OutMessage->Buffer.BSt.Function   = FuncWrite_CentronParametersPos;
-                    OutMessage->Buffer.BSt.Length     = FuncWrite_CentronParametersLen;
-                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Write;
-                    OutMessage->Buffer.BSt.Message[0] = (spid);
-                    OutMessage->Buffer.BSt.Message[1] = (parameters);
-                    OutMessage->Buffer.BSt.Message[2] = (ratio);
-
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-
-                    OutMessage->Buffer.BSt.Function   = Memory_CentronParametersPos;
-                    OutMessage->Buffer.BSt.Length     = Memory_CentronParametersLen;
-                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
-                    OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-
-                    OutMessage->Buffer.BSt.Function   = Memory_CentronMultiplierPos;
-                    OutMessage->Buffer.BSt.Length     = Memory_CentronMultiplierLen;
-                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-                    OutMessage->Priority             += 1;//return to normal
+                    if( !parse.isKeyValid("verify") )
+                    {
+                        OutMessage->Buffer.BSt.Function   = FuncWrite_CentronParametersPos;
+                        OutMessage->Buffer.BSt.Length     = FuncWrite_CentronParametersLen;
+                        OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Write;
+                        OutMessage->Buffer.BSt.Message[0] = (spid);
+                        OutMessage->Buffer.BSt.Message[1] = (parameters);
+                        OutMessage->Buffer.BSt.Message[2] = (ratio);
+    
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+    
+                        OutMessage->Buffer.BSt.Function   = Memory_CentronParametersPos;
+                        OutMessage->Buffer.BSt.Length     = Memory_CentronParametersLen;
+                        OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
+                        OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+    
+                        OutMessage->Buffer.BSt.Function   = Memory_CentronMultiplierPos;
+                        OutMessage->Buffer.BSt.Length     = Memory_CentronMultiplierLen;
+                        OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+                        OutMessage->Priority             += 1;//return to normal
+                    }
+                    else
+                    {
+                        nRet = ConfigNotCurrent;
+                    }
+                }
+                else
+                {
+                    nRet = ConfigCurrent;
                 }
             }
         }
@@ -1852,27 +1884,38 @@ int CtiDeviceMCT410::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParse
                     || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_MeterAlarmMask)  != meterAlarmMask
                     || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration)   != configuration )
                 {
-                    OutMessage->Buffer.BSt.Function   = function;
-                    OutMessage->Buffer.BSt.Length     = length;
-                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Write;
-                    OutMessage->Buffer.BSt.Message[0] = (configuration);
-                    OutMessage->Buffer.BSt.Message[1] = (event1mask);
-                    OutMessage->Buffer.BSt.Message[2] = (event2mask);
-                    OutMessage->Buffer.BSt.Message[3] = (meterAlarmMask>>8);
-                    OutMessage->Buffer.BSt.Message[4] = (meterAlarmMask);
-                    OutMessage->Buffer.BSt.Message[5] = (options);
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-
-                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
-                    OutMessage->Buffer.BSt.Function   = Memory_OptionsPos;
-                    OutMessage->Buffer.BSt.Length     = Memory_OptionsLen + Memory_ConfigurationLen;
-                    OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-
-                    OutMessage->Buffer.BSt.Function   = Memory_EventFlagsMask1Pos;
-                    OutMessage->Buffer.BSt.Length     = Memory_EventFlagsMask1Len + Memory_EventFlagsMask2Len + Memory_MeterAlarmMaskLen;
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-                    OutMessage->Priority             += 1;//return to normal
+                    if( !parse.isKeyValid("verify") )
+                    {
+                        OutMessage->Buffer.BSt.Function   = function;
+                        OutMessage->Buffer.BSt.Length     = length;
+                        OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Write;
+                        OutMessage->Buffer.BSt.Message[0] = (configuration);
+                        OutMessage->Buffer.BSt.Message[1] = (event1mask);
+                        OutMessage->Buffer.BSt.Message[2] = (event2mask);
+                        OutMessage->Buffer.BSt.Message[3] = (meterAlarmMask>>8);
+                        OutMessage->Buffer.BSt.Message[4] = (meterAlarmMask);
+                        OutMessage->Buffer.BSt.Message[5] = (options);
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+    
+                        OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
+                        OutMessage->Buffer.BSt.Function   = Memory_OptionsPos;
+                        OutMessage->Buffer.BSt.Length     = Memory_OptionsLen + Memory_ConfigurationLen;
+                        OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+    
+                        OutMessage->Buffer.BSt.Function   = Memory_EventFlagsMask1Pos;
+                        OutMessage->Buffer.BSt.Length     = Memory_EventFlagsMask1Len + Memory_EventFlagsMask2Len + Memory_MeterAlarmMaskLen;
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+                        OutMessage->Priority             += 1;//return to normal
+                    }
+                    else
+                    {
+                        nRet = ConfigNotCurrent;
+                    }
+                }
+                else if( nRet == NORMAL )
+                {
+                    nRet = ConfigCurrent;
                 }
             }
 
@@ -1894,17 +1937,28 @@ int CtiDeviceMCT410::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParse
                 if( parse.isKeyValid("force")
                     || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_OutageCycles) != outage )
                 {
-                    OutMessage->Buffer.BSt.Function   = function;
-                    OutMessage->Buffer.BSt.Length     = length;
-                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Write;
-                    OutMessage->Buffer.BSt.Message[0] = (outage);
-
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-
-                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
-                    OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-                    OutMessage->Priority             += 1;//return to normal
+                    if( !parse.isKeyValid("verify") )
+                    {
+                        OutMessage->Buffer.BSt.Function   = function;
+                        OutMessage->Buffer.BSt.Length     = length;
+                        OutMessage->Buffer.BSt.IO         = Emetcon::IO_Write;
+                        OutMessage->Buffer.BSt.Message[0] = (outage);
+    
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+    
+                        OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
+                        OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+                        OutMessage->Priority             += 1;//return to normal
+                    }
+                    else
+                    {
+                        nRet = ConfigNotCurrent;
+                    }
+                }
+                else if( nRet == NORMAL )
+                {
+                    nRet = ConfigCurrent;
                 }
             }
 
@@ -1926,17 +1980,28 @@ int CtiDeviceMCT410::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParse
                 if( parse.isKeyValid("force")
                     || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_TimeAdjustTolerance) != timeAdjustTolerance )
                 {
-                    OutMessage->Buffer.BSt.Function   = function;
-                    OutMessage->Buffer.BSt.Length     = length;
-                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Write;
-                    OutMessage->Buffer.BSt.Message[0] = (timeAdjustTolerance);
-
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-
-                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
-                    OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-                    OutMessage->Priority             += 1;//return to normal
+                    if( !parse.isKeyValid("verify") )
+                    {
+                        OutMessage->Buffer.BSt.Function   = function;
+                        OutMessage->Buffer.BSt.Length     = length;
+                        OutMessage->Buffer.BSt.IO         = Emetcon::IO_Write;
+                        OutMessage->Buffer.BSt.Message[0] = (timeAdjustTolerance);
+    
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+    
+                        OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
+                        OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+                        OutMessage->Priority             += 1;//return to normal
+                    }
+                    else
+                    {
+                        nRet = ConfigNotCurrent;
+                    }
+                }
+                else if( nRet == NORMAL )
+                {
+                    nRet = ConfigCurrent;
                 }
             }
         }

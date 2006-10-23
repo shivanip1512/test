@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.67 $
-* DATE         :  $Date: 2006/10/19 19:57:18 $
+* REVISION     :  $Revision: 1.68 $
+* DATE         :  $Date: 2006/10/23 18:57:28 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1853,31 +1853,42 @@ int CtiDeviceMCT470::executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiC
                     || CtiDeviceBase::getDynamicInfo(Keys::Key_MCT_LoadProfileKRatio1)        != kRatio1
                     || CtiDeviceBase::getDynamicInfo(Keys::Key_MCT_LoadProfileKRatio2)        != kRatio2 )
                 {
-                    OutMessage->Buffer.BSt.Function   = FuncWrite_LoadProfileChannelsPos;
-                    OutMessage->Buffer.BSt.Length     = FuncWrite_LoadProfileChannelsLen;
-                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Write;
-                    OutMessage->Buffer.BSt.Message[0] = spid;
-                    OutMessage->Buffer.BSt.Message[1] = 1;
-                    OutMessage->Buffer.BSt.Message[2] = (channel1);
-                    OutMessage->Buffer.BSt.Message[3] = (ratio1>>8);
-                    OutMessage->Buffer.BSt.Message[4] = (ratio1);
-                    OutMessage->Buffer.BSt.Message[5] = (kRatio1>>8);
-                    OutMessage->Buffer.BSt.Message[6] = (kRatio1);
-                    OutMessage->Buffer.BSt.Message[7] = 2;
-                    OutMessage->Buffer.BSt.Message[8] = (channel2);
-                    OutMessage->Buffer.BSt.Message[9] = (ratio2>>8);
-                    OutMessage->Buffer.BSt.Message[10] =(ratio2);
-                    OutMessage->Buffer.BSt.Message[11] =(kRatio2>>8);
-                    OutMessage->Buffer.BSt.Message[12] =(kRatio2);
-
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-
-                    OutMessage->Buffer.BSt.Function   = FuncRead_LoadProfileChannel12Pos;
-                    OutMessage->Buffer.BSt.Length     = FuncRead_LoadProfileChannel12Len;
-                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Read;
-                    OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-                    OutMessage->Priority             += 1;//return to normal
+                    if( !parse.isKeyValid("verify") )
+                    {
+                        OutMessage->Buffer.BSt.Function   = FuncWrite_LoadProfileChannelsPos;
+                        OutMessage->Buffer.BSt.Length     = FuncWrite_LoadProfileChannelsLen;
+                        OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Write;
+                        OutMessage->Buffer.BSt.Message[0] = spid;
+                        OutMessage->Buffer.BSt.Message[1] = 1;
+                        OutMessage->Buffer.BSt.Message[2] = (channel1);
+                        OutMessage->Buffer.BSt.Message[3] = (ratio1>>8);
+                        OutMessage->Buffer.BSt.Message[4] = (ratio1);
+                        OutMessage->Buffer.BSt.Message[5] = (kRatio1>>8);
+                        OutMessage->Buffer.BSt.Message[6] = (kRatio1);
+                        OutMessage->Buffer.BSt.Message[7] = 2;
+                        OutMessage->Buffer.BSt.Message[8] = (channel2);
+                        OutMessage->Buffer.BSt.Message[9] = (ratio2>>8);
+                        OutMessage->Buffer.BSt.Message[10] =(ratio2);
+                        OutMessage->Buffer.BSt.Message[11] =(kRatio2>>8);
+                        OutMessage->Buffer.BSt.Message[12] =(kRatio2);
+    
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+    
+                        OutMessage->Buffer.BSt.Function   = FuncRead_LoadProfileChannel12Pos;
+                        OutMessage->Buffer.BSt.Length     = FuncRead_LoadProfileChannel12Len;
+                        OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Read;
+                        OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+                        OutMessage->Priority             += 1;//return to normal
+                    }
+                    else
+                    {
+                        nRet = ConfigNotCurrent;
+                    }
+                }
+                else if( nRet == NORMAL )
+                {
+                    nRet = ConfigCurrent;
                 }
             }
 
@@ -1908,31 +1919,42 @@ int CtiDeviceMCT470::executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiC
                     || CtiDeviceBase::getDynamicInfo(Keys::Key_MCT_LoadProfileKRatio3)        != kRatio1
                     || CtiDeviceBase::getDynamicInfo(Keys::Key_MCT_LoadProfileKRatio4)        != kRatio2 )
                 {
-                    OutMessage->Buffer.BSt.Function    = FuncWrite_LoadProfileChannelsPos;
-                    OutMessage->Buffer.BSt.Length      = FuncWrite_LoadProfileChannelsLen;
-                    OutMessage->Buffer.BSt.IO          = Emetcon::IO_Function_Write;
-                    OutMessage->Buffer.BSt.Message[0]  = spid;
-                    OutMessage->Buffer.BSt.Message[1]  = 3;
-                    OutMessage->Buffer.BSt.Message[2]  = (channel1);
-                    OutMessage->Buffer.BSt.Message[3]  = (ratio1>>8);
-                    OutMessage->Buffer.BSt.Message[4]  = (ratio1);
-                    OutMessage->Buffer.BSt.Message[5]  = (kRatio1>>8);
-                    OutMessage->Buffer.BSt.Message[6]  = (kRatio1);
-                    OutMessage->Buffer.BSt.Message[7]  = 4;
-                    OutMessage->Buffer.BSt.Message[8]  = (channel2);
-                    OutMessage->Buffer.BSt.Message[9]  = (ratio2>>8);
-                    OutMessage->Buffer.BSt.Message[10] = (ratio2);
-                    OutMessage->Buffer.BSt.Message[11] = (kRatio2>>8);
-                    OutMessage->Buffer.BSt.Message[12] = (kRatio2);
-
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-
-                    OutMessage->Buffer.BSt.Function   = FuncRead_LoadProfileChannel34Pos;
-                    OutMessage->Buffer.BSt.Length     = FuncRead_LoadProfileChannel34Len;
-                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Read;
-                    OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-                    OutMessage->Priority             += 1;//return to normal
+                    if( !parse.isKeyValid("verify") )
+                    {
+                        OutMessage->Buffer.BSt.Function    = FuncWrite_LoadProfileChannelsPos;
+                        OutMessage->Buffer.BSt.Length      = FuncWrite_LoadProfileChannelsLen;
+                        OutMessage->Buffer.BSt.IO          = Emetcon::IO_Function_Write;
+                        OutMessage->Buffer.BSt.Message[0]  = spid;
+                        OutMessage->Buffer.BSt.Message[1]  = 3;
+                        OutMessage->Buffer.BSt.Message[2]  = (channel1);
+                        OutMessage->Buffer.BSt.Message[3]  = (ratio1>>8);
+                        OutMessage->Buffer.BSt.Message[4]  = (ratio1);
+                        OutMessage->Buffer.BSt.Message[5]  = (kRatio1>>8);
+                        OutMessage->Buffer.BSt.Message[6]  = (kRatio1);
+                        OutMessage->Buffer.BSt.Message[7]  = 4;
+                        OutMessage->Buffer.BSt.Message[8]  = (channel2);
+                        OutMessage->Buffer.BSt.Message[9]  = (ratio2>>8);
+                        OutMessage->Buffer.BSt.Message[10] = (ratio2);
+                        OutMessage->Buffer.BSt.Message[11] = (kRatio2>>8);
+                        OutMessage->Buffer.BSt.Message[12] = (kRatio2);
+    
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+    
+                        OutMessage->Buffer.BSt.Function   = FuncRead_LoadProfileChannel34Pos;
+                        OutMessage->Buffer.BSt.Length     = FuncRead_LoadProfileChannel34Len;
+                        OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Read;
+                        OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+                        OutMessage->Priority             += 1;//return to normal
+                    }
+                    else
+                    {
+                        nRet = ConfigNotCurrent;
+                    }
+                }
+                else if( nRet == NORMAL )
+                {
+                    nRet = ConfigCurrent;
                 }
             }
         }
@@ -1988,21 +2010,32 @@ int CtiDeviceMCT470::executePutConfigRelays(CtiRequestMsg *pReq,CtiCommandParser
                     || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_RelayATimer) != relayATimer
                     || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_RelayBTimer) != relayBTimer )
                 {
-                    OutMessage->Buffer.BSt.Function   = FuncWrite_RelaysPos;
-                    OutMessage->Buffer.BSt.Length     = FuncWrite_RelaysLen;
-                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Write;
-                    OutMessage->Buffer.BSt.Message[0] = spid;
-                    OutMessage->Buffer.BSt.Message[1] = relayATimer;
-                    OutMessage->Buffer.BSt.Message[2] = relayBTimer;
-
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-
-                    OutMessage->Buffer.BSt.Function   = Memory_RelayATimerPos;
-                    OutMessage->Buffer.BSt.Length     = Memory_RelayATimerLen + Memory_RelayBTimerLen;
-                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
-                    OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-                    OutMessage->Priority             += 1;//return to normal
+                    if( !parse.isKeyValid("verify") )
+                    {
+                        OutMessage->Buffer.BSt.Function   = FuncWrite_RelaysPos;
+                        OutMessage->Buffer.BSt.Length     = FuncWrite_RelaysLen;
+                        OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Write;
+                        OutMessage->Buffer.BSt.Message[0] = spid;
+                        OutMessage->Buffer.BSt.Message[1] = relayATimer;
+                        OutMessage->Buffer.BSt.Message[2] = relayBTimer;
+    
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+    
+                        OutMessage->Buffer.BSt.Function   = Memory_RelayATimerPos;
+                        OutMessage->Buffer.BSt.Length     = Memory_RelayATimerLen + Memory_RelayBTimerLen;
+                        OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
+                        OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+                        OutMessage->Priority             += 1;//return to normal
+                    }
+                    else
+                    {
+                        nRet = ConfigNotCurrent;
+                    }
+                }
+                else
+                {
+                    nRet = ConfigCurrent;
                 }
             }
         }
@@ -2049,22 +2082,32 @@ int CtiDeviceMCT470::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandPars
                     || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval) != loadProfile1
                     || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval2) != loadProfile2)
                 {
-                    OutMessage->Buffer.BSt.Function   = FuncWrite_IntervalsPos;
-                    OutMessage->Buffer.BSt.Length     = FuncWrite_IntervalsLen;
-                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Write;
-                    OutMessage->Buffer.BSt.Message[0] = (demand);
-                    OutMessage->Buffer.BSt.Message[1] = (loadProfile1);
-                    OutMessage->Buffer.BSt.Message[2] = (loadProfile2);
-
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-
-                    OutMessage->Buffer.BSt.Function   = Memory_IntervalsPos;
-                    OutMessage->Buffer.BSt.Length     = Memory_IntervalsLen;
-                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
-                    OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-                    OutMessage->Priority             += 1;//return to normal
-
+                    if( !parse.isKeyValid("verify") )
+                    {
+                        OutMessage->Buffer.BSt.Function   = FuncWrite_IntervalsPos;
+                        OutMessage->Buffer.BSt.Length     = FuncWrite_IntervalsLen;
+                        OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Write;
+                        OutMessage->Buffer.BSt.Message[0] = (demand);
+                        OutMessage->Buffer.BSt.Message[1] = (loadProfile1);
+                        OutMessage->Buffer.BSt.Message[2] = (loadProfile2);
+    
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+    
+                        OutMessage->Buffer.BSt.Function   = Memory_IntervalsPos;
+                        OutMessage->Buffer.BSt.Length     = Memory_IntervalsLen;
+                        OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
+                        OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+                        OutMessage->Priority             += 1;//return to normal
+                    }
+                    else
+                    {
+                        nRet = ConfigNotCurrent;
+                    }
+                }
+                else
+                {
+                    nRet = ConfigCurrent;
                 }
             }
         }
@@ -2125,22 +2168,33 @@ int CtiDeviceMCT470::executePutConfigPrecannedTable(CtiRequestMsg *pReq,CtiComma
                     || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_PrecannedMeterNumber) != meterNumber
                     || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_PrecannedTableType) != tableType )
                 {
-                    OutMessage->Buffer.BSt.Function   = FuncWrite_PrecannedTablePos;
-                    OutMessage->Buffer.BSt.Length     = FuncWrite_PrecannedTableLen;
-                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Write;
-                    OutMessage->Buffer.BSt.Message[0] = spid;
-                    OutMessage->Buffer.BSt.Message[1] = tableReadInterval;
-                    OutMessage->Buffer.BSt.Message[2] = meterNumber;
-                    OutMessage->Buffer.BSt.Message[3] = tableType;
-
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-
-                    OutMessage->Buffer.BSt.Function   = FuncRead_PrecannedTablePos;
-                    OutMessage->Buffer.BSt.Length     = FuncRead_PrecannedTableLen;
-                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Read;
-                    OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-                    OutMessage->Priority             += 1;//return to normal
+                    if( !parse.isKeyValid("verify") )
+                    {
+                        OutMessage->Buffer.BSt.Function   = FuncWrite_PrecannedTablePos;
+                        OutMessage->Buffer.BSt.Length     = FuncWrite_PrecannedTableLen;
+                        OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Write;
+                        OutMessage->Buffer.BSt.Message[0] = spid;
+                        OutMessage->Buffer.BSt.Message[1] = tableReadInterval;
+                        OutMessage->Buffer.BSt.Message[2] = meterNumber;
+                        OutMessage->Buffer.BSt.Message[3] = tableType;
+    
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+    
+                        OutMessage->Buffer.BSt.Function   = FuncRead_PrecannedTablePos;
+                        OutMessage->Buffer.BSt.Length     = FuncRead_PrecannedTableLen;
+                        OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Read;
+                        OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+                        OutMessage->Priority             += 1;//return to normal
+                    }
+                    else
+                    {
+                        nRet = ConfigNotCurrent;
+                    }
+                }
+                else
+                {
+                    nRet = ConfigCurrent;
                 }
             }
         }
@@ -2202,26 +2256,37 @@ int CtiDeviceMCT470::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParse
                     || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) != configuration
                     || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask2) != event2mask )
                 {
-                    OutMessage->Buffer.BSt.Function   = function;
-                    OutMessage->Buffer.BSt.Length     = length;
-                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Write;
-                    OutMessage->Buffer.BSt.Message[0] = (configuration);
-                    OutMessage->Buffer.BSt.Message[1] = (event1mask);
-                    OutMessage->Buffer.BSt.Message[2] = (event2mask);
-
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-
-                    OutMessage->Buffer.BSt.Function   = Memory_ConfigurationPos;
-                    OutMessage->Buffer.BSt.Length     = Memory_ConfigurationLen;
-                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
-                    OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-
-                    OutMessage->Buffer.BSt.Function   = Memory_EventFlagsMask1Pos;
-                    OutMessage->Buffer.BSt.Length     = Memory_EventFlagsMask1Len +
-                                                        Memory_EventFlagsMask2Len;
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-                    OutMessage->Priority             += 1;//return to normal
+                    if( !parse.isKeyValid("verify") )
+                    {
+                        OutMessage->Buffer.BSt.Function   = function;
+                        OutMessage->Buffer.BSt.Length     = length;
+                        OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Write;
+                        OutMessage->Buffer.BSt.Message[0] = (configuration);
+                        OutMessage->Buffer.BSt.Message[1] = (event1mask);
+                        OutMessage->Buffer.BSt.Message[2] = (event2mask);
+    
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+    
+                        OutMessage->Buffer.BSt.Function   = Memory_ConfigurationPos;
+                        OutMessage->Buffer.BSt.Length     = Memory_ConfigurationLen;
+                        OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
+                        OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+    
+                        OutMessage->Buffer.BSt.Function   = Memory_EventFlagsMask1Pos;
+                        OutMessage->Buffer.BSt.Length     = Memory_EventFlagsMask1Len +
+                                                            Memory_EventFlagsMask2Len;
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+                        OutMessage->Priority             += 1;//return to normal
+                    }
+                    else
+                    {
+                        nRet = ConfigNotCurrent;
+                    }
+                }
+                else if( nRet == NORMAL )
+                {
+                    nRet = ConfigCurrent;
                 }
             }
 
@@ -2243,17 +2308,28 @@ int CtiDeviceMCT470::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParse
                 if( parse.isKeyValid("force")
                     || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_TimeAdjustTolerance) != timeAdjustTolerance )
                 {
-                    OutMessage->Buffer.BSt.Function   = function;
-                    OutMessage->Buffer.BSt.Length     = length;
-                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Write;
-                    OutMessage->Buffer.BSt.Message[0] = (timeAdjustTolerance);
-
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-
-                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
-                    OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-                    OutMessage->Priority             += 1;//return to normal
+                    if( !parse.isKeyValid("verify") )
+                    {
+                        OutMessage->Buffer.BSt.Function   = function;
+                        OutMessage->Buffer.BSt.Length     = length;
+                        OutMessage->Buffer.BSt.IO         = Emetcon::IO_Write;
+                        OutMessage->Buffer.BSt.Message[0] = (timeAdjustTolerance);
+    
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+    
+                        OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
+                        OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+                        OutMessage->Priority             += 1;//return to normal
+                    }
+                    else
+                    {
+                        nRet = ConfigNotCurrent;
+                    }
+                }
+                else if( nRet == NORMAL )
+                {
+                    nRet = ConfigCurrent;
                 }
             }
         }
@@ -2271,6 +2347,7 @@ int CtiDeviceMCT470::executePutConfigDNP(CtiRequestMsg *pReq, CtiCommandParser &
     //To anyone who needs to change this later, unfortunatelly a lot of the values here are used as "magic" numbers.
     //Unfortunatelly any changes will require changes to the code and really non-magic numbers are of very little use to us here.
     bool doRead = false;//Do the function crc read.
+    bool verifyOnly = parse.isKeyValid("verify");
     int nRet = NORMAL;
     long value;
     const int BufferSize = 41;
@@ -2340,54 +2417,65 @@ int CtiDeviceMCT470::executePutConfigDNP(CtiRequestMsg *pReq, CtiCommandParser &
                 if( parse.isKeyValid("force")
                     || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_RealTime1CRC) != crc8(buffer, 40) )
                 {
-                    OutMessage->Buffer.BSt.Function    = FuncWrite_DNPReqTable;
-                    OutMessage->Buffer.BSt.Length      = 14;
-                    OutMessage->Buffer.BSt.IO          = Emetcon::IO_Function_Write;
-                    OutMessage->Buffer.BSt.Message[0]  = (MCT470_DNP_MCTPoint_RealTimeBinary);//This is defined in the 470 doc.
-                    OutMessage->Buffer.BSt.Message[1]  = (0);//8 bit
-                    OutMessage->Buffer.BSt.Message[2]  = (buffer[1]);
-                    OutMessage->Buffer.BSt.Message[3]  = (buffer[3]);
-                    OutMessage->Buffer.BSt.Message[4]  = (buffer[5]);
-                    OutMessage->Buffer.BSt.Message[5]  = (buffer[7]);
-                    OutMessage->Buffer.BSt.Message[6]  = (buffer[9]);
-                    OutMessage->Buffer.BSt.Message[7]  = (buffer[11]);
-                    OutMessage->Buffer.BSt.Message[8]  = (buffer[13]);
-                    OutMessage->Buffer.BSt.Message[9]  = (buffer[15]);
-                    OutMessage->Buffer.BSt.Message[10] = (buffer[17]);
-                    OutMessage->Buffer.BSt.Message[11] = (buffer[19]);
-                    OutMessage->Buffer.BSt.Message[12] = (buffer[21]);
-                    OutMessage->Buffer.BSt.Message[13] = (buffer[23]);
-
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-
-                    OutMessage->Buffer.BSt.Length      = 5;
-                    OutMessage->Buffer.BSt.Message[0]  = (MCT470_DNP_MCTPoint_RealTimeBinary+12);//This is defined in the 470 doc.
-                    OutMessage->Buffer.BSt.Message[1]  = (0);//8 bit
-                    OutMessage->Buffer.BSt.Message[2]  = (buffer[25]);
-                    OutMessage->Buffer.BSt.Message[3]  = (buffer[27]);
-                    OutMessage->Buffer.BSt.Message[4]  = (buffer[29]);
-
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-
-                    OutMessage->Buffer.BSt.Length      = 8;
-                    OutMessage->Buffer.BSt.Message[0]  = (MCT470_DNP_MCTPoint_RealTimeAnalog);//This is defined in the 470 doc.
-                    OutMessage->Buffer.BSt.Message[1]  = (2);//16 bit
-                    OutMessage->Buffer.BSt.Message[2]  = (buffer[31]);
-                    OutMessage->Buffer.BSt.Message[3]  = (buffer[30]);
-                    OutMessage->Buffer.BSt.Message[4]  = (buffer[33]);
-                    OutMessage->Buffer.BSt.Message[5]  = (buffer[32]);
-                    OutMessage->Buffer.BSt.Message[6]  = (buffer[35]);
-                    OutMessage->Buffer.BSt.Message[7]  = (buffer[34]);
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-
-                    OutMessage->Buffer.BSt.Length      = 6;
-                    OutMessage->Buffer.BSt.Message[0]  = (MCT470_DNP_MCTPoint_RealTimeAccumulator);//This is defined in the 470 doc.
-                    OutMessage->Buffer.BSt.Message[1]  = (2);//16 bit
-                    OutMessage->Buffer.BSt.Message[2]  = (buffer[37]);
-                    OutMessage->Buffer.BSt.Message[3]  = (buffer[36]);
-                    OutMessage->Buffer.BSt.Message[4]  = (buffer[39]);
-                    OutMessage->Buffer.BSt.Message[5]  = (buffer[38]);
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+                    if( !verifyOnly )
+                    {
+                        OutMessage->Buffer.BSt.Function    = FuncWrite_DNPReqTable;
+                        OutMessage->Buffer.BSt.Length      = 14;
+                        OutMessage->Buffer.BSt.IO          = Emetcon::IO_Function_Write;
+                        OutMessage->Buffer.BSt.Message[0]  = (MCT470_DNP_MCTPoint_RealTimeBinary);//This is defined in the 470 doc.
+                        OutMessage->Buffer.BSt.Message[1]  = (0);//8 bit
+                        OutMessage->Buffer.BSt.Message[2]  = (buffer[1]);
+                        OutMessage->Buffer.BSt.Message[3]  = (buffer[3]);
+                        OutMessage->Buffer.BSt.Message[4]  = (buffer[5]);
+                        OutMessage->Buffer.BSt.Message[5]  = (buffer[7]);
+                        OutMessage->Buffer.BSt.Message[6]  = (buffer[9]);
+                        OutMessage->Buffer.BSt.Message[7]  = (buffer[11]);
+                        OutMessage->Buffer.BSt.Message[8]  = (buffer[13]);
+                        OutMessage->Buffer.BSt.Message[9]  = (buffer[15]);
+                        OutMessage->Buffer.BSt.Message[10] = (buffer[17]);
+                        OutMessage->Buffer.BSt.Message[11] = (buffer[19]);
+                        OutMessage->Buffer.BSt.Message[12] = (buffer[21]);
+                        OutMessage->Buffer.BSt.Message[13] = (buffer[23]);
+    
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+    
+                        OutMessage->Buffer.BSt.Length      = 5;
+                        OutMessage->Buffer.BSt.Message[0]  = (MCT470_DNP_MCTPoint_RealTimeBinary+12);//This is defined in the 470 doc.
+                        OutMessage->Buffer.BSt.Message[1]  = (0);//8 bit
+                        OutMessage->Buffer.BSt.Message[2]  = (buffer[25]);
+                        OutMessage->Buffer.BSt.Message[3]  = (buffer[27]);
+                        OutMessage->Buffer.BSt.Message[4]  = (buffer[29]);
+    
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+    
+                        OutMessage->Buffer.BSt.Length      = 8;
+                        OutMessage->Buffer.BSt.Message[0]  = (MCT470_DNP_MCTPoint_RealTimeAnalog);//This is defined in the 470 doc.
+                        OutMessage->Buffer.BSt.Message[1]  = (2);//16 bit
+                        OutMessage->Buffer.BSt.Message[2]  = (buffer[31]);
+                        OutMessage->Buffer.BSt.Message[3]  = (buffer[30]);
+                        OutMessage->Buffer.BSt.Message[4]  = (buffer[33]);
+                        OutMessage->Buffer.BSt.Message[5]  = (buffer[32]);
+                        OutMessage->Buffer.BSt.Message[6]  = (buffer[35]);
+                        OutMessage->Buffer.BSt.Message[7]  = (buffer[34]);
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+    
+                        OutMessage->Buffer.BSt.Length      = 6;
+                        OutMessage->Buffer.BSt.Message[0]  = (MCT470_DNP_MCTPoint_RealTimeAccumulator);//This is defined in the 470 doc.
+                        OutMessage->Buffer.BSt.Message[1]  = (2);//16 bit
+                        OutMessage->Buffer.BSt.Message[2]  = (buffer[37]);
+                        OutMessage->Buffer.BSt.Message[3]  = (buffer[36]);
+                        OutMessage->Buffer.BSt.Message[4]  = (buffer[39]);
+                        OutMessage->Buffer.BSt.Message[5]  = (buffer[38]);
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+                    }
+                    else
+                    {
+                        nRet = ConfigNotCurrent;
+                    }
+                }
+                else if( nRet == NORMAL )
+                {
+                    nRet = ConfigCurrent;
                 }
             }
 
@@ -2441,54 +2529,65 @@ int CtiDeviceMCT470::executePutConfigDNP(CtiRequestMsg *pReq, CtiCommandParser &
                 if( parse.isKeyValid("force")
                     || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_RealTime2CRC) != crc8(buffer, 40) )
                 {
-                    OutMessage->Buffer.BSt.Function    = FuncWrite_DNPReqTable;
-                    OutMessage->Buffer.BSt.Length      = 14;
-                    OutMessage->Buffer.BSt.IO          = Emetcon::IO_Function_Write;
-                    OutMessage->Buffer.BSt.Message[0]  = (MCT470_DNP_MCTPoint_RealTimeBinary+15);//This is defined in the 470 doc.
-                    OutMessage->Buffer.BSt.Message[1]  = (0);//8 bit
-                    OutMessage->Buffer.BSt.Message[2]  = (buffer[1]);
-                    OutMessage->Buffer.BSt.Message[3]  = (buffer[3]);
-                    OutMessage->Buffer.BSt.Message[4]  = (buffer[5]);
-                    OutMessage->Buffer.BSt.Message[5]  = (buffer[7]);
-                    OutMessage->Buffer.BSt.Message[6]  = (buffer[9]);
-                    OutMessage->Buffer.BSt.Message[7]  = (buffer[11]);
-                    OutMessage->Buffer.BSt.Message[8]  = (buffer[13]);
-                    OutMessage->Buffer.BSt.Message[9]  = (buffer[15]);
-                    OutMessage->Buffer.BSt.Message[10] = (buffer[17]);
-                    OutMessage->Buffer.BSt.Message[11] = (buffer[19]);
-                    OutMessage->Buffer.BSt.Message[12] = (buffer[21]);
-                    OutMessage->Buffer.BSt.Message[13] = (buffer[23]);
-
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-
-                    OutMessage->Buffer.BSt.Length      = 5;
-                    OutMessage->Buffer.BSt.Message[0]  = (MCT470_DNP_MCTPoint_RealTimeBinary+27);//This is defined in the 470 doc.
-                    OutMessage->Buffer.BSt.Message[1]  = (0);//8 bit
-                    OutMessage->Buffer.BSt.Message[2]  = (buffer[25]);
-                    OutMessage->Buffer.BSt.Message[3]  = (buffer[27]);
-                    OutMessage->Buffer.BSt.Message[4]  = (buffer[29]);
-
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-
-                    OutMessage->Buffer.BSt.Length      = 8;
-                    OutMessage->Buffer.BSt.Message[0]  = (MCT470_DNP_MCTPoint_RealTimeAnalog+3);//This is defined in the 470 doc.
-                    OutMessage->Buffer.BSt.Message[1]  = (2);//16 bit
-                    OutMessage->Buffer.BSt.Message[2]  = (buffer[31]);
-                    OutMessage->Buffer.BSt.Message[3]  = (buffer[30]);
-                    OutMessage->Buffer.BSt.Message[4]  = (buffer[33]);
-                    OutMessage->Buffer.BSt.Message[5]  = (buffer[32]);
-                    OutMessage->Buffer.BSt.Message[6]  = (buffer[35]);
-                    OutMessage->Buffer.BSt.Message[7]  = (buffer[34]);
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-
-                    OutMessage->Buffer.BSt.Length      = 6;
-                    OutMessage->Buffer.BSt.Message[0]  = (MCT470_DNP_MCTPoint_RealTimeAccumulator+2);//This is defined in the 470 doc.
-                    OutMessage->Buffer.BSt.Message[1]  = (2);//16 bit
-                    OutMessage->Buffer.BSt.Message[2]  = (buffer[37]);
-                    OutMessage->Buffer.BSt.Message[3]  = (buffer[36]);
-                    OutMessage->Buffer.BSt.Message[4]  = (buffer[39]);
-                    OutMessage->Buffer.BSt.Message[5]  = (buffer[38]);
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+                    if( !verifyOnly )
+                    {
+                        OutMessage->Buffer.BSt.Function    = FuncWrite_DNPReqTable;
+                        OutMessage->Buffer.BSt.Length      = 14;
+                        OutMessage->Buffer.BSt.IO          = Emetcon::IO_Function_Write;
+                        OutMessage->Buffer.BSt.Message[0]  = (MCT470_DNP_MCTPoint_RealTimeBinary+15);//This is defined in the 470 doc.
+                        OutMessage->Buffer.BSt.Message[1]  = (0);//8 bit
+                        OutMessage->Buffer.BSt.Message[2]  = (buffer[1]);
+                        OutMessage->Buffer.BSt.Message[3]  = (buffer[3]);
+                        OutMessage->Buffer.BSt.Message[4]  = (buffer[5]);
+                        OutMessage->Buffer.BSt.Message[5]  = (buffer[7]);
+                        OutMessage->Buffer.BSt.Message[6]  = (buffer[9]);
+                        OutMessage->Buffer.BSt.Message[7]  = (buffer[11]);
+                        OutMessage->Buffer.BSt.Message[8]  = (buffer[13]);
+                        OutMessage->Buffer.BSt.Message[9]  = (buffer[15]);
+                        OutMessage->Buffer.BSt.Message[10] = (buffer[17]);
+                        OutMessage->Buffer.BSt.Message[11] = (buffer[19]);
+                        OutMessage->Buffer.BSt.Message[12] = (buffer[21]);
+                        OutMessage->Buffer.BSt.Message[13] = (buffer[23]);
+    
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+    
+                        OutMessage->Buffer.BSt.Length      = 5;
+                        OutMessage->Buffer.BSt.Message[0]  = (MCT470_DNP_MCTPoint_RealTimeBinary+27);//This is defined in the 470 doc.
+                        OutMessage->Buffer.BSt.Message[1]  = (0);//8 bit
+                        OutMessage->Buffer.BSt.Message[2]  = (buffer[25]);
+                        OutMessage->Buffer.BSt.Message[3]  = (buffer[27]);
+                        OutMessage->Buffer.BSt.Message[4]  = (buffer[29]);
+    
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+    
+                        OutMessage->Buffer.BSt.Length      = 8;
+                        OutMessage->Buffer.BSt.Message[0]  = (MCT470_DNP_MCTPoint_RealTimeAnalog+3);//This is defined in the 470 doc.
+                        OutMessage->Buffer.BSt.Message[1]  = (2);//16 bit
+                        OutMessage->Buffer.BSt.Message[2]  = (buffer[31]);
+                        OutMessage->Buffer.BSt.Message[3]  = (buffer[30]);
+                        OutMessage->Buffer.BSt.Message[4]  = (buffer[33]);
+                        OutMessage->Buffer.BSt.Message[5]  = (buffer[32]);
+                        OutMessage->Buffer.BSt.Message[6]  = (buffer[35]);
+                        OutMessage->Buffer.BSt.Message[7]  = (buffer[34]);
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+    
+                        OutMessage->Buffer.BSt.Length      = 6;
+                        OutMessage->Buffer.BSt.Message[0]  = (MCT470_DNP_MCTPoint_RealTimeAccumulator+2);//This is defined in the 470 doc.
+                        OutMessage->Buffer.BSt.Message[1]  = (2);//16 bit
+                        OutMessage->Buffer.BSt.Message[2]  = (buffer[37]);
+                        OutMessage->Buffer.BSt.Message[3]  = (buffer[36]);
+                        OutMessage->Buffer.BSt.Message[4]  = (buffer[39]);
+                        OutMessage->Buffer.BSt.Message[5]  = (buffer[38]);
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+                    }
+                    else
+                    {
+                        nRet = ConfigNotCurrent;
+                    }
+                }
+                else if( nRet == NORMAL )
+                {
+                    nRet = ConfigCurrent;
                 }
             }
 
@@ -2526,67 +2625,81 @@ int CtiDeviceMCT470::executePutConfigDNP(CtiRequestMsg *pReq, CtiCommandParser &
                 if( parse.isKeyValid("force")
                     || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_BinaryCRC) != crc8(buffer, 24) )
                 {
-                    OutMessage->Buffer.BSt.Function    = FuncWrite_DNPReqTable;
-                    OutMessage->Buffer.BSt.Length      = 14;
-                    OutMessage->Buffer.BSt.IO          = Emetcon::IO_Function_Write;
-                    OutMessage->Buffer.BSt.Message[0]  = (MCT470_DNP_MCTPoint_PreCannedBinary);//This is defined in the 470 doc.
-                    OutMessage->Buffer.BSt.Message[1]  = (0);//8 bit
-                    OutMessage->Buffer.BSt.Message[2]  = (buffer[1]);
-                    OutMessage->Buffer.BSt.Message[3]  = (buffer[3]);
-                    OutMessage->Buffer.BSt.Message[4]  = (buffer[5]);
-                    OutMessage->Buffer.BSt.Message[5]  = (buffer[7]);
-                    OutMessage->Buffer.BSt.Message[6]  = (buffer[9]);
-                    OutMessage->Buffer.BSt.Message[7]  = (buffer[11]);
-                    OutMessage->Buffer.BSt.Message[8]  = (buffer[13]);
-                    OutMessage->Buffer.BSt.Message[9]  = (buffer[15]);
-                    OutMessage->Buffer.BSt.Message[10] = (buffer[17]);
-                    OutMessage->Buffer.BSt.Message[11] = (buffer[19]);
-                    OutMessage->Buffer.BSt.Message[12] = (buffer[21]);
-                    OutMessage->Buffer.BSt.Message[13] = (buffer[23]);
-
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+                    if( !verifyOnly )
+                    {
+                        OutMessage->Buffer.BSt.Function    = FuncWrite_DNPReqTable;
+                        OutMessage->Buffer.BSt.Length      = 14;
+                        OutMessage->Buffer.BSt.IO          = Emetcon::IO_Function_Write;
+                        OutMessage->Buffer.BSt.Message[0]  = (MCT470_DNP_MCTPoint_PreCannedBinary);//This is defined in the 470 doc.
+                        OutMessage->Buffer.BSt.Message[1]  = (0);//8 bit
+                        OutMessage->Buffer.BSt.Message[2]  = (buffer[1]);
+                        OutMessage->Buffer.BSt.Message[3]  = (buffer[3]);
+                        OutMessage->Buffer.BSt.Message[4]  = (buffer[5]);
+                        OutMessage->Buffer.BSt.Message[5]  = (buffer[7]);
+                        OutMessage->Buffer.BSt.Message[6]  = (buffer[9]);
+                        OutMessage->Buffer.BSt.Message[7]  = (buffer[11]);
+                        OutMessage->Buffer.BSt.Message[8]  = (buffer[13]);
+                        OutMessage->Buffer.BSt.Message[9]  = (buffer[15]);
+                        OutMessage->Buffer.BSt.Message[10] = (buffer[17]);
+                        OutMessage->Buffer.BSt.Message[11] = (buffer[19]);
+                        OutMessage->Buffer.BSt.Message[12] = (buffer[21]);
+                        OutMessage->Buffer.BSt.Message[13] = (buffer[23]);
+    
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+                    }
+                    else
+                    {
+                        nRet = ConfigNotCurrent;
+                    }
+                }
+                else if( nRet == NORMAL )
+                {
+                    nRet = ConfigCurrent;
                 }
             }
 
             //***** Configure the analog first set (precanned analog 1 and 2)
             analogA = config->getValueFromKey(DNPAnalog1);
             analogB = config->getValueFromKey(DNPAnalog2);
-            nRet |= sendDNPConfigMessages(AnalogStartValue, outList, OutMessage, analogA, analogB, CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC1, force);
+            nRet |= sendDNPConfigMessages(AnalogStartValue, outList, OutMessage, analogA, analogB, CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC1, force, verifyOnly);
             analogA = config->getValueFromKey(DNPAnalog3);
             analogB = config->getValueFromKey(DNPAnalog4);
-            nRet |= sendDNPConfigMessages(AnalogStartValue+12, outList, OutMessage, analogA, analogB, CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC2, force);
+            nRet |= sendDNPConfigMessages(AnalogStartValue+12, outList, OutMessage, analogA, analogB, CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC2, force, verifyOnly);
             analogA = config->getValueFromKey(DNPAnalog5);
             analogB = config->getValueFromKey(DNPAnalog6);
-            nRet |= sendDNPConfigMessages(AnalogStartValue+24, outList, OutMessage, analogA, analogB, CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC3, force);
+            nRet |= sendDNPConfigMessages(AnalogStartValue+24, outList, OutMessage, analogA, analogB, CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC3, force, verifyOnly);
             analogA = config->getValueFromKey(DNPAnalog7);
             analogB = config->getValueFromKey(DNPAnalog8);
-            nRet |= sendDNPConfigMessages(AnalogStartValue+36, outList, OutMessage, analogA, analogB, CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC4, force);
+            nRet |= sendDNPConfigMessages(AnalogStartValue+36, outList, OutMessage, analogA, analogB, CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC4, force, verifyOnly);
             analogA = config->getValueFromKey(DNPAnalog9);
             analogB = config->getValueFromKey(DNPAnalog10);
-            nRet |= sendDNPConfigMessages(AnalogStartValue+48, outList, OutMessage, analogA, analogB, CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC5, force);
+            nRet |= sendDNPConfigMessages(AnalogStartValue+48, outList, OutMessage, analogA, analogB, CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC5, force, verifyOnly);
 
             accumulatorA = config->getValueFromKey(DNPAccumulator1);
             accumulatorB = config->getValueFromKey(DNPAccumulator2);
-            nRet |= sendDNPConfigMessages(AccumulatorStartValue, outList, OutMessage, accumulatorA, accumulatorB, CtiTableDynamicPaoInfo::Key_MCT_DNP_AccumulatorCRC1, force);
+            nRet |= sendDNPConfigMessages(AccumulatorStartValue, outList, OutMessage, accumulatorA, accumulatorB, CtiTableDynamicPaoInfo::Key_MCT_DNP_AccumulatorCRC1, force, verifyOnly);
             accumulatorA = config->getValueFromKey(DNPAccumulator3);
             accumulatorB = config->getValueFromKey(DNPAccumulator4);
-            nRet |= sendDNPConfigMessages(AccumulatorStartValue+12, outList, OutMessage, accumulatorA, accumulatorB, CtiTableDynamicPaoInfo::Key_MCT_DNP_AccumulatorCRC2, force);
+            nRet |= sendDNPConfigMessages(AccumulatorStartValue+12, outList, OutMessage, accumulatorA, accumulatorB, CtiTableDynamicPaoInfo::Key_MCT_DNP_AccumulatorCRC2, force, verifyOnly);
             accumulatorA = config->getValueFromKey(DNPAccumulator5);
             accumulatorB = config->getValueFromKey(DNPAccumulator6);
-            nRet |= sendDNPConfigMessages(AccumulatorStartValue+24, outList, OutMessage, accumulatorA, accumulatorB, CtiTableDynamicPaoInfo::Key_MCT_DNP_AccumulatorCRC3, force);
+            nRet |= sendDNPConfigMessages(AccumulatorStartValue+24, outList, OutMessage, accumulatorA, accumulatorB, CtiTableDynamicPaoInfo::Key_MCT_DNP_AccumulatorCRC3, force, verifyOnly);
             accumulatorA = config->getValueFromKey(DNPAccumulator7);
             accumulatorB = config->getValueFromKey(DNPAccumulator8);
-            nRet |= sendDNPConfigMessages(AccumulatorStartValue+36, outList, OutMessage, accumulatorA, accumulatorB, CtiTableDynamicPaoInfo::Key_MCT_DNP_AccumulatorCRC4, force);
+            nRet |= sendDNPConfigMessages(AccumulatorStartValue+36, outList, OutMessage, accumulatorA, accumulatorB, CtiTableDynamicPaoInfo::Key_MCT_DNP_AccumulatorCRC4, force, verifyOnly);
 
-            //Read out the CRC
-            strncpy(OutMessage->Request.CommandStr, "getvalue ied dnp crc", COMMAND_STR_SIZE );
-            OutMessage->Priority--;
-            OutMessage->Sequence = Emetcon::GetValue_IED;
-            OutMessage->Buffer.BSt.Function = FuncRead_IED_CRCPos;
-            OutMessage->Buffer.BSt.Length   = FuncRead_IED_CRCLen;
-            OutMessage->Buffer.BSt.IO = Emetcon::IO_Function_Read;
-            outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-            OutMessage->Priority++;
+            if( !parse.isKeyValid("verify") )
+            {
+                //Read out the CRC
+                strncpy(OutMessage->Request.CommandStr, "getvalue ied dnp crc", COMMAND_STR_SIZE );
+                OutMessage->Priority--;
+                OutMessage->Sequence = Emetcon::GetValue_IED;
+                OutMessage->Buffer.BSt.Function = FuncRead_IED_CRCPos;
+                OutMessage->Buffer.BSt.Length   = FuncRead_IED_CRCLen;
+                OutMessage->Buffer.BSt.IO = Emetcon::IO_Function_Read;
+                outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+                OutMessage->Priority++;
+            }
         }
         else
             nRet = NoConfigData;
@@ -2597,7 +2710,7 @@ int CtiDeviceMCT470::executePutConfigDNP(CtiRequestMsg *pReq, CtiCommandParser &
     return nRet;
 }
 
-int CtiDeviceMCT470::sendDNPConfigMessages(int startMCTID, list< OUTMESS * > &outList, OUTMESS *&OutMessage, string &dataA, string &dataB, CtiTableDynamicPaoInfo::Keys key, bool force)
+int CtiDeviceMCT470::sendDNPConfigMessages(int startMCTID, list< OUTMESS * > &outList, OUTMESS *&OutMessage, string &dataA, string &dataB, CtiTableDynamicPaoInfo::Keys key, bool force, bool verifyOnly)
 {
     int nRet = NORMAL;
     int valCount;
@@ -2631,75 +2744,86 @@ int CtiDeviceMCT470::sendDNPConfigMessages(int startMCTID, list< OUTMESS * > &ou
         if( force
             || CtiDeviceBase::getDynamicInfo(key) != crc8(buffer, 24) )
         {
-            //To make sending efficient, we will check if we can use 8 bit (we ignore 12 bit for now)
-            bool canUse8Bit = true;
-            for( int i = 0; i<24; i+=2 )
+            if( !verifyOnly )
             {
-                if( buffer[i] != 0)
+                //To make sending efficient, we will check if we can use 8 bit (we ignore 12 bit for now)
+                bool canUse8Bit = true;
+                for( int i = 0; i<24; i+=2 )
                 {
-                    canUse8Bit = false;
+                    if( buffer[i] != 0)
+                    {
+                        canUse8Bit = false;
+                    }
                 }
-            }
-
-            if( canUse8Bit )
-            {
-                OutMessage->Buffer.BSt.Function    = FuncWrite_DNPReqTable;
-                OutMessage->Buffer.BSt.Length      = 14;
-                OutMessage->Buffer.BSt.IO          = Emetcon::IO_Function_Write;
-                OutMessage->Buffer.BSt.Message[0]  = (startMCTID);//This is defined in the 470 doc.
-                OutMessage->Buffer.BSt.Message[1]  = (0);//8 bit
-                OutMessage->Buffer.BSt.Message[2]  = (buffer[1]);
-                OutMessage->Buffer.BSt.Message[3]  = (buffer[3]);
-                OutMessage->Buffer.BSt.Message[4]  = (buffer[5]);
-                OutMessage->Buffer.BSt.Message[5]  = (buffer[7]);
-                OutMessage->Buffer.BSt.Message[6]  = (buffer[9]);
-                OutMessage->Buffer.BSt.Message[7]  = (buffer[11]);
-                OutMessage->Buffer.BSt.Message[8]  = (buffer[13]);
-                OutMessage->Buffer.BSt.Message[9]  = (buffer[15]);
-                OutMessage->Buffer.BSt.Message[10] = (buffer[17]);
-                OutMessage->Buffer.BSt.Message[11] = (buffer[19]);
-                OutMessage->Buffer.BSt.Message[12] = (buffer[21]);
-                OutMessage->Buffer.BSt.Message[13] = (buffer[23]);
-
-                outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+    
+                if( canUse8Bit )
+                {
+                    OutMessage->Buffer.BSt.Function    = FuncWrite_DNPReqTable;
+                    OutMessage->Buffer.BSt.Length      = 14;
+                    OutMessage->Buffer.BSt.IO          = Emetcon::IO_Function_Write;
+                    OutMessage->Buffer.BSt.Message[0]  = (startMCTID);//This is defined in the 470 doc.
+                    OutMessage->Buffer.BSt.Message[1]  = (0);//8 bit
+                    OutMessage->Buffer.BSt.Message[2]  = (buffer[1]);
+                    OutMessage->Buffer.BSt.Message[3]  = (buffer[3]);
+                    OutMessage->Buffer.BSt.Message[4]  = (buffer[5]);
+                    OutMessage->Buffer.BSt.Message[5]  = (buffer[7]);
+                    OutMessage->Buffer.BSt.Message[6]  = (buffer[9]);
+                    OutMessage->Buffer.BSt.Message[7]  = (buffer[11]);
+                    OutMessage->Buffer.BSt.Message[8]  = (buffer[13]);
+                    OutMessage->Buffer.BSt.Message[9]  = (buffer[15]);
+                    OutMessage->Buffer.BSt.Message[10] = (buffer[17]);
+                    OutMessage->Buffer.BSt.Message[11] = (buffer[19]);
+                    OutMessage->Buffer.BSt.Message[12] = (buffer[21]);
+                    OutMessage->Buffer.BSt.Message[13] = (buffer[23]);
+    
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+                }
+                else
+                {
+                    OutMessage->Buffer.BSt.Function   = FuncWrite_DNPReqTable;
+                    OutMessage->Buffer.BSt.Length     = 14;
+                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Write;
+                    OutMessage->Buffer.BSt.Message[0] = (startMCTID);//This is defined in the 470 doc.
+                    OutMessage->Buffer.BSt.Message[1] = (2);//16 bit
+                    OutMessage->Buffer.BSt.Message[2] = (buffer[0]);
+                    OutMessage->Buffer.BSt.Message[3] = (buffer[1]);
+                    OutMessage->Buffer.BSt.Message[4] = (buffer[2]);
+                    OutMessage->Buffer.BSt.Message[5] = (buffer[3]);
+                    OutMessage->Buffer.BSt.Message[6] = (buffer[4]);
+                    OutMessage->Buffer.BSt.Message[7] = (buffer[5]);
+                    OutMessage->Buffer.BSt.Message[8] = (buffer[6]);
+                    OutMessage->Buffer.BSt.Message[9] = (buffer[7]);
+                    OutMessage->Buffer.BSt.Message[10] = (buffer[8]);
+                    OutMessage->Buffer.BSt.Message[11] = (buffer[9]);
+                    OutMessage->Buffer.BSt.Message[12] = (buffer[10]);
+                    OutMessage->Buffer.BSt.Message[13] = (buffer[11]);
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+    
+                    OutMessage->Buffer.BSt.Message[0] = (startMCTID + 6);//This is defined in the 470 doc.
+                    OutMessage->Buffer.BSt.Message[1] = (2);//16 bit
+                    OutMessage->Buffer.BSt.Message[2] = (buffer[12]);
+                    OutMessage->Buffer.BSt.Message[3] = (buffer[13]);
+                    OutMessage->Buffer.BSt.Message[4] = (buffer[14]);
+                    OutMessage->Buffer.BSt.Message[5] = (buffer[15]);
+                    OutMessage->Buffer.BSt.Message[6] = (buffer[16]);
+                    OutMessage->Buffer.BSt.Message[7] = (buffer[17]);
+                    OutMessage->Buffer.BSt.Message[8] = (buffer[18]);
+                    OutMessage->Buffer.BSt.Message[9] = (buffer[19]);
+                    OutMessage->Buffer.BSt.Message[10] = (buffer[20]);
+                    OutMessage->Buffer.BSt.Message[11] = (buffer[21]);
+                    OutMessage->Buffer.BSt.Message[12] = (buffer[22]);
+                    OutMessage->Buffer.BSt.Message[13] = (buffer[23]);
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+                }
             }
             else
             {
-                OutMessage->Buffer.BSt.Function   = FuncWrite_DNPReqTable;
-                OutMessage->Buffer.BSt.Length     = 14;
-                OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Write;
-                OutMessage->Buffer.BSt.Message[0] = (startMCTID);//This is defined in the 470 doc.
-                OutMessage->Buffer.BSt.Message[1] = (2);//16 bit
-                OutMessage->Buffer.BSt.Message[2] = (buffer[0]);
-                OutMessage->Buffer.BSt.Message[3] = (buffer[1]);
-                OutMessage->Buffer.BSt.Message[4] = (buffer[2]);
-                OutMessage->Buffer.BSt.Message[5] = (buffer[3]);
-                OutMessage->Buffer.BSt.Message[6] = (buffer[4]);
-                OutMessage->Buffer.BSt.Message[7] = (buffer[5]);
-                OutMessage->Buffer.BSt.Message[8] = (buffer[6]);
-                OutMessage->Buffer.BSt.Message[9] = (buffer[7]);
-                OutMessage->Buffer.BSt.Message[10] = (buffer[8]);
-                OutMessage->Buffer.BSt.Message[11] = (buffer[9]);
-                OutMessage->Buffer.BSt.Message[12] = (buffer[10]);
-                OutMessage->Buffer.BSt.Message[13] = (buffer[11]);
-                outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-
-                OutMessage->Buffer.BSt.Message[0] = (startMCTID + 6);//This is defined in the 470 doc.
-                OutMessage->Buffer.BSt.Message[1] = (2);//16 bit
-                OutMessage->Buffer.BSt.Message[2] = (buffer[12]);
-                OutMessage->Buffer.BSt.Message[3] = (buffer[13]);
-                OutMessage->Buffer.BSt.Message[4] = (buffer[14]);
-                OutMessage->Buffer.BSt.Message[5] = (buffer[15]);
-                OutMessage->Buffer.BSt.Message[6] = (buffer[16]);
-                OutMessage->Buffer.BSt.Message[7] = (buffer[17]);
-                OutMessage->Buffer.BSt.Message[8] = (buffer[18]);
-                OutMessage->Buffer.BSt.Message[9] = (buffer[19]);
-                OutMessage->Buffer.BSt.Message[10] = (buffer[20]);
-                OutMessage->Buffer.BSt.Message[11] = (buffer[21]);
-                OutMessage->Buffer.BSt.Message[12] = (buffer[22]);
-                OutMessage->Buffer.BSt.Message[13] = (buffer[23]);
-                outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+                nRet = ConfigNotCurrent;
             }
+        }
+        else
+        {
+            nRet = ConfigCurrent;
         }
     }
     return nRet;

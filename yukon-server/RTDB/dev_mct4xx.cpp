@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2006/10/20 15:43:35 $
+* REVISION     :  $Revision: 1.34 $
+* DATE         :  $Date: 2006/10/23 18:57:28 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1185,6 +1185,15 @@ int CtiDeviceMCT4xx::executePutConfigSingle(CtiRequestMsg         *pReq,
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " Device " << getName() << " had no configuration for config: " << installValue << endl;
         }
+        else if( nRet == ConfigCurrent )
+        {
+            resultString = "Config " + installValue + " is current.";
+            nRet = NORMAL; //This is an OK return! Note that nRet is no longer propogated!
+        }
+        else if( nRet == ConfigNotCurrent )
+        {
+            resultString = "Config " + installValue + " is NOT current.";
+        }
         else
         {
             resultString = "ERROR: NoMethod or invalid config. Config name:" + installValue;
@@ -1313,20 +1322,31 @@ int CtiDeviceMCT4xx::executePutConfigVThreshold(CtiRequestMsg *pReq, CtiCommandP
                 if(parse.isKeyValid("force") || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_UnderVoltageThreshold) != underVThreshold
                    || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_OverVoltageThreshold) != overVThreshold)
                 {
-                    OutMessage->Buffer.BSt.Function   = function;
-                    OutMessage->Buffer.BSt.Length     = length;
-                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Write;
-                    OutMessage->Buffer.BSt.Message[0] = (overVThreshold>>8);
-                    OutMessage->Buffer.BSt.Message[1] = (overVThreshold);
-                    OutMessage->Buffer.BSt.Message[2] = (underVThreshold>>8);
-                    OutMessage->Buffer.BSt.Message[3] = (underVThreshold);
-
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-
-                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
-                    OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-                    OutMessage->Priority             += 1;//return to normal
+                    if( !parse.isKeyValid("verify") )
+                    {
+                        OutMessage->Buffer.BSt.Function   = function;
+                        OutMessage->Buffer.BSt.Length     = length;
+                        OutMessage->Buffer.BSt.IO         = Emetcon::IO_Write;
+                        OutMessage->Buffer.BSt.Message[0] = (overVThreshold>>8);
+                        OutMessage->Buffer.BSt.Message[1] = (overVThreshold);
+                        OutMessage->Buffer.BSt.Message[2] = (underVThreshold>>8);
+                        OutMessage->Buffer.BSt.Message[3] = (underVThreshold);
+    
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+    
+                        OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
+                        OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+                        OutMessage->Priority             += 1;//return to normal
+                    }
+                    else
+                    {
+                        nRet = ConfigNotCurrent;
+                    }
+                }
+                else
+                {
+                    nRet = ConfigCurrent;
                 }
             }
         }
@@ -1551,69 +1571,80 @@ int CtiDeviceMCT4xx::executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandParser &p
                    || dynDaySchedule3 != daySchedule3
                    || dynDaySchedule4 != daySchedule4)
                 {
-                    OutMessage->Buffer.BSt.Function   = FuncWrite_TOUSchedule1Pos;
-                    OutMessage->Buffer.BSt.Length     = FuncWrite_TOUSchedule1Len;
-                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Write;
-                    OutMessage->Buffer.BSt.Message[0] = (dayTable>>8);
-                    OutMessage->Buffer.BSt.Message[1] = dayTable;
-                    OutMessage->Buffer.BSt.Message[2] = times[0][0];
-                    OutMessage->Buffer.BSt.Message[3] = times[0][1];
-                    OutMessage->Buffer.BSt.Message[4] = times[0][2];
-                    OutMessage->Buffer.BSt.Message[5] = times[0][3];
-                    OutMessage->Buffer.BSt.Message[6] = times[0][4];
-                    OutMessage->Buffer.BSt.Message[7] = ( ((rates[1][4]<<6)&0xC0) | ((rates[1][3]<<4)&0x30) | ((rates[0][4]<<2)&0x0C) | (rates[0][3]&0x03) );
-                    OutMessage->Buffer.BSt.Message[8] = ( ((rates[0][2]<<6)&0xC0) | ((rates[0][1]<<4)&0x30) | ((rates[0][0]<<2)&0x0C) | (rates[0][5]&0x03) );
-                    OutMessage->Buffer.BSt.Message[9] =  times[1][0];
-                    OutMessage->Buffer.BSt.Message[10] = times[1][1];
-                    OutMessage->Buffer.BSt.Message[11] = times[1][2];
-                    OutMessage->Buffer.BSt.Message[12] = times[1][3];
-                    OutMessage->Buffer.BSt.Message[13] = times[1][4];
-                    OutMessage->Buffer.BSt.Message[14] = ( ((rates[1][2]<<6)&0xC0) | ((rates[1][1]<<4)&0x30) | ((rates[1][0]<<2)&0x0C) | (rates[1][5]&0x03) );
-
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-
-                    OutMessage->Buffer.BSt.Function   = FuncWrite_TOUSchedule2Pos;
-                    OutMessage->Buffer.BSt.Length     = FuncWrite_TOUSchedule2Len;
-                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Write;
-                    OutMessage->Buffer.BSt.Message[0] = times[2][0];
-                    OutMessage->Buffer.BSt.Message[1] = times[2][1];
-                    OutMessage->Buffer.BSt.Message[2] = times[2][2];
-                    OutMessage->Buffer.BSt.Message[3] = times[2][3];
-                    OutMessage->Buffer.BSt.Message[4] = times[2][4];
-                    OutMessage->Buffer.BSt.Message[5] = ( ((rates[2][4]<<2)&0x0C) | (rates[2][3]&0x03) );
-                    OutMessage->Buffer.BSt.Message[6] = ( ((rates[2][2]<<6)&0xC0) | ((rates[2][1]<<4)&0x30) | ((rates[2][0]<<2)&0x0C) | (rates[2][5]&0x03) );
-
-                    OutMessage->Buffer.BSt.Message[7] = times[3][0];
-                    OutMessage->Buffer.BSt.Message[8] = times[3][1];
-                    OutMessage->Buffer.BSt.Message[9] = times[3][2];
-                    OutMessage->Buffer.BSt.Message[10] = times[3][3];
-                    OutMessage->Buffer.BSt.Message[11] = times[3][4];
-                    OutMessage->Buffer.BSt.Message[12] = ( ((rates[3][4]<<2)&0x0C) | (rates[3][3]&0x03) );
-                    OutMessage->Buffer.BSt.Message[13] = ( ((rates[3][2]<<6)&0xC0) | ((rates[3][1]<<4)&0x30) | ((rates[3][0]<<2)&0x0C) | (rates[3][5]&0x03) );
-                    OutMessage->Buffer.BSt.Message[14] = (defaultTOURate);
-
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-
-                    // Set up the reads here
-                    OutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule12Pos;
-                    OutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule12Len;
-                    OutMessage->Buffer.BSt.IO       = Emetcon::IO_Function_Read;
-                    OUTMESS *touOutMessage = CTIDBG_new OUTMESS(*OutMessage);
-                    touOutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
-                    touOutMessage->Sequence = Emetcon::GetConfig_TOU;
-                    strncpy(touOutMessage->Request.CommandStr, "getconfig tou schedule 1", COMMAND_STR_SIZE );
-                    outList.push_back( CTIDBG_new OUTMESS(*touOutMessage) );
-
-                    touOutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule34Pos;
-                    touOutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule34Len;
-                    strncpy(touOutMessage->Request.CommandStr, "getconfig tou schedule 3", COMMAND_STR_SIZE );
-                    outList.push_back( CTIDBG_new OUTMESS(*touOutMessage) );
-
-                    touOutMessage->Buffer.BSt.Function = FuncRead_TOUStatusPos;
-                    touOutMessage->Buffer.BSt.Length   = FuncRead_TOUStatusLen;
-                    strncpy(touOutMessage->Request.CommandStr, "getconfig tou", COMMAND_STR_SIZE );
-                    outList.push_back( touOutMessage );
-                    touOutMessage = 0;
+                    if( !parse.isKeyValid("verify") )
+                    {
+                        OutMessage->Buffer.BSt.Function   = FuncWrite_TOUSchedule1Pos;
+                        OutMessage->Buffer.BSt.Length     = FuncWrite_TOUSchedule1Len;
+                        OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Write;
+                        OutMessage->Buffer.BSt.Message[0] = (dayTable>>8);
+                        OutMessage->Buffer.BSt.Message[1] = dayTable;
+                        OutMessage->Buffer.BSt.Message[2] = times[0][0];
+                        OutMessage->Buffer.BSt.Message[3] = times[0][1];
+                        OutMessage->Buffer.BSt.Message[4] = times[0][2];
+                        OutMessage->Buffer.BSt.Message[5] = times[0][3];
+                        OutMessage->Buffer.BSt.Message[6] = times[0][4];
+                        OutMessage->Buffer.BSt.Message[7] = ( ((rates[1][4]<<6)&0xC0) | ((rates[1][3]<<4)&0x30) | ((rates[0][4]<<2)&0x0C) | (rates[0][3]&0x03) );
+                        OutMessage->Buffer.BSt.Message[8] = ( ((rates[0][2]<<6)&0xC0) | ((rates[0][1]<<4)&0x30) | ((rates[0][0]<<2)&0x0C) | (rates[0][5]&0x03) );
+                        OutMessage->Buffer.BSt.Message[9] =  times[1][0];
+                        OutMessage->Buffer.BSt.Message[10] = times[1][1];
+                        OutMessage->Buffer.BSt.Message[11] = times[1][2];
+                        OutMessage->Buffer.BSt.Message[12] = times[1][3];
+                        OutMessage->Buffer.BSt.Message[13] = times[1][4];
+                        OutMessage->Buffer.BSt.Message[14] = ( ((rates[1][2]<<6)&0xC0) | ((rates[1][1]<<4)&0x30) | ((rates[1][0]<<2)&0x0C) | (rates[1][5]&0x03) );
+    
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+    
+                        OutMessage->Buffer.BSt.Function   = FuncWrite_TOUSchedule2Pos;
+                        OutMessage->Buffer.BSt.Length     = FuncWrite_TOUSchedule2Len;
+                        OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Write;
+                        OutMessage->Buffer.BSt.Message[0] = times[2][0];
+                        OutMessage->Buffer.BSt.Message[1] = times[2][1];
+                        OutMessage->Buffer.BSt.Message[2] = times[2][2];
+                        OutMessage->Buffer.BSt.Message[3] = times[2][3];
+                        OutMessage->Buffer.BSt.Message[4] = times[2][4];
+                        OutMessage->Buffer.BSt.Message[5] = ( ((rates[2][4]<<2)&0x0C) | (rates[2][3]&0x03) );
+                        OutMessage->Buffer.BSt.Message[6] = ( ((rates[2][2]<<6)&0xC0) | ((rates[2][1]<<4)&0x30) | ((rates[2][0]<<2)&0x0C) | (rates[2][5]&0x03) );
+    
+                        OutMessage->Buffer.BSt.Message[7] = times[3][0]; 
+                        OutMessage->Buffer.BSt.Message[8] = times[3][1]; 
+                        OutMessage->Buffer.BSt.Message[9] = times[3][2]; 
+                        OutMessage->Buffer.BSt.Message[10] = times[3][3]; 
+                        OutMessage->Buffer.BSt.Message[11] = times[3][4]; 
+                        OutMessage->Buffer.BSt.Message[12] = ( ((rates[3][4]<<2)&0x0C) | (rates[3][3]&0x03) );
+                        OutMessage->Buffer.BSt.Message[13] = ( ((rates[3][2]<<6)&0xC0) | ((rates[3][1]<<4)&0x30) | ((rates[3][0]<<2)&0x0C) | (rates[3][5]&0x03) );
+                        OutMessage->Buffer.BSt.Message[14] = (defaultTOURate);
+    
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+    
+                        // Set up the reads here
+                        OutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule12Pos;
+                        OutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule12Len;
+                        OutMessage->Buffer.BSt.IO       = Emetcon::IO_Function_Read;
+                        OUTMESS *touOutMessage = CTIDBG_new OUTMESS(*OutMessage);
+                        touOutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
+                        touOutMessage->Sequence = Emetcon::GetConfig_TOU;
+                        strncpy(touOutMessage->Request.CommandStr, "getconfig tou schedule 1", COMMAND_STR_SIZE );
+                        outList.push_back( CTIDBG_new OUTMESS(*touOutMessage) );
+    
+                        touOutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule34Pos;
+                        touOutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule34Len;
+                        strncpy(touOutMessage->Request.CommandStr, "getconfig tou schedule 3", COMMAND_STR_SIZE );
+                        outList.push_back( CTIDBG_new OUTMESS(*touOutMessage) );
+    
+                        touOutMessage->Buffer.BSt.Function = FuncRead_TOUStatusPos;
+                        touOutMessage->Buffer.BSt.Length   = FuncRead_TOUStatusLen;
+                        strncpy(touOutMessage->Request.CommandStr, "getconfig tou", COMMAND_STR_SIZE );
+                        outList.push_back( touOutMessage );
+                        touOutMessage = 0;
+                    }
+                    else
+                    {
+                        nRet = ConfigNotCurrent;
+                    }
+                }
+                else
+                {
+                    nRet = ConfigCurrent;
                 }
             }
         }
@@ -1670,22 +1701,33 @@ int CtiDeviceMCT4xx::executePutConfigAddressing(CtiRequestMsg *pReq, CtiCommandP
                    || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_AddressCollection) != collection
                    || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_AddressServiceProviderID) != spid )
                 {
-                    OutMessage->Buffer.BSt.Function   = function;
-                    OutMessage->Buffer.BSt.Length     = length;
-                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Write;
-                    OutMessage->Buffer.BSt.Message[0] = (bronze);
-                    OutMessage->Buffer.BSt.Message[1] = (lead>>8);
-                    OutMessage->Buffer.BSt.Message[2] = (lead);
-                    OutMessage->Buffer.BSt.Message[3] = (collection>>8);
-                    OutMessage->Buffer.BSt.Message[4] = (collection);
-                    OutMessage->Buffer.BSt.Message[5] = spid;
-
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-
-                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
-                    OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-                    OutMessage->Priority             += 1;//return to normal
+                    if( !parse.isKeyValid("verify") )
+                    {
+                        OutMessage->Buffer.BSt.Function   = function;
+                        OutMessage->Buffer.BSt.Length     = length;
+                        OutMessage->Buffer.BSt.IO         = Emetcon::IO_Write;
+                        OutMessage->Buffer.BSt.Message[0] = (bronze);
+                        OutMessage->Buffer.BSt.Message[1] = (lead>>8);
+                        OutMessage->Buffer.BSt.Message[2] = (lead);
+                        OutMessage->Buffer.BSt.Message[3] = (collection>>8);
+                        OutMessage->Buffer.BSt.Message[4] = (collection);
+                        OutMessage->Buffer.BSt.Message[5] = spid;
+    
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+    
+                        OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
+                        OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+                        OutMessage->Priority             += 1;//return to normal
+                    }
+                    else
+                    {
+                        nRet = ConfigNotCurrent;
+                    }
+                }
+                else
+                {
+                    nRet = ConfigCurrent;
                 }
             }
         }
@@ -1735,28 +1777,39 @@ int CtiDeviceMCT4xx::executePutConfigDst(CtiRequestMsg *pReq, CtiCommandParser &
                    || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DSTEndTime) != dstEnd
                    || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_TimeZoneOffset) != timezoneOffset)
                 {
-                    OutMessage->Buffer.BSt.Function   = function;
-                    OutMessage->Buffer.BSt.Length     = length;
-                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Write;
-                    OutMessage->Buffer.BSt.Message[0] = (dstBegin>>24);
-                    OutMessage->Buffer.BSt.Message[1] = (dstBegin>>16);
-                    OutMessage->Buffer.BSt.Message[2] = (dstBegin>>8);
-                    OutMessage->Buffer.BSt.Message[3] = (dstBegin);
-                    OutMessage->Buffer.BSt.Message[4] = (dstEnd>>24);
-                    OutMessage->Buffer.BSt.Message[5] = (dstEnd>>16);
-                    OutMessage->Buffer.BSt.Message[6] = (dstEnd>>8);
-                    OutMessage->Buffer.BSt.Message[7] = (dstEnd);
-                    OutMessage->Buffer.BSt.Message[8] = (timezoneOffset);
-
-
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-
-                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
-                    OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-                    OutMessage->Priority             += 1;//return to normal
-
-                    nRet = NORMAL;
+                    if( !parse.isKeyValid("verify") )
+                    {
+                        OutMessage->Buffer.BSt.Function   = function;
+                        OutMessage->Buffer.BSt.Length     = length;
+                        OutMessage->Buffer.BSt.IO         = Emetcon::IO_Write;
+                        OutMessage->Buffer.BSt.Message[0] = (dstBegin>>24);
+                        OutMessage->Buffer.BSt.Message[1] = (dstBegin>>16);
+                        OutMessage->Buffer.BSt.Message[2] = (dstBegin>>8);
+                        OutMessage->Buffer.BSt.Message[3] = (dstBegin);
+                        OutMessage->Buffer.BSt.Message[4] = (dstEnd>>24);
+                        OutMessage->Buffer.BSt.Message[5] = (dstEnd>>16);
+                        OutMessage->Buffer.BSt.Message[6] = (dstEnd>>8);
+                        OutMessage->Buffer.BSt.Message[7] = (dstEnd);
+                        OutMessage->Buffer.BSt.Message[8] = (timezoneOffset);
+    
+    
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+    
+                        OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
+                        OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+                        OutMessage->Priority             += 1;//return to normal
+    
+                        nRet = NORMAL;
+                    }
+                    else
+                    {
+                        nRet = ConfigNotCurrent;
+                    }
+                }
+                else
+                {
+                    nRet = ConfigCurrent;
                 }
             }
         }
@@ -1809,27 +1862,38 @@ int CtiDeviceMCT4xx::executePutConfigHoliday(CtiRequestMsg *pReq, CtiCommandPars
                    || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Holiday2) != holiday2
                    || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Holiday3) != holiday3 )
                 {
-                    OutMessage->Buffer.BSt.Function   = function;
-                    OutMessage->Buffer.BSt.Length     = length;
-                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Write;
-                    OutMessage->Buffer.BSt.Message[0] = (holiday1>>24);
-                    OutMessage->Buffer.BSt.Message[1] = (holiday1>>16);
-                    OutMessage->Buffer.BSt.Message[2] = (holiday1>>8);
-                    OutMessage->Buffer.BSt.Message[3] = (holiday1);
-                    OutMessage->Buffer.BSt.Message[4] = (holiday2>>24);
-                    OutMessage->Buffer.BSt.Message[5] = (holiday2>>16);
-                    OutMessage->Buffer.BSt.Message[6] = (holiday2>>8);
-                    OutMessage->Buffer.BSt.Message[7] = (holiday2);
-                    OutMessage->Buffer.BSt.Message[8] = (holiday3>>24);
-                    OutMessage->Buffer.BSt.Message[9] = (holiday3>>16);
-                    OutMessage->Buffer.BSt.Message[10] = (holiday3>>8);
-                    OutMessage->Buffer.BSt.Message[11] = (holiday3);
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-
-                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
-                    OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-                    OutMessage->Priority             += 1;//return to normal
+                    if( !parse.isKeyValid("verify") )
+                    {
+                        OutMessage->Buffer.BSt.Function   = function;
+                        OutMessage->Buffer.BSt.Length     = length;
+                        OutMessage->Buffer.BSt.IO         = Emetcon::IO_Write;
+                        OutMessage->Buffer.BSt.Message[0] = (holiday1>>24);
+                        OutMessage->Buffer.BSt.Message[1] = (holiday1>>16);
+                        OutMessage->Buffer.BSt.Message[2] = (holiday1>>8);
+                        OutMessage->Buffer.BSt.Message[3] = (holiday1);
+                        OutMessage->Buffer.BSt.Message[4] = (holiday2>>24);
+                        OutMessage->Buffer.BSt.Message[5] = (holiday2>>16);
+                        OutMessage->Buffer.BSt.Message[6] = (holiday2>>8);
+                        OutMessage->Buffer.BSt.Message[7] = (holiday2);
+                        OutMessage->Buffer.BSt.Message[8] = (holiday3>>24);
+                        OutMessage->Buffer.BSt.Message[9] = (holiday3>>16);
+                        OutMessage->Buffer.BSt.Message[10] = (holiday3>>8);
+                        OutMessage->Buffer.BSt.Message[11] = (holiday3);
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+    
+                        OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
+                        OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+                        OutMessage->Priority             += 1;//return to normal
+                    }
+                    else
+                    {
+                        nRet = ConfigNotCurrent;
+                    }
+                }
+                else
+                {
+                    nRet = ConfigCurrent;
                 }
             }
         }
@@ -1912,24 +1976,35 @@ int CtiDeviceMCT4xx::executePutConfigLongLoadProfile(CtiRequestMsg *pReq,CtiComm
                    || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPChannel3Len) != channel3
                    || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPChannel4Len) != channel4 )
                 {
-                    OutMessage->Buffer.BSt.Function   = function;
-                    OutMessage->Buffer.BSt.Length     = length;
-                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Write;
-                    OutMessage->Buffer.BSt.Message[0] = spid;
-                    OutMessage->Buffer.BSt.Message[1] = channel1;
-                    OutMessage->Buffer.BSt.Message[2] = channel2;
-                    OutMessage->Buffer.BSt.Message[3] = channel3;
-                    OutMessage->Buffer.BSt.Message[4] = channel4;
-
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-
-                    getOperation(Emetcon::GetConfig_LongloadProfile, function, length, io);
-                    OutMessage->Buffer.BSt.Function   = function;
-                    OutMessage->Buffer.BSt.Length     = length;
-                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Read;
-                    OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-                    OutMessage->Priority             += 1;//return to normal
+                    if( !parse.isKeyValid("verify") )
+                    {
+                        OutMessage->Buffer.BSt.Function   = function;
+                        OutMessage->Buffer.BSt.Length     = length;
+                        OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Write;
+                        OutMessage->Buffer.BSt.Message[0] = spid;
+                        OutMessage->Buffer.BSt.Message[1] = channel1;
+                        OutMessage->Buffer.BSt.Message[2] = channel2;
+                        OutMessage->Buffer.BSt.Message[3] = channel3;
+                        OutMessage->Buffer.BSt.Message[4] = channel4;
+    
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+    
+                        getOperation(Emetcon::GetConfig_LongloadProfile, function, length, io);
+                        OutMessage->Buffer.BSt.Function   = function;
+                        OutMessage->Buffer.BSt.Length     = length;
+                        OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Read;
+                        OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+                        OutMessage->Priority             += 1;//return to normal
+                    }
+                    else
+                    {
+                        nRet = ConfigNotCurrent;
+                    }
+                }
+                else
+                {
+                    nRet = ConfigCurrent;
                 }
             }
         }
