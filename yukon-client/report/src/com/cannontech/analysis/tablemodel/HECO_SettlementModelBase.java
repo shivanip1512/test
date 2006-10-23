@@ -129,20 +129,33 @@ public class HECO_SettlementModelBase extends ReportModelBase
 		setEnergyCompanyID(ecID_);
 	}
 	
+    /*
+     * Clear out (re-init) all data storage objects.
+     */
+    public void clearDataObjects() {
+        getData().clear();
+        getDataObjects().clear();
+        settlementCustomerMap = null;   //dump old data
+        settlementConfigs = null;   //dump old configs
+        pointIDCSV = null;
+        
+        eriAmounts = null;
+        efslEmergencyCharges = null;
+        efslDispatchedCharges = null;
+        efslUnderfrequecyCharges = null;
+        controlledDemandIncentive = null;
+        customerIDS = null;
+        custDemandLevels = null;
+        custCurtailLoads = null;
+    }
+    
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.data.ReportModelBase#collectData()
 	 */
 	public void collectData()
 	{
 		//Reset all objects, new data being collected!
-		getData().clear();
-        getDataObjects().clear();
-		settlementCustomerMap = null;	//dump old data
-		customerIDS = null;	//dump old data
-		custDemandLevels = null;
-		custCurtailLoads = null;
-		settlementConfigs = null;	//dump old configs
-		pointIDCSV = null;
+        clearDataObjects();
 		
 		int rowCount = 0;
 		StringBuffer sql = buildSQLStatement();
@@ -894,7 +907,7 @@ public class HECO_SettlementModelBase extends ReportModelBase
 		{
 			SettlementCustomer settleCust = getSettlementCustomer(getCustomerIDS()[i]);;
 			cdi = settleCust.getControlledDemandIncentive().doubleValue();
-			controlledDemandIncentive[i] = new Double(cdi);
+            controlledDemandIncentive[i] = (cdi < 0 ? new Double(0) : new Double(cdi));
 		}
 	}
     
