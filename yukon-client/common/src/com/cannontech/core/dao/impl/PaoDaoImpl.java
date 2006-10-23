@@ -16,14 +16,18 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.StopWatch;
 import com.cannontech.core.dao.*;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.db.device.DeviceCarrierSettings;
+import com.cannontech.database.db.device.DeviceDirectCommSettings;
+import com.cannontech.database.db.device.DeviceRoutes;
+import com.cannontech.database.db.pao.YukonPAObject;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -233,6 +237,31 @@ public final class PaoDaoImpl implements PaoDao {
                                                      new Object[] { name },
                                                      litePaoRowMapper);
         return paos;
+    }
+    /**
+     * Returns a list of LiteYukonPaobjects where DeviceCarrierSettings.address is address
+     * @param address
+     * @return ArrayList<LiteYukonPaobject>
+     */
+    public static List getLiteYukonPaobjectsByAddress(int address)
+    {
+        List liteYukonPaobects = new ArrayList(); 
+        try {
+            String sqlString = 
+                "SELECT pao.PAObjectID, pao.Category, pao.PAOName, " +
+                " pao.Type, pao.PAOClass, pao.Description, d.PORTID, dcs.ADDRESS, dr.routeid " +
+                " FROM " + YukonPAObject.TABLE_NAME+ " pao " + 
+                " left outer join " + DeviceDirectCommSettings.TABLE_NAME + " d on pao.paobjectid = d.deviceid " +
+                " left outer join " + DeviceCarrierSettings.TABLE_NAME + " DCS ON pao.PAOBJECTID = DCS.DEVICEID " +        
+                " left outer join " + DeviceRoutes.TABLE_NAME + " dr on pao.paobjectid = dr.deviceid " +
+                " where address = ? " +
+                " ORDER BY pao.Category, pao.PAOClass, pao.PAOName";
+            
+            liteYukonPaobects = JdbcTemplateHelper.getYukonTemplate().query(sqlString, new Object[] { new Integer(address)}, litePaoRowMapper);
+        } catch (IncorrectResultSizeDataAccessException e) {
+            throw new NotFoundException("No liteYukonPaobjects found wiht (carrier) address(" + address+")");
+        }
+        return liteYukonPaobects;
     }
 
     public void setDatabaseCache(IDatabaseCache databaseCache) {
