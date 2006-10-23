@@ -116,6 +116,8 @@ public class HECO_LMEventSummaryReport extends YukonReportBase
 		{
 			factory = ReportFactory.createGroupLabelElementDefault(model, i);
 			factory.setWrapText(Boolean.TRUE);
+            if( i > HECO_LMEventSummaryModel.DURATION_COLUMN)
+                factory.setHorizontalAlignment(ElementAlignment.RIGHT);            
 			header.addElement(factory.createElement());
 		}
 	
@@ -154,9 +156,10 @@ public class HECO_LMEventSummaryReport extends YukonReportBase
 		for (int i = 0; i < getModel().getColumnNames().length; i++)
 		{
 			TextFieldElementFactory factory = ReportFactory.createTextFieldElementDefault(getModel(), i);
-			factory.setNullString("");
 			if( i > HECO_LMEventSummaryModel.DURATION_COLUMN)
 				factory.setHorizontalAlignment(ElementAlignment.RIGHT);
+            else 
+                factory.setNullString("");
 			items.addElement(factory.createElement());
 		}
 		return items;
