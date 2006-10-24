@@ -156,10 +156,11 @@ public class ProgramDetailModel extends ReportModelBase
 	public StringBuffer buildSQLStatement()
 	{
 		StringBuffer sql = new StringBuffer("SELECT AM.ACCOUNTID, LPWP.PROGRAMID VirtualProgID, LPWP.DEVICEID LMProgID, " +
-		" AC.DESCRIPTION, YWC.ALTERNATEDISPLAYNAME, CA.CUSTOMERID, CA.ACCOUNTNUMBER, EC.NAME " +
+		" AC.DESCRIPTION, YWC.ALTERNATEDISPLAYNAME, CA.CUSTOMERID, CA.ACCOUNTNUMBER, EC.NAME, PAO.PAONAME " +
 		" FROM APPLIANCECATEGORY AC, YUKONWEBCONFIGURATION YWC, LMPROGRAMWEBPUBLISHING LPWP, "+
-		" ECTOACCOUNTMAPPING AM, ECTOGENERICMAPPING GM, CUSTOMERACCOUNT CA, ENERGYCOMPANY EC " +
+		" ECTOACCOUNTMAPPING AM, ECTOGENERICMAPPING GM, CUSTOMERACCOUNT CA, ENERGYCOMPANY EC, YUKONPAOBJECT PAO " +
 		" WHERE LPWP.WEBSETTINGSID = YWC.CONFIGURATIONID "+  
+        " AND PAO.PAOBJECTID = LPWP.DEVICEID " +
 		" AND CA.ACCOUNTID = AM.ACCOUNTID " +
 		" AND LPWP.APPLIANCECATEGORYID = AC.APPLIANCECATEGORYID ");
 
@@ -191,6 +192,8 @@ public class ProgramDetailModel extends ReportModelBase
 			Integer custID = new Integer(rset.getInt(6));
 			String acctNum = rset.getString(7);
 			String ecName = rset.getString(8);
+            if ( altDisplayName.equalsIgnoreCase(","))
+                altDisplayName = rset.getString(9);
 			
 			//AM.ACCOUNTID, LPWP.PROGRAMID VirtualProgID, LPWP.DEVICEID LMProgID, AC.DESCRIPTION, YWC.ALTERNATEDISPLAYNAME, CA.CUSTOMERID, CA.ACCOUNTNUMBER 
 			ProgramDetail pd = new ProgramDetail(ecName, altDisplayName, custID, acctNum, acctID, new Integer(-1) );
