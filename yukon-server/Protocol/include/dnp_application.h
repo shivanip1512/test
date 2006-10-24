@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2006/10/19 20:13:18 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2006/10/24 16:14:01 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -181,7 +181,7 @@ public:
 
     //  post-completion processing
     void getObjects( object_block_queue &object_queue );
-    void getInternalIndications( string &iin );
+    string getInternalIndications( void ) const;
 
     enum FunctionCode
     {

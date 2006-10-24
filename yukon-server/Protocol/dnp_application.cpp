@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.32 $
-* DATE         :  $Date: 2006/10/19 20:13:18 $
+* REVISION     :  $Revision: 1.33 $
+* DATE         :  $Date: 2006/10/24 16:14:01 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -82,6 +82,7 @@ void Application::setCommand( FunctionCode fc )
     _retryState = Output;
     _comm_errors = 0;
 
+    //  this is the only place where _iin is cleared
     _iin.raw = 0;
 }
 
@@ -235,9 +236,9 @@ void Application::getObjects( object_block_queue &ob_queue )
 }
 
 
-void Application::getInternalIndications( string &iin )
+string Application::getInternalIndications( void ) const
 {
-    iin = "Internal indications:\n";
+    string iin = "Internal indications:\n";
 
     if( _iin.all_stations ) iin += "Broadcast message received\n";
     if( _iin.class_1      ) iin += "Class 1 data available\n";
@@ -254,6 +255,8 @@ void Application::getInternalIndications( string &iin )
     if( _iin.buf_overflow ) iin += "Event buffers have overflowed\n";
     if( _iin.already_exec ) iin += "Request already executing\n";
     if( _iin.bad_config   ) iin += "DNP configuration is corrupt\n";
+
+    return iin;
 }
 
 
