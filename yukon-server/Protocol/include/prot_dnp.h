@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2006/10/19 20:07:05 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2006/10/24 16:15:06 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,7 +20,7 @@
 
 
 #include <list>
-using std::list;
+#include <map>
 
 #include "dlldefs.h"
 #include "pointtypes.h"
@@ -33,6 +33,9 @@ using std::list;
 
 namespace Cti       {
 namespace Protocol  {
+
+using std::list;
+using std::map;
 
 using DNP::Application::object_block_queue;
 
@@ -55,6 +58,18 @@ private:
 
     stringlist_t _string_results;
     pointlist_t  _point_results;
+
+    map<unsigned, double> _analog_inputs;
+    map<unsigned, double> _binary_inputs;
+    map<unsigned, double> _analog_outputs;
+    map<unsigned, double> _binary_outputs;
+    map<unsigned, double> _counters;
+
+    map<unsigned, unsigned> _point_count;
+
+    void recordPoints(int group, const pointlist_t &points);
+    string pointSummary(unsigned points);
+    string pointDataReport(const map<unsigned, double> &pointdata, unsigned points);
 
     enum
     {

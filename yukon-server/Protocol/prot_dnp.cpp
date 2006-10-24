@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.34 $
-* DATE         :  $Date: 2006/10/19 20:07:59 $
+* REVISION     :  $Revision: 1.35 $
+* DATE         :  $Date: 2006/10/24 16:15:06 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -87,6 +87,13 @@ void DNPInterface::setOptions( int options )
 bool DNPInterface::setCommand( Command command )
 {
     _command = command;
+
+    //  clear the point records out
+    _analog_inputs.erase(_analog_inputs.begin(), _analog_inputs.end());
+    _analog_outputs.erase(_analog_outputs.begin(), _analog_outputs.end());
+    _binary_inputs.erase(_binary_inputs.begin(), _binary_inputs.end());
+    _binary_outputs.erase(_binary_outputs.begin(), _binary_outputs.end());
+    _counters.erase(_counters.begin(), _counters.end());
 
     return _command != Command_Invalid;
 }
@@ -370,18 +377,7 @@ int DNPInterface::decode( CtiXfer &xfer, int status )
     }
     else if( _app_layer.isTransactionComplete() )
     {
-        string iin_descriptor;
-
-        //  these should be moved somewhere else - these are transient results, and we should keep a multi-frame counter
-        unsigned analog, analog_change, analog_output,
-                 binary, binary_change, binary_output,
-                 counter, counter_change, other;
-
         _app_layer.getObjects(_object_blocks);
-
-        _app_layer.getInternalIndications(iin_descriptor);
-
-        _string_results.push_back(CTIDBG_new string(iin_descriptor));
 
         //  does the command need any special processing, or is it just pointdata?
         switch( _command )
@@ -499,11 +495,6 @@ int DNPInterface::decode( CtiXfer &xfer, int status )
             }
         }
 
-        analog = analog_change = analog_output = 0;
-        binary = binary_change = binary_output = 0;
-        counter = counter_change = 0;
-        other = 0;
-
         //  and this is where the pointdata gets harvested
         while( !_object_blocks.empty() )
         {
@@ -567,37 +558,14 @@ int DNPInterface::decode( CtiXfer &xfer, int status )
                 }
                 else
                 {
+                    pointlist_t points;
                     int count = ob->size();
 
-                    switch( ob->getGroup() )
-                    {
-                        case AnalogInput::Group:              analog        += count;   break;
-                        case AnalogInputChange::Group:        analog_change += count;   break;
-                        case AnalogOutput::Group:             analog_output += count;   break;
-                        case BinaryInput::Group:              binary        += count;   break;
-                        case BinaryInputChange::Group:        binary_change += count;   break;
-                        case BinaryOutput::Group:             binary_output += count;   break;
-                        case Counter::Group:                  counter       += count;   break;
-                        case CounterEvent::Group:             counter_change += count;  break;
+                    ob->getPoints(points, cto);
 
-                        case AnalogInputFrozen::Group:
-                        case AnalogInputFrozenEvent::Group:
-                        case CounterFrozen::Group:
-                        case CounterFrozenEvent::Group:
-                            //  these aren't really used, so we're counting them up seperately
-                            other += count;
-                            break;
+                    recordPoints(ob->getGroup(), points);
 
-                        case Time::Group:
-                        case TimeCTO::Group:
-                        case AnalogOutputBlock::Group:
-                        case BinaryOutputControl::Group:
-                        default:
-                            //  these are all control messages and/or time messages;  they don't count in the point scheme of things
-                            break;
-                    }
-
-                    ob->getPoints(_point_results, cto);
+                    _point_results.insert(_point_results.end(), points.begin(), points.end());
                 }
             }
 
@@ -607,6 +575,21 @@ int DNPInterface::decode( CtiXfer &xfer, int status )
 
         if( final )
         {
+            _string_results.push_back(CTIDBG_new string(_app_layer.getInternalIndications()));
+
+            switch( _command )
+            {
+                case Command_Class0Read:
+                case Command_Class1Read:
+                case Command_Class2Read:
+                case Command_Class3Read:
+                case Command_Class123Read:
+                case Command_Class1230Read:
+                {
+                    _string_results.push_back(CTIDBG_new string(pointSummary(5)));
+                }
+            }
+
             //  set final = false in the above switch statement if you want to do anything crazy (like SBO)
             setCommand(Command_Complete);
         }
@@ -618,6 +601,182 @@ int DNPInterface::decode( CtiXfer &xfer, int status )
     }
 
     return retVal;
+}
+
+
+void DNPInterface::recordPoints( int group, const pointlist_t &points )
+{
+    pointlist_t::const_iterator itr;
+
+    unsigned count = points.size();
+
+    //  Is it in the map already?
+    if( _point_count.find(group) != _point_count.end() )
+    {
+        _point_count[group] += count;
+    }
+    else
+    {
+        _point_count[group] = count;
+    }
+
+    switch( group )
+    {
+        case AnalogInput::Group:
+        case AnalogInputChange::Group:
+        {
+            for( itr = points.begin(); itr != points.end(); itr++ )
+            {
+                _analog_inputs[(*itr)->getId()] = (*itr)->getValue();
+            }
+
+            break;
+        }
+
+        case AnalogOutput::Group:
+        {
+            for( itr = points.begin(); itr != points.end(); itr++ )
+            {
+                _analog_outputs[(*itr)->getId()] = (*itr)->getValue();
+            }
+
+            break;
+        }
+
+        case BinaryInput::Group:
+        case BinaryInputChange::Group:
+        {
+            for( itr = points.begin(); itr != points.end(); itr++ )
+            {
+                _binary_inputs[(*itr)->getId()] = (*itr)->getValue();
+            }
+
+            break;
+        }
+
+        case BinaryOutput::Group:
+        {
+            for( itr = points.begin(); itr != points.end(); itr++ )
+            {
+                _binary_outputs[(*itr)->getId()] = (*itr)->getValue();
+            }
+
+            break;
+        }
+
+        case Counter::Group:
+        case CounterEvent::Group:
+        {
+            for( itr = points.begin(); itr != points.end(); itr++ )
+            {
+                _counters[(*itr)->getId()] = (*itr)->getValue();
+            }
+
+            break;
+        }
+    }
+}
+
+
+string DNPInterface::pointSummary(unsigned points)
+{
+    string report;
+
+    report += "Point data report:\n";
+    report += "AI: " + CtiNumStr(_analog_inputs.size()).spad(5) + "; ";
+    report += "AO: " + CtiNumStr(_analog_outputs.size()).spad(5) + "; ";
+    report += "DI: " + CtiNumStr(_binary_inputs.size()).spad(5) + "; ";
+    report += "DO: " + CtiNumStr(_binary_outputs.size()).spad(5) + "; ";
+    report += "Counters: " + CtiNumStr(_counters.size()).spad(5) + "; ";
+    report += "\n";
+
+    if( _analog_inputs.empty()  && _analog_outputs.empty() &&
+        _binary_inputs.empty()  && _binary_outputs.empty() &&
+        _counters.empty() )
+    {
+        report += "(No points returned)\n";
+    }
+    else
+    {
+        report += "First/Last ";
+        report += CtiNumStr(points);
+        report += " points of each type returned:\n";
+
+        if( !_analog_inputs.empty() )   report += "Analog inputs:\n"  + pointDataReport(_analog_inputs,  points);
+        if( !_analog_outputs.empty() )  report += "Analog outputs:\n" + pointDataReport(_analog_outputs, points);
+
+        if( !_binary_inputs.empty() )   report += "Binary inputs:\n"  + pointDataReport(_binary_inputs,  points);
+        if( !_binary_outputs.empty() )  report += "Binary outputs:\n" + pointDataReport(_binary_outputs, points);
+
+        if( !_counters.empty() )        report += "Counters:\n"       + pointDataReport(_counters, points);
+    }
+
+    return report;
+}
+
+
+string DNPInterface::pointDataReport(const map<unsigned, double> &pointdata, unsigned points)
+{
+    string report, item;
+
+    std::map<unsigned, double>::const_iterator itr;
+    std::map<unsigned, double>::const_reverse_iterator r_itr;
+
+    report += "[";
+
+    if( pointdata.size() <= (points * 2) )
+    {
+        for( itr = pointdata.begin(); itr != pointdata.end(); itr++ )
+        {
+            item = CtiNumStr(itr->first) + ":" + CtiNumStr(itr->second, 0);
+
+            if( itr != pointdata.begin() )
+            {
+                report += ", ";
+            }
+
+            report += item;
+        }
+    }
+    else
+    {
+        std::map<unsigned, double>::const_iterator itr_end;
+
+        string first, second;
+        int i;
+
+        for( i = 0, itr = pointdata.begin(); i < points; itr++, i++ )
+        {
+            item  = CtiNumStr(itr->first);
+            item += ":";
+            item += CtiNumStr(itr->second, 0);
+            item += ", ";
+
+            first += item;
+        }
+
+        r_itr = pointdata.rbegin();
+
+        for( i = 0; i < points; r_itr++, i++ )
+        {
+            item  = CtiNumStr(r_itr->first);
+            item += ":";
+            item += CtiNumStr(r_itr->second, 0);
+
+            if( i )
+            {
+                item += ", ";
+            }
+
+            second = item + second;
+        }
+
+        report += first + " ... " + second;
+    }
+
+    report += "]\n";
+
+    return report;
 }
 
 
