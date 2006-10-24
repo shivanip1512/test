@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.68 $
-* DATE         :  $Date: 2006/10/23 18:57:28 $
+* REVISION     :  $Revision: 1.69 $
+* DATE         :  $Date: 2006/10/24 18:14:09 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1334,14 +1334,18 @@ INT CtiDeviceMCT470::executeScan(CtiRequestMsg      *pReq,
                 //Read the pulse demand
                 function = Emetcon::GetValue_Demand;
                 found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+
                 if( found )
                 {
                     OutMessage->Sequence  = function;     // Helps us figure it out later!
+
                     CtiString createdString = originalString;
                     CtiString replaceString = "getvalue demand";
+
                     createdString.toLower();
                     createdString.replace(re_scan, replaceString);//This had better be here, or we have issues.
                     strncpy(OutMessage->Request.CommandStr, createdString.data(), COMMAND_STR_SIZE);
+
                     outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
                     incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
                 }
@@ -1364,9 +1368,11 @@ INT CtiDeviceMCT470::executeScan(CtiRequestMsg      *pReq,
                         OutMessage->Sequence  = function;     // Helps us figure it out later!
                         CtiString createdString = originalString;
                         CtiString replaceString = "getconfig ied time";
+
                         createdString.toLower();
                         createdString.replace(re_scan, replaceString);//This had better be here, or we have issues.
                         strncpy(OutMessage->Request.CommandStr, createdString.data(), COMMAND_STR_SIZE);
+
                         outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
                         incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
                     }
@@ -1379,14 +1385,17 @@ INT CtiDeviceMCT470::executeScan(CtiRequestMsg      *pReq,
                 //Read the IED demand
                 function = Emetcon::GetValue_IEDDemand;
                 found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+
                 if( found )
                 {
                     OutMessage->Sequence  = function;     // Helps us figure it out later!
                     CtiString createdString = originalString;
                     CtiString replaceString = "getvalue ied demand";
+
                     createdString.toLower();
                     createdString.replace(re_scan, replaceString);//This had better be here, or we have issues.
                     strncpy(OutMessage->Request.CommandStr, createdString.data(), COMMAND_STR_SIZE);
+
                     outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
                     incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
                 }
@@ -1871,9 +1880,9 @@ int CtiDeviceMCT470::executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiC
                         OutMessage->Buffer.BSt.Message[10] =(ratio2);
                         OutMessage->Buffer.BSt.Message[11] =(kRatio2>>8);
                         OutMessage->Buffer.BSt.Message[12] =(kRatio2);
-    
+
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-    
+
                         OutMessage->Buffer.BSt.Function   = FuncRead_LoadProfileChannel12Pos;
                         OutMessage->Buffer.BSt.Length     = FuncRead_LoadProfileChannel12Len;
                         OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Read;
@@ -1937,9 +1946,9 @@ int CtiDeviceMCT470::executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiC
                         OutMessage->Buffer.BSt.Message[10] = (ratio2);
                         OutMessage->Buffer.BSt.Message[11] = (kRatio2>>8);
                         OutMessage->Buffer.BSt.Message[12] = (kRatio2);
-    
+
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-    
+
                         OutMessage->Buffer.BSt.Function   = FuncRead_LoadProfileChannel34Pos;
                         OutMessage->Buffer.BSt.Length     = FuncRead_LoadProfileChannel34Len;
                         OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Read;
@@ -2018,9 +2027,9 @@ int CtiDeviceMCT470::executePutConfigRelays(CtiRequestMsg *pReq,CtiCommandParser
                         OutMessage->Buffer.BSt.Message[0] = spid;
                         OutMessage->Buffer.BSt.Message[1] = relayATimer;
                         OutMessage->Buffer.BSt.Message[2] = relayBTimer;
-    
+
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-    
+
                         OutMessage->Buffer.BSt.Function   = Memory_RelayATimerPos;
                         OutMessage->Buffer.BSt.Length     = Memory_RelayATimerLen + Memory_RelayBTimerLen;
                         OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
@@ -2090,9 +2099,9 @@ int CtiDeviceMCT470::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandPars
                         OutMessage->Buffer.BSt.Message[0] = (demand);
                         OutMessage->Buffer.BSt.Message[1] = (loadProfile1);
                         OutMessage->Buffer.BSt.Message[2] = (loadProfile2);
-    
+
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-    
+
                         OutMessage->Buffer.BSt.Function   = Memory_IntervalsPos;
                         OutMessage->Buffer.BSt.Length     = Memory_IntervalsLen;
                         OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
@@ -2177,9 +2186,9 @@ int CtiDeviceMCT470::executePutConfigPrecannedTable(CtiRequestMsg *pReq,CtiComma
                         OutMessage->Buffer.BSt.Message[1] = tableReadInterval;
                         OutMessage->Buffer.BSt.Message[2] = meterNumber;
                         OutMessage->Buffer.BSt.Message[3] = tableType;
-    
+
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-    
+
                         OutMessage->Buffer.BSt.Function   = FuncRead_PrecannedTablePos;
                         OutMessage->Buffer.BSt.Length     = FuncRead_PrecannedTableLen;
                         OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Read;
@@ -2264,15 +2273,15 @@ int CtiDeviceMCT470::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParse
                         OutMessage->Buffer.BSt.Message[0] = (configuration);
                         OutMessage->Buffer.BSt.Message[1] = (event1mask);
                         OutMessage->Buffer.BSt.Message[2] = (event2mask);
-    
+
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-    
+
                         OutMessage->Buffer.BSt.Function   = Memory_ConfigurationPos;
                         OutMessage->Buffer.BSt.Length     = Memory_ConfigurationLen;
                         OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
                         OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-    
+
                         OutMessage->Buffer.BSt.Function   = Memory_EventFlagsMask1Pos;
                         OutMessage->Buffer.BSt.Length     = Memory_EventFlagsMask1Len +
                                                             Memory_EventFlagsMask2Len;
@@ -2314,9 +2323,9 @@ int CtiDeviceMCT470::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParse
                         OutMessage->Buffer.BSt.Length     = length;
                         OutMessage->Buffer.BSt.IO         = Emetcon::IO_Write;
                         OutMessage->Buffer.BSt.Message[0] = (timeAdjustTolerance);
-    
+
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-    
+
                         OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
                         OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
@@ -2436,18 +2445,18 @@ int CtiDeviceMCT470::executePutConfigDNP(CtiRequestMsg *pReq, CtiCommandParser &
                         OutMessage->Buffer.BSt.Message[11] = (buffer[19]);
                         OutMessage->Buffer.BSt.Message[12] = (buffer[21]);
                         OutMessage->Buffer.BSt.Message[13] = (buffer[23]);
-    
+
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-    
+
                         OutMessage->Buffer.BSt.Length      = 5;
                         OutMessage->Buffer.BSt.Message[0]  = (MCT470_DNP_MCTPoint_RealTimeBinary+12);//This is defined in the 470 doc.
                         OutMessage->Buffer.BSt.Message[1]  = (0);//8 bit
                         OutMessage->Buffer.BSt.Message[2]  = (buffer[25]);
                         OutMessage->Buffer.BSt.Message[3]  = (buffer[27]);
                         OutMessage->Buffer.BSt.Message[4]  = (buffer[29]);
-    
+
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-    
+
                         OutMessage->Buffer.BSt.Length      = 8;
                         OutMessage->Buffer.BSt.Message[0]  = (MCT470_DNP_MCTPoint_RealTimeAnalog);//This is defined in the 470 doc.
                         OutMessage->Buffer.BSt.Message[1]  = (2);//16 bit
@@ -2458,7 +2467,7 @@ int CtiDeviceMCT470::executePutConfigDNP(CtiRequestMsg *pReq, CtiCommandParser &
                         OutMessage->Buffer.BSt.Message[6]  = (buffer[35]);
                         OutMessage->Buffer.BSt.Message[7]  = (buffer[34]);
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-    
+
                         OutMessage->Buffer.BSt.Length      = 6;
                         OutMessage->Buffer.BSt.Message[0]  = (MCT470_DNP_MCTPoint_RealTimeAccumulator);//This is defined in the 470 doc.
                         OutMessage->Buffer.BSt.Message[1]  = (2);//16 bit
@@ -2548,18 +2557,18 @@ int CtiDeviceMCT470::executePutConfigDNP(CtiRequestMsg *pReq, CtiCommandParser &
                         OutMessage->Buffer.BSt.Message[11] = (buffer[19]);
                         OutMessage->Buffer.BSt.Message[12] = (buffer[21]);
                         OutMessage->Buffer.BSt.Message[13] = (buffer[23]);
-    
+
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-    
+
                         OutMessage->Buffer.BSt.Length      = 5;
                         OutMessage->Buffer.BSt.Message[0]  = (MCT470_DNP_MCTPoint_RealTimeBinary+27);//This is defined in the 470 doc.
                         OutMessage->Buffer.BSt.Message[1]  = (0);//8 bit
                         OutMessage->Buffer.BSt.Message[2]  = (buffer[25]);
                         OutMessage->Buffer.BSt.Message[3]  = (buffer[27]);
                         OutMessage->Buffer.BSt.Message[4]  = (buffer[29]);
-    
+
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-    
+
                         OutMessage->Buffer.BSt.Length      = 8;
                         OutMessage->Buffer.BSt.Message[0]  = (MCT470_DNP_MCTPoint_RealTimeAnalog+3);//This is defined in the 470 doc.
                         OutMessage->Buffer.BSt.Message[1]  = (2);//16 bit
@@ -2570,7 +2579,7 @@ int CtiDeviceMCT470::executePutConfigDNP(CtiRequestMsg *pReq, CtiCommandParser &
                         OutMessage->Buffer.BSt.Message[6]  = (buffer[35]);
                         OutMessage->Buffer.BSt.Message[7]  = (buffer[34]);
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-    
+
                         OutMessage->Buffer.BSt.Length      = 6;
                         OutMessage->Buffer.BSt.Message[0]  = (MCT470_DNP_MCTPoint_RealTimeAccumulator+2);//This is defined in the 470 doc.
                         OutMessage->Buffer.BSt.Message[1]  = (2);//16 bit
@@ -2644,7 +2653,7 @@ int CtiDeviceMCT470::executePutConfigDNP(CtiRequestMsg *pReq, CtiCommandParser &
                         OutMessage->Buffer.BSt.Message[11] = (buffer[19]);
                         OutMessage->Buffer.BSt.Message[12] = (buffer[21]);
                         OutMessage->Buffer.BSt.Message[13] = (buffer[23]);
-    
+
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
                     }
                     else
@@ -2755,7 +2764,7 @@ int CtiDeviceMCT470::sendDNPConfigMessages(int startMCTID, list< OUTMESS * > &ou
                         canUse8Bit = false;
                     }
                 }
-    
+
                 if( canUse8Bit )
                 {
                     OutMessage->Buffer.BSt.Function    = FuncWrite_DNPReqTable;
@@ -2775,7 +2784,7 @@ int CtiDeviceMCT470::sendDNPConfigMessages(int startMCTID, list< OUTMESS * > &ou
                     OutMessage->Buffer.BSt.Message[11] = (buffer[19]);
                     OutMessage->Buffer.BSt.Message[12] = (buffer[21]);
                     OutMessage->Buffer.BSt.Message[13] = (buffer[23]);
-    
+
                     outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
                 }
                 else
@@ -2798,7 +2807,7 @@ int CtiDeviceMCT470::sendDNPConfigMessages(int startMCTID, list< OUTMESS * > &ou
                     OutMessage->Buffer.BSt.Message[12] = (buffer[10]);
                     OutMessage->Buffer.BSt.Message[13] = (buffer[11]);
                     outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-    
+
                     OutMessage->Buffer.BSt.Message[0] = (startMCTID + 6);//This is defined in the 470 doc.
                     OutMessage->Buffer.BSt.Message[1] = (2);//16 bit
                     OutMessage->Buffer.BSt.Message[2] = (buffer[12]);
