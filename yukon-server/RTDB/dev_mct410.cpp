@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.100 $
-* DATE         :  $Date: 2006/10/23 18:57:28 $
+* REVISION     :  $Revision: 1.101 $
+* DATE         :  $Date: 2006/10/24 18:13:48 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -247,7 +247,8 @@ CtiDeviceMCT410::point_info CtiDeviceMCT410::getLoadProfileData(unsigned channel
 {
     point_info pi;
 
-    if( channel == Channel_Voltage )
+    //  input channel is 0-based, enums are 1-based
+    if( (channel + 1) == Channel_Voltage )
     {
         pi = getData(buf, len, ValueType_LoadProfile_Voltage);
     }
@@ -1617,9 +1618,9 @@ int CtiDeviceMCT410::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandPars
                         OutMessage->Buffer.BSt.Message[1] = (loadProfile);
                         OutMessage->Buffer.BSt.Message[2] = (voltageDemand);
                         OutMessage->Buffer.BSt.Message[3] = (voltageLoadProfile);
-    
+
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-    
+
                         OutMessage->Buffer.BSt.Function   = Memory_IntervalsPos;
                         OutMessage->Buffer.BSt.Length     = Memory_IntervalsLen;
                         OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
@@ -1720,9 +1721,9 @@ int CtiDeviceMCT410::executePutConfigDisconnect(CtiRequestMsg *pReq,CtiCommandPa
                         //Also note, if we are of a revision with no cycle, these will simply be ignored
                         OutMessage->Buffer.BSt.Message[6] = (cycleDisconnectMinutes == numeric_limits<long>::min() ? 0 : cycleDisconnectMinutes);
                         OutMessage->Buffer.BSt.Message[7] = (cycleConnectMinutes == numeric_limits<long>::min() ? 0 : cycleConnectMinutes);
-    
+
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-    
+
                         OutMessage->Buffer.BSt.Function   = FuncRead_DisconnectConfigPos;
                         OutMessage->Buffer.BSt.Length     = revision >= SspecRev_Disconnect_Cycle ? FuncRead_DisconnectConfigLen + 2 : FuncRead_DisconnectConfigLen;
                         OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Read;
@@ -1802,15 +1803,15 @@ int CtiDeviceMCT410::executePutConfigCentron(CtiRequestMsg *pReq,CtiCommandParse
                         OutMessage->Buffer.BSt.Message[0] = (spid);
                         OutMessage->Buffer.BSt.Message[1] = (parameters);
                         OutMessage->Buffer.BSt.Message[2] = (ratio);
-    
+
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-    
+
                         OutMessage->Buffer.BSt.Function   = Memory_CentronParametersPos;
                         OutMessage->Buffer.BSt.Length     = Memory_CentronParametersLen;
                         OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
                         OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-    
+
                         OutMessage->Buffer.BSt.Function   = Memory_CentronMultiplierPos;
                         OutMessage->Buffer.BSt.Length     = Memory_CentronMultiplierLen;
                         OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
@@ -1896,13 +1897,13 @@ int CtiDeviceMCT410::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParse
                         OutMessage->Buffer.BSt.Message[4] = (meterAlarmMask);
                         OutMessage->Buffer.BSt.Message[5] = (options);
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-    
+
                         OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
                         OutMessage->Buffer.BSt.Function   = Memory_OptionsPos;
                         OutMessage->Buffer.BSt.Length     = Memory_OptionsLen + Memory_ConfigurationLen;
                         OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-    
+
                         OutMessage->Buffer.BSt.Function   = Memory_EventFlagsMask1Pos;
                         OutMessage->Buffer.BSt.Length     = Memory_EventFlagsMask1Len + Memory_EventFlagsMask2Len + Memory_MeterAlarmMaskLen;
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
@@ -1943,9 +1944,9 @@ int CtiDeviceMCT410::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParse
                         OutMessage->Buffer.BSt.Length     = length;
                         OutMessage->Buffer.BSt.IO         = Emetcon::IO_Write;
                         OutMessage->Buffer.BSt.Message[0] = (outage);
-    
+
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-    
+
                         OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
                         OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
@@ -1986,9 +1987,9 @@ int CtiDeviceMCT410::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParse
                         OutMessage->Buffer.BSt.Length     = length;
                         OutMessage->Buffer.BSt.IO         = Emetcon::IO_Write;
                         OutMessage->Buffer.BSt.Message[0] = (timeAdjustTolerance);
-    
+
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-    
+
                         OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
                         OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );

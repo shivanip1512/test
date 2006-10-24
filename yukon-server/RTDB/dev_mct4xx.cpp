@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.34 $
-* DATE         :  $Date: 2006/10/23 18:57:28 $
+* REVISION     :  $Revision: 1.35 $
+* DATE         :  $Date: 2006/10/24 18:13:48 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1331,9 +1331,9 @@ int CtiDeviceMCT4xx::executePutConfigVThreshold(CtiRequestMsg *pReq, CtiCommandP
                         OutMessage->Buffer.BSt.Message[1] = (overVThreshold);
                         OutMessage->Buffer.BSt.Message[2] = (underVThreshold>>8);
                         OutMessage->Buffer.BSt.Message[3] = (underVThreshold);
-    
+
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-    
+
                         OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
                         OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
@@ -1591,9 +1591,9 @@ int CtiDeviceMCT4xx::executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandParser &p
                         OutMessage->Buffer.BSt.Message[12] = times[1][3];
                         OutMessage->Buffer.BSt.Message[13] = times[1][4];
                         OutMessage->Buffer.BSt.Message[14] = ( ((rates[1][2]<<6)&0xC0) | ((rates[1][1]<<4)&0x30) | ((rates[1][0]<<2)&0x0C) | (rates[1][5]&0x03) );
-    
+
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-    
+
                         OutMessage->Buffer.BSt.Function   = FuncWrite_TOUSchedule2Pos;
                         OutMessage->Buffer.BSt.Length     = FuncWrite_TOUSchedule2Len;
                         OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Write;
@@ -1604,18 +1604,18 @@ int CtiDeviceMCT4xx::executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandParser &p
                         OutMessage->Buffer.BSt.Message[4] = times[2][4];
                         OutMessage->Buffer.BSt.Message[5] = ( ((rates[2][4]<<2)&0x0C) | (rates[2][3]&0x03) );
                         OutMessage->Buffer.BSt.Message[6] = ( ((rates[2][2]<<6)&0xC0) | ((rates[2][1]<<4)&0x30) | ((rates[2][0]<<2)&0x0C) | (rates[2][5]&0x03) );
-    
-                        OutMessage->Buffer.BSt.Message[7] = times[3][0]; 
-                        OutMessage->Buffer.BSt.Message[8] = times[3][1]; 
-                        OutMessage->Buffer.BSt.Message[9] = times[3][2]; 
-                        OutMessage->Buffer.BSt.Message[10] = times[3][3]; 
-                        OutMessage->Buffer.BSt.Message[11] = times[3][4]; 
+
+                        OutMessage->Buffer.BSt.Message[7] = times[3][0];
+                        OutMessage->Buffer.BSt.Message[8] = times[3][1];
+                        OutMessage->Buffer.BSt.Message[9] = times[3][2];
+                        OutMessage->Buffer.BSt.Message[10] = times[3][3];
+                        OutMessage->Buffer.BSt.Message[11] = times[3][4];
                         OutMessage->Buffer.BSt.Message[12] = ( ((rates[3][4]<<2)&0x0C) | (rates[3][3]&0x03) );
                         OutMessage->Buffer.BSt.Message[13] = ( ((rates[3][2]<<6)&0xC0) | ((rates[3][1]<<4)&0x30) | ((rates[3][0]<<2)&0x0C) | (rates[3][5]&0x03) );
                         OutMessage->Buffer.BSt.Message[14] = (defaultTOURate);
-    
+
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-    
+
                         // Set up the reads here
                         OutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule12Pos;
                         OutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule12Len;
@@ -1625,12 +1625,12 @@ int CtiDeviceMCT4xx::executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandParser &p
                         touOutMessage->Sequence = Emetcon::GetConfig_TOU;
                         strncpy(touOutMessage->Request.CommandStr, "getconfig tou schedule 1", COMMAND_STR_SIZE );
                         outList.push_back( CTIDBG_new OUTMESS(*touOutMessage) );
-    
+
                         touOutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule34Pos;
                         touOutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule34Len;
                         strncpy(touOutMessage->Request.CommandStr, "getconfig tou schedule 3", COMMAND_STR_SIZE );
                         outList.push_back( CTIDBG_new OUTMESS(*touOutMessage) );
-    
+
                         touOutMessage->Buffer.BSt.Function = FuncRead_TOUStatusPos;
                         touOutMessage->Buffer.BSt.Length   = FuncRead_TOUStatusLen;
                         strncpy(touOutMessage->Request.CommandStr, "getconfig tou", COMMAND_STR_SIZE );
@@ -1712,9 +1712,9 @@ int CtiDeviceMCT4xx::executePutConfigAddressing(CtiRequestMsg *pReq, CtiCommandP
                         OutMessage->Buffer.BSt.Message[3] = (collection>>8);
                         OutMessage->Buffer.BSt.Message[4] = (collection);
                         OutMessage->Buffer.BSt.Message[5] = spid;
-    
+
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-    
+
                         OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
                         OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
@@ -1791,15 +1791,15 @@ int CtiDeviceMCT4xx::executePutConfigDst(CtiRequestMsg *pReq, CtiCommandParser &
                         OutMessage->Buffer.BSt.Message[6] = (dstEnd>>8);
                         OutMessage->Buffer.BSt.Message[7] = (dstEnd);
                         OutMessage->Buffer.BSt.Message[8] = (timezoneOffset);
-    
-    
+
+
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-    
+
                         OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
                         OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
                         OutMessage->Priority             += 1;//return to normal
-    
+
                         nRet = NORMAL;
                     }
                     else
@@ -1880,7 +1880,7 @@ int CtiDeviceMCT4xx::executePutConfigHoliday(CtiRequestMsg *pReq, CtiCommandPars
                         OutMessage->Buffer.BSt.Message[10] = (holiday3>>8);
                         OutMessage->Buffer.BSt.Message[11] = (holiday3);
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-    
+
                         OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
                         OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
@@ -1986,9 +1986,9 @@ int CtiDeviceMCT4xx::executePutConfigLongLoadProfile(CtiRequestMsg *pReq,CtiComm
                         OutMessage->Buffer.BSt.Message[2] = channel2;
                         OutMessage->Buffer.BSt.Message[3] = channel3;
                         OutMessage->Buffer.BSt.Message[4] = channel4;
-    
+
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-    
+
                         getOperation(Emetcon::GetConfig_LongloadProfile, function, length, io);
                         OutMessage->Buffer.BSt.Function   = function;
                         OutMessage->Buffer.BSt.Length     = length;
@@ -2333,16 +2333,19 @@ INT CtiDeviceMCT4xx::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, 
         if( (channel = parse.getiValue("scan_loadprofile_channel", 0)) &&
             (block   = parse.getiValue("scan_loadprofile_block",   0)) )
         {
+            //  parse is 1-based, we need it 0-based
+            channel--;
+
             interval_len = getLoadProfileInterval(channel);
 
-            if( point = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(channel + PointOffset_LoadProfileOffset, DemandAccumulatorPointType)) )
+            if( point = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(channel + PointOffset_LoadProfileOffset + 1, DemandAccumulatorPointType)) )
             {
                 //  this is where the block started...
                 timestamp  = TimeNow.seconds();
                 timestamp -= interval_len * 6 * block;
                 timestamp -= timestamp % (interval_len * 6);
 
-                if( timestamp == _lp_info[channel - 1].current_request )
+                if( timestamp == _lp_info[channel].current_request )
                 {
                     for( int offset = 5; offset >= 0; offset-- )
                     {
@@ -2365,13 +2368,13 @@ INT CtiDeviceMCT4xx::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, 
                     //  unnecessary?
                     setLastLPTime (timestamp + interval_len * 6);
 
-                    _lp_info[channel - 1].archived_reading = timestamp + interval_len * 6;
+                    _lp_info[channel].archived_reading = timestamp + interval_len * 6;
                 }
                 else
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - possible LP logic error for device \"" << getName() << "\";  calculated timestamp=" << CtiTime(timestamp) << "; current_request=" << CtiTime(_lp_info[channel - 1].current_request) << endl;
+                        dout << CtiTime() << " **** Checkpoint - possible LP logic error for device \"" << getName() << "\";  calculated timestamp=" << CtiTime(timestamp) << "; current_request=" << CtiTime(_lp_info[channel].current_request) << endl;
                         dout << "commandstr = " << InMessage->Return.CommandStr << endl;
                     }
                 }
