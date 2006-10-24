@@ -1,5 +1,7 @@
 <%-- A wrapper file for Operator access to commander from the  consumer information pages.
 --%>
+<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
+
 <%@ include file="include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.database.data.pao.YukonPAObject"%>
 <%@ page import="com.cannontech.message.dispatch.message.PointData"%> 
