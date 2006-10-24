@@ -127,7 +127,7 @@ function setCommand(cmd)
             <table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
               <tr> 
                 <td align="right" class="TableCell"> 
-                  <input type="checkbox" name="updateDB" onMouseOver="window.status='Read Energy (from the meter)';return true;"
+                  <input type="checkbox" name="updateDB" checked onMouseOver="window.status='Read Energy (from the meter)';return true;"
                 onMouseOut="window.status='';return true;">
                   Update Database</td>
               </tr>
