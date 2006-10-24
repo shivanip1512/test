@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.35 $
-* DATE         :  $Date: 2006/10/24 18:13:48 $
+* REVISION     :  $Revision: 1.36 $
+* DATE         :  $Date: 2006/10/24 18:59:20 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -614,11 +614,10 @@ INT CtiDeviceMCT4xx::executeGetValue(CtiRequestMsg *pReq, CtiCommandParser &pars
                     {
                         //  FIXME:  we must replicate this functionality in the decode portion - right now, _llpInterest.offset
                         //            is being overwritten, resulting in faulty decodes
-                        request_time  = time_start.seconds();
-                        request_time -= request_time % interval_len;
+                        request_time  = time_start.seconds() - (time_start.seconds() % interval_len);
                         request_time -= interval_len;  //  we report interval-ending, yet request interval-beginning...  so back that thing up
 
-                        _llpInterest.time_end = time_end.seconds();
+                        _llpInterest.time_end = time_end.seconds() - (time_end.seconds() % interval_len);
 
                         //  this is the number of seconds from the current pointer
                         relative_time = request_time - _llpInterest.time;
