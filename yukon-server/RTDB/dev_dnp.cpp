@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.53 $
-* DATE         :  $Date: 2006/10/04 15:47:02 $
+* REVISION     :  $Revision: 1.54 $
+* DATE         :  $Date: 2006/10/24 16:12:34 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -737,8 +737,6 @@ void DNP::sendDispatchResults(CtiConnection &vg_connection)
 
         if( pt_msg )
         {
-            _string_results.push_back(CTIDBG_new string(pt_msg->getString()));
-
             vgMsg->PointData().push_back(pt_msg);
         }
     }
