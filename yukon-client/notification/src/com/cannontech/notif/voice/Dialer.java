@@ -5,11 +5,15 @@ import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.Map;
 
+import com.cannontech.notif.voice.callstates.CallState;
+import com.cannontech.notif.voice.callstates.TooManyRetries;
+
 
 public abstract class Dialer {
 
     String _phonePrefix = "";
     private static final int RETRY_DELAY = 3000;
+    private static final int MAX_TRIES = 15;
 
     public String getPhonePrefix() {
         return _phonePrefix;
@@ -27,7 +31,12 @@ public abstract class Dialer {
             if (call.isRetry()) {
                 Thread.sleep(RETRY_DELAY);
                 while (call.isReady()) {       
+                    count++;
                     dialCall(call);
+                    if (count >= MAX_TRIES) {
+                        call.changeState(new TooManyRetries());
+                        break;
+                    }
                     Thread.sleep(RETRY_DELAY);
                 }
             }
