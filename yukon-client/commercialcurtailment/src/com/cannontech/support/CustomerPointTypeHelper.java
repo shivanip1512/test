@@ -10,11 +10,13 @@ import org.apache.commons.lang.Validate;
 import com.cannontech.cc.dao.CustomerStubDao;
 import com.cannontech.cc.model.CICustomerPointData;
 import com.cannontech.cc.model.CICustomerStub;
+import com.cannontech.common.exception.PointException;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.dao.SimplePointAccessDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.device.VirtualDevice;
 import com.cannontech.database.data.lite.LiteCICustomer;
@@ -32,20 +34,16 @@ import com.cannontech.database.db.customer.CICustomerPointType;
 
 public class CustomerPointTypeHelper {
     private CustomerPointTypeLookup pointTypeLookup;
+    private SimplePointAccessDao pointAccessDao;
     private String customerDevicePrefix = "";
     private String customerDeviceSuffix = " Point Data";
     private CustomerStubDao customerStubDao;
     private PointDao pointDao;
     private DeviceDao deviceDao;
-    private PaoDao paoDao;
     private DBPersistentDao dbPersistentDao;
 
     public void setDeviceDao(DeviceDao deviceDao) {
         this.deviceDao = deviceDao;
-    }
-
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
     }
 
     public void setPointDao(PointDao pointDao) {
@@ -70,6 +68,12 @@ public class CustomerPointTypeHelper {
         }
         LitePoint litePoint = pointDao.getLitePoint(data.getPointId());
         return litePoint;
+    }
+    
+    public double getPointValue(CICustomerStub customer, CICustomerPointType type) throws PointException {
+        LitePoint litePoint = getPoint(customer, type);
+        double pointValue = pointAccessDao.getPointValue(litePoint);
+        return pointValue;
     }
     
     public boolean doRequiredPointsExist(CICustomerStub customer) {
@@ -185,6 +189,10 @@ public class CustomerPointTypeHelper {
 
     public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
         this.dbPersistentDao = dbPersistentDao;
+    }
+
+    public void setPointAccessDao(SimplePointAccessDao pointAccessDao) {
+        this.pointAccessDao = pointAccessDao;
     }
 
 

@@ -21,12 +21,14 @@ import com.cannontech.cc.model.EconomicEvent;
 import com.cannontech.cc.service.builder.VerifiedCustomer;
 import com.cannontech.cc.service.enums.EconomicEventState;
 import com.cannontech.cc.service.enums.CurtailmentEventState;
+import com.cannontech.common.exception.PointDataException;
 import com.cannontech.common.exception.PointException;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.dao.SimplePointAccessDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.db.customer.CICustomerPointType;
 import com.cannontech.support.CustomerPointTypeHelper;
+import com.cannontech.support.NoPointException;
 
 public class IsocCommonStrategy extends StrategyGroupBase {
     private SimplePointAccessDao pointAccess;
@@ -44,7 +46,7 @@ public class IsocCommonStrategy extends StrategyGroupBase {
         super();
     }
 
-    private int getTotalEventHours(CICustomerStub customer) {
+    private double getTotalEventHours(CICustomerStub customer) {
         //get first day this year
         Date now = new Date();
         TimeZone timeZone = TimeZone.getTimeZone(customer.getLite().getTimeZone());
@@ -59,6 +61,10 @@ public class IsocCommonStrategy extends StrategyGroupBase {
         cal.add(Calendar.YEAR, 1);
         Date to = cal.getTime();
         
+        return getTotalEventHours(customer, from, to);
+    }
+
+    public double getTotalEventHours(CICustomerStub customer, Date from, Date to) {
         List<BaseEvent> allEvents = getBaseEventDao().getAllForCustomer(customer, from, to);
         int totalMinutes = 0;
         for (BaseEvent event : allEvents) {
@@ -72,12 +78,15 @@ public class IsocCommonStrategy extends StrategyGroupBase {
     }
     
     public boolean hasCustomerExceededAllowedHours(CICustomerStub customer, int propossedEventLength) throws PointException {
-        LitePoint allowedHoursPoint = 
-            pointTypeHelper.getPoint(customer, CICustomerPointType.InterruptHours);
-        int allowedHours = (int) pointAccess.getPointValue(allowedHoursPoint);
+        double allowedHours = getAllowedHours(customer);
         // applies to current year
-        int actualHours = getTotalEventHours(customer);
+        double actualHours = getTotalEventHours(customer);
         return (actualHours + propossedEventLength) > allowedHours;
+    }
+
+    public double getAllowedHours(CICustomerStub customer) throws PointException {
+        double allowedHours = pointTypeHelper.getPointValue(customer, CICustomerPointType.InterruptHours);
+        return allowedHours;
     }
     
     public BigDecimal getCurrentLoad(CICustomerStub customer) throws PointException {
