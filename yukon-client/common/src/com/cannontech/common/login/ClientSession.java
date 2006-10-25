@@ -232,7 +232,7 @@ public class ClientSession {
 		}
 
 		LoginPanel lp = makeLocalLoginPanel();
-		while(collectInfo(lp)) {
+		while(collectInfo(p, lp)) {
 			LiteYukonUser u = DaoFactory.getAuthDao().login(lp.getUsername(), lp.getPassword());
 			if(u != null) {
 				//score! we found them
@@ -301,7 +301,7 @@ public class ClientSession {
 		
 				
 		LoginPanel lp = makeRemoteLoginPanel();
-		while(collectInfo(lp)) {
+		while(collectInfo(p, lp)) {
 			try {
 				sessionID = LoginSupport.getSessionID(lp.getYukonHost(), lp.getYukonPort(), lp.getUsername(), lp.getPassword());
 			}
@@ -372,8 +372,8 @@ public class ClientSession {
 									prefs.getDefaultRememberPassword(), false);
 		}
 		
-	private boolean collectInfo(LoginPanel lp) {
-		return JOptionPane.showConfirmDialog(null, lp, "Yukon Login", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION;
+	private boolean collectInfo(Frame parent, LoginPanel lp) {
+	    return LoginFrame.showLogin(parent.getIconImage(), lp);
 	}
 	
 	private void displayMessage(Frame p, String msg, String title) {
