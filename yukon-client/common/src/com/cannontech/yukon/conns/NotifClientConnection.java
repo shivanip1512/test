@@ -1,5 +1,7 @@
 package com.cannontech.yukon.conns;
 
+import java.util.Date;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.enums.CurtailmentEventAction;
 import com.cannontech.enums.EconomicEventAction;
@@ -13,19 +15,21 @@ import com.cannontech.message.notif.DefColl_NotifAlarmMsg;
 import com.cannontech.message.notif.DefColl_NotifCompletedMsg;
 import com.cannontech.message.notif.DefColl_NotifEmailMsg;
 import com.cannontech.message.notif.DefColl_NotifLMControlMsg;
+import com.cannontech.message.notif.DefColl_ProgramActionMsg;
 import com.cannontech.message.notif.DefColl_VoiceDataRequestMsg;
 import com.cannontech.message.notif.DefColl_VoiceDataResponseMsg;
 import com.cannontech.message.notif.EconomicEventDeleteMsg;
 import com.cannontech.message.notif.EconomicEventMsg;
 import com.cannontech.message.notif.NotifCompletedMsg;
+import com.cannontech.message.notif.ProgramActionMsg;
 import com.cannontech.message.notif.VoiceDataRequestMsg;
 import com.cannontech.message.notif.VoiceDataResponseMsg;
 import com.cannontech.message.server.ServerResponseMsg;
 import com.cannontech.message.util.ClientConnection;
 import com.cannontech.message.util.CollectableBoolean;
 import com.cannontech.message.util.ServerRequest;
-import com.cannontech.message.util.ServerRequestImpl;
 import com.cannontech.message.util.ServerRequestHelper;
+import com.cannontech.message.util.ServerRequestImpl;
 import com.cannontech.yukon.INotifConnection;
 import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.DefineCollectable;
@@ -47,7 +51,8 @@ public class NotifClientConnection extends ClientConnection implements INotifCon
         new DefColl_CurtailmentEventMsg(),
         new DefColl_CurtailmentEventDeleteMsg(),
         new DefColl_EconomicEventMsg(),
-        new DefColl_EconomicEventDeleteMsg()
+        new DefColl_EconomicEventDeleteMsg(),
+        new DefColl_ProgramActionMsg()
 	};
 	    
 	public NotifClientConnection() 
@@ -169,6 +174,24 @@ public class NotifClientConnection extends ClientConnection implements INotifCon
         msg.deleteStop = true;
         CollectableBoolean wasCancelled = (CollectableBoolean) ServerRequestHelper.makeServerRequest(this, msg);
         return wasCancelled.getValue();
+    }
+    
+    public void sendProgramEventNotification(Integer programId, 
+                                             String eventDisplayName, 
+                                             String action, 
+                                             Date startTime, 
+                                             Date stopTime, 
+                                             Date notificationTime, 
+                                             int[] customerIds) {
+        ProgramActionMsg msg = new ProgramActionMsg();
+        msg.programId = programId;
+        msg.eventDisplayName = eventDisplayName;
+        msg.action = action;
+        msg.startTime = startTime;
+        msg.stopTime = stopTime;
+        msg.notificationTime = notificationTime;
+        msg.customerIds = customerIds;
+        write(msg);
     }
 
 }

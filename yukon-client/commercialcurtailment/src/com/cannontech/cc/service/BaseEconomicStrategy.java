@@ -53,10 +53,8 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.customer.CICustomerPointType;
 import com.cannontech.enums.EconomicEventAction;
 import com.cannontech.enums.NotificationState;
-import com.cannontech.yukon.INotifConnection;
 
 public abstract class BaseEconomicStrategy extends StrategyBase {
-    private INotifConnection notificationProxy;
     private EconomicEventDao economicEventDao;
     private EconomicEventNotifDao economicEventNotifDao;
     private EconomicEventParticipantDao economicEventParticipantDao;
@@ -290,8 +288,10 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
         
         if (event.isEventExtension()) {
             getNotificationProxy().sendEconomicNotification(event.getId(), 1, EconomicEventAction.EXTENDING);
+            sendProgramNotifications(event, builder.getParticipantList(), "extended");
         } else {
             getNotificationProxy().sendEconomicNotification(event.getId(), 1, EconomicEventAction.STARTING);
+            sendProgramNotifications(event, builder.getParticipantList(), "started");
         }
         
         return event;
@@ -494,7 +494,8 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
         event.addRevision(nextRevision);
         economicEventDao.save(event);
         fillInDefaultPricesForRevision(nextRevision);
-        notificationProxy.sendEconomicNotification(event.getId(), nextRevision.getRevision(), EconomicEventAction.REVISING);
+        getNotificationProxy().sendEconomicNotification(event.getId(), nextRevision.getRevision(), EconomicEventAction.REVISING);
+        sendProgramNotifications(event, economicEventParticipantDao.getForEvent(event), "revised");
         
     }
 
@@ -577,6 +578,11 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
         if (!success) {
             throw new EventModificationException("Notifications were not successfully prevented. Check notif status for each customer.");
         }
+        // send notification first so deletion doesn't impact ability to send
+        List<EconomicEventParticipant> participants = economicEventParticipantDao.getForEvent(event);
+        sendProgramNotifications(event, participants, "deleted");
+        
+        // now, actually delete everything
         economicEventParticipantDao.deleteForEvent(event);
         economicEventDao.delete(event);
     }
@@ -585,14 +591,16 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
     public void cancelEvent(EconomicEvent event, LiteYukonUser user) {
         event.setState(EconomicEventState.CANCELLED);
         economicEventDao.save(event);
-        notificationProxy.sendEconomicNotification(event.getId(), event.getLatestRevision().getRevision(), EconomicEventAction.CANCELING);
+        getNotificationProxy().sendEconomicNotification(event.getId(), event.getLatestRevision().getRevision(), EconomicEventAction.CANCELING);
+        sendProgramNotifications(event, economicEventParticipantDao.getForEvent(event), "cancelled");
     }
     
     @Transactional
     public void suppressEvent(EconomicEvent event, LiteYukonUser user) {
         event.setState(EconomicEventState.SUPPRESSED);
         economicEventDao.save(event);
-        notificationProxy.attemptDeleteEconomic(event.getId(), false);
+        getNotificationProxy().attemptDeleteEconomic(event.getId(), false);
+        sendProgramNotifications(event, economicEventParticipantDao.getForEvent(event), "suppressed");
     }
     
     public boolean canUserSubmitSelectionForRevision(EconomicEventParticipantSelection selection, LiteYukonUser user, Date time) {
@@ -727,14 +735,6 @@ public abstract class BaseEconomicStrategy extends StrategyBase {
     @Override
     public List<? extends BaseEvent> getEventsForProgram(Program program) {
         return economicEventDao.getAllForProgram(program);
-    }
-
-    public INotifConnection getNotificationProxy() {
-        return notificationProxy;
-    }
-
-    public void setNotificationProxy(INotifConnection notificationProxy) {
-        this.notificationProxy = notificationProxy;
     }
 
     public EconomicEventDao getEconomicEventDao() {

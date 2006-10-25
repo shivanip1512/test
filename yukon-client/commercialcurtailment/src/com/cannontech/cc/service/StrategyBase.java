@@ -15,6 +15,7 @@ import java.util.TreeSet;
 import com.cannontech.cc.dao.ProgramParameterDao;
 import com.cannontech.cc.dao.UnknownParameterException;
 import com.cannontech.cc.model.BaseEvent;
+import com.cannontech.cc.model.BaseParticipant;
 import com.cannontech.cc.model.CICustomerStub;
 import com.cannontech.cc.model.Group;
 import com.cannontech.cc.model.GroupCustomerNotif;
@@ -26,12 +27,14 @@ import com.cannontech.cc.service.builder.VerifiedCustomer;
 import com.cannontech.cc.service.builder.VerifiedNotifCustomer;
 import com.cannontech.common.exception.PointException;
 import com.cannontech.database.data.notification.NotifType;
+import com.cannontech.yukon.INotifConnection;
 
 public abstract class StrategyBase {
     private ProgramService programService;
     private GroupService groupService;
     private Set<ProgramParameterKey> parameters = new TreeSet<ProgramParameterKey>();
     protected ProgramParameterDao programParameterDao;
+    private INotifConnection notificationProxy;
     
     public ProgramParameterDao getProgramParameterDao() {
         return programParameterDao;
@@ -120,6 +123,21 @@ public abstract class StrategyBase {
     List<? extends BaseEvent> getEventsForProgram(Program program);
 
     public abstract BigDecimal getCurrentLoad(CICustomerStub customer) throws PointException;
+    
+    protected void sendProgramNotifications(BaseEvent event, List<? extends BaseParticipant> participants, String action) {
+        int customerIds[] = new int[participants.size()];
+        int i = 0;
+        for (BaseParticipant participant : participants) {
+            customerIds[i++] = participant.getCustomer().getId();
+        }
+        notificationProxy.sendProgramEventNotification(event.getProgram().getId(), 
+                                                       event.getDisplayName(), 
+                                                       action, 
+                                                       event.getStartTime(), 
+                                                       event.getStopTime(), 
+                                                       event.getNotificationTime(), 
+                                                       customerIds);
+    }
 
     public void setParameterStrings(Set<String> parameterStrings) {
         for (String string : parameterStrings) {
@@ -138,6 +156,14 @@ public abstract class StrategyBase {
 
     public void setProgramParameterDao(ProgramParameterDao programParameterDao) {
         this.programParameterDao = programParameterDao;
+    }
+
+    public INotifConnection getNotificationProxy() {
+        return notificationProxy;
+    }
+
+    public void setNotificationProxy(INotifConnection notificationProxy) {
+        this.notificationProxy = notificationProxy;
     }
 
 

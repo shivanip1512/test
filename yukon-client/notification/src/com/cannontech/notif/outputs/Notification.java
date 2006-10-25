@@ -23,6 +23,15 @@ public class Notification {
         _mainElement.addContent(new Element(key).setText(value));
     }
     
+    public void addCollection(String key, Iterable<? extends Object> values) {
+        Element parent = new Element(key);
+        Element list = new Element("list");
+        parent.setContent(list);
+        for (Object item : values) {
+            list.addContent(new Element("value").setText(item.toString()));
+        }
+    }
+    
     public void addAttribute(String key, String value) {
         _mainElement.setAttribute(key, value);
     }

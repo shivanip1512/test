@@ -1,5 +1,7 @@
 package com.cannontech.yukon;
 
+import java.util.Date;
+
 import com.cannontech.enums.CurtailmentEventAction;
 import com.cannontech.enums.EconomicEventAction;
 import com.cannontech.yukon.conns.NotifRequestException;
@@ -21,4 +23,12 @@ public interface INotifConnection
     public void sendEconomicNotification(Integer economicEventId, Integer revision, EconomicEventAction action);
 
     public boolean attemptDeleteEconomic(Integer eventId, boolean includeStart);
+    
+    public void sendProgramEventNotification(Integer programId,
+                                             String eventDisplayName,
+                                             String action,
+                                             Date startTime,
+                                             Date stopTime,
+                                             Date notificationTime,
+                                             int customerIds[]);
 }

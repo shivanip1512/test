@@ -1,6 +1,9 @@
 package com.cannontech.core.dao.impl;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.core.dao.NotificationGroupDao;
@@ -77,6 +80,14 @@ public final class NotificationGroupDaoImpl implements NotificationGroupDao
 		
 		return null;
 	}
+    
+    public Set<LiteNotificationGroup> getAllNotificationGroups() {
+        List<LiteNotificationGroup> allContactNotificationGroups = 
+            databaseCache.getAllContactNotificationGroups();
+        HashSet<LiteNotificationGroup> hashSet = 
+            new HashSet<LiteNotificationGroup>(allContactNotificationGroups);
+        return hashSet;
+    }
     
     public void setDatabaseCache(IDatabaseCache databaseCache) {
         this.databaseCache = databaseCache;

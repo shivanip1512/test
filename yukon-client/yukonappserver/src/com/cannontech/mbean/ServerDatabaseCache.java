@@ -28,6 +28,7 @@ import com.cannontech.database.data.lite.LiteDeviceConfigurationCategory;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
 import com.cannontech.database.data.lite.LiteFactory;
+import com.cannontech.database.data.lite.LiteNotificationGroup;
 import com.cannontech.database.data.lite.LiteSettlementConfig;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteTOUSchedule;
@@ -103,7 +104,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	private ArrayList allYukonPAObjects = null;
 	//private ArrayList allPoints = null;
     private ArrayList allSystemPoints = null;
-	private ArrayList allNotificationGroups = null;
+	private List<LiteNotificationGroup> allNotificationGroups = null;
 		
 	private ArrayList allAlarmCategories = null;
 	private ArrayList allContacts = null;
@@ -754,13 +755,13 @@ public synchronized java.util.List getAllLoadManagement()
  * Insert the method's description here.
  * Creation date: (3/14/00 3:19:19 PM)
  */
-public synchronized java.util.List getAllContactNotificationGroups()
+public synchronized List<LiteNotificationGroup> getAllContactNotificationGroups()
 {
 	if( allNotificationGroups != null )
 		return allNotificationGroups;
 	else
 	{
-		allNotificationGroups = new ArrayList();
+		allNotificationGroups = new ArrayList<LiteNotificationGroup>();
 		ContactNotificationGroupLoader notifLoader = new ContactNotificationGroupLoader(allNotificationGroups, databaseAlias);
 		notifLoader.run();
 		

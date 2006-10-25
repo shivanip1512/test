@@ -9,6 +9,7 @@ import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteCustomer;
+import com.cannontech.database.data.lite.LiteNotificationGroup;
 import com.cannontech.database.data.lite.LiteTOUSchedule;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -29,7 +30,7 @@ public interface IDatabaseCache
 	public java.util.List getAllCapControlFeeders();
 	public java.util.List getAllCapControlSubBuses();
 
-	public java.util.List getAllContactNotificationGroups();
+	public List<LiteNotificationGroup> getAllContactNotificationGroups();
 	public java.util.List getAllContacts();
 
 	public java.util.List getAllCICustomers();

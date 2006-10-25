@@ -32,10 +32,8 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.enums.CurtailmentEventAction;
-import com.cannontech.yukon.INotifConnection;
 
 public abstract class BaseNotificationStrategy extends StrategyBase {
-    private INotifConnection notificationProxy;
     private CurtailmentEventDao curtailmentEventDao;
     private CurtailmentEventNotifDao curtailmentEventNotifDao;
     private CurtailmentEventParticipantDao curtailmentEventParticipantDao;
@@ -151,7 +149,7 @@ public abstract class BaseNotificationStrategy extends StrategyBase {
         });
         
         getNotificationProxy().sendCurtailmentNotification(event.getId(), CurtailmentEventAction.STARTING);
-        
+        sendProgramNotifications(event, curtailmentEventParticipantDao.getForEvent(event), "started");
         return event;
     }
 
@@ -237,7 +235,7 @@ public abstract class BaseNotificationStrategy extends StrategyBase {
         CTILogger.info(event + " modified by " + user + " new durration " + builder.getNewLength());
         
         getNotificationProxy().sendCurtailmentNotification(event.getId(), CurtailmentEventAction.ADJUSTING);
-        
+        sendProgramNotifications(event, curtailmentEventParticipantDao.getForEvent(event), "adjusted");
         return event;
     }
     
@@ -249,6 +247,7 @@ public abstract class BaseNotificationStrategy extends StrategyBase {
         boolean success = getNotificationProxy()
             .attemptDeleteCurtailmentNotification(event.getId(), true);
 
+        sendProgramNotifications(event, curtailmentEventParticipantDao.getForEvent(event), "deleted");
         if (success) {
             transactionTemplate.execute(new TransactionCallbackWithoutResult() {
                 public void doInTransactionWithoutResult(TransactionStatus status) {
@@ -272,6 +271,7 @@ public abstract class BaseNotificationStrategy extends StrategyBase {
 
         event.setState(CurtailmentEventState.CANCELLED);
         curtailmentEventDao.save(event);
+        sendProgramNotifications(event, curtailmentEventParticipantDao.getForEvent(event), "cancelled");
     }
 
     @Override
@@ -286,14 +286,6 @@ public abstract class BaseNotificationStrategy extends StrategyBase {
     @Override
     public List<? extends BaseEvent> getEventsForProgram(Program program) {
         return curtailmentEventDao.getAllForProgram(program);
-    }
-
-    public INotifConnection getNotificationProxy() {
-        return notificationProxy;
-    }
-
-    public void setNotificationProxy(INotifConnection notificationProxy) {
-        this.notificationProxy = notificationProxy;
     }
 
     public CurtailmentEventDao getCurtailmentEventDao() {

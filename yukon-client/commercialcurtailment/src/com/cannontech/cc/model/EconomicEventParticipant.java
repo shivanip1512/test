@@ -25,7 +25,7 @@ import com.cannontech.database.data.notification.NotifMap;
 @Entity
 @Table(name = "CCurtEEParticipant",
        uniqueConstraints=@UniqueConstraint(columnNames={"CCurtEconomicEventId","CustomerId"}))
-public class EconomicEventParticipant {
+public class EconomicEventParticipant implements BaseParticipant {
     private CICustomerStub customer;
     private EconomicEvent event;
     private Integer id;

@@ -1,5 +1,7 @@
 package com.cannontech.yukon.server.cache;
 
+import java.util.List;
+
 import com.cannontech.database.data.lite.LiteNotificationGroup;
 import com.cannontech.database.db.notification.NotificationGroup;
 
@@ -10,7 +12,7 @@ import com.cannontech.database.db.notification.NotificationGroup;
  */
 public class ContactNotificationGroupLoader implements Runnable 
 {
-	private java.util.ArrayList allContactNotificationGroups = null;
+	private List<LiteNotificationGroup> allContactNotificationGroups = null;
 	//private java.util.ArrayList allUsedContactNotifications = new java.util.ArrayList();
 	
 	private String databaseAlias = null;
@@ -18,7 +20,7 @@ public class ContactNotificationGroupLoader implements Runnable
 	/**
 	 * ContactNotificationLoader constructor comment.
 	 */
-	public ContactNotificationGroupLoader(java.util.ArrayList contactGroupArray_, String alias) {
+	public ContactNotificationGroupLoader(List<LiteNotificationGroup> contactGroupArray_, String alias) {
 		super();
 		this.allContactNotificationGroups = contactGroupArray_;
 		this.databaseAlias = alias;

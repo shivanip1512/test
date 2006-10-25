@@ -77,6 +77,42 @@
 </div>
 
 <div>
+<div class="section" style="float: left;">
+<div class="sectionTitle">Assigned Notification Groups:</div>
+<div class="sectionBody">
+<t:dataTable value="#{sProgramDetail.assignedNotificationGroups}" 
+             var="notifGroup" 
+             styleClass="horizBorders">
+  <t:column width="20">
+    <t:commandLink actionListener="#{sProgramDetail.deleteNotificationGroup}">
+      <t:updateActionListener property="#{sProgramDetail.selectedNotificationGroup}" value="#{notifGroup}"/>
+      <h:graphicImage value="/WebConfig/yukon/Icons/clearbits/subtract.gif" styleClass="cssicon" />
+    </t:commandLink>
+  </t:column>
+  <t:column><t:outputText value="#{notifGroup.notificationGroupName}"/></t:column>
+</t:dataTable>
+</div>
+</div>
+<div class="section" style="float: left">
+<div class="sectionTitle">Available Notification Groups:</div>
+<div class="sectionBody">
+<t:dataTable value="#{sProgramDetail.unassignedNotificationGroups}" 
+             var="notifGroup" 
+             styleClass="horizBorders">
+  <t:column width="20">
+    <t:commandLink actionListener="#{sProgramDetail.addNotificationGroup}">
+      <t:updateActionListener property="#{sProgramDetail.selectedNotificationGroup}" value="#{notifGroup}"/>
+      <h:graphicImage value="/WebConfig/yukon/Icons/clearbits/add.gif" styleClass="cssicon" />
+    </t:commandLink>
+  </t:column>
+  <t:column><t:outputText value="#{notifGroup.notificationGroupName}"/></t:column>
+</t:dataTable>
+</div>
+</div>
+<div style="clear: both;">&nbsp;</div>
+</div>
+
+<div>
 <h:commandButton action="#{sProgramDetail.save}" value="Save"/>
 <h:commandButton action="#{sProgramDetail.delete}" value="Delete" 
   rendered="#{sProgramDetail.programDeletable}" />

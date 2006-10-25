@@ -17,6 +17,7 @@ import com.cannontech.cc.dao.AvailableProgramGroupDao;
 import com.cannontech.cc.dao.BaseEventDao;
 import com.cannontech.cc.dao.GroupDao;
 import com.cannontech.cc.dao.ProgramDao;
+import com.cannontech.cc.dao.ProgramNotificationGroupDao;
 import com.cannontech.cc.dao.ProgramParameterDao;
 import com.cannontech.cc.dao.ProgramTypeDao;
 import com.cannontech.cc.model.AvailableProgramGroup;
@@ -27,6 +28,7 @@ import com.cannontech.cc.model.ProgramParameter;
 import com.cannontech.cc.model.ProgramType;
 import com.cannontech.core.dao.EnergyCompanyDao;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
+import com.cannontech.database.data.lite.LiteNotificationGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 public class ProgramService {
@@ -37,6 +39,7 @@ public class ProgramService {
     private ProgramParameterDao programParameterDao;
     private BaseEventDao baseEventDao;
     private EnergyCompanyDao energyCompanyDao;
+    private ProgramNotificationGroupDao programNotificationGroupDao;
    
     public ProgramService() {
         super();
@@ -120,7 +123,8 @@ public class ProgramService {
     @Transactional
     public void saveProgram(Program program, 
                             Collection<ProgramParameter> programParameters, 
-                            List<Group> assignedGroups) {
+                            List<Group> assignedGroups,
+                            Set<LiteNotificationGroup> assignedNotificationGroups) {
         programDao.save(program);
         for (ProgramParameter parameter : programParameters) {
             programParameterDao.save(parameter);
@@ -147,6 +151,9 @@ public class ProgramService {
             apg.setProgram(program);
             availableProgramGroupDao.save(apg);
         }
+        
+        // save notification groups
+        programNotificationGroupDao.setNotificationGroupsForProgram(program, assignedNotificationGroups);
     }
 
     public Program createNewProgram(LiteYukonUser user) {
@@ -217,6 +224,10 @@ public class ProgramService {
         return energyCompanyDao.getEnergyCompanyTimeZone(energyCompany);
     }
     
+    public Set<LiteNotificationGroup> getAssignedNotificationGroups(Program program) {
+        return programNotificationGroupDao.getNotificationGroupsForProgram(program);
+    }
+    
     public ProgramParameterDao getProgramParameterDao() {
         return programParameterDao;
     }
@@ -231,6 +242,10 @@ public class ProgramService {
     
     public void setEnergyCompanyDao(EnergyCompanyDao energyCompanyDao) {
         this.energyCompanyDao = energyCompanyDao;
+    }
+
+    public void setProgramNotificationGroupDao(ProgramNotificationGroupDao programNotificationGroupDao) {
+        this.programNotificationGroupDao = programNotificationGroupDao;
     }
 
 }
