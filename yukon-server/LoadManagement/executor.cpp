@@ -1223,11 +1223,20 @@ void CtiLMManualControlRequestExecutor::Execute()
             // Fix up program control window if necessary
             ((CtiLMProgramDirect*)program)->setConstraintOverride(false);
             CoerceStartStopTime(program, startTime, stopTime);
-            StartProgram(program, controlArea, startTime, stopTime);
-            if(response != NULL)
+            if( checker.checkConstraints(_controlMsg->getStartGear()-1, startTime.seconds(), stopTime.seconds()) )
             {
-                response->setStatus(CtiServerResponseMsg::OK);
-                response->setMessage("Manual Control Request OK, Using Constraints");
+                StartProgram(program, controlArea, startTime, stopTime);
+
+                if(response != NULL)
+                {
+                    response->setStatus(CtiServerResponseMsg::OK);
+                    response->setMessage("Manual Control Request OK, Using Constraints");
+                } 
+            }
+            else if(response != NULL)
+            {
+                response->setStatus(CtiServerResponseMsg::ERR);
+                response->setMessage("Manual Control Request Violates Constraints, Abandoning");
             }       
             break;
         };
