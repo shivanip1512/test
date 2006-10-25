@@ -28,6 +28,7 @@ public interface IPointOffsets
    public static final int PT_OFFSET_FROZEN_MIN_VOLT		= 25;
    public static final int PT_OFFSET_KVAR_DEMAND			= 35;
 	
+   public static final int PT_OFFSET_OUTAGE                 = 100;
    public static final int PT_OFFSET_LPROFILE_KW_DEMAND   = 101;
    public static final int PT_OFFSET_LPROFILE_VOLTAGE_DEMAND = 104;
 		

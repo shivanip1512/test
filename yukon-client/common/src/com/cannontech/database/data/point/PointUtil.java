@@ -69,6 +69,16 @@ public class PointUtil {
                 multiplier = 1.0;
             }
 
+            Integer deviceID = ((DeviceBase) val).getDevice().getDeviceID();
+            if ((val instanceof MCT400SeriesBase) && deviceID != null)
+            {
+                PointBase outageAnalogPoint = PointFactory.createAnalogPoint("Outages", 
+                                                                                  deviceID, 
+                                                                                  pointDao.getNextPointId(), 
+                                                                                  IPointOffsets.PT_OFFSET_OUTAGE, 
+                                                                                  PointUnits.UOMID_SECONDS);
+                newVal.getDBPersistentVector().add(outageAnalogPoint);
+            }
             // always create the PulseAccum point(except for 430s)
             if (val instanceof MCT310 
                     || val instanceof MCT310IL 
@@ -81,8 +91,7 @@ public class PointUtil {
             {
                 newVal.getDBPersistentVector()
                       .add(PointFactory.createPulseAccumPoint("kWh",
-                      ((DeviceBase) val).getDevice()
-                                        .getDeviceID(),
+                      deviceID,
                       pointDao.getNextPointId(),
                       PointTypes.PT_OFFSET_TOTAL_KWH,
                       com.cannontech.database.data.point.PointUnits.UOMID_KWH,
@@ -90,8 +99,7 @@ public class PointUtil {
     
                 newVal.getDBPersistentVector()
                       .add(PointFactory.createPulseAccumPoint("Blink Count",
-                      ((DeviceBase) val).getDevice()
-                                        .getDeviceID(),
+                      deviceID,
                       pointDao.getNextPointId(),
                       PointTypes.PT_OFFSET_BLINK_COUNT,
                       com.cannontech.database.data.point.PointUnits.UOMID_COUNTS,
@@ -102,8 +110,7 @@ public class PointUtil {
             if (val instanceof MCT470) {
                 newVal.getDBPersistentVector()
                     .add(PointFactory.createDmdAccumPoint("kW",
-                    ((DeviceBase) val).getDevice()
-                    .getDeviceID(),
+                    deviceID,
                     pointDao.getNextPointId(),                    
                     PointTypes.PT_OFFSET_KW_DEMAND,
                     com.cannontech.database.data.point.PointUnits.UOMID_KW,
@@ -114,8 +121,7 @@ public class PointUtil {
             if (val instanceof MCT310IL || val instanceof MCT310IDL || val instanceof MCT410IL || val instanceof MCT410CL || val instanceof MCT470) {
                 newVal.getDBPersistentVector()
                       .add(PointFactory.createDmdAccumPoint("kW-LP",
-                    ((DeviceBase) val).getDevice()
-                                      .getDeviceID(),
+                    deviceID,
                      pointDao.getNextPointId(),                                                          
                     PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND,
                     com.cannontech.database.data.point.PointUnits.UOMID_KW,
@@ -127,8 +133,7 @@ public class PointUtil {
             {
                 newVal.getDBPersistentVector()
                     .add(PointFactory.createDmdAccumPoint("Voltage-LP",
-                    ((DeviceBase) val).getDevice()
-                                      .getDeviceID(),
+                    deviceID,
                     pointDao.getNextPointId(),                                                                                                
                     PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND,
                     com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
@@ -136,8 +141,7 @@ public class PointUtil {
 
                 newVal.getDBPersistentVector()
                     .add(PointFactory.createDmdAccumPoint("Peak kW",
-                    ((DeviceBase) val).getDevice()
-                                      .getDeviceID(),
+                    deviceID,
                     pointDao.getNextPointId(),                                                                                                
                     PointTypes.PT_OFFSET_PEAK_KW_DEMAND,
                     com.cannontech.database.data.point.PointUnits.UOMID_KW,
@@ -145,8 +149,7 @@ public class PointUtil {
 
                 newVal.getDBPersistentVector()
                     .add(PointFactory.createDmdAccumPoint("Max Volts",
-                    ((DeviceBase) val).getDevice()
-                                      .getDeviceID(),
+                    deviceID,
                     pointDao.getNextPointId(),                                                                                                
                     PointTypes.PT_OFFSET_MAX_VOLT_DEMAND,
                     com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
@@ -154,8 +157,7 @@ public class PointUtil {
 
                 newVal.getDBPersistentVector()
                     .add(PointFactory.createDmdAccumPoint("Min Volts",
-                    ((DeviceBase) val).getDevice()
-                                      .getDeviceID(),
+                    deviceID,
                     pointDao.getNextPointId(),                                                                                                
                     PointTypes.PT_OFFSET_MIN_VOLT_DEMAND,
                     com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
@@ -163,8 +165,7 @@ public class PointUtil {
 
                 newVal.getDBPersistentVector()
                     .add(PointFactory.createDmdAccumPoint("Frozen Peak Demand",
-                    ((DeviceBase) val).getDevice()
-                                      .getDeviceID(),
+                    deviceID,
                     pointDao.getNextPointId(),                                                                                                
                     PointTypes.PT_OFFSET_FROZEN_PEAK_DEMAND,
                     com.cannontech.database.data.point.PointUnits.UOMID_KW,
@@ -172,8 +173,7 @@ public class PointUtil {
 
                 newVal.getDBPersistentVector()
                     .add(PointFactory.createDmdAccumPoint("Frozen Max Volts",
-                    ((DeviceBase) val).getDevice()
-                                      .getDeviceID(),
+                    deviceID,
                     pointDao.getNextPointId(),                                                                                                
                     PointTypes.PT_OFFSET_FROZEN_MAX_VOLT,
                     com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
@@ -181,8 +181,7 @@ public class PointUtil {
 
                 newVal.getDBPersistentVector()
                     .add(PointFactory.createDmdAccumPoint("Frozen Min Volts",
-                    ((DeviceBase) val).getDevice()
-                                      .getDeviceID(),
+                    deviceID,
                     pointDao.getNextPointId(),                                                                                                
                     PointTypes.PT_OFFSET_FROZEN_MIN_VOLT,
                     com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
@@ -190,8 +189,7 @@ public class PointUtil {
 
                 newVal.getDBPersistentVector()
                     .add(PointFactory.createDmdAccumPoint("kW",
-                    ((DeviceBase) val).getDevice()
-                                      .getDeviceID(),
+                    deviceID,
                     pointDao.getNextPointId(),                                                                                                
                     PointTypes.PT_OFFSET_KW_DEMAND,
                     com.cannontech.database.data.point.PointUnits.UOMID_KW,
@@ -199,8 +197,7 @@ public class PointUtil {
 
                 newVal.getDBPersistentVector()
                     .add(PointFactory.createDmdAccumPoint("Voltage",
-                    ((DeviceBase) val).getDevice()
-                                      .getDeviceID(),
+                    deviceID,
                     pointDao.getNextPointId(),                                                                                                
                     PointTypes.PT_OFFSET_VOLTAGE_DEMAND,
                     com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
@@ -221,8 +218,7 @@ public class PointUtil {
                 
                 newVal.getDBPersistentVector()
                     .add(PointFactory.createAnalogPoint("Total KWh",
-                    ((DeviceBase) val).getDevice()
-                    .getDeviceID(),
+                    deviceID,
                     pointDao.getNextPointId(),
                     PointTypes.PT_OFFSET_TOTAL_KWH,
                     com.cannontech.database.data.point.PointUnits.UOMID_KWH,
@@ -241,8 +237,7 @@ public class PointUtil {
                 
                 newVal.getDBPersistentVector()
                     .add(PointFactory.createAnalogPoint("Peak KW (Rate A KW)",
-                    ((DeviceBase) val).getDevice()
-                    .getDeviceID(),
+                    deviceID,
                     pointDao.getNextPointId(),                    
                     2,
                     com.cannontech.database.data.point.PointUnits.UOMID_KW,
@@ -258,8 +253,7 @@ public class PointUtil {
                 
                 newVal.getDBPersistentVector()
                     .add(PointFactory.createAnalogPoint("Rate A KWh",
-                    ((DeviceBase) val).getDevice()
-                    .getDeviceID(),
+                    deviceID,
                     pointDao.getNextPointId(),                                        
                     3,
                     com.cannontech.database.data.point.PointUnits.UOMID_KWH,
@@ -278,8 +272,7 @@ public class PointUtil {
                 
                 newVal.getDBPersistentVector()
                     .add(PointFactory.createAnalogPoint("Last Interval KW",
-                    ((DeviceBase) val).getDevice()
-                    .getDeviceID(),
+                    deviceID,
                     pointDao.getNextPointId(),
                     10,
                     com.cannontech.database.data.point.PointUnits.UOMID_KW,
@@ -293,8 +286,7 @@ public class PointUtil {
                 PointBase newPoint2 = PointFactory.createNewPoint(pointDao.getNextPointId(),
                       PointTypes.STATUS_POINT,
                       "DISCONNECT STATUS",
-                      ((DeviceBase) val).getDevice()
-                                        .getDeviceID(),
+                      deviceID,
                       new Integer(PointTypes.PT_OFFSET_TOTAL_KWH));
 
                 if (val instanceof MCT410IL)
