@@ -200,7 +200,7 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 	/* (non-Javadoc)
 	 * @see javax.swing.table.TableModel#getColumnClass(int)
 	 */
-	public Class getColumnClass(int column)
+	public Class<?> getColumnClass(int column)
 	{
 		return getColumnTypes()[column];
 	}
