@@ -3,6 +3,7 @@ package com.cannontech.notif.handler;
 import java.util.*;
 
 import com.cannontech.cc.dao.EconomicEventNotifDao;
+import com.cannontech.cc.dao.EconomicEventParticipantDao;
 import com.cannontech.cc.model.*;
 import com.cannontech.cc.service.BaseEconomicStrategy;
 import com.cannontech.cc.service.EconomicService;
@@ -14,8 +15,8 @@ import com.cannontech.notif.outputs.*;
 
 public class EconomicEventScheduler extends EventScheduler {
     private EconomicEventNotifDao economicEventNotifDao;
+    private EconomicEventParticipantDao economicEventParticipantDao;
     private EconomicService economicService;
-
     
 
     public EconomicEventScheduler(OutputHandlerHelper helper) {
@@ -23,7 +24,7 @@ public class EconomicEventScheduler extends EventScheduler {
     }
     
     public void eventCreationNotification(EconomicEvent event) {
-        List<EconomicEventParticipant> participants = economicService.getParticipants(event);
+        List<EconomicEventParticipant> participants = economicEventParticipantDao.getForEvent(event);
         EconomicEventPricing eventPricing = event.getRevisions().get(1);
         
         createNotification(participants,
@@ -37,7 +38,7 @@ public class EconomicEventScheduler extends EventScheduler {
     }
     
     public void eventExtensionNotification(EconomicEvent event) {
-        List<EconomicEventParticipant> participants = economicService.getParticipants(event);
+        List<EconomicEventParticipant> participants = economicEventParticipantDao.getForEvent(event);
         EconomicEventPricing eventPricing = event.getRevisions().get(1);
         
         EconomicEvent initialEvent = event.getInitialEvent();
@@ -89,7 +90,7 @@ public class EconomicEventScheduler extends EventScheduler {
     }
     
     public void eventCancellationNotification(EconomicEvent event) {
-        List<EconomicEventParticipant> participants = economicService.getParticipants(event);
+        List<EconomicEventParticipant> participants = economicEventParticipantDao.getForEvent(event);
         EconomicEventPricing eventPricing = event.getRevisions().get(1);
         
         attemptDeleteNotification(event, NotificationReason.STOPPING);
@@ -126,7 +127,6 @@ public class EconomicEventScheduler extends EventScheduler {
     protected NotificationBuilder createBuilder(final EventNotif _eventNotif) {
         final EconomicEventNotif eventNotif = (EconomicEventNotif) _eventNotif;
         final EconomicEvent event = eventNotif.getParticipant().getEvent();
-        final EconomicEventPricing eventRevision = eventNotif.getRevision();
         final NotificationReason reason = eventNotif.getReason();
         
         
@@ -188,6 +188,14 @@ public class EconomicEventScheduler extends EventScheduler {
 
     public void setEconomicEventNotifDao(EconomicEventNotifDao economicEventNotifDao) {
         this.economicEventNotifDao = economicEventNotifDao;
+    }
+
+    public void setEconomicEventParticipantDao(EconomicEventParticipantDao economicEventParticipantDao) {
+        this.economicEventParticipantDao = economicEventParticipantDao;
+    }
+
+    public EconomicService getEconomicService() {
+        return economicService;
     }
 
     public void setEconomicService(EconomicService economicService) {

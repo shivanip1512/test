@@ -1,8 +1,8 @@
 package com.cannontech.notif.handler;
 
+import com.cannontech.cc.dao.EconomicEventDao;
 import com.cannontech.cc.model.EconomicEvent;
 import com.cannontech.cc.model.EconomicEventPricing;
-import com.cannontech.cc.service.EconomicService;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.message.notif.EconomicEventDeleteMsg;
 import com.cannontech.message.notif.EconomicEventMsg;
@@ -13,7 +13,7 @@ import com.cannontech.notif.server.NotifServerConnection;
 
 public class EconomicEventMessageHandler extends MessageHandler {
     private final EconomicEventScheduler _scheduler;
-    private EconomicService economicService;
+    private EconomicEventDao economicEventDao;
     
     public EconomicEventMessageHandler(EconomicEventScheduler scheduler) {
         _scheduler = scheduler;
@@ -36,9 +36,9 @@ public class EconomicEventMessageHandler extends MessageHandler {
 
     private ServerResponseMsg handleEventDeleteMessage(ServerRequestMsg reqMsg) {
         EconomicEventDeleteMsg reqPayload = (EconomicEventDeleteMsg) reqMsg.getPayload();
-        Integer curtailmentEventId = reqPayload.economicEventId;
+        Integer economicEventId = reqPayload.economicEventId;
         final EconomicEvent economicEvent = 
-            economicService.getEvent(curtailmentEventId);
+            economicEventDao.getForId(economicEventId);
         Boolean success = _scheduler.deleteEventNotification(economicEvent, 
                                                              reqPayload.deleteStart, 
                                                              reqPayload.deleteStop);
@@ -51,7 +51,7 @@ public class EconomicEventMessageHandler extends MessageHandler {
 
     private void handleEconomicMessage(EconomicEventMsg msg) {
         final EconomicEvent economicEvent = 
-            economicService.getEvent(msg.economicEventId);
+            economicEventDao.getForId(msg.economicEventId);
         final EconomicEventPricing economicEventPricing = 
             economicEvent.getRevisions().get(msg.revisionNumber);
         
@@ -72,13 +72,13 @@ public class EconomicEventMessageHandler extends MessageHandler {
             CTILogger.error("Unknown action: " + msg.action);
         }
     }
+
+    public EconomicEventDao getEconomicEventDao() {
+        return economicEventDao;
+    }
+
+    public void setEconomicEventDao(EconomicEventDao economicEventDao) {
+        this.economicEventDao = economicEventDao;
+    }
     
-    public EconomicService getEconomicService() {
-        return economicService;
-    }
-
-    public void setEconomicService(EconomicService economicService) {
-        this.economicService = economicService;
-    }
-
 }
