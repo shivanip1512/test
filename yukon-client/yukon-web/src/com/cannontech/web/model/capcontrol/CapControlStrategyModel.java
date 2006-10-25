@@ -16,6 +16,7 @@ public class CapControlStrategyModel {
     private CapControlStrategy strategy = null;
     private HashMap enableTable = new HashMap(10);
     private HashMap valueTable = new HashMap(10);
+    
 
     public CapControlStrategyModel(CapControlStrategy s) {
         super();
@@ -24,17 +25,17 @@ public class CapControlStrategyModel {
     }
 
     private void resetEnableMap() {
-        enableTable.put(CapControlModelUtil.PEAK_LOWER, Boolean.TRUE);
-        enableTable.put(CapControlModelUtil.PEAK_UPPER, Boolean.TRUE);
-        enableTable.put(CapControlModelUtil.PEAK_LAG, Boolean.TRUE);
-        enableTable.put(CapControlModelUtil.PEAK_LEAD, Boolean.TRUE);
-        enableTable.put(CapControlModelUtil.OFFP_LOWER, Boolean.TRUE);
-        enableTable.put(CapControlModelUtil.OFFP_UPPER, Boolean.TRUE);
-        enableTable.put(CapControlModelUtil.OFFP_LAG, Boolean.TRUE);
-        enableTable.put(CapControlModelUtil.OFFP_LEAD, Boolean.TRUE);
+        enableTable.put(CapControlModelUtil.PEAK_LOWER, Boolean.FALSE);
+        enableTable.put(CapControlModelUtil.PEAK_UPPER, Boolean.FALSE);
+        enableTable.put(CapControlModelUtil.PEAK_LAG, Boolean.FALSE);
+        enableTable.put(CapControlModelUtil.PEAK_LEAD, Boolean.FALSE);
+        enableTable.put(CapControlModelUtil.OFFP_LOWER, Boolean.FALSE);
+        enableTable.put(CapControlModelUtil.OFFP_UPPER, Boolean.FALSE);
+        enableTable.put(CapControlModelUtil.OFFP_LAG, Boolean.FALSE);
+        enableTable.put(CapControlModelUtil.OFFP_LEAD, Boolean.FALSE);
         
-        enableTable.put(CapControlModelUtil.PEAK_PF_POINT, Boolean.TRUE);
-        enableTable.put(CapControlModelUtil.OFFP_PF_POINT, Boolean.TRUE);
+        enableTable.put(CapControlModelUtil.PEAK_PF_POINT, Boolean.FALSE);
+        enableTable.put(CapControlModelUtil.OFFP_PF_POINT, Boolean.FALSE);
 
     }
 
@@ -66,7 +67,7 @@ public class CapControlStrategyModel {
 
         String algo = strategy.getControlUnits();
         if (CapControlModelUtil.isVarStrat(algo)) {
-            updateVarStrat();
+            updateVoltStrat();
 
         } 
         else if (CapControlModelUtil.isPFactor(algo)) {
@@ -94,10 +95,10 @@ public class CapControlStrategyModel {
     }
 
     private void updateVoltStrat() {
-        enableTable.put(CapControlModelUtil.PEAK_LAG, Boolean.FALSE);
-        enableTable.put(CapControlModelUtil.PEAK_LEAD, Boolean.FALSE);
-        enableTable.put(CapControlModelUtil.OFFP_LAG, Boolean.FALSE);
-        enableTable.put(CapControlModelUtil.OFFP_LEAD, Boolean.FALSE);
+        enableTable.put(CapControlModelUtil.PEAK_LAG, Boolean.TRUE);
+        enableTable.put(CapControlModelUtil.PEAK_LEAD, Boolean.TRUE);
+        enableTable.put(CapControlModelUtil.OFFP_LAG, Boolean.TRUE);
+        enableTable.put(CapControlModelUtil.OFFP_LEAD, Boolean.TRUE);
 
         valueTable.put(CapControlModelUtil.PEAK_LAG, strategy.getPeakLag());
         valueTable.put(CapControlModelUtil.PEAK_LEAD, strategy.getPeakLead());
@@ -107,10 +108,10 @@ public class CapControlStrategyModel {
     }
 
     private void updateVarStrat() {
-        enableTable.put(CapControlModelUtil.PEAK_LOWER, Boolean.FALSE);
-        enableTable.put(CapControlModelUtil.PEAK_UPPER, Boolean.FALSE);
-        enableTable.put(CapControlModelUtil.OFFP_LOWER, Boolean.FALSE);
-        enableTable.put(CapControlModelUtil.OFFP_UPPER, Boolean.FALSE);
+        enableTable.put(CapControlModelUtil.PEAK_LOWER, Boolean.TRUE);
+        enableTable.put(CapControlModelUtil.PEAK_UPPER, Boolean.TRUE);
+        enableTable.put(CapControlModelUtil.OFFP_LOWER, Boolean.TRUE);
+        enableTable.put(CapControlModelUtil.OFFP_UPPER, Boolean.TRUE);
 
         valueTable.put(CapControlModelUtil.PEAK_LOWER, strategy.getPkVarLag());
         valueTable.put(CapControlModelUtil.PEAK_UPPER, strategy.getPkVarLead());
@@ -122,8 +123,8 @@ public class CapControlStrategyModel {
     }
     
     private void updatePFStrat () {
-        enableTable.put(CapControlModelUtil.PEAK_PF_POINT, Boolean.FALSE);
-        enableTable.put(CapControlModelUtil.OFFP_PF_POINT, Boolean.FALSE);
+        enableTable.put(CapControlModelUtil.PEAK_PF_POINT, Boolean.TRUE);
+        enableTable.put(CapControlModelUtil.OFFP_PF_POINT, Boolean.TRUE);
         
         valueTable.put(CapControlModelUtil.PEAK_PF_POINT, strategy.getPkPFPoint());
         valueTable.put(CapControlModelUtil.OFFP_PF_POINT, strategy.getOffPkPFPoint());
@@ -177,22 +178,14 @@ public class CapControlStrategyModel {
     }
 
     private void updateData() {
-       // if (strategy.getPeakLag().doubleValue() == 0)
             strategy.setPeakLag((Double) valueTable.get(CapControlModelUtil.PEAK_LAG));
-       // if (strategy.getPeakLead().doubleValue() == 0)
             strategy.setPeakLead((Double) valueTable.get(CapControlModelUtil.PEAK_LEAD));
-       // if (strategy.getOffPkLag().doubleValue() == 0)
             strategy.setOffPkLag((Double) valueTable.get(CapControlModelUtil.OFFP_LAG));
-       // if (strategy.getOffPkLead().doubleValue() == 0)
             strategy.setOffPkLead((Double) valueTable.get(CapControlModelUtil.OFFP_LEAD));
 
-//        if (strategy.getPkVarLag().doubleValue() == 0)
             strategy.setPkVarLag((Double) valueTable.get(CapControlModelUtil.PEAK_LOWER));
-//        if (strategy.getPkVarLead().doubleValue() == 0)
             strategy.setPkVarLead((Double) valueTable.get(CapControlModelUtil.PEAK_UPPER));
-//        if (strategy.getOffpkVarLag().doubleValue() == 0)
             strategy.setOffpkVarLag((Double) valueTable.get(CapControlModelUtil.OFFP_LOWER));
-//        if (strategy.getOffpkVarLead().doubleValue() == 0)
             strategy.setOffpkVarLead((Double) valueTable.get(CapControlModelUtil.OFFP_UPPER));
 
             strategy.setPkPFPoint((Double) valueTable.get(CapControlModelUtil.PEAK_PF_POINT));
@@ -253,5 +246,24 @@ public class CapControlStrategyModel {
 
         updateModel();
     }
+
+
+    
+    public boolean isKVarAlgorithm () {
+        String algo = strategy.getControlUnits();
+        return 
+                CapControlModelUtil.isVarStrat(algo) ;
+    }
+    
+    public boolean isPFAlgorithm () {
+        String algo = strategy.getControlUnits();
+        return CapControlModelUtil.isPFactor(algo);
+    }
+    
+    public boolean isVoltVar () {
+     String algo = strategy.getControlUnits();
+     return CapControlModelUtil.isVoltVar(algo);
+    }
+    
 
 }

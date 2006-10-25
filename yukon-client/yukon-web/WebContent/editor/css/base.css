@@ -45,7 +45,7 @@ a.submenuLink:hover, legend, .editorHeader, .legendLikeLabel {
 	width: 65px;
 }
 
-.char16Label {
+.char16Label, .char16PadLabel {
 	width: 130px;
 }
 
@@ -239,7 +239,6 @@ legend, .legendLikeLabel{
 	padding: 0;
 	
 	}
-    
 .bigFont {
     font-size: 20px;
 }
@@ -247,9 +246,8 @@ legend, .legendLikeLabel{
     height: 50px; 
 }
 
-.padlabel {
-    padding-right: 3px;  
+.padlabel, .char16PadLabel {
+    padding-right: 5px;
 }
 
- 
 
