@@ -7,12 +7,17 @@
 package com.cannontech.analysis;
 
 import java.awt.Image;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
 
 import org.jfree.report.JFreeReport;
 import org.jfree.report.PageDefinition;
+import org.jfree.report.ReportProcessingException;
+import org.jfree.report.function.FunctionInitializeException;
+import org.jfree.report.modules.gui.base.PreviewDialog;
 import org.jfree.report.modules.output.pageable.pdf.PDFReportUtil;
 
 import com.cannontech.analysis.report.CapBankReport;
@@ -197,4 +202,28 @@ public class ReportFuncs
 		final byte[] data = encoder.pngEncode();
 		out.write(data);
 	}
+
+    public static void generatePreview(YukonReportBase rmReport) throws FunctionInitializeException, ReportProcessingException {
+        rmReport.getModel().collectData();
+    
+    	//Create the report
+    	JFreeReport report = rmReport.createReport();
+    	report.setData(rmReport.getModel());
+    
+    	final PreviewDialog dialog = new PreviewDialog(report);
+    	// Add a window closeing event, even though I think it's already handled by setDefaultCloseOperation(..)
+    	dialog.addWindowListener(new java.awt.event.WindowAdapter()
+    	{
+    		public void windowClosing(java.awt.event.WindowEvent e)
+    		{
+    			dialog.setVisible(false);
+    			dialog.dispose();
+    			System.exit(0);
+    		};
+    	});
+    
+    	dialog.setModal(true);
+    	dialog.pack();
+    	dialog.setVisible(true);
+    }
 }
