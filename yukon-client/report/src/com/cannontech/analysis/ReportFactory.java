@@ -179,14 +179,15 @@ public class ReportFactory
 	{
 		
 		TextFieldElementFactory factory = new TextFieldElementFactory();
-		if( model.getColumnClass(index).equals(Integer.class) || model.getColumnClass(index).equals(Double.class))
-			factory = createNumberFieldElementDefault(model.getColumnName(index), model.getColumnProperties(index));
-			
-		else if( model.getColumnClass(index).equals(Date.class))
-			factory = createDateFieldElementDefault(model.getColumnName(index), model.getColumnProperties(index));
-		
-		else	//make it a text field on all other occasions.
-			factory = createTextFieldElementDefault(model.getColumnName(index), model.getColumnProperties(index));
+		Class<?> columnClass = model.getColumnClass(index);
+        if (Number.class.isAssignableFrom(columnClass)) {
+            factory = createNumberFieldElementDefault(model.getColumnName(index), model.getColumnProperties(index));
+        } else if (Date.class.isAssignableFrom(columnClass)) {
+            factory = createDateFieldElementDefault(model.getColumnName(index), model.getColumnProperties(index));
+        } else {
+            // make it a text field on all other occasions.
+            factory = createTextFieldElementDefault(model.getColumnName(index), model.getColumnProperties(index));
+        }
 		
 		factory = setTextFieldElementDefaults(factory, model.getColumnName(index), model.getColumnProperties(index));
 		return factory;
