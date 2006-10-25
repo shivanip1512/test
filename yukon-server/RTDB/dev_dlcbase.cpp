@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dlcbase.cpp-arc  $
-* REVISION     :  $Revision: 1.41 $
-* DATE         :  $Date: 2006/10/18 19:20:58 $
+* REVISION     :  $Revision: 1.42 $
+* DATE         :  $Date: 2006/10/25 20:07:57 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -130,47 +130,66 @@ INT CtiDeviceDLCBase::retMsgHandler( string commandStr, int status, CtiReturnMsg
     CtiReturnMsg    *tmpVGRetMsg = NULL;
     CtiPointDataMsg *tmpMsg;
     int retVal = 0;
-    bool force_update = false;
+    bool archive = false;
+
+    archive = (commandStr.find(" update") != string::npos);
 
     if( retMsg )
     {
         //  is there anything to send?
-        if(!(retMsg->ResultString().empty()) || retMsg->PointData().size() > 0)
+        if( !retMsg->ResultString().empty() || retMsg->PointData().empty() )
         {
-            //  if it's an update command, PIL will do the copying for us.  Otherwise, send the data.
+            //  if it's an update command, PIL will copy the data to Dispatch (vgList) for us, but we still
+            //    need to mark the points "must archive."
             //    This should be unified.  It's too confusing right now, what with the retList and vgList.
-            if( commandStr.find(" update") == string::npos )
+
+            if( !archive )
             {
-                const CtiMultiMsg_vec &subMsgs = retMsg->getData();
+                //  PIL won't be copying the LP data for us, so we need to
+                //    make a return msg for possible use
+                tmpVGRetMsg = (CtiReturnMsg *)retMsg->replicateMessage();
 
-                CtiMultiMsg_vec::const_iterator itr;
-                //  Check for any "Must Archive" points and send them to Dispatch
-                for( itr = subMsgs.begin(); itr != subMsgs.end(); itr++ )
+                //  make sure it's empty so we only append the messages we intend to
+                delete_vector( tmpVGRetMsg->PointData() );
+                tmpVGRetMsg->PointData().clear();
+            }
+
+            const CtiMultiMsg_vec &subMsgs = retMsg->getData();
+
+            CtiMultiMsg_vec::const_iterator itr;
+            //  Check for any "Must Archive" points and send them to Dispatch
+            for( itr = subMsgs.begin(); itr != subMsgs.end(); itr++ )
+            {
+                if( (*itr)->isA() == MSG_POINTDATA )
                 {
-                    if( force_update ||
-                        (((*itr)->isA() == MSG_POINTDATA) && (((CtiPointDataMsg *)*itr)->getTags() & (TAG_POINT_MUST_ARCHIVE | TAG_POINT_LOAD_PROFILE_DATA))) )
+                    tmpMsg = (CtiPointDataMsg *)(*itr);
+
+                    if( archive )
                     {
-                        //  only allocate this object if you need to
-                        if( tmpVGRetMsg == NULL )
+                        //  PIL will be copying the data - so all we need to do is mark it "must archive"
+                        //    if it's not already a load profile point
+                        if( !(tmpMsg->getTags() & TAG_POINT_LOAD_PROFILE_DATA) )
                         {
-                            tmpVGRetMsg = (CtiReturnMsg *)retMsg->replicateMessage();
-
-                            //  make sure it's empty so we only append the messages we intend to
-                            delete_vector( tmpVGRetMsg->PointData() );
-                            tmpVGRetMsg->PointData().clear();
+                            tmpMsg->setTags(TAG_POINT_MUST_ARCHIVE);
                         }
-
-                        CtiPointDataMsg *newMsg = (CtiPointDataMsg *)(((CtiPointDataMsg *)*itr)->replicateMessage());
-
-                        newMsg->setTags(TAG_POINT_MUST_ARCHIVE);
-
-                        tmpVGRetMsg->PointData().push_back(newMsg);
+                    }
+                    else if( tmpMsg->getTags() & (TAG_POINT_MUST_ARCHIVE | TAG_POINT_LOAD_PROFILE_DATA) )
+                    {
+                        //  otherwise, we need to copy the "must archive" data ourselves
+                        tmpVGRetMsg->PointData().push_back(tmpMsg->replicateMessage());
                     }
                 }
+            }
 
-                if( tmpVGRetMsg )
+            if( tmpVGRetMsg )
+            {
+                if( !tmpVGRetMsg->PointData().empty() )
                 {
                     vgList.push_back(tmpVGRetMsg);
+                }
+                else
+                {
+                    delete tmpVGRetMsg;
                 }
             }
 
