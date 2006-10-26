@@ -3,7 +3,7 @@ package com.cannontech.loadcontrol.data;
 /**
  * This type was created in VisualAge.
  */
-import com.cannontech.message.util.VectorExtract;
+import java.util.Vector;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
@@ -87,12 +87,16 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	Integer currentPriority = new Integer( (int)vstr.extractUnsignedInt() );
 	Integer currentDailyStartTime = new Integer( (int)vstr.extractUnsignedInt() );
 	Integer currentDailyStopTime = new Integer( (int)vstr.extractUnsignedInt() );
-
-    java.util.Vector triggerVector = VectorExtract.extractVector(vstr, polystr);
-    java.util.Vector lmProgramVector = VectorExtract.extractVector(vstr, polystr);
-    
-//	java.util.Vector triggerVector = (java.util.Vector) vstr.restoreObject( polystr );
-//	java.util.Vector lmProgramVector = (java.util.Vector) vstr.restoreObject( polystr );
+	java.util.Vector triggerVector = (java.util.Vector) vstr.restoreObject( polystr );
+    /**
+     * pre 3.2.10, lmPrograms were simply in a vector within the rw virtualinputstream.  Now a 
+     * total program count is sent, followed by the individual programs.
+     */
+    int lmProgramCount = vstr.extractInt();
+    Vector lmProgramVector = new Vector(lmProgramCount);
+    for(int i = 0; i < lmProgramCount; i++) {
+        lmProgramVector.add(vstr.restoreObject(polystr));
+    }
 
 	lmControlArea.setYukonID(yukonID);
 	lmControlArea.setYukonCategory(yukonCategory);
