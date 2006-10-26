@@ -28,6 +28,7 @@
 #include "ctitime.h"
 #include "boost_time.h"
 #include <boost/tokenizer.hpp>
+#include <boost/shared_ptr.hpp>
 
 /*
  * for RWDBDateTime
@@ -190,6 +191,19 @@ RWvistream& operator >> ( RWvistream &strm, std::vector<T> &v )
         strm >> elem;
         v.push_back(elem);
     }
+    return strm;
+}
+
+template <class T> 
+RWvistream& operator>> ( RWvistream& strm, boost::shared_ptr<T> ptr )
+{
+    strm >> *ptr.get();
+    return strm;
+}
+template <class T> 
+RWvostream& operator<< ( RWvostream& strm, boost::shared_ptr<T> ptr )
+{
+    strm << *(ptr.get());
     return strm;
 }
 
