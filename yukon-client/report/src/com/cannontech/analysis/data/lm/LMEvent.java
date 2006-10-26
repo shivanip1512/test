@@ -366,7 +366,7 @@ public class LMEvent
 	 */
 	public boolean isERIPaymentEvent()
 	{
-		if( getAdjustedStartDateTime().getTime() >= getAdjustedStopDateTime().getTime())
+		if( getAdjustedStartDateTime().getTime() > getAdjustedStopDateTime().getTime())
 			return false;
 			
 		if( (getEventType() == EMERGENCY_EVENT || getEventType() == DISPATCHED_EVENT) ||
