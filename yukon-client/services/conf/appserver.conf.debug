@@ -50,7 +50,7 @@ wrapper.console.format=PM
 wrapper.console.loglevel=INFO
 
 # Log file to use for wrapper output logging.
-wrapper.logfile=wrapper.log
+wrapper.logfile=appserver.debug.log
 
 # Format of output for the log file.  (See docs for formats)
 wrapper.logfile.format=PTM
@@ -75,7 +75,7 @@ wrapper.syslog.loglevel=NONE
 # Wrapper Unix daemon parameters
 #********************************************************************
 # File to write process ID to
-wrapper.pidfile=%YUKON_BASE%\client\log\appserver.debug.pid
+wrapper.pidfile=appserver.debug.pid
 
 #********************************************************************
 # Wrapper NT Service parameters
