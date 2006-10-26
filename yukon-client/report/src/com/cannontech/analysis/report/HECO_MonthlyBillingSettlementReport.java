@@ -5,6 +5,7 @@ import java.awt.print.PageFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+import org.jfree.report.Element;
 import org.jfree.report.ElementAlignment;
 import org.jfree.report.Group;
 import org.jfree.report.GroupFooter;
@@ -17,6 +18,10 @@ import org.jfree.report.SimplePageDefinition;
 import org.jfree.report.elementfactory.LabelElementFactory;
 import org.jfree.report.elementfactory.StaticShapeElementFactory;
 import org.jfree.report.elementfactory.TextFieldElementFactory;
+import org.jfree.report.event.ReportEvent;
+import org.jfree.report.function.ExpressionCollection;
+import org.jfree.report.function.FunctionInitializeException;
+import org.jfree.report.function.FunctionUtilities;
 import org.jfree.report.modules.gui.base.PreviewDialog;
 
 import com.cannontech.analysis.ColumnProperties;
@@ -32,6 +37,31 @@ import com.cannontech.analysis.tablemodel.HECO_MonthlyBillingSettlementModel;
  */
 public class HECO_MonthlyBillingSettlementReport extends YukonReportBase
 {
+    private class SpecificRowVisibilityFunction extends ElementVisibilitySwitchFunction
+    {
+        int count = 0;
+        public SpecificRowVisibilityFunction() {
+            super();
+        }
+        public void itemsAdvanced(final ReportEvent event) {
+            updateVisibleState(event);
+        }
+        private void updateVisibleState(final ReportEvent event) {
+            int x = (count++ % 17);
+            boolean show = (x == HECO_MonthlyBillingSettlementModel.CONTROLLED_DEMAND_INCENTIVE_DATA || 
+                            x == HECO_MonthlyBillingSettlementModel.EFSL_DISPATCHED_DATA ||
+                            x == HECO_MonthlyBillingSettlementModel.TOTAL_CIDLC_CREDITS_DEBITS_DATA );
+            
+            final Element[] e = FunctionUtilities.findAllElements(event.getReport().getItemBand(), getElement());
+            if (e.length > 0)
+            {
+              for (int i = 0; i < e.length; i++)
+              {
+                e[i].setVisible(show);
+              }
+            }
+       }
+    }
 	/**
 	 * Constructor for Report.
 	 * Data Base for this report type is instanceOf LoadControlEventSummaryModel.
@@ -150,7 +180,8 @@ public class HECO_MonthlyBillingSettlementReport extends YukonReportBase
 		ItemBand items = ReportFactory.createItemBandDefault();
 		items.addElement(StaticShapeElementFactory.createHorizontalLine
 			("top", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f), 0));
-
+        items.addElement(StaticShapeElementFactory.createHorizontalLine
+            ("boldLine", null, new BasicStroke(0.5f), 0));
 		
 		for (int i = 0; i < getModel().getColumnNames().length; i++)
 		{
@@ -186,4 +217,18 @@ public class HECO_MonthlyBillingSettlementReport extends YukonReportBase
 		}
 		return pageDefinition;
 	}
+    
+    /* (non-Javadoc)
+     * @see com.cannontech.analysis.report.YukonReportBase#getExpressions()
+     */
+    protected ExpressionCollection getExpressions() throws FunctionInitializeException
+    {
+        super.getExpressions();
+        final SpecificRowVisibilityFunction boldLineFunction = new SpecificRowVisibilityFunction();
+        boldLineFunction.setName("boldLineTrigger");
+        boldLineFunction.setElement("boldLine");
+        expressions.add(boldLineFunction);
+
+        return expressions;
+    }    
 }
