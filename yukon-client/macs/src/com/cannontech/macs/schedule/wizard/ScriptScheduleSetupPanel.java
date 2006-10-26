@@ -2303,7 +2303,7 @@ private void initSwingCompValues()
 
     if( ((String)getScriptTemplate().getParamToValueMap().get(GROUP_TYPE_PARAM)).equalsIgnoreCase("altgroup"))
         getGroupTypeComboBox().setSelectedItem(DeviceMeterGroup.ALTGROUP_DISPLAY_STRING);
-    else if( ((String)getScriptTemplate().getParamToValueMap().get(GROUP_TYPE_PARAM)).equalsIgnoreCase("bill"))	//N/A 20041208
+    else if( ((String)getScriptTemplate().getParamToValueMap().get(GROUP_TYPE_PARAM)).equalsIgnoreCase("billgroup"))	//N/A 20041208
         getGroupTypeComboBox().setSelectedItem(DeviceMeterGroup.BILLINGGROUP_DISPLAY_STRING);
     else //if( ((String)getScriptTemplate().getParamToValueMap().get(GROUP_TYPE_PARAM)).equalsIgnoreCase("group"))
         getGroupTypeComboBox().setSelectedItem(DeviceMeterGroup.COLLECTIONGROUP_DISPLAY_STRING);
@@ -2317,11 +2317,11 @@ private void initSwingCompValues()
     getDemandDaysTextField().setText((String)getScriptTemplate().getParamToValueMap().get(BILLING_DEMAND_DAYS_PARAM));
     getEnergyDaysTextField().setText((String)getScriptTemplate().getParamToValueMap().get(BILLING_ENERGY_DAYS_PARAM));
     
-    if( ((String)getScriptTemplate().getParamToValueMap().get(BILLING_GROUP_TYPE_PARAM)).equalsIgnoreCase("test"))
+    if( ((String)getScriptTemplate().getParamToValueMap().get(BILLING_GROUP_TYPE_PARAM)).equalsIgnoreCase("altgroup"))
         getBillingGroupTypeComboBox().setSelectedItem(DeviceMeterGroup.ALTGROUP_DISPLAY_STRING);
-    else if( ((String)getScriptTemplate().getParamToValueMap().get(BILLING_GROUP_TYPE_PARAM)).equalsIgnoreCase("bill"))	//N/A 20041208
+    else if( ((String)getScriptTemplate().getParamToValueMap().get(BILLING_GROUP_TYPE_PARAM)).equalsIgnoreCase("billgroup"))
         getBillingGroupTypeComboBox().setSelectedItem(DeviceMeterGroup.BILLINGGROUP_DISPLAY_STRING);
-    else //if( ((String)getScriptTemplate().getParamToValueMap().get(BILLING_GROUP_TYPE_PARAM)).equalsIgnoreCase("collect"))
+    else //if( ((String)getScriptTemplate().getParamToValueMap().get(BILLING_GROUP_TYPE_PARAM)).equalsIgnoreCase("group"))
         getBillingGroupTypeComboBox().setSelectedItem(DeviceMeterGroup.COLLECTIONGROUP_DISPLAY_STRING);
     
     //Notification setup
@@ -2440,7 +2440,7 @@ private void loadParamMapFromSwingComp()
     if( getGroupTypeComboBox().getSelectedItem().toString().equalsIgnoreCase(DeviceMeterGroup.ALTGROUP_DISPLAY_STRING))
         getScriptTemplate().getParamToValueMap().put(GROUP_TYPE_PARAM, "altgroup");
     else if( getGroupTypeComboBox().getSelectedItem().toString().equalsIgnoreCase(DeviceMeterGroup.BILLINGGROUP_DISPLAY_STRING))
-        getScriptTemplate().getParamToValueMap().put(GROUP_TYPE_PARAM, "bill");
+        getScriptTemplate().getParamToValueMap().put(GROUP_TYPE_PARAM, "billgroup");
     else// if( getGroupTypeComboBox().getSelectedItem().toString().equalsIgnoreCase(DeviceMeterGroup.COLLECTIONGROUP_DISPLAY_STRING))
         getScriptTemplate().getParamToValueMap().put(GROUP_TYPE_PARAM, "group");
 
@@ -2461,7 +2461,7 @@ private void loadParamMapFromSwingComp()
     if( getBillingGroupTypeComboBox().getSelectedItem().toString().equalsIgnoreCase(DeviceMeterGroup.ALTGROUP_DISPLAY_STRING))
         getScriptTemplate().getParamToValueMap().put(BILLING_GROUP_TYPE_PARAM, "altgroup");
     else if( getBillingGroupTypeComboBox().getSelectedItem().toString().equalsIgnoreCase(DeviceMeterGroup.BILLINGGROUP_DISPLAY_STRING))
-        getScriptTemplate().getParamToValueMap().put(BILLING_GROUP_TYPE_PARAM, "bill");
+        getScriptTemplate().getParamToValueMap().put(BILLING_GROUP_TYPE_PARAM, "billgroup");
     else// if( getBillingGroupTypeComboBox().getSelectedItem().toString().equalsIgnoreCase(DeviceMeterGroup.COLLECTIONGROUP_DISPLAY_STRING))
         getScriptTemplate().getParamToValueMap().put(BILLING_GROUP_TYPE_PARAM, "group");
     
