@@ -388,6 +388,10 @@ void CtiConfigParameters::HeadAndTail(char *source, char *dest, size_t len)
             }
             break;
         }
+        if (source[i] == '\0') 
+        {
+            break;
+        }
     }
 }
 
