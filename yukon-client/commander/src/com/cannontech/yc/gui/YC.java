@@ -195,7 +195,7 @@ public class YC extends Observable implements MessageListener
 		getPilConn().addMessageListener(this);
 	}
 
-    private IServerConnection getPilConn()
+    protected IServerConnection getPilConn()
     {
         return ConnPool.getInstance().getDefPorterConn();        
     }

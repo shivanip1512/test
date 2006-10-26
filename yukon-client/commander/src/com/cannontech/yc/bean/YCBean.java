@@ -423,6 +423,7 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 	{
 		CTILogger.info("YCBean value UnBound from session.");
         clearRequestMessage();
+        getPilConn().removeMessageListener(this);
 	}
 	/**
 	 * A map of points NOT found in the DB, stored by name instead of PointID. 
