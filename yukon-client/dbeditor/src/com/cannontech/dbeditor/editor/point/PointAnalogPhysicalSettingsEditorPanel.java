@@ -3,7 +3,12 @@ package com.cannontech.dbeditor.editor.point;
 /**
  * This type was created in VisualAge.
  */
+import java.util.List;
+import java.util.Vector;
+
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointTypes;
 
 public class PointAnalogPhysicalSettingsEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, java.awt.event.ItemListener, javax.swing.event.CaretListener, com.klg.jclass.util.value.JCValueListener
@@ -15,7 +20,7 @@ public class PointAnalogPhysicalSettingsEditorPanel extends com.cannontech.commo
 	private com.klg.jclass.field.JCSpinField ivjDeadbandSpinner = null;
 	private javax.swing.JCheckBox ivjDeadbandCheckBox = null;
 	private com.klg.jclass.field.JCSpinField ivjPointOffsetSpinner = null;
-	//private java.util.Vector usedPointOffsetsVector = null;
+	private Vector<LitePoint> usedPointOffsetsVector = null;
 	private javax.swing.JPanel ivjDeadbandPanel = null;
 	private javax.swing.JLabel ivjUsedPointOffsetLabel = null;
 	private javax.swing.JLabel ivjDataOffsetLabel = null;
@@ -765,6 +770,27 @@ private void initialize() {
 	// user code end
 }
 /**
+ * Helper method to determine if the pointOffset is already in use
+ * @param pointOffset - Offset to check
+ * @return - True if offset is used by another point
+ */
+private boolean isPointOffsetInUse(int pointOffset) {
+
+    if (this.usedPointOffsetsVector != null && this.usedPointOffsetsVector.size() > 0) {
+
+        for (LitePoint point : this.usedPointOffsetsVector) {
+
+            if (point.getPointOffset() == pointOffset) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+
+}
+
+/**
  * Insert the method's description here.
  * Creation date: (5/1/2001 9:11:36 AM)
  * @return boolean
@@ -811,7 +837,25 @@ public boolean isInputValid()
 		setErrorString("The Data Offset text field must be filled in");
 		return false;
 	}
+    
+    Object value = this.getPointOffsetSpinner().getValue();
 
+        if (value != null) {
+            if (value instanceof Long) {
+                if (this.isPointOffsetInUse(((Long) value).intValue())) {
+                    setErrorString("Analog Point Offset " + ((Long) value).intValue()
+                            + " is in use for this device");
+                    return false;
+                }
+            }
+            if (value instanceof Integer) {
+                if (this.isPointOffsetInUse(((Integer) value).intValue())) {
+                    setErrorString("Analog Point Offset " + ((Integer) value).intValue()
+                            + " is in use for this device");
+                    return false;
+                }
+            }
+        }
 
 	return true;
 }
@@ -866,8 +910,21 @@ public void setValue(Object val)
 		getDataOffsetTextField().setText( point.getPointAnalog().getDataOffset().toString() );
 	
 	getUsedPointOffsetLabel().setText("");
-//	usedPointOffsetsVector = new java.util.Vector();
-	Integer pointOffset = point.getPoint().getPointOffset();
+    
+
+        List<LitePoint> points = DaoFactory.getPointDao()
+                                           .getLitePointsByPaObjectId(point.getPoint().getPaoID());
+        usedPointOffsetsVector = new Vector<LitePoint>(points.size());
+        for (LitePoint currPoint : points) {
+            if (point.getPoint().getPointID() != currPoint.getPointID()
+                    && point.getPoint()
+                            .getPointType()
+                            .equals(PointTypes.getType(currPoint.getPointType()))) {
+                usedPointOffsetsVector.add(currPoint);
+            }
+        }
+	
+    Integer pointOffset = point.getPoint().getPointOffset();
 	Double deadband = point.getPointAnalog().getDeadband();
 	String transducerType = point.getPointAnalog().getTransducerType();
 

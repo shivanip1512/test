@@ -4,8 +4,13 @@ package com.cannontech.dbeditor.editor.point;
  * This type was created in VisualAge.
  */
 
+import java.util.List;
+import java.util.Vector;
+
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.yukon.IDatabaseCache;
@@ -14,7 +19,7 @@ public class PointStatusPhysicalSettingsEditorPanel extends com.cannontech.commo
 	private javax.swing.JLabel ivjPointOffsetLabel = null;
 	private com.klg.jclass.field.JCSpinField ivjPointOffsetSpinner = null;
 	private javax.swing.JCheckBox ivjPhysicalPointOffsetCheckBox = null;
-	//private java.util.Vector usedPointOffsetsVector = null;
+	private Vector<LitePoint> usedPointOffsetsVector = null;
 	private javax.swing.JLabel ivjUsedPointOffsetLabel = null;
 	private javax.swing.JLabel ivjCloseTime1Label = null;
 	private com.klg.jclass.field.JCSpinField ivjCloseTime1Spinner = null;
@@ -1201,14 +1206,48 @@ private void initialize() {
 	// user code end
 }
 /**
- * Insert the method's description here.
- * Creation date: (5/1/2001 9:11:36 AM)
- * @return boolean
+ * Helper method to determine if the pointOffset is already in use
+ * @param pointOffset - Offset to check
+ * @return - True if offset is used by another point
  */
-public boolean isInputValid() 
-{
-	return true;
+private boolean isPointOffsetInUse(int pointOffset) {
+
+    if (this.usedPointOffsetsVector != null && this.usedPointOffsetsVector.size() > 0) {
+
+        for (LitePoint point : this.usedPointOffsetsVector) {
+
+            if (point.getPointOffset() == pointOffset) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+
 }
+
+    public boolean isInputValid() {
+        Object value = this.getPointOffsetSpinner().getValue();
+
+        if (value != null) {
+            if (value instanceof Long) {
+                if (this.isPointOffsetInUse(((Long) value).intValue())) {
+                    setErrorString("Status Point Offset " + ((Long) value).intValue()
+                            + " is in use for this device");
+                    return false;
+                }
+            }
+            if (value instanceof Integer) {
+                if (this.isPointOffsetInUse(((Integer) value).intValue())) {
+                    setErrorString("Status Point Offset " + ((Integer) value).intValue()
+                            + " is in use for this device");
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
 /**
  * Method to handle events for the ItemListener interface.
  * @param e java.awt.event.ItemEvent
@@ -1244,7 +1283,7 @@ public static void main(java.lang.String[] args) {
 		System.err.println("Exception occurred in main() of com.cannontech.common.gui.util.DataInputPanel");
 		com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
 	}
-}
+} 
 /**
  * This method was created in VisualAge.
  * @param val java.lang.Object
@@ -1255,7 +1294,18 @@ public void setValue(Object val)
 	com.cannontech.database.data.point.StatusPoint point = (com.cannontech.database.data.point.StatusPoint) val;
 
 	getUsedPointOffsetLabel().setText("");
-	//usedPointOffsetsVector = new java.util.Vector();
+
+    List<LitePoint> points = DaoFactory.getPointDao()
+                                           .getLitePointsByPaObjectId(point.getPoint().getPaoID());
+        usedPointOffsetsVector = new Vector<LitePoint>(points.size());
+        for (LitePoint currPoint : points) {
+            if (point.getPoint().getPointID() != currPoint.getPointID()
+                    && point.getPoint()
+                            .getPointType()
+                            .equals(PointTypes.getType(currPoint.getPointType()))) {
+                usedPointOffsetsVector.add(currPoint);
+            }
+        }
 
 	Integer pointOffset = point.getPoint().getPointOffset();
 

@@ -571,6 +571,9 @@ public void pointOffsetSpinner_ValueChanged(com.klg.jclass.util.value.JCValueEve
 			repaint();
 		}
 	}
+    
+    this.fireInputUpdate();
+    
 	return;
 }
 public void reinitialize(Integer pointDeviceID, int pointType)
@@ -615,6 +618,43 @@ public void reinitialize(Integer pointDeviceID, int pointType)
 	revalidate();
 	repaint();
 }
+
+    public boolean isInputValid() {
+        Object value = this.getPointOffsetSpinner().getValue();
+
+        if (value != null) {
+            if (value instanceof Long) {
+                return !this.isPointOffsetInUse(((Long) value).intValue());
+            }
+            if (value instanceof Integer) {
+                return !this.isPointOffsetInUse(((Integer) value).intValue());
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Helper method to determine if the pointOffset is already in use
+     * @param pointOffset - Offset to check
+     * @return - True if offset is used by another point
+     */
+    private boolean isPointOffsetInUse(int pointOffset) {
+
+        if (this.usedPointOffsetsVector != null && this.usedPointOffsetsVector.size() > 0) {
+
+            for (Object point : this.usedPointOffsetsVector) {
+
+                if (((LitePoint) point).getPointOffset() == pointOffset) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+
+    }
+
 /**
  * This method was created in VisualAge.
  * @param val java.lang.Object

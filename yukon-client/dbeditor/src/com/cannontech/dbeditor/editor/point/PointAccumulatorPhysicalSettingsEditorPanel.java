@@ -1,5 +1,12 @@
 package com.cannontech.dbeditor.editor.point;
 
+import java.util.List;
+import java.util.Vector;
+
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.point.PointTypes;
+
 
 /**
  * This type was created in VisualAge.
@@ -16,6 +23,8 @@ public class PointAccumulatorPhysicalSettingsEditorPanel extends com.cannontech.
 	private javax.swing.JLabel ivjMultiplierLabel = null;
 	private javax.swing.JTextField ivjMultiplierTextField = null;
 	private javax.swing.JPanel ivjRawValuePanel = null;
+    private Vector<LitePoint> usedPointOffsetsVector = null;
+    private String pointType;
 /**
  * Constructor
  */
@@ -505,6 +514,28 @@ private void initialize() {
 	// user code begin {2}
 	// user code end
 }
+
+    /**
+     * Helper method to determine if the pointOffset is already in use
+     * @param pointOffset - Offset to check
+     * @return - True if offset is used by another point
+     */
+    private boolean isPointOffsetInUse(int pointOffset) {
+
+        if (this.usedPointOffsetsVector != null && this.usedPointOffsetsVector.size() > 0) {
+
+            for (LitePoint point : this.usedPointOffsetsVector) {
+
+                if (point.getPointOffset() == pointOffset) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+
+    }
+
 /**
  * Insert the method's description here.
  * Creation date: (5/1/2001 9:11:36 AM)
@@ -552,10 +583,31 @@ public boolean isInputValid()
 		setErrorString("The Data Offset text field must be filled in");
 		return false;
 	}
+    
+    Object value = this.getPointOffsetSpinner().getValue();
 
+        if (value != null) {
+            if (value instanceof Long) {
+                if (this.isPointOffsetInUse(((Long) value).intValue())) {
+                    String pointTypeString = (pointType != null) ? pointType + " " : "";
+                    setErrorString( pointTypeString + "Point Offset "
+                            + ((Long) value).intValue() + " is in use for this device");
+                    return false;
+                }
+            }
+            if (value instanceof Integer) {
+                if (this.isPointOffsetInUse(((Integer) value).intValue())) {
+                    String pointTypeString = (pointType != null) ? pointType + " " : "";
+                    setErrorString( pointTypeString + "Point Offset "
+                                    + ((Long) value).intValue() + " is in use for this device");
+                    return false;
+                }
+            }
+        }
 
-	return true;
+        return true;
 }
+
 /**
  * Method to handle events for the ItemListener interface.
  * @param e java.awt.event.ItemEvent
@@ -614,6 +666,21 @@ public void setValue(Object val) {
 		getPhysicalPointOffsetCheckBox().setSelected(false);
 		getPointOffsetSpinner().setValue( new Integer(0) );
 	}
+    
+    List<LitePoint> points = DaoFactory.getPointDao()
+                                           .getLitePointsByPaObjectId(point.getPoint().getPaoID());
+        usedPointOffsetsVector = new Vector<LitePoint>(points.size());
+        for (LitePoint currPoint : points) {
+            if (point.getPoint().getPointID() != currPoint.getPointID()
+                    && point.getPoint()
+                            .getPointType()
+                            .equals(PointTypes.getType(currPoint.getPointType()))) {
+                usedPointOffsetsVector.add(currPoint);
+            }
+        }
+        
+        pointType = point.getPoint().getPointType();
+    
 /*
 	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized(cache)
