@@ -138,27 +138,26 @@ vector<CtiLMControlArea*>* CtiLMControlAreaStore::getControlAreas(ULONG secondsF
     If controlArea isn't NULL it is set to point to the control area that
     the program with programID is in.
 ---------------------------------------------------------------------------*/
-bool CtiLMControlAreaStore::findProgram(LONG programID, CtiLMProgramBase** program, CtiLMControlArea** controlArea)
+bool CtiLMControlAreaStore::findProgram(LONG programID, CtiLMProgramBaseSPtr& program, CtiLMControlArea** controlArea)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
     vector<CtiLMControlArea*>* controlAreas = getControlAreas(CtiTime().seconds());
     for(LONG i=0; i < controlAreas->size(); i++)
     {
         CtiLMControlArea* currentControlArea = (CtiLMControlArea*) (*controlAreas)[i];
-        vector<CtiLMProgramBase*> lmPrograms = currentControlArea->getLMPrograms();
+        vector<CtiLMProgramBaseSPtr>& lmPrograms = currentControlArea->getLMPrograms();
         for(LONG j=0; j < lmPrograms.size(); j++)
         {
-            CtiLMProgramBase* currentLMProgram = (CtiLMProgramBase*) lmPrograms.at(j);
+            CtiLMProgramBaseSPtr currentLMProgram = (CtiLMProgramBaseSPtr) lmPrograms[j];
             if(programID == currentLMProgram->getPAOId())
             {
                 if(controlArea != NULL)
                 {
                     *controlArea = currentControlArea;
                 }
-                if(program != NULL)
-                {
-                    *program = currentLMProgram;
-                }
+
+                program = currentLMProgram;
+
                 return true;
             }
         }
@@ -219,17 +218,17 @@ void CtiLMControlAreaStore::dumpAllDynamicData()
                 }
             }
 
-            vector<CtiLMProgramBase*>& lmPrograms = currentLMControlArea->getLMPrograms();
+            vector<CtiLMProgramBaseSPtr>& lmPrograms = currentLMControlArea->getLMPrograms();
             if( lmPrograms.size() > 0 )
             {
                 for(LONG j=0;j<lmPrograms.size();j++)
                 {
-                    CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms.at(j);
+                    CtiLMProgramBaseSPtr currentLMProgramBase = (CtiLMProgramBaseSPtr)lmPrograms[j];
                     currentLMProgramBase->dumpDynamicData(conn,currentDateTime);
 
                     if( currentLMProgramBase->getPAOType() ==  TYPE_LMPROGRAM_DIRECT )
                     {
-                        CtiLMProgramDirect* currentLMProgramDirect = (CtiLMProgramDirect*)currentLMProgramBase;
+                        CtiLMProgramDirectSPtr currentLMProgramDirect = boost::static_pointer_cast< CtiLMProgramDirect>(currentLMProgramBase);
                         currentLMProgramDirect->dumpDynamicData(conn,currentDateTime);
 
                         CtiLMGroupVec groups  = currentLMProgramDirect->getLMProgramDirectGroups();
@@ -241,7 +240,7 @@ void CtiLMControlAreaStore::dumpAllDynamicData()
                     }
                     else if( currentLMProgramBase->getPAOType() ==  TYPE_LMPROGRAM_CURTAILMENT )
                     {
-                        CtiLMProgramCurtailment* currentLMProgramCurtailment = (CtiLMProgramCurtailment*)currentLMProgramBase;
+                        CtiLMProgramCurtailmentSPtr currentLMProgramCurtailment = boost::static_pointer_cast< CtiLMProgramCurtailment>(currentLMProgramBase);
 
                         if( currentLMProgramCurtailment->getManualControlReceivedFlag() )
                         {
@@ -789,7 +788,7 @@ void CtiLMControlAreaStore::reset()
                 allGroupTimer.reset();
             }
 
-                    RWTValHashMap<LONG,CtiLMProgramBase*,id_hash,equal_to<LONG> > directProgramHashMap;
+                    RWTValHashMap<LONG,CtiLMProgramBaseSPtr,id_hash,equal_to<LONG> > directProgramHashMap;
 
                     RWDBTable lmProgramTable = db.table("lmprogram_view");
                     RWDBTable dynamicLMProgramTable = db.table("dynamiclmprogram");
@@ -871,7 +870,7 @@ void CtiLMControlAreaStore::reset()
                             dout << CtiTime() << " - " << selector.asString().data() << endl;
                         }
 
-                        CtiLMProgramDirect* currentLMProgramDirect = NULL;
+                        CtiLMProgramDirectSPtr currentLMProgramDirect;
                         RWDBReader rdr = selector.reader(conn);
                         RWDBNullIndicator isNull;
                         int total_groups_assigned = 0; //keep track of how many groups we attach to programs for sanity
@@ -880,10 +879,10 @@ void CtiLMControlAreaStore::reset()
                             LONG tempProgramId = 0;
                             rdr["paobjectid"] >> tempProgramId;
 
-                            if( currentLMProgramDirect == NULL ||
+                            if( !currentLMProgramDirect ||
                                 tempProgramId != currentLMProgramDirect->getPAOId() )
                             {
-                                currentLMProgramDirect = new CtiLMProgramDirect(rdr);
+                                currentLMProgramDirect.reset(new CtiLMProgramDirect(rdr));
                                 CtiLMGroupVec& directGroups = currentLMProgramDirect->getLMProgramDirectGroups();
 
                                 //Inserting this program's groups
@@ -950,14 +949,14 @@ void CtiLMControlAreaStore::reset()
                         rdr["paoid"] >> master_program_id;
                         rdr["excludedpaoid"] >> subordinate_program_id;
 
-                        CtiLMProgramBase* master_program = 0;
-                        CtiLMProgramBase* subordinate_program = 0;
+                        CtiLMProgramBaseSPtr master_program;
+                        CtiLMProgramBaseSPtr subordinate_program;
 
                         if(directProgramHashMap.findValue(master_program_id, master_program) &&
                            directProgramHashMap.findValue(subordinate_program_id, subordinate_program))
                         {
-                            ((CtiLMProgramDirect*)master_program)->getSubordinatePrograms().insert((CtiLMProgramDirect*)subordinate_program);
-                            ((CtiLMProgramDirect*)subordinate_program)->getMasterPrograms().insert((CtiLMProgramDirect*)master_program);
+                            (boost::static_pointer_cast< CtiLMProgramDirect >(master_program))->getSubordinatePrograms().insert(boost::static_pointer_cast< CtiLMProgramDirect >(subordinate_program));
+                            (boost::static_pointer_cast< CtiLMProgramDirect >(subordinate_program))->getMasterPrograms().insert(boost::static_pointer_cast< CtiLMProgramDirect >(master_program));
                         }
                         else
                         {
@@ -1056,10 +1055,10 @@ void CtiLMControlAreaStore::reset()
                             }
                             if( newDirectGear != NULL )
                             {
-                                CtiLMProgramBase* programToPutGearIn = NULL;
+                                CtiLMProgramBaseSPtr programToPutGearIn;
                                 if( directProgramHashMap.findValue(newDirectGear->getPAOId(),programToPutGearIn) )
                                 {
-                                    vector<CtiLMProgramDirectGear*>& lmProgramDirectGearList = ((CtiLMProgramDirect*)programToPutGearIn)->getLMProgramDirectGears();
+                                    vector<CtiLMProgramDirectGear*>& lmProgramDirectGearList = boost::static_pointer_cast< CtiLMProgramDirect>(programToPutGearIn)->getLMProgramDirectGears();
                                     lmProgramDirectGearList.push_back(newDirectGear);
                                 }
                             }
@@ -1098,10 +1097,10 @@ void CtiLMControlAreaStore::reset()
                         rdr["programid"] >> program_id;
                         rdr["notificationgrpid"] >> notif_grp_id;
 
-                        CtiLMProgramBase* program = NULL;
+                        CtiLMProgramBaseSPtr program;
                         if( directProgramHashMap.findValue(program_id, program ) )
                         {
-                            ((CtiLMProgramDirect*)program)->getNotificationGroupIDs().push_back(notif_grp_id);
+                            boost::static_pointer_cast< CtiLMProgramDirect >(program)->getNotificationGroupIDs().push_back(notif_grp_id);
                         }
                         else
                         {
@@ -1118,7 +1117,7 @@ void CtiLMControlAreaStore::reset()
                     notificationGroupTimer.reset();
                 }
 
-                    RWTValHashMap<LONG,CtiLMProgramBase*,id_hash,equal_to<LONG> > curtailmentProgramHashMap;
+                    RWTValHashMap<LONG,CtiLMProgramBaseSPtr,id_hash,equal_to<LONG> > curtailmentProgramHashMap;
 
                     RWTimer curtailProgsTimer;
                     curtailProgsTimer.start();
@@ -1185,7 +1184,7 @@ void CtiLMControlAreaStore::reset()
                             dout << CtiTime() << " - " << selector.asString().data() << endl;
                         }
 
-                        CtiLMProgramCurtailment* currentLMProgramCurtailment = NULL;
+                        CtiLMProgramCurtailmentSPtr currentLMProgramCurtailment;
                         RWDBReader rdr = selector.reader(conn);
                         RWDBNullIndicator isNull;
                         while( rdr() )
@@ -1193,10 +1192,10 @@ void CtiLMControlAreaStore::reset()
                             LONG tempProgramId = 0;
                             rdr["paobjectid"] >> tempProgramId;
 
-                            if( currentLMProgramCurtailment == NULL ||
+                            if( !currentLMProgramCurtailment ||
                                 tempProgramId != currentLMProgramCurtailment->getPAOId() )
                             {
-                                currentLMProgramCurtailment = new CtiLMProgramCurtailment(rdr);
+                                currentLMProgramCurtailment.reset(new CtiLMProgramCurtailment(rdr));
                                 if( currentLMProgramCurtailment->getManualControlReceivedFlag() )
                                 {
                                     currentLMProgramCurtailment->restoreDynamicData(rdr);
@@ -1223,11 +1222,11 @@ void CtiLMControlAreaStore::reset()
                             }
                         }
 
-                        RWTValHashMapIterator<LONG,CtiLMProgramBase*,id_hash,equal_to<LONG> > itr(curtailmentProgramHashMap);
+                        RWTValHashMapIterator<LONG,CtiLMProgramBaseSPtr,id_hash,equal_to<LONG> > itr(curtailmentProgramHashMap);
 
                         for(;itr();)
                         {
-                            CtiLMProgramCurtailment* currentLMProgramCurtailment = (CtiLMProgramCurtailment*)itr.value();
+                            CtiLMProgramCurtailmentSPtr currentLMProgramCurtailment = boost::static_pointer_cast< CtiLMProgramCurtailment >(itr.value());
 
                             RWDBTable ciCustomerBaseTable = db.table("cicustomerbase");
                             RWDBTable customerTable = db.table("customer");
@@ -1283,7 +1282,7 @@ void CtiLMControlAreaStore::reset()
                     }
 
 
-                    RWTValHashMap<LONG,CtiLMProgramBase*,id_hash,equal_to<LONG> > energyExchangeProgramHashMap;
+                    RWTValHashMap<LONG,CtiLMProgramBaseSPtr,id_hash,equal_to<LONG> > energyExchangeProgramHashMap;
 
                     RWTimer eeProgsTimer;
                     eeProgsTimer.start();
@@ -1349,7 +1348,7 @@ void CtiLMControlAreaStore::reset()
                             dout << CtiTime() << " - " << selector.asString().data() << endl;
                         }
 
-                        CtiLMProgramBase* currentLMProgramEnergyExchange = NULL;
+                        CtiLMProgramBaseSPtr currentLMProgramEnergyExchange;
                         RWDBReader rdr = selector.reader(conn);
                         RWDBNullIndicator isNull;
                         while( rdr() )
@@ -1357,10 +1356,10 @@ void CtiLMControlAreaStore::reset()
                             LONG tempProgramId = 0;
                             rdr["paobjectid"] >> tempProgramId;
 
-                            if( currentLMProgramEnergyExchange == NULL ||
+                            if( !currentLMProgramEnergyExchange ||
                                 tempProgramId != currentLMProgramEnergyExchange->getPAOId() )
                             {
-                                currentLMProgramEnergyExchange = new CtiLMProgramEnergyExchange(rdr);
+                                currentLMProgramEnergyExchange.reset(new CtiLMProgramEnergyExchange(rdr));
                                 //Inserting this curtailment program into hash map
                                 energyExchangeProgramHashMap.insert( currentLMProgramEnergyExchange->getPAOId(), currentLMProgramEnergyExchange );
                             }
@@ -1383,11 +1382,11 @@ void CtiLMControlAreaStore::reset()
                             }
                         }
 
-                        RWTValHashMapIterator<LONG,CtiLMProgramBase*,id_hash,equal_to<LONG> > itr(energyExchangeProgramHashMap);
+                        RWTValHashMapIterator<LONG,CtiLMProgramBaseSPtr,id_hash,equal_to<LONG> > itr(energyExchangeProgramHashMap);
 
                         for(;itr();)
                         {
-                            CtiLMProgramEnergyExchange* currentLMProgramEnergyExchange = (CtiLMProgramEnergyExchange*)itr.value();
+                            CtiLMProgramEnergyExchangeSPtr currentLMProgramEnergyExchange = boost::static_pointer_cast< CtiLMProgramEnergyExchange >(itr.value());
 
                             if( currentLMProgramEnergyExchange->getManualControlReceivedFlag() )
                             {
@@ -1653,7 +1652,7 @@ void CtiLMControlAreaStore::reset()
                         while( rdr() )
                         {
                             CtiLMProgramControlWindow* newWindow = new CtiLMProgramControlWindow(rdr);
-                            CtiLMProgramBase* programToPutWindowIn = NULL;
+                            CtiLMProgramBaseSPtr programToPutWindowIn;
                             if( directProgramHashMap.findValue(newWindow->getPAOId(),programToPutWindowIn) ||
                                 curtailmentProgramHashMap.findValue(newWindow->getPAOId(),programToPutWindowIn) ||
                                 energyExchangeProgramHashMap.findValue(newWindow->getPAOId(),programToPutWindowIn) )
@@ -1739,7 +1738,7 @@ void CtiLMControlAreaStore::reset()
                         RWDBReader rdr = selector.reader(conn);
 
                         CtiLMControlArea* currentLMControlArea = NULL;
-                        CtiLMProgramBase* currentLMProgramBase = NULL;
+                        CtiLMProgramBaseSPtr currentLMProgramBase;
                         RWDBNullIndicator isNull;
                         while( rdr() )
                         {
@@ -1763,11 +1762,11 @@ void CtiLMControlAreaStore::reset()
                                 rdr["startpriority"] >> start_priority;
                                 rdr["stoppriority"] >> stop_priority;
 
-                                if( currentLMProgramBase == NULL ||
-                                    ( currentLMProgramBase != NULL &&
+                                if( !currentLMProgramBase ||
+                                    ( currentLMProgramBase &&
                                       currentLMProgramBase->getPAOId() != tempProgramId ) )
                                 {
-                                    vector<CtiLMProgramBase*>& lmControlAreaProgramList = currentLMControlArea->getLMPrograms();
+                                    vector<CtiLMProgramBaseSPtr>& lmControlAreaProgramList = currentLMControlArea->getLMPrograms();
 
                                     if( directProgramHashMap.findValue(tempProgramId,currentLMProgramBase) )
                                     {
@@ -1819,9 +1818,11 @@ void CtiLMControlAreaStore::reset()
 
                         //clean up all the remaining, unassigned programs
                         //(most of the should have been attached to control areas and removed from these maps alreadY)
-                        directProgramHashMap.apply(lmprogram_delete, 0);
-                        curtailmentProgramHashMap.apply(lmprogram_delete, 0);
-                        energyExchangeProgramHashMap.apply(lmprogram_delete, 0);
+
+                        //This doesnt need to happen with smart pointers
+                        //directProgramHashMap.apply(lmprogram_delete, 0);
+                        //curtailmentProgramHashMap.apply(lmprogram_delete, 0);
+                        //energyExchangeProgramHashMap.apply(lmprogram_delete, 0);
 
 
                     }//loading control areas end
@@ -2225,7 +2226,7 @@ bool CtiLMControlAreaStore::UpdateControlAreaDisableFlagInDB(CtiLMControlArea* c
     Updates a disable flag in the yukonpaobject table in the database for
     the program.
 ---------------------------------------------------------------------------*/
-bool CtiLMControlAreaStore::UpdateProgramDisableFlagInDB(CtiLMProgramBase* program)
+bool CtiLMControlAreaStore::UpdateProgramDisableFlagInDB(CtiLMProgramBaseSPtr program)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
 
@@ -2536,15 +2537,15 @@ void CtiLMControlAreaStore::saveAnyControlStringData()
     {
         CtiLMControlArea* currentLMControlArea = (CtiLMControlArea*)(*_controlAreas)[i];
 
-        vector<CtiLMProgramBase*>& lmPrograms = currentLMControlArea->getLMPrograms();
+        vector<CtiLMProgramBaseSPtr>& lmPrograms = currentLMControlArea->getLMPrograms();
         if( lmPrograms.size() > 0 )
         {
             for(LONG j=0;j<lmPrograms.size();j++)
             {
-                CtiLMProgramBase* currentLMProgram = (CtiLMProgramBase*)lmPrograms.at(j);
+                CtiLMProgramBaseSPtr currentLMProgram = (CtiLMProgramBaseSPtr)lmPrograms[j];
                 if( currentLMProgram->getPAOType() == TYPE_LMPROGRAM_DIRECT )
                 {
-                    CtiLMGroupVec groups  = ((CtiLMProgramDirect*)currentLMProgram)->getLMProgramDirectGroups();
+                    CtiLMGroupVec groups  = boost::static_pointer_cast< CtiLMProgramDirect >(currentLMProgram)->getLMProgramDirectGroups();
                     for(CtiLMGroupIter k = groups.begin(); k != groups.end(); k++)
                     {
                         CtiLMGroupPtr currentLMGroup  = *k;

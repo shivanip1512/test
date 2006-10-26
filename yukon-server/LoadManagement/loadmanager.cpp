@@ -855,14 +855,14 @@ void CtiLoadManager::registerForPoints(const vector<CtiLMControlArea*>& controlA
                 }
             }
 
-            vector<CtiLMProgramBase*>& lmPrograms = currentControlArea->getLMPrograms();
+            vector<CtiLMProgramBaseSPtr>& lmPrograms = currentControlArea->getLMPrograms();
 
             for(LONG k=0;k<lmPrograms.size();k++)
             {
-                CtiLMProgramBase* currentProgram = (CtiLMProgramBase*)lmPrograms.at(k);
+                CtiLMProgramBaseSPtr currentProgram = (CtiLMProgramBaseSPtr)lmPrograms[k];
                 if( currentProgram->getPAOType() == TYPE_LMPROGRAM_DIRECT )
                 {
-                    CtiLMGroupVec groups  = ((CtiLMProgramDirect*)currentProgram)->getLMProgramDirectGroups();
+                    CtiLMGroupVec groups  = boost::static_pointer_cast<CtiLMProgramDirect>(currentProgram)->getLMProgramDirectGroups();
                     for(CtiLMGroupIter i = groups.begin(); i != groups.end(); i++)
                     {
                         CtiLMGroupPtr currentGroup  = *i;

@@ -29,6 +29,13 @@
 
 class CtiLMProgramControlWindow;
 
+class CtiLMProgramBase;
+#if VSLICK_TAG_WORKAROUND
+typedef CtiLMProgramBase * CtiLMProgramBaseSPtr;
+#else
+typedef shared_ptr< CtiLMProgramBase > CtiLMProgramBaseSPtr;
+#endif
+
 class CtiLMProgramBase : public CtiMemDBObject, public RWCollectable
 {
 
@@ -115,7 +122,7 @@ public:
     void createControlStatusPointUpdates(CtiMultiMsg* multiDispatchMsg);
 
     virtual DOUBLE reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, vector<CtiLMControlAreaTrigger*> controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL isTriggerCheckNeeded) = 0;
-    virtual CtiLMProgramBase* replicate() const = 0;
+    virtual CtiLMProgramBaseSPtr replicate() const = 0;
     
     virtual BOOL hasControlHoursAvailable() = 0;
     virtual BOOL stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, ULONG secondsFrom1901) = 0;

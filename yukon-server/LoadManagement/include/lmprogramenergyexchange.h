@@ -64,7 +64,7 @@ RWDECLARE_COLLECTABLE( CtiLMProgramEnergyExchange )
     void dumpDynamicData();
     void dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime);
 
-    virtual CtiLMProgramBase* replicate() const;
+    virtual CtiLMProgramBaseSPtr replicate() const;
     virtual DOUBLE reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, vector<CtiLMControlAreaTrigger*> controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL isTriggerCheckNeeded);
     virtual BOOL hasControlHoursAvailable();
     virtual BOOL stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, ULONG secondsFrom1901);
@@ -97,5 +97,12 @@ private:
                                                
     void restore(RWDBReader& rdr);
 };
+
+#if VSLICK_TAG_WORKAROUND
+typedef CtiLMProgramEnergyExchange * CtiLMProgramEnergyExchangeSPtr;
+#else
+typedef shared_ptr< CtiLMProgramEnergyExchange > CtiLMProgramEnergyExchangeSPtr;
+#endif
+
 #endif
 

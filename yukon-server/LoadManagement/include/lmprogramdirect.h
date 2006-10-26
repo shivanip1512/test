@@ -34,6 +34,13 @@
 using std::set;
 using std::vector;
 using boost::shared_ptr;
+class CtiLMProgramDirect;
+
+#if VSLICK_TAG_WORKAROUND
+typedef CtiLMProgramDirect * CtiLMProgramDirectSPtr;
+#else
+typedef shared_ptr< CtiLMProgramDirect > CtiLMProgramDirectSPtr;
+#endif
 
 class CtiLMProgramDirect : public CtiLMProgramBase
 {
@@ -73,8 +80,8 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
     vector<CtiLMProgramDirectGear*>& getLMProgramDirectGears();
     CtiLMGroupVec& getLMProgramDirectGroups();
         
-    set<CtiLMProgramDirect*>& getMasterPrograms();
-    set<CtiLMProgramDirect*>& getSubordinatePrograms();
+    set<CtiLMProgramDirectSPtr>& getMasterPrograms();
+    set<CtiLMProgramDirectSPtr>& getSubordinatePrograms();
     
     vector<int>&  getNotificationGroupIDs();
 
@@ -119,7 +126,7 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
     BOOL notifyGroupsOfStart(CtiMultiMsg* multiNotifMsg);
     BOOL notifyGroupsOfStop(CtiMultiMsg* multiNotifMsg);    
 
-    virtual CtiLMProgramBase* replicate() const;
+    virtual CtiLMProgramBaseSPtr replicate() const;
     virtual DOUBLE reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, vector<CtiLMControlAreaTrigger*> controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL isTriggerCheckNeeded);
     virtual BOOL hasControlHoursAvailable();
     virtual bool stopSubordinatePrograms(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, ULONG secondsFrom1901);
@@ -188,8 +195,8 @@ private:
     vector<CtiLMProgramDirectGear*> _lmprogramdirectgears;
     CtiLMGroupVec  _lmprogramdirectgroups;
 
-    set<CtiLMProgramDirect*> _master_programs;
-    set<CtiLMProgramDirect*> _subordinate_programs;
+    set<CtiLMProgramDirectSPtr> _master_programs;
+    set<CtiLMProgramDirectSPtr> _subordinate_programs;
                                      
     vector<int> _notificationgroupids;
 

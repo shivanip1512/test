@@ -315,10 +315,10 @@ void CtiLMCommandExecutor::DisableControlArea()
                 }
             }
             currentLMControlArea->setDisableFlag(TRUE);
-            vector<CtiLMProgramBase*>& lmPrograms = currentLMControlArea->getLMPrograms();
+            vector<CtiLMProgramBaseSPtr>& lmPrograms = currentLMControlArea->getLMPrograms();
             for(LONG j=0;j<lmPrograms.size();j++)
             {
-                CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms.at(j);
+                CtiLMProgramBaseSPtr currentLMProgramBase = lmPrograms[j];
 
                 if( currentLMProgramBase->getProgramState() != CtiLMProgramBase::InactiveState )
                 {
@@ -364,10 +364,10 @@ void CtiLMCommandExecutor::EnableProgram()
 
     for(LONG i=0;i<controlAreas.size();i++)
     {
-        vector<CtiLMProgramBase*>& lmPrograms = ((CtiLMControlArea*)controlAreas[i])->getLMPrograms();
+        vector<CtiLMProgramBaseSPtr>& lmPrograms = ((CtiLMControlArea*)controlAreas[i])->getLMPrograms();
         for(LONG j=0;j<lmPrograms.size();j++)
         {
-            CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms.at(j);
+            CtiLMProgramBaseSPtr currentLMProgramBase = lmPrograms[j];
             if( commandPAOID == currentLMProgramBase->getPAOId() )
             {
                 currentLMProgramBase->setDisableFlag(FALSE);
@@ -412,10 +412,10 @@ void CtiLMCommandExecutor::DisableProgram(bool emergency)
 
     for(LONG i=0;i<controlAreas.size();i++)
     {
-        vector<CtiLMProgramBase*>& lmPrograms = ((CtiLMControlArea*)controlAreas[i])->getLMPrograms();
+        vector<CtiLMProgramBaseSPtr>& lmPrograms = ((CtiLMControlArea*)controlAreas[i])->getLMPrograms();
         for(LONG j=0;j<lmPrograms.size();j++)
         {
-            CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms.at(j);
+            CtiLMProgramBaseSPtr currentLMProgramBase = lmPrograms[j];
             if( commandPAOID == currentLMProgramBase->getPAOId() )
             {
                 currentLMProgramBase->setDisableFlag(TRUE);
@@ -617,13 +617,13 @@ void CtiLMCommandExecutor::ShedGroup()
 
     for(LONG i=0;i<controlAreas.size();i++)
     {
-        vector<CtiLMProgramBase*>& lmPrograms = ((CtiLMControlArea*)controlAreas[i])->getLMPrograms();
+        vector<CtiLMProgramBaseSPtr>& lmPrograms = ((CtiLMControlArea*)controlAreas[i])->getLMPrograms();
         for(LONG j=0;j<lmPrograms.size();j++)
         {
-            CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms.at(j);
+            CtiLMProgramBaseSPtr currentLMProgramBase = lmPrograms[j];
             if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_DIRECT )
             {
-                CtiLMGroupVec program_groups  = ((CtiLMProgramDirect*) currentLMProgramBase)->getLMProgramDirectGroups();
+                CtiLMGroupVec program_groups  = (boost::static_pointer_cast< CtiLMProgramDirect >(currentLMProgramBase))->getLMProgramDirectGroups();
                 for(CtiLMGroupIter k = program_groups.begin(); k != program_groups.end(); k++)
                 {
                     CtiLMGroupPtr currentLMGroup  = *k;
@@ -696,13 +696,13 @@ void CtiLMCommandExecutor::CycleGroup()
 
     for(LONG i=0;i<controlAreas.size();i++)
     {
-        vector<CtiLMProgramBase*>& lmPrograms = ((CtiLMControlArea*)controlAreas[i])->getLMPrograms();
+        vector<CtiLMProgramBaseSPtr>& lmPrograms = ((CtiLMControlArea*)controlAreas[i])->getLMPrograms();
         for(LONG j=0;j<lmPrograms.size();j++)
         {
-            CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms.at(j);
+            CtiLMProgramBaseSPtr currentLMProgramBase = lmPrograms[j];
             if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_DIRECT )
             {
-                CtiLMGroupVec program_groups  = ((CtiLMProgramDirect*) currentLMProgramBase)->getLMProgramDirectGroups();
+                CtiLMGroupVec program_groups  = (boost::static_pointer_cast< CtiLMProgramDirect >(currentLMProgramBase))->getLMProgramDirectGroups();
                 for(CtiLMGroupIter k = program_groups.begin(); k != program_groups.end(); k++)
                 {
                     CtiLMGroupPtr currentLMGroup  = *k;
@@ -778,13 +778,13 @@ void CtiLMCommandExecutor::RestoreGroup()
 
     for(LONG i=0;i<controlAreas.size();i++)
     {
-        vector<CtiLMProgramBase*>& lmPrograms = ((CtiLMControlArea*)controlAreas[i])->getLMPrograms();
+        vector<CtiLMProgramBaseSPtr>& lmPrograms = ((CtiLMControlArea*)controlAreas[i])->getLMPrograms();
         for(LONG j=0;j<lmPrograms.size();j++)
         {
-            CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms.at(j);
+            CtiLMProgramBaseSPtr currentLMProgramBase = lmPrograms[j];
             if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_DIRECT )
             {
-                CtiLMGroupVec program_groups  = ((CtiLMProgramDirect*) currentLMProgramBase)->getLMProgramDirectGroups();
+                CtiLMGroupVec program_groups  = (boost::static_pointer_cast< CtiLMProgramDirect >(currentLMProgramBase))->getLMProgramDirectGroups();
                 for(CtiLMGroupIter k = program_groups.begin(); k != program_groups.end(); k++)
                 {
                     CtiLMGroupPtr currentLMGroup  = *k;
@@ -850,13 +850,13 @@ void CtiLMCommandExecutor::EnableGroup()
 
     for(LONG i=0;i<controlAreas.size();i++)
     {
-        vector<CtiLMProgramBase*>& lmPrograms = ((CtiLMControlArea*)controlAreas[i])->getLMPrograms();
+        vector<CtiLMProgramBaseSPtr>& lmPrograms = ((CtiLMControlArea*)controlAreas[i])->getLMPrograms();
         for(LONG j=0;j<lmPrograms.size();j++)
         {
-            CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms.at(j);
+            CtiLMProgramBaseSPtr currentLMProgramBase = lmPrograms[j];
             if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_DIRECT )
             {
-                CtiLMGroupVec groups  = ((CtiLMProgramDirect*)currentLMProgramBase)->getLMProgramDirectGroups();
+                CtiLMGroupVec groups  = (boost::static_pointer_cast< CtiLMProgramDirect >(currentLMProgramBase))->getLMProgramDirectGroups();
                 for(CtiLMGroupIter k = groups.begin(); k != groups.end(); k++)
                 {
                     CtiLMGroupPtr currentLMGroup  = *k;
@@ -905,13 +905,13 @@ void CtiLMCommandExecutor::DisableGroup()
 
     for(LONG i=0;i<controlAreas.size();i++)
     {
-        vector<CtiLMProgramBase*>& lmPrograms = ((CtiLMControlArea*)controlAreas[i])->getLMPrograms();
+        vector<CtiLMProgramBaseSPtr>& lmPrograms = ((CtiLMControlArea*)controlAreas[i])->getLMPrograms();
         for(LONG j=0;j<lmPrograms.size();j++)
         {
-            CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms.at(j);
+            CtiLMProgramBaseSPtr currentLMProgramBase = lmPrograms[j];
             if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_DIRECT )
             {
-                CtiLMGroupVec groups  = ((CtiLMProgramDirect*)currentLMProgramBase)->getLMProgramDirectGroups();
+                CtiLMGroupVec groups  = (boost::static_pointer_cast< CtiLMProgramDirect >(currentLMProgramBase))->getLMProgramDirectGroups();
                 for(CtiLMGroupIter k = groups.begin(); k != groups.end(); k++)
                 {
                     CtiLMGroupPtr currentLMGroup  = *k;
@@ -997,13 +997,13 @@ void CtiLMCommandExecutor::ConfirmGroup()
 
     for(LONG i=0;i<controlAreas.size();i++)
     {
-        vector<CtiLMProgramBase*>& lmPrograms = ((CtiLMControlArea*)controlAreas[i])->getLMPrograms();
+        vector<CtiLMProgramBaseSPtr>& lmPrograms = ((CtiLMControlArea*)controlAreas[i])->getLMPrograms();
         for(LONG j=0;j<lmPrograms.size();j++)
         {
-            CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms.at(j);
+            CtiLMProgramBaseSPtr currentLMProgramBase = lmPrograms[j];
             if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_DIRECT )
             {
-                CtiLMGroupVec groups  = ((CtiLMProgramDirect*)currentLMProgramBase)->getLMProgramDirectGroups();
+                CtiLMGroupVec groups  = (boost::static_pointer_cast< CtiLMProgramDirect >(currentLMProgramBase))->getLMProgramDirectGroups();
                 for(CtiLMGroupIter k = groups.begin(); k != groups.end(); k++)
                 {
                     CtiLMGroupPtr currentLMGroup  = *k;
@@ -1139,20 +1139,28 @@ void CtiLMCommandExecutor::ResetPeakPointValue()
 ---------------------------------------------------------------------------*/
 void CtiLMManualControlRequestExecutor::Execute()
 {
-    CtiLMProgramBase* program = NULL;
+    CtiLMProgramBaseSPtr program;
     CtiLMControlArea* controlArea = NULL;
 
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
-    if(!store->findProgram(_controlMsg->getPAOId(), &program, &controlArea))
+    if(!store->findProgram(_controlMsg->getPAOId(), program, &controlArea))
     {
-    {
-        CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << CtiTime() << " - Received a manual control message that specified a program that doesn't exist, program id was: " << _controlMsg->getPAOId() << endl;
-        dout << CtiTime() << " - Send a response messge here!" << endl;
-        return;
+        {
+            CtiLockGuard<CtiLogger> dout_guard(dout);
+            dout << CtiTime() << " - Received a manual control message that specified a program that doesn't exist, program id was: " << _controlMsg->getPAOId() << endl;
+            dout << CtiTime() << " - Send a response messge here!" << endl;
+            return;
+        }
     }
+
+    if(!program)
+    {
+        //This would cause very very very bad things (program would die immediatelly due to assertions and exceptions)
+        CtiLockGuard<CtiLogger> dout_guard(dout);
+        dout << CtiTime() << " *** CHECKPOINT *** - This should not happen. Program ID was: " << _controlMsg->getPAOId() << endl;
+        return;
     }
 
     // Set up a response if this was wrapped up in a request message
@@ -1169,6 +1177,9 @@ void CtiLMManualControlRequestExecutor::Execute()
     CtiTime stopTime;
 
     //prepare to send a response to the clients
+
+    //I hate to use a smart pointer in this way, however our check for 0 should have been done above
+    //and the smart pointer will have a life as long as the checker, so we should be ok.
     CtiLMProgramConstraintChecker checker((CtiLMProgramDirect&)*program, CtiTime().seconds());
     bool passed_check = false;
     
@@ -1210,7 +1221,7 @@ void CtiLMManualControlRequestExecutor::Execute()
             break;
             
         case CtiLMManualControlRequest::OVERRIDE_CONSTRAINTS:
-            ((CtiLMProgramDirect*)program)->setConstraintOverride(true);
+            (boost::static_pointer_cast< CtiLMProgramDirect >(program))->setConstraintOverride(true);
             StartProgram(program, controlArea, startTime, stopTime);
             if(response != NULL)
             {
@@ -1221,7 +1232,7 @@ void CtiLMManualControlRequestExecutor::Execute()
             
         case CtiLMManualControlRequest::USE_CONSTRAINTS:
             // Fix up program control window if necessary
-            ((CtiLMProgramDirect*)program)->setConstraintOverride(false);
+            (boost::static_pointer_cast< CtiLMProgramDirect >(program))->setConstraintOverride(false);
             CoerceStartStopTime(program, startTime, stopTime);
             if( checker.checkConstraints(_controlMsg->getStartGear()-1, startTime.seconds(), stopTime.seconds()) )
             {
@@ -1258,7 +1269,7 @@ void CtiLMManualControlRequestExecutor::Execute()
             break;
             
         case CtiLMManualControlRequest::OVERRIDE_CONSTRAINTS:
-            ((CtiLMProgramDirect*)program)->setConstraintOverride(true);
+            (boost::static_pointer_cast< CtiLMProgramDirect >(program))->setConstraintOverride(true);
             StopProgram(program, controlArea, stopTime);
             if(response != NULL)
             {
@@ -1269,9 +1280,9 @@ void CtiLMManualControlRequestExecutor::Execute()
             break;
             
         case CtiLMManualControlRequest::USE_CONSTRAINTS:
-            ((CtiLMProgramDirect*)program)->setConstraintOverride(false);           
+            (boost::static_pointer_cast< CtiLMProgramDirect >(program))->setConstraintOverride(false);           
             // Fix up program control window if necessary
-            startTime = ((const CtiLMProgramDirect*) program)->getDirectStartTime();        
+            startTime = (boost::static_pointer_cast< CtiLMProgramDirect >(program))->getDirectStartTime();        
             CoerceStartStopTime(program, startTime, stopTime);
             StopProgram(program, controlArea, stopTime);
             if(response != NULL)
@@ -1315,7 +1326,7 @@ void CtiLMManualControlRequestExecutor::Execute()
     }
 }
 
-void CtiLMManualControlRequestExecutor::StartProgram(CtiLMProgramBase* program, CtiLMControlArea* controlArea,
+void CtiLMManualControlRequestExecutor::StartProgram(CtiLMProgramBaseSPtr program, CtiLMControlArea* controlArea,
                                                      const CtiTime& start, const CtiTime& stop)
 {
     if( program->getPAOType() == TYPE_LMPROGRAM_DIRECT )
@@ -1335,7 +1346,7 @@ void CtiLMManualControlRequestExecutor::StartProgram(CtiLMProgramBase* program, 
             dout << "start priority: " << tempchar << endl;
             dout << "additional info: " << _controlMsg->getAdditionalInfo() << endl;
         }
-        CtiLMProgramDirect* directProgram = (CtiLMProgramDirect*) program;
+        CtiLMProgramDirectSPtr directProgram = boost::static_pointer_cast< CtiLMProgramDirect >(program);
         StartDirectProgram(directProgram, controlArea, start, stop);
 
         directProgram->setAdditionalInfo(_controlMsg->getAdditionalInfo().data());
@@ -1366,7 +1377,7 @@ void CtiLMManualControlRequestExecutor::StartProgram(CtiLMProgramBase* program, 
             dout << "additional info: " << _controlMsg->getAdditionalInfo() << endl;
         }
 
-        CtiLMProgramCurtailment* lmProgramCurtailment = (CtiLMProgramCurtailment*)program;
+        CtiLMProgramCurtailmentSPtr lmProgramCurtailment = boost::static_pointer_cast< CtiLMProgramCurtailment >(program);
         StartCurtailmentProgram(lmProgramCurtailment, controlArea, start, stop);
             
         lmProgramCurtailment->setManualControlReceivedFlag(FALSE);
@@ -1401,7 +1412,7 @@ void CtiLMManualControlRequestExecutor::StartProgram(CtiLMProgramBase* program, 
 
 }
 
-void CtiLMManualControlRequestExecutor::StopProgram(CtiLMProgramBase* program, CtiLMControlArea* controlArea, const CtiTime& stop)
+void CtiLMManualControlRequestExecutor::StopProgram(CtiLMProgramBaseSPtr program, CtiLMControlArea* controlArea, const CtiTime& stop)
 {
     if(program->getPAOType() == TYPE_LMPROGRAM_DIRECT)
     {
@@ -1416,7 +1427,7 @@ void CtiLMManualControlRequestExecutor::StopProgram(CtiLMProgramBase* program, C
             dout << "additional info: " << _controlMsg->getAdditionalInfo() << endl;
         }
 
-        CtiLMProgramDirect* lmProgramDirect = (CtiLMProgramDirect*) program;
+        CtiLMProgramDirectSPtr lmProgramDirect = boost::static_pointer_cast< CtiLMProgramDirect >(program);
         StopDirectProgram(lmProgramDirect, controlArea, stop);
 
         string text = ("Scheduled Manual Stop, LM Program: ");
@@ -1444,7 +1455,7 @@ void CtiLMManualControlRequestExecutor::StopProgram(CtiLMProgramBase* program, C
             dout << "stop time: " << stop.asString() << endl;
             dout << "additional info: " << _controlMsg->getAdditionalInfo() << endl;
         }
-        CtiLMProgramCurtailment* lmProgramCurtailment = (CtiLMProgramCurtailment*)program;
+        CtiLMProgramCurtailmentSPtr lmProgramCurtailment = boost::static_pointer_cast< CtiLMProgramCurtailment >(program);
         StopCurtailmentProgram(lmProgramCurtailment, controlArea, stop);
         
     }
@@ -1458,7 +1469,7 @@ void CtiLMManualControlRequestExecutor::StopProgram(CtiLMProgramBase* program, C
     }
 }
 
-void CtiLMManualControlRequestExecutor::StartDirectProgram(CtiLMProgramDirect* lmProgramDirect, CtiLMControlArea* controlArea,
+void CtiLMManualControlRequestExecutor::StartDirectProgram(CtiLMProgramDirectSPtr lmProgramDirect, CtiLMControlArea* controlArea,
                                                            const CtiTime& start, const CtiTime& stop)
 {
     CtiTime startTime = start;
@@ -1493,7 +1504,7 @@ void CtiLMManualControlRequestExecutor::StartDirectProgram(CtiLMProgramDirect* l
     controlArea->setUpdatedFlag(TRUE);
 }
 
-void CtiLMManualControlRequestExecutor::StopDirectProgram(CtiLMProgramDirect* lmProgramDirect, CtiLMControlArea* controlArea, const CtiTime& stop)
+void CtiLMManualControlRequestExecutor::StopDirectProgram(CtiLMProgramDirectSPtr lmProgramDirect, CtiLMControlArea* controlArea, const CtiTime& stop)
 {
     CtiTime stopTime;
     if(_controlMsg->getCommand() == CtiLMManualControlRequest::SCHEDULED_STOP)
@@ -1532,7 +1543,7 @@ void CtiLMManualControlRequestExecutor::StopDirectProgram(CtiLMProgramDirect* lm
     }
 }
 
-void CtiLMManualControlRequestExecutor::StartCurtailmentProgram(CtiLMProgramCurtailment* lmProgramCurtailment, CtiLMControlArea* controlArea,
+void CtiLMManualControlRequestExecutor::StartCurtailmentProgram(CtiLMProgramCurtailmentSPtr lmProgramCurtailment, CtiLMControlArea* controlArea,
                                                                 const CtiTime& start, const CtiTime& stop)
 {
     CtiTime startTime = start;
@@ -1563,7 +1574,7 @@ void CtiLMManualControlRequestExecutor::StartCurtailmentProgram(CtiLMProgramCurt
     controlArea->setUpdatedFlag(TRUE);
 }
 
-void CtiLMManualControlRequestExecutor::StopCurtailmentProgram(CtiLMProgramCurtailment* lmProgramCurtailment, CtiLMControlArea* controlArea,
+void CtiLMManualControlRequestExecutor::StopCurtailmentProgram(CtiLMProgramCurtailmentSPtr lmProgramCurtailment, CtiLMControlArea* controlArea,
                                                                const CtiTime& stop)
 {
     CtiTime stopTime;
@@ -1590,7 +1601,7 @@ void CtiLMManualControlRequestExecutor::StopCurtailmentProgram(CtiLMProgramCurta
  * Change start and stop so that they fit inside one of the program control windows.  Prefer an ealier control window
  * to a later one
  */
-void CtiLMManualControlRequestExecutor::CoerceStartStopTime(CtiLMProgramBase* program, CtiTime& start, CtiTime& stop)
+void CtiLMManualControlRequestExecutor::CoerceStartStopTime(CtiLMProgramBaseSPtr program, CtiTime& start, CtiTime& stop)
 {
     CtiTime beginningOfDay(0,0,0);//This creates a time of today, at 0:00:00.00
     {
@@ -1643,7 +1654,7 @@ void CtiLMManualControlRequestExecutor::CoerceStartStopTime(CtiLMProgramBase* pr
     }
 }
 
-void CoerceStopTime(CtiLMProgramBase* program, CtiTime& stop)
+void CoerceStopTime(CtiLMProgramBaseSPtr program, CtiTime& stop)
 {
 
 }
@@ -1714,15 +1725,15 @@ void CtiLMEnergyExchangeControlMsgExecutor::NewOffer()
     for(LONG i=0;i<controlAreas.size();i++)
     {
         CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];
-        vector<CtiLMProgramBase*>& lmPrograms = currentControlArea->getLMPrograms();
+        vector<CtiLMProgramBaseSPtr>& lmPrograms = currentControlArea->getLMPrograms();
         for(LONG j=0;j<lmPrograms.size();j++)
         {
-            CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms.at(j);
+            CtiLMProgramBaseSPtr currentLMProgramBase = lmPrograms[j];
             if( energyExchangeProgramID == currentLMProgramBase->getPAOId() )
             {
                 if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_ENERGYEXCHANGE )
                 {
-                    CtiLMProgramEnergyExchange* lmProgramEnergyExchange = (CtiLMProgramEnergyExchange*)currentLMProgramBase;
+                    CtiLMProgramEnergyExchangeSPtr lmProgramEnergyExchange = boost::static_pointer_cast< CtiLMProgramEnergyExchange >(currentLMProgramBase);
                     lmProgramEnergyExchange->setProgramState(CtiLMProgramBase::ManualActiveState);
                     std::vector<CtiLMEnergyExchangeOffer*>& energyExchangeOffers = lmProgramEnergyExchange->getLMEnergyExchangeOffers();
                     {
@@ -1815,16 +1826,16 @@ void CtiLMEnergyExchangeControlMsgExecutor::OfferUpdate()
     for(LONG i=0;i<controlAreas.size();i++)
     {
         CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];
-        vector<CtiLMProgramBase*>& lmPrograms = currentControlArea->getLMPrograms();
+        vector<CtiLMProgramBaseSPtr>& lmPrograms = currentControlArea->getLMPrograms();
 
         for(LONG j=0;j<lmPrograms.size();j++)
         {
-            CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms.at(j);
+            CtiLMProgramBaseSPtr currentLMProgramBase = lmPrograms[j];
             if( energyExchangeProgramID == currentLMProgramBase->getPAOId() )
             {
                 if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_ENERGYEXCHANGE )
                 {
-                    CtiLMProgramEnergyExchange* lmProgramEnergyExchange = (CtiLMProgramEnergyExchange*)currentLMProgramBase;
+                    CtiLMProgramEnergyExchangeSPtr lmProgramEnergyExchange = boost::static_pointer_cast< CtiLMProgramEnergyExchange >(currentLMProgramBase);
                     std::vector<CtiLMEnergyExchangeOffer*>& energyExchangeOffers = lmProgramEnergyExchange->getLMEnergyExchangeOffers();
                     if( energyExchangeOffers.size() > 0 )
                     {
@@ -1927,15 +1938,15 @@ void CtiLMEnergyExchangeControlMsgExecutor::OfferRevision()
     for(LONG i=0;i<controlAreas.size();i++)
     {
         CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];
-        vector<CtiLMProgramBase*>& lmPrograms = currentControlArea->getLMPrograms();
+        vector<CtiLMProgramBaseSPtr>& lmPrograms = currentControlArea->getLMPrograms();
         for(LONG j=0;j<lmPrograms.size();j++)
         {
-            CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms.at(j);
+            CtiLMProgramBaseSPtr currentLMProgramBase = lmPrograms[j];
             if( energyExchangeProgramID == currentLMProgramBase->getPAOId() )
             {
                 if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_ENERGYEXCHANGE )
                 {
-                    CtiLMProgramEnergyExchange* lmProgramEnergyExchange = (CtiLMProgramEnergyExchange*)currentLMProgramBase;
+                    CtiLMProgramEnergyExchangeSPtr lmProgramEnergyExchange = boost::static_pointer_cast< CtiLMProgramEnergyExchange >(currentLMProgramBase);
                     std::vector<CtiLMEnergyExchangeOffer*>& energyExchangeOffers = lmProgramEnergyExchange->getLMEnergyExchangeOffers();
                     if( energyExchangeOffers.size() > 0 )
                     {
@@ -2049,15 +2060,15 @@ void CtiLMEnergyExchangeControlMsgExecutor::CloseOffer()
     for(LONG i=0;i<controlAreas.size();i++)
     {
         CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];
-        vector<CtiLMProgramBase*>& lmPrograms = currentControlArea->getLMPrograms();
+        vector<CtiLMProgramBaseSPtr>& lmPrograms = currentControlArea->getLMPrograms();
         for(LONG j=0;j<lmPrograms.size();j++)
         {
-            CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms.at(j);
+            CtiLMProgramBaseSPtr currentLMProgramBase = lmPrograms[j];
             if( energyExchangeProgramID == currentLMProgramBase->getPAOId() )
             {
                 if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_ENERGYEXCHANGE )
                 {
-                    CtiLMProgramEnergyExchange* lmProgramEnergyExchange = (CtiLMProgramEnergyExchange*)currentLMProgramBase;
+                    CtiLMProgramEnergyExchangeSPtr lmProgramEnergyExchange = boost::static_pointer_cast< CtiLMProgramEnergyExchange >(currentLMProgramBase);
                     std::vector<CtiLMEnergyExchangeOffer*>& energyExchangeOffers = lmProgramEnergyExchange->getLMEnergyExchangeOffers();
                     if( energyExchangeOffers.size() > 0 )
                     {
@@ -2147,15 +2158,15 @@ void CtiLMEnergyExchangeControlMsgExecutor::CancelOffer()
     for(LONG i=0;i<controlAreas.size();i++)
     {
         CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];
-        vector<CtiLMProgramBase*>& lmPrograms = currentControlArea->getLMPrograms();
+        vector<CtiLMProgramBaseSPtr>& lmPrograms = currentControlArea->getLMPrograms();
         for(LONG j=0;j<lmPrograms.size();j++)
         {
-            CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms.at(j);
+            CtiLMProgramBaseSPtr currentLMProgramBase = lmPrograms[j];
             if( energyExchangeProgramID == currentLMProgramBase->getPAOId() )
             {
                 if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_ENERGYEXCHANGE )
                 {
-                    CtiLMProgramEnergyExchange* lmProgramEnergyExchange = (CtiLMProgramEnergyExchange*)currentLMProgramBase;
+                    CtiLMProgramEnergyExchangeSPtr lmProgramEnergyExchange = boost::static_pointer_cast< CtiLMProgramEnergyExchange >(currentLMProgramBase);
                     std::vector<CtiLMEnergyExchangeOffer*>& energyExchangeOffers = lmProgramEnergyExchange->getLMEnergyExchangeOffers();
                     if( energyExchangeOffers.size() > 0 )
                     {
@@ -2270,14 +2281,14 @@ void CtiLMCurtailmentAcknowledgeMsgExecutor::Execute()
     for(LONG i=0;i<controlAreas.size();i++)
     {
         CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];
-        vector<CtiLMProgramBase*>& lmPrograms = currentControlArea->getLMPrograms();
+        vector<CtiLMProgramBaseSPtr>& lmPrograms = currentControlArea->getLMPrograms();
 
         for(LONG j=0;j<lmPrograms.size();j++)
         {
-            CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms.at(j);
+            CtiLMProgramBaseSPtr currentLMProgramBase = lmPrograms[j];
             if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_CURTAILMENT )
             {
-                CtiLMProgramCurtailment* lmProgramCurtailment = (CtiLMProgramCurtailment*)currentLMProgramBase;
+                CtiLMProgramCurtailmentSPtr lmProgramCurtailment = boost::static_pointer_cast< CtiLMProgramCurtailment >(currentLMProgramBase);
                 vector<CtiLMCurtailCustomer*>& lmCurtailmentCustomers = lmProgramCurtailment->getLMProgramCurtailmentCustomers();
 
                 for(LONG k=0;k<lmCurtailmentCustomers.size();k++)
@@ -2399,14 +2410,14 @@ void CtiLMEnergyExchangeAcceptMsgExecutor::Execute()
     for(LONG i=0;i<controlAreas.size();i++)
     {
         CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];
-        vector<CtiLMProgramBase*>& lmPrograms = currentControlArea->getLMPrograms();
+        vector<CtiLMProgramBaseSPtr>& lmPrograms = currentControlArea->getLMPrograms();
 
         for(LONG j=0;j<lmPrograms.size();j++)
         {
-            CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms.at(j);
+            CtiLMProgramBaseSPtr currentLMProgramBase = lmPrograms[j];
             if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_ENERGYEXCHANGE )
             {
-                CtiLMProgramEnergyExchange* lmProgramEnergyExchange = (CtiLMProgramEnergyExchange*)currentLMProgramBase;
+                CtiLMProgramEnergyExchangeSPtr lmProgramEnergyExchange = boost::static_pointer_cast< CtiLMProgramEnergyExchange >(currentLMProgramBase);
                 std::vector<CtiLMEnergyExchangeCustomer*>& lmEnergyExchangeCustomers = lmProgramEnergyExchange->getLMEnergyExchangeCustomers();
                
                 for(LONG k=0;k<lmEnergyExchangeCustomers.size();k++)

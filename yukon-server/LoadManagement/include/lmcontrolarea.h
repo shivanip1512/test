@@ -69,7 +69,7 @@ RWDECLARE_COLLECTABLE( CtiLMControlArea )
     LONG getCurrentDailyStopTime() const;
     vector<CtiLMControlAreaTrigger*>& getLMControlAreaTriggers();
     CtiLMControlAreaTrigger* getThresholdTrigger() const;
-    vector<CtiLMProgramBase*>& getLMPrograms();
+    vector<CtiLMProgramBaseSPtr>& getLMPrograms();
 
     CtiLMControlArea& setPAOId(LONG id);
     CtiLMControlArea& setPAOCategory(const string& category);
@@ -98,10 +98,10 @@ RWDECLARE_COLLECTABLE( CtiLMControlArea )
     BOOL isControlStillNeeded();
     BOOL isPastMinResponseTime(ULONG secondsFrom1901);
     BOOL isManualControlReceived();
-    BOOL isThresholdTriggerTripped(CtiLMProgramBase* program = 0);
+    BOOL isThresholdTriggerTripped(CtiLMProgramBaseSPtr program = CtiLMProgramBaseSPtr());
     BOOL hasThresholdTrigger();
     BOOL hasStatusTrigger();
-    BOOL isStatusTriggerTripped(CtiLMProgramBase* program = 0);
+    BOOL isStatusTriggerTripped(CtiLMProgramBaseSPtr program = CtiLMProgramBaseSPtr());
     
     DOUBLE calculateLoadReductionNeeded();
     double calculateExpectedLoadIncrease(int stop_priority);
@@ -173,7 +173,7 @@ private:
     LONG _currentdailystoptime;
 
     vector<CtiLMControlAreaTrigger*> _lmcontrolareatriggers;
-    vector<CtiLMProgramBase*> _lmprograms;
+    vector<CtiLMProgramBaseSPtr> _lmprograms;
 
     //don't stream
     BOOL _insertDynamicDataFlag;

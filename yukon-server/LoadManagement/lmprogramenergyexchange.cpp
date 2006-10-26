@@ -700,7 +700,7 @@ CtiLMEnergyExchangeOffer* CtiLMProgramEnergyExchange::getOfferWithId(LONG offeri
     
     Restores self's operation fields
 ---------------------------------------------------------------------------*/
-CtiLMProgramBase* CtiLMProgramEnergyExchange::replicate() const
+CtiLMProgramBaseSPtr CtiLMProgramEnergyExchange::replicate() const
 {
     return (new CtiLMProgramEnergyExchange(*this));
 }

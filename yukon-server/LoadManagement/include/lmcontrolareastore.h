@@ -90,7 +90,7 @@ class CtiLMControlAreaStore : public RWMonitor< RWRecursiveLock< RWMutexLock > >
 public:   
 
     vector<CtiLMControlArea*>* getControlAreas(ULONG secondsFrom1901 = CtiTime().seconds());
-    bool findProgram(LONG programID, CtiLMProgramBase** program = NULL, CtiLMControlArea** controlArea = NULL);
+    bool findProgram(LONG programID, CtiLMProgramBaseSPtr& program = CtiLMProgramBaseSPtr(), CtiLMControlArea** controlArea = NULL);
     
     CtiLMGroupPtr findGroupByPointID(long point_id);
     
@@ -108,7 +108,7 @@ public:
     void setWasControlAreaDeletedFlag(bool wasDeleted);
 
     bool UpdateControlAreaDisableFlagInDB(CtiLMControlArea* controlArea);
-    bool UpdateProgramDisableFlagInDB(CtiLMProgramBase* program);
+    bool UpdateProgramDisableFlagInDB(CtiLMProgramBaseSPtr program);
     bool UpdateGroupDisableFlagInDB(CtiLMGroupPtr& group);
     bool UpdateTriggerInDB(CtiLMControlArea* controlArea, CtiLMControlAreaTrigger* trigger);
 

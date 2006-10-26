@@ -346,7 +346,7 @@ CtiLMGroupVec& CtiLMProgramDirect::getLMProgramDirectGroups()
   Returns a set of pointers to the programs that this program is considered
   subordinate to.
 ----------------------------------------------------------------------------*/
-set<CtiLMProgramDirect*>& CtiLMProgramDirect::getMasterPrograms()
+set<CtiLMProgramDirectSPtr>& CtiLMProgramDirect::getMasterPrograms()
 {
     return _master_programs;
 }
@@ -356,7 +356,7 @@ set<CtiLMProgramDirect*>& CtiLMProgramDirect::getMasterPrograms()
 
   Returns a set of pointers to this programs subordinate programs.
 ----------------------------------------------------------------------------*/
-set<CtiLMProgramDirect*>& CtiLMProgramDirect::getSubordinatePrograms()
+set<CtiLMProgramDirectSPtr>& CtiLMProgramDirect::getSubordinatePrograms()
 {
     return _subordinate_programs;
 }
@@ -4119,9 +4119,9 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
 bool CtiLMProgramDirect::stopSubordinatePrograms(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, ULONG secondsFrom1901)
 {
     bool stopped_programs = false;
-    std::set<CtiLMProgramDirect*>& sub_set = getSubordinatePrograms();
+    std::set<CtiLMProgramDirectSPtr>& sub_set = getSubordinatePrograms();
 
-    for(std::set<CtiLMProgramDirect*>::iterator sub_iter = sub_set.begin();
+    for(std::set<CtiLMProgramDirectSPtr>::iterator sub_iter = sub_set.begin();
         sub_iter != sub_set.end();
         sub_iter++)
     {
@@ -4991,8 +4991,8 @@ void CtiLMProgramDirect::saveGuts(RWvostream& ostrm ) const
     CtiLMProgramBase::saveGuts( ostrm );
 
     // Only send active master/subordinate programs
-    vector<CtiLMProgramDirect*> active_masters;
-    for(std::set<CtiLMProgramDirect*>::const_iterator m_iter = _master_programs.begin();
+    std::vector<CtiLMProgramDirectSPtr> active_masters;
+    for(std::set<CtiLMProgramDirectSPtr>::const_iterator m_iter = _master_programs.begin();
         m_iter != _master_programs.end();
         m_iter++)
     {
@@ -5002,8 +5002,8 @@ void CtiLMProgramDirect::saveGuts(RWvostream& ostrm ) const
         }
     }
 
-    vector<CtiLMProgramDirect*> active_subordinates;
-    for(std::set<CtiLMProgramDirect*>::const_iterator s_iter = _subordinate_programs.begin();
+    std::vector<CtiLMProgramDirectSPtr> active_subordinates;
+    for(std::set<CtiLMProgramDirectSPtr>::const_iterator s_iter = _subordinate_programs.begin();
         s_iter != _subordinate_programs.end();
         s_iter++)
     {
@@ -5035,7 +5035,7 @@ void CtiLMProgramDirect::saveGuts(RWvostream& ostrm ) const
 
     // send all the active master programs
     ostrm << active_masters.size();
-    for(std::vector<CtiLMProgramDirect*>::const_iterator m2_iter = active_masters.begin();
+    for(std::vector<CtiLMProgramDirectSPtr>::const_iterator m2_iter = active_masters.begin();
         m2_iter != active_masters.end();
         m2_iter++)
     {
@@ -5044,7 +5044,7 @@ void CtiLMProgramDirect::saveGuts(RWvostream& ostrm ) const
 
     // send all the active subordinate programs
     ostrm << active_subordinates.size();
-    for(std::vector<CtiLMProgramDirect*>::const_iterator s2_iter = active_subordinates.begin();
+    for(std::vector<CtiLMProgramDirectSPtr>::const_iterator s2_iter = active_subordinates.begin();
         s2_iter != active_subordinates.end();
         s2_iter++)
     {
@@ -5109,7 +5109,7 @@ int CtiLMProgramDirect::operator!=(const CtiLMProgramDirect& right) const
 
     Restores self's operation fields
 ---------------------------------------------------------------------------*/
-CtiLMProgramBase* CtiLMProgramDirect::replicate() const
+CtiLMProgramBaseSPtr CtiLMProgramDirect::replicate() const
 {
     return(new CtiLMProgramDirect(*this));
 }

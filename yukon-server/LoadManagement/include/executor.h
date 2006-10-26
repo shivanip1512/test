@@ -81,15 +81,15 @@ public:
     virtual void Execute();
 
 private:
-    void StartProgram(CtiLMProgramBase* program, CtiLMControlArea* controlArea, const CtiTime& start, const CtiTime& stop);
-    void StopProgram(CtiLMProgramBase* program, CtiLMControlArea* controlArea, const CtiTime& stop);
-    void StartDirectProgram(CtiLMProgramDirect* lmProgramDirect, CtiLMControlArea* controlArea, const CtiTime& start, const CtiTime& stop);
-    void StopDirectProgram(CtiLMProgramDirect* lmProgramDirect, CtiLMControlArea* controlArea, const CtiTime& stop);
-    void StartCurtailmentProgram(CtiLMProgramCurtailment* lmProgramCurtailment, CtiLMControlArea* controlArea, const CtiTime& start, const CtiTime& stop);
-    void StopCurtailmentProgram(CtiLMProgramCurtailment* lmProgramCurtailment, CtiLMControlArea* controlArea, const CtiTime& stop);
+    void StartProgram(CtiLMProgramBaseSPtr program, CtiLMControlArea* controlArea, const CtiTime& start, const CtiTime& stop);
+    void StopProgram(CtiLMProgramBaseSPtr program, CtiLMControlArea* controlArea, const CtiTime& stop);
+    void StartDirectProgram(CtiLMProgramDirectSPtr lmProgramDirect, CtiLMControlArea* controlArea, const CtiTime& start, const CtiTime& stop);
+    void StopDirectProgram(CtiLMProgramDirectSPtr lmProgramDirect, CtiLMControlArea* controlArea, const CtiTime& stop);
+    void StartCurtailmentProgram(CtiLMProgramCurtailmentSPtr lmProgramCurtailment, CtiLMControlArea* controlArea, const CtiTime& start, const CtiTime& stop);
+    void StopCurtailmentProgram(CtiLMProgramCurtailmentSPtr lmProgramCurtailment, CtiLMControlArea* controlArea, const CtiTime& stop);
 
-    void CoerceStartStopTime(CtiLMProgramBase* program, CtiTime& start, CtiTime& stop);
-    void CoerceStopTime(CtiLMProgramBase* program, CtiTime& stop);
+    void CoerceStartStopTime(CtiLMProgramBaseSPtr program, CtiTime& start, CtiTime& stop);
+    void CoerceStopTime(CtiLMProgramBaseSPtr program, CtiTime& stop);
     
     CtiServerRequestMsg* _request;
     CtiLMManualControlRequest* _controlMsg;

@@ -1056,7 +1056,7 @@ int CtiLMProgramCurtailment::operator!=(const CtiLMProgramCurtailment& right) co
 
     Restores self's operation fields
 ---------------------------------------------------------------------------*/
-CtiLMProgramBase* CtiLMProgramCurtailment::replicate() const
+CtiLMProgramBaseSPtr CtiLMProgramCurtailment::replicate() const
 {
     return(new CtiLMProgramCurtailment(*this));
 }

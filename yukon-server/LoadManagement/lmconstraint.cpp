@@ -529,9 +529,9 @@ bool CtiLMProgramConstraintChecker::checkNotifyActiveOffset(ULONG proposed_start
 bool CtiLMProgramConstraintChecker::checkMasterActive()
 {
     bool master_active = false;
-    set<CtiLMProgramDirect*>& master_set = ((CtiLMProgramDirect&)_lm_program).getMasterPrograms();
+    std::set<CtiLMProgramDirectSPtr>& master_set = ((CtiLMProgramDirect&)_lm_program).getMasterPrograms();
     
-    for(std::set<CtiLMProgramDirect*>::iterator master_iter = master_set.begin();
+    for(std::set<CtiLMProgramDirectSPtr>::iterator master_iter = master_set.begin();
         master_iter != master_set.end();
         master_iter++)
     {
