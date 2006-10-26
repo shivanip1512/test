@@ -9,8 +9,8 @@
  *
  * PVCS KEYWORDS:
  * ARCHIVE      :  $Archive$
- * REVISION     :  $Revision: 1.5 $
- * DATE         :  $Date: 2005/12/20 17:17:14 $
+ * REVISION     :  $Revision: 1.6 $
+ * DATE         :  $Date: 2006/10/26 21:55:32 $
  */
 
 #include <windows.h>
@@ -135,7 +135,7 @@ bool CtiFDRPiBase::connect()
     logNow() << "Attempting connect to PI server " << endl;
   }
   //connect to the Pi server
-  piut_setprocname("YUKON");
+  //piut_setprocname("YUKON");
   err = piut_setservernode(_serverNodeName.c_str());
   if (err != 0)
   {
@@ -146,6 +146,8 @@ bool CtiFDRPiBase::connect()
       logNow() << "Unable to set server node, piut_setservernode returned " 
         << piError << endl;
     }
+    setConnected( false );
+    return false;
   }
 
   int32 valid = 0;
@@ -162,30 +164,15 @@ bool CtiFDRPiBase::connect()
         << piError
         << ", valid = " << valid << endl;
     }
+    setConnected( false );
   }
   else
   {
     if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
     {
       CtiLockGuard<CtiLogger> doubt_guard( dout );
-      logNow() << "Login succesfull, access level: " << valid << endl;
+      logNow() << "Login succesful, access level: " << valid << endl;
     }
-  }
-
-  // if the above fails, there's no harm trying this also...
-  err = piut_connect("");
-  if( err != 0 ) {
-    if( getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL )
-    {
-      std::string piError = getPiErrorDescription(err, "piut_connect");
-      CtiLockGuard<CtiLogger> doubt_guard( dout );
-      logNow() << "Unable to connect to PI server, piut_connect returned " 
-        << piError << endl;
-    }
-    setConnected( false );
-  }
-  else
-  {
     testConnection();
   }
 
@@ -202,6 +189,11 @@ void CtiFDRPiBase::testConnection()
   int err = pitm_servertime(&serverTime);
   if (err == 1) // for some reason, this error code is different than all others
   { 
+    if( isDebugLevel( DETAIL_FDR_DEBUGLEVEL ) )
+    {
+      CtiLockGuard<CtiLogger> doubt_guard( dout );
+      logNow() << "Connection test passed, setting connected " << endl;
+    }
     setConnected( true );
   }
   else
@@ -211,6 +203,7 @@ void CtiFDRPiBase::testConnection()
       CtiLockGuard<CtiLogger> doubt_guard( dout );
       logNow() << "Connection test failed, forcing disconnect " << endl;
     }
+    setConnected( false );
     piut_disconnect();
   }
 }
@@ -334,10 +327,22 @@ void CtiFDRPiBase::handlePiUpdate(const PiPointInfo info,
   }
   else if (info.piType == PI_REAL_POINT && istat == 0)
   {
+    if( isDebugLevel( MAJOR_DETAIL_FDR_DEBUGLEVEL ) )
+    {
+      CtiLockGuard<CtiLogger> doubt_guard( dout );
+      logNow() << "Handling PI_REAL_POINT update for " << info.ctiPoint->getPointID()
+        << ", rval=" << rval << endl;
+    }
     handleUpdate(info.ctiPoint, rval, timestamp_utc);
   }
   else if (info.piType == PI_INTEGER_POINT && istat >= 0)
   {
+    if( isDebugLevel( MAJOR_DETAIL_FDR_DEBUGLEVEL ) )
+    {
+      CtiLockGuard<CtiLogger> doubt_guard( dout );
+      logNow() << "Handling PI_INTEGER_POINT update for " << info.ctiPoint->getPointID()
+        << ", rval=" << rval << ", istat=" << istat << endl;
+    }
     handleUpdate(info.ctiPoint, istat, timestamp_utc);
   }
   else if (info.piType == PI_DIGITAL_POINT)
@@ -366,6 +371,16 @@ void CtiFDRPiBase::handlePiUpdate(const PiPointInfo info,
     } 
     else
     {
+      if( isDebugLevel( MAJOR_DETAIL_FDR_DEBUGLEVEL ) )
+      {
+        char buf[80] = "";
+        pipt_digstate(istat, buf, 80);
+        CtiLockGuard<CtiLogger> doubt_guard( dout );
+        logNow() << "Handling PI_DIGITAL_POINT update for " << info.ctiPoint->getPointID()
+          << ", rval=" << rval << ", istat=" << istat << ", state=" << state
+          << ", offset=" << info.digitalOffset << ", lastIndex=" << info.digitalLastIndex
+          << "digstate=" << buf << endl;
+      }
       handleUpdate(info.ctiPoint, state, timestamp_utc);
     }
   }
