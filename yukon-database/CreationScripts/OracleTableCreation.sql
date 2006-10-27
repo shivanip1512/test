@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     9/22/2006 11:24:16 AM                        */
+/* Created on:     10/27/2006 9:11:51 AM                        */
 /*==============================================================*/
 
 
@@ -60,7 +60,7 @@ drop index INDX_CCURTPGM_PRGNM_PRGTYPEID;
 
 drop index INDX_CCURTPRGGRP_GRPID_PRGID;
 
-drop index INDX_CCURTPGM_PRGNM_PRGTYPEID;
+drop index INDX_CCURPNG_PRGNM_PRGTYPEID;
 
 drop index INDX_CCRTPRGPRM_PGID_PMKEY;
 
@@ -1226,9 +1226,9 @@ alter table CCurtProgramNotifGroup
    add constraint PK_CCURTPROGRAMNOTIFGROUP primary key (CCurtProgramID, NotificationGroupID);
 
 /*==============================================================*/
-/* Index: INDX_CCURTPGM_PRGNM_PRGTYPEID                         */
+/* Index: INDX_CCURPNG_PRGNM_PRGTYPEID                          */
 /*==============================================================*/
-create index INDX_CCURTPGM_PRGNM_PRGTYPEID on CCurtProgramNotifGroup (
+create index INDX_CCURPNG_PRGNM_PRGTYPEID on CCurtProgramNotifGroup (
    NotificationGroupID ASC
 );
 
@@ -1392,7 +1392,13 @@ create table CapControlStrategy  (
    PeakLag              FLOAT                           not null,
    PeakLead             FLOAT                           not null,
    OffPkLag             FLOAT                           not null,
-   OffPkLead            FLOAT                           not null
+   OffPkLead            FLOAT                           not null,
+   PeakVARLag           FLOAT                           not null,
+   PeakVARLead          FLOAT                           not null,
+   OffPkVARLag          FLOAT                           not null,
+   OffPkVARLead         FLOAT                           not null,
+   PeakPFSetPoint       FLOAT                           not null,
+   OffPkPFSetPoint      FLOAT                           not null
 );
 
 insert into CapControlStrategy values (0, '(none)', '(none)', 0, 'N', 0, 0, 0, 0, 0, 0, 'NYYYYYNN', '(none)', 0, 0, 0.0, 0.0, 0.0, 0.0);
@@ -6996,6 +7002,7 @@ insert into YukonRoleProperty values(-1015,-1,'voice_host','127.0.0.1','Name or 
 insert into YukonRoleProperty values(-1016,-1,'notification_host','127.0.0.1','Name or IP address of the Yukon Notification service');
 insert into YukonRoleProperty values(-1017,-1,'notification_port','1515','TCP/IP port of the Yukon Notification service');
 insert into YukonRoleProperty values(-1018,-1,'export_file_directory','(none)','File location of all export operations');
+insert into YukonRoleProperty values(-1019,-1,'batched_switch_command_timer','auto','Specifies whether the STARS application should automatically process batched switch commands');
 
 /* Energy Company Role Properties */
 insert into YukonRoleProperty values(-1100,-2,'admin_email_address','info@cannontech.com','Sender address of emails sent on behalf of energy company, e.g. control odds and opt out notification emails.');
@@ -7197,7 +7204,6 @@ insert into YukonRoleProperty values(-20006,-200,'Member Login Cntrl','false','I
 insert into YukonRoleProperty values(-20007,-200,'Member Route Select','false','Ignored if not a member company -- Controls whether routes are visible through the EC administration page.');
 insert into YukonRoleProperty values(-20008,-200,'Allow Designation Codes','false','Toggles on or off the regional (usually zip) code option for service companies.');
 insert into YukonRoleProperty values(-20009,-200,'Multiple Warehouses','false','Allows for multiple user-created warehouses instead of a single generic warehouse.');
-insert into YukonRoleProperty values(-20010,-200,'Auto Process Batch Configs','false','Automatically process batch configs using the DailyTimerTask.');
 
 /* Operator Commercial Metering Role Properties*/
 insert into YukonRoleProperty values(-20200,-202,'Trending Disclaimer',' ','The disclaimer that appears with trends');
