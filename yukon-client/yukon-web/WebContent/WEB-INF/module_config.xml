@@ -30,6 +30,10 @@
       <link>/capcontrol/subareas.jsp</link>
       <requireProperty value="capcontrol.CBCSettingsRole.ACCESS"/>
     </option>
+    <option property="CICurtailmentRole.CURTAILMENT_LABEL">
+      <link>/cc/programSelect.jsf</link>
+      <requireRole value="CICurtailmentRole.ROLEID"/>
+    </option>
     <option name="Commander">
       <link>/apps/SelectDevice.jsp</link>
       <requireRole value="application.CommanderRole.ROLEID"/>
@@ -181,6 +185,55 @@
     <css file="/WebConfig/yukon/styles/commcurtaillogos.css"/>
     <skin name="standard"/>
     <requireRole value="cicustomer.CommercialMeteringRole.ROLEID"/>
+  </module>
+  
+  <module name="reporting">
+   <toplinks>
+      <option name="Reports">
+        <sublinks>
+          <option property="ReportingRole.ADMIN_REPORTS_GROUP_LABEL">
+            <link>/analysis/Reports.jsp?groupType=0</link>
+            <requireProperty value="ReportingRole.ADMIN_REPORTS_GROUP"/>
+          </option>
+          <option property="ReportingRole.AMR_REPORTS_GROUP_LABEL">
+            <link>/analysis/Reports.jsp?groupType=1</link>
+            <requireProperty value="ReportingRole.AMR_REPORTS_GROUP"/>
+          </option>
+          <option property="ReportingRole.CAP_CONTROL_REPORTS_GROUP_LABEL">
+            <link>/analysis/Reports.jsp?groupType=4</link>
+            <requireProperty value="ReportingRole.CAP_CONTROL_REPORTS_GROUP"/>
+          </option>
+          <option property="ReportingRole.STATISTICAL_REPORTS_GROUP_LABEL">
+            <link>/analysis/Reports.jsp?groupType=2</link>
+            <requireProperty value="ReportingRole.STATISTICAL_REPORTS_GROUP"/>
+          </option>
+          <option property="ReportingRole.DATABASE_REPORTS_GROUP_LABEL">
+            <link>/analysis/Reports.jsp?groupType=5</link>
+            <requireProperty value="ReportingRole.DATABASE_REPORTS_GROUP"/>
+          </option>
+          <option property="ReportingRole.LOAD_MANAGEMENT_REPORTS_GROUP_LABEL">
+            <link>/analysis/Reports.jsp?groupType=3</link>
+            <requireProperty value="ReportingRole.LOAD_MANAGEMENT_REPORTS_GROUP"/>
+          </option>
+          <option property="ReportingRole.STARS_REPORTS_GROUP_LABEL">
+            <link>/analysis/Reports.jsp?groupType=6</link>
+            <requireProperty value="ReportingRole.STARS_REPORTS_GROUP"/>
+          </option>
+          <option property="ReportingRole.SETTLEMENT_REPORTS_GROUP_LABEL">
+            <link>/analysis/Reports.jsp?groupType=100</link>
+            <requireProperty value="ReportingRole.SETTLEMENT_REPORTS_GROUP"/>
+          </option>
+          <option name="C&amp;I">
+            <link>/analysis/Reports.jsp?groupType=8</link>
+          </option>
+        </sublinks>
+      </option>
+    </toplinks>
+  	<skin name="standard"/>
+  	<css file="/WebConfig/yukon/Base.css"/>
+    <css file="/WebConfig/yukon/styles/reportinglogos.css"/>
+    <script file="/JavaScript/change_monitor.js"/>
+    <script file="/JavaScript/calendar.js"/>
   </module>
   
   <module name="esub">
