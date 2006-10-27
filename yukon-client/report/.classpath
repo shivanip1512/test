@@ -23,7 +23,7 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="/third-party/j2ee.jar"/>
 	<classpathentry kind="lib" path="/third-party/bsh.jar"/>
-	<classpathentry sourcepath="C:/downloads/jfreereport-0.8.5-5/source" kind="lib" path="/third-party/jfreereport.jar"/>
+	<classpathentry sourcepath="Z:/java/Third-Party Sources/jfreereport-0.8.6-4.zip" kind="lib" path="/third-party/jfreereport.jar"/>
 	<classpathentry kind="lib" path="/third-party/bsf-2.3.0.jar"/>
 	<classpathentry kind="lib" path="/third-party/libfonts-0.1.0.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/commercialcurtailment"/>
