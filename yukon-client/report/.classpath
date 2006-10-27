@@ -26,5 +26,6 @@
 	<classpathentry sourcepath="C:/downloads/jfreereport-0.8.5-5/source" kind="lib" path="/third-party/jfreereport.jar"/>
 	<classpathentry kind="lib" path="/third-party/bsf-2.3.0.jar"/>
 	<classpathentry kind="lib" path="/third-party/libfonts-0.1.0.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/commercialcurtailment"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
