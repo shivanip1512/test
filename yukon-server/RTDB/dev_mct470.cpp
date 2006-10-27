@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.69 $
-* DATE         :  $Date: 2006/10/24 18:14:09 $
+* REVISION     :  $Revision: 1.70 $
+* DATE         :  $Date: 2006/10/27 15:47:01 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3479,6 +3479,7 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                 else
                 {
                     resultString += "DNP status returned " + CtiNumStr(dnp_status) + ": " + resolveDNPStatus(status);
+
                     for( int byte = 0; byte < 6; byte++ )
                     {
                         insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_DNPAnalog_Precanned1+byte+(i-1)*6, AnalogPointType);
@@ -3509,6 +3510,7 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                 else
                 {
                     resultString += "DNP status returned " + CtiNumStr(dnp_status) + ": " + resolveDNPStatus(dnp_status);
+
                     for( int byte = 0; byte < 6; byte++ )
                     {
                         insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_DNPCounter_Precanned1+byte+(i-1)*6, AnalogPointType);
@@ -3520,6 +3522,7 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                 if( dnp_status == 0 )
                 {
                     pi.quality = NormalQuality;
+
                     for( int byte = 0; byte < 12; byte++ )
                     {
                         for( int bit = 0; bit < 8; bit++ )
@@ -3539,6 +3542,7 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                 else
                 {
                     resultString += "DNP status returned " + CtiNumStr(dnp_status) + ": " + resolveDNPStatus(dnp_status);
+
                     for( int byte = 0; byte < 12; byte++ )
                     {
                         for( int bit = 0; bit < 8; bit++ )
@@ -4261,15 +4265,17 @@ INT CtiDeviceMCT470::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, l
         setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec,         (long)ssp);
         setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, (long)rev);
 
-        if( rev && rev <= 26 )
-        {
-            rev += 'A' - 1;
+        //  convert 10 to 1.0, 24 to 2.4
+        sspec  = "Software Specification " + CtiNumStr(ssp) + "  Rom Revision " + CtiNumStr(((double)rev) / 10.0, 1);
 
-            sspec = string("\nSoftware Specification " + CtiNumStr(ssp).toString() + "  Rom Revision " + string(1, rev) + "\n");
+        //  valid/released versions are 1.0 - 24.9
+        if( InMessage->Buffer.DSt.Message[1] <   10 || InMessage->Buffer.DSt.Message[1] >= 250 )
+        {
+            sspec += " [possible development revision]\n";
         }
         else
         {
-            sspec = "\nSoftware Specification " + CtiNumStr(ssp).toString() + "  Rom Revision " + CtiNumStr(rev).toString() + " (development)\n";
+            sspec += "\n";
         }
 
         options += "Connected Meter: ";

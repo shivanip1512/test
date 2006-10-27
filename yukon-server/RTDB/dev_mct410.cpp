@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.101 $
-* DATE         :  $Date: 2006/10/24 18:13:48 $
+* REVISION     :  $Revision: 1.102 $
+* DATE         :  $Date: 2006/10/27 15:47:01 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1676,8 +1676,8 @@ int CtiDeviceMCT410::executePutConfigDisconnect(CtiRequestMsg *pReq,CtiCommandPa
                 && (cycleDisconnectMinutes | cycleConnectMinutes) != numeric_limits<long>::min() )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - Cycle Requires revision > " << (string)CtiNumStr(SspecRev_Disconnect_Cycle-1) << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << CtiTime() << " Device: " << getName() << " Revision: " << (string)CtiNumStr(revision) << endl;
+                dout << CtiTime() << " **** Checkpoint - Cycle requires revision >= " << CtiNumStr((double)(SspecRev_Disconnect_Cycle) / 10.0, 1).toString() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " Device: " << getName() << " Revision: " << CtiNumStr((double)revision / 10.0, 1).toString() << endl;
             }
 
             if( revision >= SspecRev_Disconnect_Cycle
@@ -1696,8 +1696,8 @@ int CtiDeviceMCT410::executePutConfigDisconnect(CtiRequestMsg *pReq,CtiCommandPa
             else if( revision > 0 && revision < SspecRev_Disconnect_Min )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - Disconnect Requires revision > " << (string)CtiNumStr(SspecRev_Disconnect_Min-1) << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << CtiTime() << " Device: " << getName() << " Revision: " << (string)CtiNumStr(revision) << endl;
+                dout << CtiTime() << " **** Checkpoint - Disconnect requires revision >= " << CtiNumStr((double)(SspecRev_Disconnect_Min) / 10.0, 1).toString() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " Device: " << getName() << " Revision: " << CtiNumStr((double)revision / 10.0, 1).toString() << endl;
                 nRet = FNI;
             }
             else
@@ -3484,14 +3484,14 @@ INT CtiDeviceMCT410::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, l
         sspec += CtiNumStr(ssp);
         sspec += " Rom Revision ";
 
-        if( InMessage->Buffer.DSt.Message[1] <= 26 )
+        //  convert 10 to 1.0, 24 to 2.4
+        sspec += CtiNumStr(((double)InMessage->Buffer.DSt.Message[1]) / 10.0, 1);
+
+        //  valid/released versions are 1.0 - 24.9
+        if( InMessage->Buffer.DSt.Message[1] <   10 ||
+            InMessage->Buffer.DSt.Message[1] >= 250 )
         {
-            sspec += (char)(InMessage->Buffer.DSt.Message[1] + 'A' - 1);
-        }
-        else
-        {
-            sspec += CtiNumStr((int)InMessage->Buffer.DSt.Message[1]);
-            sspec += " (unreleased/unverified revision)";
+            sspec += " [possible development revision]\n";
         }
 
         sspec += "\n";

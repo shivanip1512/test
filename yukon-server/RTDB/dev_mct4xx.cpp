@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.36 $
-* DATE         :  $Date: 2006/10/24 18:59:20 $
+* REVISION     :  $Revision: 1.37 $
+* DATE         :  $Date: 2006/10/27 15:47:01 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -710,7 +710,7 @@ INT CtiDeviceMCT4xx::executeGetValue(CtiRequestMsg *pReq, CtiCommandParser &pars
                         if( ReturnMsg )
                         {
                             ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
-                            ReturnMsg->setResultString(getName() + " / Load profile reporting for MCT 410 only supported for SSPECs " + CtiNumStr(CtiDeviceMCT410::Sspec) + " revision " + string((char)('A' + CtiDeviceMCT410::SspecRev_NewLLP_Min - 1), 1) + " and up");
+                            ReturnMsg->setResultString(getName() + " / Load profile reporting for MCT 410 only supported for SSPECs " + CtiNumStr(CtiDeviceMCT410::Sspec) + " revision " + CtiNumStr((double)(CtiDeviceMCT410::SspecRev_NewLLP_Min) / 10.0, 1) + " and up");
 
                             retMsgHandler( OutMessage->Request.CommandStr, NoMethod, ReturnMsg, vgList, retList, true );
                         }
