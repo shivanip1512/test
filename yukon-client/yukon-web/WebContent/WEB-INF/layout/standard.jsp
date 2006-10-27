@@ -27,7 +27,7 @@
 
 <div id="CopyRight">
 Copyright &copy; 2002-2006, 
-  Cannon Technologies, Inc. All rights reserved.
+  Cannon Technologies. All rights reserved.
 </div>
 
 </body>

@@ -252,7 +252,7 @@ public abstract class YukonReportBase extends java.awt.event.WindowAdapter
 		lfactory.setMinimumSize(new FloatDimension(-100, 0));
 		lfactory.setHorizontalAlignment(ElementAlignment.LEFT);
 		lfactory.setVerticalAlignment(ElementAlignment.MIDDLE);
-		lfactory.setText("Cannon Technologies, Inc.");
+		lfactory.setText("Cannon Technologies");
 		lfactory.setDynamicHeight(Boolean.TRUE);
 		pageFooter.addElement(lfactory.createElement());
 		*/
