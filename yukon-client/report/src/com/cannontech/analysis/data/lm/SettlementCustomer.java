@@ -319,6 +319,8 @@ public class SettlementCustomer
 		if (cdiAmount == null)
 		{
 			cdiAmount = new Double((getMaxMonthlyDemand().doubleValue() - getDemandLevel().doubleValue()) * getCDIRate().doubleValue());
+            if(cdiAmount < 0.0)
+                cdiAmount = 0.0;
 		}
 		return cdiAmount;
 	}
