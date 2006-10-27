@@ -113,7 +113,7 @@ public class StandardMenuRenderer implements MenuRenderer {
             first = false;
             BaseMenuOption option = (BaseMenuOption) topLevelOptionIterator.next();
             A link = new A();
-            link.addElement(e(option.getLinkName()));
+            link.addElement(e(option.getLinkName(yukonUser)));
             if (option instanceof SimpleMenuOption) {
                 SimpleMenuOption simpleOption = (SimpleMenuOption) option;
                 link.setHref(buildUrl(simpleOption.getUrl()));
@@ -123,8 +123,8 @@ public class StandardMenuRenderer implements MenuRenderer {
                 // <a href="#" class="menuLink" onclick="menuShow('subMenu', 2); return false;">
                 link.setHref("#");
                 link.setClass("stdhdr_menuLink");
-                link.setOnClick(e("ctiMenu.show(this, '" + generateIdForString(option.getLinkName()) + "'); return false;"));
-                link.setTitle(e("Display Sub Menu for " + option.getLinkName()));
+                link.setOnClick(e("ctiMenu.show(this, '" + generateIdForString(option.getLinkName(yukonUser)) + "'); return false;"));
+                link.setTitle(e("Display Sub Menu for " + option.getLinkName(yukonUser)));
             }
             leftDiv.addElement(link);
         }
@@ -137,7 +137,7 @@ public class StandardMenuRenderer implements MenuRenderer {
         for (Iterator iter = subMenuParents.iterator(); iter.hasNext();) {
             TopLevelOption optionParent = (TopLevelOption) iter.next();
             Div thisMenu = new Div();
-            thisMenu.setID(generateIdForString(optionParent.getLinkName()));
+            thisMenu.setID(generateIdForString(optionParent.getLinkName(yukonUser)));
             thisMenu.setStyle("display: none;");
             Iterator subLevelOptionIterator = optionParent.getValidSubLevelOptions(yukonUser);
             boolean first = true;
@@ -148,7 +148,7 @@ public class StandardMenuRenderer implements MenuRenderer {
                 first = false;
                 SimpleMenuOption subOption = (SimpleMenuOption) subLevelOptionIterator.next();
                 A link = new A();
-                link.addElement(e(subOption.getLinkName()));
+                link.addElement(e(subOption.getLinkName(yukonUser)));
                 link.setHref(buildUrl(subOption.getUrl()));
                 thisMenu.addElement(link);
             }
@@ -169,7 +169,7 @@ public class StandardMenuRenderer implements MenuRenderer {
             select.addElement(new Option("").addElement(e("Select a location...")).setSelected(true));
             while (quickLinkIterator.hasNext()) {
                 SimpleMenuOption element = (SimpleMenuOption) quickLinkIterator.next();
-                select.addElement(new Option(buildUrl(element.getUrl())).addElement(e(element.getLinkName())));
+                select.addElement(new Option(buildUrl(element.getUrl())).addElement(e(element.getLinkName(yukonUser))));
             }
             right.addElement(select);
         }

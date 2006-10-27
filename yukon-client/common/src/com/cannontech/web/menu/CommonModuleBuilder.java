@@ -16,7 +16,7 @@ import org.jdom.input.SAXBuilder;
  * The purpose of this class is to parse the module_config.xml file (although
  * the exact file is passed to it in the constructor) and store the settings
  * for each module that is encountered. This is likely the only file that will
- * ever need to understand the menu_structure.xml file.
+ * ever need to understand the module_config.xml file.
  */
 public class CommonModuleBuilder implements ModuleBuilder {
     private Map moduleMap = new TreeMap();
@@ -147,14 +147,22 @@ public class CommonModuleBuilder implements ModuleBuilder {
     private SimpleMenuOption createSimpleMenuOption(Element subElement) {
         SimpleMenuOption subLevelOption = null;
         String subOptionName = subElement.getAttributeValue("name");
+        OptionNameFactory factory;
+        if (subOptionName == null) {
+            // if the name is null, see if there's a property defined
+            String subOptionProperty = subElement.getAttributeValue("property");
+            factory = OptionNameFactory.createPropertyRetriever(subOptionProperty);
+        } else {
+            factory = OptionNameFactory.createPlain(subOptionName);
+        }
         Element subAction = subElement.getChild("script");
         Element subLink = subElement.getChild("link");
         if (subAction != null) {
-            SimpleMenuOptionAction subLevelOptionTemp = new SimpleMenuOptionAction(subOptionName);
+            SimpleMenuOptionAction subLevelOptionTemp = new SimpleMenuOptionAction(factory);
             subLevelOptionTemp.setScript(subAction.getTextTrim());
             subLevelOption = subLevelOptionTemp;
         } else if (subLink != null) {
-            SimpleMenuOptionLink subLevelOptionTemp = new SimpleMenuOptionLink(subOptionName);
+            SimpleMenuOptionLink subLevelOptionTemp = new SimpleMenuOptionLink(factory);
             subLevelOptionTemp.setLinkUrl(subLink.getTextTrim());
             subLevelOption = subLevelOptionTemp;
         }

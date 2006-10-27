@@ -4,7 +4,16 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 
 public abstract class BaseMenuOption {
     private OptionPropertyChecker propertyChecker = OptionPropertyChecker.createNullChecker();
-    protected String linkName = "";
+    private OptionNameFactory nameFactory = OptionNameFactory.createPlain("");
+    
+    public BaseMenuOption(OptionNameFactory nameFactory) {
+        super();
+        this.nameFactory = nameFactory;
+    }
+
+    public BaseMenuOption() {
+        super();
+    }
 
     public void setPropertyChecker(OptionPropertyChecker propertyChecker) {
         this.propertyChecker = propertyChecker;
@@ -14,12 +23,12 @@ public abstract class BaseMenuOption {
         return propertyChecker.check(user);
     }
 
-    public String getLinkName() {
-        return linkName;
+    public String getLinkName(LiteYukonUser yukonUser) {
+        return nameFactory.getName(yukonUser);
     }
 
     public void setLinkName(String linkName) {
-        this.linkName = linkName;
+        nameFactory = OptionNameFactory.createPlain(linkName);
     }
 
 }

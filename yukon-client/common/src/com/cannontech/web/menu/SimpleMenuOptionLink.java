@@ -9,6 +9,9 @@ public class SimpleMenuOptionLink extends SimpleMenuOption {
     public SimpleMenuOptionLink(String subOptionName) {
         super(subOptionName);
     }
+    public SimpleMenuOptionLink(OptionNameFactory factory) {
+        super(factory);
+    }
     public String getUrl() {
         return linkUrl;
     }

@@ -7,7 +7,11 @@ package com.cannontech.web.menu;
  */
 public abstract class SimpleMenuOption extends BaseMenuOption {
     public SimpleMenuOption(String subOptionName) {
-        this.linkName = subOptionName;
+        setLinkName(subOptionName);
+    }
+    
+    public SimpleMenuOption(OptionNameFactory factory) {
+        super(factory);
     }
     
     public abstract String getUrl();

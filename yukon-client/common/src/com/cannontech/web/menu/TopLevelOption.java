@@ -16,7 +16,7 @@ public class TopLevelOption extends BaseMenuOption {
     private List optionChildren = new ArrayList(4);
 
     public TopLevelOption(String topOptionName) {
-        linkName = topOptionName;
+        setLinkName(topOptionName);
     }
 
     public void addSubLevelOption(SimpleMenuOption subLevelOption) {

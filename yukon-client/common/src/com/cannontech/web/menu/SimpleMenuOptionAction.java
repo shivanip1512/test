@@ -12,6 +12,10 @@ public class SimpleMenuOptionAction extends SimpleMenuOption {
         super(subOptionName);
     }
 
+    public SimpleMenuOptionAction(OptionNameFactory factory) {
+        super(factory);
+    }
+    
     public void setScript(String jsEventName) {
         this.script = jsEventName;
     }
