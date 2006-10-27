@@ -15,6 +15,7 @@ import org.jfree.report.util.IntList;
 
 import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.analysis.ReportTypes;
+import com.cannontech.analysis.controller.ReportController;
 import com.cannontech.analysis.report.YukonReportBase;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
 import com.cannontech.clientutils.CTILogger;
@@ -35,6 +36,9 @@ import com.cannontech.util.ServletUtil;
  */
 public class ReportBean
 {
+	/**
+	 * @deprecated see getter method
+	 */
 	private ReportModelBase model = null;
 	private int type = -1;
 	private int[] availReportTypes = new int[0];
@@ -46,6 +50,7 @@ public class ReportBean
 	private String stop = "";
 	
 	private boolean isChanged = false;
+    private ReportController reportController;
 	
 	/**
 	 * 
@@ -174,12 +179,21 @@ public class ReportBean
 	 * Returns the ReportModelBase, creates a new ReportModelBase if isChanged flag is true.
 	 * Resets the isChanged flag on new model creation.
 	 * @return
+     * @deprecated This class should only use the reportController where possible.
 	 */
 	public ReportModelBase getModel()
 	{
+        // TEM: I didn't want to change too much about how this class worked
+        // so I still use the nullness of the model to determine when the 
+        // controller should be set.
 	    if (model == null || isChanged())
 	    {
-	        setModel(ReportTypes.create(getType()));
+	        reportController = ReportTypes.create(getType());
+            if (reportController == null) {
+                setModel(null);
+            } else {
+                setModel(reportController.getReport().getModel());
+            }
 	        setChanged(false);
 	    }
 		return model;
@@ -194,7 +208,7 @@ public class ReportBean
 	public JFreeReport createReport() throws FunctionInitializeException
 	{
 	    //Create an instance of JFreeReport from the YukonReportBase
-	    YukonReportBase report = ReportFuncs.createYukonReport(getModel());
+	    YukonReportBase report = reportController.getReport();
 	    JFreeReport jfreeReport = report.createReport();
 	    
 	    //Collecto the data for the model and set the freeReports data
@@ -227,14 +241,14 @@ public class ReportBean
 		if( getModel() == null)
 			return "";
 
-		return getModel().getHTMLOptionsTable();
+		return reportController.getHTMLOptionsTable();
 	}
 	
 	public String buildBaseOptionsHTML()
 	{
 		if (getModel() == null)
 			return "";
-		return getModel().getHTMLBaseOptionsTable();
+		return reportController.getHTMLBaseOptionsTable();
 	}
     /**
      * @param model The model to set.

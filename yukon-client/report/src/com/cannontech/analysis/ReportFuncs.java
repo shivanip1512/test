@@ -7,8 +7,6 @@
 package com.cannontech.analysis;
 
 import java.awt.Image;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -85,7 +83,6 @@ import com.cannontech.analysis.tablemodel.StarsLMSummaryModel;
 import com.cannontech.analysis.tablemodel.StatisticModel;
 import com.cannontech.analysis.tablemodel.SystemLogModel;
 import com.cannontech.analysis.tablemodel.WorkOrderModel;
-import com.cannontech.clientutils.CTILogger;
 import com.keypoint.PngEncoder;
 
 /**

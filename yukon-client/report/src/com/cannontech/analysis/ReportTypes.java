@@ -6,6 +6,11 @@
  */
 package com.cannontech.analysis;
 
+import com.cannontech.analysis.controller.CurtailmentEventSummaryController;
+import com.cannontech.analysis.controller.CurtailmentInterruptionSummaryController;
+import com.cannontech.analysis.controller.ReportController;
+import com.cannontech.analysis.controller.ReportControllerAdapter;
+import com.cannontech.analysis.report.BareModelYukonReportBase;
 import com.cannontech.analysis.tablemodel.ActivityDetailModel;
 import com.cannontech.analysis.tablemodel.ActivityModel;
 import com.cannontech.analysis.tablemodel.CapBankListModel;
@@ -99,6 +104,10 @@ public class ReportTypes
 	public static final int HECO_MONTHLY_BILLING_DATA = 30;
 	public static final int HECO_CUSTOMER_MONTHLY_BILLING_DATA = 31;
 	public static final int HECO_DSMIS_DATA = 32;
+    
+    // commercial curtailment
+    public static final int CCURT_EVENT_SUMMARY_DATA = 33;
+    public static final int CCURT_INTERRUPTION_SUMMARY_DATA = 34;
 	
 	private static Class[] typeToClassMap =
 	{
@@ -141,7 +150,9 @@ public class ReportTypes
 		HECO_LMEventSummaryModel.class,
 		HECO_MonthlyBillingSettlementModel.class,
 		HECO_CustomerMonthlyBillingSettlementModel.class,
-		HECO_DSMISModel.class	
+		HECO_DSMISModel.class,
+		CurtailmentEventSummaryController.class,
+        CurtailmentInterruptionSummaryController.class,
 	};
 		
 	/** String names for report types */
@@ -189,6 +200,9 @@ public class ReportTypes
 	public static final String HECO_CUSTOMER_MONTHLY_BILLING_STRING = "Customer Monthly Billing Settlement";
 	public static final String HECO_DSMIS_STRING = "DSMIS Settlement";
 
+	public static final String CCURT_EVENT_SUMMARY_STRING = "Event Summary";
+	public static final String CCURT_INTERRUPTION_SUMMARY_STRING = "Interruption Summary";
+    
 	/** Report String to enum mapping */
 	public static final String[] reportName = {
 		STATISTIC_DATA_STRING, 
@@ -233,7 +247,9 @@ public class ReportTypes
 		HECO_LMEVENT_SUMMARY_STRING,
 		HECO_MONTHLY_BILLING_STRING,
 		HECO_CUSTOMER_MONTHLY_BILLING_STRING,
-		HECO_DSMIS_STRING
+		HECO_DSMIS_STRING,
+		CCURT_EVENT_SUMMARY_STRING,
+		CCURT_INTERRUPTION_SUMMARY_STRING,
 	};
 
 
@@ -246,6 +262,7 @@ public class ReportTypes
 	public static final int DATABASE_REPORTS_GROUP = 5;
 	public static final int STARS_REPORTS_GROUP = 6;
 	public static final int OTHER_REPORTS_GROUP = 7;
+    public static final int CI_REPORTS_GROUP = 8;
 	
 	//This is a special case, it needs to be set up based on the current EC settlement mapping.  It will NOT be in the groupToTypeMap
 	public static final int SETTLEMENT_REPORTS_GROUP = 100;
@@ -258,6 +275,7 @@ public class ReportTypes
 	public static final String DATABASE_REPORTS_GROUP_STRING = "Database";
 	public static final String STARS_REPORTS_GROUP_STRING = "STARS";
 	public static final String OTHER_REPORTS_GROUP_STRING = "Miscellaneous";
+    public static final String CI_REPORTS_GOUP_STRING = "C&I";
 	
 	public static final String SETTLEMENT_REPORTS_GROUP_STRING = "Settlement";
 
@@ -270,7 +288,8 @@ public class ReportTypes
 		CAP_CONTROL_REPORTS_GROUP_STRING,
 		DATABASE_REPORTS_GROUP_STRING,
 		STARS_REPORTS_GROUP_STRING,
-		OTHER_REPORTS_GROUP_STRING
+		OTHER_REPORTS_GROUP_STRING,
+        CI_REPORTS_GOUP_STRING,
 	};
 
 	private static int[] adminGroupReportTypes = new int[]{POINT_DATA_INTERVAL_DATA, POINT_DATA_SUMMARY_DATA, EC_ACTIVITY_LOG_DATA, SYSTEM_LOG_DATA};
@@ -284,6 +303,7 @@ public class ReportTypes
 			/*TODO STARS_AMR_SUMMARY_DATA,*/ STARS_AMR_DETAIL_DATA};
 	private static int[] otherGroupReportTypes = new int[0];
 	private static int[] settlementGroupReportTypes = new int[0];
+    private static int[] ciGroupReportTypes = new int[]{CCURT_EVENT_SUMMARY_DATA, CCURT_INTERRUPTION_SUMMARY_DATA};
 
 	/**
 	 * Retuns int[] of settlement reportTypes for yukonDefID 
@@ -332,6 +352,8 @@ public class ReportTypes
 				return starsGroupReportTypes;
 			case OTHER_REPORTS_GROUP:
 				return otherGroupReportTypes;
+			case CI_REPORTS_GROUP:
+			    return ciGroupReportTypes;
 			//Settlement is specific for each energy company, therefore it cannot return anything from this static method but should be handled 
 			// in the specific code.				
 			case SETTLEMENT_REPORTS_GROUP:
@@ -366,15 +388,25 @@ public class ReportTypes
 	 * @return com.cannontech.database.model.DBTreeModel
 	 * @param type int
 	 */
-	public static ReportModelBase create(int reportType) {
+	public static ReportController create(int reportType) {
 	
-		ReportModelBase returnVal = null;
+        ReportController returnVal = null;
 		
 		if( reportType >= 0 && reportType < typeToClassMap.length )
 		{
 			try
 			{
-				returnVal = (ReportModelBase) typeToClassMap[reportType].newInstance();
+                // What's about to happen here isn't pretty.
+                // I'm trying to bridge the gap between the old
+                // way of creating reports and the new way.
+				Class modelClass = typeToClassMap[reportType];
+                if (ReportController.class.isAssignableFrom(modelClass)) {
+                    returnVal = (ReportController) modelClass.newInstance();
+                } else {
+                    ReportModelBase oldModel = (ReportModelBase) modelClass.newInstance();
+                    returnVal = new ReportControllerAdapter(oldModel);
+                }
+                
 			}
 			catch( IllegalAccessException e1 )
 			{
