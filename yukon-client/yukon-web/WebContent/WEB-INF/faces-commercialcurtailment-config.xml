@@ -92,6 +92,10 @@
             <property-name>commercialCurtailmentBean</property-name>
             <value>#{sCommercialCurtailment}</value>
         </managed-property>
+        <managed-property>
+            <property-name>notificationGroupDao</property-name>
+            <value>#{notificationGroupDao}</value>
+        </managed-property>
     </managed-bean>
 
     <managed-bean>
