@@ -1979,7 +1979,7 @@ public static void main(String[] args)
 		mainFrame.setIconImage( java.awt.Toolkit.getDefaultToolkit().getImage(GRAPH_GIF));
 		mainFrame.setTitle("Yukon Trending");
         
-        SplashWindow splash = new SplashWindow( mainFrame, CtiUtilities.CTISMALL_GIF, "Loading " + System.getProperty("cti.app.name") + "...", new Font("dialog", Font.BOLD, 14 ), Color.black, Color.blue, 2 );
+        SplashWindow splash = new SplashWindow( mainFrame, CtiUtilities.CTISMALL_GIF, "Loading " + CtiUtilities.getApplicationName() + "...", new Font("dialog", Font.BOLD, 14 ), Color.black, Color.blue, 2 );
         
 		ClientSession session = ClientSession.getInstance(); 
 		if(!session.establishSession(mainFrame))

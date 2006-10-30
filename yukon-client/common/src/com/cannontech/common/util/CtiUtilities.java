@@ -816,10 +816,15 @@ public static boolean isRunningAsWebApplication() {
  */
 public final static String getApplicationName()
 {
-	if( System.getProperty("cti.app.name") == null )
-		return "DefaultConnection";
-	else
-		return System.getProperty("cti.app.name");
+	if( System.getProperty("cti.app.name") == null ) {
+        if (isRunningAsWebApplication()) {
+            System.setProperty("cti.app.name", "Webserver");
+        } else {
+            System.setProperty("cti.app.name", "UnknownApplication");
+        }
+    }
+    String appName = System.getProperty("cti.app.name");
+    return appName;
 }
 
 /**
