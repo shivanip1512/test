@@ -1,14 +1,16 @@
 package com.cannontech.common.login;
 
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.Insets;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.util.concurrent.CountDownLatch;
 
 import javax.swing.JButton;
@@ -76,32 +78,20 @@ public class LoginFrame extends JFrame {
             }
         });
 
-        this.addWindowListener(new WindowListener() {
-
-            public void windowOpened(WindowEvent e) {
-            }
-
+        this.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 latch.countDown();
             }
-
-            public void windowClosed(WindowEvent e) {
-            }
-
-            public void windowIconified(WindowEvent e) {
-            }
-
-            public void windowDeiconified(WindowEvent e) {
-            }
-
-            public void windowActivated(WindowEvent e) {
-            }
-
-            public void windowDeactivated(WindowEvent e) {
-            }
         });
 
+        this.getRootPane().setDefaultButton(loginButton);
         this.pack();
+
+        // Center login frame on screen
+        Dimension dimension = getToolkit().getScreenSize();
+        Rectangle bounds = getBounds();
+        setLocation((dimension.width - bounds.width) / 2, (dimension.height - bounds.height) / 2);
+
         this.setVisible(true);
 
     }
