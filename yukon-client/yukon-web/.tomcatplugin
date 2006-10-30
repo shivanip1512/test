@@ -74,7 +74,7 @@
         <webClassPathEntry>/third-party/jta.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/jtds.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/led.jar</webClassPathEntry>
-        <webClassPathEntry>/third-party/log4j-1.2.4.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/log4j-1.2.14.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/lucene-core-2.0.0.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/mail.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/mx4j-jmx.jar</webClassPathEntry>
