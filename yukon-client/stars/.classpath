@@ -8,7 +8,6 @@
 	<classpathentry kind="lib" path="/third-party/j2ee.jar"/>
 	<classpathentry kind="lib" path="/third-party/jaxm-api.jar"/>
 	<classpathentry kind="lib" path="/third-party/led.jar"/>
-	<classpathentry kind="lib" path="/third-party/log4j-1.2.4.jar"/>
 	<classpathentry kind="lib" path="/third-party/rwav.jar"/>
 	<classpathentry kind="lib" path="/third-party/struts.jar"/>
 	<classpathentry kind="lib" path="/third-party/xerces.jar"/>

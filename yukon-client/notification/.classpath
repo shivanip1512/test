@@ -14,7 +14,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="/third-party/mx4j.jar"/>
-	<classpathentry kind="lib" path="/third-party/log4j-1.2.4.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/commercialcurtailment"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

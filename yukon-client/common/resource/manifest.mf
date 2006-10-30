@@ -17,4 +17,5 @@ Class-Path: ./
  antlr-2.7.6rc1.jar 
  cglib-2.1.3.jar 
  ejb3-persistence.jar 
- lucene-core-2.0.0.jar
+ lucene-core-2.0.0.jar 
+ log4j-1.2.14.jar
