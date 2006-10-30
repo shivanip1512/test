@@ -8,7 +8,9 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 
-import com.cannontech.clientutils.CTILogger;
+import org.apache.log4j.Logger;
+
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.yukon.IServerConnection;
 import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.PortableInputStream;
@@ -37,6 +39,8 @@ public class ClientConnection extends java.util.Observable implements Runnable, 
 	private boolean queueMessages = false; //if true, be sure you are reading from the inQueue!!
 	private boolean serverSocket = false;
 
+    //create a logger for instances of this class and its subclasses
+    private Logger logger = YukonLogManager.getLogger(this.getClass());      
 
 	//seconds until an another attempt is made to reconnect
 	//if autoReconenct is true
@@ -106,7 +110,7 @@ private void cleanUp()
 	}
 	catch( java.io.IOException ex )
 	{
-		CTILogger.error( ex.getMessage(), ex );
+		logger.error( ex.getMessage(), ex );
 	}
 }
 /**
@@ -135,7 +139,7 @@ public void connect( long millis )
 	catch( InterruptedException e )
 	{
 		//CTILogger.error( e.getMessage(), e );
-		CTILogger.info("InterruptedException in " + this.getClass().getName() + ".connect() : " + e.getMessage());
+		logger.info("InterruptedException in " + this.getClass().getName() + ".connect() : " + e.getMessage());
 	}
 }
 
@@ -350,11 +354,11 @@ public void run()
 				String logStr = "Attempting to open SOCKET to: " + this.host + " " + this.port;
 				if(retryCount == 0) 
 				{
-					CTILogger.info(logStr);
+					logger.info(logStr);
 				}
 				else
 				{
-					CTILogger.debug(logStr);
+					logger.debug(logStr);
 				}
 				this.sock = new Socket( this.host, this.port );
 			}
@@ -370,7 +374,7 @@ public void run()
 			CollectableStreamer polystreamer = new CollectableStreamer();
 			registerMappings(polystreamer);
 
-			CTILogger.debug("Starting connection in/out threads. ");
+			logger.debug("Starting connection in/out threads. ");
 			
 			inThread  = new InThread( this, pinStrm, polystreamer, inQueue );
 			outThread = new OutThread( this, poutStrm, polystreamer, outQueue);
@@ -387,40 +391,40 @@ public void run()
             fireMessageEvent( new ConnStateChange(true) );
             
 						
-			CTILogger.info("SOCKET open for " + this.getClass().getName() );
+			logger.info("SOCKET open for " + this.getClass().getName() );
 
 			do
 			{
 				Thread.sleep(400);		
 			} while( inThread.isAlive() && outThread.isAlive() );
 
-			CTILogger.debug("Interruping connection in/out threads");
+			logger.debug("Interruping connection in/out threads");
 			inThread.interrupt();
 			outThread.interrupt();
 
-			CTILogger.info("CLOSING SOCKET for " + this.getClass().getName() );
+			logger.info("CLOSING SOCKET for " + this.getClass().getName() );
 			sock.close();
 			
 		}
 		catch( InterruptedException e )
 		{
 			// The monitorThread must have been interrupted probably from disconnect()
-			CTILogger.info("  InterruptedException in monitorThread : " + e.getMessage() );
+			logger.info("  InterruptedException in monitorThread : " + e.getMessage() );
 			return;
 		}
 		catch( java.io.IOException io )
 		{
 			if(retryCount == 0)
 			{
-				CTILogger.info( io.getMessage() );
+				logger.info( io.getMessage() );
 			}
 			else
 			{
-				CTILogger.debug( io.getMessage() );
+				logger.debug( io.getMessage() );
 			}
 		}
 		
-		CTILogger.debug("Setting connection to " + host + " " + port + " invalid");
+		logger.debug("Setting connection to " + host + " " + port + " invalid");
 		
 		isValid = false;
 
@@ -435,7 +439,7 @@ public void run()
 		}
 		else
 		{
-			CTILogger.debug("Connection to  " + host + " " + port + " is set to autoreconnect in " + getTimeToReconnect() + " seconds");			
+			logger.debug("Connection to  " + host + " " + port + " is set to autoreconnect in " + getTimeToReconnect() + " seconds");			
 
 			try
 			{
@@ -444,18 +448,18 @@ public void run()
 			catch(InterruptedException e )
 			{
 				// The monitorThread must have been interrupted probably from disconnect()
-				CTILogger.info("  InterruptedException in monitorThread : " +  e.getMessage() );
+				logger.info("  InterruptedException in monitorThread : " +  e.getMessage() );
 				return;
 			}
 		}
 		
 		if(retryCount == 0)
 		{
-			CTILogger.info("Attempting to reconnect to " + getHost() + ":" + getPort() );
+			logger.info("Attempting to reconnect to " + getHost() + ":" + getPort() );
 		}
 		else
 		{
-			CTILogger.debug("Attempting to reconnect to " + getHost() + ":" + getPort() );
+			logger.debug("Attempting to reconnect to " + getHost() + ":" + getPort() );
 		}
 		retryCount++;
 	} 
