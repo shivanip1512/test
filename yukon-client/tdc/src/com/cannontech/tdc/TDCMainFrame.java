@@ -4138,7 +4138,7 @@ public static void main(final java.lang.String[] args)
 		SplashWindow splash = new SplashWindow(
 			null,
 			CtiUtilities.CTISMALL_GIF,
-			"Loading " + System.getProperty("cti.app.name") + "...",
+			"Loading " + CtiUtilities.getApplicationName() + "...",
 			new Font("dialog", Font.BOLD, 14 ), Color.black, Color.blue, 2 );
 		
 		

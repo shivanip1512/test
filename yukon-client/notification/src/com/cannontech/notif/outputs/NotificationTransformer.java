@@ -59,7 +59,7 @@ public class NotificationTransformer {
             XSLTransformer trans = new XSLTransformer(styleSheet);
             result = trans.transform(notif.getDocument());
             
-            if (CTILogger.getLogLevel().isGreaterOrEqual(Level.DEBUG)) {
+            if (CTILogger.getLevel().isGreaterOrEqual(Level.DEBUG)) {
                 CTILogger.debug("  Input document:\n" + notif.getXmlString());
 
                 XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());

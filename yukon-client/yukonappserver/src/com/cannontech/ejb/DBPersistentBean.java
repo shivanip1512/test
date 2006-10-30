@@ -11,13 +11,15 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Vector;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import com.cannontech.clientutils.CTILogManager;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
@@ -654,75 +656,47 @@ public class DBPersistentBean implements IDBPersistent {
    
    private void printSQLToFile(String line, Object[] columnValues, Object[] constraintValues, SQLException exception )
    {
-
-	String printSQLfile =
-		CTILogManager.ALL_NAMES[CTILogManager.PRINT_SQL_INSERTS_FILE][1]; 
-
-   	if( printSQLfile == null || printSQLfile.trim().length() <= 0 )
-   		return;
-
-      // Here we want to print all SQL to a file, creating a
-      // script file that could be run later.
-      java.io.PrintWriter pw = null;
-   
-      try
-      {
-         StringBuffer buffer = new StringBuffer(line);
-         boolean missingColumnValue = false;
-         boolean missingConstraintValue = false;
-         
-         if( columnValues != null )
-         {
-            buffer = new StringBuffer(line);
-            for( int i = 0; i < columnValues.length; i++ )
-            {
+       Logger logger = YukonLogManager.getLogger("com.cannontech.printsqlfile");
+       
+       if (!logger.isEnabledFor(Level.DEBUG)) {
+           return;
+       }
+       
+       StringBuffer buffer = new StringBuffer(line);
+       boolean missingColumnValue = false;
+       boolean missingConstraintValue = false;
+       
+       if( columnValues != null )
+       {
+           buffer = new StringBuffer(line);
+           for( int i = 0; i < columnValues.length; i++ )
+           {
                int index = buffer.toString().indexOf("?");
                if( index != -1 )
-                  buffer = buffer.replace( index, index+1, prepareObjectForSQLStatement(columnValues[i]).toString() );
+                   buffer = buffer.replace( index, index+1, prepareObjectForSQLStatement(columnValues[i]).toString() );
                else
-                  missingColumnValue = true;
-            }
-         }
-   
-         if( constraintValues != null )
-         {
-            for( int i = 0; i < constraintValues.length; i++ )
-            {
+                   missingColumnValue = true;
+           }
+       }
+       
+       if( constraintValues != null )
+       {
+           for( int i = 0; i < constraintValues.length; i++ )
+           {
                int index = buffer.toString().indexOf("?");
                if( index != -1 )
-                  buffer = buffer.replace( index, index+1, prepareObjectForSQLStatement(constraintValues[i]).toString() );
+                   buffer = buffer.replace( index, index+1, prepareObjectForSQLStatement(constraintValues[i]).toString() );
                else
-                  missingConstraintValue = true;
-            }
-         }
-         if( missingColumnValue )
-            buffer.insert(0, "/*** MISSING COLUMN VALUE FOUND IN THE BELOW STATEMENT */\n");
-         if( missingConstraintValue )
-             buffer.insert(0, "/*** MISSING CONSTRAINT VALUE FOUND IN THE BELOW STATEMENT */\n");
-            
-         pw = new java.io.PrintWriter(new java.io.FileWriter( printSQLfile, true), true);
-         pw.write(buffer + "; \r\n");
-         pw.close();
-      }
-      catch (Exception e) //catch everything and write the Exception to the log file
-      {
-         if( e instanceof java.io.IOException )
-            CTILogger.info("*** Cant find SQL Log file named : " + printSQLfile +
-                  " : " + e.getMessage() );
-         else
-         {
-            if( pw != null )
-               pw.write("/**** Caught EXCEPTION while trying to write to SQLFile : " +
-                  " : " + e.getMessage() + "*/" );
-         }
-         
-      }
-      finally
-      {
-         if( pw != null )
-            pw.close();
-      }
-   
+                   missingConstraintValue = true;
+           }
+       }
+       if( missingColumnValue )
+           buffer.insert(0, "/*** MISSING COLUMN VALUE FOUND IN THE BELOW STATEMENT */\n");
+       if( missingConstraintValue )
+           buffer.insert(0, "/*** MISSING CONSTRAINT VALUE FOUND IN THE BELOW STATEMENT */\n");
+       
+       logger.debug(buffer);
+       
    }
    
    private static String prepareObjectForSQLStatement( Object o ) 

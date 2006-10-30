@@ -14,6 +14,7 @@ import org.apache.log4j.Layout;
 import org.apache.log4j.helpers.LogLog;
 import org.apache.log4j.spi.LoggingEvent;
 
+
 import com.cannontech.util.ServletUtil;
 
 /**

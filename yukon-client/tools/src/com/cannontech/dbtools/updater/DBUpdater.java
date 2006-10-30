@@ -124,15 +124,6 @@ public class DBUpdater extends MessageFrameAdaptor
 		for( int i = 0; i < values.length; i++ )
 			if( values[i] != null )
 				System.setProperty(CMD_LINE_PARAM_NAMES[i], values[i]);
-		
-
-		String verb = System.getProperty(CMD_LINE_PARAM_NAMES[1]);
-		if( verb != null )
-			CTILogger.setLogLevel( 
-					(Boolean.valueOf(verb).booleanValue() ? "DEBUG" : "INFO") );
-		else
-			CTILogger.setLogLevel( "DEBUG" );
-
 	}
 
 	public void run()

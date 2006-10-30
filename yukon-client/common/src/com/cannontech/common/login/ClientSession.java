@@ -10,7 +10,6 @@ import java.util.TimerTask;
 
 import javax.swing.JOptionPane;
 
-import com.cannontech.clientutils.CTILogManager;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
@@ -277,7 +276,6 @@ public class ClientSession {
                 {
                     //load both DB and log properties
 					PoolManager.setDBProperties(props);
-                    CTILogManager.setLogProperties(props);
                     
 					//LiteYukonUser u = DaoFactory.getYukonUserDao().getLiteYukonUser(userID);
 					//already 'logged in' so we try to re-establish the login

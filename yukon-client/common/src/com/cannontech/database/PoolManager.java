@@ -17,11 +17,13 @@ import org.apache.commons.dbcp.BasicDataSource;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 
-import com.cannontech.clientutils.CTILogManager;
+//import com.cannontech.clientutils.CTILogManager;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 
 public class PoolManager {
+	public static final String FILE_BASE = System.getProperty("catalina.base");
+	
     public static final String DB_PROPERTIES_FILE = "/db.properties";
 
     public static final String DRV_SQLSERVER = "jdbc:microsoft:sqlserver:";
@@ -226,7 +228,7 @@ public class PoolManager {
 
             if (retURL == null) // not in CLASSPATH, check catalina
             {
-                File f = new File(CTILogManager.FILE_BASE + DB_PROPERTIES_FILE);
+                File f = new File(FILE_BASE + DB_PROPERTIES_FILE);
                 retURL = f.toURL();
             }
 
@@ -249,7 +251,7 @@ public class PoolManager {
         } catch (Exception e) {
             CTILogger.error("Can't read the properties file. " + 
                             "Make sure db.properties is in the CLASSPATH" + 
-                            (CTILogManager.FILE_BASE != null ? " or in the directory: " + CTILogManager.FILE_BASE
+                            (FILE_BASE != null ? " or in the directory: " + FILE_BASE
                                     : ""));
         }
         
@@ -262,11 +264,11 @@ public class PoolManager {
 
         if (is == null) //not in CLASSPATH, check catalina
         {
-            File f = new File(CTILogManager.FILE_BASE + DB_PROPERTIES_FILE);
-            is = new FileInputStream(CTILogManager.FILE_BASE + DB_PROPERTIES_FILE);
+            File f = new File(FILE_BASE + DB_PROPERTIES_FILE);
+            is = new FileInputStream(FILE_BASE + DB_PROPERTIES_FILE);
 
             CTILogger.info(" Searching for db.properties in : " + f.getAbsolutePath());
-            CTILogger.info("   catalina.base = " + CTILogManager.FILE_BASE);
+            CTILogger.info("   catalina.base = " + FILE_BASE);
         } else {
             CTILogger.info(" Using db.properties found in CLASSPATH");
         }
