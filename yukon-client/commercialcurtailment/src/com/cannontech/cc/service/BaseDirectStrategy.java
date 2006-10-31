@@ -40,10 +40,13 @@ public abstract class BaseDirectStrategy extends BaseNotificationStrategy {
     }
     
     @Override
-    public void cancelEvent(CurtailmentEvent event, LiteYukonUser user) {
+    public void cancelEvent(final CurtailmentEvent event, LiteYukonUser user) {
         super.cancelEvent(event, user);
-        int programId = event.getProgram().getId();
-        loadManagementService.stopProgram(programId);
+        sendMessages(event, new DoWithId() {
+            public void forProgram(int lmProgramId) {
+                loadManagementService.changeProgramStop(lmProgramId, event.getStopTime());
+            }
+        });
     }
     
     @Override
@@ -51,8 +54,7 @@ public abstract class BaseDirectStrategy extends BaseNotificationStrategy {
         final CurtailmentEvent event = super.adjustEvent(builder, user);
         sendMessages(event, new DoWithId() {
             public void forProgram(int lmProgramId) {
-                int programId = event.getProgram().getId();
-                loadManagementService.changeProgramStop(programId, event.getStopTime());
+                loadManagementService.changeProgramStop(lmProgramId, event.getStopTime());
             }
         });
         return event;
@@ -63,8 +65,7 @@ public abstract class BaseDirectStrategy extends BaseNotificationStrategy {
         super.deleteEvent(event, user);
         sendMessages(event, new DoWithId() {
             public void forProgram(int lmProgramId) {
-                int programId = event.getProgram().getId();
-                loadManagementService.stopProgram(programId);
+                loadManagementService.stopProgram(lmProgramId);
             }
         });
     }
