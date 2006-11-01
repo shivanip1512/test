@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.102 $
-* DATE         :  $Date: 2006/10/27 15:47:01 $
+* REVISION     :  $Revision: 1.103 $
+* DATE         :  $Date: 2006/11/01 22:39:23 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1146,7 +1146,7 @@ INT CtiDeviceMCT410::executePutConfig( CtiRequestMsg              *pReq,
                             minute = atoi(ratechangestr.substr(minute_index).data());
 
                             if( rate   >= 0 &&
-                                hour   >= 0 && hour   < 23 &&
+                                hour   >= 0 && hour   < 24 &&
                                 minute >= 0 && minute < 60 )
                             {
                                 ratechange_t ratechange;
