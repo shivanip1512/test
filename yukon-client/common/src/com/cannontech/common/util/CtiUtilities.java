@@ -8,6 +8,8 @@ import java.awt.EventQueue;
 import java.awt.MenuComponent;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.Calendar;
@@ -1551,6 +1553,44 @@ public static double convertTemperature(double temperature, String fromUnit, Str
             s.add(t);
         }
         return s;
+    }
+    
+    public static String findConstantName(int i, Class<?> c) {
+        Field[] declaredFields = c.getFields();
+        for (int j = 0; j < declaredFields.length; j++) {
+            Field field = declaredFields[j];
+            int modifiers = field.getModifiers();
+            if (!Modifier.isStatic(modifiers)) {
+                continue;
+            }
+            if (Integer.class.isAssignableFrom(field.getType())) {
+                try {
+                    Integer value = (Integer) field.get(null);
+                    if (value.intValue() == i) {
+                        return field.getName();
+                    }
+                } catch (IllegalArgumentException e) {
+                    CTILogger.error(e);
+                } catch (IllegalAccessException e) {
+                    CTILogger.error(e);
+                }
+            }
+
+            if (Integer.TYPE.isAssignableFrom(field.getType())) {
+                try {
+                    int value = field.getInt(null);
+                    if (value == i) {
+                        return field.getName();
+                    }
+                } catch (IllegalArgumentException e) {
+                    CTILogger.error(e);
+                } catch (IllegalAccessException e) {
+                    CTILogger.error(e);
+                }
+            }
+            
+        }
+        return Integer.toString(i);
     }
 }
 
