@@ -1,6 +1,9 @@
 package com.cannontech.ejb;
 import java.sql.Connection;
 
+import org.apache.log4j.Logger;
+
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.Transaction;
 import com.cannontech.yukon.ISQLStatement;
@@ -16,6 +19,7 @@ public class SqlStatementBean implements ISQLStatement
 	private InnerSqlStatement innerSql = null;
    private java.sql.Connection dbConn = null;
 	private String databaseAlias = CtiUtilities.getDatabaseAlias();	
+    private static Logger log = YukonLogManager.getLogger(SqlStatementBean.class);
 
    /**
     * @ejb:interface-method
@@ -83,14 +87,12 @@ public class SqlStatementBean implements ISQLStatement
 	   if( dbConn != null )
 	      innerSql.setDbConnection( dbConn );
 	
-	   try {
-	   com.cannontech.clientutils.CTILogger.debug( 
-	      "   DB: SQLStatement execute (" + opStr + ") " +
-	      (innerSql.getDbConnection() != null ? String.valueOf(innerSql.getDbConnection().hashCode()) :
-	      (dbConn != null ? String.valueOf(dbConn.hashCode()) : " ")) + 
-			" : " + innerSql.sql );
-	   } catch( Throwable t ) {}
-	
+	   if (log.isDebugEnabled()) {
+	       log.debug( 
+	                 "Execute [" + opStr + "," + innerSql.getDbConnection() + "," + dbConn + "] " +
+	                 ": " + innerSql.sql );
+	   }
+	   
 		Transaction t = Transaction.createTransaction( operation, innerSql, databaseAlias );
 		innerSql = (InnerSqlStatement)t.execute();
 	}

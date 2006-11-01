@@ -4,6 +4,8 @@ import javax.naming.InitialContext;
 import javax.naming.Name;
 import javax.naming.NamingException;
 
+import com.cannontech.clientutils.CTILogger;
+
 //import org.jboss.naming.NonSerializableFactory;
 
 /**
@@ -22,7 +24,6 @@ public abstract class CTIMBeanBase implements CTIMBeanBaseMBean
 	public CTIMBeanBase() 
 	{
 		super();
-System.out.println("------------created...");
 		
 	}
 
@@ -33,7 +34,6 @@ System.out.println("------------created...");
 
 	public void setJndiName(String jndiName) throws NamingException 
 	{
-System.out.println("------------setJndiName..." );
 		
 		String oldName = this.jndiName;
 		this.jndiName = jndiName;
@@ -56,7 +56,6 @@ System.out.println("------------setJndiName..." );
 	
 	public void start() throws Exception 
 	{
-System.out.println("------------start...");
 		
 		started = true;
 		rebind();
@@ -64,7 +63,6 @@ System.out.println("------------start...");
 
 	public void stop() 
 	{
-System.out.println("------------stop...");
 		
 		started = false;
 		unbind(jndiName);
@@ -72,11 +70,10 @@ System.out.println("------------stop...");
 
 	private void rebind() throws NamingException 
 	{
-System.out.println("------------rebind...");
 
 		InitialContext rootCtx = new InitialContext();
 		Name fullName = rootCtx.getNameParser("").parse(jndiName);
-		System.out.println("fullName=" + fullName);
+		CTILogger.info("fullName=" + fullName);
 
 		//JBOSS SPECIFIC CODE!!!!
 //		NonSerializableFactory.rebind(fullName, this, true);
@@ -84,7 +81,6 @@ System.out.println("------------rebind...");
 
 	private void unbind(String jndiName) 
 	{
-System.out.println("------------unbind...");
 		
 		try 
 		{
@@ -96,7 +92,7 @@ System.out.println("------------unbind...");
 		}
 		catch (NamingException e) 
 		{
-			e.printStackTrace();
+			CTILogger.error("Couldn't unbind", e);
 		}
 	}
 
