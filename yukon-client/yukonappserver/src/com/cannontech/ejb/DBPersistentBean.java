@@ -18,8 +18,8 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
@@ -35,6 +35,7 @@ import com.cannontech.yukon.IDBPersistent;
 **/
 public class DBPersistentBean implements IDBPersistent {
     protected static final int ORACLE_FLOAT_PRECISION = SqlUtils.ORACLE_FLOAT_PRECISION;
+    private static final Logger log = YukonLogManager.getLogger(DBPersistentBean.class);
     
     private java.sql.Connection dbConnection = null;   
     
@@ -69,19 +70,10 @@ public class DBPersistentBean implements IDBPersistent {
             objectSuppliedConnection = false;
         }
         
-        int hashCode = 0;
-        try {
-            hashCode = getDbConnection().hashCode();
-        } catch( Throwable t ) {}
-        CTILogger.debug("   DB: DBPersistentBean TrX started " +
-                        (operation == INSERT ? "(insert)" :
-                            (operation == UPDATE ? "(update)":
-                                (operation == RETRIEVE ? "(retrieve)":
-                                    (operation == DELETE ? "(delete)":
-                                        (operation == DELETE_PARTIAL? "(delete partial)":
-                                            (operation == ADD_PARTIAL ? "(add partial)": 
-                                            "(unknown)"))))))         
-                                            + " " + hashCode );
+        if (log.isDebugEnabled()) {
+            String operationStr = CtiUtilities.findConstantName(operation, IDBPersistent.class);
+            log.debug("DBPersistentBean TrX started " + operationStr);
+        }
         
         try {
             TransactionTemplate tt = YukonSpringHook.getTransactionTemplate();
@@ -615,7 +607,7 @@ public class DBPersistentBean implements IDBPersistent {
       	String str = StringUtils.trimSpaces(o.toString());
       	if( str == null || str.length() <= 0 )
       	{
-      		CTILogger.warn("A null value was found in a DBPersistent object, using a default value of ' '  (blank char)");
+      		log.warn("A null value was found in a DBPersistent object, using a default value of ' '  (blank char)");
       		str = " ";
       	}
       	
@@ -644,7 +636,7 @@ public class DBPersistentBean implements IDBPersistent {
       	String str = StringUtils.trimSpaces(o.toString());
       	if( str == null || str.length() <= 0 )
       	{
-      		CTILogger.warn("A null value was found in a DBPersistent object, using a default value of ' '  (blank char)");
+      		log.warn("A null value was found in a DBPersistent object, using a default value of ' '  (blank char)");
       		str = " ";
       	}
       	
@@ -729,7 +721,7 @@ public class DBPersistentBean implements IDBPersistent {
       }
       else
       {
-         CTILogger.info("prepareObjectForSQLStatement - warning unhandled type");
+         log.info("prepareObjectForSQLStatement - warning unhandled type");
          return o.toString();
       }
       
