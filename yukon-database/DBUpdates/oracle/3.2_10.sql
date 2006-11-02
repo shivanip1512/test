@@ -44,4 +44,4 @@ alter table capcontrolstrategy modify offPkPFSetPoint float not null;
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
 /**************************************************************/
-/* __YUKON_VERSION__ */
+insert into CTIDatabase values('3.2', 'Jon', '30-OCT-2006', 'DB Update Script', 10 );

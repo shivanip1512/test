@@ -411,4 +411,4 @@ go
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
 /**************************************************************/
-/* __YUKON_VERSION__ */
+insert into CTIDatabase values('3.3', 'Jon', '25-SEP-2006', 'DB Update Script', 1 );
