@@ -13,6 +13,8 @@ import java.util.Vector;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.apache.log4j.MDC;
+import org.apache.log4j.NDC;
 import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.support.TransactionCallback;
@@ -62,10 +64,9 @@ public class DBPersistentBean implements IDBPersistent {
     private DBPersistent internalExecute(final int operation, final DBPersistent object ) throws TransactionException
     {
         final boolean objectSuppliedConnection;
-        Connection conn = object.getDbConnection();
-        if (conn != null) {
+        if (object.getDbConnection() != null) {
             objectSuppliedConnection = true;
-            setDbConnection(conn);
+            setDbConnection(object.getDbConnection());
         } else {
             objectSuppliedConnection = false;
         }
@@ -76,14 +77,21 @@ public class DBPersistentBean implements IDBPersistent {
         }
         
         try {
+            NDC.push("DBPersistent=" + object);
+            NDC.push("objectSuppliedConnection=" + objectSuppliedConnection);
             TransactionTemplate tt = YukonSpringHook.getTransactionTemplate();
             tt.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
             tt.execute(new TransactionCallback() {
                 public Object doInTransaction(org.springframework.transaction.TransactionStatus status) {
-                    if (getDbConnection() == null) {
-                        setDbConnection( PoolManager.getYukonConnection() );
-                    }
+                    Connection poolConnection = null;
                     try {
+                        log.debug("Starting transaction: " + status);
+                        if (getDbConnection() == null) {
+                            poolConnection = PoolManager.getYukonConnection();
+                            setDbConnection( poolConnection );
+                            log.debug("Getting connection from PoolManager for transaction");
+                        }
+                        log.debug("Setting connection on object: " + getDbConnection());
                         object.setDbConnection( getDbConnection() );
                         
                         switch( operation )
@@ -117,6 +125,10 @@ public class DBPersistentBean implements IDBPersistent {
                         };
                     } catch (SQLException e) {
                         throw new TemporaryException(e);
+                    } finally {
+                        if (poolConnection != null) {
+                            JdbcUtils.closeConnection(poolConnection);
+                        }
                     }
                     return null;
                 }
@@ -128,13 +140,13 @@ public class DBPersistentBean implements IDBPersistent {
             throw te.e;
         } finally {
             if( !objectSuppliedConnection ) {
-                JdbcUtils.closeConnection(getDbConnection());
-                
                 //DO NOT LET THE DBPERSISTENT OBJECT HOLD ONTO A REFERENCE TO THE CONNECTION
                 //IT'S JUST A BAD IDEA SINCE WE DON'T KNOW HOW THEY ARE BEING MANAGED
                 object.setDbConnection(null);
                 setDbConnection(null);
             }
+            NDC.pop();
+            NDC.pop();
         }
         
       
