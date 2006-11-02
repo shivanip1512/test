@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct210.cpp-arc  $
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2006/09/18 17:23:09 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2006/11/02 15:48:44 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -63,7 +63,7 @@ CtiDeviceMCT210::CommandSet CtiDeviceMCT210::initCommandStore()
     CommandSet cs;
 
     //  MCT 210 commands
-    cs.insert(CommandStore(Emetcon::GetValue_Default,       Emetcon::IO_Read,  MCT210_MReadPos,    MCT210_MReadLen));
+    cs.insert(CommandStore(Emetcon::GetValue_KWH,           Emetcon::IO_Read,  MCT210_MReadPos,    MCT210_MReadLen));
     cs.insert(CommandStore(Emetcon::Scan_Accum,             Emetcon::IO_Read,  MCT210_MReadPos,    MCT210_MReadLen));
 
     cs.insert(CommandStore(Emetcon::PutValue_KYZ,           Emetcon::IO_Write, MCT210_PutMReadPos, MCT210_PutMReadLen));

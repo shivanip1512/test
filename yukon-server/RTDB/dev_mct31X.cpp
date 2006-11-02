@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct31X.cpp-arc  $
-* REVISION     :  $Revision: 1.59 $
-* DATE         :  $Date: 2006/10/19 19:51:51 $
+* REVISION     :  $Revision: 1.60 $
+* DATE         :  $Date: 2006/11/02 15:48:44 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -438,7 +438,7 @@ INT CtiDeviceMCT31X::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
         }
 
         case Emetcon::Scan_Accum:
-        case Emetcon::GetValue_Default:
+        case Emetcon::GetValue_KWH:
         {
             status = decodeGetValueKWH(InMessage, TimeNow, vgList, retList, outList);
             break;

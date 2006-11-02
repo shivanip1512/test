@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct22X.cpp-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2006/10/19 19:51:51 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2006/11/02 15:48:44 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -57,7 +57,7 @@ CtiDeviceMCT22X::CommandSet CtiDeviceMCT22X::initCommandStore()
    cs.insert(CommandStore(Emetcon::PutConfig_GroupAddr_Bronze,      Emetcon::IO_Write, MCT2XX_GroupAddrBronzePos,      MCT2XX_GroupAddrBronzeLen));
    cs.insert(CommandStore(Emetcon::PutConfig_GroupAddr_Lead,        Emetcon::IO_Write, MCT2XX_GroupAddrLeadPos,        MCT2XX_GroupAddrLeadLen));
 
-   cs.insert(CommandStore(Emetcon::GetValue_Default,    Emetcon::IO_Read,   MCT22X_MReadPos,    MCT22X_MReadLen));
+   cs.insert(CommandStore(Emetcon::GetValue_KWH,        Emetcon::IO_Read,   MCT22X_MReadPos,    MCT22X_MReadLen));
    cs.insert(CommandStore(Emetcon::Scan_Accum,          Emetcon::IO_Read,   MCT22X_MReadPos,    MCT22X_MReadLen));
 
    //  this meter requires you to subtract the current and previous meter readings to get a 5-minute demand value

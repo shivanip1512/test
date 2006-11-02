@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.70 $
-* DATE         :  $Date: 2006/10/27 15:47:01 $
+* REVISION     :  $Revision: 1.71 $
+* DATE         :  $Date: 2006/11/02 15:48:44 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -96,7 +96,7 @@ CtiDeviceMCT470::CommandSet CtiDeviceMCT470::initCommandStore( )
 
     cs.insert(CommandStore(Emetcon::Command_Loop,               Emetcon::IO_Read,           Memory_ModelPos,               1));
     cs.insert(CommandStore(Emetcon::Scan_Accum,                 Emetcon::IO_Function_Read,  FuncRead_MReadPos,            FuncRead_MReadLen));
-    cs.insert(CommandStore(Emetcon::GetValue_Default,           Emetcon::IO_Function_Read,  FuncRead_MReadPos,            FuncRead_MReadLen));
+    cs.insert(CommandStore(Emetcon::GetValue_KWH,               Emetcon::IO_Function_Read,  FuncRead_MReadPos,            FuncRead_MReadLen));
     cs.insert(CommandStore(Emetcon::Scan_Integrity,             Emetcon::IO_Function_Read,  FuncRead_DemandPos,           FuncRead_DemandLen));
     cs.insert(CommandStore(Emetcon::GetValue_Demand,            Emetcon::IO_Function_Read,  FuncRead_DemandPos,           FuncRead_DemandLen));
     cs.insert(CommandStore(Emetcon::Scan_LoadProfile,           Emetcon::IO_Function_Read,  0,                             0));
@@ -974,7 +974,7 @@ INT CtiDeviceMCT470::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
     switch(InMessage->Sequence)
     {
         case Emetcon::Scan_Accum:
-        case Emetcon::GetValue_Default:
+        case Emetcon::GetValue_KWH:
         {
             status = decodeGetValueKWH(InMessage, TimeNow, vgList, retList, outList);
             break;

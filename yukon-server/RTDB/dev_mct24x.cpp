@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct2XX.cpp-arc  $
-* REVISION     :  $Revision: 1.42 $
-* DATE         :  $Date: 2006/10/19 19:51:51 $
+* REVISION     :  $Revision: 1.43 $
+* DATE         :  $Date: 2006/11/02 15:48:44 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -70,7 +70,7 @@ CtiDeviceMCT24X::CommandSet CtiDeviceMCT24X::initCommandStore()
     cs.insert(CommandStore(Emetcon::Scan_General,                     Emetcon::IO_Read,           MCT24X_StatusPos,               MCT24X_StatusLen));
 
     cs.insert(CommandStore(Emetcon::Scan_Accum,                       Emetcon::IO_Function_Read,  MCT24X_MReadPos,                MCT24X_MReadLen));
-    cs.insert(CommandStore(Emetcon::GetValue_Default,                 Emetcon::IO_Function_Read,  MCT24X_MReadPos,                MCT24X_MReadLen));
+    cs.insert(CommandStore(Emetcon::GetValue_KWH,                     Emetcon::IO_Function_Read,  MCT24X_MReadPos,                MCT24X_MReadLen));
 
     cs.insert(CommandStore(Emetcon::PutValue_KYZ,                     Emetcon::IO_Write,          MCT24X_PutMReadPos,             MCT24X_PutMReadLen));
 

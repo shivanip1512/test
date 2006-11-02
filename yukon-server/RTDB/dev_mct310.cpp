@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.58 $
-* DATE         :  $Date: 2006/10/19 19:51:51 $
+* REVISION     :  $Revision: 1.59 $
+* DATE         :  $Date: 2006/11/02 15:48:44 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -114,7 +114,7 @@ CtiDeviceMCT310::CommandSet CtiDeviceMCT310::initCommandStore( )
     cs.insert(CommandStore(Emetcon::PutConfig_MinMax,               Emetcon::IO_Write,          MCT3XX_MinMaxPeakConfigPos,     1));
 
     cs.insert(CommandStore(Emetcon::Scan_Accum,                     Emetcon::IO_Function_Read,  FuncRead_MReadPos,        FuncRead_MReadLen));
-    cs.insert(CommandStore(Emetcon::GetValue_Default,               Emetcon::IO_Function_Read,  FuncRead_MReadPos,        FuncRead_MReadLen));
+    cs.insert(CommandStore(Emetcon::GetValue_KWH,                   Emetcon::IO_Function_Read,  FuncRead_MReadPos,        FuncRead_MReadLen));
 
 //  ACH add frozen support for 310
 //  cs.insert(CommandStore(Emetcon::GetValue_FrozenKWH,             Emetcon::IO_Function_Read,  MCT3XX_FuncReadFrozenPos, MCT3XX_FuncReadFrozenLen);
@@ -588,7 +588,7 @@ INT CtiDeviceMCT310::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
     switch(InMessage->Sequence)
     {
         case (Emetcon::Scan_Accum):
-        case (Emetcon::GetValue_Default):
+        case (Emetcon::GetValue_KWH):
         {
             status = decodeGetValueKWH(InMessage, TimeNow, vgList, retList, outList);
             break;

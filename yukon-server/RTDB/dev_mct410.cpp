@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.103 $
-* DATE         :  $Date: 2006/11/01 22:39:23 $
+* REVISION     :  $Revision: 1.104 $
+* DATE         :  $Date: 2006/11/02 15:48:44 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -267,7 +267,7 @@ CtiDeviceMCT410::CommandSet CtiDeviceMCT410::initCommandStore()
     CommandSet cs;
 
     cs.insert(CommandStore(Emetcon::Scan_Accum,                     Emetcon::IO_Function_Read, FuncRead_MReadPos,           FuncRead_MReadLen));
-    cs.insert(CommandStore(Emetcon::GetValue_Default,               Emetcon::IO_Function_Read, FuncRead_MReadPos,           FuncRead_MReadLen));
+    cs.insert(CommandStore(Emetcon::GetValue_KWH,                   Emetcon::IO_Function_Read, FuncRead_MReadPos,           FuncRead_MReadLen));
     cs.insert(CommandStore(Emetcon::GetValue_FrozenKWH,             Emetcon::IO_Function_Read, FuncRead_FrozenMReadPos,     FuncRead_FrozenMReadLen));
     cs.insert(CommandStore(Emetcon::Scan_Integrity,                 Emetcon::IO_Function_Read, FuncRead_DemandPos,          FuncRead_DemandLen));
     cs.insert(CommandStore(Emetcon::Scan_LoadProfile,               Emetcon::IO_Function_Read, 0,                           0));
@@ -708,7 +708,7 @@ INT CtiDeviceMCT410::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
     switch(InMessage->Sequence)
     {
         case Emetcon::Scan_Accum:
-        case Emetcon::GetValue_Default:
+        case Emetcon::GetValue_KWH:
         case Emetcon::GetValue_FrozenKWH:
         {
             status = decodeGetValueKWH(InMessage, TimeNow, vgList, retList, outList);
@@ -2109,7 +2109,7 @@ INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
             int offset = (i * 3);
 
             if( InMessage->Sequence == Cti::Protocol::Emetcon::Scan_Accum ||
-                InMessage->Sequence == Cti::Protocol::Emetcon::GetValue_Default )
+                InMessage->Sequence == Cti::Protocol::Emetcon::GetValue_KWH )
             {
                 //  normal KWH read, nothing too special
 
