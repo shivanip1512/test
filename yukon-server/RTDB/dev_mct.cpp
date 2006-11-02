@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.101 $
-* DATE         :  $Date: 2006/10/19 19:51:51 $
+* REVISION     :  $Revision: 1.102 $
+* DATE         :  $Date: 2006/11/02 15:47:54 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1543,7 +1543,7 @@ INT CtiDeviceMCT::executeGetValue( CtiRequestMsg              *pReq,
             found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
         }
     }
-    else  //  if( parse.getFlags() & CMD_FLAG_GV_KWH ) - default to a KWH read
+    else if( parse.getFlags() & CMD_FLAG_GV_KWH )
     {
         if( parse.getFlags() & CMD_FLAG_FROZEN )  //  Read the frozen values...
         {
@@ -1552,7 +1552,7 @@ INT CtiDeviceMCT::executeGetValue( CtiRequestMsg              *pReq,
         }
         else
         {
-            function = Emetcon::GetValue_Default;
+            function = Emetcon::GetValue_KWH;
             found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
         }
 
