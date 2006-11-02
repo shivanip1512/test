@@ -1,5 +1,3 @@
-#include "yukon.h"
-
 /**
  * File:   fdrpibase
  *
@@ -9,9 +7,11 @@
  *
  * PVCS KEYWORDS:
  * ARCHIVE      :  $Archive$
- * REVISION     :  $Revision: 1.6 $
- * DATE         :  $Date: 2006/10/26 21:55:32 $
+ * REVISION     :  $Revision: 1.7 $
+ * DATE         :  $Date: 2006/11/02 15:49:07 $
  */
+#include "yukon.h"
+
 
 #include <windows.h>
 #include <math.h>
@@ -85,7 +85,7 @@ const char CtiFDRPiBase::PI_DIGITAL_POINT = 'D';
 
 /**
  * Default Constructor.
- */ 
+ */
 CtiFDRPiBase::CtiFDRPiBase() : CtiFDRSimple( "PI" )
 {
   readThisConfig();
@@ -93,7 +93,7 @@ CtiFDRPiBase::CtiFDRPiBase() : CtiFDRSimple( "PI" )
 
 /**
  * Destructor.
- */ 
+ */
 CtiFDRPiBase::~CtiFDRPiBase()
 {
 
@@ -102,7 +102,7 @@ CtiFDRPiBase::~CtiFDRPiBase()
 /**
  * Factory method to return one of the two "flavors" based on the
  * KEY_FLAVOR value in the configuration file.
- */ 
+ */
 CtiFDRPiBase* CtiFDRPiBase::createInstance()
 {
   // can't check debuglevel in this function because it is static
@@ -124,7 +124,7 @@ CtiFDRPiBase* CtiFDRPiBase::createInstance()
 
 /**
  * Open a connection to the remote system.
- */ 
+ */
 bool CtiFDRPiBase::connect()
 {
   int err = 0;
@@ -143,7 +143,7 @@ bool CtiFDRPiBase::connect()
     {
       std::string piError = getPiErrorDescription(err, "piut_setservernode");
       CtiLockGuard<CtiLogger> doubt_guard( dout );
-      logNow() << "Unable to set server node, piut_setservernode returned " 
+      logNow() << "Unable to set server node, piut_setservernode returned "
         << piError << endl;
     }
     setConnected( false );
@@ -160,7 +160,7 @@ bool CtiFDRPiBase::connect()
     {
       std::string piError = getPiErrorDescription(err, "piut_login");
       CtiLockGuard<CtiLogger> doubt_guard( dout );
-      logNow() << "Unable to login to PI server, piut_login returned " 
+      logNow() << "Unable to login to PI server, piut_login returned "
         << piError
         << ", valid = " << valid << endl;
     }
@@ -181,14 +181,14 @@ bool CtiFDRPiBase::connect()
 
 /**
  * Test the connection.
- */ 
+ */
 void CtiFDRPiBase::testConnection()
 {
   // test connection
   int32 serverTime = 0;
   int err = pitm_servertime(&serverTime);
   if (err == 1) // for some reason, this error code is different than all others
-  { 
+  {
     if( isDebugLevel( DETAIL_FDR_DEBUGLEVEL ) )
     {
       CtiLockGuard<CtiLogger> doubt_guard( dout );
@@ -210,7 +210,7 @@ void CtiFDRPiBase::testConnection()
 
 /**
  * Add a new point to the appropriate lists.
- */ 
+ */
 void CtiFDRPiBase::processNewPoint(CtiFDRPoint *ctiPoint)
 {
   PiPointInfo info;
@@ -230,7 +230,7 @@ void CtiFDRPiBase::processNewPoint(CtiFDRPoint *ctiPoint)
     {
       std::string piError = getPiErrorDescription(err, "pipt_findpoint");
       CtiLockGuard<CtiLogger> doubt_guard( dout );
-      logNow() << "Unable to find PI tag '" << tagName << 
+      logNow() << "Unable to find PI tag '" << tagName <<
         "' for point " << info.ctiPoint->getPointID() <<
         ", pipt_findpoint returned " << piError << endl;
     }
@@ -244,18 +244,18 @@ void CtiFDRPiBase::processNewPoint(CtiFDRPoint *ctiPoint)
     {
       std::string piError = getPiErrorDescription(err, "pipt_pointtype");
       CtiLockGuard<CtiLogger> doubt_guard( dout );
-      logNow() << "Unable to get PI point type for tag " << tagName 
+      logNow() << "Unable to get PI point type for tag " << tagName
         << ", pipt_pointtype returned " << piError << endl;
     }
     return;
-  } 
+  }
   info.piType = type;
   if (info.piType == PI_REAL_POINT || info.piType == PI_INTEGER_POINT)
   {
     if (info.ctiPoint->getPointType() != AnalogPointType)
     {
       CtiLockGuard<CtiLogger> doubt_guard( dout );
-      logNow() << "Incompatible type for point " << info.ctiPoint->getPointID()  
+      logNow() << "Incompatible type for point " << info.ctiPoint->getPointID()
         << "; expected AnalogPointType, got " << info.ctiPoint->getPointType() << endl;
       return;
     }
@@ -265,7 +265,7 @@ void CtiFDRPiBase::processNewPoint(CtiFDRPoint *ctiPoint)
     if (info.ctiPoint->getPointType() != StatusPointType)
     {
       CtiLockGuard<CtiLogger> doubt_guard( dout );
-      logNow() << "Incompatible type for point " << info.ctiPoint->getPointID() 
+      logNow() << "Incompatible type for point " << info.ctiPoint->getPointID()
         << "; expected StatusPointType, got " << info.ctiPoint->getPointType() << endl;
       return;
     }
@@ -278,7 +278,7 @@ void CtiFDRPiBase::processNewPoint(CtiFDRPoint *ctiPoint)
       {
         std::string piError = getPiErrorDescription(err, "pipt_digpointers");
         CtiLockGuard<CtiLogger> doubt_guard( dout );
-        logNow() << "Unable to get digital offset for tag " << tagName 
+        logNow() << "Unable to get digital offset for tag " << tagName
           << ", pipt_digpointers returned " << piError << endl;
       }
       return;
@@ -308,11 +308,11 @@ void CtiFDRPiBase::processNewPoint(CtiFDRPoint *ctiPoint)
 
 /**
  * Handle updated values from Pi.
- */ 
-void CtiFDRPiBase::handlePiUpdate(const PiPointInfo info, 
-                                const float rval, 
-                                const int32 istat, 
-                                const time_t timestamp_utc, 
+ */
+void CtiFDRPiBase::handlePiUpdate(const PiPointInfo info,
+                                const float rval,
+                                const int32 istat,
+                                const time_t timestamp_utc,
                                 const int32 errorcode)
 {
   if (errorcode != 0) {
@@ -357,7 +357,7 @@ void CtiFDRPiBase::handlePiUpdate(const PiPointInfo info,
       // This would happen if the point had one of the system wide statuses set for it.
       // For instance, it could be set to "Shutdown" which is a valid status, but isn't one
       // of the expected statuses for this point (valid statuses for this point have a numerical
-      // value between 0 and info.digitalLastIndex, inclusive). Because the numerical value of 
+      // value between 0 and info.digitalLastIndex, inclusive). Because the numerical value of
       // "Shutdown" is meaningless to Yukon, we'll send the NonUpdatedQuality and the last state.
       if ( isDebugLevel( MIN_DETAIL_FDR_DEBUGLEVEL ) )
       {
@@ -368,7 +368,7 @@ void CtiFDRPiBase::handlePiUpdate(const PiPointInfo info,
           << ", state=" << buf << endl;
       }
       handleNonUpdate(info.ctiPoint, timestamp_utc);
-    } 
+    }
     else
     {
       if( isDebugLevel( MAJOR_DETAIL_FDR_DEBUGLEVEL ) )
@@ -401,7 +401,7 @@ void CtiFDRPiBase::handlePiUpdate(const PiPointInfo info,
 
 /**
  * Read our configuration file.
- */ 
+ */
 void CtiFDRPiBase::readThisConfig()
 {
   CtiFDRSimple::readThisConfig();
@@ -430,7 +430,7 @@ void CtiFDRPiBase::readThisConfig()
 
 /**
  * Convert Pi error code to string.
- */ 
+ */
 std::string CtiFDRPiBase::getPiErrorDescription(int errCode, char* functionName)
 {
   const int BUFFER_SIZE = 1024;  //this should be plenty big for any error message
