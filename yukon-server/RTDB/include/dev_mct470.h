@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT470.h-arc  $
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2006/10/27 15:47:01 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2006/11/03 21:46:06 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -242,7 +242,7 @@ protected:
         Memory_ModelLen             =    5,
 
         //  lengths are different for these
-        Memory_StatusPos            = 0x03, // CtiDeviceMCT410::Memory_StatusPos,
+        Memory_StatusPos            = 0x05, // CtiDeviceMCT410::Memory_StatusPos,
         Memory_StatusLen            =    3,
     };
 
