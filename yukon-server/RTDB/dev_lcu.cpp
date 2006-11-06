@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_lcu.cpp-arc  $
-* REVISION     :  $Revision: 1.39 $
-* DATE         :  $Date: 2006/03/31 18:24:43 $
+* REVISION     :  $Revision: 1.40 $
+* DATE         :  $Date: 2006/11/06 21:46:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -693,16 +693,12 @@ OUTMESS* CtiDeviceLCU::lcuControl(OUTMESS *&OutMessage)
     if(!OutMessage->DeviceID) OutMessage->DeviceID = getID();
 
 
-    if(OutMessage->Remote == RTUGLOBAL)
+    if(OutMessage->Remote == LCUGLOBAL || OutMessage->Remote == MASTERGLOBAL )
     {
         OutMessage->Retry = 0;
-
         if(_lcuType == LCU_EASTRIVER)
         {
-            /* First do not allow messages to be sent to Broadcast Address - just punt */
-            // East River LCU does not support this
-            delete (OutMessage);
-            OutMessage = NULL;
+            OutMessage->Retry = 2;
         }
     }
     else
@@ -1531,6 +1527,7 @@ void CtiDeviceLCU::initLCUGlobals()
 CtiDeviceLCU& CtiDeviceLCU::setLastControlMessage(const OUTMESS *pOutMessage)
 {
     LockGuard guard(monitor());
+    resetFlags(LCUWASGLOBAL); // This is set whenever a global message is added to non-global devices
 
     if(_lastControlMessage != NULL)
     {
@@ -1566,6 +1563,7 @@ OUTMESS*  CtiDeviceLCU::releaseLastControlMessage()
 void CtiDeviceLCU::deleteLastControlMessage()
 {
     LockGuard guard(monitor());
+    resetFlags(LCUWASGLOBAL); // This is set whenever a global message is added to non-global devices
 
     if(_lastControlMessage != NULL)
     {
@@ -1618,6 +1616,11 @@ bool CtiDeviceLCU::isFlagSet(UINT flags) const
 {
     LockGuard guard(monitor());
     return(_lcuFlags & flags);
+}
+
+bool CtiDeviceLCU::isGlobalLCU() const
+{
+    return (getAddress() == LCUGLOBAL || getAddress() == MASTERGLOBAL) ? true : false;
 }
 
 UINT CtiDeviceLCU::getNumberStarted() const
@@ -1822,12 +1825,11 @@ CtiDeviceLCU& CtiDeviceLCU::operator=(const CtiDeviceLCU& aRef)
 INT CtiDeviceLCU::lcuFastScanDecode(OUTMESS *&OutMessage, INMESS *InMessage, CtiLCUResult_t &resultCode, bool globalControlAvailable, list< CtiMessage* >  &vgList)
 {
     INT status = NORMAL;
+    CtiTime now;
 
     // Pretend for the simulated ports!
     if((InMessage->EventCode & 0x3ffff) == ErrPortSimulated)
     {
-        CtiTime now;
-
         if(getNextCommandTime() > now)
         {
             if(!(now.seconds() % 5))
@@ -1960,6 +1962,13 @@ INT CtiDeviceLCU::lcuFastScanDecode(OUTMESS *&OutMessage, INMESS *InMessage, Cti
                                 else
                                 {
                                     resultCode = eLCUNotBusyNeverTransmitted;
+
+                                    // This message resulted from a global message, we are doing global syncs, and our scan time is not yet up.
+                                    if( (getFlags() & LCUWASGLOBAL) && gConfigParms.isTrue("RIPPLE_LCU_GLOBAL_SYNCHRONIZE")
+                                        && (getNextCommandTime() > now) )
+                                    {
+                                        resultCode = eLCUFastScan;
+                                    }
                                 }
                             }
                             else if(globalControlAvailable)
