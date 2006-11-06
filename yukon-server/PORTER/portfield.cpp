@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.197 $
-* DATE         :  $Date: 2006/09/29 19:00:12 $
+* REVISION     :  $Revision: 1.198 $
+* DATE         :  $Date: 2006/11/06 21:45:59 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2250,7 +2250,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
         case ProtocolWrapIDLC:
             {
                 /* Check for broadcast type message */
-                if(OutMessage->Remote == CCUGLOBAL)
+                if(OutMessage->Remote == CCUGLOBAL && Device->getType() == TYPE_CCU711)
                 {
                     /* form the CCU IDLC preamble */
                     PreIDLC (OutMessage->Buffer.OutMessage, (USHORT)OutMessage->OutLength, CCUGLOBAL, 0, 1, 1, OutMessage->Source, OutMessage->Destination, OutMessage->Command);
@@ -2376,6 +2376,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                 {
                     if(OutMessage->Remote == CCUGLOBAL)
                     {
+                        //For those who follow, this block is used for LCU's too.
                         if(OutMessage->EventCode & DTRAN)
                         {
                             /* Calculate the time the command should take */
