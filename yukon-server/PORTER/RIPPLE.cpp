@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/RIPPLE.cpp-arc  $
-* REVISION     :  $Revision: 1.32 $
-* DATE         :  $Date: 2006/09/19 21:43:11 $
+* REVISION     :  $Revision: 1.33 $
+* DATE         :  $Date: 2006/11/06 21:46:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -191,7 +191,7 @@ void applyLCUSet(const long key, CtiDeviceSPtr Dev, void* vpTXlcu)
             pOtherLCU->removeInfiniteProhibit( lcu->getID() );                   // Remove any infinite set up at any other point.
         }
 
-        if( lcu->getAddress() == LCUGLOBAL && Dev->getPortID() == lcu->getPortID() )
+        if( lcu->isGlobalLCU() && Dev->getPortID() == lcu->getPortID() )
         {
             // Mark them all out to this remotes completion time to prevent xtalk
             pOtherLCU->removeInfiniteProhibit( lcu->getID() );                   // Remove any infinite set up at any other point.
@@ -209,15 +209,33 @@ void applyLCUSet(const long key, CtiDeviceSPtr Dev, void* vpTXlcu)
                 }
                 MPCPointSet( SEQUENCE_ACTIVE, pOtherLCU, true );
                 pOtherLCU->setFlags( LCUTRANSMITSENT );    // Global address will make this LCU squawk
+
+                // I dont think we should be in here at all if lcu == pOtherLCU, but we were previously
+                // and who am I to change that.
+                if(gConfigParms.isTrue("RIPPLE_LCU_GLOBAL_SYNCHRONIZE") && lcu != pOtherLCU)
+                {
+                    pOtherLCU->setLastControlMessage(lcu->getLastControlMessage());
+                    pOtherLCU->setFlags(LCUWASGLOBAL); // Tell this device that this message was a global message
+                    OUTMESS *lcuOutMess = pOtherLCU->getLastControlMessage();
+                    lcuOutMess->Buffer.OutMessage[PREIDLEN+1] = pOtherLCU->getAddress();
+                    lcuOutMess->DeviceID = pOtherLCU->getID();
+                    lcuOutMess->Remote = pOtherLCU->getAddress();
+                    lcuOutMess->TargetID = pOtherLCU->getID();
+                    lcuOutMess->Sequence = 2; //I want this to retry twice due to some oddities about how this is working.
+                    pOtherLCU->setNextCommandTime(lcu->getNextCommandTime());
+                }
             }
         }
         else if( lcu->getAddress() != pOtherLCU->getAddress() && pOtherLCU->isDeviceExcluded(lcu->getID())  )
         {
-            pOtherLCU->lcuResetFlagsAndTags();                  // Make sure nothing is in there!  Insurance.
+            if(!(gConfigParms.isTrue("RIPPLE_LCU_GLOBAL_SYNCHRONIZE") && lcu->isGlobalLCU()))
+            {
+                pOtherLCU->lcuResetFlagsAndTags();                  // Make sure nothing is in there!  Insurance.
+            }
         }
 
         /* This block of code counts the number of LCUs that were triggered to transmit because of the global LCU request */
-        if(pOtherLCU->getAddress() != LCUGLOBAL)
+        if(!pOtherLCU->isGlobalLCU())
         {
             if(pOtherLCU->isFlagSet(LCUTRANSMITSENT))
             {
@@ -249,7 +267,7 @@ void applyLCUReset(const long key, CtiDeviceSPtr Dev, void* vpTXlcu)
         CtiDeviceLCU *pOtherLCU = (CtiDeviceLCU*)Dev.get();
         pOtherLCU->removeProhibit(lcu->getID());                // lcu has no blockages on pOtherLCU after this.
 
-        if( lcu->getAddress() == LCUGLOBAL && Dev->getPortID() == lcu->getPortID() )  // If we are operating as the global LCU.
+        if( lcu->isGlobalLCU() && Dev->getPortID() == lcu->getPortID() )  // If we are operating as the global LCU.
         {
             pOtherLCU->lcuResetFlagsAndTags();
             MPCPointSet( SEQUENCE_ACTIVE, pOtherLCU, false );
@@ -338,6 +356,11 @@ LCUResultDecode (OUTMESS *OutMessage, INMESS *InMessage, CtiDeviceSPtr Dev, ULON
     CtiDeviceSPtr GlobalLCUDev   = DeviceManager.RemoteGetPortRemoteEqual(lcu->getPortID(), LCUGLOBAL);
     BOOL NoneStarted = TRUE;
 
+    if(!GlobalLCUDev && gConfigParms.isTrue("RIPPLE_LCU_GLOBAL_SYNCHRONIZE"))
+    {
+        GlobalLCUDev = DeviceManager.RemoteGetPortRemoteEqual(lcu->getPortID(), MASTERGLOBAL);
+    }
+
     if(Result == ErrPortSimulated)
     {
         Sleep(500);    // Keep it from being insane!
@@ -358,7 +381,7 @@ LCUResultDecode (OUTMESS *OutMessage, INMESS *InMessage, CtiDeviceSPtr Dev, ULON
         lcu->setExecutionProhibited(lcu->getID(), CtiTime() + TIMETOSTAGE);
         lcu->removeInfiniteProhibit( lcu->getID() );                   // Remove any infinite set up at any other point.
 
-        if(lcu->getAddress() == LCUGLOBAL && !Result)
+        if(lcu->isGlobalLCU() && !Result)
         {
             DeviceManager.apply( applyStageTime, (void*)lcu );
         }
@@ -390,6 +413,11 @@ LCUResultDecode (OUTMESS *OutMessage, INMESS *InMessage, CtiDeviceSPtr Dev, ULON
             dout << CtiTime() << " " << lcu->getName() << " just completed sending a ripple message. " << endl;
         }
 
+        if(lcu->isGlobalLCU() && gConfigParms.isTrue("RIPPLE_LCU_GLOBAL_SYNCHRONIZE"))
+        {
+            lcu->setNextCommandTime(CtiTime() + gConfigParms.getValueAsInt("RIPPLE_GLOBAL_MESSAGE_SECONDS", 120));
+        }
+
         DeviceManager.apply(applyLCUSet, (void*)lcu ); // Mark all other affected LCUs out, or as transmitting.
 
         if( lcu->getNumberStarted() > 0 )
@@ -405,16 +433,23 @@ LCUResultDecode (OUTMESS *OutMessage, INMESS *InMessage, CtiDeviceSPtr Dev, ULON
             MPCPointSet( SEQUENCE_ACTIVE, Dev.get(), false );
         }
 
-        if(lcu->getAddress() == LCUGLOBAL)
+        if(lcu->isGlobalLCU())
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " LCUGLOBAL is transmitting on the port! " << endl;
             }
+
+            if(gConfigParms.isTrue("RIPPLE_LCU_GLOBAL_SYNCHRONIZE"))
+            {
+                //The logic here is that later on retries we dont want this hanging around
+                //as that code looks to the global to do a retry on the global LCU, which we dont want
+                lcu->deleteLastControlMessage(); 
+            }
         }
     }
 
-    if( lcu->getAddress() != LCUGLOBAL )  /* Check if this decode is the result of a scan */
+    if( !lcu->isGlobalLCU() )  /* Check if this decode is the result of a scan */
     {
         if( Result == NORMAL || Result == ErrPortSimulated)            // Successful communication, or simulate
         {
@@ -786,7 +821,7 @@ static bool findWorkingLCU(const long unusedid, CtiDeviceSPtr Dev, void *ptrlcu)
        !Dev->isInhibited()                                  &&
        Dev->getPortID() == lcu->getPortID()                 &&
        Dev->getID()         != lcu->getID()                 &&
-       Dev->getAddress()    != LCUGLOBAL           )
+       !((CtiDeviceLCU*)Dev.get())->isGlobalLCU()        )
     {
         CtiDeviceLCU *pOtherLCU = (CtiDeviceLCU*)Dev.get();
 
@@ -986,7 +1021,7 @@ INT LCUProcessResultCode(CtiDeviceSPtr splcu, CtiDeviceSPtr GlobalLCUDev, OUTMES
             /* Check if we made it... */
             if( LCUsAreDoneTransmitting( splcu ) )
             {
-                if(GlobalLCUDev && ((CtiDeviceLCU*)(GlobalLCUDev.get()))->getFlags() & LCUTRANSMITSENT)
+                if(GlobalLCUDev && ((CtiDeviceLCU*)(GlobalLCUDev.get()))->getFlags() & LCUTRANSMITSENT  && !gConfigParms.isTrue("RIPPLE_LCU_GLOBAL_SYNCHRONIZE"))
                 {
                     if(((CtiDeviceLCU*)(GlobalLCUDev.get()))->getLastControlMessage() != NULL)
                     {
@@ -1055,7 +1090,14 @@ INT LCUProcessResultCode(CtiDeviceSPtr splcu, CtiDeviceSPtr GlobalLCUDev, OUTMES
             {
                 if(GlobalLCUDev && ((CtiDeviceLCU*)(GlobalLCUDev.get()))->getFlags() & LCUTRANSMITSENT)
                 {
-                    ReportCompletionStateToLMGroup(GlobalLCUDev);
+                    if(gConfigParms.isTrue("RIPPLE_LCU_GLOBAL_SYNCHRONIZE") && ((CtiDeviceLCU*)(GlobalLCUDev.get()))->getLastControlMessage() == NULL)
+                    {
+                        ReportCompletionStateToLMGroup(splcu);
+                    }
+                    else
+                    {
+                        ReportCompletionStateToLMGroup(GlobalLCUDev);
+                    }
                 }
                 else
                 {
@@ -1356,10 +1398,10 @@ INT ReportCompletionStateToLMGroup(CtiDeviceSPtr splcu)     // f.k.a. ReturnTrxI
 INT QueueForScan( CtiDeviceSPtr splcu, bool mayqueuescans )
 {
     INT status = NORMAL;
+    CtiDeviceLCU *lcu = (CtiDeviceLCU*)splcu.get();
 
-    if(splcu->getAddress() != LCUGLOBAL && mayqueuescans)
+    if(!lcu->isGlobalLCU() && mayqueuescans)
     {
-        CtiDeviceLCU *lcu = (CtiDeviceLCU*)splcu.get();
         OUTMESS *ScanOutMessage = CTIDBG_new OUTMESS;
 
         if(ScanOutMessage)
@@ -1384,8 +1426,9 @@ INT QueueForScan( CtiDeviceSPtr splcu, bool mayqueuescans )
             }
         }
     }
-    else if(splcu->getAddress() == LCUGLOBAL)
+    else if(lcu->isGlobalLCU())
     {
+        CtiPortManager::LockGuard portlock(PortManager.getMux());       // this applyFunc Writes to the PortManager queues!
         QueueAllForScan(splcu, mayqueuescans);        // A bit recursive, but not really too bad.
     }
 
@@ -1400,7 +1443,7 @@ static void applyQueueForScanTrue(const long unusedid, CtiDeviceSPtr Dev, void *
 {
     CtiDeviceLCU *lcu = (CtiDeviceLCU *)plcu;
 
-    if(isLCU(Dev->getType()) && !Dev->isInhibited() && Dev->getPortID() == lcu->getPortID() && Dev->getID() != lcu->getID() && Dev->getAddress() != LCUGLOBAL )
+    if(isLCU(Dev->getType()) && !Dev->isInhibited() && Dev->getPortID() == lcu->getPortID() && Dev->getID() != lcu->getID() && !((CtiDeviceLCU*)Dev.get())->isGlobalLCU() )
     {
         QueueForScan(Dev, true);
     }
@@ -1413,7 +1456,7 @@ static void applyQueueForScanFalse(const long unusedid, CtiDeviceSPtr Dev, void 
 {
     CtiDeviceLCU *lcu = (CtiDeviceLCU *)plcu;
 
-    if(isLCU(Dev->getType()) && !Dev->isInhibited() && Dev->getPortID() == lcu->getPortID() && Dev->getID() != lcu->getID() && Dev->getAddress() != LCUGLOBAL )
+    if(isLCU(Dev->getType()) && !Dev->isInhibited() && Dev->getPortID() == lcu->getPortID() && Dev->getID() != lcu->getID() && !((CtiDeviceLCU*)Dev.get())->isGlobalLCU() )
     {
         QueueForScan(Dev, false);
     }
