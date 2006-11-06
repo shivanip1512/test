@@ -153,7 +153,8 @@ public class DailyPeaksModel extends ReportModelBase
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.tablemodel.ReportModelBase#collectData()
 	 */
-	public void collectData()
+	@SuppressWarnings("unchecked")
+    public void collectData()
 	{
 		//Reset all objects, new data being collected!
 		setData(null);
@@ -259,52 +260,38 @@ public class DailyPeaksModel extends ReportModelBase
 					}
 
 					int rank = 1;
-					for(int j = 0; j <controlTimePeakVector.size();j++)
-					{
-						DailyPeak dailyPeak = null;
-						if( j < nonControlTimePeakVector.size() )
-						{
-							dailyPeak= new DailyPeak( ((TempControlAreaObject)controlAreaVector.get(i)).getLMControlArea().getDeviceID(),
-													((RawPointHistory)controlTimePeakVector.get(j)).getValue(),
-													((RawPointHistory)controlTimePeakVector.get(j)).getQuality(),
-													((RawPointHistory)controlTimePeakVector.get(j)).getTimeStamp(),
-													((RawPointHistory)nonControlTimePeakVector.get(j)).getValue(),
-													((RawPointHistory)nonControlTimePeakVector.get(j)).getQuality(),
-													((RawPointHistory)nonControlTimePeakVector.get(j)).getTimeStamp(),
-													((TempControlAreaObject)controlAreaVector.get(i)).getLMControlAreaTrigger().getThreshold(),
-													new Integer(rank));
-						}
-						else
-						{
-							dailyPeak = new DailyPeak(((TempControlAreaObject)controlAreaVector.get(i)).getLMControlArea().getDeviceID(),
-													((RawPointHistory)controlTimePeakVector.get(j)).getValue(),
-													((RawPointHistory)controlTimePeakVector.get(j)).getQuality(),
-													((RawPointHistory)controlTimePeakVector.get(j)).getTimeStamp(),
-													new Double(0.0), null, null,
-													((TempControlAreaObject)controlAreaVector.get(i)).getLMControlAreaTrigger().getThreshold(),
-													new Integer(rank));
-						}
+                    Integer controlAreaID = ((TempControlAreaObject)controlAreaVector.get(i)).getLMControlArea().getDeviceID();
+                    Double threshold = ((TempControlAreaObject)controlAreaVector.get(i)).getLMControlAreaTrigger().getThreshold();
+                    
+                    for(int j = 0; j < Math.max(controlTimePeakVector.size(), nonControlTimePeakVector.size());j++)
+                    {
+                        DailyPeak dailyPeak = null;
+                        Double peakValue = new Double(0.0);
+                        Integer peakDataQuality = null;
+                        java.util.GregorianCalendar peakTimestamp = null;
+                        if( j < controlTimePeakVector.size()){
+                            RawPointHistory rph = (RawPointHistory)controlTimePeakVector.get(j);
+                            peakValue = rph.getValue();
+                            peakDataQuality = rph.getQuality();
+                            peakTimestamp = rph.getTimeStamp();
+                        }
 
-						getData().add(dailyPeak);
-						rank++;
-					}
+                        Double offPeakValue = new Double(0.0);
+                        Integer offPeakDataQuality = null;
+                        java.util.GregorianCalendar offPeakTimestamp = null;
+                        if( j < nonControlTimePeakVector.size()){
+                            RawPointHistory rph = (RawPointHistory)nonControlTimePeakVector.get(j);
+                            offPeakValue = rph.getValue();
+                            offPeakDataQuality = rph.getQuality();
+                            offPeakTimestamp = rph.getTimeStamp();
+                        }
+                        
+                        dailyPeak= new DailyPeak( controlAreaID, peakValue, peakDataQuality, peakTimestamp, 
+                                                  offPeakValue, offPeakDataQuality, offPeakTimestamp, threshold, new Integer(rank));
 
-					if(controlTimePeakVector.size() == 0)
-					{
-						for(int j = 0; j < nonControlTimePeakVector.size(); j++)
-						{
-							DailyPeak dailyPeak = new DailyPeak(((TempControlAreaObject)controlAreaVector.get(i)).getLMControlArea().getDeviceID(),
-												new Double(0.0), null, null,
-												((RawPointHistory)nonControlTimePeakVector.get(j)).getValue(),
-												((RawPointHistory)nonControlTimePeakVector.get(j)).getQuality(),
-												((RawPointHistory)nonControlTimePeakVector.get(j)).getTimeStamp(),
-												((TempControlAreaObject)controlAreaVector.get(i)).getLMControlAreaTrigger().getThreshold(),
-												new Integer(rank));
-							
-							getData().add(dailyPeak);
-							rank++;
-						}
-					}
+                        getData().add(dailyPeak);
+                        rank++;
+                    }
 				}
 			}
 			retrieveCurrentPeakData();
