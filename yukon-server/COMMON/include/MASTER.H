@@ -37,6 +37,7 @@ class DEVICE;
 #define LCUWASTRANSMITTING  0x00000002
 #define LCUNEVERRETRY       0x00000010
 #define LCUACTIVE           0x00000020      // 20051011 CGP: LCU state bit set when an LCU has been setup/scheduled to transmit. Cleared when the LCU has no ongoing work.
+#define LCUWASGLOBAL        0x00000040      // This bit is set when the command originated from a global message 
 
 #define LCUBUSYTRANSMITTING 0x04
 #define LCUCHECKBITALARM    0x02
