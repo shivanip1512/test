@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_lcu.h-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2006/09/21 21:31:38 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2006/11/06 21:46:25 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -127,6 +127,7 @@ public:
     bool           isLCULockedOut( INMESS *InMessage );
     BOOL           isStagedUp(const CtiTime &tRef);
     BOOL           isBusyByCommand(const CtiTime &aTime) const;
+    bool           isGlobalLCU() const;
 
     UINT           getNumberStarted() const;
     CtiDeviceLCU&  setNumberStarted( const UINT ui );
