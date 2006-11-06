@@ -103,7 +103,8 @@ public class DailyPeaksReport extends YukonReportBase
 	{
 		final Group collHdgGroup = new Group();
 		collHdgGroup.setName(DailyPeaksModel.CONTROL_AREA_STRING + ReportFactory.NAME_GROUP);
-	
+        collHdgGroup.addField(DailyPeaksModel.CONTROL_AREA_STRING);
+        
 		GroupHeader header = ReportFactory.createGroupHeaderDefault();
 
 		LabelElementFactory factory = ReportFactory.createGroupLabelElementDefault(getModel(), DailyPeaksModel.CONTROL_ARAEA_COLUMN);
