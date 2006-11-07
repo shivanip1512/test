@@ -214,17 +214,19 @@ public void receivedSignal( Signal point )
         // make sure we have a device name and point name
         if( names[0] != null && names[1] != null )
         {
-            outStream.printTextLine(
+             outStream.printTextLine(
                 CommonUtils.formatString( CommonUtils.formatDate( point.getTimeStamp() ), Logger.TIMESTAMP_LENGTH ) + " " +
                 CommonUtils.formatString( names[0].toString(), Logger.DEVICENAME_LENGTH ) + " " +
                 CommonUtils.formatString( names[1].toString(), Logger.POINTNAME_LENGTH ),
                 point.getCategoryID() );
             
-            outStream.printTextLine(
-                    "                     " +
-                    CommonUtils.formatString( point.getDescription(), Logger.DESCRIPTION_LENGTH ) + " " +
-                    CommonUtils.formatString( point.getAction(), Logger.ACTION_LENGTH ),
-                    point.getCategoryID() );
+             CTILogger.info(names[0] +" "+ names[1]+ " " + point.getDescription()+ " "+ point.getAction()+ " "+ point.getCategoryID());
+            
+             outStream.printTextLine(
+                "                     " +
+                CommonUtils.formatString( point.getDescription(), Logger.DESCRIPTION_LENGTH ) + " " +
+                CommonUtils.formatString( point.getAction(), Logger.ACTION_LENGTH ),
+                point.getCategoryID() );
             
         }
     }

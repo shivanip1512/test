@@ -14,6 +14,7 @@ import java.io.PrintWriter;
 
 import javax.swing.Timer;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.CommonUtils;
 import com.cannontech.clientutils.parametersfile.ParametersFile;
 import com.cannontech.common.gui.util.Colors;
@@ -41,7 +42,8 @@ public class Logger implements java.awt.event.ActionListener, SCMEventListener
     // register for everything by default
     private int pointRegistration = PointRegistration.REG_ALL_PTS_MASK | 
                                     PointRegistration.REG_EVENTS | 
-                                    PointRegistration.REG_ALARMS;
+					  				PointRegistration.REG_ALARMS|
+                                    PointRegistration.REG_NO_UPLOAD;
 
     public final String VERSION = 
             com.cannontech.common.version.VersionTools.getYUKON_VERSION() + "2.0";
@@ -474,8 +476,7 @@ private void printToPageLayout(String line, long classification)
         lineCount++;
         
     } catch (Exception e) {
-        System.out.println("Error printing directly to LPT");
-        e.printStackTrace(System.out);
+        CTILogger.error("Error printing directly to LPT port: ",  e);
     }
 }
 /**
@@ -513,8 +514,10 @@ private void setLoggerParameters()
     {
         try
         {
-            setPointReg( parametersFile.getParameterValue("REGISTRATION", "ALL") );
+            boolean upload = new Boolean(parametersFile.getParameterValue("INITIAL_UPLOAD", "false")).booleanValue();
+			setPointReg( parametersFile.getParameterValue("REGISTRATION", "ALL"), upload );
             com.cannontech.clientutils.CTILogger.info(" Registration : " + parametersFile.getParameterValue("REGISTRATION", "ALL") );
+            com.cannontech.clientutils.CTILogger.info(" Initial Upload : " + parametersFile.getParameterValue("INITIAL_UPLOAD", "false") );
             
             colorEnabled = Boolean.getBoolean( parametersFile.getParameterValue("COLOR_TOGGLE", "false") );
             com.cannontech.clientutils.CTILogger.info(" Black/White  : " + parametersFile.getParameterValue("COLOR_TOGGLE", "false") );
@@ -551,21 +554,64 @@ private void setLoggerParameters()
  * Creation date: (7/6/00 1:36:46 PM)
  * @param regMsg java.lang.String
  */
-private void setPointReg(String regMsg) 
+private void setPointReg(String regMsg, boolean upload) 
 {
     // default of pointRegistration is ALL
-    if( regMsg.equalsIgnoreCase("EVENTS") )
-        pointRegistration = PointRegistration.REG_EVENTS;
-    else if( regMsg.equalsIgnoreCase("ALARMS") )
-        pointRegistration = PointRegistration.REG_ALARMS;
-    else if( regMsg.equalsIgnoreCase("CALCULATED") )
-        pointRegistration = PointRegistration.REG_ALL__CALCULATED;
-    else if( regMsg.equalsIgnoreCase("ACCUMULATOR") )
-        pointRegistration = PointRegistration.REG_ALL_ACCUMULATOR;
-    else if( regMsg.equalsIgnoreCase("ANALOG") )
-        pointRegistration = PointRegistration.REG_ALL_ANALOG;
-    else if( regMsg.equalsIgnoreCase("STATUS") )
-        pointRegistration = PointRegistration.REG_ALL_STATUS;
+    if( regMsg.equalsIgnoreCase("ALL")){
+        if(upload){
+            pointRegistration = PointRegistration.REG_ALL_PTS_MASK | 
+            PointRegistration.REG_EVENTS | 
+                PointRegistration.REG_ALARMS;
+        }else{
+            pointRegistration = PointRegistration.REG_ALL_PTS_MASK | 
+            PointRegistration.REG_EVENTS | 
+            PointRegistration.REG_ALARMS|
+            PointRegistration.REG_NO_UPLOAD; 
+        }
+    }
+    else if( regMsg.equalsIgnoreCase("EVENTS") ){
+        if(upload){
+            pointRegistration = PointRegistration.REG_EVENTS;
+        }else{
+            pointRegistration = PointRegistration.REG_ALL_PTS_MASK | 
+            PointRegistration.REG_NO_UPLOAD; 
+        }
+    }else if( regMsg.equalsIgnoreCase("ALARMS") ){
+        if(upload){
+            pointRegistration = PointRegistration.REG_ALARMS;
+        }else{
+            pointRegistration = PointRegistration.REG_ALL_PTS_MASK | 
+            PointRegistration.REG_NO_UPLOAD; 
+        }
+    }else if( regMsg.equalsIgnoreCase("CALCULATED") ){
+        if(upload){
+            pointRegistration = PointRegistration.REG_ALL__CALCULATED;
+        }else{
+            pointRegistration = PointRegistration.REG_ALL_PTS_MASK | 
+            PointRegistration.REG_NO_UPLOAD; 
+        }
+    }else if( regMsg.equalsIgnoreCase("ACCUMULATOR") ){
+        if(upload){
+            pointRegistration = PointRegistration.REG_ALL_ACCUMULATOR;
+        }else{
+            pointRegistration = PointRegistration.REG_ALL_PTS_MASK | 
+            PointRegistration.REG_NO_UPLOAD; 
+        }
+    }else if( regMsg.equalsIgnoreCase("ANALOG") ){
+        if(upload){
+            pointRegistration = PointRegistration.REG_ALL_ANALOG;
+        }else{
+            pointRegistration = PointRegistration.REG_ALL_PTS_MASK | 
+            PointRegistration.REG_NO_UPLOAD; 
+        }
+    }else if( regMsg.equalsIgnoreCase("STATUS") ){
+        if(upload){
+            pointRegistration = PointRegistration.REG_ALL_STATUS;
+        }else{
+            pointRegistration = PointRegistration.REG_ALL_PTS_MASK | 
+            PointRegistration.REG_NO_UPLOAD; 
+        }
+    }
 
 }
 /**

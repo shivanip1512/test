@@ -11,6 +11,7 @@ import com.cannontech.database.SqlStatement;
 import com.cannontech.logger.Logger;
 import com.cannontech.logger.LoggerClient;
 
+
 public class LoggerMainFrame extends javax.swing.JFrame {
 	public static final String[] PARAMETER_LIST =
 	{
@@ -20,6 +21,7 @@ public class LoggerMainFrame extends javax.swing.JFrame {
 		"OUTPUT_MINUTES",
 		"OUTPUT_SECONDS",
 		"PRINT_TITLE",
+        "INITIAL_UPLOAD",
 		
 		/* ADD NEW PARAMETERS HERE */
 			
@@ -37,7 +39,6 @@ public class LoggerMainFrame extends javax.swing.JFrame {
 	private int priorityColors[] = null;
 	public static final String SERVICE_NAME = "CTILogger";
 	public static final String PARAMETER_FILE_NAME = "LoggerParameters.dat";
-	private javax.swing.ButtonGroup buttonGroup = null;
 	private final ParametersFile parametersFile = new ParametersFile( PARAMETER_FILE_NAME );
 	private javax.swing.JPanel ivjJFrameContentPane = null;
 	private javax.swing.JButton ivjJButtonPrinterSetup = null;
@@ -53,6 +54,7 @@ public class LoggerMainFrame extends javax.swing.JFrame {
 	private javax.swing.JComboBox ivjJComboBoxRegistration = null;
 	private javax.swing.JLabel ivjJLabelRegistration = null;
 	private javax.swing.JCheckBox ivjJCheckBoxDisable = null;
+    private javax.swing.JCheckBox initialUploadCheckBox = null;
 	private javax.swing.JComboBox ivjJComboBoxColor1 = null;
 	private javax.swing.JComboBox ivjJComboBoxColor2 = null;
 	private javax.swing.JComboBox ivjJComboBoxColor3 = null;
@@ -322,6 +324,24 @@ private javax.swing.JCheckBox getJCheckBoxDisable() {
 	}
 	return ivjJCheckBoxDisable;
 }
+
+/**
+ * Return the initialUploadCheckBox property value.
+ * @return javax.swing.JCheckBox
+ */
+private javax.swing.JCheckBox getInitialUploadCheckBox() {
+    if (initialUploadCheckBox == null) {
+        try {
+            initialUploadCheckBox = new javax.swing.JCheckBox();
+            initialUploadCheckBox.setName("InitialUpload");
+            initialUploadCheckBox.setText("Initial Upload");
+        } catch (java.lang.Throwable ivjExc) {
+            handleException(ivjExc);
+        }
+    }
+    return initialUploadCheckBox;
+}
+
 /**
  * Return the JComboBoxColor1 property value.
  * @return javax.swing.JComboBox
@@ -755,21 +775,35 @@ private javax.swing.JLabel getJLabelTitle() {
  * Return the JPanel1 property value.
  * @return javax.swing.JPanel
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JPanel getJPanel1() {
 	if (ivjJPanel1 == null) {
 		try {
 			ivjJPanel1 = new javax.swing.JPanel();
 			ivjJPanel1.setName("JPanel1");
-			ivjJPanel1.setLayout(null);
-			getJPanel1().add(getJButtonPrinterSetup(), getJButtonPrinterSetup().getName());
-			getJPanel1().add(getJLabelRegistration(), getJLabelRegistration().getName());
-			getJPanel1().add(getJComboBoxRegistration(), getJComboBoxRegistration().getName());
-			// user code begin {1}
-			// user code end
+			ivjJPanel1.setLayout(new java.awt.GridBagLayout());
+            
+            java.awt.GridBagConstraints constraintsRegistrationLabel = new java.awt.GridBagConstraints();
+            constraintsRegistrationLabel.gridx = 0; constraintsRegistrationLabel.gridy = 0;
+            constraintsRegistrationLabel.gridwidth = 1;
+            constraintsRegistrationLabel.anchor = java.awt.GridBagConstraints.WEST;
+            constraintsRegistrationLabel.insets = new java.awt.Insets(4, 4, 4, 4);
+            ivjJPanel1.add(getJLabelRegistration(), constraintsRegistrationLabel);
+            
+            java.awt.GridBagConstraints constraintsRegistrationComboBox = new java.awt.GridBagConstraints();
+            constraintsRegistrationComboBox.gridx = 1; constraintsRegistrationComboBox.gridy = 0;
+            constraintsRegistrationComboBox.gridwidth = 1;
+            constraintsRegistrationComboBox.anchor = java.awt.GridBagConstraints.WEST;
+            constraintsRegistrationComboBox.insets = new java.awt.Insets(4, 4, 4, 4);
+            ivjJPanel1.add(getJComboBoxRegistration(), constraintsRegistrationComboBox);
+            
+            java.awt.GridBagConstraints constraintsInitialUploadCheckBox = new java.awt.GridBagConstraints();
+            constraintsInitialUploadCheckBox.gridx = 0; constraintsInitialUploadCheckBox.gridy = 1;
+            constraintsInitialUploadCheckBox.gridwidth = 1;
+            constraintsInitialUploadCheckBox.anchor = java.awt.GridBagConstraints.WEST;
+            constraintsInitialUploadCheckBox.insets = new java.awt.Insets(4, 4, 4, 4);
+            ivjJPanel1.add(getInitialUploadCheckBox(), constraintsInitialUploadCheckBox);
+
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
@@ -1331,8 +1365,9 @@ private void retrieveParameters()
 			getJTextFieldTimeMinutes().setText( parametersFile.getParameterValue("OUTPUT_MINUTES", "0") );
 			getJTextFieldTimeSeconds().setText( parametersFile.getParameterValue("OUTPUT_SECONDS", "0") );
 			getJComboBoxRegistration().setSelectedItem( parametersFile.getParameterValue("REGISTRATION", "ALL") );
-			getJCheckBoxDisable().setSelected( !Boolean.getBoolean( parametersFile.getParameterValue("COLOR_TOGGLE", "false") ) );
+			getJCheckBoxDisable().setSelected( new Boolean(parametersFile.getParameterValue("COLOR_TOGGLE", "false")).booleanValue() );
 			getJTextFieldTitle().setText( parametersFile.getParameterValue("PRINT_TITLE", "") );
+            getInitialUploadCheckBox().setSelected( new Boolean(parametersFile.getParameterValue("INITIAL_UPLOAD", "false")).booleanValue() );
 
 
 			int backIndex = (PARAMETER_LIST.length - 1) - (Logger.COLUMN_LENGTHS.length * 2 - 1);
@@ -1374,11 +1409,12 @@ private void writeParameters()
 	String[] paramValues = new String[ PARAMETER_LIST.length ];
 	
 	paramValues[0] = getJComboBoxRegistration().getSelectedItem().toString();
-	paramValues[1] = String.valueOf( !getJCheckBoxDisable().isSelected() );
+	paramValues[1] = String.valueOf( getJCheckBoxDisable().isSelected() );
 	paramValues[2] = getJTextFieldTimeHours().getText().equalsIgnoreCase("") ? "0" : getJTextFieldTimeHours().getText();
 	paramValues[3] = getJTextFieldTimeMinutes().getText().equalsIgnoreCase("") ? "0" : getJTextFieldTimeMinutes().getText();
 	paramValues[4] = getJTextFieldTimeSeconds().getText().equalsIgnoreCase("") ? "0" : getJTextFieldTimeSeconds().getText();
 	paramValues[5] = getJTextFieldTitle().getText();  //PRINT_TITLE
+    paramValues[6] = String.valueOf( getInitialUploadCheckBox().isSelected() );
 
 		
 	Object[] colNames = getTableModel().getColumnData(1);
