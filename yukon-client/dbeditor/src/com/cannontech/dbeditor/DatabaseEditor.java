@@ -907,7 +907,7 @@ private boolean executeChangeObjectType(WizardPanelEvent event)
 					DBChangeMsg.CAT_POINT, 
 					PointTypes.getType(PointTypes.ACCUMULATOR_DEMAND),
 					DBChangeMsg.CHANGE_TYPE_ADD );
-				getConnToDispatch().write(ptChange);
+				getConnToDispatch().queue(ptChange);
 				com.cannontech.database.cache.DefaultDatabaseCache.getInstance().releaseAllCache();
 				getTreeViewPanel().refresh();
 			}
@@ -1557,7 +1557,7 @@ private void generateDBChangeMsg( com.cannontech.database.db.DBPersistent object
          }
 */         
          
-			getConnToDispatch().write(dbChange[i]);
+			getConnToDispatch().queue(dbChange[i]);
 		}
 	}
 	else
