@@ -131,15 +131,15 @@ INSERT INTO dcitemtype VALUES (4, 'Service Provider ID', 'Service Provider ID', 
 INSERT INTO dcitemtype VALUES (5, 'Collection Address', 'Collection Address', 'numeric', 'Y', 0, 50, null, 'Collection Address')
 
 -- DST
-INSERT INTO dcitemtype VALUES (7, 'DST Begin', 'DST Begin', '', 'Y', 0, 0, null, 'The time which DST begins, sent as number of seconds since January 1, 1970')
-INSERT INTO dcitemtype VALUES (8, 'DST End', 'DST End', '', 'Y', 0, 0, null, 'The Time/Date which DST ends, sent as number of seconds since January 1, 1970')
+INSERT INTO dcitemtype VALUES (7, 'DST Begin', 'DST Begin', 'numeric', 'Y', 0, 0, null, 'The time which DST begins, sent as number of seconds since January 1, 1970')
+INSERT INTO dcitemtype VALUES (8, 'DST End', 'DST End', 'numeric', 'Y', 0, 0, null, 'The Time/Date which DST ends, sent as number of seconds since January 1, 1970')
 INSERT INTO dcitemtype VALUES (9, 'Time Zone Offset', 'Time Zone Offset', '', 'Y', 0, 0, null, 'Signed offset from UTC presented in 15-minute increments.  EST = -20, CST = -24 etc.')
 
 -- Options
-INSERT INTO dcitemtype VALUES (11, 'Alarm Mask Meter', 'Alarm Mask Meter', '', 'N', 0, 0, null, '')
-INSERT INTO dcitemtype VALUES (12, 'Alarm Mask Event 1', 'Alarm Mask Event 1', '', 'N', 0, 0, null, 'Bit field, bits ordered 76543210, defined as: 7 NegativeTimeSync 6 DST Change 5 Holiday Flag 4 RTC Adjusted 3 Power Fail Carryover 2 Stack Overflow 1 Electronic Meter Communication Error 0 Power Fail Event')
-INSERT INTO dcitemtype VALUES (13, 'Alarm Mask Event 2', 'Alarm Mask Event 2', '', 'N', 0, 0, null, 'Bit field, bits ordered 76543210, defined as: 7,6,5 Unused. 4: Address Corruption, 3: Zero Usage Channel 4, 2: Zero Usage Channel 3, 1: Zero Usage Channel 2. 0: Zero Usage Channel 1')
-INSERT INTO dcitemtype VALUES (14, 'Time Adjust Tolerance', 'Time Adjust Tolerance', '', 'N', 0, 0, null, '')
+INSERT INTO dcitemtype VALUES (11, 'Alarm Mask Meter', 'Alarm Mask Meter', 'numeric', 'N', 0, 255, null, 'Bit aligned with alarms in iCon meter')
+INSERT INTO dcitemtype VALUES (12, 'Alarm Mask Event 1', 'Alarm Mask Event 1', 'numeric', 'N', 0, 255, null, 'Bit field, bits ordered 76543210, defined as: 7 NegativeTimeSync 6 DST Change 5 Holiday Flag 4 RTC Adjusted 3 Power Fail Carryover 2 Stack Overflow 1 Electronic Meter Communication Error 0 Power Fail Event')
+INSERT INTO dcitemtype VALUES (13, 'Alarm Mask Event 2', 'Alarm Mask Event 2', 'numeric', 'N', 0, 255, null, 'Bit field, bits ordered 76543210, defined as: 7,6,5 Unused. 4: Address Corruption, 3: Zero Usage Channel 4, 2: Zero Usage Channel 3, 1: Zero Usage Channel 2. 0: Zero Usage Channel 1')
+INSERT INTO dcitemtype VALUES (14, 'Time Adjust Tolerance', 'Time Adjust Tolerance', 'numeric', 'N', 0, 255, null, 'Update the RTC if it is this far away from the incoming time sync')
 INSERT INTO dcitemtype VALUES (15, 'Configuration', 'Configuration', '', 'N', 0, 0, null, 'For MCT 470')
 INSERT INTO dcitemtype VALUES (177, 'Configuration', 'Configuration', '', 'N', 0, 0, null, 'For MCT 410')
 INSERT INTO dcitemtype VALUES (16, 'Options', 'Options', '', 'N', 0, 0, null, '')
@@ -188,10 +188,10 @@ INSERT INTO dcitemtype VALUES (37, 'Holiday Date 2', 'Holiday Date 2', 'date', '
 INSERT INTO dcitemtype VALUES (38, 'Holiday Date 3', 'Holiday Date 3', 'date', 'Y', 0, 50, null, 'Date of holiday3, begins and ends at midnight local time')
 
 -- Load Profile Channels
-INSERT INTO dcitemtype VALUES (40, 'Channel Config 1', 'Channel Config 1', '', 'N', 0, 50, null, '')
-INSERT INTO dcitemtype VALUES (41, 'Channel Config 2', 'Channel Config 2', '', 'N', 0, 50, null, '')
-INSERT INTO dcitemtype VALUES (42, 'Channel Config 3', 'Channel Config 3', '', 'N', 0, 50, null, '')
-INSERT INTO dcitemtype VALUES (43, 'Channel Config 4', 'Channel Config 4', '', 'N', 0, 50, null, '')
+INSERT INTO dcitemtype VALUES (40, 'Channel Config 1', 'Channel Config 1', '', 'N', 0, 50, null, 'Bit Field')
+INSERT INTO dcitemtype VALUES (41, 'Channel Config 2', 'Channel Config 2', '', 'N', 0, 50, null, 'Bit Field')
+INSERT INTO dcitemtype VALUES (42, 'Channel Config 3', 'Channel Config 3', '', 'N', 0, 50, null, 'Bit Field')
+INSERT INTO dcitemtype VALUES (43, 'Channel Config 4', 'Channel Config 4', '', 'N', 0, 50, null, 'Bit Field')
 INSERT INTO dcitemtype VALUES (44, 'Meter Ratio 1', 'Meter Ratio 1', '', 'N', 0, 50, null, 'For each pulse, the accumulator is incremented by this count')
 INSERT INTO dcitemtype VALUES (45, 'Meter Ratio 2', 'Meter Ratio 2', '', 'N', 0, 50, null, 'For each pulse, the accumulator is incremented by this count')
 INSERT INTO dcitemtype VALUES (46, 'Meter Ratio 3', 'Meter Ratio 3', '', 'N', 0, 50, null, 'For each pulse, the accumulator is incremented by this count')
@@ -269,25 +269,25 @@ INSERT INTO dcitemtype VALUES (272, 'Schedule4Rate0', 'Schedule4Rate0', 'tou', '
 -- Rate Schedule
 INSERT INTO dcitemtype VALUES (200, 'Default Rate', 'Default Rate', 'tou', 'Y', 0, 50, null, 'Default rate')
 
-INSERT INTO dcitemtype VALUES (281, 'Monday', 'Monday', 'tou', 'Y', 0, 50, null, 'Who knows.')
-INSERT INTO dcitemtype VALUES (282, 'Tuesday', 'Tuesday', 'tou', 'Y', 0, 50, null, 'Who knows.')
-INSERT INTO dcitemtype VALUES (283, 'Wednesday', 'Wednesday', 'tou', 'Y', 0, 50, null, 'Who knows.')
-INSERT INTO dcitemtype VALUES (284, 'Thursday', 'Thursday', 'tou', 'Y', 0, 50, null, 'Who knows.')
-INSERT INTO dcitemtype VALUES (285, 'Friday', 'Friday', 'tou', 'Y', 0, 50, null, 'Who knows.')
-INSERT INTO dcitemtype VALUES (286, 'Saturday', 'Saturday', 'tou', 'Y', 0, 50, null, 'Who knows.')
-INSERT INTO dcitemtype VALUES (287, 'Sunday', 'Sunday', 'tou', 'Y', 0, 50, null, 'Who knows.')
-INSERT INTO dcitemtype VALUES (288, 'Holiday', 'Holiday', 'tou', 'Y', 0, 50, null, 'Who knows.')
+INSERT INTO dcitemtype VALUES (281, 'Monday', 'Monday', 'tou', 'Y', 0, 50, null, 'Rate for each day. A, B, C, or D')
+INSERT INTO dcitemtype VALUES (282, 'Tuesday', 'Tuesday', 'tou', 'Y', 0, 50, null, 'Rate for each day. A, B, C, or D')
+INSERT INTO dcitemtype VALUES (283, 'Wednesday', 'Wednesday', 'tou', 'Y', 0, 50, null, 'Rate for each day. A, B, C, or D')
+INSERT INTO dcitemtype VALUES (284, 'Thursday', 'Thursday', 'tou', 'Y', 0, 50, null, 'Rate for each day. A, B, C, or D')
+INSERT INTO dcitemtype VALUES (285, 'Friday', 'Friday', 'tou', 'Y', 0, 50, null, 'Rate for each day. A, B, C, or D')
+INSERT INTO dcitemtype VALUES (286, 'Saturday', 'Saturday', 'tou', 'Y', 0, 50, null, 'Rate for each day. A, B, C, or D')
+INSERT INTO dcitemtype VALUES (287, 'Sunday', 'Sunday', 'tou', 'Y', 0, 50, null, 'Rate for each day. A, B, C, or D')
+INSERT INTO dcitemtype VALUES (288, 'Holiday', 'Holiday', 'tou', 'Y', 0, 50, null, 'Rate for each day. A, B, C, or D')
 
 
 -- Centron
 INSERT INTO dcitemtype VALUES (147, 'Parameters', 'Parameters', '', 'N', 0, 50, null, 'Use great caution. Is a bitfield.')
-INSERT INTO dcitemtype VALUES (148, 'Transformer Ratio', 'Transformer Ratio', 'numeric', 'N', 1, 255, null, '')
+INSERT INTO dcitemtype VALUES (148, 'Transformer Ratio', 'Transformer Ratio', 'numeric', 'N', 1, 255, null, 'Watt Hours per pulse')
 
 -- MCT DNP
 INSERT INTO dcitemtype VALUES (149, 'collection 1 binary a', 'collection 1 binary a', '', 'Y', 0, 0, null, 'Set up DNP points for collection 1 read. DNP points are offset by 1, 0 is disabled. Values must be seperated by a space. For example: 1 2 3 4, or 0x01 0x02 3 4. There are 15 possible dnp points between Collection Binary A and Collection Binary B.')
-INSERT INTO dcitemtype VALUES (150, 'collection 1 binary b', 'collection 1 binary b', '', 'Y', 0, 0, null, '')
+INSERT INTO dcitemtype VALUES (150, 'collection 1 binary b', 'collection 1 binary b', '', 'Y', 0, 0, null, 'See Collection 1 Binary A')
 INSERT INTO dcitemtype VALUES (151, 'collection 2 binary a', 'collection 2 binary a', '', 'Y', 0, 0, null, 'Set up DNP points for collection 2 read. DNP points are offset by 1, 0 is disabled. Values must be seperated by a space. For example: 1 2 3 4, or 0x01 0x02 3 4. There are 15 possible dnp points between Collection Binary A and Collection Binary B.')
-INSERT INTO dcitemtype VALUES (152, 'collection 2 binary b', 'collection 2 binary b', '', 'Y', 0, 0, null, '')
+INSERT INTO dcitemtype VALUES (152, 'collection 2 binary b', 'collection 2 binary b', '', 'Y', 0, 0, null, 'See Collection 2 Binary A')
 INSERT INTO dcitemtype VALUES (153, 'collection 1 analog', 'collection 1 analog', '', 'Y', 0, 0, null, 'Set up DNP points for collection 1 read. DNP points are offset by 1, 0 is disabled. Values must be seperated by a space. For example: 1 2 3 4, or 0x01 0x02 3 4. There are 3 possible DNP points')
 INSERT INTO dcitemtype VALUES (154, 'collection 2 analog', 'collection 2 analog', '', 'Y', 0, 0, null, 'Set up DNP points for collection 2 read. DNP points are offset by 1, 0 is disabled. Values must be seperated by a space. For example: 1 2 3 4, or 0x01 0x02 3 4. There are 3 possible DNP points')
 INSERT INTO dcitemtype VALUES (155, 'collection 1 accumulator', 'collection 1 accumulator', '', 'Y', 0, 0, null, 'Set up DNP points for collection 1 read. DNP points are offset by 1, 0 is disabled. Values must be seperated by a space. There are 2 possible DNP points')
