@@ -920,7 +920,7 @@ public final static boolean isReceiver(int deviceType)
 
 
 public static  ICapBankController changeCBCType (String newType, ICapBankController val) {
-	return (ICapBankController) changeType (newType, val, null, null, false, false, false,null);
+	return (ICapBankController) changeType (newType, val, null, null, false, false, false, false, false, false, false, false, null);
 }
 
 public static Object changeType (String newType, 
@@ -930,11 +930,14 @@ public static Object changeType (String newType,
         boolean loadProfileExists, 
 		boolean blinkCountExists, 
         boolean totalKWhExists,
+        boolean kWDemandExists,
+        boolean voltageExists,
+        boolean peakKWExists, 
+        boolean maxVoltsExists,
+        boolean minVoltsExists,
         DeviceBase currentDevice) {
 	
-
-	String type = newType;
-
+        String type = newType;
 
 		DBPersistent oldDevice = null;
 		
@@ -1061,6 +1064,9 @@ public static Object changeType (String newType,
 			((MCT410IL)val).getDeviceLoadProfile().setVoltageDmdRate(new Integer(3600));
 			((MCT410IL)val).getDeviceLoadProfile().setVoltageDmdInterval(new Integer(60));
 			
+            /*TODO: This process needs to be handled much more generally instead of specifying the
+             * type and offset of each required point like it is now. 
+             */
 			try
 			{
 				for(int j = 0; j < extra410Objs.size(); j++)
@@ -1114,33 +1120,39 @@ public static Object changeType (String newType,
 						com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
 						0.1) ).execute();
 		   	
-				Transaction.createTransaction(Transaction.INSERT, 
-					PointFactory.createDmdAccumPoint(
-						"Peak kW",
-						((DeviceBase) val).getDevice().getDeviceID(),
-                        DaoFactory.getPointDao().getNextPointId(),                                                
-						PointTypes.PT_OFFSET_PEAK_KW_DEMAND,
-						com.cannontech.database.data.point.PointUnits.UOMID_KW,
-						0.1) ).execute();
+                if(!peakKWExists) {
+    				Transaction.createTransaction(Transaction.INSERT, 
+    					PointFactory.createDmdAccumPoint(
+    						"Peak kW",
+    						((DeviceBase) val).getDevice().getDeviceID(),
+                            DaoFactory.getPointDao().getNextPointId(),                                                
+    						PointTypes.PT_OFFSET_PEAK_KW_DEMAND,
+    						com.cannontech.database.data.point.PointUnits.UOMID_KW,
+    						0.1) ).execute();
+                }
 			
-				Transaction.createTransaction(Transaction.INSERT, 
-					PointFactory.createDmdAccumPoint(
-						"Max Volts",
-						((DeviceBase) val).getDevice().getDeviceID(),
-                        DaoFactory.getPointDao().getNextPointId(),                                                                        
-						PointTypes.PT_OFFSET_MAX_VOLT_DEMAND,
-						com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
-						0.1) ).execute();
-			
-				Transaction.createTransaction(Transaction.INSERT, 
-					PointFactory.createDmdAccumPoint(
-						"Min Volts",
-						((DeviceBase) val).getDevice().getDeviceID(),
-                        DaoFactory.getPointDao().getNextPointId(),                                                                                                
-						PointTypes.PT_OFFSET_MIN_VOLT_DEMAND,
-						com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
-						0.1) ).execute();
-			
+                if(!maxVoltsExists) {
+    				Transaction.createTransaction(Transaction.INSERT, 
+    					PointFactory.createDmdAccumPoint(
+    						"Max Volts",
+    						((DeviceBase) val).getDevice().getDeviceID(),
+                            DaoFactory.getPointDao().getNextPointId(),                                                                        
+    						PointTypes.PT_OFFSET_MAX_VOLT_DEMAND,
+    						com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
+    						0.1) ).execute();
+                }
+    			
+                if(!minVoltsExists) {
+    				Transaction.createTransaction(Transaction.INSERT, 
+    					PointFactory.createDmdAccumPoint(
+    						"Min Volts",
+    						((DeviceBase) val).getDevice().getDeviceID(),
+                            DaoFactory.getPointDao().getNextPointId(),                                                                                                
+    						PointTypes.PT_OFFSET_MIN_VOLT_DEMAND,
+    						com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
+    						0.1) ).execute();
+                }
+                
 				Transaction.createTransaction(Transaction.INSERT, 
 					PointFactory.createDmdAccumPoint(
 						"Frozen Peak Demand",
@@ -1168,30 +1180,33 @@ public static Object changeType (String newType,
 						com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
 						0.1) ).execute();
 			
-				Transaction.createTransaction(Transaction.INSERT, 
-					PointFactory.createDmdAccumPoint(
-						"kW",
-						((DeviceBase) val).getDevice().getDeviceID(),
-                        DaoFactory.getPointDao().getNextPointId(),                        
-						PointTypes.PT_OFFSET_KW_DEMAND,
-						com.cannontech.database.data.point.PointUnits.UOMID_KW,
-						0.1) ).execute();
-			
-				Transaction.createTransaction(Transaction.INSERT, 
-					PointFactory.createDmdAccumPoint(
-						"Voltage",
-						((DeviceBase) val).getDevice().getDeviceID(),
-                        DaoFactory.getPointDao().getNextPointId(),                        
-						PointTypes.PT_OFFSET_VOLTAGE_DEMAND,
-						com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
-						0.1) ).execute();
-				
+                if(!kWDemandExists) {
+    				Transaction.createTransaction(Transaction.INSERT, 
+    					PointFactory.createDmdAccumPoint(
+    						"kW",
+    						((DeviceBase) val).getDevice().getDeviceID(),
+                            DaoFactory.getPointDao().getNextPointId(),                        
+    						PointTypes.PT_OFFSET_KW_DEMAND,
+    						com.cannontech.database.data.point.PointUnits.UOMID_KW,
+    						0.1) ).execute();
+                }
+                
+                if(!voltageExists) {
+    				Transaction.createTransaction(Transaction.INSERT, 
+    					PointFactory.createDmdAccumPoint(
+    						"Voltage",
+    						((DeviceBase) val).getDevice().getDeviceID(),
+                            DaoFactory.getPointDao().getNextPointId(),                        
+    						PointTypes.PT_OFFSET_VOLTAGE_DEMAND,
+    						com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
+    						0.1) ).execute();
+                }
+                
 				Transaction t2 =
 					Transaction.createTransaction(
 						Transaction.ADD_PARTIAL,
 						((DBPersistent) val));
 						val = t2.execute();
-						
 				
 			}
 			catch (TransactionException e)
@@ -1249,7 +1264,6 @@ public static Object changeType (String newType,
                     catch (TransactionException e)
                     {
                         com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-            
                     }
                 }
                 

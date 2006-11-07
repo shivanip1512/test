@@ -28,7 +28,12 @@ public class DeviceChngTypesPanel extends com.cannontech.common.gui.util.DataInp
 	boolean blinkCountExists = false;
 	boolean totalKWhExists = false;
 	boolean isDisconnect = false;
-
+	boolean kWDemandExists = false;
+    boolean voltageExists = false;
+    boolean peakKWExists = false;
+    boolean maxVoltsExists = false;
+    boolean minVoltsExists = false;
+    
 	private static final int DEVICE_CATEGORIES[] =
    {
       DeviceClasses.CARRIER,
@@ -348,7 +353,9 @@ public Object getValue(Object val)
         return new Integer( PAOGroups.getDeviceType(type) );
     }
     
-    return DeviceTypesFuncs.changeType(type, val, extraObj, extra410Objs, loadProfileExists, blinkCountExists, totalKWhExists, getCurrentDevice());
+    return DeviceTypesFuncs.changeType(type, val, extraObj, extra410Objs, loadProfileExists, blinkCountExists, 
+                                       totalKWhExists, kWDemandExists, voltageExists, peakKWExists, maxVoltsExists, 
+                                       minVoltsExists, getCurrentDevice());
 }
 
 
@@ -544,7 +551,9 @@ private void handleMCT_410IL()
 	/*
 	 * Now required to do many special things for 310 to 410 jumps.
 	 * Multipliers need to be changed, handle the disconnects, existing lp points, etc.
-	 */
+     * TODO: This process needs to be handled much more generally instead of specifying the
+     * type and offset of each required point. 
+     */
 
     int deviceId = getCurrentDevice().getPAObjectID();
     List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(deviceId); 
@@ -621,6 +630,96 @@ private void handleMCT_410IL()
 					"correctly altered for this change type.  Multiplier will be INCORRECT." );
 			}
 		}
+        if( point.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT
+                 && point.getPointOffset() == PointTypes.PT_OFFSET_KW_DEMAND ) {
+            AccumulatorPoint alteredPoint = (AccumulatorPoint)LiteFactory.createDBPersistent(point);
+            try {
+                alteredPoint = (AccumulatorPoint)Transaction.createTransaction(Transaction.RETRIEVE, alteredPoint).execute();
+                alteredPoint.getPointAccumulator().setMultiplier(new Double(0.1));
+                extra410Objs.addElement(alteredPoint);
+                kWDemandExists = true;
+                getJTextPaneNotes().setText(getJTextPaneNotes().getText() + 
+                    "\n --The current kW demand point multiplier will be adjusted." );
+            }
+            catch (com.cannontech.database.TransactionException e) {
+                com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+                getJTextPaneNotes().setText(getJTextPaneNotes().getText() + 
+                    "\n --The kW demand point could NOT be " +
+                    "correctly altered for this change type.  Multiplier will be INCORRECT." );
+            }
+        }
+        if( point.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT
+                && point.getPointOffset() == PointTypes.PT_OFFSET_VOLTAGE_DEMAND ) {
+           AccumulatorPoint alteredPoint = (AccumulatorPoint)LiteFactory.createDBPersistent(point);
+           try {
+               alteredPoint = (AccumulatorPoint)Transaction.createTransaction(Transaction.RETRIEVE, alteredPoint).execute();
+               alteredPoint.getPointAccumulator().setMultiplier(new Double(0.1));
+               extra410Objs.addElement(alteredPoint);
+               voltageExists = true;
+               getJTextPaneNotes().setText(getJTextPaneNotes().getText() + 
+                   "\n --The current voltage point multiplier will be adjusted." );
+           }
+           catch (com.cannontech.database.TransactionException e) {
+               com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+               getJTextPaneNotes().setText(getJTextPaneNotes().getText() + 
+                   "\n --The voltage point could NOT be " +
+                   "correctly altered for this change type.  Multiplier will be INCORRECT." );
+           }
+        }
+        if( point.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT
+                && point.getPointOffset() == PointTypes.PT_OFFSET_PEAK_KW_DEMAND ) {
+           AccumulatorPoint alteredPoint = (AccumulatorPoint)LiteFactory.createDBPersistent(point);
+           try {
+               alteredPoint = (AccumulatorPoint)Transaction.createTransaction(Transaction.RETRIEVE, alteredPoint).execute();
+               alteredPoint.getPointAccumulator().setMultiplier(new Double(0.1));
+               extra410Objs.addElement(alteredPoint);
+               peakKWExists = true;
+               getJTextPaneNotes().setText(getJTextPaneNotes().getText() + 
+                   "\n --The current peak kW demand point multiplier will be adjusted." );
+           }
+           catch (com.cannontech.database.TransactionException e) {
+               com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+               getJTextPaneNotes().setText(getJTextPaneNotes().getText() + 
+                   "\n --The peak kW demand point could NOT be " +
+                   "correctly altered for this change type.  Multiplier will be INCORRECT." );
+           }
+        }
+        if( point.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT
+                && point.getPointOffset() == PointTypes.PT_OFFSET_MIN_VOLT_DEMAND ) {
+           AccumulatorPoint alteredPoint = (AccumulatorPoint)LiteFactory.createDBPersistent(point);
+           try {
+               alteredPoint = (AccumulatorPoint)Transaction.createTransaction(Transaction.RETRIEVE, alteredPoint).execute();
+               alteredPoint.getPointAccumulator().setMultiplier(new Double(0.1));
+               extra410Objs.addElement(alteredPoint);
+               minVoltsExists = true;
+               getJTextPaneNotes().setText(getJTextPaneNotes().getText() + 
+                   "\n --The current minimum voltage point multiplier will be adjusted." );
+           }
+           catch (com.cannontech.database.TransactionException e) {
+               com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+               getJTextPaneNotes().setText(getJTextPaneNotes().getText() + 
+                   "\n --The minimum voltage point could NOT be " +
+                   "correctly altered for this change type.  Multiplier will be INCORRECT." );
+           }
+        }
+        if( point.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT
+                && point.getPointOffset() == PointTypes.PT_OFFSET_MAX_VOLT_DEMAND ) {
+           AccumulatorPoint alteredPoint = (AccumulatorPoint)LiteFactory.createDBPersistent(point);
+           try {
+               alteredPoint = (AccumulatorPoint)Transaction.createTransaction(Transaction.RETRIEVE, alteredPoint).execute();
+               alteredPoint.getPointAccumulator().setMultiplier(new Double(0.1));
+               extra410Objs.addElement(alteredPoint);
+               maxVoltsExists = true;
+               getJTextPaneNotes().setText(getJTextPaneNotes().getText() + 
+                   "\n --The current maximum voltage point multiplier will be adjusted." );
+           }
+           catch (com.cannontech.database.TransactionException e) {
+               com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+               getJTextPaneNotes().setText(getJTextPaneNotes().getText() + 
+                   "\n --The maximum voltage point could NOT be " +
+                   "correctly altered for this change type.  Multiplier will be INCORRECT." );
+           }
+        }
 	}
 		
 	if(currentDevice instanceof MCT310ID)
