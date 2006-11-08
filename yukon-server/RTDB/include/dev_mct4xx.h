@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct4xx.h-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2006/10/19 19:54:35 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2006/11/08 20:41:38 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -80,6 +80,9 @@ protected:
 
     enum Commands
     {
+        Command_TOUDisable   = 0x55,
+        Command_TOUEnable    = 0x56,
+
         Command_TOUResetZero = 0x5e,
         Command_TOUReset     = 0x5f,
     };
@@ -144,8 +147,13 @@ protected:
         FuncRead_LLPPeakIntervalPos  = 0xa2,
         FuncRead_LLPPeakLen          =   13,
 
-        FuncRead_TOUDaySchedulePos      = 0xad,
-        FuncRead_TOUDayScheduleLen      =   11,
+        FuncRead_TOUBasePos          = 0xb0,
+        FuncRead_TOULen              =    9,
+        FuncRead_TOUFrozenOffset     =    4,
+
+        FuncRead_TOUDaySchedulePos   = 0xad,
+        FuncRead_TOUDayScheduleLen   =   11,
+
         FuncRead_TOUStatusPos           = 0xad,
         FuncRead_TOUStatusLen           =   11,
         FuncRead_TOUSwitchSchedule12Pos = 0xae,
@@ -161,9 +169,11 @@ protected:
 
         DawnOfTime       = 0x386d4380,  //  jan 1, 2000, in UTC seconds
 
-        PointOffset_RateOffset  = 20,   //  gets added for rate B, C, D
+        PointOffset_RateOffset  =  20,   //  gets added for rate B, C, D
 
-        PointOffset_PeakOffset  = 10,
+        PointOffset_PeakOffset  =  10,
+
+        PointOffset_TOUBase     = 100,  //  this is okay because TOU only has peak and frozen demand - it must start at 111 anyway
     };
 
     struct lp_info_t
@@ -213,8 +223,8 @@ protected:
     virtual ConfigPartsList getPartsList();
 
     virtual INT executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS * > &outList);
-    virtual INT executeGetValue (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS * > &outList);
     virtual INT executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS * > &outList);
+    virtual INT executeGetValue (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS * > &outList);
     virtual INT executePutValue (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS * > &outList);
 
 
@@ -235,10 +245,11 @@ protected:
     virtual int executePutConfigDNP               (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS * > &outList);
 
     INT decodeGetConfigTime      (INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList);
+    INT decodeGetConfigTOU       (INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList);
     INT decodePutConfig          (INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList);
+    INT decodeGetValuePeakDemand (INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList);
     INT decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList);
     INT decodeScanLoadProfile    (INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList);
-    INT decodeGetConfigTOU       (INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList);
 
     static const char *PutConfigPart_all;
     static const char *PutConfigPart_tou;
