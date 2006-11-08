@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT470.h-arc  $
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2006/11/03 21:46:06 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2006/11/08 20:34:30 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -165,7 +165,7 @@ protected:
         Memory_LastTSyncLen         =    4,
 
         Memory_IntervalsPos         = 0x32,
-        Memory_IntervalsLen         =    3,
+        Memory_IntervalsLen         =    4,
 
         Memory_DemandIntervalPos    = 0x32,
         Memory_DemandIntervalLen    =    1,
@@ -296,6 +296,8 @@ protected:
         FuncRead_PeakDemandPos      = 0x93,
         FuncRead_PeakDemandLen      =   12,  //  0x93
 
+        FuncRead_TOUChannelOffset   = 0x08,  //  TOU function reads for channel 2 are offset by 8
+
         FuncRead_IED_Precanned_Base     = 0xc1,
         FuncRead_IED_Precanned_Last     = 0xd4,
         FuncRead_IED_TOU_CurrentKWBase  = 0xc1,
@@ -345,7 +347,7 @@ protected:
 
     INT decodeGetValueKWH          ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetValueDemand       ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
-    INT decodeGetValuePeakDemand   ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
+    INT decodeGetValueMinMaxDemand ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetValueIED          ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetConfigIED         ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetStatusInternal    ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
