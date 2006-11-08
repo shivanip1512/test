@@ -219,7 +219,7 @@ public synchronized final static java.lang.String getYUKON_VERSION()
 		}
 		
 		if( yukonVersion == null )
-			yukonVersion = "XX.xx";		
+			yukonVersion = "0.0.0";		
 	}
 	
 	return yukonVersion;
