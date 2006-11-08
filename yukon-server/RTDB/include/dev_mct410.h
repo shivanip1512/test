@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT410.h-arc  $
-* REVISION     :  $Revision: 1.48 $
-* DATE         :  $Date: 2006/10/27 15:47:01 $
+* REVISION     :  $Revision: 1.49 $
+* DATE         :  $Date: 2006/11/08 20:40:09 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -180,10 +180,6 @@ protected:
         FuncRead_LPStatusPos      = 0x97,
         FuncRead_LPStatusLen      =   12,
 
-        FuncRead_TOUBasePos          = 0xb0,
-        FuncRead_TOULen              =    9,
-        FuncRead_TOUFrozenOffset     =    4,
-
         FuncRead_DisconnectConfigPos = 0xfe,
         FuncRead_DisconnectConfigLen =    9,
 
@@ -213,8 +209,6 @@ protected:
         PointOffset_MinVoltage    =   15,
 
         PointOffset_Analog_Outage =  100,
-
-        PointOffset_TOUBase       =  100,  //  this is okay because TOU only has peak and frozen demand - it must start at 111 anyway
     };
 
     enum ChannelIdentifiers
@@ -247,7 +241,6 @@ protected:
 
     INT decodeGetValueKWH                   ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetValueDemand                ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
-    INT decodeGetValuePeakDemand            ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetValueVoltage               ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetValueOutage                ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetValueFreezeCounter         ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
