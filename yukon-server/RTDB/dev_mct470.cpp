@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.71 $
-* DATE         :  $Date: 2006/11/02 15:48:44 $
+* REVISION     :  $Revision: 1.72 $
+* DATE         :  $Date: 2006/11/08 20:50:55 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -248,12 +248,11 @@ bool CtiDeviceMCT470::getOperation( const UINT &cmd, USHORT &function, USHORT &l
 
         found = true;
     }
-    //  add this back in later - for now, we want to limit the interaction between the 470 and the 410
-/*    else                                //  Look in the parent if not found in the child!
+    else  //  Look in the parent if not found in the child!
     {
         found = Inherited::getOperation( cmd, function, length, io );
     }
-*/
+
     return found;
 }
 
@@ -974,96 +973,37 @@ INT CtiDeviceMCT470::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
     switch(InMessage->Sequence)
     {
         case Emetcon::Scan_Accum:
-        case Emetcon::GetValue_KWH:
-        {
-            status = decodeGetValueKWH(InMessage, TimeNow, vgList, retList, outList);
-            break;
-        }
+        case Emetcon::GetValue_KWH:             status = decodeGetValueKWH(InMessage, TimeNow, vgList, retList, outList);           break;
 
         case Emetcon::Scan_Integrity:
-        case Emetcon::GetValue_Demand:
-        {
-            status = decodeGetValueDemand(InMessage, TimeNow, vgList, retList, outList);
-            break;
-        }
-
-        case Emetcon::GetValue_PeakDemand:
-        {
-            status = decodeGetValuePeakDemand(InMessage, TimeNow, vgList, retList, outList);
-            break;
-        }
+        case Emetcon::GetValue_Demand:          status = decodeGetValueDemand(InMessage, TimeNow, vgList, retList, outList);        break;
 
         case Emetcon::GetValue_IED:
-        case Emetcon::GetValue_IEDDemand:
-        {
-            status = decodeGetValueIED(InMessage, TimeNow, vgList, retList, outList);
-            break;
-        }
+        case Emetcon::GetValue_IEDDemand:       status = decodeGetValueIED(InMessage, TimeNow, vgList, retList, outList);           break;
+
+        case Emetcon::GetValue_PeakDemand:
+        case Emetcon::GetValue_FrozenPeakDemand: status = decodeGetValueMinMaxDemand(InMessage, TimeNow, vgList, retList, outList); break;
 
         case Emetcon::GetConfig_IEDDNP:
         case Emetcon::GetConfig_IEDTime:
-        case Emetcon::GetConfig_IEDScan:
-        {
-            status = decodeGetConfigIED(InMessage, TimeNow, vgList, retList, outList);
-            break;
-        }
+        case Emetcon::GetConfig_IEDScan:        status = decodeGetConfigIED(InMessage, TimeNow, vgList, retList, outList);          break;
 
-        case Emetcon::GetValue_LoadProfile:
-        {
-            status = decodeGetValueLoadProfile(InMessage, TimeNow, vgList, retList, outList);
-            break;
-        }
+        case Emetcon::GetValue_LoadProfile:     status = decodeGetValueLoadProfile(InMessage, TimeNow, vgList, retList, outList);   break;
 
-        case Emetcon::Scan_LoadProfile:
-        {
-            status = decodeScanLoadProfile(InMessage, TimeNow, vgList, retList, outList);
-            break;
-        }
+        case Emetcon::Scan_LoadProfile:         status = decodeScanLoadProfile(InMessage, TimeNow, vgList, retList, outList);       break;
 
-        case Emetcon::GetStatus_Internal:
-        {
-            status = decodeGetStatusInternal(InMessage, TimeNow, vgList, retList, outList);
-            break;
-        }
+        case Emetcon::GetStatus_Internal:       status = decodeGetStatusInternal(InMessage, TimeNow, vgList, retList, outList);     break;
 
-        case Emetcon::GetStatus_IEDDNP:
-        {
-            status = decodeGetStatusDNP(InMessage, TimeNow, vgList, retList, outList);
-            break;
-        }
+        case Emetcon::GetStatus_IEDDNP:         status = decodeGetStatusDNP(InMessage, TimeNow, vgList, retList, outList);          break;
 
-        case Emetcon::GetStatus_LoadProfile:
-        {
-            status = decodeGetStatusLoadProfile(InMessage, TimeNow, vgList, retList, outList);
-            break;
-        }
+        case Emetcon::GetStatus_LoadProfile:    status = decodeGetStatusLoadProfile(InMessage, TimeNow, vgList, retList, outList);  break;
 
-        case Emetcon::GetConfig_Intervals:
-        {
-            status = decodeGetConfigIntervals(InMessage, TimeNow, vgList, retList, outList);
-            break;
-        }
+        case Emetcon::GetConfig_Intervals:      status = decodeGetConfigIntervals(InMessage, TimeNow, vgList, retList, outList);    break;
 
-        case Emetcon::GetConfig_ChannelSetup:
-        {
-            status = decodeGetConfigChannelSetup(InMessage, TimeNow, vgList, retList, outList);
-            break;
-        }
+        case Emetcon::GetConfig_ChannelSetup:   status = decodeGetConfigChannelSetup(InMessage, TimeNow, vgList, retList, outList); break;
 
-        case (Emetcon::GetConfig_Model):
-        {
-            status = decodeGetConfigModel(InMessage, TimeNow, vgList, retList, outList);
-            break;
-        }
+        case Emetcon::GetConfig_Model:          status = decodeGetConfigModel(InMessage, TimeNow, vgList, retList, outList);        break;
 
-        case (Emetcon::GetConfig_Time):
-        case (Emetcon::GetConfig_TSync):
-        {
-            status = decodeGetConfigTime(InMessage, TimeNow, vgList, retList, outList);
-            break;
-        }
-
-        case (Emetcon::GetValue_PFCount):
         default:
         {
             status = Inherited::ModelDecode(InMessage, TimeNow, vgList, retList, outList);
@@ -1232,6 +1172,30 @@ INT CtiDeviceMCT470::executeGetValue( CtiRequestMsg        *pReq,
             {
                 OutMessage->Buffer.BSt.Function += FuncRead_IED_TOU_PreviousOffset;
             }
+        }
+    }
+    else if( (parse.getFlags() &  CMD_FLAG_GV_KWH) &&
+             (parse.getFlags() & (CMD_FLAG_GV_RATEMASK ^ CMD_FLAG_GV_RATET)) )
+    {
+        //  if it's a KWH request for rate ABCD - rate T should fall through to a normal KWH request
+
+        //  note that this is below the IED requests - we do IED KWH rate requests, so those need to be
+        //    handled first...
+        function = Emetcon::GetValue_TOU;
+        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+
+        if( parse.getFlags() & CMD_FLAG_FROZEN )    OutMessage->Buffer.BSt.Function += FuncRead_TOUFrozenOffset;
+
+        //  no need to increment for rate A
+        if( parse.getFlags() & CMD_FLAG_GV_RATEB )  OutMessage->Buffer.BSt.Function += 1;
+        if( parse.getFlags() & CMD_FLAG_GV_RATEC )  OutMessage->Buffer.BSt.Function += 2;
+        if( parse.getFlags() & CMD_FLAG_GV_RATED )  OutMessage->Buffer.BSt.Function += 3;
+
+        //  if they request channel 2, go to the next TOU block
+        if( parse.isKeyValid("channel") &&
+            parse.getiValue ("channel") == 2 )
+        {
+            OutMessage->Buffer.BSt.Function += FuncRead_TOUChannelOffset;
         }
     }
     else if( parse.getFlags() & CMD_FLAG_GV_PEAK )
@@ -1577,96 +1541,113 @@ INT CtiDeviceMCT470::executePutConfig( CtiRequestMsg         *pReq,
     if(parse.isKeyValid("multiplier"))
     {
         unsigned long multbytes;
-        double multiplier = parse.getdValue("multiplier");
+        double multiplier = parse.getdValue("multiplier"), channel = parse.getiValue("multoffset");
         int numerator, denominator;
 
-        function = Emetcon::PutConfig_Multiplier;
-        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
-
-        if( found )
+        if( channel <= 0 || channel > ChannelCount )
         {
-            /*
+            errRet->setResultString("MCT-470 KYZ channel must be between 1 and 4");
 
-            If Mp is greater than Kh, then the accumulator will accrue the difference, Mp - Kh, whenever a pulse is received.
-            If Mp = Kh + 1, then the accumulator will be able to hold Kh - 1 as a maximum before the pulse is moved to the reading.
-            However, on that next pulse, the meter will add Mp to Kh - 1, so the maximum in the accumulator can be stated as:
+            retList.push_back(errRet);
 
-            Mp + Kh - 1
+            errRet = 0;
+        }
+        else
+        {
+            function = Emetcon::PutConfig_Multiplier;
+            found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
 
-            The maximum range of the accumulator is:
-
-            65535
-
-            So the relationship between Mp and Kh can at most be:
-
-            Mp + Kh - 1 = 65535
-            Mp + Kh     = 65536
-
-            So I choose to fix the upper bound for the denominator at 10,000 and allow the numerator to range from 1-50,000.
-
-
-               Mp    Kh
-                 1/10000 =     0.0001
-                 9/10000 =     0.0009
-                99/10000 =     0.0099
-               999/10000 =     0.0999
-              9999/10000 =     0.9999
-             49999/10000 =     4.9999
-             49999/ 1000 =    49.999
-             49999/  100 =   499.99
-             49999/   10 =  4999.9
-             49999/    1 = 49999.
-
-            */
-
-
-            if( multiplier > 50000 )
+            if( found )
             {
-                errRet->setResultString("Multiplier too large - must be less than 50000");
-                errRet->setStatus(NoMethod);
-                retList.push_back( errRet );
-                errRet = NULL;
+                /*
+
+                If Mp is greater than Kh, then the accumulator will accrue the difference, Mp - Kh, whenever a pulse is received.
+                If Mp = Kh + 1, then the accumulator will be able to hold Kh - 1 as a maximum before the pulse is moved to the reading.
+                However, on that next pulse, the meter will add Mp to Kh - 1, so the maximum in the accumulator can be stated as:
+
+                Mp + Kh - 1
+
+                The maximum range of the accumulator is:
+
+                65535
+
+                So the relationship between Mp and Kh can at most be:
+
+                Mp + Kh - 1 = 65535
+                Mp + Kh     = 65536
+
+                So I choose to fix the upper bound for the denominator at 10,000 and allow the numerator to range from 1-50,000.
+
+
+                   Mp    Kh
+                     1/10000 =     0.0001
+                     9/10000 =     0.0009
+                    99/10000 =     0.0099
+                   999/10000 =     0.0999
+                  9999/10000 =     0.9999
+                 49999/10000 =     4.9999
+                 49999/ 1000 =    49.999
+                 49999/  100 =   499.99
+                 49999/   10 =  4999.9
+                 49999/    1 = 49999.
+
+                */
+
+
+                if( multiplier > 50000 )
+                {
+                    errRet->setResultString("Multiplier too large - must be less than 50000");
+                    errRet->setStatus(NoMethod);
+                    retList.push_back( errRet );
+                    errRet = NULL;
+                }
+                if( multiplier < 0.0001 )
+                {
+                    errRet->setResultString("Multiplier too small - must be at least 0.0001");
+                    errRet->setStatus(NoMethod);
+                    retList.push_back( errRet );
+                    errRet = NULL;
+                }
+
+                denominator = 10000;
+
+                //  ex:  multiplier = 4.097, denominator = 10000
+                //         result = 40,970 <--  suitable numerator
+                //       multiplier = 689,   denominator = 10000
+                //         result = 6,890,000  <--  unsuitable numerator, divide denominator by 10
+                //       multiplier = 689,   denominator =  1000
+                //         result = 689,000    <--  unsuitable numerator, divide denominator by 10
+                //       multiplier = 689,   denominator =   100
+                //         result = 68,900     <--  unsuitable numerator, divide denominator by 10
+                //       multiplier = 689,   denominator =    10
+                //         result = 6,890      <--  suitable numerator
+
+                while( (multiplier * denominator) > 50000 )
+                {
+                    denominator /= 10;
+                }
+
+                numerator = (int)(multiplier * denominator);
+
+                OutMessage->Buffer.BSt.Message[0] = (numerator   >> 8) & 0xff;
+                OutMessage->Buffer.BSt.Message[1] =  numerator         & 0xff;
+
+                OutMessage->Buffer.BSt.Message[2] = (denominator >> 8) & 0xff;
+                OutMessage->Buffer.BSt.Message[3] =  denominator       & 0xff;
+
+                OutMessage->Buffer.BSt.Function += (channel - 1) * Memory_ChannelOffset;
             }
-            if( multiplier < 0.0001 )
-            {
-                errRet->setResultString("Multiplier too small - must be at least 0.0001");
-                errRet->setStatus(NoMethod);
-                retList.push_back( errRet );
-                errRet = NULL;
-            }
-
-            denominator = 10000;
-
-            //  ex:  multiplier = 4.097, denominator = 10000
-            //         result = 40,970 <--  suitable numerator
-            //       multiplier = 689,   denominator = 10000
-            //         result = 6,890,000  <--  unsuitable numerator, divide denominator by 10
-            //       multiplier = 689,   denominator =  1000
-            //         result = 689,000    <--  unsuitable numerator, divide denominator by 10
-            //       multiplier = 689,   denominator =   100
-            //         result = 68,900     <--  unsuitable numerator, divide denominator by 10
-            //       multiplier = 689,   denominator =    10
-            //         result = 6,890      <--  suitable numerator
-
-            while( (multiplier * denominator) > 50000 )
-            {
-                denominator /= 10;
-            }
-
-            numerator = (int)(multiplier * denominator);
-
-            OutMessage->Buffer.BSt.Message[0] = (numerator   >> 8) & 0xff;
-            OutMessage->Buffer.BSt.Message[1] =  numerator         & 0xff;
-
-            OutMessage->Buffer.BSt.Message[2] = (denominator >> 8) & 0xff;
-            OutMessage->Buffer.BSt.Message[3] =  denominator       & 0xff;
-
-            OutMessage->Buffer.BSt.Function += (parse.getiValue("multoffset") - 1) * Memory_ChannelOffset;
         }
     }
     else
     {
         nRet = Inherited::executePutConfig(pReq, parse, OutMessage, vgList, retList, outList);
+    }
+
+    if( errRet )
+    {
+        delete errRet;
+        errRet = 0;
     }
 
     if( found )
@@ -3065,7 +3046,7 @@ INT CtiDeviceMCT470::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, l
 }
 
 
-INT CtiDeviceMCT470::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceMCT470::decodeGetValueMinMaxDemand(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     int           status = NORMAL, base_offset, point_offset;
     point_info    pi, pi_time;
@@ -3084,7 +3065,7 @@ INT CtiDeviceMCT470::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
     if( getMCTDebugLevel(DebugLevel_Scanrates) )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Peak Demand Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Min/Max Demand Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
