@@ -395,6 +395,8 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
     boost::regex  re_outage("outage " + str_num);
 
     boost::regex  re_offset("off(set)? *" + str_num);
+    boost::regex  re_channel("channel " + str_num);
+
 
     boost::regex   re_dnp_collection("dnp collection " + str_num);
     boost::regex   re_dnp_analog("dnp analog " + str_num);
@@ -472,6 +474,7 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
                 cmdtok();  //  move past channel
 
                 _cmd["lp_channel"] = atoi(CtiString(cmdtok()).c_str());
+
                 _cmd["lp_date_start"] = cmdtok();
 
                 temp = cmdtok();
@@ -638,9 +641,17 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
             if(temp[temp.length() - 1] == 't')  flag |= CMD_FLAG_GV_RATET;
         }
 
+        if(!(token = CmdStr.match(re_channel)).empty())
+        {
+            if(!(temp = token.match(re_num)).empty())
+            {
+                _cmd["channel"] = CtiParseValue(atoi(temp.data()));
+            }
+        }
         if(CmdStr.contains(" ied"))      // Sourcing from CmdStr, which is the entire command string.
         {
-            flag |= CMD_FLAG_GV_IED;                     // Read data from the ied port, not internal counters!
+            //  Read data from the ied port, not internal counters!
+            flag |= CMD_FLAG_GV_IED;
         }
         if(CmdStr.contains(" frozen"))      // Sourcing from CmdStr, which is the entire command string.
         {
