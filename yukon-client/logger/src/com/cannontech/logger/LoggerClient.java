@@ -209,6 +209,7 @@ public void receivedSignal( Signal point )
 
     if((point.getTags() & Signal.MASK_ANY_ALARM) != 0) 
     {
+        
         Object[] names = getDeviceNameAndPointName( point.getPointID() );       
         
         // make sure we have a device name and point name
@@ -229,7 +230,25 @@ public void receivedSignal( Signal point )
                 point.getCategoryID() );
             
         }
+        try
+        {
+            Thread.sleep(50);
+        }
+        catch( InterruptedException ex )
+        {
+            handleException( ex );
+        }
     }
+}
+/**
+ * Called whenever the part throws an exception.
+ * @param exception java.lang.Throwable
+ */
+private void handleException(java.lang.Throwable exception) {
+
+    /* Uncomment the following lines to print uncaught exceptions to stdout */
+    com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
+    com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;   
 }
 }
 
