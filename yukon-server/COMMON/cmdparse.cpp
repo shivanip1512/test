@@ -1702,6 +1702,14 @@ void  CtiCommandParser::doParsePutConfig(const string &_CmdStr)
                     _cmd["tou_default"] = CtiParseValue(tok());
                 }
             }
+            if( CmdStr.contains(" enable") )
+            {
+                _cmd["tou_enable"] = CtiParseValue(true);
+            }
+            if( CmdStr.contains(" disable") )
+            {
+                _cmd["tou_disable"] = CtiParseValue(true);
+            }
         }
 
         switch( type )
