@@ -371,7 +371,7 @@ public class ClientSession {
 		}
 		
 	private boolean collectInfo(Frame parent, LoginPanel lp) {
-	    return LoginFrame.showLogin(parent.getIconImage(), lp);
+	    return LoginFrame.showLogin(parent, lp);
 	}
 	
 	private void displayMessage(Frame p, String msg, String title) {

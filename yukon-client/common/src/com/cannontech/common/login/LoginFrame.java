@@ -2,9 +2,9 @@ package com.cannontech.common.login;
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -24,13 +24,15 @@ public class LoginFrame extends JFrame {
 
     private boolean login = false;
 
-    public LoginFrame(Image image, final CountDownLatch latch, LoginPanel loginPanel) {
+    public LoginFrame(Frame parent, final CountDownLatch latch, LoginPanel loginPanel) {
 
         this.setLayout(new GridBagLayout());
         this.setResizable(false);
         this.setLocationByPlatform(true);
         this.setTitle("Yukon Login");
-        this.setIconImage(image);
+        if (parent != null) {
+            this.setIconImage(parent.getIconImage());
+        }
 
         this.add(loginPanel, new GridBagConstraints(1,
                                                     1,
@@ -107,15 +109,15 @@ public class LoginFrame extends JFrame {
     /**
      * Method to display a Yukon Login frame. This method will not return until
      * the user to attempts to login, closes the frame, or cancels
-     * @param image - Image which will be used as the frame's icon
+     * @param parent - parent frame for the login frame
      * @param loginPanel - Panel used for login input
      * @return True if the user attempts to login
      */
-    public static boolean showLogin(Image image, LoginPanel loginPanel) {
+    public static boolean showLogin(Frame parent, LoginPanel loginPanel) {
 
         LoginFrame frame = null;
         CountDownLatch latch = new CountDownLatch(1);
-        frame = new LoginFrame(image, latch, loginPanel);
+        frame = new LoginFrame(parent, latch, loginPanel);
 
         try {
             // Wait for the user to attempt to login or cancel/close frame
