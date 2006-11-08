@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.37 $
-* DATE         :  $Date: 2006/10/27 15:47:01 $
+* REVISION     :  $Revision: 1.38 $
+* DATE         :  $Date: 2006/11/08 20:44:29 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -171,13 +171,18 @@ CtiDeviceMCT4xx::CommandSet CtiDeviceMCT4xx::initCommandStore()
 {
     CommandSet cs;
 
-    cs.insert(CommandStore(Emetcon::PutConfig_TSync,        Emetcon::IO_Function_Write, FuncWrite_TSyncPos,         FuncWrite_TSyncLen));
-
-    cs.insert(CommandStore(Emetcon::PutValue_ResetPFCount,  Emetcon::IO_Write,          Command_PowerfailReset,     0));
+    cs.insert(CommandStore(Emetcon::GetValue_TOU,           Emetcon::IO_Function_Read,  FuncRead_TOUBasePos,        FuncRead_TOULen));
 
     //  This is the default TOU reset command - the command that zeroes the rates (Command_TOUResetZero) is assigned
     //    in executePutValue() if needed
     cs.insert(CommandStore(Emetcon::PutValue_TOUReset,      Emetcon::IO_Write,          Command_TOUReset,           0));
+
+    cs.insert(CommandStore(Emetcon::PutValue_ResetPFCount,  Emetcon::IO_Write,          Command_PowerfailReset,     0));
+
+    cs.insert(CommandStore(Emetcon::PutConfig_TSync,        Emetcon::IO_Function_Write, FuncWrite_TSyncPos,         FuncWrite_TSyncLen));
+
+    cs.insert(CommandStore(Emetcon::PutConfig_TOUEnable,    Emetcon::IO_Write,          Command_TOUEnable,          0));
+    cs.insert(CommandStore(Emetcon::PutConfig_TOUDisable,   Emetcon::IO_Write,          Command_TOUDisable,         0));
 
     return cs;
 }
@@ -772,14 +777,14 @@ INT CtiDeviceMCT4xx::executeGetValue(CtiRequestMsg *pReq, CtiCommandParser &pars
 
                                     interest_om->Buffer.BSt.Message[0] = gMCT400SeriesSPID;
 
-                                    interest_om->Buffer.BSt.Message[1] = request_channel  & 0x000000ff;
+                                    interest_om->Buffer.BSt.Message[1] = (request_channel + 1) & 0x000000ff;
 
-                                    interest_om->Buffer.BSt.Message[2] = (utc_time >> 24) & 0x000000ff;
-                                    interest_om->Buffer.BSt.Message[3] = (utc_time >> 16) & 0x000000ff;
-                                    interest_om->Buffer.BSt.Message[4] = (utc_time >>  8) & 0x000000ff;
-                                    interest_om->Buffer.BSt.Message[5] = (utc_time)       & 0x000000ff;
+                                    interest_om->Buffer.BSt.Message[2] = (utc_time >> 24)      & 0x000000ff;
+                                    interest_om->Buffer.BSt.Message[3] = (utc_time >> 16)      & 0x000000ff;
+                                    interest_om->Buffer.BSt.Message[4] = (utc_time >>  8)      & 0x000000ff;
+                                    interest_om->Buffer.BSt.Message[5] = (utc_time)            & 0x000000ff;
 
-                                    interest_om->Buffer.BSt.Message[6] = request_range    & 0x000000ff;
+                                    interest_om->Buffer.BSt.Message[6] = request_range         & 0x000000ff;
 
                                     //  add a bit of a delay so the 410 can calculate...
                                     //    this delay may need to be increased by other means, depending
@@ -944,6 +949,27 @@ INT CtiDeviceMCT4xx::executeGetConfig( CtiRequestMsg              *pReq,
 }
 
 
+//  this is for TOU putconfig ease
+struct ratechange_t
+{
+    int schedule;
+    int time;
+    int rate;
+
+    bool operator<(const ratechange_t &rhs) const
+    {
+        bool retval = false;
+
+        if( schedule < rhs.schedule || (schedule == rhs.schedule && time < rhs.time) )
+        {
+            retval = true;
+        }
+
+        return retval;
+    }
+};
+
+
 INT CtiDeviceMCT4xx::executePutConfig(CtiRequestMsg         *pReq,
                                       CtiCommandParser      &parse,
                                       OUTMESS              *&OutMessage,
@@ -952,7 +978,7 @@ INT CtiDeviceMCT4xx::executePutConfig(CtiRequestMsg         *pReq,
                                       list< OUTMESS * >     &outList)
 {
     bool  found = false;
-    INT   nRet = NoError, sRet;
+    INT   nRet = NoError, sRet, function;
 
     if( parse.isKeyValid("install") )
     {
@@ -1031,6 +1057,300 @@ INT CtiDeviceMCT4xx::executePutConfig(CtiRequestMsg         *pReq,
             OutMessage = NULL;
         }
     }
+    else if( parse.isKeyValid("tou") )
+    {
+        if( parse.isKeyValid("tou_enable") )
+        {
+            function = Emetcon::PutConfig_TOUEnable;
+            found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+        }
+        else if( parse.isKeyValid("tou_disable") )
+        {
+            function = Emetcon::PutConfig_TOUDisable;
+            found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+        }
+        else if( parse.isKeyValid("tou_days") )
+        {
+            set< ratechange_t > ratechanges;
+            int default_rate, day_schedules[8];
+
+            string schedule_name, change_name, daytable(parse.getsValue("tou_days"));
+
+            switch( parse.getsValue("tou_default").data()[0] )
+            {
+                case 'a':   default_rate =  0;  break;
+                case 'b':   default_rate =  1;  break;
+                case 'c':   default_rate =  2;  break;
+                case 'd':   default_rate =  3;  break;
+                default:    default_rate = -1;  break;
+            }
+
+            if( default_rate < 0 )
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint - TOU default rate \"" << parse.getsValue("tou_default") << "\" specified is invalid for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+            }
+            else
+            {
+                if( daytable.length() < 8 || daytable.find_first_not_of("1234") != string::npos )
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** Checkpoint - day table \"" << daytable << "\" specified is invalid for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                }
+                else
+                {
+                    for( int day = 0; day < 8; day++ )
+                    {
+                        day_schedules[day] = atoi(daytable.substr(day, 1).data()) - 1;
+                    }
+
+                    int schedulenum = 0;
+                    schedule_name.assign("tou_schedule_");
+                    schedule_name.append(CtiNumStr(schedulenum).zpad(2));
+                    while(parse.isKeyValid(schedule_name.data()))
+                    {
+                        int schedule_number = parse.getiValue(schedule_name.data());
+
+                        if( schedule_number > 0 && schedule_number <= 4 )
+                        {
+                            int changenum = 0;
+                            change_name.assign(schedule_name);
+                            change_name.append("_");
+                            change_name.append(CtiNumStr(changenum).zpad(2));
+                            while(parse.isKeyValid(change_name.data()))
+                            {
+                                string ratechangestr = parse.getsValue(change_name.data()).data();
+                                int rate, hour, minute;
+
+                                switch(ratechangestr.at(0))
+                                {
+                                    case 'a':   rate =  0;  break;
+                                    case 'b':   rate =  1;  break;
+                                    case 'c':   rate =  2;  break;
+                                    case 'd':   rate =  3;  break;
+                                    default:    rate = -1;  break;
+                                }
+
+                                hour   = atoi(ratechangestr.substr(2).data());
+
+                                int minute_index = ratechangestr.substr(4).find_first_not_of(":") + 4;
+                                minute = atoi(ratechangestr.substr(minute_index).data());
+
+                                if( rate   >= 0 &&
+                                    hour   >= 0 && hour   < 24 &&
+                                    minute >= 0 && minute < 60 )
+                                {
+                                    ratechange_t ratechange;
+
+                                    ratechange.schedule = schedule_number - 1;
+                                    ratechange.rate = rate;
+                                    ratechange.time = hour * 3600 + minute * 60;
+
+                                    ratechanges.insert(ratechange);
+                                }
+                                else
+                                {
+                                    {
+                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                        dout << CtiTime() << " **** Checkpoint - schedule \"" << schedule_number << "\" has invalid rate change \"" << ratechangestr << "\"for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                    }
+                                }
+
+                                changenum++;
+                                change_name.assign(schedule_name);
+                                change_name.append("_");
+                                change_name.append(CtiNumStr(changenum).zpad(2));
+                            }
+                        }
+                        else
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << CtiTime() << " **** Checkpoint - schedule \"" << schedule_number << "\" specified is out of range for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            }
+                        }
+
+                        schedulenum++;
+                        schedule_name.assign("tou_schedule_");
+                        schedule_name.append(CtiNumStr(schedulenum).zpad(2));
+                    }
+
+                    OUTMESS *TOU_OutMessage1 = CTIDBG_new OUTMESS(*OutMessage),
+                            *TOU_OutMessage2 = CTIDBG_new OUTMESS(*OutMessage);
+
+                    TOU_OutMessage1->Sequence = Cti::Protocol::Emetcon::PutConfig_TOU;
+                    TOU_OutMessage2->Sequence = Cti::Protocol::Emetcon::PutConfig_TOU;
+
+                    TOU_OutMessage1->Buffer.BSt.Function = FuncWrite_TOUSchedule1Pos;
+                    TOU_OutMessage1->Buffer.BSt.Length   = FuncWrite_TOUSchedule1Len;
+
+                    TOU_OutMessage2->Buffer.BSt.Function = FuncWrite_TOUSchedule2Pos;
+                    TOU_OutMessage2->Buffer.BSt.Length   = FuncWrite_TOUSchedule2Len;
+
+                    TOU_OutMessage1->Buffer.BSt.IO = Cti::Protocol::Emetcon::IO_Function_Write;
+                    TOU_OutMessage2->Buffer.BSt.IO = Cti::Protocol::Emetcon::IO_Function_Write;
+
+                    std::set< ratechange_t >::iterator itr;
+
+                    //  There's much more intelligence and safeguarding that could be added to the below,
+                    //    but it's a temporary fix, to be handled soon by the proper MCT Configs,
+                    //    so I don't think it's worth it at the moment to add all of the smarts.
+                    //  We'll handle a good string, and kick out on anything else.
+
+                    int durations[4][5], rates[4][6];
+                    for( int i = 0; i < 4; i++ )
+                    {
+                        for( int j = 0; j < 6; j++ )
+                        {
+                            if( j < 5 )
+                            {
+                                durations[i][j] = 255;
+                            }
+
+                            rates[i][j] = default_rate;
+                        }
+                    }
+
+                    int current_schedule = -1;
+                    int offset = 0, time_offset = 0;
+                    for( itr = ratechanges.begin(); itr != ratechanges.end(); itr++ )
+                    {
+                        ratechange_t &rc = *itr;
+
+                        if( rc.schedule != current_schedule )
+                        {
+                            offset      = 0;
+                            time_offset = 0;
+
+                            current_schedule = rc.schedule;
+                        }
+                        else
+                        {
+                            offset++;
+                        }
+
+                        if( offset > 5 || rc.schedule < 0 || rc.schedule > 3 )
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            }
+
+                            continue;
+                        }
+
+                        if( offset == 0 && rc.time == 0 )
+                        {
+                            //  this is a special case, because we can't access
+                            //    durations[rc.schedule][offset-1] yet - offset isn't 1 yet
+
+                            rates[rc.schedule][0] = rc.rate;
+                        }
+                        else
+                        {
+                            if( offset == 0 )
+                            {
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << CtiTime() << " **** Checkpoint - first rate change time for schedule (" << rc.schedule <<
+                                                        ") is not midnight, assuming default rate (" << default_rate <<
+                                                        ") for midnight until (" << rc.time << ") for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                }
+
+                                //  rates[rc.schedule][0] was already initialized to default_rate, so just move along
+                                offset++;
+                            }
+
+                            durations[rc.schedule][offset - 1] = (rc.time - time_offset) / 300;
+                            rates[rc.schedule][offset] = rc.rate;
+
+                            if( (offset + 1) <= 5 )
+                            {
+                                //  this is to work around the 255 * 5 min limitation for switches - this way it doesn't
+                                //    jump back to the default rate if only a midnight rate is specified
+                                rates[rc.schedule][offset + 1] = rc.rate;
+                            }
+
+                            time_offset = rc.time - (rc.time % 300);  //  make sure we don't miss the 5-minute marks
+                        }
+                    }
+
+
+                    for( offset = 0; offset < 8; offset++ )
+                    {
+                        //  write the day table
+
+                        int byte = 1 - (offset / 4);
+                        int bitoffset = (2 * offset) % 8;
+
+                        TOU_OutMessage1->Buffer.BSt.Message[byte] |= (day_schedules[offset] & 0x03) << bitoffset;
+                    }
+
+                    for( offset = 0; offset < 5; offset++ )
+                    {
+                        //  write the durations
+
+                        TOU_OutMessage1->Buffer.BSt.Message[offset + 2] = durations[0][offset];
+                        TOU_OutMessage1->Buffer.BSt.Message[offset + 9] = durations[1][offset];
+
+                        TOU_OutMessage2->Buffer.BSt.Message[offset + 0] = durations[2][offset];
+                        TOU_OutMessage2->Buffer.BSt.Message[offset + 7] = durations[3][offset];
+                    }
+
+                    //  write the rates for schedules 1 and 2
+                    TOU_OutMessage1->Buffer.BSt.Message[7]  = ((rates[1][5] & 0x03)  << 6) |
+                                                              ((rates[1][4] & 0x03)  << 4) |
+                                                              ((rates[0][5] & 0x03)  << 2) |
+                                                              ((rates[0][4] & 0x03)  << 0);
+
+                    TOU_OutMessage1->Buffer.BSt.Message[8]  = ((rates[0][3] & 0x03)  << 6) |
+                                                              ((rates[0][2] & 0x03)  << 4) |
+                                                              ((rates[0][1] & 0x03)  << 2) |
+                                                              ((rates[0][0] & 0x03)  << 0);
+
+                    TOU_OutMessage1->Buffer.BSt.Message[14] = ((rates[1][3] & 0x03)  << 6) |
+                                                              ((rates[1][2] & 0x03)  << 4) |
+                                                              ((rates[1][1] & 0x03)  << 2) |
+                                                              ((rates[1][0] & 0x03)  << 0);
+
+                    //  write the rates for schedule 3
+                    TOU_OutMessage2->Buffer.BSt.Message[5]  = ((rates[2][5] & 0x03)  << 2) |
+                                                              ((rates[2][4] & 0x03)  << 0);
+
+                    TOU_OutMessage2->Buffer.BSt.Message[6]  = ((rates[2][3] & 0x03)  << 6) |
+                                                              ((rates[2][2] & 0x03)  << 4) |
+                                                              ((rates[2][1] & 0x03)  << 2) |
+                                                              ((rates[2][0] & 0x03)  << 0);
+
+                    //  write the rates for schedule 4
+                    TOU_OutMessage2->Buffer.BSt.Message[12] = ((rates[3][5] & 0x03)  << 2) |
+                                                              ((rates[3][4] & 0x03)  << 0);
+
+                    TOU_OutMessage2->Buffer.BSt.Message[13] = ((rates[3][3] & 0x03)  << 6) |
+                                                              ((rates[3][2] & 0x03)  << 4) |
+                                                              ((rates[3][1] & 0x03)  << 2) |
+                                                              ((rates[3][0] & 0x03)  << 0);
+
+                    TOU_OutMessage2->Buffer.BSt.Message[14] = default_rate;
+
+                    outList.push_back(TOU_OutMessage2);
+                    outList.push_back(TOU_OutMessage1);
+
+                    TOU_OutMessage1 = 0;
+                    TOU_OutMessage2 = 0;
+
+                    delete OutMessage;  //  we didn't use it, we made our own
+                    OutMessage = 0;
+
+                    found = true;
+                }
+            }
+        }
+    }
     else if( parse.isKeyValid("timezone_offset") ||
              parse.isKeyValid("timezone_name") )
     {
@@ -1082,7 +1402,8 @@ INT CtiDeviceMCT4xx::executePutConfig(CtiRequestMsg         *pReq,
             nRet = NoMethod;
         }
     }
-    else
+
+    if( !found )
     {
         nRet = Inherited::executePutConfig(pReq, parse, OutMessage, vgList, retList, outList);
     }
@@ -2291,115 +2612,6 @@ INT CtiDeviceMCT4xx::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeN
 }
 
 
-INT CtiDeviceMCT4xx::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList)
-{
-    INT status = NORMAL;
-
-    INT ErrReturn =  InMessage->EventCode & 0x3fff;
-    DSTRUCT *DSt  = &InMessage->Buffer.DSt;
-
-    string         val_report;
-    int            channel, block, interval_len;
-    unsigned long  timestamp, pulses;
-    point_info   pi;
-
-    CtiCommandParser parse(InMessage->Return.CommandStr);
-
-    shared_ptr<CtiPointNumeric> point;
-    CtiReturnMsg    *ret_msg = 0;  // Message sent to VanGogh, inherits from Multi
-    CtiPointDataMsg *pdata   = 0;
-
-    if( getMCTDebugLevel(DebugLevel_Scanrates) )
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Load Profile Scan Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
-    {
-        // No error occured, we must do a real decode!
-
-        if((ret_msg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-            return MEMORY;
-        }
-
-        ret_msg->setUserMessageId(InMessage->Return.UserID);
-
-        if( (channel = parse.getiValue("scan_loadprofile_channel", 0)) &&
-            (block   = parse.getiValue("scan_loadprofile_block",   0)) )
-        {
-            //  parse is 1-based, we need it 0-based
-            channel--;
-
-            interval_len = getLoadProfileInterval(channel);
-
-            if( point = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(channel + PointOffset_LoadProfileOffset + 1, DemandAccumulatorPointType)) )
-            {
-                //  this is where the block started...
-                timestamp  = TimeNow.seconds();
-                timestamp -= interval_len * 6 * block;
-                timestamp -= timestamp % (interval_len * 6);
-
-                if( timestamp == _lp_info[channel].current_request )
-                {
-                    for( int offset = 5; offset >= 0; offset-- )
-                    {
-                        pi = getLoadProfileData(channel, DSt->Message + offset*2 + 1, 2);
-
-                        //  compute for the UOM
-                        pi.value = point->computeValueForUOM(pi.value);
-
-                        if( pdata = makePointDataMsg(point, pi, "") )
-                        {
-                            //  the data goes from latest to earliest...  it's kind of backwards
-                            pdata->setTime(timestamp + interval_len * (6 - offset));
-
-                            pdata->setTags(TAG_POINT_LOAD_PROFILE_DATA);
-
-                            ret_msg->insert(pdata);
-                        }
-                    }
-
-                    //  unnecessary?
-                    setLastLPTime (timestamp + interval_len * 6);
-
-                    _lp_info[channel].archived_reading = timestamp + interval_len * 6;
-                }
-                else
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - possible LP logic error for device \"" << getName() << "\";  calculated timestamp=" << CtiTime(timestamp) << "; current_request=" << CtiTime(_lp_info[channel].current_request) << endl;
-                        dout << "commandstr = " << InMessage->Return.CommandStr << endl;
-                    }
-                }
-            }
-            else
-            {
-                ret_msg->setResultString("No load profile point defined for '" + getName() + "'");
-            }
-        }
-        else
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - missing scan_loadprofile token in decodeScanLoadProfile for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-
-            ret_msg->setResultString("Malformed LP command string for '" + getName() + "'");
-        }
-
-        retMsgHandler( InMessage->Return.CommandStr, status, ret_msg, vgList, retList );
-    }
-
-    return status;
-}
-
-
 INT CtiDeviceMCT4xx::decodeGetConfigTOU(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
@@ -2583,6 +2795,420 @@ INT CtiDeviceMCT4xx::decodeGetConfigTOU(INMESS *InMessage, CtiTime &TimeNow, lis
 }
 
 
+INT CtiDeviceMCT4xx::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList)
+{
+    INT status = NORMAL;
+
+    INT ErrReturn =  InMessage->EventCode & 0x3fff;
+    DSTRUCT *DSt  = &InMessage->Buffer.DSt;
+
+    string         val_report;
+    int            channel, block, interval_len;
+    unsigned long  timestamp, pulses;
+    point_info   pi;
+
+    CtiCommandParser parse(InMessage->Return.CommandStr);
+
+    shared_ptr<CtiPointNumeric> point;
+    CtiReturnMsg    *ret_msg = 0;  // Message sent to VanGogh, inherits from Multi
+    CtiPointDataMsg *pdata   = 0;
+
+    if( getMCTDebugLevel(DebugLevel_Scanrates) )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** Load Profile Scan Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    {
+        // No error occured, we must do a real decode!
+
+        if((ret_msg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+            return MEMORY;
+        }
+
+        ret_msg->setUserMessageId(InMessage->Return.UserID);
+
+        if( (channel = parse.getiValue("scan_loadprofile_channel", 0)) &&
+            (block   = parse.getiValue("scan_loadprofile_block",   0)) )
+        {
+            //  parse is 1-based, we need it 0-based
+            channel--;
+
+            interval_len = getLoadProfileInterval(channel);
+
+            if( point = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(channel + PointOffset_LoadProfileOffset + 1, DemandAccumulatorPointType)) )
+            {
+                //  this is where the block started...
+                timestamp  = TimeNow.seconds();
+                timestamp -= interval_len * 6 * block;
+                timestamp -= timestamp % (interval_len * 6);
+
+                if( timestamp == _lp_info[channel].current_request )
+                {
+                    for( int offset = 5; offset >= 0; offset-- )
+                    {
+                        pi = getLoadProfileData(channel, DSt->Message + offset*2 + 1, 2);
+
+                        //  compute for the UOM
+                        pi.value = point->computeValueForUOM(pi.value);
+
+                        if( pdata = makePointDataMsg(point, pi, "") )
+                        {
+                            //  the data goes from latest to earliest...  it's kind of backwards
+                            pdata->setTime(timestamp + interval_len * (6 - offset));
+
+                            pdata->setTags(TAG_POINT_LOAD_PROFILE_DATA);
+
+                            ret_msg->insert(pdata);
+                        }
+                    }
+
+                    //  unnecessary?
+                    setLastLPTime (timestamp + interval_len * 6);
+
+                    _lp_info[channel].archived_reading = timestamp + interval_len * 6;
+                }
+                else
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** Checkpoint - possible LP logic error for device \"" << getName() << "\";  calculated timestamp=" << CtiTime(timestamp) << "; current_request=" << CtiTime(_lp_info[channel].current_request) << endl;
+                        dout << "commandstr = " << InMessage->Return.CommandStr << endl;
+                    }
+                }
+            }
+            else
+            {
+                ret_msg->setResultString("No load profile point defined for '" + getName() + "'");
+            }
+        }
+        else
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint - missing scan_loadprofile token in decodeScanLoadProfile for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            ret_msg->setResultString("Malformed LP command string for '" + getName() + "'");
+        }
+
+        retMsgHandler( InMessage->Return.CommandStr, status, ret_msg, vgList, retList );
+    }
+
+    return status;
+}
+
+
+INT CtiDeviceMCT4xx::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList)
+{
+    int        status = NORMAL,
+               pointoffset;
+    point_info pi_kw,
+               pi_kw_time,
+               pi_kwh,
+               pi_freezecount;
+    CtiTime    kw_time,
+               kwh_time;
+    bool       valid_data = true;
+
+    CtiTableDynamicPaoInfo::Keys key_peak_timestamp;
+
+    CtiString result_string, freeze_info_string;
+
+    CtiCommandParser parse(InMessage->Return.CommandStr);
+
+    INT ErrReturn  = InMessage->EventCode & 0x3fff;
+    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+
+    CtiPointSPtr kw_point, kwh_point;
+    CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+    CtiPointDataMsg *pData     = NULL;
+
+    if( getMCTDebugLevel(DebugLevel_Scanrates) )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** TOU/Peak Demand Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    /*
+        Computed TOU point offsets, for reference:
+
+            pulse accumulators:
+
+                kwh rate a: 101
+                kwh rate b: 121
+                kwh rate c: 141
+                kwh rate d: 161
+
+            demand accumulators:
+
+                peak kw rate a: 111
+                peak kw rate b: 131
+                peak kw rate c: 151
+                peak kw rate d: 171
+
+    */
+
+    pointoffset = 1;
+
+    if( parse.getiValue("channel") == 2 )
+    {
+        pointoffset = 2;
+    }
+
+    if( parse.getFlags() & (CMD_FLAG_GV_RATEMASK ^ CMD_FLAG_GV_RATET) )
+    {
+        pointoffset += PointOffset_TOUBase;
+
+        //  need to add smarts for multiple channels when applicable
+        if(      parse.getFlags() & CMD_FLAG_GV_RATEA )  pointoffset += 0; //  no increment for rate A
+        else if( parse.getFlags() & CMD_FLAG_GV_RATEB )  pointoffset += PointOffset_RateOffset * 1;
+        else if( parse.getFlags() & CMD_FLAG_GV_RATEC )  pointoffset += PointOffset_RateOffset * 2;
+        else if( parse.getFlags() & CMD_FLAG_GV_RATED )  pointoffset += PointOffset_RateOffset * 3;
+    }
+
+    if(      parse.getFlags() & CMD_FLAG_GV_RATEA )  key_peak_timestamp = CtiTableDynamicPaoInfo::Key_FrozenRateAPeakTimestamp;
+    else if( parse.getFlags() & CMD_FLAG_GV_RATEB )  key_peak_timestamp = CtiTableDynamicPaoInfo::Key_FrozenRateBPeakTimestamp;
+    else if( parse.getFlags() & CMD_FLAG_GV_RATEC )  key_peak_timestamp = CtiTableDynamicPaoInfo::Key_FrozenRateCPeakTimestamp;
+    else if( parse.getFlags() & CMD_FLAG_GV_RATED )  key_peak_timestamp = CtiTableDynamicPaoInfo::Key_FrozenRateDPeakTimestamp;
+    else                                             key_peak_timestamp = CtiTableDynamicPaoInfo::Key_FrozenDemandPeakTimestamp;
+
+    if( !(status = decodeCheckErrorReturn(InMessage, retList, outList)) )
+    {
+        // No error occured, we must do a real decode!
+
+        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+            return MEMORY;
+        }
+
+        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+        if( parse.getFlags() & (CMD_FLAG_GV_RATEMASK ^ CMD_FLAG_GV_RATET) )
+        {
+            //  TOU memory layout
+            pi_kwh         = getData(DSt->Message,     3, ValueType_Accumulator);
+
+            pi_kw          = getData(DSt->Message + 3, 2, ValueType_Demand);
+            pi_kw_time     = getData(DSt->Message + 5, 4, ValueType_Raw);
+        }
+        else
+        {
+            //  normal peak memory layout
+            pi_kw          = getData(DSt->Message,     2, ValueType_Demand);
+            pi_kw_time     = getData(DSt->Message + 2, 4, ValueType_Raw);
+
+            pi_kwh         = getData(DSt->Message + 6, 3, ValueType_Accumulator);
+
+            pi_freezecount = getData(DSt->Message + 9, 1, ValueType_Raw);
+        }
+
+        //  turn raw pulses into a demand reading
+        pi_kw.value *= double(3600 / getDemandInterval());
+
+        kw_time      = CtiTime(pi_kw_time.value + rwEpoch);
+
+        if( parse.getFlags() & CMD_FLAG_FROZEN )
+        {
+            if( _expected_freeze < 0 && hasDynamicInfo(CtiTableDynamicPaoInfo::Key_ExpectedFreeze) )
+            {
+                _expected_freeze = getDynamicInfo(CtiTableDynamicPaoInfo::Key_ExpectedFreeze);
+            }
+
+            if( _freeze_counter  < 0 && hasDynamicInfo(CtiTableDynamicPaoInfo::Key_FreezeCounter) )
+            {
+                _freeze_counter = getDynamicInfo(CtiTableDynamicPaoInfo::Key_FreezeCounter);
+            }
+
+            if( _freeze_counter < 0 || (pi_freezecount.value >= _freeze_counter) )
+            {
+                if( pi_freezecount.value > (_freeze_counter + 1) )
+                {
+                    //  it's incremented by more than one, yet the reading seems to be valid, parity-wise - we need to yelp, at least
+
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** Checkpoint - incoming freeze counter (" << pi_freezecount.value <<
+                                            ") has increased by more than expected value (" << _freeze_counter + 1 <<
+                                            ") on device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                }
+            }
+            else
+            {
+                valid_data = false;
+
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint - incoming freeze counter (" << pi_freezecount.value <<
+                                        ") less than expected value (" << _freeze_counter <<
+                                        ") on device \"" << getName() << "\", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
+                ReturnMsg->setResultString("Freeze counter mismatch error (" + CtiNumStr(pi_freezecount.value) + ") < (" + CtiNumStr(_freeze_counter) + ")");
+                status = NOTNORMAL;
+            }
+
+            if( kw_time.seconds() >= (getDynamicInfo(key_peak_timestamp) + rwEpoch) )
+            {
+                if( kw_time.seconds() <= (getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp) + rwEpoch))
+                {
+                    if( pi_kwh.freeze_bit == _expected_freeze )  //  LSB indicates which freeze caused the value to be stored
+                    {
+                        //  success - allow normal processing
+
+                        kw_point  = getDevicePointOffsetTypeEqual(pointoffset + PointOffset_PeakOffset, DemandAccumulatorPointType);
+
+                        kwh_point = getDevicePointOffsetTypeEqual(pointoffset, PulseAccumulatorPointType );
+
+                        setDynamicInfo(key_peak_timestamp, kw_time.seconds() - rwEpoch);
+
+                        if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp) )
+                        {
+                            kwh_time  = CtiTime(getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp) + rwEpoch);
+                            kwh_time -= kwh_time.seconds() % 300;
+                        }
+                        else
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << CtiTime() << " **** Checkpoint - device \"" << getName() << "\" does not have a freeze timestamp for KWH timestamp, defaulting to current time **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            }
+                        }
+
+                        freeze_info_string  = " @ " + kwh_time.asString();
+
+                        _freeze_counter = pi_freezecount.value;
+
+                        setDynamicInfo(CtiTableDynamicPaoInfo::Key_FreezeCounter, _freeze_counter);
+                    }
+                    else
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " **** Checkpoint - incoming freeze parity bit (" << pi_kwh.freeze_bit <<
+                                                ") does not match expected freeze bit (" << _expected_freeze <<
+                                                ") on device \"" << getName() << "\", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+
+                        valid_data = false;
+                        ReturnMsg->setResultString("Freeze parity check failed (" + CtiNumStr(pi_kwh.freeze_bit) + ") != (" + CtiNumStr(_expected_freeze) + "), last recorded freeze sent at " + RWTime(getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp) + rwEpoch).asString());
+                        status = NOTNORMAL;
+                    }
+                }
+                else
+                {
+                    valid_data = false;
+
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** Checkpoint - KW peak time \"" << kw_time << "\" is before KW freeze time \"" << RWTime(getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp) + rwEpoch) << ", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+
+                    ReturnMsg->setResultString("Peak time after freeze (" + kw_time.asString() + ") < (" + RWTime(getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp) + rwEpoch).asString() + ")");
+                    status = NOTNORMAL;
+                }
+            }
+            else
+            {
+                valid_data = false;
+
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint - new KW peak time \"" << kw_time << "\" is before old KW peak time \"" << RWTime(getDynamicInfo(key_peak_timestamp) + rwEpoch) << ", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
+                ReturnMsg->setResultString("New KW peak earlier than old KW peak (" + kw_time.asString() + ") < (" + RWTime(getDynamicInfo(key_peak_timestamp) + rwEpoch).asString() + ")");
+                status = NOTNORMAL;
+            }
+        }
+        else
+        {
+            //  just a normal peak read, no freeze-related work needed
+
+            kw_point = getDevicePointOffsetTypeEqual(pointoffset + PointOffset_PeakOffset, DemandAccumulatorPointType);
+
+            kwh_point = getDevicePointOffsetTypeEqual( pointoffset, PulseAccumulatorPointType );
+
+            kwh_time  = CtiTime::now();
+        }
+
+        if( valid_data )  //  valid
+        {
+            bool kw_valid = true;
+
+            //  if it's a TOU read and the MCT isn't at least at MCT410::SspecRev_TOUPeak_Min, we omit the data
+            if( parse.getFlags() & (CMD_FLAG_GV_RATEMASK ^ CMD_FLAG_GV_RATET) )
+            {
+                if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec) == CtiDeviceMCT410::Sspec &&
+                    getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) < CtiDeviceMCT410::SspecRev_TOUPeak_Min )
+                {
+                    kw_valid = false;
+                }
+            }
+
+            if( kw_valid )
+            {
+                if( kw_point )
+                {
+                    pi_kw.value = boost::static_pointer_cast<CtiPointNumeric>(kw_point)->computeValueForUOM(pi_kw.value);
+
+                    result_string = getName() + " / " + kw_point->getName() + " = "
+                                              + CtiNumStr(pi_kw.value, boost::static_pointer_cast<CtiPointNumeric>(kw_point)->getPointUnits().getDecimalPlaces())
+                                              + " @ " + kw_time.asString();
+
+                    if( pData = makePointDataMsg(kw_point, pi_kw, result_string) )
+                    {
+                        pData->setTime(kw_time);
+                        ReturnMsg->PointData().push_back(pData);
+                        pData = NULL;  // We just put it on the list...
+                    }
+                }
+                else
+                {
+                    result_string = getName() + " / Peak Demand = " + CtiNumStr(pi_kw.value) + " @ " + kw_time.asString() + "  --  POINT UNDEFINED IN DB";
+                    ReturnMsg->setResultString(result_string);
+                }
+            }
+
+            if( kwh_point )
+            {
+                pi_kwh.value = boost::static_pointer_cast<CtiPointNumeric>(kw_point)->computeValueForUOM(pi_kwh.value);
+
+                result_string  = getName() + " / " + kwh_point->getName() + " = " + CtiNumStr(pi_kwh.value,
+                                                                                              boost::static_pointer_cast<CtiPointNumeric>(kw_point)->getPointUnits().getDecimalPlaces());
+                result_string += freeze_info_string;
+
+                if( pData = makePointDataMsg(kwh_point, pi_kwh, result_string) )
+                {
+                    kwh_time -= kwh_time.seconds() % getDemandInterval();
+                    pData->setTime(kwh_time);
+                    ReturnMsg->PointData().push_back(pData);
+                    pData = NULL;  // We just put it on the list...
+                }
+            }
+            else
+            {
+                result_string = getName() + " / Meter Reading = " + CtiNumStr(pi_kwh.value) + freeze_info_string + "  --  POINT UNDEFINED IN DB";
+                ReturnMsg->setResultString(ReturnMsg->ResultString() + "\n" + result_string);
+            }
+        }
+
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    }
+
+    return status;
+}
+
+
 INT CtiDeviceMCT4xx::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList)
 {
     INT status = NORMAL;
@@ -2590,6 +3216,25 @@ INT CtiDeviceMCT4xx::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
 
     switch(InMessage->Sequence)
     {
+        case (Emetcon::GetConfig_Time):
+        case (Emetcon::GetConfig_TSync):
+        {
+            status = decodeGetConfigTime(InMessage, TimeNow, vgList, retList, outList);
+            break;
+        }
+
+        case (Emetcon::GetConfig_TOU):
+        {
+            status = decodeGetConfigTOU(InMessage, TimeNow, vgList, retList, outList);
+            break;
+        }
+
+        case Emetcon::GetValue_TOU:
+        {
+            status = decodeGetValuePeakDemand(InMessage, TimeNow, vgList, retList, outList);
+            break;
+        }
+
         case Emetcon::GetValue_LoadProfile:
         {
             status = decodeGetValueLoadProfile(InMessage, TimeNow, vgList, retList, outList);
@@ -2599,12 +3244,6 @@ INT CtiDeviceMCT4xx::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
         case Emetcon::Scan_LoadProfile:
         {
             status = decodeScanLoadProfile(InMessage, TimeNow, vgList, retList, outList);
-            break;
-        }
-
-        case (Emetcon::GetConfig_TOU):
-        {
-            status = decodeGetConfigTOU(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
