@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.72 $
-* DATE         :  $Date: 2006/11/08 20:50:55 $
+* REVISION     :  $Revision: 1.73 $
+* DATE         :  $Date: 2006/11/09 16:29:00 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3759,7 +3759,7 @@ INT CtiDeviceMCT470::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, lis
 
                 resultString += getName() + " / current time: " + printable_time(ied_time) + "\n";
 
-                resultString += getName() + " / current TOU rate: " + string(1, 'A' + (DSt->Message[4] & 0x07) - 1).c_str() + "\n";
+                resultString += getName() + " / current TOU rate: " + string(1, 'A' + (DSt->Message[4] & 0x07)).c_str() + "\n";
 
                 //  as soon as we know what type of IED this is, we can do all of the fancy IED-specific stuff
                 /*
