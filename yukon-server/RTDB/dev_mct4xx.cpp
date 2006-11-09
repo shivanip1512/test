@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.38 $
-* DATE         :  $Date: 2006/11/08 20:44:29 $
+* REVISION     :  $Revision: 1.39 $
+* DATE         :  $Date: 2006/11/09 16:50:39 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -513,7 +513,18 @@ INT CtiDeviceMCT4xx::executeGetValue(CtiRequestMsg *pReq, CtiCommandParser &pars
                 //  note that this code assumes that the current century is 20xx - this will need to change in 2100
                 if( year < 100 )    year += 2000;
 
-                if( !cmd.compare("lp") )
+                if( year > 2099 )
+                {
+                    if( errRet )
+                    {
+                        CtiString temp = "Bad start date \"" + parse.getsValue("lp_date_start") + "\"";
+                        errRet->setResultString( temp );
+                        errRet->setStatus(NoMethod);
+                        retList.push_back( errRet );
+                        errRet = NULL;
+                    }
+                }
+                else if( !cmd.compare("lp") )
                 {
                     CtiTime time_start, time_end;
 
