@@ -1,12 +1,19 @@
 package com.cannontech.clientutils;
 
-import java.io.FileNotFoundException;
 import java.net.URL;
+import java.net.MalformedURLException;
+import java.io.File;
+import java.io.IOException;
+import java.io.Reader;
 
+
+import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 
 import com.cannontech.common.util.CtiUtilities;
+
+import org.springframework.util.FileCopyUtils;
 
 
 /**
@@ -25,10 +32,12 @@ import com.cannontech.common.util.CtiUtilities;
 public class YukonLogManager {
     
     
+    private static final String YUKON_LOGGING_XML = "yukonLogging.xml";
+
     /**
      * create a logger for this class
      */
-    private final static Logger logger = Logger.getLogger(YukonLogManager.class.getClass());
+    private final static Logger logger = Logger.getLogger("com.cannontech.clientutils.YukonLogManager");
     
     /**
      *  typically c:\Yukon, but installation dependent
@@ -38,12 +47,7 @@ public class YukonLogManager {
     /**
      *  The path to the log file
      */
-    private final static String path = yukonBase + "/Client/Log/log4j.xml";
-    
-    /**
-     *  boolean flag for logging configuration
-     */
-    private static boolean alreadyConfigured = false;
+    private final static String path = yukonBase + "/Server/Config/" + YUKON_LOGGING_XML;
     
     //Constructor never gets used, YukonLogManager has only static methods
     private YukonLogManager() {
@@ -53,42 +57,44 @@ public class YukonLogManager {
     //initialize the logging at YukonLogManager creation
     static {
         initialize();
-    }
+    }  
     
     /**
-     * find the log4j.xml configuration file depending on platform
+     * find the yukonLogging.xml configuration file depending on platform
      * and load that particular file. Ignore initialization if it has already taken place.
      */
-    public static synchronized void initialize() {
-        if (alreadyConfigured)
-            return;
+    private static synchronized void initialize() {
         
-        //See if the log4j.xml config file is on the classpath
+        //See if the yukonLogging.xml config file is on the classpath
         //convert the xml file path to a url and configure log4j if url is successful
         URL url = null;
-        url = CTILogger.class.getClassLoader().getResource("log4j.xml");
+        url = CTILogger.class.getClassLoader().getResource(YUKON_LOGGING_XML);
         if (url != null){
             DOMConfigurator.configure(url);
-            logger.info("The log4j.xml config file was found on classpath");
-            alreadyConfigured = true;
+            logger.info("The config file was found on classpath: " + url);
             return;
-        /*} else if (!CtiUtilities.isRunningAsWebApplication()) {
-            return; */
         } else if (yukonBase != null){
-            //if !webserver get file under YUKON_BASE/Client/Log/log4j.xml
-            DOMConfigurator.configure(path);
-            logger.info("The log4j.xml config file was found under " + path);
-            alreadyConfigured = true;
+            //if !webserver get file under YUKON_BASE/Server/Log/yukonLogging.xml
+            //update the file if it changes every 3000 milliseconds
+            DOMConfigurator.configureAndWatch(path, 3000);
+            logger.info("The config file was found under " + path);
             return;
-        }
+        } else {
+            //If all else fails use BasicConfigurator which will append messages to the 
+            //console
+            BasicConfigurator.configure();
+            logger.error("Unbable to configure logging, using BasicConfigurator to log to console");
+            return;
+        }   
     }
     
     /**
-     * Creates a new logger for all new logging code (post 
-     * we'll now instantiate a logger in each new class/file by:
+     * Get an existing logger by class name. Creates a new logger
+     * if it does not already exist. (Loggers are typically named
+     * using the fully qualified class name.
      * @param c A class name in any of the following forms:
-     * Final static Logger logger = YukonLogManager.getLogger(X.class);
-     * For base classes use Logger logger = YukonLogManager.getLogger(this.getClass());
+     * In most cases: ClassName.class
+     * In some cases for base classes: this.getClass()
      * @return existing logger or new logger if it doesn't already exist
      */
     public static Logger getLogger(Class c) {
@@ -97,11 +103,12 @@ public class YukonLogManager {
     }
     
     /**
-     * Creates a new logger for all new logging code
-     * we'll now instantiate a logger in each new class/file by:
-     * @param c A class name in any of the following forms:
-     * Final static Logger logger = YukonLogManager.getLogger(“com.wombat.X”);
-     * Final static Logger logger = YukonLogManager.getLogger(X.class.getName());
+     * Get an existing logger by class name. Creates a new logger
+     * if it does not already exist. (Loggers are typically named
+     * using the fully qualified class name.
+     * @param s A string that is the name of the logger in the following forms:
+     * “packageName.className” or
+     * className.class.getName()
      * @return existing logger or new logger if it doesn't already exist
      */
     public static Logger getLogger(String s) {

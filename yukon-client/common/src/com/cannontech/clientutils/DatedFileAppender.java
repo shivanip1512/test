@@ -348,7 +348,7 @@ public class DatedFileAppender extends FileAppender {
         }
 
         File tempFile = new File(fileName);
-        if (tempFile.canRead() && (tempFile.length() > YukonFileAppender.getMaxFileSize())) {
+        if (tempFile.canRead() && (tempFile.length() > YukonFileAppender.getMaxFileSize()) && !isMaxFileSizeReached) {
             //if the max file size is reached, append an error message to the file
             // (and possibly give some kind of alarm later)
             // also set isMaxSizeReached = true so no more logging occurs for the
@@ -357,7 +357,8 @@ public class DatedFileAppender extends FileAppender {
            
             try {
                 FileWriter fw = new FileWriter(tempFile, true);
-                sb = new StringBuilder("\nThe maximum file size of " + YukonFileAppender.getMaxFileSize() + " bytes has been reached, logging has been turned off for today.\n");
+                sb = new StringBuilder("The maximum file size of " + YukonFileAppender.getMaxFileSize() + " bytes has been reached, logging has been turned off for today.\n");
+                fw.write("\n");
                 fw.write(sb.toString());
                 fw.close();
             } catch (IOException e) {

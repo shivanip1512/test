@@ -1,7 +1,7 @@
 package com.cannontech.clientutils;
 
-import org.apache.log4j.Logger;
 import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 /**
  * CTILogger acts as a wrapper for log4j, and all older log messages
@@ -40,7 +40,7 @@ public class CTILogger  {
      */
     public static Level getLevel() {
         String className = getFullyQualifiedClassName();
-        Logger logger = Logger.getLogger(className);
+        Logger logger = YukonLogManager.getLogger(className);
         return logger.getLevel();
     }
      
@@ -49,7 +49,7 @@ public class CTILogger  {
      */
     public static void debug(Object msg) {
         String className = getFullyQualifiedClassName();
-        Logger logger = Logger.getLogger(className);
+        Logger logger = YukonLogManager.getLogger(className);
         logger.debug(msg);
     }
     
@@ -59,7 +59,7 @@ public class CTILogger  {
      */
     public static void debug(Object msg, Throwable t) {
         String className = getFullyQualifiedClassName();
-        Logger logger = Logger.getLogger(className);
+        Logger logger = YukonLogManager.getLogger(className);
         logger.debug(msg, t);
     }
     
@@ -68,7 +68,7 @@ public class CTILogger  {
      */
     public static void info(Object msg) {
         String className = getFullyQualifiedClassName();
-        Logger logger = Logger.getLogger(className);
+        Logger logger = YukonLogManager.getLogger(className);
         logger.info(msg);
     }
     
@@ -78,7 +78,7 @@ public class CTILogger  {
      */
     public static void info(Object msg, Throwable t) {
         String className = getFullyQualifiedClassName();
-        Logger logger = Logger.getLogger(className);
+        Logger logger = YukonLogManager.getLogger(className);
         logger.info(msg, t);
     }
     
@@ -87,7 +87,7 @@ public class CTILogger  {
      */
     public static void error(Object msg) {
         String className = getFullyQualifiedClassName();
-        Logger logger = Logger.getLogger(className);
+        Logger logger = YukonLogManager.getLogger(className);
         logger.error(msg);
     }
     
@@ -97,7 +97,7 @@ public class CTILogger  {
      */
     public static void error(Object msg, Throwable t) {
         String className = getFullyQualifiedClassName();
-        Logger logger = Logger.getLogger(className);
+        Logger logger = YukonLogManager.getLogger(className);
         logger.error(msg, t);
     }
     
@@ -106,7 +106,7 @@ public class CTILogger  {
      */
     public static void fatal(Object msg) {
         String className = getFullyQualifiedClassName();
-        Logger logger = Logger.getLogger(className);
+        Logger logger = YukonLogManager.getLogger(className);
         logger.fatal(msg);
     }
     
@@ -116,7 +116,7 @@ public class CTILogger  {
      */
     public static void fatal(Object msg, Throwable t) {
         String className = getFullyQualifiedClassName();
-        Logger logger = Logger.getLogger(className);
+        Logger logger = YukonLogManager.getLogger(className);
         logger.fatal(msg, t);
     }
     
@@ -125,7 +125,7 @@ public class CTILogger  {
      */
     public static void warn(Object msg) {
         String className = getFullyQualifiedClassName();
-        Logger logger = Logger.getLogger(className);
+        Logger logger = YukonLogManager.getLogger(className);
         logger.warn(msg);
     }
     
@@ -135,8 +135,8 @@ public class CTILogger  {
      */
     public static void warn(Object msg, Throwable t) {
         String className = getFullyQualifiedClassName();
-        Logger logger = Logger.getLogger(className);
+        Logger logger = YukonLogManager.getLogger(className);
         logger.warn(msg, t);
     }
 
-}//end CTILogger.java
+}
