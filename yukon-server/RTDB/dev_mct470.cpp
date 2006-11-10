@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.73 $
-* DATE         :  $Date: 2006/11/09 16:29:00 $
+* REVISION     :  $Revision: 1.74 $
+* DATE         :  $Date: 2006/11/10 16:29:42 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1022,6 +1022,129 @@ INT CtiDeviceMCT470::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
     return status;
 }
 
+INT CtiDeviceMCT470::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+{
+    int retVal = NoError;
+    CtiCommandParser  parse(InMessage->Return.CommandStr);
+    CtiReturnMsg     *retMsg = CTIDBG_new CtiReturnMsg(getID(),
+                                                CtiString(InMessage->Return.CommandStr),
+                                                CtiString(),
+                                                InMessage->EventCode & 0x7fff,
+                                                InMessage->Return.RouteID,
+                                                InMessage->Return.MacroOffset,
+                                                InMessage->Return.Attempt,
+                                                InMessage->Return.TrxID,
+                                                InMessage->Return.UserID);
+    int ioType, location;
+    restoreMessageRead(InMessage, ioType, location);//used to remove this message from the list (we dont care about the data).
+
+    if( retMsg != NULL )
+    {
+        if( parse.getCommand() == ScanRequest )  //  we only plug values for failed scans
+        {
+            switch( parse.getiValue("scantype") )
+            {
+                case ScanRateGeneral:
+                case ScanRateStatus:
+                {
+                    insertPointFail( InMessage, retMsg, ScanRateStatus, 8, StatusPointType );
+                    insertPointFail( InMessage, retMsg, ScanRateStatus, 7, StatusPointType );
+                    insertPointFail( InMessage, retMsg, ScanRateStatus, 6, StatusPointType );
+                    insertPointFail( InMessage, retMsg, ScanRateStatus, 5, StatusPointType );
+    
+                    resetForScan(ScanRateGeneral);
+                    break;
+                }
+    
+                case ScanRateAccum:
+                {
+                    insertPointFail( InMessage, retMsg, ScanRateAccum, 1, PulseAccumulatorPointType );
+                    insertPointFail( InMessage, retMsg, ScanRateAccum, 2, PulseAccumulatorPointType );
+                    insertPointFail( InMessage, retMsg, ScanRateAccum, 3, PulseAccumulatorPointType );
+                    insertPointFail( InMessage, retMsg, ScanRateAccum, 4, PulseAccumulatorPointType );
+    
+                    resetForScan(ScanRateAccum);
+                    break;
+                }
+    
+                case ScanRateIntegrity:
+                {
+                    insertPointFail( InMessage, retMsg, ScanRateIntegrity, PointOffset_Accumulator_Powerfail, PulseAccumulatorPointType);
+                    insertPointFail( InMessage, retMsg, ScanRateIntegrity, 1, DemandAccumulatorPointType);
+                    insertPointFail( InMessage, retMsg, ScanRateIntegrity, 2, DemandAccumulatorPointType);
+                    insertPointFail( InMessage, retMsg, ScanRateIntegrity, 3, DemandAccumulatorPointType);
+                    insertPointFail( InMessage, retMsg, ScanRateIntegrity, 4, DemandAccumulatorPointType);
+                    insertPointFail( InMessage, retMsg, ScanRateGeneral, CtiDeviceMCT470::PointOffset_TotalKW,     AnalogPointType);
+                    insertPointFail( InMessage, retMsg, ScanRateGeneral, CtiDeviceMCT470::PointOffset_TotalKM,     AnalogPointType);
+                    insertPointFail( InMessage, retMsg, ScanRateGeneral, CtiDeviceMCT470::PointOffset_VoltsPhaseA, AnalogPointType);
+                    insertPointFail( InMessage, retMsg, ScanRateGeneral, CtiDeviceMCT470::PointOffset_VoltsPhaseB, AnalogPointType);
+                    insertPointFail( InMessage, retMsg, ScanRateGeneral, CtiDeviceMCT470::PointOffset_VoltsPhaseC, AnalogPointType);
+    
+                    resetForScan(ScanRateIntegrity);
+                    break;
+                }
+    
+                case ScanRateLoadProfile:
+                {
+                    int channel = parse.getiValue("loadprofile_channel", 0);
+        
+                    if( channel )
+                    {
+                        insertPointFail( InMessage, retMsg, ScanRateLoadProfile, channel + PointOffset_LoadProfileOffset, DemandAccumulatorPointType );
+                    }
+                    break;
+                }
+    
+                default:
+                {
+                    retVal = Inherited::ErrorDecode(InMessage, TimeNow, vgList, retList, outList);
+        
+                    break;
+                }
+            }
+        }
+        else if( InMessage->Sequence == Emetcon::Scan_Integrity || InMessage->Sequence == Emetcon::GetValue_Demand )
+        {
+            insertPointFail( InMessage, retMsg, ScanRateIntegrity, PointOffset_Accumulator_Powerfail, PulseAccumulatorPointType);
+            insertPointFail( InMessage, retMsg, ScanRateIntegrity, 1, DemandAccumulatorPointType);
+            insertPointFail( InMessage, retMsg, ScanRateIntegrity, 2, DemandAccumulatorPointType);
+            insertPointFail( InMessage, retMsg, ScanRateIntegrity, 3, DemandAccumulatorPointType);
+            insertPointFail( InMessage, retMsg, ScanRateIntegrity, 4, DemandAccumulatorPointType);
+        }
+        else if( InMessage->Sequence == Emetcon::GetValue_IEDDemand )
+        {
+            insertPointFail( InMessage, retMsg, ScanRateGeneral, CtiDeviceMCT470::PointOffset_TotalKW,     AnalogPointType);
+            insertPointFail( InMessage, retMsg, ScanRateGeneral, CtiDeviceMCT470::PointOffset_TotalKM,     AnalogPointType);
+            insertPointFail( InMessage, retMsg, ScanRateGeneral, CtiDeviceMCT470::PointOffset_VoltsPhaseA, AnalogPointType);
+            insertPointFail( InMessage, retMsg, ScanRateGeneral, CtiDeviceMCT470::PointOffset_VoltsPhaseB, AnalogPointType);
+            insertPointFail( InMessage, retMsg, ScanRateGeneral, CtiDeviceMCT470::PointOffset_VoltsPhaseC, AnalogPointType);
+        }
+        else
+        {
+            retVal = Inherited::ErrorDecode(InMessage, TimeNow, vgList, retList, outList);
+        }
+    
+        // send the whole mess to dispatch
+        if( retMsg->PointData().size() > 0 )
+        {
+            retList.push_back(retMsg);
+        }
+        else
+        {
+            delete retMsg;
+        }
+    
+        //  set it to null, it's been sent off
+        retMsg = NULL;
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** Checkpoint - null retMsg() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+    
+    return retVal;
+}
 
 INT CtiDeviceMCT470::executeGetValue( CtiRequestMsg        *pReq,
                                       CtiCommandParser     &parse,

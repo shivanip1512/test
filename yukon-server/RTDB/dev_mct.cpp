@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.103 $
-* DATE         :  $Date: 2006/11/08 21:29:08 $
+* REVISION     :  $Revision: 1.104 $
+* DATE         :  $Date: 2006/11/10 16:29:42 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1098,7 +1098,6 @@ INT CtiDeviceMCT::ErrorDecode(INMESS *InMessage, CtiTime& Now, list< CtiMessage*
                         case TYPEMCT318L:
                         case TYPEMCT360:
                         case TYPEMCT370:
-                        case TYPEMCT470:
                             insertPointFail( InMessage, retMsg, ScanRateStatus, 8, StatusPointType );
                             insertPointFail( InMessage, retMsg, ScanRateStatus, 7, StatusPointType );
                             insertPointFail( InMessage, retMsg, ScanRateStatus, 6, StatusPointType );
@@ -1172,7 +1171,6 @@ INT CtiDeviceMCT::ErrorDecode(INMESS *InMessage, CtiTime& Now, list< CtiMessage*
                 {
                     switch( getType() )
                     {
-                        case TYPEMCT470:
                         case TYPEMCT410:
                         {
                             int channel = parse.getiValue("loadprofile_channel", 0);
