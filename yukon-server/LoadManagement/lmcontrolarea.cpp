@@ -2714,6 +2714,7 @@ string* CtiLMControlArea::getAutomaticallyStartedSignalString()
             *returnString += " > Threshold: ";
             _snprintf(tempchar,80,"%.*f",1,currentTrigger->getThreshold());
             *returnString += tempchar;
+            *returnString += " (" + getPAOName() + ")";
         }
         else if( !stringCompareIgnoreCase(currentTrigger->getTriggerType(), CtiLMControlAreaTrigger::StatusTriggerType) &&
                  currentTrigger->getPointValue() != currentTrigger->getNormalState() )

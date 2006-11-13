@@ -1135,7 +1135,7 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
                         getDispatchConnection()->WriteConnQue(new CtiSignalMsg(currentTrigger->getPointId(),0,text,additional,GeneralLogType,SignalEvent));
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << text << ", " << additional << endl;
+                        dout << CtiTime() << " - " << text << ", " << additional << " (" << currentControlArea->getPAOName() << ")" << endl;
                     }
                     }
                     catch(...)
