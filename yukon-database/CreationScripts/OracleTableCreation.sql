@@ -7831,7 +7831,6 @@ insert into YukonUserRole values (-1016, -100, -200, -20006, '(none)');
 insert into YukonUserRole values (-1017, -100, -200, -20007, '(none)');
 insert into YukonUserRole values (-1018, -100, -200, -20008, '(none)');
 insert into YukonUserRole values (-1019, -100, -200, -20009, '(none)');
-insert into YukonUserRole values (-1020, -100, -200, -20010, '(none)');
 
 
 alter table YukonUserRole
