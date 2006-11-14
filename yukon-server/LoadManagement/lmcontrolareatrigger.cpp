@@ -489,7 +489,8 @@ void CtiLMControlAreaTrigger::calculateProjectedValue()
     {
         if( !stringCompareIgnoreCase(getProjectionType(), CtiLMControlAreaTrigger::LSFProjectionType ) )
         {
-            if( getProjectionPointEntriesQueue().size() >= getProjectionPoints() )
+            if( getProjectionPointEntriesQueue().size() >= getProjectionPoints() && getProjectionPoints() > 0 &&
+                getProjectionPointEntriesQueue()[getProjectionPoints()-1].getTimestamp().seconds() > (CtiTime::now().seconds() - 60*60) )
             {
                 std::vector<CtiLMProjectionPointEntry>::iterator itr = getProjectionPointEntriesQueue().begin();
                 while( getProjectionPointEntriesQueue().size() > getProjectionPoints() )
@@ -590,6 +591,11 @@ void CtiLMControlAreaTrigger::calculateProjectedValue()
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - Not enough getProjectionPointEntriesQueue().entries(): " << getProjectionPointEntriesQueue().size() << " need getProjectionPoints(): " << getProjectionPoints() << " in: " << __FILE__ << " at:" << __LINE__ << endl;
+                if( getProjectionPointEntriesQueue().size() > 0 )
+                {
+                    setProjectedPointValue(getProjectionPointEntriesQueue()[0].getValue());
+                }
+
             }
         }
         else
