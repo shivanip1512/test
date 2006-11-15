@@ -321,6 +321,16 @@ LONG CtiLMManualControlRequest::getStartGear() const
 }
 
 /*---------------------------------------------------------------------------
+    setStartGear
+    
+    Sets the start gear of the object that is associated with control.
+---------------------------------------------------------------------------*/
+void CtiLMManualControlRequest::setStartGear(LONG gear)
+{
+    _startgear = gear;
+}
+
+/*---------------------------------------------------------------------------
     getStartPriority
     
     Returns the start priority of the object that is associated with control.

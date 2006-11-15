@@ -214,7 +214,7 @@ void CtiLoadManager::controlLoop()
     {
     long main_wait = control_loop_delay;
     bool received_message = false;
-    
+    Sleep(250);
         while( (msg = _main_queue.getQueue(main_wait)) != NULL )
         {
             CtiLMExecutor* executor = executorFactory.createExecutor(msg);

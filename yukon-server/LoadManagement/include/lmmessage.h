@@ -151,6 +151,7 @@ public:
     const CtiTime& getStartTime() const;
     const CtiTime& getStopTime() const;
     LONG getStartGear() const;
+    void setStartGear(LONG gear);
     LONG getStartPriority() const;
     const string& getAdditionalInfo() const;
     LONG getConstraintCmd() const;

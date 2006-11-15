@@ -1163,6 +1163,13 @@ void CtiLMManualControlRequestExecutor::Execute()
         return;
     }
 
+    // A start gear of 0 is invalid, and what they really mean is they
+    // dont care, so we will set it to 1 for them.
+    if( _controlMsg->getStartGear() == 0 )
+    {
+        _controlMsg->setStartGear(1);
+    }
+
     // Set up a response if this was wrapped up in a request message
     // Fill in the response as we figure out what to say to the client
     // and then send it at the end of this function
