@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dlcbase.cpp-arc  $
-* REVISION     :  $Revision: 1.43 $
-* DATE         :  $Date: 2006/11/09 17:10:05 $
+* REVISION     :  $Revision: 1.44 $
+* DATE         :  $Date: 2006/11/15 20:50:15 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -137,7 +137,7 @@ INT CtiDeviceDLCBase::retMsgHandler( string commandStr, int status, CtiReturnMsg
     if( retMsg )
     {
         //  is there anything to send?
-        if( !retMsg->ResultString().empty() || retMsg->PointData().empty() )
+        if( !retMsg->ResultString().empty() || !retMsg->PointData().empty() )
         {
             //  if it's an update command, PIL will copy the data to Dispatch (vgList) for us, but we still
             //    need to mark the points "must archive."
@@ -410,13 +410,16 @@ int CtiDeviceDLCBase::executeOnDLCRoute( CtiRequestMsg              *pReq,
         {
             pOut->TargetID  = getID();
 
+            pOut->EventCode = BWORD | WAIT;
+
             if( result )
             {
-                pOut->EventCode = BWORD | WAIT | RESULT;
+                pOut->EventCode |= RESULT;
             }
-            else
+
+            if( pOut->Sequence == Emetcon::PutConfig_TSync )
             {
-                pOut->EventCode = BWORD | WAIT;
+                pOut->EventCode |= TSYNC;
             }
 
             if( parse.isKeyValid("noqueue") )
