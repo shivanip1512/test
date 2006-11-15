@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.39 $
-* DATE         :  $Date: 2006/11/09 16:50:39 $
+* REVISION     :  $Revision: 1.40 $
+* DATE         :  $Date: 2006/11/15 20:51:01 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1367,7 +1367,7 @@ INT CtiDeviceMCT4xx::executePutConfig(CtiRequestMsg         *pReq,
     {
         unsigned short function, length, io;
 
-        if( getOperation(Emetcon::PutConfig_TimeZoneOffset, function, length, io) )
+        if( found = getOperation(Emetcon::PutConfig_TimeZoneOffset, function, length, io) )
         {
             int timezone_blocks = 0;
 
