@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.43 $
-* DATE         :  $Date: 2006/10/18 19:14:32 $
+* REVISION     :  $Revision: 1.44 $
+* DATE         :  $Date: 2006/11/15 20:41:10 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -970,24 +970,13 @@ INT ValidateEmetconMessage(OUTMESS *&OutMessage)
 
     if(OutMessage->EventCode & BWORD)
     {
-        /*  not allow queing on broadcast commands, or if NoQueing is set */
-        if(NoQueing || OutMessage->Remote == CCUGLOBAL)
+        //  do not allow queing if NoQueing is set, or on broadcast commands and timesyncs
+        if( NoQueing
+            || (OutMessage->Remote == CCUGLOBAL)
+            || (OutMessage->EventCode & TSYNC) )
         {
             OutMessage->EventCode |= DTRAN;
             OutMessage->EventCode &= ~QUEUED;
-        }
-
-        /* Check if this is a time sync message and force it to go DTRAN */
-        /* first determine if this is a time sync */
-        if((OutMessage->Buffer.BSt.Length   == CtiDeviceMCT::Memory_TSyncLen  &&
-            OutMessage->Buffer.BSt.Function == CtiDeviceMCT::Memory_TSyncPos  &&
-            OutMessage->Buffer.BSt.IO       == Cti::Protocol::Emetcon::IO_Write)
-           || (OutMessage->Buffer.BSt.Length   == CtiDeviceMCT4xx::FuncWrite_TSyncLen  &&
-               OutMessage->Buffer.BSt.Function == CtiDeviceMCT4xx::FuncWrite_TSyncPos  &&
-               OutMessage->Buffer.BSt.IO       == Cti::Protocol::Emetcon::IO_Function_Write) )
-        {
-            OutMessage->EventCode |= (TSYNC | DTRAN);
-            //OutMessage->EventCode &= ~QUEUED;
         }
     }
 
