@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.104 $
-* DATE         :  $Date: 2006/11/10 16:29:42 $
+* REVISION     :  $Revision: 1.105 $
+* DATE         :  $Date: 2006/11/15 20:45:04 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2736,7 +2736,9 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
         {
             function = Emetcon::PutConfig_TSync;
             found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+
             //  the message is filled in by RefreshMCTTimeSync() in porttime.cpp
+            OutMessage->EventCode |= TSYNC;
         }
         else
         {
