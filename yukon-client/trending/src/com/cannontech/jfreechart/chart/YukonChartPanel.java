@@ -21,6 +21,10 @@ public class YukonChartPanel extends ChartPanel
 	public YukonChartPanel(JFreeChart chart)
 	{
 		super(chart);
+        this.setInitialDelay(0);
+        // Set the the dismiss delay to 60000 so that tool tips will be
+        // displayed for 60 seconds
+        this.setDismissDelay(60000);
 	}
 
 	/**

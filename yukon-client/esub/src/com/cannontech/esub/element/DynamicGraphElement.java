@@ -57,6 +57,8 @@ public class DynamicGraphElement extends LxAbstractRectangle implements DrawingE
 	private String linkTo = null;
 	private Properties props = new Properties();
  	private int version = CURRENT_VERSION;
+    
+    private int numberOfEvents = 20;
  	
 	/** 
 	 * Returns the drawing.
@@ -244,12 +246,16 @@ public class DynamicGraphElement extends LxAbstractRectangle implements DrawingE
 			Graph graph = getCTIGraph();
 			graph.setStartDate(getCurrentStartDate());
 			graph.setPeriod(getDisplayPeriod());
+			graph.setNumberOfEvents(getNumberOfEvents());
+            
+            if (!ServletUtil.EVENT.equals(graph.getPeriod())) {
+                graph.getTrendProperties().setOptionsMaskSettings(GraphRenderers.LEGEND_MIN_MAX_MASK);
+            }
 			
 			graph.setSize((int) getWidth(), (int) getHeight());
 			graph.setGraphDefinition(gDef);
 
 			graph.setViewType(getTrendType());
-			graph.getTrendProperties().setOptionsMaskSettings(GraphRenderers.LEGEND_MIN_MAX_MASK);
 					
 			graph.setUpdateTrend(true);
 			graph.update();
@@ -427,5 +433,13 @@ public class DynamicGraphElement extends LxAbstractRectangle implements DrawingE
 	public String getElementID() {
 		return ELEMENT_ID;
 	}
+
+    public int getNumberOfEvents() {
+        return numberOfEvents;
+    }
+
+    public void setNumberOfEvents(int numberOfEvents) {
+        this.numberOfEvents = numberOfEvents;
+    }
 }
  

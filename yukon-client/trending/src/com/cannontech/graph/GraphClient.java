@@ -8,6 +8,8 @@ package com.cannontech.graph;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
@@ -20,13 +22,18 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Vector;
 
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JSpinner;
 import javax.swing.JSplitPane;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.jfree.chart.JFreeChart;
 
@@ -160,6 +167,8 @@ public class GraphClient extends JPanel implements DBChangeLiteListener, GraphDe
 	private HelpMenu helpMenu = null;
 	private com.cannontech.common.gui.util.TreeViewPanel ivjTreeViewPanel = null;
 	private com.cannontech.common.gui.util.DateComboBox ivjStartDateComboBox = null;
+	private JSpinner eventSpinner = null;
+	private JLabel eventLabel = null;
 	private com.cannontech.jfreechart.chart.YukonChartPanel freeChartPanel = null;
 	private TrendDataAutoUpdater trendDataAutoUpdater;
 	private javax.swing.JRadioButton ivjCurrentRadioButton = null;
@@ -367,6 +376,7 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 	else if( event.getSource() == getOptionsMenu().getLoadDurationMenuItem())
 	{
 		boolean isMasked = getOptionsMenu().getLoadDurationMenuItem().isSelected();
+        updateTimePeriodComboBox();
 		getTrendProperties().updateOptionsMaskSettings(GraphRenderers.LOAD_DURATION_MASK, isMasked);
 		refresh();
 	}
@@ -501,6 +511,20 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 	}
 }
 
+/**
+ * Method to add or remove the Event time period from the combo box based on
+ * the Load Duration selection
+ */
+public void updateTimePeriodComboBox() {
+    
+    getTimePeriodComboBox().removeItem(ServletUtil.EVENT);
+
+    if(!getOptionsMenu().getLoadDurationMenuItem().isSelected()){
+        getTimePeriodComboBox().addItem(ServletUtil.EVENT);
+        
+    }
+    
+}
 /**
  * Display the dialog with about information.
  */
@@ -685,6 +709,18 @@ public void updateTimePeriod( )
 	{
 		getOptionsMenu().getPlotYesterdayMenuItem().setEnabled(true);
 	}
+    
+    // Enable / Disable the load duration and event controls
+    if (ServletUtil.EVENT.equals(getTimePeriodComboBox().getSelectedItem())) {
+        getOptionsMenu().getLoadDurationMenuItem().setEnabled(false);
+        getEventJSpinner().setEnabled(true);
+        getEventLabel().setEnabled(true);
+    } else {
+        getOptionsMenu().getLoadDurationMenuItem().setEnabled(true);
+        getEventJSpinner().setEnabled(false);
+        getEventLabel().setEnabled(false);
+    }
+    
 	getGraph().setUpdateTrend(true);
 }
 /**
@@ -883,9 +919,10 @@ private int formatDateRangeSlider(TrendModel model, TabularHtml htmlData)
 
 	if( timePeriod.equalsIgnoreCase( ServletUtil.ONEDAY) ||
 		timePeriod.equalsIgnoreCase(ServletUtil.TODAY) || 
-		(getTrendProperties().getOptionsMaskSettings() & GraphRenderers.LOAD_DURATION_MASK) == GraphRenderers.LOAD_DURATION_MASK)  //1 day
+		(getTrendProperties().getOptionsMaskSettings() & GraphRenderers.LOAD_DURATION_MASK) == GraphRenderers.LOAD_DURATION_MASK ||
+        (getTrendProperties().getOptionsMaskSettings() & GraphRenderers.EVENT_MASK) == GraphRenderers.EVENT_MASK)  //1 day
 	{
-		//With load duration, we show all values at the same time.
+		//With load duration and event, we show all values at the same time.
 		getSliderPanel().setVisible(false);
 	}
 	else
@@ -1306,6 +1343,24 @@ private com.cannontech.common.gui.util.DateComboBox getStartDateComboBox() {
 		}
 	}
 	return ivjStartDateComboBox;
+}
+private JLabel getEventLabel() {
+    if (eventLabel == null) {
+        eventLabel = new JLabel("Number of Events:");
+    }
+    return eventLabel;
+}
+private JSpinner getEventJSpinner() {
+    if (eventSpinner == null) {
+        eventSpinner = new JSpinner(new SpinnerNumberModel(20, 0, 1000, 1));
+        eventSpinner.addChangeListener(new ChangeListener(){
+
+            public void stateChanged(ChangeEvent e) {
+                getGraph().setNumberOfEvents(((Integer)eventSpinner.getValue()).intValue());
+                getGraph().setUpdateTrend(true);
+            }});
+    }
+    return eventSpinner;
 }
 /**
  * Return the StartDateLabel property value.
@@ -1757,7 +1812,32 @@ private javax.swing.JPanel getTrendSetupPanel() {
 			constraintsStartDateComboBox.weightx = 1.0;
 			constraintsStartDateComboBox.insets = new java.awt.Insets(5, 5, 5, 5);
 			getTrendSetupPanel().add(getStartDateComboBox(), constraintsStartDateComboBox);
-
+			
+			getTrendSetupPanel().add(getEventLabel(),
+                                     new GridBagConstraints(7,
+                                                            1,
+                                                            1,
+                                                            1,
+                                                            1.0,
+                                                            1.0,
+                                                            GridBagConstraints.EAST,
+                                                            GridBagConstraints.NONE,
+                                                            new Insets(5, 5, 5, 5),
+                                                            0,
+                                                            0));
+			getTrendSetupPanel().add(getEventJSpinner(),
+			                         new GridBagConstraints(8,
+			                                                1,
+			                                                1,
+			                                                1,
+			                                                1.0,
+			                                                1.0,
+			                                                GridBagConstraints.WEST,
+			                                                GridBagConstraints.NONE,
+			                                                new Insets(5, 5, 5, 5),
+			                                                0,
+			                                                0));
+            
 /*			java.awt.GridBagConstraints constraintsStartTimeTestField = new java.awt.GridBagConstraints();
 			constraintsStartTimeTestField.gridx = 5; constraintsStartTimeTestField.gridy = 0;
 			constraintsStartTimeTestField.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -1916,7 +1996,7 @@ private void initializeSwingComponents()
 				return false;
 			}
 		});	
-	
+    
 	boolean found = getTreeViewPanel().selectByString(getTrendProperties().getGdefName());
 	//Construct a mouse listener that will allow double clicking selection in the tree
 	getTreeViewPanel().getTree().addMouseListener(new java.awt.event.MouseAdapter()
@@ -2001,6 +2081,7 @@ public static void main(String[] args)
         GraphClient gc = new GraphClient(mainFrame);
         mainFrame.setContentPane(gc);
         mainFrame.setJMenuBar(gc.getMenuBar());
+        gc.updateTimePeriodComboBox();
         mainFrame.setVisible(true);
         // Add the Window Closing Listener.
         mainFrame.addWindowListener(gc);
@@ -2310,6 +2391,7 @@ public void updateCurrentPane()
 			getGraph().setHtmlString(buf);
 			getSummaryEditorPane().setCaretPosition(0);
 		}
+        getTrendModel().setNumberOfEvents(((Integer)getEventJSpinner().getValue()).intValue());
 	}
 	else
 		showPopupMessage("Please select a Trend from the List", javax.swing.JOptionPane.WARNING_MESSAGE);

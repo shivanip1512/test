@@ -38,10 +38,12 @@ function updateGraphChange(evt) {
     var view = svgElement.getAttribute('view');
     var period = svgElement.getAttribute('period');
     var start = svgElement.getAttribute('start'); 
+    var events = svgElement.getAttribute('events'); 
     var url = 	"/esub/jsp/graph_settings.jsp" +
     		  	"?view=" + view +
     		  	"&period=" + period +
-    		  	"&start=" + start;
+    		  	"&start=" + start +
+    		  	"&events=" + events;
     
     loadXMLDoc(url, handleGraphSettingsReq);
 } //end updateGraphChange
@@ -116,6 +118,7 @@ function checkPopup() {
 		svgElement.setAttributeNS(null,'view',window.parent.graphSettingsPopup.graphType);
 		svgElement.setAttributeNS(null,'period',window.parent.graphSettingsPopup.period);
 		svgElement.setAttributeNS(null,'start',window.parent.graphSettingsPopup.startDate);	
+		svgElement.setAttributeNS(null,'events',window.parent.graphSettingsPopup.events);	
 		updateAllGraphs();		
 	}
 	else {
@@ -129,10 +132,11 @@ function checkPopup() {
  * Note that this runs in a different context which is why
  * we are communicating through window.parent
  */
-function updateGraphSettings(startDate, period, graphType ) {
+function updateGraphSettings(startDate, period, graphType, events ) {
     window.parent.graphSettingsPopup.startDate = startDate;
     window.parent.graphSettingsPopup.period = period;
     window.parent.graphSettingsPopup.graphType = graphType;
+    window.parent.graphSettingsPopup.events = events;
 	window.parent.graphSettingsPopup.hidePopup();
 	window.parent.graphSettingsPopup.isShowing = false;
 }

@@ -36,7 +36,7 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDefines
 	public static Object[] createDataset(TrendSerie [] trendSeries, int options_, boolean isCategory, int type_ )
 	{
 		options = options_;
-		if(isCategory)// type_ == GraphRenderers.BAR_3D)	//type_ == GraphRenderers.BAR || 
+		if(isCategory || ( (options_ & GraphRenderers.EVENT_MASK) == GraphRenderers.EVENT_MASK))// type_ == GraphRenderers.BAR_3D)	//type_ == GraphRenderers.BAR || 
 		{
 			if( (options_ & GraphRenderers.LOAD_DURATION_MASK) == GraphRenderers.LOAD_DURATION_MASK)			
 				return YukonDataSetFactory.createVerticalCategoryDataSet_LD(trendSeries, type_);
@@ -352,6 +352,9 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDefines
 			catFormat = CATEGORY_FORMAT_MMM_dd_HH_mm_ss;
 		else if (maxResolution > 1000)
 			catFormat = CATEGORY_FORMAT_MMM_dd_HH_mm;
+		else if ( (options & GraphRenderers.EVENT_MASK) == GraphRenderers.EVENT_MASK) {
+		    catFormat = dateTimeformat;
+        }
 		else // < 1000
 			catFormat = CATEGORY_FORMAT_MMM_dd_HH_mm_ss_SSS;
 

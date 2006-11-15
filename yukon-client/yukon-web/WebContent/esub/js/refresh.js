@@ -152,6 +152,7 @@ function updateGraph(node) {
 			"&format=" + node.getAttribute('format') +
 			"&start=" + node.getAttribute('start') + 
 			"&period=" + node.getAttribute('period') +
+			"&events=" + node.getAttribute('events') +
 			"&db=" + node.getAttribute('db') +
 			"&option=" + node.getAttribute('option') +
 			"&loadfactor=" + node.getAttribute('loadfactor') +

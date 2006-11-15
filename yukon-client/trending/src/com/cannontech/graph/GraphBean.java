@@ -68,7 +68,11 @@ public class GraphBean extends Graph
 					tempCal.add(Calendar.DATE, (page - 1));
 					((TabularHtml) htmlBuffer).setTabularStartDate(tempCal.getTime());
 
-					tempCal.add(Calendar.DATE, 1);	//incr date by one
+                    if(!((tModel.getTrendProps().getOptionsMaskSettings() & GraphRenderers.EVENT_MASK) == GraphRenderers.EVENT_MASK)){
+                        tempCal.add(Calendar.DATE, 1);	//incr date by one
+                    } else {
+                        tempCal.setTime((Date)tModel.getStopDate().clone());
+                    }
 					((TabularHtml) htmlBuffer).setTabularEndDate(tempCal.getTime());
 					
 					((TabularHtml) htmlBuffer).setResolution(getTrendProperties().getResolutionInMillis());

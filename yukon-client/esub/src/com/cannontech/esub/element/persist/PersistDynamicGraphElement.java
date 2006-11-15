@@ -36,6 +36,12 @@ public class PersistDynamicGraphElement extends BasePersistElement  {
 					elem.setGraphDefinitionID(LxSaveUtils.readInt(in));
                 	elem.setTrendType(LxSaveUtils.readInt(in));
                 	elem.setDisplayPeriod(LxSaveUtils.readString(in));
+                    try {
+                        int events = LxSaveUtils.readInt(in);
+                        elem.setNumberOfEvents(events);
+                    } catch (Exception e){
+                        // ok if events doesn't exist - for backwards compatability
+                    }
 				}
 				break;
 				
@@ -54,6 +60,7 @@ public class PersistDynamicGraphElement extends BasePersistElement  {
 			LxSaveUtils.writeInt(out, elem.getGraphDefinitionID());
             LxSaveUtils.writeInt(out, elem.getTrendType());
            	LxSaveUtils.writeString(out, elem.getDisplayPeriod());
+           	LxSaveUtils.writeInt(out, elem.getNumberOfEvents());
 	}
 
 }

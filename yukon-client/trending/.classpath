@@ -2,7 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="/third-party/jcommon.jar"/>
-	<classpathentry kind="lib" path="/third-party/jfreechart.jar"/>
+	<classpathentry sourcepath="Z:/java/archive/jfreechart-1.0.0-rc1.zip" kind="lib" path="/third-party/jfreechart.jar"/>
 	<classpathentry kind="lib" path="/third-party/jfreereport.jar"/>
 	<classpathentry kind="src" path="/common"/>
 	<classpathentry kind="src" path="/yukonappserver"/>

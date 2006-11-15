@@ -9,6 +9,11 @@ else if( graphBean.getPeriod().equalsIgnoreCase(ServletUtil.ONEDAY))
 	graphBean.updateCurrentPane();
 	out.println(graphBean.getHtmlString());
 }
+else if( graphBean.getPeriod().equalsIgnoreCase(ServletUtil.EVENT))
+{
+	graphBean.updateCurrentPane();
+	out.println(graphBean.getHtmlString());
+}
 else
 {
     java.text.SimpleDateFormat shortDateFormat = new java.text.SimpleDateFormat("M/d");

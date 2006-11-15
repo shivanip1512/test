@@ -116,6 +116,11 @@ public synchronized void service(HttpServletRequest req, HttpServletResponse res
 		param = req.getParameter("option");
 		if( param != null)
 			localBean.setOption(Integer.parseInt(param));
+		
+		param = req.getParameter("events");
+		if( param != null) {
+		    localBean.setNumberOfEvents(Integer.parseInt(param));
+        }
 
 		param = req.getParameter("format");
 		if( param != null)

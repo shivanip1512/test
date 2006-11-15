@@ -12,6 +12,7 @@ import java.util.Vector;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.Axis;
 import org.jfree.chart.axis.AxisLocation;
+import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.CategoryLabelPositions;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
@@ -109,6 +110,8 @@ public class TrendModel implements com.cannontech.graph.GraphDefines
 	private Double [] scaleMax = new Double[]{
 		new Double(100.0), new Double(100.0)
 	};
+    
+    private int numberOfEvents = 20;
 
 /**
  * Constructor for TrendModel.
@@ -119,7 +122,7 @@ public class TrendModel implements com.cannontech.graph.GraphDefines
  */
 public TrendModel(GraphDefinition gdef, TrendProperties props)
 {
-	this(gdef, gdef.getGraphDefinition().getStartDate(), gdef.getGraphDefinition().getStopDate(), props);
+	this(gdef, gdef.getGraphDefinition().getStartDate(), gdef.getGraphDefinition().getStopDate(), props, 20);
 }
 
 /**
@@ -129,12 +132,15 @@ public TrendModel(GraphDefinition gdef, TrendProperties props)
  * @param stopDate the date to stop the trend (inclusive)
  * @param TrendProperties the properties to include
  */
-public TrendModel(GraphDefinition gdef, java.util.Date newStartDate, java.util.Date newStopDate, TrendProperties props)
+public TrendModel(GraphDefinition gdef, java.util.Date newStartDate, java.util.Date newStopDate, TrendProperties props, int numberOfEvents)
 {
 	// Inititialize chart properties
 	setStartDate(newStartDate);
 	setStopDate(newStopDate);
 	setChartName(gdef.getGraphDefinition().getName());
+    
+	setTrendProps(props);
+    setNumberOfEvents(numberOfEvents);
 	
 	setAutoScale(gdef.getGraphDefinition().getAutoScaleLeftAxis(), PRIMARY_AXIS);
 	setScaleMax(gdef.getGraphDefinition().getLeftMax(), PRIMARY_AXIS);
@@ -322,7 +328,13 @@ public void setScaleMax(Double newMax, int axisIndex)
 
 private Axis getDomainAxis()
 {
-	if( hasBarRenderer())//getViewType() == GraphRenderers.BAR_3D || getViewType() == GraphRenderers.BAR_3D)
+    if((getOptionsMaskSettings() & GraphRenderers.EVENT_MASK) == GraphRenderers.EVENT_MASK){
+        CategoryAxis axis = new CategoryAxis(getTrendProps().getDomainLabel());
+        axis.setCategoryLabelPositions(CategoryLabelPositions.UP_45);
+        axis.setCategoryLabelPositionOffset(5);
+        return axis;
+    }
+    else if( hasBarRenderer())//getViewType() == GraphRenderers.BAR_3D || getViewType() == GraphRenderers.BAR_3D)
 	{
 		HorizontalSkipLabelsCategoryAxis catAxis = new HorizontalSkipLabelsCategoryAxis(getTrendProps().getDomainLabel());
 		if( (getOptionsMaskSettings()  & GraphRenderers.LOAD_DURATION_MASK) == GraphRenderers.LOAD_DURATION_MASK)
@@ -412,11 +424,20 @@ public java.util.Date getStopDate()
 }
 private java.util.ArrayList getSubtitles()
 {
-	//Chart Titles
-	java.util.ArrayList subtitleList = new java.util.ArrayList();
-	TextTitle chartTitle = new TextTitle(" ( > ) " + TITLE_DATE_FORMAT.format(getStartDate()) + " - " + TITLE_DATE_FORMAT.format(getStopDate())+ " ( <= )" );	
-	subtitleList.add(chartTitle);
-	return subtitleList;
+//  Chart Titles
+    java.util.ArrayList subtitleList = new java.util.ArrayList();
+
+    TextTitle chartTitle = null;
+    if ((getOptionsMaskSettings() & GraphRenderers.EVENT_MASK) == GraphRenderers.EVENT_MASK) {
+    	// Custom title for event
+        chartTitle = new TextTitle("Last " + getNumberOfEvents() + " events previous to "
+                + TITLE_DATE_FORMAT.format(getStopDate()));
+    } else {
+        chartTitle = new TextTitle(" ( > ) " + TITLE_DATE_FORMAT.format(getStartDate()) + " - "
+                + TITLE_DATE_FORMAT.format(getStopDate()) + " ( <= )");
+    }
+    subtitleList.add(chartTitle);
+    return subtitleList;
 }
 
 private TextTitle getTitle()
@@ -553,6 +574,10 @@ private void hitDatabase_Basic()
 
 			{
 				StringBuffer sql = getSQLQueryString(getTrendSeries()[s].getTypeMask(), getTrendSeries()[s].getPointId().intValue());
+                if ((trendProps.getOptionsMaskSettings() & GraphRenderers.EVENT_MASK) == GraphRenderers.EVENT_MASK) {
+                	// Sort the rows in desc timestamp order for event
+                    sql.append(" DESC");
+                }
 				pstmt = conn.prepareStatement(sql.toString());
 				
 				int day = 0;			
@@ -590,6 +615,18 @@ private void hitDatabase_Basic()
 					CTILogger.info("START DATE >= " + new java.sql.Timestamp(startTS) + "  -  STOP DATE <= " + new java.sql.Timestamp(stopTS));
 					day = 0;
 				}
+                else if ((trendProps.getOptionsMaskSettings() & GraphRenderers.EVENT_MASK) == GraphRenderers.EVENT_MASK) 
+                {
+
+                    // Set start date to get all events in time
+                    startTS = 0;
+
+                    // Set stop date to selected stop date
+                    stopTS = getStopDate().getTime();
+                    CTILogger.info("START DATE >= " + new java.sql.Timestamp(startTS)
+                            + "  -  STOP DATE <= " + new java.sql.Timestamp(stopTS));
+                    day = 0;
+                } 
 				else
 				{
 					startTS = getStartDate().getTime();
@@ -723,6 +760,16 @@ private void hitDatabase_Basic()
 							}
 						}
 					}
+                    else if ((trendProps.getOptionsMaskSettings() & GraphRenderers.EVENT_MASK) == GraphRenderers.EVENT_MASK) 
+                    {
+                        // See if we have enough events
+                        if (timeAndValueVector.size() < this.numberOfEvents) {
+                            timeAndValue = new Pair(time, val);
+                            timeAndValueVector.add(timeAndValue);
+                        } else {
+                            break;
+                        }
+                    }
 					else
 					{
 						timeAndValue = new Pair(time, val);
@@ -1185,9 +1232,9 @@ public JFreeChart refresh()
 	//If isCategoryPlot, then timeSeries[0] will have one dataset with ALL of the series with a "bar" type renderer.  This is because we cannot
 	// add a dataset to an existing dataset on a CategoryPlot like we can on a XYPlot.  All other renderer types will return one entry 
 	// in the array for each trendSerie. 	
-	Object[] timeSeries = YukonDataSetFactory.createDataset( getTrendSeries(), getOptionsMaskSettings(), hasBarRenderer(), getViewType());
+	Object[] timeSeries = YukonDataSetFactory.createDataset( getTrendSeries(), getOptionsMaskSettings(), hasBarRenderer() && !((getOptionsMaskSettings() & GraphRenderers.EVENT_MASK) == GraphRenderers.EVENT_MASK), getViewType());
 	
-	if( !hasBarRenderer())
+	if( !hasBarRenderer() && !((getOptionsMaskSettings() & GraphRenderers.EVENT_MASK) == GraphRenderers.EVENT_MASK))
 	{
 		// Create a new XYPlot, set the domain axis and a default renderer (renderer will be overridden based on trendSerie value)
 		plot = new XYPlot(null, (ValueAxis)getDomainAxis(), null, null);
@@ -1288,7 +1335,7 @@ public JFreeChart refresh()
 	else //if( GraphRenderers.useCategoryPlot(getViewType()))	
 	{
 		// Create a new CategoryPlot, set the domain axis and a default renderer (renderer will be overridden based on trendSerie value)
-		plot = new CategoryPlot( null, (HorizontalSkipLabelsCategoryAxis)getDomainAxis(), null, null);// new BarRenderer());
+		plot = new CategoryPlot( null, (CategoryAxis)getDomainAxis(), null, null);// new BarRenderer());
 
 		CategoryItemRenderer catRend = null;
 		int barSerieCount = 0;
@@ -1446,7 +1493,7 @@ public JFreeChart refresh()
 	{
 		int tempViewType = (getViewType() == GraphRenderers.DEFAULT ? rendType : getViewType());
 		AbstractRenderer rend = null;
-		if( !hasBarRenderer())
+		if( !hasBarRenderer() && !((getOptionsMaskSettings() & GraphRenderers.EVENT_MASK) == GraphRenderers.EVENT_MASK))
 		{
 			switch (tempViewType)
 			{
@@ -1800,4 +1847,11 @@ public JFreeChart refresh()
 		}
 	}
 
+    public void setNumberOfEvents(int numberOfEvents) {
+        this.numberOfEvents = numberOfEvents;
+    }
+
+    public int getNumberOfEvents() {
+        return this.numberOfEvents;
+    }
 }

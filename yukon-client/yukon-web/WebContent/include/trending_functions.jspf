@@ -17,6 +17,7 @@ var SUMMARY = parseInt(<%=GraphRenderers.SUMMARY%>);
 //options
 var BASIC = parseInt(<%=GraphRenderers.BASIC_MASK%>); 
 var LD = parseInt(<%=GraphRenderers.LOAD_DURATION_MASK%>); 
+var EVENT = parseInt(<%=GraphRenderers.EVENT_MASK%>); 
 
 //Global variables
 var viewType = parseInt(<%=graphBean.getViewType()%>);
@@ -107,6 +108,23 @@ function changeLD ()
 		loadDur = true;
 	}
 	document.MForm.submit();
+}
+
+function changeEvent ()
+{
+    var period = document.getElementById('period');
+    var eventSpan = document.getElementById('eventSpan');
+
+	if (period.options[period.selectedIndex].value == 'Event')
+	{
+    	setMask(EVENT, true);
+        eventSpan.style.display = "";
+    }
+	else
+	{
+    	setMask(EVENT, false);
+        eventSpan.style.display = "none";
+	}
 }
 
 function submitMForm()

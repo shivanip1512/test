@@ -55,6 +55,7 @@ public final class GraphRenderers
 	public final static int LOAD_DURATION_MASK= 0x0002;
 	public final static int GRAPH_MULTIPLIER_MASK = 0x0004;
 	public final static int PLOT_MIN_MAX_MASK = 0x0008;
+	public final static int EVENT_MASK = 0x0040;
 	
 	// Legend Display
 	public final static int LEGEND_LOAD_FACTOR_MASK = 0x0010;

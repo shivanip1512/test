@@ -5,6 +5,7 @@ package com.cannontech.graph.buffer.html;
  * Creation date: (1/31/2001 1:35:09 PM)
  * @author: 
  */
+import java.sql.Date;
 import java.util.Arrays;
 import java.util.TreeMap;
 
@@ -14,6 +15,7 @@ import com.cannontech.common.util.Pair;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.database.db.graph.GDSTypesFuncs;
 import com.cannontech.database.db.graph.GraphRenderers;
+import com.cannontech.graph.GraphDefines;
 import com.cannontech.graph.model.TrendSerie;
 
 public class TabularHtml extends HTMLBuffer
@@ -61,6 +63,11 @@ public class TabularHtml extends HTMLBuffer
 				tabEndDt = getTabularEndDate().getTime();
 			}
 		}
+        
+        if ((model.getOptionsMaskSettings() & GraphRenderers.EVENT_MASK) == GraphRenderers.EVENT_MASK) {
+            tabStDt = new Date(0).getTime();
+        }
+        
 		buf.append("<center>\n");
 		buf.append("<p bgcolor=\""+TITLE_HEADER_BGCOLOR+"\" align=\"center\">&nbsp;<b><font face=\"arial\"><span class=\"titleheader\">\n");
 		buf.append( model.getChartName());
@@ -72,9 +79,15 @@ public class TabularHtml extends HTMLBuffer
 		}
 		else
 		{
-			buf.append( dateFormat.format( new java.util.Date(tabStDt)) );
-			buf.append( " - " );
-			buf.append( dateFormat.format( new java.util.Date(tabEndDt)));
+            if ((model.getOptionsMaskSettings() & GraphRenderers.EVENT_MASK) == GraphRenderers.EVENT_MASK) {
+            	// Custom title for event
+                buf.append( "Last " + model.getNumberOfEvents() + " events previous to " );
+                buf.append( dateFormat.format( new java.util.Date(tabEndDt)) );
+            } else {
+    			buf.append( dateFormat.format( new java.util.Date(tabStDt)) );
+    			buf.append( " - " );
+    			buf.append( dateFormat.format( new java.util.Date(tabEndDt)));
+            }
 		}
 		buf.append("</span></font></b>");
 	
@@ -97,6 +110,10 @@ public class TabularHtml extends HTMLBuffer
 				loadDurationSort = true;
 			}
 		}
+        
+        if ((model.getOptionsMaskSettings() & GraphRenderers.EVENT_MASK) == GraphRenderers.EVENT_MASK) {
+            tabularTimeFormat = GraphDefines.dateTimeformat;
+        }
 		
 		buf.append("<td>");
 		buf.append("<table border=\"1\" cellspacing=\"0\" cellpadding=\"0\">\n");
@@ -183,7 +200,7 @@ public class TabularHtml extends HTMLBuffer
 		
 		buf.append("<tr align=\"center\" valign=\"top\" bgcolor=\""+TABLE_CELL_BGCOLOR+"\" class=\"tablecell\">\n");
 		//Output html for the timestamps.
-		buf.append("<td class=\"tablecell\" width=\"80\"><font size=\"-1\" face=\"arial\"><span class=\"tablecell\">\n");
+		buf.append("<td class=\"tablecell\" width=\"130\"><font size=\"-1\" face=\"arial\"><span class=\"tablecell\">\n");
 		for( int x = 0; x < keyArray.length; x++ )
 		{
 			Long ts1 = keyArray[x];

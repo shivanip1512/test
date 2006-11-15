@@ -1,5 +1,15 @@
 package com.cannontech.esub.editor.element;
 
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
+
+import javax.swing.JLabel;
+import javax.swing.JRadioButton;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
 import com.cannontech.database.db.graph.GraphRenderers;
 import com.cannontech.esub.element.DynamicGraphElement;
 import com.cannontech.util.ServletUtil;
@@ -28,6 +38,11 @@ public class DynamicGraphElementEditorPanel extends com.cannontech.common.gui.ut
 	private javax.swing.ButtonGroup ivjGraphTypeButtonGroup = null;
 	private GraphDefinitionSelectionPanel ivjGraphDefinitionSelectionPanel = null;
 	private javax.swing.JPanel ivjGraphDefinitionPanel = null;
+    
+    private JRadioButton eventRadio = null;
+    private JLabel eventLabel = null;
+    private JSpinner eventSpinner = null;
+    
 /**
  * DynamicGraphElementEditorPanel constructor comment.
  */
@@ -55,6 +70,25 @@ private javax.swing.JRadioButton getBarRadioButton() {
 		}
 	}
 	return ivjBarRadioButton;
+}
+
+private JRadioButton getEventRadio(){
+    if(eventRadio == null){
+        eventRadio = new JRadioButton("Event");
+    }
+    return eventRadio;
+}
+private JLabel getEventLabel(){
+    if(eventLabel == null){
+        eventLabel = new JLabel("Number of Events:");
+    }
+    return eventLabel;
+}
+private JSpinner getEventSpinner(){
+    if(eventSpinner  == null){
+        eventSpinner = new JSpinner(new SpinnerNumberModel(20, 0, 1000, 1));
+    }
+    return eventSpinner;
 }
 /**
  * 
@@ -181,6 +215,62 @@ private javax.swing.JPanel getDisplayRangePanel() {
 			constraintsPrevious7DaysRadioButton.weightx = 1.0;
 			constraintsPrevious7DaysRadioButton.insets = new java.awt.Insets(4, 4, 4, 4);
 			getDisplayRangePanel().add(getPrevious7DaysRadioButton(), constraintsPrevious7DaysRadioButton);
+            
+            
+            
+            ivjDisplayRangePanel.add(getEventRadio(),
+                                     new GridBagConstraints(0,
+                                                            5,
+                                                            1,
+                                                            1,
+                                                            0.0,
+                                                            1.0,
+                                                            GridBagConstraints.WEST,
+                                                            GridBagConstraints.NONE,
+                                                            new Insets(5, 5, 5, 5),
+                                                            0,
+                                                            0));
+
+            ivjDisplayRangePanel.add(getEventLabel(),
+                                     new GridBagConstraints(0,
+                                                            6,
+                                                            1,
+                                                            1,
+                                                            0.0,
+                                                            1.0,
+                                                            GridBagConstraints.EAST,
+                                                            GridBagConstraints.NONE,
+                                                            new Insets(5, 30, 5, 5),
+                                                            0,
+                                                            0));
+
+            ivjDisplayRangePanel.add(getEventSpinner(),
+                                     new GridBagConstraints(1,
+                                                            6,
+                                                            1,
+                                                            1,
+                                                            1.0,
+                                                            1.0,
+                                                            GridBagConstraints.WEST,
+                                                            GridBagConstraints.NONE,
+                                                            new Insets(5, 0, 5, 5),
+                                                            0,
+                                                            0));
+
+            getEventLabel().setEnabled(getEventRadio().isSelected());
+            getEventSpinner().setEnabled(getEventRadio().isSelected());
+
+            getEventRadio().addChangeListener(new ChangeListener() {
+                public void stateChanged(ChangeEvent e) {
+
+                    JRadioButton source = (JRadioButton) e.getSource();
+
+                    getEventLabel().setEnabled(source.isSelected());
+                    getEventSpinner().setEnabled(source.isSelected());
+                }
+            });
+            
+            
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -598,6 +688,10 @@ public Object getValue(Object o) {
 	if( getPrevious7DaysRadioButton().isSelected() ) {
 		displayRange = ServletUtil.PREVSEVENDAYS;
 	}
+    else if(getEventRadio().isSelected()){
+        displayRange = ServletUtil.EVENT;
+	    graph.setNumberOfEvents(((Integer) getEventSpinner().getValue()).intValue());
+	}
 	
 	graph.setDisplayPeriod(displayRange);
 	graph.setDirty(true);
@@ -660,6 +754,7 @@ private void initialize() {
 	getDisplayRangeButtonGroup().add(getPrevious2DaysRadioButton());
 	getDisplayRangeButtonGroup().add(getPrevious3DaysRadioButton());
 	getDisplayRangeButtonGroup().add(getPrevious7DaysRadioButton());
+	getDisplayRangeButtonGroup().add(getEventRadio());
 	
 	getGraphDefinitionSelectionPanel().getIvjGraphDefinitionJTree().addTreeSelectionListener(this);
 	// user code end
@@ -688,7 +783,6 @@ public static void main(java.lang.String[] args) {
 				System.exit(0);
 			};
 		});
-		frame.show();
 		java.awt.Insets insets = frame.getInsets();
 		frame.setSize(frame.getWidth() + insets.left + insets.right, frame.getHeight() + insets.top + insets.bottom);
 		frame.setVisible(true);
@@ -753,6 +847,11 @@ public void setValue(Object o) {
 	if(displayPeriod.equals(ServletUtil.PREVSEVENDAYS)) {
 		getPrevious7DaysRadioButton().setSelected(true);
 	}
+	else
+    if(displayPeriod.equals(ServletUtil.EVENT)) {
+        getEventRadio().setSelected(true);
+        getEventSpinner().setValue(graph.getNumberOfEvents());
+    }
 	else {
 		getTodayRadioButton().setSelected(true);
 	}

@@ -343,11 +343,15 @@ public class SVGGenerator {
 		Element imgElem = doc.createElementNS(svgNS, "image");
  
 		imgElem.setAttributeNS(null, "id", Integer.toString(graph.getGraphDefinitionID()));
+        
+        int options = (ServletUtil.EVENT.equals(graph.getDisplayPeriod())) ? GraphRenderers.EVENT_MASK
+                : GraphRenderers.LEGEND_MIN_MAX_MASK;
+        
 		if(genOptions.isStaticSVG()) {
 			imgElem.setAttributeNS(xlinkNS, "xlink:href", Util.genExportedGraphName(graph));
 		}
 		else {
-			imgElem.setAttributeNS(xlinkNS, "xlink:href", "/servlet/GraphGenerator?action=EncodeGraph&gdefid=" + graph.getGraphDefinitionID() + "&view=" + graph.getTrendType() + "&width=" + width + "&height=" + height + "&format=png&start=" + dateFormat.format(graph.getCurrentStartDate()) + "&period=" + graph.getDisplayPeriod() + "&option=" + Integer.toString(GraphRenderers.LEGEND_MIN_MAX_MASK));
+			imgElem.setAttributeNS(xlinkNS, "xlink:href", "/servlet/GraphGenerator?action=EncodeGraph&gdefid=" + graph.getGraphDefinitionID() + "&view=" + graph.getTrendType() + "&width=" + width + "&height=" + height + "&format=png&start=" + dateFormat.format(graph.getCurrentStartDate()) + "&period=" + graph.getDisplayPeriod() + "&option=" + Integer.toString(options) + "&events=" + Integer.toString(graph.getNumberOfEvents()));
 		}
 		imgElem.setAttributeNS(null, "x", Integer.toString(x));
 		imgElem.setAttributeNS(null, "y", Integer.toString(y));
@@ -358,7 +362,8 @@ public class SVGGenerator {
 		imgElem.setAttributeNS(null, "view", Integer.toString(graph.getTrendType()));
 		imgElem.setAttributeNS(null, "format", "png");
 		imgElem.setAttributeNS(null, "db", CtiUtilities.getDatabaseAlias());
-		imgElem.setAttributeNS(null, "option", Integer.toString(GraphRenderers.LEGEND_MIN_MAX_MASK));
+		imgElem.setAttributeNS(null, "option", Integer.toString(options));
+		imgElem.setAttributeNS(null, "events", Integer.toString(graph.getNumberOfEvents()));
 		imgElem.setAttributeNS(null, "loadfactor", "false");
 		imgElem.setAttributeNS(null, "start", dateFormat.format(graph.getCurrentStartDate()));
 		imgElem.setAttributeNS(null, "period", graph.getDisplayPeriod());

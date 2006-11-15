@@ -32,6 +32,7 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.db.graph.GraphRenderers;
 import com.cannontech.graph.buffer.html.PeakHtml;
 import com.cannontech.graph.buffer.html.TabularHtml;
 import com.cannontech.graph.buffer.html.UsageHtml;
@@ -52,6 +53,7 @@ public class Graph implements GraphDefines
 	private long lastUpdateTime = 0;
 
 	private java.util.Date startDate = ServletUtil.getToday();	
+    private int numberOfEvents = 20;
 	
 	private static final int DEFAULT_GIF_WIDTH = 556;
 	private static final int DEFAULT_GIF_HEIGHT = 433;
@@ -587,6 +589,11 @@ public void setPeriod(String newPeriod)
 	if(!period.equalsIgnoreCase(newPeriod))
 	{
 		period = newPeriod;
+        if(ServletUtil.EVENT.equals(period)){
+            this.getTrendProperties().updateOptionsMaskSettings(GraphRenderers.EVENT_MASK, true);
+        } else {
+            this.getTrendProperties().updateOptionsMaskSettings(GraphRenderers.EVENT_MASK, false);
+        }
 		setUpdateTrend(true);
 	}	
 }  
@@ -685,7 +692,7 @@ public void update()
 		TrendModel newModel = null;
 		if( getGenerationType() == GDEF_GENERATION)
 		{
-			newModel = new TrendModel(getGraphDefinition(), getStartDate(), getStopDate(), getTrendProperties()); 
+			newModel = new TrendModel(getGraphDefinition(), getStartDate(), getStopDate(), getTrendProperties(), getNumberOfEvents()); 
 		}
 		else if ( getGenerationType() == POINT_GENERATION)
 		{
@@ -769,6 +776,10 @@ public void getDataNow(java.util.List paobjects)
 	public void setTrendProperties(	TrendProperties properties)
 	{
 		trendProperties = properties;
+        
+        if((trendProperties.getOptionsMaskSettings() & GraphRenderers.EVENT_MASK) == GraphRenderers.EVENT_MASK){
+            this.period = ServletUtil.EVENT;
+        }
 	}
 
 	/**
@@ -913,4 +924,18 @@ public void getDataNow(java.util.List paobjects)
 		int [] pointIDs = new int[]{pointID};
 		setPointIDs(pointIDs);
 	}
+
+    public int getNumberOfEvents() {
+        return numberOfEvents;
+    }
+
+    public void setNumberOfEvents(int numberOfEvents) {
+        if( this.numberOfEvents != numberOfEvents )
+        {
+            this.numberOfEvents = numberOfEvents;
+            setUpdateTrend(true);
+        }
+    }
+    
+    
 }

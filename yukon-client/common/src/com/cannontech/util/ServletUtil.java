@@ -80,6 +80,8 @@ public class ServletUtil {
 	public static final String PREVSEVENDAYS= "Prev 7 Days";
 	public static final String PREVONEWEEK= "Prev 1 Week";
     public static final String PREVTHIRTYDAYS= "Prev 30 Days";
+    public static final String EVENT = "Event";
+    
 
 //	private static String[] validPeriods =
 //	{
@@ -124,7 +126,8 @@ public class ServletUtil {
 		ONEWEEK,
 		FOURWEEKS,
 		FIVEWEEKS,
-		ONEMONTH
+		ONEMONTH,
+        EVENT
 	};
 
 	public static String[] currentPeriods =
@@ -133,7 +136,8 @@ public class ServletUtil {
 		PREVTWODAYS,
 		PREVTHREEDAYS,
 		//PREVFIVEDAYS,
-		PREVSEVENDAYS
+		PREVSEVENDAYS,
+        EVENT
 	};
 
 		
@@ -678,6 +682,11 @@ public static Date getEndingDateOfInterval(Date startingDate, String period) {
 		numDays = TimeUtil.differenceInDays(startingDate, endOfInterval);		
 	}
 	else
+    if( period.equalsIgnoreCase(EVENT) )
+    {
+        return startingDate;
+	}
+	else
 		return null;
 		
 	GregorianCalendar cal = new GregorianCalendar();
@@ -854,6 +863,11 @@ public static java.util.Date getStartingDateOfInterval(Date startingDate, String
     if( period.equalsIgnoreCase(PREVTHIRTYDAYS) )
     {
         numDays = -29;
+    }
+    else
+    if( period.equalsIgnoreCase(EVENT) )
+    {
+        return new Date(0);
     }
 
 	else	//Don't change the starting date
