@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTTIME.cpp-arc  $
-* REVISION     :  $Revision: 1.43 $
-* DATE         :  $Date: 2006/10/18 19:19:40 $
+* REVISION     :  $Revision: 1.44 $
+* DATE         :  $Date: 2006/11/16 16:58:37 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -902,8 +902,8 @@ RefreshMCTTimeSync(OUTMESS *OutMessage)
     {
         //  this is the MCT-4xx timesync
 
-        RWTime now;
-        unsigned long time = now.seconds() - rwEpoch;
+        CtiTime now;
+        unsigned long time = now.seconds();
 
         timesync_message[0] = 0xff;  //  global SPID
         timesync_message[1] = (time >> 24) & 0x000000ff;

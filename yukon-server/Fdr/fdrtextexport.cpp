@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrtextexport.cpp-arc  $
-*    REVISION     :  $Revision: 1.14 $
-*    DATE         :  $Date: 2006/06/07 22:34:04 $
+*    REVISION     :  $Revision: 1.15 $
+*    DATE         :  $Date: 2006/11/16 16:54:41 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,9 @@
 *    ---------------------------------------------------
 *    History:
       $Log: fdrtextexport.cpp,v $
+      Revision 1.15  2006/11/16 16:54:41  mfisher
+      removing RWTime and rwEpoch references
+
       Revision 1.14  2006/06/07 22:34:04  tspar
       _snprintf  adding .c_str() to all strings. Not having this does not cause compiler errors, but does cause runtime errors. Also tweaks and fixes to FDR due to some differences in STL / RW
 
@@ -416,7 +419,7 @@ bool CtiFDR_TextExport::loadTranslationLists()
                                 translationPoint->getDestinationList()[x].setTranslation (tempString2);
                                 successful = true;
                             }
-                        
+
                     }
                 }   // end for interator
 
@@ -508,7 +511,7 @@ void CtiFDR_TextExport::threadFunctionWriteToFile( void )
     FILE* fptr;
     char workBuffer[500];  // not real sure how long each line possibly is
     CtiFDRPoint *       translationPoint = NULL;
-    CtiTime lastWrite(rwEpoch);
+    CtiTime lastWrite(0UL);
 
     try
     {

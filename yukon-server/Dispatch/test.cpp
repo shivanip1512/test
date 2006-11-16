@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/test.cpp-arc  $
-* REVISION     :  $Revision: 1.46 $
-* DATE         :  $Date: 2006/06/15 20:42:20 $
+* REVISION     :  $Revision: 1.47 $
+* DATE         :  $Date: 2006/11/16 16:54:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -467,7 +467,7 @@ void DoTheNasty(int argc, char **argv)
     {
         int Op, k;
 
-        //ts//unsigned    timeCnt = rwEpoch;
+        //ts//unsigned    timeCnt = 0;
         unsigned    pt = 1;
         CtiMessage  *pMsg;
 
@@ -565,7 +565,7 @@ void tagExecute(int argc, char **argv)
 {
     int Op, k;
 
-    //ts//unsigned    timeCnt = rwEpoch;
+    //ts//unsigned    timeCnt = 0;
     unsigned    pt = 1;
     CtiMessage  *pMsg;
 
@@ -575,7 +575,7 @@ void tagExecute(int argc, char **argv)
     {
         int Op, k;
 
-        //ts//unsigned    timeCnt = rwEpoch;
+        //ts//unsigned    timeCnt = 0;
         unsigned    pt = 1;
         CtiMessage  *pMsg;
 
@@ -1067,7 +1067,7 @@ void seasonExecute(int argc, char **argv)
 {
     int Op, k;
 
-    //ts//unsigned    timeCnt = rwEpoch;
+    //ts//unsigned    timeCnt = 0;
     unsigned    pt = 1;
     CtiMessage  *pMsg;
 
@@ -1077,7 +1077,7 @@ void seasonExecute(int argc, char **argv)
     {
         int Op, k;
 
-        //ts//unsigned    timeCnt = rwEpoch;
+        //ts//unsigned    timeCnt = 0;
         unsigned    pt = 1;
         CtiMessage  *pMsg;
 
@@ -1202,7 +1202,7 @@ void lmExecute(int argc, char **argv)
         {
             int i, steps, k;
 
-            //ts//unsigned    timeCnt = rwEpoch;
+            //ts//unsigned    timeCnt = 0;
             unsigned    pt = atoi(argv[4]);
             CtiMessage  *pMsg;
 
@@ -1314,7 +1314,7 @@ void  dbchangeExecute(int argc, char **argv)
 {
     int Op, k;
 
-    //ts//unsigned    timeCnt = rwEpoch;
+    //ts//unsigned    timeCnt = 0;
     unsigned    pt = 1;
     CtiMessage  *pMsg;
 
@@ -1324,7 +1324,7 @@ void  dbchangeExecute(int argc, char **argv)
     {
         int id = 0, k;
 
-        //ts//unsigned    timeCnt = rwEpoch;
+        //ts//unsigned    timeCnt = 0;
         unsigned    pt = 1;
         CtiMessage  *pMsg;
 
@@ -1469,7 +1469,7 @@ void shutdown(int argc, char **argv)
         {
             int Op, k;
 
-            //ts//unsigned    timeCnt = rwEpoch;
+            //ts//unsigned    timeCnt = 0;
             unsigned    pt = 1;
             CtiMessage  *pMsg;
 
@@ -1590,7 +1590,7 @@ void multiExecute(int argc, char **argv)
 {
     int Op, k;
 
-    //ts//unsigned    timeCnt = rwEpoch;
+    //ts//unsigned    timeCnt = 0;
     unsigned    pt = 1;
     CtiMessage  *pMsg;
 
@@ -1600,7 +1600,7 @@ void multiExecute(int argc, char **argv)
     {
         int Op, k;
 
-        //ts//unsigned    timeCnt = rwEpoch;
+        //ts//unsigned    timeCnt = 0;
         unsigned    pt = 1;
         CtiMessage  *pMsg;
 
@@ -1705,14 +1705,14 @@ void historyExecute(int argc, char **argv)
 {
     int Op, k;
 
-    //ts//unsigned    timeCnt = rwEpoch;
+    //ts//unsigned    timeCnt = 0;
     unsigned    pt = 1;
 
     try
     {
         int Op, k;
 
-        //ts//unsigned    timeCnt = rwEpoch;
+        //ts//unsigned    timeCnt = 0;
         unsigned    pt = 1;
         unsigned    rows = 0;
         CtiMessage  *pMsg;
@@ -1867,7 +1867,7 @@ void pilExecute(int argc, char **argv)
 {
     int Op, k;
 
-    unsigned    timeCnt = rwEpoch;
+    unsigned    timeCnt = 0;
     unsigned    pt = 1;
     CtiMessage  *pMsg;
 
@@ -1877,7 +1877,7 @@ void pilExecute(int argc, char **argv)
     {
         int Op, k;
 
-        unsigned    timeCnt = rwEpoch;
+        unsigned    timeCnt = 0;
         unsigned    pt = 1;
         CtiMessage  *pMsg;
 
@@ -2014,7 +2014,7 @@ void pointReqExecute(int argc, char **argv)
 {
     int Op, k;
 
-    unsigned    timeCnt = rwEpoch;
+    unsigned    timeCnt = 0;
     unsigned    pt = 1;
     CtiMessage  *pMsg;
 
@@ -2024,7 +2024,7 @@ void pointReqExecute(int argc, char **argv)
     {
         int Op, k;
 
-        unsigned    timeCnt = rwEpoch;
+        unsigned    timeCnt = 0;
         unsigned    pt = 1;
         CtiMessage  *pMsg;
 

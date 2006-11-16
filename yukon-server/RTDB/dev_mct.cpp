@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.105 $
-* DATE         :  $Date: 2006/11/15 20:45:04 $
+* REVISION     :  $Revision: 1.106 $
+* DATE         :  $Date: 2006/11/16 16:58:06 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3136,7 +3136,7 @@ INT CtiDeviceMCT::decodeGetConfig(INMESS *InMessage, CtiTime &TimeNow, list< Cti
                           DSt->Message[2] << 8  |
                           DSt->Message[3];
 
-                holiday = CtiTime(seconds + rwEpoch);
+                holiday = CtiTime(seconds);
                 result += "Holiday 1: " + (holiday.isValid()?holiday.asString():"(invalid)") + "\n";
 
                 seconds = DSt->Message[4] << 24 |
@@ -3144,7 +3144,7 @@ INT CtiDeviceMCT::decodeGetConfig(INMESS *InMessage, CtiTime &TimeNow, list< Cti
                           DSt->Message[6] << 8  |
                           DSt->Message[7];
 
-                holiday = CtiTime(seconds + rwEpoch);
+                holiday = CtiTime(seconds);
                 result += "Holiday 2: " + (holiday.isValid()?holiday.asString():"(invalid)") + "\n";
 
                 seconds = DSt->Message[8]  << 24 |
@@ -3152,7 +3152,7 @@ INT CtiDeviceMCT::decodeGetConfig(INMESS *InMessage, CtiTime &TimeNow, list< Cti
                           DSt->Message[10] << 8  |
                           DSt->Message[11];
 
-                holiday = CtiTime(seconds + rwEpoch);
+                holiday = CtiTime(seconds);
                 result += "Holiday 3: " + (holiday.isValid()?holiday.asString():"(invalid)") + "\n";
 
                 ReturnMsg->setResultString( result );

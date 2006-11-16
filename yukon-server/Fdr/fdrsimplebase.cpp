@@ -8,8 +8,8 @@
  * Author: Tom Mack
  *
  * ARCHIVE      :  $Archive$
- * REVISION     :  $Revision: 1.8 $
- * DATE         :  $Date: 2006/04/24 14:47:33 $
+ * REVISION     :  $Revision: 1.9 $
+ * DATE         :  $Date: 2006/11/16 16:54:41 $
  */
 
 #include <windows.h>
@@ -55,12 +55,12 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 // this class header
 #include "fdrsimplebase.h"
 
-/** 
+/**
  * Constructor
- */ 
+ */
 CtiFDRSimple::CtiFDRSimple(string interfaceName) : CtiFDRInterface( string(interfaceName.c_str()) )
 {
-   CtiFDRManager   *recList = new CtiFDRManager(getInterfaceName(),string(FDR_INTERFACE_RECEIVE)); 
+   CtiFDRManager   *recList = new CtiFDRManager(getInterfaceName(),string(FDR_INTERFACE_RECEIVE));
    getReceiveFromList().setPointList( recList );
 
    recList = NULL;
@@ -68,9 +68,9 @@ CtiFDRSimple::CtiFDRSimple(string interfaceName) : CtiFDRInterface( string(inter
 }
 
 
-/** 
+/**
  * Destructor
- */ 
+ */
 CtiFDRSimple::~CtiFDRSimple()
 {
   if (getReceiveFromList().getPointList() != NULL)
@@ -81,9 +81,9 @@ CtiFDRSimple::~CtiFDRSimple()
 
 
 /**
- * Initializes the class by reading in the configuration, 
+ * Initializes the class by reading in the configuration,
  * attempting to connect, and starting the threads.
- */ 
+ */
 BOOL CtiFDRSimple::init()
 {
   BOOL        retVal = true;
@@ -112,7 +112,7 @@ BOOL CtiFDRSimple::init()
 
 /**
  * Worker thread loops forever to check for new data on the foreign system.
- */ 
+ */
 void CtiFDRSimple::threadFunctionGetData()
 {
   RWRunnableSelf    pSelf = rwRunnable();
@@ -128,7 +128,7 @@ void CtiFDRSimple::threadFunctionGetData()
     connect();
     for( ;; )
     {
-      pSelf.sleep( loopPeriod ); 
+      pSelf.sleep( loopPeriod );
 
       pSelf.serviceCancellation();
 
@@ -152,7 +152,7 @@ void CtiFDRSimple::threadFunctionGetData()
         catch (exception& e)
         {
           setConnected(false);
-        }        
+        }
       }
       else
       {
@@ -191,11 +191,11 @@ void CtiFDRSimple::threadFunctionGetData()
     logNow() << "Caught unknown exception in CtiFDRSimple::threadFunctionGetData()." << endl;
   }
 }
- 
+
 
 /**
  * Retreives updated list of points from database.
- */ 
+ */
 bool CtiFDRSimple::loadTranslationLists()
 {
   bool    retCode = true;
@@ -219,7 +219,7 @@ bool CtiFDRSimple::loadTranslationLists()
   try
   {
     // make a list with all received points
-    CtiFDRManager   *pointList = new CtiFDRManager(getInterfaceName(), 
+    CtiFDRManager   *pointList = new CtiFDRManager(getInterfaceName(),
                                                    string (FDR_INTERFACE_RECEIVE));
 
 
@@ -234,28 +234,28 @@ bool CtiFDRSimple::loadTranslationLists()
         {
           const int oldSize = aList.getPointList()->entries();
           CtiLockGuard<CtiLogger> doubt_guard( dout );
-          logNow() << "Got an unexpected empty list from the database (old size=" 
+          logNow() << "Got an unexpected empty list from the database (old size="
             << oldSize << ")" << endl;
         }
       }
       else
       {
-        CtiLockGuard<CtiMutex> sendGuard(aList.getMutex());  
+        CtiLockGuard<CtiMutex> sendGuard(aList.getMutex());
         if (aList.getPointList() != NULL)
         {
           aList.deletePointList();
         }
         aList.setPointList (pointList);
-  
+
         // get iterator on list
         CtiFDRManager::CTIFdrPointIterator  myIterator = aList.getPointList()->getMap().begin();
-  
+
         beginNewPoints();
-  
+
         while ( myIterator != aList.getPointList()->getMap().end() )
         {
           point = (*myIterator).second;
-  
+
           processNewPoint(point);
           ++myIterator;
 
@@ -284,17 +284,17 @@ bool CtiFDRSimple::loadTranslationLists()
 /**
  * Formats and sends an update message.
  * This function will apply the offset and multiplier.
- */ 
-void CtiFDRSimple::handleUpdate(CtiFDRPoint *ctiPoint, 
-                    const double value, 
+ */
+void CtiFDRSimple::handleUpdate(CtiFDRPoint *ctiPoint,
+                    const double value,
                     const time_t timestamp,
                     const PointQuality_t quality)
 {
 
-  CtiTime rwTime(timestamp);
+  CtiTime time(timestamp);
   double valueConverted = 0;
 
-  if (ctiPoint->getLastTimeStamp() < rwTime)
+  if (ctiPoint->getLastTimeStamp() < time)
   {
     valueConverted = value;
     if ( ctiPoint->getPointType() == AnalogPointType)
@@ -319,9 +319,9 @@ void CtiFDRSimple::handleUpdate(CtiFDRPoint *ctiPoint,
 
     // This no longer needs to be saved for the handleNonUpdate() method.
     //ctiPoint->setValue(valueConverted);
-    //ctiPoint->setLastTimeStamp(rwTime);
+    //ctiPoint->setLastTimeStamp(time);
 
-    pData->setTime(rwTime);
+    pData->setTime(time);
 
     queueMessageToDispatch(pData);
 
@@ -338,8 +338,8 @@ void CtiFDRSimple::handleUpdate(CtiFDRPoint *ctiPoint,
 /**
  * Formats and sends an UpdateFailed message.
  * This will cause the quality of the point to change to a NonUpdatedQuality.
- */ 
-void CtiFDRSimple::handleNonUpdate(CtiFDRPoint *ctiPoint, 
+ */
+void CtiFDRSimple::handleNonUpdate(CtiFDRPoint *ctiPoint,
                                    const time_t timestamp)
 {
   CtiCommandMsg *pMsg = new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
@@ -363,7 +363,7 @@ void CtiFDRSimple::handleNonUpdate(CtiFDRPoint *ctiPoint,
   if( isDebugLevel( MAJOR_DETAIL_FDR_DEBUGLEVEL ) )
   {
     CtiLockGuard<CtiLogger> doubt_guard( dout );
-    logNow() << "UpdateFailed command for " << 
+    logNow() << "UpdateFailed command for " <<
       *ctiPoint << " queued" << endl;
   }
 }
@@ -371,7 +371,7 @@ void CtiFDRSimple::handleNonUpdate(CtiFDRPoint *ctiPoint,
 
 /**
  * Read our configuration file.
- */ 
+ */
 void CtiFDRSimple::readThisConfig()
 {
   string  keyDbReloadRate = "FDR_" + getInterfaceName() + "_DB_RELOAD_RATE";
@@ -396,12 +396,12 @@ void CtiFDRSimple::readThisConfig()
 
 /**
  * Send message with current link status.
- */ 
+ */
 void CtiFDRSimple::sendLinkState( bool state )
 {
     CtiPointDataMsg     *pData;
-    pData = new CtiPointDataMsg( _linkStatusId , 
-                                 state ? FDR_CONNECTED : FDR_NOT_CONNECTED, 
+    pData = new CtiPointDataMsg( _linkStatusId ,
+                                 state ? FDR_CONNECTED : FDR_NOT_CONNECTED,
                                  NormalQuality, StatusPointType );
     sendMessageToDispatch( pData );
 }
@@ -409,7 +409,7 @@ void CtiFDRSimple::sendLinkState( bool state )
 /**
  * Set connected state.
  * Send updated link status when it changes.
- */ 
+ */
 void CtiFDRSimple::setConnected( bool conn )
 {
    if( conn != _connected)
@@ -427,7 +427,7 @@ void CtiFDRSimple::setConnected( bool conn )
 
 /**
  * Run the interface
- */ 
+ */
 BOOL CtiFDRSimple::run()
 {
    {
@@ -449,7 +449,7 @@ BOOL CtiFDRSimple::run()
 
 /**
  * Stop the interface
- */ 
+ */
 BOOL CtiFDRSimple::stop()
 {
     _threadGetData.requestCancellation();

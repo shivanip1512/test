@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.100 $
-* DATE         :  $Date: 2006/08/15 17:54:57 $
+* REVISION     :  $Revision: 1.101 $
+* DATE         :  $Date: 2006/11/16 16:58:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -517,7 +517,7 @@ void applyDeviceQueueReport(const long unusedid, CtiDeviceSPtr RemoteDevice, voi
                         {
                             dout << "       CCU QueTable Slot " << setw(3)  << i << " is " <<
                                 ((pInfo->QueTable[i].InUse & INUSE) ? "    INUSE" : "NOT INUSE" ) << " and " <<
-                                ((pInfo->QueTable[i].InUse & INCCU) ? "    INCCU" : "NOT INCCU" ) << " TimeSent = " << CtiTime( pInfo->QueTable[i].TimeSent + rwEpoch ) << " Sequence " << hex << setw(5) << pInfo->QueTable[i].QueueEntrySequence << dec << endl;
+                                ((pInfo->QueTable[i].InUse & INCCU) ? "    INCCU" : "NOT INCCU" ) << " TimeSent = " << CtiTime( pInfo->QueTable[i].TimeSent ) << " Sequence " << hex << setw(5) << pInfo->QueTable[i].QueueEntrySequence << dec << endl;
                         }
                     }
                 }

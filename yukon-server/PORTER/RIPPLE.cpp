@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/RIPPLE.cpp-arc  $
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2006/11/06 21:46:40 $
+* REVISION     :  $Revision: 1.34 $
+* DATE         :  $Date: 2006/11/16 16:54:41 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -326,7 +326,7 @@ LCUPreSend(OUTMESS *&OutMessage, CtiDeviceSPtr Dev)
 
             /*
              * Write the control OutMessage back to the queue util the staging operation completes.
-             * At which time, the getStageTime() will be set to current time, or rwEpoch if the stage command fails...
+             * At which time, the getStageTime() will be set to current time, or 0 if the stage command fails...
              */
             if(PortManager.writeQueue (OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
             {
@@ -374,7 +374,7 @@ LCUResultDecode (OUTMESS *OutMessage, INMESS *InMessage, CtiDeviceSPtr Dev, ULON
         }
         else
         {
-            lcu->setStageTime( rwEpoch );   // Device failed to stage
+            lcu->setStageTime( CtiTime(0UL) );   // Device failed to stage
         }
 
         lcu->setNextCommandTime( CtiTime() + TIMETOSTAGE );
@@ -444,7 +444,7 @@ LCUResultDecode (OUTMESS *OutMessage, INMESS *InMessage, CtiDeviceSPtr Dev, ULON
             {
                 //The logic here is that later on retries we dont want this hanging around
                 //as that code looks to the global to do a retry on the global LCU, which we dont want
-                lcu->deleteLastControlMessage(); 
+                lcu->deleteLastControlMessage();
             }
         }
     }
@@ -1252,7 +1252,7 @@ INT LCUProcessResultCode(CtiDeviceSPtr splcu, CtiDeviceSPtr GlobalLCUDev, OUTMES
         }
     default:
         {
-            if(lcu->getNextCommandTime() > rwEpoch && CtiTime() > lcu->getNextCommandTime() )
+            if(lcu->getNextCommandTime() > CtiTime(0UL) && CtiTime() > lcu->getNextCommandTime() )
             {
                 if(lcu->getLastControlMessage() != NULL)
                 {
@@ -1293,8 +1293,8 @@ INT RequeueLCUCommand( CtiDeviceSPtr splcu )
             OutMessage->Sequence--;
             successflag = RETRY_SUBMITTED;
 
-            lcu->setNextCommandTime( rwEpoch );
-            lcu->setExecutionProhibited(lcu->getID(), CtiTime(rwEpoch));
+            lcu->setNextCommandTime( CtiTime(0UL) );
+            lcu->setExecutionProhibited(lcu->getID(), CtiTime(0UL));
             lcu->resetFlags(LCUTRANSMITSENT | LCUWASTRANSMITTING);
 
             if(PortManager.writeQueue (OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
@@ -1369,7 +1369,7 @@ INT ReportCompletionStateToLMGroup(CtiDeviceSPtr splcu)     // f.k.a. ReturnTrxI
         lst.push_back( pData );
         SubmitDataToDispatch( lst );
     }
-    
+
     while( lcu->popControlledGroupInfo(LMGIDControl, TrxID) )
     {
         ProcessRippleGroupTrxID(LMGIDControl, TrxID);
