@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct4xx.h-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2006/11/08 20:41:38 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2006/11/16 18:35:01 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -65,6 +65,17 @@ protected:
         ValueType_Raw,
     };
 
+    enum Errors
+    {
+        Error_MeterCommunicationProblem = 0xfffffffe,
+        Error_NoDataYetAvailable        = 0xfffffffc,
+        Error_IntervalOutsideValidRange = 0xfffffffa,
+        Error_DeviceFiller              = 0xfffffff8,
+        Error_PowerFailureThisInterval  = 0xfffffff6,
+        Error_PowerRestoredThisInterval = 0xfffffff4,
+        Error_Overflow                  = 0xffffffe0,
+    };
+
     enum ErrorClasses
     {
         EC_MeterReading    = 1 << 0,
@@ -74,9 +85,30 @@ protected:
         EC_LoadProfile     = 1 << 4,
     };
 
-    typedef map<unsigned long, pair<PointQuality_t, int> > QualityMap;  //  the int will hold ErrorClasses OR'd together
+    struct error_info
+    {
+        int error;
+        int error_classes;
+        PointQuality_t quality;
+        string description;
 
-    static const QualityMap _errorQualities;
+        error_info(int e, string d = "", PointQuality_t q = NormalQuality, int ec = 0) :
+            error(e),
+            description(d),
+            quality(q),
+            error_classes(ec)
+        {
+        }
+
+        operator<(const error_info &rhs) const
+        {
+            return error < rhs.error;
+        }
+    };
+
+    typedef set<error_info> error_set;
+
+    static const error_set _errorInfo;
 
     enum Commands
     {
@@ -204,18 +236,21 @@ protected:
     //  this is more extensible than a pair
     struct point_info
     {
-        double value;
+        double         value;
         PointQuality_t quality;
-        int freeze_bit;
-        //  this could hold a timestamp someday if i get really adventurous
+        int            freeze_bit;
+        string         description;
     };
 
-    static QualityMap initErrorQualities( void );
+    static error_set initErrorInfo( void );
 
     unsigned char crc8(const unsigned char *buf, unsigned int len) const;
     point_info getData(unsigned char *buf, int len, ValueType vt=ValueType_Demand) const;
 
-    CtiPointDataMsg *makePointDataMsg(CtiPointSPtr p, const point_info &pi, const string &pointString);
+    string valueReport(const CtiPointSPtr p,    const point_info &pi, const CtiTime &t = YUKONEOT) const;
+    string valueReport(const string &pointname, const point_info &pi, const CtiTime &t = YUKONEOT, bool undefined = true) const;
+
+    bool insertPointDataReport(CtiPointType_t type, int offset, CtiReturnMsg *rm, point_info pi, const string &default_pointname="", const CtiTime &timestamp=0UL, double default_multiplier=1.0, int tags=0);
 
     virtual long getLoadProfileInterval(unsigned channel) = 0;
     virtual point_info getLoadProfileData(unsigned channel, unsigned char *buf, unsigned len);
