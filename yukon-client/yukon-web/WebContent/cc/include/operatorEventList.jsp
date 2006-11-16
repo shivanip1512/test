@@ -6,20 +6,26 @@
 <f:subview id="operatorEventList">
 <t:dataTable value="#{eventListModel}" 
              var="thisEvent"
+             styleClass="light_table"
+             renderedIfEmpty="false"
              forceIdIndexFormula="#{thisEvent.id}">
   <t:column>
+    <f:facet name="header"><h:outputText value="Program Type"/></f:facet>
     <h:outputText value="#{thisEvent.program.programType.name}"/>
   </t:column>
   <t:column>
+    <f:facet name="header"><h:outputText value="Program"/></f:facet>
     <h:outputText value="#{thisEvent.program.name}"/>
   </t:column>
   <t:column>
+    <f:facet name="header"><h:outputText value="Event #"/></f:facet>
     <h:commandLink action="#{sEventOverview.showDetail}">
       <t:updateActionListener property="#{sEventOverview.selectedEvent}" value="#{thisEvent}"/>
       <h:outputText value="#{thisEvent.displayName}"/>
     </h:commandLink>
   </t:column>
   <t:column>
+     <f:facet name="header"><h:outputText value="Start Date"/></f:facet>
     <h:outputText value="#{thisEvent.startTime}">
            <f:convertDateTime 
               pattern="#{sCommercialCurtailment.dateFormat}" 
@@ -27,6 +33,7 @@
     </h:outputText>
   </t:column>
   <t:column>
+    <f:facet name="header"><h:outputText value="Start Time"/></f:facet>
     <h:outputText value="#{thisEvent.startTime}">
            <f:convertDateTime 
               pattern="#{sCommercialCurtailment.timeFormat}" 
@@ -34,6 +41,7 @@
     </h:outputText>
   </t:column>
   <t:column>
+    <f:facet name="header"><h:outputText value="Stop Time"/></f:facet>
     <h:outputText value="#{thisEvent.stopTime}">
            <f:convertDateTime 
               pattern="#{sCommercialCurtailment.timeFormat}" 
@@ -42,5 +50,6 @@
   </t:column>
 </t:dataTable>
 
+<t:outputText value="(none)" rendered="#{empty eventListModel}"/>
  
 </f:subview>
