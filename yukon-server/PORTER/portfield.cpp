@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.198 $
-* DATE         :  $Date: 2006/11/06 21:45:59 $
+* REVISION     :  $Revision: 1.199 $
+* DATE         :  $Date: 2006/11/16 16:59:21 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1359,6 +1359,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     case TYPE_TNPP:
                     case TYPE_MODBUS:
                     case TYPE_FOREIGNPORTER:
+                    case TYPE_CCU721:
                     {
                         CtiDeviceSingle *ds = static_cast<CtiDeviceSingle *>(Device.get());
                         int comm_status = NoError;
@@ -2183,6 +2184,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     case TYPE_ALPHA_A3:
                     case TYPE_SENTINEL:
                     case TYPE_TDMARKV:
+                    case TYPE_CCU721:
                     default:
                         {
                             /*  These guys are handled in a special way...  */
@@ -2223,6 +2225,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     case TYPE_PAGING_RECEIVER:
                     case TYPE_TNPP:
                     case TYPE_MODBUS:
+                    case TYPE_CCU721:
                         break;
                     case TYPE_CCU700:
                     case TYPE_CCU710:
