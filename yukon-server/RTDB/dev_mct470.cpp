@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.74 $
-* DATE         :  $Date: 2006/11/10 16:29:42 $
+* REVISION     :  $Revision: 1.75 $
+* DATE         :  $Date: 2006/11/16 18:36:35 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1051,22 +1051,22 @@ INT CtiDeviceMCT470::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
                     insertPointFail( InMessage, retMsg, ScanRateStatus, 7, StatusPointType );
                     insertPointFail( InMessage, retMsg, ScanRateStatus, 6, StatusPointType );
                     insertPointFail( InMessage, retMsg, ScanRateStatus, 5, StatusPointType );
-    
+
                     resetForScan(ScanRateGeneral);
                     break;
                 }
-    
+
                 case ScanRateAccum:
                 {
                     insertPointFail( InMessage, retMsg, ScanRateAccum, 1, PulseAccumulatorPointType );
                     insertPointFail( InMessage, retMsg, ScanRateAccum, 2, PulseAccumulatorPointType );
                     insertPointFail( InMessage, retMsg, ScanRateAccum, 3, PulseAccumulatorPointType );
                     insertPointFail( InMessage, retMsg, ScanRateAccum, 4, PulseAccumulatorPointType );
-    
+
                     resetForScan(ScanRateAccum);
                     break;
                 }
-    
+
                 case ScanRateIntegrity:
                 {
                     insertPointFail( InMessage, retMsg, ScanRateIntegrity, PointOffset_Accumulator_Powerfail, PulseAccumulatorPointType);
@@ -1079,26 +1079,26 @@ INT CtiDeviceMCT470::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
                     insertPointFail( InMessage, retMsg, ScanRateGeneral, CtiDeviceMCT470::PointOffset_VoltsPhaseA, AnalogPointType);
                     insertPointFail( InMessage, retMsg, ScanRateGeneral, CtiDeviceMCT470::PointOffset_VoltsPhaseB, AnalogPointType);
                     insertPointFail( InMessage, retMsg, ScanRateGeneral, CtiDeviceMCT470::PointOffset_VoltsPhaseC, AnalogPointType);
-    
+
                     resetForScan(ScanRateIntegrity);
                     break;
                 }
-    
+
                 case ScanRateLoadProfile:
                 {
                     int channel = parse.getiValue("loadprofile_channel", 0);
-        
+
                     if( channel )
                     {
                         insertPointFail( InMessage, retMsg, ScanRateLoadProfile, channel + PointOffset_LoadProfileOffset, DemandAccumulatorPointType );
                     }
                     break;
                 }
-    
+
                 default:
                 {
                     retVal = Inherited::ErrorDecode(InMessage, TimeNow, vgList, retList, outList);
-        
+
                     break;
                 }
             }
@@ -1123,7 +1123,7 @@ INT CtiDeviceMCT470::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
         {
             retVal = Inherited::ErrorDecode(InMessage, TimeNow, vgList, retList, outList);
         }
-    
+
         // send the whole mess to dispatch
         if( retMsg->PointData().size() > 0 )
         {
@@ -1133,7 +1133,7 @@ INT CtiDeviceMCT470::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
         {
             delete retMsg;
         }
-    
+
         //  set it to null, it's been sent off
         retMsg = NULL;
     }
@@ -1142,7 +1142,7 @@ INT CtiDeviceMCT470::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** Checkpoint - null retMsg() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
-    
+
     return retVal;
 }
 
@@ -2997,47 +2997,15 @@ INT CtiDeviceMCT470::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
 
             point_info pi = getData(DSt->Message + (i * 3), 3, ValueType_Accumulator);
 
-            // handle accumulator data here
-            if( pPoint )
-            {
-                // 24 bit pulse value
-                pi.value = boost::static_pointer_cast<CtiPointNumeric>(pPoint)->computeValueForUOM(pi.value);
+            CtiTime pointTime;
+            pointTime -= pointTime.seconds() % 300;
 
-                resultString = "";
+            string point_name;
 
-                if( pi.quality != InvalidQuality )
-                {
-                    resultString += getName() + " / " + pPoint->getName() + " = " + CtiNumStr(pi.value, boost::static_pointer_cast<CtiPointNumeric>(pPoint)->getPointUnits().getDecimalPlaces());
+            if( !i )  point_name = "KYZ 1";
 
-                    if( pData = makePointDataMsg(pPoint, pi, resultString) )
-                    {
-                        pData->setTime(CtiTime::now() - (CtiTime::now().seconds() % 300) );
-
-                        ReturnMsg->PointData().push_back(pData);
-                        pData = NULL;  // We just put it on the list...
-                    }
-                }
-                else
-                {
-                    resultString += ReturnMsg->ResultString();
-                    resultString += getName() + " / " + pPoint->getName() + " = (invalid data)";
-
-                    ReturnMsg->setResultString(resultString);
-                }
-            }
-            else if( i == 0 )
-            {
-                if( pi.quality != InvalidQuality )
-                {
-                    resultString += getName() + " / KYZ 1 = " + CtiNumStr(pi.value) + "  --  POINT UNDEFINED IN DB";
-                }
-                else
-                {
-                    resultString += getName() + " / KYZ 1 = (invalid data) --  POINT UNDEFINED IN DB";
-                }
-
-                ReturnMsg->setResultString(resultString);
-            }
+            insertPointDataReport(PulseAccumulatorPointType, i + 1,
+                                  ReturnMsg, pi, point_name, pointTime);
         }
 
         retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
@@ -3049,16 +3017,14 @@ INT CtiDeviceMCT470::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
 
 INT CtiDeviceMCT470::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
-    int        status = NORMAL, i;
+    int  status = NORMAL, i;
+    bool demand_defined;
     point_info pi;
-    CtiString    resultString, pointString, stateName;
 
     INT ErrReturn = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
-    CtiPointSPtr    pPoint;
     CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-    CtiPointDataMsg *pData = NULL;
 
     if( getMCTDebugLevel(DebugLevel_Scanrates) )
     {
@@ -3085,81 +3051,47 @@ INT CtiDeviceMCT470::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, l
 
         for( i = 0; i < 8; i++ )
         {
-            if( pPoint = getDevicePointOffsetTypeEqual(i + 1, StatusPointType) )
+            insertPointDataReport(StatusPointType, i + 1,
+                                  ReturnMsg, pi);
+        }
+
+        //  check to see if there are any demand points defined
+        for( i = 0; !demand_defined && i < 4; i++ )
+        {
+            if( getDevicePointOffsetTypeEqual(i + 1, DemandAccumulatorPointType) )
             {
-                pi.value   = (DSt->Message[0] >> i) & 0x01;
-                pi.quality = NormalQuality;
-
-                stateName = ResolveStateName(pPoint->getStateGroupID(), pi.value);
-
-                if( !stateName.empty() )
-                {
-                    resultString += getName() + " / " + pPoint->getName() + ":" + stateName;
-                }
-                else
-                {
-                    resultString += getName() + " / " + pPoint->getName() + " = " + CtiNumStr(pi.value);
-                }
-
-                if(pData = makePointDataMsg(pPoint, pi, resultString))
-                {
-                    ReturnMsg->PointData().push_back(pData);
-                    pData = NULL;  // We just put it on the list...
-                }
+                demand_defined = true;
             }
         }
 
-        for(int i = 0; i < 5; i++)
-        {
-            if( i == 4 )
-            {
-                pi = getData(DSt->Message + (i * 2) + 1, 2, ValueType_Raw);
+        CtiTime demand_time;
+        demand_time -= demand_time.seconds() % getDemandInterval();
 
-                pPoint = getDevicePointOffsetTypeEqual(PointOffset_Accumulator_Powerfail, PulseAccumulatorPointType);
+        for( i = 0; i < 4; i++ )
+        {
+            pi = getData(DSt->Message + (i * 2) + 1, 2, ValueType_Demand);
+
+            //  turn raw pulses into a demand reading
+            pi.value *= double(3600 / getDemandInterval());
+
+            //  if there's no other demand defined, we need to at least send point 1
+            if( !i && !demand_defined )
+            {
+                insertPointDataReport(DemandAccumulatorPointType, i + 1,
+                                      ReturnMsg, pi, "Channel 1 Demand", demand_time);
             }
             else
             {
-                pi = getData(DSt->Message + (i * 2) + 1, 2, ValueType_Demand);
-
-                pPoint = getDevicePointOffsetTypeEqual(i + 1, DemandAccumulatorPointType);
-
-                //  turn raw pulses into a demand reading
-                pi.value *= double(3600 / getDemandInterval());
-            }
-
-            if( pPoint )
-            {
-                CtiTime pointTime;
-
-                pi.value = boost::static_pointer_cast<CtiPointNumeric>(pPoint)->computeValueForUOM(pi.value);
-
-                pointString  = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(pi.value, boost::static_pointer_cast<CtiPointNumeric>(pPoint)->getPointUnits().getDecimalPlaces());
-                //  if the point exists, we don't need the "POINT UNDEFINED" guys hanging around
-                resultString = "";
-
-                if( pData = makePointDataMsg(pPoint, pi, pointString) )
-                {
-                    if( i != 4 )
-                    {
-                        pointTime -= pointTime.seconds() % getDemandInterval();
-                        pData->setTime( pointTime );
-                    }
-
-                    ReturnMsg->PointData().push_back(pData);
-                    pData = NULL;  // We just put it on the list...
-                }
-            }
-            else if( i == 4 )
-            {
-                resultString += getName() + " / Blink Counter = " + CtiNumStr(pi.value) + "\n";
-            }
-            else if( i == 0 )
-            {
-                resultString += getName() + " / Channel 1 Demand = " + CtiNumStr(pi.value) + "  --  POINT UNDEFINED IN DB\n";
+                insertPointDataReport(DemandAccumulatorPointType, i + 1,
+                                      ReturnMsg, pi, "", demand_time);
             }
         }
 
-        ReturnMsg->setResultString(resultString);
+        pi = getData(DSt->Message + 9, 2, ValueType_Raw);
+
+        insertPointDataReport(PulseAccumulatorPointType, PointOffset_Accumulator_Powerfail,
+                              ReturnMsg, pi, "Blink Counter");
+
         decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
 
         retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList, getGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection ));
@@ -3171,19 +3103,16 @@ INT CtiDeviceMCT470::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, l
 
 INT CtiDeviceMCT470::decodeGetValueMinMaxDemand(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
-    int           status = NORMAL, base_offset, point_offset;
-    point_info    pi, pi_time;
-    string        resultString, pointString, stateName;
-    unsigned long pointTime;
+    int         status = NORMAL, base_offset, point_offset;
+    point_info  pi, pi_time;
+    CtiTime     pointTime;
 
     INT ErrReturn = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
     CtiCommandParser parse(InMessage->Return.CommandStr);
 
-    CtiPointSPtr     pPoint;
     CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-    CtiPointDataMsg *pData = NULL;
 
     if( getMCTDebugLevel(DebugLevel_Scanrates) )
     {
@@ -3225,32 +3154,18 @@ INT CtiDeviceMCT470::decodeGetValueMinMaxDemand(INMESS *InMessage, CtiTime &Time
         //  turn raw pulses into a demand reading
         pi.value *= double(3600 / getDemandInterval());
 
-        pointTime = pi_time.value;
+        pointTime = CtiTime(pi_time.value);
 
         //  we can do a rudimentary frozen peak time check here with the dynamicInfo stuff - we can't
         //    do much more, since we don't get the freeze count back with the frozen demand, so we have to
         //    take the device's word for it
 
-        if( pPoint = getDevicePointOffsetTypeEqual(point_offset, DemandAccumulatorPointType) )
-        {
-            pi.value = boost::static_pointer_cast<CtiPointNumeric>(pPoint)->computeValueForUOM(pi.value);
+        string pointname;
 
-            pointString  = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(pi.value, boost::static_pointer_cast<CtiPointNumeric>(pPoint)->getPointUnits().getDecimalPlaces());
-            pointString += " @ " + printable_time(pointTime);
+        pointname = "Channel " + CtiNumStr(base_offset) + " Max Demand";
 
-            if( pData = makePointDataMsg(pPoint, pi, pointString) )
-            {
-                pointTime -= pointTime % getDemandInterval();
-                pData->setTime(CtiTime(pointTime));
-
-                ReturnMsg->PointData().push_back(pData);
-                pData = 0;  // We just put it on the list...
-            }
-        }
-        else
-        {
-            resultString += getName() + " / Channel " + CtiNumStr(base_offset) + " Max Demand = " + CtiNumStr(pi.value) + " @ " + printable_time(pointTime) + "  --  POINT UNDEFINED IN DB\n";
-        }
+        insertPointDataReport(DemandAccumulatorPointType, point_offset,
+                              ReturnMsg, pi, pointname, pointTime);
 
         pi      = getData(DSt->Message + 6, 2, ValueType_Demand);
         pi_time = getData(DSt->Message + 8, 4, ValueType_Raw);
@@ -3258,26 +3173,23 @@ INT CtiDeviceMCT470::decodeGetValueMinMaxDemand(INMESS *InMessage, CtiTime &Time
         //  turn raw pulses into a demand reading
         pi.value *= double(3600 / getDemandInterval());
 
-        pointTime = pi_time.value;
+        pointTime = CtiTime(pi_time.value);
+
+        pointname = "Channel " + CtiNumStr(base_offset) + " Min Demand";
+
+        CtiPointNumericSPtr p = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(point_offset, DemandAccumulatorPointType));
 
         //  use the max point for the computation, if we've got it
-        if( pPoint )
+        if( p )
         {
-            pi.value = boost::static_pointer_cast<CtiPointNumeric>(pPoint)->computeValueForUOM(pi.value);
+            pi.value = p->computeValueForUOM(pi.value);
 
-            pointString  = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(pi.value, boost::static_pointer_cast<CtiPointNumeric>(pPoint)->getPointUnits().getDecimalPlaces());
-
-            pointString += " @ " + printable_time(pointTime);
-
-            //  we don't actually send a pointdata message for the min point, so we tack the results onto the result string instead
-            resultString += pointString;
+            valueReport(p, pi, pointTime);
         }
         else
         {
-            resultString += getName() + " / Channel " + CtiNumStr(base_offset) + " Min Demand = " + CtiNumStr(pi.value) + " @ " + printable_time(pointTime) + "  --  POINT UNDEFINED IN DB\n";
+            valueReport(pointname, pi, pointTime, false);
         }
-
-        ReturnMsg->setResultString(resultString);
 
         retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
     }
@@ -3401,48 +3313,25 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                 //  get demand
                 pi = getData(DSt->Message, 3, ValueType_IED);
 
-                if(kw = getDevicePointOffsetTypeEqual(PointOffset_TotalKW, AnalogPointType))
-                {
-                    pi.value = boost::static_pointer_cast<CtiPointNumeric>(kw)->computeValueForUOM(pi.value);
-
-                    point_string = getName() + " / " + kw->getName() + " = " + CtiNumStr(pi.value, boost::static_pointer_cast<CtiPointNumeric>(kw)->getPointUnits().getDecimalPlaces());
-
-                    ReturnMsg->PointData().push_back(makePointDataMsg(kw, pi, point_string));
-                }
-                else
-                {
-                    resultString += getName() + " / current KW = " + CtiNumStr(pi.value) + "\n";
-                }
+                insertPointDataReport(AnalogPointType, PointOffset_TotalKW,
+                                      ReturnMsg, pi, "current kW");
 
                 //  get selectable metric (kM, kVAR, etc)
                 pi = getData(DSt->Message + 3, 3, ValueType_IED);
 
-                if(km = getDevicePointOffsetTypeEqual(PointOffset_TotalKM, AnalogPointType))
-                {
-                    pi.value = boost::static_pointer_cast<CtiPointNumeric>(km)->computeValueForUOM(pi.value);
-
-                    point_string = getName() + " / " + km->getName() + " = " + CtiNumStr(pi.value, boost::static_pointer_cast<CtiPointNumeric>(km)->getPointUnits().getDecimalPlaces());
-
-                    ReturnMsg->PointData().push_back(makePointDataMsg(km, pi, point_string));
-                }
-                else
-                {
-                    resultString += getName() + " / current KM = " + CtiNumStr(pi.value) + "\n";
-                }
+                insertPointDataReport(AnalogPointType, PointOffset_TotalKM,
+                                      ReturnMsg, pi, "current kM");
 
                 //  S4-specific - get voltage
                 pi = getData(DSt->Message + 6, 2, ValueType_IED);
                 pi.value /= 100.0;
 
-                if(volts = getDevicePointOffsetTypeEqual(PointOffset_VoltsPhaseA, AnalogPointType))
+                if(getDevicePointOffsetTypeEqual(PointOffset_VoltsPhaseA, AnalogPointType))
                 {
                     send_outages = false;
 
-                    pi.value  = boost::static_pointer_cast<CtiPointNumeric>(volts)->computeValueForUOM(pi.value);
-
-                    point_string = getName() + " / " + volts->getName() + " = " + CtiNumStr(pi.value, boost::static_pointer_cast<CtiPointNumeric>(volts)->getPointUnits().getDecimalPlaces());
-
-                    ReturnMsg->PointData().push_back(makePointDataMsg(volts, pi, point_string));
+                    insertPointDataReport(AnalogPointType, PointOffset_VoltsPhaseA,
+                                          ReturnMsg, pi);
                 }
                 //  don't send the point if it's not defined - this is a hack to allow the S4 and Alpha decodes to
                 //    both happen (until we have the configs to tell us which one to use)
@@ -3458,11 +3347,8 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                 {
                     send_outages = false;
 
-                    pi.value  = boost::static_pointer_cast<CtiPointNumeric>(volts)->computeValueForUOM(pi.value);
-
-                    point_string = getName() + " / " + volts->getName() + " = " + CtiNumStr(pi.value, boost::static_pointer_cast<CtiPointNumeric>(volts)->getPointUnits().getDecimalPlaces());
-
-                    ReturnMsg->PointData().push_back(makePointDataMsg(volts, pi, point_string));
+                    insertPointDataReport(AnalogPointType, PointOffset_VoltsPhaseB,
+                                          ReturnMsg, pi);
                 }
                 //  don't send the point if it's not defined - this is a hack to allow the S4 and Alpha decodes to
                 //    both happen (until we have the configs to tell us which one to use)
@@ -3478,11 +3364,8 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                 {
                     send_outages = false;
 
-                    pi.value  = boost::static_pointer_cast<CtiPointNumeric>(volts)->computeValueForUOM(pi.value);
-
-                    point_string = getName() + " / " + volts->getName() + " = " + CtiNumStr(pi.value, boost::static_pointer_cast<CtiPointNumeric>(volts)->getPointUnits().getDecimalPlaces());
-
-                    ReturnMsg->PointData().push_back(makePointDataMsg(volts, pi, point_string));
+                    insertPointDataReport(AnalogPointType, PointOffset_VoltsPhaseC,
+                                          ReturnMsg, pi);
                 }
                 //  don't send the point if it's not defined - this is a hack to allow the S4 and Alpha decodes to
                 //    both happen (until we have the configs to tell us which one to use)
@@ -3495,7 +3378,8 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                 {
                     pi = getData(DSt->Message + 6, 2, ValueType_IED);
 
-                    resultString += getName() + " / outage count: " + CtiNumStr(pi.value) + "\n";
+                    resultString += valueReport("outage count", pi).c_str();
+                    resultString += "\n";
                 }
             }
         }
@@ -3516,37 +3400,18 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
 
                 pi = getData(DSt->Message, 5, ValueType_IED);
 
-                if(kwh = getDevicePointOffsetTypeEqual(PointOffset_TotalKWH, AnalogPointType))
-                {
-                    pi.value = boost::static_pointer_cast<CtiPointNumeric>(kwh)->computeValueForUOM(pi.value);
-
-                    point_string = getName() + " / " + kwh->getName() + " = " + CtiNumStr(pi.value, boost::static_pointer_cast<CtiPointNumeric>(kwh)->getPointUnits().getDecimalPlaces());
-
-                    ReturnMsg->PointData().push_back(makePointDataMsg(kwh, pi, point_string));
-                }
-                else
-                {
-                    resultString += getName() + " / KWH total = " + CtiNumStr(pi.value) + "\n";
-                }
+                insertPointDataReport(AnalogPointType, PointOffset_TotalKWH,
+                                      ReturnMsg, pi, "kWh total");
 
                 pi = getData(DSt->Message + 5, 5, ValueType_IED);
 
-                if(kmh = getDevicePointOffsetTypeEqual(PointOffset_TotalKMH, AnalogPointType))
-                {
-                    pi.value = boost::static_pointer_cast<CtiPointNumeric>(kmh)->computeValueForUOM(pi.value);
-
-                    point_string = getName() + " / " + kmh->getName() + " = " + CtiNumStr(pi.value, boost::static_pointer_cast<CtiPointNumeric>(kmh)->getPointUnits().getDecimalPlaces());
-
-                    ReturnMsg->PointData().push_back(makePointDataMsg(kmh, pi, point_string));
-                }
-                else
-                {
-                    resultString += getName() + " / KMH total = " + CtiNumStr(pi.value) + "\n";
-                }
+                insertPointDataReport(AnalogPointType, PointOffset_TotalKMH,
+                                      ReturnMsg, pi, "kMh total");
 
                 pi = getData(DSt->Message + 10, 2, ValueType_IED);
 
-                resultString += getName() + " / Average power factor since last freeze = " + CtiNumStr(pi.value) + "\n";
+                resultString += valueReport("Average power factor since last freeze", pi).c_str();
+                resultString += "\n";
             }
         }
         else if( parse.isKeyValid("ied_dnp") )
@@ -3565,19 +3430,16 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                 {
                     for( int byte = 0; byte < 6; byte++ )
                     {
+                        int pointoffset = PointOffset_DNPAnalog_Precanned1+byte+(i-1)*6;
+
+                        string pointname;
+                        pointname  = "Analog point ";
+                        pointname += CtiNumStr(pointoffset);
+
                         pi = getData(DSt->Message + byte*2, 2, ValueType_Raw);
-                        if( !status && (tempPoint = getDevicePointOffsetTypeEqual(PointOffset_DNPAnalog_Precanned1+byte+(i-1)*6, AnalogPointType)))
-                        {
-                            pi.value = boost::static_pointer_cast<CtiPointNumeric>(tempPoint)->computeValueForUOM(pi.value);
 
-                            point_string = getName() + " / " + tempPoint->getName() + " = " + CtiNumStr(pi.value, boost::static_pointer_cast<CtiPointNumeric>(tempPoint)->getPointUnits().getDecimalPlaces());
-
-                            ReturnMsg->PointData().push_back(makePointDataMsg(tempPoint, pi, point_string));
-                        }
-                        else
-                        {
-                            resultString += getName() + " / Analog point " + CtiNumStr(PointOffset_DNPAnalog_Precanned1+byte+(i-1)*6) + " = " + CtiNumStr(pi.value) + "\n";
-                        }
+                        insertPointDataReport(AnalogPointType, pointoffset,
+                                              ReturnMsg, pi, pointname);
                     }
                 }
                 else
@@ -3596,19 +3458,16 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                 {
                     for( int byte = 0; byte < 6; byte++ )
                     {
+                        int pointoffset = PointOffset_DNPAnalog_Precanned1+byte+(i-1)*6;
+
+                        string pointname;
+                        pointname  = "Pulse Accumulator point ";
+                        pointname += CtiNumStr(pointoffset);
+
                         pi = getData(DSt->Message + byte*2, 2, ValueType_Raw);
-                        if( !status && (tempPoint = getDevicePointOffsetTypeEqual(PointOffset_DNPCounter_Precanned1+byte+(i-1)*6, PulseAccumulatorPointType)))
-                        {
-                            pi.value = boost::static_pointer_cast<CtiPointNumeric>(tempPoint)->computeValueForUOM(pi.value);
 
-                            point_string = getName() + " / " + tempPoint->getName() + " = " + CtiNumStr(pi.value, boost::static_pointer_cast<CtiPointNumeric>(tempPoint)->getPointUnits().getDecimalPlaces());
-
-                            ReturnMsg->PointData().push_back(makePointDataMsg(tempPoint, pi, point_string));
-                        }
-                        else
-                        {
-                            resultString += getName() + " / Pulse Accumulator point " + CtiNumStr(PointOffset_DNPCounter_Precanned1+byte+(i-1)*6) + " = " + CtiNumStr(pi.value) + "\n";
-                        }
+                        insertPointDataReport(PulseAccumulatorPointType, pointoffset,
+                                              ReturnMsg, pi, pointname);
                     }
                 }
                 else
@@ -3632,12 +3491,9 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                         for( int bit = 0; bit < 8; bit++ )
                         {
                             pi.value = (DSt->Message[byte] >> bit) & 0x01;
-                            if( !status && (tempPoint = getDevicePointOffsetTypeEqual(PointOffset_DNPStatus_PrecannedStart+byte*8+bit, StatusPointType)))
-                            {
-                                point_string = getName() + " / " + tempPoint->getName() + " = " + CtiNumStr(pi.value);
 
-                                ReturnMsg->PointData().push_back(makePointDataMsg(tempPoint, pi, point_string));
-                            }
+                            insertPointDataReport(StatusPointType, PointOffset_DNPStatus_PrecannedStart+byte*8+bit,
+                                                  ReturnMsg, pi);
                         }
 
                         resultString += getName() + " / Binary Data Byte " + CtiNumStr(byte) + " = " + CtiNumStr(DSt->Message[byte]) + "\n";
@@ -3651,7 +3507,7 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                     {
                         for( int bit = 0; bit < 8; bit++ )
                         {
-                            insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_DNPStatus_PrecannedStart+byte*8+bit, StatusPointType);
+                            insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_DNPStatus_PrecannedStart+(byte*8)+bit, StatusPointType);
                         }
                     }
                 }
@@ -3746,18 +3602,13 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
 
                 pi = getData(DSt->Message, 5, ValueType_Raw);
 
-                if(kwh = getDevicePointOffsetTypeEqual(offset + rate * 2 + 1, AnalogPointType))
-                {
-                    pi.value = boost::static_pointer_cast<CtiPointNumeric>(kwh)->computeValueForUOM(pi.value);
+                string pointname;
+                pointname  = "kWH rate ";
+                pointname += string(1, (char)('A' + rate));
+                pointname += " total";
 
-                    point_string = getName() + " / " + kwh->getName() + " = " + CtiNumStr(pi.value, boost::static_pointer_cast<CtiPointNumeric>(kwh)->getPointUnits().getDecimalPlaces());
-
-                    ReturnMsg->PointData().push_back(makePointDataMsg(kwh, pi, point_string));
-                }
-                else
-                {
-                    resultString += getName() + " / KWH rate " + (char)('A' + rate) + " total = " + CtiNumStr(pi.value) + "\n";
-                }
+                insertPointDataReport(AnalogPointType, offset + rate * 2 + 1,
+                                      ReturnMsg, pi, pointname);
 
                 //  this is CRAZY WIN32 SPECIFIC
                 _TIME_ZONE_INFORMATION tzinfo;
@@ -3779,26 +3630,12 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                 time_info = getData(DSt->Message + 8, 4, ValueType_Raw);
                 peak_time = (unsigned long)time_info.value + timezone_offset;
 
-                if(kw = getDevicePointOffsetTypeEqual(offset + rate * 2, AnalogPointType))
-                {
-                    CtiPointDataMsg *peak_msg;
+                pointname  = "kW rate ";
+                pointname += string(1, (char)('A' + rate));
+                pointname += " peak";
 
-                    pi.value = boost::static_pointer_cast<CtiPointNumeric>(kw)->computeValueForUOM(pi.value);
-
-                    point_string  = getName() + " / " + kw->getName() + " = " + CtiNumStr(pi.value, boost::static_pointer_cast<CtiPointNumeric>(kw)->getPointUnits().getDecimalPlaces());
-                    point_string += " @ " + printable_time(peak_time) + "\n";
-
-                    peak_msg = makePointDataMsg(kw, pi, point_string);
-                    peak_msg->setTime(CtiTime(peak_time));
-
-                    ReturnMsg->PointData().push_back(peak_msg);
-                }
-                else
-                {
-                    resultString += getName() + " / KW rate " + (char)('A' + rate) + " peak = " + CtiNumStr(pi.value);
-
-                    resultString += " @ " + printable_time(peak_time) + "\n";
-                }
+                insertPointDataReport(AnalogPointType, offset + rate * 2,
+                                      ReturnMsg, pi, pointname, peak_time);
             }
         }
 
@@ -4444,17 +4281,14 @@ void CtiDeviceMCT470::decodeDNPRealTimeRead(BYTE *buffer, int readNumber, string
         {
             if( !errorFlagSet )
             {
-                if( (tempPoint = getDevicePointOffsetTypeEqual(binaryoffset+i, StatusPointType)))
-                {
-                    pi.value = (buffer[0] >> (i+1)) & 0x01;
-                    point_string = getName() + " / " + tempPoint->getName() + " = " + CtiNumStr(pi.value);
+                string pointname;
+                pointname  = "Status point ";
+                pointname += CtiNumStr(binaryoffset+i);
 
-                    ReturnMsg->PointData().push_back(makePointDataMsg(tempPoint, pi, point_string));
-                }
-                else
-                {
-                    resultString += getName() + " / Status point " + CtiNumStr(binaryoffset+i) + " = " + CtiNumStr(pi.value) + "\n";
-                }
+                pi.value = (buffer[0] >> i) & 0x01;
+
+                insertPointDataReport(StatusPointType, binaryoffset + i,
+                                      ReturnMsg, pi, pointname);
             }
             else
             {
@@ -4466,21 +4300,18 @@ void CtiDeviceMCT470::decodeDNPRealTimeRead(BYTE *buffer, int readNumber, string
         {
             if( !errorFlagSet )
             {
-                if( (tempPoint = getDevicePointOffsetTypeEqual(binaryoffset+i+7, StatusPointType)))
-                {
-                    pi.value = (buffer[1] >> i) & 0x01;
-                    point_string = getName() + " / " + tempPoint->getName() + " = " + CtiNumStr(pi.value);
+                string pointname;
+                pointname  = "Status point ";
+                pointname += CtiNumStr(binaryoffset + i + 7);
 
-                    ReturnMsg->PointData().push_back(makePointDataMsg(tempPoint, pi, point_string));
-                }
-                else
-                {
-                    resultString += getName() + " / Status point " + CtiNumStr(binaryoffset+i+7) + " = " + CtiNumStr(pi.value) + "\n";
-                }
+                pi.value = (buffer[1] >> i) & 0x01;
+
+                insertPointDataReport(StatusPointType, binaryoffset + i + 7,
+                                      ReturnMsg, pi, pointname);
             }
             else
             {
-                insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, binaryoffset+i+7, StatusPointType);
+                insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, binaryoffset+i, StatusPointType);
             }
         }
 
@@ -4489,19 +4320,14 @@ void CtiDeviceMCT470::decodeDNPRealTimeRead(BYTE *buffer, int readNumber, string
         {
             if( !errorFlagSet )
             {
-                pi = getData(buffer+2*(i+1), 2, ValueType_Raw);
-                if( !errorFlagSet && (tempPoint = getDevicePointOffsetTypeEqual(analogoffset+i, AnalogPointType)))
-                {
-                    pi.value = boost::static_pointer_cast<CtiPointNumeric>(tempPoint)->computeValueForUOM(pi.value);
+                string pointname;
+                pointname  = "Analog point ";
+                pointname += CtiNumStr(analogoffset + i);
 
-                    point_string = getName() + " / " + tempPoint->getName() + " = " + CtiNumStr(pi.value);
+                pi = getData(buffer + 2 * (i + 1), 2, ValueType_Raw);
 
-                    ReturnMsg->PointData().push_back(makePointDataMsg(tempPoint, pi, point_string));
-                }
-                else
-                {
-                    resultString += getName() + " / Analog point " + CtiNumStr(analogoffset+i) + " = " + CtiNumStr(pi.value) + "\n";
-                }
+                insertPointDataReport(AnalogPointType, analogoffset + i,
+                                      ReturnMsg, pi, pointname);
             }
             else
             {
@@ -4513,19 +4339,14 @@ void CtiDeviceMCT470::decodeDNPRealTimeRead(BYTE *buffer, int readNumber, string
         {
             if( !errorFlagSet )
             {
-                pi = getData(buffer+2*i+8, 2, ValueType_Raw);
-                if( (tempPoint = getDevicePointOffsetTypeEqual(counteroffset+i, PulseAccumulatorPointType)))
-                {
-                    pi.value = boost::static_pointer_cast<CtiPointNumeric>(tempPoint)->computeValueForUOM(pi.value);
+                string pointname;
+                pointname  = "Pulse Accumulator point ";
+                pointname += CtiNumStr(counteroffset + i);
 
-                    point_string = getName() + " / " + tempPoint->getName() + " = " + CtiNumStr(pi.value);
+                pi = getData(buffer + 2 * i + 8, 2, ValueType_Raw);
 
-                    ReturnMsg->PointData().push_back(makePointDataMsg(tempPoint, pi, point_string));
-                }
-                else
-                {
-                    resultString += getName() + " / Pulse Accumulator point " + CtiNumStr(counteroffset+i) + " = " + CtiNumStr(pi.value) + "\n";
-                }
+                insertPointDataReport(PulseAccumulatorPointType, counteroffset + i,
+                                      ReturnMsg, pi, pointname);
             }
             else
             {
@@ -4564,6 +4385,7 @@ void CtiDeviceMCT470::getBytesFromString(string &values, BYTE* buffer, int buffL
                 numValues++;
             }
         }
+
         if( numValues < fillCount)
         {
             for( int i=numValues; i<fillCount; i++)
@@ -4581,6 +4403,7 @@ void CtiDeviceMCT470::getBytesFromString(string &values, BYTE* buffer, int buffL
 string CtiDeviceMCT470::resolveDNPStatus(int status)
 {
     string result;
+
     switch(status)
     {
         case 0:     result = "Success";                     break;

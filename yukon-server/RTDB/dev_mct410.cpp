@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.105 $
-* DATE         :  $Date: 2006/11/08 20:46:12 $
+* REVISION     :  $Revision: 1.106 $
+* DATE         :  $Date: 2006/11/16 18:36:35 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1702,7 +1702,6 @@ INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
     INT status = NORMAL;
     ULONG i,x;
     INT pid;
-    string resultString, freeze_info_string;
     CtiTime pointTime;
     bool valid_data = true;
 
@@ -1796,8 +1795,6 @@ INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
 
                 pi = getData(DSt->Message + offset, 3, ValueType_Accumulator);
 
-                pPoint = getDevicePointOffsetTypeEqual( 1 + i, PulseAccumulatorPointType );
-
                 pointTime -= pointTime.seconds() % 60;
             }
             else if( InMessage->Sequence == Cti::Protocol::Emetcon::GetValue_FrozenKWH )
@@ -1810,8 +1807,6 @@ INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
 
                 if( pi.freeze_bit == _expected_freeze )  //  low-order bit indicates which freeze caused the value to be stored
                 {
-                    pPoint = getDevicePointOffsetTypeEqual( 1 + i, PulseAccumulatorPointType );
-
                     //  assign time from the last freeze time, if the lower bit of dp.first matches the last freeze
                     //    and the freeze counter (DSt->Message[3]) is what we expect
                     //  also, archive the received freeze and the freeze counter into the dynamicpaoinfo table
@@ -1830,8 +1825,6 @@ INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
 
                         pointTime -= pointTime.seconds() % 60;
                     }
-
-                    freeze_info_string = " @ " + pointTime.asString();
                 }
                 else
                 {
@@ -1850,47 +1843,13 @@ INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
 
             if( valid_data )
             {
-                // handle accumulator data here
-                if( pPoint )
-                {
-                    // 24 bit pulse value
-                    pi.value = boost::static_pointer_cast<CtiPointNumeric>(pPoint)->computeValueForUOM(pi.value);
+                string point_name;
 
-                    if( pi.quality != InvalidQuality )
-                    {
-                        resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(pi.value, boost::static_pointer_cast<CtiPointNumeric>(pPoint)->getPointUnits().getDecimalPlaces()) + freeze_info_string;
+                if( !i )    point_name = "Meter Reading";
 
-                        pData = makePointDataMsg(pPoint, pi, resultString);
-
-                        if(pData != NULL)
-                        {
-                            pData->setTime( pointTime );
-                            ReturnMsg->PointData().push_back(pData);
-                            pData = NULL;  // We just put it on the list...
-                        }
-                    }
-                    else
-                    {
-                        //  !!!  //  !!!  add info here  !!!
-
-                        resultString = getName() + " / " + pPoint->getName() + " = (invalid data)" + freeze_info_string;
-
-                        ReturnMsg->setResultString(ReturnMsg->ResultString() + resultString);
-                    }
-                }
-                else if( i == 0 )
-                {
-                    if( pi.quality != InvalidQuality )
-                    {
-                        resultString = getName() + " / Meter Reading = " + CtiNumStr(pi.value * 0.1) + freeze_info_string + "  --  POINT UNDEFINED IN DB";
-                    }
-                    else
-                    {
-                        resultString = getName() + " / Meter Reading = (invalid data) --  POINT UNDEFINED IN DB";
-                    }
-
-                    ReturnMsg->setResultString(ReturnMsg->ResultString() + resultString);
-                }
+                //  if kWh was returned as units, we could get rid of the default multiplier - it's messy
+                insertPointDataReport(PulseAccumulatorPointType, i + 1,
+                                      ReturnMsg, pi, point_name, pointTime, 0.1);
             }
         }
 
@@ -1906,8 +1865,6 @@ INT CtiDeviceMCT410::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, l
     int status = NORMAL;
 
     point_info pi;
-    string resultString,
-              pointString;
 
     INT ErrReturn = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt  = &InMessage->Buffer.DSt;
@@ -1948,89 +1905,27 @@ INT CtiDeviceMCT410::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, l
             //  turn raw pulses into a demand reading
             pi.value *= double(3600 / getDemandInterval());
 
-            // look for first defined DEMAND accumulator
-            if( pPoint = getDevicePointOffsetTypeEqual( i, DemandAccumulatorPointType ) )
-            {
-                CtiTime pointTime;
+            CtiTime pointTime;
 
-                pi.value = boost::static_pointer_cast<CtiPointNumeric>(pPoint)->computeValueForUOM(pi.value);
+            pointTime -= pointTime.seconds() % getDemandInterval();
 
-                pointString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(pi.value,
-                                                                                        boost::static_pointer_cast<CtiPointNumeric>(pPoint)->getPointUnits().getDecimalPlaces());
+            string point_name;
 
-                if(pData = makePointDataMsg(pPoint, pi, pointString))
-                {
-                    pointTime -= pointTime.seconds() % getDemandInterval();
-                    pData->setTime( pointTime );
-                    ReturnMsg->PointData().push_back(pData);
-                    pData = NULL;  // We just put it on the list...
-                }
-            }
-            else if( i == 1 )
-            {
-                if( pi.quality != InvalidQuality )
-                {
-                    resultString += getName() + " / Demand = " + CtiNumStr(pi.value) +  "  --  POINT UNDEFINED IN DB";
-                }
-                else
-                {
-                    resultString += getName() + " / Demand = (invalid data) --  POINT UNDEFINED IN DB";
-                }
-            }
+            if( i == 1 )    point_name = "Demand";
+
+            insertPointDataReport(DemandAccumulatorPointType, i,
+                                  ReturnMsg, pi, point_name, pointTime);
         }
 
         pi = getData(DSt->Message + 2, 2, ValueType_Voltage);
 
-        if( pPoint = getDevicePointOffsetTypeEqual( PointOffset_Voltage, DemandAccumulatorPointType ) )
-        {
-            CtiTime pointTime;
-
-            pi.value = boost::static_pointer_cast<CtiPointNumeric>(pPoint)->computeValueForUOM(pi.value);
-
-            pointString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(pi.value,
-                                                                                    boost::static_pointer_cast<CtiPointNumeric>(pPoint)->getPointUnits().getDecimalPlaces());
-
-            if( pData = makePointDataMsg(pPoint, pi, pointString) )
-            {
-                //  change this to be the voltage averaging rate - this will be in the configs
-                //  pointTime -= pointTime.seconds() % getDemandInterval();
-                pData->setTime( pointTime );
-                ReturnMsg->PointData().push_back(pData);
-                pData = NULL;  // We just put it on the list...
-            }
-        }
-        else
-        {
-            //  default multiplier for voltage
-            pi.value *= 0.1;
-
-            resultString = getName() + " / Voltage = " + CtiNumStr(pi.value) + "  --  POINT UNDEFINED IN DB\n";
-            ReturnMsg->setResultString(ReturnMsg->ResultString() + "\n" + resultString);
-        }
+        insertPointDataReport(DemandAccumulatorPointType, PointOffset_Voltage,
+                              ReturnMsg, pi, "Voltage", 0UL, 0.1);
 
         pi = getData(DSt->Message + 4, 2, ValueType_Raw);
 
-        if( pPoint = getDevicePointOffsetTypeEqual( PointOffset_Accumulator_Powerfail, PulseAccumulatorPointType ) )
-        {
-            CtiTime pointTime;
-
-            pi.value = boost::static_pointer_cast<CtiPointNumeric>(pPoint)->computeValueForUOM(pi.value);
-
-            pointString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(pi.value,
-                                                                                     boost::static_pointer_cast<CtiPointNumeric>(pPoint)->getPointUnits().getDecimalPlaces());
-
-            if( pData = makePointDataMsg(pPoint, pi, pointString) )
-            {
-                ReturnMsg->PointData().push_back(pData);
-                pData = NULL;  // We just put it on the list...
-            }
-        }
-        else
-        {
-            resultString += getName() + " / Blink Counter = " + CtiNumStr(pi.value) + "\n";
-        }
-
-        ReturnMsg->setResultString(resultString);
+        insertPointDataReport(PulseAccumulatorPointType, PointOffset_Accumulator_Powerfail,
+                              ReturnMsg, pi, "Blink Counter");
 
         retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
     }
@@ -2053,11 +1948,8 @@ INT CtiDeviceMCT410::decodeGetValueVoltage( INMESS *InMessage, CtiTime &TimeNow,
         // No error occured, we must do a real decode!
 
         CtiTime minTime, maxTime;
-        int minPointOffset, maxPointOffset;
-        string resultString, pointString;
 
         CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-        CtiPointDataMsg *pData = NULL;
 
         if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
@@ -2069,81 +1961,31 @@ INT CtiDeviceMCT410::decodeGetValueVoltage( INMESS *InMessage, CtiTime &TimeNow,
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-        max_volt_info  = getData(DSt->Message, 2, ValueType_Voltage);
-        maxPointOffset = PointOffset_MaxVoltage;
-
+        max_volt_info = getData(DSt->Message, 2, ValueType_Voltage);
         pi = getData(DSt->Message + 2, 4, ValueType_Raw);
         maxTime = CtiTime((unsigned long)pi.value);
 
 
-        min_volt_info  = getData(DSt->Message + 6, 2, ValueType_Voltage);
-        minPointOffset = PointOffset_MinVoltage;
-
+        min_volt_info = getData(DSt->Message + 6, 2, ValueType_Voltage);
         pi = getData(DSt->Message + 8, 4, ValueType_Raw);
         minTime = CtiTime((unsigned long)pi.value);
 
-        CtiPointDataMsg *pdm;
-        CtiPointNumericSPtr pt_max_volts = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual( maxPointOffset, DemandAccumulatorPointType )),
-                            pt_min_volts = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual( minPointOffset, DemandAccumulatorPointType ));
-
-        if( pt_max_volts )
+        if( InMessage->Sequence == Emetcon::GetValue_FrozenVoltage )
         {
-            max_volt_info.value = pt_max_volts->computeValueForUOM(max_volt_info.value);
+            insertPointDataReport(DemandAccumulatorPointType, PointOffset_MaxVoltage,
+                                  ReturnMsg, max_volt_info, "Frozen Max Voltage", maxTime, 0.1);
 
-            pointString = getName() + " / " + pt_max_volts->getName() + " = " + CtiNumStr(max_volt_info.value) + " @ " + maxTime.asString();
-
-            if( pdm = makePointDataMsg(pt_max_volts, max_volt_info, pointString) )
-            {
-                pdm->setTime(maxTime);
-
-                ReturnMsg->PointData().push_back(pdm);
-                pdm = 0;
-            }
+            insertPointDataReport(DemandAccumulatorPointType, PointOffset_MinVoltage,
+                                  ReturnMsg, min_volt_info, "Frozen Min Voltage", minTime, 0.1);
         }
         else
         {
-            max_volt_info.value *= 0.1;
+            insertPointDataReport(DemandAccumulatorPointType, PointOffset_MaxVoltage,
+                                  ReturnMsg, max_volt_info, "Max Voltage", maxTime, 0.1);
 
-            if( InMessage->Sequence == Emetcon::GetValue_FrozenVoltage )
-            {
-                resultString += getName() + " / Frozen Max Voltage = " + CtiNumStr(max_volt_info.value) + " @ " + maxTime.asString() + "\n";
-            }
-            else
-            {
-                resultString += getName() + " / Max Voltage = " + CtiNumStr(max_volt_info.value) + " @ " + maxTime.asString() + "\n";
-            }
+            insertPointDataReport(DemandAccumulatorPointType, PointOffset_MinVoltage,
+                                  ReturnMsg, min_volt_info, "Min Voltage", minTime, 0.1);
         }
-
-        if( pt_min_volts )
-        {
-            min_volt_info.value = pt_min_volts->computeValueForUOM(min_volt_info.value);
-
-            pointString = getName() + " / " + pt_min_volts->getName() + " = " + CtiNumStr(min_volt_info.value) + " @ " + minTime.asString();
-
-            if( pdm = makePointDataMsg(pt_min_volts, min_volt_info, pointString) )
-            {
-                pdm->setTime(minTime);
-
-                ReturnMsg->PointData().push_back(pdm);
-                pdm = 0;
-            }
-        }
-        else
-        {
-            min_volt_info.value *= 0.1;
-
-            if( InMessage->Sequence == Emetcon::GetValue_FrozenVoltage )
-            {
-                resultString += getName() + " / Frozen Min Voltage = " + CtiNumStr(min_volt_info.value) + " @ " + minTime.asString() + "\n";
-            }
-            else
-            {
-                resultString += getName() + " / Min Voltage = " + CtiNumStr(min_volt_info.value) + " @ " + minTime.asString() + "\n";
-            }
-        }
-
-
-        ReturnMsg->setResultString(resultString);
 
         retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
     }
