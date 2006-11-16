@@ -19,6 +19,7 @@ public class LoadManagementProxy implements LoadManagementService {
         LMManualControlRequest msg = new LMManualControlRequest();
         msg.setCommand(LMManualControlRequest.SCHEDULED_START);
         msg.setYukonID(programId);
+        msg.setStartGear(1);
 
         GregorianCalendar startCal = convertToCalendar(startTime);
         GregorianCalendar stopCal = convertToCalendar(stopTime);
