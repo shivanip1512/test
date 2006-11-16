@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.41 $
-* DATE         :  $Date: 2006/11/16 18:37:43 $
+* REVISION     :  $Revision: 1.42 $
+* DATE         :  $Date: 2006/11/16 23:34:24 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -483,7 +483,7 @@ bool CtiDeviceMCT4xx::insertPointDataReport(CtiPointType_t type, int offset, Cti
 
         if( p )
         {
-            result_string += valueReport(p->getName().data(), pi, timestamp);
+            result_string += valueReport(p->getName().data(), pi, timestamp, false);
         }
         else
         {
@@ -512,7 +512,7 @@ string CtiDeviceMCT4xx::valueReport(const CtiPointSPtr p, const point_info &pi, 
         }
         else if( p->isStatus() )
         {
-            CtiString state_name = ResolveStateName(        boost::static_pointer_cast<CtiPointStatus>(p)->getStateGroupID(), pi.value);
+            CtiString state_name = ResolveStateName(boost::static_pointer_cast<CtiPointStatus>(p)->getStateGroupID(), pi.value);
 
             if( state_name != "" )
             {
@@ -526,7 +526,7 @@ string CtiDeviceMCT4xx::valueReport(const CtiPointSPtr p, const point_info &pi, 
     }
     else
     {
-        report = "(invalid data)";
+        report += "(invalid data)";
     }
 
     if( t > DawnOfTime && t < YUKONEOT )
@@ -558,7 +558,7 @@ string CtiDeviceMCT4xx::valueReport(const string &pointname, const point_info &p
     }
     else
     {
-        report = "(invalid data)";
+        report += "(invalid data)";
     }
 
     if( t > DawnOfTime && t < YUKONEOT )
@@ -2719,7 +2719,13 @@ INT CtiDeviceMCT4xx::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeN
             }
         }
 
-        ReturnMsg->setResultString(resultString.c_str());
+        //  this is gross
+        if( !ReturnMsg->ResultString().empty() )
+        {
+            resultString = ReturnMsg->ResultString() + "\n" + resultString;
+        }
+
+        ReturnMsg->setResultString(resultString);
 
         retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
     }
