@@ -5,8 +5,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.56 $
-* DATE         :  $Date: 2006/09/26 14:28:47 $
+* REVISION     :  $Revision: 1.57 $
+* DATE         :  $Date: 2006/11/16 16:57:13 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -656,8 +656,9 @@ inline Protocol::Interface *CtiDeviceSingle::getProtocol()
 int CtiDeviceSingle::generate(CtiXfer &xfer)
 {
     int retval = -1;
+    Protocol::Interface *prot = getProtocol();
 
-    if( getProtocol() )     retval = getProtocol()->generate(xfer);
+    if( prot )  retval = prot->generate(xfer);
 
     return retval;
 }
@@ -665,8 +666,9 @@ int CtiDeviceSingle::generate(CtiXfer &xfer)
 int CtiDeviceSingle::decode(CtiXfer &xfer, int status)
 {
     int retval = -1;
+    Protocol::Interface *prot = getProtocol();
 
-    if( getProtocol() )     retval = getProtocol()->decode(xfer, status);
+    if( prot )  retval = prot->decode(xfer, status);
 
     return retval;
 }
@@ -674,8 +676,9 @@ int CtiDeviceSingle::decode(CtiXfer &xfer, int status)
 int CtiDeviceSingle::recvCommRequest(OUTMESS *OutMessage)
 {
     int retval = -1;
+    Protocol::Interface *prot = getProtocol();
 
-    if( getProtocol() )     retval = getProtocol()->recvCommRequest(OutMessage);
+    if( prot )  retval = prot->recvCommRequest(OutMessage);
 
     return retval;
 }
@@ -683,18 +686,19 @@ int CtiDeviceSingle::recvCommRequest(OUTMESS *OutMessage)
 int CtiDeviceSingle::sendCommResult(INMESS *InMessage)
 {
     int retval = -1;
+    Protocol::Interface *prot = getProtocol();
 
-    if( getProtocol() )     retval = getProtocol()->sendCommResult(InMessage);
+    if( prot )  retval = prot->sendCommResult(InMessage);
 
     return retval;
 }
 
-
 bool CtiDeviceSingle::isTransactionComplete(void)
 {
     bool retval = true;
+    Protocol::Interface *prot = getProtocol();
 
-    if( getProtocol() )     retval = getProtocol()->isTransactionComplete();
+    if( prot )  retval = prot->isTransactionComplete();
 
     return retval;
 }
