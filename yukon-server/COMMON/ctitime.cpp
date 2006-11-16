@@ -323,9 +323,12 @@ string CtiTime::asString()  const
         return string("pos-infinity");
     }
 
+    //  date format "mm/dd/yyyy HH:MM:SS" - 19 chars needed, plus null
+    char time_str[20];
+
     boost::mutex::scoped_lock scoped_lock(ctime_mutex);
-    string s(ctime(&_seconds));
-    s = s.substr(0, s.length() - 1);        // Remove \n
+    strftime(time_str, 20, "%m/%d/%Y %H:%M:%S", localtime(&_seconds));
+    time_str[19] = 0;
 
 #if 0
     std::stringstream ss;
@@ -333,7 +336,7 @@ string CtiTime::asString()  const
     ss << s;
     return ss.str();
 #else
-    return s;
+    return string(time_str);
 #endif
 }
 
