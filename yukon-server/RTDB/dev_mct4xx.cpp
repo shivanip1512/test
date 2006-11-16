@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.40 $
-* DATE         :  $Date: 2006/11/15 20:51:01 $
+* REVISION     :  $Revision: 1.41 $
+* DATE         :  $Date: 2006/11/16 18:37:43 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -29,6 +29,8 @@
 #include "ctistring.h"
 #include "ctidate.h"
 #include "numstr.h"
+#include "pt_status.h"   //  for valueReport()'s use of CtiPointStatus
+#include "dllyukon.h"    //  for ResolveStateName()
 
 using Cti::Protocol::Emetcon;
 
@@ -52,7 +54,7 @@ const char *CtiDeviceMCT4xx::PutConfigPart_dnp             = "dnp";
 const CtiDeviceMCT4xx::CommandSet      CtiDeviceMCT4xx::_commandStore = CtiDeviceMCT4xx::initCommandStore();
 const CtiDeviceMCT4xx::ConfigPartsList CtiDeviceMCT4xx::_config_parts = initConfigParts();
 
-const CtiDeviceMCT4xx::QualityMap      CtiDeviceMCT4xx::_errorQualities = initErrorQualities();
+const CtiDeviceMCT4xx::error_set       CtiDeviceMCT4xx::_errorInfo    = initErrorInfo();
 
 CtiDeviceMCT4xx::CtiDeviceMCT4xx()
 {
@@ -96,50 +98,69 @@ CtiDeviceMCT4xx &CtiDeviceMCT4xx::operator=(const CtiDeviceMCT4xx &aRef)
     return *this;
 }
 
-CtiDeviceMCT4xx::QualityMap CtiDeviceMCT4xx::initErrorQualities( void )
+CtiDeviceMCT4xx::error_set CtiDeviceMCT4xx::initErrorInfo( void )
 {
-    QualityMap m;
+    error_set es;
 
-    using std::make_pair;
+    es.insert(error_info(Error_MeterCommunicationProblem,
+                         "Meter communications problem",
+                         InvalidQuality,
+                         EC_MeterReading | EC_DemandReading | EC_LoadProfile));
 
-    //  Meter Communications Problem
-    m.insert(make_pair(0xFFFFFFFF, make_pair(InvalidQuality, 0)));
-    m.insert(make_pair(0xFFFFFFFE, make_pair(InvalidQuality, EC_MeterReading  |
-                                                             EC_DemandReading |
-                                                             EC_LoadProfile)));
 
-    //  No Data Yet Available
-    m.insert(make_pair(0xFFFFFFFD, make_pair(InvalidQuality, EC_TOUFrozenDemand)));
-    m.insert(make_pair(0xFFFFFFFC, make_pair(InvalidQuality, EC_MeterReading    |
-                                                             EC_DemandReading   |
-                                                             EC_TOUDemand       |
-                                                             EC_TOUFrozenDemand |
-                                                             EC_LoadProfile)));
+    es.insert(error_info(Error_NoDataYetAvailable | 0x01,
+                         "No data yet available for requested interval",
+                         InvalidQuality,
+                         EC_TOUFrozenDemand));
 
-    //  Data not available for interval
-    m.insert(make_pair(0xFFFFFFFB, make_pair(InvalidQuality, 0)));
-    m.insert(make_pair(0xFFFFFFFA, make_pair(InvalidQuality, EC_LoadProfile)));
+    es.insert(error_info(Error_NoDataYetAvailable,
+                         "No data yet available for requested interval",
+                         InvalidQuality,
+                         EC_MeterReading    |
+                         EC_DemandReading   |
+                         EC_TOUDemand       |
+                         EC_TOUFrozenDemand |
+                         EC_LoadProfile));
 
-    //  Device Filler
-    m.insert(make_pair(0xFFFFFFF9, make_pair(DeviceFillerQuality, 0)));
-    m.insert(make_pair(0xFFFFFFF8, make_pair(DeviceFillerQuality, EC_LoadProfile)));
 
-    //  Power failure occurred during interval
-    m.insert(make_pair(0xFFFFFFF7, make_pair(PowerfailQuality, 0)));
-    m.insert(make_pair(0xFFFFFFF6, make_pair(PowerfailQuality, EC_LoadProfile)));
+    es.insert(error_info(Error_IntervalOutsideValidRange,
+                         "Requested interval outside of valid range",
+                         InvalidQuality,
+                         EC_LoadProfile));
 
-    //  Power restored in this interval
-    m.insert(make_pair(0xFFFFFFF5, make_pair(PartialIntervalQuality, 0)));
-    m.insert(make_pair(0xFFFFFFF4, make_pair(PartialIntervalQuality, EC_LoadProfile)));
 
-    //  Overflow
-    m.insert(make_pair(0xFFFFFFE1, make_pair(OverflowQuality, EC_TOUFrozenDemand)));
-    m.insert(make_pair(0xFFFFFFE0, make_pair(OverflowQuality, EC_DemandReading   |
-                                                              EC_TOUDemand       |
-                                                              EC_TOUFrozenDemand |
-                                                              EC_LoadProfile)));
+    es.insert(error_info(Error_DeviceFiller,
+                         "Device filler",
+                         DeviceFillerQuality,
+                         EC_LoadProfile));
 
-    return m;
+
+    es.insert(error_info(Error_PowerFailureThisInterval,
+                         "Power failure occurred during part or all of this interval",
+                         PowerfailQuality,
+                         EC_LoadProfile));
+
+
+    es.insert(error_info(Error_PowerRestoredThisInterval,
+                         "Power restored during this interval",
+                         PartialIntervalQuality,
+                         EC_LoadProfile));
+
+
+    es.insert(error_info(Error_Overflow | 0x01,
+                         "Overflow",
+                         OverflowQuality,
+                         EC_TOUFrozenDemand));
+
+    es.insert(error_info(Error_Overflow,
+                         "Overflow",
+                         OverflowQuality,
+                         EC_DemandReading   |
+                         EC_TOUDemand       |
+                         EC_TOUFrozenDemand |
+                         EC_LoadProfile));
+
+    return es;
 }
 
 
@@ -285,75 +306,106 @@ unsigned char CtiDeviceMCT4xx::crc8( const unsigned char *buf, unsigned int len 
 
 CtiDeviceMCT4xx::point_info CtiDeviceMCT4xx::getData( unsigned char *buf, int len, ValueType vt ) const
 {
-    PointQuality_t quality    = NormalQuality;
+    PointQuality_t quality = NormalQuality;
+    unsigned long error_code = 0xffffffff,  //  filled with 0xff because some data types are less than 32 bits
+                  min_error  = 0xffffffff;
+    unsigned char quality_flags = 0,
+                  resolution    = 0;
+    unsigned char error_byte, value_byte;
+
+    string description;
     __int64 value = 0;
-    unsigned long error_code = 0xffffffff;  //  filled with 0xff because some data types are less than 32 bits
-    unsigned char quality_flags, resolution;
     point_info  retval;
 
     for( int i = 0; i < len; i++ )
     {
         //  input data is in MSB order
-        error_code <<= 8;
         value      <<= 8;
+        error_code <<= 8;
+
+        value_byte = buf[i];
+        error_byte = buf[i];
 
         //  the first byte for some value types needs to be treated specially
-        if( !i && (vt == ValueType_Demand ||
-                   vt == ValueType_LoadProfile_Demand) )
+        if( i == 0 )
         {
-            //  save these for use later
-            quality_flags = buf[i] & 0xc0;
-            resolution    = buf[i] & 0x30;
+            if( vt == ValueType_Demand ||
+                vt == ValueType_LoadProfile_Demand )
+            {
+                resolution    = value_byte & 0x30;
+                quality_flags = value_byte & 0xc0;
 
-            value        |= buf[i] & 0x0f;  //  trim off the quality bits and the resolution bits
-            error_code   |= buf[i] | 0xc0;  //  fill in the quality bits to get the true error code
-        }
-        else if( !i && (vt == ValueType_LoadProfile_Voltage) )
-        {
-            quality_flags = buf[i] & 0xc0;
+                value_byte   &= 0x0f;  //  trim off the quality bits and the resolution bits
+                error_byte   |= 0xf0;  //  fill in the quality bits to get the true error code
+            }
+            else if( vt == ValueType_LoadProfile_Voltage )
+            {
+                quality_flags = value_byte & 0xc0;
 
-            value        |= buf[i] & 0x3f;  //  trim off the quality bits
-            error_code   |= buf[i] | 0xc0;  //  fill in the quality bits to get the true error code
+                value_byte   &= 0x3f;  //  trim off the quality bits
+                error_code   |= 0xc0;  //  fill in the quality bits to get the true error code
+            }
         }
-        else
-        {
-            value        |= buf[i];
-            error_code   |= buf[i];
-        }
+
+        value      |= value_byte;
+        error_code |= error_byte;
     }
 
     retval.freeze_bit = value & 0x01;
 
-    //  i s'pose this could be a set sometime, eh?
-    QualityMap::const_iterator q_itr = _errorQualities.find(error_code);
-
-    if( q_itr != _errorQualities.end() )
+    switch( vt )
     {
-        quality = q_itr->second.first;
-        value   = 0;
+        case ValueType_Voltage:             min_error = 0xffffffe0; break;
+
+        case ValueType_Accumulator:
+        case ValueType_FrozenAccumulator:   min_error = 0xff989680; break;
+
+        case ValueType_Demand:
+        case ValueType_TOUDemand:
+        case ValueType_TOUFrozenDemand:
+        case ValueType_LoadProfile_Demand:
+        case ValueType_LoadProfile_Voltage: min_error = 0xffffffa1; break;
+    }
+
+    if( error_code > min_error )
+    {
+        value       = 0;
+
+        error_set::const_iterator es_itr = _errorInfo.find(error_info(error_code));
+
+        if( es_itr != _errorInfo.end() )
+        {
+            quality     = es_itr->quality;
+            description = es_itr->description;
+        }
+        else
+        {
+            quality     = InvalidQuality;
+            description = "Unknown/reserved error [" + CtiNumStr(error_code).hex() + "]";
+        }
     }
     else
     {
         //  only take the demand bits into account if everything else is cool
         switch( quality_flags )
         {
-            //  time was adjusted in this interval
-            case 0xc0:  quality = PartialIntervalQuality;    break;
-            //  power was restored in this interval
-            case 0x80:  quality = PartialIntervalQuality;    break;
-            //  power failed in this interval
-            case 0x40:  quality = PowerfailQuality;          break;
-        }
+            case 0xc0:  quality = PartialIntervalQuality;
+                        description = "Time was adjusted in this interval";
+                        break;
 
-        if( vt == ValueType_Voltage && value > 0x7fff )
-        {
-            value = 0;
-            quality = AbnormalQuality;
+            case 0x80:  quality = PartialIntervalQuality;
+                        description = "Power was restored in this interval";
+                        break;
+
+            case 0x40:  quality = PowerfailQuality;
+                        description = "Power failed in this interval";
+                        break;
         }
     }
 
-    retval.value   = value;
-    retval.quality = quality;
+    retval.value       = value;
+    retval.quality     = quality;
+    retval.description = description;
 
     if( vt == ValueType_Demand || vt == ValueType_LoadProfile_Demand )
     {
@@ -393,21 +445,150 @@ CtiDeviceMCT4xx::point_info CtiDeviceMCT4xx::getLoadProfileData(unsigned channel
 }
 
 
-//  eventually allow this function to construct the pointdata string as well
-CtiPointDataMsg *CtiDeviceMCT4xx::makePointDataMsg(CtiPointSPtr p, const point_info &pi, const string &pointString)
+//  timestamp == 0UL means current time
+bool CtiDeviceMCT4xx::insertPointDataReport(CtiPointType_t type, int offset, CtiReturnMsg *rm, point_info pi, const string &default_pointname, const CtiTime &timestamp, double default_multiplier, int tags)
 {
+    bool pointdata_inserted = false;
+    CtiPointSPtr p;
     CtiPointDataMsg *pdm = 0;
 
-    if( p )
+    if( p = getDevicePointOffsetTypeEqual(offset, type) )
     {
-        pdm = CTIDBG_new CtiPointDataMsg(p->getID(), pi.value, pi.quality, p->getType(), pointString);
+        if( p->isNumeric() )
+        {
+            pi.value = boost::static_pointer_cast<CtiPointNumeric>(p)->computeValueForUOM(pi.value);
+        }
+
+        if( pi.quality != InvalidQuality )
+        {
+            pdm = CTIDBG_new CtiPointDataMsg(p->getID(), pi.value, pi.quality, p->getType(), valueReport(p, pi, timestamp).c_str());
+
+            if( timestamp > DawnOfTime && timestamp < YUKONEOT )
+            {
+                pdm->setTime(timestamp);
+            }
+
+            rm->PointData().push_back(pdm);
+
+            pointdata_inserted = true;
+        }
     }
 
-    return pdm;
+    //  if there's no default pointname, we don't insert a message if the point doesn't exist
+    if( !pointdata_inserted && !default_pointname.empty() )
+    {
+        string result_string = rm->ResultString();
+
+        if( !result_string.empty() )  result_string += "\n";
+
+        if( p )
+        {
+            result_string += valueReport(p->getName().data(), pi, timestamp);
+        }
+        else
+        {
+            pi.value *= default_multiplier;
+            result_string += valueReport(default_pointname, pi, timestamp);
+        }
+
+        rm->setResultString(result_string.c_str());
+    }
+
+    return pointdata_inserted;
 }
 
 
-INT CtiDeviceMCT4xx::executeGetValue(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS * > &outList)
+string CtiDeviceMCT4xx::valueReport(const CtiPointSPtr p, const point_info &pi, const CtiTime &t) const
+{
+    string report;
+
+    report = getName() + " / " + p->getName() + " = ";
+
+    if( pi.quality != InvalidQuality )
+    {
+        if( p->isNumeric() )
+        {
+            report += CtiNumStr(pi.value, boost::static_pointer_cast<CtiPointNumeric>(p)->getPointUnits().getDecimalPlaces());
+        }
+        else if( p->isStatus() )
+        {
+            CtiString state_name = ResolveStateName(        boost::static_pointer_cast<CtiPointStatus>(p)->getStateGroupID(), pi.value);
+
+            if( state_name != "" )
+            {
+                report += state_name;
+            }
+            else
+            {
+                report += CtiNumStr(pi.value, 0);
+            }
+        }
+    }
+    else
+    {
+        report = "(invalid data)";
+    }
+
+    if( t > DawnOfTime && t < YUKONEOT )
+    {
+        report += " @ ";
+        report += t.asString();
+    }
+
+    if( !pi.description.empty() )
+    {
+        report += " [";
+        report += pi.description;
+        report += "]";
+    }
+
+    return report;
+}
+
+
+string CtiDeviceMCT4xx::valueReport(const string &pointname, const point_info &pi, const CtiTime &t, bool undefined) const
+{
+    string report;
+
+    report = getName() + " / " + pointname.c_str() + " = ";
+
+    if( pi.quality != InvalidQuality )
+    {
+        report += CtiNumStr(pi.value);
+    }
+    else
+    {
+        report = "(invalid data)";
+    }
+
+    if( t > DawnOfTime && t < YUKONEOT )
+    {
+        report += " @ ";
+        report += t.asString();
+    }
+
+    if( !pi.description.empty() )
+    {
+        report += " [";
+        report += pi.description;
+        report += "]";
+    }
+
+    if( undefined )
+    {
+        report += " (point not in DB)";
+    }
+
+    return report;
+}
+
+
+INT CtiDeviceMCT4xx::executeGetValue( CtiRequestMsg        *pReq,
+                                      CtiCommandParser     &parse,
+                                      OUTMESS             *&OutMessage,
+                                      list< CtiMessage* >  &vgList,
+                                      list< CtiMessage* >  &retList,
+                                      list< OUTMESS* >     &outList )
 {
     INT nRet = NoMethod;
 
@@ -460,7 +641,7 @@ INT CtiDeviceMCT4xx::executeGetValue(CtiRequestMsg *pReq, CtiCommandParser &pars
                     lp_status_string += "Last request failed at interval: " + printable_time(_llpInterest.time + _llpInterest.offset + interval_len) + "\n";
                 }
 
-                if( _llpInterest.time_end > (DawnOfTime + rwEpoch) )
+                if( _llpInterest.time_end > (DawnOfTime) )
                 {
                     lp_status_string += "Last request end time: " + printable_time(_llpInterest.time_end) + "\n";
                 }
@@ -669,7 +850,7 @@ INT CtiDeviceMCT4xx::executeGetValue(CtiRequestMsg *pReq, CtiCommandParser &pars
                                 interest_om->Buffer.BSt.Length   = FuncWrite_LLPInterestLen;
                                 interest_om->MessageFlags |= MessageFlag_ExpectMore;
 
-                                unsigned long utc_time = request_time - rwEpoch;
+                                unsigned long utc_time = request_time;
 
                                 interest_om->Buffer.BSt.Message[0] = gMCT400SeriesSPID;
 
@@ -784,7 +965,7 @@ INT CtiDeviceMCT4xx::executeGetValue(CtiRequestMsg *pReq, CtiCommandParser &pars
                                     interest_om->Buffer.BSt.Length   = FuncWrite_LLPPeakInterestLen;
                                     interest_om->MessageFlags |= MessageFlag_ExpectMore;
 
-                                    unsigned long utc_time = request_time - rwEpoch;
+                                    unsigned long utc_time = request_time;
 
                                     interest_om->Buffer.BSt.Message[0] = gMCT400SeriesSPID;
 
@@ -2413,17 +2594,14 @@ INT CtiDeviceMCT4xx::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeN
     INT ErrReturn =  InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
-    CtiString valReport, resultString;
-    int       interval_len, block_len, function, channel,
-              badData;
+    string valReport, resultString;
+    int    interval_len, block_len, function, channel,
+           badData;
 
     point_info  pi;
     unsigned long timeStamp, decode_time;
 
-
-    shared_ptr<CtiPointNumeric> pPoint;
     CtiReturnMsg    *ReturnMsg = NULL;  // Message sent to VanGogh, inherits from Multi
-    CtiPointDataMsg *pData     = NULL;
 
     //  add error handling for automated load profile retrieval... !
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
@@ -2441,7 +2619,7 @@ INT CtiDeviceMCT4xx::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeN
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
         unsigned char interest[5];
-        unsigned long tmptime = _llpInterest.time - rwEpoch;
+        unsigned long tmptime = _llpInterest.time;
 
         interest[0] = (tmptime >> 24) & 0x000000ff;
         interest[1] = (tmptime >> 16) & 0x000000ff;
@@ -2461,7 +2639,8 @@ INT CtiDeviceMCT4xx::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeN
 
             block_len    = interval_len * 6;
 
-            pPoint = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual( channel + 1 + PointOffset_LoadProfileOffset, DemandAccumulatorPointType ));
+            string point_name = "LP channel ";
+            point_name += CtiNumStr(channel + 1);
 
             for( int i = 0; i < 6; i++ )
             {
@@ -2472,38 +2651,8 @@ INT CtiDeviceMCT4xx::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeN
 
                 pi = getLoadProfileData(channel + 1, DSt->Message + (i * 2) + 1, 2);
 
-                if( pPoint )
-                {
-                    if( pi.quality != InvalidQuality )
-                    {
-                        pi.value = pPoint->computeValueForUOM(pi.value);
-
-                        valReport = getName() + " / " + pPoint->getName() + " @ " + printable_time(timeStamp) + " = " + CtiNumStr(pi.value, pPoint->getPointUnits().getDecimalPlaces());
-
-                        if( pData = makePointDataMsg(pPoint, pi, valReport) )
-                        {
-                            pData->setTime(timeStamp);
-                            pData->setTags(pData->getTags() | TAG_POINT_LOAD_PROFILE_DATA);
-
-                            ReturnMsg->insert(pData);
-                        }
-                    }
-                    else
-                    {
-                        resultString += getName() + " / " + pPoint->getName() + " @ " + printable_time(timeStamp) + " = (invalid data)\n";
-                    }
-                }
-                else
-                {
-                    if( pi.quality != InvalidQuality )
-                    {
-                        resultString += getName() + " / LP channel " + CtiNumStr(channel + 1) + " @ " + printable_time(timeStamp) + " = " + CtiNumStr(pi.value, 0) + "\n";
-                    }
-                    else
-                    {
-                        resultString += getName() + " / LP channel " + CtiNumStr(channel + 1) + " @ " + printable_time(timeStamp) + " = (invalid data)\n";
-                    }
-                }
+                insertPointDataReport(DemandAccumulatorPointType, PointOffset_LoadProfileOffset + 1 + channel,
+                                      ReturnMsg, pi, point_name, timeStamp, 1.0, TAG_POINT_LOAD_PROFILE_DATA);
             }
 
             if( (_llpInterest.time + _llpInterest.offset + block_len + interval_len) < _llpInterest.time_end )
@@ -2570,7 +2719,7 @@ INT CtiDeviceMCT4xx::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeN
             }
         }
 
-        ReturnMsg->setResultString(resultString);
+        ReturnMsg->setResultString(resultString.c_str());
 
         retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
     }
@@ -2820,7 +2969,6 @@ INT CtiDeviceMCT4xx::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, 
 
     CtiCommandParser parse(InMessage->Return.CommandStr);
 
-    shared_ptr<CtiPointNumeric> point;
     CtiReturnMsg    *ret_msg = 0;  // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg *pdata   = 0;
 
@@ -2852,50 +3000,36 @@ INT CtiDeviceMCT4xx::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, 
 
             interval_len = getLoadProfileInterval(channel);
 
-            if( point = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(channel + PointOffset_LoadProfileOffset + 1, DemandAccumulatorPointType)) )
+            //  this is where the block started...
+            timestamp  = TimeNow.seconds();
+            timestamp -= interval_len * 6 * block;
+            timestamp -= timestamp % (interval_len * 6);
+
+            if( timestamp == _lp_info[channel].current_request )
             {
-                //  this is where the block started...
-                timestamp  = TimeNow.seconds();
-                timestamp -= interval_len * 6 * block;
-                timestamp -= timestamp % (interval_len * 6);
-
-                if( timestamp == _lp_info[channel].current_request )
+                for( int offset = 5; offset >= 0; offset-- )
                 {
-                    for( int offset = 5; offset >= 0; offset-- )
+                    pi = getLoadProfileData(channel, DSt->Message + offset*2 + 1, 2);
+
+                    if( !insertPointDataReport(DemandAccumulatorPointType, PointOffset_LoadProfileOffset + channel + 1,
+                                               ret_msg, pi, "", timestamp + interval_len * (6 - offset), 1.0, TAG_POINT_LOAD_PROFILE_DATA) )
                     {
-                        pi = getLoadProfileData(channel, DSt->Message + offset*2 + 1, 2);
-
-                        //  compute for the UOM
-                        pi.value = point->computeValueForUOM(pi.value);
-
-                        if( pdata = makePointDataMsg(point, pi, "") )
-                        {
-                            //  the data goes from latest to earliest...  it's kind of backwards
-                            pdata->setTime(timestamp + interval_len * (6 - offset));
-
-                            pdata->setTags(TAG_POINT_LOAD_PROFILE_DATA);
-
-                            ret_msg->insert(pdata);
-                        }
-                    }
-
-                    //  unnecessary?
-                    setLastLPTime (timestamp + interval_len * 6);
-
-                    _lp_info[channel].archived_reading = timestamp + interval_len * 6;
-                }
-                else
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - possible LP logic error for device \"" << getName() << "\";  calculated timestamp=" << CtiTime(timestamp) << "; current_request=" << CtiTime(_lp_info[channel].current_request) << endl;
-                        dout << "commandstr = " << InMessage->Return.CommandStr << endl;
+                        ret_msg->setResultString("No load profile point defined for '" + getName() + "'");
                     }
                 }
+
+                //  unnecessary?
+                setLastLPTime (timestamp + interval_len * 6);
+
+                _lp_info[channel].archived_reading = timestamp + interval_len * 6;
             }
             else
             {
-                ret_msg->setResultString("No load profile point defined for '" + getName() + "'");
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint - possible LP logic error for device \"" << getName() << "\";  calculated timestamp=" << CtiTime(timestamp) << "; current_request=" << CtiTime(_lp_info[channel].current_request) << endl;
+                    dout << "commandstr = " << InMessage->Return.CommandStr << endl;
+                }
             }
         }
         else
@@ -2929,16 +3063,12 @@ INT CtiDeviceMCT4xx::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
 
     CtiTableDynamicPaoInfo::Keys key_peak_timestamp;
 
-    CtiString result_string, freeze_info_string;
-
     CtiCommandParser parse(InMessage->Return.CommandStr);
 
     INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
-    CtiPointSPtr kw_point, kwh_point;
     CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-    CtiPointDataMsg *pData     = NULL;
 
     if( getMCTDebugLevel(DebugLevel_Scanrates) )
     {
@@ -3025,7 +3155,7 @@ INT CtiDeviceMCT4xx::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
         //  turn raw pulses into a demand reading
         pi_kw.value *= double(3600 / getDemandInterval());
 
-        kw_time      = CtiTime(pi_kw_time.value + rwEpoch);
+        kw_time      = CtiTime(pi_kw_time.value);
 
         if( parse.getFlags() & CMD_FLAG_FROZEN )
         {
@@ -3068,23 +3198,19 @@ INT CtiDeviceMCT4xx::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
                 status = NOTNORMAL;
             }
 
-            if( kw_time.seconds() >= (getDynamicInfo(key_peak_timestamp) + rwEpoch) )
+            if( kw_time.seconds() >= getDynamicInfo(key_peak_timestamp) )
             {
-                if( kw_time.seconds() <= (getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp) + rwEpoch))
+                if( kw_time.seconds() <= getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp) )
                 {
                     if( pi_kwh.freeze_bit == _expected_freeze )  //  LSB indicates which freeze caused the value to be stored
                     {
                         //  success - allow normal processing
 
-                        kw_point  = getDevicePointOffsetTypeEqual(pointoffset + PointOffset_PeakOffset, DemandAccumulatorPointType);
-
-                        kwh_point = getDevicePointOffsetTypeEqual(pointoffset, PulseAccumulatorPointType );
-
-                        setDynamicInfo(key_peak_timestamp, kw_time.seconds() - rwEpoch);
+                        setDynamicInfo(key_peak_timestamp, kw_time.seconds());
 
                         if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp) )
                         {
-                            kwh_time  = CtiTime(getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp) + rwEpoch);
+                            kwh_time  = CtiTime(getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp));
                             kwh_time -= kwh_time.seconds() % 300;
                         }
                         else
@@ -3094,8 +3220,6 @@ INT CtiDeviceMCT4xx::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
                                 dout << CtiTime() << " **** Checkpoint - device \"" << getName() << "\" does not have a freeze timestamp for KWH timestamp, defaulting to current time **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             }
                         }
-
-                        freeze_info_string  = " @ " + kwh_time.asString();
 
                         _freeze_counter = pi_freezecount.value;
 
@@ -3111,7 +3235,7 @@ INT CtiDeviceMCT4xx::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
                         }
 
                         valid_data = false;
-                        ReturnMsg->setResultString("Freeze parity check failed (" + CtiNumStr(pi_kwh.freeze_bit) + ") != (" + CtiNumStr(_expected_freeze) + "), last recorded freeze sent at " + RWTime(getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp) + rwEpoch).asString());
+                        ReturnMsg->setResultString("Freeze parity check failed (" + CtiNumStr(pi_kwh.freeze_bit) + ") != (" + CtiNumStr(_expected_freeze) + "), last recorded freeze sent at " + RWTime(getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp)).asString());
                         status = NOTNORMAL;
                     }
                 }
@@ -3121,10 +3245,10 @@ INT CtiDeviceMCT4xx::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
 
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - KW peak time \"" << kw_time << "\" is before KW freeze time \"" << RWTime(getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp) + rwEpoch) << ", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint - KW peak time \"" << kw_time << "\" is before KW freeze time \"" << CtiTime(getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp)) << ", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
 
-                    ReturnMsg->setResultString("Peak time after freeze (" + kw_time.asString() + ") < (" + RWTime(getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp) + rwEpoch).asString() + ")");
+                    ReturnMsg->setResultString("Peak time after freeze (" + kw_time.asString() + ") < (" + CtiTime(getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp)).asString() + ")");
                     status = NOTNORMAL;
                 }
             }
@@ -3134,20 +3258,16 @@ INT CtiDeviceMCT4xx::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
 
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - new KW peak time \"" << kw_time << "\" is before old KW peak time \"" << RWTime(getDynamicInfo(key_peak_timestamp) + rwEpoch) << ", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint - new KW peak time \"" << kw_time << "\" is before old KW peak time \"" << CtiTime(getDynamicInfo(key_peak_timestamp)) << ", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
-                ReturnMsg->setResultString("New KW peak earlier than old KW peak (" + kw_time.asString() + ") < (" + RWTime(getDynamicInfo(key_peak_timestamp) + rwEpoch).asString() + ")");
+                ReturnMsg->setResultString("New KW peak earlier than old KW peak (" + kw_time.asString() + ") < (" + CtiTime(getDynamicInfo(key_peak_timestamp)).asString() + ")");
                 status = NOTNORMAL;
             }
         }
         else
         {
             //  just a normal peak read, no freeze-related work needed
-
-            kw_point = getDevicePointOffsetTypeEqual(pointoffset + PointOffset_PeakOffset, DemandAccumulatorPointType);
-
-            kwh_point = getDevicePointOffsetTypeEqual( pointoffset, PulseAccumulatorPointType );
 
             kwh_time  = CtiTime::now();
         }
@@ -3168,49 +3288,12 @@ INT CtiDeviceMCT4xx::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
 
             if( kw_valid )
             {
-                if( kw_point )
-                {
-                    pi_kw.value = boost::static_pointer_cast<CtiPointNumeric>(kw_point)->computeValueForUOM(pi_kw.value);
-
-                    result_string = getName() + " / " + kw_point->getName() + " = "
-                                              + CtiNumStr(pi_kw.value, boost::static_pointer_cast<CtiPointNumeric>(kw_point)->getPointUnits().getDecimalPlaces())
-                                              + " @ " + kw_time.asString();
-
-                    if( pData = makePointDataMsg(kw_point, pi_kw, result_string) )
-                    {
-                        pData->setTime(kw_time);
-                        ReturnMsg->PointData().push_back(pData);
-                        pData = NULL;  // We just put it on the list...
-                    }
-                }
-                else
-                {
-                    result_string = getName() + " / Peak Demand = " + CtiNumStr(pi_kw.value) + " @ " + kw_time.asString() + "  --  POINT UNDEFINED IN DB";
-                    ReturnMsg->setResultString(result_string);
-                }
+                insertPointDataReport(DemandAccumulatorPointType, pointoffset + PointOffset_PeakOffset,
+                                      ReturnMsg, pi_kw, "Peak Demand", kw_time);
             }
 
-            if( kwh_point )
-            {
-                pi_kwh.value = boost::static_pointer_cast<CtiPointNumeric>(kw_point)->computeValueForUOM(pi_kwh.value);
-
-                result_string  = getName() + " / " + kwh_point->getName() + " = " + CtiNumStr(pi_kwh.value,
-                                                                                              boost::static_pointer_cast<CtiPointNumeric>(kw_point)->getPointUnits().getDecimalPlaces());
-                result_string += freeze_info_string;
-
-                if( pData = makePointDataMsg(kwh_point, pi_kwh, result_string) )
-                {
-                    kwh_time -= kwh_time.seconds() % getDemandInterval();
-                    pData->setTime(kwh_time);
-                    ReturnMsg->PointData().push_back(pData);
-                    pData = NULL;  // We just put it on the list...
-                }
-            }
-            else
-            {
-                result_string = getName() + " / Meter Reading = " + CtiNumStr(pi_kwh.value) + freeze_info_string + "  --  POINT UNDEFINED IN DB";
-                ReturnMsg->setResultString(ReturnMsg->ResultString() + "\n" + result_string);
-            }
+            insertPointDataReport(PulseAccumulatorPointType, pointoffset,
+                                  ReturnMsg, pi_kwh, "Meter Reading", kwh_time, 0.1);
         }
 
         retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
