@@ -1352,7 +1352,7 @@ private JLabel getEventLabel() {
 }
 private JSpinner getEventJSpinner() {
     if (eventSpinner == null) {
-        eventSpinner = new JSpinner(new SpinnerNumberModel(20, 0, 1000, 1));
+        eventSpinner = new JSpinner(new SpinnerNumberModel(20, 0, 50, 1));
         eventSpinner.addChangeListener(new ChangeListener(){
 
             public void stateChanged(ChangeEvent e) {
