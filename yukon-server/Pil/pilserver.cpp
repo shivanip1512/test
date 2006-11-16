@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.85 $
-* DATE         :  $Date: 2006/10/05 16:58:48 $
+* REVISION     :  $Revision: 1.86 $
+* DATE         :  $Date: 2006/11/16 16:55:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -496,8 +496,6 @@ void CtiPILServer::resultThread()
     INT i;
     INT status = NORMAL;
     INT x = 0;
-
-    PBYTE    pMsg = NULL;
 
     CtiConnection  *Conn = NULL;
     CtiMessage     *pVg  = NULL;
