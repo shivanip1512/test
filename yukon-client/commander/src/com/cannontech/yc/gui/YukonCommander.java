@@ -1288,6 +1288,13 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 			getRootPane().setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );
 			restoreCurrentTree();	// Refresh the device tree and the route combo box.
 			setRouteModel();
+            
+            // Update TOUSchedule list if a tou schedule msg is received
+            if (msg.getDatabase() == DBChangeMsg.CHANGE_TOU_SCHEDULE_DB
+                    && msg.getCategory().equals(DBChangeMsg.CAT_TOU_SCHEDULE)
+                    && msg.getObjectType().equals(DBChangeMsg.CAT_TOU_SCHEDULE)) {
+                getDownloadTOUDialog().addItems();
+            }
 		}
 		catch( Exception e )
 		{

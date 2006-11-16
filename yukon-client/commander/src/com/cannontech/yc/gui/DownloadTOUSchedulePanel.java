@@ -353,6 +353,7 @@ public class DownloadTOUSchedulePanel extends com.cannontech.common.gui.util.Dat
 	{
         IDatabaseCache cache = DefaultDatabaseCache.getInstance();
         List scheds = cache.getAllTOUSchedules();
+        getTOUScheduleComboBox().removeAllItems();
         if( scheds != null)
         {
 			for ( int i = 0; i < scheds.size(); i++)
