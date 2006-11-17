@@ -10,7 +10,6 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.Collections;
@@ -18,6 +17,12 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.Vector;
+import java.net.URL;
+import java.net.NetworkInterface;
+import java.net.InetAddress;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+import java.util.Enumeration;
 
 import javax.swing.JComboBox;
 import javax.swing.JEditorPane;
@@ -1591,6 +1596,39 @@ public static double convertTemperature(double temperature, String fromUnit, Str
             
         }
         return Integer.toString(i);
+    }
+    
+    /**
+     * Gets the IP address for the client
+     * @return The IP address of the client's computer
+     */
+    public static String getIPAddress() {
+        
+        //Get the Local interfaces using the NetworkInterface class
+        Enumeration<NetworkInterface> ifEnum = null;
+        
+        //return value for client IP address
+        try {
+            ifEnum = NetworkInterface.getNetworkInterfaces();
+            while(ifEnum.hasMoreElements()) {
+                //get each NetworkInterface object
+                NetworkInterface localIf = ifEnum.nextElement();
+
+                //get the addresses of this interface
+                Enumeration<InetAddress> ifAddrEnum = localIf.getInetAddresses();
+
+                while(ifAddrEnum.hasMoreElements()){
+                    InetAddress ifAddr = ifAddrEnum.nextElement();
+                    if( !ifAddr.isLoopbackAddress() ) {
+                        String ipAddress = ifAddr.getHostAddress();
+                        return ipAddress;
+                    }    
+                }
+            }    
+        } catch (SocketException e) {
+            CTILogger.error("Couldn't find an IP address for the client, returning null");
+        } 
+        return "unknown"; 
     }
 }
 
