@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.42 $
-* DATE         :  $Date: 2006/11/16 23:34:24 $
+* REVISION     :  $Revision: 1.43 $
+* DATE         :  $Date: 2006/11/17 22:53:36 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -467,6 +467,8 @@ bool CtiDeviceMCT4xx::insertPointDataReport(CtiPointType_t type, int offset, Cti
             {
                 pdm->setTime(timestamp);
             }
+
+            pdm->setTags(tags);
 
             rm->PointData().push_back(pdm);
 
