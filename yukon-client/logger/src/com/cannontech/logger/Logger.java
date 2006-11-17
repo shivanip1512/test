@@ -346,6 +346,8 @@ public static void main(String[] args)
 {
     try
     {
+        System.setProperty("cti.app.name", "Logger");
+        CTILogger.info("Logger starting...");
         ClientSession session = ClientSession.getInstance(); 
         if(!session.establishSession(null))
             System.exit(-1);            
