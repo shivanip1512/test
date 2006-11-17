@@ -177,7 +177,7 @@
                     <x:outputText  value="Target PF*" styleClass="padlabel"
                                  rendered="#{capControlForm.currentStratModel.enableTable[capControlForm.currentStratModel.PEAK_PF_POINT]}"/>
              <f:verbatim>
-                    </td> <!--lbl_TargetPF---->
+                    </td> <!--lbl_TargetPF-->
  
                 <td id="peakPFPoint"> 
             </f:verbatim>
@@ -193,7 +193,7 @@
                                              rendered="#{capControlForm.currentStratModel.enableTable[capControlForm.currentStratModel.PEAK_PF_POINT]}"/>
             
             <f:verbatim>
-                </td> <!---peakPFPoint-->
+                </td> <!--peakPFPoint-->
                     <td width="20px"/>
                     <td width="20px"/>
                 <td id="offPkPFPoint">
@@ -209,8 +209,8 @@
                 <x:outputText value="%" styleClass="padlabel"
                              rendered="#{capControlForm.currentStratModel.enableTable[capControlForm.currentStratModel.PEAK_PF_POINT]}"/>
             <f:verbatim>
-                </td> <!---offPkPFPoint-->
-              </tr>    <!-----pfrow-->
+                </td> <!--offPkPFPoint-->
+              </tr>    <!--pfrow-->
                 <tr id="upperLimit1">
                     <td id="lbl_upperLimit1">
             </f:verbatim>
@@ -278,7 +278,7 @@
             <f:verbatim>
                     </td>
                 </tr>
-            <!----end UpperLimit1--->
+            <!--end UpperLimit1-->
 <!--start lowLimit1 -->
               <tr id="lowLimit1">
                 <td id="lbl_lowLimit1">
@@ -293,7 +293,7 @@
                              rendered="#{ capControlForm.currentStratModel.enableTable[capControlForm.currentStratModel.PEAK_LAG]
                              && capControlForm.currentStratModel.PFAlgorithm}"/>
             <f:verbatim>    
-                </td> <!---lbl_lowLimit--->
+                </td> <!--lbl_lowLimit-->
                 <td id="peakLagging1">
 
             </f:verbatim>
@@ -320,7 +320,7 @@
                 <x:outputText value="%" styleClass="padlabel"
                                  rendered="#{capControlForm.currentStratModel.enableTable[capControlForm.currentStratModel.PEAK_PF_POINT]}"/>
             <f:verbatim>    
-                </td> <!---peakLagging------>
+                </td> <!--peakLagging-->
                 <td width="20px"/>
                 <td width="20px"/>
                 <td id="offPkLagging1">
@@ -346,7 +346,7 @@
                 <x:outputText value="%" styleClass="padlabel"
                                  rendered="#{capControlForm.currentStratModel.enableTable[capControlForm.currentStratModel.PEAK_PF_POINT]}"/>
             <f:verbatim>
-                </td> <!------offPkLagging--->
+                </td> <!--offPkLagging-->
                </tr>
 <!-- stop lowLimit2 -->
                 <tr id="upperLimit2">
@@ -388,7 +388,7 @@
             <f:verbatim>
                     </td>
                 </tr>
-            <!----end upperLimit2-->            
+            <!--end upperLimit2-->            
             <!-- start lowLimit2 -->
                 <tr id="lowerLimit2">
                     <td id="lbl_lowerLimit2">
