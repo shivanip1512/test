@@ -2053,6 +2053,7 @@ public static void main(String[] args)
     try
         {
 		System.setProperty("cti.app.name", "Trending");
+        CTILogger.info("Trending starting...");
         javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
 
         javax.swing.JFrame mainFrame = new javax.swing.JFrame();

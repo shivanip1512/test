@@ -4133,6 +4133,7 @@ public static void main(final java.lang.String[] args)
 	try
 	{
 		System.setProperty("cti.app.name", "TDC");
+        CTILogger.info("TDC starting...");
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		
 		SplashWindow splash = new SplashWindow(
