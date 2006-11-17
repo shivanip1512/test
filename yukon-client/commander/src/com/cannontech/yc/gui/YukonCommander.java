@@ -1473,6 +1473,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 		try
 		{
 			System.setProperty("cti.app.name", "Commander");
+            CTILogger.info("Commander starting...");
 			javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
 			SplashWindow splash = new SplashWindow(
 					null, CtiUtilities.CTISMALL_GIF, "Loading resources...",

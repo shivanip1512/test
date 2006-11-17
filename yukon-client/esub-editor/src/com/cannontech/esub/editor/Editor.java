@@ -384,6 +384,7 @@ public class Editor extends JPanel {
 	 */
 	public static void main(String[] args) {
 		System.setProperty("cti.app.name", APPLICATION_NAME);
+        CTILogger.info(APPLICATION_NAME + " starting...");
 		CtiUtilities.setLaF();
 		JFrame frame = new JFrame();
 

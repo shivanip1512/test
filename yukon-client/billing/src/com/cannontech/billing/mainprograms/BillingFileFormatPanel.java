@@ -11,6 +11,7 @@ import com.cannontech.billing.FileFormatBase;
 import com.cannontech.billing.FileFormatFactory;
 import com.cannontech.billing.FileFormatTypes;
 import com.cannontech.billing.format.BillingFormatterFactory;
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.database.db.device.DeviceMeterGroup;
 import com.cannontech.roles.yukon.BillingRole;
@@ -1170,6 +1171,7 @@ private void initialize() {
 	try
 	{
 		System.setProperty("cti.app.name", "Billing");		
+        CTILogger.info("Billing starting...");
 		javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());	
 		final javax.swing.JFrame frame = new javax.swing.JFrame();
 		
