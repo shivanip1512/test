@@ -17,7 +17,6 @@ import org.apache.commons.dbcp.BasicDataSource;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 
-//import com.cannontech.clientutils.CTILogManager;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 
