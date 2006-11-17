@@ -33,6 +33,7 @@ import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.configuration.model.Category;
 import com.cannontech.common.device.configuration.model.DeviceConfiguration;
 import com.cannontech.common.editor.PropertyPanel;
@@ -43,7 +44,7 @@ import com.cannontech.common.gui.util.SplashWindow;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.ClientRights;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.util.FileMessageLog;
+import com.cannontech.common.util.LoggerEventListener;
 import com.cannontech.common.util.MessageEvent;
 import com.cannontech.common.util.MessageEventListener;
 import com.cannontech.common.wizard.WizardPanel;
@@ -132,7 +133,7 @@ public class DatabaseEditor
 	private ToolsMenu toolsMenu;
 	private java.awt.Frame owner = null;
 	//File logger
-	private FileMessageLog fileMessageLog;
+    private LoggerEventListener loggerEventListener;
 
 	//Allow editor frames at a time
 	private JTreeEditorFrame[] editorFrames = null;
@@ -1689,17 +1690,21 @@ private JTreeEditorFrame getEditorFrame(DefaultMutableTreeNode ownerNode)
 	
 	return null;
 }
-/**
- * This method was created in VisualAge.
- */
-private FileMessageLog getFileMessageLog() {
-	if( this.fileMessageLog == null )
-	{
-		this.fileMessageLog = new FileMessageLog();
-	}
 
-	return this.fileMessageLog;
+/**
+ * Used to get a listener for logging database editor events
+ * @return returns a loggerEventListener, which implements
+ * MessageEventListener
+ */
+private LoggerEventListener getLoggerEventListener() {
+    if(loggerEventListener == null)
+    {
+        loggerEventListener = new LoggerEventListener(DatabaseEditor.class);
+    }
+
+    return loggerEventListener;
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (3/14/2001 10:14:25 AM)
@@ -2156,9 +2161,9 @@ private void initialize(JRootPane rootPane)
 	getInternalEditorFrames();
 
 	setDatabase( DatabaseTypes.CORE_DB );  //time hog for large DB's!!!!
-
-	//Just make sure its instantiated
-	addMessageListener( getFileMessageLog() );
+    
+    //add a loggerEventListern for logging database editor events
+    addMessageListener(getLoggerEventListener());
 	owner = CtiUtilities.getParentFrame(rootPane);
 
 	//get all the config values read in
@@ -2192,6 +2197,7 @@ public static void main(String[] args) {
 	{
 		javax.swing.UIManager.setLookAndFeel(javax.swing.UIManager.getSystemLookAndFeelClassName());
         System.setProperty("cti.app.name", "DBEditor");
+        CTILogger.info("DBEditor starting...");
 
 		javax.swing.JFrame f = new javax.swing.JFrame("Yukon Database Editor [Not Connected to Dispatch]");
 		f.setDefaultCloseOperation( f.DO_NOTHING_ON_CLOSE );
