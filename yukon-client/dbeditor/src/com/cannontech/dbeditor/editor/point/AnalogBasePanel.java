@@ -241,7 +241,7 @@ private javax.swing.JLabel getJLabelMeterDials() {
             meterDialsLabel = new javax.swing.JLabel();
             meterDialsLabel.setName("JLabelMeterDials");
             meterDialsLabel.setFont(new java.awt.Font("dialog", 0, 14));
-            meterDialsLabel.setText("Meter Dials:");
+            meterDialsLabel.setText("Meter Digits (Dials):");
         } catch (java.lang.Throwable ivjExc) {
             handleException(ivjExc);
         }
