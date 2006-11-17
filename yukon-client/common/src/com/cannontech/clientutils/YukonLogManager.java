@@ -1,19 +1,15 @@
 package com.cannontech.clientutils;
 
-import java.net.URL;
-import java.net.MalformedURLException;
 import java.io.File;
-import java.io.IOException;
-import java.io.Reader;
-
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 
 import com.cannontech.common.util.CtiUtilities;
-
-import org.springframework.util.FileCopyUtils;
 
 
 /**
@@ -39,32 +35,28 @@ public class YukonLogManager {
      */
     private final static Logger logger = Logger.getLogger("com.cannontech.clientutils.YukonLogManager");
     
-    /**
-     *  typically c:\Yukon, but installation dependent
-     */
-    private static String yukonBase = CtiUtilities.getYukonBase();
-    
-    /**
-     *  The path to the log file
-     */
-    private final static String path = yukonBase + "/Server/Config/" + YUKON_LOGGING_XML;
-    
     //Constructor never gets used, YukonLogManager has only static methods
     private YukonLogManager() {
         super();
     }
     
-    //initialize the logging at YukonLogManager creation
+    //initialize the logging at YukonLogManager creation  
     static {
         initialize();
     }  
-    
+ 
     /**
-     * find the yukonLogging.xml configuration file depending on platform
-     * and load that particular file. Ignore initialization if it has already taken place.
+     * Find the yukonLogging.xml configuration file depending on platform
+     * and load that particular file. Called once at the creation of YukonLogManager
      */
     private static synchronized void initialize() {
         
+        //typically c:\Yukon, but installation dependent
+        String yukonBase = CtiUtilities.getYukonBase();
+        
+        //The path to the log file
+        File path = new File(yukonBase + "/Server/Config/" + YUKON_LOGGING_XML);
+
         //See if the yukonLogging.xml config file is on the classpath
         //convert the xml file path to a url and configure log4j if url is successful
         URL url = null;
@@ -73,19 +65,43 @@ public class YukonLogManager {
             DOMConfigurator.configure(url);
             logger.info("The config file was found on classpath: " + url);
             return;
-        } else if (yukonBase != null){
-            //if !webserver get file under YUKON_BASE/Server/Log/yukonLogging.xml
+        } else if (path.canRead()){
             //update the file if it changes every 3000 milliseconds
-            DOMConfigurator.configureAndWatch(path, 3000);
+            DOMConfigurator.configureAndWatch(path.getAbsolutePath(), 3000);
             logger.info("The config file was found under " + path);
             return;
         } else {
             //If all else fails use BasicConfigurator which will append messages to the 
             //console
             BasicConfigurator.configure();
+            Logger.getRootLogger().setLevel(Level.INFO);
             logger.error("Unbable to configure logging, using BasicConfigurator to log to console");
             return;
         }   
+    }
+    
+    /**
+     * Used for initializing the logging for clients
+     * @param hostname the IP address of the host
+     */
+    public static synchronized void initialize(String hostname, int port) {
+        //path to the servlet
+        String path = "http://" + hostname + ":" + port + "/servlet/LoggingServlet";
+                
+        try { 
+            //gets the log4j configuration file
+            URL url = new URL(path); 
+            //get log4j xml config file from servlet, and configure logging
+            DOMConfigurator.configure(url);
+            
+            // if that worked, setup YukonRemoteAppender
+            YukonRemoteAppender.setHostName(hostname);
+            YukonRemoteAppender.setPortNumber(Integer.toString(port));
+            YukonRemoteAppender.configureLogger();
+            logger.info("The remote logging config file was found under: " + path);
+        } catch (MalformedURLException e) {
+            logger.error("Unable to get the logging config file from host ",  e);
+        }
     }
     
     /**
