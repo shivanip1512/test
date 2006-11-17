@@ -15,6 +15,7 @@ import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.user.UserUtils;
+import com.cannontech.clientutils.YukonLogManager;
 
 /**
  * Holds session information for client programs.
@@ -159,6 +160,7 @@ public class ClientSession {
 			prefs.setCurrentUserID(user.getUserID());
 			prefs.setCurrentYukonHost(host);
 			prefs.setCurrentYukonPort(port);
+            YukonLogManager.initialize(host, port);
 			
 			if(!localLogin) {
 				//fire up a timer to refresh the session 
