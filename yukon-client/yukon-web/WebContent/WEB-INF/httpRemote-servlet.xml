@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+	<bean id="remoteLogger" class="com.cannontech.clientutils.RemoteLoggerImpl">
+	  
+	</bean>
+	
+	<bean name="/RemoteLogger" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
+  		<property name="service" ref="remoteLogger"/>
+  		<property name="serviceInterface" value="com.cannontech.clientutils.RemoteLogger"/>
+	</bean>
+</beans>

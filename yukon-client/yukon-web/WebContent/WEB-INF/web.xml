@@ -180,6 +180,12 @@
     </servlet>
 
     <servlet>
+        <servlet-name>httpRemote</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <load-on-startup>2</load-on-startup>
+    </servlet>
+
+    <servlet>
         <servlet-name>LoginController</servlet-name>
         <display-name>LoginController</display-name>
         <description>Handles user authentication.</description>
@@ -190,6 +196,12 @@
         <display-name>DBPropertiesServlet</display-name>
         <description>Returns a set of db.properties to clients</description>
         <servlet-class>com.cannontech.servlet.DBPropertiesServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>LoggingServlet</servlet-name>
+        <display-name>LoggingServlet</display-name>
+        <description>Returns an xml config file for log4j logging</description>
+        <servlet-class>com.cannontech.servlet.LoggingServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ConnServlet</servlet-name>
@@ -511,6 +523,11 @@
     <servlet-mapping>
         <servlet-name>lucene-index</servlet-name>
         <url-pattern>/index/*</url-pattern>
+    </servlet-mapping>
+    
+    <servlet-mapping>
+        <servlet-name>httpRemote</servlet-name>
+        <url-pattern>/remote/*</url-pattern>
     </servlet-mapping>
     
     <session-config>
