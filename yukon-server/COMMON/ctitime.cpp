@@ -442,7 +442,7 @@ CtiTime operator - (const CtiTime& t, const unsigned long s)
 }
 std::ostream& operator<< (std::ostream& s, const CtiTime& t)
 {
-    s << string(ctime(&t._seconds));
+    s << t.asString();
     return s;
 }
 
