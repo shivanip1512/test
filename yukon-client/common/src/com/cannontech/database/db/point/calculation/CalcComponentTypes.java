@@ -63,7 +63,6 @@ public class CalcComponentTypes
 	public static final String KVAR_FROM_KWKQ_FUNCTION = "kVAr from kW/kQ";
 	public static final String KVA_FROM_KWKVAR_FUNCTION = "kVA from kW/kVAr";
 	public static final String KVA_FROM_KWKQ_FUNCTION = "kVA from kW/kQ";
-	public static final String COS_FROM_PQ_FUNCTION = "COS from P/Q";
 	public static final String SQUARED_FUNCTION = "Squared";
 	public static final String SQUARE_ROOT_FUNCTION = "Square Root";
 	public static final String ARCTAN_FUNCTION = "ArcTan";
@@ -98,7 +97,6 @@ public class CalcComponentTypes
 		ARCTAN_FUNCTION,
 		BASELINE_FUNCTION,
 		BASELINE_PERCENT_FUNCTION,
-		COS_FROM_PQ_FUNCTION,
 		DEMAND_AVG15_FUNCTION,
 		DEMAND_AVG30_FUNCTION,
 		DEMAND_AVG60_FUNCTION,
