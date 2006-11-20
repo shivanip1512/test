@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.75 $
-* DATE         :  $Date: 2006/11/16 18:36:35 $
+* REVISION     :  $Revision: 1.76 $
+* DATE         :  $Date: 2006/11/20 15:16:24 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -535,7 +535,7 @@ ULONG CtiDeviceMCT470::calcNextLPScanTime( void )
                 CtiPointSPtr pPoint = getDevicePointOffsetTypeEqual((i+1) + PointOffset_LoadProfileOffset, DemandAccumulatorPointType);
 
                 //  if we're not collecting load profile, or there's no point defined, don't scan
-                if( !getLoadProfile().isChannelValid(i) || pPoint )
+                if( !getLoadProfile().isChannelValid(i) || !pPoint )
                 {
                     _lp_info[i].current_schedule = YUKONEOT;
 
@@ -777,24 +777,16 @@ INT CtiDeviceMCT470::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS
             _lastConfigRequest = Now.seconds();
         }
     }
-    else
+    else if( useScanFlags() )
     {
         for( int i = 0; i < LPChannels; i++ )
         {
             demand_rate = getLoadProfileInterval(i);
             block_size  = demand_rate * 6;
 
-            if( useScanFlags() && getLoadProfile().isChannelValid(i) )
+            if( getLoadProfile().isChannelValid(i) )
             {
-                if( _lp_info[i].current_schedule > Now )
-                {
-                    if( getMCTDebugLevel(DebugLevel_LoadProfile) )
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - LP scan too early for device \"" << getName() << "\", aborted **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-                }
-                else
+                if( _lp_info[i].current_schedule <= Now )
                 {
                     tmpOutMess = CTIDBG_new OUTMESS(*OutMessage);
 
@@ -840,6 +832,15 @@ INT CtiDeviceMCT470::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS
 
                     outList.push_back(tmpOutMess);
                 }
+            }
+        }
+
+        if( outList.empty() )
+        {
+            if( getMCTDebugLevel(DebugLevel_LoadProfile) )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint - LP scan too early for device \"" << getName() << "\", no OutMessages created **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
     }

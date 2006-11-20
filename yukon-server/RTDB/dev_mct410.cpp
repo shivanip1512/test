@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.106 $
-* DATE         :  $Date: 2006/11/16 18:36:35 $
+* REVISION     :  $Revision: 1.107 $
+* DATE         :  $Date: 2006/11/20 15:16:24 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -393,7 +393,7 @@ ULONG CtiDeviceMCT410::calcNextLPScanTime( void )
             CtiPointSPtr pPoint = getDevicePointOffsetTypeEqual((i + 1) + PointOffset_LoadProfileOffset, DemandAccumulatorPointType);
 
             //  if we're not collecting load profile, or there's no point defined, don't scan
-            if( !getLoadProfile().isChannelValid(i) || pPoint )
+            if( !getLoadProfile().isChannelValid(i) || !pPoint )
             {
                 _lp_info[i].current_schedule = YUKONEOT;
 
@@ -510,6 +510,14 @@ INT CtiDeviceMCT410::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS
 
         _intervalsSent = true;
     }
+    else if( !useScanFlags() )
+    {
+        if( getMCTDebugLevel(DebugLevel_LoadProfile) )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint - calcAndInsetLPRequests() called from outside Scanner for device \"" << getName() << "\", ignoring **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
     else
     {
         for( int i = 0; i < LPChannels; i++ )
@@ -517,7 +525,7 @@ INT CtiDeviceMCT410::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS
             interval_len = getLoadProfileInterval(i);
             block_len    = interval_len * 6;
 
-            if( useScanFlags() && getLoadProfile().isChannelValid(i) )
+            if( getLoadProfile().isChannelValid(i) )
             {
                 if( _lp_info[i].current_schedule <= Now )
                 {
@@ -565,14 +573,15 @@ INT CtiDeviceMCT410::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS
 
                     outList.push_back(tmpOutMess);
                 }
-                else
-                {
-                    if( getMCTDebugLevel(DebugLevel_LoadProfile) )
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - LP scan too early for device \"" << getName() << "\", aborted **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-                }
+            }
+        }
+
+        if( outList.empty() )
+        {
+            if( getMCTDebugLevel(DebugLevel_LoadProfile) )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint - LP scan too early for device \"" << getName() << "\", no OutMessages created **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
     }
