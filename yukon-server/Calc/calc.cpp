@@ -599,19 +599,25 @@ double CtiCalc::figureDemandAvg(long secondsInAvg)
 
 int CtiCalc::getComponentCount()
 {
-    return _components.size();
+    return getComponentIDList().size();
 }
 
-vector<long> CtiCalc::getComponentIDList()
+set<long> CtiCalc::getComponentIDList()
 {
-    vector<long> componentIDList;
+    set<long> componentIDList;
     std::list<CtiCalcComponent*>::iterator iter = _components.begin();
     CtiCalcComponent *tmpComponent;
+    long componentPointID;
 
     for( ; iter != _components.end(); ++iter )
     {
         tmpComponent = *iter;
-        componentIDList.push_back(tmpComponent->getComponentPointId());
+        componentPointID = tmpComponent->getComponentPointId();
+
+        if( componentPointID > 0 ) //This is a valid point
+        {
+            componentIDList.insert(componentPointID);
+        }
     }
     return componentIDList;
 }

@@ -55,7 +55,7 @@ public:
     CtiCalc&  setNextInterval (int interval);
     int      getUpdateInterval( ) const;
     int      getComponentCount();
-    vector<long> getComponentIDList();
+    set<long> getComponentIDList();
     long findDemandAvgComponentPointId();
     
     long getPointId( void )  

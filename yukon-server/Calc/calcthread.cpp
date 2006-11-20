@@ -526,6 +526,7 @@ void CtiCalculateThread::historicalThread( void )
         PointTimeMap unlistedPoints, updatedPoints;
         DynamicTableData data;
         int frequencyInSeconds;
+        int initialDays;
         char var[256];
 
         int calcQuality;
@@ -544,6 +545,19 @@ void CtiCalculateThread::historicalThread( void )
         else
         {
             frequencyInSeconds = 60*60;//60 minutes
+        }
+
+        strcpy(var, "CALC_HISTORICAL_INITIAL_DAYS_CALCULATED");
+        if( 0 != (initialDays = gConfigParms.getValueAsInt(var,0)) )
+        {
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - " << var << ":  " << CtiNumStr(initialDays).toString() << endl;
+            }
+        }
+        else
+        {
+            initialDays = 0;//0 days
         }
 
         while( !interrupted )
@@ -599,6 +613,7 @@ void CtiCalculateThread::historicalThread( void )
             getCalcHistoricalLastUpdatedTime(dbTimeMap);
             PointTimeMap::iterator dbTimeMapIter;
             long pointID;
+            long componentCount;
             double newPointValue;
             CtiTime calcTime;
             char pointDescription[80];
@@ -633,17 +648,18 @@ void CtiCalculateThread::historicalThread( void )
                 }
                 else
                 {
-                    lastTime = CtiTime((unsigned)0, (unsigned)0);//This should return today, at 00:00:00
+                    lastTime = CtiTime((unsigned)0, (unsigned)0) - initialDays*60*60*24;//This should return today, -initialDays days.
                     unlistedPoints.insert(PointTimeMap::value_type(pointID, lastTime));
                 }
 
                 getHistoricalTableData(calcPoint, lastTime, data);
+                componentCount = calcPoint->getComponentCount();
 
                 DynamicTableDataIter iter;
                 CtiTime newTime = (unsigned long)0;
                 for( iter = data.begin(); iter!=data.end(); iter++ )
                 {
-                    if( iter->second.size() == calcPoint->getComponentCount() )
+                    if( iter->second.size() == componentCount )
                     {
                         //This means all the necessary points in historical have been updated, we can do a calc
                         setHistoricalPointStore(iter->second);//Takes the value/paoid pair and sets the values in the point store
@@ -1847,13 +1863,13 @@ void CtiCalculateThread::getHistoricalTableData(CtiCalc *calcPoint, CtiTime &las
         << table["TIMESTAMP"]
         << table["VALUE"];
 
-        vector<long> compIDList = calcPoint->getComponentIDList();
+        set<long> compIDList = calcPoint->getComponentIDList();
 
         selector.from( table );
 
-        for( int i=0; i<compIDList.size(); i++ )
+        for( set<long>::iterator idIter = compIDList.begin(); idIter != compIDList.end(); idIter++ )
         {
-            selector.where( selector["POINTID"] == compIDList[i] || selector.where() );
+            selector.where( selector["POINTID"] == *idIter || selector.where() );
         }
 
         if( compIDList.size() <= 0 )
