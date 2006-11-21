@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.57 $
-* DATE         :  $Date: 2006/09/28 21:53:43 $
+* REVISION     :  $Revision: 1.58 $
+* DATE         :  $Date: 2006/11/21 16:57:00 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1638,7 +1638,11 @@ void HandleReturnMessage(CtiReturnMsg* msg,
     }
     else
     {
-        if( msg->ExpectMore() )
+        if( msg->Status() == DEVICEINHIBITED )
+        {
+            // This device was disabled, forget about it.
+        }
+        else if( msg->ExpectMore() )
         {
       device_map.insert(PILReturnMap::value_type(dev_id, msg));
         }
