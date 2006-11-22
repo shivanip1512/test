@@ -1,6 +1,9 @@
 package com.cannontech.dbeditor.wizard.device;
 
 import java.awt.Dimension;
+import java.util.List;
+
+import javax.swing.JOptionPane;
 
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.IDeviceMeterGroup;
@@ -168,8 +171,9 @@ public Object getValue(Object val)
    DeviceMeterGroup dmg = 
     		((IDeviceMeterGroup)val).getDeviceMeterGroup();
 
-   String meterNumber = getMeterNumberTextField().getText();    
-	dmg.setMeterNumber(meterNumber);
+   String meterNumber = getMeterNumberTextField().getText();  
+   checkMeterNumber(meterNumber);
+   dmg.setMeterNumber(meterNumber);
 
    return val;
 }
@@ -320,4 +324,33 @@ private static void getBuilderData() {
 	E953EC7ABF67B31B90FB9D20FD734C1997B1439604694F4EBC25372CE71E1DF797C63CA7D9FCAF0BBB7177061EF9F664611C12011FF22FF9E6487BB3091C33358F8B322C8B72759A2F9B73377381DD8C1E4FDF4D4371B55E4628E4F564A06ABDE46973FFD0CB878884EEB657EA91GG4CADGGD0CB818294G94G88G88GB6F954AC84EEB657EA91GG4CADGG8CGGGGGGGGGGGGGGGGGE2F5E9ECE4E5F2A0E4E1F4E1D0CB8586GGGG81G81GBAGGG2491GGGG
 **end of data**/
 }
+
+/**
+ * Helper method to check meternumber uniqueness
+ * @param meterNumber - Meternumber to check
+ */
+private void checkMeterNumber(String meterNumber) {
+     List<String> devices = DeviceMeterGroup.checkMeterNumber(meterNumber, null);
+
+     if (devices.size() > 0) {
+         StringBuffer deviceNames = new StringBuffer();
+         for (String deviceName : devices) {
+             deviceNames.append("          " + deviceName + "\n");
+         }
+
+         int response = JOptionPane.showConfirmDialog(this,
+                                                      "The meternumber '"
+                                                              + meterNumber
+                                                              + "' is already used by the following devices,\n"
+                                                              + "are you sure you want to use it again?\n"
+                                                              + deviceNames.toString(),
+                                                      "Meternumber Already Used",
+                                                      JOptionPane.YES_NO_OPTION,
+                                                      JOptionPane.WARNING_MESSAGE);
+
+         if (response == javax.swing.JOptionPane.NO_OPTION) {
+             throw new com.cannontech.common.wizard.CancelInsertException("Device was not inserted");
+         }
+     }
+ }
 }

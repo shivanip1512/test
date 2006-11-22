@@ -1,5 +1,9 @@
 package com.cannontech.dbeditor.editor.device;
 
+import java.util.List;
+
+import javax.swing.JOptionPane;
+
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
@@ -7,6 +11,7 @@ import com.cannontech.database.data.device.IDeviceMeterGroup;
 import com.cannontech.database.data.device.IEDMeter;
 import com.cannontech.database.data.device.MCTBase;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.db.device.DeviceLoadProfile;
 import com.cannontech.database.db.device.DeviceMeterGroup;
 
@@ -1397,8 +1402,7 @@ public boolean isInputValid()
 	   setErrorString("An MCT410 requires a meter number with seven digits");
 	   return false;
 	}*/
-
-   return true;
+    return this.checkMeterNumber(getMeterNumberTextField().getText());
 }
 /**
  * Method to handle events for the ItemListener interface.
@@ -1613,5 +1617,38 @@ public void setValue(Object val)
 	getAreaCodeGroupComboBox().setSelectedItem( dmg.getTestCollectionGroup() );
    getJComboBoxBillingGroup().setSelectedItem( dmg.getBillingGroup() );
 }
+/**
+ * Helper method to check meternumber uniqueness
+ * @param meterNumber - Meternumber to check
+ * @return True if meternumber is unique
+ */
+private boolean checkMeterNumber( String meterNumber )
+{
+    int deviceId = ((YukonPAObject) ((DeviceEditorPanel) this.getParent().getParent()).getOriginalObjectToEdit()).getPAObjectID();
+    List<String> devices = DeviceMeterGroup.checkMeterNumber(meterNumber, deviceId);
 
+    if (devices.size() > 0) {
+        StringBuffer deviceNames = new StringBuffer();
+        for (String deviceName : devices) {
+            deviceNames.append("          " + deviceName + "\n");
+        }
+
+        int response = JOptionPane.showConfirmDialog(this,
+                                                     "The meternumber '"
+                                                         + meterNumber
+                                                         + "' is already used by the following devices,\n"
+                                                         + "are you sure you want to use it again?\n"
+                                                         + deviceNames.toString(),
+                                                     "Meternumber Already Used",
+                                                     JOptionPane.YES_NO_OPTION,
+                                                     JOptionPane.WARNING_MESSAGE);
+
+        if (response == JOptionPane.NO_OPTION) {
+            setErrorString(null);
+            return false;
+        }
+    }
+
+    return true;
+}
 }

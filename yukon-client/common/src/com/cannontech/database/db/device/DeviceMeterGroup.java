@@ -1,5 +1,15 @@
 package com.cannontech.database.db.device;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.SqlRowSetResultSetExtractor;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
+
+import com.cannontech.database.JdbcTemplateHelper;
+import com.cannontech.database.db.pao.YukonPAObject;
+
 /**
  * This type was created in VisualAge.
  */
@@ -135,7 +145,6 @@ public class DeviceMeterGroup extends com.cannontech.database.db.DBPersistent
 			stmt.execute();
 	
 			retVal = new String[stmt.getRowCount()];
-			int count = 0;
 			for( int i = 0; i < stmt.getRowCount(); i++ )
 				retVal[i] = new String( ((String)stmt.getRow(i)[0]) );	
 		}
@@ -353,5 +362,36 @@ public class DeviceMeterGroup extends com.cannontech.database.db.DBPersistent
 	{
 		return validBillGroupTypeStrings;
 	}
+    
+    /**
+     * Method to get a list of device names for devices that have a given meternumber
+     * @param meterNumber - Meternumber to search for
+     * @param excludedDeviceId - Id of device to exclude when searching or null if no exclusions
+     * @return A list of device names or an empty list if none found
+     */
+    public static List<String> checkMeterNumber(String meterNumber, Integer excludedDeviceId){
+        
+        List<String> deviceNameList = new ArrayList<String>();
+
+        String exclude = "";
+        Object[] parameters = new Object[] { meterNumber };
+        if (excludedDeviceId != null) {
+            exclude = " AND ypo.paobjectid <> ?";
+            parameters = new Object[] { meterNumber, excludedDeviceId };
+        }
+
+        JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
+        String sql = "SELECT ypo.paoname FROM " + TABLE_NAME + " dmg, " + YukonPAObject.TABLE_NAME
+                + " ypo WHERE ypo.paobjectid=dmg.deviceid AND dmg.meternumber = ?" + exclude;
+
+        SqlRowSet rowSet = (SqlRowSet) jdbcOps.query(sql,
+                                                     parameters,
+                                                     new SqlRowSetResultSetExtractor());
+        while (rowSet.next()) {
+            deviceNameList.add(rowSet.getString(1));
+        }
+        
+        return deviceNameList;
+    }
 
 }
