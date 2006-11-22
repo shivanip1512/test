@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_server.cpp-arc  $
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2006/04/24 14:47:33 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2006/11/22 15:14:37 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -302,6 +302,10 @@ bool CtiMCServer::init()
         status = false;
     }
 
+    string errorDir = "c:\\Yukon\\Server\\Export";
+    string newDir = errorDir + "\\MACS";
+    CreateDirectoryEx( errorDir.c_str(), newDir.c_str(), NULL);
+
     /* Set up our events */
     CtiTime now = stripSeconds(CtiTime::now());
     _scheduler.initEvents(now);
@@ -408,8 +412,8 @@ void CtiMCServer::executeScript(const CtiMCSchedule& sched)
         //Acquire an interpreter to use
         CtiInterpreter* interp = _interp_pool.acquireInterpreter();
 
-    // reset mccmd for this script
-    interp->evaluate("MCCMDReset");
+        // reset mccmd for this script
+        interp->evaluate("MCCMDReset");
 
         // init the correct schedule id and holiday schedule id
         string init_id("set ScheduleID ");
@@ -422,8 +426,9 @@ void CtiMCServer::executeScript(const CtiMCSchedule& sched)
 
         interp->evaluate(init_id, true);
 
-    // (re)set some variables
-    interp->evaluate("set ScheduleName \"" + sched.getScheduleName() + "\"");
+        // (re)set some variables
+        interp->evaluate("set ScheduleName \"" + sched.getScheduleName() + "\"");
+        interp->evaluate("set ScriptName \"" + script.getScriptName() + "\"");
 
         {
             CtiLockGuard< CtiLogger > guard(dout);
@@ -434,7 +439,7 @@ void CtiMCServer::executeScript(const CtiMCSchedule& sched)
         interp->evaluate( script.getContents(), false );
 
         _running_scripts.insert(
-            map< long, CtiInterpreter* >::value_type(sched.getScheduleID(), interp ) );
+        map< long, CtiInterpreter* >::value_type(sched.getScheduleID(), interp ) );
     }
     else
     {
