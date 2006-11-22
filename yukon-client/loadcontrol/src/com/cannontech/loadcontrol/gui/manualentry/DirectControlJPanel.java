@@ -1,4 +1,5 @@
 package com.cannontech.loadcontrol.gui.manualentry;
+import java.awt.Container;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -14,7 +15,6 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
 
 import com.cannontech.clientutils.CTILogger;
@@ -34,6 +34,7 @@ import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.data.LMProgramDirect;
 import com.cannontech.loadcontrol.data.LMProgramDirectGear;
 import com.cannontech.loadcontrol.messages.LMManualControlRequest;
+import com.cannontech.loadcontrol.popup.ControlAreaPopUpMenu;
 import com.cannontech.roles.loadcontrol.DirectLoadcontrolRole;
 
 /**
@@ -1928,7 +1929,8 @@ private void initialize() {
 		if( rows == null )
 			return false;
 
-        boolean showMulti = rows.length > 1;
+        boolean showMulti = rows.length  > 1;
+        
         
         if( isScenario )
         {
@@ -1943,7 +1945,9 @@ private void initialize() {
     				
     		getJPanelMultiSelect().setSelectableData( prgs );
             setParentWidth( showMulti ? 285 : 0 ); //300, 250
-            getJPanelMultiSelect().setVisible( showMulti );     
+
+            boolean multiSelectVisible = isMultiSelectVisible(rows, getTopLevelAncestor());
+            getJPanelMultiSelect().setVisible( multiSelectVisible);     
         }
 
         getJComboBoxGear().removeAllItems();
@@ -1988,15 +1992,33 @@ private void initialize() {
 		{
 			//only 1 program, lets just show the gears for this program
 			setGearList( ((IGearProgram)rows[0].getBaseProgram()).getDirectGearVector() );
-		}
+
+        }
 	
         getJPanelMultiSelect().selectAllSelected( true );
 	
 		return ( rows.length > 0 );
 	}
+    //we want to show the programs if we selected en/dis programs from the control are popup menu
+    //this is a cosmetic issue because it is confusing to the user.
+
+    public boolean isMultiSelectVisible(MultiSelectProg[] rows, Container container) {
+        boolean prgrmEnableSelected = false;
+        if (container instanceof JDialog) {
+            JDialog topLevelAncestor = (JDialog) container;
+            if (topLevelAncestor.getTitle().equalsIgnoreCase(ControlAreaPopUpMenu.STR_EN_PRGRMS) ||
+                    topLevelAncestor.getTitle().equalsIgnoreCase(ControlAreaPopUpMenu.STR_DIS_PRGRMS))
+            {
+                prgrmEnableSelected = true;
+            }
+        }
+
+        boolean showMulti = rows.length > 1;
+        return showMulti  || prgrmEnableSelected;
+    }
 
 
-	/**
+    /**
 	 * Insert the method's description here.
 	 * Creation date: (3/12/2001 3:40:34 PM)
 	 *

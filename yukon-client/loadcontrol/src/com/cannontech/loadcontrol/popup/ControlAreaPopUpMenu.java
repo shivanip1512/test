@@ -22,7 +22,9 @@ import com.cannontech.message.dispatch.message.Multi;
 
 public class ControlAreaPopUpMenu extends com.cannontech.tdc.observe.ObservableJPopupMenu implements java.awt.event.ActionListener
 {
-	private LMControlArea loadControlArea = null;
+	public static final String STR_DIS_PRGRMS = "Disable Program(s)";
+    public static final String STR_EN_PRGRMS = "Enable Program(s)";
+    private LMControlArea loadControlArea = null;
 	private javax.swing.JMenuItem jMenuItemTriggers = null;
 	private javax.swing.JMenuItem jMenuItemDialyTime = null;
 	private javax.swing.JMenuItem jMenuItemDisable = null;
@@ -247,8 +249,8 @@ private void showProgramAblementPanel( final int cmd )
 
 	d.setTitle(
 		cmd == LMCommand.ENABLE_PROGRAM 
-		? "Enable Program(s)"
-		: "Disable Program(s)" );
+		? STR_EN_PRGRMS
+		: STR_DIS_PRGRMS );
 
 		
 	d.setModal(true);
@@ -262,7 +264,6 @@ private void showProgramAblementPanel( final int cmd )
 	LMProgramBase[] prgArray = new LMProgramBase[ getLoadControlArea().getLmProgramVector().size() ]; 
 	prgArray = (LMProgramBase[])getLoadControlArea().getLmProgramVector().toArray( prgArray );
 
-	
 	if( panel.setMultiSelectObject( prgArray ) )
 	{
 		panel.setMode( DirectControlJPanel.MODE_MULTI_SELECT_ONLY );
