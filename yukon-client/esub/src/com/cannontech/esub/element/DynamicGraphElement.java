@@ -302,8 +302,13 @@ public class DynamicGraphElement extends LxAbstractRectangle implements DrawingE
 	 * Set the current start and stop dates to correspond with
 	 * the graphs display range
 	 */
-	private void resetDisplayRange() {		
-		Date start = ServletUtil.getToday();
+	private void resetDisplayRange() {	
+	    Date start = null;
+        if(!this.getDisplayPeriod().equals(ServletUtil.EVENT)){
+            start = ServletUtil.getToday();
+        } else {
+            start = ServletUtil.getTomorrow();
+        }
 		setCurrentStartDate(start);		
 	}
 	

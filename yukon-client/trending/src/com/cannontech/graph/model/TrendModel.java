@@ -1691,9 +1691,13 @@ public JFreeChart refresh()
 						rend = new CategoryStepRenderer();
 					break;
 				case GraphRenderers.BAR:
-					return new BarRenderer();
+					BarRenderer renderer = new BarRenderer();
+                    renderer.setMaxBarWidth(.12);
+                    return renderer;
 				case GraphRenderers.BAR_3D:
-					return new BarRenderer3D(10,10);
+				    renderer = new BarRenderer3D(10,10);
+				    renderer.setMaxBarWidth(.12);
+					return renderer;
 		
 	//			case GraphRenderers.TABULAR:
 	//				return TABULAR_STRING;

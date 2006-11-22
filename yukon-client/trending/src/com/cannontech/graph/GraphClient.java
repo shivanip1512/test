@@ -522,6 +522,9 @@ public void updateTimePeriodComboBox() {
     if(!getOptionsMenu().getLoadDurationMenuItem().isSelected()){
         getTimePeriodComboBox().addItem(ServletUtil.EVENT);
         
+        if(ServletUtil.EVENT.equals(getGraph().getPeriod())){
+            getTimePeriodComboBox().setSelectedItem(ServletUtil.EVENT);
+        }
     }
     
 }
@@ -690,32 +693,40 @@ public void refresh( )
  */
 public void updateTimePeriod( )
 {
-	getGraph().setPeriod( getTimePeriodComboBox().getSelectedItem().toString() );
-	if (getCurrentRadioButton().isSelected()
-		|| getTimePeriodComboBox().getSelectedItem().toString().equalsIgnoreCase(com.cannontech.util.ServletUtil.ONEDAY.toString())
-		|| getTimePeriodComboBox().getSelectedItem().toString().equalsIgnoreCase(com.cannontech.util.ServletUtil.THREEDAYS.toString())
-		|| getTimePeriodComboBox().getSelectedItem().toString().equalsIgnoreCase(com.cannontech.util.ServletUtil.ONEWEEK.toString()))
-		currentWeek = NO_WEEK;
-	else
-		currentWeek = FIRST_WEEK;
-		
-	if( ! getTimePeriodComboBox().getSelectedItem().toString().equalsIgnoreCase(ServletUtil.TODAY.toString()) &&
-		!getTimePeriodComboBox().getSelectedItem().toString().equalsIgnoreCase(ServletUtil.ONEDAY.toString()) )
-	{
-		getOptionsMenu().getPlotYesterdayMenuItem().setSelected(false);
-		getOptionsMenu().getPlotYesterdayMenuItem().setEnabled(false);
-	}
-	else
-	{
-		getOptionsMenu().getPlotYesterdayMenuItem().setEnabled(true);
-	}
+    String period = getTimePeriodComboBox().getSelectedItem().toString();
+	getGraph().setPeriod(period);
+    if (getCurrentRadioButton().isSelected()
+    	|| period.equalsIgnoreCase(ServletUtil.ONEDAY)
+    	|| period.equalsIgnoreCase(ServletUtil.THREEDAYS)
+    	|| period.equalsIgnoreCase(ServletUtil.ONEWEEK))
+    	currentWeek = NO_WEEK;
+    else
+    	currentWeek = FIRST_WEEK;
+    	
+    if( !period.equalsIgnoreCase(ServletUtil.TODAY) &&
+    	!period.equalsIgnoreCase(ServletUtil.ONEDAY) )
+    {
+    	getOptionsMenu().getPlotYesterdayMenuItem().setSelected(false);
+    	getOptionsMenu().getPlotYesterdayMenuItem().setEnabled(false);
+    }
+    else
+    {
+    	getOptionsMenu().getPlotYesterdayMenuItem().setEnabled(true);
+    }
     
     // Enable / Disable the load duration and event controls
-    if (ServletUtil.EVENT.equals(getTimePeriodComboBox().getSelectedItem())) {
+    if (ServletUtil.EVENT.equals(period)) {
+        if(getCurrentRadioButton().isSelected()){
+            // Set date to tomorrow for Event so all of today's events are displayed
+            getStartDateComboBox().setSelectedDate(ServletUtil.getTomorrow());
+        }
         getOptionsMenu().getLoadDurationMenuItem().setEnabled(false);
         getEventJSpinner().setEnabled(true);
         getEventLabel().setEnabled(true);
     } else {
+        if (getCurrentRadioButton().isSelected()) {
+            getStartDateComboBox().setSelectedDate(ServletUtil.getToday());
+        }
         getOptionsMenu().getLoadDurationMenuItem().setEnabled(true);
         getEventJSpinner().setEnabled(false);
         getEventLabel().setEnabled(false);
@@ -735,7 +746,7 @@ public void toggleTimePeriod( )
 	
 	if( getCurrentRadioButton().isSelected() )
 	{
-		histDate = getStartDateComboBox().getSelectedDate()			;
+		histDate = getStartDateComboBox().getSelectedDate();
 		histIndex = getTimePeriodComboBox().getSelectedIndex(); //save current period
 		histWeek = currentWeek;
 		
@@ -746,9 +757,15 @@ public void toggleTimePeriod( )
 		for (int i = 0; i < ServletUtil.currentPeriods.length; i++)
 			getTimePeriodComboBox().addItem(ServletUtil.currentPeriods[i]);
 
-		getTimePeriodComboBox().setSelectedIndex(currIndex); //set to saved currentPeriod
-		getStartDateComboBox().setSelectedDate(ServletUtil.getToday()); //set to currentDate
-		setStartDate(getStartDateComboBox().getSelectedDate());
+        Date date = ServletUtil.getToday();
+		if(!((getTrendProperties().getOptionsMaskSettings() & GraphRenderers.EVENT_MASK) == GraphRenderers.EVENT_MASK)){
+    		getTimePeriodComboBox().setSelectedIndex(currIndex); //set to saved currentPeriod
+        } else {
+            getTimePeriodComboBox().setSelectedItem(ServletUtil.EVENT);
+            date = ServletUtil.getTomorrow();
+        }
+		getStartDateComboBox().setSelectedDate(date); //set to currentDate
+		setStartDate(date);
 		currentWeek = NO_WEEK;
 	}
 	else if ( getHistoricalRadioButton().isSelected() )
@@ -764,14 +781,18 @@ public void toggleTimePeriod( )
 		for (int i = 0; i < ServletUtil.historicalPeriods.length; i++)
 			getTimePeriodComboBox().addItem(ServletUtil.historicalPeriods[i]);
 
-		getTimePeriodComboBox().setSelectedIndex(histIndex); //set to saved histPeriod
-		if( histDate != null)
-		{
-			getStartDateComboBox().setSelectedDate(ServletUtil.parseDateStringLiberally( (dateFormat.format( histDate)).toString() )); //set to saved histDate
-			setStartDate(getStartDateComboBox().getSelectedDate());
-		}
-		else
-			com.cannontech.clientutils.CTILogger.debug("Historical date it null, what should we do???");
+        if(!((getTrendProperties().getOptionsMaskSettings() & GraphRenderers.EVENT_MASK) == GraphRenderers.EVENT_MASK)){
+    		getTimePeriodComboBox().setSelectedIndex(histIndex); //set to saved histPeriod
+    		if( histDate != null)
+    		{
+    			getStartDateComboBox().setSelectedDate(ServletUtil.parseDateStringLiberally( (dateFormat.format( histDate)).toString() )); //set to saved histDate
+    			setStartDate(getStartDateComboBox().getSelectedDate());
+    		}
+    		else
+    			com.cannontech.clientutils.CTILogger.debug("Historical date it null, what should we do???");
+    	} else {
+    	    getTimePeriodComboBox().setSelectedItem(ServletUtil.EVENT);
+    	}
 	}
 
 	// -- Put the action listener back on the timePeriodComboBox	
@@ -2040,6 +2061,15 @@ private void initializeSwingComponents()
 		getTrendProperties().getViewType() != GraphRenderers.SUMMARY )	//not tabular or summary
 		savedViewType = getTrendProperties().getViewType();
 	
+	if((getTrendProperties().getOptionsMaskSettings() & GraphRenderers.EVENT_MASK) == GraphRenderers.EVENT_MASK){
+	   getGraph().setPeriod(ServletUtil.EVENT);
+       Date tomorrow = ServletUtil.getTomorrow();
+       getGraph().setStartDate(tomorrow);
+       getStartDateComboBox().setSelectedDate(tomorrow);
+       getStartDateComboBox().setEnabled(true);
+       getHistoricalRadioButton().setSelected(true);
+    }
+    
 	if(found)	//found a gdefName to start with and display data
 		refresh();
 }
