@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.58 $
-* DATE         :  $Date: 2006/11/21 16:57:00 $
+* REVISION     :  $Revision: 1.59 $
+* DATE         :  $Date: 2006/11/22 15:16:05 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1418,6 +1418,37 @@ int DoTwoWayRequest(Tcl_Interp* interp, string& cmd_line)
     return DoRequest(interp,cmd_line,timeout,true);
 }
 
+int WriteFailToFile(FILE* errFile, int status, string &dev_name)
+{
+    int retVal = 0;
+    string tempStr = "  <ERROR>\n";
+
+    if( errFile != NULL )
+    {
+        retVal = 1;
+        fwrite(tempStr.c_str(), sizeof(char), tempStr.length(), errFile);
+
+        tempStr = "    <STATUS>";
+        tempStr.append(CtiNumStr(status));
+        tempStr.append("</STATUS>\n");
+        fwrite(tempStr.c_str(), sizeof(char), tempStr.length(), errFile);
+
+        tempStr = "    <STATUSSTR>";
+        tempStr.append(FormatError(status));
+        tempStr.append("</STATUSSTR>\n");
+        fwrite(tempStr.c_str(), sizeof(char), tempStr.length(), errFile);
+
+        tempStr = "    <DEVNAME>";
+        tempStr.append(dev_name);
+        tempStr.append("</DEVNAME>\n");
+        fwrite(tempStr.c_str(), sizeof(char), tempStr.length(), errFile);
+
+        tempStr = "  </ERROR>\n";
+        fwrite(tempStr.c_str(), sizeof(char), tempStr.length(), errFile);
+    }
+    return retVal;
+}
+
 static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool two_way)
 {
     bool interrupted = false;
@@ -1556,6 +1587,24 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
         Tcl_ListObjAppendElement(interp, good_list, Tcl_NewStringObj(dev_name.c_str(), -1));
     }
 
+    char* name = Tcl_GetVar(interp, "ScriptName", 0 );
+    FILE* errFile;
+    string filename, header, footer;
+
+    filename.append("C:\\Yukon\\Server\\Export\\MACS\\");
+    name == NULL ? filename.append("default") : filename.append(name);
+    filename.append(".xml");
+
+    header.append("<?xml version=\"1.0\"?>\n");
+    header.append("<?xml-stylesheet type=\"text/xsl\" href=\"MACS error.xsl\"?>\n");
+    header.append("<MACS>\n");
+    footer.append("</MACS>\n");
+    errFile = fopen((const char*) filename.c_str(), "w");
+    if(errFile != NULL)
+    {
+        fwrite(header.c_str(), sizeof(char), header.length(), errFile);
+    }
+
     for( m_iter = bad_map.begin();
          m_iter != bad_map.end();
          m_iter++ )
@@ -1563,9 +1612,16 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
         GetDeviceName(m_iter->first,dev_name);
 
         Tcl_ListObjAppendElement(interp, bad_list, Tcl_NewStringObj(dev_name.c_str(), -1));
-    Tcl_ListObjAppendElement(interp, status_list,
-                 Tcl_NewIntObj(m_iter->second->Status()));
-    delete m_iter->second;
+        Tcl_ListObjAppendElement(interp, status_list,
+        Tcl_NewIntObj(m_iter->second->Status()));
+        WriteFailToFile(errFile, m_iter->second->Status(), dev_name);
+        delete m_iter->second;
+    }
+
+    if(errFile != NULL)
+    {
+        fwrite(footer.c_str(), sizeof(char), footer.length(), errFile);
+        fclose(errFile);
     }
 
     // any device id's left in this set must have timed out
