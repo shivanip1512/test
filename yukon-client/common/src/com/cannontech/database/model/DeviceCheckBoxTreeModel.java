@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Vector;
 
-import javax.swing.tree.TreePath;
-
 import com.cannontech.common.gui.tree.CheckNode;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.cache.DefaultDatabaseCache;
@@ -184,19 +182,7 @@ public class DeviceCheckBoxTreeModel extends DeviceTreeModel implements Checkabl
                     
                     rootNode.add(deviceNode);
                     
-                    if (showPoints)
-                    {
-                        deviceDevID = currentDevice.getYukonID();
-                        List<LitePoint> devicePoints = DaoFactory.getPointDao().getLitePointsByPaObjectId(deviceDevID);
-                        if(devicePoints.size() > 0)
-                        {
-                            deviceNode.setWillHaveChildren(true);
-                        }
-                        
-                        TreePath path = new TreePath(deviceNode.getPath());
-                        treePathWillExpand(path);
-                        
-                    }
+                    deviceNode.setWillHaveChildren(showPoints);
                     
                 }
 
@@ -283,7 +269,11 @@ public class DeviceCheckBoxTreeModel extends DeviceTreeModel implements Checkabl
 
                 //add all points and point types to the deviceNode
                 addPoints( node );
-            }            
+            }   
+            // Select the new child nodes if the node is selected
+            if (node instanceof CheckNode) {
+                ((CheckNode) node).setSelected(((CheckNode) node).isSelected());
+            }
         }
 
         node.setWillHaveChildren(false);

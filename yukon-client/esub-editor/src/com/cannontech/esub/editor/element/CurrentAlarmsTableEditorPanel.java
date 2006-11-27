@@ -11,8 +11,11 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
+import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeWillExpandListener;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
@@ -20,6 +23,7 @@ import javax.swing.tree.TreeSelectionModel;
 import com.cannontech.common.gui.tree.CheckNode;
 import com.cannontech.common.gui.tree.CheckNodeSelectionListener;
 import com.cannontech.common.gui.tree.CheckRenderer;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -266,13 +270,20 @@ private javax.swing.JTree getJTreeDevices() {
             selectionJTreeDevices.setBounds(0, 0, 300, 400);
             // user code begin {1}
             
-            DefaultMutableTreeNode root = new DefaultMutableTreeNode("Devices/Points");
-            
-            selectionJTreeDevices.setModel( new DeviceCheckBoxTreeModel(true) );
+            selectionJTreeDevices.setModel(new DeviceCheckBoxTreeModel(true));
             selectionJTreeDevices.setCellRenderer( new CheckRenderer() );
             selectionJTreeDevices.getSelectionModel().setSelectionMode( TreeSelectionModel.SINGLE_TREE_SELECTION );
             getDeviceJTreeModel().update();
             
+            // Load the child nodes on expansion
+            selectionJTreeDevices.addTreeWillExpandListener(new TreeWillExpandListener() {
+                public void treeWillExpand(TreeExpansionEvent event) throws ExpandVetoException {
+                    getDeviceJTreeModel().treePathWillExpand(event.getPath());
+                }
+                public void treeWillCollapse(TreeExpansionEvent event)
+                throws ExpandVetoException {}
+            });
+
             selectionJTreeDevices.addMouseListener( getDeviceNodeListener());
             
             selectionJTreeDevices.addMouseListener( new MouseAdapter()
@@ -656,6 +667,14 @@ public void setValue(Object o) {
     
     for( int i = 0; i < pointids.length; i++ )
     {
+        // Find the device for this point and load the device's tree node.
+        int deviceId = DaoFactory.getPointDao().getLitePoint(pointids[i]).getPaobjectID();
+        CheckNode currentDeviceNode = (CheckNode) getDeviceJTreeModel().getDevicebyID(deviceId);
+        // Only load children if not already loaded
+        if (currentDeviceNode.getChildCount() == 0) {
+            getDeviceJTreeModel().treePathWillExpand(new TreePath(currentDeviceNode.getPath()));
+        }
+        
         CheckNode currentPointNode = (CheckNode) getDeviceJTreeModel().getPointbyID(pointids[i]);
         if(currentPointNode != null)
         {
@@ -670,6 +689,8 @@ public void setValue(Object o) {
         CheckNode currentDeviceNode = (CheckNode) getDeviceJTreeModel().getDevicebyID(deviceids[i]);
         if( currentDeviceNode != null)
         {
+        	// Load the device's child nodes
+            getDeviceJTreeModel().treePathWillExpand(new TreePath(currentDeviceNode.getPath()));
             currentDeviceNode.setSelected(true);
             getJTreeDevices().expandPath(new TreePath(((CheckNode)currentDeviceNode.getFirstChild()).getPath()));
         }
