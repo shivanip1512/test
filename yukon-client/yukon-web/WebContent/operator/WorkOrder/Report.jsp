@@ -57,7 +57,7 @@
                           <td> 
                             <table width="100%" border="0" cellspacing="0" cellpadding="3" class="TableCell" height="111%">
 	                		  <tr> 
-	                    		<td class="HeaderCell" width="100%">Current Filters (<c:out value="${workOrderBean.numberOfRecords}"/> matching work orkders)</td>
+	                    		<td class="HeaderCell" width="100%">Current Filters (<c:out value="${workOrderBean.numberOfRecords}"/> matching work orders)</td>
 	                  		  </tr>
 	                  		  <c:forEach var="filterEntry" items="${workOrderBean.filters}">
 							  <tr>
