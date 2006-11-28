@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_server.cpp-arc  $
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2006/11/22 15:14:37 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2006/11/28 16:20:41 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -302,9 +302,18 @@ bool CtiMCServer::init()
         status = false;
     }
 
-    string errorDir = "c:\\Yukon\\Server\\Export";
-    string newDir = errorDir + "\\MACS";
-    CreateDirectoryEx( errorDir.c_str(), newDir.c_str(), NULL);
+    string newDir = "\\Yukon\\Server\\Export\\MACS";
+    string templateDir = "\\Yukon\\Server\\Export";
+    char * yukonBaseDir = getenv("YUKON_BASE");
+    if( yukonBaseDir )
+    {
+        newDir = yukonBaseDir;
+        newDir += "\\Server\\Export\\MACS";
+        templateDir = yukonBaseDir;
+        templateDir += "\\Server\\Export";
+    }
+    
+    CreateDirectoryEx( templateDir.c_str(), newDir.c_str(), NULL);
 
     /* Set up our events */
     CtiTime now = stripSeconds(CtiTime::now());

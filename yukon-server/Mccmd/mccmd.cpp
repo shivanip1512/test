@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.59 $
-* DATE         :  $Date: 2006/11/22 15:16:05 $
+* REVISION     :  $Revision: 1.60 $
+* DATE         :  $Date: 2006/11/28 16:20:41 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1591,7 +1591,13 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
     FILE* errFile;
     string filename, header, footer;
 
-    filename.append("C:\\Yukon\\Server\\Export\\MACS\\");
+    filename = "\\Yukon\\Server\\Export\\MACS\\";
+    char * yukonBaseDir = getenv("YUKON_BASE");
+    if( yukonBaseDir )
+    {
+        filename = yukonBaseDir;
+        filename += "\\Server\\Export\\MACS\\";
+    }
     name == NULL ? filename.append("default") : filename.append(name);
     filename.append(".xml");
 
