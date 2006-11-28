@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.162 $
-* DATE         :  $Date: 2006/10/17 19:41:54 $
+* REVISION     :  $Revision: 1.163 $
+* DATE         :  $Date: 2006/11/28 16:22:36 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3782,7 +3782,10 @@ INT CtiVanGogh::markPointNonUpdated(CtiPointSPtr point, CtiMultiWrapper &aWrap)
                     aWrap.getMulti()->insert( pSig );
                 }
 
-                CtiPointDataMsg *pDat = CTIDBG_new CtiPointDataMsg(point->getID(), pDyn->getValue(), pDyn->getQuality(), point->getType(), "Non Updated", pDyn->getDispatch().getTags());
+                CtiPointDataMsg *pDat = CTIDBG_new CtiPointDataMsg(point->getID(), pDyn->getValue(), pDyn->getQuality(), point->getType(), "Non Updated");
+
+                pDat->setTags(pDyn->getDispatch().getTags() & ~(TAG_POINT_LOAD_PROFILE_DATA | TAG_POINT_MUST_ARCHIVE));
+
                 pDat->setTime(pDyn->getTimeStamp());
 
                 aWrap.getMulti()->insert( pDat );
