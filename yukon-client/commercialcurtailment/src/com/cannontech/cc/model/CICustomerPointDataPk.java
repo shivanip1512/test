@@ -7,6 +7,9 @@ import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 import com.cannontech.database.db.customer.CICustomerPointType;
 
 @Embeddable
@@ -32,5 +35,20 @@ public class CICustomerPointDataPk implements Serializable {
         this.type = type;
     }
     
-
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof CICustomerPointDataPk == false) {
+            return false;
+        }
+        if (this == obj) {
+            return true;
+        }
+        CICustomerPointDataPk rhs = (CICustomerPointDataPk) obj;
+        return new EqualsBuilder().append(type, rhs.type).append(customerId, rhs.customerId).isEquals();
+    }
+    
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder().append(type).append(customerId).toHashCode();
+    }
 }
