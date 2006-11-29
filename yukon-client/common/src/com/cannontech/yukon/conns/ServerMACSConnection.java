@@ -1,10 +1,12 @@
 package com.cannontech.yukon.conns;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.message.macs.message.DeleteSchedule;
 import com.cannontech.message.macs.message.Info;
 import com.cannontech.message.macs.message.MACSCategoryChange;
 import com.cannontech.message.macs.message.OverrideRequest;
+import com.cannontech.message.macs.message.RetrieveSchedule;
 import com.cannontech.message.macs.message.Schedule;
 import com.cannontech.message.macs.message.ScriptFile;
 import com.cannontech.message.util.ClientConnection;
@@ -80,18 +82,12 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
 	   setPort(port);
 	   setAutoReconnect(true);
 	   setTimeToReconnect(5);
+       
+       setRegistrationMsg(getRetrieveAllSchedulesMsg());
 	   
 	   //addMessageListener( this );
 	
-	   try
-	   {
-	  		connect();
-	  		sendRetrieveAllSchedules();
-		}
-		catch( java.io.IOException e )
-	   {
-		   com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-	   }
+       connectWithoutWait();
 	   
 	}
 	
@@ -412,23 +408,28 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
 		
 		write( request );
 	}
-	/**
-	 * This method was created in VisualAge.
-	 * @param sched com.cannontech.macs.Schedule
-	 * @exception java.io.IOException The exception description.
-	 */
-	public void sendRetrieveAllSchedules() throws java.io.IOException 
+
+    /**
+     * Sends a RetrieveSchedule message.
+     */
+    public void sendRetrieveAllSchedules() throws java.io.IOException 
 	{
-		/* We need this message to get out whenever we connect */		
-//		if( !(isValid()) )
-//			throw new java.io.IOException("Not connected to MACSServer.");
+		RetrieveSchedule retrieveAllSchedulesMsg = getRetrieveAllSchedulesMsg();
 	
-		com.cannontech.message.macs.message.RetrieveSchedule newSchedules = new com.cannontech.message.macs.message.RetrieveSchedule();
-		newSchedules.setUserName( com.cannontech.common.util.CtiUtilities.getUserName() );
-		newSchedules.setScheduleId( com.cannontech.message.macs.message.RetrieveSchedule.ALL_SCHEDULES );
-	
-		write( newSchedules );
+		write( retrieveAllSchedulesMsg );
 	}
+
+
+    /**
+     * Builds a RetrieveSchedule message that will retrieve all schedules.
+     * @return a RetrieveSchedule message.
+     */
+    private RetrieveSchedule getRetrieveAllSchedulesMsg() {
+        RetrieveSchedule newSchedules = new RetrieveSchedule();
+		newSchedules.setUserName( CtiUtilities.getUserName() );
+		newSchedules.setScheduleId( RetrieveSchedule.ALL_SCHEDULES );
+        return newSchedules;
+    }
 	/**
 	 * This method was created in VisualAge.
 	 * @param sched com.cannontech.macs.Schedule
