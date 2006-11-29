@@ -70,7 +70,7 @@ public class IsocEconomicStrategy extends BaseEconomicStrategy {
         TimeZone timeZone = energyCompanyDao.getEnergyCompanyTimeZone(energyCompany);
         DateFormat dateFormat = SimpleDateFormat.getTimeInstance(SimpleDateFormat.SHORT);
         dateFormat.setTimeZone(timeZone);
-        List<EconomicEventParticipantSelectionWindow> selectionWindows = selection.getSelectionWindows();
+        List<EconomicEventParticipantSelectionWindow> selectionWindows = selection.getSortedSelectionWindows();
         boolean curtailedLastWindow = false;
         for (EconomicEventParticipantSelectionWindow window : selectionWindows) {
             boolean curtailedThisWindow = isCurtailPrice(window.getEnergyToBuy());

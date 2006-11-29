@@ -3,7 +3,9 @@ package com.cannontech.cc.model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -33,8 +35,8 @@ public class EconomicEventParticipantSelection {
     private EconomicEventPricing pricingRevision;
     private Date submitTime;
     private SelectionState state;
-    private List<EconomicEventParticipantSelectionWindow> selectionWindows = 
-        new ArrayList<EconomicEventParticipantSelectionWindow>();
+    private Set<EconomicEventParticipantSelectionWindow> selectionWindows = 
+        new HashSet<EconomicEventParticipantSelectionWindow>();
 
     public EconomicEventParticipantSelection() {
     }
@@ -70,12 +72,19 @@ public class EconomicEventParticipantSelection {
     }
     
     @OneToMany(mappedBy="selection", fetch=FetchType.EAGER, cascade=CascadeType.ALL)
-    public List<EconomicEventParticipantSelectionWindow> getSelectionWindows() {
-        Collections.sort(selectionWindows); // there aren't many and they'll usually be sorted
+    public Set<EconomicEventParticipantSelectionWindow> getSelectionWindows() {
         return selectionWindows;
     }
     
-    public void setSelectionWindows(List<EconomicEventParticipantSelectionWindow> selectionWindows) {
+    @Transient
+    public List<EconomicEventParticipantSelectionWindow> getSortedSelectionWindows() {
+        ArrayList<EconomicEventParticipantSelectionWindow> temp = 
+            new ArrayList<EconomicEventParticipantSelectionWindow>(selectionWindows);
+        Collections.sort(temp); // there aren't many and they'll usually be sorted
+        return temp;
+    }
+    
+    public void setSelectionWindows(Set<EconomicEventParticipantSelectionWindow> selectionWindows) {
         this.selectionWindows = selectionWindows;
     }
     
