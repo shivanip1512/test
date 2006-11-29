@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.cannontech.cc.model.CurtailmentEvent;
 import com.cannontech.cc.model.Group;
-import com.cannontech.cc.service.BaseNotificationStrategy;
+import com.cannontech.cc.service.NotificationStrategy;
 import com.cannontech.cc.service.ProgramService;
 import com.cannontech.cc.service.builder.CurtailmentBuilder;
 import com.cannontech.cc.service.builder.VerifiedNotifCustomer;
@@ -66,8 +66,8 @@ public class CreateNotificationBean extends EventCreationBase {
         this.programService = programService;
     }
     
-    public BaseNotificationStrategy getMyStrategy() {
-        return (BaseNotificationStrategy) getStrategy();
+    public NotificationStrategy getMyStrategy() {
+        return (NotificationStrategy) getStrategy();
     }
 
     public CurtailmentBuilder getBuilder() {

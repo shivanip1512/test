@@ -54,7 +54,7 @@ import com.cannontech.database.db.customer.CICustomerPointType;
 import com.cannontech.enums.EconomicEventAction;
 import com.cannontech.enums.NotificationState;
 
-public abstract class BaseEconomicStrategy extends StrategyBase {
+public abstract class BaseEconomicStrategy extends StrategyBase implements EconomicStrategy {
     private EconomicEventDao economicEventDao;
     private EconomicEventNotifDao economicEventNotifDao;
     private EconomicEventParticipantDao economicEventParticipantDao;

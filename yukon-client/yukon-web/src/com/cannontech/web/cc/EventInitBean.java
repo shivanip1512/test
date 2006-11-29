@@ -7,8 +7,8 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
 import com.cannontech.cc.model.Program;
+import com.cannontech.cc.service.CICurtailmentStrategy;
 import com.cannontech.cc.service.ProgramService;
-import com.cannontech.cc.service.StrategyBase;
 import com.cannontech.cc.service.StrategyFactory;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.web.cc.methods.EventCreationBase;
@@ -40,7 +40,7 @@ public class EventInitBean {
                 (String) externalContext.getRequestParameterMap().get("programId");
             int programId = Integer.parseInt(programIdStr);
             Program selectedProgram = programService.getProgram(programId);
-            StrategyBase strategy = strategyFactory.getStrategy(selectedProgram);
+            CICurtailmentStrategy strategy = strategyFactory.getStrategy(selectedProgram);
             String methodKey = strategy.getMethodKey();
             EventCreationBase methodBean = methodBeanLookup.get(methodKey);
             if (methodBean == null) {

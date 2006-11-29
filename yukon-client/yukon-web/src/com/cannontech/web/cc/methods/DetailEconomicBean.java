@@ -20,6 +20,7 @@ import com.cannontech.cc.model.EconomicEventPricing;
 import com.cannontech.cc.model.EconomicEventPricingWindow;
 import com.cannontech.cc.service.BaseEconomicStrategy;
 import com.cannontech.cc.service.EconomicService;
+import com.cannontech.cc.service.EconomicStrategy;
 import com.cannontech.cc.service.ProgramService;
 import com.cannontech.cc.service.StrategyFactory;
 import com.cannontech.cc.service.enums.NotificationStatus;
@@ -31,7 +32,7 @@ import com.cannontech.web.util.JSFUtil;
 public class DetailEconomicBean implements BaseDetailBean {
     //private CreateEconomicBean createEconomicBean;
     private ProgramService programService;
-    private BaseEconomicStrategy strategy;
+    private EconomicStrategy strategy;
     private EconomicService economicService;
     private EconomicEvent event;
     private EconomicEventPricing currentRevision;
@@ -265,14 +266,14 @@ public class DetailEconomicBean implements BaseDetailBean {
         return event;
     }
 
-    public BaseEconomicStrategy getStrategy() {
+    public EconomicStrategy getStrategy() {
         return strategy;
     }
     
     public void setEvent(EconomicEvent event) {
         this.event = event;
         currentRevision = event.getLatestRevision();
-        strategy = (BaseEconomicStrategy) strategyFactory.getStrategy(event.getProgram());
+        strategy = (EconomicStrategy) strategyFactory.getStrategy(event.getProgram());
         updateModels();
     }
 
@@ -289,7 +290,7 @@ public class DetailEconomicBean implements BaseDetailBean {
         this.participantDataModel = participantDataModel;
     }
 
-    public void setStrategy(BaseEconomicStrategy strategy) {
+    public void setStrategy(EconomicStrategy strategy) {
         this.strategy = strategy;
     }
 

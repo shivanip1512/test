@@ -31,10 +31,10 @@ public class StrategyFactory implements ApplicationContextAware {
         beanFactory = applicationContext;
     }
 
-    public StrategyBase getStrategy(Program selectedProgram) {
+    public CICurtailmentStrategy getStrategy(Program selectedProgram) {
         String strategyName = selectedProgram.getProgramType().getStrategy();
         try {
-            return (StrategyBase) beanFactory.getBean(strategyName, StrategyBase.class);
+            return (CICurtailmentStrategy) beanFactory.getBean(strategyName, CICurtailmentStrategy.class);
         } catch (NoSuchBeanDefinitionException e) {
             throw new NoSuchStrategyException("Strategy " + strategyName + " doesn't exist", e);
         }

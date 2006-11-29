@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.cannontech.cc.model.EconomicEvent;
 import com.cannontech.cc.model.Group;
-import com.cannontech.cc.service.BaseEconomicStrategy;
+import com.cannontech.cc.service.EconomicStrategy;
 import com.cannontech.cc.service.ProgramService;
 import com.cannontech.cc.service.builder.EconomicBuilder;
 import com.cannontech.cc.service.builder.VerifiedNotifCustomer;
@@ -100,8 +100,8 @@ public class CreateEconomicBean extends EventCreationBase {
         this.programService = programService;
     }
     
-    public BaseEconomicStrategy getMyStrategy() {
-        return (BaseEconomicStrategy) getStrategy();
+    public EconomicStrategy getMyStrategy() {
+        return (EconomicStrategy) getStrategy();
     }
 
     public EconomicBuilder getBuilder() {

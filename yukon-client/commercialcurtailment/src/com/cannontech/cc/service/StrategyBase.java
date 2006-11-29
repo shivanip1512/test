@@ -29,7 +29,7 @@ import com.cannontech.common.exception.PointException;
 import com.cannontech.database.data.notification.NotifType;
 import com.cannontech.yukon.INotifConnection;
 
-public abstract class StrategyBase {
+public abstract class StrategyBase implements CICurtailmentStrategy {
     private ProgramService programService;
     private GroupService groupService;
     private Set<ProgramParameterKey> parameters = new TreeSet<ProgramParameterKey>();

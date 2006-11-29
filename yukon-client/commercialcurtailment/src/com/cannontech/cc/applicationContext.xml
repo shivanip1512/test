@@ -3,7 +3,7 @@
 
 <beans>
 
-  <bean id="programService" class="com.cannontech.cc.service.ProgramService" singleton="true" dependency-check="objects">
+  <bean id="programService" class="com.cannontech.cc.service.ProgramServiceImpl" singleton="true" dependency-check="objects">
     <property name="energyCompanyDao" ref="energyCompanyDao"/>
     <property name="baseEventDao" ref="baseEventDao"/>
     <property name="programDao" ref="programDao"/>
@@ -13,7 +13,7 @@
     <property name="availableProgramGroupDao" ref="availableProgramGroupDao"/>
     <property name="programNotificationGroupDao" ref="programNotificationGroupDao"/>
   </bean>
-  <bean id="groupService" class="com.cannontech.cc.service.GroupService" singleton="true" dependency-check="objects">
+  <bean id="groupService" class="com.cannontech.cc.service.GroupServiceImpl" singleton="true" dependency-check="objects">
     <property name="customerStubDao" ref="customerStubDao"/>
     <property name="groupCustomerNotifDao" ref="groupCustomerNotifDao"/>
     <property name="pointTypeHelper" ref="customerPointTypeHelper"/>

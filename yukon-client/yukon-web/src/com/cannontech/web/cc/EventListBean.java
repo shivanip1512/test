@@ -9,8 +9,8 @@ import javax.faces.model.ListDataModel;
 
 import com.cannontech.cc.model.BaseEvent;
 import com.cannontech.cc.model.Program;
+import com.cannontech.cc.service.CICurtailmentStrategy;
 import com.cannontech.cc.service.ProgramService;
-import com.cannontech.cc.service.StrategyBase;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.cc.methods.BaseDetailBean;
 
@@ -32,7 +32,7 @@ public class EventListBean {
             (String) externalContext.getRequestParameterMap().get("programId");
         int programId = Integer.parseInt(programIdStr);
         program = programService.getProgram(programId);
-        StrategyBase strategy = 
+        CICurtailmentStrategy strategy = 
             eventDetailHelper.getStrategyFactory().getStrategy(getProgram());
         
         List<? extends BaseEvent> eventList = strategy.getEventsForProgram(getProgram());

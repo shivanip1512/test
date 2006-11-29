@@ -92,7 +92,7 @@ public class EventService {
     }
 
     public boolean isConsideredActive(BaseEvent event) {
-        StrategyBase strategy = strategyFactory.getStrategy(event.getProgram());
+        CICurtailmentStrategy strategy = strategyFactory.getStrategy(event.getProgram());
         
         return strategy.isConsideredActive(event);
     }

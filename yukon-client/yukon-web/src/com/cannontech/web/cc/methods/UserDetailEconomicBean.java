@@ -22,8 +22,8 @@ import com.cannontech.cc.model.EconomicEventParticipantSelection;
 import com.cannontech.cc.model.EconomicEventParticipantSelectionWindow;
 import com.cannontech.cc.model.EconomicEventPricing;
 import com.cannontech.cc.model.EconomicEventPricingWindow;
-import com.cannontech.cc.service.BaseEconomicStrategy;
 import com.cannontech.cc.service.EconomicService;
+import com.cannontech.cc.service.EconomicStrategy;
 import com.cannontech.cc.service.ProgramService;
 import com.cannontech.cc.service.StrategyFactory;
 import com.cannontech.cc.service.exception.EventModificationException;
@@ -40,7 +40,7 @@ public class UserDetailEconomicBean implements BaseDetailBean {
     private ProgramService programService;
     private EconomicService economicService;
     private StrategyFactory strategyFactory;
-    private BaseEconomicStrategy strategy;
+    private EconomicStrategy strategy;
 
     // this state
     private EconomicEventParticipant eventParticipant;
@@ -169,14 +169,14 @@ public class UserDetailEconomicBean implements BaseDetailBean {
         return eventParticipant;
     }
 
-    public BaseEconomicStrategy getStrategy() {
+    public EconomicStrategy getStrategy() {
         return strategy;
     }
     
     public void setEventParticipant(EconomicEventParticipant eventParticipant) {
         this.eventParticipant = eventParticipant;
         currentRevision = eventParticipant.getEvent().getLatestRevision();
-        strategy = (BaseEconomicStrategy) strategyFactory.getStrategy(eventParticipant.getEvent().getProgram());
+        strategy = (EconomicStrategy) strategyFactory.getStrategy(eventParticipant.getEvent().getProgram());
         updateModels();
     }
 
@@ -189,7 +189,7 @@ public class UserDetailEconomicBean implements BaseDetailBean {
         updateModels();
     }
 
-    public void setStrategy(BaseEconomicStrategy strategy) {
+    public void setStrategy(EconomicStrategy strategy) {
         this.strategy = strategy;
     }
 

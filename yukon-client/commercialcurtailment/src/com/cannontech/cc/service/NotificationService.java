@@ -28,10 +28,6 @@ public class NotificationService {
         this.curtailmentEventNotifDao = curtailmentEventNotifDao;
     }
 
-    public CurtailmentEvent getEvent(Integer eventId) {
-        return curtailmentEventDao.getForId(eventId);
-    }
-
     public List<CurtailmentEventNotif> getEventNotifs(CurtailmentEvent event) {
         return curtailmentEventNotifDao.getForEvent(event);
     }

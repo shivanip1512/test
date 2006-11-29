@@ -18,8 +18,8 @@ import com.cannontech.cc.model.Group;
 import com.cannontech.cc.model.Program;
 import com.cannontech.cc.model.ProgramParameter;
 import com.cannontech.cc.model.ProgramType;
+import com.cannontech.cc.service.CICurtailmentStrategy;
 import com.cannontech.cc.service.ProgramService;
-import com.cannontech.cc.service.StrategyBase;
 import com.cannontech.cc.service.StrategyFactory;
 import com.cannontech.core.dao.NotificationGroupDao;
 import com.cannontech.database.data.lite.LiteComparators;
@@ -101,7 +101,7 @@ public class ProgramDetailBean {
         unassignedNotificationGroups = new ArrayList<LiteNotificationGroup>(allNotificationGroups);
         Collections.sort(unassignedNotificationGroups, LiteComparators.liteNameComparator);
 
-        StrategyBase strategy = getStrategyFactory().getStrategy(getProgram());
+        CICurtailmentStrategy strategy = getStrategyFactory().getStrategy(getProgram());
         programParameters = strategy.getParameters(getProgram());
         
         programDeletable = !programService.isEventsExistForProgram(getProgram());

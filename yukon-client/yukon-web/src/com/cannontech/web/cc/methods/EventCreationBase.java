@@ -6,7 +6,7 @@ import javax.faces.component.UIComponent;
 
 import com.cannontech.cc.model.Group;
 import com.cannontech.cc.model.Program;
-import com.cannontech.cc.service.StrategyBase;
+import com.cannontech.cc.service.CICurtailmentStrategy;
 import com.cannontech.cc.service.builder.VerifiedNotifCustomer;
 import com.cannontech.web.cc.CustomerSelectionBean;
 
@@ -14,7 +14,7 @@ public abstract class EventCreationBase {
 
     private CustomerSelectionBean customerSelectionBean;
     private Program program;
-    private StrategyBase strategy;
+    private CICurtailmentStrategy strategy;
     UIComponent form;
 
     public CustomerSelectionBean getCustomerSelectionBean() {
@@ -43,11 +43,11 @@ public abstract class EventCreationBase {
         return "programSelect";
     }
 
-    public void setStrategy(StrategyBase strategy) {
+    public void setStrategy(CICurtailmentStrategy strategy) {
         this.strategy = strategy;
     }
     
-    public StrategyBase getStrategy() {
+    public CICurtailmentStrategy getStrategy() {
         return strategy;
     }
 

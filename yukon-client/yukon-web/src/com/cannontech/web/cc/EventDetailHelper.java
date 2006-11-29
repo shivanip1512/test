@@ -3,7 +3,7 @@ package com.cannontech.web.cc;
 import java.util.Map;
 
 import com.cannontech.cc.model.BaseEvent;
-import com.cannontech.cc.service.StrategyBase;
+import com.cannontech.cc.service.CICurtailmentStrategy;
 import com.cannontech.cc.service.StrategyFactory;
 import com.cannontech.web.cc.methods.BaseDetailBean;
 
@@ -17,13 +17,13 @@ public class EventDetailHelper {
     }
 
     public BaseDetailBean getEventDetailBean(BaseEvent event) {
-        StrategyBase strategy = strategyFactory.getStrategy(event.getProgram());
+        CICurtailmentStrategy strategy = strategyFactory.getStrategy(event.getProgram());
         String methodKey = strategy.getMethodKey();
         return eventDetailLookup.get(methodKey);
     }
 
     public BaseDetailBean getUserEventDetailBean(BaseEvent event) {
-        StrategyBase strategy = strategyFactory.getStrategy(event.getProgram());
+        CICurtailmentStrategy strategy = strategyFactory.getStrategy(event.getProgram());
         String methodKey = strategy.getMethodKey();
         return userEventDetailLookup.get(methodKey);
     }

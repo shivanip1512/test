@@ -5,8 +5,8 @@ import java.util.TimeZone;
 import com.cannontech.cc.model.BaseEvent;
 import com.cannontech.cc.model.CurtailmentEvent;
 import com.cannontech.cc.model.Program;
-import com.cannontech.cc.service.BaseNotificationStrategy;
 import com.cannontech.cc.service.NotificationService;
+import com.cannontech.cc.service.NotificationStrategy;
 import com.cannontech.cc.service.ProgramService;
 import com.cannontech.cc.service.StrategyFactory;
 import com.cannontech.cc.service.builder.CurtailmentChangeBuilder;
@@ -17,7 +17,7 @@ public class DetailNotificationBean implements BaseDetailBean {
     private DetailNotificationHelperBean helper;
     private ProgramService programService;
     private NotificationService notificationService;
-    private BaseNotificationStrategy strategy;
+    private NotificationStrategy strategy;
     private StrategyFactory strategyFactory;
     private CurtailmentEvent event;
     private LiteYukonUser yukonUser;
@@ -90,13 +90,13 @@ public class DetailNotificationBean implements BaseDetailBean {
         return event;
     }
 
-    public BaseNotificationStrategy getStrategy() {
+    public NotificationStrategy getStrategy() {
         return strategy;
     }
     
     public void setEvent(CurtailmentEvent event) {
         this.event = event;
-        strategy = (BaseNotificationStrategy) strategyFactory.getStrategy(event.getProgram());
+        strategy = (NotificationStrategy) strategyFactory.getStrategy(event.getProgram());
         getHelper().setEvent(event);
         updateModels();
     }

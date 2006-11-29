@@ -36,10 +36,10 @@ public class EconomicService {
         return economicEventDao.getForId(eventId);
     }
     
-    public BaseEconomicStrategy getEconomicStrategy(EconomicEvent event) {
+    public EconomicStrategy getEconomicStrategy(EconomicEvent event) {
         Validate.notNull(event, "EconomicEvent must not be null.");
-        StrategyBase strategy = strategyFactory.getStrategy(event.getProgram());
-        return (BaseEconomicStrategy) strategy;
+        CICurtailmentStrategy strategy = strategyFactory.getStrategy(event.getProgram());
+        return (EconomicStrategy) strategy;
     }
 
     public List<EconomicEventParticipant> getParticipants(EconomicEvent event) {

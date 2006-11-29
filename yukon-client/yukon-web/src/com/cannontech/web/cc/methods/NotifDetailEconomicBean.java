@@ -4,14 +4,14 @@ import java.util.List;
 
 import com.cannontech.cc.model.EconomicEventNotif;
 import com.cannontech.cc.model.EconomicEventParticipant;
-import com.cannontech.cc.service.BaseEconomicStrategy;
 import com.cannontech.cc.service.EconomicService;
+import com.cannontech.cc.service.EconomicStrategy;
 import com.cannontech.cc.service.ProgramService;
 import com.cannontech.web.cc.CommercialCurtailmentBean;
 
 public class NotifDetailEconomicBean {
     private ProgramService programService;
-    private BaseEconomicStrategy strategy;
+    private EconomicStrategy strategy;
     private EconomicService economicService;
     private CommercialCurtailmentBean commercialCurtailment;
     private EconomicEventParticipant participant;
@@ -55,10 +55,10 @@ public class NotifDetailEconomicBean {
     public void setProgramService(ProgramService programService) {
         this.programService = programService;
     }
-    public BaseEconomicStrategy getStrategy() {
+    public EconomicStrategy getStrategy() {
         return strategy;
     }
-    public void setStrategy(BaseEconomicStrategy strategy) {
+    public void setStrategy(EconomicStrategy strategy) {
         this.strategy = strategy;
     }
 

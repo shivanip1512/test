@@ -33,7 +33,7 @@ import com.cannontech.common.util.TimeUtil;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.enums.CurtailmentEventAction;
 
-public abstract class BaseNotificationStrategy extends StrategyBase {
+public abstract class BaseNotificationStrategy extends StrategyBase implements NotificationStrategy {
     private CurtailmentEventDao curtailmentEventDao;
     private CurtailmentEventNotifDao curtailmentEventNotifDao;
     private CurtailmentEventParticipantDao curtailmentEventParticipantDao;
