@@ -20,6 +20,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
 
 public class ErrorHelperFilter  implements Filter {
 
@@ -96,17 +97,14 @@ public class ErrorHelperFilter  implements Filter {
         if (attribute instanceof Throwable) {
             Throwable startupException = (Throwable) attribute;
             Throwable rootCause = null;
-            rootCause = ExceptionUtils.getRootCause(startupException);
-            if (rootCause == null) {
-                rootCause = startupException;
-            }
+            rootCause = CtiUtilities.getRootCause(startupException);
             response.getWriter().println("Fatal startup error (usually database related): " + rootCause.getMessage());
             return;
         }
 		try {
 			chain.doFilter(request, response);
 		} catch (Error e) {
-			Throwable rc = ExceptionUtils.getRootCause(e);
+			Throwable rc = CtiUtilities.getRootCause(e);
             CTILogger.error("Servlet error filter caught an Error processing: " + getRequestInfo(request), rc);
 			if (isAjaxRequest(request)) {
 				handleAjaxErrorResponse(response, rc);
@@ -114,7 +112,7 @@ public class ErrorHelperFilter  implements Filter {
 				throw e;
 			}
 		} catch (RuntimeException re) {
-		    Throwable rc = ExceptionUtils.getRootCause(re);
+		    Throwable rc = CtiUtilities.getRootCause(re);
 			CTILogger.error("Servlet error filter caught a RuntimeException processing: " + getRequestInfo(request), rc);
 			if (isAjaxRequest(request)) {
 				handleAjaxErrorResponse(response, rc);
@@ -122,7 +120,7 @@ public class ErrorHelperFilter  implements Filter {
 				throw re;
 			}
 		} catch (Throwable t) {
-		    Throwable rc = ExceptionUtils.getRootCause(t);
+		    Throwable rc = CtiUtilities.getRootCause(t);
 			CTILogger.error("Servlet error filter caught a Throwable processing: " + getRequestInfo(request), rc);
 			if (isAjaxRequest(request)) {
 				handleAjaxErrorResponse(response, rc);
