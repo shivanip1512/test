@@ -247,7 +247,9 @@ public class CapControlStrategyModel {
         updateModel();
     }
 
-
+    public void resetValues(ValueChangeEvent vce) {
+        resetValueTable();
+    }
     
     public boolean isKVarAlgorithm () {
         String algo = strategy.getControlUnits();

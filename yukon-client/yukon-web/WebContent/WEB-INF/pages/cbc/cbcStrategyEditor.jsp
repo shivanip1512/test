@@ -59,7 +59,9 @@
 			<f:verbatim><br/></f:verbatim>
 			<x:outputLabel for="Control_Method" value="Control Method: " title="How the CapBanks are to be controlled"/>
 			<x:selectOneMenu id="Control_Method" onchange="submit();" disabled="#{!capControlForm.editingCBCStrategy}"
-					value="#{capControlForm.cbcStrategiesMap[capControlForm.currentStrategyID].controlMethod}" >
+					value="#{capControlForm.cbcStrategiesMap[capControlForm.currentStrategyID].controlMethod}" 
+                    valueChangeListener="#{capControlForm.currentStratModel.resetValues}">
+                    
 				<f:selectItems value="#{capControlForm.controlMethods}"/>
 			</x:selectOneMenu>
 	
@@ -137,6 +139,7 @@
 			<x:outputLabel for="Control_Algorithm" value="Control Algorithm: " title="The units and process we use to make control decisions"/>
 			<x:selectOneMenu id="Control_Algorithm" onchange="submit();" disabled="#{!capControlForm.editingCBCStrategy}"
 					value="#{capControlForm.cbcStrategiesMap[capControlForm.currentStrategyID].controlUnits}" 
+                    valueChangeListener="#{capControlForm.currentStratModel.resetValues}"   
                     >
 				<f:selectItems value="#{selLists.cbcControlAlgorithim}"/>
 			</x:selectOneMenu>
