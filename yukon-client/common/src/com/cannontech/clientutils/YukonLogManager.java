@@ -75,7 +75,7 @@ public class YukonLogManager {
             //console
             BasicConfigurator.configure();
             Logger.getRootLogger().setLevel(Level.INFO);
-            logger.error("Unbable to configure logging, using BasicConfigurator to log to console");
+            logger.error("Unbable to configure logging, using BasicConfigurator to log to console (path=" + path + ")");
             return;
         }   
     }
