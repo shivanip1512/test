@@ -29,6 +29,7 @@ import javax.swing.JEditorPane;
 import javax.swing.text.BadLocationException;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.login.ClientSession;
@@ -1629,6 +1630,15 @@ public static double convertTemperature(double temperature, String fromUnit, Str
             CTILogger.error("Couldn't find an IP address for the client, returning null");
         } 
         return "unknown"; 
+    }
+
+
+    public static Throwable getRootCause(Throwable e) {
+        Throwable rc = ExceptionUtils.getRootCause(e);
+        if (rc == null) {
+            rc = e;
+        }
+        return rc;
     }
 }
 
