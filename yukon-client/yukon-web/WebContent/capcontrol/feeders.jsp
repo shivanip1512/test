@@ -278,7 +278,7 @@ Event.observe(window, 'load', function() { new CtiNonScrollTable('fdrTable','fdr
                 <td  >State <img class="rAlign popupImg" src="images\question.gif"
                         onmouseover="statusMsg(this, 'System Commands, those commands that do NOT send out a message to a field device, can be initiated from this column');"/>
                 </td>
-                <td id="cb_state_td_hdr2" style="display:none" > Opcount Value</td>
+                <td id="cb_state_td_hdr2" style="display:none" > Op Count Value</td>
                 <td>Bank Address</td>
                 <td>Date/Time</td>
                 <td>Bank Size</td>
@@ -377,7 +377,7 @@ for( int i = 0; i < capBanks.length; i++ )
 					
 					</td>
 					<td id="cap_opcnt_span<%=capBank.getCcId()%>" style="display:none; " >
-						<label for="opcount" id="opcnt_label"> Opcount Value: </label>
+						<label for="opcount" id="opcnt_label"> Op Count: </label>
 						<input type="text" name="opcount" id="opcnt_input<%=capBank.getCcId()%>" maxlength="5" size="5"/>
 						<a href="javascript:void(0);" onclick="return executeCapBankCommand (<%=capBank.getCcId()%>,12,false,'Reset_OpCount', 'cap_opcnt_span<%=capBank.getCcId()%>');" >
 						Reset</a>

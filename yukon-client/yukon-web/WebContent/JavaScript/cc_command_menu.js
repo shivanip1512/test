@@ -536,7 +536,7 @@ function handleOpcountRequest (command, paoId, cmd_name) {
 var op_cnt = document.getElementById('opcnt_input'+paoId).value;
 //make sure that contains a valid number
 if (!isValidOpcount (op_cnt)) {
-	alert ('Opcount specified is INVALID. New Opcount value will be set to 0');
+	alert ('Op Count value not specified. New Op Count value will be set to 0.');
 	op_cnt = 0;
 }
 else
