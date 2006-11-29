@@ -23,7 +23,11 @@ public abstract class EventScheduler {
     private class DoScheduledTask extends TimerTask {
         @Override
         public void run() {
+            try {
             doScheduledNotifs();
+            } catch (Exception e) {
+                CTILogger.error("There was an uncaught exception while running timer task", e);
+            }
         }
     };
 
