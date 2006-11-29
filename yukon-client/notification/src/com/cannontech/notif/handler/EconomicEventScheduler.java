@@ -5,8 +5,8 @@ import java.util.*;
 import com.cannontech.cc.dao.EconomicEventNotifDao;
 import com.cannontech.cc.dao.EconomicEventParticipantDao;
 import com.cannontech.cc.model.*;
-import com.cannontech.cc.service.BaseEconomicStrategy;
 import com.cannontech.cc.service.EconomicService;
+import com.cannontech.cc.service.EconomicStrategy;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.data.notification.NotifType;
 import com.cannontech.enums.NotificationReason;
@@ -58,7 +58,7 @@ public class EconomicEventScheduler extends EventScheduler {
 
     public void eventRevisionNotification(EconomicEventPricing eventRevision) {
         EconomicEvent event = eventRevision.getEvent();
-        BaseEconomicStrategy strategy = economicService.getEconomicStrategy(event);
+        EconomicStrategy strategy = economicService.getEconomicStrategy(event);
         List<EconomicEventParticipant> participants = 
             strategy.getRevisionParticipantForNotif(eventRevision);
         Date now = new Date();
