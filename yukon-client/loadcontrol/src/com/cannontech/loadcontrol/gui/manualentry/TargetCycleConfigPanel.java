@@ -84,7 +84,7 @@ public class TargetCycleConfigPanel extends JPanel implements ActionListener{
         constraintsJTextGearAdjustFields.ipadx = 10;
         constraintsJTextGearAdjustFields.insets = new java.awt.Insets(2, 2, 3, 1);
         
-        JLabel trgtAdjHdr = createHdrLabel ("Adjustment(80%-100%)");
+        JLabel trgtAdjHdr = createHdrLabel ("Adjustment(80%-120%)");
         this.add (trgtAdjHdr, constraintsJTextGearAdjustFields);    
         constraintsJTextGearAdjustFields.gridy ++;
         
