@@ -10,6 +10,8 @@ import java.util.TimerTask;
 
 import javax.swing.JOptionPane;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
@@ -260,12 +262,52 @@ public class ClientSession {
 		// They gave up trying to login
 		return false;
 	}
+    
+    private boolean tryWebStartLogin() {
+        try {
+            String jwsUser = System.getProperty("yukon.jws.user");
+            String jwsPassword = System.getProperty("yukon.jws.password");
+            String jwsHost = System.getProperty("yukon.jws.host");
+            int jwsPort;
+            try {
+                jwsPort = Integer.parseInt(System.getProperty("yukon.jws.port"));
+            } catch (NumberFormatException  e) {
+                jwsPort = 8080;
+            }            
+            if (StringUtils.isBlank(jwsHost) || StringUtils.isBlank(jwsUser)) {
+                return false;
+            }
+            
+            String localSessionId = LoginSupport.getSessionID(jwsHost, jwsPort, jwsUser, jwsPassword);
+            
+            Properties dbProps = LoginSupport.getDBProperties(localSessionId, jwsHost, jwsPort);
+            if(!dbProps.isEmpty()) {
+                PoolManager.setDBProperties(dbProps);
+                //Do not log in the user again
+                LiteYukonUser u = DaoFactory.getYukonUserDao().getLiteYukonUser(jwsUser);
+                if(u != null) {
+                    //score! we found them
+                    setSessionInfo(u, localSessionId, jwsHost, jwsPort);
+                    
+                    return true;
+                } else {
+                    //ooh, thats bad.
+                    CTILogger.info("Server returned valid session ID but user \"" + jwsUser + "\" couldn't be found in the local cache. Aborting JWS Login");                   
+                }
+            } else {
+                CTILogger.info("Successful login returned ZERO database properties.  This is either a bug or DBProps servlet is not responding. Aborting JWS Login");
+            }
+            return true;
+        } catch (Exception e) {
+            CTILogger.warn("Couldn't use webstart for login", e);
+        } 
+        return false;
+    }
 	
 	private boolean doRemoteLogin(Frame p) {
 		LoginPrefs prefs = LoginPrefs.getInstance();
 		
 		String sessionID = prefs.getCurrentSessionID();
-		int userID = prefs.getCurrentUserID();
 		String host = prefs.getCurrentYukonHost();
 		int port = prefs.getCurrentYukonPort();
 		
@@ -297,9 +339,11 @@ public class ClientSession {
 		{
 			CTILogger.error("Unable to use old credentials, forcing login process");
 		}
-		
-		
-				
+
+		if (tryWebStartLogin()) {
+		    return true;
+        }
+
 		LoginPanel lp = makeRemoteLoginPanel();
 		while(collectInfo(p, lp)) {
 			try {
@@ -333,7 +377,7 @@ public class ClientSession {
 				}
 				else {
 					//ooh, thats bad.
-					displayMessage(p, "Server returned valid session ID but user id: " + userID + " couldn't be found in the local cache.  This is either a bug or a configuration problem.", "Error");					
+					displayMessage(p, "Server returned valid session ID but user id: " + lp.getUsername() + " couldn't be found in the local cache.  This is either a bug or a configuration problem.", "Error");					
 				}
 			}
 			//sometimes inside the IDE this returns no properties
