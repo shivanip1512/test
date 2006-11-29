@@ -1,5 +1,7 @@
 package com.cannontech.database.data.lite;
 
+import java.util.Comparator;
+
 /**
  * This type was created in VisualAge.
  */
@@ -162,7 +164,7 @@ public final class LiteComparators
 		}
 	};
 
-	public static java.util.Comparator liteNameComparator = new java.util.Comparator()
+	public static Comparator<Object> liteNameComparator = new Comparator<Object>()
 	{
 		public int compare(Object o1, Object o2)
 		{
