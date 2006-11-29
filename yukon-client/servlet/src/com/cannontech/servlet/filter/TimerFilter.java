@@ -1,4 +1,4 @@
-package com.cannontech.esub.web.filter;
+package com.cannontech.servlet.filter;
 
 import java.io.IOException;
 
@@ -10,13 +10,16 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
-import com.cannontech.clientutils.CTILogger;
+import org.apache.log4j.Logger;
+
+import com.cannontech.clientutils.YukonLogManager;
 
 /**
  * Filter that times how long a request takes.
  * @author alauinger
  */
 public class TimerFilter implements Filter {
+    private Logger log = YukonLogManager.getLogger(TimerFilter.class);
 	/**
 	 * @see javax.servlet.Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
 	 */
@@ -35,7 +38,7 @@ public class TimerFilter implements Filter {
       		name = ((HttpServletRequest)req).getRequestURI();
     	}	
 
-    	CTILogger.debug(name + ": " + (after - before) + "ms");
+    	log.info(name + ": " + (after - before) + "ms");
   	}
 
 	public void destroy() { }

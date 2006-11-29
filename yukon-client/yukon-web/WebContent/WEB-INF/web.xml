@@ -26,7 +26,7 @@
 
     <filter>
         <filter-name>timerFilter</filter-name>
-        <filter-class>com.cannontech.esub.web.filter.TimerFilter</filter-class>
+        <filter-class>com.cannontech.servlet.filter.TimerFilter</filter-class>
     </filter>
     
     <filter>
