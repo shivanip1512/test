@@ -16,7 +16,7 @@ public class TitledContainerTag extends TagSupport {
     public int doStartTag() throws JspException {
         try {
             pageContext.getOut().print("  <table " + "id= " + "\"" + getId()+ "\" " +
-            		"class=\"roundedTable\">\n" + 
+            		"class=\"roundedTable titledContainer\">\n" + 
                     "    <tr> \n" + 
                     "      <td class=\"upperLeft\"></td>\n" + 
                     "      <td class=\"top\">");
@@ -63,8 +63,7 @@ public class TitledContainerTag extends TagSupport {
 
 	public String getId() {
 		return id;
-	}
-
+}
 	public void setId(String id) {
 		this.id = id;
 	}
