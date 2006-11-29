@@ -10,6 +10,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+import org.springframework.jdbc.support.JdbcUtils;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
@@ -52,10 +54,10 @@ public class YukonUserRolePropertyLookup
         Connection conn = null;
         ResultSet rset = null;
         
-        conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+        conn = PoolManager.getYukonConnection();
         if( conn == null )
         {
-            CTILogger.info("YukonUserRolePropertyLookup.loadSpecificRoleProperty:  Error getting database connection.");
+            CTILogger.error("YukonUserRolePropertyLookup.loadSpecificRoleProperty:  Error getting database connection.");
             return null;
         }
         try
@@ -71,12 +73,16 @@ public class YukonUserRolePropertyLookup
                 if( rset.next())
                     propertyValue = rset.getString(1);
                 
-                pstmt.close();
     		}
     		catch( Exception e )
     		{
-    	   		CTILogger.error( "Error retrieving roles for user " + user.getUsername() + ": " + e.getMessage(), e );
-    		}
+    	   		CTILogger.error( "Error retrieving roles for user " + user.getUsername(), e );
+    		} 
+            finally 
+            {
+                JdbcUtils.closeResultSet(rset);
+    		    JdbcUtils.closeStatement(pstmt);
+            }
     	
     		//no user role property, so get the group one...first need to find all the groups for this user, though
     		if(propertyValue == null || propertyValue.compareTo(CtiUtilities.STRING_NONE) == 0)
@@ -100,13 +106,17 @@ public class YukonUserRolePropertyLookup
                         //assuming there are no role conflicts, should only have one occurrence for this user
                         propertyValue = rset.getString(2);
                     }
-                    pstmt.close();
     			}
     			catch( Exception e )
     			{
-    		  		com.cannontech.clientutils.CTILogger.error( "Error retrieving group, value for user " + user.getUsername() + ": " + e.getMessage(), e );
+    		  		CTILogger.error( "Error retrieving group, value for user " + user.getUsername(), e );
     		   		return "";
     			}
+                finally
+                {
+                    JdbcUtils.closeResultSet(rset);
+                    JdbcUtils.closeStatement(pstmt);
+                }
     		}
     		
     		//not sure why we can't find it, but better return default value
@@ -130,22 +140,19 @@ public class YukonUserRolePropertyLookup
     			}
     			catch( Exception e )
     			{
-    				CTILogger.error( "Role property with id " + rolePropertyID + "does not appear to exist: " + e.getMessage(), e );
+    				CTILogger.error( "Role property with id " + rolePropertyID + " does not appear to exist", e );
     				return "";
-    			}	
+                }
+                finally
+                {
+                    JdbcUtils.closeResultSet(rset);
+                    JdbcUtils.closeStatement(pstmt);
+                }
     		}
         }
         finally
         {
-            try
-            {
-                if( pstmt != null ) pstmt.close();
-                if( conn != null ) conn.close();
-            } 
-            catch( java.sql.SQLException e2 )
-            {
-                e2.printStackTrace();
-            }
+            JdbcUtils.closeConnection(conn);
         }
 
 		return propertyValue;
@@ -171,10 +178,10 @@ public class YukonUserRolePropertyLookup
         Connection conn = null;
         ResultSet rset = null;
         
-        conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+        conn = PoolManager.getYukonConnection();
         if( conn == null )
         {
-            CTILogger.info("YukonUserRolePropertyLookup.loadSpecificRole:  Error getting database connection.");
+            CTILogger.error("YukonUserRolePropertyLookup.loadSpecificRole:  Error getting database connection.");
             return null;
         }
         try
@@ -185,7 +192,7 @@ public class YukonUserRolePropertyLookup
                 pstmt.setInt(1, user.getLiteID());
                 pstmt.setInt(2, roleID);
 
-                CTILogger.info(" *********" + conn.nativeSQL(sql));
+                CTILogger.debug(conn.nativeSQL(sql));
 
                 rset = pstmt.executeQuery();
 
@@ -198,13 +205,17 @@ public class YukonUserRolePropertyLookup
     				theProudRole.setCategory(rset.getString(3));
     				theProudRole.setDescription(rset.getString(4));
     			}
-                pstmt.close();
     		}
     		catch( Exception e )
     		{
-    			CTILogger.error( "Error retrieving roles for user " + user.getUsername() + ": " + e.getMessage(), e );
+    			CTILogger.error( "Error retrieving roles for user " + user.getUsername(), e );
     			return null;
-    		}	
+    		}
+            finally
+            {
+                JdbcUtils.closeResultSet(rset);
+                JdbcUtils.closeStatement(pstmt);
+            }
     		
             if (theProudRole == null)
             {
@@ -233,25 +244,21 @@ public class YukonUserRolePropertyLookup
         				theProudRole.setCategory(rset.getString(3));
         				theProudRole.setDescription(rset.getString(4));
         			}
-                    pstmt.close();
         		}
         		catch( Exception e )
         		{
-        			CTILogger.error( "Error retrieving role for user " + user.getUsername() + ": " + e.getMessage(), e );
-        		}												
+        			CTILogger.error( "Error retrieving role for user " + user.getUsername(), e );
+        		}
+                finally
+                {
+                    JdbcUtils.closeResultSet(rset);
+                    JdbcUtils.closeStatement(pstmt);
+                }
             }
 		}
         finally
         {
-            try
-            {
-                if( pstmt != null ) pstmt.close();
-                if( conn != null ) conn.close();
-            } 
-            catch( java.sql.SQLException e2 )
-            {
-                e2.printStackTrace();
-            }
+            JdbcUtils.closeConnection(conn);
         }        
 		return theProudRole;
 	}
