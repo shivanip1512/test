@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
@@ -40,10 +42,14 @@ public class PointPickerTag extends TagSupport {
                 extraMappings.add("deviceName:" + paoNameElement);
             }
             String extraMappingString = StringUtils.join(extraMappings.iterator(), ";");
+            
+            HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
+            
             pageContext.getOut().println(
                 " <a href=\"javascript:pointPicker_showPicker(\'"
                     + pointIdField + "\','" + constraint + "', '" 
-                    + extraMappingString + "')\">");
+                    + extraMappingString + "', '"
+                    + request.getContextPath() + "')\">");
             return super.doEndTag();
         } catch (IOException e) {
             throw new JspException("Can't output PointPickerTag", e);

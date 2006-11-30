@@ -15,8 +15,11 @@ var pointPicker_inSearch = false;
 var pointPicker_criteria = '';
 var pointPicker_extraInfo = [];
 var pointPicker_lastMethod = function() {};
+var pointPicker_context = '';
 
-function pointPicker_showPicker(destPointIdFieldId, criteria, extraMapping) {
+function pointPicker_showPicker(destPointIdFieldId, criteria, extraMapping, context) {
+    // store server root context
+    pointPicker_context = context;
     // store constraint away
     pointPicker_criteria = criteria;
     // parse extraMapping
@@ -24,7 +27,7 @@ function pointPicker_showPicker(destPointIdFieldId, criteria, extraMapping) {
     pointPicker_extraInfo = [];
     if (extraMapping) {
 	    var pairs = extraMapping.split(/;/);
-	    for (i = 0; i < pairs.length; i++) {
+	    for (i = 0; i < pairs.length; i += 1) {
 	        var pair = pairs[i].split(/:/);
 	        if (pair.length == 2) {
 	            var info = {'property': pair[0], 'fieldid': pair[1]};
@@ -38,7 +41,7 @@ function pointPicker_showPicker(destPointIdFieldId, criteria, extraMapping) {
     newDivElem.setAttribute("id", "pointPickerContainer");
     bodyElem.appendChild(newDivElem);
     
-    var url = '/pointPicker/initial';
+    var url = pointPicker_context + '/pointPicker/initial';
     new Ajax.Updater('pointPickerContainer', url, {'method': 'get', 'onComplete': onPickerShown, 'onFailure': pointPicker_ajaxError});
     pointPicker_destPointIdFieldId = destPointIdFieldId;
 }
@@ -46,7 +49,7 @@ function pointPicker_showPicker(destPointIdFieldId, criteria, extraMapping) {
 var onPickerShown = function(transport, json) {
     $('pointPicker_query').focus();
     pointPicker_sameDevice();
-}
+};
 
 var onComplete = function(transport, json) {
     var newResultArea = renderHtmlResult(json);
@@ -69,7 +72,7 @@ var onComplete = function(transport, json) {
         pointPicker_inSearch = false;
         $('pointPicker_indicator').style.visibility = 'hidden';
     }
-}
+};
 
 function pointPicker_ajaxError(transport, json) {
     pointPicker_inSearch = false;
@@ -102,7 +105,7 @@ function pointPicker_doPartialSearch(start) {
     pointPicker_inSearch = true;
     var ss = escape($('pointPicker_query').value);
     pointPicker_currentSearch = ss;
-    var url = '/pointPicker/search?';
+    var url = pointPicker_context + '/pointPicker/search?';
     url += 'ss=' + ss;
     url += '&currentPointId=' + $(pointPicker_destPointIdFieldId).value;
     url += '&criteria=' + pointPicker_criteria;
@@ -115,7 +118,7 @@ function pointPicker_doSameDeviceSearch(start) {
     pointPicker_inSearch = true;
     var deviceId = escape($('pointPicker_query').value);
     pointPicker_currentSearch = '';
-    var url = '/pointPicker/sameDevice?';
+    var url = pointPicker_context + '/pointPicker/sameDevice?';
     url += 'currentPointId=' + $(pointPicker_destPointIdFieldId).value;
     url += '&criteria=' + pointPicker_criteria;
     url += '&start=' + start;
@@ -125,7 +128,7 @@ function pointPicker_doSameDeviceSearch(start) {
 function pointPicker_selectThisPoint(hit) {
     $(pointPicker_destPointIdFieldId).value = hit.pointId;
     $('pointPickerContainer').parentNode.removeChild($('pointPickerContainer'));
-    for (i=0; i < pointPicker_extraInfo.length; i++) {
+    for (i=0; i < pointPicker_extraInfo.length; i+=1) {
         info = pointPicker_extraInfo[i];
         $(info.fieldid).innerHTML = hit[info.property];
     }
@@ -166,13 +169,13 @@ function renderHtmlResult(json) {
         return function() {
             pointPicker_selectThisPoint(hit);
         };
-    }
+    };
     var currentId = $(pointPicker_destPointIdFieldId).value;
     var selectCurrent = function(rowElement, data) {
         if (data.pointId == currentId) {
             rowElement.className = "pointPicker_currentPointRow";
         }
-    }
+    };
     // The following array refers to properties that are available in
     // the UltraLightPoint interface. If additional properties are added
     // to that class, they will automatically be added to the JSON 
