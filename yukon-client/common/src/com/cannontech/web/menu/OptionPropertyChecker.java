@@ -3,6 +3,7 @@ package com.cannontech.web.menu;
 import java.util.Collection;
 
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -32,6 +33,9 @@ public abstract class OptionPropertyChecker {
      * @return an OptionPropertyChecker 
      */
     public static OptionPropertyChecker createRoleChecker(String role) {
+        if (StringUtils.isBlank(role)) {
+            return nullChecker;
+        }
         final int roleId = ReflectivePropertySearcher.getRoleProperty().getIntForName(role);
         OptionPropertyChecker checker = new OptionPropertyChecker() {
             public boolean check(LiteYukonUser user) {
