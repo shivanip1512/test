@@ -188,8 +188,8 @@
         <ant dir="${yukon-web}" target="webcopy"/> 
     </target>
 
-	<target name="sign">
-		<signjar alias="${jarsign.alias}" storepass="${jarsign.storepass}">
+	<target name="sign" depends="clean,build">
+		<signjar alias="${jarsign.alias}" storepass="${jarsign.storepass}" keystore="${jarsign.keystore}">
 			<fileset dir="${yukon.lib}">
 				<include name="*.jar"/>
 			</fileset>
