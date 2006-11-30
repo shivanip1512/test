@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+    <!--  This is a custom HandlerMapping that uses the path property from the 
+          JnlpController classes to determine if the controller matches. -->
+    <bean class="com.cannontech.web.jws.JnlpHandlerMapping">
+      <property name="order" value="1"/>
+    </bean>
+
+    <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+        <property name="mappings">
+            <value>
+              /*.jar=jarJnlpController
+              /java=javaInstall
+              /=jwsMenuController
+            </value>
+        </property>
+        <property name="order" value="2"/>
+    </bean>
+
+    <bean id="viewResolver"
+      class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+        <property name="prefix" value="/WEB-INF/pages/jws/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+    
+    <bean id="javaInstall" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+      <property name="viewName" value="javaInstall"/>
+    </bean>
+    
+    <bean id="jwsMenuController" class="com.cannontech.web.jws.JwsMenuController">
+    </bean>
+    
+    <!--  Any instance of JnlpController will be automatically found by the menu
+          controller and the mapping handler. Defining a new JWS Client only
+          requires adding a bean in this section. -->
+  
+    <bean class="com.cannontech.web.jws.JnlpController">
+        <property name="path" value="dbeditor.jnlp"/>
+        <property name="appTitle" value="Database Editor"/>
+        <property name="appMainClass" value="com.cannontech.dbeditor.DatabaseEditor"/>
+        <property name="appMainClassJar" value="dbeditor.jar"/>
+        <property name="appIcon" value="/WebConfig/yukon/Icons/dbEditorIcon64.gif" />
+    </bean>
+    
+    <bean class="com.cannontech.web.jws.JnlpController">
+        <property name="path" value="tdc.jnlp"/>
+        <property name="appTitle" value="TDC"/>
+        <property name="appMainClass" value="com.cannontech.tdc.TDCMainFrame"/>
+        <property name="appMainClassJar" value="tdc.jar"/>
+        <property name="appIcon" value="/WebConfig/yukon/Icons/tdcIcon64.gif" />
+    </bean>
+    
+    <bean class="com.cannontech.web.jws.JnlpController">
+        <property name="path" value="trending.jnlp"/>
+        <property name="appTitle" value="Trending"/>
+        <property name="appMainClass" value="com.cannontech.graph.GraphClient"/>
+        <property name="appMainClassJar" value="graph.jar"/>
+        <property name="appIcon" value="/WebConfig/yukon/Icons/GraphIcon64.gif" />
+    </bean>
+    
+    <bean class="com.cannontech.web.jws.JnlpController">
+        <property name="path" value="esub.jnlp"/>
+        <property name="appTitle" value="Esub Editor"/>
+        <property name="appMainClass" value="com.cannontech.esub.editor.Editor"/>
+        <property name="appMainClassJar" value="esub-editor.jar"/>
+        <property name="appIcon" value="/WebConfig/yukon/Icons/esubEditorIcon64.gif" />
+    </bean>
+    
+    <!--  This controller handles piping the JARs back to the JWS client. -->
+    <bean id="jarJnlpController" class="com.cannontech.web.jws.JarController">
+        <property name="cacheSeconds">
+            <value type="int">-1</value>
+        </property>
+        <property name="requireSession">
+            <value type="boolean">false</value>
+        </property>
+        <property name="synchronizeOnSession">
+            <value type="boolean">false</value>
+        </property>
+    </bean>
+</beans>

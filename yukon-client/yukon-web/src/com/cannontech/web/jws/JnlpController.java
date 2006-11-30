@@ -1,0 +1,172 @@
+package com.cannontech.web.jws;
+
+import java.io.File;
+import java.io.FilenameFilter;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.AbstractController;
+
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.util.ServletUtil;
+
+public class JnlpController extends AbstractController {
+
+    private String appTitle;
+    private String appMainClass;
+    private String appMainClassJar;
+    private String appIcon;
+    private String path;
+    
+    public JnlpController() {
+        setCacheSeconds(0);
+        setRequireSession(true);
+    }
+
+    @Override
+    protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        response.setContentType("application/x-java-jnlp-file");
+        
+        
+        Document doc = new Document();
+        Element jnlpElem = new Element("jnlp");
+        doc.addContent(jnlpElem);
+        jnlpElem.setAttribute("spec", "1.5+");
+        // determine code base
+        String url = request.getRequestURL().toString();
+        String codebase = url.substring(0, url.lastIndexOf("/"));
+        jnlpElem.setAttribute("codebase", codebase);
+        jnlpElem.setAttribute("href", url);
+        
+        Element infoElem = new Element("information");
+        jnlpElem.addContent(infoElem);
+        infoElem.addContent(new Element("title").setText(appTitle));
+        infoElem.addContent(new Element("vendor").setText("Cannon Technologies"));
+        infoElem.addContent(new Element("homepage").setAttribute("href", "http://www.cannontech.com/"));
+        infoElem.addContent(new Element("description").setText("Yukon client application to edit the Yukon database"));
+        String safeIconUrl = ServletUtil.createSafeUrl(request, appIcon);
+        infoElem.addContent(new Element("icon").setAttribute("href", safeIconUrl));
+        String safeSplashUrl = ServletUtil.createSafeUrl(request, "/install/images/cannonlogo.gif");
+        infoElem.addContent(new Element("icon").setAttribute("kind", "splash").setAttribute("href", safeSplashUrl));
+        infoElem.addContent(new Element("offline-allowed"));
+        
+        Element securityElem = new Element("security");
+        jnlpElem.addContent(securityElem);
+        securityElem.addContent(new Element("all-permissions"));
+        
+        Element resourcesElem = new Element("resources");
+        jnlpElem.addContent(resourcesElem);
+        resourcesElem.addContent(new Element("j2se").setAttribute("href", "http://java.sun.com/products/autodl/j2se").setAttribute("version", "1.5+"));        
+        resourcesElem.addContent(new Element("j2se").setAttribute("version", "1.5+"));
+        
+        // add main class jar
+        Element mainJarElem = new Element("jar");
+        resourcesElem.addContent(mainJarElem);
+        mainJarElem.setAttribute("href", appMainClassJar);
+        
+        // locate all jars under the client directory
+        String yukonBase = CtiUtilities.getYukonBase();
+        File clientDir = new File(yukonBase, "client/bin");
+        FilenameFilter filter = new FilenameFilter() {
+            public boolean accept(File dir, String name) {
+                return name.endsWith(".jar");
+            }
+        };
+        File[] files = clientDir.listFiles(filter);
+        for (File jarFile : files) {
+            if (jarFile.getName().equalsIgnoreCase(appMainClassJar)) {
+                continue;
+            }
+            Element jarElem = new Element("jar");
+            jarElem.setAttribute("href", jarFile.getName());
+            resourcesElem.addContent(jarElem);
+        }
+        
+        // add some properties to ease log in
+        LiteYukonUser user = ServletUtil.getYukonUser(request.getSession());
+        if(user != null) {
+            Element userPropElem = new Element("property");
+            userPropElem.setAttribute("name", "yukon.jws.user");
+            userPropElem.setAttribute("value", user.getUsername());
+            resourcesElem.addContent(userPropElem);
+            
+            Element passwordPropElem = new Element("property");
+            passwordPropElem.setAttribute("name", "yukon.jws.password");
+            passwordPropElem.setAttribute("value", user.getPassword());
+            resourcesElem.addContent(passwordPropElem);
+        }
+        
+        // add server info
+        String host = request.getServerName();
+        Element hostPropElem = new Element("property");
+        hostPropElem.setAttribute("name", "yukon.jws.host");
+        hostPropElem.setAttribute("value", host);
+        resourcesElem.addContent(hostPropElem);
+        
+        String port = Integer.toString(request.getServerPort());
+        Element portPropElem = new Element("property");
+        portPropElem.setAttribute("name", "yukon.jws.port");
+        portPropElem.setAttribute("value", port);
+        resourcesElem.addContent(portPropElem);
+
+        
+        Element appElem = new Element("application-desc");
+        jnlpElem.addContent(appElem);
+        appElem.setAttribute("main-class", appMainClass);
+        
+        XMLOutputter out = new XMLOutputter(Format.getPrettyFormat());
+        ServletOutputStream responseOutStream = response.getOutputStream();
+        out.output(doc, responseOutStream);
+        return null;
+    }
+
+    public void setAppTitle(String appTitle) {
+        this.appTitle = appTitle;
+    }
+
+    public void setAppMainClass(String appMainClass) {
+        this.appMainClass = appMainClass;
+    }
+
+    public void setAppMainClassJar(String appMainClassJar) {
+        this.appMainClassJar = appMainClassJar;
+    }
+
+    public String getPath() {
+        return path;
+    }
+    
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public String getAppMainClass() {
+        return appMainClass;
+    }
+
+    public String getAppMainClassJar() {
+        return appMainClassJar;
+    }
+
+    public String getAppTitle() {
+        return appTitle;
+    }
+
+    public String getAppIcon() {
+        return appIcon;
+    }
+
+    public void setAppIcon(String appIcon) {
+        this.appIcon = appIcon;
+    }
+
+
+}
