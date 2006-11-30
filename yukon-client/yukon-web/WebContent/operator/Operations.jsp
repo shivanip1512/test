@@ -215,10 +215,10 @@ function confirmDelete() {
             <div align = "center" style = "border:solid 1px #666999;"><a href = "LoadControl/oper_ee.jsp" class = "Link1" style = "text-decoration:none;"><cti:getProperty propertyid="<%= EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>"/></a></div>
           </td>
 </cti:checkRole>
-
+ 
 <cti:checkRole roleid="<%= CICurtailmentRole.ROLEID %>"> 
           <td width="25%" class="MainText"> 
-            <div align="center" style="border:solid 1px #666999;"><a href="/cc/programSelect.jsf" class="Link1" style="text-decoration:none;"><cti:getProperty property="com.cannontech.roles.operator.CICurtailmentRole.CURTAILMENT_LABEL"/></a></div>
+            <div align="center" style="border:solid 1px #666999;"><a href="<%=request.getContextPath()%>/cc/programSelect.jsf" class="Link1" style="text-decoration:none;"><cti:getProperty property="com.cannontech.roles.operator.CICurtailmentRole.CURTAILMENT_LABEL"/></a></div>
           </td>
 </cti:checkRole>
 
