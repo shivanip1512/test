@@ -10,15 +10,7 @@
        <mkdir dir="build"/>
        
        
-       <mkdir dir="temp"/>
-       
-		<copy todir="temp">
-		    <fileset dir="src">
-				<include name="**/*.java"/>
-			</fileset>
-		</copy>
-
-       <javac srcdir="temp" destdir="build" target="${yukon.javac.target}" 
+       <javac srcdir="src" destdir="build" target="${yukon.javac.target}" 
  	      source="${yukon.javac.source}" debug="${yukon.javac.debug}">
           <classpath>                        
              <fileset dir="${yukon.lib}">
@@ -27,9 +19,6 @@
 	      </classpath> 
      	</javac>
        
-       <delete dir="temp"/>
-              
-
        <jar jarfile="${yukon.lib}/yukonappserver.jar"
             basedir="build/" />       
    </target>
