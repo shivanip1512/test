@@ -35,4 +35,7 @@ public interface ReportingRole {
 	public static final int STARS_REPORTS_GROUP_LABEL = ApplicationRoleDefs.REPORTING_PROPERTYID_BASE - 19;
 	public static final int OTHER_REPORTS_GROUP_LABEL = ApplicationRoleDefs.REPORTING_PROPERTYID_BASE - 20;
 	public static final int SETTLEMENT_REPORTS_GROUP_LABEL = ApplicationRoleDefs.REPORTING_PROPERTYID_BASE - 21;
+    
+	public static final int CI_CURTAILMENT_REPORTS_GROUP_LABEL = ApplicationRoleDefs.REPORTING_PROPERTYID_BASE - 22;
+	public static final int CI_CURTAILMENT_REPORTS_GROUP = ApplicationRoleDefs.REPORTING_PROPERTYID_BASE - 23;
 }
