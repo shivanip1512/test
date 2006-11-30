@@ -43,6 +43,7 @@
         <property name="appMainClass" value="com.cannontech.dbeditor.DatabaseEditor"/>
         <property name="appMainClassJar" value="dbeditor.jar"/>
         <property name="appIcon" value="/WebConfig/yukon/Icons/dbEditorIcon64.gif" />
+        <property name="requiredRole" value="DBEditorRole.ROLEID" />
     </bean>
     
     <bean class="com.cannontech.web.jws.JnlpController">
@@ -51,6 +52,7 @@
         <property name="appMainClass" value="com.cannontech.tdc.TDCMainFrame"/>
         <property name="appMainClassJar" value="tdc.jar"/>
         <property name="appIcon" value="/WebConfig/yukon/Icons/tdcIcon64.gif" />
+        <property name="requiredRole" value="TDCRole.ROLEID" />
     </bean>
     
     <bean class="com.cannontech.web.jws.JnlpController">
@@ -59,6 +61,7 @@
         <property name="appMainClass" value="com.cannontech.graph.GraphClient"/>
         <property name="appMainClassJar" value="graph.jar"/>
         <property name="appIcon" value="/WebConfig/yukon/Icons/GraphIcon64.gif" />
+        <property name="requiredRole" value="WebGraphRole.ROLEID" />
     </bean>
     
     <bean class="com.cannontech.web.jws.JnlpController">
@@ -67,6 +70,7 @@
         <property name="appMainClass" value="com.cannontech.esub.editor.Editor"/>
         <property name="appMainClassJar" value="esub-editor.jar"/>
         <property name="appIcon" value="/WebConfig/yukon/Icons/esubEditorIcon64.gif" />
+        <property name="requiredRole" value="EsubEditorRole.ROLEID" />
     </bean>
     
     <!--  This controller handles piping the JARs back to the JWS client. -->

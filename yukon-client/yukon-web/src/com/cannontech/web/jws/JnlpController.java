@@ -25,6 +25,7 @@ public class JnlpController extends AbstractController {
     private String appMainClassJar;
     private String appIcon;
     private String path;
+    private String requiredRole;
     
     public JnlpController() {
         setCacheSeconds(0);
@@ -166,6 +167,14 @@ public class JnlpController extends AbstractController {
 
     public void setAppIcon(String appIcon) {
         this.appIcon = appIcon;
+    }
+
+    public String getRequiredRole() {
+        return requiredRole;
+    }
+
+    public void setRequiredRole(String requiredRole) {
+        this.requiredRole = requiredRole;
     }
 
 

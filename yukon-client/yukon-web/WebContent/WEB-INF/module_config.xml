@@ -42,6 +42,10 @@
       <link>/analysis/Reports.jsp</link>
       <requireRole value="application.ReportingRole.ROLEID"/>
     </option>
+     <option name="Launcher">
+      <link>/jws/</link>
+      <requireProperty value="WebClientRole.JAVA_WEB_START_LAUNCHER_ENABLED"/>
+    </option>
   </quicklinks>
   
   <module name="amr">    
@@ -234,6 +238,18 @@
     <css file="/WebConfig/yukon/styles/reportinglogos.css"/>
     <script file="/JavaScript/change_monitor.js"/>
     <script file="/JavaScript/calendar.js"/>
+  </module>
+  
+  <module name="javawebstart">
+   <toplinks>
+      <option name="Launcher">
+        <link>/jws/</link>
+      </option>
+      <option name="Java">
+        <link>/jws/java</link>
+      </option>
+   </toplinks>
+  	<skin name="standard"/>
   </module>
   
   <module name="esub">
