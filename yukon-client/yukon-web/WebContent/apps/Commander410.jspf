@@ -3,14 +3,14 @@
 
 java.util.Enumeration enum1 = request.getParameterNames();
   while (enum1.hasMoreElements()) {
-  	String ele = enum1.nextElement().toString();
-	 System.out.println(" --" + ele + "  " + request.getParameter(ele));
+    String ele = enum1.nextElement().toString();
+     System.out.println(" --" + ele + "  " + request.getParameter(ele));
 }
-		 
+         
 if( request.getParameter("clearids") != null)
 {
-	YC_BEAN.clearRequestMessage();
-	com.cannontech.clientutils.CTILogger.info("Clearing the RequestMessageIDs, they aren't coming back!");
+    YC_BEAN.clearRequestMessage();
+    com.cannontech.clientutils.CTILogger.info("Clearing the RequestMessageIDs, they aren't coming back!");
 }
 //set the deviceID of the YC_BEAN
 YC_BEAN.setDeviceID(deviceID);
@@ -20,109 +20,144 @@ YC_BEAN.setDeviceID(deviceID);
 
 function updatePrevious()
 {
-	var currVal = document.getElementById('currEnergyPD').innerHTML;
-	document.getElementById('prevEnergyPD').innerHTML = formatNum(document.getElementById('prevSelect').value);
-	
-	var selected = document.getElementById('prevSelect').options[document.getElementById('prevSelect').selectedIndex].text;
-	var prevVal = document.getElementById('prevEnergyPD').innerHTML;
-	currVal = currVal.replace(/^\s*/,"").replace(/\s*$/,"");
-	prevVal = prevVal.replace(/^\s*/,"").replace(/\s*$/,"");
-	
-	if( currVal == "---" || prevVal == "---")
-	{
-		document.getElementById('totalUsage').innerHTML = "---";
-		if( prevVal == "---")
-		{
-			document.getElementById('prevEnergyPD').innerHTML = "---";
-		}
-	}
-	else
-	{
-		document.getElementById('totalUsage').innerHTML = formatNum(currVal - prevVal);
-	}
+    var currVal = document.getElementById('currEnergyPD').innerHTML;
+    document.getElementById('prevEnergyPD').innerHTML = formatNum(document.getElementById('prevSelect').value);
+    
+    var selected = document.getElementById('prevSelect').options[document.getElementById('prevSelect').selectedIndex].text;
+    var prevVal = document.getElementById('prevEnergyPD').innerHTML;
+    currVal = currVal.replace(/^\s*/,"").replace(/\s*$/,"");
+    prevVal = prevVal.replace(/^\s*/,"").replace(/\s*$/,"");
+    
+    if( currVal == "---" || prevVal == "---")
+    {
+        document.getElementById('totalUsage').innerHTML = "---";
+        if( prevVal == "---")
+        {
+            document.getElementById('prevEnergyPD').innerHTML = "---";
+        }
+    }
+    else
+    {
+        document.getElementById('totalUsage').innerHTML = formatNum(currVal - prevVal);
+    }
 }
 
 function formatNum(valuein)
 { 
-	valuein = "" + Math.round( parseFloat(valuein) * 1000 ) / 1000 ;
+    valuein = "" + Math.round( parseFloat(valuein) * 1000 ) / 1000 ;
 
-	if (valuein=="NaN") valuein = "0";
-	decimalpos = valuein.indexOf(".");
-	if (decimalpos==-1)	//add a decimal if not exist
-	{
-		decimalpos = valuein.length;
-		valuein = valuein + ".";
-	}
-	valuein = valuein + "000";	//pad with zeros if needed.
-	valuein = valuein.substring(0, decimalpos+4);	//truncate the extra zeros
-	return valuein;
+    if (valuein=="NaN") valuein = "0";
+    decimalpos = valuein.indexOf(".");
+    if (decimalpos==-1) //add a decimal if not exist
+    {
+        decimalpos = valuein.length;
+        valuein = valuein + ".";
+    }
+    valuein = valuein + "000";  //pad with zeros if needed.
+    valuein = valuein.substring(0, decimalpos+4);   //truncate the extra zeros
+    return valuein;
 }
 
 
 function disableAllButtons()
 {
-	document.body.style.cursor = 'wait';
-	document.getElementById('readEnergyID').style.cursor = 'wait';
-	document.getElementById('readEnergyID').href="javascript:;";
-	document.getElementById('readEnergyID').disabled = true;
-	
-	document.getElementById('readDemandID').style.cursor = 'wait';
-	document.getElementById('readDemandID').href="javascript:;";
-	document.getElementById('readDemandID').disabled = true;
+    document.body.style.cursor = 'wait';
+    document.getElementById('readEnergyID').style.cursor = 'wait';
+    document.getElementById('readEnergyID').href="javascript:;";
+    document.getElementById('readEnergyID').disabled = true;
+    
+    document.getElementById('readDemandID').style.cursor = 'wait';
+    document.getElementById('readDemandID').href="javascript:;";
+    document.getElementById('readDemandID').disabled = true;
 
-	document.getElementById('readVoltageID').style.cursor = 'wait';
-	document.getElementById('readVoltageID').href="javascript:;";
-	document.getElementById('readVoltageID').disabled = true;
+    document.getElementById('readVoltageID').style.cursor = 'wait';
+    document.getElementById('readVoltageID').href="javascript:;";
+    document.getElementById('readVoltageID').disabled = true;
 
-	document.getElementById('readOutageID').style.cursor = 'wait';
-	document.getElementById('readOutageID').href="javascript:;";
-	document.getElementById('readOutageID').disabled = true;
-	
-	if( document.getElementById('readDiscID') )
-	{
-		document.getElementById('controlConnID').style.cursor = 'wait';
-		document.getElementById('controlConnID').href="javascript:;";
-		document.getElementById('controlConnID').disabled = true;
+    document.getElementById('readOutageID').style.cursor = 'wait';
+    document.getElementById('readOutageID').href="javascript:;";
+    document.getElementById('readOutageID').disabled = true;
+    
+    if( document.getElementById('readDiscID') )
+    {
+        document.getElementById('controlConnID').style.cursor = 'wait';
+        document.getElementById('controlConnID').href="javascript:;";
+        document.getElementById('controlConnID').disabled = true;
 
-		document.getElementById('controlDiscID').style.cursor = 'wait';
-		document.getElementById('controlDiscID').href="javascript:;";
-		document.getElementById('controlDiscID').disabled = true;
-	
-		document.getElementById('readDiscID').style.cursor = 'wait';
-		document.getElementById('readDiscID').href="javascript:;";
-		document.getElementById('readDiscID').disabled = true;
-	}		
+        document.getElementById('controlDiscID').style.cursor = 'wait';
+        document.getElementById('controlDiscID').href="javascript:;";
+        document.getElementById('controlDiscID').disabled = true;
+    
+        document.getElementById('readDiscID').style.cursor = 'wait';
+        document.getElementById('readDiscID').href="javascript:;";
+        document.getElementById('readDiscID').disabled = true;
+    }       
 
-	document.commandForm.submit();
+    document.commandForm.submit();
 }
 
 function setCommand(cmd)
 {
-	document.commandForm.command.value = cmd;
+    document.commandForm.command.value = cmd;
+}
+function setMspCommand(cmd)
+{
+    document.mspCommandForm.command.value = cmd;
+    document.mspCommandForm.submit();
 }
 </SCRIPT>
+  <td width="657" valign="top" bgcolor="#FFFFFF"> 
+    <div align="center"> 
+      <% String header = "MCT 410 - CONTROL COMMANDS"; %>
+      <table width="100%" border="0" cellspacing="0" cellpadding="1">
+        <form name="mspCommandForm" method="POST" action="<%= request.getContextPath() %>/servlet/MultispeakServlet">
+          <input type="hidden" name="deviceID" value="<%=deviceID%>">
+          <input type="hidden" name="ACTION" value="CB_MR">
+          <input type="hidden" name="command" value="">
+          <input type="hidden" name="timeOut" value="8000">
+          <input id="redirect" type="hidden" name="REDIRECT" value="<%= redirect%>">
+          <input id="referrer" type="hidden" name="REFERRER" value="<%= referrer%>">      
+        <tr>
+          <td width="10%" class="SubTitleHeader">Customer:</td>
+          <td width="20%" class="NavText" align="left">(<a class="Link4" href="javascript:setMspCommand('getCustomerByMeterNo')" 
+            onMouseOver="window.status='Read Customer data from CIS';return true;"
+            onMouseOut="window.status='';return true;">Show Details</a>)
+          </td>
+          <td width="40%"/>
+<%--          <td width="16%" align="left" class="SubTitleHeader">Service Location:</td>
+          <td width="14%" class="NavText" align="left">(<a class="Link4" href="javascript:setMspCommand('getCustomerByServiceLocation')" 
+            onMouseOver="window.status='Read Customer data from CIS';return true;"
+            onMouseOut="window.status='';return true;">Show Details</a>)
+          </td>          
+--%>
+        </tr>
+        <tr>
+           <td colspan="3" class="NavText">
+              <% if (session.getAttribute("CustomerDetail") != null) out.write(session.getAttribute("CustomerDetail").toString()); %>
+          </td>
+<%--           <td colspan="2" class="SubText" align="left">
+              <% if (session.getAttribute("CustomerDetail") != null) out.write(session.getAttribute("CustomerDetail").toString()); %>
+          </td>
+--%>
+        </tr>
+        <tr>
+          <td colspan="3" align="center" class="TitleHeader"><%= header %></td>
+        </tr>
+        <tr>
+          <td colspan="3" width="100%" class="SubtitleHeader" align="center"><%=liteYukonPao.getPaoName()%></td>
+        </tr>
+                </form>
+      </table>
+      <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
+      <% if (YC_BEAN.getErrorMsg().length() > 0 ) out.write("<span class=\"ErrorMsg\">" + YC_BEAN.getErrorMsg() + "</span><br>"); %>
+      <table width="530" border="0" cellspacing="0" cellpadding="0">
+        <tr>             
 <form name="commandForm" method="POST" action="<%= request.getContextPath() %>/servlet/CommanderServlet">
   <input type="hidden" name="deviceID" value="<%=deviceID%>">
   <input type="hidden" name="command" value="">
   <input type="hidden" name="timeOut" value="8000">
   <input id="redirect" type="hidden" name="REDIRECT" value="<%= redirect%>">
   <input id="referrer" type="hidden" name="REFERRER" value="<%= referrer%>">
-  <td width="657" valign="top" bgcolor="#FFFFFF"> 
-    <div align="center"> 
-      <% String header = "MCT 410 - CONTROL COMMANDS"; %>
-      <br>
-      <table width="100%" border="0" cellspacing="0" cellpadding="3">
-        <tr> 
-          <td align="center" class="TitleHeader"><%= header %></td>
-        </tr>
-        <tr> 
-          <td width="100%" class="SubtitleHeader" align="center"><%=liteYukonPao.getPaoName()%></td>
-        </tr>
-      </table>
-      <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
-      <% if (YC_BEAN.getErrorMsg().length() > 0 ) out.write("<span class=\"ErrorMsg\">" + YC_BEAN.getErrorMsg() + "</span><br>"); %>
-      <table width="530" border="0" cellspacing="0" cellpadding="0">
-        <tr> 
           <td> 
             <table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
               <tr> 
@@ -137,7 +172,7 @@ function setCommand(cmd)
                 <td width="6" height="19"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Header_left.gif" width="6" height="19"></td>
                 <td height="95%"  bgcolor="888888" class="tableHeader">Energy</td>
                 <td height="95%" bgcolor="888888" class="crumbs" style="font-weight:bold" align="right"> <a class="Link3" href="javascript:setCommand('getvalue kwh');disableAllButtons()" id="readEnergyID" name="readEnergy"
-				onMouseOver="window.status='Read Energy (from the meter)';return true;"
+                onMouseOver="window.status='Read Energy (from the meter)';return true;"
                 onMouseOut="window.status='';return true;">Read</a></td>
                 <td width="6" height="19"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Header_right.gif" width="6" height="19"></td>
               </tr>
@@ -230,7 +265,7 @@ function setCommand(cmd)
                 <td width="6" height="19"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Header_left.gif" width="6" height="19"></td>
                 <td height="95%"  bgcolor="888888" class="tableHeader">Demand</td>
                 <td height="95%" bgcolor="888888" class="crumbs" style="font-weight:bold" align="right"> <a class="Link3" href="javascript:setCommand('getvalue peak & getvalue demand');disableAllButtons()" id="readDemandID" name="readDemand"
-			  onMouseOver="window.status='Read Demand and Peak Demand (from the meter)';return true;"
+              onMouseOver="window.status='Read Demand and Peak Demand (from the meter)';return true;"
               onMouseOut="window.status='';return true;">Read</a></td>
                 <td width="6" height="19"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Header_right.gif" width="6" height="19"></td>
               </tr>
@@ -239,7 +274,7 @@ function setCommand(cmd)
                 <td colspan="2"> 
                   <table width="100%" border="1" cellspacing="0" cellpadding="0" bordercolor="#FFFFFF" align="center">
                     <tr> 
-                      <td width="20%" class="columnHeader">Current</td>
+                      <td width="20%" class="columnHeader">Last Interval</td>
                       <td width="35%"class="main" align="center"> 
                         <%pointData = YC_BEAN.getRecentPointData(deviceID, 1, PointTypes.DEMAND_ACCUMULATOR_POINT);%>
                         <%if( pointData != null){%>
@@ -308,7 +343,7 @@ function setCommand(cmd)
                 <td width="6" height="19"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Header_left.gif" width="6" height="19"></td>
                 <td height="95%"  bgcolor="888888" class="tableHeader">Voltage</td>
                 <td height="95%" bgcolor="888888" class="crumbs" style="font-weight:bold" align="right"> <a class="Link3" href="javascript:setCommand('getvalue voltage & getvalue demand');disableAllButtons()" id="readVoltageID" name="readVoltage"
-			  onMouseOver="window.status='Read Current, Minimum, and Maximum Voltage (from the meter)';return true;"
+              onMouseOver="window.status='Read Current, Minimum, and Maximum Voltage (from the meter)';return true;"
               onMouseOut="window.status='';return true;">Read</a></td>
                 <td width="6" height="19"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Header_right.gif" width="6" height="19"></td>
               </tr>
@@ -317,7 +352,7 @@ function setCommand(cmd)
                 <td colspan="2"> 
                   <table width="100%" border="1" cellspacing="0" cellpadding="0" bordercolor="#FFFFFF" align="center">
                     <tr> 
-                      <td width="20%" class="columnHeader">Current</td>
+                      <td width="20%" class="columnHeader">Last Interval</td>
                       <td width="35%"class="main" align="center"> 
                         <%pointData = YC_BEAN.getRecentPointData(deviceID, 4, PointTypes.DEMAND_ACCUMULATOR_POINT);%>
                         <%if( pointData != null){%>
@@ -410,7 +445,7 @@ function setCommand(cmd)
                 <td width="6" height="19"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Header_left.gif" width="6" height="19"></td>
                 <td height="95%"  bgcolor="888888" class="tableHeader">Outage</td>
                 <td height="95%" bgcolor="888888" class="crumbs" style="font-weight:bold" align="right"> <a class="Link3" href="javascript:setCommand('getvalue powerfail & getvalue outage 1 & getvalue outage 3 & getvalue outage 5');disableAllButtons()" id="readOutageID" name="readOutage"
-			  onMouseOver="window.status='Read Current Blink Count, Last 6 Outages (from the meter)';return true;"
+              onMouseOver="window.status='Read Current Blink Count, Last 6 Outages (from the meter)';return true;"
               onMouseOut="window.status='';return true;">Read</a></td>
                 <td width="6" height="19"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Header_right.gif" width="6" height="19"></td>
               </tr>
@@ -445,7 +480,7 @@ function setCommand(cmd)
                     <tr bgcolor="EEEEEE"> 
                       <td class="columnHeader">&nbsp;</td>
                       <td colspan="2" class="main">&nbsp; 
-					</tr>
+                    </tr>
                     <tr> 
                       <td class="columnHeader">History (Last 6)</td>
                       <td colspan="2" class="main">1.&nbsp;&nbsp; 
@@ -522,33 +557,33 @@ function setCommand(cmd)
                 <td width="6" height="9"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Bottom_right.gif" width="6" height="9"></td>
               </tr>
             </table>
-			
-			
+            
+            
             <table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
               <tr> 
                 <td> <br>
                 </td>
               </tr>
             </table>
-			<% int discAddress = YC_BEAN.getMCT410DisconnectAddress(deviceID); 
-			if( discAddress >= 0 ) {
-			%>
+            <% int discAddress = YC_BEAN.getMCT410DisconnectAddress(deviceID); 
+            if( discAddress >= 0 ) {
+            %>
             <table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
               <tr> 
                 <td width="6" height="19"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Header_left.gif" width="6" height="19"></td>
                 <td height="95%"  bgcolor="888888" class="tableHeader">Disconnect</td>
                 <td height="95%" bgcolor="888888" class="crumbs" align="right" style="font-weight:bold">
-				<a class="Link3" href="javascript:setCommand('control connect');disableAllButtons()" id="controlConnID" name="controlConn"
-				  onMouseOver="window.status='Control Connect';return true;"
-    	          onMouseOut="window.status='';return true;">Connect</a>
-				&nbsp;&nbsp;
+                <a class="Link3" href="javascript:setCommand('control connect');disableAllButtons()" id="controlConnID" name="controlConn"
+                  onMouseOver="window.status='Control Connect';return true;"
+                  onMouseOut="window.status='';return true;">Connect</a>
+                &nbsp;&nbsp;
                 <a class="Link3" href="javascript:setCommand('control disconnect');disableAllButtons()" id="controlDiscID" name="controlDisc"
-				  onMouseOver="window.status='Control Disconnect';return true;"
-	              onMouseOut="window.status='';return true;">Disconnect</a>
-				&nbsp;&nbsp;
+                  onMouseOver="window.status='Control Disconnect';return true;"
+                  onMouseOut="window.status='';return true;">Disconnect</a>
+                &nbsp;&nbsp;
                 <a class="Link3" href="javascript:setCommand('getstatus disconnect');disableAllButtons()" id="readDiscID" name="readDisc"
-				  onMouseOver="window.status='Read Disconnect Status';return true;"
-        	      onMouseOut="window.status='';return true;">Read</a></td>
+                  onMouseOver="window.status='Read Disconnect Status';return true;"
+                  onMouseOut="window.status='';return true;">Read</a></td>
                 <td width="6" height="19"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Header_right.gif" width="6" height="19"></td>
               </tr>
               <tr> 
@@ -566,7 +601,7 @@ function setCommand(cmd)
                         <%}%>
                       <td width="35%" class="main" align="right"> 
                         <%if( pointData != null){%>
-                        <%=pointData.getStr()%> 						
+                        <%=pointData.getStr()%>                         
                         <%//format_nv3.format(pointData.getValue())%> 
                         <% } else {%>
                         &nbsp; 
@@ -599,18 +634,18 @@ function setCommand(cmd)
                 <td width="6" height="30"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Header_left.gif" width="6" height="30"></td>
                 <td height="95%"  bgcolor="888888" class="tableHeader">TOU Schedule</td>
                 <td height="95%" bgcolor="888888" class="crumbs" align="right" style="font-weight:bold">
-				  <select name="scheduleID" id="scheduleID">
-				     <%for (int i = 0; i < scheds.size(); i++)
-				     {
-					     com.cannontech.database.data.lite.LiteTOUSchedule lSched = (com.cannontech.database.data.lite.LiteTOUSchedule)scheds.get(i);
-				     %>
-	          			<option value="<%=lSched.getScheduleID()%>"><%=lSched.getScheduleName()%></option>
-	          		<%}%>
-        		  </select>
-				<a class="Link3" href="javascript:setCommand('putconfig tou ');disableAllButtons()" id="touDownloadID" name="touDownload"
-				  onMouseOver="window.status='Download TOU Schedule to the meter';return true;"
-    	          onMouseOut="window.status='';return true;">Download TOU Schedule</a>
-				&nbsp;&nbsp;
+                  <select name="scheduleID" id="scheduleID">
+                     <%for (int i = 0; i < scheds.size(); i++)
+                     {
+                         com.cannontech.database.data.lite.LiteTOUSchedule lSched = (com.cannontech.database.data.lite.LiteTOUSchedule)scheds.get(i);
+                     %>
+                        <option value="<%=lSched.getScheduleID()%>"><%=lSched.getScheduleName()%></option>
+                    <%}%>
+                  </select>
+                <a class="Link3" href="javascript:setCommand('putconfig tou ');disableAllButtons()" id="touDownloadID" name="touDownload"
+                  onMouseOver="window.status='Download TOU Schedule to the meter';return true;"
+                  onMouseOut="window.status='';return true;">Download TOU Schedule</a>
+                &nbsp;&nbsp;
                 <td width="6" height="30"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Header_right.gif" width="6" height="30"></td>
               </tr>
               <tr> 
@@ -625,35 +660,36 @@ function setCommand(cmd)
                 <td width="6" height="9"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Bottom_right.gif" width="6" height="9"></td>
               </tr>
             </table>            
-			<%}%>			
+            <%}%>           
             <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center" class="TableCell">
               <tr><td height="10"></td></tr>
               <tr> 
-   			  	<td align="center" rowspan="2"><input type="reset" name="refresh" value="Refresh" onClick="window.location.reload()"></td>
-				<% String gotoLink = "";
-			  	if (request.getParameter("InvNo") != null){	//we came from the Customer Account page
-		          gotoLink =  request.getContextPath()+"/operator/Consumer/CommandInv.jsp?InvNo="+invNo+"&manual&command=null";
-		        } else {
-		          gotoLink = request.getContextPath()+"/apps/CommandDevice.jsp?deviceID="+deviceID+"&manual&command=null";
-		        }%>
-   			  	<td align="center"><a href='<%=gotoLink%>' name="manualCommander"  class="Link1">Commander: Manual</a></td>
-			  </tr>	
-	          <tr>
-			  	<%
-			  	  if (request.getParameter("InvNo") != null) {	//we came from the Customer Account page
-            	    gotoLink = request.getContextPath()+"/operator/Consumer/CommandInv.jsp?InvNo="+invNo+"&lp";
-      			  } else {
-				    gotoLink = request.getContextPath()+"/apps/CommandDevice.jsp?deviceID="+deviceID+"&lp";
+                <td align="center" rowspan="2"><input type="reset" name="refresh" value="Refresh" onClick="window.location.reload()"></td>
+                <% String gotoLink = "";
+                if (request.getParameter("InvNo") != null){ //we came from the Customer Account page
+                  gotoLink =  request.getContextPath()+"/operator/Consumer/CommandInv.jsp?InvNo="+invNo+"&manual&command=null";
+                } else {
+                  gotoLink = request.getContextPath()+"/apps/CommandDevice.jsp?deviceID="+deviceID+"&manual&command=null";
+                }%>
+                <td align="center"><a href='<%=gotoLink%>' name="manualCommander"  class="Link1">Commander: Manual</a></td>
+              </tr> 
+              <tr>
+                <%
+                  if (request.getParameter("InvNo") != null) {  //we came from the Customer Account page
+                    gotoLink = request.getContextPath()+"/operator/Consumer/CommandInv.jsp?InvNo="+invNo+"&lp";
+                  } else {
+                    gotoLink = request.getContextPath()+"/apps/CommandDevice.jsp?deviceID="+deviceID+"&lp";
                   }%>
-			  	  <td align="center"><a href='<%= gotoLink%>' name="advCommander410"  class="Link1">Commander: MCT410 Profile</a></td>
-	          </tr>    			  
+                  <td align="center"><a href='<%= gotoLink%>' name="advCommander410"  class="Link1">Commander: MCT410 Profile</a></td>
+              </tr>               
             </table>
           </td>
+		</form>
         </tr>
         <tr>
           <td>&nbsp;</td>
         </tr>
       </table>
     </div>
-    <a href="<%=referrer%>&clearids" class="Link3">.</a> </td>
-</form>
+    <a href="<%=referrer%>&clearids" class="Link3">.</a>
+</td>
