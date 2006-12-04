@@ -20,6 +20,7 @@ public final class PointTypes implements IPointOffsets, TypeBase
 	
 	//System point id constants - client
 	public static final int SYS_PID_THRESHOLD	=	-100;
+    public static final int SYS_PID_MULTISPEAK  =   -110;
 
 	//The following constants are keys into the private
 	//Array of strings (not related to any c/c++ defines!)
