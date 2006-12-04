@@ -515,6 +515,11 @@ function confirmDelete() {
               Events</a></div>
           </td>
 </cti:checkProperty> 
+<cti:checkProperty propertyid="<%= AdministratorRole.ADMIN_MULTISPEAK_SETUP %>"> 
+          <td align = "center" class = "MainText" width="25%"> 
+            <div align = "center" style = "border:solid 1px #666999;"><a href = "../msp_setup.jsp" class = "Link1" style = "text-decoration:none;">Multispeak Setup</a></div>
+          </td>
+</cti:checkProperty>
         </tr>
       </table>
     </td>
