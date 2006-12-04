@@ -4,6 +4,8 @@ import com.cannontech.database.data.pao.PAOGroups;
 
 /**
  * This type was created in VisualAge.
+ * This Model is for custom point types.
+ * Please note that Cap Control device class is also accepted as a valid device.
  */
 public class DeviceTree_CustomPointsModel extends DeviceTreeModel
 {
@@ -36,7 +38,8 @@ public DeviceTree_CustomPointsModel( boolean showPointNodes )
 
 public boolean isDeviceValid( int category_, int class_, int type_ )
 {
-   return( com.cannontech.database.data.pao.DeviceClasses.isCoreDeviceClass( class_ )
+   return( (com.cannontech.database.data.pao.DeviceClasses.isCoreDeviceClass( class_ )
+           || class_ == PAOGroups.CAT_CAPCONTROL)   //Added for Trending
             && category_ == PAOGroups.CAT_DEVICE );
 }
 
