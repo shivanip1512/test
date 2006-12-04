@@ -35,17 +35,17 @@ CtiCalculateThread::~CtiCalculateThread( void )
     }
     if( _onUpdatePoints.size() > 0 )
     {
-        delete_map(_periodicPoints);
+        delete_map(_onUpdatePoints);
         _onUpdatePoints.clear();
     }
     if( _constantPoints.size() > 0 )
     {
-        delete_map(_periodicPoints);
+        delete_map(_constantPoints);
         _constantPoints.clear();
     }
     if( _historicalPoints.size() > 0 )
     {
-        delete_map(_periodicPoints);
+        delete_map(_historicalPoints);
         _historicalPoints.clear();
     }
 };
