@@ -1718,6 +1718,11 @@ private synchronized LiteBase handleDeviceMeterGroupChange( int changeType, int 
 	if( allDeviceMeterGroups == null )
 		return lBase;
 
+    if( id == 0) {    //A force reload of all devicemetergroups was sent.
+        releaseAllDeviceMeterGroups();
+        return lBase;
+    }
+
 	switch(changeType)
 	{
 		case DBChangeMsg.CHANGE_TYPE_ADD:
