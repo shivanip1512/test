@@ -55,7 +55,7 @@ function vendorChanged(vendor)
   <h4 class='ErrorMsg'><c:out value="${sessionScope.ERROR_MESSAGE}" default=""/></h4>
 
 <cti:titledContainer title="Multispeak Interface Setup">
-<form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/SetupServlet">
+<form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/MultispeakServlet">
 <input type="hidden" name="ACTION" value="updateMSP">
 <input type="hidden" name="REDIRECT" value='<c:out value="${pageContext.request.requestURI}"/>' >
 <input type="hidden" name="actionEndpoint">
@@ -63,27 +63,43 @@ function vendorChanged(vendor)
 
 <table class="keyValueTable">
   <tr> 
-    <td colspan="2" style="text-align:right" onMouseOver="dispStatusMsg('Select vendor');return document.statVal" 
+    <td colspan="2" onMouseOver="dispStatusMsg('Select vendor');return document.statVal" 
         onMouseOut="dispStatusMsg('');return document.statVal">Company Name
     </td>
     <td colspan="2">
-      <input type="text" name="mspVendor">
+      <input type="text" name="mspCompanyName">
     </td>
   </tr>
   <tr>
-    <td colspan="2" style="text-align:right" onMouseOver="dispStatusMsg('Enter the Username');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">MSP UserName</td>
+    <td colspan="2" onMouseOver="dispStatusMsg('Enter the Application Name');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">App Name</td>
+    <td>
+      <input type="text" name="mspAppName">
+    </td>
+    <td>&nbsp;</td>
+    <td style="text-align:left"><u>Response Message Login</u></td>
+  </tr>  
+  <tr>
+    <td colspan="2" onMouseOver="dispStatusMsg('Enter the Username');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">MSP UserName</td>
     <td>
       <input type="text" name="mspUserName" value='(none)'>
     </td>
-  </tr>
-  <tr>
-    <td colspan="2" style="text-align:right" onMouseOver="dispStatusMsg('Enter the Password');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">MSP Password</td>
+    <td onMouseOver="dispStatusMsg('Enter the Username for Outgoing Yukon messages');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">UserName</td>
     <td>
-      <input type="text" name="mspPassword" value='(none)'>
+      <input type="text" name="outUserName" value='(none)'>
     </td>
   </tr>
   <tr>
-    <td colspan="2" style="text-align:right" onMouseOver="dispStatusMsg('Enter the unique key');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">MSP Unique Key</td>
+    <td colspan="2" onMouseOver="dispStatusMsg('Enter the Password');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">MSP Password</td>
+    <td>
+      <input type="text" name="mspPassword" value='(none)'>
+    </td>
+    <td onMouseOver="dispStatusMsg('Enter the Password for Outgoing Yukon messags');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">Password</td>
+    <td>
+      <input type="text" name="outPassword" value='<c:out value="${multispeakBean.selectedMspVendor.outPassword}"/>'>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" onMouseOver="dispStatusMsg('Enter the unique key');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">MSP Unique Key</td>
     <td>
       <select name="mspUniqueKey">
         <option value="meterNumber" selected>meterNumber</option>
@@ -91,15 +107,14 @@ function vendorChanged(vendor)
       </SELECT>                     
     </td>
   </tr>
+  <tr height="40" valign="bottom">
+    <td colspan="2" style="text-align:right"><u>Interfaces</u>
+    </td>
+  </tr>
   <tr>
     <td colspan="2" style="text-align:right" onMouseOver="dispStatusMsg('Enter the Multispeak URL   EX: http://127.0.0.1:80/soap/ ');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">MSP URL</td>
     <td>
       <input type="text" name="mspURL" size="30" value="http://&lt;server&gt;:&lt;port&gt;/soap/">
-    </td>
-  </tr>
-
-  <tr>
-    <td  colspan="2" style="text-align:center">Interface
     </td>
   </tr>
 
@@ -110,7 +125,7 @@ function vendorChanged(vendor)
       </td>
       <td style="text-align:center"><c:out value="${mspPossibleInterface}"/>
       </td>
-      <td>
+      <td colspan="2">
         <input id="mspEndpoint<c:out value="${mspPossibleInterface}"/>" type="text" name="mspEndpoint" size="30" disabled
             value='<c:out value="${mspPossibleInterface}"/>Soap'>
           <a id="mspPing<c:out value="${mspPossibleInterface}"/>" href='JavaScript:;' style='cursor:default' class="Link4" name="pingURL">Ping</a>

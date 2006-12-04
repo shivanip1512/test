@@ -6,7 +6,7 @@
 
 <jsp:useBean id="multispeakBean" class="com.cannontech.multispeak.client.MultispeakBean" scope="session"/>
 <c:if test="${param.vendor != null}">
-<c:set target="${multispeakBean}" property="selectedCompanyName"><c:out value="${param.vendor}" default="cannon"/></c:set>
+<c:set target="${multispeakBean}" property="selectedVendorID"><c:out value="${param.vendor}" default="1"/></c:set>
 </c:if>
 <c:if test="${param.init != null}">
 <c:set var="MSP_RESULT_MSG" value="" scope="session" />
@@ -56,7 +56,7 @@ function vendorChanged(vendor)
 <div class="mainTable">
   <h2 class="setup">Welcome to</h2>
   <h3 class="setup">Yukon Multispeak Interface Setup</h3>
-  <h4 class='ErrorMsg'><c:out value="${sessionScope.ERROR_MESSAGE}" default=""/><br></h4>
+  <h4 class='ErrorMsg'><c:out value="${sessionScope.ERROR_MESSAGE}" default=""/></h4>
 
 <cti:titledContainer title="Multispeak Interface Setup">
 <form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/MultispeakServlet">
@@ -65,34 +65,51 @@ function vendorChanged(vendor)
 <input type="hidden" name="actionService">
 <input type="hidden" name="REDIRECT" value='<c:out value="${pageContext.request.requestURI}"/>' >
 <input type="hidden" name="vendorID" value='<c:out value="${multispeakBean.selectedMspVendor.vendorID}"/>'>
+<input type="hidden" name="mspCompanyName" value='<c:out value="${multispeakBean.selectedMspVendor.companyName}"/>'>
 
 <table class="keyValueTable">
   <tr> 
-    <td colspan="2" style="text-align:right" onMouseOver="dispStatusMsg('Select vendor');return document.statVal" 
+    <td colspan="2" onMouseOver="dispStatusMsg('Select vendor');return document.statVal" 
         onMouseOut="dispStatusMsg('');return document.statVal">Company Name
     </td>
     <td colspan="2">
       <select name="mspVendor" onChange="vendorChanged(this[this.selectedIndex].value);">
       <c:forEach var="mspVendorEntry" items="${multispeakBean.mspVendorList}">
-        <option <c:if test="${mspVendorEntry.companyName == multispeakBean.selectedCompanyName}">selected</c:if> value='<c:out value="${mspVendorEntry.companyName}"/>'> <c:out value="${mspVendorEntry.companyName}"/> </option>
+        <option <c:if test="${mspVendorEntry.vendorID == multispeakBean.selectedVendorID}">selected</c:if> value='<c:out value="${mspVendorEntry.vendorID}"/>'> <c:out value="${mspVendorEntry.companyName}"/> </option>
       </c:forEach>
       </SELECT>         
     </td>
   </tr>
   <tr>
-    <td colspan="2" style="text-align:right" onMouseOver="dispStatusMsg('Enter the Username');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">MSP UserName</td>
+    <td colspan="2" onMouseOver="dispStatusMsg('Enter the Application Name');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">App Name</td>
+    <td>
+      <input type="text" name="mspAppName" value='<c:out value="${multispeakBean.selectedMspVendor.appName}"/>'>
+    </td>
+    <td>&nbsp;</td>
+    <td style="text-align:left"><u>Response Message Login</u></td>
+  </tr>  
+  <tr>
+    <td colspan="2" onMouseOver="dispStatusMsg('Enter the Username');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">MSP UserName</td>
     <td>
       <input type="text" name="mspUserName" value='<c:out value="${multispeakBean.selectedMspVendor.userName}"/>'>
     </td>
-  </tr>
-  <tr>
-    <td colspan="2" style="text-align:right" onMouseOver="dispStatusMsg('Enter the Password');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">MSP Password</td>
+    <td onMouseOver="dispStatusMsg('Enter the Username for Outgoing Yukon messages');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">UserName</td>
     <td>
-      <input type="text" name="mspPassword" value='<c:out value="${multispeakBean.selectedMspVendor.password}"/>'>
+      <input type="text" name="outUserName" value='<c:out value="${multispeakBean.selectedMspVendor.outUserName}"/>'>
     </td>
   </tr>
   <tr>
-    <td colspan="2" style="text-align:right" onMouseOver="dispStatusMsg('Enter the unique key');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">MSP Unique Key</td>
+    <td colspan="2" onMouseOver="dispStatusMsg('Enter the Password');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">MSP Password</td>
+    <td>
+      <input type="text" name="mspPassword" value='<c:out value="${multispeakBean.selectedMspVendor.password}"/>'>
+    </td>
+    <td onMouseOver="dispStatusMsg('Enter the Password for Outgoing Yukon messags');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">Password</td>
+    <td>
+      <input type="text" name="outPassword" value='<c:out value="${multispeakBean.selectedMspVendor.outPassword}"/>'>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" onMouseOver="dispStatusMsg('Enter the unique key');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">MSP Unique Key</td>
     <td>
       <select name="mspUniqueKey">
         <option value="meterNumber" <c:if test="${multispeakBean.selectedMspVendor.uniqueKey == 'meterNumber'}">selected</c:if>>meterNumber</option>
@@ -100,15 +117,14 @@ function vendorChanged(vendor)
       </SELECT>                     
     </td>
   </tr>
+  <tr height="40" valign="bottom">
+    <td colspan="2" style="text-align:right"><u>Interfaces</u>
+    </td>
+  </tr>
   <tr>
     <td colspan="2" style="text-align:right" onMouseOver="dispStatusMsg('Enter the Multispeak URL   EX: http://127.0.0.1:80/soap/ ');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">MSP URL</td>
     <td>
       <input type="text" name="mspURL" size="30" value='<c:out value="${multispeakBean.selectedMspVendor.url}"/>'>
-    </td>
-  </tr>
-
-  <tr>
-    <td colspan="2" style="text-align:right">Interface
     </td>
   </tr>
 
@@ -120,9 +136,9 @@ function vendorChanged(vendor)
         <td style="text-align:right">
           <input id="mspInterface" type="checkbox" <c:if test="${!disabled}">checked</c:if> name='mspInterface' value='<c:out value="${mspPossibleInterface}"/>' onclick='enableEndpointValue(this.checked, this.value)'>
         </td>
-          <td style="text-align:center"><c:out value="${mspPossibleInterface}"/>
+        <td style="text-align:center"><c:out value="${mspPossibleInterface}"/>
         </td>
-        <td>
+        <td colspan="2">
           <input id="mspEndpoint<c:out value="${mspPossibleInterface}"/>" type="text" name="mspEndpoint" size="30" 
                 value='<c:out value="${interfaceValue.mspEndpoint}" default="${mspPossibleInterface}Soap"/>'
                 <c:if test="${disabled}">disabled</c:if>>                
