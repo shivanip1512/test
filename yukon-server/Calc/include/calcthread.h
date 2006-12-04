@@ -115,7 +115,7 @@ public:
     BOOL isAConstantCalcPointID(const long aPointID);
 
     BOOL isAHistoricalCalcPointID(const long aPointID);
-    long numberOfLoadedCalcPoints() { return (_periodicPoints.size() + _onUpdatePoints.size() + _constantPoints.size()); };
+    long numberOfLoadedCalcPoints() { return (_periodicPoints.size() + _onUpdatePoints.size() + _constantPoints.size() + _historicalPoints.size()); };
 
 
     int outboxEntries( void )   {   return _outbox.entries( ); };
