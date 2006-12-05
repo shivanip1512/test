@@ -15,12 +15,15 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.xml.rpc.ServiceException;
 
 import org.apache.axis.client.Service;
 import org.apache.axis.message.SOAPHeaderElement;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.multispeak.client.MultispeakBean;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
@@ -30,12 +33,17 @@ import com.cannontech.multispeak.db.MultispeakInterface;
 import com.cannontech.multispeak.service.ArrayOfErrorObject;
 import com.cannontech.multispeak.service.ArrayOfString;
 import com.cannontech.multispeak.service.CB_CDSoap_BindingStub;
+import com.cannontech.multispeak.service.CB_MR;
+import com.cannontech.multispeak.service.CB_MRLocator;
 import com.cannontech.multispeak.service.CB_MRSoap_BindingStub;
+import com.cannontech.multispeak.service.CB_MRSoap_PortType;
 import com.cannontech.multispeak.service.CD_CBSoap_BindingStub;
+import com.cannontech.multispeak.service.Customer;
 import com.cannontech.multispeak.service.EA_MRSoap_BindingStub;
 import com.cannontech.multispeak.service.MR_CBSoap_BindingStub;
 import com.cannontech.multispeak.service.MR_EASoap_BindingStub;
 import com.cannontech.multispeak.service.MR_OASoap_BindingStub;
+import com.cannontech.multispeak.service.MspObject;
 import com.cannontech.multispeak.service.MultiSpeakMsgHeader;
 import com.cannontech.multispeak.service.OA_MRSoap_BindingStub;
 import com.cannontech.multispeak.service.OA_ODSoap_BindingStub;
@@ -72,18 +80,54 @@ public class MultispeakServlet extends HttpServlet
         String redirect = req.getParameter("REDIRECT");
         if (redirect == null)
             redirect = req.getContextPath() + req.getRequestURL();
-        
+
         MultispeakBean mspBean = (MultispeakBean)session.getAttribute("multispeakBean");
+        if( mspBean == null) {
+            session.setAttribute("multispeakBean", new MultispeakBean());
+            mspBean = (MultispeakBean)session.getAttribute("multispeakBean");
+        }
+        
+        if( action.equalsIgnoreCase("CB_MR")) {
+            String command = req.getParameter("command");
+            MultispeakVendor mspVendor;
+            try {
+                mspVendor = MultispeakFuncs.getMultispeakVendor("SEDC", null);
+                if( mspVendor == null)
+                    mspVendor = MultispeakFuncs.getMultispeakVendor("NISC", null);
+                if( mspVendor == null) {
+                    session.setAttribute(ServletUtil.ATT_ERROR_MESSAGE, "* No Multispeak Interface to CIS is defined.");
+                    return redirect;
+                }
+
+                String deviceIDStr = req.getParameter("deviceID");
+                Integer deviceID = null; 
+                if( deviceIDStr != null) {
+                    deviceID = new Integer(deviceIDStr);
+                    MspObject object = handleCB_MR(command, deviceID.intValue(), mspVendor, session);
+                    if( object != null) {
+                        if( object instanceof Customer)
+    //                        session.setAttribute("CustomerDetail", MultispeakFuncs.customerToString((Customer)object)));
+                        session.setAttribute("CustomerDetail", MultispeakFuncs.customerToString((Customer)object).replaceAll("/r/n", "<BR>"));
+                    }
+                }
+                return redirect;
+            } catch (RemoteException e) {
+                CTILogger.error(e);
+            }
+        }
         
 //		load all parameters from req
         String vendorIDStr = req.getParameter("vendorID");
         Integer vendorID = null;
         if( vendorIDStr != null && vendorIDStr.length() > 0)
             vendorID = Integer.valueOf(vendorIDStr);
-		String companyName = req.getParameter("mspVendor");
+		String companyName = req.getParameter("mspCompanyName");
+        String appName = req.getParameter("mspAppName");
 		String uniqueKey = req.getParameter("mspUniqueKey");
 		String password = req.getParameter("mspPassword");
 		String username = req.getParameter("mspUserName");
+        String outPassword = req.getParameter("outPassword");
+        String outUsername = req.getParameter("outUserName");
 		String mspURL = req.getParameter("mspURL");
 		String[] mspInterfaces = req.getParameterValues("mspInterface");
 		String[] mspEndpoints = req.getParameterValues("mspEndpoint");
@@ -95,8 +139,11 @@ public class MultispeakServlet extends HttpServlet
             mspURL += "/";
         String serviceURL = mspURL + mspEndpoint;
         
-        mspBean.setSelectedCompanyName(companyName);
-        MultispeakVendor mspVendor = new MultispeakVendor(vendorID,companyName, username, password, uniqueKey, 0, mspURL);
+        if( vendorID != null)
+            mspBean.setSelectedVendorID(vendorID.intValue());
+        MultispeakVendor mspVendor = new MultispeakVendor(vendorID,companyName, appName, 
+                                                          username, password, outUsername, outPassword, 
+                                                          uniqueKey, 0, mspURL);
 
         List<MultispeakInterface> mspInterfaceList = new ArrayList<MultispeakInterface>();
         if( mspInterfaces != null) {
@@ -118,11 +165,11 @@ public class MultispeakServlet extends HttpServlet
             MultispeakFuncs.getMultispeakDao().updateMultispeakVendor(mspVendor);
 		}
         else if( action.equalsIgnoreCase("Create")) {
-            redirect = req.getContextPath() + createMultispeakInterface(session, mspVendor);
+            redirect = req.getContextPath() + "/msp_setup.jsp?vendor="+ createMultispeakInterface(session, mspVendor);
         }
         else if( action.equalsIgnoreCase("Delete")) {
             deleteMultispeakInterface(session, mspVendor);
-            mspBean.setSelectedCompanyName("Cannon");   //set to default
+            mspBean.setSelectedVendorID(1);   //set to default
         }        
         else if( action.equalsIgnoreCase("pingURL")) {
             pingURL(session, mspService, serviceURL);
@@ -138,18 +185,17 @@ public class MultispeakServlet extends HttpServlet
      * @param session The request session.
      * @param mspVendor The multispeakVendor to create.
      */
-    private String createMultispeakInterface(HttpSession session, MultispeakVendor mspVendor) {
-        try{
+    private int createMultispeakInterface(HttpSession session, MultispeakVendor mspVendor) {
+        /*try{
             if( MultispeakFuncs.getMultispeakDao().getMultispeakVendor(mspVendor.getCompanyName())!= null){
-                session.setAttribute(ServletUtil.ATT_ERROR_MESSAGE, "* A vendor with the name '" + mspVendor.getCompanyName() + "' already exists.  Please enter a different company name.");
+                session.setAttribute(ServletUtil.ATT_ERROR_MESSAGE, "* A vendor with the name '" + mspVendor.getCompanyName() + "' and app name '" + mspVendor.getAppName() + "' already exists.  Please enter a different company name.");
                 return "/msp_setup_new.jsp";
             }
-        }catch(NotFoundException nfe)
-        {
+        }catch(NotFoundException nfe) {*/
             MultispeakFuncs.getMultispeakDao().addMultispeakVendor(mspVendor);
-            return "/msp_setup.jsp?vendor="+ mspVendor.getCompanyName();
-        }
-        return "/msp_setup.jsp";
+            return mspVendor.getVendorID().intValue();
+        /*}
+        return "/msp_setup.jsp";*/
     }
     
     /**
@@ -163,6 +209,50 @@ public class MultispeakServlet extends HttpServlet
             session.setAttribute(ServletUtil.ATT_ERROR_MESSAGE, "* The default interface '" + companyName + "' cannot be deleted.");
         else
             MultispeakFuncs.getMultispeakDao().deleteMultispeakVendor(mspVendor.getVendorID().intValue());
+    }
+
+    private MspObject handleCB_MR(String command, int deviceID, MultispeakVendor mspVendor, HttpSession session) {
+        MspObject mspObject = null;
+        
+        LiteDeviceMeterNumber liteDevMeterNum = DaoFactory.getDeviceDao().getLiteDeviceMeterNumber(deviceID);
+        if (liteDevMeterNum == null) {
+            session.setAttribute(ServletUtil.ATT_ERROR_MESSAGE, "* MeterNumber not found for Device (ID:" + deviceID + ")");
+            return mspObject;
+        }
+        
+        String meterNumber = liteDevMeterNum.getMeterNumber();
+        MultispeakInterface mspInterface = (MultispeakInterface)mspVendor.getMspInterfaceMap().get(MultispeakDefines.CB_MR_STR);
+        String endpointURL = "";
+        if( mspInterface != null)
+            endpointURL = mspVendor.getUrl() + mspInterface.getMspEndpoint();
+        
+        try {
+            CB_MR service = new CB_MRLocator();
+            ((CB_MRLocator)service).setCB_MRSoapEndpointAddress(endpointURL);                
+            CB_MRSoap_PortType port = service.getCB_MRSoap();
+            ((CB_MRSoap_BindingStub)port).setHeader(MultispeakFuncs.getHeader(mspVendor));
+            ((CB_MRSoap_BindingStub)port).setTimeout(10000);    //should respond within 10 seconds, right?
+
+            if( command.equalsIgnoreCase("getServiceLocationByMeterNo")) {
+                port.getServiceLocationByMeterNo(meterNumber);
+            } else if ( command.equalsIgnoreCase("getCustomerByMeterNo")) {
+                mspObject = port.getCustomerByMeterNo(meterNumber);
+            }
+            
+//            port.getServiceLocationByAccountNumber()
+                            
+//            ArrayOfMeter mspMeters = port.getMeterByServLoc(serviceLocationStr);
+
+        } catch (ServiceException e) {   
+            CTILogger.info("CB_MR service is not defined for company name: " + mspVendor.getCompanyName()+ ".  Method cancelled.");
+            session.setAttribute(ServletUtil.ATT_ERROR_MESSAGE, "CB_MR service is not defined for company name: " + mspVendor.getCompanyName()+ ".  Method cancelled.");
+            e.printStackTrace();
+        } catch (RemoteException e) {
+            CTILogger.info("Could not find a target service to invoke!  targetService: " + endpointURL + " companyName: " + mspVendor.getCompanyName() + ".  Method cancelled.");
+            session.setAttribute(ServletUtil.ATT_ERROR_MESSAGE, "CB_MR service is not defined for company name: " + mspVendor.getCompanyName()+ ".  Method cancelled.");
+            e.printStackTrace();
+        }
+        return mspObject;
     }
     
     /**
