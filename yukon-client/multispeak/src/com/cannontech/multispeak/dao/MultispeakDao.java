@@ -8,8 +8,10 @@ import com.cannontech.multispeak.service.Meter;
 
 public interface MultispeakDao
 {
-    public MultispeakVendor getMultispeakVendor(String vendorName);
+    public MultispeakVendor getMultispeakVendor(String vendorName, String appName);
     
+    public MultispeakVendor getMultispeakVendor(int vendorID);
+
     public List<MultispeakInterface> getMultispeakInterfaces(int vendorID);
     
     public List<MultispeakVendor> getMultispeakVendors();

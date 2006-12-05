@@ -12,9 +12,12 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.ListRowCallbackHandler;
 import com.cannontech.database.MaxRowCalbackHandlerRse;
+import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.db.device.DeviceCarrierSettings;
 import com.cannontech.database.db.device.DeviceMCT400Series;
@@ -63,19 +66,62 @@ public final class MultispeakDaoImpl implements MultispeakDao
     private IDatabaseCache databaseCache;
     private NextValueHelper nextValueHelper;
 
-    public MultispeakVendor getMultispeakVendor(String vendorName) {
+    public MultispeakDaoImpl()
+    {
+        super();
+        jdbcOps = JdbcTemplateHelper.getYukonTemplate();
+    }
+
+    /**
+     * Returns the MultispeakVendor object having vendorName.
+     * If no match on vendorName is found, an IncorrectResultSizeDataAccessException is thrown
+     * If multiple matches on the vendorName, the appName is used to find a better match.
+     * When no match on the appname, the (random) first found MultispeakVendor object is returned.
+     */
+    public MultispeakVendor getMultispeakVendor(String vendorName, String appName) {
+
+        String upperVendorName = vendorName.toUpperCase();
+        String sql = "SELECT VENDORID, COMPANYNAME, USERNAME, PASSWORD, UNIQUEKEY, TIMEOUT, URL, " +
+                    " APPNAME, OUTUSERNAME, OUTPASSWORD " +
+                     " FROM " + MSPVENDOR_TABLENAME + 
+                     " WHERE UPPER(COMPANYNAME) = ? " +
+                     " ORDER BY COMPANYNAME, APPNAME ";
+                
+        List mspInterfaces = jdbcOps.query(sql,
+                                           new Object[] { upperVendorName},
+                                           mspVendorRowMapper);
+        
+        if( mspInterfaces == null || mspInterfaces.isEmpty()) {
+            throw new IncorrectResultSizeDataAccessException(1, 0);
+        } else if( mspInterfaces.size() > 1) {  //match on app name if possible
+            //Find a matching AppName
+            for (int i = 0; i < mspInterfaces.size(); i++){
+                MultispeakVendor tempVendor = ((MultispeakVendor)mspInterfaces.get(i));
+                if (tempVendor.getAppName().equalsIgnoreCase("(none)") ||
+                        tempVendor.getAppName().toUpperCase().startsWith(appName.toUpperCase()))
+                    return tempVendor; 
+            }
+//            throw new IncorrectResultSizeDataAccessException(1, mspInterfaces.size());
+        }
+        return (MultispeakVendor)mspInterfaces.get(0);    //default to the first one in the list.
+    }
+    
+    /**
+     * Returns the MultispeakVendor object having vendorIF.
+     */
+    public MultispeakVendor getMultispeakVendor(int vendorID) {
         try {
-            String upperVendorName = vendorName.toUpperCase();
-            String sql = "SELECT VENDORID, COMPANYNAME, USERNAME, PASSWORD, UNIQUEKEY, TIMEOUT, URL" +
-                         " FROM " + MSPVENDOR_TABLENAME + 
-                         " WHERE UPPER(COMPANYNAME) = ? ";
+                        String sql = "SELECT VENDORID, COMPANYNAME, USERNAME, PASSWORD, UNIQUEKEY, TIMEOUT, URL, " +
+                                     " APPNAME, OUTUSERNAME, OUTPASSWORD " +
+                                     " FROM " + MSPVENDOR_TABLENAME +
+                                     " WHERE VENDORID = ? ";
             
             MultispeakVendor mspVendor = (MultispeakVendor) jdbcOps.queryForObject(sql,
-                                                                                   new Object[] { upperVendorName },
+                                                                                   new Object[] { new Integer(vendorID)},
                                                                                    mspVendorRowMapper);
             return mspVendor;
         } catch (IncorrectResultSizeDataAccessException e) {
-            throw new NotFoundException("A MSP Vendor with Company name " + vendorName + " cannot be found.");
+            throw new NotFoundException("A MSP Vendor with VendorID " + vendorID + " cannot be found.");
         }
     }
     
@@ -97,7 +143,8 @@ public final class MultispeakDaoImpl implements MultispeakDao
     public List<MultispeakVendor> getMultispeakVendors()
     {
         try {
-            String sql = "SELECT VENDORID, COMPANYNAME, USERNAME, PASSWORD, UNIQUEKEY, TIMEOUT, URL " +
+            String sql = "SELECT VENDORID, COMPANYNAME, USERNAME, PASSWORD, UNIQUEKEY, TIMEOUT, URL, " +
+                         " APPNAME, OUTUSERNAME, OUTPASSWORD " +
                          " FROM " + MSPVENDOR_TABLENAME;
             
             List<MultispeakVendor> mspVendors = jdbcOps.query(sql,mspVendorRowMapper);
@@ -114,7 +161,7 @@ public final class MultispeakDaoImpl implements MultispeakDao
             String sql = "DELETE FROM " + MSPINTERFACE_TABLENAME + 
                          " WHERE VENDORID = ? ";
             
-            int numDeleted = jdbcOps.update(sql,new Object[]{vendorID});
+            int numDeleted = jdbcOps.update(sql,new Object[]{new Integer(vendorID)});
             
             return numDeleted;
         } catch (IncorrectResultSizeDataAccessException e) {
@@ -150,7 +197,10 @@ public final class MultispeakDaoImpl implements MultispeakDao
                                  " PASSWORD = ?, " +
                                  " UNIQUEKEY = ?, " +
                                  " TIMEOUT = ?, " +
-                                 " URL = ? " +
+                                 " URL = ?, " +
+                                 " APPNAME = ?, " +
+                                 " OUTUSERNAME = ?, " +
+                                 " OUTPASSWORD = ? " +
                                  " WHERE VENDORID = ? ";
                     
                     Object [] args = new Object[] {
@@ -159,8 +209,11 @@ public final class MultispeakDaoImpl implements MultispeakDao
                         mspVendor.getUserName(),
                         mspVendor.getPassword(),
                         mspVendor.getUniqueKey(),
-                        mspVendor.getTimeout(),
+                        new Integer(mspVendor.getTimeout()),
                         mspVendor.getUrl(),
+                        mspVendor.getAppName(),
+                        mspVendor.getOutUserName(),
+                        mspVendor.getOutPassword(),                        
                         mspVendor.getVendorID() //Where Clause
                     };
                     jdbcOps.update(sql, args);
@@ -183,7 +236,7 @@ public final class MultispeakDaoImpl implements MultispeakDao
                 try {
                     mspVendor.setVendorID(getNextVendorId());
                     String sql = "INSERT INTO " + MSPVENDOR_TABLENAME + 
-                                 " VALUES (?, ?, ?, ?, ?, ?, ?)";
+                                 " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                     
                     Object [] args = new Object[] {
                         mspVendor.getVendorID(),
@@ -191,8 +244,11 @@ public final class MultispeakDaoImpl implements MultispeakDao
                         mspVendor.getUserName(),
                         mspVendor.getPassword(),
                         mspVendor.getUniqueKey(),
-                        mspVendor.getTimeout(),
-                        mspVendor.getUrl()                        
+                        new Integer(mspVendor.getTimeout()),
+                        mspVendor.getUrl(),
+                        mspVendor.getAppName(),
+                        mspVendor.getOutUserName(),
+                        mspVendor.getOutPassword()
                     };
                     jdbcOps.update(sql, args);
                     
@@ -217,7 +273,7 @@ public final class MultispeakDaoImpl implements MultispeakDao
                     String sql = "DELETE FROM " + MSPVENDOR_TABLENAME + 
                     " WHERE VENDORID = ? ";
                     
-                    jdbcOps.update(sql,new Object[]{vendorID});
+                    jdbcOps.update(sql,new Object[]{new Integer(vendorID)});
                     
                 } catch (IncorrectResultSizeDataAccessException e) {
                     throw new NotFoundException("Multispeak Vendor not deleted for VendorID "+ vendorID +".");
@@ -231,27 +287,26 @@ public final class MultispeakDaoImpl implements MultispeakDao
     
     private static MultispeakVendor createMspVendor( ResultSet rset) throws SQLException {
 
-        int vendorID = rset.getInt(1);
+        Integer vendorID = new Integer(rset.getInt(1));
         String companyName = rset.getString(2).trim();
         String userName = rset.getString(3).trim();
         String password = rset.getString(4).trim();
         String uniqueKey = rset.getString(5).trim();
         int timeout = rset.getInt(6);
         String url = rset.getString(7).trim();
-
-        MultispeakVendor mspVendor = new MultispeakVendor(vendorID,
-                                                      companyName, 
-                                                      userName, 
-                                                      password,
-                                                      uniqueKey, 
-                                                      timeout,
-                                                      url);
+        String appName = rset.getString(8).trim();
+        String outUserName = rset.getString(9).trim();
+        String outPassword = rset.getString(10).trim();
+        
+        MultispeakVendor mspVendor = new MultispeakVendor(vendorID, companyName, appName, 
+                                                          userName, password, outUserName, outPassword,
+                                                          uniqueKey,  timeout, url);
         return mspVendor;
     }
 
     private static MultispeakInterface createMspInterface( ResultSet rset) throws SQLException {
 
-        int vendorID = rset.getInt(1);
+        Integer vendorID = new Integer(rset.getInt(1));
         String interfaceStr = rset.getString(2).trim();
         String endpoint = rset.getString(3).trim();
         
@@ -285,7 +340,7 @@ public final class MultispeakDaoImpl implements MultispeakDao
             if( key.toLowerCase().startsWith("device") || key.toLowerCase().startsWith("pao"))
                 uniqueKey = "PAONAME"; 
 
-            String sql = "SELECT " + uniqueKey + ", COLLECTIONGROUP, PAOBJECTID, ADDRESS " +
+            String sql = "SELECT " + uniqueKey + ", COLLECTIONGROUP, BILLINGGROUP, PAOBJECTID, ADDRESS, TYPE " +
                          " FROM " + DeviceMeterGroup.TABLE_NAME + " dmg, " + 
                          YukonPAObject.TABLE_NAME + " pao, " +
                          DeviceCarrierSettings.TABLE_NAME + " dcs " +
@@ -307,35 +362,37 @@ public final class MultispeakDaoImpl implements MultispeakDao
             if( key.toLowerCase().startsWith("device") || key.toLowerCase().startsWith("pao"))
                 uniqueKey = "PAONAME"; 
 
-            String sql = "SELECT " + uniqueKey + ", COLLECTIONGROUP, PAOBJECTID, ADDRESS, TYPE, DISCONNECTADDRESS " +
-                         " FROM " + DeviceMeterGroup.TABLE_NAME + " dmg, " +
-                         DeviceCarrierSettings.TABLE_NAME + " dcs, " +
-                         YukonPAObject.TABLE_NAME + " pao left outer join " + DeviceMCT400Series.TABLE_NAME + " mct on pao.paobjectid = mct.deviceid " +
-                         " WHERE DMG.DEVICEID = PAO.PAOBJECTID" + 
-                         " AND PAO.PAOBJECTID = DCS.DEVICEID " +
-                         " AND PAO.TYPE in ('" + DeviceTypes.STRING_MCT_213[0] + "', " + 
-                                           "'" + DeviceTypes.STRING_MCT_310ID[0] + "', " +
-                                           "'" + DeviceTypes.STRING_MCT_310IDL[0] + "', " +
-                                           "'" + DeviceTypes.STRING_MCT_410CL[0] + "', " +
-                                           "'" + DeviceTypes.STRING_MCT_410IL[0] + "') " +
-                         " AND " + uniqueKey + " > ? ORDER BY " + uniqueKey; 
-            List mspMeters = new ArrayList();
-            ListRowCallbackHandler lrcHandler = new ListRowCallbackHandler(mspMeters, mspCDMeterRowMapper);
-            jdbcOps.query(sql, new Object[]{lastReceived}, new MaxRowCalbackHandlerRse(lrcHandler, MultispeakDefines.MAX_RETURN_RECORDS));
-            return mspMeters;
-        } catch (IncorrectResultSizeDataAccessException e) {
-            throw new NotFoundException("No results found >= objectID " + lastReceived + ".");
-        }
-    }
-    
+          String sql = "SELECT " + uniqueKey + ", COLLECTIONGROUP, BILLINGGROUP, PAOBJECTID, ADDRESS, TYPE, DISCONNECTADDRESS " +
+                       " FROM " + DeviceMeterGroup.TABLE_NAME + " dmg, " +
+                       DeviceCarrierSettings.TABLE_NAME + " dcs, " +
+                       YukonPAObject.TABLE_NAME + " pao left outer join " + DeviceMCT400Series.TABLE_NAME + " mct on pao.paobjectid = mct.deviceid " +
+                       " WHERE DMG.DEVICEID = PAO.PAOBJECTID" + 
+                       " AND PAO.PAOBJECTID = DCS.DEVICEID " +
+                       " AND PAO.TYPE in ('" + DeviceTypes.STRING_MCT_213[0] + "', " + 
+                                         "'" + DeviceTypes.STRING_MCT_310ID[0] + "', " +
+                                         "'" + DeviceTypes.STRING_MCT_310IDL[0] + "', " +
+                                         "'" + DeviceTypes.STRING_MCT_410CL[0] + "', " +
+                                         "'" + DeviceTypes.STRING_MCT_410IL[0] + "') " +
+                       " AND " + uniqueKey + " > ? ORDER BY " + uniqueKey; 
+          List mspMeters = new ArrayList();
+          ListRowCallbackHandler lrcHandler = new ListRowCallbackHandler(mspMeters, mspCDMeterRowMapper);
+          jdbcOps.query(sql, new Object[]{lastReceived}, new MaxRowCalbackHandlerRse(lrcHandler, MultispeakDefines.MAX_RETURN_RECORDS));
+          return mspMeters;
+      } catch (IncorrectResultSizeDataAccessException e) {
+          throw new NotFoundException("No results found >= objectID " + lastReceived + ".");
+      }
+  }
+
     private static Meter createMspMeter( ResultSet rset) throws SQLException {
 
         String objectID = rset.getString(1).trim();
         String collectionGroup = rset.getString(2).trim();
-        int paobjectID = rset.getInt(3);
-        String address = rset.getString(4).trim();
+        String billingGroup = rset.getString(3).trim();
+        int paobjectID = rset.getInt(4);
+        String address = rset.getString(5).trim();
+        String paoType = rset.getString(6).trim();
 
-        Meter mspMeter = MultispeakFuncs.createMeter(objectID, address);
+        Meter mspMeter = MultispeakFuncs.createMeter(objectID, paoType, collectionGroup, billingGroup, address);
         return mspMeter;
     }
     
@@ -343,17 +400,18 @@ public final class MultispeakDaoImpl implements MultispeakDao
 
         String objectID = rset.getString(1).trim();
         String collectionGroup = rset.getString(2).trim();
-        int paobjectID = rset.getInt(3);
-        String address = rset.getString(4).trim();
-        String paoType = rset.getString(5).trim();
-        String discAddress = rset.getString(6);
+        String billingGroup = rset.getString(3).trim();
+        int paobjectID = rset.getInt(4);
+        String address = rset.getString(5).trim();
+        String paoType = rset.getString(6).trim();
+        String discAddress = rset.getString(7);
         
         if( (paoType.equalsIgnoreCase(DeviceTypes.STRING_MCT_410CL[0]) ||
             paoType.equalsIgnoreCase(DeviceTypes.STRING_MCT_410IL[0]) ) &&
             discAddress == null)
             return null;
         
-        Meter mspMeter = MultispeakFuncs.createMeter(objectID, address);
+        Meter mspMeter = MultispeakFuncs.createMeter(objectID, paoType, collectionGroup, billingGroup, address);
         return mspMeter;
-    }    
+    }
 }
