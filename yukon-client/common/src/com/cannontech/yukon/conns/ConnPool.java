@@ -40,7 +40,7 @@ public class ConnPool
 	
 
 	// Map<String, IServerConnection>
-	private Hashtable _allConns = null;
+	private Hashtable<String, IServerConnection> _allConns = null;
 
     private RoleDao roleDao;
 
@@ -53,13 +53,19 @@ public class ConnPool
 		return (ConnPool) YukonSpringHook.getBean("connectionPool");
 	}
   
-	private Hashtable getAllConns()
+	private Hashtable<String, IServerConnection> getAllConns()
 	{
 		if( _allConns == null )
-			_allConns = new Hashtable(16);
+			_allConns = new Hashtable<String, IServerConnection>(16);
 		
 		return _allConns;
 	}
+    
+    public void shutdown() {
+        for (IServerConnection conn : _allConns.values()) {
+            conn.disconnect();
+        }
+    }
     
 
     /**
