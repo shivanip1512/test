@@ -80,7 +80,7 @@ public class HECO_SettlementModelBase extends ReportModelBase
 //	private static final String ATT_ACTION_GROUP_TYPE = "actionGroupType";
 	
 	protected SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yy");
-	protected SimpleDateFormat dateFormat_yyyy = new SimpleDateFormat("MM/dd/yyyy");
+	protected SimpleDateFormat dateFormat_yyyy = new SimpleDateFormat("yyyyMM");
 	protected SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
 	protected DecimalFormat decimalFormat = new DecimalFormat("0.00");
 	protected DecimalFormat intFormat = new DecimalFormat("0");
@@ -156,7 +156,7 @@ public class HECO_SettlementModelBase extends ReportModelBase
 	{
 		//Reset all objects, new data being collected!
         clearDataObjects();
-		
+        		
 		int rowCount = 0;
 		StringBuffer sql = buildSQLStatement();
 		CTILogger.info(sql.toString());
@@ -236,7 +236,13 @@ public class HECO_SettlementModelBase extends ReportModelBase
 				sql.append(" AND POINTID IN (" + pointList + ")"); 
 
 			sql.append(" ORDER BY POINTID, TIMESTAMP");
-		
+
+        CTILogger.info("LM EVENT: " + event.getEventTypeString() + " (ID:"+event.getGroupID() +")");
+        CTILogger.info("ActualStartDateTime     - " + event.getActualStartDateTime()     + "  - ActualStopDateTime     - " + event.getActualStopDateTime());
+        CTILogger.info("RoundedStartDateTime    - " + event.getRoundedStartDateTime()    + "  - RoundedStopDateTime    - " + event.getRoundedStopDateTime());
+        CTILogger.info("SettlementStartDateTime - " + event.getSettlementStartDateTime() + "  - SettlementStopDateTime - " + event.getSettlementStopDateTime());
+        CTILogger.info("AdjustedStartDateTime   - " + event.getAdjustedStartDateTime()   + "  - AdjustedStopDateTime   - " + event.getAdjustedStopDateTime());
+
 		CTILogger.info(sql.toString());
 				
 		java.sql.Connection conn = null;
