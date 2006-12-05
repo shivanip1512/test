@@ -9,7 +9,19 @@ import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MultispeakDao;
-import com.cannontech.multispeak.service.*;
+import com.cannontech.multispeak.service.ArrayOfDomainMember;
+import com.cannontech.multispeak.service.ArrayOfErrorObject;
+import com.cannontech.multispeak.service.ArrayOfObjectRef;
+import com.cannontech.multispeak.service.ArrayOfOutageDetectionDevice;
+import com.cannontech.multispeak.service.ArrayOfString;
+import com.cannontech.multispeak.service.DomainMember;
+import com.cannontech.multispeak.service.ErrorObject;
+import com.cannontech.multispeak.service.OD_OASoap_BindingImpl;
+import com.cannontech.multispeak.service.ObjectRef;
+import com.cannontech.multispeak.service.OutageDetectDeviceStatus;
+import com.cannontech.multispeak.service.OutageDetectDeviceType;
+import com.cannontech.multispeak.service.OutageDetectionDevice;
+import com.cannontech.multispeak.service.PhaseCd;
 
 public class OD_OAImpl extends OD_OASoap_BindingImpl
 {
@@ -76,8 +88,7 @@ public class OD_OAImpl extends OD_OASoap_BindingImpl
         init();
         ErrorObject[] errorObjects = new ErrorObject[0];
         
-        String companyName = MultispeakFuncs.getCompanyNameFromSOAPHeader();
-        MultispeakVendor vendor = MultispeakFuncs.getMultispeakVendor(companyName);
+        MultispeakVendor vendor = MultispeakFuncs.getMultispeakVendorFromHeader();
 
         String url = (vendor != null ? vendor.getUrl() : "(none)");
         if( url == null || url.equalsIgnoreCase(CtiUtilities.STRING_NONE))

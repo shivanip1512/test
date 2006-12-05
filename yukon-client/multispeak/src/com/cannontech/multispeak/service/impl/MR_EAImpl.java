@@ -18,6 +18,7 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.multispeak.client.Multispeak;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
@@ -30,6 +31,7 @@ import com.cannontech.multispeak.service.ArrayOfMeter;
 import com.cannontech.multispeak.service.ArrayOfMeterRead;
 import com.cannontech.multispeak.service.ArrayOfString;
 import com.cannontech.multispeak.service.DomainMember;
+import com.cannontech.multispeak.service.ErrorObject;
 import com.cannontech.multispeak.service.EventCode;
 import com.cannontech.multispeak.service.MR_CBSoap_BindingImpl;
 import com.cannontech.multispeak.service.MR_EASoap_BindingImpl;
@@ -104,8 +106,7 @@ public class MR_EAImpl extends MR_EASoap_BindingImpl
 
     public ArrayOfMeterRead getLatestReadings(java.lang.String lastReceived) throws java.rmi.RemoteException {
         init();
-        String companyName = MultispeakFuncs.getCompanyNameFromSOAPHeader();
-        MultispeakVendor vendor = MultispeakFuncs.getMultispeakVendor(companyName);
+        MultispeakVendor vendor = MultispeakFuncs.getMultispeakVendorFromHeader();
         String key = (vendor != null ? vendor.getUniqueKey(): "meternumber");
                 
         int maxSize = 10000;    //Max number of meters we'll send

@@ -10,13 +10,25 @@ import org.apache.axis.MessageContext;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.multispeak.client.Multispeak;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.YukonMultispeakMsgHeader;
 import com.cannontech.multispeak.dao.MultispeakDao;
-import com.cannontech.multispeak.service.*;
+import com.cannontech.multispeak.service.ArrayOfConnectDisconnectEvent;
+import com.cannontech.multispeak.service.ArrayOfCustomer;
+import com.cannontech.multispeak.service.ArrayOfDomainMember;
+import com.cannontech.multispeak.service.ArrayOfErrorObject;
+import com.cannontech.multispeak.service.ArrayOfMeter;
+import com.cannontech.multispeak.service.ArrayOfServiceLocation;
+import com.cannontech.multispeak.service.ArrayOfString;
+import com.cannontech.multispeak.service.CD_CBSoap_BindingImpl;
+import com.cannontech.multispeak.service.DomainMember;
+import com.cannontech.multispeak.service.ErrorObject;
+import com.cannontech.multispeak.service.LoadActionCode;
+import com.cannontech.multispeak.service.Meter;
 
 public class CD_CBImpl extends CD_CBSoap_BindingImpl
 {
@@ -38,7 +50,7 @@ public class CD_CBImpl extends CD_CBSoap_BindingImpl
     public ArrayOfString getMethods() throws java.rmi.RemoteException {
         init();
         String [] methods = new String[]{"pingURL", "getMethods",
-                                         "getCDSupportedMeters",
+        								 "getCDSupportedMeters",
                                          "getCDMeterState",
                                          "initiateConnectDisconnect"};
         return MultispeakFuncs.getMethods(MultispeakDefines.CD_CB_STR, methods );
@@ -57,16 +69,16 @@ public class CD_CBImpl extends CD_CBSoap_BindingImpl
     }
     
     public ArrayOfMeter getCDSupportedMeters(java.lang.String lastReceived) throws java.rmi.RemoteException {
-        String companyName = MultispeakFuncs.getCompanyNameFromSOAPHeader();
-        MultispeakVendor vendor = MultispeakFuncs.getMultispeakVendor(companyName);
+        init();
+        MultispeakVendor vendor = MultispeakFuncs.getMultispeakVendorFromHeader();
 
         List meterList = null;
         Date timerStart = new Date();
-//        try {
+        try {
             meterList = MultispeakFuncs.getMultispeakDao().getCDSupportedMeters(lastReceived, vendor.getUniqueKey());
-//        } catch(NotFoundException nfe) {
+        } catch(NotFoundException nfe) {
             //Not an error, it could happen that there are no more entries.
-//        }
+        }
         
         Meter[] arrayOfMeters = new Meter[meterList.size()];
         meterList.toArray(arrayOfMeters);
@@ -84,10 +96,9 @@ public class CD_CBImpl extends CD_CBSoap_BindingImpl
 
     public LoadActionCode getCDMeterState(java.lang.String meterNo) throws java.rmi.RemoteException {
         init();
-        String companyName = MultispeakFuncs.getCompanyNameFromSOAPHeader();
         MultispeakVendor vendor = null;
         try {
-            vendor = MultispeakFuncs.getMultispeakVendor(companyName);
+            vendor = MultispeakFuncs.getMultispeakVendorFromHeader();
         }catch (IncorrectResultSizeDataAccessException e) {
             throw new AxisFault("Vendor unknown.  Please contact Yukon administrator to setup a Multispeak Interface Vendor in Yukon.");
         }
@@ -103,10 +114,9 @@ public class CD_CBImpl extends CD_CBSoap_BindingImpl
         init();
         ErrorObject[] errorObjects = new ErrorObject[0];
         
-        String companyName = MultispeakFuncs.getCompanyNameFromSOAPHeader();
         MultispeakVendor vendor = null;
         try {
-            vendor = MultispeakFuncs.getMultispeakVendor(companyName);
+            vendor = MultispeakFuncs.getMultispeakVendorFromHeader();
         }catch (IncorrectResultSizeDataAccessException e) {
             throw new AxisFault("Vendor unknown.  Please contact Yukon administrator to setup a Multispeak Interface Vendor in Yukon.");
         }
