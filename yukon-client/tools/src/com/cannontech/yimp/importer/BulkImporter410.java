@@ -8,15 +8,21 @@ package com.cannontech.yimp.importer;
 
 
 import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Observable;
+import java.util.Set;
 import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.LogWriter;
+import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.Transaction;
@@ -34,10 +40,15 @@ import com.cannontech.database.db.device.DeviceMeterGroup;
 import com.cannontech.database.db.device.DeviceRoutes;
 import com.cannontech.database.db.importer.ImportData;
 import com.cannontech.database.db.importer.ImportFail;
+import com.cannontech.database.db.importer.ImportPendingComm;
 import com.cannontech.database.db.pao.YukonPAObject;
 import com.cannontech.device.range.DeviceAddressRange;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.porter.message.Request;
+import com.cannontech.message.porter.message.Return;
+import com.cannontech.message.util.Message;
+import com.cannontech.message.util.MessageEvent;
+import com.cannontech.message.util.MessageListener;
 import com.cannontech.yimp.util.DBFuncs;
 import com.cannontech.yimp.util.ImportFuncs;
 import com.cannontech.yukon.IServerConnection;
@@ -49,16 +60,24 @@ import com.cannontech.yukon.conns.ConnPool;
  * To change the template for this generated type comment go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-public final class BulkImporter410 implements java.util.Observer
+public final class BulkImporter410 extends Observable implements MessageListener
 {
 	private Thread starter = null;
 	
 	private Thread worker = null;
-	private Vector paoIDsForPorter = new Vector();
-	
 	private IServerConnection dispatchConn = null;
+    
+    
 	private static IServerConnection connToPorter = null;
-	public Request porterRequest = null;
+    private Set porterMessageIDs = new java.util.HashSet();
+    private Map messageIDToRouteIDMap = new HashMap();
+    public Request porterRequest = null;
+    /* Singleton incrementor for messageIDs to send to porter connection */
+    private static volatile long currentMessageID = 1;
+    private List cmdMultipleRouteList = new ArrayList();
+    
+    /* flag indicating more looping required*/
+    //public volatile int loopRouteCounter = 0;
 
 	private GregorianCalendar nextImportTime = null;
 	private static GregorianCalendar lastImportTime = null;
@@ -73,7 +92,9 @@ public final class BulkImporter410 implements java.util.Observer
 	
 	private final int PORTER_PRIORITY = 6;
 	private final String INTERVAL_COMMAND = "putconfig emetcon intervals";
-	//15 min
+    private final String LOOP_COMMAND = "loop";
+    private final String LOOP_LOCATE_COMMAND = "loop locate";
+    //15 min wait for porter safety
     private final long PORTER_WAIT = 900000;
 	private final int SAVETHEAMPCARDS_AMOUNT = 50;
 	
@@ -143,11 +164,13 @@ public void start()
 		public void run()
 		{
 		
-			CTILogger.info("410 Importer Version: " + "TEMPORARY RELEASE" + " starting.");
-			logger = ImportFuncs.writeToImportLog(logger, 'N', "410 Importer (Version: " + "TEMPORARY RELEASE" + ") starting.", "", "");
+			CTILogger.info("Bulk MCT Importer Version " + VersionTools.getYUKON_VERSION() + " starting.");
+			logger = ImportFuncs.writeToImportLog(logger, 'N', "Bulk MCT Importer Version " + VersionTools.getYUKON_VERSION() + " starting.", "", "");
 			
 			figureNextImportTime();
-			
+			//start the worker bee to handle porter communication
+            porterWorker();
+            
 			do
 			{
 				logger = ImportFuncs.changeLog(logger);
@@ -181,12 +204,6 @@ public void start()
 					{
 						//go go go, import away!
 						runImport(importEntries);
-					}
-					
-					if(paoIDsForPorter.size() > 1)
-					{
-						//make sure the worker bee is doing his thing
-						porterWorker();
 					}
 					
 					figureNextImportTime();
@@ -250,6 +267,7 @@ public void runImport(Vector imps)
 	int successCounter = 0;
 	Connection conn = null;
     boolean notUpdate = true;
+    boolean usingSub = false;
 	
 	for(int j = 0; j < imps.size(); j++)
 	{
@@ -267,6 +285,9 @@ public void runImport(Vector imps)
 		String collectionGrp = currentEntry.getCollectionGrp();
 		String altGrp = currentEntry.getAltGrp();
 		String templateName = currentEntry.getTemplateName();
+        String billGrp = currentEntry.getBillingGroup();
+        String substationName = currentEntry.getSubstationName();
+        List routeIDsFromSub = new ArrayList();
 		
 		//validation
 		StringBuffer errorMsg = new StringBuffer("Failed due to: ");
@@ -387,9 +408,31 @@ public void runImport(Vector imps)
 			badEntry = true;
 			errorMsg.append("has no alternate group specified; ");	
 		}
-		if(routeName.length() < 1)
-		{
-			if(notUpdate) {
+        if(billGrp.length() < 1 && notUpdate)
+        {
+            CTILogger.info("Import entry with name " + name + " has no billing group.");
+            logger = ImportFuncs.writeToImportLog(logger, 'F', "Import entry with name " + name + " has no billing group.", "", "");
+            //This is not an error.  Otherwise we could not be backwards compatible, but we should note it anyways in the log file.
+        }
+		if(routeName.length() < 1) {
+			if(substationName.length() < 1) {
+                if(notUpdate) {
+                    CTILogger.info("Import entry with name " + name + " has no specified substation or route.");
+                    logger = ImportFuncs.writeToImportLog(logger, 'F', "Import entry with name " + name + " has no specified substation or route.", "", "");
+                    badEntry = true;
+                    errorMsg.append("has no substation or route specified; ");
+                }
+            } 
+            else if(substationName.length() > 0) {
+                routeIDsFromSub = DBFuncs.getRouteIDsFromSubstationName(substationName);
+                if(routeIDsFromSub.size() < 1) {
+                    CTILogger.info("Import entry with name " + name + " specifies a substation with routes not in the Yukon database.");
+                    logger = ImportFuncs.writeToImportLog(logger, 'F', "Import entry with name " + name + " specifies a substation with routes not in the Yukon database.", "", "");
+                    badEntry = true;
+                    errorMsg.append("has an unknown substation or a substation with no routes; ");
+                }
+            }
+            else if(notUpdate) {
                 CTILogger.info("Import entry with name " + name + " has no specified route.");
     			logger = ImportFuncs.writeToImportLog(logger, 'F', "Import entry with name " + name + " has no specified route.", "", "");
     			badEntry = true;
@@ -414,7 +457,10 @@ public void runImport(Vector imps)
 		if(badEntry)
 		{
 			GregorianCalendar now = new GregorianCalendar();
-			currentFailure = new ImportFail(address, name, routeName, meterNumber, collectionGrp, altGrp, templateName, errorMsg.toString(), now.getTime());
+			currentFailure = new ImportFail(address, name, routeName, 
+                                            meterNumber, collectionGrp, altGrp, templateName, 
+                                            errorMsg.toString(), now.getTime(), billGrp, 
+                                            substationName, ImportFuncs.FAIL_INVALID_DATA);
 			failures.addElement(currentFailure);
 		}
 		else if( updateDeviceID != null)
@@ -442,7 +488,7 @@ public void runImport(Vector imps)
 				dmg = (DeviceMeterGroup)t.execute();
         
 				if( !dmg.getMeterNumber().equals(meterNumber) || !dmg.getCollectionGroup().equals(collectionGrp)||
-						!dmg.getTestCollectionGroup().equals(altGrp))
+						!dmg.getTestCollectionGroup().equals(altGrp) || !dmg.getBillingGroup().equals(billGrp))
 				{
 					if(meterNumber.length() > 0)
 					    dmg.setMeterNumber(meterNumber);
@@ -450,6 +496,8 @@ public void runImport(Vector imps)
                         dmg.setCollectionGroup(collectionGrp);
 					if(altGrp.length() > 0)
 					    dmg.setTestCollectionGroup(altGrp);
+                    if(billGrp.length() > 0)
+                        dmg.setBillingGroup(billGrp);
 					t = Transaction.createTransaction( Transaction.UPDATE, dmg);
 					dmg = (DeviceMeterGroup)t.execute();
 				}
@@ -466,6 +514,14 @@ public void runImport(Vector imps)
     					t = Transaction.createTransaction(Transaction.UPDATE, dr);
     					dr = (DeviceRoutes)t.execute();
     				}
+                }
+                else if(routeIDsFromSub.size() > 0) {
+                    for(int i = 0; i < routeIDsFromSub.size(); i++) {
+                        /*TODO: do we want to change the route based on substation
+                         * on an update since there will be no porter communication to verify?
+                         * Or will there be porter communication to verify even on an update?
+                         */
+                    }
                 }
 			} catch (TransactionException e)
 			{
@@ -488,7 +544,24 @@ public void runImport(Vector imps)
 			current400Series.getDeviceMeterGroup().setMeterNumber(meterNumber);
 			current400Series.getDeviceMeterGroup().setCollectionGroup(collectionGrp);
 			current400Series.getDeviceMeterGroup().setTestCollectionGroup(altGrp);
-			current400Series.getDeviceRoutes().setRouteID(routeID);
+            current400Series.getDeviceMeterGroup().setBillingGroup(billGrp);
+			
+            ImportPendingComm pc = new ImportPendingComm(deviceID, address, name, routeName, 
+                                                         meterNumber, collectionGrp, altGrp, 
+                                                         templateName, billGrp, substationName);
+            
+            /*
+             * single route vs. substation specified: multiple possible routes
+             * if sub specified, a porter thread will attempt to find the right one; for now
+             * just use the first in the list.
+             */
+            if(routeID.intValue() == -12 && routeIDsFromSub.size() > 0) {
+                current400Series.getDeviceRoutes().setRouteID((Integer)routeIDsFromSub.get(0));
+                usingSub  = true;
+            }
+            else
+                current400Series.getDeviceRoutes().setRouteID(routeID);
+            
 			com.cannontech.database.data.multi.MultiDBPersistent objectsToAdd = new com.cannontech.database.data.multi.MultiDBPersistent();
 			objectsToAdd.getDBPersistentVector().add(current400Series);
 			
@@ -497,8 +570,7 @@ public void runImport(Vector imps)
 			boolean hasPoints = false;
 			for (int i = 0; i < points.size(); i++)
 			{
-                int nextPointId = DaoFactory.getPointDao().getNextPointId();
-				((com.cannontech.database.data.point.PointBase) points.get(i)).setPointID(nextPointId);
+				((com.cannontech.database.data.point.PointBase) points.get(i)).setPointID(new Integer(DBFuncs.getNextPointID() + i));
 				((com.cannontech.database.data.point.PointBase) points.get(i)).getPoint().setPaoID(deviceID);
 				objectsToAdd.getDBPersistentVector().add(points.get(i));
 				hasPoints = true;
@@ -515,20 +587,22 @@ public void runImport(Vector imps)
                     Transaction.createTransaction(Transaction.INSERT, current400Series).execute();
                 }
 				
+                //write pending communication entry for porter thread to pick up
+                Transaction.createTransaction(Transaction.INSERT, pc).execute();
+                
 				successVector.addElement(imps.elementAt(j));
 				logger = ImportFuncs.writeToImportLog(logger, 'S', current400Series.getPAOClass() + "with name " + name + " with address " + address + ".", "", "");
-				synchronized(paoIDsForPorter)
-				{				
-                    CTILogger.info("Writing to porter array.");
-                    paoIDsForPorter.addElement(current400Series.getPAObjectID());
-				}
+				
 				successCounter++;
 			}
 			catch( TransactionException e )
 			{
 				e.printStackTrace();
 				StringBuffer tempErrorMsg = new StringBuffer(e.toString());
-				currentFailure = new ImportFail(address, name, routeName, meterNumber, collectionGrp, altGrp, templateName, tempErrorMsg.toString(), now.getTime());
+				currentFailure = new ImportFail(address, name, routeName, 
+                                                meterNumber, collectionGrp, altGrp, 
+                                                templateName, tempErrorMsg.toString(), now.getTime(), 
+                                                billGrp, substationName, ImportFuncs.FAIL_DATABASE);
 				failures.addElement(currentFailure);
 				logger = ImportFuncs.writeToImportLog(logger, 'F', current400Series.getPAOClass() + "with name " + name + "failed on INSERT into database.", e.toString(), e.toString());
 			}
@@ -631,7 +705,8 @@ public void stop()
 {
 	try
 	{
-		Thread t = starter;
+        generateMessageID();
+        Thread t = starter;
 		starter = null;
 		t.interrupt();
 		Thread w = worker;
@@ -677,9 +752,8 @@ private synchronized IServerConnection getDispatchConnection()
     if(dispatchConn == null) 
     {
         dispatchConn = ConnPool.getInstance().getDefDispatchConn();
-        dispatchConn.addObserver(this);
         
-        CTILogger.info("Porter connection created.");
+        CTILogger.info("Dispatch connection created.");
     }
     
     return dispatchConn;
@@ -690,7 +764,7 @@ private synchronized IServerConnection getPorterConnection()
 	if(connToPorter == null)
 	{
         connToPorter = ConnPool.getInstance().getDefPorterConn();
-        connToPorter.addObserver(this);
+        connToPorter.addMessageListener(this);
         
 		CTILogger.info("Porter connection created.");
 	}
@@ -701,82 +775,80 @@ private synchronized IServerConnection getPorterConnection()
 /*
  * With big databases, porter needs a lot of time to reload.  Therefore, if we want the submits
  * to work, we need to give porter its grace period.  This worker thread will grab the ids of 
- * all successfully imported devices and then wait fifteen minutes before it attempts to submit 
- * the intervals for them.
+ * all successfully imported devices and then wait fifteen minutes before it attempts to locate 
+ * them and submit the intervals for them.
  * 
  * Also, we will now do only fifty at a time.  Otherwise, we could dump a thousand or more meters out at
  * at time and burn out some poor CCU amp card.
  */
 private void porterWorker()
 {	
-	if(worker == null)
-	{
-		Runnable runner = new Runnable()
-		{
-			public void run()
-			{
+	if(worker == null) {
+		Runnable runner = new Runnable() {
+			public void run() {
                 CTILogger.info("Porter submission thread created.");
                 
-                while(true)
-				{
-					Integer[] paoIDs = null;
-					int counter = 0;
+                while(true) {
+                    try {
+                        Thread.sleep(PORTER_WAIT);
+                    }
+                    catch (InterruptedException ie) {
+                        CTILogger.info("Exiting the worker bee unexpectedly...sleep failed!!!");
+                        logger = ImportFuncs.writeToImportLog(logger, 'N', "Exiting the worker bee unexpectedly...sleep failed!!!" + ie.toString(), "", "");
+                        break;
+                    }
                     
-					synchronized(paoIDsForPorter)
-					{
-						if(paoIDsForPorter.size() > 0 && paoIDsForPorter.size() <= SAVETHEAMPCARDS_AMOUNT)
-						{
-							paoIDs = new Integer[paoIDsForPorter.size()];
-							paoIDsForPorter.copyInto(paoIDs);
-							paoIDsForPorter.clear();
-							
-							CTILogger.info("Porter worker thread has obtained " + paoIDs.length + " MCT IDs.  Interval write attempt after " + PORTER_WAIT + " ms.");
-							logger = ImportFuncs.writeToImportLog(logger, 'N', "Porter worker thread has obtained" + paoIDs.length + " MCT IDs.  Interval write attempt after " + PORTER_WAIT + " ms.", "", "");
-						}
-						else if(paoIDsForPorter.size() > SAVETHEAMPCARDS_AMOUNT)
-						{
-							paoIDs = new Integer[SAVETHEAMPCARDS_AMOUNT];
-							for(int j = 0; j < paoIDs.length; j++)
-							{
-								paoIDs[j] = (Integer)paoIDsForPorter.get(j);
-							}
+                    List pending = ImportFuncs.getAllPending();
+                    List cmds = getCmdMultipleRouteList();
+                    
+					if(pending.size() > 0) {
+                        if(pending.size() > SAVETHEAMPCARDS_AMOUNT) {
+    						pending = pending.subList(0, SAVETHEAMPCARDS_AMOUNT);
+    					}
+    					
+                        CTILogger.info("Porter worker thread has obtained " + pending.size() + " MCT IDs.  Communication attempt.");
+                        logger = ImportFuncs.writeToImportLog(logger, 'N', "Porter worker thread has obtained" + pending.size() + " MCT IDs.", "", "");
+                        
+						for(int j = 0; j < pending.size(); j++) {
+							//locate attempt (only if given multiple routes via substation)
+                            ImportPendingComm pc = ((ImportPendingComm)pending.get(j));
+                            String routeName = pc.getRouteName();
+                            List routeIDsFromSub = DBFuncs.getRouteIDsFromSubstationName(pc.getSubstationName());
+                            if(routeName.length() > 1) {
+                                /*
+                                 * Don't actually need to set a routeID; loop will use what is attached to the device
+                                 * Proper route has already been attached by the bulk importer.  Why use an extra db connection finding
+                                 * out what we already know?
+                                 */
+                                porterRequest = new Request( pc.getPendingID().intValue(), LOOP_COMMAND, currentMessageID );
+                                Integer routeID = DBFuncs.getRouteFromName(routeName);
+                                ImportFuncs.writeToImportLog(logger, 'N', "Locate attempt written to porter: device " + porterRequest.getDeviceID() + " on route " + routeName, "", "");
+                                writeToPorter(porterRequest);
+                                messageIDToRouteIDMap.put(new Long(porterRequest.getUserMessageID()), routeID);
+                            }
+                            else if(routeIDsFromSub.size() > 0) {
+                                //send first one right off
+                                porterRequest = new Request( pc.getPendingID().intValue(), LOOP_COMMAND, currentMessageID );
+                                porterRequest.setRouteID(((Integer)routeIDsFromSub.get(0)).intValue());
+                                ImportFuncs.writeToImportLog(logger, 'N', "Locate attempt written to porter: device " + porterRequest.getDeviceID() + " on route " + routeName, "", "");
+                                writeToPorter(porterRequest);
+                                messageIDToRouteIDMap.put(new Long(porterRequest.getUserMessageID()), (Integer)routeIDsFromSub.get(0));
+                                for(int i = 1; i < routeIDsFromSub.size(); i++) {
+                                    porterRequest = new Request( pc.getPendingID().intValue(), LOOP_COMMAND, currentMessageID );
+                                    porterRequest.setRouteID(((Integer)routeIDsFromSub.get(i)).intValue());
+                                    cmdMultipleRouteList.add(porterRequest);
+                                    messageIDToRouteIDMap.put(new Long(porterRequest.getUserMessageID()), (Integer)routeIDsFromSub.get(i));
+                                    ImportFuncs.writeToImportLog(logger, 'N', "Locate attempt queued: device " + porterRequest.getDeviceID() + " on route " + routeName, "", "");
+                                }
+                            }
+                            //going to have to do a general loop locate to find it; we apparently don't know a possible route
+                            else {
+                                porterRequest = new Request( pc.getPendingID().intValue(), LOOP_LOCATE_COMMAND, currentMessageID );
+                                writeToPorter(porterRequest);
+                            }
 						}
 					}
-					
-					try
-					{
-						Thread.sleep(PORTER_WAIT);
-					}
-					catch (InterruptedException ie)
-					{
-						CTILogger.info("Exiting the worker bee unexpectedly...sleep failed!!!");
-						logger = ImportFuncs.writeToImportLog(logger, 'N', "Exiting the worker bee unexpectedly...sleep failed!!!" + ie.toString(), "", "");
-						break;
-					}			
-					
-					if(paoIDs != null)
-					{
-						for(int j = 0; j < paoIDs.length; j++)
-						{
-							porterRequest = new Request( paoIDs[j].intValue(), INTERVAL_COMMAND, paoIDs[j].longValue() );
-							porterRequest.setPriority(PORTER_PRIORITY);
-							if( getPorterConnection() != null )
-							{
-								getPorterConnection().write( porterRequest );
-								counter++;
-							}
-							else
-							{
-								CTILogger.info(paoIDs[j].toString() + " REQUEST NOT SENT: CONNECTION TO PORTER IS NULL");
-								logger = ImportFuncs.writeToImportLog(logger, 'N', "("+ paoIDs[j].toString() + ")REQUEST NOT SENT: CONNECTION TO PORTER IS NULL", "", "");
-							}
-						}
-					
-						CTILogger.info(counter + " intervals written to porter.");
-						logger = ImportFuncs.writeToImportLog(logger, 'N', "Intervals for " + counter + " MCTs written to porter.", "", "");
-						
-					}
-				}
+                }
 			}
 		};
 		
@@ -787,6 +859,156 @@ private void porterWorker()
 
 public void update(Observable o, Object arg) 
 {}
-						
 
+/*
+ * Uses the messageReceived from the MessageListener class to listen to messages coming back
+ * from Porter.  This will be used when trying to locate meters on some or all routes, as well as
+ * to determine whether meter interval sends are successful.
+ */
+public void messageReceived(MessageEvent e) {
+    Message in = e.getMessage();        
+    
+    if(in instanceof Return) {
+        Return returnMsg = (Return) in;
+        synchronized(this) {
+            CTILogger.debug("Message Received [ID:"+ returnMsg.getUserMessageID() + 
+                            " DevID:" + returnMsg.getDeviceID() + 
+                            " Command:" + returnMsg.getCommandString() +
+                            " Result:" + returnMsg.getResultString() + 
+                            " Status:" + returnMsg.getStatus() +
+                            " More:" + returnMsg.getExpectMore()+"]");
+            
+            if( !porterMessageIDs.contains( new Long(returnMsg.getUserMessageID()))) {
+                CTILogger.info("Unknown Message: "+ returnMsg.getUserMessageID() +" Command [" + returnMsg.getCommandString()+"]");
+                CTILogger.info("Unknown Message: "+ returnMsg.getUserMessageID() +" Result [" + returnMsg.getResultString()+"]");
+                return;
+            }
+            else {
+                //Remove the messageID from the set of stored ids.
+                if(returnMsg.getExpectMore() == 0) { //nothing more is coming, remove from list.
+                    getPorterMessageIDs().remove( new Long(returnMsg.getUserMessageID()));
+                    Request nextRouteLoop = null;
+                    boolean removed = false;
+                    for(int j = 0; j < cmdMultipleRouteList.size(); j++) {
+                        if(removed && returnMsg.getDeviceID() == ((Request)cmdMultipleRouteList.get(j)).getDeviceID()) {
+                            nextRouteLoop = ((Request)cmdMultipleRouteList.get(j));
+                            break;
+                        }
+                        if(returnMsg.getUserMessageID() == ((Request)cmdMultipleRouteList.get(j)).getUserMessageID()) {
+                            cmdMultipleRouteList.remove(j);
+                            removed = true;
+                        }
+                    }
+
+                    boolean commSuccessful = returnMsg.getStatus() == 0;
+                    
+                    //message was not successful and it was the only one for this device
+                    if(!commSuccessful && nextRouteLoop == null) {
+                        if(DBFuncs.writePendingCommToFail(ImportFuncs.FAIL_COMMUNICATION, "Unable to communicate with device.", new Integer(returnMsg.getDeviceID())))
+                            ImportFuncs.writeToImportLog(logger, 'N', "Communication failure with device " + returnMsg.getDeviceID() + ".", "", "");
+                        else
+                            logger = ImportFuncs.writeToImportLog(logger, 'F', "Could not move pending communication to fail table, but communication failure occurred with device " + porterRequest.getDeviceID() + ".", e.toString(), e.toString());
+                        return;
+                    }
+                    //it was a loop locate (checking all available routes) and succeeded, save the route and then write the interval out
+                    else if(returnMsg.getCommandString().lastIndexOf(LOOP_LOCATE_COMMAND) > -1) {
+                        handleSuccessfulLocate(returnMsg);
+                    }
+                    //check to see if it was a route-specific or substation specific loop
+                    else if(returnMsg.getCommandString().lastIndexOf(LOOP_COMMAND) > -1) {
+                        //there is more than one loop; substation must have been supplied instead of route
+                        if(commSuccessful) {  
+                            handleSuccessfulLocate(returnMsg);
+                            //there were multiple routes specified; remove later attempts
+                            if(nextRouteLoop != null) {
+                                for(int j = 0; j < cmdMultipleRouteList.size(); j++) {
+                                    if(removed && returnMsg.getDeviceID() == ((Request)cmdMultipleRouteList.get(j)).getDeviceID()) {
+                                        cmdMultipleRouteList.remove(j);
+                                    }
+                                }
+                            } 
+                        }
+                        //failed, on to the next one
+                        else if (nextRouteLoop!= null ) {
+                            writeToPorter(nextRouteLoop);
+                        }
+                    }
+                    //must be an interval command if it has made it this far
+                    else if(returnMsg.getCommandString().lastIndexOf(INTERVAL_COMMAND) > -1) {
+                        logger = ImportFuncs.writeToImportLog(logger, 'N', "Intervals successfully written to device " + returnMsg.getDeviceID() + ".", "", "");
+                    }
+                    
+                    /*it made it this far, communicationg succeeded, we can remove it from the pending table 
+                     *and from the failure table if it still happens to be there
+                     */
+                    DBFuncs.removeFromPendingAndFailed(returnMsg.getDeviceID());
+                }
+            }
+            //??synchronized ( BulkImporter410.class )??
+        }
+    }
+}
+
+public Set getPorterMessageIDs() {
+    return porterMessageIDs;
+}
+
+public void setPorterMessageIDs(Set porterMessageIDs) {
+    this.porterMessageIDs = porterMessageIDs;
+}
+
+public List getCmdMultipleRouteList() {
+    return cmdMultipleRouteList;
+}
+
+public void setCmdMultipleRouteList(List cmdList) {
+    this.cmdMultipleRouteList = cmdList;
+}
+						
+private synchronized long generateMessageID() {
+    if(++currentMessageID == Integer.MAX_VALUE) {
+        currentMessageID = 1;
+    }
+    return currentMessageID;
+}
+
+public void writeToPorter(Request request_) {
+    porterRequest.setPriority(PORTER_PRIORITY);
+    if( getPorterConnection().isValid() ) {
+        getPorterConnection().write( porterRequest );
+        porterMessageIDs.add(new Long(porterRequest.getUserMessageID()));
+    }
+    else {
+        CTILogger.info(porterRequest.getUserMessageID() + " REQUEST NOT SENT: CONNECTION TO PORTER IS NULL");
+        logger = ImportFuncs.writeToImportLog(logger, 'N', "("+ porterRequest.getUserMessageID() + ")REQUEST NOT SENT: CONNECTION TO PORTER IS NULL", "", "");
+    }
+    generateMessageID();
+}
+
+private void handleSuccessfulLocate(Return returnMsg) {
+    Integer routeID = (Integer)messageIDToRouteIDMap.get(new Long(returnMsg.getUserMessageID()));
+    MCT400SeriesBase retMCT = new MCT400SeriesBase();
+    retMCT.setDeviceID(new Integer(returnMsg.getDeviceID()));
+    try {
+        ImportFuncs.writeToImportLog(logger, 'N', "Sucessful location of device " + returnMsg.getDeviceID() + " on route " + routeID, "", "");
+        retMCT = (MCT400SeriesBase) Transaction.createTransaction(Transaction.RETRIEVE, retMCT).execute();
+        if(routeID != null)
+            retMCT.getDeviceRoutes().setRouteID(routeID);
+        else
+            throw new TransactionException("Route not found for a message ID of " + returnMsg.getUserMessageID());
+        Transaction.createTransaction(Transaction.UPDATE, retMCT).execute();
+        logger = ImportFuncs.writeToImportLog(logger, 'N', retMCT.getPAOClass() + "with name " + retMCT.getPAOName() + " was successfully located on route with ID " + routeID + ".", "", "");
+        
+        //interval write
+        porterRequest = new Request( retMCT.getPAObjectID().intValue(), INTERVAL_COMMAND, currentMessageID );
+        writeToPorter(porterRequest);
+        ImportFuncs.writeToImportLog(logger, 'N', "Interval write sent to porter: device " + returnMsg.getDeviceID() + " on route " + routeID, "", "");
+    }
+    catch( TransactionException e ) {
+        if(DBFuncs.writePendingCommToFail(ImportFuncs.FAIL_DATABASE, e.toString(), retMCT.getPAObjectID()))
+            ImportFuncs.writeToImportLog(logger, 'N', "Could not assign device " + retMCT.getPAObjectID() + " the route " + routeID, "", "");
+        else
+            logger = ImportFuncs.writeToImportLog(logger, 'F', "Could not move pending communication to fail table, but failure occurred assigning device " + porterRequest.getDeviceID() + " the route " + routeID, e.toString(), e.toString());
+    }
+}
 }
