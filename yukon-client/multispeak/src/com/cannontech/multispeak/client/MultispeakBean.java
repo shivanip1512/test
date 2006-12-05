@@ -7,7 +7,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 
 public class MultispeakBean
 {
-    private String selectedCompanyName = "Cannon";
+    private int selectedVendorID = 1;
     private MultispeakVendor selectedMspVendor;
     private LiteYukonUser yukonUser;
     private List<MultispeakVendor> mspVendorList;
@@ -27,22 +27,22 @@ public class MultispeakBean
     }
 
     /**
-     * @return Returns the selectedCompanyName.
+     * @return Returns the selectedVendorID.
      */
-    public String getSelectedCompanyName()
+    public int getSelectedVendorID()
     {
-        return selectedCompanyName;
+        return selectedVendorID;
     }
 
     /**
-     * @param selectedCompanyName The selectedCompanyName to set.
+     * @param selectedVendorID The selectedVendorID to set.
      */
-    public void setSelectedCompanyName(String selectedCompanyName)
+    public void setSelectedVendorID(int selectedVendorID)
     {
         //clear out the old vendor if this changes.
-        if( !this.selectedCompanyName.equalsIgnoreCase(selectedCompanyName))
+        if( this.selectedVendorID != selectedVendorID)
             selectedMspVendor = null;
-        this.selectedCompanyName = selectedCompanyName;
+        this.selectedVendorID = selectedVendorID;
     }
 
     /**
@@ -52,7 +52,7 @@ public class MultispeakBean
     {
         if (selectedMspVendor == null)
         {
-            selectedMspVendor = MultispeakFuncs.getMultispeakDao().getMultispeakVendor(getSelectedCompanyName());
+            selectedMspVendor = MultispeakFuncs.getMultispeakDao().getMultispeakVendor(getSelectedVendorID());
         }
         return selectedMspVendor;
     }
