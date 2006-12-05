@@ -73,7 +73,7 @@ public class HECO_CustomerMonthlyBillingSettlementModel extends HECO_SettlementM
 	public static final String TOTAL_CIDLC_CREDITS_DEBITS_STRING = "Net Billing Credit/Charge";
 	public static final String LOAD_CONTROL_EVENT_SUMMARY_STRING = "Load Control Event Summary";
 	public static final String TOTAL_DISPATCHED_HOURS_STRING = "Total Dispatched Control";
-	public static final String TOTAL_UF_HOURS_STRING = "Total Under Frequency Control";
+	public static final String TOTAL_UF_HOURS_STRING = "Total Underfrequency Control";
 	
 	public static final String EVENT_TYPE_HEADING_STRING = "Type";
 	public static final String EVENT_DATE_HEADING_STRING = "Date";

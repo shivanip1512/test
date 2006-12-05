@@ -45,9 +45,9 @@ public class HECO_DSMISModel extends HECO_SettlementModelBase
 	public static final String CONTROLLED_DEMAND_INCENTIVE_STRING = "CDI";
 	public static final String CONTROLLED_DEMAND_INCENTIVE_AMOUNT_STRING = "CDI Amount";
 	public static final String ENERGY_REDUCTION_INCENTIVE_STRING = "ERI";
-	public static final String ENERGY_REDUCTION_INCENTIVE_AMOUNT_STRING = "ERI Amounnt";
-	public static final String EFSL_TOTAL_STRING = "EFSL";
-	public static final String EFSL_TOTAL_CHARGE_STRING = "EFSL Charge";
+	public static final String ENERGY_REDUCTION_INCENTIVE_AMOUNT_STRING = "ERI Amount";
+	public static final String EFSL_TOTAL_STRING = "EFSLC";
+	public static final String EFSL_TOTAL_CHARGE_STRING = "EFSLC Amount";
 	
 		
 	public static void main(String[] args)
@@ -71,7 +71,7 @@ public class HECO_DSMISModel extends HECO_SettlementModelBase
 		setFieldSeparator("");	//THERE IS NONE, This is a character specific format
 		decimalFormat.setNegativePrefix("");
 		decimalFormat.setPositivePrefix("");
-		decimalFormat.setNegativeSuffix("-");
+		decimalFormat.setNegativeSuffix(" ");
 		decimalFormat.setPositiveSuffix(" ");
 	}
 

@@ -68,11 +68,11 @@ public class HECO_MonthlyBillingSettlementModel extends HECO_SettlementModelBase
 	public static final String ENERGY_REDUCTION_INCENTIVE_STRING = "Energy Reduction Incentive";
 	public static final String TOTAL_CIDLC_INCENTIVE_STRING = "Total CIDLC Incentive";
 	
-	public static final String EFSL_DISPATCHED_STRING = "EFSL Dispatched";
-	public static final String EFSL_EMERGENCY_STRING = "EFSL Emergency";
-	public static final String EFSL_UNDERFREQUENCY_STRING = "EFSL UnderFrequency";
+	public static final String EFSL_DISPATCHED_STRING = "EFSLC Dispatched";
+	public static final String EFSL_EMERGENCY_STRING = "EFSLC Emergency";
+	public static final String EFSL_UNDERFREQUENCY_STRING = "EFSLC Underfrequency";
 	public static final String EFSL_TOTAL_CHARGE_STRING = "Total EFSL Charge";
-	public static final String TOTAL_CIDLC_CREDITS_DEBITS_STRING = "Total CIDL Credits/Debits";
+	public static final String TOTAL_CIDLC_CREDITS_DEBITS_STRING = "Total CIDLC Credits/Debits";
 
 	private static final String[] ROW_HEADINGS = new String[]{
 		CUSTOMER_NAME_STRING,
@@ -280,16 +280,16 @@ public class HECO_MonthlyBillingSettlementModel extends HECO_SettlementModelBase
 		{
 			int offset = 0;
 			columnProperties = new ColumnProperties[NUMBER_COLUMNS + getCustomerIDS().length];
-            //posX, posY, width, height, numberFormatString
+			//posX, posY, width, height, numberFormatString
 
-            columnProperties[0] = new ColumnProperties(offset, 1, 150, null);
-            columnProperties[1] = new ColumnProperties(offset+=150, 1, 75, null);
+			columnProperties[0] = new ColumnProperties(offset, 1, 150, null);
+			columnProperties[1] = new ColumnProperties(offset+=150, 1, 75, null);
             offset += 75;   //update to current position.
-            
+			
             int width = 75;
-            for (int i = 0; i < getCustomerIDS().length; i++){
+			for (int i = 0; i < getCustomerIDS().length; i++){
                 offset = getAdjustedStartOffset(offset, width);
-                columnProperties[NUMBER_COLUMNS + i] = new ColumnProperties(offset, 1, width, null);
+        		columnProperties[NUMBER_COLUMNS + i] = new ColumnProperties(offset, 1, width, null);
                 offset += width;
             }
 		}
