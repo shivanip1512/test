@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.108 $
-* DATE         :  $Date: 2006/12/05 19:45:41 $
+* REVISION     :  $Revision: 1.109 $
+* DATE         :  $Date: 2006/12/05 20:10:56 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1711,6 +1711,7 @@ INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
     INT status = NORMAL;
     ULONG i,x;
     INT pid;
+    INT tags = 0;
     CtiTime pointTime;
     bool valid_data = true;
 
@@ -1801,6 +1802,7 @@ INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
                 InMessage->Sequence == Cti::Protocol::Emetcon::GetValue_KWH )
             {
                 //  normal KWH read, nothing too special
+                tags = TAG_POINT_MUST_ARCHIVE;
 
                 pi = getData(DSt->Message + offset, 3, ValueType_Accumulator);
 
@@ -1809,6 +1811,7 @@ INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
             else if( InMessage->Sequence == Cti::Protocol::Emetcon::GetValue_FrozenKWH )
             {
                 //  but this is where the action is - frozen decode
+                tags = 0;
 
                 if( i ) offset++;  //  so that, for the frozen read, it goes 0, 4, 7 to step past the freeze counter in position 3
 
@@ -1858,7 +1861,7 @@ INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
 
                 //  if kWh was returned as units, we could get rid of the default multiplier - it's messy
                 insertPointDataReport(PulseAccumulatorPointType, i + 1,
-                                      ReturnMsg, pi, point_name, pointTime, 0.1);
+                                      ReturnMsg, pi, point_name, pointTime, 0.1, tags);
             }
         }
 

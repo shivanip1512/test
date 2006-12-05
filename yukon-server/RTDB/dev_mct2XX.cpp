@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct2XX.cpp-arc  $
-* REVISION     :  $Revision: 1.39 $
-* DATE         :  $Date: 2006/11/02 15:48:44 $
+* REVISION     :  $Revision: 1.40 $
+* DATE         :  $Date: 2006/12/05 20:10:56 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -235,7 +235,7 @@ INT CtiDeviceMCT2XX::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
             resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value,
                                                                                      boost::static_pointer_cast<CtiPointNumeric>(pPoint)->getPointUnits().getDecimalPlaces());
 
-            pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, PulseAccumulatorPointType, resultString);
+            pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, PulseAccumulatorPointType, resultString, TAG_POINT_MUST_ARCHIVE);
             if(pData != NULL)
             {
                 pointTime -= pointTime.seconds() % 300;

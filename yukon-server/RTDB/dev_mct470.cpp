@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.77 $
-* DATE         :  $Date: 2006/12/05 19:45:41 $
+* REVISION     :  $Revision: 1.78 $
+* DATE         :  $Date: 2006/12/05 20:10:56 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3006,7 +3006,7 @@ INT CtiDeviceMCT470::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
             if( !i )  point_name = "KYZ 1";
 
             insertPointDataReport(PulseAccumulatorPointType, i + 1,
-                                  ReturnMsg, pi, point_name, pointTime);
+                                  ReturnMsg, pi, point_name, pointTime, 1.0, TAG_POINT_MUST_ARCHIVE);
         }
 
         retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
@@ -3402,7 +3402,7 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                 pi = getData(DSt->Message, 5, ValueType_IED);
 
                 insertPointDataReport(AnalogPointType, PointOffset_TotalKWH,
-                                      ReturnMsg, pi, "kWh total");
+                                      ReturnMsg, pi, "kWh total", 0UL, 1.0, TAG_POINT_MUST_ARCHIVE);
 
                 pi = getData(DSt->Message + 5, 5, ValueType_IED);
 
@@ -3586,14 +3586,19 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                 CtiPointSPtr kwh, kw;
                 point_info time_info;
                 unsigned long peak_time;
-
+                string pointname;
+                int tags = 0;
+                
                 if( parse.getFlags() & CMD_FLAG_GV_KVARH || parse.getFlags() & CMD_FLAG_GV_KVAH  )
                 {
                     offset = PointOffset_TOU_KMBase;
+                    pointname  = "kMH rate ";
                 }
                 else
                 {
                     offset = PointOffset_TOU_KWBase;
+                    pointname  = "kWH rate ";
+                    tags = TAG_POINT_MUST_ARCHIVE;
                 }
 
                 if(      parse.getFlags() & CMD_FLAG_GV_RATEA )  rate = 0;
@@ -3603,13 +3608,11 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
 
                 pi = getData(DSt->Message, 5, ValueType_Raw);
 
-                string pointname;
-                pointname  = "kWH rate ";
                 pointname += string(1, (char)('A' + rate));
                 pointname += " total";
 
                 insertPointDataReport(AnalogPointType, offset + rate * 2 + 1,
-                                      ReturnMsg, pi, pointname);
+                                      ReturnMsg, pi, pointname, 0UL, 1.0, tags);
 
                 //  this is CRAZY WIN32 SPECIFIC
                 _TIME_ZONE_INFORMATION tzinfo;
