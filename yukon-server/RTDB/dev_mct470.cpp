@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.76 $
-* DATE         :  $Date: 2006/11/20 15:16:24 $
+* REVISION     :  $Revision: 1.77 $
+* DATE         :  $Date: 2006/12/05 19:45:41 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3889,7 +3889,7 @@ INT CtiDeviceMCT470::decodeGetStatusInternal( INMESS *InMessage, CtiTime &TimeNo
             for( int j = 0; j < 8; j++ )
             {
                 //  Don't send the powerfail status again - it's being sent by dev_mct in ResultDecode()
-                if( (i + j != 10) && (point = boost::static_pointer_cast<CtiPointStatus>(getDevicePointOffsetTypeEqual( i + j, StatusPointType ))) )
+                if( (offset + j != 10) && (point = boost::static_pointer_cast<CtiPointStatus>(getDevicePointOffsetTypeEqual( offset + j, StatusPointType ))) )
                 {
                     double value = (InMessage->Buffer.DSt.Message[i] >> j) & 0x01;
 
