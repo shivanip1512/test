@@ -7,6 +7,7 @@
 package com.cannontech.yimp.util;
 
 import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Vector;
@@ -17,11 +18,15 @@ import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.device.MCT400SeriesBase;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.db.device.DeviceCarrierSettings;
+import com.cannontech.database.db.importer.ImportFail;
+import com.cannontech.database.db.importer.ImportPendingComm;
+import com.cannontech.database.db.point.Point;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.yukon.IServerConnection;
 
@@ -178,6 +183,7 @@ public class DBFuncs
 		
 		return returnDeviceID;
 	}
+	
 	public static Vector getPointsForPAO( Integer paoID )
 	{
         List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(paoID);
@@ -203,6 +209,11 @@ public class DBFuncs
 			
 		return daPoints;
 	
+	}
+	
+	public final static int getNextPointID()
+	{
+		return Point.getNextPointID();
 	}
 	
 	public static boolean writeLastImportTime(Date lastImport)
@@ -347,10 +358,100 @@ public class DBFuncs
 			DBChangeMsg.CHANGE_TYPE_ADD );
 		
 		dispatchConnection.write(chumpChange);
-				
 	}
 	
-	
-	
-	
+	public static List getRouteIDsFromSubstationName(String name)
+    {
+        List routeIDs = new ArrayList();
+        
+        SqlStatement stmt = new SqlStatement("SELECT ROUTEID FROM SUBSTATIONTOROUTEMAPPING WHERE SUBSTATIONID IN " +
+                "(SELECT SUBSTATIONID FROM SUBSTATION WHERE SUBSTATIONNAME  = '" 
+            + name + "')", "yukon");
+        
+        try
+        {
+            stmt.execute();
+                
+            if( stmt.getRowCount() > 0 )
+            {
+                for( int i = 0; i < stmt.getRowCount(); i++ )
+                {
+                    routeIDs.add(new Integer( ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue())); 
+                }
+            }
+        }
+        catch( Exception e )
+        {
+            e.printStackTrace();
+        }
+        
+        return routeIDs;
+    }
+    
+    public static List getRouteNamesFromSubstationName(String subName)
+    {
+        List routeNames = new ArrayList();
+        
+        SqlStatement stmt = new SqlStatement("SELECT PAONAME " + 
+                                             " FROM YUKONPAOBJECT PAO, SUBSTATION SUB, SUBSTATIONTOROUTEMAPPING MAP " + 
+                                             " WHERE SUB.SUBSTATIONID = MAP.SUBSTATIONID " +
+                                             " AND SUB.SUBSTATIONNAME = '" + subName + "' " + 
+                                             " AND PAO.PAOBJECTID = MAP.ROUTEID ORDER BY MAP.ORDERING", "yukon");
+        try {
+            stmt.execute();
+                
+            if( stmt.getRowCount() > 0 ) {
+                for( int i = 0; i < stmt.getRowCount(); i++ )
+                    routeNames.add(stmt.getRow(0)[0]); 
+            }
+        }
+        catch( Exception e ) {
+            e.printStackTrace();
+        }
+        
+        return routeNames;
+    }    
+    public static boolean writePendingCommToFail(String failType, String errorMsg, Integer deviceID) {
+        ImportPendingComm pc = new ImportPendingComm();
+        pc.setPendingID(deviceID);
+        try {
+            pc = (ImportPendingComm)Transaction.createTransaction(Transaction.RETRIEVE, pc).execute();
+            ImportFail failure = new ImportFail();
+            failure.setAddress(pc.getAddress());
+            failure.setName( pc.getName() );
+            failure.setRouteName( pc.getRouteName() );
+            failure.setMeterNumber( pc.getMeterNumber() );
+            failure.setCollectionGrp( pc.getCollectionGrp() );
+            failure.setAltGrp( pc.getAltGrp() );
+            failure.setTemplateName( pc.getTemplateName() );
+            failure.setErrorMsg( errorMsg );
+            failure.setSubstationName( pc.getSubstationName() );
+            failure.setDateTime(new Date());
+            failure.setBillGrp(pc.getBillGrp());
+            failure.setFailType( failType );
+            Transaction.createTransaction(Transaction.INSERT, failure).execute();
+            Transaction.createTransaction(Transaction.DELETE, pc).execute();
+            return true;
+        }
+        catch( TransactionException e ) {
+            return false;
+        }
+    }
+    
+    public static boolean removeFromPendingAndFailed(int devID) {
+        ImportPendingComm pc = new ImportPendingComm();
+        pc.setPendingID(new Integer(devID));
+        
+        try {
+            pc = (ImportPendingComm)Transaction.createTransaction(Transaction.RETRIEVE, pc).execute();
+            ImportFail failure = new ImportFail();
+            failure.setAddress(pc.getAddress());
+            Transaction.createTransaction(Transaction.DELETE, pc).execute();
+            Transaction.createTransaction(Transaction.DELETE, failure).execute();
+            return true;
+        }
+        catch( TransactionException e ) {
+            return false;
+        }
+    }
 }
