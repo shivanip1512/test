@@ -8,6 +8,7 @@ package com.cannontech.database.db.importer;
 
 import java.util.Date;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.db.NestedDBPersistent;
 
 /**
@@ -27,13 +28,17 @@ public class ImportFail extends NestedDBPersistent
 	private String templateName;
 	private String errorMsg;
 	private Date dateTime;
+    private String billGrp;
+    private String substationName;
+    private String failType;
 	
 	public static final String SETTER_COLUMNS[] = 
 	{ 
 		"ADDRESS", "NAME", "ROUTENAME", 
 		"METERNUMBER", "COLLECTIONGRP", 
 		"ALTGRP", "TEMPLATENAME",
-		"ERRORMSG", "DATETIME"
+		"ERRORMSG", "DATETIME",
+        "BILLGRP", "SUBSTATIONNAME", "FAILTYPE"
 	};
 
 	public static final String CONSTRAINT_COLUMNS[] = { "ADDRESS" };
@@ -45,7 +50,8 @@ public class ImportFail extends NestedDBPersistent
 		super();
 	}
 	
-	public ImportFail(String addy, String _name, String rName, String mNum, String colGrp, String _altGrp, String tn, String _errorMsg, Date _dateTime) 
+	public ImportFail(String addy, String _name, String rName, String mNum, String colGrp, String _altGrp, 
+            String tn, String _errorMsg, Date _dateTime, String _billGrp, String _substationName, String _failType) 
 	{
 		super();
 		name = _name;
@@ -57,6 +63,9 @@ public class ImportFail extends NestedDBPersistent
 		templateName = tn;
 		errorMsg = _errorMsg;
 		dateTime = _dateTime;
+        billGrp = _billGrp;
+        substationName = _substationName;
+        failType = _failType;
 	}
 
 	public void add() throws java.sql.SQLException
@@ -67,7 +76,8 @@ public class ImportFail extends NestedDBPersistent
 			getRouteName(), getMeterNumber(), 
 			getCollectionGrp(), getAltGrp(), 
 			getTemplateName(), getErrorMsg(), 
-			getDateTime() 
+			getDateTime(), getBillGrp(), 
+            getSubstationName(), getFailType()
 		};
 
 		add( TABLE_NAME, addValues );
@@ -78,6 +88,16 @@ public class ImportFail extends NestedDBPersistent
 		delete( TABLE_NAME, CONSTRAINT_COLUMNS[0], getAddress());
 	}
 
+    public String getFailType() 
+    {
+        return failType;
+    }
+    
+    public String getSubstationName() 
+    {
+        return substationName;
+    }
+    
    	public String getTemplateName() 
 	{
 		return templateName;
@@ -123,23 +143,37 @@ public class ImportFail extends NestedDBPersistent
 	
 			if( results.length == SETTER_COLUMNS.length )
 			{
-				setName( (String) results[1] );
-				setRouteName( (String) results[2] );
-				setMeterNumber( (String) results[3] );
-				setCollectionGrp( (String) results[4] );
-				setAltGrp( (String) results[5] );
-				setTemplateName( (String) results[6] );
-				setErrorMsg( (String) results[7] );
+				setName( ((String) results[1]).trim() );
+				setRouteName( ((String) results[2]).trim() );
+				setMeterNumber( ((String) results[3]).trim() );
+				setCollectionGrp( ((String) results[4]).trim() );
+				setAltGrp( ((String) results[5]).trim() );
+				setTemplateName( ((String) results[6]).trim() );
+				setErrorMsg( ((String) results[7]).trim() );
+                setDateTime( (java.util.Date) results[8] );
+                setBillGrp( ((String) results[9]).trim() );
+                setSubstationName( ((String) results[10]).trim() );
+                setFailType( ((String) results[11]).trim() );
 			}
 		else
 			throw new Error(getClass() + " - Incorrect Number of results retrieved");
 		}
 		catch (Exception e)
 		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 		}
 	}
 
+    public void setFailType(String _failType) 
+    {
+        failType = _failType;
+    }
+    
+    public void setSubstationName(String _substationName) 
+    {
+        substationName = _substationName;
+    }
+    
 	public void setTemplateName(String _templateName) 
 	{
 		templateName = _templateName;
@@ -183,7 +217,8 @@ public class ImportFail extends NestedDBPersistent
 			getRouteName(), getMeterNumber(), 
 			getCollectionGrp(), getAltGrp(), 
 			getTemplateName(), getErrorMsg(), 
-			getDateTime()
+			getDateTime(), getBillGrp(), 
+            getSubstationName(), getFailType()
 		};
 	
 		Object constraintValues[] = { getAddress() };
@@ -224,5 +259,13 @@ public class ImportFail extends NestedDBPersistent
 	public void setErrorMsg(String string) {
 		errorMsg = string;
 	}
+
+    public String getBillGrp() {
+        return billGrp;
+    }
+
+    public void setBillGrp(String billGrp) {
+        this.billGrp = billGrp;
+    }
 
 }
