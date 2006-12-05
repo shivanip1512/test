@@ -13,7 +13,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.axis.AxisFault;
-import org.apache.axis.MessageContext;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
@@ -24,7 +23,6 @@ import com.cannontech.multispeak.client.Multispeak;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
-import com.cannontech.multispeak.client.YukonMultispeakMsgHeader;
 import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.dao.RawPointHistoryDao.ReadBy;
 import com.cannontech.multispeak.data.MeterReadFactory;
@@ -94,8 +92,7 @@ public class MR_CBImpl extends MR_CBSoap_BindingImpl{
 
     public ArrayOfMeter getAMRSupportedMeters(java.lang.String lastReceived) throws java.rmi.RemoteException {
         init();
-        String companyName = MultispeakFuncs.getCompanyNameFromSOAPHeader();
-        MultispeakVendor vendor = MultispeakFuncs.getMultispeakVendor(companyName);
+        MultispeakVendor vendor = MultispeakFuncs.getMultispeakVendorFromHeader();
 
         List<Meter> meterList = null;
         Date timerStart = new Date();
@@ -110,7 +107,11 @@ public class MR_CBImpl extends MR_CBSoap_BindingImpl{
         CTILogger.info("Returning " + arrayOfMeters.length + " AMR Supported Meters. (" + (new Date().getTime() - timerStart.getTime())*.001 + " secs)");             
         //TODO = need to get the true number of meters remaining
         int numRemaining = (arrayOfMeters.length <= MultispeakDefines.MAX_RETURN_RECORDS ? 0:1); //at least one item remaining, bad assumption.
-        ((YukonMultispeakMsgHeader)MessageContext.getCurrentContext().getResponseMessage().getSOAPEnvelope().getHeaderByName("http://www.multispeak.org", "MultiSpeakMsgHeader").getObjectValue()).setObjectsRemaining(new BigInteger(String.valueOf(numRemaining)));
+        
+        MultispeakFuncs.getResponseHeader().setObjectsRemaining(new BigInteger(String.valueOf(numRemaining)));
+        MultispeakFuncs.getResponseHeader().setUserID(vendor.getUserName());
+        MultispeakFuncs.getResponseHeader().setPwd(vendor.getPassword());
+        
         return new ArrayOfMeter(arrayOfMeters);
     }
 
@@ -122,8 +123,7 @@ public class MR_CBImpl extends MR_CBSoap_BindingImpl{
     public boolean isAMRMeter(java.lang.String meterNo) throws java.rmi.RemoteException {
         init();
 
-        String companyName = MultispeakFuncs.getCompanyNameFromSOAPHeader();
-        MultispeakVendor vendor = MultispeakFuncs.getMultispeakVendor(companyName);
+        MultispeakVendor vendor = MultispeakFuncs.getMultispeakVendorFromHeader();
         if( meterNo != null && meterNo.length() > 0)
         {
             LiteYukonPAObject lPao = MultispeakFuncs.getLiteYukonPaobject(vendor.getUniqueKey(), meterNo);
@@ -157,10 +157,9 @@ public class MR_CBImpl extends MR_CBSoap_BindingImpl{
 //      init(); //init is already performed on the call to isAMRMeter()
         if( ! isAMRMeter(meterNo))
             throw new RemoteException( "Meter Number (" + meterNo + "): NOT Found.");
-
-        String companyName = MultispeakFuncs.getCompanyNameFromSOAPHeader();
-        MultispeakVendor vendor = MultispeakFuncs.getMultispeakVendor(companyName);
-
+        
+        MultispeakVendor vendor = MultispeakFuncs.getMultispeakVendorFromHeader();
+        
         LiteYukonPAObject lPao = MultispeakFuncs.getLiteYukonPaobject(vendor.getUniqueKey(), meterNo);
         ReadableDevice device = MeterReadFactory.createMeterReadObject(lPao.getCategory(), lPao.getType(), meterNo);
         device.populateWithPointData(lPao.getYukonID());
@@ -171,10 +170,14 @@ public class MR_CBImpl extends MR_CBSoap_BindingImpl{
 
     public ArrayOfMeterRead getReadingsByBillingCycle(java.lang.String billingCycle, java.util.Calendar startDate, java.util.Calendar endDate, java.lang.String lastReceived) throws java.rmi.RemoteException {
         init();
+        MultispeakVendor vendor = MultispeakFuncs.getMultispeakVendorFromHeader();
         MeterRead[] meterReads = MultispeakFuncs.getMspRawPointHistoryDao().retrieveMeterReads(ReadBy.COLL_GROUP, billingCycle, startDate.getTime(), endDate.getTime(), lastReceived);
         //TODO = need to get the true number of meters remaining
         int numRemaining = (meterReads.length <= MultispeakDefines.MAX_RETURN_RECORDS ? 0:1); //at least one item remaining, bad assumption.
-        ((YukonMultispeakMsgHeader)MessageContext.getCurrentContext().getResponseMessage().getSOAPEnvelope().getHeaderByName("http://www.multispeak.org", "MultiSpeakMsgHeader").getObjectValue()).setObjectsRemaining(new BigInteger(String.valueOf(numRemaining)));
+        
+        MultispeakFuncs.getResponseHeader().setObjectsRemaining(new BigInteger(String.valueOf(numRemaining)));
+        MultispeakFuncs.getResponseHeader().setUserID(vendor.getUserName());
+        MultispeakFuncs.getResponseHeader().setPwd(vendor.getPassword());
         
         ArrayOfMeterRead arrayOfMeterReads = new ArrayOfMeterRead(meterReads);
         return arrayOfMeterReads;
@@ -212,32 +215,28 @@ public class MR_CBImpl extends MR_CBSoap_BindingImpl{
 
     public ArrayOfErrorObject initiateUsageMonitoring(ArrayOfString meterNos) throws java.rmi.RemoteException {
         init();
-        String companyName = MultispeakFuncs.getCompanyNameFromSOAPHeader();
-        MultispeakVendor vendor = MultispeakFuncs.getMultispeakVendor(companyName);
+        MultispeakVendor vendor = MultispeakFuncs.getMultispeakVendorFromHeader();
         ErrorObject[] errorObject = Multispeak.getInstance().initiateStatusChange(vendor, meterNos.getString(), DeviceMeterGroup.USAGE_MONITORING_GROUP_PREFIX);
         return new ArrayOfErrorObject(errorObject);
     }
 
     public ArrayOfErrorObject cancelUsageMonitoring(ArrayOfString meterNos) throws java.rmi.RemoteException {
         init();
-        String companyName = MultispeakFuncs.getCompanyNameFromSOAPHeader();
-        MultispeakVendor vendor = MultispeakFuncs.getMultispeakVendor(companyName);
+        MultispeakVendor vendor = MultispeakFuncs.getMultispeakVendorFromHeader();
         ErrorObject[] errorObject = Multispeak.getInstance().cancelStatusChange(vendor, meterNos.getString(), DeviceMeterGroup.USAGE_MONITORING_GROUP_PREFIX);
         return new ArrayOfErrorObject(errorObject);
     }
 
     public ArrayOfErrorObject initiateDisconnectedStatus(ArrayOfString meterNos) throws java.rmi.RemoteException {
         init();
-        String companyName = MultispeakFuncs.getCompanyNameFromSOAPHeader();
-        MultispeakVendor vendor = MultispeakFuncs.getMultispeakVendor(companyName);
+        MultispeakVendor vendor = MultispeakFuncs.getMultispeakVendorFromHeader();
         ErrorObject[] errorObject = Multispeak.getInstance().initiateStatusChange(vendor, meterNos.getString(), DeviceMeterGroup.DISCONNECTED_GROUP_PREFIX);
         return new ArrayOfErrorObject(errorObject);
     }
 
     public ArrayOfErrorObject cancelDisconnectedStatus(ArrayOfString meterNos) throws java.rmi.RemoteException {
         init();
-        String companyName = MultispeakFuncs.getCompanyNameFromSOAPHeader();
-        MultispeakVendor vendor = MultispeakFuncs.getMultispeakVendor(companyName);
+        MultispeakVendor vendor = MultispeakFuncs.getMultispeakVendorFromHeader();
         ErrorObject[] errorObject = Multispeak.getInstance().cancelStatusChange(vendor, meterNos.getString(), DeviceMeterGroup.DISCONNECTED_GROUP_PREFIX);
         return new ArrayOfErrorObject(errorObject);
     }
@@ -247,9 +246,7 @@ public class MR_CBImpl extends MR_CBSoap_BindingImpl{
         init();
         ErrorObject[] errorObjects = new ErrorObject[0];
         
-        String companyName = MultispeakFuncs.getCompanyNameFromSOAPHeader();
-        MultispeakVendor vendor = MultispeakFuncs.getMultispeakVendor(companyName);
-
+        MultispeakVendor vendor = MultispeakFuncs.getMultispeakVendorFromHeader();
         String url = (vendor != null ? vendor.getUrl() : "(none)");
         if( url == null || url.equalsIgnoreCase(CtiUtilities.STRING_NONE)) {
             throw new AxisFault("Vendor unknown.  Please contact Yukon administrator to setup a Multispeak Interface Vendor in Yukon.");
@@ -280,16 +277,14 @@ public class MR_CBImpl extends MR_CBSoap_BindingImpl{
     }
 
     public ArrayOfErrorObject meterRemoveNotification(ArrayOfMeter removedMeters) throws java.rmi.RemoteException {
-        String companyName = MultispeakFuncs.getCompanyNameFromSOAPHeader();
-        MultispeakVendor vendor = MultispeakFuncs.getMultispeakVendor(companyName);
-        ErrorObject[] errorObject = Multispeak.getInstance().disableMeterObject(vendor, removedMeters.getMeter());
+        MultispeakVendor vendor = MultispeakFuncs.getMultispeakVendorFromHeader();
+        ErrorObject[] errorObject = Multispeak.getInstance().removeMeterObject(vendor, removedMeters.getMeter());
         return new ArrayOfErrorObject(errorObject);
     }
 
     public ArrayOfErrorObject meterAddNotification(ArrayOfMeter addedMeters) throws java.rmi.RemoteException {
-        String companyName = MultispeakFuncs.getCompanyNameFromSOAPHeader();
-        MultispeakVendor vendor = MultispeakFuncs.getMultispeakVendor(companyName);
-        ErrorObject[] errorObject = Multispeak.getInstance().enableMeterObject(vendor, addedMeters.getMeter());
+        MultispeakVendor vendor = MultispeakFuncs.getMultispeakVendorFromHeader();
+        ErrorObject[] errorObject = Multispeak.getInstance().addMeterObject(vendor, addedMeters.getMeter());
         return new ArrayOfErrorObject(errorObject);
     }
     private void init()
