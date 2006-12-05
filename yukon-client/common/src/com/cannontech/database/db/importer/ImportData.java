@@ -23,12 +23,15 @@ public class ImportData extends NestedDBPersistent
 	private String collectionGrp;
 	private String altGrp;
 	private String templateName;
+    private String billingGroup;
+    private String substationName;
 	
 	public static final String SETTER_COLUMNS[] = 
 	{ 
 		"ADDRESS", "NAME", "ROUTENAME", 
 		"METERNUMBER", "COLLECTIONGRP", 
-		"ALTGRP", "TEMPLATENAME"
+		"ALTGRP", "TEMPLATENAME", "BILLGRP",
+        "SUBSTATIONNAME"
 	};
 
 	public static final String CONSTRAINT_COLUMNS[] = { "ADDRESS" };
@@ -40,7 +43,9 @@ public class ImportData extends NestedDBPersistent
 		super();
 	}
 	
-	public ImportData(String addy, String _name, String rName, String mNum, String colGrp, String _altGrp, String tn) 
+	public ImportData(String addy, String _name, String rName, 
+                        String mNum, String colGrp, String _altGrp, 
+                        String tn, String _billGrp, String sn) 
 	{
 		super();
 		name = _name;
@@ -50,6 +55,8 @@ public class ImportData extends NestedDBPersistent
 		collectionGrp = colGrp;
 		altGrp = _altGrp;
 		templateName = tn;
+        billingGroup = _billGrp;
+        substationName = sn;
 	}
 
 	public void add() throws java.sql.SQLException
@@ -59,7 +66,7 @@ public class ImportData extends NestedDBPersistent
 			getAddress(), getName(), 
 			getRouteName(), getMeterNumber(), 
 			getCollectionGrp(), getAltGrp(), 
-			getTemplateName() 
+			getTemplateName(), getBillingGroup(), getSubstationName() 
 		};
 
 		add( TABLE_NAME, addValues );
@@ -70,7 +77,12 @@ public class ImportData extends NestedDBPersistent
 		delete( TABLE_NAME, CONSTRAINT_COLUMNS[0], getAddress());
 	}
 
-   	public String getTemplateName() 
+    public String getSubstationName() 
+    {
+        return substationName;
+    }
+    
+    public String getTemplateName() 
 	{
 		return templateName;
 	}
@@ -115,12 +127,14 @@ public class ImportData extends NestedDBPersistent
 	
 			if( results.length == SETTER_COLUMNS.length )
 			{
-				setName( (String) results[1] );
-				setRouteName( (String) results[2] );
-				setMeterNumber( (String) results[3] );
-				setCollectionGrp( (String) results[4] );
-				setAltGrp( (String) results[5] );
-				setTemplateName( (String) results[6] );
+				setName( ((String) results[1]).trim() );
+				setRouteName( ((String) results[2]).trim() );
+				setMeterNumber( ((String) results[3]).trim() );
+				setCollectionGrp( ((String) results[4]).trim() );
+				setAltGrp( ((String) results[5]).trim() );
+				setTemplateName( ((String) results[6]).trim() );
+                setBillingGroup( ((String) results[7]).trim() );
+                setSubstationName( ((String) results[8]).trim() );
 			}
 		else
 			throw new Error(getClass() + " - Incorrect Number of results retrieved");
@@ -131,6 +145,11 @@ public class ImportData extends NestedDBPersistent
 		}
 	}
 
+    public void setSubstationName(String _substationName) 
+    {
+        substationName = _substationName;
+    }
+    
 	public void setTemplateName(String _templateName) 
 	{
 		templateName = _templateName;
@@ -173,7 +192,7 @@ public class ImportData extends NestedDBPersistent
 			getAddress(), getName(), 
 			getRouteName(), getMeterNumber(), 
 			getCollectionGrp(), getAltGrp(), 
-			getTemplateName()
+			getTemplateName(), getBillingGroup(), getSubstationName()
 		};
 	
 		Object constraintValues[] = { getAddress() };
@@ -187,4 +206,12 @@ public class ImportData extends NestedDBPersistent
 			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 	}
+
+    public String getBillingGroup() {
+        return billingGroup;
+    }
+
+    public void setBillingGroup(String billingGroup) {
+        this.billingGroup = billingGroup;
+    }
 }
