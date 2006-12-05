@@ -7,16 +7,20 @@
 package com.cannontech.yimp.util;
 
 import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Vector;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.LogWriter;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.db.NestedDBPersistent;
 import com.cannontech.database.db.importer.ImportData;
 import com.cannontech.database.db.importer.ImportFail;
+import com.cannontech.database.db.importer.ImportPendingComm;
 
 /**
  * @author jdayton
@@ -26,7 +30,11 @@ import com.cannontech.database.db.importer.ImportFail;
  */
 public class ImportFuncs 
 {
-	/*
+	public static final String FAIL_INVALID_DATA = "Invalid Data";
+    public static final String FAIL_COMMUNICATION = "Communication Error";
+    public static final String FAIL_DATABASE = "Database Problem";
+    
+    /*
 	 * This method will bring in the contents of the ImportData
 	 * table in the form of ImportData objects
 	 */
@@ -34,7 +42,10 @@ public class ImportFuncs
 	{
 		Vector hordeOfImps = new Vector();
 		
-		SqlStatement stmt = new SqlStatement("SELECT * FROM " + ImportData.TABLE_NAME, "yukon");
+		SqlStatement stmt = new SqlStatement("SELECT ADDRESS, NAME, ROUTENAME, " +
+                                             " METERNUMBER, COLLECTIONGRP, ALTGRP, TEMPLATENAME, " +
+                                             " BILLGRP, SUBSTATIONNAME " +
+                                             " FROM " + ImportData.TABLE_NAME, CtiUtilities.getDatabaseAlias());
 		
 		try
 		{
@@ -44,16 +55,19 @@ public class ImportFuncs
 			{
 				for( int i = 0; i < stmt.getRowCount(); i++ )
 				{
-					String address = stmt.getRow(i)[0].toString();
-					String name = stmt.getRow(i)[1].toString();
-					String routeName = stmt.getRow(i)[2].toString();
-					String meterNumber = stmt.getRow(i)[3].toString();
-					String collectionGrp = stmt.getRow(i)[4].toString();
-					String altGrp = stmt.getRow(i)[5].toString();
-					String templateName = stmt.getRow(i)[6].toString();
+					String address = stmt.getRow(i)[0].toString().trim();
+					String name = stmt.getRow(i)[1].toString().trim();
+					String routeName = stmt.getRow(i)[2].toString().trim();
+					String meterNumber = stmt.getRow(i)[3].toString().trim();
+					String collectionGrp = stmt.getRow(i)[4].toString().trim();
+					String altGrp = stmt.getRow(i)[5].toString().trim();
+					String templateName = stmt.getRow(i)[6].toString().trim();
+                    String billGrp = stmt.getRow(i)[7].toString().trim();
+                    String substationName = stmt.getRow(i)[8].toString().trim();
 
 					ImportData imp = new ImportData( address, name,
-										routeName, meterNumber, collectionGrp, altGrp, templateName );
+										routeName, meterNumber, collectionGrp, altGrp, 
+                                        templateName, billGrp, substationName );
 
 					hordeOfImps.add(imp);
 				}
@@ -75,7 +89,11 @@ public class ImportFuncs
 	{
 		Vector failures = new Vector();
 		
-		SqlStatement stmt = new SqlStatement("SELECT * FROM " + ImportFail.TABLE_NAME + " ORDER BY DATETIME DESC", "yukon");
+		SqlStatement stmt = new SqlStatement("SELECT ADDRESS, NAME, ROUTENAME, " + 
+                                             " METERNUMBER, COLLECTIONGRP, ALTGRP, TEMPLATENAME, " + 
+                                             "ERRORMSG, DATETIME, BILLGRP, SUBSTATIONNAME, FAILTYPE " +
+                                             " FROM " + ImportFail.TABLE_NAME + 
+                                             " ORDER BY DATETIME DESC", CtiUtilities.getDatabaseAlias());
 		
 		try
 		{
@@ -85,19 +103,23 @@ public class ImportFuncs
 			{
 				for( int i = 0; i < stmt.getRowCount(); i++ )
 				{
-					String address = stmt.getRow(i)[0].toString();
-					String name = stmt.getRow(i)[1].toString();
-					String routeName = stmt.getRow(i)[2].toString();
-					String meterNumber = stmt.getRow(i)[3].toString();
-					String collectionGrp = stmt.getRow(i)[4].toString();
-					String altGrp = stmt.getRow(i)[5].toString();
-					String templateName = stmt.getRow(i)[6].toString();
-					String errorMsg = stmt.getRow(i)[7].toString();
+					String address = stmt.getRow(i)[0].toString().trim();
+					String name = stmt.getRow(i)[1].toString().trim();
+					String routeName = stmt.getRow(i)[2].toString().trim();
+					String meterNumber = stmt.getRow(i)[3].toString().trim();
+					String collectionGrp = stmt.getRow(i)[4].toString().trim();
+					String altGrp = stmt.getRow(i)[5].toString().trim();
+					String templateName = stmt.getRow(i)[6].toString().trim();
+					String errorMsg = stmt.getRow(i)[7].toString().trim();
 					Date dateTime = new Date(((java.sql.Timestamp)stmt.getRow(i)[8]).getTime());
+                    String billGrp = stmt.getRow(i)[9].toString().trim();
+                    String substationName = stmt.getRow(i)[10].toString().trim();
+                    String failType = stmt.getRow(i)[11].toString().trim();
 
-					ImportFail fail = new ImportFail( address, name,
-										routeName, meterNumber, collectionGrp, altGrp,  
-										templateName, errorMsg, dateTime );
+					ImportFail fail = new ImportFail( address, name, routeName, meterNumber, 
+                                                      collectionGrp, altGrp, templateName, 
+                                                      errorMsg, dateTime, billGrp, 
+                                                      substationName, failType);
 
 					failures.add(fail);
 				}
@@ -290,5 +312,135 @@ public class ImportFuncs
 		return logger;
 	}
 	
-	
+    /*
+     * This method will bring in the contents of the ImportPendingComm
+     * table in the form of ImportPendingComm objects
+     */
+    public static List getAllPending() {
+        List pending = new ArrayList();
+        
+        SqlStatement stmt = new SqlStatement("SELECT DEVICEID, ADDRESS, NAME, ROUTENAME, " +
+                                             " METERNUMBER, COLLECTIONGRP, ALTGRP, TEMPLATENAME, " +
+                                             " BILLGRP, SUBSTATIONNAME " +
+                                             " FROM " + ImportPendingComm.TABLE_NAME, CtiUtilities.getDatabaseAlias());
+        try {
+            stmt.execute();
+            
+            if( stmt.getRowCount() > 0 ) {
+                for( int i = 0; i < stmt.getRowCount(); i++ ) {
+                    Integer deviceID = new Integer(((java.math.BigDecimal) stmt.getRow(i)[0]).intValue());
+                    String address = stmt.getRow(i)[1].toString().trim();
+                    String name = stmt.getRow(i)[2].toString().trim();
+                    String routeName = stmt.getRow(i)[3].toString().trim();
+                    String meterNumber = stmt.getRow(i)[4].toString().trim();
+                    String collectionGrp = stmt.getRow(i)[5].toString().trim();
+                    String altGrp = stmt.getRow(i)[6].toString().trim();
+                    String templateName = stmt.getRow(i)[7].toString().trim();
+                    String billGrp = stmt.getRow(i)[8].toString().trim();
+                    String substationName = stmt.getRow(i)[9].toString().trim();
+
+                    ImportPendingComm pc = new ImportPendingComm( deviceID, address, name, routeName, 
+                                                      meterNumber, collectionGrp, altGrp, 
+                                                      templateName, billGrp, substationName);
+                    pending.add(pc);
+                }
+            }
+        }
+            catch( Exception e ) {
+                e.printStackTrace();
+            }
+        
+        return pending;
+    }
+    
+    /*
+     * This method will bring in the communication related contents of the ImportFail
+     * table in the form of ImportFail objects
+     */
+    public static List getAllCommunicationFailures() {
+        List failures = new ArrayList();
+        
+        SqlStatement stmt = new SqlStatement("SELECT ADDRESS, NAME, ROUTENAME, " + 
+                                             " METERNUMBER, COLLECTIONGRP, ALTGRP, TEMPLATENAME, " + 
+                                             "ERRORMSG, DATETIME, BILLGRP, SUBSTATIONNAME, FAILTYPE " +
+                                             " FROM " + ImportFail.TABLE_NAME + " WHERE FAILTYPE = '" +
+                                             ImportFuncs.FAIL_COMMUNICATION + "' ORDER BY DATETIME DESC", CtiUtilities.getDatabaseAlias());
+        
+        try {
+            stmt.execute();
+            
+            if( stmt.getRowCount() > 0 ) {
+                for( int i = 0; i < stmt.getRowCount(); i++ ) {
+                    String address = stmt.getRow(i)[0].toString().trim();
+                    String name = stmt.getRow(i)[1].toString().trim();
+                    String routeName = stmt.getRow(i)[2].toString().trim();
+                    String meterNumber = stmt.getRow(i)[3].toString().trim();
+                    String collectionGrp = stmt.getRow(i)[4].toString().trim();
+                    String altGrp = stmt.getRow(i)[5].toString().trim();
+                    String templateName = stmt.getRow(i)[6].toString().trim();
+                    String errorMsg = stmt.getRow(i)[7].toString().trim();
+                    Date dateTime = new Date(((java.sql.Timestamp)stmt.getRow(i)[8]).getTime());
+                    String billGrp = stmt.getRow(i)[9].toString().trim();
+                    String substationName = stmt.getRow(i)[10].toString().trim();
+                    String failType = stmt.getRow(i)[11].toString().trim();
+
+                    ImportFail fail = new ImportFail( address, name, routeName, meterNumber, 
+                                                      collectionGrp, altGrp, templateName, 
+                                                      errorMsg, dateTime, billGrp, 
+                                                      substationName, failType);
+
+                    failures.add(fail);
+                }
+            }
+        }
+            catch( Exception e ) {
+                e.printStackTrace();
+            }
+        
+        return failures;
+    }
+    
+    public static List getAllDataFailures() {
+        List failures = new ArrayList();
+        
+        SqlStatement stmt = new SqlStatement("SELECT ADDRESS, NAME, ROUTENAME, " + 
+                                             " METERNUMBER, COLLECTIONGRP, ALTGRP, TEMPLATENAME, " + 
+                                             "ERRORMSG, DATETIME, BILLGRP, SUBSTATIONNAME, FAILTYPE " +
+                                             " FROM " + ImportFail.TABLE_NAME + " WHERE NOT FAILTYPE = '" +
+                                             ImportFuncs.FAIL_COMMUNICATION + "'" +
+                                             " ORDER BY DATETIME DESC", CtiUtilities.getDatabaseAlias());
+        
+        try {
+            stmt.execute();
+            
+            if( stmt.getRowCount() > 0 ) {
+                for( int i = 0; i < stmt.getRowCount(); i++ ) {
+                    String address = stmt.getRow(i)[0].toString().trim();
+                    String name = stmt.getRow(i)[1].toString().trim();
+                    String routeName = stmt.getRow(i)[2].toString().trim();
+                    String meterNumber = stmt.getRow(i)[3].toString().trim();
+                    String collectionGrp = stmt.getRow(i)[4].toString().trim();
+                    String altGrp = stmt.getRow(i)[5].toString().trim();
+                    String templateName = stmt.getRow(i)[6].toString().trim();
+                    String errorMsg = stmt.getRow(i)[7].toString().trim();
+                    Date dateTime = new Date(((java.sql.Timestamp)stmt.getRow(i)[8]).getTime());
+                    String billGrp = stmt.getRow(i)[9].toString().trim();
+                    String substationName = stmt.getRow(i)[10].toString().trim();
+                    String failType = stmt.getRow(i)[11].toString().trim();
+
+                    ImportFail fail = new ImportFail( address, name, routeName, meterNumber, 
+                                                      collectionGrp, altGrp, templateName, 
+                                                      errorMsg, dateTime, billGrp, 
+                                                      substationName, failType);
+
+                    failures.add(fail);
+                }
+            }
+        }
+            catch( Exception e ) {
+                e.printStackTrace();
+            }
+        
+        return failures;
+    }
 }
