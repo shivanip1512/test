@@ -19,10 +19,10 @@ public class Substation extends DBPersistent {
 
     private Integer substationID = null;
     private String substationName = "";
-    private Integer routeID = new Integer(NONE_INT);
+    private Integer lmRouteID = new Integer(NONE_INT);
 
     public static final String[] SETTER_COLUMNS = {
-        "SubstationName", "RouteID"
+        "SubstationName", "LMRouteID"
     };
 
     public static final String[] CONSTRAINT_COLUMNS = { "SubstationID" };
@@ -156,10 +156,10 @@ public class Substation extends DBPersistent {
     }
 
     public Integer getRouteID() {
-        return routeID;
+        return lmRouteID;
     }
 
     public void setRouteID(Integer newRouteID) {
-        routeID = newRouteID;
+        lmRouteID = newRouteID;
     }
 }
