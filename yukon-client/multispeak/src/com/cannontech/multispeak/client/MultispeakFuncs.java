@@ -10,10 +10,12 @@ import java.rmi.RemoteException;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
 
+import javax.xml.namespace.QName;
 import javax.xml.soap.SOAPException;
 
 import org.apache.axis.AxisFault;
 import org.apache.axis.MessageContext;
+import org.apache.axis.message.MessageElement;
 import org.apache.axis.message.PrefixedQName;
 import org.apache.axis.message.SOAPEnvelope;
 import org.apache.axis.message.SOAPHeader;
@@ -29,10 +31,13 @@ import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.dao.RawPointHistoryDao;
 import com.cannontech.multispeak.service.ArrayOfErrorObject;
 import com.cannontech.multispeak.service.ArrayOfString;
+import com.cannontech.multispeak.service.Customer;
 import com.cannontech.multispeak.service.ErrorObject;
+import com.cannontech.multispeak.service.Extensions;
 import com.cannontech.multispeak.service.Meter;
 import com.cannontech.multispeak.service.Nameplate;
 import com.cannontech.multispeak.service.UtilityInfo;
+import com.cannontech.roles.yukon.MultispeakRole;
 import com.cannontech.spring.YukonSpringHook;
 
 /**
@@ -107,6 +112,11 @@ public class MultispeakFuncs
 			}
 		}
 	}
+    
+    public static SOAPHeaderElement getHeader(MultispeakVendor mspVendor) {
+        return new SOAPHeaderElement("http://www.multispeak.org", "MultiSpeakMsgHeader", new YukonMultispeakMsgHeader());
+    }
+    
 	public static void loadResponseHeader() 
 	{
 		try {
@@ -123,10 +133,20 @@ public class MultispeakFuncs
 			env.addHeader(header);
 		} catch (AxisFault e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			CTILogger.error(e);
 		}
 	}
-	
+
+    public static YukonMultispeakMsgHeader getResponseHeader() throws AxisFault {
+        // Get current message context
+        MessageContext ctx = MessageContext.getCurrentContext();
+
+        // Get SOAP envelope of response
+        SOAPEnvelope env = ctx.getResponseMessage().getSOAPEnvelope();
+        
+        return (YukonMultispeakMsgHeader)env.getHeaderByName("http://www.multispeak.org", "MultiSpeakMsgHeader").getObjectValue();
+    }
+    
     public static String getObjectID(String key, int deviceID)
     {
         if( key.toLowerCase().startsWith("device") || key.toLowerCase().startsWith("pao"))
@@ -221,38 +241,76 @@ public class MultispeakFuncs
 			e.printStackTrace();
 		}
 		return companyName;
-	}    
+	}
     
+    public static String getAppNameFromSOAPHeader() throws java.rmi.RemoteException
+    {
+        String appName = null;
+        try
+        {
+            // Gets the SOAPHeader for the Request Message
+            SOAPHeader soapHead = (SOAPHeader)MessageContext.getCurrentContext().getRequestMessage().getSOAPEnvelope().getHeader();
+            // Gets all the SOAPHeaderElements into an Iterator
+            Iterator itrElements= soapHead.getChildElements();
+            while(itrElements.hasNext())
+            {
+                org.apache.axis.message.SOAPHeaderElement ele = (org.apache.axis.message.SOAPHeaderElement)itrElements.next();
+                Iterator iterAllAttr = ele.getAllAttributes();
+                while (iterAllAttr.hasNext()){
+                    PrefixedQName pQName = (PrefixedQName)iterAllAttr.next();
+                    if( pQName.getQualifiedName().equalsIgnoreCase("appname")){
+                        appName = ele.getAttribute(pQName.getQualifiedName());
+                        break;
+                    }
+                }
+            }
+        }
+        catch (SOAPException e) {
+            e.printStackTrace();
+        }
+        return appName;
+    }    
+    
+    public static MultispeakVendor getMultispeakVendorFromHeader() throws RemoteException {
+        String companyName = MultispeakFuncs.getCompanyNameFromSOAPHeader();
+        String appName = MultispeakFuncs.getAppNameFromSOAPHeader();
+        return MultispeakFuncs.getMultispeakVendor(companyName, appName);
+    }
+
     /**
      * Returns the MultispeakVendor for the companyName (uses toLower() for the company name so we can ignore the case)
      * @param companyName
      * @return
      */
-    public static MultispeakVendor getMultispeakVendor(String companyName) throws RemoteException
+    public static MultispeakVendor getMultispeakVendor(String companyName, String appName) throws RemoteException
     {
         try{
-            return getMultispeakDao().getMultispeakVendor(companyName);
+            return getMultispeakDao().getMultispeakVendor(companyName, appName);
         }
         catch (NotFoundException nfe)
         {
             throw new AxisFault("Company '" +companyName + "' does not have a defined interface.");
         }
     }
-    
+
     /**
      * Creates a new (MSP) Meter object.
      * @param objectID The Multispeak objectID.
      * @param address The meter's transponderID (Physical Address)
      * @return
      */
-    public static Meter createMeter(String objectID, String address)
+    public static Meter createMeter(String objectID, String paoType, String collectionGroup, String billingGroup, String address)
     {
         Meter meter = new Meter();
         meter.setObjectID(objectID);
-        
+//      MessageElement element = new MessageElement(QName.valueOf("AMRMeterType"), paoType);
+        MessageElement element2 = new MessageElement(QName.valueOf("AMRRdgGrp"), collectionGroup);
+        Extensions ext = new Extensions();
+        ext.set_any(new MessageElement[]{element2});
+        meter.setExtensions(ext);
         meter.setMeterNo(objectID);
 //        meter.setSerialNumber( );    //Meter serial number. This is the original number assigned to the meter by the manufacturer.
-//        meter.setMeterType();       //Meter type/model.
+        meter.setMeterType(paoType);       //Meter type/model.
 //        meter.setManufacturer();    //Meter manufacturer.
         meter.setAMRType(MultispeakDefines.AMR_TYPE);         //Type of AMR used on this meter, if any. This is a utility defined field.  A string containing the vendor name and type of AMR used, or "none"
         meter.setNameplate(getNameplate(objectID, address));
@@ -327,17 +385,61 @@ public class MultispeakFuncs
         utilityInfo.setTransformerBankID();*/
         return utilityInfo;
     }
+ 
     /**
      * Creates a new (MSP) ErrorObject 
      * @param objectID The Multispeak objectID
      * @param errorMessage The error message.
      * @return
      */
-    public static ErrorObject getErrorOjbect(String objectID, String errorMessage){
+    public static ErrorObject getErrorObject(String objectID, String errorMessage, String nounType){
         ErrorObject err = new ErrorObject();
         err.setEventTime(new GregorianCalendar());
-        err.setErrorString(errorMessage);
         err.setObjectID(objectID);
+        err.setErrorString(errorMessage);
+        err.setNounType(nounType);
         return err;
-    }    
+    }
+    
+    public static String customerToString(Customer customer) {
+        String returnStr = "";
+        
+        returnStr += (customer.getObjectID() != null ? "Customer: " + customer.getObjectID() + "/r/n" : "");
+        
+        String tempString = (customer.getLastName() != null ? customer.getLastName() + ", " : "") +
+                     (customer.getFirstName() != null ? customer.getFirstName() + " " : "" ) + 
+                     (customer.getMName() != null ? customer.getMName() : "" );
+        if( tempString.length() > 0)
+            returnStr += "Name: " + tempString  + "/r/n";
+        
+        returnStr += (customer.getDBAName() != null ? "DBA Name: " +customer.getDBAName() + "/r/n": "");
+        
+        tempString = (customer.getHomeAc() != null ? "(" + customer.getHomeAc() +") " : "");
+        tempString += (customer.getHomePhone() != null ? customer.getHomePhone(): "");
+        if( tempString.length() > 0)
+            returnStr += "Home Phone: " + tempString + "/r/n";
+        
+        tempString = (customer.getDayAc() != null ? "(" + customer.getDayAc() +") " : "");
+        tempString += (customer.getDayPhone() != null ? customer.getDayPhone(): "");
+        if( tempString.length() > 0)
+            returnStr += "Home Phone: " + tempString + "/r/n";
+        
+        returnStr += (customer.getBillAddr1() != null ? "Address 1: " + customer.getBillAddr1() + "/r/n": "");
+        returnStr += (customer.getBillAddr2() != null ? "Address 2: " + customer.getBillAddr2() + "/r/n": "");
+        
+        tempString = (customer.getBillCity() != null ? customer.getBillCity() + ", ": "");
+        tempString += (customer.getBillState() != null ? customer.getBillState() + " " : "");
+        tempString += (customer.getBillZip() != null ? customer.getBillZip() : "");
+        if( tempString.length() > 0)
+            returnStr += "City/State/Zip: " + tempString + "/r/n";
+
+        return returnStr;
+        
+    }
+    
+    public static int getPaoNameAlias() {
+        
+        String value = DaoFactory.getRoleDao().getGlobalPropertyValue(MultispeakRole.MSP_PAONAME_ALIAS);
+        return Integer.valueOf(value).intValue();
+    }
 }
