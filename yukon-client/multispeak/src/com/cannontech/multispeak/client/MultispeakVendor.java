@@ -11,11 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.multispeak.db.MultispeakInterface;
-import com.cannontech.multispeak.service.Meter;
-import com.cannontech.multispeak.service.Nameplate;
 
 /**
  * @author stacey
@@ -27,23 +23,63 @@ public class MultispeakVendor
 {
     public static final String CANNON_MSP_COMPANYNAME = "Cannon ";
     
-	private Integer vendorID = null;
-	private String companyName = CtiUtilities.STRING_NONE;
-	private String userName = CtiUtilities.STRING_NONE;
-	private String password = CtiUtilities.STRING_NONE;
-	//Valid values are meternumber | devicename
-	private String uniqueKey = "meternumber";
+    private Integer vendorID = null;
+    private String companyName = CtiUtilities.STRING_NONE;
+    private String appName = "";
+    private String userName = CtiUtilities.STRING_NONE;
+    private String password = CtiUtilities.STRING_NONE;
+    private String outUserName = CtiUtilities.STRING_NONE;
+    private String outPassword = CtiUtilities.STRING_NONE;
+    //Valid values are meternumber | devicename
+    private String uniqueKey = "meternumber";
+    
+    public static int DEFAULT_PAONAME = 0;
+    public static int ACCOUNT_NUMBER_PAONAME = 1;
+    public static int SERVICE_LOCATION_PAONAME = 2;
+    public static int CUSTOMER_PAONAME = 3;
+
+    public static String DEFAULT_PAONAME_STRING = "Device Name";
+    public static String ACCOUNT_NUMBER_PAONAME_STRING = "Account Number";
+    public static String SERVICE_LOCATION_PAONAME_STRING = "Service Location";
+    public static String CUSTOMER_PAONAME_STRING = "Customer";
+    
+    public static String[] paoNameAliasStrings = new String[]{
+           DEFAULT_PAONAME_STRING,
+           ACCOUNT_NUMBER_PAONAME_STRING,
+           SERVICE_LOCATION_PAONAME_STRING,
+           CUSTOMER_PAONAME_STRING
+       };
     private int timeout = 0;
-	private String url = "http://127.0.0.1:8080/soap/";    //some default url string for formatting example
-	
+    private String url = "http://127.0.0.1:8080/soap/";    //some default url string for formatting example
+    
 	private List<MultispeakInterface> mspInterfaces = null;
-	
-	public MultispeakVendor()
+    
+    public MultispeakVendor()
     {
         super();
     }
 
-    public MultispeakVendor(Integer vendorID, String companyName, String userName, String password, String uniqueKey, int timeout, String url)
+    
+    public MultispeakVendor(Integer vendorID, String companyName, String appName, String userName, 
+            String password, String outUserName, String outPassword, String uniqueKey,  
+            int timeout, String url) {
+        super();
+        // TODO Auto-generated constructor stub
+        this.vendorID = vendorID;
+        this.companyName = companyName;
+        this.appName = appName;
+        this.userName = userName;
+        this.password = password;
+        this.outUserName = outUserName;
+        this.outPassword = outPassword;
+        this.uniqueKey = uniqueKey;
+        this.timeout = timeout;
+        this.url = url;
+    }
+
+
+    public MultispeakVendor(Integer vendorID, String companyName, String userName, String password, 
+            String uniqueKey, int timeout, String url)
     {
         super();
         this.vendorID = vendorID;
@@ -55,13 +91,13 @@ public class MultispeakVendor
         this.url = url;
     }
 
-	/**
-	 * @return
-	 */
-	public String getCompanyName()
-	{
-		return companyName;
-	}
+    /**
+     * @return
+     */
+    public String getCompanyName()
+    {
+        return companyName;
+    }
 
 
     /**
@@ -98,127 +134,92 @@ public class MultispeakVendor
 	}
     
 
-	/**
-	 * @return
-	 */
-	public String getPassword()
-	{
-		return password;
-	}
-
-	/**
-	 * @return
-	 */
-	public String getUniqueKey()
-	{
-		return uniqueKey;
-	}
-
-	/**
-	 * @return
-	 */
-	public String getUrl()
-	{
-		return url;
-	}
-
-	/**
-	 * @return
-	 */
-	public String getUserName()
-	{
-		return userName;
-	}
-
-	/**
-	 * @param string
-	 */
-	public void setCompanyName(String string)
-	{
-		companyName = string;
-	}
-
-	/**
-	 * @param string
-	 */
-	public void setPassword(String string)
-	{
-		password = string;
-	}
-
-	/**
-	 * @param string
-	 */
-	public void setUniqueKey(String string)
-	{
-		uniqueKey = string;
-	}
-
-	/**
-	 * @param string
-	 */
-	public void setUrl(String string)
-	{
-		url = string;
-	}
-
-	/**
-	 * @param string
-	 */
-	public void setUserName(String string)
-	{
-		userName = string;
-	}
-	/**
-	 * @return
-	 */
-	public Integer getVendorID()
-	{
-		return vendorID;
-	}
-
-	/**
-	 * @param i
-	 */
-	public void setVendorID(Integer i)
-	{
-		vendorID = i;
-	}
-    
-    /*public String getMeterObjectID(int deviceID)
+    /**
+     * @return
+     */
+    public String getPassword()
     {
-        if( getUniqueKey().toLowerCase().startsWith("device") || getUniqueKey().toLowerCase().startsWith("pao"))
-            return DaoFactory.getPaoDao().getLiteYukonPAO(deviceID).getPaoName();
-        else //if(key.toLowerCase().startsWith("meternum"))
-            return DaoFactory.getDeviceDao().getLiteDeviceMeterNumber(deviceID).getMeterNumber();
-    }*/
-    /*public LiteBase getMeterObjectID(int deviceID)
-    {
-        if( getUniqueKey().toLowerCase().startsWith("device") || getUniqueKey().toLowerCase().startsWith("pao"))
-            return DaoFactory.getPaoDao().getLiteYukonPAO(deviceID);
-        else //if(key.toLowerCase().startsWith("meternum"))
-            return DaoFactory.getDeviceDao().getLiteDeviceMeterNumber(deviceID);
-    }
-    
-    public LiteBase getMeterObject(String meterNumber)
-    {
-        if( getUniqueKey().toLowerCase().startsWith("device") || getUniqueKey().toLowerCase().startsWith("pao"))
-            return DaoFactory.getPaoDao().getLiteYukonPaoByName(meterNumber, false).get(0);
-        else //if(key.toLowerCase().startsWith("meternum"))
-            return DaoFactory.getDeviceDao().getLiteDeviceMeterNumber(0);
-    }
-    
-    public Meter getMeter(int deviceID)
-    {
-        String objectID = getMeterObjectID(deviceID);
-        return MultispeakFuncs.createMeter(objectID);
+        return password;
     }
 
-    public Nameplate getNameplate(int deviceID)
+    /**
+     * @return
+     */
+    public String getUniqueKey()
     {
-        String objectID = getMeterObjectID(deviceID);
-        return MultispeakFuncs.getNameplate(objectID);
-    }*/
+        return uniqueKey;
+    }
+
+    /**
+     * @return
+     */
+    public String getUrl()
+    {
+        return url;
+    }
+
+    /**
+     * @return
+     */
+    public String getUserName()
+    {
+        return userName;
+    }
+
+    /**
+     * @param string
+     */
+    public void setCompanyName(String string)
+    {
+        companyName = string;
+    }
+
+    /**
+     * @param string
+     */
+    public void setPassword(String string)
+    {
+        password = string;
+    }
+
+    /**
+     * @param string
+     */
+    public void setUniqueKey(String string)
+    {
+        uniqueKey = string;
+    }
+
+    /**
+     * @param string
+     */
+    public void setUrl(String string)
+    {
+        url = string;
+    }
+
+    /**
+     * @param string
+     */
+    public void setUserName(String string)
+    {
+        userName = string;
+    }
+    /**
+     * @return
+     */
+    public Integer getVendorID()
+    {
+        return vendorID;
+    }
+
+    /**
+     * @param i
+     */
+    public void setVendorID(Integer i)
+    {
+        vendorID = i;
+    }
 
     /**
      * @return Returns the timeout.
@@ -234,5 +235,33 @@ public class MultispeakVendor
     public void setTimeout(int timeout)
     {
         this.timeout = timeout;
+    }
+
+    public String getAppName() {
+        return appName;
+    }
+
+    public void setAppName(String appName) {
+        this.appName = appName;
+    }
+
+    public String getOutPassword() {
+        return outPassword;
+    }
+
+    public void setOutPassword(String outPassword) {
+        this.outPassword = outPassword;
+    }
+
+    public String getOutUserName() {
+        return outUserName;
+    }
+
+    public void setOutUserName(String outUserName) {
+        this.outUserName = outUserName;
+    }
+    
+    public String[] getPaoNameAliasStrings() {
+        return paoNameAliasStrings;
     }
 }
