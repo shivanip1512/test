@@ -22,16 +22,6 @@ public class IndexBuilder {
         }
     }
 
-    /**
-     * Method which builds all Lucene indexes
-     * @param overwrite - True if existing indexes should be overwritten
-     */
-    public void buildAllIndexes(boolean overwrite) {
-        for (String managerName : this.managerMap.keySet()) {
-            this.buildIndex(managerName, overwrite);
-        }
-    }
-    
     public void shutdown() {
         for (IndexManager manager : this.managerMap.values()) {
             manager.shutdown();
@@ -43,12 +33,12 @@ public class IndexBuilder {
      * @param indexName - Name of index to build
      * @param overwrite - True if existing index should be overwritten
      */
-    public void buildIndex(String indexName, final boolean overwrite) {
+    public void buildIndex(String indexName) {
 
         final IndexManager manager = this.managerMap.get(indexName);
 
         if (manager != null) {
-            manager.buildIndex(overwrite);
+            manager.rebuildIndex();
         } else {
             throw new IllegalArgumentException("Invalid index name: " + indexName);
         }

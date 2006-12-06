@@ -58,7 +58,6 @@ public abstract class AbstractIndexManager implements IndexManager {
     private int recordCount = 0;
     private AtomicInteger count = new AtomicInteger(0);
 
-    private boolean overwrite = false;
     private boolean isBuilding = false;
     private boolean buildIndex = false;
     private LinkedBlockingQueue<IndexUpdateInfo> updateQueue = new LinkedBlockingQueue<IndexUpdateInfo>();
@@ -67,7 +66,6 @@ public abstract class AbstractIndexManager implements IndexManager {
     private boolean shutdownNow = false;
 
     public AbstractIndexManager() {
-        this.initialize();
     }
 
     public boolean isBuilding() {
@@ -211,21 +209,19 @@ public abstract class AbstractIndexManager implements IndexManager {
 
     }
 
-    public synchronized void buildIndex(boolean overwrite) {
+    public synchronized void rebuildIndex() {
 
         if (!this.isBuilding() && !this.managerThread.isInterrupted()) {
-            this.overwrite = overwrite;
             this.buildIndex = true;
             this.currentException = null;
             this.managerThread.interrupt();
         }
-
     }
 
     /**
      * Helper method to initialize the index manager
      */
-    private void initialize() {
+    public void initialize() {
 
         this.indexLocation = new File(CtiUtilities.getYukonBase() + "/cache/" + this.getIndexName()
                 + "/index");
@@ -255,6 +251,7 @@ public abstract class AbstractIndexManager implements IndexManager {
         // Start the index manager thread
         managerThread = new Thread(new Runnable() {
             public void run() {
+                processBuild(false);
                 processUpdates();
             }
         }, getIndexName() + "IndexManager");
@@ -314,7 +311,7 @@ public abstract class AbstractIndexManager implements IndexManager {
                     // Build the index
                     this.buildIndex = false;
                     this.isBuilding = true;
-                    this.processBuild();
+                    this.processBuild(true);
                     this.isBuilding = false;
 
                 } else {
@@ -329,7 +326,7 @@ public abstract class AbstractIndexManager implements IndexManager {
     /**
      * Helper method to build the index
      */
-    private void processBuild() {
+    private void processBuild(boolean overwrite) {
 
         if (!overwrite) {
             boolean indexExists = true;

@@ -10,7 +10,8 @@
 
     <alias name="pointDeviceSearcherLucene" alias="pointDeviceSearcher" />
 
-    <bean id="pointDeviceIndexManager" class="com.cannontech.common.search.index.PointDeviceIndexManager" singleton="true" autowire="default">
+    <bean id="pointDeviceIndexManager" class="com.cannontech.common.search.index.PointDeviceIndexManager" 
+          singleton="true" autowire="default" init-method="initialize" destroy-method="shutdown">
         <property name="jdbcTemplate" ref="jdbcTemplate" />
         <property name="asyncDynamicDataSource" ref="asyncDynamicDataSource" />
     </bean>

@@ -42,11 +42,8 @@ public interface IndexManager extends DBChangeListener {
 
     /**
      * Method used to build the index.
-     * @param overwrite - True if any existing index should be overwritten.
-     *            False if the index should only be created if it doesn't
-     *            already exist or if the index version is out of date.
      */
-    public void buildIndex(boolean overwrite);
+    public void rebuildIndex();
 
     /**
      * Method used to get an IndexSearcher for the index
