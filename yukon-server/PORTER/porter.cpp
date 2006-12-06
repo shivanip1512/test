@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.101 $
-* DATE         :  $Date: 2006/11/16 16:58:57 $
+* REVISION     :  $Revision: 1.102 $
+* DATE         :  $Date: 2006/12/06 22:12:51 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -148,6 +148,7 @@
 #include "mgr_device.h"
 #include "mgr_route.h"
 #include "mgr_config.h"
+#include "mgr_point.h"
 
 #include "port_base.h"
 #include "port_shr.h"
@@ -224,7 +225,7 @@ CtiDeviceManager   DeviceManager(Application_Porter);
 CtiConfigManager   ConfigManager;
 CtiRouteManager    RouteManager;
 vector< CtiPortShare * > PortShareManager;
-
+PointDeviceMapping PointToDeviceMap;
 
 //These form the connection between Pil and Porter
 extern DLLIMPORT CtiLocalConnect PilToPorter; //Pil handles this one
@@ -1484,7 +1485,21 @@ INT RefreshPorterRTDB(void *ptr)
         }
 
         DeviceManager.refresh(DeviceFactory, isNotADevice, NULL, chgid, catstr, devstr);
-        ConfigManager.initialize(DeviceManager);
+        
+        if(pChg == NULL)
+        {
+            attachRouteManagerToDevices(&DeviceManager, &RouteManager);
+            attachPointIDDeviceMapToDevices(&DeviceManager, &PointToDeviceMap);
+            ConfigManager.initialize(DeviceManager);
+        }
+        else
+        {
+            CtiDeviceManager::LockGuard  dev_guard(DeviceManager.getMux());       // Protect our iteration!
+            CtiDeviceSPtr pDev = DeviceManager.getEqual( chgid );
+            pDev->setRouteManager(&RouteManager);
+            pDev->setPointDeviceMap(&PointToDeviceMap);
+        }
+        
     }
 
     if(!PorterQuit)
@@ -1516,7 +1531,6 @@ INT RefreshPorterRTDB(void *ptr)
         }
 
         /* Make routes associate with devices */
-        attachRouteManagerToDevices(&DeviceManager, &RouteManager);
         attachTransmitterDeviceToRoutes(&DeviceManager, &RouteManager);
 
         if(autoRole)
@@ -1551,7 +1565,20 @@ INT RefreshPorterRTDB(void *ptr)
 
         if(pChg != NULL && (pChg->getDatabase() == ChangePointDb))
         {
-            LONG paoid = GetPAOIdOfPoint( pChg->getId() );
+            LONG paoid = 0;
+            LONG pointID = pChg->getId();
+            {
+                PointDeviceMapping::LockGuard guard(PointToDeviceMap.mux);
+                std::map<long, long>::iterator iter = PointToDeviceMap.point_device_map.find(pointID);
+                if(iter != PointToDeviceMap.point_device_map.end())
+                {
+                    paoid = iter->second;
+                }
+            }
+            if( paoid == 0)
+            {
+                paoid = GetPAOIdOfPoint( pointID );
+            }
 
             if(paoid != 0)
             {
@@ -1561,7 +1588,9 @@ INT RefreshPorterRTDB(void *ptr)
                 {
                     if(pChg->getTypeOfChange() == ChangeTypeDelete)
                     {
-                        pDevToReset->orphanDevicePoint(pChg->getId());
+                        pDevToReset->orphanDevicePoint(pointID);
+                        PointDeviceMapping::LockGuard guard(PointToDeviceMap.mux);
+                        PointToDeviceMap.point_device_map.erase(pointID);
                     }
 
                     pDevToReset->ResetDevicePoints();

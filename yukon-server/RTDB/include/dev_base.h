@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base.h-arc  $
-* REVISION     :  $Revision: 1.57 $
-* DATE         :  $Date: 2006/09/21 21:31:37 $
+* REVISION     :  $Revision: 1.58 $
+* DATE         :  $Date: 2006/12/06 22:12:51 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -52,6 +52,7 @@ class CtiRouteManager;
 class CtiPointBase;
 class CtiPointManager;
 class CtiTransmitterInfo;
+struct PointDeviceMapping;
 
 namespace Cti       {
 namespace Protocol  {
@@ -105,6 +106,7 @@ protected:
 
     CtiPointManager      *_pointMgr;              //  Manages points associated with this Device (Device owned memory)
     CtiRouteManager      *_routeMgr;              //  Helps me find my Route.  (Memory managed elsewhere)
+    PointDeviceMapping   *_pointToDeviceMap;      //  Tracks the point ID to Device pairing.
 
     union
     {
@@ -135,6 +137,7 @@ public:
     CtiRouteSPtr         getRoute(LONG RteId) const;
     CtiRouteManager*     getRouteManager() const;
     CtiDeviceBase&       setRouteManager(CtiRouteManager* aPtr);
+    CtiDeviceBase&       setPointDeviceMap(PointDeviceMapping* aPtr);
 
     virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
     virtual void DecodeDatabaseReader(RWDBReader &rdr);

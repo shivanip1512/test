@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.62 $
-* DATE         :  $Date: 2006/09/01 18:50:40 $
+* REVISION     :  $Revision: 1.63 $
+* DATE         :  $Date: 2006/12/06 22:12:51 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -45,6 +45,7 @@
 #include "ilex.h"
 #include "master.h"
 #include "dllbase.h"
+#include "dlldev.h"
 // Here are the devices for which scannables have been defined
 
 #include "scanglob.h"
@@ -106,6 +107,7 @@ void    DumpRevision(void);
 INT     MakePorterRequests(list< OUTMESS* > &outList);
 
 CtiDeviceManager      ScannerDeviceManager(Application_Scanner);
+PointDeviceMapping    ScannerPointDeviceMap;
 
 static RWWinSockInfo  winsock;
 
@@ -1222,6 +1224,17 @@ void LoadScannableDevices(void *ptr)
 
             ScannerDeviceManager.refresh(DeviceFactory, isNotAScannableDevice, NULL, chgid, catstr, devstr);
 
+            if(pChg == NULL)
+            {
+                attachPointIDDeviceMapToDevices(&ScannerDeviceManager, &ScannerPointDeviceMap);
+            }
+            else
+            {
+                CtiDeviceManager::LockGuard  dev_guard(ScannerDeviceManager.getMux());       // Protect our iteration!
+                CtiDeviceSPtr pDev = ScannerDeviceManager.getEqual( chgid );
+                pDev->setPointDeviceMap(&ScannerPointDeviceMap);
+            }
+
             stop = stop.now();
 
             if(stop.seconds() - start.seconds() > 5 || ScannerDebugLevel & SCANNER_DEBUG_DBRELOAD)
@@ -1273,7 +1286,20 @@ void LoadScannableDevices(void *ptr)
 
     if(pChg != NULL && pChg->getDatabase() == ChangePointDb)  // On a point specific message only!
     {
-        LONG paoDeviceID = GetPAOIdOfPoint(pChg->getId());
+        LONG paoDeviceID = 0;
+        LONG pointID = pChg->getId();
+        {
+            PointDeviceMapping::LockGuard guard(ScannerPointDeviceMap.mux);
+            std::map<long, long>::iterator iter = ScannerPointDeviceMap.point_device_map.find(pointID);
+            if(iter != ScannerPointDeviceMap.point_device_map.end())
+            {
+                paoDeviceID = iter->second;
+            }
+        }
+        if( paoDeviceID == 0)
+        {
+            paoDeviceID = GetPAOIdOfPoint( pointID );
+        }
 
         {
             CtiDeviceSPtr pBase = ScannerDeviceManager.getEqual(paoDeviceID);
@@ -1283,8 +1309,6 @@ void LoadScannableDevices(void *ptr)
                 RWRecursiveLock<RWMutexLock>::LockGuard devguard(pBase->getMux());
                 if(pBase->isSingle())
                 {
-                    CtiDeviceSingle *DeviceRecord = (CtiDeviceSingle*)pBase.get();
-
                     if( (pChg->getTypeOfChange() == ChangeTypeAdd) || (pChg->getTypeOfChange() == ChangeTypeUpdate) )
                     {
                         {
@@ -1302,7 +1326,9 @@ void LoadScannableDevices(void *ptr)
                     }
                     else if(pChg->getTypeOfChange() == ChangeTypeDelete)
                     {
-                        pBase->orphanDevicePoint(pChg->getId());
+                        pBase->orphanDevicePoint(pointID);
+                        PointDeviceMapping::LockGuard guard(ScannerPointDeviceMap.mux);
+                        ScannerPointDeviceMap.point_device_map.erase(pointID);
                     }
                 }
             }

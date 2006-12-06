@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.60 $
-* DATE         :  $Date: 2006/09/18 16:53:41 $
+* REVISION     :  $Revision: 1.61 $
+* DATE         :  $Date: 2006/12/06 22:12:51 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -66,6 +66,11 @@ CtiDeviceBase& CtiDeviceBase::setRouteManager(CtiRouteManager* aPtr)
     return *this;
 }
 
+CtiDeviceBase& CtiDeviceBase::setPointDeviceMap(PointDeviceMapping* aPtr)
+{
+    _pointToDeviceMap = aPtr;
+    return *this;
+}
 
 INT CtiDeviceBase::ExecuteRequest(CtiRequestMsg                *pReq,
                                   CtiCommandParser             &parse,
@@ -184,31 +189,56 @@ INT CtiDeviceBase::ResetDevicePoints()
 INT CtiDeviceBase::RefreshDevicePoints()
 {
     INT status = NORMAL;
+    vector<long> pointList;
 
-    LockGuard guard(monitor());
-
-    if(_pointMgr == NULL)
     {
-        _pointMgr = CTIDBG_new CtiPointManager();
-    }
-
-    if(_pointMgr != NULL)
-    {
-        try
+        LockGuard guard(monitor());
+    
+        if(_pointMgr == NULL)
         {
-            _pointMgr->refreshList(isPoint, NULL, 0, getID());
+            _pointMgr = CTIDBG_new CtiPointManager();
         }
-        catch(...)
+    
+        if(_pointMgr != NULL)
         {
+            try
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " EP: " << getName() << "  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                _pointMgr->refreshList(isPoint, NULL, 0, getID());
+
+                {
+                    CtiPointManager::LockGuard guard(_pointMgr->getMux());
+                    /* Walk the point in memory db to see what the point range is */
+                    CtiPointManager::spiterator iter = _pointMgr->begin();
+            
+                    CtiPointManager::spiterator end = _pointMgr->end();
+            
+                    for( ; iter != end; iter++ )
+                    {
+                        pointList.push_back(iter->second->getPointID());
+                    }
+                }
+            }
+            catch(...)
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " EP: " << getName() << "  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
             }
         }
+        else
+        {
+            status = MEMORY;
+        }
     }
-    else
+
+    if(_pointToDeviceMap != NULL)
     {
-        status = MEMORY;
+        PointDeviceMapping::LockGuard guard(_pointToDeviceMap->mux);
+        for(std::vector<long>::iterator iter = pointList.begin(); iter != pointList.end(); iter++)
+        {
+            _pointToDeviceMap->point_device_map.insert(std::map<long, long>::value_type(*iter, getID()));
+        }
     }
 
     return status;

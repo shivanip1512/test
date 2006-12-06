@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dlldev.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2006/09/23 13:32:27 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2006/12/06 22:12:51 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -22,6 +22,7 @@
 // #include "rtdb.h"
 #include "mgr_device.h"
 #include "mgr_route.h"
+#include "mgr_point.h"
 #include "dlldefs.h"
 #include "devicetypes.h"
 #include "msg_pcrequest.h"
@@ -76,6 +77,19 @@ void IM_EX_DEVDB attachRouteManagerToDevices(CtiDeviceManager *DM, CtiRouteManag
     {
         pBase = itr->second;
         pBase->setRouteManager(RteMgr);
+    }
+}
+
+void IM_EX_DEVDB attachPointIDDeviceMapToDevices(CtiDeviceManager *DM, PointDeviceMapping *PtTrk)
+{
+    CtiDeviceManager::ptr_type pBase;
+
+    CtiDeviceManager::spiterator itr;
+
+    for(itr = DM->begin(); itr != DM->end(); itr++)
+    {
+        pBase = itr->second;
+        pBase->setPointDeviceMap(PtTrk);
     }
 }
 

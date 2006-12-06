@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_point.h-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2006/07/06 09:49:27 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2006/12/06 22:12:51 $
 *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
  * All Rights Reserved
@@ -86,6 +86,13 @@ public:
         return _smartMap.getMux();
     }
 
+};
+
+struct PointDeviceMapping
+{
+    std::map<long, long> point_device_map;
+    typedef CtiLockGuard<CtiMutex>    LockGuard;
+    CtiMutex mux;
 };
 
 #endif                  // #ifndef __MGR_POINT_H__
