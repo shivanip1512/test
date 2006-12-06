@@ -112,9 +112,6 @@ public class DailyTimerTask extends StarsTimerTask {
     		}
         }
         
-		// Restart *frequently happened* timer tasks
-		TimerTaskUtil.restartFrequentTimerTasks();
-		
 		CTILogger.debug( "*** Daily timer task stop ***" );
 	}
 

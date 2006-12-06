@@ -12,9 +12,6 @@ import java.util.TimerTask;
  */
 public abstract class StarsTimerTask extends TimerTask {
 	
-	private static long MIN_INIT_DELAY = 1000 * 10;	// 10 seconds
-	private static long MAX_INIT_DELAY = 1000 * 30;	// 30 seconds
-	
 	/**
 	 * Return whether the timer task is fixed-rate or fixed delay.
 	 * If the function returns true, which means fixed-rate, the timer task
@@ -30,18 +27,14 @@ public abstract class StarsTimerTask extends TimerTask {
 	public abstract long getTimerPeriod();
 	
 	/**
-	 * Return the delay of executing the timer task after it's been initiated,
-	 * negative value means no initial execution.
-	 */
-	public long getInitialDelay() {
-		return (long) (MIN_INIT_DELAY + Math.random() * (MAX_INIT_DELAY - MIN_INIT_DELAY));
-	}
-	
-	/**
 	 * Return the next scheduled time of the timer task.
 	 * If the timer task is fixed-rate, then after the initial execution, the
 	 * timer task will be scheduled to start running at the next scheduled time.
 	 */
 	public abstract java.util.Date getNextScheduledTime();
+    
+    public long getNextTimeOffsetMillis() {
+        return getNextScheduledTime().getTime() - System.currentTimeMillis();
+    }
 
 }

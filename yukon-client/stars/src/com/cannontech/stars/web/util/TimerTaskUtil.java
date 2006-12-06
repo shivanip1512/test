@@ -1,14 +1,10 @@
-/*
- * Created on Nov 10, 2004
- *
- * To change the template for this generated file go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
 package com.cannontech.stars.web.util;
 
-import java.util.Timer;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.util.task.DailyTimerTask;
 import com.cannontech.stars.util.task.HourlyTimerTask;
 import com.cannontech.stars.util.task.LMCtrlHistTimerTask;
@@ -24,45 +20,52 @@ import com.cannontech.stars.util.task.StarsTimerTask;
 public class TimerTaskUtil {
 
 	// Timer object for less frequently happened tasks
-	private static Timer timer1 = null;
-	// Timer object for frequently happened tasks
-	private static Timer timer2 = null;
+	private static ScheduledExecutorService timer = YukonSpringHook.getGlobalExecutor();
 	
-	private static void runTimerTask(StarsTimerTask timerTask, Timer timer) {
+	private static void runTimerTask(StarsTimerTask timerTask) {
+        // This class used to go to great lengths to clear and reschedule all of the classes.
+        // Because it no longer does this, make sure that the tasks don't throw any exceptions.
+        
+        Runnable safeRunner = createSafeRunnable(timerTask);
+        long randomDelay = (long) (30000 * Math.random() + 10000);
 		if (timerTask.isFixedRate()) {
 			// Run the first time after the initial delay,
 			// then run periodically at a fixed rate, e.g. at every midnight
-			timer.scheduleAtFixedRate( timerTask, timerTask.getNextScheduledTime(), timerTask.getTimerPeriod() );
+			timer.scheduleAtFixedRate( safeRunner, timerTask.getNextTimeOffsetMillis(), 
+                                       timerTask.getTimerPeriod(), TimeUnit.MILLISECONDS );
 		}
 		else if (timerTask.getTimerPeriod() == 0) {
 			// Run just once after the initial delay,
 			// If initial delay set to 0, has the same effect as creating a new thread
-			timer.schedule( timerTask, timerTask.getInitialDelay() );
+			timer.schedule( safeRunner, randomDelay, TimeUnit.MILLISECONDS );
 		}
 		else {
 			// Run the first time after the initial delay,
 			// then run periodically at a fixed delay, e.g. every 5 minutes
-			timer.schedule( timerTask, timerTask.getInitialDelay(), timerTask.getTimerPeriod() );
+			timer.scheduleWithFixedDelay( safeRunner, randomDelay, 
+                                          timerTask.getTimerPeriod(), TimeUnit.MILLISECONDS );
 		}
 	}
 	
-	public static void restartFrequentTimerTasks() {
-		if (timer2 != null) timer2.cancel();
-		timer2 = new Timer();
-		runTimerTask( new HourlyTimerTask(), timer2 );
-		runTimerTask( new LMCtrlHistTimerTask(), timer2 );
-		runTimerTask( new RefreshTimerTask(), timer2 );
+	public static void startAllTimerTasks() {
+		runTimerTask( new DailyTimerTask());
 		
-		CTILogger.info("All frequent timer tasks restarted");
+		runTimerTask( new HourlyTimerTask());
+        runTimerTask( new LMCtrlHistTimerTask());
+        runTimerTask( new RefreshTimerTask());
+        
+		CTILogger.info("Stars timer tasks started");
 	}
-	
-	public static void restartAllTimerTasks() {
-		if (timer1 != null) timer1.cancel();
-		timer1 = new Timer();
-		runTimerTask( new DailyTimerTask(), timer1 );
-		
-		restartFrequentTimerTasks();
-		
-		CTILogger.info("All timer tasks restarted");
-	}
+    
+    private static Runnable createSafeRunnable(final StarsTimerTask stt) {
+        return new Runnable() {
+            public void run() {
+                try {
+                    stt.run();
+                } catch (Exception e) {
+                    CTILogger.error("a StarsTimerTask threw an exception", e);
+                }
+            }
+        };
+    }
 }
