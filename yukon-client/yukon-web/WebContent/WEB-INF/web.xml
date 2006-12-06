@@ -149,14 +149,18 @@
     <listener>
         <listener-class>com.cannontech.servlet.KickStartLoggingListener</listener-class>
     </listener>
+    
+    <listener>
+        <listener-class>com.cannontech.servlet.CannonContextLoaderListener</listener-class>
+    </listener>
+    
+    <listener>
+        <listener-class>com.cannontech.servlet.TimerTaskInitializer</listener-class>
+    </listener>
 
     <!-- Faces Listener, that does all the startup work (configuration, init). -->
     <listener>
         <listener-class>org.apache.myfaces.webapp.StartupServletContextListener</listener-class>
-    </listener>
-
-    <listener>
-        <listener-class>com.cannontech.servlet.CannonContextLoaderListener</listener-class>
     </listener>
 
 
@@ -334,13 +338,6 @@
         <servlet-class>com.cannontech.servlet.StarsPWordRequest</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>TimerTaskServlet</servlet-name>
-        <display-name>TimerTaskServlet</display-name>
-        <description>Manages tasks that are executed periodically.</description>
-        <servlet-class>com.cannontech.servlet.TimerTaskServlet</servlet-class>
-		<load-on-startup>6</load-on-startup>
-    </servlet>
-    <servlet>
         <servlet-name>ImportManager</servlet-name>
         <display-name>ImportManager</display-name>
         <description>Customer accounts importing management.</description>
@@ -450,12 +447,6 @@
             <param-value>5001</param-value>
         </init-param>
         <load-on-startup>100</load-on-startup>
-    </servlet>
-    <servlet>
-        <servlet-name>LuceneIndexer</servlet-name>
-        <display-name>LuceneIndexer</display-name>
-        <servlet-class>com.cannontech.servlet.LuceneIndexingServlet</servlet-class>
-        <load-on-startup>50</load-on-startup>
     </servlet>
     <!-- END AXIS servlets -->
 
