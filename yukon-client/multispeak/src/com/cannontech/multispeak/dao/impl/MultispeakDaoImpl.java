@@ -12,12 +12,9 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.ListRowCallbackHandler;
 import com.cannontech.database.MaxRowCalbackHandlerRse;
-import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.db.device.DeviceCarrierSettings;
 import com.cannontech.database.db.device.DeviceMCT400Series;
@@ -65,12 +62,6 @@ public final class MultispeakDaoImpl implements MultispeakDao
     private TransactionTemplate transactionTemplate;
     private IDatabaseCache databaseCache;
     private NextValueHelper nextValueHelper;
-
-    public MultispeakDaoImpl()
-    {
-        super();
-        jdbcOps = JdbcTemplateHelper.getYukonTemplate();
-    }
 
     /**
      * Returns the MultispeakVendor object having vendorName.
