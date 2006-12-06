@@ -45,7 +45,7 @@
         </constructor-arg>
     </bean>
 
-    <bean id="connectionPool" class="com.cannontech.yukon.conns.ConnPool">
+    <bean id="connectionPool" class="com.cannontech.yukon.conns.ConnPool" destroy-method="shutdown">
         <property name="roleDao" ref="roleDao" />
     </bean>
 
@@ -62,6 +62,16 @@
     <bean id="sequenceNameLookup" class="com.cannontech.database.incrementer.XmlIncrementer" init-method="parse">
         <property name="dataSource" ref="yukonDataSource" />
         <property name="configFile" value="classpath:com/cannontech/database/incrementer/table_sequences.xml" />
+    </bean>
+    
+    <bean id="globalTimer" class="java.util.Timer" destroy-method="cancel" lazy-init="true">
+       <constructor-arg value="true"/> <!--  create as daemon  -->
+    </bean>
+    
+    
+    <bean id="globalScheduledExecutor" class="java.util.concurrent.Executors"
+          factory-method="newScheduledThreadPool" destroy-method="shutdownNow">
+       <constructor-arg value="2"/>
     </bean>
 
 </beans>
