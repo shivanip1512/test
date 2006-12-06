@@ -1,5 +1,8 @@
 package com.cannontech.spring;
 
+import java.util.Timer;
+import java.util.concurrent.ScheduledExecutorService;
+
 import org.springframework.beans.factory.access.BeanFactoryLocator;
 import org.springframework.beans.factory.access.BeanFactoryReference;
 import org.springframework.context.ApplicationContext;
@@ -24,15 +27,18 @@ public class YukonSpringHook {
         }
     }
     
-    static ApplicationContext applicationContext;
+    private static ApplicationContext applicationContext = null;
+    private static BeanFactoryReference beanFactoryRef = null;
     
     public synchronized static ApplicationContext getContext() {
-        // this is synchronized to ensure that non-web applications
-        // don't try to access it for the first time from multiple threads
-        BeanFactoryLocator bfl = ContextSingletonBeanFactoryLocator.getInstance();
-        BeanFactoryReference bfr = bfl.useBeanFactory(beanFactoryKey);
-        ApplicationContext context = (ApplicationContext) bfr.getFactory();
-        return context;
+        if (applicationContext == null) {
+            // this is synchronized to ensure that non-web applications
+            // don't try to access it for the first time from multiple threads
+            BeanFactoryLocator bfl = ContextSingletonBeanFactoryLocator.getInstance();
+            beanFactoryRef = bfl.useBeanFactory(beanFactoryKey);
+            applicationContext = (ApplicationContext) beanFactoryRef.getFactory();
+        }
+        return applicationContext;
     }
     
     public static ApplicationContext getServicesContext() {
@@ -53,6 +59,20 @@ public class YukonSpringHook {
     
     public static TransactionTemplate getTransactionTemplate() {
         return (TransactionTemplate) getBean("transactionTemplate");
+    }
+
+    public static Timer getGlobalTimer() {
+        return (Timer) getBean("globalTimer");
     }    
+    
+    public static ScheduledExecutorService getGlobalExecutor() {
+        return (ScheduledExecutorService) getBean("globalScheduledExecutor");
+    }
+    
+    public static void shutdownContext() {
+        if (beanFactoryRef != null) {
+            beanFactoryRef.release();
+        }
+    }
     
 }

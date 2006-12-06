@@ -25,6 +25,7 @@ import org.springframework.web.context.ContextLoaderServlet;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.servlet.filter.ErrorHelperFilter;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * Bootstrap listener to start up Spring's root WebApplicationContext.
@@ -52,6 +53,8 @@ public class CannonContextLoaderListener implements ServletContextListener {
      * Initialize the root web application context.
      */
     public void contextInitialized(ServletContextEvent event) {
+        System.setProperty("cti.app.name", "Webserver");
+        
         try {
             this.contextLoader = createContextLoader();
             this.contextLoader.initWebApplicationContext(event.getServletContext());
@@ -85,6 +88,9 @@ public class CannonContextLoaderListener implements ServletContextListener {
         if (this.contextLoader != null) {
             this.contextLoader.closeWebApplicationContext(event.getServletContext());
         }
+        
+        // now shutdown the main context
+        YukonSpringHook.shutdownContext();
     }
 
 }
