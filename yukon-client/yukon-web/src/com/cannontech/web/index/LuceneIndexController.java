@@ -30,7 +30,7 @@ public class LuceneIndexController extends MultiActionController {
 
         final String index = request.getParameter("index");
 
-        indexBuilder.buildIndex(index, true);
+        indexBuilder.buildIndex(index);
 
         return mav;
     }
