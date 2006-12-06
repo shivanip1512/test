@@ -90,6 +90,9 @@ public class MockDispatchConnection implements IServerConnection {
         // TODO Auto-generated method stub
 
     }
+
+    public void disconnect() {
+    }
     
     
 

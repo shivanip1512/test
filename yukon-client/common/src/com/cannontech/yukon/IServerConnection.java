@@ -33,7 +33,7 @@ public interface IServerConnection
 	boolean isQueueMessages();
 	void setQueueMessages(boolean b);
 
-
+    public void disconnect();
 
 	//not sure if these will stay or go?
 	public void addObserver(Observer obs);
