@@ -187,12 +187,7 @@ class EditorActions {
 					comm.setPriority(15);				
 					comm.setOperation( Command.CLIENT_APP_SHUTDOWN );
 					conn.write( comm );
-                    try {
-                        conn.disconnect();
-                    } catch (IOException e) {
-                        // Too bad
-                        e.printStackTrace();
-                    }
+                    conn.disconnect();
 				}
 			
 				System.exit(0);

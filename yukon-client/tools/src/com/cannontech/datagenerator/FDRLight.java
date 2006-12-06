@@ -62,16 +62,10 @@ public class FDRLight {
 		}
 		catch( IOException ioe ) {
 			ioe.printStackTrace();
-			if( srcConn != null ) 
-				try {
-					srcConn.disconnect();
-				} catch (IOException e) {
-				}
-			if( destConn != null ) 
-			 	try {
-					destConn.disconnect();
-				} catch (IOException e) {
-				}		 	
+			if( srcConn != null )
+                srcConn.disconnect();
+			if( destConn != null )
+                destConn.disconnect();		 	
 			return;
 		}
 		

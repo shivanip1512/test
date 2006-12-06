@@ -108,10 +108,6 @@ public void exit()
 		dispatchConn.write( comm );
 		dispatchConn.disconnect();
 	}
-	catch( java.io.IOException ioe)
-	{
-		ioe.printStackTrace();
-	}
 	finally
 	{
 		System.exit(0);

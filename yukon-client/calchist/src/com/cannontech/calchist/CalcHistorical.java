@@ -819,14 +819,7 @@ public void start()
 					logEvent("Exiting Calc Historical", LogWriter.ERROR);
 					if (getDispatchConnection().isValid())
 					{
-						try
-						{
-							getDispatchConnection().disconnect();
-						}
-						catch (java.io.IOException ioe)
-						{
-							ioe.printStackTrace();
-						}
+						getDispatchConnection().disconnect();
 					}
 					break;
 				}
@@ -838,16 +831,8 @@ public void start()
 			} while (isService);
 
 		
-			try
-			{
-				getDispatchConnection().disconnect();
-				dispatchConnection = null;
-			}
-			catch(java.io.IOException ioe)
-			{
-				logEvent("An exception occured disconnecting from load control", LogWriter.ERROR);
-				CTILogger.info("An exception occured disconnecting from load control");
-			}
+			getDispatchConnection().disconnect();
+            dispatchConnection = null;
 		
 			logger.getPrintWriter().close();
 			logger = null;
@@ -1079,15 +1064,7 @@ public void stopApplication()
 {
 	logEvent("Forced stopApplication.", LogWriter.INFO);
 	isService = false;
-	try
-	{
-		getDispatchConnection().disconnect();
-	}
-	catch(java.io.IOException ioe)
-	{
-		logEvent("Disconnecting dispatch failed.", LogWriter.INFO);
-		ioe.printStackTrace();
-	}
+	getDispatchConnection().disconnect();
 	
 	sleepThread.interrupt();
 

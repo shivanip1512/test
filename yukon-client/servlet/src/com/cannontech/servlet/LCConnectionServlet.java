@@ -51,17 +51,10 @@ public void destroy()
 	// Pull this out of the servlet context
 	getServletContext().removeAttribute(SERVLET_CONTEXT_ID);
 	
-	try
-	{
-		if( conn != null )
-		{
-			conn.disconnect();
-		}
-	}
-	catch( java.io.IOException ioe )
-	{
-		CTILogger.error("An exception occured disconnecting from load control");
-	}
+	if( conn != null )
+    {
+    	conn.disconnect();
+    }
 	
 	super.destroy();
 }

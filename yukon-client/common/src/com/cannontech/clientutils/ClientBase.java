@@ -227,24 +227,17 @@ public void startConnection()
 public void stop() 
 {
 
-	try
-	{
-		if ( connected() )  // free up VanGogh's resources
-		{
-			Command comm = new Command();
-			comm.setPriority(15);
-			
-			comm.setOperation( Command.CLIENT_APP_SHUTDOWN );
+	if ( connected() )  // free up VanGogh's resources
+    {
+    	Command comm = new Command();
+    	comm.setPriority(15);
+    	
+    	comm.setOperation( Command.CLIENT_APP_SHUTDOWN );
 
-			getConnection().write( comm );
+    	getConnection().write( comm );
 
-			getConnection().disconnect();
-		}
-	}
-	catch ( java.io.IOException e )
-	{
-		handleException ( e );
-	}
+    	getConnection().disconnect();
+    }
 	
 }
 /**

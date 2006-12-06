@@ -75,26 +75,19 @@ public static synchronized boolean classExists()
  */
 public void destroyConnection() 
 {
-	try
-	{
-		if ( connection != null && connection.isValid() )  // free up VanGogh's resources
-		{
-			Command comm = new Command();
-			comm.setPriority(15);
-			comm.setUserName( com.cannontech.common.util.CtiUtilities.getUserName() );
-			
-			comm.setOperation( Command.CLIENT_APP_SHUTDOWN );
+	if ( connection != null && connection.isValid() )  // free up VanGogh's resources
+    {
+    	Command comm = new Command();
+    	comm.setPriority(15);
+    	comm.setUserName( com.cannontech.common.util.CtiUtilities.getUserName() );
+    	
+    	comm.setOperation( Command.CLIENT_APP_SHUTDOWN );
 
-			sendCommandMsg( comm );
-			
-			connection.disconnect();
-			connection = null;
-		}
-	}
-	catch ( java.io.IOException e )
-	{
-		handleException ( e );
-	}
+    	sendCommandMsg( comm );
+    	
+    	connection.disconnect();
+    	connection = null;
+    }
 }
 /**
  * Insert the method's description here.

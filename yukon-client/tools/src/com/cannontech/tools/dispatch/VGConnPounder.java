@@ -70,8 +70,6 @@ public class VGConnPounder {
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
-            } catch (IOException ioe) {
-                ioe.printStackTrace();
             }
         }
 
