@@ -32,6 +32,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.db.stars.hardware.LMHardwareConfiguration;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
@@ -65,14 +66,6 @@ import com.cannontech.stars.xml.util.StarsConstants;
 
 public class YukonSwitchCommandAction implements ActionBase {
 	
-	private static Timer configTimer = null;
-	
-	private synchronized static Timer getTimer() {
-		if (configTimer == null)
-			configTimer = new Timer();
-		return configTimer;
-	}
-
 	public YukonSwitchCommandAction() {
 		super();
 	}
@@ -512,7 +505,7 @@ public class YukonSwitchCommandAction implements ActionBase {
 				}
 			};
 			
-			getTimer().schedule( sendCfgTask, 300 * 1000 );
+			YukonSpringHook.getGlobalTimer().schedule( sendCfgTask, 300 * 1000 );
 			CTILogger.info( "*** Send config command a while later ***" );
 		}
 		else {
