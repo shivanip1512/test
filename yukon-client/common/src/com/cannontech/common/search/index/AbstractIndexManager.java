@@ -64,6 +64,7 @@ public abstract class AbstractIndexManager implements IndexManager {
     private LinkedBlockingQueue<IndexUpdateInfo> updateQueue = new LinkedBlockingQueue<IndexUpdateInfo>();
     private RuntimeException currentException = null;
     private Thread managerThread;
+    private boolean shutdownNow = false;
 
     public AbstractIndexManager() {
         this.initialize();
@@ -261,6 +262,11 @@ public abstract class AbstractIndexManager implements IndexManager {
         managerThread.start();
 
     }
+    
+    public void shutdown() {
+        shutdownNow = true;
+        managerThread.interrupt();
+    }
 
     /**
      * Helper method to process updates to the index
@@ -301,8 +307,10 @@ public abstract class AbstractIndexManager implements IndexManager {
                 }
 
             } catch (InterruptedException e) {
-
-                if (this.buildIndex && !this.isBuilding()) {
+                if (shutdownNow) {
+                    CTILogger.info("Shutting down " + getIndexName() + " indexing thread");
+                    break;
+                } else if (this.buildIndex && !this.isBuilding()) {
                     // Build the index
                     this.buildIndex = false;
                     this.isBuilding = true;

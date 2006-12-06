@@ -31,6 +31,12 @@ public class IndexBuilder {
             this.buildIndex(managerName, overwrite);
         }
     }
+    
+    public void shutdown() {
+        for (IndexManager manager : this.managerMap.values()) {
+            manager.shutdown();
+        }
+    }
 
     /**
      * Method which builds a given Lucene index

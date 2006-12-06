@@ -54,4 +54,6 @@ public interface IndexManager extends DBChangeListener {
      */
     public IndexSearcher getIndexSearcher();
 
+    public void shutdown();
+
 }
