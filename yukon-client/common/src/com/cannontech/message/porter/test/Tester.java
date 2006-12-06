@@ -5,7 +5,7 @@ package com.cannontech.message.porter.test;
  * Creation date: (5/17/00 2:22:43 PM)
  * @author: 
  */
-public class Test {
+public class Tester {
 /**
  * Insert the method's description here.
  * Creation date: (5/17/00 2:23:00 PM)

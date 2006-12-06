@@ -14,7 +14,7 @@ import com.cannontech.tags.TagManager;
 /**
  * @author aaron
   */
-public class TagTest implements Runnable {
+public class TagTester implements Runnable {
 
 	class TagRunner implements Runnable {
 		int pointid;
@@ -79,7 +79,7 @@ public class TagTest implements Runnable {
 	public static void main(String[] args) throws InterruptedException{
 while(true) {
 
-		TagTest tt = new TagTest();
+		TagTester tt = new TagTester();
 		tt.run();
 		Thread.sleep(5000);
 }

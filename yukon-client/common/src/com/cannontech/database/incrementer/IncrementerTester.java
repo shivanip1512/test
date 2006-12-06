@@ -3,7 +3,7 @@ package com.cannontech.database.incrementer;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 
-public class IncrementerTest {
+public class IncrementerTester {
 
     /**
      * @param args
