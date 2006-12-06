@@ -5,7 +5,6 @@ package com.cannontech.cbc.web;
  *
  *
  */
-import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -14,9 +13,10 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.TimerTask;
 import java.util.Vector;
-
-import javax.swing.Timer;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.Validate;
 
@@ -34,6 +34,7 @@ import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.web.lite.LiteWrapper;
 import com.cannontech.yukon.cbc.CBCClientConnection;
 import com.cannontech.yukon.cbc.CBCCommand;
@@ -46,11 +47,11 @@ import com.cannontech.yukon.cbc.StreamableCapObject;
 import com.cannontech.yukon.cbc.SubBus;
 import com.cannontech.yukon.conns.ConnPool;
 
-public class CapControlCache implements MessageListener, ActionListener, CapControlDAO
+public class CapControlCache implements MessageListener, CapControlDAO
 {
 	private static final int STARTUP_REF_RATE = 15 * 1000;
 	private static final int NORMAL_REF_RATE = 60 * 5 * 1000; //5 minutes
-	private Timer refreshTimer = new Timer(STARTUP_REF_RATE, this );
+	private ScheduledExecutorService refreshTimer = YukonSpringHook.getGlobalExecutor();
 	
 	// Map<suBusID(Integer), sub(SubBus)>
 	private Hashtable subBusMap = new Hashtable();
@@ -81,20 +82,15 @@ public class CapControlCache implements MessageListener, ActionListener, CapCont
 public CapControlCache()
 {
 	super();
+    
+    Runnable task = new Runnable() {
+        public void run() {
+            refresh();
+        }
+    };
 
 	ConnPool.getInstance().getDefCapControlConn().addMessageListener( this );	
-	refreshTimer.setRepeats(true);
-	refreshTimer.start();
-	
-//	System.out.println("  ---Creating new CBC cache");
-}
-
-/**
- * Invoked when an action occurs.
- */
-public void actionPerformed(java.awt.event.ActionEvent e)
-{
-	refresh();
+	refreshTimer.scheduleWithFixedDelay(task, STARTUP_REF_RATE, NORMAL_REF_RATE, TimeUnit.MILLISECONDS);
 }
 
 /**
@@ -587,8 +583,6 @@ public synchronized void refresh()
 	} catch ( IOException ioe ) {
 		CTILogger.error( "Exception occured during a refresh_cache operation", ioe );
 	}
-
-	refreshTimer.setDelay(NORMAL_REF_RATE);
 }
 
 /**

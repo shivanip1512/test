@@ -17,9 +17,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.Vector;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
-import javax.swing.Timer;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
@@ -37,15 +40,16 @@ import com.cannontech.loadcontrol.data.LMProgramDirect;
 import com.cannontech.loadcontrol.data.LMProgramEnergyExchange;
 import com.cannontech.loadcontrol.data.LMScenarioWrapper;
 import com.cannontech.loadcontrol.events.LCChangeEvent;
+import com.cannontech.spring.YukonSpringHook;
 
-public class LoadcontrolCache implements java.util.Observer, java.awt.event.ActionListener {
+public class LoadcontrolCache implements java.util.Observer {
 
 	//SQL to retrive customer base line point data
 	private static String baseLineSql = "SELECT Value FROM RawPointhistory WHERE PointID=? AND Timestamp > ? AND Timestamp <= ?";
 		
 	private static int startupRefreshRate = 15 * 1000;
 	private static int normalRefreshRate = 60 * 5 * 1000; //5 minutes
-	private Timer refreshTimer = new javax.swing.Timer(startupRefreshRate, this );
+	private ScheduledExecutorService refreshTimer = YukonSpringHook.getGlobalExecutor();
 	
 	private com.cannontech.loadcontrol.LoadControlClientConnection conn = null;
 	 
@@ -84,16 +88,15 @@ public class LoadcontrolCache implements java.util.Observer, java.awt.event.Acti
  */
 public LoadcontrolCache() {
 	super();
-	refreshTimer.setRepeats(true);
-	refreshTimer.start();
+	Runnable timerTask = new Runnable() {
+	    public void run() {
+	        refresh();
+	    }
+
+	};
+    refreshTimer.scheduleWithFixedDelay(timerTask, startupRefreshRate, normalRefreshRate, TimeUnit.MILLISECONDS);
 }
-	/**
-	 * Invoked when an action occurs.
-	 */
-public void actionPerformed(java.awt.event.ActionEvent e)
-{
-	refresh();
-}
+
 /**
  * Creation date: (6/25/2001 9:16:12 AM)
  * @return java.lang.Integer
@@ -696,7 +699,6 @@ public synchronized void refresh()
 		c.setCommand( com.cannontech.loadcontrol.messages.LMCommand.RETRIEVE_ALL_CONTROL_AREAS);
 		conn.write(c);
 
-		refreshTimer.setDelay(normalRefreshRate);
 	}
 	
 }
