@@ -42,7 +42,7 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
 
 	public ServerMACSConnection()
 	{
-		super();
+		super("MACS");
 		initConnection();
 	}
 

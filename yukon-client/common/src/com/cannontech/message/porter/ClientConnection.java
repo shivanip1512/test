@@ -10,13 +10,14 @@ public class ClientConnection extends com.cannontech.message.util.ClientConnecti
  * ClientConnection constructor comment.
  */
 public ClientConnection() {
-	super();
+	super("Porter");
 }
 /**
  * ClientConnection constructor comment.
  * @param host java.lang.String
  * @param port int
  */
+@Deprecated
 public ClientConnection(String host, int port) {
 	super(host, port);
 }

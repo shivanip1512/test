@@ -38,6 +38,7 @@ public class ClientConnection extends java.util.Observable implements Runnable, 
 	private boolean autoReconnect = false;
 	private boolean queueMessages = false; //if true, be sure you are reading from the inQueue!!
 	private boolean serverSocket = false;
+    private boolean disconnected = false;
 
     //create a logger for instances of this class and its subclasses
     private Logger logger = YukonLogManager.getLogger(this.getClass());      
@@ -56,20 +57,22 @@ public class ClientConnection extends java.util.Observable implements Runnable, 
 	
 	// Keep track of all of this connections MessageListeners 
 	private ArrayList messageListeners = new ArrayList(5);
+    private final String connectionName;
 
 /**
  * ClientConnection constructor comment.
  */
-public ClientConnection() {
+public ClientConnection(String connectionName) {
 	super();
+    this.connectionName = connectionName;
 }
 
 /**
  * ClientConnection constructor comment.
  */
+@Deprecated
 public ClientConnection(String host, int port) {
-	super();
-
+	this("Unknown for " + host + " and " + port);
 	this.host = host;
 	this.port = port;	
 }
@@ -79,7 +82,7 @@ public ClientConnection(String host, int port) {
  */
 public ClientConnection( Socket newSocket ) 
 {
-	this();
+	this("Auto from " + newSocket);
 
 	this.sock = newSocket;
 	serverSocket = true;
@@ -148,15 +151,18 @@ public void connect( long millis )
  */
 public void connectWithoutWait()
 {	
-	monitorThread = new Thread(this, "ConnectionMonitor");
+	monitorThread = new Thread(this, getName() + "Monitor");
 	monitorThread.setDaemon(true);
 	monitorThread.start();
 }
 /**
  * This method was created in VisualAge.
  */
-public void disconnect() throws java.io.IOException 
+public void disconnect() 
 {
+    if (disconnected) {
+        logger.warn("already disconnected " + getName());
+    }
 	this.deleteObservers();
 	this.setAutoReconnect(false);
 	
@@ -186,7 +192,13 @@ public void disconnect() throws java.io.IOException
 	cleanUp();
 
 	isValid = false;
+    disconnected = true;
 }
+
+protected String getName() {
+    return connectionName;
+}
+
 /**
  * This method was created in VisualAge.
  * @return boolean

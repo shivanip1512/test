@@ -19,7 +19,7 @@ class OutThread extends Thread {
  * OutThread constructor comment.
  */
 public OutThread(ClientConnection conn, VirtualOutputStream ostrm, CollectableStreamer streamer, java.util.ArrayList out) {
-	super("OutThread");
+	super(conn.getName() + "OutThread");
 	setDaemon(true);
 	this.conn = conn;
 	

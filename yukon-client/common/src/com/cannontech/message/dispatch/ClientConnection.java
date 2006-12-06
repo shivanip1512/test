@@ -14,13 +14,14 @@ import com.roguewave.vsj.CollectableStreamer;
 
 public class ClientConnection extends com.cannontech.message.util.ClientConnection {
     public ClientConnection() {
-        super();
+        super("Dispatch");
     }
 
     /**
      * @param host java.lang.String
      * @param port int
      */
+    @Deprecated
     public ClientConnection(String host, int port) {
         super(host, port);
     }

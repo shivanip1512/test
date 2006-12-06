@@ -53,7 +53,7 @@ public class CBCClientConnection extends ClientConnection
 	 */
 	public CBCClientConnection() 
 	{
-		super();// "127.0.0.1", 1910 );
+		super("CBC");// "127.0.0.1", 1910 );
 		initialize();
 		getExternalResources();
 		setRegistrationMsg(new CBCCommand ( 0, CBCCommand.REQUEST_ALL_SUBS) );

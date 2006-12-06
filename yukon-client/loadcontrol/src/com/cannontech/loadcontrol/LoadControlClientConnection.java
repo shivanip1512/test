@@ -30,7 +30,7 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
  * @param port int
  */
 protected LoadControlClientConnection() {
-	super();
+	super("LC");
 	initialize();
 } 
 /**
@@ -73,7 +73,7 @@ public void clearControlAreas()
  * Insert the method's description here.
  * Creation date: (4/10/2001 3:43:51 PM)
  */
-public void disconnect() throws java.io.IOException
+public void disconnect()
 {
 	super.disconnect();
 
@@ -268,18 +268,11 @@ public synchronized void removeClient(Object client)
 	if( client instanceof java.util.Observer )
 		deleteObserver( (java.util.Observer)client );
 
-	try
-	{
-		if( countObservers() == 0 )
-		{
-			super.disconnect();
-			staticLoadControlClientConnection = null;
-		}
-	}
-	catch( java.io.IOException e )
-	{
-		CTILogger.error( e.getMessage(), e );
-	}
+	if( countObservers() == 0 )
+    {
+    	super.disconnect();
+    	staticLoadControlClientConnection = null;
+    }
 
 }
 

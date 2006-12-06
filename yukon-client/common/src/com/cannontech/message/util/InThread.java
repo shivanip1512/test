@@ -21,7 +21,7 @@ class InThread extends Thread
  * InThread constructor comment.
  */
 public InThread(ClientConnection conn, VirtualInputStream istrm, CollectableStreamer streamer, java.util.ArrayList in) {
-	super("InThread");
+	super(conn.getName() + "InThread");
 	setDaemon(true);
 	this.conn = conn;
 	

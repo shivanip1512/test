@@ -57,7 +57,7 @@ public class NotifClientConnection extends ClientConnection implements INotifCon
 	    
 	public NotifClientConnection() 
 	{
-		super();
+		super("Notification");
 		initialize();
 	}
 
