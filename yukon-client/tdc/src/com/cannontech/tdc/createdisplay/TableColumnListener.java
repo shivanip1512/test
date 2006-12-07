@@ -28,7 +28,8 @@ public TableColumnListener( Object call ) {
 public void columnAdded(javax.swing.event.TableColumnModelEvent e) 
 {
 	if ( caller instanceof CreateBottomPanel )
-		((CreateBottomPanel)caller).jTableModel_ColumnAdded( e );	
+		((CreateBottomPanel)caller).jTableModel_ColumnAdded( e );
+
 }
 /**
  * columnMarginChanged method comment.
@@ -42,7 +43,15 @@ public void columnMarginChanged(javax.swing.event.ChangeEvent e)
 public void columnMoved(javax.swing.event.TableColumnModelEvent e) 
 {
 	if ( caller instanceof CreateBottomPanel )
+    {
 		((CreateBottomPanel)caller).jTableModel_ColumnMoved( e );	
+     
+    }
+    
+    if ( caller instanceof TemplatePanel )
+    {
+        ((TemplatePanel)caller).jTableModel_ColumnMoved( e );
+    }
 }
 /**
  * columnRemoved method comment.

@@ -82,6 +82,10 @@ public static int createValidDisplayNumber ()
 }
 
 
+public static int getValidDisplayNumber () {
+    String query1 = "select templatenum from template order by templatenum";
+    return createValidDisplayNumber (query1);
+}
 /**
  * This method was created in VisualAge.
  * @return int
@@ -178,7 +182,7 @@ public static Calendar getCalendarDate(Date stopDate) {
 }
 
 public static Date getNextDay(Calendar c) {
-    c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH), (c.get(Calendar.DAY_OF_MONTH) + 1), c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE));
+    c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH), (c.get(Calendar.DAY_OF_MONTH) + 1), 0, 0);
     Date newStartDate = c.getTime();
     return newStartDate;
 }

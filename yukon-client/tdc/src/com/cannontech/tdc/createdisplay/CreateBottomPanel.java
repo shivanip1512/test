@@ -5,11 +5,14 @@ package com.cannontech.tdc.createdisplay;
  * Creation date: (1/24/00 4:54:37 PM)
  * @author: 
  */
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 import com.cannontech.clientutils.CommonUtils;
 import com.cannontech.tdc.TDCMainFrame;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
+import com.cannontech.tdc.model.ModelContext;
 import com.cannontech.tdc.utils.DataBaseInteraction;
 
 public class CreateBottomPanel extends javax.swing.JPanel {
@@ -250,7 +253,10 @@ private void createColumn(String title, int prefWidth )
  */
 public void editInitialize( Long templateNumber )
 {
-	if ( columnCount() > 1 )
+	
+   
+    
+    if ( columnCount() > 1 )
 	{
 		getJComboBoxColumnNumber().setSelectedIndex( 0 );
 		removeAllColumns();
@@ -279,8 +285,10 @@ public void editInitialize( Long templateNumber )
 		{	
 			Integer width = new Integer( values[i][4].toString() );
 				
-			getJTextFieldTitle().setText( CommonUtils.createString( values[i][1] ) );
-			getJComboBoxType().setSelectedItem( values[i][5] );
+			String colText = CommonUtils.createString( values[i][1] );
+            getJTextFieldTitle().setText( colText );
+			Object selItem = values[i][5];
+            getJComboBoxType().setSelectedItem( selItem );
 
 			// let this event tell the other components to change it values accordingly
 			jTextFieldTitle_CaretUpdate( null );
@@ -797,7 +805,7 @@ private void initialize() {
 		setLayout(null);
 		setSize(479, 236);
 		add(getJPanelContentPane(), getJPanelContentPane().getName());
-		initConnections();
+        initConnections();
 	} catch (java.lang.Throwable ivjExc) {
 		handleException(ivjExc);
 	}
@@ -1009,13 +1017,17 @@ public void jTableModel_ColumnMoved( javax.swing.event.TableColumnModelEvent e )
 {
 	swap( columnData, e.getFromIndex(), e.getToIndex());
 
+    
 	ColumnData column = null;
 	
 	if ( e.getToIndex() == getJComboBoxColumnNumber().getSelectedIndex() )
+    {
 		column = ((ColumnData)columnData.elementAt( e.getToIndex() ) );
-	else if ( e.getFromIndex() == getJComboBoxColumnNumber().getSelectedIndex() )
+    }
+    else if ( e.getFromIndex() == getJComboBoxColumnNumber().getSelectedIndex() )
+    {
 		column = ((ColumnData)columnData.elementAt( e.getFromIndex() ) );
-
+    }
 	// if a moved column affected the current columns displayed fields
 	if ( column != null )
 	{
@@ -1025,6 +1037,7 @@ public void jTableModel_ColumnMoved( javax.swing.event.TableColumnModelEvent e )
 		
 	getJComboBoxType().repaint();	
 }
+
 /**
  * Comment
  */
@@ -1197,4 +1210,5 @@ private static void getBuilderData() {
 	071D5D7B72483A0886FC7CE2BC2BBF15CB7E98EC3037996D7DE61B8D22528BF5F68BF927D1BFA4093EF7DC0EBC523E9BE964CAD6F7097EB63BCF41737FD0CB8788F82EE5D27B9CGG14D6GGD0CB818294G94G88G88GF5F954ACF82EE5D27B9CGG14D6GG8CGGGGGGGGGGGGGGGGGE2F5E9ECE4E5F2A0E4E1F4E1D0CB8586GGGG81G81GBAGGGB59DGGGG
 **end of data**/
 }
+
 }

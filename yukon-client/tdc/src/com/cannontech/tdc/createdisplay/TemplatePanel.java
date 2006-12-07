@@ -7,17 +7,30 @@ package com.cannontech.tdc.createdisplay;
  * @Version: <version>
  */
 import java.awt.Color;
-import java.awt.Container;
+import java.awt.Dialog;
+import java.awt.Frame;
+import java.awt.event.ActionEvent;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
+import javax.swing.JCheckBox;
+import javax.swing.event.TableColumnModelEvent;
+
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.tdc.TDCMainFrame;
 import com.cannontech.tdc.TDCMainPanel;
 import com.cannontech.tdc.editdisplay.EditDisplayDialog;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
+import com.cannontech.tdc.model.ModelContext;
+import com.cannontech.tdc.model.TDCDataModel;
+import com.cannontech.tdc.template.TemplateDisplay;
+import com.cannontech.tdc.template.TemplateDisplayModel;
 import com.cannontech.tdc.utils.DataBaseInteraction;
+import com.cannontech.tdc.utils.DataModelUtils;
 
-public class TemplatePanel extends javax.swing.JPanel 
+public class TemplatePanel extends javax.swing.JPanel implements ModelContext
 {	
 	private long currentDisplayNumber = com.cannontech.tdc.data.Display.UNKNOWN_DISPLAY_NUMBER;
 	private Vector columnData = null;
@@ -30,6 +43,11 @@ public class TemplatePanel extends javax.swing.JPanel
 	private javax.swing.JTable ivjJTable = null;
 	private javax.swing.JLabel ivjJLabelCustomized = null;
     private int selectedTemplateIndex = 1;
+    private List<String> modelContextList = new ArrayList<String>(10);
+    private TableColumnListener templateColumnListener = new TableColumnListener (this);
+    private Frame parentFrame = null;
+    
+    private JCheckBox useTemplateCB = null;
 	
 class IvjEventHandler implements java.awt.event.ActionListener {
 		public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -37,7 +55,11 @@ class IvjEventHandler implements java.awt.event.ActionListener {
 				connEtoC1(e);
 			if (e.getSource() == TemplatePanel.this.getJButtonAdvanced()) 
 				connEtoC2(e);
-		};
+            if (e.getSource() == getUseTemplateCB()) 
+                useTemplateCBPressed(e);
+            
+		}
+
 	};
 /**
  * TemplatePanel constructor comment.
@@ -69,6 +91,12 @@ public TemplatePanel(boolean isDoubleBuffered) {
 	super(isDoubleBuffered);
 }
 
+public TemplatePanel(Frame pf) {
+    super();
+    parentFrame = pf;
+    initialize();
+    
+}
 /**
  * Insert the method's description here.
  * Creation date: (1/26/00 11:11:55 AM)
@@ -136,6 +164,35 @@ private void connEtoC2(java.awt.event.ActionEvent arg1) {
 		handleException(ivjExc);
 	}
 }
+
+private void useTemplateCBPressed(ActionEvent e) {
+   JCheckBox cb = (JCheckBox) e.getSource(); 
+   if (cb.isSelected())
+   {
+       displayIsUsingTemplate();
+   }
+   else 
+   {
+       displayIsNotUsingTemplate();
+   }
+}
+public void displayIsNotUsingTemplate() {
+    removeAllColumns();
+       setUpTemplateTable();
+       getJComboBoxTemplate().setEnabled(false);
+       getJButtonAdvanced().setEnabled(true);
+       getJTable().getTableHeader().setReorderingAllowed(true);
+}
+
+public void displayIsUsingTemplate() {
+    resetTemplateTable();
+       getJComboBoxTemplate().setEnabled(true);
+       getJButtonAdvanced().setEnabled(false);
+       getJTable().getTableHeader().setReorderingAllowed(false);
+};
+
+
+
 /**
  * This method was created in VisualAge.
  * @param number int
@@ -148,8 +205,7 @@ private void createColumn(String title, int prefWidth )
 	tableColumn.setWidth(75);
 	tableColumn.setMaxWidth(255);
 	tableColumn.setMinWidth(30);
-
-	getJTable().addColumn(tableColumn);
+    getJTable().addColumn(tableColumn);
 }
 /**
  * Insert the method's description here.
@@ -159,19 +215,20 @@ private void createColumn(String title, int prefWidth )
 private void createCustomColumns( ColumnEditorDialog editor )
 {
 	removeAllColumns();	
-		
-	for ( int i = 0; i < editor.getEditorPanel().columnCount(); i++ )
-	{
-		columnData.addElement( new ColumnData( 
-						new Integer( i ),
-						new Object(),  // just a filler
-						editor.getEditorPanel().columnFieldData( i, ColumnData.COLUMN_WIDTH ),
-						editor.getEditorPanel().columnFieldData( i, ColumnData.COLUMN_TITLE ),
-						editor.getEditorPanel().columnFieldData( i, ColumnData.COLUMN_TYPE_NUMBER ) ) );
-		
-		createColumn( editor.getEditorPanel().columnFieldData( i, ColumnData.COLUMN_TITLE ), 
-					  Integer.parseInt( editor.getEditorPanel().columnFieldData( i, ColumnData.COLUMN_WIDTH ) ) );
-	}
+
+        for ( int i = 0; i < editor.getEditorPanel().columnCount(); i++ )
+    	{
+    		columnData.addElement( new ColumnData( 
+    						new Integer( i ),
+    						new Object(),  // just a filler
+    						editor.getEditorPanel().columnFieldData( i, ColumnData.COLUMN_WIDTH ),
+    						editor.getEditorPanel().columnFieldData( i, ColumnData.COLUMN_TITLE ),
+    						editor.getEditorPanel().columnFieldData( i, ColumnData.COLUMN_TYPE_NUMBER ) ) );
+    		
+    		createColumn( editor.getEditorPanel().columnFieldData( i, ColumnData.COLUMN_TITLE ), 
+    					  Integer.parseInt( editor.getEditorPanel().columnFieldData( i, ColumnData.COLUMN_WIDTH ) ) );
+    	}
+    
 	
 }
 /**
@@ -191,6 +248,18 @@ public void editInitialize( Long displayNumber )
     Object[][] templates = DataBaseInteraction.queryResults( query, objs );
     if ( getJTable().getColumnCount() > 1 )
 	{
+        
+        int template = DataModelUtils.getDisplayTemplate(displayNumber.longValue());
+        if (template > -1)
+        {
+            getUseTemplateCB().setSelected(true);
+            displayIsUsingTemplate();
+        }
+        else
+        {
+            getUseTemplateCB().setSelected(false);
+            displayIsNotUsingTemplate();
+        }
         
         initProperties(); 
         removeAllColumns();
@@ -217,18 +286,37 @@ public void editInitialize( Long displayNumber )
 	return;
 }
 public void initProperties() {
-    setSelectedIndex();
+    if (getUseTemplateCB().isSelected())
+        setSelectedIndex();
     setCustomized();
 }
 
 private void setSelectedIndex() {
-    TDCMainPanel mainPanel = getMainPanel();
-    selectedTemplateIndex = 0;
-    if (mainPanel != null)
-    {
-        int currentTemplateNum = mainPanel.getCurrentTemplateNum();
-        selectedTemplateIndex = templateNums.indexOf(new BigDecimal (currentTemplateNum));
+    Frame parentFrame = CtiUtilities.getParentFrame(this);
+    EditDisplayDialog d = (EditDisplayDialog) CtiUtilities.getParentDialog(this);
+    Integer dispNum = new Integer (new Integer ((int)d.getCurrentDisplayNumber()));
+    TDCDataModel componentDataModel = DataModelUtils.getComponentDataModel(parentFrame, this, ModelContext.ALL_CTXTS[0]);
+    ((TemplateDisplayModel)componentDataModel).setDisplayNum(dispNum);
+    componentDataModel.initModel();
+    Integer templateNum = ((TemplateDisplayModel)componentDataModel).getTemplateNum();
+    //special case when a template associated with a display has been deleted.
+    Integer standardTemplate = 1;
+    if (templateNum.equals( TemplateDisplay.INITVAL) ){
+/*        TDCDataModel dataModel = ((TDCMainFrame)parentFrame).getDataModel();
+        dataModel.updateModel(this, "templateNum", standardTemplate, ModelContext.ALL_CTXTS[0]);
+        dataModel.updateModel(this, "displayNum", dispNum, ModelContext.ALL_CTXTS[0]);
+        selectedTemplateIndex = 0;
+        DataModelUtils.saveDataModel(parentFrame);
+*/      
+        getUseTemplateCB().setSelected(false);
+        displayIsNotUsingTemplate();
+        selectedTemplateIndex = standardTemplate;
     }
+    else
+    {
+        selectedTemplateIndex = templateNums.indexOf(new BigDecimal (templateNum.intValue()));
+    }
+    
     getJComboBoxTemplate().setSelectedIndex(selectedTemplateIndex);
 }
 /**
@@ -259,7 +347,7 @@ private javax.swing.JButton getJButtonAdvanced() {
  * @return javax.swing.JComboBox
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JComboBox getJComboBoxTemplate() {
+public javax.swing.JComboBox getJComboBoxTemplate() {
 	if (ivjJComboBoxTemplate == null) {
 		try {
 			ivjJComboBoxTemplate = new javax.swing.JComboBox();
@@ -435,6 +523,8 @@ private void initConnections() throws java.lang.Exception
 	// user code end
 	getJComboBoxTemplate().addActionListener(ivjEventHandler);
 	getJButtonAdvanced().addActionListener(ivjEventHandler);
+    getJTable().getColumnModel().addColumnModelListener(templateColumnListener);
+    getUseTemplateCB().addActionListener(ivjEventHandler);
 }
 /**
  * Initialize the class.
@@ -462,28 +552,39 @@ private void initialize() {
 		constraintsJScrollPaneTable.insets = new java.awt.Insets(2, 2, 2, 2);
 		add(getJScrollPaneTable(), constraintsJScrollPaneTable);
 
-		java.awt.GridBagConstraints constraintsJLabelTemplate = new java.awt.GridBagConstraints();
-		constraintsJLabelTemplate.gridx = 1; constraintsJLabelTemplate.gridy = 1;
+
+        java.awt.GridBagConstraints constraintsJChekcBoxTemp= new java.awt.GridBagConstraints();
+        constraintsJChekcBoxTemp.gridx = 1; constraintsJChekcBoxTemp.gridy = 1;
+        constraintsJChekcBoxTemp.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        constraintsJChekcBoxTemp.weightx = 1.0;
+        constraintsJChekcBoxTemp.insets = new java.awt.Insets(9, 2, 7, 2);
+        add(getUseTemplateCB(), constraintsJChekcBoxTemp);
+        
+        java.awt.GridBagConstraints constraintsJLabelTemplate = new java.awt.GridBagConstraints();
+		constraintsJLabelTemplate.gridx = 2; constraintsJLabelTemplate.gridy = 1;
 		constraintsJLabelTemplate.anchor = java.awt.GridBagConstraints.NORTHWEST;
 		constraintsJLabelTemplate.ipadx = 12;
 		constraintsJLabelTemplate.insets = new java.awt.Insets(9, 2, 11, 125);
 		add(getJLabelTemplate(), constraintsJLabelTemplate);
 
-		java.awt.GridBagConstraints constraintsJComboBoxTemplate = new java.awt.GridBagConstraints();
-		constraintsJComboBoxTemplate.gridx = 1; constraintsJComboBoxTemplate.gridy = 1;
+
+		
+        
+        java.awt.GridBagConstraints constraintsJComboBoxTemplate = new java.awt.GridBagConstraints();
+		constraintsJComboBoxTemplate.gridx = 2; constraintsJComboBoxTemplate.gridy = 1;
 		constraintsJComboBoxTemplate.anchor = java.awt.GridBagConstraints.NORTHWEST;
 		constraintsJComboBoxTemplate.weightx = 1.0;
 		constraintsJComboBoxTemplate.insets = new java.awt.Insets(9, 60, 7, 2);
 		add(getJComboBoxTemplate(), constraintsJComboBoxTemplate);
 
 		java.awt.GridBagConstraints constraintsJButtonAdvanced = new java.awt.GridBagConstraints();
-		constraintsJButtonAdvanced.gridx = 3; constraintsJButtonAdvanced.gridy = 1;
+		constraintsJButtonAdvanced.gridx = 4; constraintsJButtonAdvanced.gridy = 1;
 		constraintsJButtonAdvanced.anchor = java.awt.GridBagConstraints.NORTHEAST;
 		constraintsJButtonAdvanced.insets = new java.awt.Insets(8, 47, 2, 4);
 		add(getJButtonAdvanced(), constraintsJButtonAdvanced);
 
 		java.awt.GridBagConstraints constraintsJLabelCustomized = new java.awt.GridBagConstraints();
-		constraintsJLabelCustomized.gridx = 2; constraintsJLabelCustomized.gridy = 1;
+		constraintsJLabelCustomized.gridx = 3; constraintsJLabelCustomized.gridy = 1;
 		constraintsJLabelCustomized.anchor = java.awt.GridBagConstraints.NORTHWEST;
 		constraintsJLabelCustomized.weightx = 1.0;
 		constraintsJLabelCustomized.insets = new java.awt.Insets(10, 0, 10, 35);
@@ -494,11 +595,29 @@ private void initialize() {
 	}
 	// user code begin {2}
 	
-	setUpTemplateTable();
-
+	//setUpTemplateTable();
 	setUnCustomized();
-	
+	initTemplateDisplay();
+    initModelContextList();
+
+    
 	// user code end
+}
+private void initTemplateDisplay() {
+    if (parentFrame != null)
+    {
+        long currentDisp = ((TDCMainFrame)parentFrame).getCurrentDisplayNumber();
+        boolean usingTemplate = DataModelUtils.getDisplayTemplate(currentDisp) > -1;    
+        if (usingTemplate)
+        {
+            getUseTemplateCB().setSelected(true);
+            displayIsUsingTemplate();
+        }
+        else
+        {
+            displayIsNotUsingTemplate();    
+        }
+    }
 }
 /**
  * Insert the method's description here.
@@ -556,52 +675,59 @@ public void jButtonAdvanced_ActionPerformed(java.awt.event.ActionEvent actionEve
 }
 /**
  * Comment
+ * @throws ClassNotFoundException 
  */
 public void jComboBoxTemplate_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
-	java.awt.Frame owner = com.cannontech.common.util.CtiUtilities.getParentFrame(this);
-	java.awt.Cursor original = owner.getCursor();
-	owner.setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );	
+    java.awt.Frame owner = com.cannontech.common.util.CtiUtilities.getParentFrame(this);
+    java.awt.Cursor original = owner.getCursor();
+    owner.setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );  
+    
 
-	try
-	{
-		removeAllColumns();
-		
-		if ( getJComboBoxTemplate().getSelectedIndex() >= 0 &&
-			getJComboBoxTemplate().getItemCount() > 0 )
-		{
-			setUnCustomized();
-			
-			setUpTemplateTable();			
-		}
-		
-	}
-	finally
-	{	
-		owner.setCursor( original );
-	}
-}
-public void saveLastTemplateNum() {
-    BigDecimal lastTemplateNum  = (BigDecimal) templateNums.get (getJComboBoxTemplate().getSelectedIndex() );
-    lastTemplateNum = (lastTemplateNum.intValue() == -1) ? new BigDecimal (0) : lastTemplateNum;
-    TDCMainPanel mainPanel = getMainPanel();
-    if (mainPanel != null)
-    {
-        mainPanel.setCurrentTemplateNum(lastTemplateNum.intValue());
-    }
+
+    //before changing all the columns see if the event was triggered
+    //by changing of the combo box element 
+    //we know if it changed if the current element is equal the element that we
+    //remember to be current
+    Integer dbData = getTemplateNumFromModel();
+    Dialog parentDialog = CtiUtilities.getParentDialog(this);
+        if (parentDialog instanceof EditDisplayDialog )
+        {
+            setTemplateColumnsForEdit(owner, dbData);
+        }
+        if (parentDialog instanceof CreateDisplayDialog)
+        {
+            setUnCustomized();
+            resetTemplateTable();
+        }
+    owner.setCursor( original );
     
 }
-private TDCMainPanel getMainPanel() {
-    Container c = getTopLevelAncestor();
-    TDCMainPanel mainPanel = null;
-    if (c instanceof EditDisplayDialog) {
-        EditDisplayDialog dispDialog = (EditDisplayDialog) c;
-        TDCMainFrame mainFrame = (TDCMainFrame)dispDialog.getParent();
-        mainPanel = mainFrame.getMainPanel();
-        
-    }
-    return mainPanel;
+private void setTemplateColumnsForEdit(java.awt.Frame owner, Integer dbData) {
+    int selectedIndex = getJComboBoxTemplate().getSelectedIndex();
+    BigDecimal elementAt = (BigDecimal) templateNums.elementAt( selectedIndex );
+    Integer templateNum = new Integer ( elementAt.intValue() );
+    if ( !templateNum.equals(dbData))
+        {     
+            TDCDataModel dataModel = ((TDCMainFrame)owner).getDataModel();
+            String templateCxt = ModelContext.ALL_CTXTS[0];
+            dataModel.updateModel(this, "templateNum", templateNum, templateCxt);        
+        }
+    setUnCustomized();
+    resetTemplateTable();
 }
+
+private Integer getTemplateNumFromModel() {
+    TDCMainPanel mainPanel = ((TDCMainFrame) parentFrame).getMainPanel();
+    int displayNumber = mainPanel.getCurrentDisplay().getDisplayNumber();
+    TemplateDisplayModel componentDataModel = (TemplateDisplayModel) DataModelUtils.getComponentDataModel(parentFrame, this, ModelContext.ALL_CTXTS[0]);
+    componentDataModel.setDisplayNum(displayNumber);
+    componentDataModel.initModel();
+    Integer dbData = componentDataModel.getTemplateNum();
+    return dbData;
+}
+
+
 /**
  * main entrypoint - starts the part when it is run as an application
  * @param args java.lang.String[]
@@ -632,15 +758,17 @@ public static void main(java.lang.String[] args) {
 private void removeAllColumns() 
 {
 
-	columnData.removeAllElements();
-	
-	int count = getJTable().getColumnCount();
-
-	for ( int i = 0; i < count; i++ )
-	{
-		getJTable().removeColumn( getJTable().getColumnModel().getColumn( 0 ) );
-	}
-	
+    if (columnData != null)
+    {
+        columnData.removeAllElements();
+    	
+    	int count = getJTable().getColumnCount();
+    
+    	for ( int i = 0; i < count; i++ )
+    	{
+    		getJTable().removeColumn( getJTable().getColumnModel().getColumn( 0 ) );
+    	}
+    }	
 	return;
 }
 /**
@@ -679,11 +807,17 @@ private void setUnCustomized()
  * Creation date: (3/31/00 12:17:48 PM)
  * Version: <version>
  */
-private void setUpTemplateTable() 
+public void resetTemplateTable() 
 {
-	if( getJComboBoxTemplate().getSelectedIndex() < 0 )
-		return;
-		
+    removeAllColumns();
+
+    int selectedIndex = getJComboBoxTemplate().getSelectedIndex();
+
+    if( selectedIndex < 0 )
+        return;
+
+
+    BigDecimal templateNum = (BigDecimal) templateNums.elementAt(selectedIndex); 
 	// set our template table accordingly
 	String query = new String
 		("select t.templatenum, t.title, t.typenum, t.ordering, t.width, c.name " + 
@@ -692,25 +826,57 @@ private void setUpTemplateTable()
 		 " and t.typenum = c.typenum " +		 
 		 " order by t.ordering");
 	Object[] objs = new Object[1];
-	objs[0] = templateNums.elementAt( getJComboBoxTemplate().getSelectedIndex() ).toString();
-	Object[][] templates = DataBaseInteraction.queryResults( query, objs );
+	objs[0] = templateNum.toString();
+	
+    Object[][] templates = DataBaseInteraction.queryResults( query, objs );
 		
-	if ( templates.length > 0 )
+	setUpTemlateColumns(templates);
+    
+  }
+
+private void setUpTemplateTable() 
+{
+    if( getJComboBoxTemplate().getSelectedIndex() < 0 )
+        return;
+        
+    // set our template table accordingly
+
+    String q = "select d.displaynum, d.title, d.typenum, d.ordering, d.width, c.name " +  
+    "from displaycolumns d, columntype c  where d.displaynum = ? " +  
+    "and d.typenum = c.typenum  order by d.ordering";
+    
+    Object[] objs = new Object[1];
+    if (parentFrame != null)
+    {
+    TDCMainPanel mainPanel = ((TDCMainFrame) parentFrame).getMainPanel();
+    int displayNumber = mainPanel.getCurrentDisplay().getDisplayNumber();
+    objs[0] = new Integer (displayNumber); 
+
+    Object[][] templates = DataBaseInteraction.queryResults( q, objs );
+        
+    setUpTemlateColumns(templates);
+    }
+   }
+
+
+private void setUpTemlateColumns(Object[][] templates) {
+    if ( templates.length > 0 )
 	{
 		if( columnData == null )
 			columnData = new Vector( templates.length );
 		
-		for( int i = 0; i < templates.length; i++ )
-		{
-			columnData.addElement( new ColumnData( 
-						new Integer( i ),
-						templates[i][5],
-						templates[i][4],
-						templates[i][1].toString(),
-						templates[i][2] ) );
-			
-			createColumn( templates[i][1].toString(), Integer.parseInt( templates[i][4].toString() ) );
-		}
+            for( int i = 0; i < templates.length; i++ )
+    		{
+    			columnData.addElement( new ColumnData( 
+    						new Integer( i ),
+    						templates[i][5],
+    						templates[i][4],
+    						templates[i][1].toString(),
+    						templates[i][2] ) );
+    			
+    			createColumn( templates[i][1].toString(), Integer.parseInt( templates[i][4].toString() ) );
+    		}
+        
 
 		getJTable().revalidate();
 		getJTable().repaint();
@@ -752,4 +918,63 @@ private static void getBuilderData() {
 	GGGG
 **end of data**/
 }
+
+
+public List<String> getModelContextList() {
+    return modelContextList;
+}
+public void initModelContextList() {
+    modelContextList.add(ModelContext.ALL_CTXTS[0]);
+}
+public Vector getTemplateNums() {
+    return templateNums;
+}
+
+
+public void jTableModel_ColumnMoved(TableColumnModelEvent e) {
+
+        swap( columnData, e.getFromIndex(), e.getToIndex());
+        TDCMainFrame f = (TDCMainFrame)CtiUtilities.getParentFrame(this);
+}
+
+public void swap( Vector vector, int source, int dest) {
+
+    Object temp = new Object();
+
+    if ( source != dest &&
+         source >= 0 && source < vector.size() &&
+         dest >= 0 && dest < vector.size() )
+    {
+
+        temp = vector.elementAt( source );
+        vector.setElementAt( vector.elementAt( dest ), source );
+        vector.setElementAt( temp, dest );
+    }
+    
+}
+public JCheckBox getUseTemplateCB() {
+    if (useTemplateCB == null) {
+        try {
+            useTemplateCB = new javax.swing.JCheckBox();
+            useTemplateCB.setName("UseTemplateCheckBox");
+            useTemplateCB.setFont(new java.awt.Font("dialog", 0, 12));
+            useTemplateCB.setText("Use Template");
+            useTemplateCB.setMargin(new java.awt.Insets(0, 0, 0, 0));
+            // user code begin {1}
+            // user code end
+        } catch (java.lang.Throwable ivjExc) {
+            // user code begin {2}
+            // user code end
+            handleException(ivjExc);
+        }
+    }
+    return useTemplateCB;
+
+}
+
+public boolean isTableEditable () 
+{
+    return ! getUseTemplateCB().isSelected();
+}
+
 }

@@ -6,13 +6,21 @@ package com.cannontech.tdc.createdisplay;
  * @author: 
  */
 import java.awt.Cursor;
+import java.awt.Frame;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.tdc.TDCMainFrame;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
+import com.cannontech.tdc.model.ModelContext;
+import com.cannontech.tdc.model.TDCDataModel;
 import com.cannontech.tdc.utils.DataBaseInteraction;
+import com.cannontech.tdc.utils.DataModelUtils;
 import com.cannontech.tdc.utils.TDCDefines;
  
-public class CreateDisplayDialog extends javax.swing.JDialog {
+public class CreateDisplayDialog extends javax.swing.JDialog implements ModelContext{
 	private long currentDisplayNumber = com.cannontech.tdc.data.Display.UNKNOWN_DISPLAY_NUMBER;
 	private javax.swing.JPanel ivjJDialogContentPane = null;
 	private CreateTopPanel ivjTopPanel = null;
@@ -23,6 +31,7 @@ public class CreateDisplayDialog extends javax.swing.JDialog {
 	private javax.swing.JPanel ivjJPanelBottomPanelHolder = null;
 	private javax.swing.JPanel ivjJPanelTemplateHolder = null;
 	private com.cannontech.common.gui.util.OkCancelPanel ivjOkCancelPanel = null;
+    private List<String> modelContextList = new ArrayList<String>(10);
 
 class IvjEventHandler implements com.cannontech.common.gui.util.OkCancelPanelListener {
 		public void JButtonCancelAction_actionPerformed(java.util.EventObject newEvent) {
@@ -263,11 +272,13 @@ private com.cannontech.common.gui.util.OkCancelPanel getOkCancelPanel() {
  * @return com.cannontech.tdc.createdisplay.TemplatePanel
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private TemplatePanel getTemplatePanel() {
+public TemplatePanel getTemplatePanel() {
 	if (ivjTemplatePanel == null) {
 		try {
-			ivjTemplatePanel = new com.cannontech.tdc.createdisplay.TemplatePanel();
-			ivjTemplatePanel.setName("TemplatePanel");
+			Frame parentFrame = CtiUtilities.getParentFrame(this);
+            ivjTemplatePanel = new com.cannontech.tdc.createdisplay.TemplatePanel(parentFrame);
+			ivjTemplatePanel.resetTemplateTable();
+            ivjTemplatePanel.setName("TemplatePanel");
 			// user code begin {1}
 
 			ivjTemplatePanel.setCurrentDisplayNumber( currentDisplayNumber );
@@ -340,6 +351,7 @@ private void initialize() {
 		setSize(629, 650);
 		setTitle("Create Display");
 		setContentPane(getJDialogContentPane());
+        initModelContextList();
 		initConnections();
 	} catch (java.lang.Throwable ivjExc) {
 		handleException(ivjExc);
@@ -451,6 +463,25 @@ public void okCancelPanel_JButtonOkAction_actionPerformed(java.util.EventObject 
 				
 			TDCMainFrame.messageLog.addMessage("Display " + displayName + " added to the display tables", MessageBoxFrame.INFORMATION_MSG );
 
+            //update our data model if using template
+            boolean usingTemplate = getTemplatePanel().getUseTemplateCB().isSelected();
+            if (usingTemplate)
+            {
+                Frame owner = CtiUtilities.getParentFrame(this);
+                TDCDataModel dataModel = ((TDCMainFrame)owner).getDataModel();
+                Integer displayNum = new Integer ( (int)currentDisplayNumber );
+                String cxt = ModelContext.ALL_CTXTS[0];
+                dataModel.updateModel(this, "displayNum", displayNum, cxt);
+                
+                TemplatePanel templatePanel = getTemplatePanel();
+                int selectedIndex = templatePanel.getJComboBoxTemplate().getSelectedIndex();
+                BigDecimal templateNum = (BigDecimal) templatePanel.getTemplateNums().get(selectedIndex);
+                dataModel.updateModel(this, "templateNum", new Integer ( templateNum.intValue()), cxt);
+              
+                DataModelUtils.saveDataModel(owner);
+            }
+            
+            
 			removeCache();			
 			this.setVisible( false );
 		}
@@ -516,5 +547,11 @@ private static void getBuilderData() {
 	68013EE82BCC223807C0FCD4BF65C66C367EDA0A689D2A2EE0E9A77E590DFF12E827947AB7F5481242DE7B1CA474D5B7617B4A11FB5A6F12B70CCEF67B5DB6F9066DA7094FB8769536276CAC26E7FA400B4F703D232988E46676BB4BAB9DC6D1140DE2FB0945045FDC16764802639EA02998473773B6CA25F237C0FF8BF1C353677F81D0CB878856AE59AF4997GGBCC6GGD0CB818294G94G88G88GC9F954AC56AE59AF4997GGBCC6GG8CGGGGGGGGGGGGGGGGGE2F5E9ECE4E5F2
 	A0E4E1F4E1D0CB8586GGGG81G81GBAGGG8398GGGG
 **end of data**/
+}
+public List<String> getModelContextList() {
+    return modelContextList;
+}
+public void initModelContextList() {
+    modelContextList.add(ModelContext.ALL_CTXTS[0]);
 }
 }

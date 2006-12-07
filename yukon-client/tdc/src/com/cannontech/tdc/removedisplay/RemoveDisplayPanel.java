@@ -6,13 +6,21 @@ package com.cannontech.tdc.removedisplay;
  * @author: 
  */
 
+import java.awt.Frame;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.tdc.TDCMainFrame;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
+import com.cannontech.tdc.model.ModelContext;
+import com.cannontech.tdc.model.TDCDataModel;
 import com.cannontech.tdc.utils.DataBaseInteraction;
+import com.cannontech.tdc.utils.DataModelUtils;
 
-public class RemoveDisplayPanel extends javax.swing.JPanel 
+public class RemoveDisplayPanel extends javax.swing.JPanel  implements ModelContext
 {
 	private Object[] removedDisplays = null;
 	private Vector displayNumbers = null;
@@ -25,6 +33,7 @@ public class RemoveDisplayPanel extends javax.swing.JPanel
 	IvjEventHandler ivjEventHandler = new IvjEventHandler();
 	protected transient com.cannontech.tdc.removedisplay.RemoveDisplayPanelListener fieldRemoveDisplayPanelListenerEventMulticaster = null;
 	private javax.swing.JButton ivjJButtonDelete = null;
+    private List<String> modelContextList = new ArrayList<String>(10);
 
 class IvjEventHandler implements java.awt.event.ActionListener {
 		public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -392,7 +401,8 @@ constraintsJPanel3.gridheight = 2;
 		constraintsJPanel3.weighty = 1.0;
 		constraintsJPanel3.insets = new java.awt.Insets(10, 15, 10, 15);
 		add(getJPanel3(), constraintsJPanel3);
-		initConnections();
+		initModelContextList();
+        initConnections();
 	} catch (java.lang.Throwable ivjExc) {
 		handleException(ivjExc);
 	}
@@ -485,7 +495,16 @@ private void removeSelections()
 	
 	for ( int i = 0; i < removedDisplays.length; i++ )
 	{
-		String query = new String
+		
+        Frame parentFrame = CtiUtilities.getParentFrame(this);
+        TDCDataModel dataModel = ((TDCMainFrame)parentFrame).getDataModel();
+      
+        String dispName = removedDisplays[ i ].toString();
+        Integer displayNum = DataModelUtils.getDisplayNum (dispName ); 
+        dataModel.updateModel(this, "displayNum", displayNum, ModelContext.ALL_CTXTS[0]);
+        dataModel.removeModel();
+
+        String query = new String
 			("delete from display where name = ?");
 		Object[] objs = new Object[1];
 		objs[0] = removedDisplays[ i ].toString();
@@ -566,5 +585,11 @@ private static void getBuilderData() {
 	EE0D3C73FEDD505ED93FEA0D3C734E9ED5DFE30B3C735EB16A4E7BCBDB641DB77567F3F84A06FF5154282C969556251D13277654E93B4356E9EFBDE77B58517A6919E67B392ED6FB2B59E16B7818FCE101D53B861F0779498F0E6FD7DCBFA9D60A3D48B747BDEA25580B32607FA57D01EF815A43FF897932E06077857042AF9582FE21C87D7C5846C24C0621A37539BFDF121BA3645984838F39B6A18F6326CD48E7E155A664C2489D463FE1E178ABD2E03BAC54DAA50F4B54E53535B95EBB55F13A2B751C59EEB3
 	371BFAA53FE9B068115DBE0FE8D2559E90E84FF56806760EA1EBE6F954FB0AF5C9DCB699C961BD974F298E32EFB12A9F02FD77C31497057C789F1EE8E7DCDD03CE0FC7F6FAAEB6FBDDF85E55B2A20B61736C1AG528FD09B25D2796FCCE01B22FB6A73FFD0CB87880C1A0C0D0A94GG94BCGGD0CB818294G94G88G88G74F854AC0C1A0C0D0A94GG94BCGG8CGGGGGGGGGGGGGGGGGE2F5E9ECE4E5F2A0E4E1F4E1D0CB8586GGGG81G81GBAGGG4494GGGG
 **end of data**/
+}
+public List<String> getModelContextList() {
+    return modelContextList;
+}
+public void initModelContextList() {
+    modelContextList.add(ModelContext.ALL_CTXTS[0]);
 }
 }

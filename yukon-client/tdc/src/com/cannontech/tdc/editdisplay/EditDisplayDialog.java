@@ -6,16 +6,27 @@ package com.cannontech.tdc.editdisplay;
  * @author: 
  */
 import java.awt.Cursor;
+import java.awt.Frame;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.swing.JCheckBox;
+
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.tdc.TDCMainFrame;
 import com.cannontech.tdc.createdisplay.ColumnData;
 import com.cannontech.tdc.createdisplay.CreateTopPanel;
 import com.cannontech.tdc.createdisplay.TemplatePanel;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
+import com.cannontech.tdc.model.ModelContext;
+import com.cannontech.tdc.model.TDCDataModel;
+import com.cannontech.tdc.template.TemplateDisplayModel;
 import com.cannontech.tdc.utils.DataBaseInteraction;
+import com.cannontech.tdc.utils.DataModelUtils;
 import com.cannontech.tdc.utils.TDCDefines;
 
-public class EditDisplayDialog extends javax.swing.JDialog 
+public class EditDisplayDialog extends javax.swing.JDialog implements ModelContext
 {
 	private String displayName = null;
 	private java.util.Vector displayNumbers = null;
@@ -30,6 +41,8 @@ public class EditDisplayDialog extends javax.swing.JDialog
 	private com.cannontech.tdc.addpoints.AddPointsCenterPanel ivjAddPointsPanel = null;
 	private TemplatePanel ivjTemplatePanel = null;
 	private com.cannontech.common.gui.util.OkCancelPanel ivjOkCancelPanel = null;
+    private List<String> modelContextList = new ArrayList<String>(10);
+    
 
 class IvjEventHandler implements com.cannontech.common.gui.util.OkCancelPanelListener, java.awt.event.ActionListener {
 		public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -173,7 +186,8 @@ public String createCopy()
 	}
 
 	long oldDisplayNumber = currentDisplayNumber;
-	currentDisplayNumber = TDCDefines.createValidDisplayNumber();
+	boolean usingTemplate = DataModelUtils.getDisplayTemplate(oldDisplayNumber) > -1;
+    currentDisplayNumber = TDCDefines.createValidDisplayNumber();
 	
 	Cursor original = getCursor();
 	try
@@ -184,7 +198,24 @@ public String createCopy()
 		createDisplay( newName );
 		insertCreatedColumns();
 		copyPoints( oldDisplayNumber );
-
+        
+        //update our data model
+        if (usingTemplate)
+        {
+            Frame owner = CtiUtilities.getParentFrame(this);
+            TDCDataModel dataModel = ((TDCMainFrame)owner).getDataModel();
+            Integer displayNum = new Integer ( (int)currentDisplayNumber );
+            String cxt = ModelContext.ALL_CTXTS[0];
+            dataModel.updateModel(this, "displayNum", displayNum, cxt);
+            
+            TemplatePanel templatePanel = getTemplatePanel();
+            int selectedIndex = templatePanel.getJComboBoxTemplate().getSelectedIndex();
+            BigDecimal templateNum = (BigDecimal) templatePanel.getTemplateNums().get(selectedIndex);
+            dataModel.updateModel(this, "templateNum", new Integer ( templateNum.intValue()), cxt);
+          
+            DataModelUtils.saveDataModel(owner);
+        }
+        
 		TDCMainFrame.messageLog.addMessage("Copy of display " + getTopPanel().getName() + " created successfully", MessageBoxFrame.INFORMATION_MSG );
 	}
 	finally
@@ -433,10 +464,10 @@ private com.cannontech.common.gui.util.OkCancelPanel getOkCancelPanel() {
  * @return com.cannontech.tdc.createdisplay.TemplatePanel
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private com.cannontech.tdc.createdisplay.TemplatePanel getTemplatePanel() {
+public com.cannontech.tdc.createdisplay.TemplatePanel getTemplatePanel() {
 	if (ivjTemplatePanel == null) {
 		try {
-			ivjTemplatePanel = new com.cannontech.tdc.createdisplay.TemplatePanel();
+			ivjTemplatePanel = new com.cannontech.tdc.createdisplay.TemplatePanel(CtiUtilities.getParentFrame(this));
 			ivjTemplatePanel.setName("TemplatePanel");
 			ivjTemplatePanel.setPreferredSize(new java.awt.Dimension(611, 94));
 			ivjTemplatePanel.setMinimumSize(new java.awt.Dimension(611, 94));
@@ -541,13 +572,13 @@ private boolean initComboCurrentDisplay( String displayName )
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
 private void initConnections() throws java.lang.Exception {
 	// user code begin {1}
-
 	if( displayName != null )
 		initComboCurrentDisplay( displayName );
 
 	// user code end
 	getJComboBoxCurrentDisplay().addActionListener(ivjEventHandler);
 	getOkCancelPanel().addOkCancelPanelListener(ivjEventHandler);
+    
 }
 /**
  * Initialize the class.
@@ -566,7 +597,8 @@ private void initialize()
 		setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 		setTitle("Edit Display");
 		setContentPane(getJDialogContentPane());
-		initConnections();
+        initModelContextList();
+        initConnections();
 	}
 	catch (java.lang.Throwable ivjExc) 
 	{
@@ -577,6 +609,8 @@ private void initialize()
 }
 /**
  * Comment
+ * @param displayNum 
+ * @param templateNum 
  */
 private void insertCreatedColumns()
 {
@@ -589,16 +623,27 @@ private void insertCreatedColumns()
 		objs[0] = new Long(currentDisplayNumber);
 		objs[1] = getTemplatePanel().columnFieldData( i, ColumnData.COLUMN_TITLE );
 		objs[2] = getTemplatePanel().columnFieldData( i, ColumnData.COLUMN_TYPE_NUMBER );
-		objs[3] = getTemplatePanel().columnFieldData( i, ColumnData.COLUMN_NUMBER );
+		objs[3] = new Integer (i + 1); 
+            //getTemplatePanel().columnFieldData( i, ColumnData.COLUMN_NUMBER );
 		objs[4] = getTemplatePanel().columnFieldData( i, ColumnData.COLUMN_WIDTH );
-		DataBaseInteraction.updateDataBase( query, objs );
+		
+        DataBaseInteraction.updateDataBase( query, objs );
 
 	}
 			
-//			TDCMainFrame.messageLog.addMessage("Display " + displayName + " added to the display tables", MessageBoxFrame.INFORMATION_MSG );
+    //make displaycolumns look like template columns
+  
+    //			TDCMainFrame.messageLog.addMessage("Display " + displayName + " added to the display tables", MessageBoxFrame.INFORMATION_MSG );
 	this.setVisible( false );
 	
 	return;
+}
+
+private void templatizeDisplay (Integer templateNum, Integer displayNum){
+    DataModelUtils.templatizeDisplay (templateNum, displayNum);
+    this.setVisible( false );
+    return;
+
 }
 /**
  * Insert the method's description here.
@@ -688,9 +733,12 @@ public void jComboBoxCurrentDisplay_ActionPerformed(java.awt.event.ActionEvent a
 		currentDisplayNumber = 
 				Long.parseLong( displayNumbers.elementAt( getJComboBoxCurrentDisplay().getSelectedIndex() ).toString() );
 				
-		getAddPointsPanel().jDisplayChanged_ActionPerformed( currentDisplayNumber );
+
+           
+        getAddPointsPanel().jDisplayChanged_ActionPerformed( currentDisplayNumber );
 		getTopPanel().editInitialize( new Long( currentDisplayNumber ) );
-		getTemplatePanel().editInitialize( new Long( currentDisplayNumber ) );		
+		getTemplatePanel().editInitialize( new Long( currentDisplayNumber ) );	
+        
 	}
 
 	return;
@@ -713,8 +761,19 @@ public void okCancelPanel_JButtonOkAction_actionPerformed(java.util.EventObject 
 		  getBottomPanel().columnCount() > 0 )*/
 	{
 
-		updateCurrentDisplay();
-	}
+		JCheckBox useTemplateCB = getTemplatePanel().getUseTemplateCB();
+        //check if we are using a template for our display
+        boolean usingTemplate = useTemplateCB.isSelected();
+        if (usingTemplate)
+        {
+            Frame parentFrame = CtiUtilities.getParentFrame(this);
+            TemplateDisplayModel m = (TemplateDisplayModel) DataModelUtils.getComponentDataModel(parentFrame, this, ModelContext.ALL_CTXTS[0]);
+            BigDecimal idx = (BigDecimal)displayNumbers.get( getJComboBoxCurrentDisplay().getSelectedIndex());
+            m.setDisplayNum(new Integer (idx.intValue()));
+            m.saveModel();
+        }
+        updateCurrentDisplay(usingTemplate);
+    }
 	else
 		warningMsg.showMessageDialog(this, 
 			"Make sure all fields are completely filled in.", "Message Box", warningMsg.WARNING_MESSAGE);
@@ -722,7 +781,8 @@ public void okCancelPanel_JButtonOkAction_actionPerformed(java.util.EventObject 
 	return;
 }
 
-public void updateCurrentDisplay() {
+
+public void updateCurrentDisplay(boolean templatize) {
     Cursor original = getCursor();		
     setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );		
 
@@ -731,11 +791,37 @@ public void updateCurrentDisplay() {
     	updateDisplayTable();
     	
     	removeAllColumnsFromDB();
-
-    	insertCreatedColumns();
-    	insertDataSet();
-    	getTemplatePanel().saveLastTemplateNum();
-    	TDCMainFrame.messageLog.addMessage("Display " + getTopPanel().getName() + " edited successfully", MessageBoxFrame.INFORMATION_MSG );
+        Frame owner = CtiUtilities.getParentFrame(this);
+        if (templatize)
+        {
+            Integer dispNum = new Integer ((int)currentDisplayNumber);
+            
+            int selectedIndex = getTemplatePanel().getJComboBoxTemplate().getSelectedIndex();
+            String numString = getTemplatePanel().getTemplateNums().elementAt(selectedIndex).toString();
+            Integer templateNum = Integer.parseInt ( numString);
+            
+            if (templateNum == null)
+            {
+                templateNum = getTemplateNumberForDisplay(owner, dispNum);
+            }
+            updateTemplateDisplayModel(owner, templateNum);
+            //when we temlatize we make the display columns look like template columns
+            //it is useful when the new template has been created and the current
+            //display needs to be updated with information about this new template
+                templatizeDisplay(templateNum, dispNum);
+        }
+        else
+        {
+            
+            TemplateDisplayModel m = (TemplateDisplayModel) DataModelUtils.getComponentDataModel(owner, this, ModelContext.ALL_CTXTS[0]);
+            m.setDisplayNum(Integer.parseInt( "" + currentDisplayNumber) );
+            m.initModel();
+            m.removeModel();
+            insertCreatedColumns();
+        }
+        insertDataSet();
+        ((TDCMainFrame)owner).getMainPanel().setUpTable();
+        TDCMainFrame.messageLog.addMessage("Display " + getTopPanel().getName() + " edited successfully", MessageBoxFrame.INFORMATION_MSG );
 
     	this.setVisible( false );
     }
@@ -744,6 +830,22 @@ public void updateCurrentDisplay() {
     	setCursor( original );					
     }
     return;
+}
+
+private void updateTemplateDisplayModel(Frame owner, Integer tempNum) {
+    Integer displayNum = new Integer ((int)currentDisplayNumber);
+    String templateCxt = ModelContext.ALL_CTXTS[0];
+    TemplateDisplayModel componentDataModel = (TemplateDisplayModel) DataModelUtils.getComponentDataModel(owner, this, templateCxt);
+    componentDataModel.setDisplayNum(displayNum);
+    componentDataModel.setTemplateNum(tempNum);
+    componentDataModel.saveModel();
+}
+
+private Integer getTemplateNumberForDisplay(Frame owner, Integer displayNum) {
+    TemplateDisplayModel componentDataModel = (TemplateDisplayModel) DataModelUtils.getComponentDataModel(owner, this, ModelContext.ALL_CTXTS[0]);
+    componentDataModel.setDisplayNum(displayNum);
+    componentDataModel.initModel();
+    return componentDataModel.getTemplateNum();
 }
 /**
  * Remove all the columns from the database
@@ -830,6 +932,17 @@ private static void getBuilderData() {
 
 public String getDisplayName() {
     return displayName;
+}
+
+public long getCurrentDisplayNumber() {
+    return currentDisplayNumber;
+}
+
+public List<String> getModelContextList() {
+    return modelContextList;
+}
+public void initModelContextList() {
+    modelContextList.add(ModelContext.ALL_CTXTS[0]);
 }
 
 }

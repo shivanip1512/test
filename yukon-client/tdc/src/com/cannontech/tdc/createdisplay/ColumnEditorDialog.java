@@ -6,15 +6,29 @@ package com.cannontech.tdc.createdisplay;
  * @author: 
  * @Version: <version>
  */
+import java.awt.Component;
+import java.awt.Dialog;
+import java.awt.Frame;
+import java.math.BigDecimal;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.tdc.TDCMainFrame;
 import com.cannontech.tdc.editdisplay.EditDisplayDialog;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
+import com.cannontech.tdc.model.ModelContext;
+import com.cannontech.tdc.model.TDCDataModel;
+import com.cannontech.tdc.template.TemplateDisplay;
+import com.cannontech.tdc.template.TemplateDisplayModel;
 import com.cannontech.tdc.utils.DataBaseInteraction;
+import com.cannontech.tdc.utils.DataModelUtils;
 import com.cannontech.tdc.utils.TDCDefines;
 
-public class ColumnEditorDialog extends javax.swing.JDialog {
+public class ColumnEditorDialog extends javax.swing.JDialog implements ModelContext{
 	private String title = "";
 	private int currentMode = -1;
 	private Vector templateNums = null;
@@ -32,6 +46,7 @@ public class ColumnEditorDialog extends javax.swing.JDialog {
 	private javax.swing.JLabel ivjJLabelTemplateName = null;
 	private javax.swing.JLabel ivjJLabelName = null;
 	private javax.swing.JTextField ivjJTextFieldName = null;
+    private List<String> modelContextList = new ArrayList<String>(10);
 
 class IvjEventHandler implements com.cannontech.common.gui.util.OkCancelPanelListener, java.awt.event.ActionListener {
 		public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -107,7 +122,6 @@ public ColumnEditorDialog(java.awt.Frame owner, String title, int  displayMode, 
 
 	setDisplayMode( displayMode );
 	
-	displayNumber = displayNumber;
 	initialize();
 }
 /**
@@ -244,13 +258,14 @@ private javax.swing.JPanel getJDialogContentPane() {
 			constraintsOkCancelPanel.insets = new java.awt.Insets(1, 2, 4, 9);
 			getJDialogContentPane().add(getOkCancelPanel(), constraintsOkCancelPanel);
 
-			java.awt.GridBagConstraints constraintsJComboBoxTemplate = new java.awt.GridBagConstraints();
+			
+            java.awt.GridBagConstraints constraintsJComboBoxTemplate = new java.awt.GridBagConstraints();
 			constraintsJComboBoxTemplate.gridx = 2; constraintsJComboBoxTemplate.gridy = 2;
 			constraintsJComboBoxTemplate.fill = java.awt.GridBagConstraints.HORIZONTAL;
 			constraintsJComboBoxTemplate.anchor = java.awt.GridBagConstraints.NORTHWEST;
 			constraintsJComboBoxTemplate.weightx = 1.0;
-			constraintsJComboBoxTemplate.ipadx = -6;
-			constraintsJComboBoxTemplate.ipady = -6;
+			//constraintsJComboBoxTemplate.ipadx = -6;
+			//constraintsJComboBoxTemplate.ipady = -6;
 			constraintsJComboBoxTemplate.insets = new java.awt.Insets(8, 3, 1, 310);
 			getJDialogContentPane().add(getJComboBoxTemplate(), constraintsJComboBoxTemplate);
 
@@ -421,8 +436,41 @@ private void initComboTemplate()
 	//init our first display
 	if( getJComboBoxTemplate().getItemCount() > 0 )
 	{
-		getJComboBoxTemplate().setSelectedIndex( 0 );
-		getEditorPanel().editInitialize( new Long( templateNums.elementAt(0).toString() ) );
+        Integer templateNum = new Integer (1);
+        Frame parentFrame = CtiUtilities.getParentFrame(this);
+        if (parentFrame instanceof TDCMainFrame)
+        {
+            Integer dispNum = new Integer (((TDCMainFrame)parentFrame).getMainPanel().getCurrentDisplay().getDisplayNumber());
+            TDCDataModel componentDataModel = DataModelUtils.getComponentDataModel(parentFrame, this, ModelContext.ALL_CTXTS[0]);
+            ((TemplateDisplayModel)componentDataModel).setDisplayNum(dispNum);
+            componentDataModel.initModel();
+            int selectedTemplateIndex = 0;
+            templateNum = ((TemplateDisplayModel)componentDataModel).getTemplateNum();
+            if (!templateNum.equals( TemplateDisplay.INITVAL) )
+            {
+                selectedTemplateIndex = templateNums.indexOf(new BigDecimal (templateNum.intValue()));
+            }
+                
+            /*            templateNum = ((TemplateDisplayModel)componentDataModel).getTemplateNum();
+           
+            //special case when a template associated with a display has been deleted.
+            Integer standardTemplate = 1;
+            int selectedTemplateIndex;
+            if (templateNum.equals( TemplateDisplay.INITVAL) ){
+                TDCDataModel dataModel = ((TDCMainFrame)parentFrame).getDataModel();
+                dataModel.updateModel(this, "templateNum", standardTemplate, ModelContext.ALL_CTXTS[0]);
+                dataModel.updateModel(this, "displayNum", dispNum, ModelContext.ALL_CTXTS[0]);
+                selectedTemplateIndex = 0;
+                DataModelUtils.saveDataModel(parentFrame);
+            }
+            else
+            {
+                selectedTemplateIndex = templateNums.indexOf(new BigDecimal (templateNum.intValue()));
+            }
+*/            
+            getJComboBoxTemplate().setSelectedIndex( selectedTemplateIndex );
+        }
+        getEditorPanel().editInitialize( new Long ( templateNum.intValue() ) );
 	}
 	
 	getJComboBoxTemplate().revalidate();
@@ -461,7 +509,8 @@ private void initialize() {
 		setModal(true);
 		setTitle("");
 		setContentPane(getJDialogContentPane());
-		initConnections();
+		initModelContextList();
+        initConnections();
 	} catch (java.lang.Throwable ivjExc) {
 		handleException(ivjExc);
 	}
@@ -479,7 +528,6 @@ public void jComboBoxTemplate_ActionPerformed(java.awt.event.ActionEvent actionE
 	java.awt.Frame owner = com.cannontech.common.util.CtiUtilities.getParentFrame(this);
 	java.awt.Cursor original = owner.getCursor();
 	owner.setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );	
-
 	try
 	{
 		//getEditorPanel().removeAllColumns();
@@ -488,13 +536,19 @@ public void jComboBoxTemplate_ActionPerformed(java.awt.event.ActionEvent actionE
 			getJComboBoxTemplate().getItemCount() > 0 )
 		{	
 				
-			getEditorPanel().editInitialize( new Long( templateNums.elementAt( getJComboBoxTemplate().getSelectedIndex() ).toString() ) );
-		}
+            BigDecimal templateNum   = (BigDecimal) templateNums.elementAt( getJComboBoxTemplate().getSelectedIndex() );
+            Integer tempNum = new Integer ( templateNum.intValue());
+            getEditorPanel().editInitialize( new Long( templateNum.toString() ) );
+            TDCDataModel dataModel = ((TDCMainFrame)owner).getDataModel();
+            String cxt = ModelContext.ALL_CTXTS[0];
+            dataModel.updateModel(this, "templateNum", tempNum, cxt );
+        
+        }
 		
 	}
 	finally
 	{	
-		owner.setCursor( original );
+        owner.setCursor( original );
 	}
 	return;
 }
@@ -523,8 +577,7 @@ public static void main(java.lang.String[] args) {
  */
 public void okCancelPanel_JButtonCancelAction_actionPerformed(java.util.EventObject newEvent) 
 {
-	this.dispose();
-	
+    this.dispose();
 	return;
 }
 /**
@@ -532,38 +585,70 @@ public void okCancelPanel_JButtonCancelAction_actionPerformed(java.util.EventObj
  */
 public void okCancelPanel_JButtonOkAction_actionPerformed(java.util.EventObject newEvent) 
 {
-
-	switch ( currentMode )
+    Integer templateNum;
+    switch ( currentMode )
 	{
 		case DISPLAY_COMBO_ONLY:  // editing a template
-		int templateNum = Integer.parseInt( templateNums.elementAt( getJComboBoxTemplate().getSelectedIndex() ).toString() );
-		deletePreviouslyCreatedColumns( templateNum );
-		writeCreatedColumns( templateNum );
-        updateCurrentDisplay();
-        this.dispose();
-        return;
+    		templateNum = new Integer ( Integer.parseInt( templateNums.elementAt( getJComboBoxTemplate().getSelectedIndex() ).toString() ) );
+            deletePreviouslyCreatedColumns( templateNum );
+    		writeCreatedColumns( templateNum );
+    		//update our template display data model   
+            updateTemplateDisplayModel(templateNum);
+            updateDisplaysAssociated (templateNum);
+            updateCurrentDisplay(templateNum, true);
+            this.dispose();
+            return;
 		
 		case DISPLAY_NAME_ONLY:  // Created a Template from scratch
-		writeCreatedTemplate();
-        updateCurrentDisplay();
-        this.dispose();
-		return;
+    		templateNum = new Integer ( TDCDefines.getValidDisplayNumber() );
+            writeCreatedTemplate(templateNum.intValue());
+            //update our data model
+            updateTemplateDisplayModel(templateNum);
+            updateCurrentDisplay(templateNum, true);
+            this.dispose();
+    		return;
 
 		
 		case DISPLAY_ALL_OPTIONS:
-		return;
+		    return;
 
 		case DISPLAY_NO_OPTIONS:  // Advanced template option
-		default:
-		this.setVisible( false );
+    		default:
+    		this.setVisible( false );
 	}
 	
 	return;
 }
-private void updateCurrentDisplay() {
+
+
+
+
+private void updateDisplaysAssociated(Integer templateNum) 
+{
+    List<Integer> allDisplaysForTemplate = DataModelUtils.getAllDisplaysForTemplate(templateNum);
+    for (Integer dispNum : allDisplaysForTemplate) {
+        DataModelUtils.deleteDisplayColumns(dispNum);
+        DataModelUtils.templatizeDisplay(templateNum, dispNum);
+    }
+}
+private void updateTemplateDisplayModel(Integer templateNum) {
+    String tempCxt = ModelContext.ALL_CTXTS[0];
+    Frame parentFrame = CtiUtilities.getParentFrame(this);
+    TDCDataModel dataModel;
+    Integer displayNum;
+    dataModel = ((TDCMainFrame)parentFrame).getDataModel();
+    dataModel.updateModel(this, "templateNum", templateNum, tempCxt);
+    
+    displayNum = new Integer ((int)((TDCMainFrame)parentFrame).getCurrentDisplayNumber());
+    dataModel.updateModel(this, "displayNum", displayNum, tempCxt );
+    DataModelUtils.saveDataModel(parentFrame);
+    
+}
+
+private void updateCurrentDisplay(Integer tempNum, boolean templatize) {
     TDCMainFrame mainFrame = ((TDCMainFrame)getParent());
     EditDisplayDialog dialog = mainFrame.getEditDisplayDialog();
-    dialog.updateCurrentDisplay();
+    dialog.updateCurrentDisplay(templatize);
     mainFrame.getMainPanel().executeRefresh_Pressed();
 }
 /**
@@ -621,33 +706,46 @@ private void writeCreatedColumns( int templateNum )
 {
 	for ( int i = 0; i < getEditorPanel().columnCount(); i++ )
 	{
-		String query = new String
+		String templateQuery = new String
 			("insert into templatecolumns (templatenum, title, typenum, ordering, width) values (?, ?, ?, ?, ?)");
-		Object[] objs = new Object[5];
-		objs[0] = new Integer(templateNum);
-		objs[1] = getEditorPanel().columnFieldData( i, ColumnData.COLUMN_TITLE );
-		objs[2] = getEditorPanel().columnFieldData( i, ColumnData.COLUMN_TYPE_NUMBER );
-		objs[3] = getEditorPanel().columnFieldData( i, ColumnData.COLUMN_NUMBER );
-		objs[4] = getEditorPanel().columnFieldData( i, ColumnData.COLUMN_WIDTH );
-		int result = DataBaseInteraction.updateDataBase( query, objs );
-			
-		if( result >0 )				
-			TDCMainFrame.messageLog.addMessage("Template column data written to the database successfully", MessageBoxFrame.INFORMATION_MSG );
+        Object[] objs = new Object[5];
+        objs[0] = new Integer(templateNum);
+        objs[1] = getEditorPanel().columnFieldData( i, ColumnData.COLUMN_TITLE );
+        objs[2] = getEditorPanel().columnFieldData( i, ColumnData.COLUMN_TYPE_NUMBER );
+        objs[3] = new Integer (i);
+        objs[4] = getEditorPanel().columnFieldData( i, ColumnData.COLUMN_WIDTH );
 
-	}
+
+		int result = DataBaseInteraction.updateDataBase( templateQuery, objs );
+        if( result >0 )             
+            TDCMainFrame.messageLog.addMessage("Template column data written to the database successfully", MessageBoxFrame.INFORMATION_MSG );
+        
+    
+    }
 
 	return;
+    
+}
+
+private Object[] getColumnData(int templateNum, int i) {
+    Object[] objs = new Object[5];
+    objs[0] = new Integer(templateNum);
+    objs[1] = getEditorPanel().columnFieldData( i, ColumnData.COLUMN_TITLE );
+    objs[2] = getEditorPanel().columnFieldData( i, ColumnData.COLUMN_TYPE_NUMBER );
+    objs[3] = new Integer (i);
+    objs[4] = getEditorPanel().columnFieldData( i, ColumnData.COLUMN_WIDTH );
+    return objs;
 }
 /**
  * Comment
  */
 private void writeCreatedTemplate()
 {
-
-	String query1 = "select templatenum from template order by templatenum";
-	int templateNum = TDCDefines.createValidDisplayNumber( query1 );
-	
-	String query = new String
+	int templateNum = TDCDefines.getValidDisplayNumber();
+	writeCreatedTemplate(templateNum);
+}
+private void writeCreatedTemplate(int templateNum) {
+    String query = new String
 			("insert into template (templatenum, name, description) values (?, ?, '')");
 	Object[] objs = new Object[2];
 	objs[0] = new Integer(templateNum);
@@ -694,5 +792,12 @@ private static void getBuilderData() {
 	49CE2D0FA63060DBB432AFC83A8D53D85EF11C9E0D6C00BF8F7D7361E4035BC8C6FF1421118CD10852C8AA561574F14816EC411AF1D83C706C9E0765BD491FA24DF158DD1C82B2B6FF2226B4BE7C5A06789B76C28B3100247AE4A61A34A1CC496889B89D267765F70DFA3FED06AD6C6F9A310F717F8F72D870EE4E74B1E98CF5FC9360D3978B1D2C9B7BB81CCE42F5245DA5A98AF85501C637836B0DCD431A9C4CA1FEBB0674FDE28C6FE4FDDB46B239AF90F37E8FD0CB8788B2E3F4E2CB93GG54B4GGD0CB81
 	8294G94G88G88GD8F954ACB2E3F4E2CB93GG54B4GG8CGGGGGGGGGGGGGGGGGE2F5E9ECE4E5F2A0E4E1F4E1D0CB8586GGGG81G81GBAGGG0593GGGG
 **end of data**/
+}
+public List<String> getModelContextList() {
+    return modelContextList;
+}
+//must contain all contexts this component belongs to
+public void initModelContextList() {
+    modelContextList.add(ModelContext.ALL_CTXTS[0]);
 }
 }

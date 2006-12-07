@@ -7,13 +7,21 @@ package com.cannontech.tdc.createdisplay;
  * @Version: <version>
  */
 
+import java.awt.Frame;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.tdc.TDCMainFrame;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
+import com.cannontech.tdc.model.ModelContext;
+import com.cannontech.tdc.model.TDCDataModel;
 import com.cannontech.tdc.utils.DataBaseInteraction;
+import com.cannontech.tdc.utils.DataModelUtils;
 
-public class RemoveTemplateDialog extends javax.swing.JDialog {
+public class RemoveTemplateDialog extends javax.swing.JDialog implements ModelContext{
 	private Vector templateNumbers = null;
 	private javax.swing.JPanel ivjJDialogContentPane = null;
 	private javax.swing.JButton ivjJButtonCancel = null;
@@ -21,6 +29,8 @@ public class RemoveTemplateDialog extends javax.swing.JDialog {
 	private javax.swing.JList ivjJListTemplate = null;
 	IvjEventHandler ivjEventHandler = new IvjEventHandler();
 	private javax.swing.JScrollPane ivjJScrollPane = null;
+    private List<String> modelContextList = new ArrayList<String>(10);
+
 
 class IvjEventHandler implements java.awt.event.ActionListener {
 		public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -263,6 +273,7 @@ private void initialize() {
 		setSize(438, 284);
 		setTitle("Remove Template");
 		setContentPane(getJDialogContentPane());
+        initModelContextList();
 		initConnections();
 	} catch (java.lang.Throwable ivjExc) {
 		handleException(ivjExc);
@@ -319,23 +330,15 @@ public void jButtonCancel_ActionPerformed(java.awt.event.ActionEvent actionEvent
  */
 public void jButtonDelete_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
-	Object selectionValues[] = getJListTemplate().getSelectedValues();
-
-	// delete all the columns owned by the template
-	for ( int i = 0; i <= getJListTemplate().getMaxSelectionIndex(); i++ )
-		if ( getJListTemplate().isSelectedIndex( i ) )
-			deleteTemplateColumn( templateNumbers.elementAt( i ).toString() );
-	
-	for ( int i = 0; i < selectionValues.length; i++ )
-	{
-		String query = new String
-			("delete from template where name = ?");
-		Object[] objs = new Object[1];
-		objs[0] = selectionValues[i];
-		DataBaseInteraction.updateDataBase( query, objs );
-
-		TDCMainFrame.messageLog.addMessage("Template : " + selectionValues[ i ].toString() + "  deleted from the database successfully", MessageBoxFrame.INFORMATION_MSG );
-	}
+    // delete all the columns owned by the template
+	for ( int i = 0; i <= getJListTemplate().getMaxSelectionIndex(); i++ ) { 
+		if ( getJListTemplate().isSelectedIndex( i ) ) {
+            BigDecimal templateNum = (BigDecimal) templateNumbers.elementAt( i );
+            deleteFromTemplateModel(templateNum);
+            deleteTemplateColumn( templateNum.toString() );
+            deleteTemplate (templateNum.toString());
+        }
+    }
 	
 
 	TDCMainFrame.messageLog.addMessage("Template removal successfully accomplished", MessageBoxFrame.INFORMATION_MSG );
@@ -343,6 +346,24 @@ public void jButtonDelete_ActionPerformed(java.awt.event.ActionEvent actionEvent
 	this.dispose();
 	//this.setVisible( false );
 	return;
+}
+
+private void deleteTemplate(String string) {
+    String query = new String
+    ("delete from template where templatenum = ?");
+    Object[] objs = new Object[1];
+    objs[0] = Integer.parseInt(string);
+    DataBaseInteraction.updateDataBase( query, objs );
+    
+}
+private void deleteFromTemplateModel(BigDecimal templateNum) {
+    Frame parentFrame = CtiUtilities.getParentFrame(this);
+    TDCDataModel dataModel = ((TDCMainFrame)parentFrame).getDataModel();
+    List<Integer> displays = DataModelUtils.getAllDisplaysForTemplate (new Integer ( templateNum.intValue() ));
+    for (Integer displayNum : displays) {
+        dataModel.updateModel(this, "displayNum", displayNum, ModelContext.ALL_CTXTS[0]);
+        dataModel.removeModel();
+    }
 }
 /**
  * main entrypoint - starts the part when it is run as an application
@@ -393,5 +414,12 @@ private static void getBuilderData() {
 	FB2C11B5D6313E1E655207EA717F752264D2BC211EC3275BF88EF54D62BADFB0E96C0A2D47845BE46B12E6CD3487E6175F3799F7E8184374F50F0D6BEBA960D6G2C85283CA953FA70A6AE7327ED7C7D2D77A6AE73B2FB244C55B0193758A3E5EE89137908BDD266A742E47EE3FB244C79FAA6031CB0994C813ED2EF1A5C8F188C7ECE4FF2AF4C457D98AE17629E819C1E0169D4580571DE2F0DFBA40FB64870D5232F07702DA2468368337F571C2D6D01F6618B24D0A3456CA77D9AEE609A31325B91FC30AB942B
 	67EAAF1B5FCB564E2C0C794634ECB6BBDF4E6CD0BD47726C234348FF559C50599C1ED7378D6FA3316F101DDEC116B5C1BEFB4467417B6451B1CD8C4561A707113E4A6768037A1B76B072BDE4DA73FFD0CB8788F0E3F215458FGG88ABGGD0CB818294G94G88G88GA0F954ACF0E3F215458FGG88ABGG8CGGGGGGGGGGGGGGGGGE2F5E9ECE4E5F2A0E4E1F4E1D0CB8586GGGG81G81GBAGGG7F8FGGGG
 **end of data**/
+}
+public List<String> getModelContextList() {
+    return modelContextList;
+}
+//must contain all contexts this component belongs to
+public void initModelContextList() {
+    modelContextList.add(ModelContext.ALL_CTXTS[0]);
 }
 }
