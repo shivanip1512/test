@@ -109,8 +109,6 @@ public class OneLineSubs implements MessageListener
     	try
         {
         	getConnection().addMessageListener( this );
-        	getConnection().connect( 15000 );
-
         	getConnection().executeCommand( 0, CBCCommand.REQUEST_ALL_SUBS );
         	CTILogger.info("CBC One-Line successfully started...");
         }
@@ -131,7 +129,6 @@ public class OneLineSubs implements MessageListener
     	try
         {
         	getConnection().removeMessageListener( this );
-        	getConnection().disconnect();
         	CTILogger.info("CBC One-Line successfully stoped.");
         }
         catch( Exception e ) {

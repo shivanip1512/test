@@ -32,11 +32,14 @@ import com.cannontech.servlet.nav.DBEditorNav;
 import com.cannontech.servlet.xml.DynamicUpdate;
 import com.cannontech.servlet.xml.ResultXML;
 import com.cannontech.util.ParamUtil;
+import com.cannontech.yukon.IServerConnection;
+import com.cannontech.yukon.cbc.CBCClientConnection;
 import com.cannontech.yukon.cbc.CBCDisplay;
 import com.cannontech.yukon.cbc.CBCUtils;
 import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.Feeder;
 import com.cannontech.yukon.cbc.SubBus;
+import com.cannontech.yukon.conns.ConnPool;
 
 public class CBCServlet extends HttpServlet 
 {		
@@ -63,15 +66,25 @@ public class CBCServlet extends HttpServlet
  */
 public void destroy() 
 {
-	// Removing any application scope varaibles
-	getServletContext().removeAttribute(CBC_CACHE_STR);
-	
-	//stop one line service first
-	OneLineSubs oneLine = (OneLineSubs)getServletContext().getAttribute(CBC_ONE_LINE);
-	oneLine.stop();
-	getServletContext().removeAttribute(CBC_ONE_LINE);
-	super.destroy();
+	// clean up
+	shutDownCBCOneLine();
+    shutDownCBCCache(); 
+    super.destroy();
 }
+
+private void shutDownCBCOneLine() {
+    OneLineSubs oneLine = (OneLineSubs)getServletContext().getAttribute(CBC_ONE_LINE);
+    oneLine.stop();
+	getServletContext().removeAttribute(CBC_ONE_LINE);
+}
+
+private void shutDownCBCCache() {
+    CBCClientConnection defCapControlConn = (CBCClientConnection) ConnPool.getInstance().getDefCapControlConn();
+    defCapControlConn.disconnect();
+    getServletContext().removeAttribute(CBC_CACHE_STR);
+}
+
+
 
 private OneLineSubs getOneLineSubs () {
 	OneLineSubs oneLine = (OneLineSubs)getServletContext().getAttribute(CBC_ONE_LINE);
