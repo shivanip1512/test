@@ -44,6 +44,7 @@ import com.cannontech.roles.application.TDCRole;
 import com.cannontech.tdc.bookmark.BookMarkBase;
 import com.cannontech.tdc.commandevents.AckAlarm;
 import com.cannontech.tdc.createdisplay.ColumnEditorDialog;
+import com.cannontech.tdc.createdisplay.EditTemplateWarningDialog;
 import com.cannontech.tdc.createdisplay.RemoveTemplateDialog;
 import com.cannontech.tdc.data.Display;
 import com.cannontech.tdc.editdisplay.EditDisplayDialog;
@@ -51,11 +52,13 @@ import com.cannontech.tdc.exportdata.ExportCreatedDisplay;
 import com.cannontech.tdc.filter.ITDCFilter;
 import com.cannontech.tdc.fonteditor.FontEditorFrame;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
+import com.cannontech.tdc.model.TDCDataModel;
 import com.cannontech.tdc.removedisplay.RemoveDisplayDialog;
 import com.cannontech.tdc.removedisplay.RemoveDisplayPanel;
 import com.cannontech.tdc.roweditor.SendData;
 import com.cannontech.tdc.spawn.SpawnTDCMainFrameEvent;
 import com.cannontech.tdc.spawn.TDCMainFrameSpawnListener;
+import com.cannontech.tdc.utils.DataModelUtils;
 import com.cannontech.tdc.utils.DateTimeUserQuery;
 import com.cannontech.tdc.utils.TDCDefines;
 import com.klg.jclass.page.JCDocument;
@@ -139,13 +142,16 @@ public class TDCMainFrame extends javax.swing.JFrame implements com.cannontech.t
 
     public static final URL TDC_GIF = TDCMainFrame.class.getResource("/tdcIcon.gif");
 
+    
+    private TDCDataModel tdcDataModel = null;
+   
 
 /**
  * TDCFrame constructor comment.
  */
 public TDCMainFrame() {
 	super();
-	//initialize();
+
 }
 
 
@@ -161,7 +167,8 @@ public TDCMainFrame(String[] parameters)
 	{		
 		startingDisplayName = parameters[0];
 		startingViewType = parameters[1];
-	}
+
+    }
 	
 	//initialize();
 }
@@ -1945,7 +1952,7 @@ private javax.swing.JMenuItem getJMenuItemCreateTemplate() {
  * @return javax.swing.JMenuItem
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JMenuItem getJMenuItemEditDisplays() {
+public javax.swing.JMenuItem getJMenuItemEditDisplays() {
 	if (ivjJMenuItemEditDisplays == null) {
 		try {
 			ivjJMenuItemEditDisplays = new javax.swing.JMenuItem();
@@ -2671,7 +2678,9 @@ public TDCMainPanel getMainPanel() {
 			ivjMainPanel.setName("MainPanel");
 			// user code begin {1}
 			ivjMainPanel.setToolBar( getAlarmToolBar() );
-			// user code end
+            
+      
+            // user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
 			// user code end
@@ -2929,9 +2938,10 @@ private void initConnections() throws java.lang.Exception {
 
 /**
  * Initialize the class.
+ * @throws ClassNotFoundException 
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-public void initialize() {
+public void initialize()  {
 	try {
 		// user code begin {1}
 		initAccelerators();
@@ -2951,10 +2961,12 @@ public void initialize() {
 	// user code begin {2}
 
 	setIconImage( com.cannontech.tdc.utils.TDCDefines.ICON_TDC );
+    getDataModel().initModel();
 	
 	initAppearance();
 	TDCMainFrame.messageLog.addMessage("TDC started with MAX_ROWS = " + TDCDefines.MAX_ROWS, MessageBoxFrame.INFORMATION_MSG );	
 	
+
 	// connect and register with Dispatch
 	getTdcClient();
 
@@ -3362,17 +3374,21 @@ public void jMenuItemEditTemplate_ActionPerformed(java.awt.event.ActionEvent act
 		return;
 
 	java.awt.Frame owner = com.cannontech.common.util.CtiUtilities.getParentFrame( this );
-	ColumnEditorDialog editor = 
-			new ColumnEditorDialog(
-					owner, "Edit Template",
-					ColumnEditorDialog.DISPLAY_COMBO_ONLY,
-					getCurrentDisplayNumber() );
 	
-	editor.setModal( true );
-	editor.setLocationRelativeTo( this );
-	editor.show();
+    
+    ColumnEditorDialog editor = 
+        new ColumnEditorDialog(owner, "Edit Template", ColumnEditorDialog.DISPLAY_COMBO_ONLY, getCurrentDisplayNumber() );
+    editor.setModal( true );
+    editor.setLocationRelativeTo( this );
+    
+    EditTemplateWarningDialog warning = 
+        new EditTemplateWarningDialog(owner, editor);
 
-	this.repaint();
+    warning.setModal( true );
+    warning.setLocationRelativeTo( this );
+    warning.show();
+    	
+    this.repaint();
 	
 	return;
 }
@@ -3603,10 +3619,16 @@ public void jMenuItemPrint_ActionPerformed(java.awt.event.ActionEvent actionEven
 	Date stopDate = dq.getStopDate();
     Date startDate = dq.getStartDate();
     final TableModel tableModel = mainPanel.getDisplayTable().getModel();
-    setRowsForDateRange(rows, stopDate, startDate, mainPanel);
+    setRowsForDateRange(rows, stopDate, startDate);
+	printTable(rows, stopDate, startDate, tableModel);
+}
 
+
+private void printTable(final Vector rows, Date stopDate, Date startDate, final TableModel tableModel) {
+    
+    TDCMainPanel mainPanel = getMainPanel();
     //did someone say "hack it"??!!
-	TableModel tempModel = new AbstractTableModel() {
+    TableModel tempModel = new AbstractTableModel() {
 
         /**
          * 
@@ -3698,57 +3720,65 @@ public void jMenuItemPrint_ActionPerformed(java.awt.event.ActionEvent actionEven
 	flow.getCurrentTextStyle().setFont( new java.awt.Font(oldFont.getName(), java.awt.Font.PLAIN, 12) );
 	flow.print( table );
 
-
 	document.print();
 	setCursor( original );
 	
    
-   repaint();
+	repaint();
 
 	return;
 }
 
 
-
-
-
-private void setRowsForDateRange(final Vector rows, Date stopDate, Date startDate, TDCMainPanel mainPanel) 
+private void setRowsForDateRange(final Vector rows, Date stopDate, Date startDate)
 {
-     Display2WayDataAdapter tableDataModel = mainPanel.getTableDataModel();
-     if (tableDataModel != null)
-     {
-        tableDataModel.setCurrentDate(startDate);        
-        if (stopDate.after(startDate))
+    if (stopDate.after(startDate))
+    {
+
+        Calendar c = TDCDefines.getCalendarDate(startDate);
+        TDCMainPanel mainPanel = getMainPanel();
+
+        mainPanel.getHistoryDisplayData(startDate);
+
+        for (int i=mainPanel.getPageNumber(); i <= mainPanel.getTotalPages(); i++)
         {
-            updateRows(rows, stopDate, startDate, tableDataModel);
-            Calendar c = TDCDefines.getCalendarDate(startDate);
-            Date newStartDate = TDCDefines.getNextDay(c);
-            setRowsForDateRange (rows, stopDate, newStartDate, mainPanel);
+            
+                mainPanel.getHistoryDisplayDataForEventViewer(startDate, i);
+                updateRows(rows, stopDate, startDate);
         }
-     } 
+
+    
+    c = TDCDefines.getCalendarDate(startDate);
+    Date newStartDate = TDCDefines.getNextDay(c);
+    setRowsForDateRange (rows, stopDate, newStartDate);
+    }
+    
 }
 
-
-private void updateRows(final Vector rows, Date stopDate, Date startDate, TableModel tableModel) {
-    for( int i = 0; i < tableModel.getRowCount(); i++ ) {
-    	Vector v = new Vector(10);
-   
-    	boolean validDate = false;
-    	for( int j = 0; j < tableModel.getColumnCount(); j++ ) {
-    		
-    		Object val = tableModel.getValueAt( i ,j );
-    		if( val instanceof Date
-    			 && ((Date)val).before(stopDate)
-    			 && ((Date)val).after(startDate) )
-    		{
-    			validDate = true;
-    		}
-    		
-    		v.add( val );
-    	}
-    	
-    	if( validDate )
-    		rows.add( v );
+private void updateRows(final Vector rows, Date stopDate, Date startDate) {
+    Display2WayDataAdapter tableModel = getMainPanel().getTableDataModel();
+    if (tableModel != null)
+    {
+        for( int i = 0; i < tableModel.getRowCount(); i++ ) {
+        	Vector v = new Vector(10);
+       
+        	boolean validDate = false;
+        	for( int j = 0; j < tableModel.getColumnCount(); j++ ) {
+        		
+        		Object val = tableModel.getValueAt( i ,j );
+        		if( val instanceof Date
+        			 && ((Date)val).before(stopDate)
+        			 && ((Date)val).after(startDate) )
+        		{
+        			validDate = true;
+        		}
+        		
+        		v.add( val );
+        	}
+        	
+        	if( validDate )
+        		rows.add( v );
+        }
     }
 }
 
@@ -3825,7 +3855,8 @@ public void jMenuItemRemove_ActionPerformed(java.awt.event.ActionEvent actionEve
 		display.setModal(true);
 		display.setLocationRelativeTo(this);
 		display.setTitle("Delete Display");
-		display.show();
+        display.show();
+        
 		
 		
 		if( !compCanceled(display) && originalDisplayNumber >= Display.BEGINNING_USER_DISPLAY_NUMBER )
@@ -3938,8 +3969,12 @@ public void jMenuItemRemoveTemplate_ActionPerformed(java.awt.event.ActionEvent a
 		setCursor( original );
 		display.setModal(true);
 		display.setLocationRelativeTo( this );	
-		display.show();
-	}
+        EditTemplateWarningDialog warning = new EditTemplateWarningDialog (CtiUtilities.getParentFrame(this), display);
+        warning.setModal(true);
+        warning.setLocationRelativeTo(this);
+        warning.setVisible(true);
+
+    }
 	finally
 	{
 		setCursor( original );
@@ -4682,7 +4717,7 @@ private void writeParameters()
 	try
 	{
 		ParametersFile pf = new ParametersFile( CtiUtilities.OUTPUT_FILE_NAME );
-
+		
 		// get the current names for the params
 		final String[] paramNames =
 		{
@@ -4703,11 +4738,12 @@ private void writeParameters()
 		};
 
 		// get the current values for the params
-		final String[] paramValues =
+		Display currentDisplay = (Display) getMainPanel().getJComboCurrentDisplay().getSelectedItem();
+        final String[] paramValues =
 		{
-			(getMainPanel().getJComboCurrentDisplay().getSelectedItem() == null
-			 	? "" : getMainPanel().getJComboCurrentDisplay().getSelectedItem().toString()),
-
+			(currentDisplay == null
+			 	? "" 
+                : currentDisplay.toString()),
 			getSelectedViewType(),
 			String.valueOf(getX()),
 			String.valueOf(getY()),
@@ -4723,8 +4759,7 @@ private void writeParameters()
 			String.valueOf( getAlarmToolBar().getJToolBarButtonMuteAlarms().getText().equalsIgnoreCase("UnMute") ),
 			String.valueOf( getMainPanel().getCurrentTemplateNum())
         };
-
-		pf.updateValues( paramNames, paramValues );
+        pf.updateValues( paramNames, paramValues );
 	}
 	catch ( Exception e )
 	{
@@ -4732,4 +4767,15 @@ private void writeParameters()
 	}
 	
 }
+
+
+public TDCDataModel getDataModel()  {
+    if (tdcDataModel == null)
+    {
+        tdcDataModel = DataModelUtils.createMainModel(this);
+    }
+    return tdcDataModel;
+}
+
+
 }

@@ -9,6 +9,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -64,6 +65,8 @@ import com.cannontech.tdc.data.Display;
 import com.cannontech.tdc.data.DisplayData;
 import com.cannontech.tdc.filter.ITDCFilter;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
+import com.cannontech.tdc.model.ModelContext;
+import com.cannontech.tdc.model.TDCDataModel;
 import com.cannontech.tdc.roweditor.AltScanRatePanel;
 import com.cannontech.tdc.roweditor.AnalogPanel;
 import com.cannontech.tdc.roweditor.EditorDialogData;
@@ -79,7 +82,7 @@ import com.cannontech.tdc.utils.DataBaseInteraction;
 import com.cannontech.tdc.utils.TDCDefines;
 import com.cannontech.yukon.IDatabaseCache;
 
-public class TDCMainPanel extends javax.swing.JPanel implements com.cannontech.tdc.bookmark.BookMarkSelectionListener, java.awt.event.ActionListener, java.awt.event.ItemListener, java.awt.event.MouseListener, javax.swing.event.PopupMenuListener 
+public class TDCMainPanel extends javax.swing.JPanel implements com.cannontech.tdc.bookmark.BookMarkSelectionListener, java.awt.event.ActionListener, java.awt.event.ItemListener, java.awt.event.MouseListener, javax.swing.event.PopupMenuListener, ModelContext 
 {
 	//an int read in as a CParm used to turn on/off features
    public static final String PROP_BOOKMARK = "con.cannontech.BookMark";
@@ -144,6 +147,8 @@ public class TDCMainPanel extends javax.swing.JPanel implements com.cannontech.t
 	private javax.swing.JMenuItem jMenuItemGraph = null;
 	private javax.swing.JMenuItem jMenuItemCreateTag = null;
 	private javax.swing.JMenuItem jMenuItemAltScanRate = null;
+
+    private List<String> modelContextList = new ArrayList<String>(10);
 
 
 
@@ -841,7 +846,9 @@ private void fireJComboCurrentDisplayAction_actionPerformed(java.util.EventObjec
 		}
 		finally
 		{
-			CtiUtilities.getParentFrame(this).setCursor( original );
+            Frame owner = CtiUtilities.getParentFrame(this);
+            
+            owner.setCursor( original );
 			
 		}
 	}
@@ -861,6 +868,16 @@ private void fireJComboCurrentDisplayAction_actionPerformed(java.util.EventObjec
 	{
 		fieldTDCMainPanelListenerEventMulticaster.JComboCurrentDisplayAction_actionPerformed(newEvent);
 	}
+
+    Display d = getCurrentDisplay();
+    Frame owner = CtiUtilities.getParentFrame(this);
+    TDCDataModel dataModel = ((TDCMainFrame)owner).getDataModel();
+    Integer displayNum = new Integer ( d.getDisplayNumber() );
+    String cxt = ModelContext.ALL_CTXTS[0];
+    dataModel.updateModel(this, "displayNum", displayNum, cxt);
+    //initialize our model with the new value from DB if necessary
+    dataModel.initModel();
+
 
 		
 	return;
@@ -1643,7 +1660,7 @@ private Display[] getLastDisplays() {
  * Insert the method's description here.
  * Creation date: (3/24/00 1:11:30 PM)
  */
-private void getHistoryDisplayData( Date date ) 
+public void getHistoryDisplayData( Date date ) 
 {
 	java.awt.Frame owner = CtiUtilities.getParentFrame(this);
 	java.awt.Cursor original = owner.getCursor();	
@@ -2115,7 +2132,8 @@ private void initialize() {
 		constraintsJLabelDisplayTitle.ipadx = 91;
 		constraintsJLabelDisplayTitle.insets = new java.awt.Insets(1, 3, 2, 38);
 		add(getJLabelDisplayTitle(), constraintsJLabelDisplayTitle);
-		initConnections();
+		initModelContextList();
+        initConnections();
 	} catch (java.lang.Throwable ivjExc) {
 		handleException(ivjExc);
 	}
@@ -2181,7 +2199,6 @@ private void initializeParameters()
             }
 			
 			getJComboCurrentDisplay().setSelectedIndex( getDisplayIndexByJComboValue( TDCMainFrame.startingDisplayName ) );
-			setUpTable();
 		}
 		else
 		{
@@ -3722,7 +3739,8 @@ private void setStartUpDisplay( ParametersFile pf, TDCMainFrame parentFrame )
 				parentFrame.setSelectedViewType( TDCMainFrame.startingViewType );
 
 			getJComboCurrentDisplay().setSelectedIndex( getDisplayIndexByJComboValue( TDCMainFrame.startingDisplayName ) );
-			TDCMainFrame.messageLog.addMessage("Starting display name on start up found", MessageBoxFrame.INFORMATION_MSG );
+            setCurrentModelDisplay(parentFrame, TDCMainFrame.startingDisplayName );
+            TDCMainFrame.messageLog.addMessage("Starting display name on start up found", MessageBoxFrame.INFORMATION_MSG );
 		}
 		else
 		{
@@ -3730,7 +3748,10 @@ private void setStartUpDisplay( ParametersFile pf, TDCMainFrame parentFrame )
 					pf.getParameterValue("ViewType", Display.DISPLAY_TYPES[0]) );
 
 			String dispName = pf.getParameterValue("DisplayName", "");
-			for( int i = 0; i < getJComboCurrentDisplay().getItemCount(); i++ )
+			
+            setCurrentModelDisplay(parentFrame, dispName);
+            
+            for( int i = 0; i < getJComboCurrentDisplay().getItemCount(); i++ )
 				if( dispName.equalsIgnoreCase(getJComboCurrentDisplay().getItemAt(i).toString()) )
 				{
 					//be sure we do NOT update the column data!!!
@@ -3749,6 +3770,22 @@ private void setStartUpDisplay( ParametersFile pf, TDCMainFrame parentFrame )
 		getParent().repaint();
 
 	}
+}
+private void setCurrentModelDisplay(TDCMainFrame parentFrame, String dispName) {
+    if (allDisplays != null)
+    {
+        for (int i = 0; i < allDisplays.length; i++) {
+            Display disp = allDisplays[i];
+            String name = disp.getName();
+            if (name.equalsIgnoreCase(dispName)) 
+            {
+                Integer dispNum = new Integer ( disp.getDisplayNumber() );
+                TDCDataModel dataModel = parentFrame.getDataModel();
+                String templateCxt = ModelContext.ALL_CTXTS[0];
+                dataModel.updateModel(this, "displayNum", dispNum, templateCxt);
+            }
+        }
+    }
 }
 /**
  * Insert the method's description here.
@@ -4273,4 +4310,25 @@ public int getCurrentTemplateNum() {
 public void setCurrentTemplateNum(int currentTemplateNum) {
     this.currentTemplateNum = currentTemplateNum;
 }
+public List<String> getModelContextList() {
+    return modelContextList;
+}
+public void initModelContextList() {
+    modelContextList.add(ModelContext.ALL_CTXTS[0]);
+}
+
+public void getHistoryDisplayDataForEventViewer( Date currentDate, int i) {
+    ViewCreator vc = new ViewCreator( getTableDataModel() );
+    if( getCurrentDisplay().getDisplayNumber() == Display.EVENT_VIEWER_DISPLAY_NUMBER )
+    {       
+        vc.createRowsForHistoricalView( currentDate, i );
+    }
+}
+public int getPageNumber() {
+    return pageNumber;
+}
+public int getTotalPages() {
+    return totalPages;
+}
+
 }
