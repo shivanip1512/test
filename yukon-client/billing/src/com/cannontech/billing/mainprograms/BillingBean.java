@@ -21,7 +21,7 @@ public class BillingBean implements java.util.Observer
 	public static final String BILLING_VERSION = VersionTools.getYUKON_VERSION();
 	private BillingFile billingFile = null;
 
-	private int fileFormat = 0;
+	private int fileFormat = FileFormatTypes.INVALID;
 	private int demandDaysPrev = 30;
 	private int energyDaysPrev = 7;
 	private String billGroup = "Default";
