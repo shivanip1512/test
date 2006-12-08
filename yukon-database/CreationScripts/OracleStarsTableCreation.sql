@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     7/10/2006 2:23:32 PM                         */
+/* Created on:     12/8/2006 11:23:36 AM                        */
 /*==============================================================*/
 
 
@@ -144,6 +144,8 @@ drop table Shipment cascade constraints;
 drop table SiteInformation cascade constraints;
 
 drop table Substation cascade constraints;
+
+drop table SubstationToRouteMapping cascade constraints;
 
 drop table Warehouse cascade constraints;
 
@@ -1032,7 +1034,7 @@ alter table LMThermostatSeasonEntry
 create table MeterHardwareBase  (
    InventoryID          NUMBER                          not null,
    MeterNumber          VARCHAR2(30)                    not null,
-   MeterTypeID          NUMBER                          not null
+   MeterTypeID          NUMBER
 );
 
 alter table MeterHardwareBase
@@ -1152,12 +1154,24 @@ alter table SiteInformation
 create table Substation  (
    SubstationID         NUMBER                          not null,
    SubstationName       VARCHAR2(50),
-   RouteID              NUMBER
+   LMRouteID            NUMBER
 );
 
 INSERT INTO Substation VALUES (0,'(none)',0);
 alter table Substation
    add constraint PK_SUBSTATION primary key (SubstationID);
+
+/*==============================================================*/
+/* Table: SubstationToRouteMapping                              */
+/*==============================================================*/
+create table SubstationToRouteMapping  (
+   SubstationID         NUMBER                          not null,
+   RouteID              NUMBER                          not null,
+   Ordering             NUMBER                          not null
+);
+
+alter table SubstationToRouteMapping
+   add constraint PK_SUBSTATIONTOROUTEMAPPING primary key (SubstationID, RouteID);
 
 /*==============================================================*/
 /* Table: Warehouse                                             */
@@ -1777,6 +1791,14 @@ alter table Shipment
 
 alter table SiteInformation
    add constraint FK_Sub_Si foreign key (SubstationID)
+      references Substation (SubstationID);
+
+alter table SubstationToRouteMapping
+   add constraint FK_Sub_Rte_Map_RteID foreign key (RouteID)
+      references Route (RouteID);
+
+alter table SubstationToRouteMapping
+   add constraint FK_Sub_Rte_Map_SubID foreign key (SubstationID)
       references Substation (SubstationID);
 
 alter table Warehouse
