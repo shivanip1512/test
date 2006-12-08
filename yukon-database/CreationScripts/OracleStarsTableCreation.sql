@@ -1793,6 +1793,10 @@ alter table SiteInformation
    add constraint FK_Sub_Si foreign key (SubstationID)
       references Substation (SubstationID);
 
+alter table Substation
+   add constraint FK_Sub_Rt foreign key (LMRouteID)
+      references Route (RouteID);
+
 alter table SubstationToRouteMapping
    add constraint FK_Sub_Rte_Map_RteID foreign key (RouteID)
       references Route (RouteID);
