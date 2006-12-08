@@ -73,7 +73,7 @@ function vendorChanged(vendor)
   <tr>
     <td colspan="2" onMouseOver="dispStatusMsg('Enter the Application Name');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">App Name</td>
     <td>
-      <input type="text" name="mspAppName">
+      <input type="text" name="mspAppName" value='(none)'>
     </td>
     <td>&nbsp;</td>
     <td style="text-align:left"><u>Response Message Login</u></td>

@@ -25,7 +25,7 @@ public class MultispeakVendor
     
     private Integer vendorID = null;
     private String companyName = CtiUtilities.STRING_NONE;
-    private String appName = "";
+    private String appName = CtiUtilities.STRING_NONE;
     private String userName = CtiUtilities.STRING_NONE;
     private String password = CtiUtilities.STRING_NONE;
     private String outUserName = CtiUtilities.STRING_NONE;
