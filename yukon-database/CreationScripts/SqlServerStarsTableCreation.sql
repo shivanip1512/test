@@ -2802,6 +2802,12 @@ alter table SiteInformation
 go
 
 
+alter table Substation
+   add constraint FK_Sub_Rt foreign key (RouteID)
+      references Route (LMRouteID)
+go
+
+
 alter table SubstationToRouteMapping
    add constraint FK_Sub_Rte_Map_RteID foreign key (RouteID)
       references Route (RouteID)
