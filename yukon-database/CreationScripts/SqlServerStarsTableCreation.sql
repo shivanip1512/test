@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     7/10/2006 2:25:06 PM                         */
+/* Created on:     12/7/2006 5:13:43 PM                         */
 /*==============================================================*/
 
 
@@ -573,6 +573,14 @@ if exists (select 1
            where  id = object_id('Substation')
             and   type = 'U')
    drop table Substation
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('SubstationToRouteMapping')
+            and   type = 'U')
+   drop table SubstationToRouteMapping
 go
 
 
@@ -1847,7 +1855,7 @@ go
 create table Substation (
    SubstationID         numeric              not null,
    SubstationName       varchar(50)          null,
-   RouteID              numeric              null
+   LMRouteID            numeric              null
 )
 go
 
@@ -1855,6 +1863,22 @@ go
 INSERT INTO Substation VALUES (0,'(none)',0);
 alter table Substation
    add constraint PK_SUBSTATION primary key  (SubstationID)
+go
+
+
+/*==============================================================*/
+/* Table: SubstationToRouteMapping                              */
+/*==============================================================*/
+create table SubstationToRouteMapping (
+   SubstationID         numeric              not null,
+   RouteID              numeric              not null,
+   Ordering             numeric              not null
+)
+go
+
+
+alter table SubstationToRouteMapping
+   add constraint PK_SUBSTATIONTOROUTEMAPPING primary key  (SubstationID, RouteID)
 go
 
 
@@ -2774,6 +2798,18 @@ go
 
 alter table SiteInformation
    add constraint FK_Sub_Si foreign key (SubstationID)
+      references Substation (SubstationID)
+go
+
+
+alter table SubstationToRouteMapping
+   add constraint FK_Sub_Rte_Map_RteID foreign key (RouteID)
+      references Route (RouteID)
+go
+
+
+alter table SubstationToRouteMapping
+   add constraint FK_Sub_Rte_Map_SubID foreign key (SubstationID)
       references Substation (SubstationID)
 go
 

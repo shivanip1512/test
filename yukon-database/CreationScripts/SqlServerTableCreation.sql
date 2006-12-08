@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     10/27/2006 9:43:25 AM                        */
+/* Created on:     12/8/2006 10:30:24 AM                        */
 /*==============================================================*/
 
 
@@ -1675,6 +1675,14 @@ go
 
 if exists (select 1
             from  sysobjects
+           where  id = object_id('ImportPendingComm')
+            and   type = 'U')
+   drop table ImportPendingComm
+go
+
+
+if exists (select 1
+            from  sysobjects
            where  id = object_id('LMCONTROLAREAPROGRAM')
             and   type = 'U')
    drop table LMCONTROLAREAPROGRAM
@@ -2342,6 +2350,14 @@ if exists (select 1
            where  id = object_id('Tags')
             and   type = 'U')
    drop table Tags
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('TemplateDisplay')
+            and   type = 'U')
+   drop table TemplateDisplay
 go
 
 
@@ -6313,7 +6329,9 @@ create table ImportData (
    MeterNumber          varchar(64)          not null,
    CollectionGrp        varchar(64)          not null,
    AltGrp               varchar(64)          not null,
-   TemplateName         varchar(64)          not null
+   TemplateName         varchar(64)          not null,
+   BillGrp              varchar(64)          not null,
+   SubstationName       varchar(64)          not null
 )
 go
 
@@ -6335,13 +6353,39 @@ create table ImportFail (
    AltGrp               varchar(64)          not null,
    TemplateName         varchar(64)          not null,
    ErrorMsg             varchar(1024)        null,
-   DateTime             datetime             null
+   DateTime             datetime             null,
+   BillGrp              varchar(64)          not null,
+   SubstationName       varchar(64)          not null,
+   FailType             varchar(64)          not null
 )
 go
 
 
 alter table ImportFail
    add constraint PK_IMPORTFAIL primary key  (Address)
+go
+
+
+/*==============================================================*/
+/* Table: ImportPendingComm                                     */
+/*==============================================================*/
+create table ImportPendingComm (
+   DeviceID             numeric              not null,
+   Address              varchar(64)          not null,
+   Name                 varchar(64)          not null,
+   RouteName            varchar(64)          not null,
+   MeterNumber          varchar(64)          not null,
+   CollectionGrp        varchar(64)          not null,
+   AltGrp               varchar(64)          not null,
+   TemplateName         varchar(64)          not null,
+   BillGrp              varchar(64)          not null,
+   SubstationName       varchar(64)          not null
+)
+go
+
+
+alter table ImportPendingComm
+   add constraint PK_IMPORTPENDINGCOMM primary key  (DeviceID)
 go
 
 
@@ -7314,12 +7358,15 @@ create table MSPVendor (
    Password             varchar(64)          not null,
    UniqueKey            varchar(32)          not null,
    Timeout              numeric              not null,
-   URL                  varchar(120)         not null
+   URL                  varchar(120)         not null,
+   AppName              varchar(64)          not null,
+   OutUserName          varchar(64)          not null,
+   OutPassword          varchar(64)          not null
 )
 go
 
 
-insert into MSPVendor values (1, 'cannon', '(none)', '(none)', 'meterNumber', 0, 'http://127.0.0.1:8080/soap');
+insert into MSPVendor values (1, 'cannon', '(none)', '(none)', 'meterNumber', 0, 'http://127.0.0.1:8080/soap', '', '', '');
 alter table MSPVendor
    add constraint PK_MSPVENDOR primary key  (VendorID)
 go
@@ -7502,6 +7549,7 @@ INSERT into point values( -6,  'System', 'Notifcation', 0, 'Default', 0, 'N', 'N
 INSERT into point values( -10, 'System', 'Load Management' , 0, 'Default', 0, 'N', 'N', 'S', 10 ,'None', 0);
 INSERT into point values( -100, 'System', 'Threshold' , 0, 'Default', 0, 'N', 'N', 'S', 10 ,'None', 0);
 insert into point values( 100,'Analog','Porter Work Count',0,'Default',0,'N','N','R',1500,'None',0);
+INSERT into point values( -110, 'System', 'Multispeak' , 0, 'Default', 0, 'N', 'N', 'S', 110 ,'None', 0);
 alter table POINT
    add constraint Key_PT_PTID primary key  (POINTID)
 go
@@ -8258,6 +8306,21 @@ go
 
 
 /*==============================================================*/
+/* Table: TemplateDisplay                                       */
+/*==============================================================*/
+create table TemplateDisplay (
+   DisplayNum           numeric              not null,
+   TemplateNum          numeric              not null
+)
+go
+
+
+alter table TemplateDisplay
+   add constraint PK_TEMPLATEDISPLAY primary key  (DisplayNum)
+go
+
+
+/*==============================================================*/
 /* Table: UNITMEASURE                                           */
 /*==============================================================*/
 create table UNITMEASURE (
@@ -8451,7 +8514,6 @@ insert into YukonGroupRole values(-109,-100,-100,-10009,'(none)');
 insert into YukonGroupRole values(-110,-100,-100,-10010,'(none)');
 insert into YukonGroupRole values(-111,-100,-100,-10011,'(none)');
 
-
 /* TDC */
 insert into YukonGroupRole values(-120,-100,-101,-10100,'(none)');
 insert into YukonGroupRole values(-121,-100,-101,-10101,'(none)');
@@ -8515,20 +8577,11 @@ insert into YukonGroupRole values(-235,-1,-6,-1505,'(none)');
 insert into YukonGroupRole values(-236,-1,-6,-1506,'(none)');
 insert into YukonGroupRole values(-237,-1,-6,-1507,'(none)');
 
+/*Multispeak*/
+insert into YukonGroupRole values(-270,-1,-7,-1600,'0');
+
 /* Esubstation Editor */
 insert into YukonGroupRole values(-250,-100,-107,-10700,'(none)');
-
-/* Multispeak */
-insert into YukonGroupRole values(-270,-1,-7,-1600,'(none)');
-insert into YukonGroupRole values(-271,-1,-7,-1601,'(none)');
-insert into YukonGroupRole values(-272,-1,-7,-1602,'(none)');
-insert into YukonGroupRole values(-273,-1,-7,-1603,'(none)');
-insert into YukonGroupRole values(-274,-1,-7,-1604,'(none)');
-insert into YukonGroupRole values(-275,-1,-7,-1605,'(none)');
-insert into YukonGroupRole values(-276,-1,-7,-1606,'(none)');
-insert into YukonGroupRole values(-277,-1,-7,-1607,'(none)');
-insert into YukonGroupRole values(-278,-1,-7,-1608,'(none)');
-insert into YukonGroupRole values(-279,-1,-7,-1609,'(none)');
 
 /* Assign roles to the default Esub Users */
 insert into YukonGroupRole values(-300,-200,-206,-20600,'(none)');
@@ -9272,7 +9325,6 @@ insert into YukonListEntry values (121, 100, 0, 'P-Factor kW/kVA', 0);
 insert into YukonListEntry values (122, 100, 0, 'kVAr from kW/kQ', 0);
 insert into YukonListEntry values (123, 100, 0, 'kVA from kW/kVAr', 0);
 insert into YukonListEntry values (124, 100, 0, 'kVA from kW/kQ', 0);
-insert into YukonListEntry values (125, 100, 0, 'COS from P/Q', 0);
 insert into YukonListEntry values (126, 100, 0, 'Squared', 0);
 insert into YukonListEntry values (127, 100, 0, 'Square Root', 0);
 insert into YukonListEntry values (128, 100, 0, 'ArcTan', 0);
@@ -9913,18 +9965,6 @@ insert into YukonRoleProperty values(-1506,-6,'Append To File','false','Append t
 insert into YukonRoleProperty values(-1507,-6,'Remove Multiplier','false','Remove the multiplier value from the reading.');
 insert into YukonRoleProperty values(-1508,-6,'Coop ID - CADP Only','(none)','CADP format requires a coop id number.');
 
-/* Multispeak Role Properties */
-insert into YukonRoleProperty values(-1600,-7,'Vendor 01 Config','cannon, (none), (none), meterNumber, http://127.0.0.1:8080/soap/,OD_OA=OD_OASoap,OA_OD=OA_ODSoap,MR_EA=MR_EASoap,EA_MR=EA_MRSoap,MR_CB=MR_CBSoap,CB_MR=CB_MRSoap,CD_CB=CD_CBSoap,CB_CD=CB_CDSoap','Vendor 01 Webservice setup parameters, format: <companyName>,<username>,<password>,<deviceName|meterNumber>,<webserviceURL>,<service=endpoint0>...<service=endpointX>');
-insert into YukonRoleProperty values(-1601,-7,'Vendor 02 Config','(none), (none), (none), meterNumber, http://127.0.0.1:80/soap/','Vendor 02 Webservice setup parameters, format: <companyName>,<username>,<password>,<deviceName|meterNumber>,<webserviceURL>,<service=endpoint0>...<service=endpointX>');
-insert into YukonRoleProperty values(-1602,-7,'Vendor 03 Config','(none), (none), (none), meterNumber, http://127.0.0.1:80/soap/','Vendor 03 Webservice setup parameters, format: <companyName>,<username>,<password>,<deviceName|meterNumber>,<webserviceURL>,<service=endpoint0>...<service=endpointX>');
-insert into YukonRoleProperty values(-1603,-7,'Vendor 04 Config','(none), (none), (none), meterNumber, http://127.0.0.1:80/soap/','Vendor 04 Webservice setup parameters, format: <companyName>,<username>,<password>,<deviceName|meterNumber>,<webserviceURL>,<service=endpoint0>...<service=endpointX>');
-insert into YukonRoleProperty values(-1604,-7,'Vendor 05 Config','(none), (none), (none), meterNumber, http://127.0.0.1:80/soap/','Vendor 05 Webservice setup parameters, format: <companyName>,<username>,<password>,<deviceName|meterNumber>,<webserviceURL>,<service=endpoint0>...<service=endpointX>');
-insert into YukonRoleProperty values(-1605,-7,'Vendor 06 Config','(none), (none), (none), meterNumber, http://127.0.0.1:80/soap/','Vendor 06 Webservice setup parameters, format: <companyName>,<username>,<password>,<deviceName|meterNumber>,<webserviceURL>,<service=endpoint0>...<service=endpointX>');
-insert into YukonRoleProperty values(-1606,-7,'Vendor 07 Config','(none), (none), (none), meterNumber, http://127.0.0.1:80/soap/','Vendor 07 Webservice setup parameters, format: <companyName>,<username>,<password>,<deviceName|meterNumber>,<webserviceURL>,<service=endpoint0>...<service=endpointX>');
-insert into YukonRoleProperty values(-1607,-7,'Vendor 08 Config','(none), (none), (none), meterNumber, http://127.0.0.1:80/soap/','Vendor 08 Webservice setup parameters, format: <companyName>,<username>,<password>,<deviceName|meterNumber>,<webserviceURL>,<service=endpoint0>...<service=endpointX>');
-insert into YukonRoleProperty values(-1608,-7,'Vendor 09 Config','(none), (none), (none), meterNumber, http://127.0.0.1:80/soap/','Vendor 09 Webservice setup parameters, format: <companyName>,<username>,<password>,<deviceName|meterNumber>,<webserviceURL>,<service=endpoint0>...<service=endpointX>');
-insert into YukonRoleProperty values(-1609,-7,'Vendor 10 Config','(none), (none), (none), meterNumber, http://127.0.0.1:80/soap/','Vendor 10 Webservice setup parameters, format: <companyName>,<username>,<password>,<deviceName|meterNumber>,<webserviceURL>,<service=endpoint0>...<service=endpointX>');
-
 /* Database Editor Role */
 insert into YukonRoleProperty values(-10000,-100,'point_id_edit','false','Controls whether point ids can be edited');
 insert into YukonRoleProperty values(-10001,-100,'dbeditor_core','true','Controls whether the Core menu item in the View menu is displayed');
@@ -9937,6 +9977,10 @@ insert into YukonRoleProperty values(-10008,-100,'permit_login_edit','true','Clo
 insert into YukonRoleProperty values(-10009,-100,'allow_user_roles','false','Allows the editor panel individual user roles to be shown');
 insert into YukonRoleProperty values(-10010,-100,'z_optional_product_dev','00000000','This feature is for development purposes only');
 insert into YukonRoleProperty values(-10011,-100,'allow_member_programs','false','Allows member management of LM Direct Programs through the DBEditor');
+
+/*Multispeak*/
+insert into YukonRoleProperty values(-1600,-7,'PaoName Alias','0','Defines a Yukon Pao (Device) Name field alias. Valid values(0-4): [0=Device Name, 1=Account Number, 2=Service Location, 3=Customer]');
+insert into YukonRoleProperty values(-1601,-7,'Primary CIS Vendor','0','Defines the primary CIS vendor for CB interfaces.');
 
 /* TDC Role */
 insert into YukonRoleProperty values(-10100,-101,'loadcontrol_edit','00000000','(No settings yet)');
@@ -10007,6 +10051,8 @@ insert into YukonRoleProperty values(-10807,-108,'nav_connector_bottom','yukon/B
 insert into YukonRoleProperty values(-10808,-108,'nav_connector_middle','yukon/MidConnector.gif','The connector icon in the nav used for showing the hardware tree structure, in front of every hardware except the last one under each category');
 insert into YukonRoleProperty values(-10810,-108, 'pop_up_appear_style','onmouseover', 'Style of the popups appearance when the user selects element in capcontrol.');
 insert into YukonRoleProperty values(-10811,-108, 'inbound_voice_home_url', '/voice/inboundOptOut.jsp', 'Home URL for inbound voice logins');
+insert into YukonRoleProperty values(-10812, -108,'Java Web Start Launcher Enabled', 'false', 'Allow access to the Java Web Start Launcher for client applications.');
+
 
 /* Reporting Analysis role properties */
 insert into YukonRoleProperty values(-10900,-109,'Header Label','Reporting','The header label for reporting.');
@@ -10029,6 +10075,9 @@ insert into YukonRoleProperty values(-10917,-109,'Cap Control Reports Group Labe
 insert into YukonRoleProperty values(-10918,-109,'Database Reports Group Label','Database','Label (header) for Database group reports.');
 insert into YukonRoleProperty values(-10919,-109,'Stars Reports Group Label','Stars','Label (header) for Stars group reports.');
 insert into YukonRoleProperty values(-10920,-109,'Other Reports Group Label','Other','Label (header) for Other group reports.');
+insert into YukonRoleProperty values(-10922,-109,'C&I Curtailment Reports Group Label','Stars','Label (header) for C&I Curtailment group reports.');
+insert into YukonRoleProperty values(-10923,-109,'C&I Curtailment Reports Group','false','Access to C&I Curtailment group reports');
+
 
 /* Operator Consumer Info Role Properties */
 insert into YukonRoleProperty values(-20101,-201,'Account General','true','Controls whether to show the general account information');
@@ -10075,6 +10124,7 @@ insert into YukonRoleProperty values(-20006,-200,'Member Login Cntrl','false','I
 insert into YukonRoleProperty values(-20007,-200,'Member Route Select','false','Ignored if not a member company -- Controls whether routes are visible through the EC administration page.');
 insert into YukonRoleProperty values(-20008,-200,'Allow Designation Codes','false','Toggles on or off the regional (usually zip) code option for service companies.');
 insert into YukonRoleProperty values(-20009,-200,'Multiple Warehouses','false','Allows for multiple user-created warehouses instead of a single generic warehouse.');
+insert into YukonRoleProperty values(-20011,-200,'Multispeak Setup','false','Controls access to configure the Multispeak Interfaces.');
 
 /* Operator Commercial Metering Role Properties*/
 insert into YukonRoleProperty values(-20200,-202,'Trending Disclaimer',' ','The disclaimer that appears with trends');
@@ -10724,6 +10774,7 @@ insert into YukonUserRole values (-1016, -100, -200, -20006, '(none)');
 insert into YukonUserRole values (-1017, -100, -200, -20007, '(none)');
 insert into YukonUserRole values (-1018, -100, -200, -20008, '(none)');
 insert into YukonUserRole values (-1019, -100, -200, -20009, '(none)');
+
 
 
 alter table YukonUserRole
@@ -11871,6 +11922,12 @@ alter table GraphCustomerList
 go
 
 
+alter table ImportPendingComm
+   add constraint FK_ImpPC_PAO foreign key (DeviceID)
+      references YukonPAObject (PAObjectID)
+go
+
+
 alter table LMCONTROLAREAPROGRAM
    add constraint FK_LMCntlArea_LMCntlArProg foreign key (DEVICEID)
       references LMControlArea (DEVICEID)
@@ -12597,6 +12654,18 @@ go
 alter table TagLog
    add constraint FK_TagLg_Tgs foreign key (TagID)
       references Tags (TagID)
+go
+
+
+alter table TemplateDisplay
+   add constraint FK_TemplateDisplay_DISPLAY foreign key (DisplayNum)
+      references DISPLAY (DISPLAYNUM)
+go
+
+
+alter table TemplateDisplay
+   add constraint FK_TemplateDisplay_TEMPLATE foreign key (TemplateNum)
+      references TEMPLATE (TEMPLATENUM)
 go
 
 
