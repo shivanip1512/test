@@ -7366,7 +7366,7 @@ create table MSPVendor (
 go
 
 
-insert into MSPVendor values (1, 'cannon', '(none)', '(none)', 'meterNumber', 0, 'http://127.0.0.1:8080/soap', '', '', '');
+insert into MSPVendor values (1, 'cannon', '(none)', '(none)', 'meterNumber', 0, 'http://127.0.0.1:8080/soap', '(none)', '(none)', '(none)');
 alter table MSPVendor
    add constraint PK_MSPVENDOR primary key  (VendorID)
 go
