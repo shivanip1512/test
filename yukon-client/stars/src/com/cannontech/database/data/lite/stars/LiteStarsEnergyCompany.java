@@ -1676,8 +1676,12 @@ public class LiteStarsEnergyCompany extends LiteBase {
         }
     }
     
-    /**
-     * @return Pair(LiteStarsLMHardware, LiteStarsEnergyCompany)
+    /*
+     * TODO: This method was changed after 3.2 so it does not depend on the yukondefinitionID and can instead
+     * rely on the entryID of the type.  This allows change types between different aliases to be possible.
+     * The downside is that the yukdefID was used to find occurrences in other energy companies 
+     * (dev types in different ecs naturally have different entry IDs).  Currently this will not catch
+     * these occurrences.  Is that a bad thing?
      */
     private Pair searchForLMHardware(int devTypeEntryID, String serialNo, LiteStarsEnergyCompany referer)
         throws ObjectInOtherEnergyCompanyException
