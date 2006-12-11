@@ -57,7 +57,6 @@ TH {
                   	<font color="#ffffff" size="2" face="Arial, Helvetica, sans-serif">
                   	 </font></a></span></div>
                   </td>
-                  
               </tr>
             </table>
           </td>
@@ -137,34 +136,84 @@ TH {
 							
 							<BR>
 							<TABLE width="740" border="1" cellpadding="2" cellspacing="0">
-								<CAPTION align="top" class="HeaderCellCrucial">Failed Entries</CAPTION>
+								<CAPTION align="top" class="HeaderCellCrucial">Failed Data Entries</CAPTION>
 								<TBODY>
 									<TR valign="top" class="HeaderCell">
-										<TD width="70"><FONT color="#000000"><%= webImp.COLUMN_NAMES[0] %></FONT></TD>
-										<TD width="400"><FONT color="#ff0000"><%= webImp.COLUMN_NAMES[1] %></FONT></TD>
-										<TD width="70"><FONT color="#000000"><%= webImp.COLUMN_NAMES[2] %></FONT></TD>
+										<TD width="70"><FONT color="#000000"><%= webImp.FAILURE_COLUMN_NAMES[0] %></FONT></TD>
+										<TD width="400"><FONT color="#ff0000"><%= webImp.FAILURE_COLUMN_NAMES[1] %></FONT></TD>
+										<TD width="70"><FONT color="#000000"><%= webImp.FAILURE_COLUMN_NAMES[2] %></FONT></TD>
 									</TR>
-
 						<% 
 	                  	for( int i = 0; i < webImp.getFailures().size(); i++ )
 	                  	{
 	                  	%>
-
 									<TR valign="top">
-					
 										<TD width="70" class="TableCell"><FONT color="#000000"><%= webImp.getFailName(i)  %></FONT></TD>
 										<TD width="400" class="TableCell"><FONT color="#ff0000"><%= webImp.getErrorString(i) %></FONT></TD>
 										<TD width="70" class="TableCell"><FONT color="#000000"><%= webImp.getFailureTime(i) %></FONT></TD>
-										
 									</TR>
 						<%
 						}
 						%>
-
-
 								</TBODY>
 							</TABLE>
 							<BR>
+							
+							<BR>
+							<TABLE width="740" border="1" cellpadding="2" cellspacing="0">
+								<CAPTION align="top" class="HeaderCellCrucial">Pending Communication Attempts</CAPTION>
+								<TBODY>
+									<TR valign="top" class="HeaderCell">
+										<TD width="108"><FONT color="#000000"><%= webImp.COMM_PENDING_COLUMN_NAMES[0] %></FONT></TD>
+										<TD width="108"><FONT color="#000000"><%= webImp.COMM_PENDING_COLUMN_NAMES[1] %></FONT></TD>
+										<TD width="108"><FONT color="#000000"><%= webImp.COMM_PENDING_COLUMN_NAMES[2] %></FONT></TD>
+									</TR>
+
+						<% 
+	                  	for( int i = 0; i < webImp.getPendingComms().size(); i++ )
+	                  	{
+	                  	%>
+									<TR valign="top">
+										<TD width="108" class="TableCell"><FONT color="#000000"><%= webImp.getPendingName(i)  %></FONT></TD>
+										<TD width="108" class="TableCell"><FONT color="#000000"><%= webImp.getPendingRouteName(i) %></FONT></TD>
+										<TD width="108" class="TableCell"><FONT color="#000000"><%= webImp.getPendingSubstationName(i) %></FONT></TD>
+									</TR>
+						<%
+						}
+						%>
+								</TBODY>
+							</TABLE>
+							<BR>
+							
+							<BR>
+							<TABLE width="740" border="1" cellpadding="2" cellspacing="0">
+								<CAPTION align="top" class="HeaderCellCrucial">Failed Communication Attempts</CAPTION>
+								<TBODY>
+									<TR valign="top" class="HeaderCell">
+										<TD width="108"><FONT color="#000000"><%= webImp.COMM_FAILURE_COLUMN_NAMES[0] %></FONT></TD>
+										<TD width="108"><FONT color="#000000"><%= webImp.COMM_FAILURE_COLUMN_NAMES[1] %></FONT></TD>
+										<TD width="108"><FONT color="#000000"><%= webImp.COMM_FAILURE_COLUMN_NAMES[2] %></FONT></TD>
+										<TD width="108"><FONT color="#FF0000"><%= webImp.COMM_FAILURE_COLUMN_NAMES[3] %></FONT></TD>
+										<TD width="108"><FONT color="#000000"><%= webImp.COMM_FAILURE_COLUMN_NAMES[4] %></FONT></TD>
+									</TR>
+						<% 
+	                  	for( int i = 0; i < webImp.getFailedComms().size(); i++ )
+	                  	{
+	                  	%>
+									<TR valign="top">
+										<TD width="108" class="TableCell"><FONT color="#000000"><%= webImp.getCommFailureName(i)  %></FONT></TD>
+										<TD width="108" class="TableCell"><FONT color="#000000"><%= webImp.getCommFailureRouteName(i) %></FONT></TD>
+										<TD width="108" class="TableCell"><FONT color="#000000"><%= webImp.getCommFailureSubstationName(i) %></FONT></TD>
+										<TD width="108" class="TableCell"><FONT color="#FF0000"><%= webImp.getCommFailureErrorString(i) %></FONT></TD>
+										<TD width="108" class="TableCell"><FONT color="#000000"><%= webImp.getCommFailureTime(i) %></FONT></TD>
+									</TR>
+						<%
+						}
+						%>
+								</TBODY>
+							</TABLE>
+							<BR>
+							
 							</TD>
 						</TR>
 					</TBODY>
