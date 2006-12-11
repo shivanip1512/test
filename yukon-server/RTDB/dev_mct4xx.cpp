@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.43 $
-* DATE         :  $Date: 2006/11/17 22:53:36 $
+* REVISION     :  $Revision: 1.44 $
+* DATE         :  $Date: 2006/12/11 16:16:21 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1257,11 +1257,13 @@ INT CtiDeviceMCT4xx::executePutConfig(CtiRequestMsg         *pReq,
         {
             function = Emetcon::PutConfig_TOUEnable;
             found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+            OutMessage->Sequence = function;
         }
         else if( parse.isKeyValid("tou_disable") )
         {
             function = Emetcon::PutConfig_TOUDisable;
             found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+            OutMessage->Sequence = function;
         }
         else if( parse.isKeyValid("tou_days") )
         {
