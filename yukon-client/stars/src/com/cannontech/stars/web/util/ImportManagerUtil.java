@@ -205,6 +205,7 @@ public class ImportManagerUtil {
 	public static final int IDX_R2_STATUS = inv_idx++;
 	public static final int IDX_R3_STATUS = inv_idx++;
     public static final int IDX_OPTION_PARAMS = inv_idx++;
+    public static final int IDX_DEVICE_LABEL = inv_idx++;
     public static final int NUM_INV_FIELDS = inv_idx;
 	
 	// Appliance fields
@@ -794,6 +795,9 @@ public class ImportManagerUtil {
 			if (inv.getDeviceID() == 0)
 				inv.setDeviceLabel( fields[IDX_DEVICE_NAME] );
 		}
+        
+        if (fields[IDX_DEVICE_LABEL].length() > 0)
+            inv.setDeviceLabel( fields[IDX_DEVICE_LABEL] );
 	}
 	
 	public static LiteInventoryBase insertLMHardware(String[] fields, LiteStarsCustAccountInformation liteAcctInfo,

@@ -95,7 +95,8 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 		"APP_TYPE",
 		"APP_KW",
         "APP_RELAY_NUM",
-        "OPTION_PARAMS"
+        "OPTION_PARAMS",
+        "DEVICE_LABEL"
 	};
 	
 	// Column indices of the generic customer info file
@@ -141,6 +142,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 	private static final int COL_APP_KW = hw_col++;
     private static final int COL_APP_RELAY_NUMBER = hw_col++;
     private static final int COL_OPTION_PARAMS = hw_col++;
+    private static final int COL_DEVICE_LABEL = hw_col++;
     
 	LiteStarsEnergyCompany energyCompany = null;
 	FileItem custFile = null;
@@ -964,6 +966,8 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 			fields[ImportManagerUtil.IDX_ADDR_GROUP] = columns[ colIdx[COL_ADDR_GROUP] ];
         if (colIdx[COL_OPTION_PARAMS] >= 0 && colIdx[COL_OPTION_PARAMS] < columns.length)
             fields[ImportManagerUtil.IDX_OPTION_PARAMS] = columns[ colIdx[COL_OPTION_PARAMS] ];
+        if (colIdx[COL_DEVICE_LABEL] >= 0 && colIdx[COL_DEVICE_LABEL] < columns.length)
+            fields[ImportManagerUtil.IDX_DEVICE_LABEL] = columns[ colIdx[COL_DEVICE_LABEL] ];
 	}
 	
 	private void setApplianceFields(String[] fields, String[] columns, int[] colIdx) {
