@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_cbc.h-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2006/09/21 21:31:37 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2006/12/11 16:38:04 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -66,7 +66,7 @@ private:
     };
 
     info_struct _porter_info;
-    info_struct _pil_info;
+    info_struct _pil_info;  //  only used for the call to sendCommRequest(), unreliable after - DO NOT USE FOR DECODES
 
     typedef map< long, dnp_accumulator_pointdata > dnp_accumulator_pointdata_map;
 
