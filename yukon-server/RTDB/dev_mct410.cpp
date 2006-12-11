@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.109 $
-* DATE         :  $Date: 2006/12/05 20:10:56 $
+* REVISION     :  $Revision: 1.110 $
+* DATE         :  $Date: 2006/12/11 16:30:04 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -291,8 +291,8 @@ CtiDeviceMCT410::CommandSet CtiDeviceMCT410::initCommandStore()
     cs.insert(CommandStore(Emetcon::PutConfig_Disconnect,       Emetcon::IO_Function_Write, FuncWrite_DisconnectConfigPos,  FuncWrite_DisconnectConfigLen));
     cs.insert(CommandStore(Emetcon::PutConfig_Raw,              Emetcon::IO_Write,          0,                              0));  //  filled in later
     cs.insert(CommandStore(Emetcon::GetConfig_TSync,            Emetcon::IO_Read,           Memory_LastTSyncPos,            Memory_LastTSyncLen));
-    cs.insert(CommandStore(Emetcon::GetConfig_Time,             Emetcon::IO_Read,           Memory_TimeZoneOffsetPos,       Memory_TimeZoneOffsetLen +
-                                                                                                                            Memory_RTCLen));
+    cs.insert(CommandStore(Emetcon::GetConfig_Time,             Emetcon::IO_Read,           Memory_TimeZoneOffsetPos,       Memory_TimeZoneOffsetLen
+                                                                                                                            + Memory_RTCLen));
     cs.insert(CommandStore(Emetcon::PutConfig_TimeZoneOffset,   Emetcon::IO_Write,          Memory_TimeZoneOffsetPos,       Memory_TimeZoneOffsetLen));
     cs.insert(CommandStore(Emetcon::PutConfig_Intervals,        Emetcon::IO_Function_Write, FuncWrite_IntervalsPos,         FuncWrite_IntervalsLen));
     cs.insert(CommandStore(Emetcon::GetConfig_Intervals,        Emetcon::IO_Read,           Memory_IntervalsPos,            Memory_IntervalsLen));
@@ -308,19 +308,19 @@ CtiDeviceMCT410::CommandSet CtiDeviceMCT410::initCommandStore()
     cs.insert(CommandStore(Emetcon::PutConfig_LongloadProfile,  Emetcon::IO_Function_Write, FuncWrite_LLPStoragePos,        FuncWrite_LLPStorageLen));
     cs.insert(CommandStore(Emetcon::GetConfig_LongloadProfile,  Emetcon::IO_Function_Read,  FuncRead_LLPStatusPos,          FuncRead_LLPStatusLen));
 
-    cs.insert(CommandStore(Emetcon::PutConfig_DST,              Emetcon::IO_Write,          Memory_DSTBeginPos,             Memory_DSTBeginLen +
-                                                                                                                            Memory_DSTEndLen   +
-                                                                                                                            Memory_TimeZoneOffsetLen));
+    cs.insert(CommandStore(Emetcon::PutConfig_DST,              Emetcon::IO_Write,          Memory_DSTBeginPos,             Memory_DSTBeginLen
+                                                                                                                            + Memory_DSTEndLen
+                                                                                                                            + Memory_TimeZoneOffsetLen));
 
     cs.insert(CommandStore(Emetcon::PutConfig_VThreshold,       Emetcon::IO_Write,          Memory_OverVThresholdPos,       Memory_OverVThresholdLen +
                                                                                                                             Memory_UnderVThresholdLen));
     //  used by both the putconfig install and putconfig holiday commands
-    cs.insert(CommandStore(Emetcon::PutConfig_Holiday,          Emetcon::IO_Write,          Memory_Holiday1Pos,             Memory_Holiday1Len +
-                                                                                                                            Memory_Holiday2Len +
-                                                                                                                            Memory_Holiday3Len));
-    cs.insert(CommandStore(Emetcon::GetConfig_Holiday,          Emetcon::IO_Read,           Memory_Holiday1Pos,             Memory_Holiday1Len +
-                                                                                                                            Memory_Holiday2Len +
-                                                                                                                            Memory_Holiday3Len));
+    cs.insert(CommandStore(Emetcon::PutConfig_Holiday,          Emetcon::IO_Write,          Memory_Holiday1Pos,             Memory_Holiday1Len
+                                                                                                                            + Memory_Holiday2Len
+                                                                                                                            + Memory_Holiday3Len));
+    cs.insert(CommandStore(Emetcon::GetConfig_Holiday,          Emetcon::IO_Read,           Memory_Holiday1Pos,             Memory_Holiday1Len
+                                                                                                                            + Memory_Holiday2Len
+                                                                                                                            + Memory_Holiday3Len));
     cs.insert(CommandStore(Emetcon::PutConfig_Options,          Emetcon::IO_Write,          FuncWrite_ConfigAlarmMaskPos,   FuncWrite_ConfigAlarmMaskLen));
     cs.insert(CommandStore(Emetcon::PutConfig_Outage,           Emetcon::IO_Write,          Memory_OutageCyclesPos,         Memory_OutageCyclesLen));
     cs.insert(CommandStore(Emetcon::PutConfig_TimeAdjustTolerance, Emetcon::IO_Write,       Memory_TimeAdjustTolPos,        Memory_TimeAdjustTolLen));
@@ -883,92 +883,7 @@ INT CtiDeviceMCT410::executePutConfig( CtiRequestMsg              *pReq,
     OutMessage->Request.RouteID   = getRouteID();
     strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
 
-    if( parse.isKeyValid("holiday_offset") )
-    {
-        function = Emetcon::PutConfig_Holiday;
-
-        if( found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO) )
-        {
-            unsigned long holidays[3];
-            int holiday_count = 0;
-
-            int holiday_offset = parse.getiValue("holiday_offset");
-
-            OutMessage->Sequence = Cti::Protocol::Emetcon::PutConfig_Holiday;
-
-            //  grab up to three potential dates
-            for( int i = 0; i < 3 && parse.isKeyValid("holiday_date" + CtiNumStr(i)); i++ )
-            {
-                CtiTokenizer date_tokenizer(parse.getsValue("holiday_date" + CtiNumStr(i)));
-
-                int month = atoi(date_tokenizer("/").data()),
-                    day   = atoi(date_tokenizer("/").data()),
-                    year  = atoi(date_tokenizer("/").data());
-
-                if( year > 2000 )
-                {
-                    CtiDate holiday_date(day, month, year);
-
-                    if( holiday_date.isValid() && holiday_date > CtiDate::now() )
-                    {
-                        holidays[holiday_count++] = CtiTime(holiday_date).seconds();
-                    }
-                }
-            }
-
-            if( holiday_offset >= 1 && holiday_offset <= 3 )
-            {
-                if( holiday_count > 0 )
-                {
-                    //  change to 0-based offset;  it just makes things easier
-                    holiday_offset--;
-
-                    if( holiday_count > (3 - holiday_offset) )
-                    {
-                        holiday_count = 3 - holiday_offset;
-                    }
-
-                    OutMessage->Buffer.BSt.Function += holiday_offset * 4;
-                    OutMessage->Buffer.BSt.Length    = holiday_count  * 4;
-
-                    for( int i = 0; i < holiday_count; i++ )
-                    {
-                        OutMessage->Buffer.BSt.Message[i*4+0] = holidays[i] >> 24;
-                        OutMessage->Buffer.BSt.Message[i*4+1] = holidays[i] >> 16;
-                        OutMessage->Buffer.BSt.Message[i*4+2] = holidays[i] >>  8;
-                        OutMessage->Buffer.BSt.Message[i*4+3] = holidays[i] >>  0;
-                    }
-                }
-                else
-                {
-                    found = false;
-
-                    if( errRet )
-                    {
-                        errRet->setResultString("Specified dates are invalid");
-                        errRet->setStatus(NoMethod);
-                        retList.push_back(errRet);
-
-                        errRet = NULL;
-                    }
-                }
-            }
-            else
-            {
-                found = false;
-
-                if( errRet )
-                {
-                    errRet->setResultString("Invalid holiday offset specified");
-                    errRet->setStatus(NoMethod);
-                    retList.push_back(errRet);
-
-                    errRet = NULL;
-                }
-            }
-        }
-    }
-    else if( parse.isKeyValid("centron_ratio") )
+    if( parse.isKeyValid("centron_ratio") )
     {
         //  these Centron guys are very specialized writes, so we won't put them in the command store at the
         //    moment - at least not until we get a better command store than the Cti::Protocol::Emetcon:: thing...
@@ -2264,8 +2179,6 @@ INT CtiDeviceMCT410::decodeGetValueLoadProfilePeakReport(INMESS *InMessage, CtiT
                                 DSt->Message[5] <<  8 |
                                 DSt->Message[6];
 
-        max_demand_timestamp += PASTDATE;//TS
-
         pulses = DSt->Message[7] << 16 |
                  DSt->Message[8] <<  8 |
                  DSt->Message[9];
@@ -2284,39 +2197,48 @@ INT CtiDeviceMCT410::decodeGetValueLoadProfilePeakReport(INMESS *InMessage, CtiT
         result_string += "Report range: " + CtiTime(_llpPeakInterest.time - (_llpPeakInterest.period * 86400)).asString() + " - " +
                                             CtiTime(_llpPeakInterest.time).asString() + "\n";
 
-        switch( _llpPeakInterest.command )
+        if( max_demand_timestamp > _llpPeakInterest.time ||
+            max_demand_timestamp < (_llpPeakInterest.time - _llpPeakInterest.period * 86400) )
         {
-            case FuncRead_LLPPeakDayPos:
+            result_string = "Peak timestamp (" + CtiTime(max_demand_timestamp).asString() + ") outside of requested range - retry report";
+            status = NOTNORMAL;
+        }
+        else
+        {
+            switch( _llpPeakInterest.command )
             {
-                result_string += "Peak day: " + CtiTime(max_demand_timestamp).asString() + "\n";
-                result_string += "Usage:  " + CtiNumStr(max_usage) + string(" kWH\n");
-                result_string += "Demand: " + CtiNumStr(max_usage / 24) + string(" kW\n");
-                result_string += "Average daily usage over range: " + CtiNumStr(avg_daily) + string(" kWH\n");
-                result_string += "Total usage over range: " + CtiNumStr(total_usage) + string(" kWH\n");
+                case FuncRead_LLPPeakDayPos:
+                {
+                    result_string += "Peak day: " + CtiTime(max_demand_timestamp).asString() + "\n";
+                    result_string += "Usage:  " + CtiNumStr(max_usage, 1) + string(" kWH\n");
+                    result_string += "Demand: " + CtiNumStr(max_usage / 24, 2) + string(" kW\n");
+                    result_string += "Average daily usage over range: " + CtiNumStr(avg_daily, 1) + string(" kWH\n");
+                    result_string += "Total usage over range: " + CtiNumStr(total_usage, 1) + string(" kWH\n");
 
-                break;
-            }
-            case FuncRead_LLPPeakHourPos:
-            {
-                result_string += "Peak hour: " + CtiTime(max_demand_timestamp).asString() + "\n";
-                result_string += "Usage:  " + CtiNumStr(max_usage) + string(" kWH\n");
-                result_string += "Demand: " + CtiNumStr(max_usage) + string(" kW\n");
-                result_string += "Average daily usage over range: " + CtiNumStr(avg_daily) + string(" kWH\n");
-                result_string += "Total usage over range: " + CtiNumStr(total_usage) + string(" kWH\n");
+                    break;
+                }
+                case FuncRead_LLPPeakHourPos:
+                {
+                    result_string += "Peak hour: " + CtiTime(max_demand_timestamp).asString() + "\n";
+                    result_string += "Usage:  " + CtiNumStr(max_usage, 1) + string(" kWH\n");
+                    result_string += "Demand: " + CtiNumStr(max_usage, 1) + string(" kW\n");
+                    result_string += "Average daily usage over range: " + CtiNumStr(avg_daily, 1) + string(" kWH\n");
+                    result_string += "Total usage over range: " + CtiNumStr(total_usage, 1) + string(" kWH\n");
 
-                break;
-            }
-            case FuncRead_LLPPeakIntervalPos:
-            {
-                int intervals_per_hour = 3600 / getLoadProfile().getLoadProfileDemandRate();
+                    break;
+                }
+                case FuncRead_LLPPeakIntervalPos:
+                {
+                    int intervals_per_hour = 3600 / getLoadProfile().getLoadProfileDemandRate();
 
-                result_string += "Peak interval: " + CtiTime(max_demand_timestamp).asString() + "\n";
-                result_string += "Usage:  " + CtiNumStr(max_usage) + string(" kWH\n");
-                result_string += "Demand: " + CtiNumStr(max_usage * intervals_per_hour) + string(" kW\n");
-                result_string += "Average daily usage over range: " + CtiNumStr(avg_daily) + string(" kWH\n");
-                result_string += "Total usage over range: " + CtiNumStr(total_usage) + string(" kWH\n");
+                    result_string += "Peak interval: " + CtiTime(max_demand_timestamp).asString() + "\n";
+                    result_string += "Usage:  " + CtiNumStr(max_usage, 1) + string(" kWH\n");
+                    result_string += "Demand: " + CtiNumStr(max_usage * intervals_per_hour, 1) + string(" kW\n");
+                    result_string += "Average daily usage over range: " + CtiNumStr(avg_daily, 1) + string(" kWH\n");
+                    result_string += "Total usage over range: " + CtiNumStr(total_usage, 1) + string(" kWH\n");
 
-                break;
+                    break;
+                }
             }
         }
 
