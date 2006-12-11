@@ -373,11 +373,6 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
     boost::regex   re_kxx  ("(kwh|kvah|kvarh)[abcdt]?");  //  Match on kwh, kwha,b,c,d,t
     boost::regex   re_hrate("h[abcdt]?");                 //  Match on h,ha,hb,hc,hd,ht
     boost::regex   re_rate ("rate *[abcdt]");
-//not in head
-    boost::regex   re_kwh  ("kwh");
-    boost::regex   re_kvah ("kvah");
-    boost::regex   re_kvarh("kvarh");
-
 
     boost::regex   re_demand(" dema|( kw| kvar| kva)( |$)");  //  match "dema"nd, but also match "kw", "kvar", or "kva"
 
