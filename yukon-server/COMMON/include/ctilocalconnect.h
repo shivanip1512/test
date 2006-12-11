@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_710.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2006/04/20 17:15:13 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2006/12/11 17:08:22 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -35,12 +35,6 @@ struct DirectDataKeeper
     UINT len;
 };
 
-enum ReadFlags
-{
-    NOFLAG = 0,
-    MESSAGE_PEEK
-};
-
 class IM_EX_CTIBASE CtiLocalConnect : public CtiConnect
 {
 private:
@@ -52,14 +46,19 @@ private:
 
     CtiCriticalSection _crit;
 
+    ULONG                   NexusType;        // What is this connection??
+    CHAR                    Name[64];         // Text Description of connection
+
 public:
-    CtiLocalConnect()
-    {};
+    CtiLocalConnect() {};
 
     ~CtiLocalConnect();
 
-    ULONG                   NexusType;        // What is this connection??
-    CHAR                    Name[64];         // Text Description of connection
+    enum ReadFlags
+    {
+        NOFLAG = 0,
+        MESSAGE_PEEK
+    };
 
     ULONG CtiGetNexusState ();
     INT   CTINexusClose    ();
@@ -69,8 +68,8 @@ public:
 
     bool  CTINexusValid    () const;
 
-    int   CtiLocalConnectOpen    ();
-    INT   CtiLocalConnectRead    (VOID *buf, ULONG len, PULONG BRead, LONG TimeOut, int flags = NOFLAG);
+    int   CtiLocalConnectOpen ();
+    INT   CtiLocalConnectRead (VOID *buf, ULONG len, PULONG BRead, LONG TimeOut, int flags = NOFLAG);
 
     bool setMatchingConnection( CtiLocalConnect &connection );
 };
