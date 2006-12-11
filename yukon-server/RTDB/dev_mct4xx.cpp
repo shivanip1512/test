@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.44 $
-* DATE         :  $Date: 2006/12/11 16:16:21 $
+* REVISION     :  $Revision: 1.45 $
+* DATE         :  $Date: 2006/12/11 16:30:15 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1174,6 +1174,18 @@ INT CtiDeviceMCT4xx::executePutConfig(CtiRequestMsg         *pReq,
     bool  found = false;
     INT   nRet = NoError, sRet, function;
 
+    CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ),
+                                                   OutMessage->Request.CommandStr,
+                                                   string(),
+                                                   nRet,
+                                                   OutMessage->Request.RouteID,
+                                                   OutMessage->Request.MacroOffset,
+                                                   OutMessage->Request.Attempt,
+                                                   OutMessage->Request.TrxID,
+                                                   OutMessage->Request.UserID,
+                                                   OutMessage->Request.SOE,
+                                                   CtiMultiMsg_vec( ));
+
     if( parse.isKeyValid("install") )
     {
         if( parse.getsValue("installvalue") == PutConfigPart_all )
@@ -1249,6 +1261,91 @@ INT CtiDeviceMCT4xx::executePutConfig(CtiRequestMsg         *pReq,
         {
             delete OutMessage;
             OutMessage = NULL;
+        }
+    }
+    else if( parse.isKeyValid("holiday_offset") )
+    {
+        function = Emetcon::PutConfig_Holiday;
+
+        if( found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO) )
+        {
+            unsigned long holidays[3];
+            int holiday_count = 0;
+
+            int holiday_offset = parse.getiValue("holiday_offset");
+
+            OutMessage->Sequence = Cti::Protocol::Emetcon::PutConfig_Holiday;
+
+            //  grab up to three potential dates
+            for( int i = 0; i < 3 && parse.isKeyValid("holiday_date" + CtiNumStr(i)); i++ )
+            {
+                CtiTokenizer date_tokenizer(parse.getsValue("holiday_date" + CtiNumStr(i)));
+
+                int month = atoi(date_tokenizer("/").data()),
+                    day   = atoi(date_tokenizer("/").data()),
+                    year  = atoi(date_tokenizer("/").data());
+
+                if( year > 2000 )
+                {
+                    CtiDate holiday_date(day, month, year);
+
+                    if( holiday_date.isValid() && holiday_date > CtiDate::now() )
+                    {
+                        holidays[holiday_count++] = CtiTime(holiday_date).seconds();
+                    }
+                }
+            }
+
+            if( holiday_offset >= 1 && holiday_offset <= 3 )
+            {
+                if( holiday_count > 0 )
+                {
+                    //  change to 0-based offset;  it just makes things easier
+                    holiday_offset--;
+
+                    if( holiday_count > (3 - holiday_offset) )
+                    {
+                        holiday_count = 3 - holiday_offset;
+                    }
+
+                    OutMessage->Buffer.BSt.Function += holiday_offset * 4;
+                    OutMessage->Buffer.BSt.Length    = holiday_count  * 4;
+
+                    for( int i = 0; i < holiday_count; i++ )
+                    {
+                        OutMessage->Buffer.BSt.Message[i*4+0] = holidays[i] >> 24;
+                        OutMessage->Buffer.BSt.Message[i*4+1] = holidays[i] >> 16;
+                        OutMessage->Buffer.BSt.Message[i*4+2] = holidays[i] >>  8;
+                        OutMessage->Buffer.BSt.Message[i*4+3] = holidays[i] >>  0;
+                    }
+                }
+                else
+                {
+                    found = false;
+
+                    if( errRet )
+                    {
+                        errRet->setResultString("Specified dates are invalid");
+                        errRet->setStatus(NoMethod);
+                        retList.push_back(errRet);
+
+                        errRet = NULL;
+                    }
+                }
+            }
+            else
+            {
+                found = false;
+
+                if( errRet )
+                {
+                    errRet->setResultString("Invalid holiday offset specified");
+                    errRet->setStatus(NoMethod);
+                    retList.push_back(errRet);
+
+                    errRet = NULL;
+                }
+            }
         }
     }
     else if( parse.isKeyValid("tou") )
@@ -1597,6 +1694,12 @@ INT CtiDeviceMCT4xx::executePutConfig(CtiRequestMsg         *pReq,
         {
             nRet = NoMethod;
         }
+    }
+
+    if( errRet )
+    {
+        delete errRet;
+        errRet = 0;
     }
 
     if( !found )
