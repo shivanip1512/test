@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2006/09/26 14:11:52 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2006/12/11 21:47:51 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -202,7 +202,7 @@ CtiSignalMsg*  CtiSignalManager::setAlarmActive(long pointid, int alarm_conditio
 
             if(pOriginalSig)
             {
-                if( ((pOriginalSig->getTags() & TAG_ACTIVE_CONDITION) != 0) != active )     // We must be changing it!
+                if( ((pOriginalSig->getTags() & (TAG_ACTIVE_CONDITION | TAG_ACTIVE_ALARM)) != 0) != active )     // We must be changing it!
                 {
                     setDirty(true);
 
