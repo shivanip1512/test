@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_sixnet.cpp-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2006/03/23 15:29:18 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2006/12/11 17:08:43 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1188,7 +1188,7 @@ INT CtiDeviceSixnet::decodeResponse(CtiXfer &Transfer,INT commReturnValue, list<
                 {
                     _tailTime = getFirstRecordTime();
 
-                    CtiTime recordtime( PASTDATE + _tailTime );
+                    CtiTime recordtime( _tailTime );
 
                     if (getDebugLevel() & DEBUGLEVEL_SIXNET_DEVICE)
                     {
@@ -1239,8 +1239,8 @@ INT CtiDeviceSixnet::decodeResponse(CtiXfer &Transfer,INT commReturnValue, list<
                 if (CtiProtocolSixnet::GETCOMPLETE == protocolreturn )
                 {
                     time_t recordtime = getFirstRecordTime();
-                    CtiTime headTime( PASTDATE + recordtime );
-                    CtiTime tailtime( PASTDATE + _tailTime );
+                    CtiTime headTime( recordtime );
+                    CtiTime tailtime( _tailTime );
 
                     if ( _lpTime >= headTime )
                     {
@@ -1354,7 +1354,7 @@ INT CtiDeviceSixnet::decodeResponse(CtiXfer &Transfer,INT commReturnValue, list<
 
                 if (CtiProtocolSixnet::GETCOMPLETE == protocolreturn )
                 {
-                    CtiTime recordtime( PASTDATE + getFirstRecordTime() );
+                    CtiTime recordtime( getFirstRecordTime() );
 
                     int recCnt = processGetRecords(recProcessed);
 
