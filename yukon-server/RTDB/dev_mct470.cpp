@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.78 $
-* DATE         :  $Date: 2006/12/05 20:10:56 $
+* REVISION     :  $Revision: 1.79 $
+* DATE         :  $Date: 2006/12/11 16:05:07 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3314,25 +3314,51 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                 //  get demand
                 pi = getData(DSt->Message, 3, ValueType_IED);
 
-                insertPointDataReport(AnalogPointType, PointOffset_TotalKW,
-                                      ReturnMsg, pi, "current kW");
+                if(pi.value != 0xFEFEFE )
+                {
+                    insertPointDataReport(AnalogPointType, PointOffset_TotalKW,
+                                          ReturnMsg, pi, "current kW");
+                }
+                else
+                {
+                    resultString += getName() + " / Current kW: Data Unavailable" + "\n";
+                    insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKW,     AnalogPointType);
+                }
+
+                
 
                 //  get selectable metric (kM, kVAR, etc)
                 pi = getData(DSt->Message + 3, 3, ValueType_IED);
 
-                insertPointDataReport(AnalogPointType, PointOffset_TotalKM,
-                                      ReturnMsg, pi, "current kM");
+                if(pi.value != 0xFEFEFE )
+                {
+                    insertPointDataReport(AnalogPointType, PointOffset_TotalKM,
+                                          ReturnMsg, pi, "current kM");
+                }
+                else
+                {
+                    resultString += getName() + " / Current kM: Data Unavailable" + "\n";
+                    insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKM,     AnalogPointType);
+                }
 
                 //  S4-specific - get voltage
                 pi = getData(DSt->Message + 6, 2, ValueType_IED);
-                pi.value /= 100.0;
 
                 if(getDevicePointOffsetTypeEqual(PointOffset_VoltsPhaseA, AnalogPointType))
                 {
                     send_outages = false;
 
-                    insertPointDataReport(AnalogPointType, PointOffset_VoltsPhaseA,
-                                          ReturnMsg, pi);
+                    if(pi.value != 0xFEFE )
+                    {
+                        pi.value /= 100.0;
+                        insertPointDataReport(AnalogPointType, PointOffset_VoltsPhaseA,
+                                              ReturnMsg, pi);
+                    }
+                    else
+                    {
+                        resultString += getName() + " / Phase A Volts: Data Unavailable" + "\n";
+                        insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_VoltsPhaseA, AnalogPointType);
+                    }
                 }
                 //  don't send the point if it's not defined - this is a hack to allow the S4 and Alpha decodes to
                 //    both happen (until we have the configs to tell us which one to use)
@@ -3342,14 +3368,22 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                 }*/
 
                 pi = getData(DSt->Message + 8, 2, ValueType_IED);
-                pi.value /= 100.0;
 
                 if(volts = getDevicePointOffsetTypeEqual(PointOffset_VoltsPhaseB, AnalogPointType))
                 {
                     send_outages = false;
 
-                    insertPointDataReport(AnalogPointType, PointOffset_VoltsPhaseB,
-                                          ReturnMsg, pi);
+                    if(pi.value != 0xFEFE )
+                    {
+                        pi.value /= 100.0;
+                        insertPointDataReport(AnalogPointType, PointOffset_VoltsPhaseB,
+                                              ReturnMsg, pi);
+                    }
+                    else
+                    {
+                        resultString += getName() + " / Phase B Volts: Data Unavailable" + "\n";
+                        insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_VoltsPhaseB, AnalogPointType);
+                    }
                 }
                 //  don't send the point if it's not defined - this is a hack to allow the S4 and Alpha decodes to
                 //    both happen (until we have the configs to tell us which one to use)
@@ -3359,14 +3393,22 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                 }*/
 
                 pi = getData(DSt->Message + 10, 2, ValueType_IED);
-                pi.value /= 100.0;
 
                 if(volts = getDevicePointOffsetTypeEqual(PointOffset_VoltsPhaseC, AnalogPointType))
                 {
                     send_outages = false;
 
-                    insertPointDataReport(AnalogPointType, PointOffset_VoltsPhaseC,
-                                          ReturnMsg, pi);
+                    if(pi.value != 0xFEFE )
+                    {
+                        pi.value /= 100.0;
+                        insertPointDataReport(AnalogPointType, PointOffset_VoltsPhaseC,
+                                              ReturnMsg, pi);
+                    }
+                    else
+                    {
+                        resultString += getName() + " / Phase C Volts: Data Unavailable" + "\n";
+                        insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_VoltsPhaseC, AnalogPointType);
+                    }
                 }
                 //  don't send the point if it's not defined - this is a hack to allow the S4 and Alpha decodes to
                 //    both happen (until we have the configs to tell us which one to use)
@@ -3379,8 +3421,11 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                 {
                     pi = getData(DSt->Message + 6, 2, ValueType_IED);
 
-                    resultString += valueReport("outage count", pi).c_str();
-                    resultString += "\n";
+                    if(pi.value != 0xFEFE )
+                    {
+                        resultString += valueReport("outage count", pi).c_str();
+                        resultString += "\n";
+                    }
                 }
             }
         }
@@ -3401,13 +3446,29 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
 
                 pi = getData(DSt->Message, 5, ValueType_IED);
 
-                insertPointDataReport(AnalogPointType, PointOffset_TotalKWH,
-                                      ReturnMsg, pi, "kWh total", 0UL, 1.0, TAG_POINT_MUST_ARCHIVE);
+                if( pi.value != 0xFEFEFEFEFE )
+                {
+                    insertPointDataReport(AnalogPointType, PointOffset_TotalKWH,
+                                          ReturnMsg, pi, "kWh total", 0UL, 1.0, TAG_POINT_MUST_ARCHIVE);
+                }
+                else
+                {
+                    resultString += getName() + " / kWh total: Data Unavailable" + "\n";
+                    insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKWH, AnalogPointType);
+                }
 
                 pi = getData(DSt->Message + 5, 5, ValueType_IED);
 
-                insertPointDataReport(AnalogPointType, PointOffset_TotalKMH,
-                                      ReturnMsg, pi, "kMh total");
+                if( pi.value!= 0xFEFEFEFEFE )
+                {
+                    insertPointDataReport(AnalogPointType, PointOffset_TotalKMH,
+                                          ReturnMsg, pi, "kMh total");
+                }
+                else
+                {
+                    resultString += getName() + " / kMh total: Data Unavailable" + "\n";
+                    insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKMH, AnalogPointType);
+                }
 
                 pi = getData(DSt->Message + 10, 2, ValueType_IED);
 
