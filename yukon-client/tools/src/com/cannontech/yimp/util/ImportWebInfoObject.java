@@ -5,9 +5,16 @@
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
 package com.cannontech.yimp.util;
-import java.util.Vector;
+import java.sql.Connection;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.List;
 
+import com.cannontech.database.PoolManager;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.importer.ImportFail;
+import com.cannontech.database.db.importer.ImportPendingComm;
+import com.cannontech.database.SqlStatement;
 
 /**
  * @author jdayton
@@ -17,14 +24,26 @@ import com.cannontech.database.db.importer.ImportFail;
  */
 public class ImportWebInfoObject 
 {
-	private Vector failures;
+	private List failures;
+    private List pendingComms;
+    private List failedComms;
 	
 	public final String REFRESH_RATE = "45";
 	
-	public final String COLUMN_NAMES[] = 
+	public final String FAILURE_COLUMN_NAMES[] = 
 	{ 
 		"NAME", "REASONS FOR FAILURE", "TIME"
 	};
+    
+    public final String COMM_FAILURE_COLUMN_NAMES[] = 
+    { 
+        "NAME", "ROUTE", "SUBSTATION", "ERROR", "TIME"
+    };
+    
+    public final String COMM_PENDING_COLUMN_NAMES[] = 
+    { 
+        "NAME", "ROUTE", "SUBSTATION"
+    };
 		
 	public ImportWebInfoObject()
 	{
@@ -33,9 +52,9 @@ public class ImportWebInfoObject
 		//getFailures();
 	}
 	
-	public Vector getFailures()
+	public List getFailures()
 	{
-		return ImportFuncs.getAllFailed();
+		return ImportFuncs.getAllDataFailures();
 	}
 	
 	public ImportFail getFailureAt(int index)
@@ -43,7 +62,7 @@ public class ImportWebInfoObject
 		if(failures == null)
 			failures = getFailures();
 		
-		return (ImportFail)getFailures().elementAt(index);
+		return (ImportFail)getFailures().get(index);
 	}
 	
 	public String getFailName(int index)
@@ -163,6 +182,58 @@ public class ImportWebInfoObject
 		return totalAttempts;
 	}
 	
-	
+    public List getPendingComms() {
+        return ImportFuncs.getAllPending();
+    }
+    
+    public ImportPendingComm getPendingCommAt(int index) {
+        if(pendingComms == null)
+            pendingComms = getPendingComms();
+        
+        return (ImportPendingComm)getPendingComms().get(index);
+    }
+    
+    public String getPendingName(int index) {
+        return ((ImportPendingComm)getPendingCommAt(index)).getName();
+    }
+    
+    public String getPendingRouteName(int index) {
+        return ((ImportPendingComm)getPendingCommAt(index)).getRouteName();
+    }
+    
+    public String getPendingSubstationName(int index) {
+        return ((ImportPendingComm)getPendingCommAt(index)).getSubstationName();
+    }
+    
+    public List getFailedComms() {
+        return ImportFuncs.getAllCommunicationFailures();
+    }
+    
+    public ImportFail getCommFailureAt(int index) {
+        if(failedComms == null)
+            failedComms = getFailedComms();
+        
+        return (ImportFail)getFailedComms().get(index);
+    }
+    
+    public String getCommFailureName(int index) {
+        return ((ImportFail)getCommFailureAt(index)).getName();
+    }
+    
+    public String getCommFailureErrorString(int index) {
+        return ((ImportFail)getCommFailureAt(index)).getErrorMsg();
+    }
+    
+    public String getCommFailureTime(int index) {
+        return ((ImportFail)getCommFailureAt(index)).getDateTime().toString();
+    }
+    
+    public String getCommFailureRouteName(int index) {
+        return ((ImportFail)getCommFailureAt(index)).getRouteName();
+    }
+    
+    public String getCommFailureSubstationName(int index) {
+        return ((ImportFail)getCommFailureAt(index)).getSubstationName();
+    }
 	
 }
