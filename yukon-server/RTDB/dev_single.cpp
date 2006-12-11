@@ -5,8 +5,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.57 $
-* DATE         :  $Date: 2006/11/16 16:57:13 $
+* REVISION     :  $Revision: 1.58 $
+* DATE         :  $Date: 2006/12/11 16:36:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1768,7 +1768,7 @@ bool CtiDeviceSingle::validatePendingStatus(bool status, int scantype, CtiTime &
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << getName() << "'s pending flags (" << scantype << ") reset due to timeout on prior scan" << endl;
+                    dout << CtiTime() << " " << getName() << "'s pending flags (" << scantype << ") reset due to timeout on prior scan (" << getScanData().getLastCommunicationTime(scantype) << " + " << getTardyTime(scantype) << " < " << now << ")" << endl;
                 }
                 resetForScan(scantype);
                 getScanData().setLastCommunicationTime(scantype, now);
