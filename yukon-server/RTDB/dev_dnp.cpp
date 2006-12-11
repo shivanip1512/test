@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.54 $
-* DATE         :  $Date: 2006/10/24 16:12:34 $
+* REVISION     :  $Revision: 1.55 $
+* DATE         :  $Date: 2006/12/11 16:39:54 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -484,6 +484,7 @@ INT DNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&
 
     if( command != Protocol::DNPInterface::Command_Invalid )
     {
+        //  only used for the call to sendCommRequest(), unreliable after - DO NOT USE FOR DECODES
         _pil_info.protocol_command   = command;
         _pil_info.protocol_parameter = controlout;
         _pil_info.pseudo_info        = p_i;
@@ -640,13 +641,11 @@ int DNP::sendCommResult(INMESS *InMessage)
     int retval = NoError;
 
     char *buf;
-    int offset;
     string result_string;
     Protocol::DNPInterface::stringlist_t strings;
     Protocol::DNPInterface::stringlist_t::iterator itr;
 
     buf = reinterpret_cast<char *>(InMessage->Buffer.InMessage);
-    offset = 0;
 
     _dnp.getInboundStrings(strings);
 
@@ -946,21 +945,15 @@ INT DNP::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &
 
         result_string.assign(reinterpret_cast<char *>(InMessage->Buffer.InMessage), InMessage->InLength);
 
-        switch( _pil_info.protocol_command )
+        if( strstr(InMessage->Return.CommandStr, "scan integrity") )
         {
-            case Protocol::DNPInterface::Command_Class1230Read:
-            {
-                setScanFlag(ScanRateIntegrity, false);
-                break;
-            }
-            case Protocol::DNPInterface::Command_Class123Read:
-            case Protocol::DNPInterface::Command_Class1Read:
-            case Protocol::DNPInterface::Command_Class2Read:
-            case Protocol::DNPInterface::Command_Class3Read:
-            {
-                setScanFlag(ScanRateGeneral, false);
-                break;
-            }
+            //  case Protocol::DNPInterface::Command_Class1230Read:
+            setScanFlag(ScanRateIntegrity, false);
+        }
+        if( strstr(InMessage->Return.CommandStr, "scan general") )
+        {
+            //  case Protocol::DNPInterface::Command_Class123Read:
+            setScanFlag(ScanRateGeneral, false);
         }
 
         retMsg = CTIDBG_new CtiReturnMsg(getID(),
@@ -1023,21 +1016,15 @@ INT DNP::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &v
         dout << CtiTime() << " Error decode for device " << getName() << " in progress " << endl;
     }
 
-    switch( _pil_info.protocol_command )
+    if( strstr(InMessage->Return.CommandStr, "scan integrity") )
     {
-        case Protocol::DNPInterface::Command_Class1230Read:
-        {
-            setScanFlag(ScanRateIntegrity, false);
-            break;
-        }
-        case Protocol::DNPInterface::Command_Class123Read:
-        case Protocol::DNPInterface::Command_Class1Read:
-        case Protocol::DNPInterface::Command_Class2Read:
-        case Protocol::DNPInterface::Command_Class3Read:
-        {
-            setScanFlag(ScanRateGeneral, false);
-            break;
-        }
+        //  case Protocol::DNPInterface::Command_Class1230Read:
+        setScanFlag(ScanRateIntegrity, false);
+    }
+    if( strstr(InMessage->Return.CommandStr, "scan general") )
+    {
+        //  case Protocol::DNPInterface::Command_Class123Read:
+        setScanFlag(ScanRateGeneral, false);
     }
 
     if( pPIL != NULL )
@@ -1057,6 +1044,7 @@ INT DNP::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &v
             }
             else
             {
+                //  does this ever get called?  should probably be removed...
                 pMsg->insert(GeneralScanAborted);
             }
 
