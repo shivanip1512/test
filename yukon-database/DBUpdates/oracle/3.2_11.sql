@@ -27,9 +27,9 @@ insert into point values( -110, 'System', 'Multispeak' , 0, 'Default', 0, 'N', '
 
 /* @error ignore-begin */
 create table Substation (
-   SubstationID         number              not null,
-   SubstationName       varchar2(50)          null,
-   LMRouteID              number              null
+   SubstationID        	number              not null,
+   SubstationName       varchar2(50)        null,
+   LMRouteID            number              null
 );
 
 insert into Substation values (0,'(none)',0);
@@ -49,7 +49,7 @@ alter table Substation rename column RouteID to LMRouteID;
 /* Table: SubstationToRouteMapping                              */
 /*==============================================================*/
 create table SubstationToRouteMapping (
-   SubstationID		number              not null,
+   SubstationID			number              not null,
    RouteID              number              not null,
    Ordering             number              not null
 );
@@ -89,17 +89,17 @@ alter table ImportFail modify FailType varchar2(64) not null;
 /* Table: ImportPendingComm                                     */
 /*==============================================================*/
 create table ImportPendingComm (
-   DeviceID	       	   	number		    	 not null,
+   DeviceID	       	   	number		    	  not null,
    Address             	varchar2(64)          not null,
    Name	               	varchar2(64)          not null,
    RouteName           	varchar2(64)          not null,
-   MeterNumber	       	varchar2(64)	    	 not null,
+   MeterNumber	       	varchar2(64)	   	  not null,
    CollectionGrp       	varchar2(64)          not null,
    AltGrp	       		varchar2(64)          not null,
    TemplateName	       	varchar2(64)          not null,
    BillGrp             	varchar2(64)          not null, 
    SubstationName      	varchar2(64)          not null
-)
+);
 
 alter table ImportPendingComm
    add constraint PK_IMPPENDINGCOMM primary key  (DeviceID);
@@ -121,4 +121,4 @@ insert into YukonRoleProperty values(-20011,-200,'Multispeak Setup','false','Con
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
 /**************************************************************/
-/* __YUKON_VERSION__ */
+insert into CTIDatabase values('3.2', 'Jon', '11-Dec-2006', 'Latest Update', 11 );

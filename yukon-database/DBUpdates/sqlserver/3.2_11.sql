@@ -131,7 +131,7 @@ create table ImportPendingComm (
    TemplateName	       	varchar(64)          not null,
    BillGrp             	varchar(64)          not null, 
    SubstationName      	varchar(64)          not null
-)
+);
 go
 alter table ImportPendingComm
    add constraint PK_IMPPENDINGCOMM primary key  (DeviceID);
@@ -156,4 +156,4 @@ go
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
 /**************************************************************/
-/* __YUKON_VERSION__ */
+insert into CTIDatabase values('3.2', 'Jon', '11-Dec-2006', 'Latest Update', 11 );
