@@ -16,6 +16,7 @@ import java.util.Vector;
 import javax.xml.rpc.ServiceException;
 
 import org.apache.axis.message.SOAPHeaderElement;
+import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.DaoFactory;
@@ -772,24 +773,25 @@ public class Multispeak implements MessageListener {
                             String oldCollGroup = deviceMeterGroup.getCollectionGroup();
                             String oldBillGroup = deviceMeterGroup.getBillingGroup();
                             deviceMeterGroup.setCollectionGroup(oldCollGroup.replaceAll(DeviceMeterGroup.INVENTORY_GROUP_PREFIX, ""));
-                            deviceMeterGroup.setBillingGroup(mspServiceLocation.getBillingCycle());
+                            if (!StringUtils.isBlank(mspServiceLocation.getBillingCycle()))
+                            	deviceMeterGroup.setBillingGroup(mspServiceLocation.getBillingCycle());
                             
                             yukonPaobject.setDisabled(false);
                             String logTemp = "";
                             if( MultispeakFuncs.getPaoNameAlias() == MultispeakVendor.ACCOUNT_NUMBER_PAONAME) {
-                                if( mspServiceLocation.getAccountNumber() == null || mspServiceLocation.getAccountNumber().length() < 1)
+                                if( StringUtils.isBlank(mspServiceLocation.getAccountNumber()))
                                     logTemp = "; PAOName(ActNum) NO CHANGE - MSP ACCOUNT NUMBER EMPTY.";
                                 else
                                     logTemp = "; PAOName(ActNum)(OLD:" + yukonPaobject.getPAOName() + " NEW:" + mspServiceLocation.getAccountNumber() + ").";
                                 yukonPaobject.setPAOName(mspServiceLocation.getAccountNumber());
                             } else if( MultispeakFuncs.getPaoNameAlias() == MultispeakVendor.SERVICE_LOCATION_PAONAME) {
-                                if( mspServiceLocation.getObjectID() == null || mspServiceLocation.getObjectID().length() < 1)
+                                if( StringUtils.isBlank(mspServiceLocation.getObjectID()))
                                     logTemp = "; PAOName(ServLoc) NO CHANGE - MSP SERVICE LOCATION OBJECTID EMPTY.";
                                 else
                                     logTemp = "; PAOName(ServLoc)(OLD:" + yukonPaobject.getPAOName() + " NEW:" + mspServiceLocation.getObjectID() + ").";
                                 yukonPaobject.setPAOName(mspServiceLocation.getObjectID());
                             } else if( MultispeakFuncs.getPaoNameAlias() == MultispeakVendor.CUSTOMER_PAONAME) {
-                                if( mspServiceLocation.getCustID() == null || mspServiceLocation.getCustID().length() < 1)
+                                if( StringUtils.isBlank(mspServiceLocation.getCustID()))
                                     logTemp = "; PAOName(CustID) NO CHANGE - MSP CUSTID EMPTY.";
                                 else
                                     logTemp = "; PAOName(CustID)(OLD:" + yukonPaobject.getPAOName() + " NEW:" + mspServiceLocation.getCustID() + ").";
@@ -907,7 +909,8 @@ public class Multispeak implements MessageListener {
                                     String oldCollGroup = deviceMeterGroup.getCollectionGroup();
                                     String oldBillGroup = deviceMeterGroup.getBillingGroup();
                                     deviceMeterGroup.setCollectionGroup(oldCollGroup.replaceAll(DeviceMeterGroup.INVENTORY_GROUP_PREFIX, ""));
-                                    deviceMeterGroup.setBillingGroup(mspServiceLocation.getBillingCycle());
+                                    if (!StringUtils.isBlank(mspServiceLocation.getBillingCycle()))
+                                    	deviceMeterGroup.setBillingGroup(mspServiceLocation.getBillingCycle());
                                     
                                     String oldAddress = String.valueOf(deviceCarrierSettings.getAddress());
                                     deviceCarrierSettings.setAddress(Integer.valueOf(mspAddress));
@@ -915,19 +918,19 @@ public class Multispeak implements MessageListener {
                                     yukonPaobject.setDisabled(false);
                                     String logTemp = "";
                                     if( MultispeakFuncs.getPaoNameAlias() == MultispeakVendor.ACCOUNT_NUMBER_PAONAME) {
-                                        if( mspServiceLocation.getAccountNumber() == null || mspServiceLocation.getAccountNumber().length() < 1)
+                                        if( StringUtils.isBlank(mspServiceLocation.getAccountNumber()))
                                             logTemp = "; PAOName(ActNum) NO CHANGE - MSP ACCOUNT NUMBER EMPTY.";
                                         else
                                             logTemp = "; PAOName(ActNum)(OLD:" + yukonPaobject.getPAOName() + " NEW:" + mspServiceLocation.getAccountNumber() + ").";
                                         yukonPaobject.setPAOName(mspServiceLocation.getAccountNumber());
                                     } else if( MultispeakFuncs.getPaoNameAlias() == MultispeakVendor.SERVICE_LOCATION_PAONAME) {
-                                        if( mspServiceLocation.getObjectID() == null || mspServiceLocation.getObjectID().length() < 1)
+                                        if( StringUtils.isBlank(mspServiceLocation.getObjectID()))
                                             logTemp = "; PAOName(ServLoc) NO CHANGE - MSP SERVICE LOCATION OBJECTID EMPTY.";
                                         else
                                             logTemp = "; PAOName(ServLoc)(OLD:" + yukonPaobject.getPAOName() + " NEW:" + mspServiceLocation.getObjectID() + ").";
                                         yukonPaobject.setPAOName(mspServiceLocation.getObjectID());
                                     } else if( MultispeakFuncs.getPaoNameAlias() == MultispeakVendor.CUSTOMER_PAONAME) {
-                                        if( mspServiceLocation.getCustID() == null || mspServiceLocation.getCustID().length() < 1)
+                                        if( StringUtils.isBlank(mspServiceLocation.getCustID()))
                                             logTemp = "; PAOName(CustID) NO CHANGE - MSP CUSTID EMPTY.";
                                         else
                                             logTemp = "; PAOName(CustID)(OLD:" + yukonPaobject.getPAOName() + " NEW:" + mspServiceLocation.getCustID() + ").";
@@ -1051,19 +1054,19 @@ public class Multispeak implements MessageListener {
                         yukonPaobjectByAddress.setDisabled(false);
                         String logTemp = "";
                         if( MultispeakFuncs.getPaoNameAlias() == MultispeakVendor.ACCOUNT_NUMBER_PAONAME) {
-                            if( mspServiceLocation.getAccountNumber() == null || mspServiceLocation.getAccountNumber().length() < 1)
+                            if( StringUtils.isBlank(mspServiceLocation.getAccountNumber()))
                                 logTemp = "; PAOName(ActNum) NO CHANGE - MSP ACCOUNT NUMBER EMPTY.";
                             else
                                 logTemp = "; PAOName(ActNum)(OLD:" + yukonPaobjectByAddress.getPAOName() + " NEW:" + mspServiceLocation.getAccountNumber() + ").";
                             yukonPaobjectByAddress.setPAOName(mspServiceLocation.getAccountNumber());
                         } else if( MultispeakFuncs.getPaoNameAlias() == MultispeakVendor.SERVICE_LOCATION_PAONAME) {
-                            if( mspServiceLocation.getObjectID() == null || mspServiceLocation.getObjectID().length() < 1)
+                            if( StringUtils.isBlank(mspServiceLocation.getObjectID()))
                                 logTemp = "; PAOName(ServLoc) NO CHANGE - MSP SERVICE LOCATION OBJECTID EMPTY.";
                             else
                                 logTemp = "; PAOName(ServLoc)(OLD:" + yukonPaobjectByAddress.getPAOName() + " NEW:" + mspServiceLocation.getObjectID() + ").";
                             yukonPaobjectByAddress.setPAOName(mspServiceLocation.getObjectID());
                         } else if( MultispeakFuncs.getPaoNameAlias() == MultispeakVendor.CUSTOMER_PAONAME) {
-                            if( mspServiceLocation.getCustID() == null || mspServiceLocation.getCustID().length() < 1)
+                            if( StringUtils.isBlank(mspServiceLocation.getCustID()))
                                 logTemp = "; PAOName(CustID) NO CHANGE - MSP CUSTID EMPTY.";
                             else
                                 logTemp = "; PAOName(CustID)(OLD:" + yukonPaobjectByAddress.getPAOName() + " NEW:" + mspServiceLocation.getCustID() + ").";
@@ -1076,7 +1079,8 @@ public class Multispeak implements MessageListener {
                         String oldMeterNo = deviceMeterGroup.getMeterNumber();
                         deviceMeterGroup.setMeterNumber(meterNo);
                         deviceMeterGroup.setCollectionGroup(oldCollGroup.replaceAll(DeviceMeterGroup.INVENTORY_GROUP_PREFIX, ""));
-                        deviceMeterGroup.setBillingGroup(mspServiceLocation.getBillingCycle());
+                        if (!StringUtils.isBlank(mspServiceLocation.getBillingCycle()))
+                        	deviceMeterGroup.setBillingGroup(mspServiceLocation.getBillingCycle());
                         
                         DaoFactory.getDbPersistentDao().performDBChange(yukonPaobjectByAddress, Transaction.UPDATE);
                         logMSPActivity("MeterAddNotification",
@@ -1317,16 +1321,16 @@ public class Multispeak implements MessageListener {
         String address = mspMeter.getNameplate().getTransponderID();
         String meterNumber = mspMeter.getMeterNo();
         String paoName = meterNumber;
-        String billingGroup = mspServiceLocation.getBillingCycle();
+        String billingGroup = StringUtils.isBlank(mspServiceLocation.getBillingCycle())? "":mspServiceLocation.getBillingCycle();
         
         if( MultispeakFuncs.getPaoNameAlias() == MultispeakVendor.ACCOUNT_NUMBER_PAONAME) {
-            if( mspServiceLocation.getAccountNumber() != null && mspServiceLocation.getAccountNumber().length() > 0)
+            if( !StringUtils.isBlank(mspServiceLocation.getAccountNumber()))
                 paoName = mspServiceLocation.getAccountNumber();
         } else if( MultispeakFuncs.getPaoNameAlias() == MultispeakVendor.SERVICE_LOCATION_PAONAME) {
-            if( mspServiceLocation.getObjectID() != null && mspServiceLocation.getObjectID().length() > 0)
+            if( !StringUtils.isBlank(mspServiceLocation.getObjectID()))
                 paoName = mspServiceLocation.getObjectID();
         } else if( MultispeakFuncs.getPaoNameAlias() == MultispeakVendor.CUSTOMER_PAONAME) {
-            if( mspServiceLocation.getCustID() != null && mspServiceLocation.getCustID().length() > 0)
+            if( !StringUtils.isBlank(mspServiceLocation.getCustID()))
                 paoName = mspServiceLocation.getCustID();
         }
 
