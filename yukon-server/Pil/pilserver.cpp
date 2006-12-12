@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.86 $
-* DATE         :  $Date: 2006/11/16 16:55:07 $
+* REVISION     :  $Revision: 1.87 $
+* DATE         :  $Date: 2006/12/12 21:42:10 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1195,21 +1195,24 @@ int CtiPILServer::executeMulti(CtiMultiMsg *pMulti)
         CtiMultiMsg_vec::iterator itr = pMulti->getData().begin();
         //RWOrderedIterator itr( pMulti->getData() );
 
-        for(;NULL != (pMyMsg = (CtiMessage*)*itr ); itr++)
+        for(;itr != pMulti->getData().end(); itr++)
         {
-            switch( pMyMsg->isA() )
+            if((pMyMsg = (CtiMessage*) *itr) != NULL)
             {
-            case MSG_PCREQUEST:
+                switch( pMyMsg->isA() )
                 {
-                    CtiRequestMsg *pReq = (CtiRequestMsg *)pMyMsg;
-                    status = executeRequest(pReq);
-                    break;
-                }
-            default:
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "**** ERROR **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    break;
+                case MSG_PCREQUEST:
+                    {
+                        CtiRequestMsg *pReq = (CtiRequestMsg *)pMyMsg;
+                        status = executeRequest(pReq);
+                        break;
+                    }
+                default:
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << "**** ERROR **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        break;
+                    }
                 }
             }
         }
