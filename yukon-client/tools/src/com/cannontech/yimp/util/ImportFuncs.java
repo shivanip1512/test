@@ -172,8 +172,6 @@ public class ImportFuncs
 		return;
    	}
 	
-	
-	
 	/*
 	 * This performs the actual import, taking in a vector
 	 * filled with ImportData objects and converting them to
@@ -238,78 +236,6 @@ public class ImportFuncs
 		}
 		
 		return;
-	}
-	
-	/*
-	 * This method is called to log every event; it dutifully logs each entry to an 
-	 * external log file location.  The parameter importStatus is a char that indicates
-	 * a 'F' for failure, 'S' for success, or 'N' for non-import status event.
-	 * It then returns the logger for continued use.
-	 */
-	public static LogWriter writeToImportLog(LogWriter logger, char importStatus, String event, String sqlEvent, String exception)
-	{
-		if (logger == null)
-		{
-			logger = changeLog(logger);
-		}
-		
-		if(importStatus == 'F')
-		{
-			String output = "Failed import entry -- " +
-						event + " -- " + sqlEvent 
-						+ " -- " + exception; 
-			logger.log( output, LogWriter.ERROR);
-		}
-		else if(importStatus == 'S')
-		{
-			String output = "Successful import entry: " +
-						event + "----" + sqlEvent; 
-			logger.log( output, LogWriter.INFO);
-		}
-		else
-		{
-			logger.log( event, LogWriter.INFO);
-		}
-			
-		return logger;
-	}
-	
-	public static LogWriter changeLog(LogWriter logger)
-	{
-		Date now = new Date();
-		GregorianCalendar cal = new GregorianCalendar();
-		cal.setTime(now);
-		int day = cal.get(GregorianCalendar.DAY_OF_MONTH);
-		
-		try
-		{
-			String dataDir = "../log/";
-			String opName = "import" + day;
-			String filename = dataDir + opName  + ".log";
-			java.io.File file = new java.io.File( filename );
-				
-			//if this log file hasn't been modified today, assume it is a month old and start over.
-			if(file.exists() && file.lastModified() < (now.getTime() - 86400000))
-			{
-				file.delete();
-			}
-				
-			if(! file.exists() || logger == null)
-			{
-				java.io.FileOutputStream out = new java.io.FileOutputStream(filename, true);
-				java.io.PrintWriter writer = new java.io.PrintWriter(out, true);
-				logger = new LogWriter(opName, LogWriter.DEBUG, writer);
-				logger.log("NEW DAY OF THE MONTH, NEW LOG", LogWriter.INFO );
-				logger.log("Initializing " + opName, LogWriter.INFO );
-				logger.log("Version: " + "(TEMPORARY RELEASE)" + ".", LogWriter.INFO );
-			}
-		}
-		catch( java.io.FileNotFoundException e )
-		{
-			e.printStackTrace();
-		}
-		
-		return logger;
 	}
 	
     /*

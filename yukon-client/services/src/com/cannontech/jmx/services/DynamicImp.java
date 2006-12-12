@@ -15,17 +15,17 @@ import javax.management.MBeanParameterInfo;
 
 import com.cannontech.clientutils.commonutils.ModifiedDate;
 import com.cannontech.jmx.CTIBaseDynMBean;
-import com.cannontech.yimp.importer.BulkImporter410;
+import com.cannontech.yimp.importer.BulkImporter;
 
 /**
  * @author jdayton
  *
- * Wrapper for the BulkImporter410 to allow plugability into a JMX server
+ * Wrapper for the BulkImporter to allow plugability into a JMX server
  * 
  */
 public class DynamicImp extends CTIBaseDynMBean
 {
-	private BulkImporter410 bulkImp410 = null;
+	private BulkImporter bulkImp = null;
 
 	/**
 	 * Main constructor
@@ -34,25 +34,25 @@ public class DynamicImp extends CTIBaseDynMBean
 	{
 		super();
 		
-		bulkImp410 = new BulkImporter410();		
+		bulkImp = new BulkImporter();		
 		initialize();		
 	}
 
 	
 	/**
-	 * Starts the BulkImp410 Service
+	 * Starts the BulkImp Service
 	 */
 	public void start()
 	{
-		bulkImp410.start();
+		bulkImp.start();
 	}
 
 	/**
-	 * Stops the BulkImp410 Service
+	 * Stops the BulkImp Service
 	 */
 	public void stop()
 	{
-		bulkImp410.stop();
+		bulkImp.stop();
 	}
 
 	/**
@@ -60,7 +60,7 @@ public class DynamicImp extends CTIBaseDynMBean
 	 */
 	public boolean isRunning()
 	{
-		return bulkImp410.isRunning();
+		return bulkImp.isRunning();
 	}
 
 	/**
@@ -70,10 +70,10 @@ public class DynamicImp extends CTIBaseDynMBean
 	{
 		try
 		{
-			Class cls = bulkImp410.getClass();
+			Class cls = bulkImp.getClass();
 			Method method = cls.getDeclaredMethod("getNextImportTime", new Class[0]);
 			method.setAccessible(true);
-			GregorianCalendar result = (GregorianCalendar)method.invoke(bulkImp410, new Object[0]);
+			GregorianCalendar result = (GregorianCalendar)method.invoke(bulkImp, new Object[0]);
 			
 			return new ModifiedDate( result.getTime().getTime() ).toString();
 		}
