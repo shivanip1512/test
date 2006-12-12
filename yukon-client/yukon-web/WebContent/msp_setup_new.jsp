@@ -73,7 +73,7 @@ function vendorChanged(vendor)
   <tr>
     <td colspan="2" onMouseOver="dispStatusMsg('Enter the Application Name');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">App Name</td>
     <td>
-      <input type="text" name="mspAppName" value='(none)'>
+      <input type="text" name="mspAppName">
     </td>
     <td>&nbsp;</td>
     <td style="text-align:left"><u>Response Message Login</u></td>
@@ -81,21 +81,21 @@ function vendorChanged(vendor)
   <tr>
     <td colspan="2" onMouseOver="dispStatusMsg('Enter the Username');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">MSP UserName</td>
     <td>
-      <input type="text" name="mspUserName" value='(none)'>
+      <input type="text" name="mspUserName">
     </td>
     <td onMouseOver="dispStatusMsg('Enter the Username for Outgoing Yukon messages');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">UserName</td>
     <td>
-      <input type="text" name="outUserName" value='(none)'>
+      <input type="text" name="outUserName">
     </td>
   </tr>
   <tr>
     <td colspan="2" onMouseOver="dispStatusMsg('Enter the Password');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">MSP Password</td>
     <td>
-      <input type="text" name="mspPassword" value='(none)'>
+      <input type="text" name="mspPassword">
     </td>
     <td onMouseOver="dispStatusMsg('Enter the Password for Outgoing Yukon messags');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">Password</td>
     <td>
-      <input type="text" name="outPassword" value='<c:out value="${multispeakBean.selectedMspVendor.outPassword}"/>'>
+      <input type="text" name="outPassword">
     </td>
   </tr>
   <tr>
