@@ -764,7 +764,7 @@ public class Multispeak implements MessageListener {
                 Meter mspMeter = addMeters[i];
                 String meterNo = mspMeter.getObjectID().trim();
                 String mspAddress = mspMeter.getNameplate().getTransponderID().trim();
-                ServiceLocation mspServiceLocation = port.getServiceLocationByMeterNo(meterNo);
+//                ServiceLocation mspServiceLocation = port.getServiceLocationByMeterNo(meterNo);
                 
                 //Find Meter by MeterNumber in Yukon
                 LiteYukonPAObject liteYukonPaobject = MultispeakFuncs.getLiteYukonPaobject(mspVendor.getUniqueKey(), meterNo);
@@ -779,6 +779,8 @@ public class Multispeak implements MessageListener {
                         String address = deviceCarrierSettings.getAddress().toString();
                         if( address.equalsIgnoreCase(mspMeter.getNameplate().getTransponderID())) { //Same MeterNumber and Address
                             if( disabled ) {        //Disabled Meter found
+                            	//Load the CIS serviceLocation.
+                            	ServiceLocation mspServiceLocation = port.getServiceLocationByMeterNo(meterNo);
                                 //Enable Meter and update applicable fields.
                                 String oldCollGroup = deviceMeterGroup.getCollectionGroup();
                                 String oldBillGroup = deviceMeterGroup.getBillingGroup();
@@ -878,6 +880,8 @@ public class Multispeak implements MessageListener {
                                                        mspVendor.getCompanyName());
                                     }
                                     else {    //Valid template found
+                                    	//Load the CIS serviceLocation.
+                                    	ServiceLocation mspServiceLocation = port.getServiceLocationByMeterNo(meterNo);
                                         //Find a valid substation
                                         if( mspMeter.getUtilityInfo() == null || mspMeter.getUtilityInfo().getSubstationName()== null){
                                             addImportData(mspMeter, mspServiceLocation, templateName, "");
@@ -910,6 +914,8 @@ public class Multispeak implements MessageListener {
                                     YukonPAObject yukonPaobjectByAddress = (YukonPAObject)DaoFactory.getDbPersistentDao().retrieveDBPersistent(liteYukonPaoByAddress);
                                     
                                     if (yukonPaobjectByAddress.isDisabled()) {  //Address object is disabled, so we can update and activate the Meter Number object
+                                    	//Load the CIS serviceLocation.
+                                    	ServiceLocation mspServiceLocation = port.getServiceLocationByMeterNo(meterNo);
                                         //TODO deleteRawPointHistory(yukonPaobject);
                                         String oldCollGroup = deviceMeterGroup.getCollectionGroup();
                                         String oldBillGroup = deviceMeterGroup.getBillingGroup();
@@ -1018,6 +1024,8 @@ public class Multispeak implements MessageListener {
                                                mspVendor.getCompanyName());
                             }
                             else {    //Valid template found
+                            	//Load the CIS serviceLocation.
+                            	ServiceLocation mspServiceLocation = port.getServiceLocationByMeterNo(meterNo);
                                 //Find a valid substation
                                 if( mspMeter.getUtilityInfo() == null || mspMeter.getUtilityInfo().getSubstationName()== null){
                                     addImportData(mspMeter, mspServiceLocation, templateName, "");
@@ -1051,7 +1059,8 @@ public class Multispeak implements MessageListener {
                         YukonPAObject yukonPaobjectByAddress = (YukonPAObject)DaoFactory.getDbPersistentDao().retrieveDBPersistent(liteYukonPaoByAddress);
                         if (yukonPaobjectByAddress.isDisabled()) {  //Address object is disabled, so we can update and activate the Address object
                             //TODO deleteRawPointHistory(yukonPaobject);
-
+                        	//Load the CIS serviceLocation.
+                        	ServiceLocation mspServiceLocation = port.getServiceLocationByMeterNo(meterNo);
                             yukonPaobjectByAddress.setDisabled(false);
                             String logTemp = "";
                             if( MultispeakFuncs.getPaoNameAlias() == MultispeakVendor.ACCOUNT_NUMBER_PAONAME) {
