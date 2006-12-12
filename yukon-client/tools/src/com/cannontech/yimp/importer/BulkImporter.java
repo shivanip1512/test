@@ -164,7 +164,7 @@ public void start() {
 				if( getNextImportTime().getTime().compareTo(now) <= 0 || isForcedImport()) {
 					log.info("Starting import process.");
 					
-					Vector importEntries = ImportFuncs.summonImps();
+					List<ImportData> importEntries = ImportFuncs.summonImps();
 					
 					//if no importEntries, report this and go back to waiting
 					if(importEntries.size() < 1) {
@@ -207,14 +207,14 @@ public void start() {
 	 * This method also will call logging methods for those
 	 * that failed.
 	 */
-public void runImport(Vector imps) {
+public void runImport(List<ImportData> imps) {
 	DBFuncs.writeNextImportTime(this.nextImportTime.getTime(), true);
 	
 	ImportData currentEntry = null;
 	ImportFail currentFailure = null;
     MCT400SeriesBase template400SeriesBase = null;
-	Vector failures = new Vector();
-	Vector successVector = new Vector();
+	List<ImportFail> failures = new ArrayList<ImportFail>();
+	List<ImportData> successVector = new ArrayList<ImportData>();
 	boolean badEntry = false;
 	Integer updateDeviceID = null;
 	int successCounter = 0;
@@ -224,10 +224,10 @@ public void runImport(Vector imps) {
 	
 	for(int j = 0; j < imps.size(); j++) {
 		updateDeviceID = null;
-        currentEntry = (ImportData)imps.elementAt(j);
+        currentEntry = imps.get(j);
 	
 		//mark entry for deletion
-		((ImportData)imps.elementAt(j)).setOpCode(Transaction.DELETE);
+		imps.get(j).setOpCode(Transaction.DELETE);
 		
 		String name = currentEntry.getName();
 		String address = currentEntry.getAddress();
@@ -375,7 +375,7 @@ public void runImport(Vector imps) {
                                             meterNumber, collectionGrp, altGrp, templateName, 
                                             errorMsg.toString(), now.getTime(), billGrp, 
                                             substationName, ImportFuncs.FAIL_INVALID_DATA);
-			failures.addElement(currentFailure);
+			failures.add(currentFailure);
 		}
 		else if( updateDeviceID != null) {
 			YukonPAObject pao = new YukonPAObject();
@@ -493,7 +493,7 @@ public void runImport(Vector imps) {
                 //write pending communication entry for porter thread to pick up
                 Transaction.createTransaction(Transaction.INSERT, pc).execute();
                 
-				successVector.addElement(imps.elementAt(j));
+				successVector.add(imps.get(j));
 				log.info(current400Series.getPAOClass() + "with name " + name + " with address " + address + ".");
 				
 				successCounter++;
@@ -505,7 +505,7 @@ public void runImport(Vector imps) {
                                                 meterNumber, collectionGrp, altGrp, 
                                                 templateName, tempErrorMsg.toString(), now.getTime(), 
                                                 billGrp, substationName, ImportFuncs.FAIL_DATABASE);
-				failures.addElement(currentFailure);
+				failures.add(currentFailure);
 				log.error(current400Series.getPAOClass() + "with name " + name + "failed on INSERT into database.");
 			}
 			finally {
@@ -548,7 +548,7 @@ public void runImport(Vector imps) {
 	try {
 		//having trouble with fail adds...want to make sure these work
 		for(int m = 0; m < failures.size(); m++) {
-			((NestedDBPersistent)failures.elementAt(m)).setOpCode(Transaction.INSERT);
+			failures.get(m).setOpCode(Transaction.INSERT);
 		}		
 		
 		conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
