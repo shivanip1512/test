@@ -747,117 +747,104 @@ public class Multispeak implements MessageListener {
     public ErrorObject[] addMeterObject(MultispeakVendor mspVendor, Meter[] addMeters) {
         Vector errorObjects = new Vector();
         
-        MultispeakInterface mspInterface = (MultispeakInterface)mspVendor.getMspInterfaceMap().get(MultispeakDefines.CB_MR_STR);
-        String endpointURL = "";
-        if( mspInterface != null)
-            endpointURL = mspVendor.getUrl() + mspInterface.getMspEndpoint();
-        
-        try
-        {
-            CB_MR service = new CB_MRLocator();
-            ((CB_MRLocator)service).setCB_MRSoapEndpointAddress(endpointURL);                
-            CB_MRSoap_PortType port = service.getCB_MRSoap();
-            ((CB_MRSoap_BindingStub)port).setHeader(MultispeakFuncs.getHeader(mspVendor));
-            ((CB_MRSoap_BindingStub)port).setTimeout(10000);    //should respond within 10 seconds, right?
+        for  (int i = 0; i < addMeters.length; i++){
+            Meter mspMeter = addMeters[i];
+            String meterNo = mspMeter.getObjectID().trim();
+            String mspAddress = mspMeter.getNameplate().getTransponderID().trim();
+            ServiceLocation mspServiceLocation = null;
             
-            for  (int i = 0; i < addMeters.length; i++){
-                Meter mspMeter = addMeters[i];
-                String meterNo = mspMeter.getObjectID().trim();
-                String mspAddress = mspMeter.getNameplate().getTransponderID().trim();
-//                ServiceLocation mspServiceLocation = port.getServiceLocationByMeterNo(meterNo);
-                
-                //Find Meter by MeterNumber in Yukon
-                LiteYukonPAObject liteYukonPaobject = MultispeakFuncs.getLiteYukonPaobject(mspVendor.getUniqueKey(), meterNo);
-                
-                if( liteYukonPaobject != null) {    //Meter exists in Yukon
-                    YukonPAObject yukonPaobject = (YukonPAObject)DaoFactory.getDbPersistentDao().retrieveDBPersistent(liteYukonPaobject);
-                    if (yukonPaobject instanceof MCTBase){
-                        DeviceMeterGroup deviceMeterGroup = ((MCTBase)yukonPaobject).getDeviceMeterGroup();
-                        DeviceCarrierSettings deviceCarrierSettings = ((MCTBase)yukonPaobject).getDeviceCarrierSettings();
+            //Find Meter by MeterNumber in Yukon
+            LiteYukonPAObject liteYukonPaobject = MultispeakFuncs.getLiteYukonPaobject(mspVendor.getUniqueKey(), meterNo);
+            
+            if( liteYukonPaobject != null) {    //Meter exists in Yukon
+                YukonPAObject yukonPaobject = (YukonPAObject)DaoFactory.getDbPersistentDao().retrieveDBPersistent(liteYukonPaobject);
+                if (yukonPaobject instanceof MCTBase){
+                    DeviceMeterGroup deviceMeterGroup = ((MCTBase)yukonPaobject).getDeviceMeterGroup();
+                    DeviceCarrierSettings deviceCarrierSettings = ((MCTBase)yukonPaobject).getDeviceCarrierSettings();
+                    
+                    boolean disabled = yukonPaobject.isDisabled();
+                    String address = deviceCarrierSettings.getAddress().toString();
+                    if( address.equalsIgnoreCase(mspMeter.getNameplate().getTransponderID())) { //Same MeterNumber and Address
+                        if( disabled ) {        //Disabled Meter found
+                        	//Load the CIS serviceLocation.
+                        	mspServiceLocation = getServiceLocation(mspVendor, meterNo);
+                            //Enable Meter and update applicable fields.
+                            String oldCollGroup = deviceMeterGroup.getCollectionGroup();
+                            String oldBillGroup = deviceMeterGroup.getBillingGroup();
+                            deviceMeterGroup.setCollectionGroup(oldCollGroup.replaceAll(DeviceMeterGroup.INVENTORY_GROUP_PREFIX, ""));
+                            deviceMeterGroup.setBillingGroup(mspServiceLocation.getBillingCycle());
+                            
+                            yukonPaobject.setDisabled(false);
+                            String logTemp = "";
+                            if( MultispeakFuncs.getPaoNameAlias() == MultispeakVendor.ACCOUNT_NUMBER_PAONAME) {
+                                if( mspServiceLocation.getAccountNumber() == null || mspServiceLocation.getAccountNumber().length() < 1)
+                                    logTemp = "; PAOName(ActNum) NO CHANGE - MSP ACCOUNT NUMBER EMPTY.";
+                                else
+                                    logTemp = "; PAOName(ActNum)(OLD:" + yukonPaobject.getPAOName() + " NEW:" + mspServiceLocation.getAccountNumber() + ").";
+                                yukonPaobject.setPAOName(mspServiceLocation.getAccountNumber());
+                            } else if( MultispeakFuncs.getPaoNameAlias() == MultispeakVendor.SERVICE_LOCATION_PAONAME) {
+                                if( mspServiceLocation.getObjectID() == null || mspServiceLocation.getObjectID().length() < 1)
+                                    logTemp = "; PAOName(ServLoc) NO CHANGE - MSP SERVICE LOCATION OBJECTID EMPTY.";
+                                else
+                                    logTemp = "; PAOName(ServLoc)(OLD:" + yukonPaobject.getPAOName() + " NEW:" + mspServiceLocation.getObjectID() + ").";
+                                yukonPaobject.setPAOName(mspServiceLocation.getObjectID());
+                            } else if( MultispeakFuncs.getPaoNameAlias() == MultispeakVendor.CUSTOMER_PAONAME) {
+                                if( mspServiceLocation.getCustID() == null || mspServiceLocation.getCustID().length() < 1)
+                                    logTemp = "; PAOName(CustID) NO CHANGE - MSP CUSTID EMPTY.";
+                                else
+                                    logTemp = "; PAOName(CustID)(OLD:" + yukonPaobject.getPAOName() + " NEW:" + mspServiceLocation.getCustID() + ").";
+                                yukonPaobject.setPAOName(mspServiceLocation.getCustID());
+                            }
+                            DaoFactory.getDbPersistentDao().performDBChange(yukonPaobject, Transaction.UPDATE);
+                            logMSPActivity("MeterAddNotification",
+                                           "MeterNumber(" + meterNo + ") - CollGroup(OLD:" + oldCollGroup + " NEW:" + deviceMeterGroup.getCollectionGroup() + ");" +
+                                           "BillingGroup(OLD:" + oldBillGroup + " NEW:" +mspServiceLocation.getBillingCycle() +").", 
+                                           mspVendor.getCompanyName());
+                            logMSPActivity("MeterAddNotification",
+                                           "MeterNumber(" + meterNo + ") - Meter Enabled" + logTemp, 
+                                           mspVendor.getCompanyName());
+                            //TODO Read the Meter.
+                        }
+                        else {  //Meter is currently enabled in Yukon
+                            ErrorObject err = MultispeakFuncs.getErrorObject(meterNo, 
+                                                                             "Warning: MeterNumber(" + meterNo + ") - Meter is already active.  No updates were made.",
+                                                                             "Meter");
+                            errorObjects.add(err);
+                            logMSPActivity("MeterAddNotification",
+                                           "MeterNumber(" + meterNo + ") - Meter is already active.  No updates were made.",
+                                           mspVendor.getCompanyName());
+                        }
                         
-                        boolean disabled = yukonPaobject.isDisabled();
-                        String address = deviceCarrierSettings.getAddress().toString();
-                        if( address.equalsIgnoreCase(mspMeter.getNameplate().getTransponderID())) { //Same MeterNumber and Address
-                            if( disabled ) {        //Disabled Meter found
-                            	//Load the CIS serviceLocation.
-                            	ServiceLocation mspServiceLocation = port.getServiceLocationByMeterNo(meterNo);
-                                //Enable Meter and update applicable fields.
+                    } else {    //Address is different!
+                        if( disabled ) {        //Disabled Meter found
+
+                            //Lookup meter by mspAddress
+                            List liteYukonPaoByAddressList = DaoFactory.getPaoDao().getLiteYukonPaobjectsByAddress(new Integer(mspAddress).intValue());
+                            
+                            if (liteYukonPaoByAddressList.isEmpty()) {  //New Hardware
+                                //Need to "remove" the existing (disabled) Meter Number
+                                deviceMeterGroup.setMeterNumber(meterNo + DeviceMeterGroup.REMOVED_METER_NUMBER_SUFFIX);
+                                yukonPaobject.setPAOName(yukonPaobject.getPAOName() + deviceMeterGroup.REMOVED_METER_NUMBER_SUFFIX);
                                 String oldCollGroup = deviceMeterGroup.getCollectionGroup();
-                                String oldBillGroup = deviceMeterGroup.getBillingGroup();
-                                deviceMeterGroup.setCollectionGroup(oldCollGroup.replaceAll(DeviceMeterGroup.INVENTORY_GROUP_PREFIX, ""));
-                                deviceMeterGroup.setBillingGroup(mspServiceLocation.getBillingCycle());
-                                
-                                yukonPaobject.setDisabled(false);
-                                String logTemp = "";
-                                if( MultispeakFuncs.getPaoNameAlias() == MultispeakVendor.ACCOUNT_NUMBER_PAONAME) {
-                                    if( mspServiceLocation.getAccountNumber() == null || mspServiceLocation.getAccountNumber().length() < 1)
-                                        logTemp = "; PAOName(ActNum) NO CHANGE - MSP ACCOUNT NUMBER EMPTY.";
-                                    else
-                                        logTemp = "; PAOName(ActNum)(OLD:" + yukonPaobject.getPAOName() + " NEW:" + mspServiceLocation.getAccountNumber() + ").";
-                                    yukonPaobject.setPAOName(mspServiceLocation.getAccountNumber());
-                                } else if( MultispeakFuncs.getPaoNameAlias() == MultispeakVendor.SERVICE_LOCATION_PAONAME) {
-                                    if( mspServiceLocation.getObjectID() == null || mspServiceLocation.getObjectID().length() < 1)
-                                        logTemp = "; PAOName(ServLoc) NO CHANGE - MSP SERVICE LOCATION OBJECTID EMPTY.";
-                                    else
-                                        logTemp = "; PAOName(ServLoc)(OLD:" + yukonPaobject.getPAOName() + " NEW:" + mspServiceLocation.getObjectID() + ").";
-                                    yukonPaobject.setPAOName(mspServiceLocation.getObjectID());
-                                } else if( MultispeakFuncs.getPaoNameAlias() == MultispeakVendor.CUSTOMER_PAONAME) {
-                                    if( mspServiceLocation.getCustID() == null || mspServiceLocation.getCustID().length() < 1)
-                                        logTemp = "; PAOName(CustID) NO CHANGE - MSP CUSTID EMPTY.";
-                                    else
-                                        logTemp = "; PAOName(CustID)(OLD:" + yukonPaobject.getPAOName() + " NEW:" + mspServiceLocation.getCustID() + ").";
-                                    yukonPaobject.setPAOName(mspServiceLocation.getCustID());
+                                if( deviceMeterGroup.getCollectionGroup().indexOf(DeviceMeterGroup.INVENTORY_GROUP_PREFIX ) < 0) {
+                                    deviceMeterGroup.setCollectionGroup(DeviceMeterGroup.INVENTORY_GROUP_PREFIX + oldCollGroup);
                                 }
                                 DaoFactory.getDbPersistentDao().performDBChange(yukonPaobject, Transaction.UPDATE);
                                 logMSPActivity("MeterAddNotification",
-                                               "MeterNumber(" + meterNo + ") - CollGroup(OLD:" + oldCollGroup + " NEW:" + deviceMeterGroup.getCollectionGroup() + ");" +
-                                               "BillingGroup(OLD:" + oldBillGroup + " NEW:" +mspServiceLocation.getBillingCycle() +").", 
+                                               "MeterNumber(" + meterNo + ") - _REM disabled MeterNo with conflicting Address; " + 
+                                               "CollGroup(OLD:" + oldCollGroup + " NEW:" + deviceMeterGroup.getCollectionGroup() + ").", 
                                                mspVendor.getCompanyName());
-                                logMSPActivity("MeterAddNotification",
-                                               "MeterNumber(" + meterNo + ") - Meter Enabled" + logTemp, 
-                                               mspVendor.getCompanyName());
-                                //TODO Read the Meter.
-                            }
-                            else {  //Meter is currently enabled in Yukon
-                                ErrorObject err = MultispeakFuncs.getErrorObject(meterNo, 
-                                                                                 "Warning: MeterNumber(" + meterNo + ") - Meter is already active.  No updates were made.",
-                                                                                 "Meter");
-                                errorObjects.add(err);
-                                logMSPActivity("MeterAddNotification",
-                                               "MeterNumber(" + meterNo + ") - Meter is already active.  No updates were made.",
-                                               mspVendor.getCompanyName());
-                            }
-                            
-                        } else {    //Address is different!
-                            if( disabled ) {        //Disabled Meter found
-
-                                //Lookup meter by mspAddress
-                                List liteYukonPaoByAddressList = DaoFactory.getPaoDao().getLiteYukonPaobjectsByAddress(new Integer(mspAddress).intValue());
                                 
-                                if (liteYukonPaoByAddressList.isEmpty()) {  //New Hardware
-                                    //Need to "remove" the existing (disabled) Meter Number
-                                    deviceMeterGroup.setMeterNumber(meterNo + DeviceMeterGroup.REMOVED_METER_NUMBER_SUFFIX);
-                                    yukonPaobject.setPAOName(yukonPaobject.getPAOName() + deviceMeterGroup.REMOVED_METER_NUMBER_SUFFIX);
-                                    String oldCollGroup = deviceMeterGroup.getCollectionGroup();
-                                    if( deviceMeterGroup.getCollectionGroup().indexOf(DeviceMeterGroup.INVENTORY_GROUP_PREFIX ) < 0) {
-                                        deviceMeterGroup.setCollectionGroup(DeviceMeterGroup.INVENTORY_GROUP_PREFIX + oldCollGroup);
-                                    }
-                                    DaoFactory.getDbPersistentDao().performDBChange(yukonPaobject, Transaction.UPDATE);
-                                    logMSPActivity("MeterAddNotification",
-                                                   "MeterNumber(" + meterNo + ") - _REM disabled MeterNo with conflicting Address; " + 
-                                                   "CollGroup(OLD:" + oldCollGroup + " NEW:" + deviceMeterGroup.getCollectionGroup() + ").", 
-                                                   mspVendor.getCompanyName());
-                                    
-                                    
+                                
 //                                  Find a valid Template!
-                                    String templateName = "Default Template";
-                                    ExtensionsItem [] eItems = mspMeter.getExtensionsList().getExtensionsItem();
-                                    for (int j = 0; j < eItems.length; j++) {
-                                        ExtensionsItem eItem = eItems[j];
-                                        String extName = eItem.getExtName();
-                                        if ( extName.equalsIgnoreCase("AMRMeterType"))
-                                            templateName = eItem.getExtValue();
-                                    }
+                                String templateName = "Default Template";
+                                ExtensionsItem [] eItems = mspMeter.getExtensionsList().getExtensionsItem();
+                                for (int j = 0; j < eItems.length; j++) {
+                                    ExtensionsItem eItem = eItems[j];
+                                    String extName = eItem.getExtName();
+                                    if ( extName.equalsIgnoreCase("AMRMeterType"))
+                                        templateName = eItem.getExtValue();
+                                }
 /*                                    if (templateName == null) { //Template NOT provided!
                                         ErrorObject err = MultispeakFuncs.getErrorObject(meterNo, "Error: MeterNumber(" + meterNo + ")- AMRMeterType extension not found in Yukon or is not a valid template in yukon. Meter was NOT added.");
                                         errorObjects.add(err);
@@ -868,264 +855,256 @@ public class Multispeak implements MessageListener {
                                         //TODO Need to use "default" template if possible
                                     } 
 */
-                                    //Find template object in Yukon
-                                    LiteYukonPAObject liteYukonPaobjectTemplate = DaoFactory.getDeviceDao().getLiteYukonPaobjectByDeviceName(templateName);
-                                    if( liteYukonPaobjectTemplate == null){ 
-                                        ErrorObject err = MultispeakFuncs.getErrorObject(meterNo, 
-                                                                                         "Error: MeterNumber(" + meterNo + ")- AMRMeterType(" + templateName + ") not found in Yukon. Meter was NOT added.",
-                                                                                         "Meter");
-                                        errorObjects.add(err);
-                                        logMSPActivity("MeterAddNotification",
-                                                       "MeterNumber(" + meterNo + ") - AMRMeterType(" + templateName + ") not found in Yukon. Meter was NOT added.",
-                                                       mspVendor.getCompanyName());
-                                    }
-                                    else {    //Valid template found
-                                    	//Load the CIS serviceLocation.
-                                    	ServiceLocation mspServiceLocation = port.getServiceLocationByMeterNo(meterNo);
-                                        //Find a valid substation
-                                        if( mspMeter.getUtilityInfo() == null || mspMeter.getUtilityInfo().getSubstationName()== null){
-                                            addImportData(mspMeter, mspServiceLocation, templateName, "");
-                                            logMSPActivity("MeterAddNotification",
-                                                           "MeterNumber(" + meterNo + ") - Meter inserted into ImportData for processing.", 
-                                                           mspVendor.getCompanyName());
-                                        } else {
-                                            String substationName = mspMeter.getUtilityInfo().getSubstationName();
-                                            List routeNames = DBFuncs.getRouteNamesFromSubstationName(substationName);
-                                            if( routeNames.isEmpty()){
-                                                ErrorObject err = MultispeakFuncs.getErrorObject(meterNo, 
-                                                                                                 "Error: MeterNumber(" + meterNo + ") - SubstationName(" + substationName + ") - no RouteMappings found in Yukon.  Meter was NOT added",
-                                                                                                 "Meter");
-                                                errorObjects.add(err);
-                                                logMSPActivity("MeterAddNotification",
-                                                               "MeterNumber(" + meterNo + ") - SubstationName(" + substationName + ") not found in Yukon. Meter was NOT added.", 
-                                                               mspVendor.getCompanyName());
-                                            }
-                                            else {
-                                                addImportData(mspMeter, mspServiceLocation, templateName, substationName);
-                                                logMSPActivity("MeterAddNotification",
-                                                               "MeterNumber(" + meterNo + ") - Meter inserted into ImportData for processing.", 
-                                                               mspVendor.getCompanyName());
-                                            }
-                                        }
-                                    }                                    
-                                    
-                                } else {    //Meter Number and Address both exist...on different objects! 
-                                    LiteYukonPAObject liteYukonPaoByAddress = (LiteYukonPAObject)liteYukonPaoByAddressList.get(0);
-                                    YukonPAObject yukonPaobjectByAddress = (YukonPAObject)DaoFactory.getDbPersistentDao().retrieveDBPersistent(liteYukonPaoByAddress);
-                                    
-                                    if (yukonPaobjectByAddress.isDisabled()) {  //Address object is disabled, so we can update and activate the Meter Number object
-                                    	//Load the CIS serviceLocation.
-                                    	ServiceLocation mspServiceLocation = port.getServiceLocationByMeterNo(meterNo);
-                                        //TODO deleteRawPointHistory(yukonPaobject);
-                                        String oldCollGroup = deviceMeterGroup.getCollectionGroup();
-                                        String oldBillGroup = deviceMeterGroup.getBillingGroup();
-                                        deviceMeterGroup.setCollectionGroup(oldCollGroup.replaceAll(DeviceMeterGroup.INVENTORY_GROUP_PREFIX, ""));
-                                        deviceMeterGroup.setBillingGroup(mspServiceLocation.getBillingCycle());
-                                        
-                                        String oldAddress = String.valueOf(deviceCarrierSettings.getAddress());
-                                        deviceCarrierSettings.setAddress(Integer.valueOf(mspAddress));
-                                        
-                                        yukonPaobject.setDisabled(false);
-                                        String logTemp = "";
-                                        if( MultispeakFuncs.getPaoNameAlias() == MultispeakVendor.ACCOUNT_NUMBER_PAONAME) {
-                                            if( mspServiceLocation.getAccountNumber() == null || mspServiceLocation.getAccountNumber().length() < 1)
-                                                logTemp = "; PAOName(ActNum) NO CHANGE - MSP ACCOUNT NUMBER EMPTY.";
-                                            else
-                                                logTemp = "; PAOName(ActNum)(OLD:" + yukonPaobject.getPAOName() + " NEW:" + mspServiceLocation.getAccountNumber() + ").";
-                                            yukonPaobject.setPAOName(mspServiceLocation.getAccountNumber());
-                                        } else if( MultispeakFuncs.getPaoNameAlias() == MultispeakVendor.SERVICE_LOCATION_PAONAME) {
-                                            if( mspServiceLocation.getObjectID() == null || mspServiceLocation.getObjectID().length() < 1)
-                                                logTemp = "; PAOName(ServLoc) NO CHANGE - MSP SERVICE LOCATION OBJECTID EMPTY.";
-                                            else
-                                                logTemp = "; PAOName(ServLoc)(OLD:" + yukonPaobject.getPAOName() + " NEW:" + mspServiceLocation.getObjectID() + ").";
-                                            yukonPaobject.setPAOName(mspServiceLocation.getObjectID());
-                                        } else if( MultispeakFuncs.getPaoNameAlias() == MultispeakVendor.CUSTOMER_PAONAME) {
-                                            if( mspServiceLocation.getCustID() == null || mspServiceLocation.getCustID().length() < 1)
-                                                logTemp = "; PAOName(CustID) NO CHANGE - MSP CUSTID EMPTY.";
-                                            else
-                                                logTemp = "; PAOName(CustID)(OLD:" + yukonPaobject.getPAOName() + " NEW:" + mspServiceLocation.getCustID() + ").";
-                                            yukonPaobject.setPAOName(mspServiceLocation.getCustID());
-                                        }
-                                        
-                                        DaoFactory.getDbPersistentDao().performDBChange(yukonPaobject, Transaction.UPDATE);
-                                        logMSPActivity("MeterAddNotification",
-                                                       "MeterNumber(" + meterNo + ") - CollGroup(OLD:" + oldCollGroup + " NEW:" + deviceMeterGroup.getCollectionGroup() + "); " +
-                                                       "BillingGroup(OLD:" + oldBillGroup + " NEW:" +mspServiceLocation.getBillingCycle() +").",
-                                                       mspVendor.getCompanyName());
-                                        logMSPActivity("MeterAddNotification",
-                                                       "MeterNumber(" + meterNo + ") - Address(OLD:" + oldAddress + " NEW:" + deviceCarrierSettings.getAddress().toString() + ").", 
-                                                       mspVendor.getCompanyName());
-                                        logMSPActivity("MeterAddNotification",
-                                                       "MeterNumber(" + meterNo + ") - Meter Enabled." + logTemp, 
-                                                       mspVendor.getCompanyName());
-
-                                        //TODO Read the Meter.
-                                                                            
-                                    } else {    //Address is already active
-                                        ErrorObject err = MultispeakFuncs.getErrorObject(meterNo, 
-                                                                                         "Error:  MeterNumber(" + meterNo + ") with Address(" + mspAddress + 
-                                                                                         ") is already active on another enabled meter with MeterNumber(" + 
-                                                                                         ((MCTBase)yukonPaobjectByAddress).getDeviceMeterGroup().getMeterNumber() + "). No updates were made.",
-                                                                                         "Meter");
-                                        errorObjects.add(err);
-                                        logMSPActivity("MeterAddNotification",
-                                                       "Error:  MeterNumber(" + meterNo + ") with Address(" + mspAddress +
-                                                       ") is already active on another enabled meter with MeterNumber (" +
-                                                       ((MCTBase)yukonPaobjectByAddress).getDeviceMeterGroup().getMeterNumber() + "). No updates were made.",
-                                                       mspVendor.getCompanyName());
-                                    }
-                                }
-                            }
-                            else {  //Meter is currently enabled in Yukon
-                                ErrorObject err = MultispeakFuncs.getErrorObject(meterNo, 
-                                                                                 "Error: MeterNumber(" + meterNo + ") - Meter is already active with a different " +
-                                                                                 "Address(" + deviceCarrierSettings.getAddress().toString() +"). No updates were made.",
-                                                                                 "Meter");
-                                errorObjects.add(err);
-                                logMSPActivity("MeterAddNotification",
-                                               "Error: MeterNumber(" + meterNo + ") - Meter is already active with a different " +
-                                               "Address(" + deviceCarrierSettings.getAddress().toString() +"). No updates were made.", 
-                                               mspVendor.getCompanyName());                                
-                            }
-                        }
-                    }
-                }else { //Meter Number not currently found in Yukon
-                    //Lookup meter by mspAddress
-                    List liteYukonPaoByAddressList = DaoFactory.getPaoDao().getLiteYukonPaobjectsByAddress(new Integer(mspAddress).intValue());
-                    if (liteYukonPaoByAddressList.isEmpty()) {  //New Hardware
-                        //Find a valid Template!
-                        String templateName = null;
-                        ExtensionsItem [] eItems = mspMeter.getExtensionsList().getExtensionsItem();
-                        for (int j = 0; j < eItems.length; j++) {
-                            ExtensionsItem eItem = eItems[j];
-                            String extName = eItem.getExtName();
-                            if ( extName.equalsIgnoreCase("AMRMeterType"))
-                                templateName = eItem.getExtValue();
-                        }
-                        if (templateName == null) { //Template NOT provided!
-                            ErrorObject err = MultispeakFuncs.getErrorObject(meterNo, 
-                                                                             "Error: MeterNumber(" + meterNo + ") - AMRMeterType extension not found in Yukon or is not a valid template in yukon. Meter was NOT added.",
-                                                                             "Meter");
-                            errorObjects.add(err);
-                            logMSPActivity("MeterAddNotification",
-                                           "MeterNumber(" + meterNo + ") - AMRMeterType extension not found or is not a valid template in Yukon. Meter was NOT added.",
-                                           mspVendor.getCompanyName());
-                                                            
-                            //TODO Need to use "default" template if possible
-                        } else {    //Find template object in Yukon
-                            LiteYukonPAObject liteYukonPaobjectTemplate = DaoFactory.getDeviceDao().getLiteYukonPaobjectByDeviceName(templateName);
-                            if( liteYukonPaobjectTemplate == null){ 
-                                ErrorObject err = MultispeakFuncs.getErrorObject(meterNo, 
-                                                                                 "Error: MeterNumber(" + meterNo + ")- AMRMeterType(" + templateName + ") not found in Yukon. Meter was NOT added.",
-                                                                                 "Meter");
-                                errorObjects.add(err);
-                                logMSPActivity("MeterAddNotification",
-                                               "MeterNumber(" + meterNo + ") - AMRMeterType(" + templateName + ") not found in Yukon. Meter was NOT added.", 
-                                               mspVendor.getCompanyName());
-                            }
-                            else {    //Valid template found
-                            	//Load the CIS serviceLocation.
-                            	ServiceLocation mspServiceLocation = port.getServiceLocationByMeterNo(meterNo);
-                                //Find a valid substation
-                                if( mspMeter.getUtilityInfo() == null || mspMeter.getUtilityInfo().getSubstationName()== null){
-                                    addImportData(mspMeter, mspServiceLocation, templateName, "");
+                                //Find template object in Yukon
+                                LiteYukonPAObject liteYukonPaobjectTemplate = DaoFactory.getDeviceDao().getLiteYukonPaobjectByDeviceName(templateName);
+                                if( liteYukonPaobjectTemplate == null){ 
+                                    ErrorObject err = MultispeakFuncs.getErrorObject(meterNo, 
+                                                                                     "Error: MeterNumber(" + meterNo + ")- AMRMeterType(" + templateName + ") not found in Yukon. Meter was NOT added.",
+                                                                                     "Meter");
+                                    errorObjects.add(err);
                                     logMSPActivity("MeterAddNotification",
-                                                   "MeterNumber(" + meterNo + ") - Meter inserted into ImportData for processing.",
+                                                   "MeterNumber(" + meterNo + ") - AMRMeterType(" + templateName + ") not found in Yukon. Meter was NOT added.",
                                                    mspVendor.getCompanyName());
-                                } else {
-                                    String substationName = mspMeter.getUtilityInfo().getSubstationName();
-                                    List routeNames = DBFuncs.getRouteNamesFromSubstationName(substationName);
-                                    if( routeNames.isEmpty()){
-                                        ErrorObject err = MultispeakFuncs.getErrorObject(meterNo, 
-                                                                                         "Error: MeterNumber(" + meterNo + ") - SubstationName(" + substationName + ") - no RouteMappings found in Yukon.  Meter was NOT added",
-                                                                                         "Meter");
-                                        errorObjects.add(err);
-                                        logMSPActivity("MeterAddNotification",
-                                                       "MeterNumber(" + meterNo + ") - SubstationName(" + substationName + ") not found in Yukon. Meter was NOT added.", 
-                                                       mspVendor.getCompanyName());
-                                    }
-                                    else {
-                                        addImportData(mspMeter, mspServiceLocation, templateName, substationName);
+                                }
+                                else {    //Valid template found
+                                	//Load the CIS serviceLocation.
+                                	mspServiceLocation = getServiceLocation(mspVendor, meterNo);
+                                    //Find a valid substation
+                                    if( mspMeter.getUtilityInfo() == null || mspMeter.getUtilityInfo().getSubstationName()== null){
+                                        addImportData(mspMeter, mspServiceLocation, templateName, "");
                                         logMSPActivity("MeterAddNotification",
                                                        "MeterNumber(" + meterNo + ") - Meter inserted into ImportData for processing.", 
                                                        mspVendor.getCompanyName());
+                                    } else {
+                                        String substationName = mspMeter.getUtilityInfo().getSubstationName();
+                                        List routeNames = DBFuncs.getRouteNamesFromSubstationName(substationName);
+                                        if( routeNames.isEmpty()){
+                                            ErrorObject err = MultispeakFuncs.getErrorObject(meterNo, 
+                                                                                             "Error: MeterNumber(" + meterNo + ") - SubstationName(" + substationName + ") - no RouteMappings found in Yukon.  Meter was NOT added",
+                                                                                             "Meter");
+                                            errorObjects.add(err);
+                                            logMSPActivity("MeterAddNotification",
+                                                           "MeterNumber(" + meterNo + ") - SubstationName(" + substationName + ") not found in Yukon. Meter was NOT added.", 
+                                                           mspVendor.getCompanyName());
+                                        }
+                                        else {
+                                            addImportData(mspMeter, mspServiceLocation, templateName, substationName);
+                                            logMSPActivity("MeterAddNotification",
+                                                           "MeterNumber(" + meterNo + ") - Meter inserted into ImportData for processing.", 
+                                                           mspVendor.getCompanyName());
+                                        }
                                     }
+                                }                                    
+                                
+                            } else {    //Meter Number and Address both exist...on different objects! 
+                                LiteYukonPAObject liteYukonPaoByAddress = (LiteYukonPAObject)liteYukonPaoByAddressList.get(0);
+                                YukonPAObject yukonPaobjectByAddress = (YukonPAObject)DaoFactory.getDbPersistentDao().retrieveDBPersistent(liteYukonPaoByAddress);
+                                
+                                if (yukonPaobjectByAddress.isDisabled()) {  //Address object is disabled, so we can update and activate the Meter Number object
+                                	//Load the CIS serviceLocation.
+                                	mspServiceLocation = getServiceLocation(mspVendor, meterNo);
+                                    //TODO deleteRawPointHistory(yukonPaobject);
+                                    String oldCollGroup = deviceMeterGroup.getCollectionGroup();
+                                    String oldBillGroup = deviceMeterGroup.getBillingGroup();
+                                    deviceMeterGroup.setCollectionGroup(oldCollGroup.replaceAll(DeviceMeterGroup.INVENTORY_GROUP_PREFIX, ""));
+                                    deviceMeterGroup.setBillingGroup(mspServiceLocation.getBillingCycle());
+                                    
+                                    String oldAddress = String.valueOf(deviceCarrierSettings.getAddress());
+                                    deviceCarrierSettings.setAddress(Integer.valueOf(mspAddress));
+                                    
+                                    yukonPaobject.setDisabled(false);
+                                    String logTemp = "";
+                                    if( MultispeakFuncs.getPaoNameAlias() == MultispeakVendor.ACCOUNT_NUMBER_PAONAME) {
+                                        if( mspServiceLocation.getAccountNumber() == null || mspServiceLocation.getAccountNumber().length() < 1)
+                                            logTemp = "; PAOName(ActNum) NO CHANGE - MSP ACCOUNT NUMBER EMPTY.";
+                                        else
+                                            logTemp = "; PAOName(ActNum)(OLD:" + yukonPaobject.getPAOName() + " NEW:" + mspServiceLocation.getAccountNumber() + ").";
+                                        yukonPaobject.setPAOName(mspServiceLocation.getAccountNumber());
+                                    } else if( MultispeakFuncs.getPaoNameAlias() == MultispeakVendor.SERVICE_LOCATION_PAONAME) {
+                                        if( mspServiceLocation.getObjectID() == null || mspServiceLocation.getObjectID().length() < 1)
+                                            logTemp = "; PAOName(ServLoc) NO CHANGE - MSP SERVICE LOCATION OBJECTID EMPTY.";
+                                        else
+                                            logTemp = "; PAOName(ServLoc)(OLD:" + yukonPaobject.getPAOName() + " NEW:" + mspServiceLocation.getObjectID() + ").";
+                                        yukonPaobject.setPAOName(mspServiceLocation.getObjectID());
+                                    } else if( MultispeakFuncs.getPaoNameAlias() == MultispeakVendor.CUSTOMER_PAONAME) {
+                                        if( mspServiceLocation.getCustID() == null || mspServiceLocation.getCustID().length() < 1)
+                                            logTemp = "; PAOName(CustID) NO CHANGE - MSP CUSTID EMPTY.";
+                                        else
+                                            logTemp = "; PAOName(CustID)(OLD:" + yukonPaobject.getPAOName() + " NEW:" + mspServiceLocation.getCustID() + ").";
+                                        yukonPaobject.setPAOName(mspServiceLocation.getCustID());
+                                    }
+                                    
+                                    DaoFactory.getDbPersistentDao().performDBChange(yukonPaobject, Transaction.UPDATE);
+                                    logMSPActivity("MeterAddNotification",
+                                                   "MeterNumber(" + meterNo + ") - CollGroup(OLD:" + oldCollGroup + " NEW:" + deviceMeterGroup.getCollectionGroup() + "); " +
+                                                   "BillingGroup(OLD:" + oldBillGroup + " NEW:" +mspServiceLocation.getBillingCycle() +").",
+                                                   mspVendor.getCompanyName());
+                                    logMSPActivity("MeterAddNotification",
+                                                   "MeterNumber(" + meterNo + ") - Address(OLD:" + oldAddress + " NEW:" + deviceCarrierSettings.getAddress().toString() + ").", 
+                                                   mspVendor.getCompanyName());
+                                    logMSPActivity("MeterAddNotification",
+                                                   "MeterNumber(" + meterNo + ") - Meter Enabled." + logTemp, 
+                                                   mspVendor.getCompanyName());
+
+                                    //TODO Read the Meter.
+                                                                        
+                                } else {    //Address is already active
+                                    ErrorObject err = MultispeakFuncs.getErrorObject(meterNo, 
+                                                                                     "Error:  MeterNumber(" + meterNo + ") with Address(" + mspAddress + 
+                                                                                     ") is already active on another enabled meter with MeterNumber(" + 
+                                                                                     ((MCTBase)yukonPaobjectByAddress).getDeviceMeterGroup().getMeterNumber() + "). No updates were made.",
+                                                                                     "Meter");
+                                    errorObjects.add(err);
+                                    logMSPActivity("MeterAddNotification",
+                                                   "Error:  MeterNumber(" + meterNo + ") with Address(" + mspAddress +
+                                                   ") is already active on another enabled meter with MeterNumber (" +
+                                                   ((MCTBase)yukonPaobjectByAddress).getDeviceMeterGroup().getMeterNumber() + "). No updates were made.",
+                                                   mspVendor.getCompanyName());
                                 }
-                            
                             }
                         }
-                    } else { // mspAddress already exists in Yukon 
-                        LiteYukonPAObject liteYukonPaoByAddress = (LiteYukonPAObject)liteYukonPaoByAddressList.get(0);
-                        YukonPAObject yukonPaobjectByAddress = (YukonPAObject)DaoFactory.getDbPersistentDao().retrieveDBPersistent(liteYukonPaoByAddress);
-                        if (yukonPaobjectByAddress.isDisabled()) {  //Address object is disabled, so we can update and activate the Address object
-                            //TODO deleteRawPointHistory(yukonPaobject);
-                        	//Load the CIS serviceLocation.
-                        	ServiceLocation mspServiceLocation = port.getServiceLocationByMeterNo(meterNo);
-                            yukonPaobjectByAddress.setDisabled(false);
-                            String logTemp = "";
-                            if( MultispeakFuncs.getPaoNameAlias() == MultispeakVendor.ACCOUNT_NUMBER_PAONAME) {
-                                if( mspServiceLocation.getAccountNumber() == null || mspServiceLocation.getAccountNumber().length() < 1)
-                                    logTemp = "; PAOName(ActNum) NO CHANGE - MSP ACCOUNT NUMBER EMPTY.";
-                                else
-                                    logTemp = "; PAOName(ActNum)(OLD:" + yukonPaobjectByAddress.getPAOName() + " NEW:" + mspServiceLocation.getAccountNumber() + ").";
-                                yukonPaobjectByAddress.setPAOName(mspServiceLocation.getAccountNumber());
-                            } else if( MultispeakFuncs.getPaoNameAlias() == MultispeakVendor.SERVICE_LOCATION_PAONAME) {
-                                if( mspServiceLocation.getObjectID() == null || mspServiceLocation.getObjectID().length() < 1)
-                                    logTemp = "; PAOName(ServLoc) NO CHANGE - MSP SERVICE LOCATION OBJECTID EMPTY.";
-                                else
-                                    logTemp = "; PAOName(ServLoc)(OLD:" + yukonPaobjectByAddress.getPAOName() + " NEW:" + mspServiceLocation.getObjectID() + ").";
-                                yukonPaobjectByAddress.setPAOName(mspServiceLocation.getObjectID());
-                            } else if( MultispeakFuncs.getPaoNameAlias() == MultispeakVendor.CUSTOMER_PAONAME) {
-                                if( mspServiceLocation.getCustID() == null || mspServiceLocation.getCustID().length() < 1)
-                                    logTemp = "; PAOName(CustID) NO CHANGE - MSP CUSTID EMPTY.";
-                                else
-                                    logTemp = "; PAOName(CustID)(OLD:" + yukonPaobjectByAddress.getPAOName() + " NEW:" + mspServiceLocation.getCustID() + ").";
-                                yukonPaobjectByAddress.setPAOName(mspServiceLocation.getCustID());
-                            }
-                            
-                            DeviceMeterGroup deviceMeterGroup = ((MCTBase)yukonPaobjectByAddress).getDeviceMeterGroup();
-                            String oldCollGroup = deviceMeterGroup.getCollectionGroup();
-                            String oldBillGroup = deviceMeterGroup.getBillingGroup();
-                            String oldMeterNo = deviceMeterGroup.getMeterNumber();
-                            deviceMeterGroup.setMeterNumber(meterNo);
-                            deviceMeterGroup.setCollectionGroup(oldCollGroup.replaceAll(DeviceMeterGroup.INVENTORY_GROUP_PREFIX, ""));
-                            deviceMeterGroup.setBillingGroup(mspServiceLocation.getBillingCycle());
-                            
-                            DaoFactory.getDbPersistentDao().performDBChange(yukonPaobjectByAddress, Transaction.UPDATE);
-                            logMSPActivity("MeterAddNotification",
-                                           "MeterNumber(" + meterNo + ") - MeterNumber(OLD:" +oldMeterNo + "); CollGroup(OLD:" + oldCollGroup + " NEW:" + deviceMeterGroup.getCollectionGroup() + ");" +
-                                           "BillingGroup(OLD:" + oldBillGroup + " NEW:" +mspServiceLocation.getBillingCycle() +").",
-                                           mspVendor.getCompanyName());
-                            logMSPActivity("MeterAddNotification",
-                                           "MeterNumber(" + meterNo + ") - Meter Enabled" + logTemp,
-                                           mspVendor.getCompanyName());
-                            //TODO Read the Meter.
-                                                                
-                        } else {    //Address is already active
+                        else {  //Meter is currently enabled in Yukon
                             ErrorObject err = MultispeakFuncs.getErrorObject(meterNo, 
-                                                                             "Error: Address(" + mspAddress + ") "+ 
-                                                                             " - is already active on another enabled meter with MeterNumber(" +
-                                                                             ((MCTBase)yukonPaobjectByAddress).getDeviceMeterGroup().getMeterNumber() +"). Meter was NOT added.",
+                                                                             "Error: MeterNumber(" + meterNo + ") - Meter is already active with a different " +
+                                                                             "Address(" + deviceCarrierSettings.getAddress().toString() +"). No updates were made.",
                                                                              "Meter");
                             errorObjects.add(err);
-                            
                             logMSPActivity("MeterAddNotification",
-                                           "Error:  Address(" + mspAddress + ") - is already active on another enabled meter with MeterNumber(" +
-                                           ((MCTBase)yukonPaobjectByAddress).getDeviceMeterGroup().getMeterNumber() + "). Meter was NOT added.",
-                                           mspVendor.getCompanyName());                            
+                                           "Error: MeterNumber(" + meterNo + ") - Meter is already active with a different " +
+                                           "Address(" + deviceCarrierSettings.getAddress().toString() +"). No updates were made.", 
+                                           mspVendor.getCompanyName());                                
                         }
                     }
                 }
-            }//end for
-            
-        } catch (ServiceException e) {   
-            CTILogger.info("CB_MR service is not defined for company name: " + mspVendor.getCompanyName()+ ".  Method cancelled.");
-            e.printStackTrace();
-        } catch (RemoteException e) {
-            
-            CTILogger.info("Could not find a target service to invoke!  targetService: " + endpointURL + " companyName: " + mspVendor.getCompanyName() + ".  Method cancelled.");
-            e.printStackTrace();
-        } 
+            }else { //Meter Number not currently found in Yukon
+                //Lookup meter by mspAddress
+                List liteYukonPaoByAddressList = DaoFactory.getPaoDao().getLiteYukonPaobjectsByAddress(new Integer(mspAddress).intValue());
+                if (liteYukonPaoByAddressList.isEmpty()) {  //New Hardware
+                    //Find a valid Template!
+                    String templateName = null;
+                    ExtensionsItem [] eItems = mspMeter.getExtensionsList().getExtensionsItem();
+                    for (int j = 0; j < eItems.length; j++) {
+                        ExtensionsItem eItem = eItems[j];
+                        String extName = eItem.getExtName();
+                        if ( extName.equalsIgnoreCase("AMRMeterType"))
+                            templateName = eItem.getExtValue();
+                    }
+                    if (templateName == null) { //Template NOT provided!
+                        ErrorObject err = MultispeakFuncs.getErrorObject(meterNo, 
+                                                                         "Error: MeterNumber(" + meterNo + ") - AMRMeterType extension not found in Yukon or is not a valid template in yukon. Meter was NOT added.",
+                                                                         "Meter");
+                        errorObjects.add(err);
+                        logMSPActivity("MeterAddNotification",
+                                       "MeterNumber(" + meterNo + ") - AMRMeterType extension not found or is not a valid template in Yukon. Meter was NOT added.",
+                                       mspVendor.getCompanyName());
+                                                        
+                        //TODO Need to use "default" template if possible
+                    } else {    //Find template object in Yukon
+                        LiteYukonPAObject liteYukonPaobjectTemplate = DaoFactory.getDeviceDao().getLiteYukonPaobjectByDeviceName(templateName);
+                        if( liteYukonPaobjectTemplate == null){ 
+                            ErrorObject err = MultispeakFuncs.getErrorObject(meterNo, 
+                                                                             "Error: MeterNumber(" + meterNo + ")- AMRMeterType(" + templateName + ") not found in Yukon. Meter was NOT added.",
+                                                                             "Meter");
+                            errorObjects.add(err);
+                            logMSPActivity("MeterAddNotification",
+                                           "MeterNumber(" + meterNo + ") - AMRMeterType(" + templateName + ") not found in Yukon. Meter was NOT added.", 
+                                           mspVendor.getCompanyName());
+                        }
+                        else {    //Valid template found
+                        	//Load the CIS serviceLocation.
+                        	mspServiceLocation = getServiceLocation(mspVendor, meterNo);
+                            //Find a valid substation
+                            if( mspMeter.getUtilityInfo() == null || mspMeter.getUtilityInfo().getSubstationName()== null){
+                                addImportData(mspMeter, mspServiceLocation, templateName, "");
+                                logMSPActivity("MeterAddNotification",
+                                               "MeterNumber(" + meterNo + ") - Meter inserted into ImportData for processing.",
+                                               mspVendor.getCompanyName());
+                            } else {
+                                String substationName = mspMeter.getUtilityInfo().getSubstationName();
+                                List routeNames = DBFuncs.getRouteNamesFromSubstationName(substationName);
+                                if( routeNames.isEmpty()){
+                                    ErrorObject err = MultispeakFuncs.getErrorObject(meterNo, 
+                                                                                     "Error: MeterNumber(" + meterNo + ") - SubstationName(" + substationName + ") - no RouteMappings found in Yukon.  Meter was NOT added",
+                                                                                     "Meter");
+                                    errorObjects.add(err);
+                                    logMSPActivity("MeterAddNotification",
+                                                   "MeterNumber(" + meterNo + ") - SubstationName(" + substationName + ") not found in Yukon. Meter was NOT added.", 
+                                                   mspVendor.getCompanyName());
+                                }
+                                else {
+                                    addImportData(mspMeter, mspServiceLocation, templateName, substationName);
+                                    logMSPActivity("MeterAddNotification",
+                                                   "MeterNumber(" + meterNo + ") - Meter inserted into ImportData for processing.", 
+                                                   mspVendor.getCompanyName());
+                                }
+                            }
+                        
+                        }
+                    }
+                } else { // mspAddress already exists in Yukon 
+                    LiteYukonPAObject liteYukonPaoByAddress = (LiteYukonPAObject)liteYukonPaoByAddressList.get(0);
+                    YukonPAObject yukonPaobjectByAddress = (YukonPAObject)DaoFactory.getDbPersistentDao().retrieveDBPersistent(liteYukonPaoByAddress);
+                    if (yukonPaobjectByAddress.isDisabled()) {  //Address object is disabled, so we can update and activate the Address object
+                        //TODO deleteRawPointHistory(yukonPaobject);
+                    	//Load the CIS serviceLocation.
+                    	mspServiceLocation = getServiceLocation(mspVendor, meterNo);
+                        yukonPaobjectByAddress.setDisabled(false);
+                        String logTemp = "";
+                        if( MultispeakFuncs.getPaoNameAlias() == MultispeakVendor.ACCOUNT_NUMBER_PAONAME) {
+                            if( mspServiceLocation.getAccountNumber() == null || mspServiceLocation.getAccountNumber().length() < 1)
+                                logTemp = "; PAOName(ActNum) NO CHANGE - MSP ACCOUNT NUMBER EMPTY.";
+                            else
+                                logTemp = "; PAOName(ActNum)(OLD:" + yukonPaobjectByAddress.getPAOName() + " NEW:" + mspServiceLocation.getAccountNumber() + ").";
+                            yukonPaobjectByAddress.setPAOName(mspServiceLocation.getAccountNumber());
+                        } else if( MultispeakFuncs.getPaoNameAlias() == MultispeakVendor.SERVICE_LOCATION_PAONAME) {
+                            if( mspServiceLocation.getObjectID() == null || mspServiceLocation.getObjectID().length() < 1)
+                                logTemp = "; PAOName(ServLoc) NO CHANGE - MSP SERVICE LOCATION OBJECTID EMPTY.";
+                            else
+                                logTemp = "; PAOName(ServLoc)(OLD:" + yukonPaobjectByAddress.getPAOName() + " NEW:" + mspServiceLocation.getObjectID() + ").";
+                            yukonPaobjectByAddress.setPAOName(mspServiceLocation.getObjectID());
+                        } else if( MultispeakFuncs.getPaoNameAlias() == MultispeakVendor.CUSTOMER_PAONAME) {
+                            if( mspServiceLocation.getCustID() == null || mspServiceLocation.getCustID().length() < 1)
+                                logTemp = "; PAOName(CustID) NO CHANGE - MSP CUSTID EMPTY.";
+                            else
+                                logTemp = "; PAOName(CustID)(OLD:" + yukonPaobjectByAddress.getPAOName() + " NEW:" + mspServiceLocation.getCustID() + ").";
+                            yukonPaobjectByAddress.setPAOName(mspServiceLocation.getCustID());
+                        }
+                        
+                        DeviceMeterGroup deviceMeterGroup = ((MCTBase)yukonPaobjectByAddress).getDeviceMeterGroup();
+                        String oldCollGroup = deviceMeterGroup.getCollectionGroup();
+                        String oldBillGroup = deviceMeterGroup.getBillingGroup();
+                        String oldMeterNo = deviceMeterGroup.getMeterNumber();
+                        deviceMeterGroup.setMeterNumber(meterNo);
+                        deviceMeterGroup.setCollectionGroup(oldCollGroup.replaceAll(DeviceMeterGroup.INVENTORY_GROUP_PREFIX, ""));
+                        deviceMeterGroup.setBillingGroup(mspServiceLocation.getBillingCycle());
+                        
+                        DaoFactory.getDbPersistentDao().performDBChange(yukonPaobjectByAddress, Transaction.UPDATE);
+                        logMSPActivity("MeterAddNotification",
+                                       "MeterNumber(" + meterNo + ") - MeterNumber(OLD:" +oldMeterNo + "); CollGroup(OLD:" + oldCollGroup + " NEW:" + deviceMeterGroup.getCollectionGroup() + ");" +
+                                       "BillingGroup(OLD:" + oldBillGroup + " NEW:" +mspServiceLocation.getBillingCycle() +").",
+                                       mspVendor.getCompanyName());
+                        logMSPActivity("MeterAddNotification",
+                                       "MeterNumber(" + meterNo + ") - Meter Enabled" + logTemp,
+                                       mspVendor.getCompanyName());
+                        //TODO Read the Meter.
+                                                            
+                    } else {    //Address is already active
+                        ErrorObject err = MultispeakFuncs.getErrorObject(meterNo, 
+                                                                         "Error: Address(" + mspAddress + ") "+ 
+                                                                         " - is already active on another enabled meter with MeterNumber(" +
+                                                                         ((MCTBase)yukonPaobjectByAddress).getDeviceMeterGroup().getMeterNumber() +"). Meter was NOT added.",
+                                                                         "Meter");
+                        errorObjects.add(err);
+                        
+                        logMSPActivity("MeterAddNotification",
+                                       "Error:  Address(" + mspAddress + ") - is already active on another enabled meter with MeterNumber(" +
+                                       ((MCTBase)yukonPaobjectByAddress).getDeviceMeterGroup().getMeterNumber() + "). Meter was NOT added.",
+                                       mspVendor.getCompanyName());                            
+                    }
+                }
+            }
+        }//end for
+
         if( !errorObjects.isEmpty()) {
             ErrorObject[] errors = new ErrorObject[errorObjects.size()];
             errorObjects.toArray(errors);
@@ -1362,5 +1341,40 @@ public class Multispeak implements MessageListener {
     
     private void logMSPActivity(String method, String description, String userName) {
         getSystemLogHelper().log(PointTypes.SYS_PID_MULTISPEAK, method, description, userName); 
-    }    
+    }
+    
+    /**
+    * Returns a serviceLocation for the meterNo.
+    * If the interface/method is not supported by mspVendor, or if no object is found, an empty ServiceLocation object is returned.
+    * @param mspVendor
+    * @param meterNo
+    * @return
+    */
+   private ServiceLocation getServiceLocation(MultispeakVendor mspVendor, String meterNo) {
+   	// Load the CIS serviceLocation.
+   	ServiceLocation mspServiceLocation = new ServiceLocation();
+       MultispeakInterface mspInterface = (MultispeakInterface)mspVendor.getMspInterfaceMap().get(MultispeakDefines.CB_MR_STR);
+       String endpointURL = "";
+       if( mspInterface != null)
+           endpointURL = mspVendor.getUrl() + mspInterface.getMspEndpoint();
+
+       try {
+       	CB_MR service = new CB_MRLocator();
+           ((CB_MRLocator)service).setCB_MRSoapEndpointAddress(endpointURL);                
+           CB_MRSoap_PortType port = service.getCB_MRSoap();
+           
+           ((CB_MRSoap_BindingStub)port).setHeader(MultispeakFuncs.getHeader(mspVendor));
+           ((CB_MRSoap_BindingStub)port).setTimeout(10000);    //should respond within 10 seconds, right?
+           
+   		mspServiceLocation =  port.getServiceLocationByMeterNo(meterNo);            
+       } catch (ServiceException e) {   
+           CTILogger.info("CB_MR service is not defined for company name: " + mspVendor.getCompanyName()+ ".  Method cancelled.");
+           e.printStackTrace();
+       } catch (RemoteException e) {
+           CTILogger.info("Could not find a target service to invoke!  targetService: " + endpointURL + " companyName: " + mspVendor.getCompanyName() + ".  Method cancelled.");
+           e.printStackTrace();
+       }
+
+		return mspServiceLocation;
+   }
 }
