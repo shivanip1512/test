@@ -773,6 +773,7 @@ public class Multispeak implements MessageListener {
                             String oldCollGroup = deviceMeterGroup.getCollectionGroup();
                             String oldBillGroup = deviceMeterGroup.getBillingGroup();
                             deviceMeterGroup.setCollectionGroup(oldCollGroup.replaceAll(DeviceMeterGroup.INVENTORY_GROUP_PREFIX, ""));
+                            yukonPaobject.setPAOName(yukonPaobject.getPAOName().replaceAll(DeviceMeterGroup.REMOVED_METER_NUMBER_SUFFIX, ""));
                             if (!StringUtils.isBlank(mspServiceLocation.getBillingCycle()))
                             	deviceMeterGroup.setBillingGroup(mspServiceLocation.getBillingCycle());
                             
@@ -909,6 +910,7 @@ public class Multispeak implements MessageListener {
                                     String oldCollGroup = deviceMeterGroup.getCollectionGroup();
                                     String oldBillGroup = deviceMeterGroup.getBillingGroup();
                                     deviceMeterGroup.setCollectionGroup(oldCollGroup.replaceAll(DeviceMeterGroup.INVENTORY_GROUP_PREFIX, ""));
+                                    yukonPaobject.setPAOName(yukonPaobject.getPAOName().replaceAll(DeviceMeterGroup.REMOVED_METER_NUMBER_SUFFIX, ""));
                                     if (!StringUtils.isBlank(mspServiceLocation.getBillingCycle()))
                                     	deviceMeterGroup.setBillingGroup(mspServiceLocation.getBillingCycle());
                                     
@@ -1079,6 +1081,7 @@ public class Multispeak implements MessageListener {
                         String oldMeterNo = deviceMeterGroup.getMeterNumber();
                         deviceMeterGroup.setMeterNumber(meterNo);
                         deviceMeterGroup.setCollectionGroup(oldCollGroup.replaceAll(DeviceMeterGroup.INVENTORY_GROUP_PREFIX, ""));
+                        yukonPaobjectByAddress.setPAOName(yukonPaobjectByAddress.getPAOName().replaceAll(DeviceMeterGroup.REMOVED_METER_NUMBER_SUFFIX, ""));
                         if (!StringUtils.isBlank(mspServiceLocation.getBillingCycle()))
                         	deviceMeterGroup.setBillingGroup(mspServiceLocation.getBillingCycle());
                         
