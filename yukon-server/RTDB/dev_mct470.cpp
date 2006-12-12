@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.80 $
-* DATE         :  $Date: 2006/12/12 18:07:10 $
+* REVISION     :  $Revision: 1.81 $
+* DATE         :  $Date: 2006/12/12 21:11:04 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3177,7 +3177,7 @@ INT CtiDeviceMCT470::decodeGetValueMinMaxDemand(INMESS *InMessage, CtiTime &Time
         pointname = "Channel " + CtiNumStr(base_offset) + " Min Demand";
 
         //  if the min point doesn't exist...
-        if( !getDevicePointOffsetTypeEqual(point_offset + PointOffset_MinOffset, DemandAccumulatorPointType) )
+        if( !getDevicePointOffsetTypeEqual(base_offset + PointOffset_MinOffset, DemandAccumulatorPointType) )
         {
             //  first look for the max point
             CtiPointNumericSPtr p = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(base_offset + PointOffset_MaxOffset, DemandAccumulatorPointType));
@@ -3331,7 +3331,7 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                     insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKW,     AnalogPointType);
                 }
 
-                
+
 
                 //  get selectable metric (kM, kVAR, etc)
                 pi = getData(DSt->Message + 3, 3, ValueType_IED);
