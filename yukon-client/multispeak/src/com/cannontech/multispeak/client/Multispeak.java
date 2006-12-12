@@ -764,10 +764,7 @@ public class Multispeak implements MessageListener {
                 Meter mspMeter = addMeters[i];
                 String meterNo = mspMeter.getObjectID().trim();
                 String mspAddress = mspMeter.getNameplate().getTransponderID().trim();
-//                ServiceLocation mspServiceLocation = port.getServiceLocationByMeterNo(meterNo);
-                ServiceLocation mspServiceLocation = new ServiceLocation();
-                mspServiceLocation.setAccountNumber("12345");
-                mspServiceLocation.setBillingCycle("Test Billing");
+                ServiceLocation mspServiceLocation = port.getServiceLocationByMeterNo(meterNo);
                 
                 //Find Meter by MeterNumber in Yukon
                 LiteYukonPAObject liteYukonPaobject = MultispeakFuncs.getLiteYukonPaobject(mspVendor.getUniqueKey(), meterNo);
@@ -1115,10 +1112,10 @@ public class Multispeak implements MessageListener {
         } catch (ServiceException e) {   
             CTILogger.info("CB_MR service is not defined for company name: " + mspVendor.getCompanyName()+ ".  Method cancelled.");
             e.printStackTrace();
-//        } catch (RemoteException e) {
-//            
-//            CTILogger.info("Could not find a target service to invoke!  targetService: " + endpointURL + " companyName: " + mspVendor.getCompanyName() + ".  Method cancelled.");
-//            e.printStackTrace();
+        } catch (RemoteException e) {
+            
+            CTILogger.info("Could not find a target service to invoke!  targetService: " + endpointURL + " companyName: " + mspVendor.getCompanyName() + ".  Method cancelled.");
+            e.printStackTrace();
         } 
         if( !errorObjects.isEmpty()) {
             ErrorObject[] errors = new ErrorObject[errorObjects.size()];
