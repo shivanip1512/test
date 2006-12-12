@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT470.h-arc  $
-* REVISION     :  $Revision: 1.31 $
-* DATE         :  $Date: 2006/11/10 16:29:42 $
+* REVISION     :  $Revision: 1.32 $
+* DATE         :  $Date: 2006/12/12 18:06:43 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -39,6 +39,12 @@ private:
 
     CtiTableDeviceMCTIEDPort _iedPort;
     CtiTime                  _iedTime;
+
+    enum PointOffsets
+    {
+        PointOffset_MaxOffset = PointOffset_PeakOffset,      //  10
+        PointOffset_MinOffset = PointOffset_PeakOffset + 10  //  20
+    };
 
     enum DNP_MCT_Offsets
     {

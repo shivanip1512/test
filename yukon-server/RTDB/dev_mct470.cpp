@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.79 $
-* DATE         :  $Date: 2006/12/11 16:05:07 $
+* REVISION     :  $Revision: 1.80 $
+* DATE         :  $Date: 2006/12/12 18:07:10 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3104,7 +3104,7 @@ INT CtiDeviceMCT470::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, l
 
 INT CtiDeviceMCT470::decodeGetValueMinMaxDemand(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
-    int         status = NORMAL, base_offset, point_offset;
+    int         status = NORMAL, base_offset;
     point_info  pi, pi_time;
     CtiTime     pointTime;
 
@@ -3147,8 +3147,6 @@ INT CtiDeviceMCT470::decodeGetValueMinMaxDemand(INMESS *InMessage, CtiTime &Time
             base_offset = 1;
         }
 
-        point_offset = base_offset + PointOffset_PeakOffset;
-
         pi      = getData(DSt->Message + 0, 2, ValueType_Demand);
         pi_time = getData(DSt->Message + 2, 4, ValueType_Raw);
 
@@ -3165,7 +3163,7 @@ INT CtiDeviceMCT470::decodeGetValueMinMaxDemand(INMESS *InMessage, CtiTime &Time
 
         pointname = "Channel " + CtiNumStr(base_offset) + " Max Demand";
 
-        insertPointDataReport(DemandAccumulatorPointType, point_offset,
+        insertPointDataReport(DemandAccumulatorPointType, base_offset + PointOffset_MaxOffset,
                               ReturnMsg, pi, pointname, pointTime);
 
         pi      = getData(DSt->Message + 6, 2, ValueType_Demand);
@@ -3178,19 +3176,27 @@ INT CtiDeviceMCT470::decodeGetValueMinMaxDemand(INMESS *InMessage, CtiTime &Time
 
         pointname = "Channel " + CtiNumStr(base_offset) + " Min Demand";
 
-        CtiPointNumericSPtr p = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(point_offset, DemandAccumulatorPointType));
-
-        //  use the max point for the computation, if we've got it
-        if( p )
+        //  if the min point doesn't exist...
+        if( !getDevicePointOffsetTypeEqual(point_offset + PointOffset_MinOffset, DemandAccumulatorPointType) )
         {
-            pi.value = p->computeValueForUOM(pi.value);
+            //  first look for the max point
+            CtiPointNumericSPtr p = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(base_offset + PointOffset_MaxOffset, DemandAccumulatorPointType));
 
-            valueReport(p, pi, pointTime);
+            //  if that doesn't exist, go after the normal demand point
+            if( !p )
+            {
+                p = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(base_offset, DemandAccumulatorPointType));
+            }
+
+            //  if we found a stand-in point, compute the multiplier before we send it off
+            if( p )
+            {
+                pi.value = p->computeValueForUOM(pi.value);
+            }
         }
-        else
-        {
-            valueReport(pointname, pi, pointTime, false);
-        }
+
+        insertPointDataReport(DemandAccumulatorPointType, base_offset + PointOffset_MinOffset,
+                              ReturnMsg, pi, pointname, pointTime);
 
         retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
     }
@@ -3649,7 +3655,7 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                 unsigned long peak_time;
                 string pointname;
                 int tags = 0;
-                
+
                 if( parse.getFlags() & CMD_FLAG_GV_KVARH || parse.getFlags() & CMD_FLAG_GV_KVAH  )
                 {
                     offset = PointOffset_TOU_KMBase;
