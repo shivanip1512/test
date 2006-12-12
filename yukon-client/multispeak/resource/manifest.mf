@@ -5,6 +5,7 @@ Class-Path:
  jradius-client.jar 
  common.jar 
  yukonappserver.jar 
+ tools.jar 
  j2ee.jar 
  rwav.jar 
  log4j-1.2.4.jar 

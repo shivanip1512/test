@@ -2,7 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry sourcepath="C:/axis1_2/src" kind="lib" path="/third-party/axis.jar"/>
+	<classpathentry kind="lib" path="/third-party/axis.jar" sourcepath="C:/axis1_2/src"/>
 	<classpathentry kind="lib" path="/third-party/activation.jar"/>
 	<classpathentry kind="lib" path="/third-party/commons-discovery.jar"/>
 	<classpathentry kind="lib" path="/third-party/commons-httpclient.jar"/>
@@ -18,5 +18,6 @@
 	<classpathentry kind="src" path="/common"/>
 	<classpathentry kind="src" path="/yukonappserver"/>
 	<classpathentry kind="src" path="/third-party"/>
+	<classpathentry kind="src" path="/tools"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
