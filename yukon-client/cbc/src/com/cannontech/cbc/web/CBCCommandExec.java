@@ -101,7 +101,8 @@ public class CBCCommandExec
 		else if( _cmdID == CBCCommand.CLOSE_CAPBANK 
 			 	 || _cmdID == CBCCommand.OPEN_CAPBANK
 				 || _cmdID == CBCCommand.BANK_DISABLE_OVUV 
-				 || _cmdID == CBCCommand.BANK_ENABLE_OVUV )
+				 || _cmdID == CBCCommand.BANK_ENABLE_OVUV 
+                 || _cmdID == CBCCommand.SCAN_2WAY_DEV)
 		{
 			CapBankDevice bank = (CapBankDevice)cbcCache.getCapBankDevice( new Integer(_paoID) );
 			

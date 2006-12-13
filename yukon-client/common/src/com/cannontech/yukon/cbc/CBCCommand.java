@@ -37,6 +37,7 @@ public class CBCCommand extends com.cannontech.yukon.cbc.CBCMessage
     public static final int CONFIRM_AREA = 21;
     public static final int ENABLE_AREA = 22;
     public static final int DISABLE_AREA = 23;
+    public static final int SCAN_2WAY_DEV = 24;
 
 
 	//server does not use these commands
@@ -49,6 +50,7 @@ public class CBCCommand extends com.cannontech.yukon.cbc.CBCMessage
 	public static final int CMD_FAILED_BANKS = VERIFY_OFFSET + 2;
 	public static final int CMD_QUESTIONABLE_BANKS = VERIFY_OFFSET + 3;
 	public static final int CMD_DISABLE_VERIFY = VERIFY_OFFSET + 4;
+
 
 	public static final String[] COMMAND_STRINGS =
 	{
@@ -77,7 +79,7 @@ public class CBCCommand extends com.cannontech.yukon.cbc.CBCMessage
         "CONFIRM AREA", //21
         "ENABLE AREA", //22
         "DISABLE AREA", //23
-        "",
+        "SCAN 2WAY DEV",//24
 		"","","","","",
 
 

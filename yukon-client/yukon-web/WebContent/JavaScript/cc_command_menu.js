@@ -43,10 +43,11 @@ function updateCommandMenu(result) {
  				 	var name = getElementTextNS(result[i], 0,'param3');
  				 	var allow_ovuv = getElementTextNS(result[i], 0,'param4');
  				 	var all_manual_sts = getElementTextNS(result[i], 0,'param5');
+                    var is2_Way = document.getElementById ('2_way_' + id).value;
  				 	
- 				 	opts = [false, name, sub_type, allow_ovuv, all_manual_sts];
+ 				 	opts = [false, name, sub_type, allow_ovuv, all_manual_sts, is2_Way];
  				 	document.getElementById ('cmd_cap_move_back_' + id).value = generate_CB_Move_Back (id, name);		       	
- 				 }
+                 }
  				//otherwise the only thing left is to get state
  				var state = getElementTextNS(result[i], 0,'state');
  				
@@ -241,7 +242,8 @@ function generateCapBankMenu (id, state, opts) {
  	bank_disable_ovuv:18,
  	enable_capbank:4,
  	disable_capbank:5,
- 	reset_op_cnt:12
+ 	reset_op_cnt:12,
+    scan_2way_dev:24
  	}
  var table_footer = "</table>";
  var table_body = "<table >";
@@ -256,6 +258,10 @@ function generateCapBankMenu (id, state, opts) {
 		   table_body += add_AJAX_Function('cap', id, ALL_CAP_CMDS.confirm_open, 'Confirm', false);
 		   table_body += add_AJAX_Function('cap', id, ALL_CAP_CMDS.open_capbank, 'Open_Capacitor', false);
 		   table_body += add_AJAX_Function('cap', id, ALL_CAP_CMDS.close_capbank, 'Close_Capacitor', false);
+           if (opts[5] == 'true')
+            {
+                table_body += add_AJAX_Function('cap', id, ALL_CAP_CMDS.scan_2way_dev, 'Init_Scan', false);
+            }
 		
 		if (allow_ovuv == 'true') {
 		   table_body += add_AJAX_Function('cap', id, ALL_CAP_CMDS.bank_enable_ovuv, 'Enable_OV/UV', false);
@@ -297,7 +303,10 @@ function enableOpCounts (pao_id) {
 	window.document.getElementById ("cb_state_td_hdr1").style.display = '';
 	window.document.getElementById ("cb_state_td_hdr2").style.display = '';
 	enableDisplayAll ('capBankTable');
-	alignHeadersIgnoreDisplayNone ('capBankTable','capBankHeaderTable');	
+    var invis_idx = 3;
+	//the index of the invisible input text field in the table
+    //located right after CB Name(Order) column
+    alignHeadersIgnoreDisplayNone ('capBankTable','capBankHeaderTable', invis_idx);	
 	window.document.getElementById ("cap_opcnt_span"+pao_id).style.display = '';
 }
 
