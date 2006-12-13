@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.45 $
-* DATE         :  $Date: 2006/12/11 16:30:15 $
+* REVISION     :  $Revision: 1.46 $
+* DATE         :  $Date: 2006/12/13 21:52:10 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2704,6 +2704,7 @@ INT CtiDeviceMCT4xx::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeN
     string valReport, resultString;
     int    interval_len, block_len, function, channel,
            badData;
+    bool   expectMore = false;
 
     point_info  pi;
     unsigned long timeStamp, decode_time;
@@ -2775,6 +2776,7 @@ INT CtiDeviceMCT4xx::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeN
                 if(      strstr(InMessage->Return.CommandStr, " background") )   lp_request_str += " background";
                 else if( strstr(InMessage->Return.CommandStr, " noqueue") )      lp_request_str += " noqueue";
 
+                expectMore = true;
                 CtiRequestMsg newReq(getID(),
                                      lp_request_str,
                                      InMessage->Return.UserID,
@@ -2808,6 +2810,7 @@ INT CtiDeviceMCT4xx::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeN
 
                 resultString += ", retrying";
 
+                expectMore = true;
                 CtiRequestMsg newReq(getID(),
                                      InMessage->Return.CommandStr,
                                      InMessage->Return.UserID,
@@ -2834,7 +2837,7 @@ INT CtiDeviceMCT4xx::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeN
 
         ReturnMsg->setResultString(resultString);
 
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList, expectMore );
     }
     else
     {
