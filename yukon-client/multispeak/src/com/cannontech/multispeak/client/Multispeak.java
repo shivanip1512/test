@@ -750,7 +750,7 @@ public class Multispeak implements MessageListener {
         
         for  (int i = 0; i < addMeters.length; i++){
             Meter mspMeter = addMeters[i];
-            String meterNo = mspMeter.getObjectID().trim();
+            String meterNo = mspMeter.getMeterNo().trim();
             String mspAddress = mspMeter.getNameplate().getTransponderID().trim();
             ServiceLocation mspServiceLocation = null;
             
@@ -1130,7 +1130,7 @@ public class Multispeak implements MessageListener {
         Vector errorObjects = new Vector();
         for  (int i = 0; i < removeMeters.length; i++){
             Meter mspMeter = removeMeters[i];
-            String meterNo = mspMeter.getObjectID();
+            String meterNo = mspMeter.getMeterNo().trim();
             //Lookup meter in Yukon by msp meter number
             LiteYukonPAObject liteYukonPaobject = MultispeakFuncs.getLiteYukonPaobject(mspVendor.getUniqueKey(), meterNo);
             if( liteYukonPaobject != null) {    //Meter exists
@@ -1226,7 +1226,7 @@ public class Multispeak implements MessageListener {
                     ArrayOfMeter mspMeters = port.getMeterByServLoc(serviceLocationStr);
                     if( mspMeters != null && mspMeters.getMeter() != null) {
                         for ( int j = 0; j < mspMeters.getMeter().length; j++){
-                            LiteYukonPAObject tempPao = DaoFactory.getDeviceDao().getLiteYukonPaobjectByMeterNumber(mspMeters.getMeter(j).getObjectID());
+                            LiteYukonPAObject tempPao = DaoFactory.getDeviceDao().getLiteYukonPaobjectByMeterNumber(mspMeters.getMeter(j).getMeterNo());
                             if( tempPao != null) {
                                 liteYukonPaobject = tempPao;
                                 break;
