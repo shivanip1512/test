@@ -596,7 +596,7 @@ function enableDisplayAll (mainTable) {
 }
 
 
-function alignHeadersIgnoreDisplayNone (mainTable, headerTable) {
+function alignHeadersIgnoreDisplayNone (mainTable, headerTable, invis_idx) {
 mytable = document.getElementById(mainTable);
 hdrTable =  document.getElementById(headerTable);
 if (hdrTable)
@@ -617,7 +617,7 @@ if (hdrTable)
 			            maxWidth = Math.max(hdrRow.getElementsByTagName('td').item(i).offsetWidth, myrow.cells[i].offsetWidth);
 			            hdrRow.getElementsByTagName('td').item(i).width = maxWidth;
 			            myrow.cells[i].width = maxWidth;
-			            if (i == 4)
+			            if (i == invis_idx)
 			                myrow.cells[i].style.display = 'none';
 			                                                                       
 			         }
@@ -640,7 +640,7 @@ CtiNonScrollTable.prototype = {
     }
 }
 
-function addLockButtonForButtonGroup (groupId) {
+function addLockButtonForButtonGroup (groupId, secs) {
 Event.observe(window, 'load', function() {
 var button_group = document.getElementById(groupId);
 var buttons = button_group.getElementsByTagName("input");
@@ -650,6 +650,11 @@ for (var i=0; i<buttons.length; i++) {
     lock_buttons(button_el.id);
 }
 });
+
+if (secs != null)
+	{
+		pause (secs * 1000);
+	}
 }
 
 function lock_buttons(el_id){
@@ -668,6 +673,7 @@ for (var i=0; i < button_els.length; i++)
  }
 
 }
+
 });
 
 }
