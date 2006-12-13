@@ -39,7 +39,8 @@
 <f:verbatim>
 <script type="text/JavaScript">
 
-addLockButtonForButtonGroup("buttons");
+addLockButtonForButtonGroup("hdr_buttons");
+addLockButtonForButtonGroup("foot_buttons");
 
 </script>
 </f:verbatim>
@@ -62,6 +63,17 @@ addLockButtonForButtonGroup("buttons");
                     styleClass="smallResults" errorClass="errorResults" layout="table"/>
 
 
+                    <x:panelGroup id="hdr_buttons" forceId="true">
+                        <f:verbatim><br/></f:verbatim>
+                        <x:commandButton id="hdr_submit_button_1" value="Submit" action="#{capControlForm.update}" 
+                        styleClass="stdButton" title="Writes this item to the database"  rendered = "#{!capControlForm.visibleTabs['CBCCapBank']}"/>
+                        <x:commandButton id="hdr_submit_button_2" value="Submit" action="#{capBankEditor.update}" 
+                        styleClass="stdButton" title="Writes this item to the database"  rendered = "#{capControlForm.visibleTabs['CBCCapBank']}"/>
+                        <x:commandButton  id="hdr_reset_button"  value="Reset" action="#{capControlForm.resetForm}" styleClass="stdButton" title="Resets all the data to the original settings" />
+                        <x:commandButton id="hdr_return_button" value="Return" action="none" styleClass="stdButton" immediate="true" title="Returns to the last module page that was used to enter this editor" >
+                            <f:actionListener type="com.cannontech.web.editor.CtiNavActionListener" />
+                        </x:commandButton>
+                    </x:panelGroup>
 
             <h:panelGrid id="body" columns="1" styleClass="pageBody">
 
@@ -120,7 +132,7 @@ addLockButtonForButtonGroup("buttons");
 
 
                 <f:facet name="footer">
-                    <x:panelGroup id="buttons" forceId="true">
+                    <x:panelGroup id="foot_buttons" forceId="true">
                         <f:verbatim><br/></f:verbatim>
                         <x:commandButton id="submit_button1" value="Submit" action="#{capControlForm.update}" 
                         styleClass="stdButton" title="Writes this item to the database"  rendered = "#{!capControlForm.visibleTabs['CBCCapBank']}"/>
