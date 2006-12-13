@@ -4,7 +4,14 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <f:view>
 <cti:standardPage title="CapControl Wizard" module="capcontrol">
-
+<cti:includeScript link="/capcontrol/js/cbc_funcs.js"/>
+<f:verbatim>
+<script type="text/JavaScript">
+ 
+addLockButtonForButtonGroup("buttons", 5);
+ 
+</script>
+</f:verbatim>
 
     <x:panelLayout id="page" styleClass="pageLayout" headerClass="pageHeader"
             navigationClass="pageNavigation" bodyClass="pageBody"
@@ -62,7 +69,7 @@
 
 
                 <f:facet name="footer">
-                    <x:panelGroup>
+                    <x:panelGroup id="buttons" forceId="true">
                         <f:verbatim><br/><hr/><br/></f:verbatim>
                         <x:commandButton value="Submit" action="#{paoDeleteForm.update}" styleClass="stdButton" title="Writes this item to the database" />
                         <x:commandButton value="Return" action="none" styleClass="stdButton" immediate="true" title="Returns to the last module page that was used to enter this editor" >
