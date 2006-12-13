@@ -7,14 +7,24 @@
 package com.cannontech.yimp.util;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.RowMapper;
+
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.Transaction;
@@ -24,10 +34,13 @@ import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.db.device.DeviceCarrierSettings;
+import com.cannontech.database.db.importer.ImportData;
 import com.cannontech.database.db.importer.ImportFail;
 import com.cannontech.database.db.importer.ImportPendingComm;
 import com.cannontech.database.db.point.Point;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.yimp.importer.BulkImporter;
 import com.cannontech.yukon.IServerConnection;
 
 /**
@@ -36,156 +49,102 @@ import com.cannontech.yukon.IServerConnection;
  * To change the template for this generated type comment go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-public class DBFuncs 
-{
+public class DBFuncs {
+    
+    private static final RowMapper routeNameRowMapper = new RowMapper() {
+        public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
+            String name = rs.getString("Name").trim();
+            return name;
+        };
+    };
+    
+    private static final RowMapper routeIDRowMapper = new RowMapper() {
+        public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
+            Integer routeID = rs.getInt("RouteID");
+            return routeID;
+        };
+    };
 	/*
 	 * Grab a Route using a PAOName, returns one with an ID of -12 if unsuccessful
 	 * This should be changed to use cache at a later time
 	 */
-	public static Integer getRouteFromName(String name)
-	{
+	public static Integer getRouteFromName(String name) {
 		Integer routeID = new Integer(-12);
 		
-		SqlStatement stmt = new SqlStatement("SELECT PAOBJECTID FROM YUKONPAOBJECT WHERE PAONAME = '" 
-			+ name + "' AND PAOCLASS = 'ROUTE'", "yukon");
-		
-		try
-		{
-			stmt.execute();
-				
-			if( stmt.getRowCount() > 0 )
-			{
-				routeID = new Integer( ((java.math.BigDecimal) stmt.getRow(0)[0]).intValue());	
-			}
-		}
-		catch( Exception e )
-		{
-			e.printStackTrace();
-		}
-		
-		return routeID;
+        try {
+            String stmt = "SELECT PAOBJECTID FROM YUKONPAOBJECT WHERE PAONAME = '" 
+                + name + "' AND PAOCLASS = 'ROUTE'";
+            
+            JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
+            routeID = (Integer) jdbcOps.queryForObject(stmt, Integer.class);
+            return routeID;
+        } catch (IncorrectResultSizeDataAccessException e) {
+            return routeID;
+        }
 	}
 	
 	/*
 	 * Grab an MCT410 using a PAOName, returns one with an ID of -12 if unsuccessful
 	 * This should be changed to use cache at a later time
 	 */
-	public static MCT400SeriesBase get410FromTemplateName(String name)
-	{
+	public static MCT400SeriesBase get410FromTemplateName(String name) {
 		MCT400SeriesBase template410 = new MCT400SeriesBase();
 		template410.setDeviceID(new Integer(-12));
-		Integer id = new Integer(0);
-        String type = new String();
+        Integer id = null;
         
-		SqlStatement stmt = new SqlStatement("SELECT PAOBJECTID,TYPE FROM YUKONPAOBJECT WHERE PAONAME = '" 
-			+ name + "' AND TYPE LIKE 'MCT-4%'", "yukon");
+		String stmt = "SELECT PAOBJECTID FROM YUKONPAOBJECT WHERE PAONAME = '" 
+			+ name + "' AND TYPE LIKE 'MCT-4%'";
         
-		try
-		{
-			stmt.execute();
-				
-			if( stmt.getRowCount() > 0 )
-			{
-				id = new Integer( ((java.math.BigDecimal) stmt.getRow(0)[0]).intValue());	
-				type = new String(stmt.getRow(0)[1].toString());
-                
-                if(type.length() > 0)
-                {
-                    template410.setDeviceID(id);
-                    template410 = (MCT400SeriesBase) Transaction.createTransaction(Transaction.RETRIEVE, template410).execute();
-                }
-			}
-		}
-		catch( Exception e )
-		{
-			template410.setDeviceID(new Integer(-12));
-			e.printStackTrace();
-		}
-	
+        try {
+            JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
+            id = (Integer) jdbcOps.queryForObject(stmt, Integer.class);
+            if(id != null && id > 0) {
+                template410.setDeviceID(id);
+                template410 = (MCT400SeriesBase) Transaction.createTransaction(Transaction.RETRIEVE, template410).execute();
+            }
+        }
+        catch( Exception e ) {
+            template410.setDeviceID(new Integer(-12));
+        }
+    
 		return template410;
 	}
 	
-	public static boolean IsDuplicateName(String name)
-	{
-		SqlStatement stmt = new SqlStatement("SELECT PAOBJECTID FROM YUKONPAOBJECT WHERE PAONAME = '" 
-			+ name + "' AND (TYPE = 'MCT-410IL' OR TYPE = 'MCT-410CL')", "yukon");
+	public static boolean IsDuplicateName(String name) {
+		String stmt = "SELECT PAOBJECTID FROM YUKONPAOBJECT WHERE PAONAME = '" 
+			+ name + "' AND TYPE LIKE 'MCT-4%'";
 		
-		try
-		{
-			stmt.execute();
-
-			if( stmt.getRowCount() > 0 )
-			{
-				return ((java.math.BigDecimal) stmt.getRow(0)[0]).intValue() != 0;	
-			}
-		}
-		catch( Exception e )
-		{
-			e.printStackTrace();
-		}
-		
-		return false;
+		try {
+		    Integer paoID = 0;
+		    JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
+		    paoID = (Integer) jdbcOps.queryForObject(stmt, Integer.class);
+            return paoID > 0;
+        } 
+        catch (IncorrectResultSizeDataAccessException e) {
+            return false;
+        }
 	}
 	/**
 	 * returns the paobjectid of the device with address.  Else null
 	 * @param address
 	 * @return
 	 */
-	public static Integer getDeviceIDByAddress(String address)
-	{
+	public static Integer getDeviceIDByAddress(String address) {
 		Integer returnDeviceID = null;
-		java.sql.PreparedStatement pstmt = null;
-		java.sql.ResultSet rset = null;
-		Connection conn = null;
 		
-		try
-		{
-			String sql = "SELECT DEVICEID FROM " + DeviceCarrierSettings.TABLE_NAME + " WHERE ADDRESS = '" + address + "'";
+		String stmt = "SELECT DEVICEID FROM " + DeviceCarrierSettings.TABLE_NAME + " WHERE ADDRESS = '" + address + "'";
 		    
-			conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-			if( conn == null )
-			{
-				CTILogger.error("Error getting database connection.");
-				return null;	//this might not be the best thing to return, its assuming the address is NOT already in t
-			}
-			else
-			{
+        try {
+            JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
+            returnDeviceID = (Integer) jdbcOps.queryForObject(stmt, Integer.class);
+        } 
+        catch (IncorrectResultSizeDataAccessException e) {
+            return null;
+        }
+        return returnDeviceID;
+    }
 	
-				pstmt= conn.prepareStatement( sql);
-				rset = pstmt.executeQuery();
-	
-				if(rset != null && rset.next() )
-				{
-					returnDeviceID = new Integer(rset.getInt(1));
-				}
-			}
-		}
-		catch( java.sql.SQLException e )
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			try
-			{
-				if( rset != null)
-					rset.close();
-				if( pstmt != null )
-					pstmt.close();
-				if( conn != null )
-					conn.close();
-			}
-			catch( java.sql.SQLException e )
-			{
-				e.printStackTrace();
-			}
-		}
-		
-		return returnDeviceID;
-	}
-	
-	public static Vector getPointsForPAO( Integer paoID )
-	{
+	public static Vector getPointsForPAO( Integer paoID ) {
         List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(paoID);
 
 		Vector daPoints = new Vector(points.size());
@@ -194,153 +153,74 @@ public class DBFuncs
 		for (LitePoint point: points) {
 			pointBase = (PointBase) LiteFactory.createDBPersistent(point);
 			
-			try
-			{
+			try {
 				com.cannontech.database.Transaction t =
 					com.cannontech.database.Transaction.createTransaction(com.cannontech.database.Transaction.RETRIEVE, pointBase);
 				t.execute();
 				daPoints.addElement(pointBase);
 			}
-			catch (com.cannontech.database.TransactionException e)
-			{
+			catch (com.cannontech.database.TransactionException e) {
 				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 			}
 		}
 			
 		return daPoints;
-	
 	}
 	
-	public final static int getNextPointID()
-	{
-		return Point.getNextPointID();
-	}
-	
-	public static boolean writeLastImportTime(Date lastImport)
-	{
-		SqlStatement stmt = new SqlStatement("UPDATE DYNAMICIMPORTSTATUS SET LASTIMPORTTIME = '" + lastImport.toString() + "' WHERE ENTRY = 'SYSTEMVALUE'", "yukon");
+	public static boolean writeLastImportTime(Date lastImport) {
+		String stmt = "UPDATE DYNAMICIMPORTSTATUS SET LASTIMPORTTIME = '" + lastImport.toString() + "' WHERE ENTRY = 'SYSTEMVALUE'";
 		
-		try
-		{
-			stmt.execute();
-		}
-		catch (Exception e)
-		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-			return false;
-		}
-
-		return true;
+		return executeSimpleImportStatusSQL(stmt);
 	}
 	
-	public static boolean writeNextImportTime(Date nextImport, boolean currentlyRunning)
-	{
+	public static boolean writeNextImportTime(Date nextImport, boolean currentlyRunning) {
 		String next;
-		
 		if(currentlyRunning)
 			next = "CURRENTLY RUNNING..";
 		else
 			next = nextImport.toString();
 
-		SqlStatement stmt = new SqlStatement("UPDATE DYNAMICIMPORTSTATUS SET NEXTIMPORTTIME = '" + next + "' WHERE ENTRY = 'SYSTEMVALUE'", "yukon");
-				
-		try
-		{
-			stmt.execute();
-		}
-		catch (Exception e)
-		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-			return false;
-		}
-
-		return true;
+		String stmt = "UPDATE DYNAMICIMPORTSTATUS SET NEXTIMPORTTIME = '" + next + "' WHERE ENTRY = 'SYSTEMVALUE'";
+        return executeSimpleImportStatusSQL(stmt);
 	}
 	
-	public static boolean writeTotalSuccess(int success)
-	{
-		SqlStatement stmt = new SqlStatement("UPDATE DYNAMICIMPORTSTATUS SET TOTALSUCCESSES = " + success + " WHERE ENTRY = 'SYSTEMVALUE'", "yukon");
+	public static boolean writeTotalSuccess(int success) {
+		String stmt = "UPDATE DYNAMICIMPORTSTATUS SET TOTALSUCCESSES = " + success + " WHERE ENTRY = 'SYSTEMVALUE'";
 
-		try
-		{
-			stmt.execute();
-		}
-		catch (Exception e)
-		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-			return false;
-		}
-
-		return true;
+        return executeSimpleImportStatusSQL(stmt);
 	}
 	
-	public static boolean writeTotalAttempted(int attempts)
-	{
-		SqlStatement stmt = new SqlStatement("UPDATE DYNAMICIMPORTSTATUS SET TOTALATTEMPTS = " + attempts + " WHERE ENTRY = 'SYSTEMVALUE'", "yukon");
+	public static boolean writeTotalAttempted(int attempts) {
+		String stmt = "UPDATE DYNAMICIMPORTSTATUS SET TOTALATTEMPTS = " + attempts + " WHERE ENTRY = 'SYSTEMVALUE'";
 
-		try
-		{
-			stmt.execute();
-		}
-		catch (Exception e)
-		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-			return false;
-		}
-
-		return true;
+        return executeSimpleImportStatusSQL(stmt);
 	}
 	
-	public static void alreadyForcedImport()
-	{
-		SqlStatement stmt = new SqlStatement("UPDATE DYNAMICIMPORTSTATUS SET FORCEIMPORT = 'N' WHERE ENTRY = 'SYSTEMVALUE'", "yukon");
+	public static void alreadyForcedImport() {
+		String stmt = "UPDATE DYNAMICIMPORTSTATUS SET FORCEIMPORT = 'N' WHERE ENTRY = 'SYSTEMVALUE'";
 	
-		try
-		{
-			stmt.execute();
-		}
-		catch (Exception e)
-		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-		}
+        executeSimpleImportStatusSQL(stmt);
 	}
 	
-	public static boolean forceImport()
-	{
-		SqlStatement stmt = new SqlStatement("UPDATE DYNAMICIMPORTSTATUS SET FORCEIMPORT = 'Y' WHERE ENTRY = 'SYSTEMVALUE'", "yukon");
+	public static boolean forceImport() {
+		String stmt = "UPDATE DYNAMICIMPORTSTATUS SET FORCEIMPORT = 'Y' WHERE ENTRY = 'SYSTEMVALUE'";
 			
-		try
-		{
-			stmt.execute();
-		}
-		catch (Exception e)
-		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-			return false;
-		}
-
-		return true;
+        return executeSimpleImportStatusSQL(stmt);
 	}
 	
-	public static boolean isForcedImport()
-	{
-		boolean isForced = false;
-		SqlStatement stmt = new SqlStatement("SELECT FORCEIMPORT FROM DYNAMICIMPORTSTATUS WHERE ENTRY = 'SYSTEMVALUE'", "yukon");
-		
-		try
-		{
-			stmt.execute();
-
-			if( stmt.getRowCount() > 0 )
-				isForced = stmt.getRow(0)[0].toString().compareTo("Y") == 0;
-		}
-		
-		catch( Exception e )
-		{
-			e.printStackTrace();
-		}
-		
-		return isForced;
+	public static boolean isForcedImport() {
+        String forceImport = "N";
+		String stmt = "SELECT FORCEIMPORT FROM DYNAMICIMPORTSTATUS WHERE ENTRY = 'SYSTEMVALUE'";
+        JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
+        
+        try {
+            forceImport = (String) jdbcOps.queryForObject(stmt, String.class);
+            return forceImport.compareTo("Y") == 0;
+        }
+        catch (DataAccessException e) {
+            YukonLogManager.getLogger(BulkImporter.class).error(e);
+            return false;
+        }
 	}
 	
 	/*
@@ -348,8 +228,7 @@ public class DBFuncs
 	 * they do a full reload of the database.
 	 * This is a poor man's RELOAD_ALL DBChangeMsg.
 	 */
-	public static void generateBulkDBChangeMsg(int dbField, String objCategory, String objType, IServerConnection dispatchConnection  ) 
-	{
+	public static void generateBulkDBChangeMsg(int dbField, String objCategory, String objType, IServerConnection dispatchConnection  ) {
 		DBChangeMsg chumpChange = new com.cannontech.message.dispatch.message.DBChangeMsg(
 			0,
 			dbField,
@@ -360,57 +239,32 @@ public class DBFuncs
 		dispatchConnection.write(chumpChange);
 	}
 	
-	public static List getRouteIDsFromSubstationName(String name)
-    {
-        List routeIDs = new ArrayList();
-        
-        SqlStatement stmt = new SqlStatement("SELECT ROUTEID FROM SUBSTATIONTOROUTEMAPPING WHERE SUBSTATIONID IN " +
+	public static List<Integer> getRouteIDsFromSubstationName(String name) {
+        String stmt = "SELECT ROUTEID FROM SUBSTATIONTOROUTEMAPPING WHERE SUBSTATIONID IN " +
                 "(SELECT SUBSTATIONID FROM SUBSTATION WHERE SUBSTATIONNAME  = '" 
-            + name + "')", "yukon");
+            + name + "')";
         
-        try
-        {
-            stmt.execute();
-                
-            if( stmt.getRowCount() > 0 )
-            {
-                for( int i = 0; i < stmt.getRowCount(); i++ )
-                {
-                    routeIDs.add(new Integer( ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue())); 
-                }
-            }
-        }
-        catch( Exception e )
-        {
-            e.printStackTrace();
-        }
+        JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
+        List<Integer> routeIDs = 
+            jdbcOps.query(stmt, routeIDRowMapper);
         
         return routeIDs;
     }
     
-    public static List getRouteNamesFromSubstationName(String subName)
-    {
-        List routeNames = new ArrayList();
+    public static List<String> getRouteNamesFromSubstationName(String subName) {
+        String stmt = "SELECT PAONAME " + 
+                                " FROM YUKONPAOBJECT PAO, SUBSTATION SUB, SUBSTATIONTOROUTEMAPPING MAP " + 
+                                " WHERE SUB.SUBSTATIONID = MAP.SUBSTATIONID " + 
+                                " AND SUB.SUBSTATIONNAME = '" + subName + "' " + 
+                                " AND PAO.PAOBJECTID = MAP.ROUTEID ORDER BY MAP.ORDERING";
         
-        SqlStatement stmt = new SqlStatement("SELECT PAONAME " + 
-                                             " FROM YUKONPAOBJECT PAO, SUBSTATION SUB, SUBSTATIONTOROUTEMAPPING MAP " + 
-                                             " WHERE SUB.SUBSTATIONID = MAP.SUBSTATIONID " +
-                                             " AND SUB.SUBSTATIONNAME = '" + subName + "' " + 
-                                             " AND PAO.PAOBJECTID = MAP.ROUTEID ORDER BY MAP.ORDERING", "yukon");
-        try {
-            stmt.execute();
-                
-            if( stmt.getRowCount() > 0 ) {
-                for( int i = 0; i < stmt.getRowCount(); i++ )
-                    routeNames.add(stmt.getRow(0)[0]); 
-            }
-        }
-        catch( Exception e ) {
-            e.printStackTrace();
-        }
+        JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
+        List<String> routeNames = 
+            jdbcOps.query(stmt, routeNameRowMapper);
         
         return routeNames;
     }    
+    
     public static boolean writePendingCommToFail(String failType, String errorMsg, Integer deviceID) {
         ImportPendingComm pc = new ImportPendingComm();
         pc.setPendingID(deviceID);
@@ -453,5 +307,19 @@ public class DBFuncs
         catch( TransactionException e ) {
             return false;
         }
+    }
+    
+    public static boolean executeSimpleImportStatusSQL(String stmt) {
+        JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
+        
+        try {
+            jdbcOps.execute(stmt);
+        }
+        catch (DataAccessException e) {
+            YukonLogManager.getLogger(BulkImporter.class).error(e);
+            return false;
+        }
+
+        return true;
     }
 }
