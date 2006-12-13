@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -243,8 +244,9 @@ public final class CBCUtils
 	        				 "AND SubStationBusID = ?";
 	        
 	        JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();            
-	        
-	        return (SubSnapshotParams)yukonTemplate.queryForObject(sqlStmt, new Integer[] { new Integer (subID)}, new RowMapper () {
+            SubSnapshotParams snapshot = null;
+	        try {
+             snapshot = (SubSnapshotParams)yukonTemplate.queryForObject(sqlStmt, new Integer[] { new Integer (subID)}, new RowMapper () {
 	        	public Object mapRow (ResultSet rs, int rowNum) throws SQLException {
 	        		SubSnapshotParams snapParam = new SubSnapshotParams();
 	        		snapParam.setBusID (rs.getInt(1));
@@ -254,6 +256,12 @@ public final class CBCUtils
 	        	}
 	        	
 	        });
+            }
+            catch (IncorrectResultSizeDataAccessException e)
+            {
+                snapshot = new SubSnapshotParams();
+            }
+            return snapshot;
 		}		
 		return new SubSnapshotParams();
 	}
