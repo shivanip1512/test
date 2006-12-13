@@ -255,34 +255,31 @@ Event.observe(window, 'load', function() { new CtiNonScrollTable('fdrTable','fdr
              
              <tr class="columnHeader lAlign">
               	<td/>
-              	<td> Parent Feeder </td>
-              	<td/>
-              	<td/>
+                <td/>
+                <td/>
               	<td id="cb_state_td_hdr1" style="display:none"/>
-              	<td/>
-              	<td/>
-              	<td/>
+                <td/>
+                <td/>
+                <td/>
+              	<td>Parent Feeder </td>
               	<td/>
               <tr/> 
              <tr class="columnHeader lAlign">
                 <td><input type="checkbox" name="chkAllBanksBx"
                     onclick="checkAll(this, 'cti_chkbxBanks');" /> </td>
                     
-             <td id="parent_fdr_td"/>  
- 
-                    <td> CB Name (Order)
-                    <img class="rAlign popupImg" src="images\question.gif"
-                        onmouseover="statusMsg(this, 'Order is the order the CapBank will control in.<br>Commands that can be sent to a field device are initiated from this column');" />
-                </td>
-         
                 <td  >State <img class="rAlign popupImg" src="images\question.gif"
                         onmouseover="statusMsg(this, 'System Commands, those commands that do NOT send out a message to a field device, can be initiated from this column');"/>
                 </td>
+                <td> CB Name (Order)
+                        <img class="rAlign popupImg" src="images\question.gif"
+                            onmouseover="statusMsg(this, 'Order is the order the CapBank will control in.<br>Commands that can be sent to a field device are initiated from this column');" />
+                 </td>
                 <td id="cb_state_td_hdr2" style="display:none" > Op Count Value</td>
                 <td>Bank Address</td>
                 <td>Date/Time</td>
                 <td>Bank Size</td>
-  
+                <td id="parent_fdr_td"/>  
                 <td>Op Count</td>
               </tr>              
               
@@ -300,32 +297,17 @@ for( int i = 0; i < capBanks.length; i++ )
 {
 	CapBankDevice capBank = capBanks[i];
 	css = ("tableCell".equals(css) ? "altTableCell" : "tableCell");
+    LiteYukonPAObject obj = DaoFactory.getPaoDao().getLiteYukonPAO(capBank.getControlDeviceID().intValue());
 %>
 				<tr class="<%=css%>">
 										
 
 					<td><input type="checkbox" name="cti_chkbxBanks" value="<%=capBank.getCcId()%>" /></td>
 					<td>
-		          	<input id="cmd_cap_move_back_<%=capBank.getCcId()%>" type="hidden" value= "" />
-		          	<a href="javascript:void(0);"
-		          		<% if( capBank.isBankMoved() ) { %>
-		       
-		          			class="warning" <%= popupEvent %>=
-		          			"
-							return overlib(
-									$F('cmd_cap_move_back_<%=capBank.getCcId()%>'),
-									STICKY, WIDTH,155, HEIGHT,50, OFFSETX,-15,OFFSETY,-15, FULLHTML);"
-									onmouseout = <%=nd %> 
-		          		<% } else { %>
-							onmouseover="statusMsg(this, 'Click here to temporarily move this CapBank from it\'s current parent feeder');"
-		          			onclick="return GB_show('CapBank Temp Move (Pick feeder by clicking on name)','tempmove.jsp?bankid='+<%=capBank.getCcId()%>, 500, 700, onGreyBoxClose);"
-		          		<% } %>
-						><%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_PARENT_COLUMN)%>
-					</a>					
-					</td>
-					<td>
 					<% if( hasControl && !CtiUtilities.STRING_NONE.equals(subBus.getControlUnits()) ) { %>
 						<input id="cmd_cap_<%=capBank.getCcId()%>_field" type="hidden" name = "cmd_dyn" value= "" />
+                        <!--2-way device designator-->
+                        <input id="2_way_<%=capBank.getCcId()%>" type="hidden" value="<%=CBCUtils.isTwoWay(obj)%>"/>
 						<a href="javascript:void(0);"
 						    <%= popupEvent %>="return overlib(
 								$F('cmd_cap_<%=capBank.getCcId()%>_field'),
@@ -344,7 +326,7 @@ for( int i = 0; i < capBanks.length; i++ )
 
 					<!-- -------------------------------------->
 					<%
-					LiteYukonPAObject obj = DaoFactory.getPaoDao().getLiteYukonPAO(capBank.getControlDeviceID().intValue());					
+										
 					if (CBCUtils.isTwoWay(obj)) {
 					%>					
 						<a href="#" 
@@ -389,6 +371,24 @@ for( int i = 0; i < capBanks.length; i++ )
 					</td>
 					
 					<td><%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_BANK_SIZE_COLUMN)%></td>
+                    <td>
+                    <input id="cmd_cap_move_back_<%=capBank.getCcId()%>" type="hidden" value= "" />
+                    <a href="javascript:void(0);"
+                        <% if( capBank.isBankMoved() ) { %>
+               
+                            class="warning" <%= popupEvent %>=
+                            "
+                            return overlib(
+                                    $F('cmd_cap_move_back_<%=capBank.getCcId()%>'),
+                                    STICKY, WIDTH,155, HEIGHT,50, OFFSETX,-15,OFFSETY,-15, FULLHTML);"
+                                    onmouseout = <%=nd %> 
+                        <% } else { %>
+                            onmouseover="statusMsg(this, 'Click here to temporarily move this CapBank from it\'s current parent feeder');"
+                            onclick="return GB_show('CapBank Temp Move (Pick feeder by clicking on name)','tempmove.jsp?bankid='+<%=capBank.getCcId()%>, 500, 700, onGreyBoxClose);"
+                        <% } %>
+                        ><%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_PARENT_COLUMN)%>
+                    </a>                    
+                    </td>
 
 
 					<td><a type="param2" name="cti_dyn" id="<%=capBank.getCcId()%>">
